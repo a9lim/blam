@@ -83,9 +83,13 @@ loses a halter.
 
 ## Open docket (detail in MORNING.md "Where I'd point us next")
 
-- ABS/APP interpreter slot searches per `tools/interp/SEARCH_SPEC.md`
-  (sound method: close candidate under rigid binders, compare full
-  β-nf against the reference slot; minutes of compute on this engine).
+- ~~ABS/APP interpreter slot searches~~ **done** —
+  `src/bin/slotsearch.rs`, results in `tools/interp/SEARCH_RESULTS.md`.
+  All three slots (VAR 21, APP 41, ABS 43 bits) are exhaustively optimal
+  under the parametric contract: unique survivor = reference, nothing
+  smaller, zero residual unknowns. Remaining lane is the *contextual*
+  one (§2 of the spec) — drop the must-mask to 0; a survivor there is a
+  hypothesis needing splice + battery, not a proof.
 - `loop32`: the one 32-bit term with no mechanical divergence proof
   anywhere. A context-sensitive recurrence certificate would be new.
 - bb.rs meter decoupling + `Meta{max_free,bits,hash}` caching — est.
