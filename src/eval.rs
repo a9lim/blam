@@ -16,6 +16,10 @@ pub enum OutOfFuel {
     Beta,
     /// Machine-transition cap exhausted (vm only).
     Transitions,
+    /// The sink asked to stop: it already knows the rest of the run is
+    /// irrelevant (vm only; see `Sink::CAN_ABORT`). Not a resource verdict —
+    /// the caller owns the reason and must not read it as "no normal form".
+    Aborted,
 }
 
 /// Beta-step budget. `steps` is left at the count reached so far, so a

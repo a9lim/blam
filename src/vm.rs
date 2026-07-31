@@ -35,7 +35,10 @@ impl TermPool {
         self.nodes.clear();
     }
 
-    fn push(&mut self, n: Node) -> u32 {
+    /// Append a node, returning its index. Public so callers can splice a
+    /// decoded term into a larger context (slot search closes candidates
+    /// under rigid binders this way) without a second decode pass.
+    pub fn push(&mut self, n: Node) -> u32 {
         self.nodes.push(n);
         (self.nodes.len() - 1) as u32
     }
@@ -184,6 +187,11 @@ impl TermPool {
 /// `var` on a deep spine burned 99.9% of a profiled solomonoff tail
 /// (the work-meter lesson, instance #4).
 pub trait Sink {
+    /// Opt in to early termination. When `false` (the default) the machine
+    /// never calls `aborted`, and monomorphization deletes the check — the
+    /// census path is unchanged, instruction for instruction.
+    const CAN_ABORT: bool = false;
+
     fn zero(&mut self);
     fn one(&mut self);
     fn var(&mut self, n: u32) {
@@ -191,6 +199,13 @@ pub trait Sink {
             self.one();
         }
         self.zero();
+    }
+    /// Polled once per machine transition when `CAN_ABORT`. Returning true
+    /// stops the run with `OutOfFuel::Aborted`; the bits already delivered
+    /// are still a genuine prefix of the normal form (readback is in order),
+    /// which is what makes an early "this can't be the target" sound.
+    fn aborted(&self) -> bool {
+        false
     }
 }
 
@@ -329,6 +344,9 @@ impl Machine {
             trans += 1;
             if trans > trans_limit {
                 return Err(OutOfFuel::Transitions);
+            }
+            if S::CAN_ABORT && sink.aborted() {
+                return Err(OutOfFuel::Aborted);
             }
             match pool.nodes[t as usize] {
                 Node::App(f, a) => {
