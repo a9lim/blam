@@ -1,0 +1,13 @@
+[package]
+name = "blc"
+version = "0.1.0"
+edition = "2021"
+description = "Binary lambda calculus engine for algorithmic information theory experiments"
+license = "MIT"
+
+[dependencies]
+im-rc = "15"
+rayon = "1"
+
+[profile.release]
+debug = true
