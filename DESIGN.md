@@ -128,8 +128,11 @@ so Tier B fuel would not be comparable across paths.
 ## Results (census of 2026-07-31)
 
 Full sweep of every closed term of 4..40 bits: **283,817,255 terms in
-~26 min** on the M5 Max (18 threads), vs ~4.3 h for Tromp's Haskell
-tooling over the same range. Complete table in `census_full.txt`.
+~24 min** on the M5 Max (18 threads), vs ~4.3 h for Tromp's Haskell
+tooling over the same range. Canonical table in `census_full2.txt`
+(includes the divergence certificate and the audit patches; 2,032
+unknowns, listed in `unknowns_v2.txt`; per-size unknown-cause splits
+~83% capacity / 17% work-meter).
 
 Verification: A114852 counts exact at every published size (20, 24, 28,
 32, 36, 40); BBλ(n) reproduced for every published value 4..34,
@@ -150,14 +153,17 @@ the 38-champion — a consistency check that fell out for free).
   threads.
 - **NF-prescan: neutral** at these sizes — a redex-free term also falls
   out of KN budget-1 in 0 steps almost as cheaply. Kept for clarity.
-- **budget1 16 vs 64 vs 512: flat.** The ladder is insensitive to the
-  first rung's exact height.
-- **Task-split granularity 1152..73728: flat** (bench_split_results.txt),
-  which falsified the "tail imbalance" hypothesis for the n≥39 slowdown.
-  The real cost model: each Unknown burns a stuck rescue (~3.2 s of
-  transition fuel); n=40's 1563 unknowns account for ~278 s of its 799 s
-  wall — the inherent price of maximum effort at the frontier, not a
-  scheduling defect.
+- **budget1 16 vs 64 vs 512: flat** — *explained post-audit*: rung 1's
+  transition floor equaled rung 2's, so rung 1 was redundant at any β
+  height. It now runs at `budget1 × 64` transitions and is a real rung.
+- **Task-split granularity 1152..73728: flat** (bench_split_results.txt)
+  — but this A/B ran at n=37, where the expensive tail is invisible.
+  The audit's live profile of n=40 found the tail *does* serialize
+  there: expensive terms cluster by enumeration prefix, adjacent tasks
+  are adjacent prefixes, and rayon splits by index range — 17 of 18
+  workers idle. Fix: bit-reversal task interleave
+  (`enumerate::interleave_tasks`). The other real cost stands: each
+  Unknown burns a stuck rescue (~3.2 s of transition fuel).
 
 ### The work-meter lesson (three bugs, one family)
 
@@ -195,10 +201,28 @@ us too). The five he fails that we resolve are the BBλ champions (both
 his pure BB reducer chokes on big-growth halters, our KN rescue
 resolves them in milliseconds. BB.txt's summary lines report far fewer
 fails (1/4/6/17/25) than its own traces (5/2/17/32/72), so the file is
-multi-generational; which of his newer engines mechanically proves the
-traced loops is the open conformance question. Two terms ≤36 (one 35b,
-one 36b) are unknown for us with no corresponding trace — the only
-sizes-≤36 knowledge gap on our side.
+multi-generational; the summary-line engine's extra proving power
+turned out to be BBold.lhs `redloop`, which we then generalized.
+
+### The self-feedback divergence certificate (closing the gap)
+
+The night's theory result, co-developed with Codex: for a syntactic
+self-application `A A` with `A = λx.x Q(x) R̄(x)` closed and ⊥-free,
+if bounded KN probes give `nf(A) = nf(Q(A))`, then `A A` has no head
+normal form — the rigid head `x` survives normalization, so any hnf
+shape re-demands the same spine and the states `Tₙ₊₁ = Q(Tₙ)` are all
+≡β. BBold's exact-equality `redloop` is the special case `Q(A) ≡ A`.
+Implementation: `bb.rs redloop`, armed at the same hook as the redex-
+history check; probes at `BLC_PROBE_FUEL` β (default 4096).
+
+Effect on the census: unknowns 2,903 → **2,032** (11,367 certificate
+proofs), halts unchanged at every size — and faster (n=32: 2.79 →
+1.14 s), since loops that previously burned both meters now exit on a
+cheap probe. n=32 reaches exact parity with Tromp's ledger (both sides
+fail only `loop32`, which no engine mechanically proves); at 34-36 we
+prove strictly more than his traced engine, including both previously
+unexplained 35/36-bit residuals. Fuel-robustness: re-adjudicating all
+2,032 survivors at `BLC_PROBE_FUEL=65536` (16×) flips nothing.
 
 Memory note: at 42M capacity the escalation engine's *live* graph can
 reach tens of GB per worker even though the meter bounds total

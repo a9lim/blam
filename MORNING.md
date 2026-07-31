@@ -1,31 +1,51 @@
 # Morning report — overnight census run, 2026-07-31
 
-Good morning! Everything on the agenda landed. The machine is clean (no
-runs in flight), the repo is uncommitted as always, and the night's story
-is below. Numbers you can trust: every claim here is backed by a file in
-the repo, and every reference value Tromp published is reproduced exactly.
+Good morning! Everything on the agenda landed, and then the mandate you
+widened at 2am filled the rest of the night. The machine is clean (no
+runs in flight), the history is committed (you gave standing permission
+mid-night), and the story is below. Numbers you can trust: every claim
+here is backed by a file in the repo, and every reference value Tromp
+published is reproduced exactly.
 
 ## TL;DR
 
-- **The full census 4..40 is done and verified**: 283,817,255 closed
-  terms, ~26 min wall on your 18 threads (`census_full.txt`). Every
-  A114852 count exact, every published BBλ(n) reproduced, n=32 halt
-  count matches BB.txt to the term.
+- **The full census 4..40 is done, verified, and sharper than Tromp's
+  ledger**: 283,817,255 closed terms (`census_full2.txt`, the canonical
+  table). Every A114852 count exact, every published BBλ(n) reproduced,
+  halt counts identical under every engine change all night. Unknowns:
+  **2,032** (down from 2,903 pre-certificate).
+- **The night's theory result — a divergence certificate, co-developed
+  with Codex**: for self-applications `A A` where A's behavior feeds
+  back into itself, comparing two bounded normal-form probes proves
+  divergence outright. It generalizes the mechanism behind BB.txt's
+  stronger engine, fires 11,367 times in the census, closes n=32 to
+  exact Tromp parity, and *overtakes* his traced engine at 34-36.
+- **Ω to nine decimals, exactly**: the new `solomonoff` engine (m(x),
+  K(x), Ω in exact 2⁻⁶⁴-unit integer arithmetic) gives
+  **Ω|≤40 ∈ [0.123995323359, 0.123995329152]** — the interval width
+  *is* the mass of the 2,032 unknowns. Coding theorem visible in the
+  tables: K(x) within a bit of −log₂ m(x) for every heavy hitter.
+- **The 170-bit self-interpreter is now mapped, and 170 is locally
+  optimal**: variables parse for *zero bits* (the −27 heart of the
+  2025 record), the 21-bit VAR slot is exhaustively optimal, and
+  Codex's design sweep measured every credible restructuring at
+  171-179 with the incumbent knot proven unique through 20 bits.
+  Sound search spec for the remaining ABS/APP slots is written.
+- **A live perf audit paid for itself**: an agent profiled the running
+  sweep, found a missing O(1) sink override eating 99.9% of the tail
+  (5× on solomonoff), a real n=40 serialization (fixed by bit-reversal
+  task interleaving), and a provably redundant census rung. Patch set
+  landed, verified bit-identical, resource errors now name their cause.
+- **Frontier pass at Tromp's exact capacity (42M)**: zero movement —
+  what our port proves, it proves at 2M. The discovery came from
+  cross-matching BB.txt's fail traces instead: **the terms his reducer
+  fails on that ours resolves are exactly the BBλ champions**, and
+  conformance vs BB.txt is now a precise two-layer story (below);
+  neither engine dominates.
 - **Ablations quantified** (`bench_results.txt`): oracle prefilter ~3×,
-  fused parallel generation ~8×, NF-prescan and budget1 tuning ≈ noise.
-- **The "tail imbalance" hypothesis died a clean death**
-  (`bench_split_results.txt`): throughput is flat from 1152 to 73,728
-  generation tasks. The real n≥39 cost is stuck-rescue burns on
-  unknowns (~3.2 s each; 1563 of them ≈ 278 s of n=40's 799 s wall).
-  Inherent price of maximum effort at the frontier, not a bug.
-- **Frontier pass at Tromp's exact capacity (42M)**: zero movement.
-  Every n≤36 unknown seed stays unknown at 21× the census capacity —
-  what our port can prove, it already proves at 2M. The real discovery
-  came from cross-matching BB.txt's fail traces instead: **our automatic
-  frontier and Tromp's nearly coincide, and the terms his reducer fails
-  on that ours resolves are exactly the BBλ champions.**
-- **Conformance vs BB.txt is now a precise, interesting story** — see
-  below; neither engine dominates the other.
+  fused parallel generation ~8×, NF-prescan ≈ noise — and the flat
+  budget1 ablation turned out to be *explained* by the audit (rung 1
+  was redundant; it isn't anymore).
 - **The night had a memory-bomb subplot** (three detonations, one of
   them mine and embarrassing) — honest accounting below, all defused.
 
@@ -167,7 +187,11 @@ soundness *proof* is the recurrence theorem), 709 proof events, and
 raising probe fuel 16× produced no additional certificates and no
 census changes: no cutoff sensitivity observed through 65,536 β. (The
 706 fuel-rejected probes are *plausibly* mostly divergent probes, but
-that's inference, not proof — Codex kept me honest here.) The precise
+that's inference, not proof — Codex kept me honest here.) As the
+night's last act this was extended to the full range: re-adjudicating
+**all 2,032 surviving unknowns** (4..40) at 16× probe fuel flipped
+nothing (`fuelcheck_65536.txt`) — no unknown anywhere in the table is
+one probe-fuel bump away from resolution. The precise
 conformance claim: **every identified mechanical asymmetry between our
 ≤36 frontier and the BB.txt ledger is resolved**; the shared unknown
 frontier remains (80 terms ≤36), with `loop32` the sole size-32
@@ -200,6 +224,116 @@ roughly doubling per bit.
   BBλ(36) = 6+5·2^256) — the computable census is a lower-bound game
   from n=35 up. n=34 is the last size whose champion physically fits in
   memory, and our engine computes it automatically.
+
+## Act 4: the parallel lanes (while the machine crunched)
+
+When you asked for parallelism I fanned out three compute-light lanes;
+all three came back heavy.
+
+**The perf audit** (opus agent, read-only — it `sample`d the live
+process) found the solomonoff 5× gap in one profile: `KeySink` never
+overrode `Sink::var`, whose *default* is O(n) per emitted variable with
+n bounded only by the transition cap — 99.9% of the n=40 tail was
+inside that loop, on 2 of 18 cores. Also: the n=40 tail genuinely
+serializes (17 workers idle — my n=37 split A/B tested the wrong
+size; fix is a bit-reversal task interleave), census rung 1 was
+provably redundant (its transition floor equals rung 2's — which
+*explains* the flat budget1 ablation), and the VM had an 18 GB/worker
+memory exposure of its own. The zero-risk patch set is landed and
+verified bit-identical (commit `2cf3a86`); resource errors now say
+which resource died (`Why::Capacity` vs `Why::WorkMeter` — first
+reading: all 32-33 unknowns are capacity-bound, i.e. missed loops,
+matching Tromp's hand analyses). The medium-risk items (bb.rs metadata
+caching, est. 2-5× on the escalation tier that is ~98% of census CPU;
+rescue-by-cause budgets; λ-wrap memoization) are written up in the
+audit for a daytime session.
+
+**The self-interpreter analysis** (opus agent) reverse-engineered the
+170-bit interpreter end to end and verified everything by execution:
+the `cons'` cell makes a variable's own bitstream act as its de Bruijn
+selector, so **variables parse for zero bits** (−27 alone); the
+implicit-tail restructure is another −13; and Felgenhauer's classic −4
+trick becomes a +8 *liability* post-`cons'` (so the true algorithmic
+win is 210→170). It byte-exactly reproduced the classic 206/210-bit
+interpreters from BLC.tex and the 232-bit universal machine bitstring.
+Then it started *proving optimality*: the 21-bit variable branch is
+exhaustively optimal (30,232 candidates, exactly one survivor — the
+reference term). The ABS (43-bit) and APP (41-bit) slots need 15.4B
+and 4.3B candidates — mapped onto our enumeration engine, **minutes of
+compute**; the probe harness and methodology (including a documented
+false-positive trap) are preserved in `tools/interp/`. Free
+observation for the Tromp conversation: `intL (\z.z z)` is a 180-bit
+universal machine for closed programs, vs the published 196. Floor
+estimates: 165-168 plausible via micro-tricks, ~150 needs a new
+`cons'`-scale idea, below ~140 bet against.
+
+**The Codex lane** produced the self-feedback certificate (Act 3b),
+then two interpreter deliverables. First, a *sound* slot-search spec
+(`tools/interp/SEARCH_SPEC.md`): close each candidate under rigid
+binders and compare full β-normal forms against the reference slot —
+a contextual-correctness proof per candidate, replacing the
+probe-and-pray harness. Second, a design-theory sweep of every
+structural route below 170 (`tools/interp/DESIGN_NOTES.md`): all
+eight credible rearrangement classes compiled and measured at 171-179
+(the best rival ties the incumbent's structure exactly and loses only
+on index depth, X=41 vs 38); the wrong 168-bit `cons'` has a clean
+semantic repair — at 171, with a proof the repair class can't reach
+169 (binder saves 2, thunk costs 3); and a new exhaustive knot search
+(`tools/interp/search_fix.py`) over all 14,803 closed contexts
+through 20 bits shows the incumbent `(λa.a a)(λa.H(a a))` is the
+*unique* weak-head self-reproducing knot. Verdict: **170 is locally
+optimal** — beating it needs a new `cons'`-scale representation idea,
+not another binder move. The ABS/APP slot searches stay open as the
+mechanical route.
+
+## Act 5: Ω, m(x), K(x) — the AIT payoff
+
+The night's feature request, delivered on the audited engine
+(`src/bin/solomonoff.rs`, full sweep 4..40 in **1410 s** — the
+pre-audit engine was on pace for hours; outputs `solomonoff_40.txt`,
+`solomonoff_table.txt`). All arithmetic is exact: every program's mass
+is an integer count of 2⁻⁶⁴ units in u128 accumulators, so the
+decimals below are conversions, not float estimates.
+
+**The halting probability.** Over all 283,817,255 closed programs of
+4..40 bits: 282,854,928 halt (mass 0.123995323359), 960,295 diverge
+(mass 1.72×10⁻⁵), 2,032 unknown (mass 5.79×10⁻⁹). Hence
+
+> **Ω restricted to |p|≤40 ∈ [0.123995323359, 0.123995329152]**
+
+and the interval width *is exactly the unknown mass* — the census
+frontier, expressed as bits of Ω. Everything below the ninth decimal
+is the 2,032 unresolved terms; everything above it is proven. Two
+mass-weighted observations: 99.986% of covered program mass halts
+(short programs dominate the measure and overwhelmingly normalize),
+and the diverge mass ≈ 4.5×2⁻¹⁸ is consistent with the smallest
+loops (the 18-bit (λx.xx)(λx.xx) family) carrying most of it. The
+≤24 teaser from earlier in the night (0.120181739330, exact — no
+unknowns there) sits inside every later interval, as it must.
+
+**m(x) and the coding theorem, watched live.** The sweep tabulated
+3,214,311 distinct nontrivial normal forms (691 of width ≤20 bits
+dumped with full masses to `solomonoff_table.txt`). For the heaviest
+outputs, K(x) and −log₂ m(x) are within a fraction of a bit — for
+`x = I = 0010`: K=4, −log₂ m = 3.91; for `λλ.1 = 000010`: K=6,
+−log₂ m = 5.81. That's the coding theorem K(x) = −log₂ m(x) + O(1)
+materializing in a table, with the O(1) visibly < 1 for every heavy
+hitter in range.
+
+**Compressibility.** The most compressible normal form in range: a
+63-bit x with K(x)=31 — a 32-bit gain, i.e. a program that names a
+string using half its bits. The whole top-40 table gains 28-32 bits,
+and the witnesses are recognizably the census max-nf champions in
+compression clothing.
+
+**The monsters.** Normal forms too wide to tabulate get aggregated by
+size, and the top is remarkable: a single 38-bit program whose normal
+form is **222,333,282 bits** (~26 MB), with its 40-bit λ-wrap at
++2 bits of output — the λ-wrap chains are visible all down the
+aggregate table as (|x|, |x|+2) pairs at quarter mass. The 38-bit
+figure cross-checks the census exactly (`census_full2.txt` row 38,
+max nf 222,333,282), as does the 327,686-bit BBλ(34) champion —
+aggregated into the mass totals, below the printed top-40 cutoff.
 
 ## The memory subplot (honest accounting)
 
@@ -248,14 +382,30 @@ meter, charged on every primitive operation of every engine.
   inconsistencies within a chain (there were none).
 - `tools/bbtxt.py` — parses BB.txt's de Bruijn fail traces to BLC bits
   and set-compares them against our unknowns (the conformance engine).
-- `BLC_WORK_MULT` env knob on the escalation engine (default 16).
+- `src/bin/solomonoff.rs` — the m(x)/K(x)/Ω engine (Act 5); outputs
+  `solomonoff_40.txt` + `solomonoff_table.txt`.
+- The self-feedback divergence certificate in `src/bb.rs` (`redloop`),
+  with proof counters and four targeted tests (Act 3b).
+- The audit patch set: O(1) `Sink::var` contract, `normalize_capped`,
+  env/stack capacity release, `interleave_tasks`, and typed resource
+  errors — `OutOfFuel::{Beta,Transitions}`,
+  `NoNf::Unknown(Why::{Capacity,WorkMeter})` — threaded through to
+  per-size cause counters in the census output.
+- `tools/interp/` — the interpreter lab: probe harness + slot searches
+  (`lc.py`, `db.py`, `harness.py`, `search_var.py`, `search_abs.py`),
+  Codex's exhaustive knot search (`search_fix.py`), the sound
+  parametric search spec (`SEARCH_SPEC.md`), and the design-theory
+  notes (`DESIGN_NOTES.md`).
+- `BLC_WORK_MULT` env knob on the escalation engine (default 16),
+  `BLC_PROBE_FUEL` on the certificate probes (default 4096).
 - DESIGN.md gained a Results section; oracle.rs doc-comment warning
-  fixed. Tests: 37 pass, 1 ignored (the deliberately-slow naive BB(34)).
-- New data files: `unknowns_all.txt`, `unknown_seeds.txt`, the
+  fixed. Tests: 41 pass, 1 ignored (the deliberately-slow naive BB(34)).
+- New data files: `census_full2.txt` (canonical), `unknowns_v2.txt`
+  (the 2,032 survivors), `unknowns_all.txt`, `unknown_seeds.txt`, the
   `frontier_*.txt` adjudication outputs, `census_dump.txt`,
   `bench_results.txt`, `bench_split_results.txt`.
-- Git history exists now (you gave permission mid-night): engine core,
-  census+data, docs, and a final results commit.
+- Git history exists now (you gave permission mid-night): seven
+  commits from engine core through the final results.
 
 ## Where I'd point us next
 
