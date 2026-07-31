@@ -1,0 +1,571 @@
+//! Ratchet divergence certificates for growing-context loops.
+//!
+//! Contract and soundness proof: `tools/cert/SPEC.md`. A certificate is a
+//! triple `(A, W, C0)`; four checks (OPEN / DESC / BASE / INIT) reduce
+//! "T has no normal form" to bounded symbolic head reductions. `verify`
+//! is the trusted core; `discover` is untrusted search — a bad candidate
+//! can only fail to certify, never produce a wrong certificate.
+//!
+//! Everything here runs on plain trees. This is an adjudication-time
+//! prover, not an enumeration-throughput path.
+
+use crate::term::Term;
+use std::collections::HashMap;
+use std::fmt;
+use std::rc::Rc;
+
+/// Pattern term: `Term` plus one opaque metavariable `Meta` standing for
+/// an arbitrary *closed* term. Closedness is what makes `shift`/`subst`
+/// no-ops on `Meta` sound (SPEC.md §3, symbolic step rules).
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum PTerm {
+    Var(u32),
+    Lam(Rc<PTerm>),
+    App(Rc<PTerm>, Rc<PTerm>),
+    Meta,
+}
+
+pub fn pvar(n: u32) -> PTerm {
+    PTerm::Var(n)
+}
+
+pub fn plam(b: PTerm) -> PTerm {
+    PTerm::Lam(Rc::new(b))
+}
+
+pub fn papp(f: PTerm, a: PTerm) -> PTerm {
+    PTerm::App(Rc::new(f), Rc::new(a))
+}
+
+impl PTerm {
+    pub fn from_term(t: &Term) -> PTerm {
+        match t {
+            Term::Var(n) => PTerm::Var(*n),
+            Term::Lam(b) => plam(PTerm::from_term(b)),
+            Term::App(f, a) => papp(PTerm::from_term(f), PTerm::from_term(a)),
+        }
+    }
+
+    /// Back to a concrete `Term`; `None` if any `Meta` remains.
+    pub fn to_term(&self) -> Option<Term> {
+        match self {
+            PTerm::Var(n) => Some(Term::Var(*n)),
+            PTerm::Lam(b) => Some(Term::Lam(Rc::new(b.to_term()?))),
+            PTerm::App(f, a) => Some(Term::App(Rc::new(f.to_term()?), Rc::new(a.to_term()?))),
+            PTerm::Meta => None,
+        }
+    }
+
+    pub fn nodes(&self) -> u64 {
+        match self {
+            PTerm::Var(_) | PTerm::Meta => 1,
+            PTerm::Lam(b) => 1 + b.nodes(),
+            PTerm::App(f, a) => 1 + f.nodes() + a.nodes(),
+        }
+    }
+
+    pub fn contains_meta(&self) -> bool {
+        match self {
+            PTerm::Meta => true,
+            PTerm::Var(_) => false,
+            PTerm::Lam(b) => b.contains_meta(),
+            PTerm::App(f, a) => f.contains_meta() || a.contains_meta(),
+        }
+    }
+
+    /// Largest de Bruijn index reaching above `depth` binders; `Meta`
+    /// counts as closed. 0 for a pattern-closed term.
+    pub fn max_free(&self, depth: u32) -> u32 {
+        match self {
+            PTerm::Var(n) => n.saturating_sub(depth),
+            PTerm::Meta => 0,
+            PTerm::Lam(b) => b.max_free(depth + 1),
+            PTerm::App(f, a) => f.max_free(depth).max(a.max_free(depth)),
+        }
+    }
+}
+
+impl fmt::Display for PTerm {
+    /// De Bruijn notation with `Z` for the metavariable.
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PTerm::Var(n) => write!(f, "{n}"),
+            PTerm::Meta => write!(f, "Z"),
+            PTerm::Lam(b) => write!(f, "\\{b}"),
+            PTerm::App(x, a) => {
+                match **x {
+                    PTerm::Lam(_) => write!(f, "({x})")?,
+                    _ => write!(f, "{x}")?,
+                }
+                match **a {
+                    PTerm::Var(_) | PTerm::Meta => write!(f, " {a}"),
+                    _ => write!(f, " ({a})"),
+                }
+            }
+        }
+    }
+}
+
+/// Replace every `Meta` in `w` by the pattern-closed `z` (capture-free by
+/// closedness — no shifting required).
+pub fn plug(w: &PTerm, z: &PTerm) -> PTerm {
+    match w {
+        PTerm::Meta => z.clone(),
+        PTerm::Var(n) => PTerm::Var(*n),
+        PTerm::Lam(b) => plam(plug(b, z)),
+        PTerm::App(f, a) => papp(plug(f, z), plug(a, z)),
+    }
+}
+
+fn shift(t: &PTerm, d: u32, cutoff: u32) -> PTerm {
+    match t {
+        PTerm::Var(n) => {
+            if *n > cutoff {
+                PTerm::Var(n + d)
+            } else {
+                t.clone()
+            }
+        }
+        PTerm::Meta => PTerm::Meta,
+        PTerm::Lam(b) => plam(shift(b, d, cutoff + 1)),
+        PTerm::App(f, a) => papp(shift(f, d, cutoff), shift(a, d, cutoff)),
+    }
+}
+
+/// Substitute `s` for `Var(j)` and decrement free variables above `j`
+/// (the one-pass β-substitution; matches the reference reducer in
+/// `tools/cert/loop32_trace.py`).
+fn subst_dec(t: &PTerm, j: u32, s: &PTerm) -> PTerm {
+    match t {
+        PTerm::Var(n) => {
+            if *n == j {
+                s.clone()
+            } else if *n > j {
+                PTerm::Var(n - 1)
+            } else {
+                t.clone()
+            }
+        }
+        PTerm::Meta => PTerm::Meta,
+        PTerm::Lam(b) => plam(subst_dec(b, j + 1, &shift(s, 1, 0))),
+        PTerm::App(f, a) => papp(subst_dec(f, j, s), subst_dec(a, j, s)),
+    }
+}
+
+fn contract(body: &PTerm, arg: &PTerm) -> PTerm {
+    subst_dec(body, 1, arg)
+}
+
+/// One symbolic head step.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Step {
+    Did(PTerm),
+    /// The spine head is `Meta`: the reduction would have to inspect the
+    /// opaque closed term. The enclosing check must abort.
+    MetaHead,
+    /// Head normal form — no head redex exists.
+    Nf,
+}
+
+/// Deterministic head step: contract the unique redex `(λ.M) N` in
+/// position `((λ.M) N) t₂ … tₖ`, under leading lambdas. Only *concrete*
+/// lambdas are ever contracted; the spine path traversed contains no
+/// `Meta`, so the located redex is the head redex under every closed
+/// instantiation of `Meta` (SPEC.md §3).
+pub fn head_step(t: &PTerm) -> Step {
+    match t {
+        PTerm::Var(_) => Step::Nf,
+        PTerm::Meta => Step::MetaHead,
+        PTerm::Lam(b) => match head_step(b) {
+            Step::Did(b2) => Step::Did(plam(b2)),
+            other => other,
+        },
+        PTerm::App(f, a) => match &**f {
+            PTerm::Lam(b) => Step::Did(contract(b, a)),
+            PTerm::Meta => Step::MetaHead,
+            _ => match head_step(f) {
+                Step::Did(f2) => Step::Did(PTerm::App(Rc::new(f2), a.clone())),
+                other => other,
+            },
+        },
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum CheckFail {
+    /// `Meta` reached the spine head at this step.
+    MetaHead(u32),
+    /// Head normal form reached without hitting the target.
+    ReachedNf(u32),
+    /// A proper source state (the start, or any state before the end)
+    /// was an abstraction or bare `Meta` — the lifting lemma (SPEC.md
+    /// §2) would not apply, so the chain cannot be composed inside a
+    /// left spine. Step 0 marks the start state itself.
+    BadIntermediate(u32),
+    /// Step budget exhausted.
+    Budget,
+    /// Malformed certificate data (openness, missing `Meta`, …).
+    Shape(&'static str),
+}
+
+/// Verify the pattern reduction `l →ₕ⁺ r` (exact syntactic match) with
+/// every *proper source state* — `l` and every state before `r` — a
+/// non-abstraction and non-`Meta`, within `max_steps`. Returns the
+/// number of steps taken.
+///
+/// The source-state condition (not merely "intermediate states") is what
+/// the lifting lemma needs: if a source state were an abstraction, the
+/// head step in a left-spine context would consume that abstraction via
+/// the outer redex instead of reducing beneath it. In v1 every check
+/// starts from an application, so the distinction is latent; it is
+/// enforced here so v2 lemma systems cannot fall through the gap
+/// (Codex review, blc-conformance 2026-07-31).
+pub fn check_reduces(l: &PTerm, r: &PTerm, max_steps: u32) -> Result<u32, CheckFail> {
+    if matches!(l, PTerm::Lam(_) | PTerm::Meta) {
+        return Err(CheckFail::BadIntermediate(0));
+    }
+    let mut cur = l.clone();
+    for i in 1..=max_steps {
+        cur = match head_step(&cur) {
+            Step::Did(next) => next,
+            Step::MetaHead => return Err(CheckFail::MetaHead(i)),
+            Step::Nf => return Err(CheckFail::ReachedNf(i)),
+        };
+        if cur == *r {
+            return Ok(i);
+        }
+        // Instantiation-stability: `App` and `Var` stay non-abstractions
+        // under every closed instantiation; `Lam` and `Meta` do not.
+        if matches!(cur, PTerm::Lam(_) | PTerm::Meta) {
+            return Err(CheckFail::BadIntermediate(i));
+        }
+    }
+    Err(CheckFail::Budget)
+}
+
+/// A ratchet certificate (SPEC.md §3): head `A`, wrapper `W[Z]`, base `C0`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Ratchet {
+    pub a: Term,
+    pub w: PTerm,
+    pub c0: Term,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct CertReport {
+    pub open_steps: u32,
+    pub desc_steps: u32,
+    pub base_steps: u32,
+    /// Concrete head steps from the target to the matched milestone.
+    pub init_steps: u32,
+    /// Tower height of the matched milestone argument.
+    pub init_tower: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum CertFail {
+    Open(CheckFail),
+    Desc(CheckFail),
+    Base(CheckFail),
+    /// INIT never matched `A · Wⁿ[C0]` within its budgets.
+    Init,
+    Shape(&'static str),
+}
+
+/// Match `x` against the wrapper pattern: if `x = W[y]` for a unique `y`
+/// filling every `Meta` position consistently, return `y`.
+pub fn match_wrapper(w: &PTerm, x: &PTerm) -> Option<PTerm> {
+    fn go(w: &PTerm, x: &PTerm, out: &mut Option<PTerm>) -> bool {
+        match (w, x) {
+            (PTerm::Meta, _) => match out {
+                Some(prev) => prev == x,
+                None => {
+                    *out = Some(x.clone());
+                    true
+                }
+            },
+            (PTerm::Var(a), PTerm::Var(b)) => a == b,
+            (PTerm::Lam(wb), PTerm::Lam(xb)) => go(wb, xb, out),
+            (PTerm::App(wf, wa), PTerm::App(xf, xa)) => go(wf, xf, out) && go(wa, xa, out),
+            _ => false,
+        }
+    }
+    let mut out = None;
+    if go(w, x, &mut out) {
+        out
+    } else {
+        None
+    }
+}
+
+/// `Some(n)` iff `x == Wⁿ[C0]`.
+pub fn tower_index(w: &PTerm, c0: &PTerm, x: &PTerm) -> Option<u32> {
+    let mut cur = x.clone();
+    let mut n = 0u32;
+    loop {
+        if cur == *c0 {
+            return Some(n);
+        }
+        match match_wrapper(w, &cur) {
+            Some(inner) => {
+                cur = inner;
+                n += 1;
+            }
+            None => return None,
+        }
+    }
+}
+
+/// The trusted verifier. Establishes that `t` has no normal form
+/// (per the glue theorem, SPEC.md §3) or fails.
+pub fn verify(
+    t: &Term,
+    cert: &Ratchet,
+    lemma_steps: u32,
+    init_steps: u32,
+    max_nodes: u64,
+) -> Result<CertReport, CertFail> {
+    if !cert.a.is_closed() {
+        return Err(CertFail::Shape("A not closed"));
+    }
+    if !cert.c0.is_closed() {
+        return Err(CertFail::Shape("C0 not closed"));
+    }
+    if !cert.w.contains_meta() {
+        return Err(CertFail::Shape("W has no Meta"));
+    }
+    if cert.w.max_free(0) != 0 {
+        return Err(CertFail::Shape("W not pattern-closed"));
+    }
+    if !t.is_closed() {
+        return Err(CertFail::Shape("target not closed"));
+    }
+
+    let a = PTerm::from_term(&cert.a);
+    let c0 = PTerm::from_term(&cert.c0);
+    let w = cert.w.clone();
+
+    // OPEN: A Z →ₕ⁺ (Z Z) W[Z]
+    let open_l = papp(a.clone(), PTerm::Meta);
+    let open_r = papp(papp(PTerm::Meta, PTerm::Meta), w.clone());
+    let open_steps = check_reduces(&open_l, &open_r, lemma_steps).map_err(CertFail::Open)?;
+
+    // DESC: W[Z] W[Z] →ₕ⁺ Z Z
+    let desc_l = papp(w.clone(), w.clone());
+    let desc_r = papp(PTerm::Meta, PTerm::Meta);
+    let desc_steps = check_reduces(&desc_l, &desc_r, lemma_steps).map_err(CertFail::Desc)?;
+
+    // BASE: C0 C0 →ₕ⁺ A (fully concrete)
+    let base_l = papp(c0.clone(), c0.clone());
+    let base_steps = check_reduces(&base_l, &a, lemma_steps).map_err(CertFail::Base)?;
+
+    // INIT: T →ₕ* A Wⁿ[C0] for some n, concretely and bounded.
+    let mut cur = PTerm::from_term(t);
+    for i in 0..=init_steps {
+        if let PTerm::App(h, x) = &cur {
+            if **h == a {
+                if let Some(n) = tower_index(&w, &c0, x) {
+                    return Ok(CertReport {
+                        open_steps,
+                        desc_steps,
+                        base_steps,
+                        init_steps: i,
+                        init_tower: n,
+                    });
+                }
+            }
+        }
+        if cur.nodes() > max_nodes {
+            break;
+        }
+        cur = match head_step(&cur) {
+            Step::Did(next) => next,
+            // Concrete terms contain no Meta; Nf means head reduction
+            // terminated — INIT can never match past this point.
+            _ => break,
+        };
+    }
+    Err(CertFail::Init)
+}
+
+/// Replace every occurrence of `needle` in `hay` by `Meta`.
+fn generalize(hay: &PTerm, needle: &PTerm) -> PTerm {
+    if hay == needle {
+        return PTerm::Meta;
+    }
+    match hay {
+        PTerm::Var(n) => PTerm::Var(*n),
+        PTerm::Meta => PTerm::Meta,
+        PTerm::Lam(b) => plam(generalize(b, needle)),
+        PTerm::App(f, a) => papp(generalize(f, needle), generalize(a, needle)),
+    }
+}
+
+/// Untrusted certificate discovery: run a bounded concrete head trace,
+/// look for a recurring abstraction head with strictly growing arguments,
+/// and extract `(A, W, C0)` by expressing each milestone argument as a
+/// context around its predecessor. The caller must `verify`.
+pub fn discover(t: &Term, max_steps: u32, max_nodes: u64) -> Option<Ratchet> {
+    let mut cur = PTerm::from_term(t);
+    // head pattern -> milestone arguments in trace order
+    let mut milestones: HashMap<Rc<PTerm>, Vec<PTerm>> = HashMap::new();
+
+    for _ in 0..max_steps {
+        if let PTerm::App(h, x) = &cur {
+            if matches!(**h, PTerm::Lam(_)) {
+                let args = milestones.entry(h.clone()).or_default();
+                args.push((**x).clone());
+                if args.len() >= 3 {
+                    // Sliding window: a term may have a pre-ratchet
+                    // prelude; any later tower point works as C0 (BASE
+                    // is a concrete check, it just runs longer).
+                    let k = args.len();
+                    let (x1, x2, x3) = (&args[k - 3], &args[k - 2], &args[k - 1]);
+                    if x1.nodes() < x2.nodes() && x2.nodes() < x3.nodes() {
+                        let w = generalize(x2, x1);
+                        // real growth (at least one occurrence replaced,
+                        // wrapper is not the bare hole) and one
+                        // consistency probe before handing to `verify`
+                        if w != PTerm::Meta
+                            && w.contains_meta()
+                            && plug(&w, x2) == *x3
+                        {
+                            let a = h.to_term()?;
+                            let c0 = x1.to_term()?;
+                            return Some(Ratchet { a, w, c0 });
+                        }
+                    }
+                }
+            }
+        }
+        if cur.nodes() > max_nodes {
+            return None;
+        }
+        cur = match head_step(&cur) {
+            Step::Did(next) => next,
+            _ => return None,
+        };
+    }
+    None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::parse::parse_all;
+
+    const LOOP32: &str = "01000110001100001011010000110110";
+
+    fn loop32_cert() -> Ratchet {
+        // A = λx. x x (λy. y x); W[Z] = λy. y Z; C0 = λ_. A
+        let a = parse_all("0001011010000110110").unwrap();
+        let w = plam(papp(pvar(1), PTerm::Meta));
+        let c0 = Term::Lam(Rc::new(a.clone()));
+        Ratchet { a, w, c0 }
+    }
+
+    #[test]
+    fn loop32_manual_certificate_verifies() {
+        let t = parse_all(LOOP32).unwrap();
+        let rep = verify(&t, &loop32_cert(), 64, 64, 1 << 20).unwrap();
+        // Measured in tools/cert/loop32_trace.py: OPEN is one step,
+        // DESC two, BASE one, and the first milestone is one step in.
+        assert_eq!(rep.open_steps, 1);
+        assert_eq!(rep.desc_steps, 2);
+        assert_eq!(rep.base_steps, 1);
+        assert_eq!(rep.init_steps, 1);
+        assert_eq!(rep.init_tower, 0);
+    }
+
+    #[test]
+    fn loop32_discovers_and_verifies_end_to_end() {
+        let t = parse_all(LOOP32).unwrap();
+        let cert = discover(&t, 4096, 1 << 20).expect("discovery");
+        assert_eq!(cert.a, loop32_cert().a);
+        verify(&t, &cert, 64, 4096, 1 << 20).expect("verify");
+    }
+
+    #[test]
+    fn omega_does_not_ratchet() {
+        // (λx.x x)(λx.x x): exact recurrence, no growth — redloop's case,
+        // not ours. Discovery must refuse (wrapper degenerates to bare Z).
+        let t = parse_all("010001101000011010").unwrap();
+        assert_eq!(discover(&t, 4096, 1 << 20), None);
+    }
+
+    #[test]
+    fn halting_lookalike_fails_verify() {
+        // D (λx. x I) halts (bb.rs has the twin test); a forged loop32
+        // certificate against it must die in INIT, not certify.
+        let t = parse_all("01000110100001100010").unwrap();
+        assert!(t.is_closed());
+        assert!(matches!(
+            verify(&t, &loop32_cert(), 64, 4096, 1 << 20),
+            Err(CertFail::Init)
+        ));
+    }
+
+    #[test]
+    fn intermediate_abstraction_is_rejected() {
+        // (λ.1)(λ. (λ.1) 1) →ₕ λ. (λ.1) 1 →ₕ λ.1 — the one intermediate
+        // is an abstraction, so the chain must NOT check even though the
+        // end state is reachable.
+        let i = plam(pvar(1));
+        let inner = plam(papp(plam(pvar(1)), pvar(1)));
+        let l = papp(i.clone(), inner);
+        let r = plam(pvar(1));
+        assert!(matches!(
+            check_reduces(&l, &r, 16),
+            Err(CheckFail::BadIntermediate(_))
+        ));
+    }
+
+    #[test]
+    fn abstraction_start_state_is_rejected() {
+        // Codex review: the lifting lemma constrains every proper
+        // SOURCE state, including the start. λ.(λ.1)1 →ₕ λ.1 is a real
+        // head reduction, but it must not check — lifted under an
+        // argument the composite's head step would consume the outer
+        // abstraction instead.
+        let l = plam(papp(plam(pvar(1)), pvar(1)));
+        let r = plam(pvar(1));
+        assert_eq!(check_reduces(&l, &r, 16), Err(CheckFail::BadIntermediate(0)));
+    }
+
+    #[test]
+    fn meta_head_aborts() {
+        // Z Z has the metavariable at the spine head: symbolic reduction
+        // must refuse to proceed rather than guess.
+        let l = papp(PTerm::Meta, PTerm::Meta);
+        let r = papp(PTerm::Meta, PTerm::Meta);
+        assert!(matches!(
+            check_reduces(&l, &r, 16),
+            Err(CheckFail::MetaHead(1))
+        ));
+    }
+
+    #[test]
+    fn tower_matching_is_exact() {
+        let cert = loop32_cert();
+        let c0 = PTerm::from_term(&cert.c0);
+        let t0 = c0.clone();
+        let t1 = plug(&cert.w, &t0);
+        let t2 = plug(&cert.w, &t1);
+        assert_eq!(tower_index(&cert.w, &c0, &t0), Some(0));
+        assert_eq!(tower_index(&cert.w, &c0, &t2), Some(2));
+        // off-by-one wrapper (λy. y (y Z)) must not match the tower
+        let bad = plam(papp(pvar(1), papp(pvar(1), PTerm::Meta)));
+        assert_eq!(tower_index(&bad, &c0, &t2), None);
+    }
+
+    #[test]
+    fn symbolic_subst_treats_meta_as_closed() {
+        // (λ.λ. 2 1) Z →ₕ λ. Z 1 — Z must not be shifted or renumbered
+        // when it goes under the remaining binder.
+        let l = papp(plam(plam(papp(pvar(2), pvar(1)))), PTerm::Meta);
+        match head_step(&l) {
+            Step::Did(t) => assert_eq!(t, plam(papp(PTerm::Meta, pvar(1)))),
+            other => panic!("expected step, got {other:?}"),
+        }
+    }
+}

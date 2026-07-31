@@ -5,6 +5,7 @@
 //! The fast abstract machine (to come) is differential-tested against it.
 
 pub mod bb;
+pub mod cert;
 pub mod enumerate;
 pub mod eval;
 pub mod oracle;
