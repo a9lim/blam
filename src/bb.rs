@@ -227,6 +227,156 @@ pub enum NoNf {
     Unknown,
 }
 
+fn has_bot(t: &LTerm) -> bool {
+    match t {
+        Bot => true,
+        Var(_) => false,
+        Lam(b) => has_bot(b),
+        App(f, a) => has_bot(f) || has_bot(a),
+    }
+}
+
+/// Largest free de Bruijn index (0 = closed).
+fn max_free(t: &LTerm) -> u32 {
+    match t {
+        Var(n) => *n,
+        Lam(b) => max_free(b).saturating_sub(1),
+        App(f, a) => max_free(f).max(max_free(a)),
+        Bot => 0,
+    }
+}
+
+/// Render closed `t` as BLC bits (⊥-free by construction at call sites).
+fn lterm_bits(t: &LTerm, out: &mut String) {
+    match t {
+        Var(n) => {
+            for _ in 0..*n {
+                out.push('1');
+            }
+            out.push('0');
+        }
+        Lam(b) => {
+            out.push_str("00");
+            lterm_bits(b, out);
+        }
+        App(f, a) => {
+            out.push_str("01");
+            lterm_bits(f, out);
+            lterm_bits(a, out);
+        }
+        Bot => unreachable!("lterm_bits on a term containing ⊥"),
+    }
+}
+
+/// Self-feedback divergence certificate — the semantic generalization of
+/// BBold.lhs's `redloop` (designed across a 2026-07-31 gaslamp exchange
+/// with Codex, soundness co-derived). For a self-application `A A` with
+/// `A = λx.x Q(x) R̄(x)` CLOSED and ⊥-free (the displayed application
+/// being B's left spine):
+///
+///   nf(A) = nf(Q(A))  ⇒  A A has no head normal form.
+///
+/// Equal normal forms witness Q(A) =β A. With T₀ = A, Tₙ₊₁ = Q(Tₙ),
+/// congruence gives every Tₙ =β A; B's head is the RIGID bound variable,
+/// so nf(A) necessarily has shape λx.x⋯ and every Tₙ shares that hnf
+/// (Böhm invariance). Each configuration `Tₙ Tₙ₊₁ Γ` head-normalizes its
+/// head to λx.x⋯ and re-demands Tₙ₊₁ at the head — unboundedly many head
+/// contractions, never a rigid head or unapplied λ: no hnf, no nf.
+/// Pending Γ arguments cannot interfere (normal order resolves the
+/// function spine first, and the recurrence is uniform in Γ).
+///
+/// The exact-equality rule (nf(Q(A)) == A, requiring A normal) is the
+/// special case that proves 4 of the 5 traced 32-bit loops; the
+/// β-equivalence form additionally proves the 35-bit and 36-bit
+/// residual unknowns (which reach `A A` and `(A A) A` respectively).
+/// The fifth 32-bit loop (outer function not λx.x x, never reaching a
+/// self-application of this shape) remains — hand-excluded in Tromp's
+/// tree too; nobody proves it mechanically.
+///
+/// Probes run on the pure KN machine with a fixed small budget — never
+/// re-entering this engine or the oracle — and any failure (no match,
+/// ⊥, open term, fuel out, nf mismatch) claims nothing.
+///
+/// Completeness telemetry (per Codex's review): FIRES counts proofs,
+/// FUEL_REJECTS counts shape-matches abandoned solely because a probe
+/// ran out of fuel — a zero there over a full census certifies the
+/// cutoff lost nothing at that range.
+pub static REDLOOP_FIRES: std::sync::atomic::AtomicU64 =
+    std::sync::atomic::AtomicU64::new(0);
+pub static REDLOOP_FUEL_REJECTS: std::sync::atomic::AtomicU64 =
+    std::sync::atomic::AtomicU64::new(0);
+
+/// Bounded pure normalization of a closed ⊥-free LTerm on the KN
+/// machine; `None` on fuel-out (recorded in REDLOOP_FUEL_REJECTS).
+/// `BLC_PROBE_FUEL` tunes the β budget (default 4096); the telemetry
+/// says whether the census result is fuel-sensitive at a given setting.
+fn probe_nf(t: &LTerm) -> Option<String> {
+    use std::sync::OnceLock;
+    static FUEL: OnceLock<u64> = OnceLock::new();
+    let fuel = *FUEL.get_or_init(|| {
+        std::env::var("BLC_PROBE_FUEL")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(4096)
+    });
+    let mut bits = String::new();
+    lterm_bits(t, &mut bits);
+    let mut pool = crate::vm::TermPool::new();
+    let root = pool.decode_str(&bits)?;
+    let mut vm = crate::vm::Machine::new();
+    let mut sink = crate::vm::StringSink::default();
+    if vm.normalize(&pool, root, fuel, &mut sink).is_err() {
+        REDLOOP_FUEL_REJECTS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        return None;
+    }
+    Some(sink.0)
+}
+
+fn redloop(t: &LTerm) -> bool {
+    spend_work();
+    // Self-application A A, syntactically. (A redex D A with D = λx.x x
+    // contracts to A A one step later, so this shape subsumes the D A
+    // trigger of BBold's original rule.)
+    let App(a1, a2) = t else { return false };
+    if a1 != a2 {
+        return false;
+    }
+    let a: &LTerm = a1;
+    let Lam(body) = a else { return false };
+    if max_free(a) != 0 || has_bot(a) {
+        return false;
+    }
+    // Left spine of B: find the demanded application `x q`.
+    let mut s: &LTerm = body;
+    let q = loop {
+        match s {
+            App(f, q_) => {
+                if matches!(&**f, Var(1)) {
+                    break q_;
+                }
+                s = f;
+            }
+            _ => return false,
+        }
+    };
+    // probe = q[A/x]; closed since free(q) ⊆ {x} and A is closed.
+    let probe = beta(q, a);
+    if max_free(&probe) != 0 {
+        return false;
+    }
+    // Fire iff nf(A) and nf(Q(A)) both exist and coincide — equal normal
+    // forms witness Q(A) =β A, which is all the recurrence needs.
+    let (Some(na), Some(nq)) = (probe_nf(a), probe_nf(&probe)) else {
+        return false;
+    };
+    if na == nq {
+        REDLOOP_FIRES.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        true
+    } else {
+        false
+    }
+}
+
 // Persistent set with O(1) clone — the same structural sharing BB.lhs gets
 // from Data.Set; a std HashSet clone at every history fork is quadratic on
 // long escalation runs.
@@ -260,7 +410,7 @@ fn bb_nf(
             if *cap < 0 {
                 return Err(NoNf::Unknown);
             }
-            if no_nf(f, &ab) || seen.contains(&**ra) {
+            if no_nf(f, &ab) || seen.contains(&**ra) || redloop(&ab) {
                 return Err(NoNf::Diverge);
             }
             match &a {
@@ -323,6 +473,68 @@ mod tests {
 
     fn v(n: u32) -> LTerm {
         Var(n)
+    }
+
+    fn from_bits(s: &str) -> LTerm {
+        LTerm::from_term(&crate::parse_all(s).unwrap())
+    }
+
+    #[test]
+    fn redloop_proves_the_four_32bit_loops() {
+        // The four D A loops BBold.lhs's redloop proves and current BB.lhs
+        // cannot (identified in the 2026-07-31 conformance cross-match;
+        // hand loop-analyses in ref/AIT/BB/BB.txt).
+        for bits in [
+            "01000110100001100110000110001110", // (\1 1)(\1 (1 (\1 (\3))))
+            "01000110100001011001100011000110", // (\1 1)(\1 (1 (\2)) (\2))
+            "01000110100001011001100000111010", // (\1 1)(\1 (1 (\\3)) 1)
+            "01000110100001011001011000101010", // (\1 1)(\1 (1 (\1) 1) 1)
+        ] {
+            assert_eq!(
+                normal_form(2_000_000, &from_bits(bits)),
+                Err(NoNf::Diverge),
+                "{bits}"
+            );
+        }
+    }
+
+    #[test]
+    fn self_feedback_proves_the_residual_pair() {
+        // The 35b/36b terms that resisted everything else tonight: A A
+        // and (A A) A for A = λx.x (T (K x)) — provable only via the
+        // β-equivalence form (A itself is not syntactically normal; its
+        // dormant T(Kx) reduces to x(Kx)).
+        for bits in [
+            "01000110100001100100010110101000110",  // (\1 1)(\1 ((\1 1 1)(\2)))
+            "010001100001100111000110000101101010", // (\1 (\1 (2 (\2))))(\1 1 1)
+        ] {
+            assert_eq!(
+                normal_form(2_000_000, &from_bits(bits)),
+                Err(NoNf::Diverge),
+                "{bits}"
+            );
+        }
+    }
+
+    #[test]
+    fn fifth_loop_stays_unknown() {
+        // (\1 (\2))(\1 1 (\1 2)) — hand-excluded (`loop32`) even in
+        // Tromp's tree; its outer function is not λx.x x, so redloop's
+        // guard correctly refuses. Documents parity: nobody proves this
+        // mechanically.
+        let t = from_bits("01000110001100001011010000110110");
+        assert_eq!(normal_form(2_000_000, &t), Err(NoNf::Unknown));
+    }
+
+    #[test]
+    fn redloop_no_false_positive_on_halting_shape() {
+        // D (λx. x I): spine matches x q with q = I, but the probe
+        // nf(I[A/x]) = I ≠ A, so redloop stays silent — and the term
+        // truly halts: D A → A A → A I → I I → I.
+        let a = lam(app(v(1), lam(v(1))));
+        let d = lam(app(v(1), v(1)));
+        let t = app(d, a);
+        assert_eq!(normal_form(2_000_000, &t), Ok(lam(v(1))));
     }
 
     #[test]

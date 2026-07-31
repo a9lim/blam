@@ -426,4 +426,8 @@ fn main() {
             }
         }
     }
+    use std::sync::atomic::Ordering;
+    let fires = blc::bb::REDLOOP_FIRES.load(Ordering::Relaxed);
+    let fuel = blc::bb::REDLOOP_FUEL_REJECTS.load(Ordering::Relaxed);
+    println!("redloop: {fires} proofs, {fuel} shape-matches lost to probe fuel");
 }

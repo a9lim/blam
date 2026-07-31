@@ -84,10 +84,8 @@ What the trace layer shows (the deep result):
   `0100011000011001110001…` (36b) are unknown for us but absent from his
   traces — presumably resolved by the later engine generation. The only
   terms ≤36 where he mechanically knows something we don't.
-- **The later-generation summary lines imply his stronger engine proves
-  ~4 of the 5 traced 32-bit loops mechanically** (nonhalt 2939 = our
-  2935 + 4). Which BB variant does that (BBU.lhs? BBx.hs? newer isB23?)
-  is the top open conformance question — good Codex material.
+- **The "which engine proves the traced loops" question got ANSWERED
+  overnight** — by Codex, then by us in Rust. See the next section.
 - **Capacity is not the differentiator for us**: all 103 n≤36 unknown
   seeds were re-adjudicated at bb-cap 42,000,000 (21× census) — 28 at
   the full work meter, 75 at a reduced meter after the memory incident,
@@ -100,6 +98,50 @@ BBλ(36) = 6+5·2^256 bits. So for n≥35 our max-computable numbers are
 lower bounds on a frontier whose true values are known by analysis to be
 astronomically larger. n=34 (= 6+5·2¹⁶ = 327,686) is the last size where
 the champion is physically computable — and we compute it.
+
+## Act 3: the redloop port (n=32 conformance closed)
+
+I sent the conformance puzzle to Codex over gaslamp (thread
+`blc-conformance`) with the raw evidence. The reply was superb detective
+work: the mechanism is **`BBold.lhs`'s `redloop` rule** — present only
+in the *old* engine, absent from current BB.lhs. For a redex `D A` with
+`D = λx.x x`: walk A's body left-spine to the head-demanded application
+`x q`, normalize the small probe `q[A/x]`, and if it comes back exactly
+`A`, the demanded `A A` configuration provably recurs forever. Codex
+transliterated BBold, confirmed it proves exactly 4 of the 5 traced
+32-bit loops (the fifth — outer function `λx.x Kx`-shaped, not
+`λx.x x` — is hand-excluded as `loop32` even in Tromp's tree; *nobody*
+proves it mechanically). Also settled: the BB.txt summary lines are
+editorial (2026 "analyse all TODOs" commit), not output of a hidden
+stronger engine; and our two residual 35/36-bit unknowns exit on
+*capacity*, not the work meter (Codex ran our Rust to check), via an
+old history rule Tromp himself later diagnosed as unsound — correctly
+not portable.
+
+So I ported redloop in a narrowed, provably-sound form (exact AST
+equality only, `A` closed and ⊥-free, probe on the pure KN machine with
+a fixed budget, no oracle re-entry — `redloop` in src/bb.rs, soundness
+argument in the doc comment). Results:
+
+- The four loops prove `Diverge` at census capacity; the fifth stays
+  `Unknown`; a constructed near-miss (`D (λx.x I)`, which matches the
+  spine pattern but halts) correctly doesn't fire.
+- Census regression: **halt counts unchanged everywhere** (975,507 at
+  n=32 — still exact vs BB.txt); n=32 becomes halt 975507 / diverge
+  2939 / unknown **1** — **term-for-term parity with Tromp's best known
+  state**.
+- Bonus for the optimization thread: n=32 census dropped 2.79s → 1.19s.
+  Every proven diverger is a 10⁷-β rescue burn that never happens, so
+  the redloop rule is also a *throughput* win at every size (the
+  refreshed full table quantifies it).
+- Codex then co-reviewed the soundness argument (second gaslamp round):
+  no hole; the proof is now phrased via head-behavior invariance under
+  β-conversion (the Tₙ₊₁ = Q(Tₙ) recurrence on the demanded head spine
+  — the doc comment on `redloop` carries it), exact-equality ≡ `eqfree`
+  for closed A is proven, and per his suggestion the rule now counts
+  both its proofs and any shape-match rejected solely by probe fuel —
+  a zero in the latter over the full census certifies the fuel cutoff
+  lost nothing through n=40.
 
 ## Frontier unknowns at 42M
 
@@ -185,15 +227,16 @@ meter, charged on every primitive operation of every engine.
 
 ## Where I'd point us next
 
-1. **The two residual asymmetric terms** (35b/36b above): the only ≤36
-   terms where Tromp mechanically knows something we don't. Cracking
-   how his later engine proves them (and the 4 traced 32-bit loops the
-   summary layer implies it proves) closes conformance completely.
-2. The lazy-vs-eager escalation gap: mult=2 vs mult=16 changed nothing,
-   so within our engine the meter isn't the binding constraint — but
-   his lazy graph reduction may still be doing qualitatively more
-   within the same capacity. A shared-graph escalation engine is the
-   experiment; also prime Codex material alongside (1).
+1. **What remains genuinely open ≤36**: the fifth 32-bit loop (no
+   mechanical proof exists anywhere — a new certified pattern would be
+   novel territory) and the two 35/36-bit capacity-outs (BBold's global
+   history "proves" them but that rule is known-unsound; a
+   context-sensitive recurrence certificate would be the sound
+   version). Both are small, sharply-posed problems now.
+2. The lazy-vs-eager escalation gap: mult=2 vs mult=16 changed nothing
+   and the residuals are capacity-bound, so the meter isn't the
+   binding constraint. A shared-graph escalation engine remains the
+   experiment if we ever want the capacity to stretch further.
 3. n=41 census (~242M terms, ~30 min with current engine) any time you
    want the next row; nothing blocks it.
 4. The Lean track and the `uni.rs` distillation for the Tromp PR remain
