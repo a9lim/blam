@@ -223,8 +223,17 @@ fn bot_free(d: u32, t: &LTerm) -> LTerm {
 pub enum NoNf {
     /// Proven: oracle hit or redex reoccurrence.
     Diverge,
-    /// Capacity budget exhausted before a verdict.
-    Unknown,
+    /// Resource exhausted before a verdict — the reason says which.
+    Unknown(Why),
+}
+
+/// Which resource died. Capacity (redex-history bits) smells like a
+/// missed loop; the work meter (subst/simplify blowup) smells like a
+/// big-growth halter that the KN rescue can still win.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Why {
+    Capacity,
+    WorkMeter,
 }
 
 fn has_bot(t: &LTerm) -> bool {
@@ -392,7 +401,7 @@ fn bb_nf(
     match t {
         App(a_, b_) => {
             if work_exhausted() {
-                return Err(NoNf::Unknown);
+                return Err(NoNf::Unknown(Why::WorkMeter));
             }
             let empty;
             let sub_seen = if weak {
@@ -408,7 +417,7 @@ fn bb_nf(
             let App(ra, _) = &r else { unreachable!() };
             *cap -= r.bit_size() as i64;
             if *cap < 0 {
-                return Err(NoNf::Unknown);
+                return Err(NoNf::Unknown(Why::Capacity));
             }
             if no_nf(f, &ab) || seen.contains(&**ra) || redloop(&ab) {
                 return Err(NoNf::Diverge);
@@ -523,7 +532,7 @@ mod tests {
         // guard correctly refuses. Documents parity: nobody proves this
         // mechanically.
         let t = from_bits("01000110001100001011010000110110");
-        assert_eq!(normal_form(2_000_000, &t), Err(NoNf::Unknown));
+        assert!(matches!(normal_form(2_000_000, &t), Err(NoNf::Unknown(_))));
     }
 
     #[test]

@@ -176,6 +176,13 @@ impl TermPool {
 }
 
 /// Receives the normal form as a BLC bit stream during readback.
+///
+/// CONTRACT: implementations MUST override `var` with an O(1) (or
+/// explicitly bounded) version. The default is O(n) in the variable
+/// index, and n = depth − level + 1 is bounded only by the machine's
+/// transition cap — which does NOT charge for emitted bits. An O(n)
+/// `var` on a deep spine burned 99.9% of a profiled solomonoff tail
+/// (the work-meter lesson, instance #4).
 pub trait Sink {
     fn zero(&mut self);
     fn one(&mut self);
@@ -213,6 +220,11 @@ impl Sink for StringSink {
     }
     fn one(&mut self) {
         self.0.push('1');
+    }
+    fn var(&mut self, n: u32) {
+        self.0.reserve(n as usize + 1);
+        self.0.extend(std::iter::repeat('1').take(n as usize));
+        self.0.push('0');
     }
 }
 
@@ -262,6 +274,43 @@ impl Machine {
         limit: u64,
         sink: &mut S,
     ) -> Result<u64, OutOfFuel> {
+        let trans_limit = limit.saturating_mul(64).max(1 << 22);
+        self.normalize_capped(pool, root, limit, trans_limit, sink)
+    }
+
+    /// `normalize` with the transition cap as an explicit parameter, so a
+    /// budget ladder can give a cheap rung a genuinely cheap cap (the
+    /// default floor of 1<<22 otherwise makes small-β rungs cost as much
+    /// as large ones on transition-bound terms).
+    pub fn normalize_capped<S: Sink>(
+        &mut self,
+        pool: &TermPool,
+        root: u32,
+        limit: u64,
+        trans_limit: u64,
+        sink: &mut S,
+    ) -> Result<u64, OutOfFuel> {
+        let r = self.normalize_inner(pool, root, limit, trans_limit, sink);
+        // A transition-capped run can leave multi-GB arenas behind (16 B
+        // per env node × up to trans_limit); don't hold the peak forever.
+        const KEEP: usize = 1 << 20;
+        if self.envs.capacity() > KEEP {
+            self.envs = Vec::with_capacity(KEEP);
+        }
+        if self.stack.capacity() > KEEP {
+            self.stack = Vec::with_capacity(KEEP);
+        }
+        r
+    }
+
+    fn normalize_inner<S: Sink>(
+        &mut self,
+        pool: &TermPool,
+        root: u32,
+        limit: u64,
+        trans_limit: u64,
+        sink: &mut S,
+    ) -> Result<u64, OutOfFuel> {
         self.envs.clear();
         self.stack.clear();
         let mut steps = 0u64;
@@ -273,13 +322,13 @@ impl Machine {
         // the β-count — the classic machine-steps-vs-β gap. The transition
         // cap turns "astronomically slow" into an honest resource error,
         // and since each transition allocates at most one env node or
-        // frame, it bounds memory too.
-        let trans_limit = limit.saturating_mul(64).max(1 << 22);
+        // frame, it bounds memory too (up to ~16 B × trans_limit per
+        // worker — release oversized buffers on exit, below).
         let mut trans = 0u64;
         'eval: loop {
             trans += 1;
             if trans > trans_limit {
-                return Err(OutOfFuel);
+                return Err(OutOfFuel::Transitions);
             }
             match pool.nodes[t as usize] {
                 Node::App(f, a) => {
@@ -292,7 +341,7 @@ impl Machine {
                         self.stack.pop();
                         steps += 1;
                         if steps > limit {
-                            return Err(OutOfFuel);
+                            return Err(OutOfFuel::Beta);
                         }
                         env = self.push_env(Val::Clo(at, ae), env);
                         t = b;
@@ -348,7 +397,7 @@ impl Machine {
                             loop {
                                 trans += 1;
                                 if trans > trans_limit {
-                                    return Err(OutOfFuel);
+                                    return Err(OutOfFuel::Transitions);
                                 }
                                 match self.stack.pop() {
                                     None => return Ok(steps),

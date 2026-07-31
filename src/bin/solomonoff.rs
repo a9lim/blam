@@ -20,7 +20,7 @@
 //!        [--dump-max-x N] [--top N]
 
 use blc::bb::{normal_form, LTerm, NoNf};
-use blc::enumerate::{enc_to_string, run_task, split_tasks};
+use blc::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
 use blc::oracle::no_nf;
 use blc::vm::{Machine, Sink, TermPool};
 use rayon::prelude::*;
@@ -62,15 +62,24 @@ impl Sink for KeySink {
     fn one(&mut self) {
         self.push(true);
     }
+    /// O(1) equivalent of the default (n ones, then a zero). The default
+    /// is O(n) with n bounded only by the machine's transition cap —
+    /// profiled at 99.9% of the n=40 tail before this override existed.
+    fn var(&mut self, n: u32) {
+        let need = n as u64 + 1;
+        if !self.overflow && self.len + need <= 63 {
+            self.enc = (self.enc << need) | (((1u64 << n) - 1) << 1);
+        } else {
+            self.overflow = true;
+        }
+        self.len += need;
+    }
 }
 
 fn emit_lterm(t: &LTerm, sink: &mut KeySink) {
     match t {
         LTerm::Var(n) => {
-            for _ in 0..*n {
-                sink.one();
-            }
-            sink.zero();
+            sink.var(*n);
         }
         LTerm::Lam(a) => {
             sink.zero();
@@ -93,7 +102,6 @@ struct Entry {
     count: u64,    // nontrivial programs
     k: u8,         // shortest program size seen (incl. nontrivial only)
     k_prog: (u64, u8),
-    steps_max: u64,
 }
 
 #[derive(Default)]
@@ -126,8 +134,8 @@ impl Acc {
                 .and_modify(|m| {
                     m.mass += e.mass;
                     m.count += e.count;
-                    m.steps_max = m.steps_max.max(e.steps_max);
-                    if e.k < m.k {
+                    // Total order on ties: reduce-order independent.
+                    if (e.k, e.k_prog) < (m.k, m.k_prog) {
                         m.k = e.k;
                         m.k_prog = e.k_prog;
                     }
@@ -159,8 +167,7 @@ impl Acc {
                 .and_modify(|m| {
                     m.mass += mass_of(len);
                     m.count += 1;
-                    m.steps_max = m.steps_max.max(steps);
-                    if len < m.k {
+                    if (len, (enc, len)) < (m.k, m.k_prog) {
                         m.k = len;
                         m.k_prog = (enc, len);
                     }
@@ -170,7 +177,6 @@ impl Acc {
                     count: 1,
                     k: len,
                     k_prog: (enc, len),
-                    steps_max: steps,
                 });
         }
     }
@@ -244,7 +250,7 @@ fn main() {
     let mut acc = Acc::default();
     for n in min_n..=max_n {
         let tn = Instant::now();
-        let tasks = split_tasks(n, rayon::current_num_threads() * 64);
+        let tasks = interleave_tasks(split_tasks(n, rayon::current_num_threads() * 64));
         let a = tasks
             .par_iter()
             .map_init(
@@ -291,7 +297,7 @@ fn main() {
                                 acc.diverge += 1;
                                 acc.diverge_mass += mass_of(len);
                             }
-                            Err(NoNf::Unknown) => {
+                            Err(NoNf::Unknown(_)) => {
                                 sink.clear();
                                 match vm.normalize(pool, root, rescue, &mut sink) {
                                     Ok(steps) => acc.record_halt(enc, len, &sink, steps),

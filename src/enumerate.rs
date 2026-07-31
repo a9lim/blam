@@ -115,6 +115,24 @@ pub fn split_tasks(n: u32, target: usize) -> Vec<GenTask> {
     cur
 }
 
+/// Bit-reversal interleave of a task list. Expensive terms cluster by
+/// enumeration prefix, and adjacent tasks are adjacent prefixes; rayon
+/// splits `par_iter` by index range, so a contiguous expensive family
+/// lands in one leaf and serializes its whole tail. Reordering by
+/// reversed index scatters each prefix family across the index space.
+/// Values are unaffected; only reduce order (and thus which witness
+/// wins a tie, absent a total tie-break) changes.
+pub fn interleave_tasks(tasks: Vec<GenTask>) -> Vec<GenTask> {
+    let m = tasks.len();
+    if m < 2 {
+        return tasks;
+    }
+    let bits = usize::BITS - (m - 1).leading_zeros();
+    let mut order: Vec<usize> = (0..m).collect();
+    order.sort_unstable_by_key(|&i| i.reverse_bits() >> (usize::BITS - bits));
+    order.into_iter().map(|i| tasks[i].clone()).collect()
+}
+
 /// Produce every term in a task's subtree.
 pub fn run_task(task: &GenTask, f: &mut impl FnMut(u64, u8)) {
     let mut pending = task.pending.clone();

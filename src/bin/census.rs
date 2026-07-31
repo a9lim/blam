@@ -17,8 +17,8 @@
 //! (--chunk now sets the minimum generation-task count for the fused
 //! parallel enumeration.)
 
-use blc::bb::{normal_form, LTerm, NoNf};
-use blc::enumerate::{enc_to_string, run_task, split_tasks};
+use blc::bb::{normal_form, LTerm, NoNf, Why};
+use blc::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
 use blc::oracle::no_nf;
 use blc::vm::{Machine, SizeSink, TermPool};
 use rayon::prelude::*;
@@ -42,10 +42,13 @@ struct Stats {
     halt: u64,
     diverge: u64,
     unknown: u64,
+    unknown_cap: u64,
+    unknown_work: u64,
     escalated: u64,
     beta_total: u64,
     max_nf: u64,
     max_nf_witness: (u64, u8),
+    max_rescue_beta: u64,
     unknowns: Vec<(u64, u8)>,
 }
 
@@ -56,12 +59,17 @@ impl Stats {
         self.halt += o.halt;
         self.diverge += o.diverge;
         self.unknown += o.unknown;
+        self.unknown_cap += o.unknown_cap;
+        self.unknown_work += o.unknown_work;
         self.escalated += o.escalated;
         self.beta_total += o.beta_total;
-        if o.max_nf > self.max_nf {
+        // Total order on ties so the reported witness is independent of
+        // reduce order (task interleaving shuffles it otherwise).
+        if (o.max_nf, o.max_nf_witness) > (self.max_nf, self.max_nf_witness) {
             self.max_nf = o.max_nf;
             self.max_nf_witness = o.max_nf_witness;
         }
+        self.max_rescue_beta = self.max_rescue_beta.max(o.max_rescue_beta);
         self.unknowns.extend(o.unknowns);
         self
     }
@@ -106,12 +114,20 @@ fn census_term(
         stats.diverge += 1;
         return;
     }
-    for budget in [cfg.budget1, cfg.budget2] {
-        let mut sink = SizeSink::default();
-        if let Ok(steps) = vm.normalize(pool, root, budget, &mut sink) {
-            stats.record_halt(sink.0, steps, enc, len);
-            return;
-        }
+    // Rung 1 gets a transition cap proportional to its β budget; the
+    // default floor (1<<22) would make it exactly as expensive as rung 2
+    // on transition-bound terms, i.e. pure overhead (audit item 4).
+    let mut sink = SizeSink::default();
+    if let Ok(steps) =
+        vm.normalize_capped(pool, root, cfg.budget1, cfg.budget1.saturating_mul(64), &mut sink)
+    {
+        stats.record_halt(sink.0, steps, enc, len);
+        return;
+    }
+    let mut sink = SizeSink::default();
+    if let Ok(steps) = vm.normalize(pool, root, cfg.budget2, &mut sink) {
+        stats.record_halt(sink.0, steps, enc, len);
+        return;
     }
     // Escalation: full BB.lhs semantics.
     stats.escalated += 1;
@@ -122,7 +138,10 @@ fn census_term(
             // machinery, no step ledger) — recover it with a KN re-run.
             let mut sink = SizeSink::default();
             match vm.normalize(pool, root, cfg.rescue, &mut sink) {
-                Ok(steps) => stats.record_halt(sink.0, steps, enc, len),
+                Ok(steps) => {
+                    stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
+                    stats.record_halt(sink.0, steps, enc, len);
+                }
                 Err(_) => {
                     // Halts per BB engine but out of rescue fuel for the
                     // canonical count; record with the engine's nf size.
@@ -131,12 +150,19 @@ fn census_term(
             }
         }
         Err(NoNf::Diverge) => stats.diverge += 1,
-        Err(NoNf::Unknown) => {
+        Err(NoNf::Unknown(why)) => {
             let mut sink = SizeSink::default();
             match vm.normalize(pool, root, cfg.rescue, &mut sink) {
-                Ok(steps) => stats.record_halt(sink.0, steps, enc, len),
+                Ok(steps) => {
+                    stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
+                    stats.record_halt(sink.0, steps, enc, len);
+                }
                 Err(_) => {
                     stats.unknown += 1;
+                    match why {
+                        Why::Capacity => stats.unknown_cap += 1,
+                        Why::WorkMeter => stats.unknown_work += 1,
+                    }
                     stats.unknowns.push((enc, len));
                 }
             }
@@ -292,7 +318,7 @@ fn main() {
                             }
                         }
                         Err(NoNf::Diverge) => format!("{bits} DIVERGE bb-engine"),
-                        Err(NoNf::Unknown) => {
+                        Err(NoNf::Unknown(_)) => {
                             let mut sink = SizeSink::default();
                             match vm.normalize(pool, root, cfg.rescue, &mut sink) {
                                 Ok(steps) => {
@@ -367,7 +393,7 @@ fn main() {
         } else {
             cfg.chunk
         };
-        let tasks = split_tasks(n, target);
+        let tasks = interleave_tasks(split_tasks(n, target));
         let stats = tasks
             .par_iter()
             .map_init(
@@ -397,6 +423,10 @@ fn main() {
             stats.total as f64 / secs
         );
         if !stats.unknowns.is_empty() {
+            println!(
+                "    unknowns by cause: {} capacity, {} work-meter; max successful rescue {} beta",
+                stats.unknown_cap, stats.unknown_work, stats.max_rescue_beta
+            );
             for (enc, len) in stats.unknowns.iter().take(16) {
                 println!("    unknown: {}", enc_to_string(*enc, *len));
             }

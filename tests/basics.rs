@@ -141,7 +141,7 @@ fn normal_order_reaches_nf_where_applicative_would_not() {
 #[test]
 fn omega_exhausts_fuel() {
     let mut fuel = Budget::new(1000);
-    assert_eq!(normalize(&omega(), &mut fuel), Err(OutOfFuel));
+    assert_eq!(normalize(&omega(), &mut fuel), Err(OutOfFuel::Beta));
     assert_eq!(fuel.steps, 1000);
 }
 

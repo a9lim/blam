@@ -139,9 +139,41 @@ argument in the doc comment). Results:
   β-conversion (the Tₙ₊₁ = Q(Tₙ) recurrence on the demanded head spine
   — the doc comment on `redloop` carries it), exact-equality ≡ `eqfree`
   for closed A is proven, and per his suggestion the rule now counts
-  both its proofs and any shape-match rejected solely by probe fuel —
-  a zero in the latter over the full census certifies the fuel cutoff
-  lost nothing through n=40.
+  both its proofs and any shape-match rejected solely by probe fuel.
+
+**Act 3b — the generalization (third gaslamp round).** I handed Codex
+the two residual 35/36-bit unknowns as a theory problem while the
+machine crunched. His answer: they don't need a context-sensitive
+history mechanism at all — they need the *semantic* form of redloop.
+The 35-bit term's `A = λx.x (T (K x))` isn't syntactically normal (its
+dormant `T (K x)` reduces), which is precisely why exact equality
+missed it; the sound generalization triggers on literal
+self-application `A A` and fires iff **nf(A) = nf(Q(A))** — equal
+normal forms witness β-equivalence, and the rigid head variable
+guarantees the recurrence stays on the demanded spine. The 36-bit term
+reaches `(A A) A` and inherits through the strict head context. I
+re-derived the soundness chain independently, ported it, and:
+
+| n  | unknowns before | after redloop v1 | after v2 (final) | Tromp traces |
+|----|----------------|------------------|------------------|--------------|
+| 32 | 5              | 1                | **1**            | 5            |
+| 33 | 2              | 2                | **2**            | 2            |
+| 34 | 15             | 15               | **10**           | 17           |
+| 35 | 32             | 32               | **23**           | 32           |
+| 36 | 71             | 71               | **44**           | 72           |
+
+Halt counts unchanged at every size (a strong regression check — the
+soundness *proof* is the recurrence theorem), 709 proof events, and
+raising probe fuel 16× produced no additional certificates and no
+census changes: no cutoff sensitivity observed through 65,536 β. (The
+706 fuel-rejected probes are *plausibly* mostly divergent probes, but
+that's inference, not proof — Codex kept me honest here.) The precise
+conformance claim: **every identified mechanical asymmetry between our
+≤36 frontier and the BB.txt ledger is resolved**; the shared unknown
+frontier remains (80 terms ≤36), with `loop32` the sole size-32
+unknown. The night started with us behind Tromp's engine at n=32 and
+ended at parity there and measurably ahead of his traced engine at
+34/35/36.
 
 ## Frontier unknowns at 42M
 

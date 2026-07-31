@@ -11,7 +11,12 @@ use crate::term::Term;
 use std::rc::Rc;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct OutOfFuel;
+pub enum OutOfFuel {
+    /// β-step budget exhausted.
+    Beta,
+    /// Machine-transition cap exhausted (vm only).
+    Transitions,
+}
 
 /// Beta-step budget. `steps` is left at the count reached so far, so a
 /// successful run reports its cost and an exhausted one shows the limit.
@@ -28,7 +33,7 @@ impl Budget {
 
     fn tick(&mut self) -> Result<(), OutOfFuel> {
         if self.steps >= self.limit {
-            return Err(OutOfFuel);
+            return Err(OutOfFuel::Beta);
         }
         self.steps += 1;
         Ok(())
