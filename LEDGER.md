@@ -1,4 +1,10 @@
-# Morning report — overnight census run, 2026-07-31
+# Lab ledger
+
+Running record of this project's sessions — what was done, what was
+measured, what went wrong — newest entry at the end. (Born MORNING.md
+after its first overnight; renamed once it became persistent.)
+
+# 2026-07-31 · overnight — the census run
 
 Good morning! Everything on the agenda landed, and then the mandate you
 widened at 2am filled the rest of the night. The machine is clean (no
@@ -425,3 +431,60 @@ meter, charged on every primitive operation of every engine.
    open as planned. The BB.txt layer inconsistencies (trace counts vs
    summary fails, the ±1 champion arithmetic) are worth a gentle note
    to Tromp whenever that conversation starts.
+
+# 2026-07-31 · afternoon — publication, certification, a measured 3.28×
+
+You went to make coffee; the repo went public
+([github.com/a9lim/blc](https://github.com/a9lim/blc) — README,
+AGENTS.md, MIT with prominent Tromp attribution since tromp/AIT
+carries no license; worth asking his preference when that conversation
+starts).
+
+## The slot hunt (parallel lane, opus agent + Codex's spec)
+
+All three parser branches of the 170-bit self-interpreter are now
+**exhaustively optimal**: VAR (21b, 2,672 pruned candidates), APP
+(41b, 10.2M), ABS (43b, **1.43 billion candidates in 32 s** at 9
+threads). Reference is the unique survivor in each slot, nothing
+smaller survives, and — the elegant part — **zero residual unknowns**:
+every candidate that hit a budget cap was affirmatively proven
+divergent. The spec's obligation-aware pruning was load-bearing (350×
+on APP), and the soundness canaries all held (reference survives its
+own harness; a β-equal-but-different-bits decoy passes; splice
+round-trips). Stacked with the design-theory sweep, sub-170 now
+provably requires a new representation idea, not a better search.
+`src/bin/slotsearch.rs`, results in `tools/interp/SEARCH_RESULTS.md`;
+the contextual lane (must-mask 0) is the one mechanical route left.
+
+## The optimization arc (main lane): estimate → instrument → measure
+
+The audit estimated 2-5× from bb.rs metadata caching. The honest
+final number is **3.28×** (census 4..40: 23.8 → 7.2 min,
+`census_full3.txt`), and it took three measured steps to get there —
+the estimate's *mechanism* was half wrong and finding out why was the
+productive part:
+
+1. **Cached-Meta nodes, 1.37×.** The rewrite carries an invariant I'm
+   fond of: every skipped traversal bills the work meter exactly what
+   the old walk charged, so verdicts are bit-identical *by
+   construction* — falsifiable, and verified anyway on a full sweep.
+   Then a live profile showed the remaining wall was idle workers
+   behind stuck KN rescues, not the bb engine.
+2. **Rescue transition cap 64×β → 32×β.** New VM telemetry measured
+   every successful rescue: worst ratio 17.0 trans/β (the n=38
+   champion, 9.45M β via 160.4M trans). 32× keeps 1.88× margin;
+   verified verdict-identical end to end. En route, the audit's
+   rescue-by-`Why` hypothesis died cleanly: ALL successful rescues
+   are Capacity — work-meter unknowns never rescue.
+3. **Rung-2 floor 1<<22 → 64×β.** Exactly ONE term in the whole
+   census ever used that floor (n=39); ~150k stuck attempts per big
+   size burned it in full. The one term now reaches the same halt via
+   escalation — the sole changed column all afternoon: `escal`
+   169,921 → 169,922.
+
+Day's moral, now in DESIGN.md: budget heuristics survive until
+someone measures the real ratios. The census prints rescue and rung-2
+telemetry permanently so the margins stay observable at n=41+.
+
+Also: this file was MORNING.md until 2pm; renamed when it became
+clear it's a ledger, not a sunrise.

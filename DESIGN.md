@@ -224,6 +224,39 @@ prove strictly more than his traced engine, including both previously
 unexplained 35/36-bit residuals. Fuel-robustness: re-adjudicating all
 2,032 survivors at `BLC_PROBE_FUEL=65536` (16×) flips nothing.
 
+### The daytime patch set (2026-07-31 afternoon): a measured 3.28×
+
+Census 4..40 went from ~23.8 min to **7.2 min** (`census_full3.txt`,
+the canonical table) in three verdict-preserving steps, each verified
+by a full sweep:
+
+1. **Cached-Meta escalation nodes (1.37×).** Lam/App nodes carry
+   `Meta{bits, hash, max-free, node counts, ⊥}` composed O(1) at
+   construction; size accounting, history hashing, closedness and
+   ⊥-checks stop walking trees (walks that were exponential on
+   Rc-shared structures). The invariant that de-risked it: traversal
+   fast paths bill the work meter *exactly* what the replaced walk
+   charged (O(1) formulas from cached counts), so meter exhaustion —
+   and hence every verdict and cause split — is bit-identical by
+   construction. The audit's 2-5× estimate was wrong because the
+   post-patch wall was elsewhere: stuck KN rescues.
+2. **Rescue transition cap 64× → 32×β.** Measured across every
+   successful rescue in 4..40: worst transition/β ratio is 17.0 (the
+   n=38 champion, 9,452,558 β via 160,434,707 transitions), so 32×
+   keeps a 1.88× margin while halving the dominant stuck-rescue cost.
+   The β budget is untouchable — the champion uses 94.5% of it.
+3. **Rung-2 transition floor 1<<22 → 64×β.** Telemetry showed exactly
+   one rung-2 success in the entire census ever exceeded 64×β
+   transitions, while ~150k stuck rung-2 attempts per big size burned
+   the full 4.2M-transition floor. That one term (n=39) now routes
+   through escalation+rescue to the same halt — the sole column change
+   anywhere: `escal` 169,921 → 169,922.
+
+Moral, appended to the work-meter lesson: budget *heuristics* (64×,
+1<<22) survive until someone measures the real ratios; the census now
+prints `rescued:` / `stuck rescues:` / `rung2:` telemetry so the
+margins stay observable as sizes grow.
+
 Memory note: at 42M capacity the escalation engine's *live* graph can
 reach tens of GB per worker even though the meter bounds total
 allocations — adjudication runs use few threads, a watchdog on the

@@ -12,12 +12,13 @@
 //!   6. Unknowns get one last big-budget KN attempt
 //!
 //! Usage: census <min_n> <max_n> [--budget1 N] [--budget2 N] [--bb-cap N]
-//!        [--rescue N] [--no-prescan] [--no-oracle] [--verify] [--chunk N]
-//!        [--dump-unknowns FILE] [--terms-file FILE]
+//!        [--rescue N] [--rescue-trans-mult N] [--no-prescan] [--no-oracle]
+//!        [--verify] [--chunk N] [--dump-unknowns FILE] [--terms-file FILE]
 //! (--chunk now sets the minimum generation-task count for the fused
 //! parallel enumeration.)
 
 use blc::bb::{normal_form, LTerm, NoNf, Why};
+use blc::eval::OutOfFuel;
 use blc::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
 use blc::oracle::no_nf;
 use blc::vm::{Machine, SizeSink, TermPool};
@@ -30,6 +31,12 @@ struct Cfg {
     budget2: u64,
     bb_cap: i64,
     rescue: u64,
+    /// Rescue transition cap = rescue × this. Measured: no successful
+    /// rescue in 4..40 exceeds 17.0 transitions/β (the n=38 champion:
+    /// 9,452,558 β via 160,434,707 trans); 32 keeps a 1.88× margin and
+    /// halves the cost of transition-bound stuck rescues vs the old
+    /// blanket 64. `--rescue-trans-mult` overrides.
+    rescue_trans_mult: u64,
     prescan: bool,
     oracle: bool,
     chunk: usize,
@@ -53,6 +60,18 @@ struct Stats {
     /// (count, max β). Decides whether per-cause rescue budgets are safe.
     rescue_cap: (u64, u64),
     rescue_work: (u64, u64),
+    /// Max transitions consumed by any successful rescue (incl. the
+    /// step-count-recovery rescues of engine-proven halters) — the datum
+    /// that decides whether the rescue transition cap can drop below 64×β.
+    rescue_max_trans: u64,
+    /// Failed rescues by which fuel died: (β-bound, transition-bound).
+    /// β-bound burns ~ms; transition-bound burns the full 64×β cap (~3 s).
+    rescue_stuck: (u64, u64),
+    /// Rung-2 cost structure: successes needing > 64×β transitions
+    /// (the 1<<22 floor's beneficiaries — big-readback halters), and
+    /// failures by fuel type. Decides whether rung 2's floor can drop.
+    rung2_over: u64,
+    rung2_stuck: (u64, u64),
     unknowns: Vec<(u64, u8)>,
 }
 
@@ -81,6 +100,16 @@ impl Stats {
         self.rescue_work = (
             self.rescue_work.0 + o.rescue_work.0,
             self.rescue_work.1.max(o.rescue_work.1),
+        );
+        self.rescue_max_trans = self.rescue_max_trans.max(o.rescue_max_trans);
+        self.rescue_stuck = (
+            self.rescue_stuck.0 + o.rescue_stuck.0,
+            self.rescue_stuck.1 + o.rescue_stuck.1,
+        );
+        self.rung2_over += o.rung2_over;
+        self.rung2_stuck = (
+            self.rung2_stuck.0 + o.rung2_stuck.0,
+            self.rung2_stuck.1 + o.rung2_stuck.1,
         );
         self.unknowns.extend(o.unknowns);
         self
@@ -136,10 +165,22 @@ fn census_term(
         stats.record_halt(sink.0, steps, enc, len);
         return;
     }
+    // Rung 2 at 64×β transitions too: measured across 4..40, exactly ONE
+    // rung-2 success ever exceeded that (n=39; it now takes the
+    // escalation+rescue path to the same verdict), while stuck rung-2
+    // attempts burned the 1<<22 floor ~150k times per big size.
     let mut sink = SizeSink::default();
-    if let Ok(steps) = vm.normalize(pool, root, cfg.budget2, &mut sink) {
-        stats.record_halt(sink.0, steps, enc, len);
-        return;
+    match vm.normalize_capped(pool, root, cfg.budget2, cfg.budget2.saturating_mul(64), &mut sink)
+    {
+        Ok(steps) => {
+            if vm.last_trans > cfg.budget2.saturating_mul(64) {
+                stats.rung2_over += 1;
+            }
+            stats.record_halt(sink.0, steps, enc, len);
+            return;
+        }
+        Err(OutOfFuel::Beta) => stats.rung2_stuck.0 += 1,
+        Err(_) => stats.rung2_stuck.1 += 1,
     }
     // Escalation: full BB.lhs semantics.
     stats.escalated += 1;
@@ -149,12 +190,17 @@ fn census_term(
             // β-count from the escalation engine isn't canonical (history
             // machinery, no step ledger) — recover it with a KN re-run.
             let mut sink = SizeSink::default();
-            match vm.normalize(pool, root, cfg.rescue, &mut sink) {
+            match vm.normalize_capped(pool, root, cfg.rescue, cfg.rescue.saturating_mul(cfg.rescue_trans_mult), &mut sink) {
                 Ok(steps) => {
                     stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
+                    stats.rescue_max_trans = stats.rescue_max_trans.max(vm.last_trans);
                     stats.record_halt(sink.0, steps, enc, len);
                 }
-                Err(_) => {
+                Err(e) => {
+                    match e {
+                        OutOfFuel::Beta => stats.rescue_stuck.0 += 1,
+                        _ => stats.rescue_stuck.1 += 1,
+                    }
                     // Halts per BB engine but out of rescue fuel for the
                     // canonical count; record with the engine's nf size.
                     stats.record_halt(nf.bit_size(), 0, enc, len);
@@ -164,9 +210,10 @@ fn census_term(
         Err(NoNf::Diverge) => stats.diverge += 1,
         Err(NoNf::Unknown(why)) => {
             let mut sink = SizeSink::default();
-            match vm.normalize(pool, root, cfg.rescue, &mut sink) {
+            match vm.normalize_capped(pool, root, cfg.rescue, cfg.rescue.saturating_mul(cfg.rescue_trans_mult), &mut sink) {
                 Ok(steps) => {
                     stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
+                    stats.rescue_max_trans = stats.rescue_max_trans.max(vm.last_trans);
                     let r = match why {
                         Why::Capacity => &mut stats.rescue_cap,
                         Why::WorkMeter => &mut stats.rescue_work,
@@ -175,7 +222,11 @@ fn census_term(
                     r.1 = r.1.max(steps);
                     stats.record_halt(sink.0, steps, enc, len);
                 }
-                Err(_) => {
+                Err(e) => {
+                    match e {
+                        OutOfFuel::Beta => stats.rescue_stuck.0 += 1,
+                        _ => stats.rescue_stuck.1 += 1,
+                    }
                     stats.unknown += 1;
                     match why {
                         Why::Capacity => stats.unknown_cap += 1,
@@ -202,6 +253,7 @@ fn main() {
         // 50x the BB(34) witness's measured 192757 beta; with the VM's
         // 64x transition cap a stuck rescue costs ~3s, not 2 hours.
         rescue: 10_000_000,
+        rescue_trans_mult: 32,
         prescan: true,
         oracle: true,
         chunk: 0, // 0 = auto (threads * 64)
@@ -232,6 +284,10 @@ fn main() {
             "--rescue" => {
                 i += 1;
                 cfg.rescue = args[i].parse().unwrap();
+            }
+            "--rescue-trans-mult" => {
+                i += 1;
+                cfg.rescue_trans_mult = args[i].parse().unwrap();
             }
             "--chunk" => {
                 i += 1;
@@ -328,7 +384,7 @@ fn main() {
                     match normal_form(cfg.bb_cap, &lterm_of(pool, root)) {
                         Ok(nf) => {
                             let mut sink = SizeSink::default();
-                            match vm.normalize(pool, root, cfg.rescue, &mut sink) {
+                            match vm.normalize_capped(pool, root, cfg.rescue, cfg.rescue.saturating_mul(cfg.rescue_trans_mult), &mut sink) {
                                 Ok(steps) => {
                                     format!("{bits} HALT nf={} steps={steps}", sink.0)
                                 }
@@ -338,7 +394,7 @@ fn main() {
                         Err(NoNf::Diverge) => format!("{bits} DIVERGE bb-engine"),
                         Err(NoNf::Unknown(_)) => {
                             let mut sink = SizeSink::default();
-                            match vm.normalize(pool, root, cfg.rescue, &mut sink) {
+                            match vm.normalize_capped(pool, root, cfg.rescue, cfg.rescue.saturating_mul(cfg.rescue_trans_mult), &mut sink) {
                                 Ok(steps) => {
                                     format!("{bits} HALT nf={} steps={steps}", sink.0)
                                 }
@@ -448,8 +504,24 @@ fn main() {
         }
         if stats.rescue_cap.0 + stats.rescue_work.0 > 0 {
             println!(
-                "    rescued: {} from capacity (max {} beta), {} from work-meter (max {} beta)",
-                stats.rescue_cap.0, stats.rescue_cap.1, stats.rescue_work.0, stats.rescue_work.1
+                "    rescued: {} from capacity (max {} beta), {} from work-meter (max {} beta); max trans {}",
+                stats.rescue_cap.0,
+                stats.rescue_cap.1,
+                stats.rescue_work.0,
+                stats.rescue_work.1,
+                stats.rescue_max_trans
+            );
+        }
+        if stats.rescue_stuck.0 + stats.rescue_stuck.1 > 0 {
+            println!(
+                "    stuck rescues: {} beta-bound, {} transition-bound",
+                stats.rescue_stuck.0, stats.rescue_stuck.1
+            );
+        }
+        if stats.rung2_over + stats.rung2_stuck.0 + stats.rung2_stuck.1 > 0 {
+            println!(
+                "    rung2: {} successes past 64x trans; stuck {} beta-bound, {} transition-bound",
+                stats.rung2_over, stats.rung2_stuck.0, stats.rung2_stuck.1
             );
         }
         if !stats.unknowns.is_empty() {

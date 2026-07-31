@@ -2,7 +2,7 @@
 
 Rust engine for binary lambda calculus / AIT experiments, verified
 against Tromp's Haskell. README.md has the public story; DESIGN.md has
-architecture + measured results; MORNING.md is the 2026-07-31 overnight
+architecture + measured results; LEDGER.md is the 2026-07-31 overnight
 lab notebook. This file is what you need to work here without
 re-deriving the night's lessons.
 
@@ -13,11 +13,11 @@ re-deriving the night's lessons.
   `tests/tromp_vectors.rs` needs it; the unit suite passes without it.
 - The verification bar for any engine change: `cargo test --release`
   green, then a census spot-check whose **halt counts are bit-identical**
-  to `census_full2.txt` at the sizes you touch. Halts have been invariant
+  to `census_full3.txt` at the sizes you touch. Halts have been invariant
   through every change in history; treat any drift as a bug in your
   change, not a discovery.
 - Data files in the repo root are results, not scratch. The canonical
-  census table is `census_full2.txt`; `unknowns_v2.txt` is the live
+  census table is `census_full3.txt`; `unknowns_v2.txt` is the live
   frontier (2,032 terms). Regenerate rather than hand-edit.
 
 ## Conventions that will bite you
@@ -41,10 +41,16 @@ re-deriving the night's lessons.
 ## The engines
 
 Ladder in `src/bin/census.rs`: prescan → oracle prefilter → KN at
-budget1 (transitions budget1×64) → KN at budget2 (4096) → escalation
-engine (`src/bb.rs`, cap 2M) → KN rescue at 10⁷ β. Rescue stays at
-10⁷: the max successful rescue observed is 9,452,558 β — lowering it
-loses a halter.
+budget1 (transitions budget1×64) → KN at budget2 (transitions
+budget2×64) → escalation engine (`src/bb.rs`, cap 2M) → KN rescue at
+10⁷ β, transitions 32×β (`--rescue-trans-mult`). Rescue β stays 10⁷:
+the max successful rescue is 9,452,558 β — lowering it loses a
+halter. The 32× transition mult has a 1.88× margin over the worst
+measured successful ratio (17.0×, the n=38 champion: 9.45M β via
+160.4M transitions); the rung-2 64× cap re-routes exactly one term in
+4..40 (n=39, `escal` 169,921→169,922 in `census_full3.txt`) through
+escalation to the same halt. Both trims verified verdict-identical on
+full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
 
 - `src/vm.rs` (KN machine): any `Sink` impl MUST override `var` with
   an O(1) body — the default is O(n) in an *uncharged* n and cost a 5×
@@ -81,7 +87,7 @@ loses a halter.
 - This is a9's daily driver. Leave RAM headroom, kill strays when
   done, `ps aux | grep census` before declaring the machine clean.
 
-## Open docket (detail in MORNING.md "Where I'd point us next")
+## Open docket (detail in LEDGER.md "Where I'd point us next")
 
 - ~~ABS/APP interpreter slot searches~~ **done** —
   `src/bin/slotsearch.rs`, results in `tools/interp/SEARCH_RESULTS.md`.
@@ -92,11 +98,19 @@ loses a halter.
   hypothesis needing splice + battery, not a proof.
 - `loop32`: the one 32-bit term with no mechanical divergence proof
   anywhere. A context-sensitive recurrence certificate would be new.
-- bb.rs meter decoupling + `Meta{max_free,bits,hash}` caching — est.
-  2–5× on the escalation tier (~98% of census CPU). Medium risk;
-  verify halt-invariance at 28..33 before trusting.
-- Rescue-by-`Why` budgets; λ-wrap memoization; n=41 census (~242M
-  terms, ~30 min, nothing blocks it).
+- ~~bb.rs Meta caching~~ **done** (2026-07-31 daytime): cached-Meta
+  nodes with exact meter parity, verified bit-identical on a full 4..40
+  sweep. Honest gain 1.37× overall — the 2-5× estimate was wrong
+  because post-patch the wall is stuck KN rescues, not the bb engine.
+- ~~Rescue-by-`Why` budgets~~ **refuted, superseded by transition
+  trims (done)**: ALL successful rescues 4..40 come from Capacity
+  unknowns (max 9,452,558 β — no room to trim β); work-meter unknowns
+  never rescue. The measured levers landed instead: rescue transitions
+  32×β, rung-2 transitions 64×β (see "The engines"). Cumulative
+  daytime speedup incl. Meta caching: 3.28× (23.8 → 7.2 min), verdicts
+  bit-identical. Census prints `rescued:`/`stuck rescues:`/`rung2:`
+  telemetry to keep the margins observable.
+- λ-wrap memoization; n=41 census (~242M terms, nothing blocks it).
 - Lean 4 track (no existing BLC formalization); distilled `uni.rs` PR
   to tromp/AIT (repo root has uni.c/js/pl/py/rb — no uni.rs slot
   filled).

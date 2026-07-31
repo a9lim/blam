@@ -268,6 +268,10 @@ const NIL: u32 = u32::MAX;
 pub struct Machine {
     envs: Vec<(Val, u32)>,
     stack: Vec<Frame>,
+    /// Transitions consumed by the most recent `normalize*` call
+    /// (telemetry: measures real transition/β ratios so budget caps can
+    /// be set from data instead of the blanket 64× heuristic).
+    pub last_trans: u64,
 }
 
 impl Machine {
@@ -343,9 +347,11 @@ impl Machine {
         'eval: loop {
             trans += 1;
             if trans > trans_limit {
+                self.last_trans = trans;
                 return Err(OutOfFuel::Transitions);
             }
             if S::CAN_ABORT && sink.aborted() {
+                self.last_trans = trans;
                 return Err(OutOfFuel::Aborted);
             }
             match pool.nodes[t as usize] {
@@ -359,6 +365,7 @@ impl Machine {
                         self.stack.pop();
                         steps += 1;
                         if steps > limit {
+                            self.last_trans = trans;
                             return Err(OutOfFuel::Beta);
                         }
                         env = self.push_env(Val::Clo(at, ae), env);
@@ -415,10 +422,14 @@ impl Machine {
                             loop {
                                 trans += 1;
                                 if trans > trans_limit {
+                                    self.last_trans = trans;
                                     return Err(OutOfFuel::Transitions);
                                 }
                                 match self.stack.pop() {
-                                    None => return Ok(steps),
+                                    None => {
+                                        self.last_trans = trans;
+                                        return Ok(steps);
+                                    }
                                     Some(Frame::LamEnd) => depth -= 1,
                                     Some(Frame::Norm(nt, ne)) => {
                                         t = nt;

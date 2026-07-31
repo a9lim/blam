@@ -8,11 +8,11 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
 ## Headline numbers
 
 - **Complete census of every closed λ-term of 4–40 bits**:
-  283,817,255 terms adjudicated (halt / diverge / unknown) in ~24 min
+  283,817,255 terms adjudicated (halt / diverge / unknown) in ~7 min
   on an M5 Max — vs ~4.3 h for the reference Haskell tooling. Every
   [A114852](https://oeis.org/A114852) count and every published
   [BBλ](https://oeis.org/A333479) value in range reproduced exactly
-  (`census_full2.txt`).
+  (`census_full3.txt`).
 - **2,032 unknowns survive maximum effort** — fewer than the reference
   ledger at every comparable size. At n=32 the frontier matches
   Tromp's exactly (the sole survivor is the famous `loop32`, which no
@@ -31,11 +31,15 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   reference `redloop` rule (see below) that fires 11,367 times in the
   census and is fuel-robust — re-running all 2,032 unknowns at 16×
   probe fuel flips nothing.
-- **The 170-bit self-interpreter, mapped**: its 21-bit variable branch
-  is exhaustively optimal (one survivor in 30,232 candidates), and a
-  design-space sweep places every credible structural rearrangement at
-  171–179 bits with the fixpoint knot unique through 20 bits — 170 is
-  locally optimal (`tools/interp/`).
+- **The 170-bit self-interpreter is certified locally optimal**: all
+  three parser branches are exhaustively optimal — VAR (21 bits, 2,672
+  pruned candidates), APP (41 bits, 10.2M), ABS (43 bits, **1.43
+  billion candidates in 32 s**) — each with the reference as unique
+  survivor and *zero* residual unknowns (every capped candidate proven
+  divergent). A design-space sweep places every credible structural
+  rearrangement at 171–179 bits with the fixpoint knot unique through
+  20 bits. Beating 170 now requires a new representation idea, not a
+  better search (`src/bin/slotsearch.rs`, `tools/interp/`).
 
 ## The engine
 
@@ -115,15 +119,17 @@ default 4096).
   `frontier.py`, and `tools/interp/` (the self-interpreter lab:
   slot searches, knot search, sound search spec, design notes).
 - `DESIGN.md` — architecture, measured results, open questions.
-- `MORNING.md` — the overnight lab notebook: how these results
+- `LEDGER.md` — the overnight lab notebook: how these results
   happened, including the failures.
-- Data: `census_full2.txt` (canonical table), `unknowns_v2.txt` (the
+- Data: `census_full3.txt` (canonical table), `unknowns_v2.txt` (the
   2,032 survivors), `solomonoff_40.txt`, benchmarks, frontier files.
 
 ## Roadmap
 
-- ABS/APP interpreter-slot searches (sound spec written; either a
-  sub-170 find or a full slot-optimality certificate).
+- The contextual slot search (drop the parametric contract's must-use
+  mask): survivors there are hypotheses needing whole-interpreter
+  splice + battery, not proofs — the one mechanical route left to
+  sub-170.
 - A certificate for `loop32` — the one 32-bit term nobody proves.
 - Lean 4 track: verified prefix-freeness/Kraft, machine-checked K
   upper bounds (no Lean BLC formalization exists yet).
@@ -138,7 +144,7 @@ implementations, and the published values are all John Tromp's
 This repo is an independent engine, verified against his.
 
 Built by [a9lim](https://github.com/a9lim) with Claude (Anthropic) and
-Codex (OpenAI) as agent collaborators — `MORNING.md` is the honest
+Codex (OpenAI) as agent collaborators — `LEDGER.md` is the honest
 record of what that looked like.
 
 MIT license.
