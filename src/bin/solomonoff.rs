@@ -81,16 +81,16 @@ fn emit_lterm(t: &LTerm, sink: &mut KeySink) {
         LTerm::Var(n) => {
             sink.var(*n);
         }
-        LTerm::Lam(a) => {
+        LTerm::Lam(x) => {
             sink.zero();
             sink.zero();
-            emit_lterm(a, sink);
+            emit_lterm(&x.b, sink);
         }
-        LTerm::App(f, a) => {
+        LTerm::App(x) => {
             sink.zero();
             sink.one();
-            emit_lterm(f, sink);
-            emit_lterm(a, sink);
+            emit_lterm(&x.f, sink);
+            emit_lterm(&x.a, sink);
         }
         LTerm::Bot => unreachable!("normal forms are bot-free"),
     }

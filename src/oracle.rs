@@ -55,6 +55,16 @@ pub(crate) fn spend_work() {
     WORK.with(|w| w.set(w.get() - 1));
 }
 
+/// Charge `n` units in one step — used by the escalation engine's
+/// structure-sharing fast paths to bill exactly the work the skipped
+/// traversal would have charged (meter parity: exhaustion happens at
+/// the same check sites as the pre-sharing engine). Saturating: a
+/// logical-size overflow charges "everything", which is the verdict
+/// the old engine reached by grinding.
+pub(crate) fn spend_work_n(n: i64) {
+    WORK.with(|w| w.set(w.get().saturating_sub(n)));
+}
+
 pub(crate) fn work_exhausted() -> bool {
     WORK.with(|w| w.get()) < 0
 }

@@ -49,6 +49,10 @@ struct Stats {
     max_nf: u64,
     max_nf_witness: (u64, u8),
     max_rescue_beta: u64,
+    /// Successful rescues by the bb-engine Why they rescued from:
+    /// (count, max β). Decides whether per-cause rescue budgets are safe.
+    rescue_cap: (u64, u64),
+    rescue_work: (u64, u64),
     unknowns: Vec<(u64, u8)>,
 }
 
@@ -70,6 +74,14 @@ impl Stats {
             self.max_nf_witness = o.max_nf_witness;
         }
         self.max_rescue_beta = self.max_rescue_beta.max(o.max_rescue_beta);
+        self.rescue_cap = (
+            self.rescue_cap.0 + o.rescue_cap.0,
+            self.rescue_cap.1.max(o.rescue_cap.1),
+        );
+        self.rescue_work = (
+            self.rescue_work.0 + o.rescue_work.0,
+            self.rescue_work.1.max(o.rescue_work.1),
+        );
         self.unknowns.extend(o.unknowns);
         self
     }
@@ -155,6 +167,12 @@ fn census_term(
             match vm.normalize(pool, root, cfg.rescue, &mut sink) {
                 Ok(steps) => {
                     stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
+                    let r = match why {
+                        Why::Capacity => &mut stats.rescue_cap,
+                        Why::WorkMeter => &mut stats.rescue_work,
+                    };
+                    r.0 += 1;
+                    r.1 = r.1.max(steps);
                     stats.record_halt(sink.0, steps, enc, len);
                 }
                 Err(_) => {
@@ -427,6 +445,14 @@ fn main() {
                 "    unknowns by cause: {} capacity, {} work-meter; max successful rescue {} beta",
                 stats.unknown_cap, stats.unknown_work, stats.max_rescue_beta
             );
+        }
+        if stats.rescue_cap.0 + stats.rescue_work.0 > 0 {
+            println!(
+                "    rescued: {} from capacity (max {} beta), {} from work-meter (max {} beta)",
+                stats.rescue_cap.0, stats.rescue_cap.1, stats.rescue_work.0, stats.rescue_work.1
+            );
+        }
+        if !stats.unknowns.is_empty() {
             for (enc, len) in stats.unknowns.iter().take(16) {
                 println!("    unknown: {}", enc_to_string(*enc, *len));
             }

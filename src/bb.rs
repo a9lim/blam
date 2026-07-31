@@ -26,19 +26,68 @@
 //! free variables).
 //!
 //! Only ~0.3% of closed terms ever reach this engine, so it favors
-//! fidelity over speed: boxed terms, textbook substitution, cloned sets at
-//! history forks (mirroring the Haskell's persistent-set sharing).
+//! fidelity over speed — but the *representation* is optimized: every
+//! Lam/App node caches `Meta { bits, hash, max-free, node counts, ⊥ }`
+//! computed O(1) at construction, so bit-size accounting, history-set
+//! hashing, closedness checks, and ⊥-detection are all O(1) instead of
+//! per-call tree walks (walks that were exponential on Rc-shared
+//! structures, which substitution creates via argument sharing).
+//!
+//! METER PARITY INVARIANT: traversal helpers (`shift`, `subst`,
+//! `bot_free`, `simplify`, `simp_e`, `simp_i`) short-circuit on subtrees
+//! the cached max-free index proves untouched, returning an Rc share —
+//! but each skip charges the shared work meter *exactly* what the
+//! pre-sharing engine's walk charged (one unit per Lam/App constructed,
+//! computable O(1) from cached counts; `subst` also bills the per-binder
+//! `shift` of its argument: nodes(t) + lams(t)·nodes(s)). Executed slow
+//! paths charge identically by construction. The meter therefore reaches
+//! every `work_exhausted` check site with the same value as the old
+//! engine, and all verdicts — including which resource dies first — are
+//! bit-identical. (Sole theoretical exception: logical sizes past u64
+//! saturate and charge i64::MAX, where the old engine would grind
+//! unboundedly; no census term reaches that regime.)
 
 use crate::oracle::{no_nf, LView, NV};
 use std::rc::Rc;
 
-/// Boxed term with ⊥, mirroring BB.lhs's `L`. 1-based de Bruijn.
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+/// Term with ⊥, mirroring BB.lhs's `L`. 1-based de Bruijn. `Var`/`Bot`
+/// are unboxed; `Lam`/`App` are Rc-shared nodes carrying cached metadata.
+#[derive(Clone, Debug)]
 pub enum LTerm {
     Var(u32),
-    Lam(Rc<LTerm>),
-    App(Rc<LTerm>, Rc<LTerm>),
+    Lam(Rc<LamN>),
+    App(Rc<AppN>),
     Bot,
+}
+
+#[derive(Debug)]
+pub struct LamN {
+    pub b: LTerm,
+    m: Meta,
+}
+
+#[derive(Debug)]
+pub struct AppN {
+    pub f: LTerm,
+    pub a: LTerm,
+    m: Meta,
+}
+
+/// Per-node cached facts, O(1)-composed from children at construction.
+#[derive(Clone, Copy, Debug)]
+struct Meta {
+    /// BLC bit-size (⊥ counts 1, as in BB.lhs). Logical (sharing-blind).
+    bits: u64,
+    /// Structural hash; equal terms always hash equal.
+    hash: u64,
+    /// Largest free de Bruijn index (0 = closed).
+    mf: u32,
+    /// Lam-node count (logical).
+    lams: u64,
+    /// App-node count (logical).
+    apps: u64,
+    /// Contains ⊥ anywhere.
+    bot: bool,
 }
 
 use LTerm::*;
@@ -47,31 +96,79 @@ impl<'a> LView for &'a LTerm {
     fn node(self) -> NV<Self> {
         match self {
             Var(n) => NV::Var(*n),
-            Lam(b) => NV::Lam(b),
-            App(f, a) => NV::App(f, a),
+            Lam(x) => NV::Lam(&x.b),
+            App(x) => NV::App(&x.f, &x.a),
             Bot => NV::Bot,
         }
     }
 }
 
-// The work meter lives in `oracle` and is shared: every node this engine
-// allocates AND every oracle predicate step decrements it. It bounds TOTAL
-// engine work — simplify cascades, substitution into huge bodies, oracle
-// recursion on huge redexes — none of which the redex-size capacity sees.
-// Armed by `normal_form`; i64::MAX (disarmed) outside it.
-use crate::oracle::{spend_work, work_exhausted, WORK};
-
-pub fn lam(t: LTerm) -> LTerm {
-    spend_work();
-    Lam(Rc::new(t))
+// splitmix64 finalizer: cheap, well-mixed.
+fn mix(mut z: u64) -> u64 {
+    z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+    z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+    z ^ (z >> 31)
 }
-
-pub fn app(f: LTerm, a: LTerm) -> LTerm {
-    spend_work();
-    App(Rc::new(f), Rc::new(a))
-}
+const H_VAR: u64 = 0x517C_C1B7_2722_0A95;
+const H_LAM: u64 = 0xA5A5_5A5A_C100_11EB;
+const H_APP: u64 = 0x0DD1_CAFE_0DD1_CAFE;
+const H_BOT: u64 = 0xB07B_07B0_7B07_B07B;
 
 impl LTerm {
+    /// BLC bit-size; ⊥ counts 1, as in BB.lhs. O(1).
+    pub fn bit_size(&self) -> u64 {
+        match self {
+            Var(n) => *n as u64 + 1,
+            Lam(x) => x.m.bits,
+            App(x) => x.m.bits,
+            Bot => 1,
+        }
+    }
+
+    fn hash64(&self) -> u64 {
+        match self {
+            Var(n) => mix(H_VAR ^ *n as u64),
+            Lam(x) => x.m.hash,
+            App(x) => x.m.hash,
+            Bot => H_BOT,
+        }
+    }
+
+    /// Largest free de Bruijn index (0 = closed). O(1).
+    fn mf(&self) -> u32 {
+        match self {
+            Var(n) => *n,
+            Lam(x) => x.m.mf,
+            App(x) => x.m.mf,
+            Bot => 0,
+        }
+    }
+
+    /// (lams, apps) — logical constructor counts. O(1).
+    fn counts(&self) -> (u64, u64) {
+        match self {
+            Var(_) | Bot => (0, 0),
+            Lam(x) => (x.m.lams, x.m.apps),
+            App(x) => (x.m.lams, x.m.apps),
+        }
+    }
+
+    /// Lam+App node count: exactly the work the old engine charged to
+    /// rebuild this subtree. O(1).
+    fn nodes_la(&self) -> u64 {
+        let (l, a) = self.counts();
+        l.saturating_add(a)
+    }
+
+    fn has_bot(&self) -> bool {
+        match self {
+            Var(_) => false,
+            Lam(x) => x.m.bot,
+            App(x) => x.m.bot,
+            Bot => true,
+        }
+    }
+
     pub fn from_term(t: &crate::term::Term) -> LTerm {
         use crate::term::Term;
         match t {
@@ -80,34 +177,107 @@ impl LTerm {
             Term::App(f, a) => app(LTerm::from_term(f), LTerm::from_term(a)),
         }
     }
+}
 
-    /// BLC bit-size; ⊥ counts 1, as in BB.lhs.
-    pub fn bit_size(&self) -> u64 {
-        match self {
-            Var(n) => *n as u64 + 1,
-            Lam(b) => 2 + b.bit_size(),
-            App(f, a) => 2 + f.bit_size() + a.bit_size(),
-            Bot => 1,
+// Equality: ptr-share and cached hash/bits as fast paths, structural
+// descent as ground truth (the caches are negative filters only, so a
+// hash collision costs time, never correctness).
+impl PartialEq for LTerm {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Var(a), Var(b)) => a == b,
+            (Bot, Bot) => true,
+            (Lam(x), Lam(y)) => {
+                Rc::ptr_eq(x, y)
+                    || (x.m.hash == y.m.hash && x.m.bits == y.m.bits && x.b == y.b)
+            }
+            (App(x), App(y)) => {
+                Rc::ptr_eq(x, y)
+                    || (x.m.hash == y.m.hash
+                        && x.m.bits == y.m.bits
+                        && x.f == y.f
+                        && x.a == y.a)
+            }
+            _ => false,
         }
     }
 }
+impl Eq for LTerm {}
+
+impl std::hash::Hash for LTerm {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        state.write_u64(self.hash64());
+    }
+}
+
+// The work meter lives in `oracle` and is shared: every node this engine
+// allocates AND every oracle predicate step decrements it. It bounds TOTAL
+// engine work — simplify cascades, substitution into huge bodies, oracle
+// recursion on huge redexes — none of which the redex-size capacity sees.
+// Armed by `normal_form`; i64::MAX (disarmed) outside it.
+use crate::oracle::{spend_work, spend_work_n, work_exhausted, WORK};
+
+/// Bill the meter for a skipped traversal (see METER PARITY INVARIANT).
+fn charge(n: u64) {
+    spend_work_n(i64::try_from(n).unwrap_or(i64::MAX));
+}
+
+pub fn lam(t: LTerm) -> LTerm {
+    spend_work();
+    let (l, a) = t.counts();
+    let m = Meta {
+        bits: 2u64.saturating_add(t.bit_size()),
+        hash: mix(t.hash64() ^ H_LAM),
+        mf: t.mf().saturating_sub(1),
+        lams: l.saturating_add(1),
+        apps: a,
+        bot: t.has_bot(),
+    };
+    Lam(Rc::new(LamN { b: t, m }))
+}
+
+pub fn app(f: LTerm, a: LTerm) -> LTerm {
+    spend_work();
+    let (fl, fa) = f.counts();
+    let (al, aa) = a.counts();
+    let m = Meta {
+        bits: 2u64
+            .saturating_add(f.bit_size())
+            .saturating_add(a.bit_size()),
+        hash: mix(f.hash64().wrapping_mul(0x9E37_79B9_7F4A_7C15) ^ a.hash64() ^ H_APP),
+        mf: f.mf().max(a.mf()),
+        lams: fl.saturating_add(al),
+        apps: fa.saturating_add(aa).saturating_add(1),
+        bot: f.has_bot() || a.has_bot(),
+    };
+    App(Rc::new(AppN { f, a, m }))
+}
 
 fn shift(t: &LTerm, d: i64, cutoff: u32) -> LTerm {
+    if t.mf() < cutoff {
+        // No variable at or above the cutoff: the old walk rebuilt the
+        // term unchanged, one charge per Lam/App. Same charge, no walk.
+        charge(t.nodes_la());
+        return t.clone();
+    }
     match t {
-        Var(n) => {
-            if *n >= cutoff {
-                Var((*n as i64 + d) as u32)
-            } else {
-                Var(*n)
-            }
-        }
-        Lam(b) => lam(shift(b, d, cutoff + 1)),
-        App(f, a) => app(shift(f, d, cutoff), shift(a, d, cutoff)),
+        Var(n) => Var((*n as i64 + d) as u32), // n ≥ cutoff here
+        Lam(x) => lam(shift(&x.b, d, cutoff + 1)),
+        App(x) => app(shift(&x.f, d, cutoff), shift(&x.a, d, cutoff)),
         Bot => Bot,
     }
 }
 
 fn subst(t: &LTerm, j: u32, s: &LTerm) -> LTerm {
+    if t.mf() < j {
+        // Var j cannot occur. Old walk: rebuilt t (nodes charge) and
+        // shifted s once per Lam passed (nodes(s) each, shift-invariant).
+        charge(
+            t.nodes_la()
+                .saturating_add(t.counts().0.saturating_mul(s.nodes_la())),
+        );
+        return t.clone();
+    }
     match t {
         Var(n) => {
             if *n == j {
@@ -116,8 +286,8 @@ fn subst(t: &LTerm, j: u32, s: &LTerm) -> LTerm {
                 Var(*n)
             }
         }
-        Lam(b) => lam(subst(b, j + 1, &shift(s, 1, 1))),
-        App(f, a) => app(subst(f, j, s), subst(a, j, s)),
+        Lam(x) => lam(subst(&x.b, j + 1, &shift(s, 1, 1))),
+        App(x) => app(subst(&x.f, j, s), subst(&x.a, j, s)),
         Bot => Bot,
     }
 }
@@ -127,33 +297,41 @@ fn beta(body: &LTerm, arg: &LTerm) -> LTerm {
 }
 
 fn noccur(i: u32, t: &LTerm) -> u32 {
+    if t.mf() < i {
+        return 0; // allocation-free in the old engine too: no charge
+    }
     match t {
         Var(n) => (*n == i) as u32,
-        Lam(b) => noccur(i + 1, b),
-        App(f, a) => noccur(i, f) + noccur(i, a),
+        Lam(x) => noccur(i + 1, &x.b),
+        App(x) => noccur(i, &x.f) + noccur(i, &x.a),
         Bot => 0,
     }
 }
 
 /// BB.lhs `simplify`: semantics-preserving argument canonicalization.
 pub fn simplify(t: &LTerm) -> LTerm {
+    if t.counts().1 == 0 {
+        // App-free ⇒ simplify is the identity; old walk charged one per Lam.
+        charge(t.counts().0);
+        return t.clone();
+    }
     match t {
-        Lam(a) => lam(simplify(a)),
-        App(a_, b_) => {
-            let a = simplify(a_);
-            if let Lam(body) = &a {
+        Lam(x) => lam(simplify(&x.b)),
+        App(x) => {
+            let a = simplify(&x.f);
+            if let Lam(an) = &a {
                 // Variable argument: contract, no duplication possible.
-                if matches!(&**b_, Var(_)) {
-                    return simplify(&beta(body, b_));
+                if matches!(&x.a, Var(_)) {
+                    return simplify(&beta(&an.b, &x.a));
                 }
                 // Specialize the body against the argument, then contract
                 // if the bound variable is used at most once.
-                let body2 = simp_a(body, b_);
+                let body2 = simp_a(&an.b, &x.a);
                 if noccur(1, &body2) <= 1 {
-                    return simplify(&beta(&body2, b_));
+                    return simplify(&beta(&body2, &x.a));
                 }
             }
-            app(a, simplify(b_))
+            app(a, simplify(&x.a))
         }
         _ => t.clone(),
     }
@@ -162,11 +340,11 @@ pub fn simplify(t: &LTerm) -> LTerm {
 /// Refine `body` knowing its argument: erasing-λ arguments ⊥ their own
 /// arguments; identity arguments collapse their applications.
 fn simp_a(body: &LTerm, arg: &LTerm) -> LTerm {
-    if let Lam(b) = arg {
-        if noccur(1, b) == 0 {
+    if let Lam(x) = arg {
+        if noccur(1, &x.b) == 0 {
             return simp_e(1, body);
         }
-        if **b == Var(1) {
+        if x.b == Var(1) {
             return simp_i(1, body);
         }
     }
@@ -175,36 +353,50 @@ fn simp_a(body: &LTerm, arg: &LTerm) -> LTerm {
 
 /// Var i will be bound to an erasing function: its arguments are dead.
 fn simp_e(i: u32, t: &LTerm) -> LTerm {
+    if t.mf() < i {
+        // Var i absent: old walk rebuilt everything unchanged.
+        charge(t.nodes_la());
+        return t.clone();
+    }
     match t {
-        App(a, b) => {
-            if **a == Var(i) {
+        App(x) => {
+            if x.f == Var(i) {
                 app(Var(i), Bot)
             } else {
-                app(simp_e(i, a), simp_e(i, b))
+                app(simp_e(i, &x.f), simp_e(i, &x.a))
             }
         }
-        Lam(a) => lam(simp_e(i + 1, a)),
+        Lam(x) => lam(simp_e(i + 1, &x.b)),
         _ => t.clone(),
     }
 }
 
 /// Var i will be bound to the identity: its applications collapse.
 fn simp_i(i: u32, t: &LTerm) -> LTerm {
+    if t.mf() < i {
+        charge(t.nodes_la());
+        return t.clone();
+    }
     match t {
-        App(a, b) => {
-            if **a == Var(i) {
-                simp_i(i, b)
+        App(x) => {
+            if x.f == Var(i) {
+                simp_i(i, &x.a)
             } else {
-                app(simp_i(i, a), simp_i(i, b))
+                app(simp_i(i, &x.f), simp_i(i, &x.a))
             }
         }
-        Lam(a) => lam(simp_i(i + 1, a)),
+        Lam(x) => lam(simp_i(i + 1, &x.b)),
         _ => t.clone(),
     }
 }
 
 /// Replace variables free at depth `d` by ⊥ (BB.lhs `botFree`).
 fn bot_free(d: u32, t: &LTerm) -> LTerm {
+    if t.mf() <= d {
+        // No variable free above depth d: old walk rebuilt unchanged.
+        charge(t.nodes_la());
+        return t.clone();
+    }
     match t {
         Var(n) => {
             if *n > d {
@@ -213,8 +405,8 @@ fn bot_free(d: u32, t: &LTerm) -> LTerm {
                 Var(*n)
             }
         }
-        Lam(b) => lam(bot_free(d + 1, b)),
-        App(f, a) => app(bot_free(d, f), bot_free(d, a)),
+        Lam(x) => lam(bot_free(d + 1, &x.b)),
+        App(x) => app(bot_free(d, &x.f), bot_free(d, &x.a)),
         Bot => Bot,
     }
 }
@@ -236,25 +428,6 @@ pub enum Why {
     WorkMeter,
 }
 
-fn has_bot(t: &LTerm) -> bool {
-    match t {
-        Bot => true,
-        Var(_) => false,
-        Lam(b) => has_bot(b),
-        App(f, a) => has_bot(f) || has_bot(a),
-    }
-}
-
-/// Largest free de Bruijn index (0 = closed).
-fn max_free(t: &LTerm) -> u32 {
-    match t {
-        Var(n) => *n,
-        Lam(b) => max_free(b).saturating_sub(1),
-        App(f, a) => max_free(f).max(max_free(a)),
-        Bot => 0,
-    }
-}
-
 /// Render closed `t` as BLC bits (⊥-free by construction at call sites).
 fn lterm_bits(t: &LTerm, out: &mut String) {
     match t {
@@ -264,14 +437,14 @@ fn lterm_bits(t: &LTerm, out: &mut String) {
             }
             out.push('0');
         }
-        Lam(b) => {
+        Lam(x) => {
             out.push_str("00");
-            lterm_bits(b, out);
+            lterm_bits(&x.b, out);
         }
-        App(f, a) => {
+        App(x) => {
             out.push_str("01");
-            lterm_bits(f, out);
-            lterm_bits(a, out);
+            lterm_bits(&x.f, out);
+            lterm_bits(&x.a, out);
         }
         Bot => unreachable!("lterm_bits on a term containing ⊥"),
     }
@@ -346,31 +519,31 @@ fn redloop(t: &LTerm) -> bool {
     // Self-application A A, syntactically. (A redex D A with D = λx.x x
     // contracts to A A one step later, so this shape subsumes the D A
     // trigger of BBold's original rule.)
-    let App(a1, a2) = t else { return false };
-    if a1 != a2 {
+    let App(tn) = t else { return false };
+    if tn.f != tn.a {
         return false;
     }
-    let a: &LTerm = a1;
-    let Lam(body) = a else { return false };
-    if max_free(a) != 0 || has_bot(a) {
+    let a: &LTerm = &tn.f;
+    let Lam(an) = a else { return false };
+    if a.mf() != 0 || a.has_bot() {
         return false;
     }
     // Left spine of B: find the demanded application `x q`.
-    let mut s: &LTerm = body;
+    let mut s: &LTerm = &an.b;
     let q = loop {
         match s {
-            App(f, q_) => {
-                if matches!(&**f, Var(1)) {
-                    break q_;
+            App(sn) => {
+                if matches!(&sn.f, Var(1)) {
+                    break &sn.a;
                 }
-                s = f;
+                s = &sn.f;
             }
             _ => return false,
         }
     };
     // probe = q[A/x]; closed since free(q) ⊆ {x} and A is closed.
     let probe = beta(q, a);
-    if max_free(&probe) != 0 {
+    if probe.mf() != 0 {
         return false;
     }
     // Fire iff nf(A) and nf(Q(A)) both exist and coincide — equal normal
@@ -388,7 +561,7 @@ fn redloop(t: &LTerm) -> bool {
 
 // Persistent set with O(1) clone — the same structural sharing BB.lhs gets
 // from Data.Set; a std HashSet clone at every history fork is quadratic on
-// long escalation runs.
+// long escalation runs. Keys hash O(1) via the cached structural hash.
 type Hist = im_rc::HashSet<LTerm>;
 
 fn bb_nf(
@@ -399,7 +572,7 @@ fn bb_nf(
     t: &LTerm,
 ) -> Result<LTerm, NoNf> {
     match t {
-        App(a_, b_) => {
+        App(tn) => {
             if work_exhausted() {
                 return Err(NoNf::Unknown(Why::WorkMeter));
             }
@@ -410,26 +583,26 @@ fn bb_nf(
                 empty = Hist::new();
                 &empty
             };
-            let a = bb_nf(true, f, sub_seen, cap, a_)?;
-            let b = simplify(b_);
+            let a = bb_nf(true, f, sub_seen, cap, &tn.f)?;
+            let b = simplify(&tn.a);
             let ab = app(a.clone(), b.clone());
             let r = bot_free(0, &ab);
-            let App(ra, _) = &r else { unreachable!() };
+            let App(rn) = &r else { unreachable!() };
             *cap -= r.bit_size() as i64;
             if *cap < 0 {
                 return Err(NoNf::Unknown(Why::Capacity));
             }
-            if no_nf(f, &ab) || seen.contains(&**ra) || redloop(&ab) {
+            if no_nf(f, &ab) || seen.contains(&rn.f) || redloop(&ab) {
                 return Err(NoNf::Diverge);
             }
             match &a {
-                Lam(body) => {
+                Lam(an) => {
                     if seen.contains(&r) {
                         return Err(NoNf::Diverge);
                     }
                     let mut seen2 = seen.clone();
                     seen2.insert(r);
-                    bb_nf(weak, f, &seen2, cap, &beta(body, &b))
+                    bb_nf(weak, f, &seen2, cap, &beta(&an.b, &b))
                 }
                 _ if weak => Ok(ab),
                 _ => {
@@ -441,7 +614,7 @@ fn bb_nf(
                 }
             }
         }
-        Lam(a) if !weak => Ok(lam(bb_nf(weak, f + 1, seen, cap, a)?)),
+        Lam(x) if !weak => Ok(lam(bb_nf(weak, f + 1, seen, cap, &x.b)?)),
         _ => Ok(t.clone()),
     }
 }
@@ -466,7 +639,7 @@ pub fn normal_form(cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
     let mut cap = cap_bits;
     fn nf0(cap: &mut i64, t: &LTerm) -> Result<LTerm, NoNf> {
         match t {
-            Lam(a) => Ok(lam(nf0(cap, a)?)),
+            Lam(x) => Ok(lam(nf0(cap, &x.b)?)),
             _ => bb_nf(false, 0, &Hist::new(), cap, t),
         }
     }
@@ -486,6 +659,29 @@ mod tests {
 
     fn from_bits(s: &str) -> LTerm {
         LTerm::from_term(&crate::parse_all(s).unwrap())
+    }
+
+    #[test]
+    fn meta_matches_walked_facts() {
+        // Cached bits/mf/hash-eq agree with ground truth on every closed
+        // term ≤ 20 bits — and a REBUILT copy (fresh Rcs, structural-only
+        // path) is found in a hash set keyed by the original.
+        use std::collections::HashSet;
+        for n in [8u32, 14, 20] {
+            let mut set = HashSet::new();
+            crate::enumerate::for_each_closed(n, &mut |enc, len| {
+                let bits = crate::enumerate::enc_to_string(enc, len);
+                let t = from_bits(&bits);
+                assert_eq!(t.bit_size(), n as u64, "{bits}");
+                assert_eq!(t.mf(), 0, "{bits}");
+                assert!(!t.has_bot(), "{bits}");
+                set.insert(t);
+            });
+            crate::enumerate::for_each_closed(n, &mut |enc, len| {
+                let bits = crate::enumerate::enc_to_string(enc, len);
+                assert!(set.contains(&from_bits(&bits)), "{bits}");
+            });
+        }
     }
 
     #[test]
