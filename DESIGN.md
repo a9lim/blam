@@ -180,7 +180,31 @@ expensive in a way the unit can't see.
 
 ### Frontier unknowns (42M-capacity adjudication)
 
-TODO(frontier): fill from frontier_42M.txt + tools/frontier.py analysis.
+The 2903 census unknowns (n=32..40) collapse to 2282 λ-wrap seeds. All
+103 seeds ≤36 bits were re-adjudicated at `--bb-cap 42000000` — Tromp's
+exact capacity, 21× the census default: **every verdict stayed
+UNKNOWN**, at both the full work meter and the memory-bounded
+`BLC_WORK_MULT=2` (identical verdicts wherever both ran). Our port's
+proving power saturates by 2M capacity.
+
+Cross-matching BB.txt's per-term `-- TODO:` fail traces
+(`tools/bbtxt.py`): 123 of his 128 traced fails are exactly our
+unknowns; his hand analyses mark 106 of them as loops (all unknown for
+us too). The five he fails that we resolve are the BBλ champions (both
+327,686-bit witnesses at n=34, the 98,421 witness at 35, and wraps) —
+his pure BB reducer chokes on big-growth halters, our KN rescue
+resolves them in milliseconds. BB.txt's summary lines report far fewer
+fails (1/4/6/17/25) than its own traces (5/2/17/32/72), so the file is
+multi-generational; which of his newer engines mechanically proves the
+traced loops is the open conformance question. Two terms ≤36 (one 35b,
+one 36b) are unknown for us with no corresponding trace — the only
+sizes-≤36 knowledge gap on our side.
+
+Memory note: at 42M capacity the escalation engine's *live* graph can
+reach tens of GB per worker even though the meter bounds total
+allocations — adjudication runs use few threads, a watchdog on the
+child pid, and streamed verdicts. `BLC_WORK_MULT=2` bounds live memory
+to ~4 GB/worker by construction and lost nothing empirically.
 
 ## Open questions
 

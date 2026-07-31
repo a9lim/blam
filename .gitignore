@@ -1,3 +1,4 @@
 /target
 /ref
 /.claude/
+__pycache__/
