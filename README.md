@@ -144,7 +144,7 @@ default 4096).
 - `DESIGN.md` — architecture, measured results, open questions.
 - `LEDGER.md` — the overnight lab notebook: how these results
   happened, including the failures.
-- Data: `census_full3.txt` (canonical table), `unknowns_v6.txt` (the
+- Data: `census_full4.txt` (canonical table), `unknowns_v6.txt` (the
   1,894-term live frontier; `unknowns_v2.txt` is the pre-ratchet
   2,032), `solomonoff_40.txt`, benchmarks, frontier files.
 

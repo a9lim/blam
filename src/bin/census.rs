@@ -42,6 +42,25 @@ struct Cfg {
     chunk: usize,
 }
 
+/// Cross-size verdict memo entry for λ-wrap reuse. A closed term T and
+/// its wrap λ.T (same bits behind a "00" prefix, size +2) have exactly
+/// the same fate under normal order: identical β sequence, nf two bits
+/// larger, diverge iff diverge. The bit code is prefix-free and
+/// unambiguous, so a (stripped-bits, len−2) hit in a map of CLOSED
+/// memoized terms proves the body is closed — no walk needed. Only
+/// terms that reach the escalation tier are memoized (the cheap 99.7%
+/// are cheaper to redo than to hash); memo hits re-insert themselves so
+/// λλ-chains stay free. Audit item "λ-wrap memoization", landed
+/// 2026-08-01.
+#[derive(Clone, Copy)]
+enum MemoV {
+    /// steps=0 marks the non-canonical rescue-stuck halt, matching what
+    /// a direct run of the wrap would record.
+    Halt { nf: u64, steps: u64 },
+    Diverge,
+    Unknown(Why),
+}
+
 #[derive(Default, Clone)]
 struct Stats {
     total: u64,
@@ -72,6 +91,10 @@ struct Stats {
     /// failures by fuel type. Decides whether rung 2's floor can drop.
     rung2_over: u64,
     rung2_stuck: (u64, u64),
+    memo_hits: u64,
+    /// (term, verdict) records feeding the next-size-plus-two memo:
+    /// escalated terms and memo hits (chain propagation).
+    memo_out: Vec<((u64, u8), MemoV)>,
     unknowns: Vec<(u64, u8)>,
 }
 
@@ -111,6 +134,8 @@ impl Stats {
             self.rung2_stuck.0 + o.rung2_stuck.0,
             self.rung2_stuck.1 + o.rung2_stuck.1,
         );
+        self.memo_hits += o.memo_hits;
+        self.memo_out.extend(o.memo_out);
         self.unknowns.extend(o.unknowns);
         self
     }
@@ -139,10 +164,39 @@ fn census_term(
     pool: &mut TermPool,
     vm: &mut Machine,
     stats: &mut Stats,
+    memo: &std::collections::HashMap<(u64, u8), MemoV>,
     enc: u64,
     len: u8,
 ) {
     stats.total += 1;
+    // λ-wrap memo: bits are packed MSB-first, so a Lam-headed term is
+    // top-two-bits 00 and its body key is simply (enc, len−2).
+    if !memo.is_empty() && len >= 3 && (enc >> (len - 2)) & 0b11 == 0 {
+        if let Some(v) = memo.get(&(enc, len - 2)) {
+            stats.memo_hits += 1;
+            let bumped = match *v {
+                MemoV::Halt { nf, steps } => {
+                    stats.record_halt(nf + 2, steps, enc, len);
+                    MemoV::Halt { nf: nf + 2, steps }
+                }
+                MemoV::Diverge => {
+                    stats.diverge += 1;
+                    MemoV::Diverge
+                }
+                MemoV::Unknown(why) => {
+                    stats.unknown += 1;
+                    match why {
+                        Why::Capacity => stats.unknown_cap += 1,
+                        Why::WorkMeter => stats.unknown_work += 1,
+                    }
+                    stats.unknowns.push((enc, len));
+                    MemoV::Unknown(why)
+                }
+            };
+            stats.memo_out.push(((enc, len), bumped));
+            return;
+        }
+    }
     pool.clear();
     let root = pool.decode_u64(enc, len).expect("enumerator emits valid terms");
 
@@ -195,6 +249,7 @@ fn census_term(
                     stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
                     stats.rescue_max_trans = stats.rescue_max_trans.max(vm.last_trans);
                     stats.record_halt(sink.0, steps, enc, len);
+                    stats.memo_out.push(((enc, len), MemoV::Halt { nf: sink.0, steps }));
                 }
                 Err(e) => {
                     match e {
@@ -204,10 +259,17 @@ fn census_term(
                     // Halts per BB engine but out of rescue fuel for the
                     // canonical count; record with the engine's nf size.
                     stats.record_halt(nf.bit_size(), 0, enc, len);
+                    stats.memo_out.push((
+                        (enc, len),
+                        MemoV::Halt { nf: nf.bit_size(), steps: 0 },
+                    ));
                 }
             }
         }
-        Err(NoNf::Diverge) => stats.diverge += 1,
+        Err(NoNf::Diverge) => {
+            stats.diverge += 1;
+            stats.memo_out.push(((enc, len), MemoV::Diverge));
+        }
         Err(NoNf::Unknown(why)) => {
             let mut sink = SizeSink::default();
             match vm.normalize_capped(pool, root, cfg.rescue, cfg.rescue.saturating_mul(cfg.rescue_trans_mult), &mut sink) {
@@ -221,6 +283,7 @@ fn census_term(
                     r.0 += 1;
                     r.1 = r.1.max(steps);
                     stats.record_halt(sink.0, steps, enc, len);
+                    stats.memo_out.push(((enc, len), MemoV::Halt { nf: sink.0, steps }));
                 }
                 Err(e) => {
                     match e {
@@ -233,6 +296,7 @@ fn census_term(
                         Why::WorkMeter => stats.unknown_work += 1,
                     }
                     stats.unknowns.push((enc, len));
+                    stats.memo_out.push(((enc, len), MemoV::Unknown(why)));
                 }
             }
         }
@@ -458,6 +522,10 @@ fn main() {
         "{:>3} {:>12} {:>12} {:>8} {:>8} {:>8} {:>10} {:>12} {:>9} {:>10}",
         "n", "closed", "halt", "diverge", "unknown", "escal", "max|nf|", "beta_total", "time_s", "terms/s"
     );
+    // λ-wrap memo, rolling by size parity: slot n%2 holds size n−2's
+    // expensive verdicts during size n, then is replaced by size n's.
+    let mut memo_by_parity: [std::collections::HashMap<(u64, u8), MemoV>; 2] =
+        [Default::default(), Default::default()];
     for n in min_n..=max_n {
         // Generation is fused into the workers: each task enumerates its
         // subtree of the term space and censuses terms as they appear.
@@ -468,20 +536,31 @@ fn main() {
             cfg.chunk
         };
         let tasks = interleave_tasks(split_tasks(n, target));
-        let stats = tasks
+        let memo = &memo_by_parity[(n % 2) as usize];
+        let mut stats = tasks
             .par_iter()
             .map_init(
                 || (TermPool::new(), Machine::new()),
                 |(pool, vm), task| {
                     let mut stats = Stats::default();
                     run_task(task, &mut |enc, len| {
-                        census_term(&cfg, pool, vm, &mut stats, enc, len);
+                        census_term(&cfg, pool, vm, &mut stats, memo, enc, len);
                     });
                     stats
                 },
             )
             .reduce(Stats::default, Stats::merge);
         let secs = t0.elapsed().as_secs_f64();
+        let memo_in = memo_by_parity[(n % 2) as usize].len();
+        memo_by_parity[(n % 2) as usize] = stats.memo_out.drain(..).collect();
+        if stats.memo_hits > 0 || memo_in > 0 {
+            eprintln!(
+                "    memo: {} hits of {} candidates; {} records forward",
+                stats.memo_hits,
+                memo_in,
+                memo_by_parity[(n % 2) as usize].len()
+            );
+        }
 
         println!(
             "{:>3} {:>12} {:>12} {:>8} {:>8} {:>8} {:>10} {:>12} {:>9.2} {:>10.0}",

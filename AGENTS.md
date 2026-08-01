@@ -13,11 +13,11 @@ re-deriving the night's lessons.
   `tests/tromp_vectors.rs` needs it; the unit suite passes without it.
 - The verification bar for any engine change: `cargo test --release`
   green, then a census spot-check whose **halt counts are bit-identical**
-  to `census_full3.txt` at the sizes you touch. Halts have been invariant
+  to `census_full4.txt` at the sizes you touch. Halts have been invariant
   through every change in history; treat any drift as a bug in your
   change, not a discovery.
 - Data files in the repo root are results, not scratch. The canonical
-  census table is `census_full3.txt`; `unknowns_v6.txt` is the live
+  census table is `census_full4.txt` (full3 kept: pre-memo telemetry); `unknowns_v6.txt` is the live
   frontier (1,894 terms — `unknowns_v2.txt` minus the 138 certificate
   kills in `tools/cert/ratchet_kills.txt`; intermediate v3-v5 files
   were derivable stepping stones, deleted). Regenerate rather than
@@ -137,7 +137,16 @@ full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
   daytime speedup incl. Meta caching: 3.28× (23.8 → 7.2 min), verdicts
   bit-identical. Census prints `rescued:`/`stuck rescues:`/`rung2:`
   telemetry to keep the margins observable.
-- λ-wrap memoization; n=41 census (~242M terms, nothing blocks it).
+- ~~λ-wrap memoization~~ **done** (2026-08-01 overnight): cross-size
+  verdict memo in census.rs — λ.T reuses T's escalation-tier verdict
+  (prefix-free code ⇒ a map hit proves the body closed; nf+2, same
+  steps; chains propagate). 100% hit rate on every candidate, halt
+  counts bit-identical 4..40, all verifies green. Honest wall gain
+  ~3% (post-trims the cheap tiers dominate, not escalation — the
+  audit's 98% figure predated the daytime trims); the memo's share
+  grows with n as the escalated tier grows. Canonical table now
+  census_full4.txt (escal/telemetry columns changed by design).
+- n=41 census (~242M terms, nothing blocks it).
 - Lean 4 track (no existing BLC formalization); ratchet-checker
   soundness is the flagship (Codex staging: infinite head chain →
   head standardization → `¬ HasNormalForm loop32`). Distilled `uni.rs`

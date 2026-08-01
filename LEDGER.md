@@ -758,3 +758,24 @@ nondeterminism (sort by gain alone, then `take(top)` cutting inside a
 tie class in HashMap order), now fixed with a deterministic (gain,
 xlen, xenc) key. The shipped solomonoff_40.txt stays canonical until
 the tables regenerate at n=41.
+
+# 2026-08-01 · overnight — memoized wraps, uni.rs, the PR kit, Lean
+
+## λ-wrap memoization: correct, beautiful, honest
+
+The last audit docket item. A closed T and its wrap λ.T share a fate —
+same β sequence, nf two bits bigger — and the census re-derived it at
+every size. Now a cross-size memo keyed (enc, len−2) reuses every
+escalation-tier verdict: the bit code being prefix-free means a map
+hit PROVES the body is closed (no walk — the key match is the proof),
+and memo hits re-insert themselves so λλ-chains stay free.
+
+Measured: **100% hit rate** (every candidate's wrap exists and hits —
+462/462 at n=32 through 6,538/6,538 at n=36), halt/diverge/unknown
+bit-identical across 4..40, every BBλ and A114852 verify green. And
+the honest wall number: **~3%** (7:12 → 6:58). The audit's "escalation
+tier ≈98% of CPU" predated the daytime trims; post-trims the wall is
+the cheap tiers sweeping 130M terms at n=40. The memo's share grows
+with n (the escalated tier grows superlinearly), so n=41+ benefits
+more. Canonical table: census_full4.txt (telemetry columns changed by
+design; verdict columns identical to full3).
