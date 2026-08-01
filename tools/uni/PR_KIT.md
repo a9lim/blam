@@ -69,19 +69,22 @@ standardization. The spec with soundness proof is in the repo
 (tools/cert/SPEC.md), adversarially reviewed in the spirit of "try to
 break it before trusting it." With it, BBλ(32) is fully mechanical —
 every closed term of ≤32 bits machine-adjudicated with no hand
-exclusions — and sweeping the certificate (plus a second class for
-loops whose tower argument takes head position) over my census
-frontier proves 257 maximum-effort unknowns divergent. There is also
-now a Lean 4 proof that loop32 has no normal form — axioms propext
-alone, no mathlib (the first mechanical BLC formalization I know of;
-pleasingly, no standardization theorem is needed, because every
-β-reduct of loop32 carries exactly one redex, so β-reduction from it
-is deterministic).
+exclusions — and sweeping the certificate (plus two further classes,
+for loops whose tower argument takes head position and for wrappers
+that select their next layer through the argument) over my census
+frontier proves 297 maximum-effort unknowns divergent. There is also
+now a Lean 4 formalization — zero sorries, no mathlib, the first
+mechanical BLC formalization I know of — proving loop32 has no
+normal form on axiom propext alone (pleasingly, no standardization
+theorem is needed, because every β-reduct of loop32 carries exactly
+one redex, so β-reduction from it is deterministic), and every one
+of the 297 certificate kills is individually kernel-checked as a
+¬HasNormalForm theorem from its wire bits.
 
 The census itself now runs one size past the published tables: every
 closed term of 4..41 bits adjudicated, giving BBλ(41) ≥ 1,074,266,118
 bits — the first billion-bit row — and Ω restricted to ≤41-bit
-programs in [0.124105086764, 0.124105092978] by exact rational
+programs in [0.124105086764, 0.124105092919] by exact rational
 arithmetic. Your published numbers reproduce along the way — every
 A114852 count and BBλ value in range, and exact agreement with your
 BB.txt halt counts at n=32.

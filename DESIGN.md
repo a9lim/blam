@@ -125,14 +125,18 @@ so Tier B fuel would not be comparable across paths.
    in ref/AIT (no GHC needed).
 6. BBλ(n) reproduction for all published n, then the frontier.
 
-## Results (census of 2026-07-31)
+## Results (census of 2026-07-31 — the dated record; current numbers
+live in README.md and `census_full5.txt`)
 
 Full sweep of every closed term of 4..40 bits: **283,817,255 terms in
 ~24 min** on the M5 Max (18 threads), vs ~4.3 h for Tromp's Haskell
-tooling over the same range. Canonical table in `census_full2.txt`
-(includes the divergence certificate and the audit patches; 2,032
-unknowns, listed in `unknowns_v2.txt`; per-size unknown-cause splits
-~83% capacity / 17% work-meter).
+tooling over the same range. Table of record for that run:
+`census_full2.txt` (includes the divergence certificate and the audit
+patches; 2,032 unknowns, listed in `unknowns_v2.txt`; per-size
+unknown-cause splits ~83% capacity / 17% work-meter). The subsequent
+arcs — the 3.28× daytime patch set below, the λ-wrap memo, n=41, and
+the certificate campaign — are ledgered in LEDGER.md; the canonical
+table is now `census_full5.txt` (4..41, ~16.5 min).
 
 Verification: A114852 counts exact at every published size (20, 24, 28,
 32, 36, 40); BBλ(n) reproduced for every published value 4..34,
@@ -227,8 +231,8 @@ unexplained 35/36-bit residuals. Fuel-robustness: re-adjudicating all
 ### The daytime patch set (2026-07-31 afternoon): a measured 3.28×
 
 Census 4..40 went from ~23.8 min to **7.2 min** (`census_full3.txt`,
-the canonical table) in three verdict-preserving steps, each verified
-by a full sweep:
+the table of record for this patch set) in three verdict-preserving
+steps, each verified by a full sweep:
 
 1. **Cached-Meta escalation nodes (1.37×).** Lam/App nodes carry
    `Meta{bits, hash, max-free, node counts, ⊥}` composed O(1) at
@@ -272,6 +276,8 @@ to ~4 GB/worker by construction and lost nothing empirically.
   vs `stacker`: unstudied, settle empirically.
 - Crate name: `blc` is taken on crates.io (ljedrz/blc). Decide before
   any publish; local name unaffected.
-- Memoizing normal forms of shared enumeration prefixes: promising
-  (siblings share structure by construction), but only after the simple
-  engine is measured.
+- Memoizing across shared structure: the λ-wrap verdict memo (census
+  reuses a body's escalation-tier Halt/Diverge verdict for its
+  λ-wrap; Unknowns deliberately excluded) realized the cheap end of
+  this — ~3% wall at n≤41, share grows with n. The general
+  shared-prefix normal-form memo remains unstudied.

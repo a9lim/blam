@@ -2,9 +2,12 @@
 
 Rust engine for binary lambda calculus / AIT experiments, verified
 against Tromp's Haskell. README.md has the public story; DESIGN.md has
-architecture + measured results; LEDGER.md is the 2026-07-31 overnight
-lab notebook. This file is what you need to work here without
-re-deriving the night's lessons.
+architecture + measured results; LEDGER.md is the running lab
+notebook (dated entries, 2026-07-31 onward — the full history of how
+every result landed, including the failures). This file tracks what
+you need to work here NOW: conventions, live engine facts, live
+state, and the open docket. When something ships, its story goes to
+the ledger and only its live residue stays here.
 
 ## Ground rules
 
@@ -13,7 +16,7 @@ re-deriving the night's lessons.
   `tests/tromp_vectors.rs` needs it; the unit suite passes without it.
 - The verification bar for any engine change: `cargo test --release`
   green, then a census spot-check whose **halt counts are bit-identical**
-  to `census_full4.txt` at the sizes you touch. Halts have been invariant
+  to `census_full5.txt` at the sizes you touch. Halts have been invariant
   through every change in history; treat any drift as a bug in your
   change, not a discovery.
 - Data files in the repo root are results, not scratch. The canonical
@@ -74,6 +77,28 @@ full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
 - `src/enumerate.rs`: tasks are bit-reversal-interleaved on purpose —
   expensive terms cluster by enumeration prefix and rayon splits by
   index range; don't "simplify" the order back.
+- census λ-wrap memo: λ.T reuses T's escalation-tier verdict for
+  Halt/Diverge ONLY (a map hit proves the body closed via
+  prefix-freeness; nf+2, same steps; chains propagate). Unknown is a
+  resource outcome, not a fate — seed-Unknown wraps run the ordinary
+  ladder. Don't "extend" the memo to Unknowns; that reuse was built
+  and deliberately removed (ledgered).
+- `src/cert.rs` (trusted checkers, three classes: v1.2 ratchet, v2
+  HeadTowerRatchet, v3 SelectorRatchet) + `src/bin/certsearch.rs`
+  (untrusted rayon discovery, streams candidates through the checker
+  ladder per term, hnf descent into closed spine args → `-ARG`
+  kills). Sweep defaults 1000 steps/100k nodes (measured
+  kill-equivalent to 2000/200k); a full three-rung frontier sweep is
+  ~40 min at 8 threads. New-kill protocol: re-certify at 4× budgets
+  (`--steps 4000 --nodes 400000`, diff byte-identical), regenerate
+  the frontier file, trim Ω by exact fraction arithmetic, rerun
+  `certlean` + `lake build Certs`, ledger it.
+  `tests/cert_battery.rs` = soundness battery (196,848 provable
+  halters ≤28 bits through the exact sweep ladder, zero fires,
+  ~0.5 s); `src/bin/certdiag.rs` probes surviving candidates and
+  writes the CLASSIFY.md maps — its buckets are abort fingerprints
+  under one candidate triple, NOT class boundaries (the selector
+  sweep proved this: 30 probe-accepts became 40 kills).
 
 ## Ops lessons (each bit us once)
 
@@ -103,109 +128,58 @@ full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
 - This is a9's daily driver. Leave RAM headroom, kill strays when
   done, `ps aux | grep census` before declaring the machine clean.
 
-## Open docket (detail in LEDGER.md "Where I'd point us next")
+## Live state (2026-08-01)
 
-- ~~ABS/APP interpreter slot searches~~ **done** —
-  `src/bin/slotsearch.rs`, results in `tools/interp/SEARCH_RESULTS.md`.
-  All three slots (VAR 21, APP 41, ABS 43 bits) are exhaustively optimal
-  under the parametric contract: unique survivor = reference, nothing
-  smaller, zero residual unknowns. Remaining lane is the *contextual*
-  one (§2 of the spec) — drop the must-mask to 0; a survivor there is a
-  hypothesis needing splice + battery, not a proof.
-- ~~`loop32`~~ **done** (2026-07-31 evening) — the ratchet certificate
-  (`src/cert.rs`, spec+proof in `tools/cert/SPEC.md`, Codex-reviewed
-  twice: v1 glue theorem, then v1.2 trailing-spine lifting; the v2
-  `HeadTowerRatchet` — Meta(id), indexed towers, six replayed
-  obligations — is the round-two co-design, implemented same day).
-  257 frontier kills as of that night — 297 total after the
-  2026-08-01 SelectorRatchet sweep (`tools/cert/ratchet_kills.txt`:
-  RATCHET
-  and RATCHET2 lines ± -ARG variants; 138 across 4..40 plus 119 of
-  the 2,500 fresh n=41 unknowns), n=32 row now zero, 4..40 Ω width
-  −11.41%.
-  Discovery STREAMS candidates to both checkers (a rejected family is
-  retired, later families still propose — Codex round three; the fix
-  immediately found 2 masked kills). Sweep defaults 1000/100k,
-  measured kill-equivalent to 2000/200k at 4× less wall (~12.6 min
-  full-frontier).
-  `certsearch` sweeps both classes (rayon parallel; discovery
-  untrusted, checkers trusted); `tests/cert_battery.rs` is the
-  halter soundness battery. Next lane: v3 shapes need forcing
-  examples first (alternating heads, outer-context growth —
-  classifier coordinates in `tools/cert/CLASSIFY.md`).
-- ~~bb.rs Meta caching~~ **done** (2026-07-31 daytime): cached-Meta
-  nodes with exact meter parity, verified bit-identical on a full 4..40
-  sweep. Honest gain 1.37× overall — the 2-5× estimate was wrong
-  because post-patch the wall is stuck KN rescues, not the bb engine.
-- ~~Rescue-by-`Why` budgets~~ **refuted, superseded by transition
-  trims (done)**: ALL successful rescues 4..40 come from Capacity
-  unknowns (max 9,452,558 β — no room to trim β); work-meter unknowns
-  never rescue. The measured levers landed instead: rescue transitions
-  32×β, rung-2 transitions 64×β (see "The engines"). Cumulative
-  daytime speedup incl. Meta caching: 3.28× (23.8 → 7.2 min), verdicts
-  bit-identical. Census prints `rescued:`/`stuck rescues:`/`rung2:`
-  telemetry to keep the margins observable.
-- ~~λ-wrap memoization~~ **done** (2026-08-01 overnight): cross-size
-  verdict memo in census.rs — λ.T reuses T's escalation-tier verdict
-  (prefix-free code ⇒ a map hit proves the body closed; nf+2, same
-  steps; chains propagate). Codex-reviewed: Halt/Diverge reuse is
-  semantically sound; Unknown reuse was REMOVED same day (Unknown is
-  a resource outcome, not a fate — seed-Unknown wraps run the
-  ordinary ladder, keeping the budgeted-ladder meaning exact).
-  Verified verdict-identical 4..40 post-policy; the 463 wraps of
-  39-bit unknowns at n=41 all direct-adjudicate to Unknown too.
-  100% hit rate, honest wall gain ~3% (post-trims the cheap tiers
-  dominate; the memo's share grows with n).
-- ~~n=41 census~~ **done** (2026-08-01 overnight): 242,222,714 terms
-  in ~16.5 min total 4..41; BBλ(41) ≥ 1,074,266,118 bits (first
-  billion-bit row, one size past every published table); 2,500
-  unknowns, 119 certificate-killed same night. Canonical table
-  census_full5.txt. n=42 needs a --rescue raise first (see The
-  engines).
-- Lean 4 track: `lean/` **proves the flagship twice** —
-  `loop32_noNormalForm` (axioms propext alone) by the one-way-street
-  invariant (Blc/Beta.lean `Spine`, Blc/NoNf.lean `St`), AND the
-  **general bridge `headDiverges_not_hasNormalForm` for every term**
-  (Blc/Subst.lean five Nipkow lemmas, Blc/Par.lean indexed parallel
-  reduction + substitution theorem, Blc/Factor.lean indexed split /
-  merge / lex pullback — the AFG route; the naive factorization's
-  lambda-passing failure and its `redexShell` repair are ledgered).
-  Zero sorries, no mathlib anywhere. Every ratchet cert's
-  head-divergence now concludes ¬HasNormalForm unconditionally.
-  **Symbolic checker layer + generic assembly DONE (2026-08-01
-  morning)**: Blc/Sym.lean (STerm — constructor is `mvar`, `meta` is
-  a Lean keyword — commuting square `symHeadStep_sound` as the one
-  trusted rule, LiftReds/symStepsApp for appL lifting) +
-  Blc/Ratchet.lean (RatchetCert data + Valid = seven decidable
-  obligations = one `decide`; glue theorem → HeadDiverges →
-  noNormalForm; loop32 as data is the PoC) + `certlean` (untrusted
-  Rust emitter) + lean/Certs/ (GENERATED, separate lake target):
-  **297/297 kernel-checked ¬HasNormalForm theorems** = every line of
-  ratchet_kills.txt: RATCHET (v1.2 assembly), RATCHET2
-  (Blc/HeadTower.lean, the v2 assembly to Codex's round-eight
-  design; OnlyMVar-0 gate, recursive descent costs), SELECTOR
-  (Blc/Selector.lean, the v3 assembly to Codex's round-nine
-  derivation), and the ten *-ARG kills through **Blc/Rigid.lean's
-  `argKill` bridge** (2026-08-01 afternoon: `parN_betas` +
-  strengthened pullback carrying the residual `Par q p` ⇒ head
-  factorization WITH normal-form transport, NO confluence; rigid
-  spine shape theory by elementary inversion; headSteps determinism
-  pins the landing) — each with a wire-identity theorem
-  (Blc/Wire.lean — Codex round eight's audit gap). ~1.9 s batch,
-  axioms [propext, Quot.sound]. Remaining lanes: prefix-freeness/
-  Kraft, K upper bounds. v4 evidence: certdiag measured the live
-  ratchet-candidates (CLASSIFY.md "The v3 map, measured");
-  post-selector the biggest classes are zfirst (tower-recursive
-  wrappers) and the PassengerDiagonal (4 probe-accepts, obligations
-  sketched in round nine, deliberately not built yet).
-- `uni.rs` (tools/uni/): call-by-name parity rework done after
-  Codex's adversarial review found call-by-need observably diverges
-  from uni.py (duplicated-argument witness) and buffered stdin broke
-  streaming. Now: Name thunks for program args, memoized input cells
-  (inp[n] parity incl. 1-byte read-ahead), streaming 1-byte reads,
-  per-emission flush, checked output bytes; verify.sh carries the
-  witnesses as regression vectors. ~18× uni.py. a9 sends the PR
-  (PR_KIT.md).
+- **Census**: canonical 4..41 in `census_full5.txt` (~16.5 min;
+  4..40 alone ~7.2 min). BBλ(41) ≥ 1,074,266,118 bits. n=32 row has
+  zero unknowns — BBλ(32) fully mechanical.
+- **Frontier**: `unknowns_v8.txt`, 4,235 terms. Ω|≤41 ∈
+  [0.124105086764, 0.124105092919] (round-nearest 12 digits, exact
+  fractions in `solomonoff_41.txt` + the kills' mass).
+- **Certificates**: 297 kills in `tools/cert/ratchet_kills.txt`
+  (214 RATCHET + 34 RATCHET2 + 39 SELECTOR + ten `-ARG` variants),
+  all re-certified at 4× budgets. Spec + glue proofs in
+  `tools/cert/SPEC.md`; candidate maps in `tools/cert/CLASSIFY.md`
+  (carries Codex's round-nine and round-ten strikethrough
+  corrections — don't revert them).
+- **Lean** (`lean/`, own README): flagship proven twice, general
+  head-factorization bridge for every term, symbolic checker layer,
+  generic assemblies for all three classes, rigid-head `argKill`
+  bridge — **297/297 kills kernel-checked** with wire-identity
+  theorems (`lake build Certs`, ~1.9 s), zero sorries, no mathlib,
+  axioms [propext, Quot.sound]. `lean/Certs/` is GENERATED by
+  `certlean` — regenerate, never hand-edit.
+- **Interpreter lab** (`tools/interp/`): 170-bit self-interpreter
+  certified locally optimal (all three slots exhaustive, unique
+  survivor = reference, zero residual unknowns).
+- **uni.rs** (`tools/uni/`): distilled interpreter at call-by-name
+  parity with uni.py (three adversarial witnesses as regression
+  vectors in verify.sh), ~18× faster. PR kit ready (PR_KIT.md).
+
+## Open docket
+
+- **v4 certificate classes, in Codex-ratified order (round ten,
+  reply at ~/.gaslamp/jobs/cx-20260801-120729-a8f9/reply.md)**:
+  (1) PassengerDiagonal — 4 probe-accepted exemplars; the complete
+  assembly (SEED/OPEN/UNWRAP/DROP, diagonal descent = UNWRAP twice,
+  n=0 exceptional cycle via SEED) is derived in that reply; needs
+  only existing commuting-square + v1.2 machinery; keep it a
+  separate class. (2) zfirst — derive obligations from an actual
+  survivor trace, not the bucket. Drift is GATED: no certificate
+  until an exemplar exhibits a finite generator Rₙ₊₁ = G[Rₙ]
+  (an unconstrained W : Nat → Context leaves the ∀n assumed).
+- **Lean lanes**: prefix-freeness/Kraft (Blc/Wire.lean's `blcCode`
+  is the seed), then machine-checked K upper bounds.
+- **n=42**: blocked on a `--rescue` raise (margin 1.06× at n=41 —
+  see The engines); a9 decides the new cap. Expect possible
+  legitimate row improvements 4..41 ⇒ new canonical table +
+  frontier/Ω rebuild.
+- **Contextual slot search** (`tools/interp/SEARCH_SPEC.md` §2):
+  drop the must-mask to 0; survivors are hypotheses needing
+  whole-interpreter splice + battery, not proofs.
+- **Upstream PR**: a9 sends tromp/AIT the uni.rs PR herself
+  (PR_KIT.md has the text + letter). Never fork/push external repos
+  from a session.
 
 ## Collaboration
 

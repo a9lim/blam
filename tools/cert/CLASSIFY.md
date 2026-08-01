@@ -1,8 +1,12 @@
 # Frontier reduction-shape classification
 
-All 2032 terms of `unknowns_v2.txt` classified by the shape of their
-normal-order (leftmost-outermost) reduction. Raw table:
-`tools/cert/classify.csv`. Scanner: `src/bin/tracescan.rs`.
+Base report (2026-07-31): all 2,032 terms of `unknowns_v2.txt`
+classified by the shape of their normal-order (leftmost-outermost)
+reduction. Raw table: `tools/cert/classify.csv`. Scanner:
+`src/bin/tracescan.rs`. Later dated sections are appended below (the
+n=41 residue, the measured v3 map and its outcome); corrections to
+superseded readings stay visible as strikethrough. The live kill
+state is `ratchet_kills.txt` + AGENTS.md, not this file.
 
 ## Method and its limits
 
@@ -825,8 +829,18 @@ The families, by the OPEN abort state and an HTR obligation probe:
   giant cycles or wrong-family candidates.
 - **drift, 63** — consecutive milestones nest but under a
   *different* wrapper each level (`generalize(x3,x2) ≠
-  generalize(x2,x1)`): level-indexed wrappers Wₙ, the indexed-schema
-  shape of SPEC §5. Exemplar: `0100011010000110000110011100111000110`.
+  generalize(x2,x1)`): ~~level-indexed wrappers Wₙ, the
+  indexed-schema shape of SPEC §5~~ — too strong (Codex round ten,
+  from an independent trace of the exemplar): the three nested
+  milestones share *no* generator (first-argument sizes 70/207/1519,
+  and `plug(generalize(x₂,x₁), x₂) ≠ x₃`), so this bucket is not yet
+  evidence for a semantic family Wₙ — it could equally be nonlinear
+  wrapper evolution, mixed roles sharing (head, arity), or spine
+  growth. A sound indexed-wrapper certificate needs a finite
+  generator `Rₙ₊₁ = G[Rₙ]` exhibited by a forcing trace first; an
+  unconstrained `W : Nat → Context` with finitely many checked
+  instances leaves the `∀n` as an assumption.
+  Exemplar: `0100011010000110000110011100111000110`.
 - **passenger, 48** — OPEN aborts at `Z ⟨…⟩ W[Z]` with an
   interleaved spine argument. ~~Small fixed constants~~ — ALSO
   wrong (Codex round nine): on the exemplar the "constant" is
@@ -849,3 +863,16 @@ The families, by the OPEN abort state and an HTR obligation probe:
 Raw per-term rows: certdiag CSV (rerun in ~2 min:
 `certdiag <terms> --threads 8`); the exemplars above are the
 smallest members of each family.
+
+## Outcome (2026-08-01 evening)
+
+The SelectorRatchet shipped and swept: **40 kills** (30 from the
+probe-accept set + 10 from the fan-shape variant bucket — streaming
+discovery proposes triples the single-triple probe never tried).
+Frontier now `unknowns_v8.txt` (4,235); every kill kernel-checked in
+Lean. Codex round ten ratified the v4 order: **PassengerDiagonal
+first** (assembly fully derived in the round-ten reply —
+SEED/OPEN/UNWRAP/DROP, diagonal descent = UNWRAP twice, n=0
+exceptional cycle via SEED), then a zfirst variant derived from an
+actual survivor trace; drift stays gated on a finite generator (see
+the corrected bullet above).

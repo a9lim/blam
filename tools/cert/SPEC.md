@@ -1,18 +1,19 @@
 # Ratchet certificates: mechanical divergence proofs for growing-context loops
 
-Status: v1–v1.2 AND v2 implemented (`src/cert.rs`,
-`src/bin/certsearch.rs`); v1 **adversarially reviewed by Codex** in
-two rounds (thread `blc-conformance`, 2026-07-31): round one — *"the
-glue theorem survives — no soundness counterexample"*; round two —
-*"v1.2 is sound. Ship it."* Review findings all fixed (§7 logs both
-rounds). v2 is the round-two co-designed `HeadTowerRatchet` (§5):
-narrow indexed-tower certificates, not a general control graph. The
-v2 checker (`verify_htr`: six replayed obligations + the v1.2 INIT)
-implements the design; its assembly theorem is §5's — proved on
-paper, replayed obligations trusted, discovery untrusted. Discovery
-keys milestone families by (head, spine arity): the deep family
-passes through both `A Xₙ` milestones and `A I Xₘ Xₙ` rank-step
-interiors, and merging the streams destroys the growing window.
+Status: three classes live in `src/cert.rs` + `src/bin/certsearch.rs`
+— v1–v1.2 (§3), the v2 `HeadTowerRatchet` (§5, co-designed with
+Codex), and the v3 `SelectorRatchet` (§6, derived by Codex from a
+forcing exemplar). All checkers trusted, discovery untrusted; every
+class's assembly theorem is additionally **machine-checked in Lean**
+(`lean/Blc/{Ratchet,HeadTower,Selector,Rigid}.lean` — the last is the
+rigid-head bridge for `-ARG` kills), and every kill in
+`ratchet_kills.txt` is a kernel-checked `¬HasNormalForm` theorem
+(`lean/Certs/`). Adversarial review with Codex ran ten rounds on
+thread `blc-conformance` (2026-07-31 → 2026-08-01); §8 logs the first
+two in full, LEDGER.md carries the rest. Discovery keys milestone
+families by (head, spine arity): the deep family passes through both
+`A Xₙ` milestones and `A I Xₘ Xₙ` rank-step interiors, and merging
+the streams destroys the growing window.
 
 ## 1. The target, and why redloop can't reach it
 
@@ -343,6 +344,11 @@ Measured acceptance on the 2026-08-01 frontier probe: 30 of the 456
 live ratchet-candidates pass all four obligations (the 131-term
 `zfirst` abort bucket is a signature, not a class); 110 more reach a
 Q-headed FAN endpoint of a different shape — unexplored variants.
+The full sweep then landed **40 kills** — the 10 beyond the probe's
+30 came out of that fan-shape bucket, because streaming discovery
+proposes candidate triples the single-triple probe never tried
+(buckets are abort fingerprints, not class boundaries). All 40
+re-certified byte-identically at 4× budgets.
 
 ## 7. Verification battery
 
@@ -396,3 +402,12 @@ exact recurrence and co-designed the v2 `HeadTowerRatchet` (§5),
 including the correction that the cycle-internal context term is the
 cycle-local Xₙ₋₁, not a global constant. The 24-kill sweep count was
 reported to Codex, not independently re-swept by them.
+
+**Rounds three through ten (2026-07-31 → 2026-08-01)** are logged in
+LEDGER.md and the `blc-conformance` gaslamp thread: round three
+(streaming discovery, wrapper-ID hardening), four through six (uni.rs
+and the Lean bridge), seven (v3 staging), eight (HTR Lean design +
+the wire-identity audit gap), nine (the SelectorRatchet derivation
+and the zfirst/passenger corrections), ten (independent verification
+of the Lean rigid-head bridge at 1d9c600; the PassengerDiagonal
+assembly derivation; the drift generator gate).

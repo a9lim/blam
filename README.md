@@ -16,7 +16,8 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
 - **The first BBλ(41) bound: ≥ 1,074,266,118 bits** — the busy
   beaver's first billion-bit row, one size past every published
   table (241,372,280 of the 242,222,714 closed 41-bit terms proven
-  halting; 2,500 stubborn unknowns).
+  halting; the census left 2,500 unknowns, since cut to 2,347 by the
+  certificate campaign).
 - **BBλ(32) is fully mechanical** — `loop32`, the famous 32-bit term
   hand-excluded even in Tromp's tree, now carries a machine-checked
   divergence certificate (the *ratchet*, below). Every closed term of
@@ -31,43 +32,54 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   **[0.124105086764, 0.124105092919]**, computed in exact rational
   arithmetic from the census counts; the interval width *is* the
   total mass of the 4,235 unknowns — the census frontier expressed
-  as bits of Ω. (The ≤40 interval is [0.123995323359,
-  0.123995328490]; `solomonoff_40.txt` holds the pre-ratchet census
-  interval, from which the 4–40 certificates trim exactly 727·2⁻⁴⁰,
-  11.41% of the width. `solomonoff_41.txt` is the independent ≤41
-  regeneration: its pre-certificate upper bound minus the full
-  297-kill exact mass, 1703·2⁻⁴¹, reproduces the census interval to
-  the last printed digit, and its 4,532 internal unknowns are
-  exactly the 4,235-term frontier plus the 297 certificate kills.)
+  as bits of Ω. Cross-checked by independent regeneration
+  (`solomonoff_41.txt`): its pre-certificate upper bound minus the
+  297 kills' exact mass (1703·2⁻⁴¹) reproduces the interval to the
+  last printed digit, and its internal unknown count is exactly
+  frontier + kills (4,532 = 4,235 + 297).
 - **The coding theorem, watched live**: K(x) and −log₂ m(x) agree
   within a bit for every high-mass normal form in range
-  (`solomonoff_table.txt`).
+  (`solomonoff_table41.txt`).
 - **A semantic divergence certificate**: a generalization of the
   reference `redloop` rule (see below) that fires 11,367 times in the
-  census and is fuel-robust — re-running the frontier at 16× probe
-  fuel flips nothing.
+  4–40 census and is fuel-robust — re-running the frontier at 16×
+  probe fuel flips nothing.
 - **The ratchet certificate**: a machine-checked proof format for
   *unbounded-period* loops — states `A Wⁿ[C0]` growing forever, which
-  no exact-recurrence window can see. Three bounded symbolic head
-  reductions over a closed metavariable (OPEN/DESC/BASE) plus a glue
-  theorem; adversarially reviewed in two rounds, checkers in
-  `src/cert.rs`, spec and proofs in `tools/cert/SPEC.md`. Three
-  certificate classes: the v1 ratchet (with under-binder and
-  trailing-spine-vector extensions), the v2 `HeadTowerRatchet`
-  (six replayed obligations over named metavariables, for loops whose
-  tower argument itself takes head position — co-designed with Codex,
-  who derived the family's exact cycle arithmetic), and the v3
-  `SelectorRatchet` (the wrapper *selects*: FAN hands control to the
-  fresh argument carrying a second pattern `P[Z]`, SELECT contracts a
-  wrapper layer back to the stored one — derived by Codex from a
-  35-bit forcing exemplar the v1/v2 verifiers measurably reject).
-  Together they kill **297 frontier terms** including `loop32` — 144
-  across the 4–40 frontier plus 153 of the 2,500 fresh n=41 unknowns
-  (`tools/cert/ratchet_kills.txt`), re-certified byte-identically
-  at 4× discovery budgets, with a soundness battery running every
-  provable halter ≤28 bits (196,848 of them) through the exact
-  three-checker sweep ladder — zero false fires, in under a second
-  (`tests/cert_battery.rs`).
+  no exact-recurrence window can see. Bounded symbolic head
+  reductions over closed metavariables plus a glue theorem; checkers
+  in `src/cert.rs`, spec and proofs in `tools/cert/SPEC.md`,
+  co-designed and adversarially reviewed with Codex across ten
+  rounds. Three certificate classes: the v1 ratchet (with
+  under-binder and trailing-spine-vector extensions), the v2
+  `HeadTowerRatchet` (six replayed obligations over named
+  metavariables, for loops whose tower argument itself takes head
+  position), and the v3 `SelectorRatchet` (the wrapper *selects*:
+  FAN hands control to the fresh argument carrying a second pattern
+  `P[Z]`, SELECT contracts a wrapper layer back to the stored one —
+  derived from a 35-bit forcing exemplar the v1/v2 verifiers
+  measurably reject). Together they kill **297 frontier terms**
+  including `loop32` — 144 across the 4–40 frontier plus 153 of the
+  2,500 fresh n=41 unknowns (`tools/cert/ratchet_kills.txt`),
+  re-certified byte-identically at 4× discovery budgets, with a
+  soundness battery running every provable halter ≤28 bits (196,848
+  of them) through the exact three-checker sweep ladder — zero false
+  fires, in under a second (`tests/cert_battery.rs`).
+- **Every certificate is a kernel-checked theorem** (`lean/`): the
+  first mechanical BLC formalization anywhere — zero sorries, no
+  mathlib. `¬ HasNormalForm loop32` twice over (a single-redex
+  invariant argument on `propext` alone, and as a corollary of the
+  general head-factorization bridge `HeadDiverges → ¬HasNormalForm`,
+  proven for every term via indexed parallel reduction); a symbolic
+  checker layer whose one trusted rule is a commuting square; generic
+  assemblies for all three certificate classes plus a rigid-head
+  argument bridge (head factorization *with normal-form transport* —
+  no confluence needed); and `certlean`, an untrusted emitter that
+  turns `ratchet_kills.txt` into **297 individually kernel-checked
+  `¬HasNormalForm` theorems** — every kill in the campaign — each
+  pinned to its named bits by a kernel-checked wire encoding
+  (`lean/Certs/`, ~1.9 s for the whole batch, axioms `propext` +
+  `Quot.sound`). Details in `lean/README.md`.
 - **The 170-bit self-interpreter is certified locally optimal**: all
   three parser branches are exhaustively optimal — VAR (21 bits, 2,672
   pruned candidates), APP (41 bits, 10.2M), ABS (43 bits, **1.43
@@ -120,10 +132,16 @@ target/release/census 4 40 --verify
 target/release/census --term 010001101000011010
 
 # batch adjudication of a term list, full ladder, streamed verdicts
-target/release/census --terms-file unknowns_v2.txt
+target/release/census --terms-file unknowns_v8.txt
 
 # Solomonoff prior / K-complexity / Ω sweep
-target/release/solomonoff 4 40 --table solomonoff_table.txt
+target/release/solomonoff 4 41 --table solomonoff_table41.txt
+
+# certificate sweep over the frontier (all three classes)
+target/release/certsearch --terms-file unknowns_v8.txt --threads 8
+
+# regenerate the Lean certificate modules, then kernel-check them
+cargo run --release --bin certlean && cd lean && lake build Certs
 ```
 
 Knobs: `BLC_WORK_MULT` (work-meter multiplier; `2` = memory-bounded
@@ -149,54 +167,48 @@ default 4096).
 ## Layout
 
 - `src/` — engine (`term`, `parse`, `eval` naive reference, `vm` KN
-  machine, `oracle`, `bb` escalation + certificate, `enumerate`).
-- `src/bin/census.rs`, `src/bin/solomonoff.rs` — the two drivers.
+  machine, `oracle`, `bb` escalation + certificate, `enumerate`,
+  `cert` the trusted certificate checkers).
+- `src/bin/` — drivers: `census` and `solomonoff` (the measurements),
+  `certsearch` (certificate discovery sweep), `certdiag` (frontier
+  classifier/probe instrument), `certlean` (Lean certificate
+  emitter), `slotsearch` (interpreter slot searches).
+- `lean/` — the Lean 4 formalization (own README).
 - `tools/` — analysis: `blcc.py` (.lam→.blc compiler, byte-exact
   against 8 repo goldens), `bbtxt.py` (BB.txt trace cross-matcher),
-  `frontier.py`, and `tools/interp/` (the self-interpreter lab:
-  slot searches, knot search, sound search spec, design notes).
+  `frontier.py`; `tools/cert/` (certificate spec, proofs, kills
+  file, classifier maps); `tools/interp/` (the self-interpreter lab:
+  slot searches, knot search, sound search spec, design notes);
+  `tools/uni/` (the distilled interpreter + PR kit).
 - `DESIGN.md` — architecture, measured results, open questions.
-- `LEDGER.md` — the overnight lab notebook: how these results
+- `LEDGER.md` — the running lab notebook: how these results
   happened, including the failures.
 - Data: `census_full5.txt` (canonical table, 4–41; `census_full4.txt`
-  kept as the 4–40 record), `unknowns_v7.txt` (the 4,275-term live
-  frontier; `unknowns_v2.txt` is the pre-ratchet 4–40 set),
-  `solomonoff_41.txt`/`solomonoff_table41.txt` (canonical Ω/K sweep;
-  the `_40` files kept as the 4–40 record), benchmarks, frontier
-  files.
+  kept as the 4–40 record), `unknowns_v8.txt` (the 4,235-term live
+  frontier; `unknowns_v2.txt` is the pre-ratchet 4–40 set, `_v7` the
+  pre-selector record), `solomonoff_41.txt`/`solomonoff_table41.txt`
+  (canonical Ω/K sweep; the `_40` files kept as the 4–40 record),
+  benchmarks, frontier files.
 
 ## Roadmap
 
+- Certificate v4 classes (`tools/cert/CLASSIFY.md` has the measured
+  map of the surviving ratchet-candidates): the PassengerDiagonal
+  first (4 probe-accepted exemplars; the assembly derived in review
+  round ten), then a zfirst variant derived from an actual survivor
+  trace; level-indexed "drift" wrappers stay gated until an exemplar
+  exhibits a finite generator.
+- Lean: prefix-freeness/Kraft, then machine-checked K upper bounds.
 - The contextual slot search (drop the parametric contract's must-use
   mask): survivors there are hypotheses needing whole-interpreter
   splice + battery, not proofs — the one mechanical route left to
   sub-170.
-- Certificate v4 lanes (`tools/cert/CLASSIFY.md`): the measured v3
-  map's next classes — the PassengerDiagonal (4 probe-accepted
-  exemplars, obligations sketched in round nine) and the zfirst
-  tower-recursive wrappers — over the 4,235-term frontier's
-  remaining ratchet-candidates.
-- Lean 4 track (`lean/`): **`¬ HasNormalForm loop32` is proven**
-  (axioms: `propext` alone; zero sorries, no mathlib) — the first
-  mechanical BLC formalization anywhere — by the one-way-street
-  argument AND through the **general factorization bridge
-  `HeadDiverges → ¬HasNormalForm`**, proven for every term via
-  indexed parallel reduction (the Accattoli–Faggian–Guerrieri
-  split). On top of the bridge sit the **symbolic checker layer**
-  (STerm metavariables, the commuting square as the one trusted
-  rule), the **generic ratchet assemblies** (v1.2, HeadTower,
-  Selector), and the **rigid-head argument bridge** (`argKill`: head
-  factorization with normal-form transport — no confluence — plus
-  rigid-spine shape theory), so a certificate is just data:
-  `certlean` translates `ratchet_kills.txt` into Lean and **all 297
-  kills are individually kernel-checked `¬HasNormalForm` theorems**,
-  each pinned to its named bits by a kernel-checked wire encoding
-  (`lean/Certs/`, ~1.9 s for the whole batch). Next:
-  prefix-freeness/Kraft; K upper bounds.
-- ~~A distilled `uni.rs`~~ **built and verified** (`tools/uni/` —
-  call-by-name parity with uni.py, streaming stdin, byte-identical
-  on the corpus plus three adversarial witnesses, ~18× faster; PR
-  kit ready, upstream submission pending).
+- n=42: needs a `--rescue` raise first (the n=41 rescue margin is
+  1.06×; see `AGENTS.md`).
+- Upstream: `tools/uni/` holds the distilled `uni.rs` (call-by-name
+  parity with `uni.py`, byte-identical on the corpus plus three
+  adversarial witnesses, ~18× faster) with its PR kit — submission
+  pending.
 
 ## Attribution
 
