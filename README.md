@@ -34,7 +34,11 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   as bits of Ω. (The ≤40 interval is [0.123995323359,
   0.123995328490]; `solomonoff_40.txt` holds the pre-ratchet census
   interval, from which the 4–40 certificates trim exactly 727·2⁻⁴⁰,
-  11.41% of the width.)
+  11.41% of the width. `solomonoff_41.txt` is the independent ≤41
+  regeneration: its pre-certificate upper bound minus the 257 kills'
+  exact mass, 1573·2⁻⁴¹, reproduces the census interval to the last
+  printed digit, and its 4,532 internal unknowns are exactly the
+  4,275-term frontier plus the 257 certificate kills.)
 - **The coding theorem, watched live**: K(x) and −log₂ m(x) agree
   within a bit for every high-mass normal form in range
   (`solomonoff_table.txt`).
@@ -153,7 +157,9 @@ default 4096).
 - Data: `census_full5.txt` (canonical table, 4–41; `census_full4.txt`
   kept as the 4–40 record), `unknowns_v7.txt` (the 4,275-term live
   frontier; `unknowns_v2.txt` is the pre-ratchet 4–40 set),
-  `solomonoff_40.txt`, benchmarks, frontier files.
+  `solomonoff_41.txt`/`solomonoff_table41.txt` (canonical Ω/K sweep;
+  the `_40` files kept as the 4–40 record), benchmarks, frontier
+  files.
 
 ## Roadmap
 
