@@ -21,24 +21,24 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   hand-excluded even in Tromp's tree, now carries a machine-checked
   divergence certificate (the *ratchet*, below). Every closed term of
   ≤32 bits is adjudicated with no hand exclusions anywhere.
-- **4,275 unknowns survive maximum effort** (`unknowns_v7.txt`:
-  1,894 across 4–40, fewer than the reference ledger at every
+- **4,235 unknowns survive maximum effort** (`unknowns_v8.txt`:
+  1,888 across 4–40, fewer than the reference ledger at every
   comparable size — at n=34–36 this engine proves strictly more
-  terms divergent than the traced reference engine — plus 2,381 at
+  terms divergent than the traced reference engine — plus 2,347 at
   the new n=41 frontier).
 - **The halting probability, exactly bracketed**:
   Ω restricted to programs ≤41 bits lies in
-  **[0.124105086764, 0.124105092978]**, computed in exact rational
+  **[0.124105086764, 0.124105092919]**, computed in exact rational
   arithmetic from the census counts; the interval width *is* the
-  total mass of the 4,275 unknowns — the census frontier expressed
+  total mass of the 4,235 unknowns — the census frontier expressed
   as bits of Ω. (The ≤40 interval is [0.123995323359,
   0.123995328490]; `solomonoff_40.txt` holds the pre-ratchet census
   interval, from which the 4–40 certificates trim exactly 727·2⁻⁴⁰,
   11.41% of the width. `solomonoff_41.txt` is the independent ≤41
-  regeneration: its pre-certificate upper bound minus the 257 kills'
-  exact mass, 1573·2⁻⁴¹, reproduces the census interval to the last
-  printed digit, and its 4,532 internal unknowns are exactly the
-  4,275-term frontier plus the 257 certificate kills.)
+  regeneration: its pre-certificate upper bound minus the full
+  297-kill exact mass, 1703·2⁻⁴¹, reproduces the census interval to
+  the last printed digit, and its 4,532 internal unknowns are
+  exactly the 4,235-term frontier plus the 297 certificate kills.)
 - **The coding theorem, watched live**: K(x) and −log₂ m(x) agree
   within a bit for every high-mass normal form in range
   (`solomonoff_table.txt`).
@@ -51,18 +51,22 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   no exact-recurrence window can see. Three bounded symbolic head
   reductions over a closed metavariable (OPEN/DESC/BASE) plus a glue
   theorem; adversarially reviewed in two rounds, checkers in
-  `src/cert.rs`, spec and proofs in `tools/cert/SPEC.md`. Two
+  `src/cert.rs`, spec and proofs in `tools/cert/SPEC.md`. Three
   certificate classes: the v1 ratchet (with under-binder and
-  trailing-spine-vector extensions) and the v2 `HeadTowerRatchet`
+  trailing-spine-vector extensions), the v2 `HeadTowerRatchet`
   (six replayed obligations over named metavariables, for loops whose
   tower argument itself takes head position — co-designed with Codex,
-  who derived the family's exact cycle arithmetic). Together they
-  kill **257 frontier terms** including `loop32` — 138 across the
-  4–40 frontier plus 119 of the 2,500 fresh n=41 unknowns
+  who derived the family's exact cycle arithmetic), and the v3
+  `SelectorRatchet` (the wrapper *selects*: FAN hands control to the
+  fresh argument carrying a second pattern `P[Z]`, SELECT contracts a
+  wrapper layer back to the stored one — derived by Codex from a
+  35-bit forcing exemplar the v1/v2 verifiers measurably reject).
+  Together they kill **297 frontier terms** including `loop32` — 144
+  across the 4–40 frontier plus 153 of the 2,500 fresh n=41 unknowns
   (`tools/cert/ratchet_kills.txt`), re-certified byte-identically
   at 4× discovery budgets, with a soundness battery running every
-  provable halter ≤28 bits (196,848 of them) through discovery and
-  both verifiers — zero false fires, in under a second
+  provable halter ≤28 bits (196,848 of them) through the exact
+  three-checker sweep ladder — zero false fires, in under a second
   (`tests/cert_battery.rs`).
 - **The 170-bit self-interpreter is certified locally optimal**: all
   three parser branches are exhaustively optimal — VAR (21 bits, 2,672

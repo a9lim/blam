@@ -18,12 +18,13 @@ re-deriving the night's lessons.
   change, not a discovery.
 - Data files in the repo root are results, not scratch. The canonical
   census table is `census_full5.txt` (4..41; full4 kept as the 4..40
-  record, full3 as pre-memo telemetry); `unknowns_v7.txt` is the live
-  frontier (4,275 terms: the 1,894-term 4..40 residue plus 2,381 at
+  record, full3 as pre-memo telemetry); `unknowns_v8.txt` is the live
+  frontier (4,235 terms: the 1,888-term 4..40 residue plus 2,347 at
   n=41 — `unknowns_v2.txt` plus the fresh 41-bit unknowns, minus the
-  257 certificate kills in `tools/cert/ratchet_kills.txt`;
-  intermediate v3-v6 files were derivable stepping stones, deleted).
-  Regenerate rather than hand-edit.
+  297 certificate kills in `tools/cert/ratchet_kills.txt`, of which
+  40 are the 2026-08-01 SelectorRatchet sweep; v7 kept as the
+  pre-selector record, intermediate v3-v6 files were derivable
+  stepping stones, deleted). Regenerate rather than hand-edit.
 
 ## Conventions that will bite you
 

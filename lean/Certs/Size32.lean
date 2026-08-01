@@ -5,6 +5,7 @@ and each `wire_*` theorem pins the certified term to its named bits.
 -/
 import Blc.Ratchet
 import Blc.HeadTower
+import Blc.Selector
 import Blc.Wire
 
 namespace Blc.Certs
