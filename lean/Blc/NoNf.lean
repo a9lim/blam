@@ -47,8 +47,14 @@ theorem tw_isLam : ∀ {z : Term}, Tw z → ∃ b, z = .lam b
   | _, .c0 => ⟨_, rfl⟩
   | _, .w _ => ⟨_, rfl⟩
 
-/-- Every state β-reachable from loop32: the initial term, the engine
-applied to a tower, and the descending tower-tower spine states. -/
+/-- An invariant family CONTAINING every β-reduct of loop32 (a
+closure-friendly superset — mismatched tower triples that no actual
+reduction visits are harmlessly included): the initial term, the
+engine applied to a tower, and tower-tower spine states. Substitution
+does create off-path material along the way — OPEN plants the tower
+under the wrapper's binder, INIT plants A under C0's — but each such
+object is re-established as a tower and re-proved normal; nothing
+relies on substitution avoiding off-path positions. -/
 inductive St : Term → Prop where
   | init : St loop32
   | engine {T : Term} (h : Tw T) : St (.app A T)

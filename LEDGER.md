@@ -917,3 +917,54 @@ The sharpened v3 target list: 225 unkilled `ratchet-candidate` terms
 anti-unifying discovery), and the 180-term spine-growth axis (`H
 t1..tk` with k itself climbing — needs the one-more-argument
 obligation shape). The n=41 residue (2,381 terms) is classifying now.
+
+## Codex on the flagship: no soundness hole; and three gifts back
+
+The adversarial review came back clean — verified locally at ff90e63
+(build, zero sorries, axioms as claimed), every Beta case of the
+Spine argument checked exhaustively. Two wording corrections, both
+taken: St is a closure-friendly SUPERSET of the reachable states,
+not an exact characterization (the over-approximation strengthens
+the proof); and substitution does create off-path material (OPEN
+plants the tower under the wrapper's binder) — the proof is safe
+because each such object is re-proved a tower, not because
+substitution avoids off-path positions. NoNf.lean's comments now say
+exactly that.
+
+The review also returned three things better than what it reviewed:
+
+1. **Trailing vectors don't force standardization.** Extend any
+   deterministic core invariant P to λᵏ.(core y⃗): a β-step either
+   hits the core (closed by st_beta's argument) or one baggage
+   coordinate (replace it); no root contraction can consume baggage
+   because every core is an application. So v1.2-shaped states with
+   arbitrary — even open, even non-normal — trailing baggage keep
+   the one-way-street conclusion. What DOES need standardization is
+   certificates whose A/W/C0 components are themselves non-normal
+   (the checker contract never required normality). Measurable gate:
+   how many of the 257 kills have deterministic cores. Queued.
+2. **The exact repair for my failed factorization**: an IPar with a
+   `redexShell` constructor (root redex preserved while body and
+   argument parallel-reduce — the case my naive definition could not
+   classify), plus the indexed split of Accattoli–Faggian–Guerrieri:
+   ParN counts contracted redexes, and the split exposes AT MOST ONE
+   head step per application of the lemma — no head chains through
+   lambdas ever arise. Full lemma DAG down to
+   HeadDiverges → ¬HasNormalForm, staged and referenced.
+3. **The symbolic checker representation**: STerm with a meta
+   constructor (the Lean mirror of the Rust checker's PTerm::Meta),
+   instantiation maps, the commuting square as the one trusted rule,
+   and a LiftPath relation carrying the source-nonlam side condition
+   the appL lifting needs.
+
+## The n=41 residue, classified
+
+tracescan over the 2,381 unresolved 41-bit terms (38:30 on 3 threads
+while the fuel control held the rest): ratchet-candidate 231,
+head-recurrent-other 570, monotone-growth 225, blowup 580, opaque
+775. Under-the-binder share still dominant (1,632 with k0_frac>0.9,
+68.6%); spine-growth axis 367 terms with max arity ≥100. The 231
+fresh ratchet-candidates survived the default-fuel certificate sweep
+— same anti-unification gap as the 4..40 residue's 225 (duplicating
+wrappers, high arities). The v3 lanes now have 456 mapped candidate
+terms across 4..41 to force against.
