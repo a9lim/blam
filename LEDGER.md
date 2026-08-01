@@ -1027,3 +1027,56 @@ Ops lesson, canonized as a docket item: certsearch discovery needs a
 per-term work meter (the bb.rs pattern) so a control sweep can never
 be held hostage by half a percent of pathological terms. Wall-clock
 is a UX budget; a control that doesn't terminate isn't a control.
+
+# 2026-08-01 · midday — certificates become theorems
+
+The symbolic checker layer landed in one sitting, and the endgame it
+was designed for landed the same hour. Two files and a translator:
+
+- **Blc/Sym.lean** — `STerm` (terms plus opaque metavariables; the
+  constructor is `mvar` because `meta` turned out to be a reserved
+  Lean keyword, which cost one confusing parse-cascade before `head`
+  instead of `tail` on the build log found it). Shift and
+  substitution leave holes opaque; instantiation is capture-permitting
+  grafting, sound because environments are required closed — exactly
+  the Rust checker's contract. The executable `symHeadStep` aborts on
+  an opaque head (a `some` transports, a `none` claims nothing), and
+  the ONE trusted rule is the commuting square: a symbolic step
+  instantiates to a concrete `HeadStep` under every closed
+  environment. `LiftReds` packages SPEC.md's "every proper source is
+  a non-abstraction"; `symStepsApp` is its symbolic witness.
+- **Blc/Ratchet.lean** — the generic v1.2 assembly. `RatchetCert` is
+  pure data: the triple, three obligation counts, and the INIT
+  landing (binder count, tower height, trailing vector — v1.1 and
+  v1.2 both formalized). `Valid` is seven decidable obligations;
+  `check`/`valid_of_check` collapse them into ONE kernel `decide`.
+  The glue theorem is Loop32.lean's cycle argument run generically —
+  OPEN mints the next layer, DESC peels inside the left spine, BASE
+  relights, all lifted through the trail and under the binders —
+  ending in `HeadDiverges`, then `¬HasNormalForm` through the
+  bridge. loop32-as-data is the in-file proof of concept: the
+  flagship's third independent derivation.
+- **certlean** (src/bin/certlean.rs, UNTRUSTED) — parses
+  ratchet_kills.txt, re-runs the trusted Rust verifier for the step
+  counts, replays INIT to read off the landing state, emits Lean.
+
+Result: `lean/Certs/` — **214 individually kernel-checked
+`¬HasNormalForm` theorems**, one per plain RATCHET line, named by
+their bit strings. The whole batch elaborates in **~1.1 s** (the
+kernel-decide cost I budgeted minutes for is milliseconds — the
+obligations are short traces on small terms). Axioms per theorem:
+`[propext, Quot.sound]`. Separate lake target, so `lake build` for
+the library stays fast.
+
+Honest scope: 214 of 257. The 34 RATCHET2 kills need the
+HeadTowerRatchet assembly formalized (six obligations, same
+pattern, more glue); the 9 `*-ARG` kills certify divergence of a
+spine ARGUMENT under a rigid head, and that bridge (a normal form
+of `λᵏ.(x a⃗)` needs normal forms of every aᵢ) is genuinely new
+theory — standardization-adjacent, not a translator afternoon.
+Both are docketed.
+
+The trust story is now exactly what the certificate campaign wanted:
+discovery untrusted, Rust checkers trusted-but-audited, and for 83%
+of the kills the Rust checker is no longer in the trusted base at
+all — the Lean kernel replays every obligation from raw data.

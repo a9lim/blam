@@ -8,13 +8,20 @@ theorem loop32_noNormalForm : ¬ HasNormalForm loop32     -- axioms: propext
 theorem headDiverges_not_hasNormalForm :
     HeadDiverges t → ¬ HasNormalForm t                   -- propext, Quot.sound
 theorem loop32_headDiverges : HeadDiverges loop32        -- propext, Quot.sound
+theorem RatchetCert.noNormalForm :
+    c.Valid → ¬ HasNormalForm c.T                        -- propext, Quot.sound
 ```
 
 — the famous 32-bit term, hand-excluded even in the reference
 busy-beaver ledger, provably has no normal form under arbitrary
-β-reduction; and the **general bridge** holds for every term, so any
-head-divergence certificate (all 257 ratchet kills) concludes
-no-normal-form with no side conditions.
+β-reduction; the **general bridge** holds for every term, so any
+head-divergence certificate concludes no-normal-form with no side
+conditions; and the **generic ratchet assembly** turns certificate
+*data* into that conclusion mechanically. `Certs/` holds **214
+generated kernel-checked `¬HasNormalForm` theorems** — every plain
+RATCHET line of `tools/cert/ratchet_kills.txt`, emitted by the
+untrusted `certlean` tool and replayed obligation-by-obligation by
+the kernel (`by decide`; the whole batch checks in ~1 s).
 
 Two independent routes to the flagship:
 
@@ -57,11 +64,36 @@ Layout:
   route 1.
 - `Blc/Factor.lean` — `IPar`, the indexed split, merge, the
   pullback, the general bridge; the flagship re-derived by route 2.
+- `Blc/Sym.lean` — the symbolic checker layer: `STerm` (terms with
+  opaque metavariables, mirroring the Rust checker's `PTerm`),
+  grafting instantiation sound under closed environments, the
+  executable `symHeadStep` (an opaque head aborts), and the ONE
+  trusted rule — the commuting square `symHeadStep_sound`
+  transporting each symbolic step to a concrete `HeadStep` under
+  every closed instantiation. `LiftReds`/`symStepsApp` package the
+  proper-source-nonlam condition for lifting chains through
+  application contexts.
+- `Blc/Ratchet.lean` — the generic v1.2 ratchet assembly:
+  `RatchetCert` (triple + obligation counts + INIT landing, with
+  under-binder and trailing-vector extensions), `Valid` as seven
+  decidable obligations packaged into one `decide` via
+  `check`/`valid_of_check`, and the glue theorem — OPEN opens the
+  descent, DESC peels a tower layer per round inside the left spine,
+  BASE relights the engine, everything lifted through the trailing
+  vector and under the leading binders — ending in `HeadDiverges`
+  and, through the bridge, `noNormalForm`. loop32's certificate as
+  literal data is the in-file proof of concept (the flagship's third
+  derivation).
+- `Certs/` — GENERATED (by `cargo run --release --bin certlean`,
+  untrusted): one module per term size, 214 `RatchetCert` literals
+  each with its `¬HasNormalForm` theorem. Separate lake target
+  (`lake build Certs`); the default build stays lean.
 
-Next stages: the symbolic checker layer (STerm with metavariables,
-instantiation, the commuting square as the one trusted rule — so any
-ratchet certificate exports a Lean proof mechanically);
-prefix-freeness/Kraft; machine-checked K upper bounds. Discovery
-stays outside the formal surface entirely.
+Next stages: the v2 (`HeadTowerRatchet`) assembly so the 34 RATCHET2
+kills export too; the rigid-head bridge for the 9 `*-ARG` kills
+(divergent spine argument under a rigid head); prefix-freeness/
+Kraft; machine-checked K upper bounds. Discovery stays outside the
+formal surface entirely.
 
 Build: `cd lean && lake build` (Lean 4.32.2 via elan; no mathlib).
+Certificates: `lake build Certs`.

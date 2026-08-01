@@ -169,8 +169,18 @@ full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
   lambda-passing failure and its `redexShell` repair are ledgered).
   Zero sorries, no mathlib anywhere. Every ratchet cert's
   head-divergence now concludes ¬HasNormalForm unconditionally.
-  Next: symbolic checker layer (STerm + commuting square ⇒ any
-  ratchet cert exports a Lean proof), prefix-freeness/Kraft, K
+  **Symbolic checker layer + generic assembly DONE (2026-08-01
+  morning)**: Blc/Sym.lean (STerm — constructor is `mvar`, `meta` is
+  a Lean keyword — commuting square `symHeadStep_sound` as the one
+  trusted rule, LiftReds/symStepsApp for appL lifting) +
+  Blc/Ratchet.lean (RatchetCert data + Valid = seven decidable
+  obligations = one `decide`; glue theorem → HeadDiverges →
+  noNormalForm; loop32 as data is the PoC) + `certlean` (untrusted
+  Rust emitter) + lean/Certs/ (GENERATED, separate lake target):
+  **214 kernel-checked ¬HasNormalForm theorems** = every plain
+  RATCHET line, ~1 s batch check, axioms [propext, Quot.sound].
+  Remaining export lanes: v2/HTR assembly (34 RATCHET2 kills),
+  rigid-head bridge (9 *-ARG kills). Then prefix-freeness/Kraft, K
   upper bounds.
 - `uni.rs` (tools/uni/): call-by-name parity rework done after
   Codex's adversarial review found call-by-need observably diverges

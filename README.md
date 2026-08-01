@@ -167,17 +167,19 @@ default 4096).
   4,275-term frontier's remaining ratchet-candidates.
 - Lean 4 track (`lean/`): **`¬ HasNormalForm loop32` is proven**
   (axioms: `propext` alone; zero sorries, no mathlib) — the first
-  mechanical BLC formalization anywhere — **twice**: once by the
-  one-way-street argument (every β-reduct of loop32 has exactly one
-  redex, so β-reduction from it is deterministic — the reason the
-  ratchet certificate works), and once through the **general
-  factorization bridge `HeadDiverges → ¬HasNormalForm`**, proven for
-  every term via indexed parallel reduction (the
-  Accattoli–Faggian–Guerrieri split), so every head-divergence
-  certificate concludes no-normal-form with no side conditions.
-  Next: the symbolic checker layer so any ratchet certificate
-  exports a Lean proof mechanically; prefix-freeness/Kraft; K upper
-  bounds.
+  mechanical BLC formalization anywhere — by the one-way-street
+  argument AND through the **general factorization bridge
+  `HeadDiverges → ¬HasNormalForm`**, proven for every term via
+  indexed parallel reduction (the Accattoli–Faggian–Guerrieri
+  split). On top of the bridge sits the **symbolic checker layer**
+  (STerm metavariables, the commuting square as the one trusted
+  rule) and the **generic ratchet assembly**, so a certificate is
+  just data: `certlean` translates `ratchet_kills.txt` into Lean,
+  and **214 of the 257 kills are now individually kernel-checked
+  `¬HasNormalForm` theorems** (`lean/Certs/`, ~1 s for the whole
+  batch; the RATCHET2 and spine-argument kills await their
+  assemblies). Next: the v2 assembly; the rigid-head bridge;
+  prefix-freeness/Kraft; K upper bounds.
 - ~~A distilled `uni.rs`~~ **built and verified** (`tools/uni/` —
   call-by-name parity with uni.py, streaming stdin, byte-identical
   on the corpus plus three adversarial witnesses, ~18× faster; PR
