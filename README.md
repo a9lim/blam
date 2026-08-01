@@ -162,7 +162,9 @@ default 4096).
   upper bounds, and the ratchet checker's soundness
   (`¬ HasNormalForm loop32` as the flagship theorem — no Lean BLC
   formalization exists yet).
-- A distilled `uni.rs` to PR upstream to tromp/AIT.
+- ~~A distilled `uni.rs`~~ **built and verified** (`tools/uni/` —
+  byte-identical with uni.py on the corpus, ~11× faster; PR kit
+  ready, upstream submission pending).
 
 ## Attribution
 

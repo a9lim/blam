@@ -3,7 +3,7 @@
 // program's output. Byte mode by default; any argument selects bit
 // mode, as in uni.py / uni.js / uni.rb / uni.pl.
 //
-//   rustc -O uni.rs && ./uni   < prog.blc8   # byte mode
+//   rustc --edition 2021 -O uni.rs && ./uni  < prog.blc8   # byte mode
 //   ./uni -                    < prog.blc    # bit mode
 //
 // Standard library only. Terms become host closures over a persistent
@@ -213,7 +213,7 @@ fn lam2bit(lambit: &Value) -> u64 {
     lambit
         .apply(Thunk::ready(Value::fun(|_| Value::int(0))))
         .apply(Thunk::ready(Value::fun(|_| Value::int(1))))
-        .apply(Thunk::ready(Value::int(101)))
+        .apply(Thunk::ready(Value::int(0)))
         .as_int()
 }
 
@@ -248,7 +248,7 @@ fn output(list: Value, bytemode: bool) -> u64 {
         })
     });
     list.apply(Thunk::ready(handler))
-        .apply(Thunk::ready(Value::int(103)))
+        .apply(Thunk::ready(Value::int(0)))
         .as_int()
 }
 
