@@ -17,11 +17,13 @@ busy-beaver ledger, provably has no normal form under arbitrary
 β-reduction; the **general bridge** holds for every term, so any
 head-divergence certificate concludes no-normal-form with no side
 conditions; and the **generic ratchet assembly** turns certificate
-*data* into that conclusion mechanically. `Certs/` holds **214
-generated kernel-checked `¬HasNormalForm` theorems** — every plain
-RATCHET line of `tools/cert/ratchet_kills.txt`, emitted by the
-untrusted `certlean` tool and replayed obligation-by-obligation by
-the kernel (`by decide`; the whole batch checks in ~1 s).
+*data* into that conclusion mechanically. `Certs/` holds **248
+generated kernel-checked `¬HasNormalForm` theorems** — every RATCHET
+line through the generic v1.2 assembly and every RATCHET2 line
+through the HeadTowerRatchet (v2) assembly, emitted by the untrusted
+`certlean` tool and replayed obligation-by-obligation by the kernel
+(`by decide`; the whole batch checks in ~1.6 s), each with a
+`wire_*` theorem pinning the certified term to its named bits.
 
 Two independent routes to the flagship:
 
@@ -84,13 +86,23 @@ Layout:
   and, through the bridge, `noNormalForm`. loop32's certificate as
   literal data is the in-file proof of concept (the flagship's third
   derivation).
+- `Blc/HeadTower.lean` — the HeadTowerRatchet (v2) assembly:
+  `HTRCert` with the six obligations (BASE may be zero-step), the
+  `OnlyMVar 0` wrapper gate (SPREAD instantiates two metavariable
+  slots), the rank step as a literal seven-lemma lifted composition,
+  and recursive descent costs — the quadratic closed form is never
+  trusted glue.
+- `Blc/Wire.lean` — the kernel-computable BLC encoder; each
+  generated certificate carries a `wire_*` theorem pinning its term
+  to the bits in its name (the emitter is untrusted, the kernel
+  vouches for the decoding).
 - `Certs/` — GENERATED (by `cargo run --release --bin certlean`,
-  untrusted): one module per term size, 214 `RatchetCert` literals
-  each with its `¬HasNormalForm` theorem. Separate lake target
-  (`lake build Certs`); the default build stays lean.
+  untrusted): one module per term size, 248 certificate literals
+  (214 `RatchetCert` + 34 `HTRCert`) each with its `¬HasNormalForm`
+  and wire theorems. Separate lake target (`lake build Certs`); the
+  default build stays lean.
 
-Next stages: the v2 (`HeadTowerRatchet`) assembly so the 34 RATCHET2
-kills export too; the rigid-head bridge for the 9 `*-ARG` kills
+Next stages: the rigid-head bridge for the 9 `*-ARG` kills
 (divergent spine argument under a rigid head); prefix-freeness/
 Kraft; machine-checked K upper bounds. Discovery stays outside the
 formal surface entirely.

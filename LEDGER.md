@@ -1080,3 +1080,49 @@ The trust story is now exactly what the certificate campaign wanted:
 discovery untrusted, Rust checkers trusted-but-audited, and for 83%
 of the kills the Rust checker is no longer in the trusted base at
 all — the Lean kernel replays every obligation from raw data.
+
+# 2026-08-01 · afternoon — 248, and the v3 map stops being a guess
+
+Three movements after the 214:
+
+**Codex round eight** accepted the symbolic layer ("the contract is
+airtight") and found the one gap that matters outside the calculus:
+a generated theorem's bit string lived only in its NAME — a hostile
+emitter could certify loop32 under every name in the file. Fixed
+within the hour: Blc/Wire.lean (kernel BLC encoder, the future Kraft
+module's seed) + a `wire_*` theorem per certificate. They also
+handed back a complete Lean design for the v2 assembly, down to the
+recursive cost structure and the instruction that the quadratic
+closed form stay OUT of the trusted glue.
+
+**Blc/HeadTower.lean** implemented to that spec, first-try compile:
+six symbolic obligations (BASE legitimately zero-step when C0 = A),
+the OnlyMVar-0 gate — decorative in Rust (round-three hygiene),
+PROOF-RELEVANT in Lean, exactly as Codex predicted: SPREAD
+instantiates two metavariable slots, and a stray Meta(1) in W would
+make `inst ρ W = wrap W Z` false — the rank step as the literal
+seven-lemma lifted composition, descent by structural recursion.
+certlean emits RATCHET2 through it: **248 of 257 kills are now
+kernel-checked theorems, batch 1.6 s, [propext, Quot.sound]**. The
+9 *-ARG kills (divergence of a spine argument under a rigid head)
+are the only export residue; that bridge is genuinely new theory.
+
+**certdiag** replaced the v3 docket's folklore with measurement. The
+"anti-unifying discovery" hypothesis: REFUTED — generalize() was
+already all-occurrence, and 387 of the 456 live ratchet-candidates
+hand the trusted verifier a plug-consistent triple it REJECTS
+(369 OPEN / 18 DESC). The gap is certificate shapes:
+zfirst 131 (OPEN aborts at exactly `Z W[Z]`, then HTR's SPREAD
+aborts MetaHead under every eraser — wrappers that hand control to
+the TOWER, not the argument; the recursion drives through Z),
+resource 74, drift 63 (level-indexed wrappers), passenger 48 (HTR
+plus fixed spine constants — probably the cheapest new kills),
+badsrc 38, selfapp 26, descfail 17, no-nest 6. Map + exemplars in
+CLASSIFY.md; round nine sent to Codex with the obligation-set
+design question for zfirst (a Z-driven descent needs a well-founded
+measure the opacity discipline can still see).
+
+Cross-checks that landed on the side: solomonoff 4..41 regenerated —
+its pre-certificate Ω upper minus the kills' exact mass (1573·2⁻⁴¹)
+reproduces the census interval to the last printed digit, and its
+4,532 internal unknowns are exactly frontier + kills.

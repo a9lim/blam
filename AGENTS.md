@@ -177,11 +177,18 @@ full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
   obligations = one `decide`; glue theorem → HeadDiverges →
   noNormalForm; loop32 as data is the PoC) + `certlean` (untrusted
   Rust emitter) + lean/Certs/ (GENERATED, separate lake target):
-  **214 kernel-checked ¬HasNormalForm theorems** = every plain
-  RATCHET line, ~1 s batch check, axioms [propext, Quot.sound].
-  Remaining export lanes: v2/HTR assembly (34 RATCHET2 kills),
-  rigid-head bridge (9 *-ARG kills). Then prefix-freeness/Kraft, K
-  upper bounds.
+  **248 kernel-checked ¬HasNormalForm theorems** = every RATCHET
+  line (v1.2 assembly) + every RATCHET2 line (Blc/HeadTower.lean,
+  the v2 assembly to Codex's round-eight design; OnlyMVar-0 gate,
+  recursive descent costs), each with a wire-identity theorem
+  (Blc/Wire.lean — Codex round eight's audit gap). ~1.6 s batch,
+  axioms [propext, Quot.sound]. Remaining export lane: rigid-head
+  bridge (9 *-ARG kills). Then prefix-freeness/Kraft, K upper
+  bounds. v3 evidence: certdiag measured the 456 live
+  ratchet-candidates (CLASSIFY.md "The v3 map, measured") —
+  discovery was never the gap; the dominant new class is zfirst
+  (131 tower-recursive wrappers), then passenger 48, drift 63;
+  Codex round nine owns the obligation-set derivation.
 - `uni.rs` (tools/uni/): call-by-name parity rework done after
   Codex's adversarial review found call-by-need observably diverges
   from uni.py (duplicated-argument witness) and buffered stdin broke

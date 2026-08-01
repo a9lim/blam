@@ -180,12 +180,13 @@ default 4096).
   split). On top of the bridge sits the **symbolic checker layer**
   (STerm metavariables, the commuting square as the one trusted
   rule) and the **generic ratchet assembly**, so a certificate is
-  just data: `certlean` translates `ratchet_kills.txt` into Lean,
-  and **214 of the 257 kills are now individually kernel-checked
-  `¬HasNormalForm` theorems** (`lean/Certs/`, ~1 s for the whole
-  batch; the RATCHET2 and spine-argument kills await their
-  assemblies). Next: the v2 assembly; the rigid-head bridge;
-  prefix-freeness/Kraft; K upper bounds.
+  just data: `certlean` translates `ratchet_kills.txt` into Lean
+  through the v1.2 and HeadTowerRatchet assemblies, and **248 of the
+  257 kills are individually kernel-checked `¬HasNormalForm`
+  theorems**, each pinned to its named bits by a kernel-checked wire
+  encoding (`lean/Certs/`, ~1.6 s for the whole batch; the 9
+  spine-argument kills await the rigid-head bridge). Next: that
+  bridge; prefix-freeness/Kraft; K upper bounds.
 - ~~A distilled `uni.rs`~~ **built and verified** (`tools/uni/` —
   call-by-name parity with uni.py, streaming stdin, byte-identical
   on the corpus plus three adversarial witnesses, ~18× faster; PR
