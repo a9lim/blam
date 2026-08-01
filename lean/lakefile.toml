@@ -1,0 +1,6 @@
+name = "blc"
+version = "0.1.0"
+defaultTargets = ["Blc"]
+
+[[lean_lib]]
+name = "Blc"

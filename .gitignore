@@ -3,3 +3,4 @@
 /.claude/
 __pycache__/
 .DS_Store
+lean/.lake/
