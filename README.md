@@ -7,29 +7,34 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
 
 ## Headline numbers
 
-- **Complete census of every closed λ-term of 4–40 bits**:
-  283,817,255 terms adjudicated (halt / diverge / unknown) in ~7 min
-  on an M5 Max — vs ~4.3 h for the reference Haskell tooling. Every
-  [A114852](https://oeis.org/A114852) count and every published
-  [BBλ](https://oeis.org/A333479) value in range reproduced exactly
-  (`census_full3.txt`).
+- **Complete census of every closed λ-term of 4–41 bits**:
+  526,039,969 terms adjudicated (halt / diverge / unknown) in ~16.5
+  min on an M5 Max (4–40 alone: ~7 min, vs ~4.3 h for the reference
+  Haskell tooling). Every [A114852](https://oeis.org/A114852) count
+  and every published [BBλ](https://oeis.org/A333479) value in range
+  reproduced exactly (`census_full5.txt`).
+- **The first BBλ(41) bound: ≥ 1,074,266,118 bits** — the busy
+  beaver's first billion-bit row, one size past every published
+  table (241,372,280 of the 242,222,714 closed 41-bit terms proven
+  halting; 2,500 stubborn unknowns).
 - **BBλ(32) is fully mechanical** — `loop32`, the famous 32-bit term
   hand-excluded even in Tromp's tree, now carries a machine-checked
   divergence certificate (the *ratchet*, below). Every closed term of
   ≤32 bits is adjudicated with no hand exclusions anywhere.
-- **1,894 unknowns survive maximum effort** (`unknowns_v6.txt`) —
-  fewer than the reference ledger at every comparable size; at
-  n=34–36 this engine proves strictly more terms divergent than the
-  traced reference engine.
-- **The halting probability to nine exact decimals**:
-  Ω restricted to programs ≤40 bits lies in
-  **[0.123995323359, 0.123995328603]**, computed in exact integer
-  arithmetic (masses in units of 2⁻⁶⁴, u128 accumulators). The
-  interval width *is* the total mass of the 1,894 unknowns — the
-  census frontier expressed as bits of Ω (`solomonoff_40.txt` holds
-  the pre-ratchet census interval; the ratchet certificates trim
-  exactly 727·2⁻⁴⁰ off the top, 11.41% of the width, giving
-  [0.123995323359, 0.123995328490]).
+- **4,275 unknowns survive maximum effort** (`unknowns_v7.txt`:
+  1,894 across 4–40, fewer than the reference ledger at every
+  comparable size — at n=34–36 this engine proves strictly more
+  terms divergent than the traced reference engine — plus 2,381 at
+  the new n=41 frontier).
+- **The halting probability, exactly bracketed**:
+  Ω restricted to programs ≤41 bits lies in
+  **[0.124105086764, 0.124105092978]**, computed in exact rational
+  arithmetic from the census counts; the interval width *is* the
+  total mass of the 4,275 unknowns — the census frontier expressed
+  as bits of Ω. (The ≤40 interval is [0.123995323359,
+  0.123995328490]; `solomonoff_40.txt` holds the pre-ratchet census
+  interval, from which the 4–40 certificates trim exactly 727·2⁻⁴⁰,
+  11.41% of the width.)
 - **The coding theorem, watched live**: K(x) and −log₂ m(x) agree
   within a bit for every high-mass normal form in range
   (`solomonoff_table.txt`).
@@ -48,8 +53,9 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   (six replayed obligations over named metavariables, for loops whose
   tower argument itself takes head position — co-designed with Codex,
   who derived the family's exact cycle arithmetic). Together they
-  kill **138 frontier terms** including `loop32`
-  (`tools/cert/ratchet_kills.txt`), all re-certified byte-identically
+  kill **257 frontier terms** including `loop32` — 138 across the
+  4–40 frontier plus 119 of the 2,500 fresh n=41 unknowns
+  (`tools/cert/ratchet_kills.txt`), re-certified byte-identically
   at 4× discovery budgets, with a soundness battery running every
   provable halter ≤28 bits (196,848 of them) through discovery and
   both verifiers — zero false fires, in under a second
@@ -144,9 +150,10 @@ default 4096).
 - `DESIGN.md` — architecture, measured results, open questions.
 - `LEDGER.md` — the overnight lab notebook: how these results
   happened, including the failures.
-- Data: `census_full4.txt` (canonical table), `unknowns_v6.txt` (the
-  1,894-term live frontier; `unknowns_v2.txt` is the pre-ratchet
-  2,032), `solomonoff_40.txt`, benchmarks, frontier files.
+- Data: `census_full5.txt` (canonical table, 4–41; `census_full4.txt`
+  kept as the 4–40 record), `unknowns_v7.txt` (the 4,275-term live
+  frontier; `unknowns_v2.txt` is the pre-ratchet 4–40 set),
+  `solomonoff_40.txt`, benchmarks, frontier files.
 
 ## Roadmap
 
@@ -157,14 +164,17 @@ default 4096).
 - Certificate v3 lanes (`tools/cert/SPEC.md` §5 tail): shapes still
   waiting for forcing examples — alternating heads, growth in outer
   evaluation contexts, normalization-equal milestones — over the
-  1,894-term frontier's remaining ratchet-candidates.
-- Lean 4 track: verified prefix-freeness/Kraft, machine-checked K
-  upper bounds, and the ratchet checker's soundness
-  (`¬ HasNormalForm loop32` as the flagship theorem — no Lean BLC
-  formalization exists yet).
+  4,275-term frontier's remaining ratchet-candidates.
+- Lean 4 track (`lean/`): `loop32_headDiverges` is **proven** — the
+  first mechanical BLC formalization anywhere (executable head
+  stepper mirroring the trusted checker, agreement + determinism,
+  the ratchet cycle at its exact step arithmetic). Next: head
+  standardization lifts it to `¬ HasNormalForm loop32`; then
+  prefix-freeness/Kraft and machine-checked K upper bounds.
 - ~~A distilled `uni.rs`~~ **built and verified** (`tools/uni/` —
-  byte-identical with uni.py on the corpus, ~11× faster; PR kit
-  ready, upstream submission pending).
+  call-by-name parity with uni.py, streaming stdin, byte-identical
+  on the corpus plus three adversarial witnesses, ~18× faster; PR
+  kit ready, upstream submission pending).
 
 ## Attribution
 

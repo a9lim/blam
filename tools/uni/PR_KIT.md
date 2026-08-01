@@ -21,18 +21,23 @@ standard library only, same conventions — program then input on stdin,
 byte mode by default, bit mode with any argument, build with
 `rustc --edition 2021 -O uni.rs`.
 
-Structurally it follows uni.py: parsed terms become host closures over
-a persistent environment, with the Scott/Church I/O forms built the
-same way. The one deliberate difference is that argument suspensions
-are memoized (call-by-need rather than call-by-name), which keeps the
-observable semantics and makes it roughly 11× faster than uni.py on
-`primes1k.blc`.
+Structurally it follows uni.py closely: parsed terms become host
+closures over a persistent environment, argument suspensions are
+call-by-name (re-evaluated per use, like uni.py's eta-suspensions, so
+effect timing through the output decoders matches exactly), input
+cells are memoized by index (the `inp[n]` cache), stdin is read one
+byte at a time and stdout flushed per emission so pipelines stream.
+It comes out roughly 18× faster than uni.py on `primes1k.blc`.
 
 Verified byte-identical with uni.py on: the quine under
 self-application, `bin/take256.blc8` (exact first 256 bytes of a
-400-byte input, including matching behavior at that program's list
-terminator), `hilbert` with depth input `12`, and `primes1k.blc`
-(1,024 output bits).
+400-byte input, both interpreters exiting nonzero at that program's
+list terminator), `hilbert` with depth input `12`, and `primes1k.blc`
+(1,024 output bits) — plus three adversarial vectors: a duplicated
+argument whose forcing replays output effects (distinguishes
+call-by-name from call-by-need), a streaming check (output arrives
+while stdin is still open), and a malformed nine-bit output byte
+(both interpreters must die emitting nothing).
 
 Happy to adjust style or conventions to taste.
 
@@ -66,13 +71,17 @@ break it before trusting it." With it, BBλ(32) is fully mechanical —
 every closed term of ≤32 bits machine-adjudicated with no hand
 exclusions — and sweeping the certificate (plus a second class for
 loops whose tower argument takes head position) over my census
-frontier proves 138 of the 2,032 maximum-effort unknowns divergent,
-narrowing Ω restricted to ≤40-bit programs to
-[0.123995323359, 0.123995328490].
+frontier proves 257 maximum-effort unknowns divergent. There is also
+now a Lean 4 proof that loop32's head reduction is infinite (the
+first mechanical BLC formalization I know of).
 
-The census machinery reproduces your published numbers along the way —
-every A114852 count and BBλ value in 4..40, and exact agreement with
-your BB.txt halt counts at n=32.
+The census itself now runs one size past the published tables: every
+closed term of 4..41 bits adjudicated, giving BBλ(41) ≥ 1,074,266,118
+bits — the first billion-bit row — and Ω restricted to ≤41-bit
+programs in [0.124105086764, 0.124105092978] by exact rational
+arithmetic. Your published numbers reproduce along the way — every
+A114852 count and BBλ value in range, and exact agreement with your
+BB.txt halt counts at n=32.
 
 One practical question: the AIT repo carries no license file. My repo
 is MIT with prominent attribution to you; if you have a preference for

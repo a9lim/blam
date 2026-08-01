@@ -51,14 +51,19 @@ struct Cfg {
 /// terms that reach the escalation tier are memoized (the cheap 99.7%
 /// are cheaper to redo than to hash); memo hits re-insert themselves so
 /// λλ-chains stay free. Audit item "λ-wrap memoization", landed
-/// 2026-08-01.
+/// 2026-08-01; Unknown reuse removed same day on review: Halt and
+/// Diverge are SEMANTIC results and reusable under λ, but Unknown is a
+/// resource/proof-search outcome of the seed's run — copying it would
+/// not prove the wrap exhausts the same engine budget, so seed-Unknown
+/// wraps run the ordinary ladder instead (the census's advertised
+/// budgeted-ladder meaning is preserved exactly).
 #[derive(Clone, Copy)]
 enum MemoV {
-    /// steps=0 marks the non-canonical rescue-stuck halt, matching what
-    /// a direct run of the wrap would record.
+    /// steps=0 preserves the seed's "BB engine proved halt, canonical
+    /// rescue exhausted" sentinel; the wrap inherits the seed's recorded
+    /// verdict, not a claim about which path a direct run would take.
     Halt { nf: u64, steps: u64 },
     Diverge,
-    Unknown(Why),
 }
 
 #[derive(Default, Clone)]
@@ -183,15 +188,6 @@ fn census_term(
                     stats.diverge += 1;
                     MemoV::Diverge
                 }
-                MemoV::Unknown(why) => {
-                    stats.unknown += 1;
-                    match why {
-                        Why::Capacity => stats.unknown_cap += 1,
-                        Why::WorkMeter => stats.unknown_work += 1,
-                    }
-                    stats.unknowns.push((enc, len));
-                    MemoV::Unknown(why)
-                }
             };
             stats.memo_out.push(((enc, len), bumped));
             return;
@@ -296,7 +292,6 @@ fn census_term(
                         Why::WorkMeter => stats.unknown_work += 1,
                     }
                     stats.unknowns.push((enc, len));
-                    stats.memo_out.push(((enc, len), MemoV::Unknown(why)));
                 }
             }
         }

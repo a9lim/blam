@@ -17,11 +17,13 @@ re-deriving the night's lessons.
   through every change in history; treat any drift as a bug in your
   change, not a discovery.
 - Data files in the repo root are results, not scratch. The canonical
-  census table is `census_full4.txt` (full3 kept: pre-memo telemetry); `unknowns_v6.txt` is the live
-  frontier (1,894 terms — `unknowns_v2.txt` minus the 138 certificate
-  kills in `tools/cert/ratchet_kills.txt`; intermediate v3-v5 files
-  were derivable stepping stones, deleted). Regenerate rather than
-  hand-edit.
+  census table is `census_full5.txt` (4..41; full4 kept as the 4..40
+  record, full3 as pre-memo telemetry); `unknowns_v7.txt` is the live
+  frontier (4,275 terms: the 1,894-term 4..40 residue plus 2,381 at
+  n=41 — `unknowns_v2.txt` plus the fresh 41-bit unknowns, minus the
+  257 certificate kills in `tools/cert/ratchet_kills.txt`;
+  intermediate v3-v6 files were derivable stepping stones, deleted).
+  Regenerate rather than hand-edit.
 
 ## Conventions that will bite you
 
@@ -46,14 +48,15 @@ re-deriving the night's lessons.
 Ladder in `src/bin/census.rs`: prescan → oracle prefilter → KN at
 budget1 (transitions budget1×64) → KN at budget2 (transitions
 budget2×64) → escalation engine (`src/bb.rs`, cap 2M) → KN rescue at
-10⁷ β, transitions 32×β (`--rescue-trans-mult`). Rescue β stays 10⁷:
-the max successful rescue is 9,452,558 β — lowering it loses a
-halter. The 32× transition mult has a 1.88× margin over the worst
+10⁷ β, transitions 32×β (`--rescue-trans-mult`). Rescue β stays 10⁷
+through n=41, but the margin is now THIN: the max successful rescue is
+9,457,564 β (n=41) — 1.06× headroom. RAISE `--rescue` BEFORE RUNNING
+n=42. The 32× transition mult has a 1.88× margin over the worst
 measured successful ratio (17.0×, the n=38 champion: 9.45M β via
 160.4M transitions); the rung-2 64× cap re-routes exactly one term in
 4..40 (n=39, `escal` 169,921→169,922 in `census_full3.txt`) through
 escalation to the same halt. Both trims verified verdict-identical on
-full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
+full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
 
 - `src/vm.rs` (KN machine): any `Sink` impl MUST override `var` with
   an O(1) body — the default is O(n) in an *uncharged* n and cost a 5×
@@ -113,8 +116,10 @@ full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
   twice: v1 glue theorem, then v1.2 trailing-spine lifting; the v2
   `HeadTowerRatchet` — Meta(id), indexed towers, six replayed
   obligations — is the round-two co-design, implemented same day).
-  138 frontier kills total (`tools/cert/ratchet_kills.txt`: RATCHET
-  and RATCHET2 lines), n=32 row now zero, Ω width −11.41%.
+  257 frontier kills total (`tools/cert/ratchet_kills.txt`: RATCHET
+  and RATCHET2 lines ± -ARG variants; 138 across 4..40 plus 119 of
+  the 2,500 fresh n=41 unknowns), n=32 row now zero, 4..40 Ω width
+  −11.41%.
   Discovery STREAMS candidates to both checkers (a rejected family is
   retired, later families still propose — Codex round three; the fix
   immediately found 2 masked kills). Sweep defaults 1000/100k,
@@ -140,18 +145,34 @@ full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
 - ~~λ-wrap memoization~~ **done** (2026-08-01 overnight): cross-size
   verdict memo in census.rs — λ.T reuses T's escalation-tier verdict
   (prefix-free code ⇒ a map hit proves the body closed; nf+2, same
-  steps; chains propagate). 100% hit rate on every candidate, halt
-  counts bit-identical 4..40, all verifies green. Honest wall gain
-  ~3% (post-trims the cheap tiers dominate, not escalation — the
-  audit's 98% figure predated the daytime trims); the memo's share
-  grows with n as the escalated tier grows. Canonical table now
-  census_full4.txt (escal/telemetry columns changed by design).
-- n=41 census (~242M terms, nothing blocks it).
-- Lean 4 track (no existing BLC formalization); ratchet-checker
-  soundness is the flagship (Codex staging: infinite head chain →
-  head standardization → `¬ HasNormalForm loop32`). Distilled `uni.rs`
-  PR to tromp/AIT (repo root has uni.c/js/pl/py/rb — no uni.rs slot
-  filled).
+  steps; chains propagate). Codex-reviewed: Halt/Diverge reuse is
+  semantically sound; Unknown reuse was REMOVED same day (Unknown is
+  a resource outcome, not a fate — seed-Unknown wraps run the
+  ordinary ladder, keeping the budgeted-ladder meaning exact).
+  Verified verdict-identical 4..40 post-policy; the 463 wraps of
+  39-bit unknowns at n=41 all direct-adjudicate to Unknown too.
+  100% hit rate, honest wall gain ~3% (post-trims the cheap tiers
+  dominate; the memo's share grows with n).
+- ~~n=41 census~~ **done** (2026-08-01 overnight): 242,222,714 terms
+  in ~16.5 min total 4..41; BBλ(41) ≥ 1,074,266,118 bits (first
+  billion-bit row, one size past every published table); 2,500
+  unknowns, 119 certificate-killed same night. Canonical table
+  census_full5.txt. n=42 needs a --rescue raise first (see The
+  engines).
+- Lean 4 track: `lean/` **exists and proves** `loop32_headDiverges`
+  (executable head stepper mirroring the trusted checker + relation
+  agreement + determinism + the exact 2n+2 cycle arithmetic; zero
+  sorries, no mathlib). Next stage per Codex staging: head
+  standardization → `¬ HasNormalForm loop32`. Then
+  prefix-freeness/Kraft, K upper bounds.
+- `uni.rs` (tools/uni/): call-by-name parity rework done after
+  Codex's adversarial review found call-by-need observably diverges
+  from uni.py (duplicated-argument witness) and buffered stdin broke
+  streaming. Now: Name thunks for program args, memoized input cells
+  (inp[n] parity incl. 1-byte read-ahead), streaming 1-byte reads,
+  per-emission flush, checked output bytes; verify.sh carries the
+  witnesses as regression vectors. ~18× uni.py. a9 sends the PR
+  (PR_KIT.md).
 
 ## Collaboration
 

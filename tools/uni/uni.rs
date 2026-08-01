@@ -7,9 +7,13 @@
 //   ./uni -                    < prog.blc    # bit mode
 //
 // Standard library only. Terms become host closures over a persistent
-// environment (de Bruijn indices index a cons list); arguments are
-// lazy, memoized thunks, so semantics match the call-by-name reference
-// interpreters while each suspension evaluates at most once.
+// environment (de Bruijn indices index a cons list). Program argument
+// suspensions are call-by-name — re-evaluated on every use, exactly
+// like uni.py's eta-suspensions — while input cells are memoized (the
+// counterpart of uni.py's inp[n] cache), so duplicated input tails
+// consume each stdin byte once. Stdin is read one byte at a time and
+// stdout is flushed per emission, so piping to and from a live
+// producer/consumer behaves like the reference interpreters.
 
 use std::cell::RefCell;
 use std::io::{Read, Write};
@@ -46,29 +50,51 @@ impl Value {
     }
 }
 
+// Suspensions come in three classes. Program arguments are Name —
+// re-evaluated on every force, matching uni.py's `lambda arg:
+// q(*args)(arg)` eta-suspensions, so any effects the output decoders
+// run while forcing replay exactly as often as in the reference.
+// Need memoizes (used only for pure constructor tails); Ready is a
+// forced value.
 #[derive(Clone)]
 struct Thunk(Rc<RefCell<ThunkState>>);
 
 enum ThunkState {
     Done(Value),
-    Pending(Rc<dyn Fn() -> Value>),
+    Need(Rc<dyn Fn() -> Value>),
+    Name(Rc<dyn Fn() -> Value>),
 }
 
 impl Thunk {
     fn ready(v: Value) -> Thunk {
         Thunk(Rc::new(RefCell::new(ThunkState::Done(v))))
     }
-    fn suspend(f: impl Fn() -> Value + 'static) -> Thunk {
-        Thunk(Rc::new(RefCell::new(ThunkState::Pending(Rc::new(f)))))
+    fn need(f: impl Fn() -> Value + 'static) -> Thunk {
+        Thunk(Rc::new(RefCell::new(ThunkState::Need(Rc::new(f)))))
+    }
+    fn name(f: impl Fn() -> Value + 'static) -> Thunk {
+        Thunk(Rc::new(RefCell::new(ThunkState::Name(Rc::new(f)))))
     }
     fn force(&self) -> Value {
-        let pending = match &*self.0.borrow() {
-            ThunkState::Done(v) => return v.clone(),
-            ThunkState::Pending(f) => f.clone(),
+        enum Act {
+            Ret(Value),
+            Memo(Rc<dyn Fn() -> Value>),
+            Run(Rc<dyn Fn() -> Value>),
+        }
+        let act = match &*self.0.borrow() {
+            ThunkState::Done(v) => Act::Ret(v.clone()),
+            ThunkState::Need(f) => Act::Memo(f.clone()),
+            ThunkState::Name(f) => Act::Run(f.clone()),
         };
-        let v = pending();
-        *self.0.borrow_mut() = ThunkState::Done(v.clone());
-        v
+        match act {
+            Act::Ret(v) => v,
+            Act::Memo(f) => {
+                let v = f();
+                *self.0.borrow_mut() = ThunkState::Done(v.clone());
+                v
+            }
+            Act::Run(f) => f(),
+        }
     }
 }
 
@@ -110,46 +136,55 @@ fn eval(t: &Rc<Term>, env: &Rc<Env>) -> Value {
         Term::App(f, a) => {
             let fv = eval(f, env);
             let (a, env) = (a.clone(), env.clone());
-            fv.apply(Thunk::suspend(move || eval(&a, &env)))
+            fv.apply(Thunk::name(move || eval(&a, &env)))
         }
     }
 }
 
-// Program bits come first on stdin: whole bytes in byte mode, ASCII
-// '0'/'1' characters in bit mode. Whatever follows is program input
-// (byte mode discards the rest of a partially parsed byte, matching
-// the reference interpreters).
+// Streaming bit source. Program bits come first on stdin — whole bytes
+// in byte mode, one ASCII character per bit in bit mode — read one
+// byte at a time exactly like uni.py's os.read(0,1), so a program can
+// start producing output while its input is still being written.
+// After the parse, any remaining bits of a partially consumed byte are
+// discarded (input reads bypass the bit buffer), matching the
+// reference interpreters.
 struct BitReader {
-    data: Vec<u8>,
-    pos: usize,
-    bit: u32,
+    stdin: std::io::Stdin,
+    cur: u8,
+    nbit: u32,
     bytemode: bool,
 }
 
 impl BitReader {
-    fn next_bit(&mut self) -> bool {
-        if self.bytemode {
-            let b = (self.data[self.pos] >> (7 - self.bit)) & 1 == 1;
-            self.bit += 1;
-            if self.bit == 8 {
-                self.bit = 0;
-                self.pos += 1;
-            }
-            b
-        } else {
-            let c = self.data[self.pos];
-            self.pos += 1;
-            c & 1 == 1 // '0' = 0x30, '1' = 0x31
+    fn new(bytemode: bool) -> BitReader {
+        BitReader {
+            stdin: std::io::stdin(),
+            cur: 0,
+            nbit: 0,
+            bytemode,
         }
     }
-    fn next_byte(&mut self) -> Option<u8> {
-        if self.bit != 0 {
-            self.bit = 0;
-            self.pos += 1;
+    fn read1(&mut self) -> Option<u8> {
+        let mut b = [0u8];
+        loop {
+            match self.stdin.lock().read(&mut b) {
+                Ok(0) => return None,
+                Ok(_) => return Some(b[0]),
+                Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
+                Err(e) => panic!("read stdin: {e}"),
+            }
         }
-        let c = self.data.get(self.pos).copied();
-        self.pos += 1;
-        c
+    }
+    fn next_bit(&mut self) -> bool {
+        if self.nbit == 0 {
+            self.cur = self.read1().expect("eof inside program");
+            self.nbit = if self.bytemode { 8 } else { 1 };
+        }
+        self.nbit -= 1;
+        (self.cur >> self.nbit) & 1 == 1 // bit mode: '0' = 0x30, '1' = 0x31
+    }
+    fn next_byte(&mut self) -> Option<u8> {
+        self.read1()
     }
 }
 
@@ -179,32 +214,52 @@ fn nil() -> Value {
     Value::fun(|_z| Value::fun(|y| y.force()))
 }
 
-fn cons(head: Value, tail: Thunk) -> Value {
-    let head = Thunk::ready(head);
-    Value::fun(move |z| z.force().apply(head.clone()).apply(tail.clone()))
-}
-
 fn byte2lam(bits: u8, n: u32) -> Value {
     if n == 0 {
         nil()
     } else {
-        cons(
-            bit2lam((bits >> (n - 1)) & 1 == 1),
-            Thunk::suspend(move || byte2lam(bits, n - 1)),
-        )
+        let head = Thunk::ready(bit2lam((bits >> (n - 1)) & 1 == 1));
+        let tail = Thunk::need(move || byte2lam(bits, n - 1));
+        Value::fun(move |z| z.force().apply(head.clone()).apply(tail.clone()))
     }
 }
 
-// The lazily consumed input stream.
-fn input(reader: Rc<RefCell<BitReader>>, bytemode: bool) -> Value {
-    let next = reader.borrow_mut().next_byte();
-    match next {
-        None => nil(),
-        Some(c) => cons(
-            if bytemode { byte2lam(c, 8) } else { bit2lam(c & 1 == 1) },
-            Thunk::suspend(move || input(reader.clone(), bytemode)),
-        ),
-    }
+// The input stream, mirroring uni.py's input(n)/inp[] exactly: cells
+// are memoized by index (a duplicated tail must not consume stdin
+// twice), each cell reads its byte on first construction, and
+// destructing cell n materializes cell n+1 eagerly — one byte of
+// read-ahead, just like the reference's strict `z(head)(input(n+1))`.
+struct Input {
+    reader: BitReader,
+    cells: Vec<Value>,
+}
+
+fn input(st: &Rc<RefCell<Input>>, n: usize, bytemode: bool) -> Value {
+    let cell = {
+        let mut s = st.borrow_mut();
+        while s.cells.len() <= n {
+            let cell = match s.reader.next_byte() {
+                None => nil(),
+                Some(c) => {
+                    let head = if bytemode {
+                        byte2lam(c, 8)
+                    } else {
+                        bit2lam(c & 1 == 1)
+                    };
+                    let st = st.clone();
+                    let k = s.cells.len() + 1;
+                    Value::fun(move |z| {
+                        let partial = z.force().apply(Thunk::ready(head.clone()));
+                        let tail = input(&st, k, bytemode);
+                        partial.apply(Thunk::ready(tail))
+                    })
+                }
+            };
+            s.cells.push(cell);
+        }
+        s.cells[n].clone()
+    };
+    cell
 }
 
 // Decoding mirrors uni.py: a Church bit applied to two constant
@@ -218,6 +273,12 @@ fn lam2bit(lambit: &Value) -> u64 {
 }
 
 fn lam2byte(lambits: &Value, x: u64) -> u64 {
+    // uni.py constructs bytes([x]) at entry, so a malformed "byte" of
+    // more than eight bits dies as soon as the ninth accumulates; the
+    // same check here also makes the later u8 cast exact.
+    if x > 255 {
+        panic!("output byte out of range: {x}");
+    }
     let handler = Value::fun(move |bit: Thunk| {
         Value::fun(move |tail: Thunk| {
             let bit = bit.clone();
@@ -243,6 +304,9 @@ fn output(list: Value, bytemode: bool) -> u64 {
             out.write_all(if lam2bit(&cv) == 1 { b"1" } else { b"0" })
                 .expect("write");
         }
+        // uni.py writes through os.write, which is unbuffered; flushing
+        // per emission keeps interactive pipelines live.
+        out.flush().expect("flush");
         Value::fun(move |tail: Thunk| {
             Value::fun(move |_| Value::int(output(tail.force(), bytemode)))
         })
@@ -254,13 +318,17 @@ fn output(list: Value, bytemode: bool) -> u64 {
 
 fn run() {
     let bytemode = std::env::args().len() <= 1;
-    let mut data = Vec::new();
-    std::io::stdin().read_to_end(&mut data).expect("read stdin");
-    let mut reader = BitReader { data, pos: 0, bit: 0, bytemode };
+    let mut reader = BitReader::new(bytemode);
     let prog = parse(&mut reader);
-    let reader = Rc::new(RefCell::new(reader));
     let v = eval(&prog, &Rc::new(Env::Nil));
-    let out = v.apply(Thunk::suspend(move || input(reader.clone(), bytemode)));
+    // First input cell built eagerly — uni.py's `prog(input(0))`
+    // evaluates input(0), reading one byte, before the program runs.
+    let st = Rc::new(RefCell::new(Input {
+        reader,
+        cells: Vec::new(),
+    }));
+    let first = input(&st, 0, bytemode);
+    let out = v.apply(Thunk::ready(first));
     output(out, bytemode);
 }
 
@@ -272,5 +340,5 @@ fn main() {
         .spawn(run)
         .unwrap()
         .join()
-        .unwrap();
+        .unwrap()
 }

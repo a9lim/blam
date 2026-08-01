@@ -779,3 +779,73 @@ the cheap tiers sweeping 130M terms at n=40. The memo's share grows
 with n (the escalated tier grows superlinearly), so n=41+ benefits
 more. Canonical table: census_full4.txt (telemetry columns changed by
 design; verdict columns identical to full3).
+
+## uni.rs and the corpus that lied by omission
+
+Built the Rust member of Tromp's reference-interpreter family
+(tools/uni/): single file, std only, host closures over a persistent
+env, Scott/Church I/O. First draft memoized argument suspensions
+(call-by-need) and passed the whole corpus byte-identically — quine,
+take256, hilbert, primes1k — at ~11× uni.py. Sent to Codex for
+adversarial review with the direct question: is call-by-need
+observationally equivalent here?
+
+**No.** The review came back with a 51-bit closed witness whose
+duplicated argument runs output effects during forcing: uni.py prints
+`00`, memoized uni.rs printed `0`. The corpus never duplicated an
+effectful argument, so four vectors of byte-identity said nothing
+about the case that matters. Two more findings: `read_to_end` made
+"lazily consumed input" true only of a buffered Vec (a live producer
+deadlocks — uni.py streams via os.read(0,1)), and `as u8` silently
+truncated malformed nine-bit output bytes where uni.py raises.
+
+Rebuilt for exact parity: **call-by-name** Name-thunks for program
+arguments (uni.py's eta-suspensions — effects replay identically),
+**memoized input cells** with uni.py's exact one-byte read-ahead at
+destruct (inp[n]), **streaming stdin** one byte at a time, flush per
+emission, range-checked output bytes. All three review witnesses are
+now regression vectors in verify.sh alongside the corpus — eight
+vectors green. The kicker: call-by-name cost nothing measurable.
+**0.48 s vs 8.67 s on primes1k — 18× uni.py**, faster than the
+unsound draft's claim. The PR kit claims are rewritten to match;
+a9 sends the PR.
+
+Lesson canonized: a passing corpus is evidence about the corpus. The
+review question that found the bug was the one we asked on purpose —
+"is this equivalence actually true?" — and the answer arrived as an
+executable witness, which is the only currency that settles such
+questions.
+
+## The memo's Unknown was never a verdict
+
+Same review, second finding: reusing a seed's Unknown for its wrap is
+conservative but claims too much — Unknown is a resource outcome of
+one engine run, not a semantic fate, so copying it (and its Why) does
+not prove the wrap would exhaust the same budget. Policy now: **memoize
+Halt and Diverge only**; a seed-Unknown wrap runs the ordinary ladder.
+Verified: 4..40 verdict-identical to the canonical table post-policy
+(7:05), and all 463 n=41 wraps of 39-bit unknowns direct-adjudicate
+to Unknown anyway (19 s) — the inherited rows were right, but now
+they're right for the stated reason.
+
+# 2026-08-01 · late night — the 41st busy beaver row
+
+The census went one size past every published table. **4..41 in
+16:29**: 242,222,714 closed 41-bit terms, 241,372,280 proven halting,
+847,934 divergent, 2,500 unknown. **BBλ(41) ≥ 1,074,266,118 bits** —
+the busy beaver's first billion-bit row. Every A114852 and BBλ verify
+in range green; 4..40 rows bit-identical to census_full4. Canonical
+table: census_full5.txt.
+
+The certificate sweep over the 2,500 fresh unknowns killed **119**
+(87 ratchet + 3 under-arg, 28 HeadTowerRatchet + 1 under-arg) in
+14:25 — the ratchet families keep scaling with the frontier. Kills
+file now 257 lines; frontier `unknowns_v7.txt` = 4,275 terms (1,894
+at 4..40 + 2,381 at 41). Ω|≤41 ∈ **[0.124105086764, 0.124105092978]**
+in exact rational arithmetic — the first Ω bracket at 41 bits.
+
+Rescue margin watch: the n=41 rescue champion needed 9,457,564 β of
+the 10⁷ cap — **1.06× headroom**. AGENTS.md now says in bold: raise
+--rescue before n=42. An 8× fuel control over the 2,381 unresolved
+41-bit terms ran overnight to test kill-completeness at default
+budgets.
