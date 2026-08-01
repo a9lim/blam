@@ -271,9 +271,15 @@ fn main() {
                             return;
                         }
                         let mut sink = KeySink::default();
+                        // Transition caps ported from the census's measured
+                        // trims (LEDGER 2026-07-31 daytime): rungs 64×β,
+                        // rescue 32×β — verified verdict-identical there on
+                        // the same 4..40 term set; output diffed on port.
                         for budget in [64u64, 4096] {
                             sink.clear();
-                            if let Ok(steps) = vm.normalize(pool, root, budget, &mut sink) {
+                            if let Ok(steps) =
+                                vm.normalize_capped(pool, root, budget, budget * 64, &mut sink)
+                            {
                                 acc.record_halt(enc, len, &sink, steps);
                                 return;
                             }
@@ -282,7 +288,8 @@ fn main() {
                         match normal_form(bb_cap, &t) {
                             Ok(nf) => {
                                 sink.clear();
-                                match vm.normalize(pool, root, rescue, &mut sink) {
+                                match vm.normalize_capped(pool, root, rescue, rescue * 32, &mut sink)
+                                {
                                     Ok(steps) => acc.record_halt(enc, len, &sink, steps),
                                     Err(_) => {
                                         // Canonical step count unavailable;
@@ -299,7 +306,8 @@ fn main() {
                             }
                             Err(NoNf::Unknown(_)) => {
                                 sink.clear();
-                                match vm.normalize(pool, root, rescue, &mut sink) {
+                                match vm.normalize_capped(pool, root, rescue, rescue * 32, &mut sink)
+                                {
                                     Ok(steps) => acc.record_halt(enc, len, &sink, steps),
                                     Err(_) => {
                                         acc.unknown += 1;
@@ -357,7 +365,12 @@ fn main() {
         .filter(|((_, xlen), e)| e.k < *xlen)
         .map(|(k, e)| (*k, *e))
         .collect();
-    by_compression.sort_by_key(|((_, xlen), e)| std::cmp::Reverse(*xlen as i64 - e.k as i64));
+    // Deterministic tiebreak (xlen, xenc): the gain classes are wide and
+    // `take(top)` used to cut inside them in HashMap/merge order, making
+    // output diffs meaningless between identical runs (survey finding).
+    by_compression.sort_by_key(|((xenc, xlen), e)| {
+        (std::cmp::Reverse(*xlen as i64 - e.k as i64), *xlen, *xenc)
+    });
     println!("\n== most compressible normal forms (|x| − K ≤{max_n}(x)) ==");
     println!("{:>5} {:>4} {:>6} {:>8}  program -> x", "|x|", "K", "gain", "#progs");
     for ((xenc, xlen), e) in by_compression.iter().take(top) {
@@ -386,7 +399,7 @@ fn main() {
     }
 
     // Coding theorem check: K(x) vs −log2 m(x) for the heaviest x.
-    rows.sort_by_key(|(_, e)| std::cmp::Reverse(e.mass));
+    rows.sort_by_key(|((xenc, xlen), e)| (std::cmp::Reverse(e.mass), *xlen, *xenc));
     println!("\n== coding theorem: heaviest normal forms ==");
     println!(
         "{:>18} {:>5} {:>4} {:>9} {:>12} {:>10}",

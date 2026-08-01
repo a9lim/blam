@@ -92,6 +92,17 @@ fn vm_reproduces_bb_witnesses() {
             )),
             1812,
         ),
+        // The n=34 BBλ champion: (λ.1 1 1 1) C2 → C65536, 327,686-bit
+        // nf. Previously an #[ignore]d fat-stack naive-normalizer test
+        // in tromp_vectors.rs; the KN machine streams it to a SizeSink
+        // in milliseconds with O(1) space.
+        (
+            app(
+                lam(app(app(app(var(1), var(1)), var(1)), var(1))),
+                lam(lam(app(var(2), app(var(2), var(1))))),
+            ),
+            327_686,
+        ),
     ];
     let mut pool = TermPool::new();
     let mut vm = Machine::new();

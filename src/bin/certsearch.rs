@@ -8,7 +8,7 @@
 //! `aᵢ` with a ratchet certificate kills the whole term. Open arguments
 //! are skipped (the v1 machinery assumes closed metavariables).
 
-use blc::cert::{discover, head_step, try_htr, verify, HeadTowerRatchet, PTerm, Ratchet, Step};
+use blc::cert::{discover_stream, head_step, try_htr, verify, HeadTowerRatchet, PTerm, Ratchet, Step};
 use blc::parse::parse_all;
 use blc::term::Term;
 use rayon::prelude::*;
@@ -35,12 +35,16 @@ enum Kill {
 /// Bounded head reduction to hnf. Some(hnf) if reached, None otherwise.
 fn head_normalize(t: &PTerm, steps: u32, nodes: u64) -> Option<PTerm> {
     let mut cur = t.clone();
+    let mut size = cur.nodes() as i64;
     for _ in 0..steps {
-        if cur.nodes() > nodes {
+        if size > nodes as i64 {
             return None;
         }
         cur = match head_step(&cur, nodes) {
-            Step::Did(next) => next,
+            Step::Did(next, d) => {
+                size += d;
+                next
+            }
             Step::Nf => return Some(cur),
             Step::MetaHead | Step::TooBig => return None,
         };
@@ -66,20 +70,26 @@ fn spine(t: &PTerm) -> (u32, &PTerm, Vec<&PTerm>) {
 }
 
 fn try_kill(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<Kill> {
-    if let Some(cert) = discover(t, cfg.steps, cfg.nodes) {
-        if verify(t, &cert, cfg.lemma_steps, cfg.steps, cfg.nodes).is_ok() {
-            return Some(if path.is_empty() {
-                Kill::Top(cert)
+    // Streaming discovery: each candidate triple is tried against BOTH
+    // trusted checkers; a rejection retires only that milestone family,
+    // so later families still get their shot (Codex round three:
+    // first-candidate masking was the main completeness gap).
+    let mut found: Option<Kill> = None;
+    discover_stream(t, cfg.steps, cfg.nodes, &mut |cand: &Ratchet| {
+        if verify(t, cand, cfg.lemma_steps, cfg.steps, cfg.nodes).is_ok() {
+            found = Some(if path.is_empty() {
+                Kill::Top(cand.clone())
             } else {
                 Kill::Arg {
                     path: path.to_string(),
-                    cert,
+                    cert: cand.clone(),
                 }
             });
+            return true;
         }
         // v2: same discovered triple, HeadTowerRatchet obligations
-        if let Some((htr, _)) = try_htr(t, &cert, cfg.lemma_steps, cfg.steps, cfg.nodes) {
-            return Some(if path.is_empty() {
+        if let Some((htr, _)) = try_htr(t, cand, cfg.lemma_steps, cfg.steps, cfg.nodes) {
+            found = Some(if path.is_empty() {
                 Kill::Top2(htr)
             } else {
                 Kill::Arg2 {
@@ -87,7 +97,12 @@ fn try_kill(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<Kill> {
                     cert: htr,
                 }
             });
+            return true;
         }
+        false
+    });
+    if found.is_some() {
+        return found;
     }
     if depth >= cfg.descend_depth {
         return None;
@@ -114,9 +129,13 @@ fn try_kill(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<Kill> {
 }
 
 fn main() {
+    // Default budgets measured 2026-07-31 late: 1000/100k reproduces the
+    // full 138-kill set of 2000/200k on all of unknowns_v2 with
+    // byte-identical certificates, at ~4× less wall (12.6 vs 50 min).
+    // Raise via flags for thorough runs; fuel controls run at 8000/800k.
     let mut cfg = Cfg {
-        steps: 2000,
-        nodes: 200_000,
+        steps: 1000,
+        nodes: 100_000,
         lemma_steps: 4096,
         descend_depth: 8,
         threads: 0, // 0 = rayon default (all cores)

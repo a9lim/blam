@@ -146,22 +146,3 @@ fn bb_33() {
     assert_eq!(nf(&t, 1_000_000).bit_size(), 1812);
 }
 
-#[test]
-#[ignore = "slow on the naive normalizer; run with --release -- --ignored"]
-fn bb_34() {
-    // (\1 1 1 1) C2 = ((C2 C2) C2) C2 -> C65536, 6 + 5*2^16 = 327686 bits.
-    // Deep result term: run on a fat stack.
-    std::thread::Builder::new()
-        .stack_size(1 << 29)
-        .spawn(|| {
-            let t = app(
-                lam(app(app(app(var(1), var(1)), var(1)), var(1))),
-                church(2),
-            );
-            assert_eq!(t.bit_size(), 34);
-            assert_eq!(nf(&t, 10_000_000_000).bit_size(), 327_686);
-        })
-        .unwrap()
-        .join()
-        .unwrap();
-}

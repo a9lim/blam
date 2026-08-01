@@ -689,3 +689,72 @@ hunting ground — geometric duplicating wrappers and spine ratchets
 first, each needing its own forcing example before we grow the
 certificate language again. Then Lean, where the checker's smallness
 was the design constraint all along.
+
+# 2026-07-31 · late — the wall-clock survey (a9's rule, then its dividends)
+
+a9 canonized the rule after watching the battery grind: wall-clock is
+a UX budget; a 2-hour single-thread run and an instant one are
+different products even when the verdicts agree. It's in AGENTS.md
+ops lessons now. The survey that followed measured every lane and
+paid out in three currencies — speed, coverage, and two fresh kills.
+
+## Measured, lane by lane
+
+- **Battery**: naive-probe single-thread ~45 min (≤26) → KN probe +
+  rayon subtree tasks → 0.17 s; default tier extended to ≤28 bits,
+  196,848 halters, <1 s. The moral got its own AGENTS bullet: never
+  probe with the executable spec.
+- **BBλ(34) witness**: was an `#[ignore]`d fat-stack naive test
+  nobody ran; now a 0.01 s KN case in the default suite. Zero
+  ignored tests remain.
+- **Census frontier re-adjudication** (`--terms-file`): 2:53 for all
+  1,894 at 16 threads. Fine as-is.
+- **certsearch incremental sizing**: head_step now returns the exact
+  contraction delta (occ·|arg| − occ − |arg| − 2) so callers track
+  size instead of re-walking the tree each step. Honest yield: only
+  ~5-10% — substitution *allocation* dominates, not the size walk.
+  Kept anyway (exact, free).
+- **solomonoff**: ported the census's measured transition caps
+  (rungs 64×β, rescue 32×β); output diffed against the shipped
+  tables before trusting (see below for the number).
+
+## Codex round three, and the two kills discovery owed us
+
+Their verdict on the v2 transcription: *"faithful … no association
+error, role swap, or soundness hole"* — all six RATCHET2 terms
+independently re-certified. Three follow-ups, all landed: wrapper-ID
+hardening (both trusted verifiers now require every wrapper hole to
+be Meta(0) — the plug/match_wrapper all-holes-collapse was a v3
+landmine); a 4,096-family cap in discovery (spine ratchets mint a
+fresh arity almost every state); and the big one — **first-candidate
+masking**. Discovery used to return its first consistent triple and
+stop; if both checkers rejected it, every later family died unseen.
+Discovery now STREAMS candidates to an accept callback, retiring a
+family per rejection.
+
+The unmasking immediately found **2 new kills** on the historical
+frontier — both n=39, wrapper λy.y Z, two engine heads never seen
+before, independently cross-validated by the Python replay and
+byte-identical at 4× budgets. Completeness has a price: the full
+2,032-term sweep at 2000/200k went from ~13 to ~50 min (rejected
+candidates no longer end the trace). The measured answer: 1000/100k
+reproduces the exact 138-kill set with byte-identical certificates
+in 12.6 min — now the default; thorough budgets stay a flag away.
+
+## Where the numbers stand
+
+Frontier **1,894** (`unknowns_v6.txt`; the v3-v5 intermediates were
+derivable stepping stones, deleted). Certificates **138**. Killed
+mass **727·2⁻⁴⁰ = 11.41%** of the census width. Ω|≤40 ∈
+**[0.123995323359, 0.123995328490]**. Suite: ~4 s, nothing ignored.
+
+**Solomonoff verification (the gate before this commit):** with the
+census caps ported, the full 4..40 sweep runs in **7:19 (was 23.5
+min, 3.2×)** — and every exact quantity is identical: halt/diverge/
+unknown masses to the last 2⁻⁶⁴ unit, 3,214,311 distinct nfs, the
+|x|≤20 table byte-for-byte. The only diff was the "most compressible"
+listing permuting within gain-tie classes — a pre-existing
+nondeterminism (sort by gain alone, then `take(top)` cutting inside a
+tie class in HashMap order), now fixed with a deterministic (gain,
+xlen, xenc) key. The shipped solomonoff_40.txt stays canonical until
+the tables regenerate at n=41.

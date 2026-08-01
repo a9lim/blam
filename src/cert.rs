@@ -173,10 +173,14 @@ fn count_var(t: &PTerm, j: u32) -> u64 {
     }
 }
 
-/// One symbolic head step.
+/// One symbolic head step. `Did` carries the exact node-count delta of
+/// the contraction (result − redex, computable redex-locally), so
+/// callers can track term size incrementally instead of re-walking the
+/// whole tree every step — the walk was the dominant cost of long
+/// discovery traces (survey, 2026-07-31 late).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Step {
-    Did(PTerm),
+    Did(PTerm, i64),
     /// The spine head is `Meta`: the reduction would have to inspect the
     /// opaque closed term. The enclosing check must abort.
     MetaHead,
@@ -201,20 +205,24 @@ pub fn head_step(t: &PTerm, max_nodes: u64) -> Step {
         PTerm::Var(_) => Step::Nf,
         PTerm::Meta(_) => Step::MetaHead,
         PTerm::Lam(b) => match head_step(b, max_nodes) {
-            Step::Did(b2) => Step::Did(plam(b2)),
+            Step::Did(b2, d) => Step::Did(plam(b2), d),
             other => other,
         },
         PTerm::App(f, a) => match &**f {
             PTerm::Lam(b) => {
-                let bound = b.nodes() + count_var(b, 1).saturating_mul(a.nodes());
+                let (bsz, asz, occ) = (b.nodes(), a.nodes(), count_var(b, 1));
+                let bound = bsz + occ.saturating_mul(asz);
                 if bound > max_nodes {
                     return Step::TooBig;
                 }
-                Step::Did(contract(b, a))
+                // redex = App + Lam + body + arg; result = body with each
+                // of `occ` Var(1) nodes replaced by a copy of the arg.
+                let delta = (occ * asz) as i64 - occ as i64 - asz as i64 - 2;
+                Step::Did(contract(b, a), delta)
             }
             PTerm::Meta(_) => Step::MetaHead,
             _ => match head_step(f, max_nodes) {
-                Step::Did(f2) => Step::Did(PTerm::App(Rc::new(f2), a.clone())),
+                Step::Did(f2, d) => Step::Did(PTerm::App(Rc::new(f2), a.clone()), d),
                 other => other,
             },
         },
@@ -264,7 +272,7 @@ pub fn check_reduces(
     let mut cur = l.clone();
     for i in 1..=max_steps {
         cur = match head_step(&cur, max_nodes) {
-            Step::Did(next) => next,
+            Step::Did(next, _) => next,
             Step::MetaHead => return Err(CheckFail::MetaHead(i)),
             Step::Nf => return Err(CheckFail::ReachedNf(i)),
             Step::TooBig => return Err(CheckFail::TooBig(i)),
@@ -409,6 +417,9 @@ pub fn verify(
     if cert.w.max_free(0) != 0 {
         return Err(CertFail::Shape("W not pattern-closed"));
     }
+    if !wrapper_holes_are_meta0(&cert.w) {
+        return Err(CertFail::Shape("W holes must all be Meta(0)"));
+    }
     if !t.is_closed() {
         return Err(CertFail::Shape("target not closed"));
     }
@@ -474,6 +485,7 @@ fn init_search(
     max_nodes: u64,
 ) -> Option<(u32, u32, u32)> {
     let mut cur = PTerm::from_term(t);
+    let mut size = cur.nodes() as i64;
     for i in 0..=init_steps {
         let (_, body) = strip_lams(&cur);
         if let Some((h, args)) = spine(body) {
@@ -483,11 +495,14 @@ fn init_search(
                 }
             }
         }
-        if cur.nodes() > max_nodes {
+        if size > max_nodes as i64 {
             break;
         }
         cur = match head_step(&cur, max_nodes) {
-            Step::Did(next) => next,
+            Step::Did(next, d) => {
+                size += d;
+                next
+            }
             // Concrete terms contain no Meta; Nf means head reduction
             // terminated — INIT can never match past this point.
             _ => break,
@@ -550,7 +565,7 @@ pub enum HtrFail {
 /// The trusted HeadTowerRatchet verifier. Establishes that `t` has no
 /// normal form, per the fixed assembly theorem (SPEC.md §5): the six
 /// obligations mechanically derive the rank step
-/// `R(m,N): Xₘ₊₁ Xₙ →ₕ⁺ Xₘ Xₙ` (SPREAD; PEEL×N; BASE+BOUNCE; PEEL×m;
+/// `R(m,N): Xₘ₊₁ X_N →ₕ⁺ Xₘ X_N` (SPREAD; PEEL×N; BASE+BOUNCE; PEEL×m;
 /// BASE+ERASE — each lemma lifted into its right-spine context, licensed
 /// because every proper source state is a non-abstraction) and the cycle
 /// `A Xₙ →ₕ⁺(OPEN) Xₙ Xₙ₊₁ →ₕ⁺ R(n−1,n+1)…R(0,n+1) →ₕ* (BASE) A Xₙ₊₁`,
@@ -580,8 +595,8 @@ pub fn verify_htr(
     if cert.w.max_free(0) != 0 {
         return Err(HtrFail::Shape("W not pattern-closed"));
     }
-    if contains_meta_id(&cert.w, 1) {
-        return Err(HtrFail::Shape("W uses reserved Meta(1)"));
+    if !wrapper_holes_are_meta0(&cert.w) {
+        return Err(HtrFail::Shape("W holes must all be Meta(0)"));
     }
     if !t.is_closed() {
         return Err(HtrFail::Shape("target not closed"));
@@ -656,12 +671,18 @@ pub fn verify_htr(
     })
 }
 
-fn contains_meta_id(t: &PTerm, id: u32) -> bool {
+/// True iff every metavariable in `t` is `Meta(0)` (and there is at
+/// least none of any other id). The wrapper helpers `plug` /
+/// `match_wrapper` collapse ALL hole ids into one — sound only for
+/// single-id wrappers, so both trusted verifiers gate on this before
+/// any multi-meta v3 code can meet the old helpers by accident
+/// (Codex round-three hardening).
+fn wrapper_holes_are_meta0(t: &PTerm) -> bool {
     match t {
-        PTerm::Meta(i) => *i == id,
-        PTerm::Var(_) => false,
-        PTerm::Lam(b) => contains_meta_id(b, id),
-        PTerm::App(f, a) => contains_meta_id(f, id) || contains_meta_id(a, id),
+        PTerm::Meta(i) => *i == 0,
+        PTerm::Var(_) => true,
+        PTerm::Lam(b) => wrapper_holes_are_meta0(b),
+        PTerm::App(f, a) => wrapper_holes_are_meta0(f) && wrapper_holes_are_meta0(a),
     }
 }
 
@@ -745,15 +766,44 @@ fn generalize(hay: &PTerm, needle: &PTerm) -> PTerm {
 /// look for a recurring abstraction head with strictly growing arguments,
 /// and extract `(A, W, C0)` by expressing each milestone argument as a
 /// context around its predecessor. The caller must `verify`.
+///
+/// Returns the FIRST consistent candidate. Callers that can reject a
+/// candidate (checker says no) should prefer `discover_stream`, which
+/// keeps scanning across families instead of stopping at the first —
+/// Codex round three identified first-candidate masking as the main
+/// completeness gap.
 pub fn discover(t: &Term, max_steps: u32, max_nodes: u64) -> Option<Ratchet> {
+    discover_stream(t, max_steps, max_nodes, &mut |_| true)
+}
+
+/// Streaming discovery: every consistent candidate triple is offered to
+/// `accept`; the scan stops at the first candidate `accept` takes (that
+/// triple is returned) or when the trace budget ends. Each milestone
+/// family proposes at most once — after a rejection the family is
+/// retired (consecutive windows of one family yield near-identical
+/// triples whose rejection cause persists; distinct families are the
+/// completeness win). Family count is capped: spine ratchets push a
+/// fresh arity almost every state (observed arity up to 8,228), and
+/// each would otherwise hold a milestone window alive (Codex
+/// round-three resource note). All policy here is untrusted — the
+/// checkers alone decide soundness.
+pub fn discover_stream(
+    t: &Term,
+    max_steps: u32,
+    max_nodes: u64,
+    accept: &mut impl FnMut(&Ratchet) -> bool,
+) -> Option<Ratchet> {
     let mut cur = PTerm::from_term(t);
+    let mut size = cur.nodes() as i64;
     // milestone family (head pattern, spine arity) -> first spine
-    // arguments in trace order. Keying on arity too keeps distinct
-    // roles of the same head apart — the deep family passes through
-    // both `A Xₙ` (the milestones) and `A I Xₘ Xₙ` (rank-step
-    // interiors); merged into one stream, the interiors' small
-    // constant first argument destroys the growing-window invariant.
-    let mut milestones: HashMap<(Rc<PTerm>, usize), Vec<PTerm>> = HashMap::new();
+    // arguments in trace order (None = family retired after a rejected
+    // proposal). Keying on arity too keeps distinct roles of the same
+    // head apart — the deep family passes through both `A Xₙ` (the
+    // milestones) and `A I Xₘ Xₙ` (rank-step interiors); merged into
+    // one stream, the interiors' small constant first argument destroys
+    // the growing-window invariant.
+    const MAX_FAMILIES: usize = 4096;
+    let mut milestones: HashMap<(Rc<PTerm>, usize), Option<Vec<PTerm>>> = HashMap::new();
 
     for _ in 0..max_steps {
         // Milestones may live under leading binders (verify's closedness
@@ -765,43 +815,59 @@ pub fn discover(t: &Term, max_steps: u32, max_nodes: u64) -> Option<Ratchet> {
             let x = spine_args[0];
             // Head-size guard: hashing the head is O(|H|) per state, and
             // certificate heads are small; skip pathological giants.
-            if matches!(**h, PTerm::Lam(_)) && h.nodes() <= 4096 {
-                let args = milestones.entry((h.clone(), spine_args.len())).or_default();
-                // Only the last three milestones are ever inspected;
-                // dropping older ones releases their subtree graphs
-                // (keeping them alive was half the memory bomb).
-                if args.len() == 3 {
-                    args.remove(0);
-                }
-                args.push((**x).clone());
-                if args.len() >= 3 {
-                    // Sliding window: a term may have a pre-ratchet
-                    // prelude; any later tower point works as C0 (BASE
-                    // is a concrete check, it just runs longer).
-                    let k = args.len();
-                    let (x1, x2, x3) = (&args[k - 3], &args[k - 2], &args[k - 1]);
-                    if x1.nodes() < x2.nodes() && x2.nodes() < x3.nodes() {
-                        let w = generalize(x2, x1);
-                        // real growth (at least one occurrence replaced,
-                        // wrapper is not the bare hole) and one
-                        // consistency probe before handing to `verify`
-                        if w != PTerm::Meta(0)
-                            && w.contains_meta()
-                            && plug(&w, x2) == *x3
-                        {
-                            let a = h.to_term()?;
-                            let c0 = x1.to_term()?;
-                            return Some(Ratchet { a, w, c0 });
+            if matches!(**h, PTerm::Lam(_))
+                && h.nodes() <= 4096
+                && (milestones.len() < MAX_FAMILIES
+                    || milestones.contains_key(&(h.clone(), spine_args.len())))
+            {
+                let entry = milestones
+                    .entry((h.clone(), spine_args.len()))
+                    .or_insert_with(|| Some(Vec::new()));
+                if let Some(args) = entry {
+                    // Only the last three milestones are ever inspected;
+                    // dropping older ones releases their subtree graphs
+                    // (keeping them alive was half the memory bomb).
+                    if args.len() == 3 {
+                        args.remove(0);
+                    }
+                    args.push((**x).clone());
+                    if args.len() >= 3 {
+                        // Sliding window: a term may have a pre-ratchet
+                        // prelude; any later tower point works as C0 (BASE
+                        // is a concrete check, it just runs longer).
+                        let k = args.len();
+                        let (x1, x2, x3) = (&args[k - 3], &args[k - 2], &args[k - 1]);
+                        if x1.nodes() < x2.nodes() && x2.nodes() < x3.nodes() {
+                            let w = generalize(x2, x1);
+                            // real growth (at least one occurrence replaced,
+                            // wrapper is not the bare hole) and one
+                            // consistency probe before offering upward
+                            if w != PTerm::Meta(0)
+                                && w.contains_meta()
+                                && plug(&w, x2) == *x3
+                            {
+                                if let (Some(a), Some(c0)) = (h.to_term(), x1.to_term()) {
+                                    let cand = Ratchet { a, w, c0 };
+                                    if accept(&cand) {
+                                        return Some(cand);
+                                    }
+                                }
+                                // rejected: retire this family
+                                *entry = None;
+                            }
                         }
                     }
                 }
             }
         }
-        if cur.nodes() > max_nodes {
+        if size > max_nodes as i64 {
             return None;
         }
         cur = match head_step(&cur, max_nodes) {
-            Step::Did(next) => next,
+            Step::Did(next, d) => {
+                size += d;
+                next
+            }
             _ => return None,
         };
     }
@@ -1057,7 +1123,7 @@ mod tests {
         // when it goes under the remaining binder.
         let l = papp(plam(plam(papp(pvar(2), pvar(1)))), PTerm::Meta(0));
         match head_step(&l, 1 << 20) {
-            Step::Did(t) => assert_eq!(t, plam(papp(PTerm::Meta(0), pvar(1)))),
+            Step::Did(t, _) => assert_eq!(t, plam(papp(PTerm::Meta(0), pvar(1)))),
             other => panic!("expected step, got {other:?}"),
         }
     }

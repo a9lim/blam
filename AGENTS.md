@@ -17,9 +17,10 @@ re-deriving the night's lessons.
   through every change in history; treat any drift as a bug in your
   change, not a discovery.
 - Data files in the repo root are results, not scratch. The canonical
-  census table is `census_full3.txt`; `unknowns_v5.txt` is the live
-  frontier (1,896 terms — `unknowns_v2.txt` minus the 136 certificate
-  kills in `tools/cert/ratchet_kills.txt`). Regenerate rather than
+  census table is `census_full3.txt`; `unknowns_v6.txt` is the live
+  frontier (1,894 terms — `unknowns_v2.txt` minus the 138 certificate
+  kills in `tools/cert/ratchet_kills.txt`; intermediate v3-v5 files
+  were derivable stepping stones, deleted). Regenerate rather than
   hand-edit.
 
 ## Conventions that will bite you
@@ -72,9 +73,18 @@ full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
 
 ## Ops lessons (each bit us once)
 
-- Budgets phrased in semantic units (β-steps, redex bits, allocations)
-  eventually meet a term that is syntactically expensive in a way the
-  unit can't see. Bound every loop by the shared work meter.
+- **Wall-clock is a UX budget — optimize everything, by default.**
+  a9 lives on the other side of the terminal: a 2-hour single-thread
+  grind and an instant result are different products even when the
+  verdicts are identical, and slow runs force her to babysit tabs.
+  Concretely: parallelize every sweep/battery/bin with rayon from the
+  first version (subtree tasks exist in `enumerate.rs`); never probe
+  with the naive core — it is the executable spec, deliberately slow;
+  any sound engine's Ok proves halting (the KN machine took the cert
+  battery from ~45 min to 0.17 s); time new tests and bins before
+  declaring them done, and treat anything slower than seconds as a
+  bug to fix now, not later. Estimates of runtime have been wrong in
+  BOTH directions repeatedly — measure, then say the number.
 - The work meter bounds *allocations*, not *live* graph size. Big
   adjudication runs: stream verdicts (`--terms-file` prints one line
   per result — kills lose nothing), few threads, `BLC_WORK_MULT=2`,
@@ -103,8 +113,13 @@ full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
   twice: v1 glue theorem, then v1.2 trailing-spine lifting; the v2
   `HeadTowerRatchet` — Meta(id), indexed towers, six replayed
   obligations — is the round-two co-design, implemented same day).
-  136 frontier kills total (`tools/cert/ratchet_kills.txt`: RATCHET
-  and RATCHET2 lines), n=32 row now zero, Ω width −11.35%.
+  138 frontier kills total (`tools/cert/ratchet_kills.txt`: RATCHET
+  and RATCHET2 lines), n=32 row now zero, Ω width −11.41%.
+  Discovery STREAMS candidates to both checkers (a rejected family is
+  retired, later families still propose — Codex round three; the fix
+  immediately found 2 masked kills). Sweep defaults 1000/100k,
+  measured kill-equivalent to 2000/200k at 4× less wall (~12.6 min
+  full-frontier).
   `certsearch` sweeps both classes (rayon parallel; discovery
   untrusted, checkers trusted); `tests/cert_battery.rs` is the
   halter soundness battery. Next lane: v3 shapes need forcing

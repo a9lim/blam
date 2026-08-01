@@ -17,7 +17,7 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   hand-excluded even in Tromp's tree, now carries a machine-checked
   divergence certificate (the *ratchet*, below). Every closed term of
   ≤32 bits is adjudicated with no hand exclusions anywhere.
-- **1,896 unknowns survive maximum effort** (`unknowns_v5.txt`) —
+- **1,894 unknowns survive maximum effort** (`unknowns_v6.txt`) —
   fewer than the reference ledger at every comparable size; at
   n=34–36 this engine proves strictly more terms divergent than the
   traced reference engine.
@@ -25,11 +25,11 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   Ω restricted to programs ≤40 bits lies in
   **[0.123995323359, 0.123995328603]**, computed in exact integer
   arithmetic (masses in units of 2⁻⁶⁴, u128 accumulators). The
-  interval width *is* the total mass of the 1,896 unknowns — the
+  interval width *is* the total mass of the 1,894 unknowns — the
   census frontier expressed as bits of Ω (`solomonoff_40.txt` holds
   the pre-ratchet census interval; the ratchet certificates trim
-  exactly 723·2⁻⁴⁰ off the top, 11.35% of the width, giving
-  [0.123995323359, 0.123995328494]).
+  exactly 727·2⁻⁴⁰ off the top, 11.41% of the width, giving
+  [0.123995323359, 0.123995328490]).
 - **The coding theorem, watched live**: K(x) and −log₂ m(x) agree
   within a bit for every high-mass normal form in range
   (`solomonoff_table.txt`).
@@ -48,7 +48,7 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   (six replayed obligations over named metavariables, for loops whose
   tower argument itself takes head position — co-designed with Codex,
   who derived the family's exact cycle arithmetic). Together they
-  kill **136 frontier terms** including `loop32`
+  kill **138 frontier terms** including `loop32`
   (`tools/cert/ratchet_kills.txt`), all re-certified byte-identically
   at 4× discovery budgets, with a soundness battery running every
   provable halter ≤28 bits (196,848 of them) through discovery and
@@ -144,8 +144,8 @@ default 4096).
 - `DESIGN.md` — architecture, measured results, open questions.
 - `LEDGER.md` — the overnight lab notebook: how these results
   happened, including the failures.
-- Data: `census_full3.txt` (canonical table), `unknowns_v5.txt` (the
-  1,896-term live frontier; `unknowns_v2.txt` is the pre-ratchet
+- Data: `census_full3.txt` (canonical table), `unknowns_v6.txt` (the
+  1,894-term live frontier; `unknowns_v2.txt` is the pre-ratchet
   2,032), `solomonoff_40.txt`, benchmarks, frontier files.
 
 ## Roadmap
@@ -157,7 +157,7 @@ default 4096).
 - Certificate v3 lanes (`tools/cert/SPEC.md` §5 tail): shapes still
   waiting for forcing examples — alternating heads, growth in outer
   evaluation contexts, normalization-equal milestones — over the
-  1,896-term frontier's 238 remaining ratchet-candidates.
+  1,894-term frontier's remaining ratchet-candidates.
 - Lean 4 track: verified prefix-freeness/Kraft, machine-checked K
   upper bounds, and the ratchet checker's soundness
   (`¬ HasNormalForm loop32` as the flagship theorem — no Lean BLC
