@@ -780,3 +780,61 @@ different obstacles, which overlap — the counts below are not a partition:
   332 terms hit the node cap rather than showing
   20,000 steps of growth.
 
+
+## The n=41 residue (2026-08-01, post-sweep)
+
+`classify41.csv`: the 2,381 unresolved 41-bit terms (post-certificate),
+same tracer, same coordinates. Counts: opaque 775, blowup 580,
+head-recurrent-other 570, ratchet-candidate 231, monotone-growth 225.
+The under-binder share keeps growing: 1,632 terms (68.6%) have
+k0_frac > 0.9. 367 terms reach spine arity ≥ 100 (the third-axis
+population at this size).
+
+## The v3 map, measured (certdiag, 2026-08-01)
+
+The docket said "anti-unifying discovery for duplicating wrappers" —
+refuted by instrumentation. `certdiag` (src/bin/certdiag.rs) ran the
+full discovery pipeline over all 456 live ratchet-candidates (225 at
+4–40 + 231 at 41) and recorded where each dies:
+
+- **387/456 produce a fully plug-consistent candidate triple** that
+  the trusted verifier REJECTS (369 OPEN, 18 DESC). Discovery is not
+  the gap; the certificate *shapes* are.
+- Stage census (family names below): zfirst 131, resource 74,
+  drift 63, other 53, passenger 48, badsrc 38, selfapp 26,
+  descfail 17, no-nest 6.
+
+The families, by the OPEN abort state and an HTR obligation probe:
+
+- **zfirst, 131 terms** — OPEN aborts at exactly `Z W[Z]` (the HTR
+  entry shape), and then HTR's SPREAD obligation aborts MetaHead:
+  the wrapper hands control to **Z first**, not to its fresh
+  argument (`W[Z] q →ₕ⁺ Z ⟨…q…⟩`-shaped, vs HTR's `q I Z q`). A
+  tower-recursive descent — the recursion drives *through* the
+  tower. HTR structurally cannot express it; this is the dominant
+  v3 class. Exemplar (35 bits):
+  `01000110100001100001011000001111010`.
+- **resource, 74** — the offered candidate's OPEN blows the symbolic
+  budget (37 TooBig, 37 Budget at 2000 steps / 100k nodes): either
+  giant cycles or wrong-family candidates.
+- **drift, 63** — consecutive milestones nest but under a
+  *different* wrapper each level (`generalize(x3,x2) ≠
+  generalize(x2,x1)`): level-indexed wrappers Wₙ, the indexed-schema
+  shape of SPEC §5. Exemplar: `0100011010000110000110011100111000110`.
+- **passenger, 48** — OPEN aborts at `Z e⃗ W[Z]` with small constant
+  arguments interleaved (s2/s3/s4 erasers): the HTR shape with fixed
+  passengers riding the spine. Likely the cheapest v3 win (a
+  passenger-tolerant SPREAD/PEEL variant).
+  Exemplar: `010001101000010110011000110000110110`.
+- **selfapp, 26** — OPEN ends at bare `Z Z`: the cycle mints no
+  wrapper at OPEN's end (growth lives elsewhere).
+  Exemplar: `010001101000010001101001011000001010`.
+- **badsrc, 38** — an OPEN source state is an abstraction: the chain
+  cannot lift through a left spine as-is.
+  Exemplar: `010001011010100000010101101000111010`.
+- **descfail, 17 / no-nest, 6 / other, 53** — DESC-stage aborts,
+  non-nesting windows, and mixed abort spines (`Z s8 Z`, …).
+
+Raw per-term rows: certdiag CSV (rerun in ~2 min:
+`certdiag <terms> --threads 8`); the exemplars above are the
+smallest members of each family.

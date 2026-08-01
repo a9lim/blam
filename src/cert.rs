@@ -749,8 +749,9 @@ fn closed_subterms(t: &PTerm, max_nodes: u64, out: &mut Vec<PTerm>) {
     }
 }
 
-/// Replace every occurrence of `needle` in `hay` by `Meta`.
-fn generalize(hay: &PTerm, needle: &PTerm) -> PTerm {
+/// Replace every occurrence of `needle` in `hay` by `Meta` (discovery
+/// aid — untrusted; also used by the certdiag instrument).
+pub fn generalize(hay: &PTerm, needle: &PTerm) -> PTerm {
     if hay == needle {
         return PTerm::Meta(0);
     }
