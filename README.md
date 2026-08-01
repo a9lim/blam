@@ -167,13 +167,17 @@ default 4096).
   4,275-term frontier's remaining ratchet-candidates.
 - Lean 4 track (`lean/`): **`¬ HasNormalForm loop32` is proven**
   (axioms: `propext` alone; zero sorries, no mathlib) — the first
-  mechanical BLC formalization anywhere. The head-divergence theorem
-  carries the trace's exact cycle arithmetic, and the no-normal-form
-  lift needs no standardization: every β-reduct of loop32 has exactly
-  one redex (the ratchet is a one-way street), so full β-reduction is
-  deterministic there. Next: the symbolic checker layer so any
-  ratchet certificate exports a Lean proof; head standardization as
-  the general bridge; prefix-freeness/Kraft; K upper bounds.
+  mechanical BLC formalization anywhere — **twice**: once by the
+  one-way-street argument (every β-reduct of loop32 has exactly one
+  redex, so β-reduction from it is deterministic — the reason the
+  ratchet certificate works), and once through the **general
+  factorization bridge `HeadDiverges → ¬HasNormalForm`**, proven for
+  every term via indexed parallel reduction (the
+  Accattoli–Faggian–Guerrieri split), so every head-divergence
+  certificate concludes no-normal-form with no side conditions.
+  Next: the symbolic checker layer so any ratchet certificate
+  exports a Lean proof mechanically; prefix-freeness/Kraft; K upper
+  bounds.
 - ~~A distilled `uni.rs`~~ **built and verified** (`tools/uni/` —
   call-by-name parity with uni.py, streaming stdin, byte-identical
   on the corpus plus three adversarial witnesses, ~18× faster; PR

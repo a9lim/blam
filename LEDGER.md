@@ -968,3 +968,43 @@ fresh ratchet-candidates survived the default-fuel certificate sweep
 — same anti-unification gap as the 4..40 residue's 225 (duplicating
 wrappers, high arities). The v3 lanes now have 456 mapped candidate
 terms across 4..41 to force against.
+
+## The general bridge falls the same night
+
+The morning docket said head standardization was "a real project,
+not an evening." It took the rest of the evening. With Codex's
+round-five staging in hand (the AFG indexed route and the missing
+`redexShell` constructor), the whole tower went up in three files:
+
+- Subst.lean — the five Nipkow shift/substitution equations, each an
+  induction with the indices generalized and an omega-driven if-bash
+  (`var_bash`) at the leaves.
+- Par.lean — occurrence counting (five interaction lemmas mirroring
+  the substitution geometry), ParN indexed parallel reduction, and
+  the substitution theorem at the exact index n + occ j t' · m —
+  the count algebra closes under Nat.mul_add/add_mul/mul_assoc
+  normalization plus omega over the product atoms.
+- Factor.lean — IPar with redexShell (a root redex held in place
+  while body and argument reduce — exactly the case the naive
+  factorization could not classify), the indexed split (at most one
+  head step exposed, index strictly down; the beta case spends its
+  +1 on the root contraction with the substitution theorem supplying
+  the remainder), merge (internal-then-head recombines into one
+  parallel step, index forgotten), and the pullback on the
+  lexicographic measure (head steps remaining, then index). The
+  assembly turned out SIMPLER than the staged DAG: no postponement,
+  no persistence lemma — the un-indexed merge plus the lex measure
+  carry the whole terminal argument.
+
+```
+theorem headDiverges_not_hasNormalForm : HeadDiverges t → ¬ HasNormalForm t
+-- every term; zero sorries; propext + Quot.sound; no mathlib
+```
+
+loop32_noNormalForm now has two independent proofs (the one-way
+street, and this bridge via loop32_headDiverges — `loop32_noNormalForm'`),
+and every one of the 257 ratchet kills has a Lean-formal path from
+its certificate's conclusion to no-normal-form with no side
+conditions. What remains for cert-to-Lean export is mechanical: the
+symbolic checker layer (STerm metavariables, instantiation, the
+commuting square as the one trusted rule).
