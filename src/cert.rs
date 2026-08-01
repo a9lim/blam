@@ -308,6 +308,8 @@ pub struct CertReport {
     pub init_steps: u32,
     /// Tower height of the matched milestone argument.
     pub init_tower: u32,
+    /// Trailing spine arguments carried past the tower (v1.2).
+    pub init_trail: u32,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -344,6 +346,22 @@ pub fn match_wrapper(w: &PTerm, x: &PTerm) -> Option<PTerm> {
     } else {
         None
     }
+}
+
+/// Split an application spine: `Some((head, args))` with `t = head a₁ … aₖ`
+/// and k ≥ 1, or `None` if `t` is not an application. The head is returned
+/// as the innermost function `Rc` so callers can key on it cheaply.
+pub fn spine(t: &PTerm) -> Option<(&Rc<PTerm>, Vec<&Rc<PTerm>>)> {
+    let (mut f, mut args) = match t {
+        PTerm::App(f, a) => (f, vec![a]),
+        _ => return None,
+    };
+    while let PTerm::App(g, a) = &**f {
+        args.push(a);
+        f = g;
+    }
+    args.reverse();
+    Some((f, args))
 }
 
 /// `Some(n)` iff `x == Wⁿ[C0]`.
@@ -410,22 +428,35 @@ pub fn verify(
     let base_steps =
         check_reduces(&base_l, &a, lemma_steps, max_nodes).map_err(CertFail::Base)?;
 
-    // INIT: T →ₕ* λᵏ.(A Wⁿ[C0]) for some k, n, concretely and bounded.
-    // Matching under leading binders is sound because A, W, C0 are all
-    // closed (checked above): the body's infinite head reduction is the
-    // state's infinite head reduction.
+    // INIT: T →ₕ* λᵏ.(A Wⁿ[C0] y⃗) for some k, n and any concrete trailing
+    // vector y⃗ (v1.2; j = 0 is the v1 shape). Matching under leading
+    // binders is sound because A, W, C0 are all closed (checked above):
+    // the body's infinite head reduction is the state's. Trailing args are
+    // sound by iterated lifting: every state of the certified infinite
+    // chain A Wⁿ →ₕ A Wⁿ⁺¹ →ₕ … is a non-abstraction — check_reduces
+    // enforces it on every proper source, and in the assembled chain each
+    // lemma endpoint occurs applied to the pending tower argument (BASE's
+    // endpoint A appears only as A Wⁿ⁺¹[C0]), hence as an application. So
+    // appending y⃗ maps the chain step-for-step onto an infinite head
+    // reduction of the matched body; after the first lift every state is
+    // syntactically an application, so further lifts are automatic. INIT
+    // never compares trailing vectors across observed milestones: it
+    // selects ONE state, and the lifted certified execution preserves that
+    // exact vector, open or closed — y⃗ is never substituted into,
+    // shifted, or inspected. [Codex round-2 review wording.]
     let mut cur = PTerm::from_term(t);
     for i in 0..=init_steps {
         let (_, body) = strip_lams(&cur);
-        if let PTerm::App(h, x) = body {
+        if let Some((h, args)) = spine(body) {
             if **h == a {
-                if let Some(n) = tower_index(&w, &c0, x) {
+                if let Some(n) = tower_index(&w, &c0, args[0]) {
                     return Ok(CertReport {
                         open_steps,
                         desc_steps,
                         base_steps,
                         init_steps: i,
                         init_tower: n,
+                        init_trail: args.len() as u32 - 1,
                     });
                 }
             }
@@ -468,8 +499,11 @@ pub fn discover(t: &Term, max_steps: u32, max_nodes: u64) -> Option<Ratchet> {
     for _ in 0..max_steps {
         // Milestones may live under leading binders (verify's closedness
         // gates reject any candidate that captures ambient variables).
+        // The tower rides the FIRST spine argument; trailing args are
+        // carried by lifting (see verify's INIT note) and ignored here.
         let (_, body) = strip_lams(&cur);
-        if let PTerm::App(h, x) = body {
+        if let Some((h, spine_args)) = spine(body) {
+            let x = spine_args[0];
             // Head-size guard: hashing the head is O(|H|) per state, and
             // certificate heads are small; skip pathological giants.
             if matches!(**h, PTerm::Lam(_)) && h.nodes() <= 4096 {
@@ -561,6 +595,51 @@ mod tests {
         let cert = discover(&t, 4096, 1 << 20).expect("discovery under binder");
         assert_eq!(cert.a, loop32_cert().a);
         verify(&t, &cert, 64, 4096, 1 << 20).expect("verify under binder");
+    }
+
+    #[test]
+    fn trailing_arg_ratchet_certifies() {
+        // Frontier near-miss (n=36): milestones are A Wⁿ[C0] y with
+        // loop32's exact engine and one fixed trailing spine argument
+        // (which happens to be A itself). v1.1 was blind to the shape;
+        // v1.2's spine matching certifies it, soundly by lifting.
+        let t = parse_all("010001011000110100001011010000110110").unwrap();
+        let cert = discover(&t, 4096, 1 << 20).expect("discovery with trailing arg");
+        assert_eq!(cert.a, loop32_cert().a);
+        let rep = verify(&t, &cert, 64, 4096, 1 << 20).expect("verify with trailing arg");
+        assert_eq!(rep.init_trail, 1);
+    }
+
+    #[test]
+    fn two_trailing_args_certify() {
+        // Frontier near-miss (n=36): A Wⁿ[C0] y₁ y₂ — two trailing
+        // spine arguments after a one-step prelude.
+        let t = parse_all("010001100110001100001011010000110110").unwrap();
+        let cert = discover(&t, 4096, 1 << 20).expect("discovery with two trailing args");
+        assert_eq!(cert.a, loop32_cert().a);
+        let rep = verify(&t, &cert, 64, 4096, 1 << 20).expect("verify with two trailing args");
+        assert_eq!(rep.init_trail, 2);
+    }
+
+    #[test]
+    fn open_trailing_arg_certifies() {
+        // λu. A C0 u — the trailing argument is OPEN in the stripped
+        // body (it is the stripped binder's variable). Lifting never
+        // substitutes into, shifts, or inspects y⃗, so openness is
+        // harmless; this pins the exact claim the closed-trailing and
+        // under-binder tests each cover only half of. [Codex round-2
+        // requested test.]
+        let a = parse_all("0001011010000110110").unwrap();
+        let c0 = parse_all("000001011010000110110").unwrap();
+        let body = Term::App(
+            Rc::new(Term::App(Rc::new(a.clone()), Rc::new(c0))),
+            Rc::new(Term::Var(1)),
+        );
+        let t = Term::Lam(Rc::new(body));
+        let cert = discover(&t, 4096, 1 << 20).expect("discovery with open trailing arg");
+        assert_eq!(cert.a, a);
+        let rep = verify(&t, &cert, 64, 4096, 1 << 20).expect("verify with open trailing arg");
+        assert_eq!(rep.init_trail, 1);
     }
 
     #[test]

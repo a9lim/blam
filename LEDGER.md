@@ -590,3 +590,57 @@ well-founded measure. That's the next Codex round on `blc-conformance`.
 After v2: the Lean track, with this checker as the centerpiece —
 Codex's staging is (a) infinite head chain, (b) head standardization,
 (c) `¬ HasNormalForm loop32`.
+
+## Round two: v1.2 ships, and v2 arrives with its math done
+
+The 244 surviving ratchet-candidates split under hand diagnosis into
+a cheap family and a deep one, and the evening's last act handled
+both.
+
+**The cheap family — trailing spine vectors.** Dozens of near-misses
+are loop32's exact engine presenting as `λᵏ.(A Wⁿ[C0] y⃗)` — the
+tower plus baggage (one exemplar's trailing argument is literally A
+itself). v1.2 decomposes the full spine in INIT and discovery;
+soundness is iterated lifting, and the subtlety Codex's round-one
+strengthening paid for came due here: every state of the certified
+chain is a non-abstraction, so any fixed trailing vector — open or
+closed — rides along untouched. Swept: **24 new kills, every one
+with loop32's head** (2×36, 5×38, 3×39, 14×40). The v1.1 kill set
+reproduced byte-identically; the 24 held at 4× budgets.
+
+Codex's round-two verdict: *"v1.2 is sound. Ship it"* — with two
+comment corrections, both mine to own: I'd written "each lemma
+endpoint is an application," which is false (BASE ends at A, an
+abstraction; the assembled chain only ever contains it *applied*),
+and my "y⃗ need not be constant across milestones" conflated
+untrusted discovery with the proof (INIT selects one state; the
+lifted execution preserves that exact vector). Plus one adversarial
+test they wanted: `λu. A C0 u`, the trailing argument open in the
+stripped body. All applied; 31 tests green.
+
+**The deep family — and Codex did the math.** For the n=35 forcing
+term (wrapper perfectly consistent, but OPEN ends `Z W[Z]` — the
+tower takes head position, where v1's opacity must abort), they
+derived the exact recurrence: rank step `R(m,N)` in 11+3(m+N) steps,
+cycle length 1 + (9n²+25n)/2, matching my measured milestone gaps
+1, 18, 44, 79, … exactly. And they caught my misread: the
+cycle-internal context term is the cycle-local Xₙ₋₁, not a fixed
+constant — a schema that opaques it loses the tower correlation.
+
+The v2 design that fell out (SPEC.md §5, now the ratified plan) is
+smaller than what I'd sketched: no control graph, no cyclic proof.
+`HeadTowerRatchet` — named metavariables `Meta(id)`, indexed towers
+unfolded by definitional equality, six replayed obligations
+(BASE/OPEN/SPREAD/PEEL/BOUNCE/ERASE), a fixed assembly theorem
+proved once, two proof strata (productive CYCLE, terminating
+helpers), and the commuting square still the only primitive rule.
+Their line worth keeping: the forcing example "does not force
+general pattern-headed schemas or cyclic proof graphs. It forces
+indexed towers, named closed metavariables, and ordinary
+well-founded induction."
+
+**Numbers after v1.2:** frontier 1,926 → **1,902**
+(`unknowns_v4.txt`), certificates 106 → **130**
+(`tools/cert/ratchet_kills.txt`), killed mass 675·2⁻⁴⁰ total —
+**10.6%** of the census width — interval
+**[0.123995323359, 0.123995328538]**.

@@ -17,8 +17,8 @@ re-deriving the night's lessons.
   through every change in history; treat any drift as a bug in your
   change, not a discovery.
 - Data files in the repo root are results, not scratch. The canonical
-  census table is `census_full3.txt`; `unknowns_v3.txt` is the live
-  frontier (1,926 terms — `unknowns_v2.txt` minus the 106 ratchet
+  census table is `census_full3.txt`; `unknowns_v4.txt` is the live
+  frontier (1,902 terms — `unknowns_v2.txt` minus the 130 ratchet
   kills in `tools/cert/ratchet_kills.txt`). Regenerate rather than
   hand-edit.
 
@@ -99,12 +99,15 @@ full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
   one (§2 of the spec) — drop the must-mask to 0; a survivor there is a
   hypothesis needing splice + battery, not a proof.
 - ~~`loop32`~~ **done** (2026-07-31 evening) — the ratchet certificate
-  (`src/cert.rs`, spec+proof in `tools/cert/SPEC.md`, Codex-reviewed).
-  106 frontier kills total (`tools/cert/ratchet_kills.txt`), n=32 row
-  now zero, Ω width −9.5%. `certsearch` is the sweep bin (rayon
+  (`src/cert.rs`, spec+proof in `tools/cert/SPEC.md`, Codex-reviewed
+  twice: v1 glue theorem, then v1.2 trailing-spine lifting). 130
+  frontier kills total (`tools/cert/ratchet_kills.txt`), n=32 row
+  now zero, Ω width −10.6%. `certsearch` is the sweep bin (rayon
   parallel; discovery untrusted, checker trusted). Next lane: ratchet
-  v2 (SPEC.md §5 — alternating heads, asymmetric cores, spine
-  ratchets; classifier coordinates in `tools/cert/CLASSIFY.md`).
+  v2 = `HeadTowerRatchet` (SPEC.md §5, co-designed with Codex —
+  Meta(id), indexed towers, six replayed obligations; forcing example
+  n=35 `01000110100001100001010110001011010`; classifier coordinates
+  in `tools/cert/CLASSIFY.md`).
 - ~~bb.rs Meta caching~~ **done** (2026-07-31 daytime): cached-Meta
   nodes with exact meter parity, verified bit-identical on a full 4..40
   sweep. Honest gain 1.37× overall — the 2-5× estimate was wrong

@@ -1,13 +1,12 @@
 # Ratchet certificates: mechanical divergence proofs for growing-context loops
 
-Status: v1 implemented (`src/cert.rs`, `src/bin/certsearch.rs`) and
-**adversarially reviewed by Codex** (thread `blc-conformance`,
-2026-07-31): *"the glue theorem survives — no soundness counterexample."*
-Two review findings, both fixed: the reference reducer had a latent
-(unexercised) argument-descent branch, now head-only by construction;
-and the lifting side condition is enforced on every proper *source*
-state, not merely intermediates (latent in v1 — every check starts from
-an application — real in v2). §7 logs the review.
+Status: v1–v1.2 implemented (`src/cert.rs`, `src/bin/certsearch.rs`)
+and **adversarially reviewed by Codex** in two rounds (thread
+`blc-conformance`, 2026-07-31): round one — *"the glue theorem
+survives — no soundness counterexample"*; round two — *"v1.2 is
+sound. Ship it."* Review findings all fixed (§7 logs both rounds).
+The v2 design (§5) is the round-two co-designed `HeadTowerRatchet`:
+narrow indexed-tower certificates, not a general control graph.
 
 ## 1. The target, and why redloop can't reach it
 
@@ -81,7 +80,10 @@ over terms extended with the opaque closed metavariable Z:
 | OPEN | `A Z →ₕ⁺ (Z Z) W[Z]` | all closed Z |
 | DESC | `W[Z] W[Z] →ₕ⁺ Z Z` | all closed Z |
 | BASE | `C0 C0 →ₕ⁺ A` | concrete |
-| INIT | `T →ₕ* A Wⁿ[C0]` for some n ≥ 0 | concrete, bounded |
+| INIT | `T →ₕ* λᵏ.(A Wⁿ[C0] y⃗)` for some k, n ≥ 0, any y⃗ | concrete, bounded |
+
+(v1 had k = 0 and y⃗ empty; v1.1 added the binders, v1.2 the trailing
+vector — see below.)
 
 **Symbolic step rules** (what makes the ∀Z quantification sound):
 
@@ -131,6 +133,25 @@ checks and never certify. Motivation: the frontier classification
 (tools/cert/CLASSIFY.md) found 1,320/2,032 unknowns presenting as bare
 abstractions, invisible to top-level spine matching.
 
+**Trailing-vector extension (v1.2).** INIT (and discovery's milestone
+scan) decompose the full application spine: a state
+`λᵏ.(A Wⁿ[C0] y₁ … yⱼ)` certifies for any j ≥ 0. Soundness is
+iterated lifting: every state of the certified infinite chain
+`A Wⁿ[C0] →ₕ A Wⁿ⁺¹[C0] →ₕ …` is a non-abstraction — the lemma
+checks enforce it on every proper source state, and in the assembled
+chain each lemma endpoint occurs applied to the pending tower
+argument (BASE's endpoint `A` appears only as `A Wⁿ⁺¹[C0]`), hence
+as an application. The lifting lemma therefore applies pointwise to
+every step; after the first lift every state is syntactically an
+application, so lifts through y₂ … yⱼ are automatic. The trailing
+vector is never substituted into, shifted, or inspected, so it may be
+open (including in the k stripped binders); INIT never compares
+trailing vectors across observed milestones — it selects ONE state,
+and the lifted certified execution preserves that exact vector.
+There is no soundness reason to bound j; `init_trail` is recorded in
+the report for audit but is not certificate data. [Reviewed by Codex,
+round two.]
+
 **INIT matching note.** The implementation matches `x = Wⁿ[C0]` by
 *peeling*: `match_wrapper(w, x)` requires every `Meta` position of w to
 carry the identical subtree and is the exact tree-inverse of `plug`.
@@ -173,37 +194,86 @@ concrete head trace with per-state snapshots and:
 3. hands `(A, W, C0)` to the checker. Garbage in ⇒ ABORT, never a
    wrong certificate.
 
-## 5. v2 design lane (beyond the (Z Z)-collapse shape)
+## 5. v2: the `HeadTowerRatchet` (co-designed with Codex, round two)
 
 v1 hard-codes the state shape `A Wⁿ[C0]` and the collapse core `Z Z`.
-Shapes it provably misses — concrete in Tromp's loop33/34 hand
-analyses in `BBold.lhs`, per the Codex review, not hypothetical
-taxonomy:
+The forcing example is the 35-bit frontier term
+`01000110100001100001010110001011010`: its wrapper is perfectly
+consistent, but OPEN's natural endpoint is `Z W[Z]` — the tower
+argument itself takes head position, where v1's opacity must abort
+(MetaHead). Codex derived its exact recurrence: with `I = λu.u`,
+`A = λx. x W[x]`, `W[Z] = λy. y I Z y`, `C0 = A`, the rank step
+`R(m,N): Xₘ₊₁ Xₙ →ₕ⁺ Xₘ Xₙ` takes exactly 11+3(m+N) steps and the
+full cycle `A Xₙ →ₕ⁺ A Xₙ₊₁` takes 1 + (9n²+25n)/2 — matching the
+measured milestone gaps 1, 18, 44, 79, … exactly. Crucially the
+cycle-internal context term is Xₙ₋₁ — cycle-local, NOT globally
+fixed; any schema that generalizes it to an opaque constant loses an
+essential tower correlation.
 
-- alternating / mutually recursive heads: `A Xₙ → B Yₙ → A Xₙ₊₁`;
-- asymmetric collapse cores such as `Z P[Z]`; triplication, several
-  tower arguments;
-- alternating wrappers, vector-valued tower depths;
-- growth in an outer evaluation context rather than one argument;
-- recurrences under binders or depending on open parameters;
-- milestones equal only after a certified normalization, not
-  syntactically;
-- phase-dependent descent, multiple base cases.
+**The decisive design result: this family does not force general
+pattern-headed schemas or cyclic proof graphs.** It forces three
+things only — indexed towers, *named* closed metavariables, and
+ordinary well-founded induction around the existing opaque symbolic
+reducer. The certificate class:
 
-The reviewed v2 direction (ordinary well-founded induction — not
-cyclic proof, since every lemma invocation strictly decreases):
+- Data: closed `A`, `C0`, `I`, wrapper `W`; metavariables get
+  identities `Meta(id)` (same id ⇒ identical instantiation,
+  different ids independent; `shift(Meta i) = Meta i`, substitution
+  never enters).
+- Replayed obligations (lengths for the forcing example in
+  parentheses; BASE is 0 steps there because `C0 = A`):
 
-- a finite control graph of indexed state schemas;
-- arbitrary exact symbolic lemma endpoints (no hard-coded core);
-- several closed metavariables where needed;
-- proof *scripts* of symbolic head steps + explicit lemma invocations,
-  fully replayable by the small trusted checker;
-- a lexicographic/multiset measure on tower depths decreasing at every
-  invocation.
+```
+BASE(Z):     C0 Z    →ₕ* A Z            (0)
+OPEN(Z):     A Z     →ₕ⁺ Z W[Z]         (1)
+SPREAD(Z,Q): W[Z] Q  →ₕ⁺ Q I Z Q        (1)
+PEEL(Z):     W[Z] I  →ₕ⁺ Z I            (3)
+BOUNCE(Z):   A I Z   →ₕ⁺ Z I I Z        (3)
+ERASE(Z):    A I I Z →ₕ⁺ Z              (7)
+```
 
-Discovery may stay heuristic; only the replayed script is trusted.
-Build this if (and as soon as) the frontier classification shows
-ratchet-adjacent families v1 leaves on the table.
+- A FIXED theorem (proved once, on paper/in Lean — not per-term)
+  assembles these into `R(m,N)` and the cycle: SPREAD exposes
+  `Xₙ I`; PEEL iterates N times; BASE+BOUNCE; PEEL m times;
+  BASE+ERASE; then descend `Xₙ Xₙ₊₁` through `R(n−1,n+1) … R(0,n+1)`
+  and finish with BASE. Every state in the assembled chain is again
+  a non-abstraction, so v1.2's trailing-vector lifting carries over.
+- Proof-term calculus for the checker (structured AST, not a graph):
+  `Replay(symbolic_steps) | Seq | Lift(trailing_spine) |
+  NatRec(index, zero, succ) | Call(lemma, instantiation)`, with
+  `Tower(0) = C0`, `Tower(succ n) = W[Tower(n)]` unfolded by
+  definitional equality (not a β-step — never inspects an opaque
+  metavariable).
+- Two proof strata, kept separate: the *productive* theorem
+  `CYCLE(n): S(n) →ₕ⁺ S(n+1)` (cycle count increases forever — it
+  is NOT part of a well-founded measure), and *terminating* helpers
+  (`PEEL_TO(n)`, `DESC(m,N)`) whose recursive calls must
+  syntactically decrease. Productivity = each CYCLE contains ≥1 real
+  head step.
+- The symbolic commuting square `s →ₕˢʸᵐ s′ ⇒ inst(s) →ₕ inst(s′)`
+  remains the ONLY primitive reduction-simulation rule; tower
+  unfolding, left-spine lifting, composition, induction, and
+  decrease-checking are proved combinators that merely assemble it.
+
+Discovery (untrusted): anti-unify milestones for `A`, `W`, `C0`;
+enumerate small closed subterms of `A` and `W` as candidate `I`;
+hand `(A, W, C0, I)` to the six-check verifier; the fixed theorem
+manufactures the indexed proof. Failure modes to guard when
+synthesizing from traces: treating the cycle-local Xₙ₋₁ as globally
+fixed; independently generalizing occurrences that must share one
+tower index; C0-specific concrete segments; lifting through
+arbitrary one-hole contexts rather than right-spine suffixes;
+β-equivalent rather than exact endpoints; capture under stripped
+binders; unchecked recursive decrease; exceptional n=0 phases (the
+first cycle here has length 1); unrolling concrete depths instead of
+producing an induction witness.
+
+A finite control graph may return later as *discovery IR* compiled
+into this proof AST; building graph SCCs and a lexicographic-measure
+solver first would enlarge the trusted surface before any frontier
+example requires it. Shapes plausibly still beyond this class
+(alternating heads, growth in outer evaluation contexts,
+normalization-equal milestones) wait for their own forcing examples.
 
 ## 6. Verification battery (planned)
 
@@ -237,3 +307,23 @@ verified (§3). Lean staging advice adopted (§8 of the project docket):
 standardization, (c) derive `¬ HasNormalForm loop32` — with the
 symbolic layer's commuting square `inst(s) →ₕ inst(s′)` as the central
 checker theorem.
+
+**2026-07-31, Codex round two (thread `blc-conformance`, job
+cx-20260731-193136-4a8c).** Verdict on v1.2: *"v1.2 is sound. Ship it
+after correcting two misleading comments and adding one targeted
+test. I found no semantic or implementation hole in trailing-spine
+lifting."* Independently reproduced the two exemplar certifications
+(`init_trail` 1 and 2) and ran the cert test suite. Corrections, all
+applied: (1) "each lemma endpoint is an application" was false as
+written — BASE ends at `A`, an abstraction; the assembled chain only
+ever contains it applied to the pending tower argument; (2) the
+trailing-vector claim rephrased: INIT selects one state and the
+lifted execution preserves that exact vector (discovery may observe
+unrelated vectors — it is untrusted); (3) adversarial test
+`λu. A C0 u` (trailing argument open in the stripped body) added.
+Confirmed: no soundness reason to bound j; `init_trail` stays report
+data, not certificate data. Round two also derived the deep-family
+exact recurrence and co-designed the v2 `HeadTowerRatchet` (§5),
+including the correction that the cycle-internal context term is the
+cycle-local Xₙ₋₁, not a global constant. The 24-kill sweep count was
+reported to Codex, not independently re-swept by them.
