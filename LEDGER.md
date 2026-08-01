@@ -1174,3 +1174,24 @@ the batch, axioms [propext, Quot.sound] throughout. The export lane
 that opened three days ago with "can the Rust checker's verdicts
 become proofs?" is closed. What remains formal-side is a different
 kind of theorem: prefix-freeness/Kraft, then K upper bounds.
+
+Round ten came back the same evening (cx-20260801-120729-a8f9):
+Codex verified the bridge independently at 1d9c600 — builds, all
+297 kill theorems present, axioms [propext, Quot.sound] on the
+pullback, the factorization, and argKill — "ship the strengthened
+pullback and ARG bridge unchanged," with one precision correction
+worth keeping: the residual is not TRANSPORTED through the merge
+branch; the merged parallel step becomes the new recursive input
+and the IH derives the final residual directly (forgetting the
+merge index is safe because head count, the lex order's primary
+coordinate, strictly drops there). On the docket questions: drift
+is NOT yet a class — they traced the 37-bit exemplar and its three
+nested milestones share no generator (arg sizes 70/207/1519,
+incompatible generalizations; an unconstrained W : Nat → Context
+would leave the ∀n as an assumption — only a finite generator
+Rₙ₊₁ = G[Rₙ] gives a sound indexed-wrapper certificate); and
+PassengerDiagonal is the right next build — their reply derives the
+complete glue (rank step UNWRAP/UNWRAP-lifted/DROP-lifted/UNWRAP,
+diagonal descent = UNWRAP twice, the n=0 exceptional cycle closing
+by SEED lifted through X₁) on nothing but the existing commuting
+square and v1.2 machinery. Next session opens there.
