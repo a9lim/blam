@@ -2,7 +2,8 @@
 loop32 = `01000110001100001011010000110110`, the 32-bit closed term
 whose only prior divergence proof was by hand. This file certifies the
 ratchet (tools/cert/SPEC.md) in Lean: the head reduction from loop32
-is infinite. Head standardization (no hnf ⇒ no nf) is the next stage.
+is infinite. Blc/NoNf.lean lifts this to ¬ HasNormalForm loop32 via
+the single-redex discipline (no standardization needed).
 
 The cycle arithmetic mirrors the machine-verified trace exactly:
 OPEN (1 step) + DESC×n lifted (2n steps) + BASE lifted (1 step)
@@ -96,7 +97,7 @@ theorem base_step (w : Term) : HeadStep (.app C0 w) A := by
   exact h
 
 /-- An application is never a lambda (side condition for `appL`). -/
-private theorem app_ne_lam (f a : Term) : ∀ b, Term.app f a ≠ Term.lam b := by
+theorem app_ne_lam (f a : Term) : ∀ b, Term.app f a ≠ Term.lam b := by
   intro b h
   cases h
 

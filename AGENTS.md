@@ -159,12 +159,18 @@ full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
   unknowns, 119 certificate-killed same night. Canonical table
   census_full5.txt. n=42 needs a --rescue raise first (see The
   engines).
-- Lean 4 track: `lean/` **exists and proves** `loop32_headDiverges`
-  (executable head stepper mirroring the trusted checker + relation
-  agreement + determinism + the exact 2n+2 cycle arithmetic; zero
-  sorries, no mathlib). Next stage per Codex staging: head
-  standardization → `¬ HasNormalForm loop32`. Then
-  prefix-freeness/Kraft, K upper bounds.
+- Lean 4 track: `lean/` **proves the flagship** —
+  `loop32_noNormalForm : ¬ HasNormalForm loop32` (axioms propext
+  alone; zero sorries, no mathlib), plus `loop32_headDiverges` with
+  the exact 2n+2 cycle arithmetic. The no-nf lift SKIPS
+  standardization: every β-reduct of loop32 is a single-redex state
+  (`Spine` in Blc/Beta.lean, invariant family `St` in Blc/NoNf.lean),
+  so full β is deterministic there — the route Codex staged
+  (Takahashi factorization) hit a real subtlety (internal parallel
+  reduction vs head chains passing through lambdas, see LEDGER) and
+  remains the docket item for the GENERAL bridge. Next: symbolic
+  checker layer (any ratchet cert → Lean proof), then
+  standardization, prefix-freeness/Kraft, K upper bounds.
 - `uni.rs` (tools/uni/): call-by-name parity rework done after
   Codex's adversarial review found call-by-need observably diverges
   from uni.py (duplicated-argument witness) and buffered stdin broke

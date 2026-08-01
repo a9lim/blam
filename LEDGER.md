@@ -849,3 +849,42 @@ the 10⁷ cap — **1.06× headroom**. AGENTS.md now says in bold: raise
 --rescue before n=42. An 8× fuel control over the 2,381 unresolved
 41-bit terms ran overnight to test kill-completeness at default
 budgets.
+
+## The flagship falls without standardization
+
+Set out to close the gap loop32_headDiverges → ¬HasNormalForm via the
+staged route (Takahashi: parallel reduction, factorization through
+internal reduction, five Nipkow substitution lemmas). Stress-testing
+the factorization statement before writing Lean found a real
+subtlety: the head chain of an application's function can pass
+through a lambda, at which point the naive lifting breaks and the
+internal-reduction bookkeeping has to absorb a multi-step head prefix
+into a single parallel step — which is false. Takahashi's actual
+proof threads this needle with care; formalizing it is a real
+project, not an evening.
+
+Then the better observation: **the ratchet doesn't need
+standardization at all.** A, F, C0, and every tower Wⁿ[C0] are
+themselves β-normal — the only redex any reachable state ever carries
+is the head redex. So full β-reduction from loop32 is deterministic
+and coincides with the head stepper. Formalized as: `Spine` (the
+single-redex discipline; its lemma: on a spine, every β step IS the
+head step) + `St` (the ratchet state family: init, engine·tower,
+tower-tower descent spines) with two closure theorems — every state
+steps to a state, every β step from a state lands in the family. A
+normal form reachable from loop32 would be a state with no successor;
+there are none.
+
+```
+theorem loop32_noNormalForm : ¬ HasNormalForm loop32
+-- axioms: [propext]; zero sorries; no mathlib
+```
+
+Cleaner axiom footprint than the divergence theorem itself (propext
+alone — the Quot.sound dependency of headDiverges comes through Nat
+arithmetic that the invariant argument never touches). The proof is
+~180 lines across Blc/Beta.lean and Blc/NoNf.lean and formalizes the
+reason the certificate approach is sound in the first place: the loop
+is a one-way street. Head standardization stays on the docket as the
+general bridge (for terms without the single-redex discipline), with
+the factorization subtlety recorded above as the entry cost.

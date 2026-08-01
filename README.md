@@ -165,12 +165,15 @@ default 4096).
   waiting for forcing examples — alternating heads, growth in outer
   evaluation contexts, normalization-equal milestones — over the
   4,275-term frontier's remaining ratchet-candidates.
-- Lean 4 track (`lean/`): `loop32_headDiverges` is **proven** — the
-  first mechanical BLC formalization anywhere (executable head
-  stepper mirroring the trusted checker, agreement + determinism,
-  the ratchet cycle at its exact step arithmetic). Next: head
-  standardization lifts it to `¬ HasNormalForm loop32`; then
-  prefix-freeness/Kraft and machine-checked K upper bounds.
+- Lean 4 track (`lean/`): **`¬ HasNormalForm loop32` is proven**
+  (axioms: `propext` alone; zero sorries, no mathlib) — the first
+  mechanical BLC formalization anywhere. The head-divergence theorem
+  carries the trace's exact cycle arithmetic, and the no-normal-form
+  lift needs no standardization: every β-reduct of loop32 has exactly
+  one redex (the ratchet is a one-way street), so full β-reduction is
+  deterministic there. Next: the symbolic checker layer so any
+  ratchet certificate exports a Lean proof; head standardization as
+  the general bridge; prefix-freeness/Kraft; K upper bounds.
 - ~~A distilled `uni.rs`~~ **built and verified** (`tools/uni/` —
   call-by-name parity with uni.py, streaming stdin, byte-identical
   on the corpus plus three adversarial witnesses, ~18× faster; PR
