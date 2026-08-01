@@ -1008,3 +1008,22 @@ its certificate's conclusion to no-normal-form with no side
 conditions. What remains for cert-to-Lean export is mechanical: the
 symbolic checker layer (STerm metavariables, instantiation, the
 commuting square as the one trusted rule).
+
+# 2026-08-01 · morning — the control's verdict, and its tail
+
+The 8× fuel control over the 2,381 unresolved 41-bit terms:
+**2,370 processed, zero additional kills.** Default discovery budgets
+(1000 steps / 100k nodes) are kill-complete at n=41 on everything
+measurable. The remaining 11 terms were killed with the run at the
+9-hour mark (exact pid, machine clean): all are classifier blowup
+terms (9 of 11 hit the 500k-node cap in 20k trace steps —
+`head-recurrent-other` with ~500k-node states), where 8× discovery
+budgets thrash allocation rather than approach a certificate. They
+are recorded in the scratchpad, not silently dropped; the honest
+claim is "kill-complete on 2,370/2,381, 11 blowup terms not
+control-swept at 8×."
+
+Ops lesson, canonized as a docket item: certsearch discovery needs a
+per-term work meter (the bb.rs pattern) so a control sweep can never
+be held hostage by half a percent of pathological terms. Wall-clock
+is a UX budget; a control that doesn't terminate isn't a control.
