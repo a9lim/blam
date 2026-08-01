@@ -92,6 +92,10 @@ Layout:
   slots), the rank step as a literal seven-lemma lifted composition,
   and recursive descent costs — the quadratic closed form is never
   trusted glue.
+- `Blc/Selector.lean` — the SelectorRatchet (v3) assembly:
+  `SelCert` with FAN/SELECT obligations (`renameMVar01` and its
+  instantiation lemma let SELECT mention `W[Q]` alongside `P[Z]`),
+  constant-cost rank steps, same divergence tail.
 - `Blc/Wire.lean` — the kernel-computable BLC encoder; each
   generated certificate carries a `wire_*` theorem pinning its term
   to the bits in its name (the emitter is untrusted, the kernel
