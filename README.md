@@ -13,24 +13,37 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   [A114852](https://oeis.org/A114852) count and every published
   [BBλ](https://oeis.org/A333479) value in range reproduced exactly
   (`census_full3.txt`).
-- **2,032 unknowns survive maximum effort** — fewer than the reference
-  ledger at every comparable size. At n=32 the frontier matches
-  Tromp's exactly (the sole survivor is the famous `loop32`, which no
-  engine proves mechanically); at n=34–36 this engine proves strictly
-  more terms divergent than the traced reference engine.
+- **BBλ(32) is fully mechanical** — `loop32`, the famous 32-bit term
+  hand-excluded even in Tromp's tree, now carries a machine-checked
+  divergence certificate (the *ratchet*, below). Every closed term of
+  ≤32 bits is adjudicated with no hand exclusions anywhere.
+- **1,926 unknowns survive maximum effort** (`unknowns_v3.txt`) —
+  fewer than the reference ledger at every comparable size; at
+  n=34–36 this engine proves strictly more terms divergent than the
+  traced reference engine.
 - **The halting probability to nine exact decimals**:
   Ω restricted to programs ≤40 bits lies in
-  **[0.123995323359, 0.123995329152]**, computed in exact integer
+  **[0.123995323359, 0.123995328603]**, computed in exact integer
   arithmetic (masses in units of 2⁻⁶⁴, u128 accumulators). The
-  interval width *is* the total mass of the 2,032 unknowns — the
-  census frontier expressed as bits of Ω (`solomonoff_40.txt`).
+  interval width *is* the total mass of the 1,926 unknowns — the
+  census frontier expressed as bits of Ω (`solomonoff_40.txt` holds
+  the pre-ratchet census interval; the ratchet trims exactly
+  603·2⁻⁴⁰ off the top, 9.5% of the width).
 - **The coding theorem, watched live**: K(x) and −log₂ m(x) agree
   within a bit for every high-mass normal form in range
   (`solomonoff_table.txt`).
 - **A semantic divergence certificate**: a generalization of the
   reference `redloop` rule (see below) that fires 11,367 times in the
-  census and is fuel-robust — re-running all 2,032 unknowns at 16×
-  probe fuel flips nothing.
+  census and is fuel-robust — re-running the frontier at 16× probe
+  fuel flips nothing.
+- **The ratchet certificate**: a machine-checked proof format for
+  *unbounded-period* loops — states `A Wⁿ[C0]` growing forever, which
+  no exact-recurrence window can see. Three bounded symbolic head
+  reductions over a closed metavariable (OPEN/DESC/BASE) plus a glue
+  theorem; adversarially reviewed, checker in `src/cert.rs`, spec and
+  proof in `tools/cert/SPEC.md`. It kills **106 frontier terms**
+  including `loop32` (`tools/cert/ratchet_kills.txt`), all
+  re-certified byte-identically at 4× discovery budgets.
 - **The 170-bit self-interpreter is certified locally optimal**: all
   three parser branches are exhaustively optimal — VAR (21 bits, 2,672
   pruned candidates), APP (41 bits, 10.2M), ABS (43 bits, **1.43
@@ -121,8 +134,9 @@ default 4096).
 - `DESIGN.md` — architecture, measured results, open questions.
 - `LEDGER.md` — the overnight lab notebook: how these results
   happened, including the failures.
-- Data: `census_full3.txt` (canonical table), `unknowns_v2.txt` (the
-  2,032 survivors), `solomonoff_40.txt`, benchmarks, frontier files.
+- Data: `census_full3.txt` (canonical table), `unknowns_v3.txt` (the
+  1,926-term live frontier; `unknowns_v2.txt` is the pre-ratchet
+  2,032), `solomonoff_40.txt`, benchmarks, frontier files.
 
 ## Roadmap
 
@@ -130,9 +144,14 @@ default 4096).
   mask): survivors there are hypotheses needing whole-interpreter
   splice + battery, not proofs — the one mechanical route left to
   sub-170.
-- A certificate for `loop32` — the one 32-bit term nobody proves.
+- Ratchet v2 (`tools/cert/SPEC.md` §5): a lemma-system generalization
+  covering the shapes the classifier mapped — alternating heads,
+  asymmetric collapse cores, spine ratchets — over the 1,926-term
+  frontier.
 - Lean 4 track: verified prefix-freeness/Kraft, machine-checked K
-  upper bounds (no Lean BLC formalization exists yet).
+  upper bounds, and the ratchet checker's soundness
+  (`¬ HasNormalForm loop32` as the flagship theorem — no Lean BLC
+  formalization exists yet).
 - A distilled `uni.rs` to PR upstream to tromp/AIT.
 
 ## Attribution

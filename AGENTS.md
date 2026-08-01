@@ -17,8 +17,10 @@ re-deriving the night's lessons.
   through every change in history; treat any drift as a bug in your
   change, not a discovery.
 - Data files in the repo root are results, not scratch. The canonical
-  census table is `census_full3.txt`; `unknowns_v2.txt` is the live
-  frontier (2,032 terms). Regenerate rather than hand-edit.
+  census table is `census_full3.txt`; `unknowns_v3.txt` is the live
+  frontier (1,926 terms — `unknowns_v2.txt` minus the 106 ratchet
+  kills in `tools/cert/ratchet_kills.txt`). Regenerate rather than
+  hand-edit.
 
 ## Conventions that will bite you
 
@@ -96,8 +98,13 @@ full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
   smaller, zero residual unknowns. Remaining lane is the *contextual*
   one (§2 of the spec) — drop the must-mask to 0; a survivor there is a
   hypothesis needing splice + battery, not a proof.
-- `loop32`: the one 32-bit term with no mechanical divergence proof
-  anywhere. A context-sensitive recurrence certificate would be new.
+- ~~`loop32`~~ **done** (2026-07-31 evening) — the ratchet certificate
+  (`src/cert.rs`, spec+proof in `tools/cert/SPEC.md`, Codex-reviewed).
+  106 frontier kills total (`tools/cert/ratchet_kills.txt`), n=32 row
+  now zero, Ω width −9.5%. `certsearch` is the sweep bin (rayon
+  parallel; discovery untrusted, checker trusted). Next lane: ratchet
+  v2 (SPEC.md §5 — alternating heads, asymmetric cores, spine
+  ratchets; classifier coordinates in `tools/cert/CLASSIFY.md`).
 - ~~bb.rs Meta caching~~ **done** (2026-07-31 daytime): cached-Meta
   nodes with exact meter parity, verified bit-identical on a full 4..40
   sweep. Honest gain 1.37× overall — the 2-5× estimate was wrong
@@ -111,8 +118,10 @@ full sweeps. Census 4..40: ~7.2 min (was ~23.8 pre-2026-07-31-daytime).
   bit-identical. Census prints `rescued:`/`stuck rescues:`/`rung2:`
   telemetry to keep the margins observable.
 - λ-wrap memoization; n=41 census (~242M terms, nothing blocks it).
-- Lean 4 track (no existing BLC formalization); distilled `uni.rs` PR
-  to tromp/AIT (repo root has uni.c/js/pl/py/rb — no uni.rs slot
+- Lean 4 track (no existing BLC formalization); ratchet-checker
+  soundness is the flagship (Codex staging: infinite head chain →
+  head standardization → `¬ HasNormalForm loop32`). Distilled `uni.rs`
+  PR to tromp/AIT (repo root has uni.c/js/pl/py/rb — no uni.rs slot
   filled).
 
 ## Collaboration

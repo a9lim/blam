@@ -11,12 +11,16 @@
 use blc::cert::{discover, head_step, verify, PTerm, Ratchet, Step};
 use blc::parse::parse_all;
 use blc::term::Term;
+use rayon::prelude::*;
+use std::io::Write;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 struct Cfg {
     steps: u32,
     nodes: u64,
     lemma_steps: u32,
     descend_depth: u32,
+    threads: usize,
 }
 
 /// Where a certificate bit: at the top term or inside an hnf argument.
@@ -32,10 +36,10 @@ fn head_normalize(t: &PTerm, steps: u32, nodes: u64) -> Option<PTerm> {
         if cur.nodes() > nodes {
             return None;
         }
-        cur = match head_step(&cur) {
+        cur = match head_step(&cur, nodes) {
             Step::Did(next) => next,
             Step::Nf => return Some(cur),
-            Step::MetaHead => return None,
+            Step::MetaHead | Step::TooBig => return None,
         };
     }
     None
@@ -101,6 +105,7 @@ fn main() {
         nodes: 200_000,
         lemma_steps: 4096,
         descend_depth: 8,
+        threads: 0, // 0 = rayon default (all cores)
     };
     let mut term_arg: Option<String> = None;
     let mut file_arg: Option<String> = None;
@@ -112,6 +117,7 @@ fn main() {
             "--nodes" => cfg.nodes = args.next().unwrap().parse().unwrap(),
             "--lemma-steps" => cfg.lemma_steps = args.next().unwrap().parse().unwrap(),
             "--no-descend" => cfg.descend_depth = 0,
+            "--threads" => cfg.threads = args.next().unwrap().parse().unwrap(),
             "--term" => term_arg = Some(args.next().unwrap()),
             "--terms-file" => file_arg = Some(args.next().unwrap()),
             other => {
@@ -133,46 +139,59 @@ fn main() {
             .collect()
     };
 
-    let (mut kills_top, mut kills_arg, mut none) = (0u64, 0u64, 0u64);
-    for bits in &lines {
+    if cfg.threads > 0 {
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(cfg.threads)
+            .build_global()
+            .unwrap();
+    }
+
+    // Per-term parallel; each worker builds and drops its own Rc trees.
+    // Output is streamed one self-describing line at a time (unordered —
+    // kills lose nothing, per the ops ledger), counters are atomic.
+    let (kills_top, kills_arg, none) = (AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0));
+    lines.par_iter().for_each(|bits| {
         let t = match parse_all(bits) {
             Ok(t) => t,
             Err(e) => {
                 eprintln!("parse error on {bits}: {e:?}");
-                continue;
+                return;
             }
         };
-        match try_kill(&t, &cfg, 0, "") {
+        let line = match try_kill(&t, &cfg, 0, "") {
             Some(Kill::Top(cert)) => {
-                kills_top += 1;
-                println!(
+                kills_top.fetch_add(1, Ordering::Relaxed);
+                format!(
                     "RATCHET\t{bits}\thead={}\tw={}\tc0={}",
                     cert.a.to_bits(),
                     cert.w,
                     cert.c0.to_bits()
-                );
+                )
             }
             Some(Kill::Arg { path, cert }) => {
-                kills_arg += 1;
-                println!(
+                kills_arg.fetch_add(1, Ordering::Relaxed);
+                format!(
                     "RATCHET-ARG\t{bits}\tat={path}\thead={}\tw={}\tc0={}",
                     cert.a.to_bits(),
                     cert.w,
                     cert.c0.to_bits()
-                );
+                )
             }
             None => {
-                none += 1;
-                println!("none\t{bits}");
+                none.fetch_add(1, Ordering::Relaxed);
+                format!("none\t{bits}")
             }
-        }
-    }
+        };
+        let stdout = std::io::stdout();
+        let mut lock = stdout.lock();
+        writeln!(lock, "{line}").unwrap();
+    });
     eprintln!(
         "certsearch: {} terms; ratchet {} top + {} arg = {}; unresolved {}",
         lines.len(),
-        kills_top,
-        kills_arg,
-        kills_top + kills_arg,
-        none
+        kills_top.load(Ordering::Relaxed),
+        kills_arg.load(Ordering::Relaxed),
+        kills_top.load(Ordering::Relaxed) + kills_arg.load(Ordering::Relaxed),
+        none.load(Ordering::Relaxed)
     );
 }

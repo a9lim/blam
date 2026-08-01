@@ -488,3 +488,105 @@ telemetry permanently so the margins stay observable at n=41+.
 
 Also: this file was MORNING.md until 2pm; renamed when it became
 clear it's a ledger, not a sunrise.
+
+# 2026-07-31 · evening — the ratchet: loop32 falls, and 105 more
+
+## The certificate arc
+
+The afternoon ended with `loop32` still the one 32-bit term nobody
+proves. The evening closed it, then kept going.
+
+The shape of the thing: `loop32 = F A` with `A = λx. x x (λy. y x)`
+never *recurs* — it grows. An independent from-scratch reducer
+(`tools/cert/loop32_trace.py`) confirmed the hypothesis exactly: the
+head reduction passes through `A Wⁿ[C0]` for `W[Z] = λy. y Z`,
+`C0 = λ_.A`, milestones n = 0..76 strictly consecutive, cycle n taking
+exactly 2n+2 steps — the machine consumes the whole depth-n tower
+every cycle, so no bounded exact-recurrence window (redloop included)
+can ever see it. The certificate that *can* is three bounded symbolic
+head reductions over a closed opaque metavariable — OPEN, DESC, BASE —
+plus a concrete INIT; the glue theorem turns them into an infinite
+head chain, and standardization turns that into "no normal form."
+Full spec with proof: `tools/cert/SPEC.md`.
+
+Codex reviewed it adversarially on `blc-conformance` before I trusted
+it: *"the glue theorem survives — no soundness counterexample."* Two
+findings, both fixed same-day — the reference reducer had a latent
+argument-descent branch (now head-only by construction), and the
+lifting side condition must bind every proper *source* state, start
+included (the checker now rejects an abstraction start). Prior art
+pinned down too: this is a head-strategy, closed-metavariable
+λ-instance of Emmes–Enger–Giesl's non-looping nontermination patterns
+(IJCAR 2012); no closer untyped-λ certificate surfaced in the search.
+
+The checker (`src/cert.rs`, 11 unit tests) is the only trusted piece;
+discovery is a heuristic that anti-unifies consecutive milestone
+arguments and hands the triple over. Garbage in, ABORT out.
+
+## Honest accounting: the memory bomb, again
+
+First sweep launch hit 38 GB RSS inside a minute. Cause: one
+β-contraction can *square* the term size, so a between-steps size cap
+is a fence checked after the horse. This is the overnight ledger's
+"budgets in semantic units" lesson recurring in code I wrote hours
+after re-reading it. Fix is structural now: `head_step` computes the
+pre-contraction bound |body| + occurrences×|arg| and refuses to
+allocate (`Step::TooBig`), plus a regression test that would have
+caught it. Killed by exact pid, machine verified clean.
+
+## The sweep: 65, then 106
+
+Pass 1 (top-level spines only): **65 kills**. Three cross-validated by
+an independent Python replay (`crosscheck_kill.py`) — including a
+38-bit kill with a *different* engine head, so the certificate is
+already generalizing beyond loop32's family.
+
+Then the classifier map (opus agent, `tools/cert/CLASSIFY.md`, all
+2,032 unknowns): 305 ratchet-candidates, **zero** exactly-periodic
+states, and the big structural fact — **1,320 of 2,032 unknowns
+present as bare abstractions**, invisible to top-level spine matching.
+That motivated v1.1: strip leading binders before milestone matching
+(sound because head reduction is defined under leading lambdas and the
+certificate gates already force the triple closed).
+
+Sequential re-sweeps were the evening's second lesson: you flagged
+pass 2 grinding at two hours (my estimate said minutes — the n=39/40
+stragglers burn full budgets). Parallelized `certsearch` with rayon
+(~15% CPU → all cores), and the v1.1 sweep of the full frontier now
+runs in ~14 min at 16 threads.
+
+Final: **106 certified kills** — 101 top-level + 5 inside closed hnf
+arguments (sound descent: a closed spine argument with no normal form
+kills the whole term). Strict superset of pass 1. By size: 1×32,
+1×34, 1×35, 2×36, 2×37, 26×38, 26×39, 47×40 — the n=40 jump (16→47)
+is the under-binder mass, exactly where the classifier pointed.
+Fuel-robustness control: all 106 re-certified at 4× budgets,
+certificate lines byte-identical.
+
+## What it means for the numbers
+
+- **BBλ(32) is now fully mechanical.** loop32 was the sole 32-bit
+  unknown; the n=32 row reads zero. Every term of ≤32 bits is now
+  machine-adjudicated with no hand exclusions anywhere.
+- **The frontier is `unknowns_v3.txt`: 1,926 terms** (from 2,032).
+  Certificates + bits: `tools/cert/ratchet_kills.txt`.
+- **Ω narrows 9.47%**: killed mass 603·2⁻⁴⁰ exactly, interval now
+  **[0.123995323359, 0.123995328603]**, width 5.24e-9 (was 5.79e-9).
+  The lower bound is untouched — certificates only ever move unknowns
+  to diverge.
+
+Per-size frontier after the ratchet: n=33: 2, 34: 9, 35: 22, 36: 42,
+37: 92, 38: 197, 39: 472, 40: 1090.
+
+## Where this points
+
+The classifier says what v1 leaves on the table, with coordinates:
+geometric duplicating wrappers (x→2x+5 towers), spine ratchets (arity
+to 8,228 with flat sizes), alternating heads, deeper under-binder
+recurrences. The v2 design (SPEC.md §5, Codex-reviewed direction):
+finite control graph of indexed state schemas, arbitrary exact lemma
+endpoints, several metavariables, replayable proof scripts, a
+well-founded measure. That's the next Codex round on `blc-conformance`.
+After v2: the Lean track, with this checker as the centerpiece —
+Codex's staging is (a) infinite head chain, (b) head standardization,
+(c) `¬ HasNormalForm loop32`.
