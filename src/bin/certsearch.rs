@@ -8,7 +8,7 @@
 //! `aᵢ` with a ratchet certificate kills the whole term. Open arguments
 //! are skipped (the v1 machinery assumes closed metavariables).
 
-use blc::cert::{discover, head_step, verify, PTerm, Ratchet, Step};
+use blc::cert::{discover, head_step, try_htr, verify, HeadTowerRatchet, PTerm, Ratchet, Step};
 use blc::parse::parse_all;
 use blc::term::Term;
 use rayon::prelude::*;
@@ -23,10 +23,13 @@ struct Cfg {
     threads: usize,
 }
 
-/// Where a certificate bit: at the top term or inside an hnf argument.
+/// Where a certificate bit: at the top term or inside an hnf argument,
+/// and which certificate class fired (v1 Ratchet or v2 HeadTowerRatchet).
 enum Kill {
     Top(Ratchet),
     Arg { path: String, cert: Ratchet },
+    Top2(HeadTowerRatchet),
+    Arg2 { path: String, cert: HeadTowerRatchet },
 }
 
 /// Bounded head reduction to hnf. Some(hnf) if reached, None otherwise.
@@ -71,6 +74,17 @@ fn try_kill(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<Kill> {
                 Kill::Arg {
                     path: path.to_string(),
                     cert,
+                }
+            });
+        }
+        // v2: same discovered triple, HeadTowerRatchet obligations
+        if let Some((htr, _)) = try_htr(t, &cert, cfg.lemma_steps, cfg.steps, cfg.nodes) {
+            return Some(if path.is_empty() {
+                Kill::Top2(htr)
+            } else {
+                Kill::Arg2 {
+                    path: path.to_string(),
+                    cert: htr,
                 }
             });
         }
@@ -149,7 +163,12 @@ fn main() {
     // Per-term parallel; each worker builds and drops its own Rc trees.
     // Output is streamed one self-describing line at a time (unordered —
     // kills lose nothing, per the ops ledger), counters are atomic.
-    let (kills_top, kills_arg, none) = (AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0));
+    let (kills_top, kills_arg, kills_htr, none) = (
+        AtomicU64::new(0),
+        AtomicU64::new(0),
+        AtomicU64::new(0),
+        AtomicU64::new(0),
+    );
     lines.par_iter().for_each(|bits| {
         let t = match parse_all(bits) {
             Ok(t) => t,
@@ -177,6 +196,26 @@ fn main() {
                     cert.c0.to_bits()
                 )
             }
+            Some(Kill::Top2(cert)) => {
+                kills_htr.fetch_add(1, Ordering::Relaxed);
+                format!(
+                    "RATCHET2\t{bits}\thead={}\tw={}\tc0={}\ti={}",
+                    cert.a.to_bits(),
+                    cert.w,
+                    cert.c0.to_bits(),
+                    cert.i.to_bits()
+                )
+            }
+            Some(Kill::Arg2 { path, cert }) => {
+                kills_htr.fetch_add(1, Ordering::Relaxed);
+                format!(
+                    "RATCHET2-ARG\t{bits}\tat={path}\thead={}\tw={}\tc0={}\ti={}",
+                    cert.a.to_bits(),
+                    cert.w,
+                    cert.c0.to_bits(),
+                    cert.i.to_bits()
+                )
+            }
             None => {
                 none.fetch_add(1, Ordering::Relaxed);
                 format!("none\t{bits}")
@@ -187,11 +226,14 @@ fn main() {
         writeln!(lock, "{line}").unwrap();
     });
     eprintln!(
-        "certsearch: {} terms; ratchet {} top + {} arg = {}; unresolved {}",
+        "certsearch: {} terms; ratchet {} top + {} arg, htr {}; total {}; unresolved {}",
         lines.len(),
         kills_top.load(Ordering::Relaxed),
         kills_arg.load(Ordering::Relaxed),
-        kills_top.load(Ordering::Relaxed) + kills_arg.load(Ordering::Relaxed),
+        kills_htr.load(Ordering::Relaxed),
+        kills_top.load(Ordering::Relaxed)
+            + kills_arg.load(Ordering::Relaxed)
+            + kills_htr.load(Ordering::Relaxed),
         none.load(Ordering::Relaxed)
     );
 }

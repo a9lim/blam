@@ -1,12 +1,18 @@
 # Ratchet certificates: mechanical divergence proofs for growing-context loops
 
-Status: v1–v1.2 implemented (`src/cert.rs`, `src/bin/certsearch.rs`)
-and **adversarially reviewed by Codex** in two rounds (thread
-`blc-conformance`, 2026-07-31): round one — *"the glue theorem
-survives — no soundness counterexample"*; round two — *"v1.2 is
-sound. Ship it."* Review findings all fixed (§7 logs both rounds).
-The v2 design (§5) is the round-two co-designed `HeadTowerRatchet`:
-narrow indexed-tower certificates, not a general control graph.
+Status: v1–v1.2 AND v2 implemented (`src/cert.rs`,
+`src/bin/certsearch.rs`); v1 **adversarially reviewed by Codex** in
+two rounds (thread `blc-conformance`, 2026-07-31): round one — *"the
+glue theorem survives — no soundness counterexample"*; round two —
+*"v1.2 is sound. Ship it."* Review findings all fixed (§7 logs both
+rounds). v2 is the round-two co-designed `HeadTowerRatchet` (§5):
+narrow indexed-tower certificates, not a general control graph. The
+v2 checker (`verify_htr`: six replayed obligations + the v1.2 INIT)
+implements the design; its assembly theorem is §5's — proved on
+paper, replayed obligations trusted, discovery untrusted. Discovery
+keys milestone families by (head, spine arity): the deep family
+passes through both `A Xₙ` milestones and `A I Xₘ Xₙ` rank-step
+interiors, and merging the streams destroys the growing window.
 
 ## 1. The target, and why redloop can't reach it
 

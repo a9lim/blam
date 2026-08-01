@@ -644,3 +644,42 @@ well-founded induction."
 (`tools/cert/ratchet_kills.txt`), killed mass 675·2⁻⁴⁰ total —
 **10.6%** of the census width — interval
 **[0.123995323359, 0.123995328538]**.
+
+## v2 lands the same night: the HeadTowerRatchet
+
+Implementation turned out to be the smallest part — Codex's design
+meant the trusted surface barely grew. `Meta` became `Meta(id)` (same
+id ⇒ same closed term; Z and Q display as themselves), `check_reduces`
+gained a →ₕ*-variant for the empty BASE, and the six obligations are
+literally six calls: no plugging anywhere, since `W[Z]` *is* the
+wrapper pattern and Q is just `Meta(1)`. The assembly theorem stays on
+paper (SPEC.md §5) where Codex proved it; the checker replays
+obligations and runs the same v1.2 INIT. The forcing term certifies
+with obligation lengths exactly [0,1,1,3,3,7] — the numbers their
+derivation predicted before the code existed.
+
+One real bug: discovery keyed milestone families by head alone, and
+the deep family's rank-step interiors (`A I Xₘ Xₙ` — same head A,
+different role) polluted the milestone stream, killing the growing
+window. The fix is the honest taxonomy: a milestone family is
+**(head, spine arity)**. All 130 shipped certificates reproduce
+byte-identically under the new keying — checked before anything else.
+
+**Sweep of the 1,902:** 6 HeadTowerRatchet kills — the n=35 forcing
+term and its family: 1×35, 1×37, 4×39, one shared head, every eraser
+the identity. Zero new v1 kills (the arity keying unlocked nothing
+spurious). All 6 byte-identical at 4× budgets. And a new battery
+(`tests/cert_battery.rs`): every provable halter ≤24 bits through
+discovery and BOTH verifiers — zero certificates fire — with a
+slower ≤26 tier behind `--ignored` (a first ≤26 pass ran 33 min
+without firing before a harness restart ate its verdict; relaunched).
+
+**Where the campaign stands after one day:** 2,032 unknowns → 1,896
+(`unknowns_v5.txt`), 136 certificates in `tools/cert/ratchet_kills.txt`
+(130 RATCHET + 6 RATCHET2), killed mass 723·2⁻⁴⁰ = **11.35%** of the
+census width, Ω|≤40 ∈ **[0.123995323359, 0.123995328494]**, and BBλ(32)
+mechanical end to end. The remaining 238 ratchet-candidates are the v3
+hunting ground — geometric duplicating wrappers and spine ratchets
+first, each needing its own forcing example before we grow the
+certificate language again. Then Lean, where the checker's smallness
+was the design constraint all along.
