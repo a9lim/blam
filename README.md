@@ -51,8 +51,8 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   kill **136 frontier terms** including `loop32`
   (`tools/cert/ratchet_kills.txt`), all re-certified byte-identically
   at 4× discovery budgets, with a soundness battery running every
-  provable halter ≤24 bits through discovery and both verifiers —
-  zero false fires — plus a slower ≤26-bit tier
+  provable halter ≤28 bits (196,848 of them) through discovery and
+  both verifiers — zero false fires, in under a second
   (`tests/cert_battery.rs`).
 - **The 170-bit self-interpreter is certified locally optimal**: all
   three parser branches are exhaustively optimal — VAR (21 bits, 2,672

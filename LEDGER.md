@@ -669,10 +669,16 @@ byte-identically under the new keying — checked before anything else.
 term and its family: 1×35, 1×37, 4×39, one shared head, every eraser
 the identity. Zero new v1 kills (the arity keying unlocked nothing
 spurious). All 6 byte-identical at 4× budgets. And a new battery
-(`tests/cert_battery.rs`): every provable halter ≤24 bits through
-discovery and BOTH verifiers — zero certificates fire — with a
-slower ≤26 tier behind `--ignored` (a first ≤26 pass ran 33 min
-without firing before a harness restart ate its verdict; relaunched).
+(`tests/cert_battery.rs`): every provable halter ≤28 bits — 196,848
+of them — through discovery and BOTH verifiers, zero certificates
+fire. First cut probed halting with the naive normalizer on one
+thread and wanted ~45 min for ≤26; a9 balked, rightly. The probe
+doesn't need the executable spec — any sound engine's Ok is a proof
+of halting — so it now uses the KN machine over rayon subtree tasks:
+the ≤26 sweep went from ~45 min to 0.17 s (~16,000×), and ≤28 runs
+in under a second as a default test. The day's budget moral, once
+more: the cost was never the battery, it was probing with the one
+deliberately slow component in the repo.
 
 **Where the campaign stands after one day:** 2,032 unknowns → 1,896
 (`unknowns_v5.txt`), 136 certificates in `tools/cert/ratchet_kills.txt`
