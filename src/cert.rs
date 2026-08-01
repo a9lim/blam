@@ -156,6 +156,17 @@ fn contract(body: &PTerm, arg: &PTerm) -> PTerm {
     subst_dec(body, 1, arg)
 }
 
+/// Occurrences of `Var(j)` (adjusting under binders) — sizing input for
+/// the pre-contraction allocation bound.
+fn count_var(t: &PTerm, j: u32) -> u64 {
+    match t {
+        PTerm::Var(n) => (*n == j) as u64,
+        PTerm::Meta => 0,
+        PTerm::Lam(b) => count_var(b, j + 1),
+        PTerm::App(f, a) => count_var(f, j) + count_var(a, j),
+    }
+}
+
 /// One symbolic head step.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Step {
@@ -165,6 +176,10 @@ pub enum Step {
     MetaHead,
     /// Head normal form — no head redex exists.
     Nf,
+    /// The contraction's result would exceed the node budget. Checked
+    /// BEFORE allocating: a single β step can square the term size, so
+    /// a between-steps cap alone is a memory bomb (ops ledger, twice).
+    TooBig,
 }
 
 /// Deterministic head step: contract the unique redex `(λ.M) N` in
@@ -172,18 +187,27 @@ pub enum Step {
 /// lambdas are ever contracted; the spine path traversed contains no
 /// `Meta`, so the located redex is the head redex under every closed
 /// instantiation of `Meta` (SPEC.md §3).
-pub fn head_step(t: &PTerm) -> Step {
+///
+/// `max_nodes` bounds the *redex-local result* of the contraction
+/// (`|body| + occurrences × |arg|`), computed before allocating.
+pub fn head_step(t: &PTerm, max_nodes: u64) -> Step {
     match t {
         PTerm::Var(_) => Step::Nf,
         PTerm::Meta => Step::MetaHead,
-        PTerm::Lam(b) => match head_step(b) {
+        PTerm::Lam(b) => match head_step(b, max_nodes) {
             Step::Did(b2) => Step::Did(plam(b2)),
             other => other,
         },
         PTerm::App(f, a) => match &**f {
-            PTerm::Lam(b) => Step::Did(contract(b, a)),
+            PTerm::Lam(b) => {
+                let bound = b.nodes() + count_var(b, 1).saturating_mul(a.nodes());
+                if bound > max_nodes {
+                    return Step::TooBig;
+                }
+                Step::Did(contract(b, a))
+            }
             PTerm::Meta => Step::MetaHead,
-            _ => match head_step(f) {
+            _ => match head_step(f, max_nodes) {
                 Step::Did(f2) => Step::Did(PTerm::App(Rc::new(f2), a.clone())),
                 other => other,
             },
@@ -204,6 +228,8 @@ pub enum CheckFail {
     BadIntermediate(u32),
     /// Step budget exhausted.
     Budget,
+    /// A contraction would exceed the node budget.
+    TooBig(u32),
     /// Malformed certificate data (openness, missing `Meta`, …).
     Shape(&'static str),
 }
@@ -220,16 +246,22 @@ pub enum CheckFail {
 /// starts from an application, so the distinction is latent; it is
 /// enforced here so v2 lemma systems cannot fall through the gap
 /// (Codex review, blc-conformance 2026-07-31).
-pub fn check_reduces(l: &PTerm, r: &PTerm, max_steps: u32) -> Result<u32, CheckFail> {
+pub fn check_reduces(
+    l: &PTerm,
+    r: &PTerm,
+    max_steps: u32,
+    max_nodes: u64,
+) -> Result<u32, CheckFail> {
     if matches!(l, PTerm::Lam(_) | PTerm::Meta) {
         return Err(CheckFail::BadIntermediate(0));
     }
     let mut cur = l.clone();
     for i in 1..=max_steps {
-        cur = match head_step(&cur) {
+        cur = match head_step(&cur, max_nodes) {
             Step::Did(next) => next,
             Step::MetaHead => return Err(CheckFail::MetaHead(i)),
             Step::Nf => return Err(CheckFail::ReachedNf(i)),
+            Step::TooBig => return Err(CheckFail::TooBig(i)),
         };
         if cur == *r {
             return Ok(i);
@@ -241,6 +273,22 @@ pub fn check_reduces(l: &PTerm, r: &PTerm, max_steps: u32) -> Result<u32, CheckF
         }
     }
     Err(CheckFail::Budget)
+}
+
+/// Strip leading lambdas: `(count, body)`. Head reduction is defined
+/// under leading binders, so a state `λᵏ. (A · Wⁿ[C0])` with A, W, C0
+/// all closed carries the ratchet exactly as the top-level state does:
+/// infinite head reduction of the body is infinite head reduction of
+/// the state. The frontier classifier measured 1,320/2,032 unknowns
+/// presenting as bare abstractions — without stripping, discovery and
+/// INIT are blind to all of them.
+pub fn strip_lams(mut t: &PTerm) -> (u32, &PTerm) {
+    let mut k = 0;
+    while let PTerm::Lam(b) = t {
+        k += 1;
+        t = b;
+    }
+    (k, t)
 }
 
 /// A ratchet certificate (SPEC.md §3): head `A`, wrapper `W[Z]`, base `C0`.
@@ -348,21 +396,28 @@ pub fn verify(
     // OPEN: A Z →ₕ⁺ (Z Z) W[Z]
     let open_l = papp(a.clone(), PTerm::Meta);
     let open_r = papp(papp(PTerm::Meta, PTerm::Meta), w.clone());
-    let open_steps = check_reduces(&open_l, &open_r, lemma_steps).map_err(CertFail::Open)?;
+    let open_steps =
+        check_reduces(&open_l, &open_r, lemma_steps, max_nodes).map_err(CertFail::Open)?;
 
     // DESC: W[Z] W[Z] →ₕ⁺ Z Z
     let desc_l = papp(w.clone(), w.clone());
     let desc_r = papp(PTerm::Meta, PTerm::Meta);
-    let desc_steps = check_reduces(&desc_l, &desc_r, lemma_steps).map_err(CertFail::Desc)?;
+    let desc_steps =
+        check_reduces(&desc_l, &desc_r, lemma_steps, max_nodes).map_err(CertFail::Desc)?;
 
     // BASE: C0 C0 →ₕ⁺ A (fully concrete)
     let base_l = papp(c0.clone(), c0.clone());
-    let base_steps = check_reduces(&base_l, &a, lemma_steps).map_err(CertFail::Base)?;
+    let base_steps =
+        check_reduces(&base_l, &a, lemma_steps, max_nodes).map_err(CertFail::Base)?;
 
-    // INIT: T →ₕ* A Wⁿ[C0] for some n, concretely and bounded.
+    // INIT: T →ₕ* λᵏ.(A Wⁿ[C0]) for some k, n, concretely and bounded.
+    // Matching under leading binders is sound because A, W, C0 are all
+    // closed (checked above): the body's infinite head reduction is the
+    // state's infinite head reduction.
     let mut cur = PTerm::from_term(t);
     for i in 0..=init_steps {
-        if let PTerm::App(h, x) = &cur {
+        let (_, body) = strip_lams(&cur);
+        if let PTerm::App(h, x) = body {
             if **h == a {
                 if let Some(n) = tower_index(&w, &c0, x) {
                     return Ok(CertReport {
@@ -378,7 +433,7 @@ pub fn verify(
         if cur.nodes() > max_nodes {
             break;
         }
-        cur = match head_step(&cur) {
+        cur = match head_step(&cur, max_nodes) {
             Step::Did(next) => next,
             // Concrete terms contain no Meta; Nf means head reduction
             // terminated — INIT can never match past this point.
@@ -411,9 +466,20 @@ pub fn discover(t: &Term, max_steps: u32, max_nodes: u64) -> Option<Ratchet> {
     let mut milestones: HashMap<Rc<PTerm>, Vec<PTerm>> = HashMap::new();
 
     for _ in 0..max_steps {
-        if let PTerm::App(h, x) = &cur {
-            if matches!(**h, PTerm::Lam(_)) {
+        // Milestones may live under leading binders (verify's closedness
+        // gates reject any candidate that captures ambient variables).
+        let (_, body) = strip_lams(&cur);
+        if let PTerm::App(h, x) = body {
+            // Head-size guard: hashing the head is O(|H|) per state, and
+            // certificate heads are small; skip pathological giants.
+            if matches!(**h, PTerm::Lam(_)) && h.nodes() <= 4096 {
                 let args = milestones.entry(h.clone()).or_default();
+                // Only the last three milestones are ever inspected;
+                // dropping older ones releases their subtree graphs
+                // (keeping them alive was half the memory bomb).
+                if args.len() == 3 {
+                    args.remove(0);
+                }
                 args.push((**x).clone());
                 if args.len() >= 3 {
                     // Sliding window: a term may have a pre-ratchet
@@ -441,7 +507,7 @@ pub fn discover(t: &Term, max_steps: u32, max_nodes: u64) -> Option<Ratchet> {
         if cur.nodes() > max_nodes {
             return None;
         }
-        cur = match head_step(&cur) {
+        cur = match head_step(&cur, max_nodes) {
             Step::Did(next) => next,
             _ => return None,
         };
@@ -486,6 +552,18 @@ mod tests {
     }
 
     #[test]
+    fn under_binder_ratchet_certifies() {
+        // λ_. loop32: the milestones live under a leading binder. The
+        // classifier found 1,320 frontier terms presenting this way;
+        // discovery and INIT must strip binders (and the closed-triple
+        // gates keep it sound).
+        let t = Term::Lam(Rc::new(parse_all(LOOP32).unwrap()));
+        let cert = discover(&t, 4096, 1 << 20).expect("discovery under binder");
+        assert_eq!(cert.a, loop32_cert().a);
+        verify(&t, &cert, 64, 4096, 1 << 20).expect("verify under binder");
+    }
+
+    #[test]
     fn omega_does_not_ratchet() {
         // (λx.x x)(λx.x x): exact recurrence, no growth — redloop's case,
         // not ours. Discovery must refuse (wrapper degenerates to bare Z).
@@ -515,7 +593,7 @@ mod tests {
         let l = papp(i.clone(), inner);
         let r = plam(pvar(1));
         assert!(matches!(
-            check_reduces(&l, &r, 16),
+            check_reduces(&l, &r, 16, 1 << 20),
             Err(CheckFail::BadIntermediate(_))
         ));
     }
@@ -529,7 +607,10 @@ mod tests {
         // abstraction instead.
         let l = plam(papp(plam(pvar(1)), pvar(1)));
         let r = plam(pvar(1));
-        assert_eq!(check_reduces(&l, &r, 16), Err(CheckFail::BadIntermediate(0)));
+        assert_eq!(
+            check_reduces(&l, &r, 16, 1 << 20),
+            Err(CheckFail::BadIntermediate(0))
+        );
     }
 
     #[test]
@@ -539,9 +620,27 @@ mod tests {
         let l = papp(PTerm::Meta, PTerm::Meta);
         let r = papp(PTerm::Meta, PTerm::Meta);
         assert!(matches!(
-            check_reduces(&l, &r, 16),
+            check_reduces(&l, &r, 16, 1 << 20),
             Err(CheckFail::MetaHead(1))
         ));
+    }
+
+    #[test]
+    fn contraction_bomb_is_refused_before_allocation() {
+        // (λx. x x x x) BIG would quadruple BIG in ONE step; the guard
+        // must refuse before building it (between-steps caps alone are
+        // a memory bomb — measured at 38 GB on the first sweep).
+        let quad = plam(papp(
+            papp(papp(pvar(1), pvar(1)), pvar(1)),
+            pvar(1),
+        ));
+        // BIG: a chain of ~4000 nodes
+        let mut big = pvar(1);
+        for _ in 0..2000 {
+            big = plam(big);
+        }
+        let l = papp(quad, big);
+        assert_eq!(head_step(&l, 4000), Step::TooBig);
     }
 
     #[test]
@@ -563,7 +662,7 @@ mod tests {
         // (λ.λ. 2 1) Z →ₕ λ. Z 1 — Z must not be shifted or renumbered
         // when it goes under the remaining binder.
         let l = papp(plam(plam(papp(pvar(2), pvar(1)))), PTerm::Meta);
-        match head_step(&l) {
+        match head_step(&l, 1 << 20) {
             Step::Did(t) => assert_eq!(t, plam(papp(PTerm::Meta, pvar(1)))),
             other => panic!("expected step, got {other:?}"),
         }

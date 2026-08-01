@@ -121,6 +121,16 @@ one (OPEN is ⁺), so the head reduction is infinite. ∎
 Note the proof nowhere needs W linear in Z, and nowhere needs A, W, C0
 to be in normal form.
 
+**Under-binder extension (v1.1).** Discovery and INIT match milestones
+after stripping leading lambdas: a state `λᵏ.(A · Wⁿ[C0])` with A, W,
+C0 all *closed* (the existing certificate gates) carries the ratchet
+exactly as a top-level state — head reduction is defined under leading
+binders, so the body's infinite head chain is the state's. Candidates
+whose extracted triple captures an ambient variable fail the closedness
+checks and never certify. Motivation: the frontier classification
+(tools/cert/CLASSIFY.md) found 1,320/2,032 unknowns presenting as bare
+abstractions, invisible to top-level spine matching.
+
 **INIT matching note.** The implementation matches `x = Wⁿ[C0]` by
 *peeling*: `match_wrapper(w, x)` requires every `Meta` position of w to
 carry the identical subtree and is the exact tree-inverse of `plug`.
