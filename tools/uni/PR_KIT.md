@@ -72,8 +72,11 @@ every closed term of ≤32 bits machine-adjudicated with no hand
 exclusions — and sweeping the certificate (plus a second class for
 loops whose tower argument takes head position) over my census
 frontier proves 257 maximum-effort unknowns divergent. There is also
-now a Lean 4 proof that loop32's head reduction is infinite (the
-first mechanical BLC formalization I know of).
+now a Lean 4 proof that loop32 has no normal form — axioms propext
+alone, no mathlib (the first mechanical BLC formalization I know of;
+pleasingly, no standardization theorem is needed, because every
+β-reduct of loop32 carries exactly one redex, so β-reduction from it
+is deterministic).
 
 The census itself now runs one size past the published tables: every
 closed term of 4..41 bits adjudicated, giving BBλ(41) ≥ 1,074,266,118

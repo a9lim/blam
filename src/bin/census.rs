@@ -570,6 +570,13 @@ fn main() {
             secs,
             stats.total as f64 / secs
         );
+        // The BBλ champion's own bits — at record-setting sizes the
+        // witness term is the headline, not just its |nf|.
+        if stats.max_nf > 0 {
+            let (wenc, wlen) = stats.max_nf_witness;
+            let bits: String = (0..wlen).rev().map(|i| if (wenc >> i) & 1 == 1 { '1' } else { '0' }).collect();
+            println!("    max|nf| witness: {bits}");
+        }
         if !stats.unknowns.is_empty() {
             println!(
                 "    unknowns by cause: {} capacity, {} work-meter; max successful rescue {} beta",

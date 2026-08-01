@@ -888,3 +888,32 @@ reason the certificate approach is sound in the first place: the loop
 is a one-way street. Head standardization stays on the docket as the
 general bridge (for terms without the single-redex discipline), with
 the factorization subtlety recorded above as the entry cost.
+
+## Where the 138 kills actually landed (classification cross-reference)
+
+Joining `ratchet_kills.txt` (the 4..40 rows) against
+`tools/cert/classify.csv`:
+
+| trace class | killed | of class |
+|---|---:|---:|
+| `ratchet-candidate` | 80 | 305 |
+| `opaque` | 58 | 594 |
+| everything else | 0 | 1,133 |
+
+Two readings. First, the discovery upper bound was honest: the
+A-head family is killed **45/45** — the exact set CLASSIFY.md
+predicted one certificate triple would discharge. Second, and
+better: **58 kills came from `opaque`** — the class defined by the
+20,000-step tracer seeing nothing (states spend >90% of their time
+as bare abstractions, no spine to measure). The under-binder
+milestones (v1.1) and trailing spine vectors (v1.2) reached inside a
+class the trace detector is structurally blind to. Certificates are
+not just confirming the map; they are proving theorems where the map
+is blank.
+
+The sharpened v3 target list: 225 unkilled `ratchet-candidate` terms
+(the geometric duplicating-wrapper families — milestone sizes like
+13, 31, 67, 139 = 2x+5 — are in checker scope per SPEC §3 but need
+anti-unifying discovery), and the 180-term spine-growth axis (`H
+t1..tk` with k itself climbing — needs the one-more-argument
+obligation shape). The n=41 residue (2,381 terms) is classifying now.
