@@ -8,4 +8,5 @@ import Blc.NoNf
 import Blc.Factor
 import Blc.Sym
 import Blc.Ratchet
+import Blc.HeadTower
 import Blc.Wire

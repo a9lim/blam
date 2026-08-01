@@ -4,11 +4,12 @@ Every obligation is replayed by the Lean kernel (`by decide`),
 and each `wire_*` theorem pins the certified term to its named bits.
 -/
 import Blc.Ratchet
+import Blc.HeadTower
 import Blc.Wire
 
 namespace Blc.Certs
 
-/-- `0001000110001100001011010000110110` (34 bits). -/
+/-- `0001000110001100001011010000110110` (34 bits, RATCHET). -/
 def cert_0001000110001100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))

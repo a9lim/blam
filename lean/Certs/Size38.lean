@@ -4,11 +4,12 @@ Every obligation is replayed by the Lean kernel (`by decide`),
 and each `wire_*` theorem pins the certified term to its named bits.
 -/
 import Blc.Ratchet
+import Blc.HeadTower
 import Blc.Wire
 
 namespace Blc.Certs
 
-/-- `00000001000110001100001011010000110110` (38 bits). -/
+/-- `00000001000110001100001011010000110110` (38 bits, RATCHET). -/
 def cert_00000001000110001100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -28,7 +29,7 @@ theorem kill_00000001000110001100001011010000110110 : ¬ HasNormalForm (cert_000
 theorem wire_00000001000110001100001011010000110110 :
     blcCode (cert_00000001000110001100001011010000110110).T = [false, false, false, false, false, false, false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `00010000011100011100001011010000110110` (38 bits). -/
+/-- `00010000011100011100001011010000110110` (38 bits, RATCHET). -/
 def cert_00010000011100011100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -48,7 +49,7 @@ theorem kill_00010000011100011100001011010000110110 : ¬ HasNormalForm (cert_000
 theorem wire_00010000011100011100001011010000110110 :
     blcCode (cert_00010000011100011100001011010000110110).T = [false, false, false, true, false, false, false, false, false, true, true, true, false, false, false, true, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `00010001011000110100001011010000110110` (38 bits). -/
+/-- `00010001011000110100001011010000110110` (38 bits, RATCHET). -/
 def cert_00010001011000110100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -68,7 +69,7 @@ theorem kill_00010001011000110100001011010000110110 : ¬ HasNormalForm (cert_000
 theorem wire_00010001011000110100001011010000110110 :
     blcCode (cert_00010001011000110100001011010000110110).T = [false, false, false, true, false, false, false, true, false, true, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `00010001011011010000001011010000110110` (38 bits). -/
+/-- `00010001011011010000001011010000110110` (38 bits, RATCHET). -/
 def cert_00010001011011010000001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -88,7 +89,7 @@ theorem kill_00010001011011010000001011010000110110 : ¬ HasNormalForm (cert_000
 theorem wire_00010001011011010000001011010000110110 :
     blcCode (cert_00010001011011010000001011010000110110).T = [false, false, false, true, false, false, false, true, false, true, true, false, true, true, false, true, false, false, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `00010001100110001100001011010000110110` (38 bits). -/
+/-- `00010001100110001100001011010000110110` (38 bits, RATCHET). -/
 def cert_00010001100110001100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -108,7 +109,7 @@ theorem kill_00010001100110001100001011010000110110 : ¬ HasNormalForm (cert_000
 theorem wire_00010001100110001100001011010000110110 :
     blcCode (cert_00010001100110001100001011010000110110).T = [false, false, false, true, false, false, false, true, true, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `00010100011000110000101101000011011010` (38 bits). -/
+/-- `00010100011000110000101101000011011010` (38 bits, RATCHET). -/
 def cert_00010100011000110000101101000011011010 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -128,7 +129,7 @@ theorem kill_00010100011000110000101101000011011010 : ¬ HasNormalForm (cert_000
 theorem wire_00010100011000110000101101000011011010 :
     blcCode (cert_00010100011000110000101101000011011010).T = [false, false, false, true, false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false, true, false] := by decide
 
-/-- `01000100011000110100001011010000110110` (38 bits). -/
+/-- `01000100011000110100001011010000110110` (38 bits, RATCHET). -/
 def cert_01000100011000110100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -148,7 +149,7 @@ theorem kill_01000100011000110100001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000100011000110100001011010000110110 :
     blcCode (cert_01000100011000110100001011010000110110).T = [false, true, false, false, false, true, false, false, false, true, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000100100110001100001011010000110110` (38 bits). -/
+/-- `01000100100110001100001011010000110110` (38 bits, RATCHET). -/
 def cert_01000100100110001100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -168,7 +169,7 @@ theorem kill_01000100100110001100001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000100100110001100001011010000110110 :
     blcCode (cert_01000100100110001100001011010000110110).T = [false, true, false, false, false, true, false, false, true, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000101001010001100001011010000110110` (38 bits). -/
+/-- `01000101001010001100001011010000110110` (38 bits, RATCHET). -/
 def cert_01000101001010001100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -188,7 +189,7 @@ theorem kill_01000101001010001100001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000101001010001100001011010000110110 :
     blcCode (cert_01000101001010001100001011010000110110).T = [false, true, false, false, false, true, false, true, false, false, true, false, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000101100011000100001011010000110110` (38 bits). -/
+/-- `01000101100011000100001011010000110110` (38 bits, RATCHET). -/
 def cert_01000101100011000100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -208,7 +209,7 @@ theorem kill_01000101100011000100001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000101100011000100001011010000110110 :
     blcCode (cert_01000101100011000100001011010000110110).T = [false, true, false, false, false, true, false, true, true, false, false, false, true, true, false, false, false, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000101100011010000001011010000110110` (38 bits). -/
+/-- `01000101100011010000001011010000110110` (38 bits, RATCHET). -/
 def cert_01000101100011010000001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -228,7 +229,7 @@ theorem kill_01000101100011010000001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000101100011010000001011010000110110 :
     blcCode (cert_01000101100011010000001011010000110110).T = [false, true, false, false, false, true, false, true, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110000100101100001011010000110110` (38 bits). -/
+/-- `01000110000100101100001011010000110110` (38 bits, RATCHET). -/
 def cert_01000110000100101100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -248,7 +249,7 @@ theorem kill_01000110000100101100001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110000100101100001011010000110110 :
     blcCode (cert_01000110000100101100001011010000110110).T = [false, true, false, false, false, true, true, false, false, false, false, true, false, false, true, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110000101101000011011000011000110` (38 bits). -/
+/-- `01000110000101101000011011000011000110` (38 bits, RATCHET). -/
 def cert_01000110000101101000011011000011000110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -268,7 +269,7 @@ theorem kill_01000110000101101000011011000011000110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110000101101000011011000011000110 :
     blcCode (cert_01000110000101101000011011000011000110).T = [false, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false, false, false, false, true, true, false, false, false, true, true, false] := by decide
 
-/-- `01000110001100001000101101000011011010` (38 bits). -/
+/-- `01000110001100001000101101000011011010` (38 bits, RATCHET). -/
 def cert_01000110001100001000101101000011011010 : RatchetCert where
   A := (.lam (.app (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1))))) (.var 0)))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -288,7 +289,7 @@ theorem kill_01000110001100001000101101000011011010 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001000101101000011011010 :
     blcCode (cert_01000110001100001000101101000011011010).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false, true, false] := by decide
 
-/-- `01000110001100001000101101010000110110` (38 bits). -/
+/-- `01000110001100001000101101010000110110` (38 bits, RATCHET). -/
 def cert_01000110001100001000101101010000110110 : RatchetCert where
   A := (.lam (.app (.lam (.app (.app (.var 0) (.var 0)) (.var 0))) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -308,7 +309,7 @@ theorem kill_01000110001100001000101101010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001000101101010000110110 :
     blcCode (cert_01000110001100001000101101010000110110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110001100001001001011010000110110` (38 bits). -/
+/-- `01000110001100001001001011010000110110` (38 bits, RATCHET). -/
 def cert_01000110001100001001001011010000110110 : RatchetCert where
   A := (.lam (.app (.lam (.var 0)) (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1))))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -328,7 +329,7 @@ theorem kill_01000110001100001001001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001001001011010000110110 :
     blcCode (cert_01000110001100001001001011010000110110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, false, true, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110001100001010001101010000110110` (38 bits). -/
+/-- `01000110001100001010001101010000110110` (38 bits, RATCHET). -/
 def cert_01000110001100001010001101010000110110 : RatchetCert where
   A := (.lam (.app (.app (.lam (.app (.var 0) (.var 0))) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -348,7 +349,7 @@ theorem kill_01000110001100001010001101010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001010001101010000110110 :
     blcCode (cert_01000110001100001010001101010000110110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, false, false, false, true, true, false, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110001100001010010011010000110110` (38 bits). -/
+/-- `01000110001100001010010011010000110110` (38 bits, RATCHET). -/
 def cert_01000110001100001010010011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.lam (.var 0)) (.app (.var 0) (.var 0))) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -368,7 +369,7 @@ theorem kill_01000110001100001010010011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001010010011010000110110 :
     blcCode (cert_01000110001100001010010011010000110110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, false, false, true, false, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110001100001010100101010000110110` (38 bits). -/
+/-- `01000110001100001010100101010000110110` (38 bits, RATCHET). -/
 def cert_01000110001100001010100101010000110110 : RatchetCert where
   A := (.lam (.app (.app (.app (.lam (.var 0)) (.var 0)) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -388,7 +389,7 @@ theorem kill_01000110001100001010100101010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001010100101010000110110 :
     blcCode (cert_01000110001100001010100101010000110110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, false, true, false, false, true, false, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110001100001011010000100100110110` (38 bits). -/
+/-- `01000110001100001011010000100100110110` (38 bits, RATCHET). -/
 def cert_01000110001100001011010000100100110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.lam (.var 0)) (.app (.var 0) (.var 1))))))
   W := (.lam (.app (.lam (.var 0)) (.app (.var 0) (.mvar 0))))
@@ -408,7 +409,7 @@ theorem kill_01000110001100001011010000100100110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001011010000100100110110 :
     blcCode (cert_01000110001100001011010000100100110110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, false, false, true, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110001100001011010000101001010110` (38 bits). -/
+/-- `01000110001100001011010000101001010110` (38 bits, RATCHET). -/
 def cert_01000110001100001011010000101001010110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.app (.lam (.var 0)) (.var 0)) (.var 1)))))
   W := (.lam (.app (.app (.lam (.var 0)) (.var 0)) (.mvar 0)))
@@ -428,7 +429,7 @@ theorem kill_01000110001100001011010000101001010110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001011010000101001010110 :
     blcCode (cert_01000110001100001011010000101001010110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, false, true, false, false, true, false, true, false, true, true, false] := by decide
 
-/-- `01000110001100001011010000101100010110` (38 bits). -/
+/-- `01000110001100001011010000101100010110` (38 bits, RATCHET). -/
 def cert_01000110001100001011010000101100010110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.app (.var 0) (.lam (.var 0))) (.var 1)))))
   W := (.lam (.app (.app (.var 0) (.lam (.var 0))) (.mvar 0)))
@@ -448,7 +449,7 @@ theorem kill_01000110001100001011010000101100010110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001011010000101100010110 :
     blcCode (cert_01000110001100001011010000101100010110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, false, true, true, false, false, false, true, false, true, true, false] := by decide
 
-/-- `01000110001100001011010010000011011010` (38 bits). -/
+/-- `01000110001100001011010010000011011010` (38 bits, RATCHET). -/
 def cert_01000110001100001011010010000011011010 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.app (.lam (.lam (.app (.var 0) (.var 1)))) (.var 0))))
   W := (.app (.lam (.lam (.app (.var 0) (.var 1)))) (.mvar 0))
@@ -468,7 +469,7 @@ theorem kill_01000110001100001011010010000011011010 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001011010010000011011010 :
     blcCode (cert_01000110001100001011010010000011011010).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, true, false, false, false, false, false, true, true, false, true, true, false, true, false] := by decide
 
-/-- `01000110001100001011010010010000110110` (38 bits). -/
+/-- `01000110001100001011010010010000110110` (38 bits, RATCHET). -/
 def cert_01000110001100001011010010010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.app (.lam (.var 0)) (.lam (.app (.var 0) (.var 1))))))
   W := (.app (.lam (.var 0)) (.lam (.app (.var 0) (.mvar 0))))
@@ -488,7 +489,7 @@ theorem kill_01000110001100001011010010010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100001011010010010000110110 :
     blcCode (cert_01000110001100001011010010010000110110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, true, false, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110001100100100001011010000110110` (38 bits). -/
+/-- `01000110001100100100001011010000110110` (38 bits, RATCHET). -/
 def cert_01000110001100100100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -508,7 +509,7 @@ theorem kill_01000110001100100100001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110001100100100001011010000110110 :
     blcCode (cert_01000110001100100100001011010000110110).T = [false, true, false, false, false, true, true, false, false, false, true, true, false, false, true, false, false, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110010000110100001011010000110110` (38 bits). -/
+/-- `01000110010000110100001011010000110110` (38 bits, RATCHET). -/
 def cert_01000110010000110100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -528,7 +529,7 @@ theorem kill_01000110010000110100001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110010000110100001011010000110110 :
     blcCode (cert_01000110010000110100001011010000110110).T = [false, true, false, false, false, true, true, false, false, true, false, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01000110010010001100001011010000110110` (38 bits). -/
+/-- `01000110010010001100001011010000110110` (38 bits, RATCHET). -/
 def cert_01000110010010001100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -548,7 +549,7 @@ theorem kill_01000110010010001100001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01000110010010001100001011010000110110 :
     blcCode (cert_01000110010010001100001011010000110110).T = [false, true, false, false, false, true, true, false, false, true, false, false, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01001001000110001100001011010000110110` (38 bits). -/
+/-- `01001001000110001100001011010000110110` (38 bits, RATCHET). -/
 def cert_01001001000110001100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -568,7 +569,7 @@ theorem kill_01001001000110001100001011010000110110 : ¬ HasNormalForm (cert_010
 theorem wire_01001001000110001100001011010000110110 :
     blcCode (cert_01001001000110001100001011010000110110).T = [false, true, false, false, true, false, false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false] := by decide
 
-/-- `01010001100011000010110100001101100010` (38 bits). -/
+/-- `01010001100011000010110100001101100010` (38 bits, RATCHET). -/
 def cert_01010001100011000010110100001101100010 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))
@@ -588,7 +589,7 @@ theorem kill_01010001100011000010110100001101100010 : ¬ HasNormalForm (cert_010
 theorem wire_01010001100011000010110100001101100010 :
     blcCode (cert_01010001100011000010110100001101100010).T = [false, true, false, true, false, false, false, true, true, false, false, false, true, true, false, false, false, false, true, false, true, true, false, true, false, false, false, false, true, true, false, true, true, false, false, false, true, false] := by decide
 
-/-- `01010010000110001100001011010000110110` (38 bits). -/
+/-- `01010010000110001100001011010000110110` (38 bits, RATCHET). -/
 def cert_01010010000110001100001011010000110110 : RatchetCert where
   A := (.lam (.app (.app (.var 0) (.var 0)) (.lam (.app (.var 0) (.var 1)))))
   W := (.lam (.app (.var 0) (.mvar 0)))

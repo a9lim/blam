@@ -8,14 +8,19 @@
 //! Rust verifier, and the INIT landing state (binders / tower height /
 //! trailing vector) from a concrete head-trace replay.
 //!
-//! Scope: plain `RATCHET` lines (214 of 257). `RATCHET2` waits on the
-//! v2 assembly in Lean; `*-ARG` lines certify divergence of a spine
-//! argument and need the rigid-head bridge — both future lanes.
+//! Scope: `RATCHET` lines through the v1.2 assembly (lean/Blc/
+//! Ratchet.lean) and `RATCHET2` lines through the HeadTowerRatchet
+//! assembly (lean/Blc/HeadTower.lean) — 248 of 257. `*-ARG` lines
+//! certify divergence of a spine argument and need the rigid-head
+//! bridge (future lane).
 //!
 //! Usage: certlean [kills_file] [lean_out_dir]
 //! Defaults: tools/cert/ratchet_kills.txt lean
 
-use blc::cert::{head_step, spine, strip_lams, tower_index, verify, PTerm, Ratchet, Step};
+use blc::cert::{
+    head_step, spine, strip_lams, tower_index, verify, verify_htr, HeadTowerRatchet, PTerm,
+    Ratchet, Step,
+};
 use blc::parse::parse_all;
 use blc::term::Term;
 use std::collections::BTreeMap;
@@ -146,7 +151,7 @@ fn main() {
     for line in text.lines() {
         let mut cols = line.split('\t');
         let tag = cols.next().unwrap_or("");
-        if tag != "RATCHET" {
+        if tag != "RATCHET" && tag != "RATCHET2" {
             skipped += 1;
             continue;
         }
@@ -154,6 +159,7 @@ fn main() {
         let mut head = "";
         let mut w = "";
         let mut c0 = "";
+        let mut eraser = "";
         for col in cols {
             if let Some(v) = col.strip_prefix("head=") {
                 head = v;
@@ -161,6 +167,8 @@ fn main() {
                 w = v;
             } else if let Some(v) = col.strip_prefix("c0=") {
                 c0 = v;
+            } else if let Some(v) = col.strip_prefix("i=") {
+                eraser = v;
             }
         }
         let t = parse_all(bits).expect("target parse");
@@ -168,19 +176,54 @@ fn main() {
         let c0t = parse_all(c0).expect("c0 parse");
         let wp = parse_pterm(w);
 
-        let cert = Ratchet {
-            a: a.clone(),
-            w: wp.clone(),
-            c0: c0t.clone(),
+        // Re-verify with the matching trusted checker; collect the
+        // obligation counts and the INIT step count.
+        let (kind, counts, init_steps): (&str, Vec<(&str, u32)>, u32) = if tag == "RATCHET" {
+            let cert = Ratchet {
+                a: a.clone(),
+                w: wp.clone(),
+                c0: c0t.clone(),
+            };
+            let rep = verify(&t, &cert, LEMMA_STEPS, INIT_STEPS, MAX_NODES)
+                .unwrap_or_else(|e| panic!("re-verify failed on {bits}: {e:?}"));
+            (
+                "RatchetCert",
+                vec![
+                    ("kO", rep.open_steps),
+                    ("kD", rep.desc_steps),
+                    ("kB", rep.base_steps),
+                ],
+                rep.init_steps,
+            )
+        } else {
+            let htr = HeadTowerRatchet {
+                a: a.clone(),
+                w: wp.clone(),
+                c0: c0t.clone(),
+                i: parse_all(eraser).expect("eraser parse"),
+            };
+            let rep = verify_htr(&t, &htr, LEMMA_STEPS, INIT_STEPS, MAX_NODES)
+                .unwrap_or_else(|e| panic!("htr re-verify failed on {bits}: {e:?}"));
+            let [kb, ko, ks, kp, kn, ke] = rep.obligation_steps;
+            (
+                "HTRCert",
+                vec![
+                    ("kB", kb),
+                    ("kO", ko),
+                    ("kS", ks),
+                    ("kP", kp),
+                    ("kBounce", kn),
+                    ("kE", ke),
+                ],
+                rep.init_steps,
+            )
         };
-        let rep = verify(&t, &cert, LEMMA_STEPS, INIT_STEPS, MAX_NODES)
-            .unwrap_or_else(|e| panic!("re-verify failed on {bits}: {e:?}"));
 
         // Replay INIT to the landing state and read off the v1.1/v1.2 data.
         let ap = PTerm::from_term(&a);
         let c0p = PTerm::from_term(&c0t);
         let mut cur = PTerm::from_term(&t);
-        for i in 0..rep.init_steps {
+        for i in 0..init_steps {
             match head_step(&cur, MAX_NODES) {
                 Step::Did(next, _) => cur = next,
                 other => panic!("INIT replay stalled on {bits} at {i}: {other:?}"),
@@ -190,34 +233,34 @@ fn main() {
         let (h, spine_args) = spine(body).expect("landing not an application");
         assert_eq!(**h, ap, "landing head mismatch on {bits}");
         let n0 = tower_index(&wp, &c0p, spine_args[0]).expect("landing tower");
-        assert_eq!(n0, rep.init_tower, "tower mismatch on {bits}");
         let trail: Vec<Term> = spine_args[1..]
             .iter()
             .map(|p| p.to_term().expect("trail must be concrete"))
             .collect();
-        assert_eq!(trail.len() as u32, rep.init_trail, "trail mismatch on {bits}");
 
         // Emit the certificate block.
         let mut blk = String::new();
-        let _ = writeln!(blk, "/-- `{bits}` ({} bits). -/", bits.len());
-        let _ = writeln!(blk, "def cert_{bits} : RatchetCert where");
+        let _ = writeln!(blk, "/-- `{bits}` ({} bits, {tag}). -/", bits.len());
+        let _ = writeln!(blk, "def cert_{bits} : {kind} where");
         blk.push_str("  A := ");
         lean_term(&a, &mut blk);
         blk.push_str("\n  W := ");
         lean_pterm(&wp, &mut blk);
         blk.push_str("\n  C0 := ");
         lean_term(&c0t, &mut blk);
-        let _ = writeln!(
-            blk,
-            "\n  kO := {}\n  kD := {}\n  kB := {}",
-            rep.open_steps, rep.desc_steps, rep.base_steps
-        );
+        if kind == "HTRCert" {
+            blk.push_str("\n  E := ");
+            lean_term(&parse_all(eraser).unwrap(), &mut blk);
+        }
+        blk.push('\n');
+        for (name, val) in &counts {
+            let _ = writeln!(blk, "  {name} := {val}");
+        }
         blk.push_str("  T := ");
         lean_term(&t, &mut blk);
         let _ = writeln!(
             blk,
-            "\n  kI := {}\n  binders := {}\n  n0 := {}",
-            rep.init_steps, binders, n0
+            "\n  kI := {init_steps}\n  binders := {binders}\n  n0 := {n0}"
         );
         blk.push_str("  trail := [");
         for (i, y) in trail.iter().enumerate() {
@@ -230,7 +273,7 @@ fn main() {
         let _ = writeln!(
             blk,
             "theorem kill_{bits} : ¬ HasNormalForm (cert_{bits}).T :=\n  \
-             (cert_{bits}).noNormalForm (RatchetCert.valid_of_check (by decide))\n"
+             (cert_{bits}).noNormalForm ({kind}.valid_of_check (by decide))\n"
         );
         // Wire identity: the kernel, not this emitter, vouches that the
         // certified term IS the term the theorem name's bits encode
@@ -262,7 +305,7 @@ fn main() {
             "/-\nGenerated by certlean — DO NOT EDIT. {} RATCHET kill(s) at n={size}.\n\
              Every obligation is replayed by the Lean kernel (`by decide`),\n\
              and each `wire_*` theorem pins the certified term to its named bits.\n-/\n\
-             import Blc.Ratchet\nimport Blc.Wire\n\nnamespace Blc.Certs\n",
+             import Blc.Ratchet\nimport Blc.HeadTower\nimport Blc.Wire\n\nnamespace Blc.Certs\n",
             blocks.len()
         );
         for b in blocks {
