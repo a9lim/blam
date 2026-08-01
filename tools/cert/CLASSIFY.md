@@ -807,12 +807,18 @@ full discovery pipeline over all 456 live ratchet-candidates (225 at
 The families, by the OPEN abort state and an HTR obligation probe:
 
 - **zfirst, 131 terms** — OPEN aborts at exactly `Z W[Z]` (the HTR
-  entry shape), and then HTR's SPREAD obligation aborts MetaHead:
-  the wrapper hands control to **Z first**, not to its fresh
-  argument (`W[Z] q →ₕ⁺ Z ⟨…q…⟩`-shaped, vs HTR's `q I Z q`). A
-  tower-recursive descent — the recursion drives *through* the
-  tower. HTR structurally cannot express it; this is the dominant
-  v3 class. Exemplar (35 bits):
+  entry shape), and then HTR's SPREAD obligation aborts MetaHead.
+  ~~The wrapper hands control to Z first~~ — WRONG, corrected by
+  Codex's round-nine independent trace: SPREAD's abort is an
+  *endpoint mismatch*, not a Z-headed abort. On the exemplar the
+  wrapper is a **selector**: `W[Z] Q →ₕ Q P[Z] Q` (control to Q,
+  carrying a second unary pattern `P`), and then
+  `W[Q] P[Z] →ₕ⁺ Z` — the argument *selects* the next tower layer.
+  The proposed class is the **SelectorRatchet**
+  (BASE/OPEN/FAN/SELECT; rank cost FAN+SELECT, exemplar milestone
+  gaps exactly 4n+1). The 131 bucket is an abort signature, NOT a
+  class count — the exact four-obligation probe below measures the
+  real size. Exemplar (35 bits):
   `01000110100001100001011000001111010`.
 - **resource, 74** — the offered candidate's OPEN blows the symbolic
   budget (37 TooBig, 37 Budget at 2000 steps / 100k nodes): either
@@ -821,11 +827,16 @@ The families, by the OPEN abort state and an HTR obligation probe:
   *different* wrapper each level (`generalize(x3,x2) ≠
   generalize(x2,x1)`): level-indexed wrappers Wₙ, the indexed-schema
   shape of SPEC §5. Exemplar: `0100011010000110000110011100111000110`.
-- **passenger, 48** — OPEN aborts at `Z e⃗ W[Z]` with small constant
-  arguments interleaved (s2/s3/s4 erasers): the HTR shape with fixed
-  passengers riding the spine. Likely the cheapest v3 win (a
-  passenger-tolerant SPREAD/PEEL variant).
-  Exemplar: `010001101000010110011000110000110110`.
+- **passenger, 48** — OPEN aborts at `Z ⟨…⟩ W[Z]` with an
+  interleaved spine argument. ~~Small fixed constants~~ — ALSO
+  wrong (Codex round nine): on the exemplar the "constant" is
+  `Z P[Z]`, metavariable-bearing and consumed by the tower head —
+  it *controls* the descent, so folding passengers into HTR would
+  hide a theorem union inside one record. Proposed class:
+  **PassengerDiagonalRatchet** (SEED/OPEN/UNWRAP/DROP; diagonal
+  descent `Xₘ₊₁ Xₘ₊₁ →⁺ Xₘ Xₘ`, exemplar core-cycle gaps 2n+4
+  after an exceptional base cycle). Same caveat: probe before
+  counting. Exemplar: `010001101000010110011000110000110110`.
 - **selfapp, 26** — OPEN ends at bare `Z Z`: the cycle mints no
   wrapper at OPEN's end (growth lives elsewhere).
   Exemplar: `010001101000010001101001011000001010`.

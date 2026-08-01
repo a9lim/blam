@@ -8,7 +8,10 @@
 //! `aᵢ` with a ratchet certificate kills the whole term. Open arguments
 //! are skipped (the v1 machinery assumes closed metavariables).
 
-use blc::cert::{discover_stream, head_step, try_htr, verify, HeadTowerRatchet, PTerm, Ratchet, Step};
+use blc::cert::{
+    discover_stream, head_step, try_htr, try_selector, verify, HeadTowerRatchet, PTerm, Ratchet,
+    SelectorRatchet, Step,
+};
 use blc::parse::parse_all;
 use blc::term::Term;
 use rayon::prelude::*;
@@ -30,6 +33,8 @@ enum Kill {
     Arg { path: String, cert: Ratchet },
     Top2(HeadTowerRatchet),
     Arg2 { path: String, cert: HeadTowerRatchet },
+    Top3(SelectorRatchet),
+    Arg3 { path: String, cert: SelectorRatchet },
 }
 
 /// Bounded head reduction to hnf. Some(hnf) if reached, None otherwise.
@@ -95,6 +100,18 @@ fn try_kill(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<Kill> {
                 Kill::Arg2 {
                     path: path.to_string(),
                     cert: htr,
+                }
+            });
+            return true;
+        }
+        // v3: same triple, SelectorRatchet obligations (Codex round nine)
+        if let Some((sel, _)) = try_selector(t, cand, cfg.lemma_steps, cfg.steps, cfg.nodes) {
+            found = Some(if path.is_empty() {
+                Kill::Top3(sel)
+            } else {
+                Kill::Arg3 {
+                    path: path.to_string(),
+                    cert: sel,
                 }
             });
             return true;
@@ -182,7 +199,8 @@ fn main() {
     // Per-term parallel; each worker builds and drops its own Rc trees.
     // Output is streamed one self-describing line at a time (unordered —
     // kills lose nothing, per the ops ledger), counters are atomic.
-    let (kills_top, kills_arg, kills_htr, none) = (
+    let (kills_top, kills_arg, kills_htr, kills_sel, none) = (
+        AtomicU64::new(0),
         AtomicU64::new(0),
         AtomicU64::new(0),
         AtomicU64::new(0),
@@ -235,6 +253,26 @@ fn main() {
                     cert.i.to_bits()
                 )
             }
+            Some(Kill::Top3(cert)) => {
+                kills_sel.fetch_add(1, Ordering::Relaxed);
+                format!(
+                    "SELECTOR\t{bits}\thead={}\tw={}\tp={}\tc0={}",
+                    cert.a.to_bits(),
+                    cert.w,
+                    cert.p,
+                    cert.c0.to_bits()
+                )
+            }
+            Some(Kill::Arg3 { path, cert }) => {
+                kills_sel.fetch_add(1, Ordering::Relaxed);
+                format!(
+                    "SELECTOR-ARG\t{bits}\tat={path}\thead={}\tw={}\tp={}\tc0={}",
+                    cert.a.to_bits(),
+                    cert.w,
+                    cert.p,
+                    cert.c0.to_bits()
+                )
+            }
             None => {
                 none.fetch_add(1, Ordering::Relaxed);
                 format!("none\t{bits}")
@@ -245,14 +283,16 @@ fn main() {
         writeln!(lock, "{line}").unwrap();
     });
     eprintln!(
-        "certsearch: {} terms; ratchet {} top + {} arg, htr {}; total {}; unresolved {}",
+        "certsearch: {} terms; ratchet {} top + {} arg, htr {}, selector {}; total {}; unresolved {}",
         lines.len(),
         kills_top.load(Ordering::Relaxed),
         kills_arg.load(Ordering::Relaxed),
         kills_htr.load(Ordering::Relaxed),
+        kills_sel.load(Ordering::Relaxed),
         kills_top.load(Ordering::Relaxed)
             + kills_arg.load(Ordering::Relaxed)
-            + kills_htr.load(Ordering::Relaxed),
+            + kills_htr.load(Ordering::Relaxed)
+            + kills_sel.load(Ordering::Relaxed),
         none.load(Ordering::Relaxed)
     );
 }

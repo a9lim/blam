@@ -19,8 +19,9 @@
 //! Usage: certdiag <terms-file> [--steps N] [--nodes N] [--threads N]
 
 use blc::cert::{
-    generalize, head_step, match_wrapper, plug, spine, strip_lams, verify, verify_htr,
-    CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm, Ratchet, Step,
+    check_reduces, check_reduces_star, generalize, head_step, match_wrapper, plug, spine,
+    strip_lams, verify, verify_htr, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm,
+    Ratchet, Step,
 };
 use blc::parse::parse_all;
 use blc::term::Term;
@@ -37,6 +38,158 @@ struct Diag {
     x1_closed: bool,
     drift: &'static str,
     verify_fail: String,
+    sel: String,
+    pdiag: String,
+}
+
+/// Rename metavariable ids (Codex round nine: SELECT needs `W[Q]`
+/// alongside `P[Z]`).
+fn rename_meta(t: &PTerm, from: u32, to: u32) -> PTerm {
+    match t {
+        PTerm::Meta(i) if *i == from => PTerm::Meta(to),
+        PTerm::Meta(i) => PTerm::Meta(*i),
+        PTerm::Var(n) => PTerm::Var(*n),
+        PTerm::Lam(b) => PTerm::Lam(rename_meta(b, from, to).into()),
+        PTerm::App(f, a) => PTerm::App(
+            rename_meta(f, from, to).into(),
+            rename_meta(a, from, to).into(),
+        ),
+    }
+}
+
+/// Pattern hygiene: scoped (no free vars) and only `Meta(0)` holes.
+fn good_pattern(p: &PTerm) -> bool {
+    fn only_meta0(t: &PTerm) -> bool {
+        match t {
+            PTerm::Meta(i) => *i == 0,
+            PTerm::Var(_) => true,
+            PTerm::Lam(b) => only_meta0(b),
+            PTerm::App(f, a) => only_meta0(f) && only_meta0(a),
+        }
+    }
+    p.max_free(0) == 0 && only_meta0(p)
+}
+
+/// Trace symbolically until the head goes opaque; return that state.
+fn trace_to_metahead(start: &PTerm, max_steps: u32, max_nodes: u64) -> Option<PTerm> {
+    let mut cur = start.clone();
+    for _ in 0..max_steps {
+        match head_step(&cur, max_nodes) {
+            Step::Did(next, _) => cur = next,
+            Step::MetaHead => return Some(cur),
+            _ => return None,
+        }
+    }
+    None
+}
+
+/// SelectorRatchet probe (Codex round nine): BASE `C0 Z →* A Z`,
+/// OPEN `A Z →⁺ Z W[Z]`, FAN `W[Z] Q →⁺ Q P[Z] Q` (P extracted),
+/// SELECT `W[Q] P[Z] →⁺ Z`. Returns "ok:kO:kF:kSel" or the failing
+/// obligation.
+fn selector_probe(cand: &Ratchet, max_nodes: u64) -> String {
+    const K: u32 = 400;
+    let ap = PTerm::from_term(&cand.a);
+    let c0p = PTerm::from_term(&cand.c0);
+    let m0 = PTerm::Meta(0);
+    let m1 = PTerm::Meta(1);
+    let open_end = PTerm::App(m0.clone().into(), cand.w.clone().into());
+    let Ok(ko) = check_reduces(
+        &PTerm::App(ap.clone().into(), m0.clone().into()),
+        &open_end,
+        K,
+        max_nodes,
+    ) else {
+        return "open".into();
+    };
+    // FAN: find the opaque-head endpoint of W[Z] Q and match `Q P Q`.
+    let fan_start = PTerm::App(cand.w.clone().into(), m1.clone().into());
+    let Some(fan_end) = trace_to_metahead(&fan_start, K, max_nodes) else {
+        return "fan-trace".into();
+    };
+    let p = match &fan_end {
+        PTerm::App(qp, q2) if **q2 == m1 => match &**qp {
+            PTerm::App(q1, p) if **q1 == m1 && good_pattern(p) => (**p).clone(),
+            _ => return "fan-shape".into(),
+        },
+        _ => return "fan-shape".into(),
+    };
+    let Ok(kf) = check_reduces(&fan_start, &fan_end, K, max_nodes) else {
+        return "fan-lift".into();
+    };
+    // SELECT: W[Q] P[Z] →⁺ Z
+    let wq = rename_meta(&cand.w, 0, 1);
+    let Ok(ksel) = check_reduces(
+        &PTerm::App(wq.into(), p.into()),
+        &m0,
+        K,
+        max_nodes,
+    ) else {
+        return "select".into();
+    };
+    // BASE: C0 Z →* A Z
+    if check_reduces_star(
+        &PTerm::App(c0p.into(), m0.clone().into()),
+        &PTerm::App(ap.into(), m0.into()),
+        K,
+        max_nodes,
+    )
+    .is_err()
+    {
+        return "base".into();
+    }
+    format!("ok:{ko}:{kf}:{ksel}")
+}
+
+/// PassengerDiagonalRatchet probe (Codex round nine): OPEN
+/// `A Z →⁺ Z (Z P[Z]) W[Z]` (P and W extracted from the endpoint),
+/// UNWRAP `W[Z] Q →⁺ Q Z`, DROP `P[Z] Q →⁺ Z`, SEED `C0 Q →⁺ A`.
+fn pdiag_probe(cand: &Ratchet, max_nodes: u64) -> String {
+    const K: u32 = 400;
+    let ap = PTerm::from_term(&cand.a);
+    let c0p = PTerm::from_term(&cand.c0);
+    let m0 = PTerm::Meta(0);
+    let m1 = PTerm::Meta(1);
+    let open_start = PTerm::App(ap.clone().into(), m0.clone().into());
+    let Some(open_end) = trace_to_metahead(&open_start, K, max_nodes) else {
+        return "open-trace".into();
+    };
+    // endpoint spine must be Z · (Z P) · W
+    let Some((h, args)) = spine(&open_end) else {
+        return "open-shape".into();
+    };
+    if **h != m0 || args.len() != 2 {
+        return "open-shape".into();
+    }
+    let (p, w) = match (&*args[0].clone(), &*args[1].clone()) {
+        (PTerm::App(z1, p), w) if **z1 == m0 && good_pattern(p) && good_pattern(w) => {
+            ((**p).clone(), (*w).clone())
+        }
+        _ => return "open-shape".into(),
+    };
+    if check_reduces(&open_start, &open_end, K, max_nodes).is_err() {
+        return "open-lift".into();
+    }
+    // UNWRAP: W[Z] Q →⁺ Q Z
+    if check_reduces(
+        &PTerm::App(w.into(), m1.clone().into()),
+        &PTerm::App(m1.clone().into(), m0.clone().into()),
+        K,
+        max_nodes,
+    )
+    .is_err()
+    {
+        return "unwrap".into();
+    }
+    // DROP: P[Z] Q →⁺ Z
+    if check_reduces(&PTerm::App(p.into(), m1.clone().into()), &m0, K, max_nodes).is_err() {
+        return "drop".into();
+    }
+    // SEED: C0 Q →⁺ A
+    if check_reduces(&PTerm::App(c0p.into(), m1.into()), &ap, K, max_nodes).is_err() {
+        return "seed".into();
+    }
+    "ok".into()
 }
 
 /// Decode a verify failure into `Obligation:Kind[@step][:spine=...]`.
@@ -274,6 +427,8 @@ fn diagnose(t: &Term, max_steps: u32, max_nodes: u64) -> Diag {
                                                     describe_fail(&e, &cand, max_nodes),
                                                     htr_probe(t, &cand, max_nodes)
                                                 );
+                                                d.sel = selector_probe(&cand, max_nodes);
+                                                d.pdiag = pdiag_probe(&cand, max_nodes);
                                             }
                                             retire = true;
                                         }
@@ -361,14 +516,14 @@ fn main() {
         .filter(|l| !l.is_empty() && l.chars().all(|c| c == '0' || c == '1'))
         .collect();
 
-    println!("bits,n,stage,best_milestones,head_arities,max_arity,x1_closed,drift,verify_fail");
+    println!("bits,n,stage,best_milestones,head_arities,max_arity,x1_closed,drift,verify_fail,sel,pdiag");
     let rows: Vec<String> = terms
         .par_iter()
         .map(|bits| {
             let t = parse_all(bits).expect("parse");
             let d = diagnose(&t, steps, nodes);
             format!(
-                "{bits},{},{},{},{},{},{},{},{}",
+                "{bits},{},{},{},{},{},{},{},{},{},{}",
                 bits.len(),
                 d.stage,
                 d.best_milestones,
@@ -376,7 +531,9 @@ fn main() {
                 d.max_arity,
                 d.x1_closed as u8,
                 d.drift,
-                d.verify_fail
+                d.verify_fail,
+                d.sel,
+                d.pdiag
             )
         })
         .collect();

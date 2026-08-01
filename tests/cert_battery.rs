@@ -1,5 +1,7 @@
-//! Certificate soundness battery (SPEC.md §6): run discovery and both
-//! trusted verifiers over every closed term of 4..=28 bits that
+//! Certificate soundness battery (SPEC.md §7): stream discovery's
+//! candidates through ALL trusted verifiers (v1 ratchet, HTR,
+//! SelectorRatchet — the exact sweep ladder) over every closed term
+//! of 4..=28 bits that
 //! provably HALTS, and assert no certificate ever fires. This tests the
 //! implementation, not the math — a certificate on a halter would mean
 //! a checker bug, since both glue theorems conclude "no normal form".
@@ -10,7 +12,7 @@
 //! default test rather than a nightly. Terms whose probe runs out of
 //! fuel are skipped: not proven halters, nothing to assert.
 
-use blc::cert::{discover, try_htr, verify};
+use blc::cert::{discover_stream, try_htr, try_selector, verify, Ratchet};
 use blc::enumerate::{enc_to_string, run_task, split_tasks};
 use blc::parse_all;
 use blc::vm::{Machine, SizeSink, TermPool};
@@ -39,13 +41,23 @@ fn no_certificate_fires_on_any_small_halter() {
                 halters += 1;
                 let bits = enc_to_string(enc, len);
                 let t = parse_all(&bits).unwrap();
-                if let Some(cert) = discover(&t, 2000, 200_000) {
-                    if verify(&t, &cert, 4096, 2000, 200_000).is_ok() {
+                // Stream ALL candidate families through all three trusted
+                // checkers — the exact sweep ladder (certsearch::try_kill).
+                discover_stream(&t, 2000, 200_000, &mut |cand: &Ratchet| {
+                    if verify(&t, cand, 4096, 2000, 200_000).is_ok() {
                         certified.push(format!("v1 certified halter {bits}"));
-                    } else if try_htr(&t, &cert, 4096, 2000, 200_000).is_some() {
-                        certified.push(format!("htr certified halter {bits}"));
+                        return true;
                     }
-                }
+                    if try_htr(&t, cand, 4096, 2000, 200_000).is_some() {
+                        certified.push(format!("htr certified halter {bits}"));
+                        return true;
+                    }
+                    if try_selector(&t, cand, 4096, 2000, 200_000).is_some() {
+                        certified.push(format!("selector certified halter {bits}"));
+                        return true;
+                    }
+                    false
+                });
             });
             (halters, certified)
         })

@@ -281,7 +281,70 @@ example requires it. Shapes plausibly still beyond this class
 (alternating heads, growth in outer evaluation contexts,
 normalization-equal milestones) wait for their own forcing examples.
 
-## 6. Verification battery (planned)
+## 6. v3: the SelectorRatchet (derived by Codex, round nine)
+
+Forced by the 35-bit exemplar `01000110100001100001011000001111010`
+(A = C0 = λx. x W[x], W[Z] = λq. q P[Z] q, P[Z] = λa.λb.Z), which v1
+must reject (OPEN ends at `Z W[Z]`, not `(Z Z) W[Z]`) and the
+HeadTowerRatchet must also reject (its SPREAD expects `Q I Z Q`; here
+the fan-out is `Q P[Z] Q` — the abort is an endpoint mismatch, not a
+Z-headed reduction; the round-nine trace corrected an earlier
+misreading of exactly this point).
+
+**Data:** `(A, W, P, C0)` — A, C0 closed; W and P pattern-closed with
+every hole `Meta(0)`; W contains at least one hole (P may contain any
+number, including zero). The wrapper is a *selector*: applied to a
+fresh argument it hands control to that argument, passing along a
+second unary pattern carrying its stored layer; one wrapper layer
+applied to that pattern reduces to the stored layer.
+
+**Checks** — bounded symbolic head reductions, every proper source
+state a non-abstraction and non-Meta (the same `check_reduces`
+discipline as v1/v2); Z and Q are independent opaque closed
+metavariables; `W[Q]` is built by syntactic hole-renaming BEFORE the
+check (unambiguous under the Meta(0) gates):
+
+| name | obligation | quantification |
+|------|-----------|----------------|
+| OPEN | `A Z →ₕ⁺ Z W[Z]` | all closed Z |
+| FAN | `W[Z] Q →ₕ⁺ Q P[Z] Q` | all closed Z, Q |
+| SELECT | `W[Q] P[Z] →ₕ⁺ Z` | all closed Z, Q |
+| BASE | `C0 Z →ₕ* A Z` | all closed Z (may be 0 steps) |
+| INIT | `T →ₕ* λᵏ.(A Wⁿ[C0] y⃗)` | concrete, bounded (v1.2 landing) |
+
+**Glue theorem.** With `Xₙ = Wⁿ[C0]`: for every n,
+`A Xₙ →ₕ⁺ A Xₙ₊₁`, hence with INIT the target has no normal form.
+
+*Proof.* Towers of closed patterns over the closed C0 are closed, so
+every instantiation below is capture-free. OPEN at Z := Xₙ gives
+`A Xₙ →ₕ⁺ Xₙ W[Xₙ] = Xₙ Xₙ₊₁`. Rank step, for m ≥ 1:
+`Xₘ Xₙ₊₁ →ₕ⁺ Xₘ₋₁ Xₙ₊₁` — since `Xₘ = W[Xₘ₋₁]`, FAN at
+(Z := Xₘ₋₁, Q := Xₙ₊₁) runs at the state's top level and yields
+`Xₙ₊₁ P[Xₘ₋₁] Xₙ₊₁`; its left factor is literally `W[Xₙ] P[Xₘ₋₁]`,
+so SELECT at (Q := Xₙ, Z := Xₘ₋₁) reduces it to `Xₘ₋₁` inside the
+context `□ Xₙ₊₁` — one application lifting, licensed because every
+proper source of SELECT's chain is a non-abstraction. Iterating the
+rank step from m = n down to 1 reaches `C0 Xₙ₊₁`; BASE at
+Z := Xₙ₊₁ closes the cycle at `A Xₙ₊₁`. OPEN is ⁺, so the cycle is
+productive; the under-binder and trailing-vector lifting is v1.2's,
+verbatim. ∎
+
+For the exemplar the measured obligation lengths are OPEN 1, FAN 1,
+SELECT 3, BASE 0, giving milestone gaps exactly `4n+1` — matching the
+independently observed positions 0, 1, 6, 15, 28, 45, 66, 91, ….
+
+**Discovery** (untrusted): reuse the v1 stream's `(A, W, C0)`
+candidates; trace `W[Z] Q` to its first opaque-head state, match it
+as `Q P Q` to read off P, peel the base to the tower bottom, hand to
+`verify_selector`. Checkers: `verify_selector` in src/cert.rs;
+driver `try_selector`; sweep tag `SELECTOR` (± `-ARG`).
+
+Measured acceptance on the 2026-08-01 frontier probe: 30 of the 456
+live ratchet-candidates pass all four obligations (the 131-term
+`zfirst` abort bucket is a signature, not a class); 110 more reach a
+Q-headed FAN endpoint of a different shape — unexplored variants.
+
+## 7. Verification battery
 
 - Unit: loop32 certifies end-to-end from its wire bits.
 - Soundness battery: run discovery+checker over all census *halters*
@@ -294,7 +357,7 @@ normalization-equal milestones) wait for their own forcing examples.
   found must be identical (the checker result is budget-independent
   once found).
 
-## 7. Review log
+## 8. Review log
 
 **2026-07-31, Codex (thread `blc-conformance`, job
 cx-20260731-151501-5ad2).** Verdict: *glue theorem survives, no

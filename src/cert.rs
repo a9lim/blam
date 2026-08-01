@@ -686,6 +686,203 @@ fn wrapper_holes_are_meta0(t: &PTerm) -> bool {
     }
 }
 
+/// Rename metavariable ids syntactically (`W[Z]` → `W[Q]`). Done
+/// BEFORE any checking — the checkers themselves never plug or rename;
+/// Z and Q stay opaque throughout.
+pub fn rename_meta(t: &PTerm, from: u32, to: u32) -> PTerm {
+    match t {
+        PTerm::Meta(i) if *i == from => PTerm::Meta(to),
+        PTerm::Meta(i) => PTerm::Meta(*i),
+        PTerm::Var(n) => PTerm::Var(*n),
+        PTerm::Lam(b) => plam(rename_meta(b, from, to)),
+        PTerm::App(f, a) => papp(rename_meta(f, from, to), rename_meta(a, from, to)),
+    }
+}
+
+/// A SelectorRatchet certificate (SPEC.md §6, derived by Codex in
+/// round nine from the 35-bit forcing exemplar
+/// `01000110100001100001011000001111010`): the wrapper is a
+/// *selector* — applied to a fresh argument it hands control to that
+/// argument carrying a second unary pattern `P[Z]` (FAN), and one
+/// wrapper layer applied to `P[Z]` reduces to the stored layer
+/// (SELECT). The descent drops the tower index through the argument's
+/// own contraction, with every metavariable opaque throughout — the
+/// shape both v1 (OPEN endpoint mismatch) and HTR (SPREAD endpoint
+/// mismatch) must reject.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SelectorRatchet {
+    pub a: Term,
+    pub w: PTerm,
+    pub p: PTerm,
+    pub c0: Term,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SelReport {
+    /// Steps of OPEN/FAN/SELECT/BASE in that order (BASE may be 0).
+    pub obligation_steps: [u32; 4],
+    pub init_steps: u32,
+    pub init_tower: u32,
+    pub init_trail: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum SelFail {
+    Open(CheckFail),
+    Fan(CheckFail),
+    Select(CheckFail),
+    Base(CheckFail),
+    Init,
+    Shape(&'static str),
+}
+
+/// The trusted SelectorRatchet verifier. Establishes that `t` has no
+/// normal form per the glue theorem (SPEC.md §6): with `Xₙ = Wⁿ[C0]`,
+/// the rank step is FAN at (Z:=Xₘ₋₁, Q:=Xₙ₊₁) followed by SELECT at
+/// (Q:=Xₙ, Z:=Xₘ₋₁) lifted through the trailing `Xₙ₊₁`
+/// (`Xₘ Xₙ₊₁ →ₕ⁺ Xₙ₊₁ P[Xₘ₋₁] Xₙ₊₁ = W[Xₙ] P[Xₘ₋₁] Xₙ₊₁ →ₕ⁺
+/// Xₘ₋₁ Xₙ₊₁`), and the cycle is OPEN, n rank steps, BASE at
+/// Z:=Xₙ₊₁ — every proper source a non-abstraction, so the whole
+/// chain lifts through trailing vectors and leading binders exactly
+/// as v1.2's. INIT is v1's landing, unchanged.
+pub fn verify_selector(
+    t: &Term,
+    cert: &SelectorRatchet,
+    lemma_steps: u32,
+    init_steps: u32,
+    max_nodes: u64,
+) -> Result<SelReport, SelFail> {
+    if !cert.a.is_closed() {
+        return Err(SelFail::Shape("A not closed"));
+    }
+    if !cert.c0.is_closed() {
+        return Err(SelFail::Shape("C0 not closed"));
+    }
+    if !cert.w.contains_meta() {
+        return Err(SelFail::Shape("W has no Meta"));
+    }
+    if cert.w.max_free(0) != 0 {
+        return Err(SelFail::Shape("W not pattern-closed"));
+    }
+    if !wrapper_holes_are_meta0(&cert.w) {
+        return Err(SelFail::Shape("W holes must all be Meta(0)"));
+    }
+    if cert.p.max_free(0) != 0 {
+        return Err(SelFail::Shape("P not pattern-closed"));
+    }
+    if !wrapper_holes_are_meta0(&cert.p) {
+        return Err(SelFail::Shape("P holes must all be Meta(0)"));
+    }
+    if !t.is_closed() {
+        return Err(SelFail::Shape("target not closed"));
+    }
+
+    let a = PTerm::from_term(&cert.a);
+    let c0 = PTerm::from_term(&cert.c0);
+    let w = cert.w.clone();
+    let p = cert.p.clone();
+    let z = || PTerm::Meta(0);
+    let q = || PTerm::Meta(1);
+
+    // OPEN(Z):     A Z       →ₕ⁺ Z W[Z]
+    let open = check_reduces(
+        &papp(a.clone(), z()),
+        &papp(z(), w.clone()),
+        lemma_steps,
+        max_nodes,
+    )
+    .map_err(SelFail::Open)?;
+    // FAN(Z,Q):    W[Z] Q    →ₕ⁺ Q P[Z] Q
+    let fan = check_reduces(
+        &papp(w.clone(), q()),
+        &papp(papp(q(), p.clone()), q()),
+        lemma_steps,
+        max_nodes,
+    )
+    .map_err(SelFail::Fan)?;
+    // SELECT(Z,Q): W[Q] P[Z] →ₕ⁺ Z   (W[Q] built by syntactic
+    // renaming BEFORE the check; the meta0 gates above make the
+    // renaming unambiguous)
+    let select = check_reduces(
+        &papp(rename_meta(&w, 0, 1), p.clone()),
+        &z(),
+        lemma_steps,
+        max_nodes,
+    )
+    .map_err(SelFail::Select)?;
+    // BASE(Z):     C0 Z      →ₕ* A Z
+    let base = check_reduces_star(
+        &papp(c0.clone(), z()),
+        &papp(a.clone(), z()),
+        lemma_steps,
+        max_nodes,
+    )
+    .map_err(SelFail::Base)?;
+
+    // INIT: identical machinery to v1.2 — same tower, same lifting.
+    let (init_steps, init_tower, init_trail) =
+        init_search(t, &a, &w, &c0, init_steps, max_nodes).ok_or(SelFail::Init)?;
+    Ok(SelReport {
+        obligation_steps: [open, fan, select, base],
+        init_steps,
+        init_tower,
+        init_trail,
+    })
+}
+
+/// Untrusted SelectorRatchet driver: reuse a discovered `(A, W, C0)`
+/// triple — read `P` off the FAN trace's opaque-head endpoint
+/// (`W[Z] Q →ₕ⁺ Q P[Z] Q`), peel the observed base to the tower
+/// bottom, and hand everything to the trusted verifier. Garbage in ⇒
+/// no certificate, never a wrong one.
+pub fn try_selector(
+    t: &Term,
+    cand: &Ratchet,
+    lemma_steps: u32,
+    init_steps: u32,
+    max_nodes: u64,
+) -> Option<(SelectorRatchet, SelReport)> {
+    // FAN trace to the first opaque-head state.
+    let mut cur = papp(cand.w.clone(), PTerm::Meta(1));
+    let mut fuel = lemma_steps;
+    loop {
+        match head_step(&cur, max_nodes) {
+            Step::Did(next, _) => {
+                cur = next;
+                if fuel == 0 {
+                    return None;
+                }
+                fuel -= 1;
+            }
+            Step::MetaHead => break,
+            _ => return None,
+        }
+    }
+    // Endpoint must be Q P Q; extract P.
+    let p = match &cur {
+        PTerm::App(qp, q2) if **q2 == PTerm::Meta(1) => match &**qp {
+            PTerm::App(q1, p) if **q1 == PTerm::Meta(1) => (**p).clone(),
+            _ => return None,
+        },
+        _ => return None,
+    };
+    // Peel the discovered base to the tower bottom.
+    let mut bottom = PTerm::from_term(&cand.c0);
+    while let Some(inner) = match_wrapper(&cand.w, &bottom) {
+        bottom = inner;
+    }
+    let c0 = bottom.to_term()?;
+    let cert = SelectorRatchet {
+        a: cand.a.clone(),
+        w: cand.w.clone(),
+        p,
+        c0,
+    };
+    verify_selector(t, &cert, lemma_steps, init_steps, max_nodes)
+        .ok()
+        .map(|rep| (cert, rep))
+}
+
 /// Untrusted HeadTowerRatchet driver: reuse a discovered `(A, W, C0)`
 /// triple, peel the observed base to the true tower bottom (a witnessed
 /// milestone argument is Wᵏ[C0ₜᵣᵤₑ] — v1 may use it directly, the
@@ -888,6 +1085,53 @@ mod tests {
         let w = plam(papp(pvar(1), PTerm::Meta(0)));
         let c0 = Term::Lam(Rc::new(a.clone()));
         Ratchet { a, w, c0 }
+    }
+
+    /// The 35-bit SelectorRatchet forcing exemplar (Codex round nine):
+    /// A = C0 = λx. x W[x], W[Z] = λq. q P[Z] q, P[Z] = λa.λb.Z.
+    /// v1 rejects it (OPEN endpoint is `Z W[Z]`), HTR rejects it
+    /// (SPREAD endpoint is `Q P[Z] Q`, not `Q I Z Q`); the selector
+    /// obligations certify it with the measured counts
+    /// OPEN 1 / FAN 1 / SELECT 3 / BASE 0 — milestone gaps 4n+1.
+    const SEL35: &str = "01000110100001100001011000001111010";
+
+    #[test]
+    fn selector_exemplar_certifies() {
+        let t = parse_all(SEL35).unwrap();
+        let mut found = None;
+        discover_stream(&t, 1000, 100_000, &mut |cand: &Ratchet| {
+            assert!(
+                verify(&t, cand, 1000, 1000, 100_000).is_err(),
+                "v1 must reject the selector exemplar"
+            );
+            if let Some(pair) = try_selector(&t, cand, 1000, 1000, 100_000) {
+                found = Some(pair);
+                return true;
+            }
+            false
+        });
+        let (cert, rep) = found.expect("selector certificate expected");
+        assert_eq!(rep.obligation_steps, [1, 1, 3, 0]);
+        assert_eq!(cert.a, cert.c0, "the forcing family has A = C0");
+    }
+
+    /// Selector soundness spot-check: the certificate data must not
+    /// verify against a HALTING self-application of the same shape
+    /// family (the battery covers this exhaustively; this is the
+    /// in-file canary).
+    #[test]
+    fn selector_rejects_halter() {
+        // (λx. x x) (λx. x) — halts.
+        let t = parse_all("01000110100010").unwrap();
+        let mut fired = false;
+        discover_stream(&t, 1000, 100_000, &mut |cand: &Ratchet| {
+            if try_selector(&t, cand, 1000, 1000, 100_000).is_some() {
+                fired = true;
+                return true;
+            }
+            false
+        });
+        assert!(!fired);
     }
 
     #[test]
