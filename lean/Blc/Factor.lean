@@ -34,6 +34,20 @@ theorem beta_par : ∀ {t u : Term}, Beta t u → Par t u := by
   | appR f _ ih => obtain ⟨n, hn⟩ := ih; exact ⟨_, ParN.app (parN_refl f) hn⟩
   | lam _ ih => obtain ⟨n, hn⟩ := ih; exact ⟨n, ParN.lam hn⟩
 
+/-- A parallel step is a β multi-step: `Par ⊆ Betas`. This is the
+transport that lets the strengthened pullback carry a normal form
+backward through head reduction. -/
+theorem parN_betas : ∀ {n : Nat} {t u : Term}, ParN n t u → Betas t u := by
+  intro n t u h
+  induction h with
+  | var k => exact Betas.refl _
+  | lam _ ih => exact betas_lam ih
+  | app _ _ ihf iha => exact betas_trans (betas_appL _ ihf) (betas_appR _ iha)
+  | beta _ _ ihb iha =>
+      exact betas_trans (betas_appL _ (betas_lam ihb))
+        (betas_trans (betas_appR _ iha)
+          (Betas.head (Beta.beta _ _) (Betas.refl _)))
+
 /-- Internal parallel reduction: a parallel step that contracts no
 head redex. `redexShell` is the load-bearing constructor — a root
 redex may stay in place (body and argument reducing in parallel)
@@ -159,13 +173,16 @@ theorem ipar_merge : ∀ {t u : Term}, IPar t u →
           exact ⟨_, ParN.app h₁ h₂⟩
 
 /-- The pullback: a parallel step into a head-terminating term
-head-terminates. Lexicographic descent: the IPar branch consumes one
-head step of the target (merge recombines, index reset, head count
-down); the split branch keeps the head count and drops the index. -/
+head-terminates — and the head-normal form it lands on parallel-reduces
+to the target's (the residual internal work, carried explicitly so a
+normal form transports backward). Lexicographic descent: the IPar
+branch consumes one head step of the target (merge recombines, index
+reset, head count down); the split branch keeps the head count and
+drops the index. -/
 theorem parN_head_pullback :
     ∀ (k : Nat), ∀ {n : Nat} {t u p : Term}, ParN n t u →
       headSteps k u = some p → headStep p = none →
-      ∃ k' q, headSteps k' t = some q ∧ headStep q = none := by
+      ∃ k' q, headSteps k' t = some q ∧ headStep q = none ∧ Par q p := by
   intro k
   induction k using Nat.strongRecOn with
   | ind k IHk =>
@@ -178,14 +195,14 @@ theorem parN_head_pullback :
             | zero =>
                 simp only [headSteps] at hsteps
                 cases hsteps
-                exact ⟨0, t, rfl, ipar_headNormal hint hp⟩
+                exact ⟨0, t, rfl, ipar_headNormal hint hp, ipar_par hint⟩
             | succ k' =>
                 simp only [headSteps, Option.bind_eq_some_iff] at hsteps
                 obtain ⟨u₁, hu₁, hrest'⟩ := hsteps
                 obtain ⟨n₂, hpar⟩ := ipar_merge hint (headStep_sound hu₁)
                 exact IHk k' (Nat.lt_succ_self k') hpar hrest' hp
-          · obtain ⟨k'', q, hq, hqn⟩ := IHn m hm hrest hsteps hp
-            refine ⟨k'' + 1, q, ?_, hqn⟩
+          · obtain ⟨k'', q, hq, hqn, hqp⟩ := IHn m hm hrest hsteps hp
+            refine ⟨k'' + 1, q, ?_, hqn, hqp⟩
             simp only [headSteps, headStep_complete hstep, Option.bind_some]
             exact hq
 
@@ -196,18 +213,32 @@ theorem normalForm_headStep_none {t : Term} (h : NormalForm t) :
   | none => rfl
   | some v => exact absurd (beta_of_headStep (headStep_sound hs)) (h v)
 
+/-- Head factorization with transport: a term with a β-normal form
+head-reduces to a head-normal form that STILL HAS that normal form.
+This is what the rigid-head argument bridge (Blc/Rigid.lean) needs —
+termination alone loses the connection to the normal form. -/
+theorem hasNormalForm_headFactorizes : ∀ {t : Term}, HasNormalForm t →
+    ∃ k p, headSteps k t = some p ∧ headStep p = none ∧ HasNormalForm p := by
+  intro t ⟨nf, hred, hnf⟩
+  have aux : ∃ k p, headSteps k t = some p ∧ headStep p = none ∧
+      Betas p nf := by
+    induction hred with
+    | refl t => exact ⟨0, t, rfl, normalForm_headStep_none hnf, Betas.refl t⟩
+    | head hb _ ih =>
+        obtain ⟨k, p, hk, hp, hpn⟩ := ih hnf
+        obtain ⟨n, hn⟩ := beta_par hb
+        obtain ⟨k', q, hq, hqn, m, hqp⟩ := parN_head_pullback k hn hk hp
+        exact ⟨k', q, hq, hqn, betas_trans (parN_betas hqp) hpn⟩
+  obtain ⟨k, p, hk, hp, hpn⟩ := aux
+  exact ⟨k, p, hk, hp, nf, hpn, hnf⟩
+
 /-- Head normalization: a term with a β-normal form has a
 terminating head reduction. -/
 theorem hasNormalForm_headTerminates : ∀ {t : Term}, HasNormalForm t →
     ∃ k p, headSteps k t = some p ∧ headStep p = none := by
-  intro t ⟨nf, hred, hnf⟩
-  induction hred with
-  | refl t => exact ⟨0, t, rfl, normalForm_headStep_none hnf⟩
-  | head hb _ ih =>
-      obtain ⟨k, p, hk, hp⟩ := ih hnf
-      obtain ⟨n, hn⟩ := beta_par hb
-      obtain ⟨k', q, hq, hqn⟩ := parN_head_pullback k hn hk hp
-      exact ⟨k', q, hq, hqn⟩
+  intro t h
+  obtain ⟨k, p, hk, hp, _⟩ := hasNormalForm_headFactorizes h
+  exact ⟨k, p, hk, hp⟩
 
 /-- **The general bridge**: head divergence rules out a normal form —
 for every term. Any head-divergence certificate now concludes

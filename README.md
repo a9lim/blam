@@ -171,26 +171,28 @@ default 4096).
   mask): survivors there are hypotheses needing whole-interpreter
   splice + battery, not proofs — the one mechanical route left to
   sub-170.
-- Certificate v3 lanes (`tools/cert/SPEC.md` §5 tail): shapes still
-  waiting for forcing examples — alternating heads, growth in outer
-  evaluation contexts, normalization-equal milestones — over the
-  4,275-term frontier's remaining ratchet-candidates.
+- Certificate v4 lanes (`tools/cert/CLASSIFY.md`): the measured v3
+  map's next classes — the PassengerDiagonal (4 probe-accepted
+  exemplars, obligations sketched in round nine) and the zfirst
+  tower-recursive wrappers — over the 4,235-term frontier's
+  remaining ratchet-candidates.
 - Lean 4 track (`lean/`): **`¬ HasNormalForm loop32` is proven**
   (axioms: `propext` alone; zero sorries, no mathlib) — the first
   mechanical BLC formalization anywhere — by the one-way-street
   argument AND through the **general factorization bridge
   `HeadDiverges → ¬HasNormalForm`**, proven for every term via
   indexed parallel reduction (the Accattoli–Faggian–Guerrieri
-  split). On top of the bridge sits the **symbolic checker layer**
+  split). On top of the bridge sit the **symbolic checker layer**
   (STerm metavariables, the commuting square as the one trusted
-  rule) and the **generic ratchet assembly**, so a certificate is
-  just data: `certlean` translates `ratchet_kills.txt` into Lean
-  through the v1.2 and HeadTowerRatchet assemblies, and **248 of the
-  257 kills are individually kernel-checked `¬HasNormalForm`
-  theorems**, each pinned to its named bits by a kernel-checked wire
-  encoding (`lean/Certs/`, ~1.6 s for the whole batch; the 9
-  spine-argument kills await the rigid-head bridge). Next: that
-  bridge; prefix-freeness/Kraft; K upper bounds.
+  rule), the **generic ratchet assemblies** (v1.2, HeadTower,
+  Selector), and the **rigid-head argument bridge** (`argKill`: head
+  factorization with normal-form transport — no confluence — plus
+  rigid-spine shape theory), so a certificate is just data:
+  `certlean` translates `ratchet_kills.txt` into Lean and **all 297
+  kills are individually kernel-checked `¬HasNormalForm` theorems**,
+  each pinned to its named bits by a kernel-checked wire encoding
+  (`lean/Certs/`, ~1.9 s for the whole batch). Next:
+  prefix-freeness/Kraft; K upper bounds.
 - ~~A distilled `uni.rs`~~ **built and verified** (`tools/uni/` —
   call-by-name parity with uni.py, streaming stdin, byte-identical
   on the corpus plus three adversarial witnesses, ~18× faster; PR

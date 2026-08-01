@@ -10,20 +10,27 @@ theorem headDiverges_not_hasNormalForm :
 theorem loop32_headDiverges : HeadDiverges loop32        -- propext, Quot.sound
 theorem RatchetCert.noNormalForm :
     c.Valid → ¬ HasNormalForm c.T                        -- propext, Quot.sound
+theorem argKill : headSteps k t = some s → headStep s = none →
+    hnfArgB a s = true → ¬ HasNormalForm a →
+    ¬ HasNormalForm t                                    -- propext, Quot.sound
 ```
 
 — the famous 32-bit term, hand-excluded even in the reference
 busy-beaver ledger, provably has no normal form under arbitrary
 β-reduction; the **general bridge** holds for every term, so any
 head-divergence certificate concludes no-normal-form with no side
-conditions; and the **generic ratchet assembly** turns certificate
-*data* into that conclusion mechanically. `Certs/` holds **248
-generated kernel-checked `¬HasNormalForm` theorems** — every RATCHET
-line through the generic v1.2 assembly and every RATCHET2 line
-through the HeadTowerRatchet (v2) assembly, emitted by the untrusted
-`certlean` tool and replayed obligation-by-obligation by the kernel
-(`by decide`; the whole batch checks in ~1.6 s), each with a
-`wire_*` theorem pinning the certified term to its named bits.
+conditions; the **generic ratchet assemblies** turn certificate
+*data* into that conclusion mechanically; and the **rigid-head
+argument bridge** lifts a spine argument's divergence to the whole
+term. `Certs/` holds **297 generated kernel-checked `¬HasNormalForm`
+theorems** — every line of `ratchet_kills.txt`: RATCHET through the
+generic v1.2 assembly, RATCHET2 through the HeadTowerRatchet (v2),
+SELECTOR through the SelectorRatchet (v3), and every `*-ARG` variant
+through `argKill` on top of its inner assembly — emitted by the
+untrusted `certlean` tool and replayed obligation-by-obligation by
+the kernel (`by decide`; the whole batch checks in ~1.9 s), each
+with a `wire_*` theorem pinning the certified term to its named
+bits.
 
 Two independent routes to the flagship:
 
@@ -96,20 +103,28 @@ Layout:
   `SelCert` with FAN/SELECT obligations (`renameMVar01` and its
   instantiation lemma let SELECT mention `W[Q]` alongside `P[Z]`),
   constant-cost rank steps, same divergence tail.
+- `Blc/Rigid.lean` — the rigid-head argument bridge for `*-ARG`
+  kills: `parN_betas` (Par ⊆ Betas) turns the strengthened pullback
+  (Blc/Factor.lean now carries the residual `Par q p`) into head
+  factorization WITH normal-form transport — no confluence anywhere;
+  rigid-spine shape theory (a normal form of `λᵏ.(x a⃗)` forces
+  normal forms of every spine argument, by elementary inversion);
+  head-reduction determinism pins the factorization's landing to the
+  computed hnf; `argKill` glues it: three decided shape premises +
+  the argument's certificate ⇒ the outer term has no normal form.
 - `Blc/Wire.lean` — the kernel-computable BLC encoder; each
   generated certificate carries a `wire_*` theorem pinning its term
   to the bits in its name (the emitter is untrusted, the kernel
   vouches for the decoding).
 - `Certs/` — GENERATED (by `cargo run --release --bin certlean`,
-  untrusted): one module per term size, 248 certificate literals
-  (214 `RatchetCert` + 34 `HTRCert`) each with its `¬HasNormalForm`
-  and wire theorems. Separate lake target (`lake build Certs`); the
-  default build stays lean.
+  untrusted): one module per term size, 297 certificate literals
+  (222 `RatchetCert` + 35 `HTRCert` + 40 `SelCert`; the ten `*-ARG`
+  lines — 8/1/1 per class — reach their target through `argKill`)
+  each with its `¬HasNormalForm` and wire theorems. Separate lake
+  target (`lake build Certs`); the default build stays lean.
 
-Next stages: the rigid-head bridge for the 9 `*-ARG` kills
-(divergent spine argument under a rigid head); prefix-freeness/
-Kraft; machine-checked K upper bounds. Discovery stays outside the
-formal surface entirely.
+Next stages: prefix-freeness/Kraft; machine-checked K upper bounds.
+Discovery stays outside the formal surface entirely.
 
 Build: `cd lean && lake build` (Lean 4.32.2 via elan; no mathlib).
 Certificates: `lake build Certs`.

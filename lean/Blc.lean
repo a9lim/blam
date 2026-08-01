@@ -10,4 +10,5 @@ import Blc.Sym
 import Blc.Ratchet
 import Blc.HeadTower
 import Blc.Selector
+import Blc.Rigid
 import Blc.Wire

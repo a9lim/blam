@@ -151,7 +151,11 @@ fn main() {
 
     for line in text.lines() {
         let mut cols = line.split('\t');
-        let tag = cols.next().unwrap_or("");
+        let raw_tag = cols.next().unwrap_or("");
+        let (tag, is_arg) = match raw_tag.strip_suffix("-ARG") {
+            Some(base) => (base, true),
+            None => (raw_tag, false),
+        };
         if tag != "RATCHET" && tag != "RATCHET2" && tag != "SELECTOR" {
             skipped += 1;
             continue;
@@ -162,6 +166,7 @@ fn main() {
         let mut c0 = "";
         let mut eraser = "";
         let mut selp = "";
+        let mut at_path = "";
         for col in cols {
             if let Some(v) = col.strip_prefix("head=") {
                 head = v;
@@ -173,9 +178,44 @@ fn main() {
                 eraser = v;
             } else if let Some(v) = col.strip_prefix("p=") {
                 selp = v;
+            } else if let Some(v) = col.strip_prefix("at=") {
+                at_path = v;
             }
         }
-        let t = parse_all(bits).expect("target parse");
+        let outer = parse_all(bits).expect("target parse");
+
+        // `-ARG` kills: the certificate applies to a closed spine
+        // argument of the outer term's head normal form. Replay the
+        // head normalization (counting exact steps for the Lean-side
+        // `headSteps` obligation), extract the argument, and run the
+        // ordinary pipeline against it; the bridge theorem `argKill`
+        // (Blc/Rigid.lean) then lifts its ¬HasNormalForm to the outer
+        // term.
+        let (t, arg_data) = if is_arg {
+            let mut hnf = PTerm::from_term(&outer);
+            let mut k_h: u32 = 0;
+            loop {
+                match head_step(&hnf, MAX_NODES) {
+                    Step::Did(next, _) => {
+                        hnf = next;
+                        k_h += 1;
+                        assert!(k_h < 1_000_000, "hnf replay runaway on {bits}");
+                    }
+                    Step::Nf => break,
+                    other => panic!("hnf replay stalled on {bits}: {other:?}"),
+                }
+            }
+            let idx: usize = at_path
+                .parse()
+                .expect("only single-level ARG paths are emitted");
+            let (_, body) = strip_lams(&hnf);
+            let (_, sargs) = spine(body).expect("hnf is not an application");
+            let a_term = sargs[idx].to_term().expect("ARG must be concrete");
+            let hnf_term = hnf.to_term().expect("hnf must be concrete");
+            (a_term, Some((k_h, hnf_term)))
+        } else {
+            (outer.clone(), None)
+        };
         let a = parse_all(head).expect("head parse");
         let c0t = parse_all(c0).expect("c0 parse");
         let wp = parse_pterm(w);
@@ -259,7 +299,7 @@ fn main() {
 
         // Emit the certificate block.
         let mut blk = String::new();
-        let _ = writeln!(blk, "/-- `{bits}` ({} bits, {tag}). -/", bits.len());
+        let _ = writeln!(blk, "/-- `{bits}` ({} bits, {raw_tag}). -/", bits.len());
         let _ = writeln!(blk, "def cert_{bits} : {kind} where");
         blk.push_str("  A := ");
         lean_term(&a, &mut blk);
@@ -293,23 +333,52 @@ fn main() {
             lean_term(y, &mut blk);
         }
         blk.push_str("]\n\n");
-        let _ = writeln!(
-            blk,
-            "theorem kill_{bits} : ¬ HasNormalForm (cert_{bits}).T :=\n  \
-             (cert_{bits}).noNormalForm ({kind}.valid_of_check (by decide))\n"
-        );
-        // Wire identity: the kernel, not this emitter, vouches that the
-        // certified term IS the term the theorem name's bits encode
-        // (Codex round eight).
         let wire: Vec<&str> = bits
             .chars()
             .map(|c| if c == '1' { "true" } else { "false" })
             .collect();
-        let _ = writeln!(
-            blk,
-            "theorem wire_{bits} :\n    blcCode (cert_{bits}).T = [{}] := by decide\n",
-            wire.join(", ")
-        );
+        if let Some((k_h, hnf_term)) = &arg_data {
+            // The bridge: outer term → (headSteps, decided) its hnf →
+            // (hnfArgB, decided) the certified argument on the rigid
+            // spine → argKill concludes for the outer term.
+            blk.push_str("def target_");
+            blk.push_str(bits);
+            blk.push_str(" : Term := ");
+            lean_term(&outer, &mut blk);
+            blk.push_str("\n\n");
+            let _ = writeln!(
+                blk,
+                "theorem kill_{bits} : ¬ HasNormalForm target_{bits} :=\n  \
+                 argKill (k := {k_h}) (s := "
+            );
+            blk.truncate(blk.len() - 1); // drop the newline writeln added
+            lean_term(hnf_term, &mut blk);
+            let _ = writeln!(
+                blk,
+                ") (a := (cert_{bits}).T)\n    \
+                 (by decide) (by decide) (by decide)\n    \
+                 ((cert_{bits}).noNormalForm ({kind}.valid_of_check (by decide)))\n"
+            );
+            let _ = writeln!(
+                blk,
+                "theorem wire_{bits} :\n    blcCode target_{bits} = [{}] := by decide\n",
+                wire.join(", ")
+            );
+        } else {
+            let _ = writeln!(
+                blk,
+                "theorem kill_{bits} : ¬ HasNormalForm (cert_{bits}).T :=\n  \
+                 (cert_{bits}).noNormalForm ({kind}.valid_of_check (by decide))\n"
+            );
+            // Wire identity: the kernel, not this emitter, vouches that
+            // the certified term IS the term the theorem name's bits
+            // encode (Codex round eight).
+            let _ = writeln!(
+                blk,
+                "theorem wire_{bits} :\n    blcCode (cert_{bits}).T = [{}] := by decide\n",
+                wire.join(", ")
+            );
+        }
         by_size.entry(bits.len()).or_default().push(blk);
         emitted += 1;
     }
@@ -328,7 +397,7 @@ fn main() {
             "/-\nGenerated by certlean — DO NOT EDIT. {} RATCHET kill(s) at n={size}.\n\
              Every obligation is replayed by the Lean kernel (`by decide`),\n\
              and each `wire_*` theorem pins the certified term to its named bits.\n-/\n\
-             import Blc.Ratchet\nimport Blc.HeadTower\nimport Blc.Selector\nimport Blc.Wire\n\nnamespace Blc.Certs\n",
+             import Blc.Ratchet\nimport Blc.HeadTower\nimport Blc.Selector\nimport Blc.Rigid\nimport Blc.Wire\n\nnamespace Blc.Certs\n",
             blocks.len()
         );
         for b in blocks {

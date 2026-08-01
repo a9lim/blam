@@ -117,7 +117,9 @@ full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
   twice: v1 glue theorem, then v1.2 trailing-spine lifting; the v2
   `HeadTowerRatchet` — Meta(id), indexed towers, six replayed
   obligations — is the round-two co-design, implemented same day).
-  257 frontier kills total (`tools/cert/ratchet_kills.txt`: RATCHET
+  257 frontier kills as of that night — 297 total after the
+  2026-08-01 SelectorRatchet sweep (`tools/cert/ratchet_kills.txt`:
+  RATCHET
   and RATCHET2 lines ± -ARG variants; 138 across 4..40 plus 119 of
   the 2,500 fresh n=41 unknowns), n=32 row now zero, 4..40 Ω width
   −11.41%.
@@ -178,18 +180,24 @@ full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
   obligations = one `decide`; glue theorem → HeadDiverges →
   noNormalForm; loop32 as data is the PoC) + `certlean` (untrusted
   Rust emitter) + lean/Certs/ (GENERATED, separate lake target):
-  **248 kernel-checked ¬HasNormalForm theorems** = every RATCHET
-  line (v1.2 assembly) + every RATCHET2 line (Blc/HeadTower.lean,
-  the v2 assembly to Codex's round-eight design; OnlyMVar-0 gate,
-  recursive descent costs), each with a wire-identity theorem
-  (Blc/Wire.lean — Codex round eight's audit gap). ~1.6 s batch,
-  axioms [propext, Quot.sound]. Remaining export lane: rigid-head
-  bridge (9 *-ARG kills). Then prefix-freeness/Kraft, K upper
-  bounds. v3 evidence: certdiag measured the 456 live
-  ratchet-candidates (CLASSIFY.md "The v3 map, measured") —
-  discovery was never the gap; the dominant new class is zfirst
-  (131 tower-recursive wrappers), then passenger 48, drift 63;
-  Codex round nine owns the obligation-set derivation.
+  **297/297 kernel-checked ¬HasNormalForm theorems** = every line of
+  ratchet_kills.txt: RATCHET (v1.2 assembly), RATCHET2
+  (Blc/HeadTower.lean, the v2 assembly to Codex's round-eight
+  design; OnlyMVar-0 gate, recursive descent costs), SELECTOR
+  (Blc/Selector.lean, the v3 assembly to Codex's round-nine
+  derivation), and the ten *-ARG kills through **Blc/Rigid.lean's
+  `argKill` bridge** (2026-08-01 afternoon: `parN_betas` +
+  strengthened pullback carrying the residual `Par q p` ⇒ head
+  factorization WITH normal-form transport, NO confluence; rigid
+  spine shape theory by elementary inversion; headSteps determinism
+  pins the landing) — each with a wire-identity theorem
+  (Blc/Wire.lean — Codex round eight's audit gap). ~1.9 s batch,
+  axioms [propext, Quot.sound]. Remaining lanes: prefix-freeness/
+  Kraft, K upper bounds. v4 evidence: certdiag measured the live
+  ratchet-candidates (CLASSIFY.md "The v3 map, measured");
+  post-selector the biggest classes are zfirst (tower-recursive
+  wrappers) and the PassengerDiagonal (4 probe-accepts, obligations
+  sketched in round nine, deliberately not built yet).
 - `uni.rs` (tools/uni/): call-by-name parity rework done after
   Codex's adversarial review found call-by-need observably diverges
   from uni.py (duplicated-argument witness) and buffered stdin broke

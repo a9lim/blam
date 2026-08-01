@@ -29,6 +29,33 @@ def NormalForm (t : Term) : Prop := ∀ u, ¬ Beta t u
 
 def HasNormalForm (t : Term) : Prop := ∃ n, Betas t n ∧ NormalForm n
 
+theorem betas_trans : ∀ {t u v : Term}, Betas t u → Betas u v → Betas t v := by
+  intro t u v h
+  induction h with
+  | refl t => exact id
+  | head hb _ ih => intro h2; exact Betas.head hb (ih h2)
+
+theorem betas_lam : ∀ {b b' : Term}, Betas b b' →
+    Betas (.lam b) (.lam b') := by
+  intro b b' h
+  induction h with
+  | refl t => exact Betas.refl _
+  | head hb _ ih => exact Betas.head (Beta.lam hb) ih
+
+theorem betas_appL : ∀ {f f' : Term} (a : Term), Betas f f' →
+    Betas (.app f a) (.app f' a) := by
+  intro f f' a h
+  induction h with
+  | refl t => exact Betas.refl _
+  | head hb _ ih => exact Betas.head (Beta.appL a hb) ih
+
+theorem betas_appR : ∀ (f : Term) {a a' : Term}, Betas a a' →
+    Betas (.app f a) (.app f a') := by
+  intro f a a' h
+  induction h with
+  | refl t => exact Betas.refl _
+  | head hb _ ih => exact Betas.head (Beta.appR f hb) ih
+
 /-- Head steps are β steps. -/
 theorem beta_of_headStep : ∀ {t u : Term}, HeadStep t u → Beta t u := by
   intro t u h

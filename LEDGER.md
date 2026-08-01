@@ -1126,3 +1126,51 @@ Cross-checks that landed on the side: solomonoff 4..41 regenerated —
 its pre-certificate Ω upper minus the kills' exact mass (1573·2⁻⁴¹)
 reproduces the census interval to the last printed digit, and its
 4,532 internal unknowns are exactly frontier + kills.
+
+## Evening — the selector lands, and the last ten kills become theorems
+
+The full-frontier sweep with the three-checker ladder came back:
+**40 SELECTOR kills** out of 4,275 (1 at n=35 — the forcing exemplar
+itself — 1 at 37, 4 at 39, 34 at 41; one an ARG variant; zero new
+v1/v2, as it should be — v7 already excludes them). Re-certified
+byte-identically at 4× budgets. The exact probe had said 30; the
+extra 10 came out of the 110-member fan-shape bucket, which is the
+measured reminder that certdiag's buckets are abort fingerprints,
+not class boundaries. Frontier now `unknowns_v8.txt` (4,235 = 1,888
+across 4–40 + 2,347 at 41), kills file at 297, Ω|≤41 upper trimmed
+by exactly 130·2⁻⁴¹ to **[0.124105086764, 0.124105092919]** — and
+the solomonoff cross-identity 4,532 = frontier + kills still holds
+to the term (4,235 + 297).
+
+Then the rigid-head bridge — the "genuinely new theory" the morning
+entry deferred — turned out to need no confluence at all. The
+observation: Factor.lean's pullback already walks head reduction
+backward through a parallel step; it just DISCARDED the residual.
+Strengthening it to carry `Par q p` (same lex induction, one extra
+conjunct threaded through) gives head factorization WITH normal-form
+transport: `HasNormalForm t → t` head-reduces to a head-normal `p`
+that still has t's normal form (`hasNormalForm_headFactorizes`, via
+the new `parN_betas : Par ⊆ Betas`). Determinism of `headSteps` pins
+that `p` to the hnf the certificate computed. And on a rigid-head
+hnf `λᵏ.(x a⃗)`, a normal form forces normal forms of every spine
+argument by elementary Beta inversion — `Rigid` is stable under β,
+steps under it are componentwise, binders pass normal forms down.
+Blc/Rigid.lean glues it as `argKill`: three `decide`-able shape
+premises (the head replay, head-normality, spine membership) plus
+the inner certificate's ¬HasNormalForm ⇒ the outer term's. certlean
+re-targets the ordinary pipeline at the extracted argument and wraps
+the result.
+
+```
+theorem argKill : headSteps k t = some s → headStep s = none →
+    hnfArgB a s = true → ¬ HasNormalForm a → ¬ HasNormalForm t
+-- propext + Quot.sound; the 8 RATCHET-ARG, 1 RATCHET2-ARG and
+-- 1 SELECTOR-ARG kills now export through their inner assemblies
+```
+
+**297 of 297.** Every line of ratchet_kills.txt is a kernel-checked
+`¬HasNormalForm` theorem with a wire-identity theorem, 1.9 s for
+the batch, axioms [propext, Quot.sound] throughout. The export lane
+that opened three days ago with "can the Rust checker's verdicts
+become proofs?" is closed. What remains formal-side is a different
+kind of theorem: prefix-freeness/Kraft, then K upper bounds.
