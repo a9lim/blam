@@ -26,7 +26,8 @@ effects during forcing — memoization halved its output. Call-by-need
 is NOT observationally equivalent to the reference for arbitrary
 closed programs; the witness is now a regression vector in `verify.sh`.
 
-Verification (`verify.sh`, needs `ref/AIT` cloned): byte-identical
+Verification (`verify.sh`, needs the `ref/AIT` submodule initialized):
+byte-identical
 output with `uni.py` on the quine (self-application property checked
 too), `take256.blc8` (exact first 256 bytes; both interpreters must
 exit nonzero at that vector's terminator — asserted, not ignored),
@@ -38,5 +39,6 @@ interpreters must die emitting nothing — a silent `as u8` truncation
 once emitted `0xff` here).
 
 `PR_KIT.md` holds the ready-to-send upstream PR text and letter draft.
-The file is destined for tromp/AIT's root, where no `uni.rs` slot is
-filled; a9 sends the PR.
+The file itself lives at the root of the a9lim/AIT fork (the `ref/AIT`
+submodule pins it) — one additive commit over upstream, which is
+exactly the tree the PR ships; a9 sends the PR.

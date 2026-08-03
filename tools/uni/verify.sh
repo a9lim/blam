@@ -1,13 +1,14 @@
 #!/bin/bash
 # Differential verification of uni.rs against Tromp's uni.py on his own
-# corpus (ref/AIT must be cloned; see AGENTS.md). Every vector must be
-# byte-identical; take256's nonzero exits match uni.py's behavior at
+# corpus. uni.rs lives in the ref/AIT submodule (the a9lim/AIT fork,
+# where the upstream PR ships from); init it first. Every vector must
+# be byte-identical; take256's nonzero exits match uni.py's behavior at
 # that vector's terminator and are asserted, not ignored.
 set -e
 cd "$(dirname "$0")/../.."
 R=ref/AIT
 U=/tmp/uni_verify
-rustc --edition 2021 -O -o $U tools/uni/uni.rs 2>/dev/null
+rustc --edition 2021 -O -o $U $R/uni.rs 2>/dev/null
 
 echo "quine (bit mode, self-application)"
 cat $R/ait/quine $R/ait/quine | $U - > /tmp/uv_q.rs

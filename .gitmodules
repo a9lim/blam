@@ -1,0 +1,3 @@
+[submodule "ref/AIT"]
+	path = ref/AIT
+	url = https://github.com/a9lim/AIT.git

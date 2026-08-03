@@ -1,11 +1,15 @@
 # Upstream PR kit (a9 sends; nothing here is auto-submitted)
 
-Steps when ready:
-1. Fork tromp/AIT on GitHub; branch `uni-rs`.
-2. Copy `tools/uni/uni.rs` to the fork's root as `uni.rs`.
-3. Optionally add a Makefile stanza mirroring the uni.py lines
-   (`(cat hilbert; echo '12') | ./uni`).
-4. Open the PR with the text below; adapt freely.
+The staging is done (2026-08-03): the a9lim/AIT fork carries `uni.rs`
+at its root as one additive commit over upstream master, and blam's
+`ref/AIT` submodule pins exactly that tree, so CI exercises the PR
+payload continuously. Steps when ready:
+1. Optionally add a Makefile stanza mirroring the uni.py lines
+   (`(cat hilbert; echo '12') | ./uni`) — note this would break the
+   fork's additive-only property that CI checks; if wanted, add it in
+   the PR branch at send time.
+2. Open the PR from a9lim/AIT master → tromp/AIT master with the text
+   below; adapt freely.
 
 ---
 

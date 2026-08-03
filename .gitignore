@@ -1,5 +1,6 @@
 /target
-/ref
+/ref/*
+!/ref/AIT
 /.claude/
 __pycache__/
 .DS_Store
