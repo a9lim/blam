@@ -146,10 +146,10 @@ fn try_kill(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<Kill> {
 }
 
 fn main() {
-    // Default budgets measured 2026-07-31 late: 1000/100k reproduces the
-    // full 138-kill set of 2000/200k on all of unknowns_v2 with
-    // byte-identical certificates, at ~4× less wall (12.6 vs 50 min).
-    // Raise via flags for thorough runs; fuel controls run at 8000/800k.
+    // Default budgets: 1000/100k is measured kill-equivalent to
+    // 2000/200k over a full frontier sweep (byte-identical
+    // certificates) at ~4× less wall. Raise via flags for thorough
+    // runs; fuel controls run at 8000/800k.
     let mut cfg = Cfg {
         steps: 1000,
         nodes: 100_000,
@@ -180,7 +180,7 @@ fn main() {
     let lines: Vec<String> = if let Some(bits) = term_arg {
         vec![bits]
     } else {
-        let path = file_arg.unwrap_or_else(|| "unknowns_v2.txt".to_string());
+        let path = file_arg.unwrap_or_else(|| "unknowns_v8.txt".to_string());
         std::fs::read_to_string(&path)
             .unwrap_or_else(|e| panic!("read {path}: {e}"))
             .lines()

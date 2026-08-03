@@ -2,12 +2,9 @@
 
 Rust engine for binary lambda calculus / AIT experiments, verified
 against Tromp's Haskell. README.md has the public story; DESIGN.md has
-architecture + measured results; LEDGER.md is the running lab
-notebook (dated entries, 2026-07-31 onward — the full history of how
-every result landed, including the failures). This file tracks what
-you need to work here NOW: conventions, live engine facts, live
-state, and the open docket. When something ships, its story goes to
-the ledger and only its live residue stays here.
+architecture + measured results; LEDGER.md is the running lab notebook.
+This file tracks what you need to work here now: conventions, live
+engine facts, live state, and the open docket.
 
 ## Ground rules
 
@@ -19,15 +16,14 @@ the ledger and only its live residue stays here.
   to `census_full5.txt` at the sizes you touch. Halts have been invariant
   through every change in history; treat any drift as a bug in your
   change, not a discovery.
-- Data files in the repo root are results, not scratch. The canonical
-  census table is `census_full5.txt` (4..41; full4 kept as the 4..40
-  record, full3 as pre-memo telemetry); `unknowns_v8.txt` is the live
-  frontier (4,235 terms: the 1,888-term 4..40 residue plus 2,347 at
-  n=41 — `unknowns_v2.txt` plus the fresh 41-bit unknowns, minus the
-  297 certificate kills in `tools/cert/ratchet_kills.txt`, of which
-  40 are the 2026-08-01 SelectorRatchet sweep; v7 kept as the
-  pre-selector record, intermediate v3-v6 files were derivable
-  stepping stones, deleted). Regenerate rather than hand-edit.
+- Data files in the repo root are results, not scratch, and only the
+  canonical generation lives in the tree: `census_full5.txt` (census
+  4..41), `unknowns_v8.txt` (live frontier: 4,235 terms — the
+  1,888-term 4..40 residue plus 2,347 at n=41, the 297 certificate
+  kills in `tools/cert/ratchet_kills.txt` already subtracted), and
+  `solomonoff_41.txt` + `solomonoff_table41.txt` (Ω/K sweep).
+  Superseded generations live in git history. Regenerate rather than
+  hand-edit.
 
 ## Conventions that will bite you
 
@@ -58,9 +54,9 @@ through n=41, but the margin is now THIN: the max successful rescue is
 n=42. The 32× transition mult has a 1.88× margin over the worst
 measured successful ratio (17.0×, the n=38 champion: 9.45M β via
 160.4M transitions); the rung-2 64× cap re-routes exactly one term in
-4..40 (n=39, `escal` 169,921→169,922 in `census_full3.txt`) through
-escalation to the same halt. Both trims verified verdict-identical on
-full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
+4..40 (n=39) through escalation to the same halt. Both trims verified
+verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
+~16.5 min.
 
 - `src/vm.rs` (KN machine): any `Sink` impl MUST override `var` with
   an O(1) body — the default is O(n) in an *uncharged* n and cost a 5×
@@ -139,9 +135,9 @@ full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
 - **Certificates**: 297 kills in `tools/cert/ratchet_kills.txt`
   (214 RATCHET + 34 RATCHET2 + 39 SELECTOR + ten `-ARG` variants),
   all re-certified at 4× budgets. Spec + glue proofs in
-  `tools/cert/SPEC.md`; candidate maps in `tools/cert/CLASSIFY.md`
-  (carries Codex's round-nine and round-ten strikethrough
-  corrections — don't revert them).
+  `tools/cert/SPEC.md` (§8 specs the planned v4 classes); candidate
+  maps in `tools/cert/CLASSIFY.md` — its bucket-≠-class caveat is
+  load-bearing, don't soften it.
 - **Lean** (`lean/`, own README): flagship proven twice, general
   head-factorization bridge for every term, symbolic checker layer,
   generic assemblies for all three classes, rigid-head `argKill`
@@ -158,16 +154,14 @@ full sweeps. Census 4..40: ~7.2 min; 4..41: ~16.5 min.
 
 ## Open docket
 
-- **v4 certificate classes, in Codex-ratified order (round ten,
-  reply at ~/.gaslamp/jobs/cx-20260801-120729-a8f9/reply.md)**:
-  (1) PassengerDiagonal — 4 probe-accepted exemplars; the complete
-  assembly (SEED/OPEN/UNWRAP/DROP, diagonal descent = UNWRAP twice,
-  n=0 exceptional cycle via SEED) is derived in that reply; needs
-  only existing commuting-square + v1.2 machinery; keep it a
-  separate class. (2) zfirst — derive obligations from an actual
-  survivor trace, not the bucket. Drift is GATED: no certificate
-  until an exemplar exhibits a finite generator Rₙ₊₁ = G[Rₙ]
-  (an unconstrained W : Nat → Context leaves the ∀n assumed).
+- **v4 certificate classes, in Codex-ratified order — specs in
+  `tools/cert/SPEC.md` §8**: (1) PassengerDiagonal (§8.1) — the
+  complete assembly is derived; needs only existing commuting-square
+  + v1.2 machinery; keep it a separate class. (2) zfirst (§8.2) —
+  derive obligations from an actual survivor trace, not the bucket.
+  Drift is GATED (§8.3): no certificate until an exemplar exhibits a
+  finite generator Rₙ₊₁ = G[Rₙ] (an unconstrained W : Nat → Context
+  leaves the ∀n assumed).
 - **Lean lanes**: prefix-freeness/Kraft (Blc/Wire.lean's `blcCode`
   is the seed), then machine-checked K upper bounds.
 - **n=42**: blocked on a `--rescue` raise (margin 1.06× at n=41 —

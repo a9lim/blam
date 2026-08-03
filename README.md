@@ -181,23 +181,21 @@ default 4096).
   slot searches, knot search, sound search spec, design notes);
   `tools/uni/` (the distilled interpreter + PR kit).
 - `DESIGN.md` — architecture, measured results, open questions.
-- `LEDGER.md` — the running lab notebook: how these results
-  happened, including the failures.
-- Data: `census_full5.txt` (canonical table, 4–41; `census_full4.txt`
-  kept as the 4–40 record), `unknowns_v8.txt` (the 4,235-term live
-  frontier; `unknowns_v2.txt` is the pre-ratchet 4–40 set, `_v7` the
-  pre-selector record), `solomonoff_41.txt`/`solomonoff_table41.txt`
-  (canonical Ω/K sweep; the `_40` files kept as the 4–40 record),
-  benchmarks, frontier files.
+- `LEDGER.md` — the running lab notebook: recent sessions, with
+  compacted entries living on in git history.
+- Data: `census_full5.txt` (the canonical census table, 4–41),
+  `unknowns_v8.txt` (the 4,235-term live frontier),
+  `solomonoff_41.txt`/`solomonoff_table41.txt` (the Ω/K sweep).
+  Superseded generations live in git history, not the tree.
 
 ## Roadmap
 
-- Certificate v4 classes (`tools/cert/CLASSIFY.md` has the measured
-  map of the surviving ratchet-candidates): the PassengerDiagonal
-  first (4 probe-accepted exemplars; the assembly derived in review
-  round ten), then a zfirst variant derived from an actual survivor
-  trace; level-indexed "drift" wrappers stay gated until an exemplar
-  exhibits a finite generator.
+- Certificate v4 classes (specs in `tools/cert/SPEC.md` §8, measured
+  candidate maps in `tools/cert/CLASSIFY.md`): the PassengerDiagonal
+  first (assembly fully derived, 4 probe-accepted exemplars), then a
+  zfirst variant derived from an actual survivor trace; level-indexed
+  "drift" wrappers stay gated until an exemplar exhibits a finite
+  generator.
 - Lean: prefix-freeness/Kraft, then machine-checked K upper bounds.
 - The contextual slot search (drop the parametric contract's must-use
   mask): survivors there are hypotheses needing whole-interpreter
@@ -219,7 +217,7 @@ implementations, and the published values are all John Tromp's
 This repo is an independent engine, verified against his.
 
 Built by [a9lim](https://github.com/a9lim) with Claude (Anthropic) and
-Codex (OpenAI) as agent collaborators — `LEDGER.md` is the honest
-record of what that looked like.
+Codex (OpenAI) as agent collaborators — `LEDGER.md` and the commit
+history are the honest record of what that looked like.
 
 MIT license.

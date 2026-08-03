@@ -1,16 +1,20 @@
 # Rust slot-search specification
 
-## Verdict
+## The two contracts
 
-Use two search contracts and do not blur them:
+Two search contracts; do not blur them:
 
-1. **Parametric slot search — recommended morning implementation.**  
+1. **Parametric slot search — implemented** (`src/bin/slotsearch.rs`;
+   results in SEARCH_RESULTS.md: all three slots exhaustively optimal).
    Close the open slot under rigid binders and compare its complete β-normal form with the reference. A pass is a proof of contextual correctness for every substitution, not merely evidence from test markers.
 
-2. **Fixed-interpreter/context-sharing search — later exploratory lane.**  
+2. **Fixed-interpreter/context-sharing search — the open lane** (§2;
+   on the project docket).
    Allow candidates to exploit `list`, `list1`, `bit1`, the fixed point, and relationships between them. Finite probes cannot prove this lane correct; splice survivors into the complete interpreter and run the full battery plus exhaustive small programs.
 
-The current Python probes use closed Church terms for unrelated roles. That caused the reported collision and is structurally unsafe. Do not port that marker scheme.
+Never use closed Church terms as markers for unrelated roles: that
+scheme produced a false positive in the retired Python probes and is
+structurally unsafe.
 
 ## Verified live facts
 
@@ -39,7 +43,6 @@ intL (λexp2. cont (λargs. exp args (exp2 args)))
 
 - `Machine::normalize` on an open root does not enter “UB territory” in the current safe Rust implementation; it indexes `envs[u32::MAX]` and panics. It is still unusable for open roots.
 - `normalize()` has a transition-cap floor of `1 << 22`; the search must call `normalize_capped()` explicitly.
-- The visible Python directory currently lacks the imported `frag.py`, `nf2.py`, and an APP search file, so it is not presently a rerunnable golden harness.
 
 ## 1. Sound parametric probe
 
@@ -434,8 +437,12 @@ If a hole occurs more than once, multiply by its occurrence count; preferably re
 - Cache candidate libraries by `(hole signature, ordered frame layout, budget)`, not by skeleton ID.
 - Do not attempt whole-term β-normalization for deduplication across recursive fixpoint templates.
 
-### Recommendation
+### Status
 
-Implement the parametric ABS/APP harness first. It gives a genuine proof boundary, exercises open enumeration, closing, caps, and Rayon task splitting, and should reduce APP’s 4.3B raw candidates to roughly 5.1M.
-
-Defer the full `10^3–10^5` skeleton sweep until that harness is validated. The typed IR and catalog above are worth implementing next, but skeleton search remains an architecture-family search—not an interpreter optimality proof—and contextual multi-hole survivors still require splicing, symbolic-tail batteries, and exhaustive small-program differential testing.
+The parametric ABS/APP/VAR harness is implemented and its sweeps are
+complete (SEARCH_RESULTS.md). The contextual lane (§2, drop the must
+mask to 0) is the open mechanical route; the skeleton sweep above is
+the lane after that. Both remain architecture-family searches — not
+interpreter optimality proofs — and contextual multi-hole survivors
+still require splicing, symbolic-tail batteries, and exhaustive
+small-program differential testing.

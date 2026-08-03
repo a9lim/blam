@@ -3,14 +3,15 @@
 Status: three classes live in `src/cert.rs` + `src/bin/certsearch.rs`
 — v1–v1.2 (§3), the v2 `HeadTowerRatchet` (§5, co-designed with
 Codex), and the v3 `SelectorRatchet` (§6, derived by Codex from a
-forcing exemplar). All checkers trusted, discovery untrusted; every
-class's assembly theorem is additionally **machine-checked in Lean**
+forcing exemplar); §8 specs the planned v4 classes. All checkers
+trusted, discovery untrusted; every class's assembly theorem is
+additionally **machine-checked in Lean**
 (`lean/Blc/{Ratchet,HeadTower,Selector,Rigid}.lean` — the last is the
 rigid-head bridge for `-ARG` kills), and every kill in
 `ratchet_kills.txt` is a kernel-checked `¬HasNormalForm` theorem
-(`lean/Certs/`). Adversarial review with Codex ran ten rounds on
-thread `blc-conformance` (2026-07-31 → 2026-08-01); §8 logs the first
-two in full, LEDGER.md carries the rest. Discovery keys milestone
+(`lean/Certs/`). Every class was adversarially reviewed with Codex
+(ten rounds, thread `blc-conformance`; the round-by-round log lives
+in git history). Discovery keys milestone
 families by (head, spine arity): the deep family passes through both
 `A Xₙ` milestones and `A I Xₘ Xₙ` rank-step interiors, and merging
 the streams destroys the growing window.
@@ -67,9 +68,10 @@ non-abstraction is the function part's head redex; if a source state
 were an abstraction, the head step of the composite would instead
 consume it via the outer redex.) If `Mₖ` is an abstraction the
 composite then continues with that outer contraction, which is exactly
-how our lemmas chain. [Wording per Codex review: "intermediate states"
-alone is a v2-sized hole; v1's checks all start from applications, so
-the distinction is latent there.]
+how our lemmas chain. (The condition must cover every proper source
+state, start included — "intermediate states" alone is a hole. v1's
+checks all start from applications, so the distinction is latent
+there; it bites in v2.)
 
 ## 3. The v1 certificate
 
@@ -156,8 +158,10 @@ open (including in the k stripped binders); INIT never compares
 trailing vectors across observed milestones — it selects ONE state,
 and the lifted certified execution preserves that exact vector.
 There is no soundness reason to bound j; `init_trail` is recorded in
-the report for audit but is not certificate data. [Reviewed by Codex,
-round two.]
+the report for audit but is not certificate data. Note that INIT
+selects ONE state and the lifted certified execution preserves that
+exact vector — discovery may observe unrelated vectors across
+milestones, but discovery is untrusted.
 
 **INIT matching note.** The implementation matches `x = Wⁿ[C0]` by
 *peeling*: `match_wrapper(w, x)` requires every `Meta` position of w to
@@ -167,8 +171,8 @@ then rebuilding bottom-up plugs only closed terms — for which `plug` is
 genuine capture-free substitution — so `x` *is* the closed tower, tree-
 identically. An extracted subtree that references binders of w can
 never terminate the chain, because tree-equality with the closed C0
-forces closedness. (Codex's "least dangerous" alternative — construct
-`C0, W[C0], …` forward and compare — is equivalent here; peeling is
+forces closedness. (The forward alternative — construct
+`C0, W[C0], …` and compare — is equivalent here; peeling is
 kept for efficiency, with this argument recorded as its license.)
 
 **Relation to redloop.** redloop certifies *exact* recurrence of a
@@ -201,7 +205,7 @@ concrete head trace with per-state snapshots and:
 3. hands `(A, W, C0)` to the checker. Garbage in ⇒ ABORT, never a
    wrong certificate.
 
-## 5. v2: the `HeadTowerRatchet` (co-designed with Codex, round two)
+## 5. v2: the `HeadTowerRatchet` (co-designed with Codex)
 
 v1 hard-codes the state shape `A Wⁿ[C0]` and the collapse core `Z Z`.
 The forcing example is the 35-bit frontier term
@@ -282,15 +286,14 @@ example requires it. Shapes plausibly still beyond this class
 (alternating heads, growth in outer evaluation contexts,
 normalization-equal milestones) wait for their own forcing examples.
 
-## 6. v3: the SelectorRatchet (derived by Codex, round nine)
+## 6. v3: the SelectorRatchet (derived by Codex)
 
 Forced by the 35-bit exemplar `01000110100001100001011000001111010`
 (A = C0 = λx. x W[x], W[Z] = λq. q P[Z] q, P[Z] = λa.λb.Z), which v1
 must reject (OPEN ends at `Z W[Z]`, not `(Z Z) W[Z]`) and the
 HeadTowerRatchet must also reject (its SPREAD expects `Q I Z Q`; here
 the fan-out is `Q P[Z] Q` — the abort is an endpoint mismatch, not a
-Z-headed reduction; the round-nine trace corrected an earlier
-misreading of exactly this point).
+Z-headed reduction).
 
 **Data:** `(A, W, P, C0)` — A, C0 closed; W and P pattern-closed with
 every hole `Meta(0)`; W contains at least one hole (P may contain any
@@ -340,15 +343,13 @@ as `Q P Q` to read off P, peel the base to the tower bottom, hand to
 `verify_selector`. Checkers: `verify_selector` in src/cert.rs;
 driver `try_selector`; sweep tag `SELECTOR` (± `-ARG`).
 
-Measured acceptance on the 2026-08-01 frontier probe: 30 of the 456
-live ratchet-candidates pass all four obligations (the 131-term
-`zfirst` abort bucket is a signature, not a class); 110 more reach a
-Q-headed FAN endpoint of a different shape — unexplored variants.
-The full sweep then landed **40 kills** — the 10 beyond the probe's
-30 came out of that fan-shape bucket, because streaming discovery
-proposes candidate triples the single-triple probe never tried
-(buckets are abort fingerprints, not class boundaries). All 40
-re-certified byte-identically at 4× budgets.
+The class's frontier sweep landed **40 kills** — 10 more than the
+30 the single-candidate `certdiag` probe had accepted, because
+streaming discovery proposes candidate triples the probe never tried.
+The standing lesson: **certdiag buckets are abort fingerprints under
+one candidate triple, not class boundaries** — probe counts bound
+classes from below only. All 40 re-certified byte-identically at 4×
+budgets.
 
 ## 7. Verification battery
 
@@ -363,51 +364,99 @@ re-certified byte-identically at 4× budgets.
   found must be identical (the checker result is budget-independent
   once found).
 
-## 8. Review log
+## 8. v4: the next classes (specified, not yet implemented)
 
-**2026-07-31, Codex (thread `blc-conformance`, job
-cx-20260731-151501-5ad2).** Verdict: *glue theorem survives, no
-soundness counterexample.* Independently reproduced the loop32 trace
-with a from-scratch head-only reducer (77 milestones, consecutive
-indices, gaps 2n+2). Findings, both fixed same day: (1) the Python
-reference had an argument-descent branch (never exercised by loop32) —
-now head-only by construction; (2) lifting condition strengthened to
-every proper source state (`check_reduces` now rejects an abstraction/
-`Meta` *start* state too). Confirmed: symbolic opacity of the closed
-metavariable is sound ("concrete lambda" = outer constructor is `Lam`,
-body may contain Z); exact de Bruijn tree equality suffices for INIT;
-obligations must take ≥1 step (INIT may take 0). Prior-art citations
-verified (§3). Lean staging advice adopted (§8 of the project docket):
-(a) certify the infinite head chain, (b) prove/import head
-standardization, (c) derive `¬ HasNormalForm loop32` — with the
-symbolic layer's commuting square `inst(s) →ₕ inst(s′)` as the central
-checker theorem.
+Build order ratified in review round ten: **PassengerDiagonal first**,
+then a zfirst variant derived from an actual survivor trace; drift
+stays gated on a finite generator. The measured candidate map behind
+these families is `tools/cert/CLASSIFY.md`.
 
-**2026-07-31, Codex round two (thread `blc-conformance`, job
-cx-20260731-193136-4a8c).** Verdict on v1.2: *"v1.2 is sound. Ship it
-after correcting two misleading comments and adding one targeted
-test. I found no semantic or implementation hole in trailing-spine
-lifting."* Independently reproduced the two exemplar certifications
-(`init_trail` 1 and 2) and ran the cert test suite. Corrections, all
-applied: (1) "each lemma endpoint is an application" was false as
-written — BASE ends at `A`, an abstraction; the assembled chain only
-ever contains it applied to the pending tower argument; (2) the
-trailing-vector claim rephrased: INIT selects one state and the
-lifted execution preserves that exact vector (discovery may observe
-unrelated vectors — it is untrusted); (3) adversarial test
-`λu. A C0 u` (trailing argument open in the stripped body) added.
-Confirmed: no soundness reason to bound j; `init_trail` stays report
-data, not certificate data. Round two also derived the deep-family
-exact recurrence and co-designed the v2 `HeadTowerRatchet` (§5),
-including the correction that the cycle-internal context term is the
-cycle-local Xₙ₋₁, not a global constant. The 24-kill sweep count was
-reported to Codex, not independently re-swept by them.
+### 8.1 PassengerDiagonalRatchet
 
-**Rounds three through ten (2026-07-31 → 2026-08-01)** are logged in
-LEDGER.md and the `blc-conformance` gaslamp thread: round three
-(streaming discovery, wrapper-ID hardening), four through six (uni.rs
-and the Lean bridge), seven (v3 staging), eight (HTR Lean design +
-the wire-identity audit gap), nine (the SelectorRatchet derivation
-and the zfirst/passenger corrections), ten (independent verification
-of the Lean rigid-head bridge at 1d9c600; the PassengerDiagonal
-assembly derivation; the drift generator gate).
+Forced by the 36-bit exemplar `010001101000010110011000110000110110`
+(4 probe-accepted exemplars on the current frontier — a lower bound
+only, per the fingerprint lesson above). v1's OPEN aborts at
+`Z ⟨…⟩ W[Z]` with an interleaved spine argument — and that argument
+is `Z P[Z]`: metavariable-bearing and consumed by the tower head, it
+*controls* the descent. This is why passengers must not be folded
+into the HeadTowerRatchet — that would hide a theorem union inside
+one record.
+
+**Data:** `(A, W, P, C0)` — A, C0 closed; W, P pattern-closed.
+**Obligations** (same `check_reduces` discipline as v1–v3):
+
+| name | obligation | quantification |
+|------|-----------|----------------|
+| OPEN | `A Z →ₕ⁺ Z (Z P[Z]) W[Z]` | all closed Z |
+| UNWRAP | `W[Z] Q →ₕ⁺ Q Z` | all closed Z, Q |
+| DROP | `P[Z] Q →ₕ⁺ Z` | all closed Z, Q |
+| SEED | `C0 Q →ₕ⁺ A` | all closed Q |
+| INIT | `T →ₕ* λᵏ.(A Wⁿ[C0] y⃗)` | concrete, bounded (v1.2 landing) |
+
+**Assembly** (derived and checked in review round ten). Write
+`Xₙ = Wⁿ[C0]`, `Pₙ = P[Xₙ]`. The non-base rank step:
+
+```
+Xₘ₊₁ (Xₘ₊₁ Pₘ₊₁)
+→ₕ⁺ (Xₘ₊₁ Pₘ₊₁) Xₘ       UNWRAP
+→ₕ⁺ (Pₘ₊₁ Xₘ) Xₘ         UNWRAP, lifted
+→ₕ⁺ Xₘ₊₁ Xₘ              DROP, lifted
+→ₕ⁺ Xₘ Xₘ                UNWRAP
+```
+
+and diagonal descent is UNWRAP twice: `Xₘ₊₁ Xₘ₊₁ →ₕ⁺ Xₘ₊₁ Xₘ →ₕ⁺
+Xₘ Xₘ`. Hence for n > 0:
+
+```
+A Xₙ →ₕ⁺ [Xₙ (Xₙ Pₙ)] Xₙ₊₁      OPEN
+     →ₕ⁺ [Xₙ₋₁ Xₙ₋₁] Xₙ₊₁       rank step, lifted
+     →ₕ⁺ [C0 C0] Xₙ₊₁           diagonal descent, iterated
+     →ₕ⁺ A Xₙ₊₁                 SEED, lifted
+```
+
+and the n = 0 cycle is exceptional but closes directly:
+`A C0 →ₕ⁺ [C0 (C0 P0)] X₁ →ₕ⁺ A X₁` by SEED on `C0 (C0 P0)`, lifted
+through `X₁`. The exemplar's measured core-cycle gaps are 2n+4 after
+that exceptional base cycle. Every ingredient — the symbolic
+commuting square, source-nonlam lifting, closed A/C0, scoped W/P,
+v1.2 INIT and trailing-vector machinery — already exists; the class
+needs a verifier, a discovery hook, and a Lean assembly, nothing new
+in the trusted core.
+
+### 8.2 zfirst variant
+
+The 131-term `zfirst` bucket (OPEN aborts at exactly `Z W[Z]`, then
+HTR's SPREAD aborts on an endpoint mismatch) produced the
+SelectorRatchet once; the residue after the selector sweep is a
+different shape. Do not derive obligations from the bucket — derive
+them from an actual surviving exemplar's trace, the way v2 and v3
+were each forced by one term.
+
+### 8.3 Drift: gated on a finite generator
+
+The `drift` bucket shows consecutive milestones nesting under a
+*different* wrapper each level. Measured on the exemplar
+`0100011010000110000110011100111000110`: the three nested milestones
+share **no** generator — first-argument sizes 70/207/1519,
+`plug(generalize(x₂,x₁), x₂) ≠ x₃`, and the head appears at twenty
+different spine arities — so the bucket is not yet evidence for a
+semantic family Wₙ; it could equally be nonlinear wrapper evolution,
+mixed roles sharing (head, arity), or spine growth. A sound
+indexed-wrapper certificate needs a forcing trace exhibiting a finite
+generator:
+
+```
+R₀                  finite index seed
+Rₙ₊₁ = G[Rₙ]        fixed index constructor
+X₀ = C0
+Xₙ₊₁ = W[Rₙ, Xₙ]    fixed two-hole wrapper pattern
+```
+
+with the checker reasoning symbolically over opaque closed R, Z, Q,
+exposing exactly one concrete `G[R']` layer when reduction must
+inspect the index (recursing on opaque `R'` with a decreasing
+within-cycle rank; a finite control graph handles multiple phases,
+and periodic wrappers are the special case where R is a phase tag).
+An unconstrained `W : Nat → Context` with finitely many checked
+instances leaves the required ∀n as an *assumption* — no certificate
+from this bucket until an exemplar exhibits a generator.

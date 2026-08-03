@@ -1,13 +1,14 @@
 # Engine design
 
-Synthesis of three research passes (2026-07-30): archaeology on Tromp's AIT
-repo, interpreter-optimization literature + measurements, ecosystem survey.
-Working document — argue with it.
+Architecture, the rationale behind it, and the measured results that
+justify it. Working document — argue with it. The running record of
+how results landed is LEDGER.md (recent) and git history (permanent);
+live operational facts are in AGENTS.md.
 
 ## Workload (measured, not assumed)
 
 - Closed terms by BLC size (OEIS A114852, triple-confirmed): 284M terms
-  ≤ 40 bits; 3.4B ≤ 44; growth ≈ 1.96×/bit asymptotically.
+  ≤ 40 bits; 526M ≤ 41; 3.4B ≤ 44; growth ≈ 1.96×/bit asymptotically.
 - **99.7% of closed terms normalize** (Tromp's BB.txt, n=32/36). The
   "most terms diverge" folk assumption is false.
 - Fuel distribution at ≤ 24 bits: **median 1 β-step, max 11**; 8–30% of
@@ -17,26 +18,31 @@ Working document — argue with it.
 
 Consequence: **per-term fixed overhead dominates the enumeration tier
 completely.** Allocator behavior, parse cost, and pre-checks matter;
-steps/sec of the reducer barely does. Deep reduction only matters for the
-self-interpreter tier.
+steps/sec of the reducer barely does. Deep reduction only matters for
+the busy-beaver tail and the self-interpreter work.
 
-## Architecture: two tiers over one reference core
+## Architecture: fast tiers over one reference core
 
-**Reference core (exists):** naive shift/subst normal-order normalizer
-(`src/eval.rs`) — the executable spec. Slow, obviously correct,
-differential-tested against Tromp's corpus and the corrected BBλ table
-through n=34. Every fast path must agree with it on samples.
+**Reference core** (`src/eval.rs`): naive shift/subst normal-order
+normalizer — the executable spec. Slow, obviously correct,
+differential-tested against Tromp's corpus and the corrected BBλ table.
+Every fast path must agree with it (the fast VM is lockstep-verified on
+output bits *and* β-step counts over all 658 closed terms ≤18 bits,
+plus targeted vectors). Never used for sweeps — any sound engine's Ok
+proves halting, and the KN machine is orders of magnitude faster.
 
-**Tier A — enumeration engine** (the 284M-term sweep):
+**Enumeration engine** (the census ladder; rung layout and budgets in
+AGENTS.md "The engines"):
 
-- Machine: **defunctionalized Crégut KN ≡ NbE with explicit closures**.
-  APLAS 2020 (arXiv:2009.06984) proves KN and NbE are the same algorithm
-  under defunctionalization, which collapses that design choice; the
+- Machine (`src/vm.rs`): **defunctionalized Crégut KN ≡ NbE with
+  explicit closures** (~166M β/s single-thread). APLAS 2020
+  (arXiv:2009.06984) proves KN and NbE are the same algorithm under
+  defunctionalization, which collapses that design choice; the
   defunctionalized form is the one Rust can arena-allocate.
 - Binding: **de Bruijn indices in syntax, levels in values**; rigid
   variables are level markers; level→index at readback (`depth − 1 − lvl`).
-  O(1) context extension; no shifting. Levels only pay because we go under
-  binders (strong normalization).
+  O(1) context extension; no shifting. Levels only pay because we go
+  under binders (strong normalization).
 - Memory: **one `bumpalo::Bump` per worker, `reset()` after every term,
   no GC ever.** (Measured on Tromp's nf.c: its GC costs 3× wall-clock and
   inflates step counts 65% by discarding the spine stack.) Nodes are u32
@@ -45,24 +51,31 @@ through n=34. Every fast path must agree with it on samples.
   never reduce over the bitstring.
 - Control: **explicit spine/continuation stacks, zero native recursion**
   (nf.c's recursive readback segfaults at ~131k depth; BB(34)'s normal
-  form is 65k-deep).
+  form is 65k-deep). Normal-form bits stream to a `Sink`, so measuring
+  a huge nf costs O(1) space.
 - Pre-checks, in order: (a) already-in-NF linear scan (skips 8–30%);
-  (b) Tromp's syntactic divergence oracle from BB.lhs (`noNF`/`isW` —
-  resolves all but ~25 in 11.1M at n=36); (c) redex-history loop
-  detection, with the mode-switch reset subtlety from BB.lhs:89.
-- Parallelism: rayon `par_chunks` over enumeration subtrees (hundreds+
-  terms per task), thread-local arenas. Embarrassingly parallel.
+  (b) Tromp's syntactic divergence oracle from BB.lhs (`noNF`/`isW`);
+  (c) in the escalation engine, redex-history loop detection plus the
+  self-feedback certificate (below).
+- Parallelism: rayon over enumeration subtree tasks fused with the
+  consumers, thread-local arenas, bit-reversal-interleaved task order
+  (expensive families cluster by enumeration prefix; interleaving is
+  what keeps 18 threads busy at n≥40).
 
-Target: ~1M terms/s/core ⇒ **≤ 40 bits in ~20 s on 16 cores** vs Tromp's
-4.3 h. The win is per-term overhead, not reducer speed.
+**Escalation engine** (`src/bb.rs`): a port of the reference
+`normalForm` — divergence oracle at every application, redex-history
+loop detection — for the terms the KN budgets can't settle. Cached
+`Meta{bits, hash, max-free, node counts, ⊥}` on every node makes size
+accounting, history hashing, closedness and ⊥-checks O(1) instead of
+tree walks; the fast paths bill the work meter exactly what the
+replaced walks charged, so meter exhaustion — and hence every verdict —
+is independent of the caching.
 
-**Tier B — deep programs** (self-interpreter, universal machine, m(x)
-dovetailing): same machine with a growable heap and stacks. Here size
-explosion is reachable and the Accattoli useful-sharing results start to
-bind; revisit sharing only if profiling demands it. Fallback: Tromp's
-combinator-compilation path (uni.c's ION machine, measured ~280M
-steps/s) — but bracket abstraction decouples its step count from β-count,
-so Tier B fuel would not be comparable across paths.
+**Deep programs** (self-interpreter lab, universal machine): the same
+KN machine with explicit β + transition budgets. Fallback if size
+explosion ever binds: Tromp's combinator-compilation path (uni.c's ION
+machine, ~280M steps/s) — but bracket abstraction decouples its step
+count from β-count, so fuel would not be comparable across paths.
 
 ## Fuel and metrics
 
@@ -74,12 +87,11 @@ so Tier B fuel would not be comparable across paths.
 - **The cross-implementation comparable is normal-form BLC bit-size** —
   that is BBλ's metric (BB1.lhs `bb0` is the corrected table; BB.20.out
   is stale).
-- Tier A budgets of 10³–10⁴ are generous given the measured median of 1.
-- Tier B may add a memory ceiling; note Tromp's BB.lhs fuels by
-  cumulative redex bit-size (42M budget) — an alternative if β-count
-  proves unsatisfying for the tail.
+- β-fuel alone bounds nothing (see the work-meter lesson below): every
+  β budget is paired with a transition budget, and the escalation
+  engine runs a shared per-operation work meter.
 
-## I/O conventions (for the universal-machine milestone)
+## I/O conventions (universal machine)
 
 - `.blc` = ASCII '0'/'1'; `.blc8` = packed MSB-first. `ait/quine` is
   ASCII, `hilbert` is packed — both extensionless.
@@ -106,48 +118,31 @@ so Tier B fuel would not be comparable across paths.
   enumeration = worst case for it.
 - **Optimal (Lévy) reduction:** not a reasonable cost model (Lawall &
   Mairson 1996); wrong unit for AIT regardless of speed.
-- **Fork of tromp/AIT as project home:** PR mechanism only, at `uni.rs`
-  distillation time (repo actively merges outside PRs: 9/10, latest
-  2026-07-24).
+- **Fork of tromp/AIT as project home:** PR mechanism only (the repo
+  actively merges outside PRs); `tools/uni/` holds the distilled
+  interpreter and its PR kit.
 
-## Validation ladder
+## Measured results
 
-1. Decode/encode round-trip: Omega table rows, 5 smallest closed terms,
-   corpus bitstrings (done in tests/tromp_vectors.rs).
-2. BBλ witnesses n=20..34 against BB1.lhs values (done, naive core;
-   redo on fast VM).
-3. Differential: fast VM vs naive core on exhaustive small n + random
-   larger terms.
-4. Enumeration counts vs A114852; halting fractions vs BB.txt.
-5. Universal machine: `uni.lam` bits ++ quine ++ quine self-doubling;
-   take256; primes1k (1024-bit characteristic sequence); bf.blc8 +
-   hw.bf → "Hello World!"; hilbert byte-mode. Oracles: uni.py/rb/pl/js
-   in ref/AIT (no GHC needed).
-6. BBλ(n) reproduction for all published n, then the frontier.
-
-## Results (census of 2026-07-31 — the dated record; current numbers
-live in README.md and `census_full5.txt`)
-
-Full sweep of every closed term of 4..40 bits: **283,817,255 terms in
-~24 min** on the M5 Max (18 threads), vs ~4.3 h for Tromp's Haskell
-tooling over the same range. Table of record for that run:
-`census_full2.txt` (includes the divergence certificate and the audit
-patches; 2,032 unknowns, listed in `unknowns_v2.txt`; per-size
-unknown-cause splits ~83% capacity / 17% work-meter). The subsequent
-arcs — the 3.28× daytime patch set below, the λ-wrap memo, n=41, and
-the certificate campaign — are ledgered in LEDGER.md; the canonical
-table is now `census_full5.txt` (4..41, ~16.5 min).
+Canonical table: `census_full5.txt` — every closed term of 4..41 bits
+(526,039,969 terms) adjudicated in ~16.5 min on the M5 Max, 4..40
+alone ~7.2 min (vs ~4.3 h for the reference Haskell tooling over
+4..40). Headline numbers and their cross-checks are in README.md;
+operational state (frontier, Ω bracket, rescue margins) in AGENTS.md.
 
 Verification: A114852 counts exact at every published size (20, 24, 28,
 32, 36, 40); BBλ(n) reproduced for every published value 4..34,
 including 327,686 at n=34; n=32 halt count 975,507 matches BB.txt.
+Halt counts have been invariant under every engine change in the
+repo's history.
 
-Frontier lower bounds (max computable |nf|, pending unknowns at each
-size): 98,421 (n=35) · 1,441,774 (36) · 4,290,711 (37) ·
-**222,333,282 (38)** · 10,263,449 (39) · 222,333,284 (40, the λ-wrap of
-the 38-champion — a consistency check that fell out for free).
+BBλ lower bounds at sizes with pending unknowns (max computed |nf|
+per `census_full5.txt`): 98,421 (n=35) · 1,441,774 (36) · 4,290,711
+(37) · **222,333,282 (38)** · 10,263,449 (39) · 222,333,284 (40, the
+λ-wrap of the 38-champion — a consistency check that fell out for
+free) · **1,074,266,118 (41)**.
 
-### What each optimization buys (bench_results.txt, n=28..31)
+### What each optimization buys (ablations at n=28..31; `bench.sh`)
 
 - **Oracle prefilter: ~3×.** Without it every diverger burns both KN
   budgets and a full escalation; with it 2/3 of divergers cost one
@@ -157,17 +152,16 @@ the 38-champion — a consistency check that fell out for free).
   threads.
 - **NF-prescan: neutral** at these sizes — a redex-free term also falls
   out of KN budget-1 in 0 steps almost as cheaply. Kept for clarity.
-- **budget1 16 vs 64 vs 512: flat** — *explained post-audit*: rung 1's
-  transition floor equaled rung 2's, so rung 1 was redundant at any β
-  height. It now runs at `budget1 × 64` transitions and is a real rung.
-- **Task-split granularity 1152..73728: flat** (bench_split_results.txt)
-  — but this A/B ran at n=37, where the expensive tail is invisible.
-  The audit's live profile of n=40 found the tail *does* serialize
-  there: expensive terms cluster by enumeration prefix, adjacent tasks
-  are adjacent prefixes, and rayon splits by index range — 17 of 18
-  workers idle. Fix: bit-reversal task interleave
-  (`enumerate::interleave_tasks`). The other real cost stands: each
-  Unknown burns a stuck rescue (~3.2 s of transition fuel).
+- **Cached-Meta escalation nodes: 1.37×** on the full census, and the
+  invariant that de-risked the change (meter billing identical by
+  construction) is the pattern for any future traversal shortcut.
+- **Measured budget trims** (rescue transitions 64×→32×β, rung-2 floor
+  1<<22→64×β): ~2.2× together on the full census, each verified
+  verdict-identical on a full sweep. The moral, appended to the
+  work-meter lesson: budget *heuristics* survive until someone measures
+  the real ratios. The census prints `rescued:` / `stuck rescues:` /
+  `rung2:` telemetry so the margins stay observable as sizes grow —
+  current margins are in AGENTS.md ("The engines").
 
 ### The work-meter lesson (three bugs, one family)
 
@@ -175,7 +169,7 @@ Every semantic budget missed a syntactic cost corner:
 
 1. **β-fuel doesn't bound the KN machine** — closure-chain walks between
    contractions can spin unboundedly (the classic machine-steps-vs-β gap;
-   cost: one 2-hour hang). Fix: transition cap at 64× β-fuel.
+   cost: one 2-hour hang). Fix: transition cap alongside every β cap.
 2. **Redex-size capacity doesn't bound the escalation engine** —
    subst/simplify allocation on huge intermediates is invisible to it.
    Fix: a work meter charged in the `lam`/`app` constructors.
@@ -188,96 +182,71 @@ operation of every engine**, armed per adjudication. Any budget phrased
 in a semantic unit will eventually meet a term that is syntactically
 expensive in a way the unit can't see.
 
-### Frontier unknowns (42M-capacity adjudication)
+Memory corollary: the meter bounds total *allocations*, not *live*
+graph size — at large capacities the escalation engine's live graph
+can reach tens of GB per worker. Big adjudication runs use few
+threads, streamed verdicts, a watchdog on the child pid, and
+`BLC_WORK_MULT=2`, which bounds live memory to ~4 GB/worker by
+construction and has never lost a verdict.
 
-The 2903 census unknowns (n=32..40) collapse to 2282 λ-wrap seeds. All
-103 seeds ≤36 bits were re-adjudicated at `--bb-cap 42000000` — Tromp's
-exact capacity, 21× the census default: **every verdict stayed
-UNKNOWN**, at both the full work meter and the memory-bounded
-`BLC_WORK_MULT=2` (identical verdicts wherever both ran). Our port's
-proving power saturates by 2M capacity.
+### The frontier is saturated, not under-fueled
+
+All frontier seeds ≤36 bits were re-adjudicated at `--bb-cap 42000000`
+— Tromp's exact capacity, 21× the census default: **every verdict
+stayed UNKNOWN**, at both the full work meter and `BLC_WORK_MULT=2`
+(identical verdicts wherever both ran). The engine's proving power
+saturates by 2M capacity; more fuel is not where new kills come from.
+That is why the certificate campaign (`tools/cert/`) exists.
 
 Cross-matching BB.txt's per-term `-- TODO:` fail traces
-(`tools/bbtxt.py`): 123 of his 128 traced fails are exactly our
-unknowns; his hand analyses mark 106 of them as loops (all unknown for
-us too). The five he fails that we resolve are the BBλ champions (both
-327,686-bit witnesses at n=34, the 98,421 witness at 35, and wraps) —
-his pure BB reducer chokes on big-growth halters, our KN rescue
+(`tools/bbtxt.py`): 123 of the reference's 128 traced fails are exactly
+our unknowns; his hand analyses mark 106 of them as loops (all unknown
+for us too). The five he fails that we resolve are the BBλ champions
+(both 327,686-bit witnesses at n=34, the 98,421 witness at 35, and
+wraps) — a pure BB reducer chokes on big-growth halters, the KN rescue
 resolves them in milliseconds. BB.txt's summary lines report far fewer
-fails (1/4/6/17/25) than its own traces (5/2/17/32/72), so the file is
-multi-generational; the summary-line engine's extra proving power
-turned out to be BBold.lhs `redloop`, which we then generalized.
+fails than its own traces, so the file is multi-generational; the
+summary-line engine's extra proving power turned out to be BBold.lhs
+`redloop`, which we generalized.
 
-### The self-feedback divergence certificate (closing the gap)
+### The self-feedback divergence certificate
 
-The night's theory result, co-developed with Codex: for a syntactic
-self-application `A A` with `A = λx.x Q(x) R̄(x)` closed and ⊥-free,
-if bounded KN probes give `nf(A) = nf(Q(A))`, then `A A` has no head
-normal form — the rigid head `x` survives normalization, so any hnf
-shape re-demands the same spine and the states `Tₙ₊₁ = Q(Tₙ)` are all
-≡β. BBold's exact-equality `redloop` is the special case `Q(A) ≡ A`.
-Implementation: `bb.rs redloop`, armed at the same hook as the redex-
-history check; probes at `BLC_PROBE_FUEL` β (default 4096).
+Co-developed with Codex: for a syntactic self-application `A A` with
+`A = λx.x Q(x) R̄(x)` closed and ⊥-free, if bounded KN probes give
+`nf(A) = nf(Q(A))`, then `A A` has no head normal form — the rigid
+head `x` survives normalization, so any hnf shape re-demands the same
+spine and the states `Tₙ₊₁ = Q(Tₙ)` are all ≡β. BBold's
+exact-equality `redloop` is the special case `Q(A) ≡ A`.
+Implementation: `bb.rs redloop`, armed at the same hook as the
+redex-history check; probes at `BLC_PROBE_FUEL` β (default 4096,
+verified insensitive through 65,536 — 16× — on the whole frontier).
 
-Effect on the census: unknowns 2,903 → **2,032** (11,367 certificate
-proofs), halts unchanged at every size — and faster (n=32: 2.79 →
-1.14 s), since loops that previously burned both meters now exit on a
-cheap probe. n=32 reaches exact parity with Tromp's ledger (both sides
-fail only `loop32`, which no engine mechanically proves); at 34-36 we
-prove strictly more than his traced engine, including both previously
-unexplained 35/36-bit residuals. Fuel-robustness: re-adjudicating all
-2,032 survivors at `BLC_PROBE_FUEL=65536` (16×) flips nothing.
+Besides its kills (11,367 proofs on the 4–40 census), it makes the
+census *faster* (n=32: 2.79 → 1.14 s): loops that previously burned
+both meters now exit on a cheap probe. At n=32 the engine reaches
+exact parity with Tromp's ledger — both sides fail only `loop32`,
+which the ratchet certificate (`tools/cert/SPEC.md`) then killed and
+the Lean formalization proved twice.
 
-### The daytime patch set (2026-07-31 afternoon): a measured 3.28×
+### The λ-wrap memo
 
-Census 4..40 went from ~23.8 min to **7.2 min** (`census_full3.txt`,
-the table of record for this patch set) in three verdict-preserving
-steps, each verified by a full sweep:
-
-1. **Cached-Meta escalation nodes (1.37×).** Lam/App nodes carry
-   `Meta{bits, hash, max-free, node counts, ⊥}` composed O(1) at
-   construction; size accounting, history hashing, closedness and
-   ⊥-checks stop walking trees (walks that were exponential on
-   Rc-shared structures). The invariant that de-risked it: traversal
-   fast paths bill the work meter *exactly* what the replaced walk
-   charged (O(1) formulas from cached counts), so meter exhaustion —
-   and hence every verdict and cause split — is bit-identical by
-   construction. The audit's 2-5× estimate was wrong because the
-   post-patch wall was elsewhere: stuck KN rescues.
-2. **Rescue transition cap 64× → 32×β.** Measured across every
-   successful rescue in 4..40: worst transition/β ratio is 17.0 (the
-   n=38 champion, 9,452,558 β via 160,434,707 transitions), so 32×
-   keeps a 1.88× margin while halving the dominant stuck-rescue cost.
-   The β budget is untouchable — the champion uses 94.5% of it.
-3. **Rung-2 transition floor 1<<22 → 64×β.** Telemetry showed exactly
-   one rung-2 success in the entire census ever exceeded 64×β
-   transitions, while ~150k stuck rung-2 attempts per big size burned
-   the full 4.2M-transition floor. That one term (n=39) now routes
-   through escalation+rescue to the same halt — the sole column change
-   anywhere: `escal` 169,921 → 169,922.
-
-Moral, appended to the work-meter lesson: budget *heuristics* (64×,
-1<<22) survive until someone measures the real ratios; the census now
-prints `rescued:` / `stuck rescues:` / `rung2:` telemetry so the
-margins stay observable as sizes grow.
-
-Memory note: at 42M capacity the escalation engine's *live* graph can
-reach tens of GB per worker even though the meter bounds total
-allocations — adjudication runs use few threads, a watchdog on the
-child pid, and streamed verdicts. `BLC_WORK_MULT=2` bounds live memory
-to ~4 GB/worker by construction and lost nothing empirically.
+λ.T reuses T's escalation-tier verdict for Halt/Diverge ONLY: a map
+hit proves the body closed via prefix-freeness; nf+2, same steps;
+chains propagate. ~3% wall at n≤41; the share grows with n. Unknown
+is a resource outcome, not a fate — seed-Unknown wraps run the
+ordinary ladder. The memo was once extended to Unknowns and
+deliberately retracted: don't rebuild that.
 
 ## Open questions
 
 - No published head-to-head of KN vs NbE vs graph reduction for strong
-  normalization in a systems language — our benchmarks will be the first
-  data point. Bench harness should keep the naive core as one contender.
+  normalization in a systems language — our benchmarks are still the
+  only data point we know of. The bench harness keeps the naive core
+  as one contender.
 - Environment representation (cons-list vs flat vec) and explicit-stack
   vs `stacker`: unstudied, settle empirically.
 - Crate name: `blc` is taken on crates.io (ljedrz/blc). Decide before
   any publish; local name unaffected.
-- Memoizing across shared structure: the λ-wrap verdict memo (census
-  reuses a body's escalation-tier Halt/Diverge verdict for its
-  λ-wrap; Unknowns deliberately excluded) realized the cheap end of
-  this — ~3% wall at n≤41, share grows with n. The general
-  shared-prefix normal-form memo remains unstudied.
+- Memoizing across shared structure: the λ-wrap memo realized the
+  cheap end; the general shared-prefix normal-form memo remains
+  unstudied.

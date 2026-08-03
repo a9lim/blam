@@ -1,12 +1,12 @@
 # Design theory: why 170 bits is a local optimum
 
-Codex consult, 2026-07-31 (gaslamp thread `blc-interpreter`, job
-`cx-20260731-032624-9cda`). Question posed: is there a *structural*
-route below the 170-bit self-interpreter — fixpoint shape,
+The structural question (worked with Codex, gaslamp thread
+`blc-interpreter`): is there a route below the 170-bit
+self-interpreter through *global* rearrangement — fixpoint shape,
 continuation timing, environment representation — as opposed to the
-slot-local searches specced in SEARCH_SPEC.md? All candidates below
-were compiled with `tools/blcc.py` and run through the semantic
-battery; bit counts are verified, not estimated.
+slot-local searches of SEARCH_SPEC.md? All candidates below were
+compiled with `tools/blcc.py` and run through the semantic battery;
+bit counts are verified, not estimated.
 
 ## Verdict
 
@@ -92,7 +92,10 @@ independent floor estimate from the reverse-engineering lane
 (165–168 plausible only via a new micro-trick; ~150 needs a new
 paradigm).
 
-Slot-local exhaustive searches (ABS 43-bit / APP 41-bit) remain the
-open *mechanical* route and are specced soundly in SEARCH_SPEC.md;
-they would either find a micro-trick or certify the slots optimal the
-way VAR already is.
+The slot-local exhaustive searches have since run to completion
+(SEARCH_RESULTS.md): VAR, ABS and APP are each certified optimal with
+the reference as unique survivor and zero residual unknowns. No
+micro-trick was hiding in the branch bodies. The one mechanical route
+left is the contextual lane (SEARCH_SPEC.md §2) — and a survivor
+there is a hypothesis needing whole-interpreter splice + battery, not
+a proof.

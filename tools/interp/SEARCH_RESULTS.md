@@ -140,13 +140,14 @@ proven diverger.
 - `TermPool::push` made `pub`, so a decoded candidate can be spliced into a
   closing context without a second decode pass.
 
-`cargo test --release` green (49 passing, 1 ignored). Census spot-check `n = 24..36` is
-**bit-identical** to `census_full2.txt` on every column — closed, halt,
-diverge, unknown, escal, max|nf|, beta_total.
+`cargo test --release` green (49 passing, 1 ignored). Census
+spot-check `n = 24..36` was bit-identical to the then-canonical table
+on every column — closed, halt, diverge, unknown, escal, max|nf|,
+beta_total — meeting the repo's verification bar for engine changes.
 
 ## Harness validation
 
-- **VAR canary.** Reproduces `search_var.py`'s headline numbers: 30,232 naive
+- **VAR canary.** Reproduces the retired `search_var.py` probe's headline numbers: 30,232 naive
   candidates through 21 bits, unique survivor = the reference VAR slot. The
   Python probe reached that answer through closed Church markers (the scheme
   that produced the false positive the spec was written to kill); this run
@@ -175,11 +176,11 @@ diverge, unknown, escal, max|nf|, beta_total.
 
 ## Status of the Python lab
 
-`search_var.py` and `search_abs.py` are superseded. Both use the closed-Church
-marker scheme the spec rejects, and both import `frag.py`/`nf2.py`, which are
-not in the tree — they are not rerunnable. `lc.py`, `db.py` and `harness.py`
-remain useful (and are used above for the golden cross-check and the
-provenance battery).
+`search_var.py` and `search_abs.py` (the closed-Church-marker probes
+the spec was written to kill) are superseded and deleted — git
+history holds them. `lc.py`, `db.py` and `harness.py` remain live
+(used above for the golden cross-check and the provenance battery),
+as does `search_fix.py` (the knot search of DESIGN_NOTES.md).
 
 ## What this does not cover
 
