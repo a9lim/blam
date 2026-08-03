@@ -192,10 +192,25 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   capacity, single events at 41; qBLC frontier = 1,619,650 unknowns.
   Budgets β=4096/trans=2²⁶ measured-headroom; β×16 resolves zero
   unknowns (measured — the unk column is a real frontier).
-  `--cond-k K` runs Object B mode (`p k̄ ⟨sig⟩`). Next: G_k
-  approximant runs + sandwich constants; dyadicity threshold hunt
-  42..45; output-convention question still open for Object B (v0 =
-  whole-live-store).
+  `--cond-k K` runs Object B mode (`p k̄ ⟨sig⟩`).
+  **Self-interpretation measured** (2026-08-03): E_q = intL I =
+  **176 bits** — HOAS collapses the signature adapter to 6 bits;
+  tight within the intL protocol, global optimality open (bin
+  `src/bin/qselfint.rs`, effect-trace verification via
+  `qeval::run_traced` + qvm cross-check; bisimulation stays the
+  proof obligation — DESIGN-QBLC.md obligation 2 has the record).
+  **Dyadicity threshold answered in the idiom sector** (2026-08-03,
+  bin `src/bin/qradical.rs`, filter cross-checked against Codex's
+  independent DP): per-size Σ_success √2-coefficient exactly 0 for
+  46..52, then **−1/4 at n=53** — the unique fate-divergent program
+  is P53 (pinned `first_fate_divergent_nondyadic_witness_at_53`),
+  the sole survivor of within-program cancellation over 90M idiom
+  programs; unknowns at 53 (752) are β-insensitive at 8×/64×
+  budgets. Phase 2 (primitive-taint over the non-λ⁵ complement,
+  46..53) is the remaining blocker on the full-population claim.
+  Next: phase-2 taint evaluator; G_k approximant runs + sandwich
+  constants; output-convention question still open for Object B
+  (v0 = whole-live-store).
   Classical engines untouched — the bit-identity bar applies to
   them, not to qBLC's new surface. Literature survey in
   `ref/QUANTUM_AIT.md` (untracked).
