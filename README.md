@@ -120,6 +120,49 @@ splits the generation tree into subtree tasks fused with the consumers
 (rayon), bit-reversal-interleaved so prefix-clustered expensive
 families don't serialize.
 
+## The quantum pillar: qBLC
+
+The same census methodology extended to quantum-preparing programs
+(design spec: `DESIGN-QBLC.md`): untyped BLC plus five primitive
+constants `new / meas / cnot / t / h` handed to every program as an
+application signature (order frozen by a predeclared 120-permutation
+pilot), classical control, a branch-local quantum store with *dynamic*
+linearity (epoch-tracked handles — cloning a qubit is a runtime `Err`,
+not a type error), and measurement as exact branching: nothing is ever
+sampled, every amplitude lives in **Z[ω]/√2^k exactly** (`src/dw.rs`,
+ω = e^{iπ/4}), and resource exhaustion is a typed fate, never a wrong
+number.
+
+The target object is an operator-valued Solomonoff prior: the census
+operator **M_Fock = ⊕ₖ M^(k)**, where M^(k)|≤N = Σₚ 2^(−|p|) vₚvₚ†
+over programs halting with k live qubits — number-superselected by
+construction, with **Tr M_Fock = Ω_success**. (The dimension-
+conditioned Gács family G_k is the separate universality candidate;
+the two are provably distinct and sandwich-related — see the spec.)
+
+First results (`qcensus_table36.txt`: 24.3M programs of 4–36 bits,
+58 s, per-program mass conservation Σ‖leaf‖² = 1 asserted exactly
+across the whole sweep):
+
+- **Ω_{success,≤36} = 105268717/2³⁵ ≈ 0.00306**, exactly bracketed.
+- **M^(1) is Hermitian and positive definite** (exact determinant
+  sign), eigenvalues ≈ 6.7·10⁻⁴ and 3.8·10⁻⁸; the census's measured
+  ranking of single-qubit states:
+  **|0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩**.
+- The two-qubit sector opens at exactly n=33
+  (`cnot (new X) (new Y)`); the first *entangled* halt needs 41 bits.
+- Fate-divergent measurement exists from 22 bits — yet every halt
+  mass through n=36 is dyadic: Ω_success first goes irrational only
+  once an h·t·h sandwich reaches a measurement (explicit witness at
+  45 bits). To our knowledge this is the first computed operator
+  census of quantum-preparing programs.
+
+The engines mirror the classical layout: `src/qeval.rs` is the naive
+reference evaluator (the executable spec), `src/qvm.rs` the KN-store
+machine (~200× faster on bulk) — lockstep-verified on *full leaf
+sequences* (fates including stores, exact masses, contraction counts)
+over the entire ≤24-bit program population.
+
 ## Running it
 
 ```
@@ -142,6 +185,9 @@ target/release/certsearch --terms-file unknowns_v8.txt --threads 8
 
 # regenerate the Lean certificate modules, then kernel-check them
 cargo run --release --bin certlean && cd lean && lake build Certs
+
+# quantum operator census (the M^(1) sweep)
+target/release/qcensus --max-n 36 --trans 67108864 --out qcensus_table36.txt
 ```
 
 Knobs: `BLC_WORK_MULT` (work-meter multiplier; `2` = memory-bounded
@@ -168,11 +214,14 @@ default 4096).
 
 - `src/` — engine (`term`, `parse`, `eval` naive reference, `vm` KN
   machine, `oracle`, `bb` escalation + certificate, `enumerate`,
-  `cert` the trusted certificate checkers).
+  `cert` the trusted certificate checkers; quantum pillar with the
+  same layout `q`-prefixed: `qeval` naive reference, `qvm` KN-store
+  machine, `dw` the exact Z[ω]/√2^k ring).
 - `src/bin/` — drivers: `census` and `solomonoff` (the measurements),
   `certsearch` (certificate discovery sweep), `certdiag` (frontier
   classifier/probe instrument), `certlean` (Lean certificate
-  emitter), `slotsearch` (interpreter slot searches).
+  emitter), `slotsearch` (interpreter slot searches), `qcensus` and
+  `qpilot` (the quantum census and signature pilot).
 - `lean/` — the Lean 4 formalization (own README).
 - `tools/` — analysis: `blcc.py` (.lam→.blc compiler, byte-exact
   against 8 repo goldens), `bbtxt.py` (BB.txt trace cross-matcher),
@@ -180,16 +229,21 @@ default 4096).
   file, classifier maps); `tools/interp/` (the self-interpreter lab:
   slot searches, knot search, sound search spec, design notes);
   `tools/uni/` (the distilled interpreter + PR kit).
-- `DESIGN-BLC.md` — architecture, measured results, open questions.
+- `DESIGN-BLC.md` — classical architecture, measured results, open
+  questions; `DESIGN-QBLC.md` — the quantum pillar's design spec.
 - `LEDGER.md` — the running lab notebook: recent sessions, with
   compacted entries living on in git history.
 - Data: `census_full5.txt` (the canonical census table, 4–41),
   `unknowns_v8.txt` (the 4,235-term live frontier),
-  `solomonoff_41.txt`/`solomonoff_table41.txt` (the Ω/K sweep).
+  `solomonoff_41.txt`/`solomonoff_table41.txt` (the Ω/K sweep),
+  `qcensus_table36.txt` (the quantum operator census).
   Superseded generations live in git history, not the tree.
 
 ## Roadmap
 
+- qBLC S3: the M^(2) sector matrix and the n≤41 sweep (where the
+  first entangled halts live), the Ω_success bracket at depth, and
+  the Gács-family G_k approximants (`DESIGN-QBLC.md`, Staging).
 - Certificate v4 classes (specs in `tools/cert/SPEC.md` §8, measured
   candidate maps in `tools/cert/CLASSIFY.md`): the PassengerDiagonal
   first (assembly fully derived, 4 probe-accepted exemplars), then a

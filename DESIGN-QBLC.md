@@ -347,10 +347,10 @@ is Unknown(Capacity), mass into the bracket.
 ## Staging
 
 S0 spec ratification (**done**, 2026-08-02) → S1 evaluator (**done**,
-2026-08-02: naive reference evaluator `src/qvm.rs` + exact ring
+2026-08-02: naive reference evaluator `src/qeval.rs` + exact ring
 `src/dw.rs` + pilot `src/bin/qpilot.rs`; signature order frozen) →
 S2 M^(1) operator census (**done**, 2026-08-03: KN-store fast path
-`src/qkn.rs`, lockstep-verified against qvm on leaf sequences — fate
+`src/qvm.rs`, lockstep-verified against qeval on leaf sequences — fate
 incl. store, exact mass, contraction count — over the full ≤24
 population; census bin `src/bin/qcensus.rs`; canonical
 `qcensus_table36.txt`, 24.3M programs in 58 s, β=4096/trans=2²⁶ with

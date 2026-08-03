@@ -220,3 +220,15 @@ operator census, one session after S1.
   is still marked decide-before-S2 — this run is v0
   (whole-live-store, the convention M_Fock is defined on); a
   convention change costs one ~1-min rerun.
+
+## 2026-08-03 — naming harmonized; overnight continuation begins
+
+a9's convention, now standing: **a quantum file is its classical
+counterpart's name with `q` prefixed.** So the naive reference
+evaluator `qvm.rs` → `qeval.rs` (analog of `eval.rs`), and the
+KN-store fast machine `qkn.rs` → `qvm.rs` (analog of `vm.rs`) —
+earlier ledger entries use the old names, true as written. Bins were
+already conformant (`qcensus`, `qpilot`). README gained the quantum
+pillar (section, layout, roadmap — it had none of it); docs now fully
+current. Full suite green post-rename. a9 to bed; overnight
+authorization: chase the pillar as far as it goes.

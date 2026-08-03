@@ -9,7 +9,7 @@
 
 use blc::dw::Dw;
 use blc::enumerate::{enc_to_string, for_each_closed};
-use blc::qvm::{apply_signature, run, Fate, Prim, QBudget};
+use blc::qeval::{apply_signature, run, Fate, Prim, QBudget};
 use blc::{parse_all, Term};
 use rayon::prelude::*;
 use std::time::Instant;

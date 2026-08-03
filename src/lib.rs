@@ -1,8 +1,10 @@
 //! Binary lambda calculus engine for algorithmic information theory experiments.
 //!
 //! The `term`/`parse`/`eval` modules form the *reference core*: a naive,
-//! textbook-faithful implementation that serves as the executable spec.
-//! The fast abstract machine (to come) is differential-tested against it.
+//! textbook-faithful implementation that serves as the executable spec;
+//! `vm` is the fast abstract machine differential-tested against it.
+//! The quantum pillar mirrors the layout with a `q` prefix: `qeval` is
+//! the naive reference evaluator, `qvm` the lockstep-verified fast path.
 
 pub mod bb;
 pub mod cert;
@@ -11,7 +13,7 @@ pub mod enumerate;
 pub mod eval;
 pub mod oracle;
 pub mod parse;
-pub mod qkn;
+pub mod qeval;
 pub mod qvm;
 pub mod term;
 pub mod vm;

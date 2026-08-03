@@ -161,9 +161,9 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   M_Fock (Tr = Ω_success, number-superselected) and the
   dimension-conditioned Gács family G_k. **Signature order frozen:
   `p h meas new cnot t`**. S1 landed (reference evaluator
-  `src/qvm.rs` + ring `src/dw.rs` + pilot); S2 LANDED (2026-08-03):
-  KN-store fast path `src/qkn.rs` (~200× naive on bulk, lockstep-
-  verified on full leaf sequences vs qvm over the ≤24 population —
+  `src/qeval.rs` + ring `src/dw.rs` + pilot); S2 LANDED (2026-08-03):
+  KN-store fast path `src/qvm.rs` (~200× naive on bulk, lockstep-
+  verified on full leaf sequences vs qeval over the ≤24 population —
   keep that test green when touching either engine) + census bin
   `src/bin/qcensus.rs` → canonical `qcensus_table36.txt`
   (Ω_{success,≤36} = 105268717/2³⁵; M^(1) PD, ranking

@@ -1,781 +1,682 @@
-//! qBLC naive reference evaluator: the executable spec of DESIGN-QBLC.md v0.
+//! qBLC fast path: the defunctionalized Crégut KN machine of `vm.rs`
+//! extended with a quantum store — primitive constants and opaque qubit
+//! handles as new node species, a store hook at primitive application, and
+//! copy-on-fork at `meas`. Lockstep-tested against `qeval.rs` (the executable
+//! spec) for identical leaf sequences: fate (including the full store),
+//! exact mass, and contraction count, over the whole small-size population.
 //!
-//! Small-step leftmost-outermost reduction over terms extended with primitive
-//! constants and opaque qubit handles, a branch-local quantum store of
-//! unnormalized Z[ω]/√2^k statevectors, and measurement branching with exact
-//! weights (nothing is ever sampled). Deliberately favors obvious correctness
-//! over speed, like `eval.rs`; the KN-store fast path will be lockstep-tested
-//! against this. Classical engines are untouched (DESIGN-QBLC.md obligation 4).
+//! Sharing choices that make the lockstep meaningful:
+//! - `Store` and all effect methods (H/T/CNOT/project, epoch discipline) are
+//!   qeval's own — one implementation, so amplitudes compare bit-identically.
+//! - Fates, budgets, and leaves are qeval's types; `QBudget.beta` means the
+//!   same thing (contractions: β + primitive firings). `QBudget.trans` is
+//!   engine-relative (machine transitions here, redex searches there) —
+//!   Unknown is a resource outcome, not a fate, per the classical doctrine.
 //!
-//! Spec anchors, in order of the surprises they encode:
-//! - `new M → #(q,0)` discards M *unevaluated* (species-blind, K-style);
-//!   every other primitive takes its arguments strictly left-to-right to
-//!   WHNF, stays neutral on rigid-variable heads, Errs on non-handle values
-//!   *before* any effect, and consumes epochs atomically only when the full
-//!   redex is assembled.
-//! - A handle in operator position is Err, not a stuck normal form.
-//! - Unnormalized branch vectors: a Halt leaf's sole mass is ‖v‖² = Tr vv†.
-//! - Capacity (qubit count, denominator exponent, coefficient overflow,
-//!   branch count) is a fate, never a panic or a wrong number.
+//! Machine shape (vs `vm.rs`): flat u32 nodes, explicit frame stack, shared
+//! append-only env arena. No readback emission — the census output is the
+//! live store at Halt, never the normal form — so there are no LamEnd
+//! frames and rigid values carry no level. Branch forks share the env arena
+//! (append-only within a program run) and the node pool; only the frame
+//! stack and store are cloned.
+//!
+//! The subtle invariant (this is where a naive port goes wrong): when a
+//! primitive's argument turns out *neutral* (rigid head), neutrality
+//! propagates through the whole contiguous run of pending Arg/Prim1/Cnot1/
+//! Cnot2 frames at once — `h (cnot x M)` with x rigid leaves BOTH the cnot
+//! and the h symbolic, and M becomes an ordinary normalization job. So a
+//! rigid arrival converts the entire run (Arg→Norm, Cnot1→Norm on its held
+//! second argument, Prim1/Cnot2→Skip) before readback. Species checks
+//! happen only at *value* arrival (Lam / bare or undersaturated prim
+//! meeting a Prim1/Cnot1/Cnot2 on top), which is exactly qeval's "Err
+//! precedes effects, before the value's interior is normalized".
 
-use crate::dw::Dw;
-use crate::term::Term;
-use std::rc::Rc;
+use crate::qeval::{Capacity, ErrKind, Fate, Leaf, Prim, QBudget, Store};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Prim {
-    New,
-    Meas,
-    Cnot,
-    T,
-    H,
-}
-
-impl Prim {
-    pub const ALL: [Prim; 5] = [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H];
-
-    pub(crate) fn arity(self) -> usize {
-        match self {
-            Prim::Cnot => 2,
-            _ => 1,
-        }
-    }
-
-    pub fn name(self) -> &'static str {
-        match self {
-            Prim::New => "new",
-            Prim::Meas => "meas",
-            Prim::Cnot => "cnot",
-            Prim::T => "t",
-            Prim::H => "h",
-        }
-    }
-}
-
-/// Term extended with primitives and handles. Both extensions are closed
-/// constants: shift and substitution pass through them untouched. Handles
-/// have no syntactic intro form — only `new` mints them at runtime.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum QTerm {
+/// Term arena node. Children are indices into the pool. `Prim` and `Handle`
+/// are closed constants — substitution-free by construction here, since the
+/// machine never substitutes at all.
+#[derive(Clone, Copy, Debug)]
+pub enum Node {
     Var(u32),
-    Lam(Rc<QTerm>),
-    App(Rc<QTerm>, Rc<QTerm>),
+    Lam(u32),
+    App(u32, u32),
     Prim(Prim),
-    /// (qubit id, epoch)
+    /// (qubit id, epoch) — minted at runtime by `new`, never by the decoder.
     Handle(u32, u32),
 }
 
-pub fn qt_of_term(t: &Term) -> QTerm {
-    match t {
-        Term::Var(n) => QTerm::Var(*n),
-        Term::Lam(b) => QTerm::Lam(Rc::new(qt_of_term(b))),
-        Term::App(f, a) => QTerm::App(Rc::new(qt_of_term(f)), Rc::new(qt_of_term(a))),
-    }
+/// Church booleans, pre-interned by `Pool::reset` at fixed indices.
+/// Polarity: outcome 0 → true = λx.λy.x.
+const TRUE_NODE: u32 = 2;
+const FALSE_NODE: u32 = 5;
+
+/// Flat term storage. Reset per program; runtime results (handles, cnot
+/// pairs) are appended during evaluation, so the pool is append-only within
+/// a run and forked branches share it.
+#[derive(Default)]
+pub struct Pool {
+    pub nodes: Vec<Node>,
 }
 
-/// Church booleans under the classical polarity convention:
-/// outcome 0 → true = λx.λy.x, outcome 1 → false = λx.λy.y.
-fn church_bool(outcome_zero: bool) -> QTerm {
-    let v = if outcome_zero { 2 } else { 1 };
-    QTerm::Lam(Rc::new(QTerm::Lam(Rc::new(QTerm::Var(v)))))
-}
+impl Pool {
+    pub fn new() -> Pool {
+        let mut p = Pool::default();
+        p.reset();
+        p
+    }
 
-// ---------------------------------------------------------------------------
-// shift / subst / beta — eval.rs transplanted to QTerm.
+    pub fn reset(&mut self) {
+        self.nodes.clear();
+        self.nodes.push(Node::Var(2)); // 0
+        self.nodes.push(Node::Lam(0)); // 1
+        self.nodes.push(Node::Lam(1)); // 2 = TRUE  (λx.λy.x)
+        self.nodes.push(Node::Var(1)); // 3
+        self.nodes.push(Node::Lam(3)); // 4
+        self.nodes.push(Node::Lam(4)); // 5 = FALSE (λx.λy.y)
+    }
 
-fn shift(t: &QTerm, d: i64, cutoff: u32) -> QTerm {
-    match t {
-        QTerm::Var(n) => {
-            if *n >= cutoff {
-                QTerm::Var((*n as i64 + d) as u32)
-            } else {
-                QTerm::Var(*n)
-            }
+    pub fn push(&mut self, n: Node) -> u32 {
+        self.nodes.push(n);
+        (self.nodes.len() - 1) as u32
+    }
+
+    /// Decode one BLC term off a packed (bits, length) pair — the same
+    /// explicit-stack decoder as `vm::TermPool`, no string round-trip.
+    pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {
+        let mut bits = (0..len).rev().map(|j| (enc >> j) & 1 == 1);
+        enum P {
+            Lam,
+            App0,
+            App1(u32),
         }
-        QTerm::Lam(b) => QTerm::Lam(Rc::new(shift(b, d, cutoff + 1))),
-        QTerm::App(f, a) => QTerm::App(Rc::new(shift(f, d, cutoff)), Rc::new(shift(a, d, cutoff))),
-        leaf => leaf.clone(),
-    }
-}
-
-fn subst(t: &QTerm, j: u32, s: &QTerm) -> QTerm {
-    match t {
-        QTerm::Var(n) => {
-            if *n == j {
-                s.clone()
-            } else {
-                QTerm::Var(*n)
-            }
-        }
-        QTerm::Lam(b) => QTerm::Lam(Rc::new(subst(b, j + 1, &shift(s, 1, 1)))),
-        QTerm::App(f, a) => QTerm::App(Rc::new(subst(f, j, s)), Rc::new(subst(a, j, s))),
-        leaf => leaf.clone(),
-    }
-}
-
-fn beta(body: &QTerm, arg: &QTerm) -> QTerm {
-    shift(&subst(body, 1, &shift(arg, 1, 1)), -1, 1)
-}
-
-// ---------------------------------------------------------------------------
-// The quantum store: branch-local, unnormalized.
-
-/// Tensor position: bit p of a statevector index is the p-th *live* qubit
-/// in allocation-rank order (LSB = earliest surviving allocation).
-///
-/// Methods are pub(crate): `qkn` (the fast path) reuses this exact effect
-/// implementation, so both engines share one definition of H/T/CNOT/project
-/// and stores compare bit-identically in the lockstep tests.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Store {
-    /// Unnormalized amplitudes, length 2^live.
-    pub amps: Vec<Dw>,
-    /// Per qubit id: Some(epoch) while usable, None once retired (measured).
-    epochs: Vec<Option<u32>>,
-    /// Live qubit ids in allocation-rank order; position = tensor bit.
-    live: Vec<u32>,
-}
-
-impl Store {
-    fn new() -> Store {
-        Store { amps: vec![Dw::ONE], epochs: Vec::new(), live: Vec::new() }
-    }
-
-    pub fn live_count(&self) -> usize {
-        self.live.len()
-    }
-
-    /// ‖v‖² — the branch's exact mass. None on coefficient overflow.
-    pub fn mass(&self) -> Option<Dw> {
-        let mut m = Dw::ZERO;
-        for a in &self.amps {
-            m = m.add(a.norm_sq()?)?;
-        }
-        Some(m.reduce())
-    }
-
-    fn pos_of(&self, q: u32) -> Option<usize> {
-        self.live.iter().position(|&x| x == q)
-    }
-
-    pub(crate) fn empty() -> Store {
-        Store::new()
-    }
-
-    pub(crate) fn alloc(&mut self, max_qubits: usize) -> Result<u32, Capacity> {
-        if self.live.len() >= max_qubits {
-            return Err(Capacity::Qubits);
-        }
-        let q = self.epochs.len() as u32;
-        self.epochs.push(Some(0));
-        self.live.push(q);
-        // Append |0⟩ as the new highest tensor bit: old amplitudes keep
-        // their indices, the bit-set half is zero.
-        let old = self.amps.len();
-        self.amps.resize(old * 2, Dw::ZERO);
-        Ok(q)
-    }
-
-    /// Check-and-bump an epoch (atomic consumption). Err = stale or retired.
-    pub(crate) fn consume(&mut self, q: u32, e: u32) -> Result<(), ErrKind> {
-        match self.epochs.get_mut(q as usize) {
-            Some(Some(cur)) if *cur == e => {
-                *cur += 1;
-                Ok(())
-            }
-            Some(Some(_)) => Err(ErrKind::StaleEpoch),
-            Some(None) => Err(ErrKind::Retired),
-            None => unreachable!("handle to unknown qubit"),
-        }
-    }
-
-    pub(crate) fn peek(&self, q: u32, e: u32) -> Result<(), ErrKind> {
-        match self.epochs.get(q as usize) {
-            Some(Some(cur)) if *cur == e => Ok(()),
-            Some(Some(_)) => Err(ErrKind::StaleEpoch),
-            Some(None) => Err(ErrKind::Retired),
-            None => unreachable!("handle to unknown qubit"),
-        }
-    }
-
-    pub(crate) fn apply_h(&mut self, q: u32) -> Result<(), Capacity> {
-        let p = self.pos_of(q).expect("H on non-live qubit");
-        let bit = 1usize << p;
-        for i in 0..self.amps.len() {
-            if i & bit == 0 {
-                let (v0, v1) = (self.amps[i], self.amps[i | bit]);
-                let s = v0.add(v1).ok_or(Capacity::Amplitude)?;
-                let dnew = v0.sub(v1).ok_or(Capacity::Amplitude)?;
-                self.amps[i] = s.div_sqrt2().ok_or(Capacity::Amplitude)?.reduce();
-                self.amps[i | bit] = dnew.div_sqrt2().ok_or(Capacity::Amplitude)?.reduce();
-            }
-        }
-        Ok(())
-    }
-
-    pub(crate) fn apply_t(&mut self, q: u32) -> Result<(), Capacity> {
-        let p = self.pos_of(q).expect("T on non-live qubit");
-        let bit = 1usize << p;
-        for i in 0..self.amps.len() {
-            if i & bit != 0 {
-                self.amps[i] = self.amps[i].mul(Dw::OMEGA).ok_or(Capacity::Amplitude)?;
-            }
-        }
-        Ok(())
-    }
-
-    pub(crate) fn apply_cnot(&mut self, qc: u32, qt: u32) {
-        let pc = self.pos_of(qc).expect("CNOT control non-live");
-        let pt = self.pos_of(qt).expect("CNOT target non-live");
-        let (bc, bt) = (1usize << pc, 1usize << pt);
-        for i in 0..self.amps.len() {
-            // For control=1, swap target pair once (visit the target-0 index).
-            if i & bc != 0 && i & bt == 0 {
-                self.amps.swap(i, i | bt);
+        let mut work: Vec<P> = Vec::new();
+        loop {
+            let mut done: u32 = match bits.next()? {
+                false => match bits.next()? {
+                    false => {
+                        work.push(P::Lam);
+                        continue;
+                    }
+                    true => {
+                        work.push(P::App0);
+                        continue;
+                    }
+                },
+                true => {
+                    let mut n: u32 = 1;
+                    loop {
+                        match bits.next()? {
+                            true => n += 1,
+                            false => break,
+                        }
+                    }
+                    self.push(Node::Var(n))
+                }
+            };
+            loop {
+                match work.pop() {
+                    None => return Some(done),
+                    Some(P::Lam) => done = self.push(Node::Lam(done)),
+                    Some(P::App0) => {
+                        work.push(P::App1(done));
+                        break;
+                    }
+                    Some(P::App1(f)) => done = self.push(Node::App(f, done)),
+                }
             }
         }
     }
 
-    /// Project qubit q onto |outcome⟩, remove its tensor factor, retire it.
-    /// The surviving vector stays unnormalized — its norm² is the branch mass.
-    pub(crate) fn measure_project(&mut self, q: u32, outcome_one: bool) {
-        let p = self.pos_of(q).expect("measure on non-live qubit");
-        let bit = 1usize << p;
-        let mut kept = Vec::with_capacity(self.amps.len() / 2);
-        for i in 0..self.amps.len() {
-            if (i & bit != 0) == outcome_one {
-                kept.push(self.amps[i]);
+    /// Import an eval/qeval-side term (tests).
+    pub fn from_term(&mut self, t: &crate::term::Term) -> u32 {
+        use crate::term::Term;
+        match t {
+            Term::Var(n) => self.push(Node::Var(*n)),
+            Term::Lam(b) => {
+                let b = self.from_term(b);
+                self.push(Node::Lam(b))
+            }
+            Term::App(f, a) => {
+                let f = self.from_term(f);
+                let a = self.from_term(a);
+                self.push(Node::App(f, a))
             }
         }
-        self.amps = kept;
-        self.epochs[q as usize] = None;
-        self.live.remove(p);
+    }
+
+    /// Apply a program to the five primitives in signature order.
+    pub fn apply_signature(&mut self, root: u32, order: &[Prim; 5]) -> u32 {
+        let mut r = root;
+        for &p in order {
+            let pn = self.push(Node::Prim(p));
+            r = self.push(Node::App(r, pn));
+        }
+        r
     }
 }
 
-// ---------------------------------------------------------------------------
-// Fates and budgets.
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum ErrKind {
-    /// Primitive met a canonical non-handle value.
-    Species,
-    /// Handle in operator position.
-    HandleApplied,
-    /// Epoch already consumed — a duplication was attempted.
-    StaleEpoch,
-    /// Qubit already measured.
-    Retired,
-    /// cnot with coincident arguments.
-    SameQubit,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Capacity {
-    Qubits,
-    Amplitude,
-    Branches,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Fate {
-    /// Full normal form reached; store is the leaf's live output.
-    Halt(Store),
-    /// β budget or transition budget exhausted on this branch.
-    Unknown,
-    /// Capacity charge fired (resource verdict, never a wrong number).
-    Capacity(Capacity),
-    /// Store-discipline violation; the branch's mass is excluded from
-    /// Ω_success by construction.
-    Err(ErrKind),
+#[derive(Clone, Copy)]
+enum Val {
+    /// Unevaluated closure: (term, env). Call-by-name, no memoization —
+    /// recipes duplicate, matching qeval's substitution semantics exactly.
+    Clo(u32, u32),
+    /// Bound by an unapplied binder in the normal form: rigid.
+    Rigid,
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct QBudget {
-    /// β-steps per branch.
-    pub beta: u64,
-    /// Small-step transitions per branch (redex searches).
-    pub trans: u64,
-    /// Max simultaneous live qubits per branch.
-    pub max_qubits: usize,
-    /// Max total branches per program.
-    pub max_branches: usize,
+enum Frame {
+    /// Pending application argument (eval phase).
+    Arg(u32, u32),
+    /// Spine argument awaiting its own normalization (readback phase).
+    Norm(u32, u32),
+    /// h/t/meas waiting for its argument's WHNF.
+    Prim1(Prim),
+    /// cnot waiting for argument 1's WHNF; holds argument 2's closure.
+    Cnot1(u32, u32),
+    /// cnot waiting for argument 2's WHNF; holds (q1, e1) unconsumed —
+    /// epochs are only checked and bumped when the full redex assembles.
+    Cnot2(u32, u32),
+    /// Neutralized primitive frame (readback no-op).
+    Skip,
 }
 
-impl Default for QBudget {
-    fn default() -> Self {
-        QBudget { beta: 4096, trans: 1 << 16, max_qubits: 12, max_branches: 4096 }
+const NIL: u32 = u32::MAX;
+
+/// A suspended branch: everything not shared. The env arena and node pool
+/// are shared (append-only within a program run).
+struct Branch {
+    t: u32,
+    env: u32,
+    stack: Vec<Frame>,
+    store: Store,
+    contr: u64,
+    trans: u64,
+}
+
+/// The machine. Reused across programs; arenas reset per `run`.
+#[derive(Default)]
+pub struct QMachine {
+    envs: Vec<(Val, u32)>,
+    stack: Vec<Frame>,
+    work: Vec<Branch>,
+    /// Max transitions consumed by any branch path of the most recent run
+    /// (telemetry: measures real trans/β headroom so sweep caps are set
+    /// from data, not the blanket heuristic).
+    pub max_trans: u64,
+}
+
+impl QMachine {
+    pub fn new() -> Self {
+        Self::default()
     }
-}
 
-/// One leaf of the (truncated) branch tree, with its exact mass.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Leaf {
-    pub fate: Fate,
-    /// ‖v‖² at the leaf — mass of Halt leaves is the Ω_success contribution;
-    /// mass of Err/Unknown/Capacity leaves feeds the bracket / Err column.
-    /// None only if the mass itself overflowed (counted as Capacity).
-    pub mass: Option<Dw>,
-    /// Contractions (β + primitive firings) on this leaf's branch path —
-    /// the lockstep surface the fast path must reproduce exactly.
-    pub steps: u64,
-}
+    fn push_env(&mut self, v: Val, parent: u32) -> u32 {
+        self.envs.push((v, parent));
+        (self.envs.len() - 1) as u32
+    }
 
-// ---------------------------------------------------------------------------
-// Small-step reduction.
-
-enum Step {
-    /// One reduction applied (possibly with store effect); keep going.
-    Reduced(QTerm),
-    /// meas fired: two successor branches (outcome 0, outcome 1).
-    Forked(Box<(QTerm, Store, QTerm, Store)>),
-    /// No redex anywhere: full normal form.
-    Normal,
-    /// Branch died.
-    Died(Fate),
-}
-
-/// Outcome of searching a subterm for the leftmost-outermost redex.
-enum Found {
-    /// Redex found and contracted (β charged by caller via flag).
-    Rewritten(QTerm, bool),
-    /// Effectful contraction already applied to the store.
-    RewrittenEffect(QTerm),
-    /// meas redex: replacement terms for both outcomes.
-    Fork(QTerm, QTerm, u32),
-    /// Err fired.
-    Fail(ErrKind),
-    /// Capacity fired.
-    Full(Capacity),
-    /// No redex in this subterm (it is in normal form).
-    None,
-}
-
-/// How a primitive treats an argument subterm.
-enum ArgView {
-    /// A handle value — the species the primitive wants.
-    Handle(u32, u32),
-    /// A canonical non-handle value (λ, bare/undersaturated prim, pair):
-    /// species Err, fired before any effect and before the value's interior
-    /// is normalized ("Err precedes effects", DESIGN-QBLC.md).
-    Value,
-    /// Anything else: search inside for the next redex. If the interior is
-    /// already fully normal (rigid/neutral head), the search returns None
-    /// and the primitive application simply stays symbolic in the NF.
-    Search,
-}
-
-fn arg_view(t: &QTerm) -> ArgView {
-    match t {
-        QTerm::Handle(q, e) => ArgView::Handle(*q, *e),
-        QTerm::Lam(_) => ArgView::Value,
-        QTerm::Prim(_) => ArgView::Value,
-        QTerm::Var(_) => ArgView::Search,
-        QTerm::App(f, _) => {
-            // Walk the spine: rigid head → neutral (search-inside, may stay
-            // symbolic); undersaturated primitive head → a value (species
-            // Err); saturated prim / Lam / Handle head → reducible (search
-            // will find the redex or the Err).
-            let mut head = f;
-            let mut args = 1usize;
-            loop {
-                match &**head {
-                    QTerm::App(g, _) => {
-                        head = g;
-                        args += 1;
-                    }
-                    QTerm::Var(_) => return ArgView::Search,
-                    QTerm::Prim(p) if args < p.arity() => return ArgView::Value,
-                    _ => return ArgView::Search,
-                }
+    /// Convert the contiguous top run of spine-context frames after a rigid
+    /// (or neutral-prim-head) arrival: pending Args become normalization
+    /// jobs, pending primitive frames neutralize — a Cnot1's held second
+    /// argument still needs normalizing (it is a spine argument of the now-
+    /// neutral application), a Cnot2's held handle stays unconsumed in the
+    /// normal form.
+    fn convert_run(&mut self) {
+        for f in self.stack.iter_mut().rev() {
+            match *f {
+                Frame::Arg(a, e) => *f = Frame::Norm(a, e),
+                Frame::Cnot1(a, e) => *f = Frame::Norm(a, e),
+                Frame::Prim1(_) | Frame::Cnot2(..) => *f = Frame::Skip,
+                Frame::Norm(..) | Frame::Skip => break,
             }
         }
     }
-}
 
-struct Ctx<'a> {
-    store: &'a mut Store,
-    budget: &'a QBudget,
-}
+    /// Run one root term to its truncated branch tree, appending leaves.
+    /// Leaf order matches qeval exactly (outcome-0 first, depth-first).
+    pub fn run_into(
+        &mut self,
+        pool: &mut Pool,
+        root: u32,
+        budget: &QBudget,
+        leaves: &mut Vec<Leaf>,
+    ) {
+        assert!(budget.beta >= 1 && budget.trans >= 1, "degenerate budgets");
+        self.envs.clear();
+        self.stack.clear();
+        self.work.clear();
+        self.max_trans = 0;
+        let mut branches = 1usize;
 
-/// Find and contract the leftmost-outermost redex in `t`, normal order:
-/// spine head first, then arguments left to right, then under binders.
-fn search(t: &QTerm, cx: &mut Ctx) -> Found {
-    match t {
-        QTerm::Var(_) | QTerm::Prim(_) | QTerm::Handle(_, _) => Found::None,
-        QTerm::Lam(b) => match search(b, cx) {
-            Found::Rewritten(nb, chg) => Found::Rewritten(QTerm::Lam(Rc::new(nb)), chg),
-            Found::RewrittenEffect(nb) => Found::RewrittenEffect(QTerm::Lam(Rc::new(nb))),
-            Found::Fork(b0, b1, q) => {
-                Found::Fork(QTerm::Lam(Rc::new(b0)), QTerm::Lam(Rc::new(b1)), q)
-            }
-            other => other,
-        },
-        QTerm::App(f, a) => {
-            // Decompose the spine to find the head.
-            match &**f {
-                QTerm::Lam(body) => return Found::Rewritten(beta(body, a), true),
-                QTerm::Handle(_, _) => return Found::Fail(ErrKind::HandleApplied),
-                QTerm::Prim(Prim::New) => {
-                    // new discards its argument unevaluated, species-blind.
-                    return match cx.store.alloc(cx.budget.max_qubits) {
-                        Ok(q) => Found::RewrittenEffect(QTerm::Handle(q, 0)),
-                        Err(c) => Found::Full(c),
-                    };
-                }
-                QTerm::Prim(p) if p.arity() == 1 => {
-                    return unary_prim(*p, f, a, cx);
-                }
-                _ => {}
-            }
-            // cnot: spine App(App(cnot, a1), a2).
-            if let QTerm::App(g, a1) = &**f {
-                if let QTerm::Prim(Prim::Cnot) = &**g {
-                    return cnot_prim(g, a1, a, f, cx);
-                }
-            }
-            // Otherwise: reduce inside f first (head position), then a.
-            match search(f, cx) {
-                Found::Rewritten(nf, chg) => {
-                    Found::Rewritten(QTerm::App(Rc::new(nf), a.clone()), chg)
-                }
-                Found::RewrittenEffect(nf) => {
-                    Found::RewrittenEffect(QTerm::App(Rc::new(nf), a.clone()))
-                }
-                Found::Fork(f0, f1, q) => Found::Fork(
-                    QTerm::App(Rc::new(f0), a.clone()),
-                    QTerm::App(Rc::new(f1), a.clone()),
-                    q,
-                ),
-                Found::None => match search(a, cx) {
-                    Found::Rewritten(na, chg) => {
-                        Found::Rewritten(QTerm::App(f.clone(), Rc::new(na)), chg)
-                    }
-                    Found::RewrittenEffect(na) => {
-                        Found::RewrittenEffect(QTerm::App(f.clone(), Rc::new(na)))
-                    }
-                    Found::Fork(a0, a1, q) => Found::Fork(
-                        QTerm::App(f.clone(), Rc::new(a0)),
-                        QTerm::App(f.clone(), Rc::new(a1)),
-                        q,
-                    ),
-                    other => other,
-                },
-                other => other,
-            }
-        }
-    }
-}
+        let mut t = root;
+        let mut env = NIL;
+        let mut store = Store::empty();
+        let mut contr = 0u64;
+        let mut trans = 0u64;
+        let mut reading = false;
 
-/// Wrap a search result of an argument back into the surrounding context.
-fn wrap_arg(res: Found, rebuild: impl Fn(QTerm) -> QTerm) -> Found {
-    match res {
-        Found::Rewritten(n, chg) => Found::Rewritten(rebuild(n), chg),
-        Found::RewrittenEffect(n) => Found::RewrittenEffect(rebuild(n)),
-        Found::Fork(x0, x1, q) => Found::Fork(rebuild(x0), rebuild(x1), q),
-        other => other,
-    }
-}
-
-/// h/t/meas applied to one argument: argument to WHNF first (searching its
-/// interior — a neutral argument leaves the primitive symbolic in the NF);
-/// species Err on non-handle values precedes any effect.
-fn unary_prim(p: Prim, f: &Rc<QTerm>, a: &Rc<QTerm>, cx: &mut Ctx) -> Found {
-    match arg_view(a) {
-        ArgView::Search => {
-            let f2 = f.clone();
-            wrap_arg(search(a, cx), move |n| QTerm::App(f2.clone(), Rc::new(n)))
-        }
-        ArgView::Value => Found::Fail(ErrKind::Species),
-        ArgView::Handle(q, e) => match p {
-            Prim::H => match cx.store.consume(q, e) {
-                Ok(()) => match cx.store.apply_h(q) {
-                    Ok(()) => Found::RewrittenEffect(QTerm::Handle(q, e + 1)),
-                    Err(c) => Found::Full(c),
-                },
-                Err(k) => Found::Fail(k),
-            },
-            Prim::T => match cx.store.consume(q, e) {
-                Ok(()) => match cx.store.apply_t(q) {
-                    Ok(()) => Found::RewrittenEffect(QTerm::Handle(q, e + 1)),
-                    Err(c) => Found::Full(c),
-                },
-                Err(k) => Found::Fail(k),
-            },
-            Prim::Meas => match cx.store.peek(q, e) {
-                Ok(()) => Found::Fork(church_bool(true), church_bool(false), q),
-                Err(k) => Found::Fail(k),
-            },
-            _ => unreachable!("unary_prim on {:?}", p),
-        },
-    }
-}
-
-/// cnot with both arguments present: strictly left-to-right WHNF, species
-/// checks first, epoch consumption atomic once the full redex is assembled.
-fn cnot_prim(
-    g: &Rc<QTerm>,
-    a1: &Rc<QTerm>,
-    a2: &Rc<QTerm>,
-    f: &Rc<QTerm>,
-    cx: &mut Ctx,
-) -> Found {
-    // First argument.
-    let (q1, e1) = match arg_view(a1) {
-        ArgView::Search => {
-            let (g2, a2c) = (g.clone(), (**a2).clone());
-            let res = search(a1, cx);
-            let wrapped = wrap_arg(res, move |n| {
-                QTerm::App(
-                    Rc::new(QTerm::App(g2.clone(), Rc::new(n))),
-                    Rc::new(a2c.clone()),
-                )
-            });
-            // A fully-normal neutral first argument leaves the whole
-            // application symbolic, but the second argument's interior must
-            // still normalize for the full NF.
-            return match wrapped {
-                Found::None => {
-                    let f2 = f.clone();
-                    wrap_arg(search(a2, cx), move |n| QTerm::App(f2.clone(), Rc::new(n)))
-                }
-                other => other,
-            };
-        }
-        ArgView::Value => return Found::Fail(ErrKind::Species),
-        ArgView::Handle(q, e) => (q, e),
-    };
-    // Second argument.
-    let (q2v, e2v) = match arg_view(a2) {
-        ArgView::Search => {
-            let f2 = f.clone();
-            return wrap_arg(search(a2, cx), move |n| QTerm::App(f2.clone(), Rc::new(n)));
-        }
-        ArgView::Value => return Found::Fail(ErrKind::Species),
-        ArgView::Handle(q, e) => (q, e),
-    };
-    // Atomic consumption: epoch validity first (a stale handle is the more
-    // informative diagnosis than coincidence), then the same-qubit check,
-    // then both epochs bumped together.
-    if let Err(k) = cx.store.peek(q1, e1) {
-        return Found::Fail(k);
-    }
-    if let Err(k) = cx.store.peek(q2v, e2v) {
-        return Found::Fail(k);
-    }
-    if q1 == q2v {
-        return Found::Fail(ErrKind::SameQubit);
-    }
-    cx.store.consume(q1, e1).expect("peeked");
-    cx.store.consume(q2v, e2v).expect("peeked");
-    cx.store.apply_cnot(q1, q2v);
-    // Church pair of the fresh epochs: λz. z #(q1,e1+1) #(q2,e2+1).
-    Found::RewrittenEffect(QTerm::Lam(Rc::new(QTerm::App(
-        Rc::new(QTerm::App(
-            Rc::new(QTerm::Var(1)),
-            Rc::new(QTerm::Handle(q1, e1 + 1)),
-        )),
-        Rc::new(QTerm::Handle(q2v, e2v + 1)),
-    ))))
-}
-
-fn step(t: &QTerm, store: &mut Store, budget: &QBudget) -> Step {
-    let mut cx = Ctx { store, budget };
-    match search(t, &mut cx) {
-        Found::Rewritten(nt, _beta) => Step::Reduced(nt),
-        Found::RewrittenEffect(nt) => Step::Reduced(nt),
-        Found::Fork(t0, t1, q) => {
-            let mut s0 = store.clone();
-            let mut s1 = store.clone();
-            s0.measure_project(q, false);
-            s1.measure_project(q, true);
-            Step::Forked(Box::new((t0, s0, t1, s1)))
-        }
-        Found::None => Step::Normal,
-        Found::Fail(k) => Step::Died(Fate::Err(k)),
-        Found::Full(c) => Step::Died(Fate::Capacity(c)),
-    }
-}
-
-/// Run one program (already applied to its signature) to its truncated branch
-/// tree. Exact, deterministic, never samples.
-pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
-    let mut leaves = Vec::new();
-    let mut work: Vec<(QTerm, Store, u64, u64)> = vec![(term, Store::new(), 0, 0)];
-    let mut branches = 1usize;
-    while let Some((mut t, mut store, mut nbeta, mut ntrans)) = work.pop() {
         loop {
-            if ntrans >= budget.trans || nbeta >= budget.beta {
-                let mass = store.mass();
-                leaves.push(Leaf { fate: Fate::Unknown, mass, steps: nbeta });
-                break;
+            // ---- one branch to its leaf ----------------------------------
+            // `end`: None = full normal form reached; Some(f) = branch died.
+            let end: Option<Fate> = 'run: loop {
+                trans += 1;
+                if trans > budget.trans {
+                    break 'run Some(Fate::Unknown);
+                }
+                if reading {
+                    // Readback: pull the next pending normalization job.
+                    // Invariant: only Norm/Skip are reachable here (rigid
+                    // arrivals convert whole runs; value arrivals enter
+                    // readback only over Norm/Skip). Arg/Cnot1 are handled
+                    // identically to Norm for robustness; Prim1/Cnot2 as
+                    // Skip.
+                    match self.stack.pop() {
+                        None => break 'run None,
+                        Some(Frame::Norm(nt, ne))
+                        | Some(Frame::Arg(nt, ne))
+                        | Some(Frame::Cnot1(nt, ne)) => {
+                            t = nt;
+                            env = ne;
+                            reading = false;
+                        }
+                        Some(Frame::Skip) | Some(Frame::Prim1(_)) | Some(Frame::Cnot2(..)) => {}
+                    }
+                    continue;
+                }
+                match pool.nodes[t as usize] {
+                    Node::App(f, a) => {
+                        self.stack.push(Frame::Arg(a, env));
+                        t = f;
+                    }
+                    Node::Lam(b) => match self.stack.last() {
+                        Some(&Frame::Arg(at, ae)) => {
+                            // β-contraction.
+                            self.stack.pop();
+                            env = self.push_env(Val::Clo(at, ae), env);
+                            t = b;
+                            contr += 1;
+                            if contr >= budget.beta {
+                                break 'run Some(Fate::Unknown);
+                            }
+                        }
+                        Some(Frame::Prim1(_)) | Some(Frame::Cnot1(..)) | Some(Frame::Cnot2(..)) => {
+                            // λ-value fed to a primitive: species Err, before
+                            // the value's interior is normalized.
+                            break 'run Some(Fate::Err(ErrKind::Species));
+                        }
+                        _ => {
+                            // Normal-form position: normalize under the binder.
+                            env = self.push_env(Val::Rigid, env);
+                            t = b;
+                        }
+                    },
+                    Node::Var(i) => {
+                        let mut e = env;
+                        for _ in 1..i {
+                            e = self.envs[e as usize].1;
+                        }
+                        match self.envs[e as usize].0 {
+                            Val::Clo(ct, ce) => {
+                                t = ct;
+                                env = ce;
+                            }
+                            Val::Rigid => {
+                                self.convert_run();
+                                reading = true;
+                            }
+                        }
+                    }
+                    Node::Prim(p) => {
+                        // The contiguous Arg frames on top are this prim's
+                        // spine arguments.
+                        let mut nargs = 0usize;
+                        while nargs < self.stack.len()
+                            && matches!(
+                                self.stack[self.stack.len() - 1 - nargs],
+                                Frame::Arg(..)
+                            )
+                        {
+                            nargs += 1;
+                        }
+                        if nargs >= p.arity() {
+                            match p {
+                                Prim::New => {
+                                    // Discards its argument unevaluated,
+                                    // species-blind.
+                                    self.stack.pop();
+                                    match store.alloc(budget.max_qubits) {
+                                        Ok(q) => {
+                                            t = pool.push(Node::Handle(q, 0));
+                                            env = NIL;
+                                            contr += 1;
+                                            if contr >= budget.beta {
+                                                break 'run Some(Fate::Unknown);
+                                            }
+                                        }
+                                        Err(c) => break 'run Some(Fate::Capacity(c)),
+                                    }
+                                }
+                                Prim::H | Prim::T | Prim::Meas => {
+                                    let Some(Frame::Arg(at, ae)) = self.stack.pop() else {
+                                        unreachable!()
+                                    };
+                                    self.stack.push(Frame::Prim1(p));
+                                    t = at;
+                                    env = ae;
+                                }
+                                Prim::Cnot => {
+                                    let Some(Frame::Arg(a1t, a1e)) = self.stack.pop() else {
+                                        unreachable!()
+                                    };
+                                    let Some(Frame::Arg(a2t, a2e)) = self.stack.pop() else {
+                                        unreachable!()
+                                    };
+                                    self.stack.push(Frame::Cnot1(a2t, a2e));
+                                    t = a1t;
+                                    env = a1e;
+                                }
+                            }
+                        } else if matches!(
+                            self.stack
+                                .len()
+                                .checked_sub(1 + nargs)
+                                .map(|i| &self.stack[i]),
+                            Some(Frame::Prim1(_)) | Some(Frame::Cnot1(..)) | Some(Frame::Cnot2(..))
+                        ) {
+                            // Bare/undersaturated primitive is a canonical
+                            // non-handle value in a primitive's argument.
+                            break 'run Some(Fate::Err(ErrKind::Species));
+                        } else {
+                            // Neutral head in normal-form position: its
+                            // arguments become normalization jobs.
+                            self.convert_run();
+                            reading = true;
+                        }
+                    }
+                    Node::Handle(q, e) => match self.stack.last().copied() {
+                        Some(Frame::Arg(..)) => {
+                            break 'run Some(Fate::Err(ErrKind::HandleApplied));
+                        }
+                        Some(Frame::Prim1(p @ (Prim::H | Prim::T))) => {
+                            self.stack.pop();
+                            match store.consume(q, e) {
+                                Ok(()) => {
+                                    let r = if p == Prim::H {
+                                        store.apply_h(q)
+                                    } else {
+                                        store.apply_t(q)
+                                    };
+                                    match r {
+                                        Ok(()) => {
+                                            t = pool.push(Node::Handle(q, e + 1));
+                                            env = NIL;
+                                            contr += 1;
+                                            if contr >= budget.beta {
+                                                break 'run Some(Fate::Unknown);
+                                            }
+                                        }
+                                        Err(c) => break 'run Some(Fate::Capacity(c)),
+                                    }
+                                }
+                                Err(k) => break 'run Some(Fate::Err(k)),
+                            }
+                        }
+                        Some(Frame::Prim1(Prim::Meas)) => {
+                            self.stack.pop();
+                            match store.peek(q, e) {
+                                Ok(()) => {
+                                    branches += 1;
+                                    if branches > budget.max_branches {
+                                        // Fork aborted whole: pre-projection
+                                        // store mass, both children dropped.
+                                        break 'run Some(Fate::Capacity(Capacity::Branches));
+                                    }
+                                    let mut s1 = store.clone();
+                                    s1.measure_project(q, true);
+                                    store.measure_project(q, false);
+                                    self.work.push(Branch {
+                                        t: FALSE_NODE,
+                                        env: NIL,
+                                        stack: self.stack.clone(),
+                                        store: s1,
+                                        contr,
+                                        trans,
+                                    });
+                                    t = TRUE_NODE;
+                                    env = NIL;
+                                }
+                                Err(k) => break 'run Some(Fate::Err(k)),
+                            }
+                        }
+                        Some(Frame::Prim1(_)) => unreachable!("Prim1 holds only h/t/meas"),
+                        Some(Frame::Cnot1(a2t, a2e)) => {
+                            self.stack.pop();
+                            self.stack.push(Frame::Cnot2(q, e));
+                            t = a2t;
+                            env = a2e;
+                        }
+                        Some(Frame::Cnot2(q1, e1)) => {
+                            self.stack.pop();
+                            // Epoch validity first (the more informative
+                            // diagnosis), then coincidence, then atomic
+                            // consumption — qeval's exact order.
+                            if let Err(k) = store.peek(q1, e1) {
+                                break 'run Some(Fate::Err(k));
+                            }
+                            if let Err(k) = store.peek(q, e) {
+                                break 'run Some(Fate::Err(k));
+                            }
+                            if q1 == q {
+                                break 'run Some(Fate::Err(ErrKind::SameQubit));
+                            }
+                            store.consume(q1, e1).expect("peeked");
+                            store.consume(q, e).expect("peeked");
+                            store.apply_cnot(q1, q);
+                            // λz. z #(q1,e1+1) #(q2,e2+1)
+                            let h1 = pool.push(Node::Handle(q1, e1 + 1));
+                            let h2 = pool.push(Node::Handle(q, e + 1));
+                            let v = pool.push(Node::Var(1));
+                            let a1 = pool.push(Node::App(v, h1));
+                            let a2 = pool.push(Node::App(a1, h2));
+                            t = pool.push(Node::Lam(a2));
+                            env = NIL;
+                            contr += 1;
+                            if contr >= budget.beta {
+                                break 'run Some(Fate::Unknown);
+                            }
+                        }
+                        _ => {
+                            // Handle is a normal-form leaf.
+                            reading = true;
+                        }
+                    },
+                }
+            };
+
+            // ---- emit the leaf, pull the next branch ---------------------
+            self.max_trans = self.max_trans.max(trans);
+            let mass = store.mass();
+            match end {
+                None => match mass {
+                    Some(_) => leaves.push(Leaf { fate: Fate::Halt(store), mass, steps: contr }),
+                    None => leaves.push(Leaf {
+                        fate: Fate::Capacity(Capacity::Amplitude),
+                        mass: None,
+                        steps: contr,
+                    }),
+                },
+                Some(f) => leaves.push(Leaf { fate: f, mass, steps: contr }),
             }
-            ntrans += 1;
-            match step(&t, &mut store, budget) {
-                Step::Reduced(nt) => {
-                    nbeta += 1; // β and primitive contractions share the count
-                    t = nt;
-                }
-                Step::Forked(fork) => {
-                    let (t0, s0, t1, s1) = *fork;
-                    branches += 1;
-                    if branches > budget.max_branches {
-                        let mass = store.mass();
-                        leaves.push(Leaf {
-                            fate: Fate::Capacity(Capacity::Branches),
-                            mass,
-                            steps: nbeta,
-                        });
-                        break;
-                    }
-                    work.push((t1, s1, nbeta, ntrans));
-                    t = t0;
-                    store = s0;
-                }
-                Step::Normal => {
-                    let mass = store.mass();
-                    match mass {
-                        Some(_) => leaves.push(Leaf { fate: Fate::Halt(store), mass, steps: nbeta }),
-                        None => leaves.push(Leaf {
-                            fate: Fate::Capacity(Capacity::Amplitude),
-                            mass: None,
-                            steps: nbeta,
-                        }),
-                    }
-                    break;
-                }
-                Step::Died(fate) => {
-                    let mass = store.mass();
-                    leaves.push(Leaf { fate, mass, steps: nbeta });
-                    break;
+            match self.work.pop() {
+                None => break,
+                Some(b) => {
+                    t = b.t;
+                    env = b.env;
+                    self.stack = b.stack;
+                    store = b.store;
+                    contr = b.contr;
+                    trans = b.trans;
+                    reading = false;
                 }
             }
         }
-    }
-    leaves
-}
 
-/// Apply a program term to the five primitives in the given order.
-pub fn apply_signature(p: &Term, order: &[Prim; 5]) -> QTerm {
-    let mut t = qt_of_term(p);
-    for pr in order {
-        t = QTerm::App(Rc::new(t), Rc::new(QTerm::Prim(*pr)));
+        // Don't hold peak arenas forever (vm.rs lesson).
+        const KEEP: usize = 1 << 20;
+        if self.envs.capacity() > KEEP {
+            self.envs = Vec::with_capacity(KEEP);
+        }
+        if self.stack.capacity() > KEEP {
+            self.stack = Vec::with_capacity(KEEP);
+        }
     }
-    t
+
+    /// Decode + apply signature + run: the sweep entry point.
+    pub fn run_program_into(
+        &mut self,
+        pool: &mut Pool,
+        enc: u64,
+        len: u8,
+        order: &[Prim; 5],
+        budget: &QBudget,
+        leaves: &mut Vec<Leaf>,
+    ) {
+        pool.reset();
+        let root = pool.decode_u64(enc, len).expect("well-formed closed term");
+        let sig = pool.apply_signature(root, order);
+        self.run_into(pool, sig, budget, leaves);
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::dw::Dw;
+    use crate::enumerate::{enc_to_string, for_each_closed};
     use crate::parse_all;
+    use crate::qeval;
+    use rayon::prelude::*;
 
-    fn sig_default() -> [Prim; 5] {
-        [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H]
-    }
+    /// The frozen signature order (DESIGN-QBLC.md): p h meas new cnot t.
+    const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
-    fn run_str(src: &str) -> Vec<Leaf> {
-        // src is a BLC bit-string program, applied to the default signature.
+    fn qeval_leaves(src: &str, order: &[Prim; 5], budget: &QBudget) -> Vec<Leaf> {
         let t = parse_all(src).unwrap();
-        run(apply_signature(&t, &sig_default()), &QBudget::default())
+        qeval::run(qeval::apply_signature(&t, order), budget)
     }
 
-    #[test]
-    fn identity_program_is_err() {
-        // (λx.x) new meas cnot t h → new meas … → #q cnot … → handle applied.
-        let leaves = run_str("0010");
-        assert_eq!(leaves.len(), 1);
-        assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::HandleApplied)));
-    }
-
-    #[test]
-    fn pure_terms_agree_with_reference_core() {
-        // Differential test: on prim-free closed terms the small-step
-        // evaluator must reach exactly eval.rs's normal form.
-        use crate::enumerate::{enc_to_string, for_each_closed};
-        for n in 4..=16 {
-            for_each_closed(n, &mut |enc, len| {
+    /// Lockstep over every closed program of size 4..=max_n: identical leaf
+    /// sequences (fate incl. full store, exact mass, contraction count).
+    fn lockstep_population(max_n: u32, order: &[Prim; 5], ref_budget: &QBudget) {
+        // Machine transition budget is engine-relative: generous, so only
+        // the shared β/branch budgets bind.
+        let fast_budget = QBudget { trans: 1 << 26, ..*ref_budget };
+        let mut programs: Vec<(u64, u8)> = Vec::new();
+        for n in 4..=max_n {
+            for_each_closed(n, &mut |enc, len| programs.push((enc, len)));
+        }
+        programs.par_iter().for_each_init(
+            || (Pool::new(), QMachine::new()),
+            |(pool, m), &(enc, len)| {
                 let src = enc_to_string(enc, len);
-                let t = parse_all(&src).unwrap();
-                let mut fuel = crate::Budget::new(4096);
-                let Ok(nf) = crate::normalize(&t, &mut fuel) else {
-                    return; // reference ran out of fuel; skip
-                };
-                let leaves = run(qt_of_term(&t), &QBudget::default());
-                assert_eq!(leaves.len(), 1, "{src}");
-                match &leaves[0].fate {
-                    Fate::Halt(store) => {
-                        assert_eq!(store.live_count(), 0, "{src}");
-                        let got = &leaves[0];
-                        assert_eq!(got.mass, Some(crate::dw::Dw::ONE), "{src}");
-                        // Compare normal forms structurally.
-                        let qnf = match run_to_nf(qt_of_term(&t)) {
-                            Some(x) => x,
-                            None => panic!("no NF for {src}"),
-                        };
-                        assert_eq!(qnf, qt_of_term(&nf), "{src}");
-                    }
-                    Fate::Unknown => {} // budget mismatch vs reference; fine
-                    other => panic!("{src}: unexpected fate {other:?}"),
-                }
-            });
-        }
-    }
-
-    fn run_to_nf(mut t: QTerm) -> Option<QTerm> {
-        let budget = QBudget::default();
-        let mut store = Store::new();
-        for _ in 0..budget.trans {
-            match step(&t, &mut store, &budget) {
-                Step::Reduced(nt) => t = nt,
-                Step::Normal => return Some(t),
-                _ => return None,
-            }
-        }
-        None
+                let expect = qeval_leaves(&src, order, ref_budget);
+                let mut got = Vec::new();
+                m.run_program_into(pool, enc, len, order, &fast_budget, &mut got);
+                assert_eq!(got, expect, "program {src}");
+            },
+        );
     }
 
     #[test]
-    fn coin_flip_two_leaves_mass_one() {
-        // λn.λm.λc.λt.λh. m (h (n m)) — prepare |+⟩, measure.
-        // Signature order [new, meas, cnot, t, h]: n=5, m=4, c=3, t=2, h=1.
-        // Body: 4 (1 (5 4)) — the `new` argument (m) is discarded unevaluated.
-        use crate::term::{app, lam, var};
-        let body = app(var(4), app(var(1), app(var(5), var(4))));
-        let p = lam(lam(lam(lam(lam(body)))));
-        let leaves = run(apply_signature(&p, &sig_default()), &QBudget::default());
-        assert_eq!(leaves.len(), 2);
-        let mut total = Dw::ZERO;
-        for l in &leaves {
-            match &l.fate {
-                Fate::Halt(store) => {
-                    assert_eq!(store.live_count(), 0);
-                    let m = l.mass.unwrap();
-                    // Each branch mass is exactly 1/2.
-                    assert_eq!(m, Dw { a: 1, b: 0, c: 0, d: 0, k: 2 });
-                    total = total.add(m).unwrap();
-                }
-                other => panic!("unexpected fate {other:?}"),
-            }
-        }
-        assert_eq!(total.reduce(), Dw::ONE);
+    fn lockstep_full_population_frozen_order() {
+        lockstep_population(24, &FROZEN, &QBudget::default());
     }
 
     #[test]
-    fn bell_state_exact() {
-        // λn.λm.λc.λt.λh. c (h (n n)) (n n) — Bell pair, unmeasured, via the
-        // cnot Church pair left in the normal form.
+    fn lockstep_second_order() {
+        // A different permutation exercises different prim adjacencies.
+        let order = [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H];
+        lockstep_population(20, &order, &QBudget::default());
+    }
+
+    #[test]
+    fn lockstep_beta_boundary() {
+        // Tiny β budgets: the Unknown/Halt boundary must mirror exactly
+        // (qeval performs the β-th contraction, then declares Unknown at the
+        // next check — before any further effect).
+        for beta in [1u64, 3, 8, 64] {
+            let b = QBudget { beta, ..QBudget::default() };
+            lockstep_population(18, &FROZEN, &b);
+        }
+    }
+
+    #[test]
+    fn lockstep_branch_capacity() {
+        for max_branches in [1usize, 2, 3] {
+            let b = QBudget { max_branches, ..QBudget::default() };
+            lockstep_population(20, &FROZEN, &b);
+        }
+    }
+
+    #[test]
+    fn lockstep_qubit_capacity() {
+        for max_qubits in [1usize, 2] {
+            let b = QBudget { max_qubits, ..QBudget::default() };
+            lockstep_population(20, &FROZEN, &b);
+        }
+    }
+
+    // ---- direct machine vectors (pool-built, independent of qeval) ---------
+
+    fn run_root(pool: &mut Pool, root: u32) -> Vec<Leaf> {
+        let mut m = QMachine::new();
+        let mut leaves = Vec::new();
+        let budget = QBudget { trans: 1 << 26, ..QBudget::default() };
+        m.run_into(pool, root, &budget, &mut leaves);
+        leaves
+    }
+
+    #[test]
+    fn neutral_propagates_through_prim_frames() {
+        // λx. h (cnot x (λy.y)) — x rigid: the cnot AND the h stay symbolic,
+        // the λy.y must NOT species-Err against the stale h frame, and the
+        // whole term halts with no contractions and no store effects.
+        let mut pool = Pool::new();
+        let x = pool.push(Node::Var(1));
+        let cn = pool.push(Node::Prim(Prim::Cnot));
+        let cx = pool.push(Node::App(cn, x));
+        let idv = pool.push(Node::Var(1));
+        let idl = pool.push(Node::Lam(idv));
+        let cxi = pool.push(Node::App(cx, idl));
+        let h = pool.push(Node::Prim(Prim::H));
+        let hb = pool.push(Node::App(h, cxi));
+        let root = pool.push(Node::Lam(hb));
+        let leaves = run_root(&mut pool, root);
+        assert_eq!(leaves.len(), 1);
+        assert!(matches!(leaves[0].fate, Fate::Halt(ref s) if s.live_count() == 0));
+        assert_eq!(leaves[0].mass, Some(Dw::ONE));
+        assert_eq!(leaves[0].steps, 0);
+    }
+
+    #[test]
+    fn bell_state_exact_on_machine() {
+        // λn.λm.λc.λt.λh. c (h (n n)) (n n) under order [new,meas,cnot,t,h].
         use crate::term::{app, lam, var};
         let body = app(
             app(var(3), app(var(1), app(var(5), var(5)))),
             app(var(5), var(5)),
         );
         let p = lam(lam(lam(lam(lam(body)))));
-        let leaves = run(apply_signature(&p, &sig_default()), &QBudget::default());
+        let mut pool = Pool::new();
+        let root = pool.from_term(&p);
+        let sig = pool.apply_signature(root, &[Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H]);
+        let leaves = run_root(&mut pool, sig);
         assert_eq!(leaves.len(), 1);
         match &leaves[0].fate {
             Fate::Halt(store) => {
                 assert_eq!(store.live_count(), 2);
-                // (|00⟩ + |11⟩)/√2, allocation order: q0 is LSB.
                 let h = Dw { a: 1, b: 0, c: 0, d: 0, k: 1 };
                 assert_eq!(store.amps[0].reduce(), h);
                 assert_eq!(store.amps[1], Dw::ZERO);
@@ -787,108 +688,91 @@ mod tests {
         }
     }
 
-    fn qapp(f: QTerm, a: QTerm) -> QTerm {
-        QTerm::App(Rc::new(f), Rc::new(a))
-    }
-
-    fn fresh_qubit() -> QTerm {
-        // new h — allocates, discarding the (unevaluated) h argument.
-        qapp(QTerm::Prim(Prim::New), QTerm::Prim(Prim::H))
-    }
-
-    /// cnot on two fresh qubits, yielding the Church pair of handles.
-    fn cnot_pair() -> QTerm {
-        qapp(
-            qapp(QTerm::Prim(Prim::Cnot), fresh_qubit()),
-            fresh_qubit(),
-        )
-    }
-
     #[test]
-    fn cbn_duplicates_recipes_not_states() {
-        // (λx. cnot x (t x)) (new h): call-by-name substitutes the
-        // *unevaluated* preparation, so `new` runs twice and the cnot gets
-        // two independent qubits — recipe duplication is legal, per spec.
-        let body = qapp(
-            qapp(QTerm::Prim(Prim::Cnot), QTerm::Var(1)),
-            qapp(QTerm::Prim(Prim::T), QTerm::Var(1)),
-        );
-        let t = qapp(QTerm::Lam(Rc::new(body)), fresh_qubit());
-        let leaves = run(t, &QBudget::default());
-        assert_eq!(leaves.len(), 1);
-        match &leaves[0].fate {
-            Fate::Halt(store) => assert_eq!(store.live_count(), 2),
-            other => panic!("unexpected fate {other:?}"),
+    fn stale_epoch_and_same_qubit_on_machine() {
+        // cnot-pair sharing (the only way handle values duplicate), then a
+        // selector that reuses a consumed epoch / passes coincident qubits.
+        fn cnot_pair(pool: &mut Pool) -> u32 {
+            let n1 = pool.push(Node::Prim(Prim::New));
+            let h1 = pool.push(Node::Prim(Prim::H));
+            let q1 = pool.push(Node::App(n1, h1));
+            let n2 = pool.push(Node::Prim(Prim::New));
+            let h2 = pool.push(Node::Prim(Prim::H));
+            let q2 = pool.push(Node::App(n2, h2));
+            let cn = pool.push(Node::Prim(Prim::Cnot));
+            let c1 = pool.push(Node::App(cn, q1));
+            pool.push(Node::App(c1, q2))
         }
-    }
-
-    #[test]
-    fn stale_epoch_is_err() {
-        // Handle VALUES only ever get shared via the cnot Church pair.
-        // pair (λa.λb. cnot a (t a)): `a` is a handle value used twice —
-        // t bumps its epoch, then cnot's atomic consumption sees the stale
-        // one. Duplication of state, caught by the store.
-        let sel = QTerm::Lam(Rc::new(QTerm::Lam(Rc::new(qapp(
-            qapp(QTerm::Prim(Prim::Cnot), QTerm::Var(2)),
-            qapp(QTerm::Prim(Prim::T), QTerm::Var(2)),
-        )))));
-        let t = qapp(cnot_pair(), sel);
-        let leaves = run(t, &QBudget::default());
+        // pair (λa.λb. cnot a (t a)) → StaleEpoch
+        let mut pool = Pool::new();
+        let pair = cnot_pair(&mut pool);
+        let a2 = pool.push(Node::Var(2));
+        let cn = pool.push(Node::Prim(Prim::Cnot));
+        let ca = pool.push(Node::App(cn, a2));
+        let tp = pool.push(Node::Prim(Prim::T));
+        let a2b = pool.push(Node::Var(2));
+        let ta = pool.push(Node::App(tp, a2b));
+        let body = pool.push(Node::App(ca, ta));
+        let l1 = pool.push(Node::Lam(body));
+        let sel = pool.push(Node::Lam(l1));
+        let root = pool.push(Node::App(pair, sel));
+        let leaves = run_root(&mut pool, root);
         assert_eq!(leaves.len(), 1);
         assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::StaleEpoch)));
-    }
 
-    #[test]
-    fn cnot_same_qubit_is_err() {
-        // pair (λa.λb. cnot a a): the same handle value in both positions.
-        let sel = QTerm::Lam(Rc::new(QTerm::Lam(Rc::new(qapp(
-            qapp(QTerm::Prim(Prim::Cnot), QTerm::Var(2)),
-            QTerm::Var(2),
-        )))));
-        let t = qapp(cnot_pair(), sel);
-        let leaves = run(t, &QBudget::default());
+        // pair (λa.λb. cnot a a) → SameQubit
+        let mut pool = Pool::new();
+        let pair = cnot_pair(&mut pool);
+        let a2 = pool.push(Node::Var(2));
+        let cn = pool.push(Node::Prim(Prim::Cnot));
+        let ca = pool.push(Node::App(cn, a2));
+        let a2b = pool.push(Node::Var(2));
+        let body = pool.push(Node::App(ca, a2b));
+        let l1 = pool.push(Node::Lam(body));
+        let sel = pool.push(Node::Lam(l1));
+        let root = pool.push(Node::App(pair, sel));
+        let leaves = run_root(&mut pool, root);
         assert_eq!(leaves.len(), 1);
         assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::SameQubit)));
     }
 
     #[test]
-    fn species_err_before_effect() {
-        // h (λx. new x): argument is a Lam value — Err fires, nothing allocates.
-        let t = QTerm::App(
-            Rc::new(QTerm::Prim(Prim::H)),
-            Rc::new(QTerm::Lam(Rc::new(QTerm::App(
-                Rc::new(QTerm::Prim(Prim::New)),
-                Rc::new(QTerm::Var(1)),
-            )))),
-        );
-        let leaves = run(t, &QBudget::default());
+    fn species_err_before_effect_on_machine() {
+        // h (λx. new x): Err fires before the λ's interior runs — nothing
+        // allocates, mass stays ONE.
+        let mut pool = Pool::new();
+        let nw = pool.push(Node::Prim(Prim::New));
+        let x = pool.push(Node::Var(1));
+        let nx = pool.push(Node::App(nw, x));
+        let lam = pool.push(Node::Lam(nx));
+        let h = pool.push(Node::Prim(Prim::H));
+        let root = pool.push(Node::App(h, lam));
+        let leaves = run_root(&mut pool, root);
         assert_eq!(leaves.len(), 1);
         assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::Species)));
-        match &leaves[0].fate {
-            Fate::Err(_) => assert_eq!(leaves[0].mass, Some(Dw::ONE)),
-            _ => unreachable!(),
-        }
+        assert_eq!(leaves[0].mass, Some(Dw::ONE));
     }
 
     #[test]
-    fn ht_measure_weights_are_exact() {
-        // T on |+⟩ then H then measure: P(0) = (2+√2)/4, P(1) = (2−√2)/4.
-        // Program: meas (h (t (h (new _)))).
-        let mk = |inner: QTerm, p: Prim| QTerm::App(Rc::new(QTerm::Prim(p)), Rc::new(inner));
-        let q = mk(QTerm::Prim(Prim::H), Prim::New);
-        let t = mk(mk(mk(mk(q, Prim::H), Prim::T), Prim::H), Prim::Meas);
-        let leaves = run(t, &QBudget::default());
+    fn ht_measure_weights_exact_on_machine() {
+        // meas (h (t (h (new h)))): P(0) = (2+√2)/4, P(1) = (2−√2)/4.
+        let mut pool = Pool::new();
+        let nw = pool.push(Node::Prim(Prim::New));
+        let harg = pool.push(Node::Prim(Prim::H));
+        let mut cur = pool.push(Node::App(nw, harg));
+        for p in [Prim::H, Prim::T, Prim::H, Prim::Meas] {
+            let pn = pool.push(Node::Prim(p));
+            cur = pool.push(Node::App(pn, cur));
+        }
+        let leaves = run_root(&mut pool, cur);
         assert_eq!(leaves.len(), 2);
-        let m0 = leaves.iter().find(|l| matches!(&l.fate, Fate::Halt(_)));
-        assert!(m0.is_some());
         let total = leaves
             .iter()
             .fold(Dw::ZERO, |acc, l| acc.add(l.mass.unwrap()).unwrap());
         assert_eq!(total.reduce(), Dw::ONE);
-        // Exact weights: (2 ± √2)/4 — never dyadic, exactly representable.
-        let p0 = Dw { a: 2, b: 1, c: 0, d: -1, k: 4 };
-        let p1 = Dw { a: 2, b: -1, c: 0, d: 1, k: 4 };
+        let p0 = Dw { a: 2, b: 1, c: 0, d: -1, k: 4 }.reduce();
+        let p1 = Dw { a: 2, b: -1, c: 0, d: 1, k: 4 }.reduce();
         let masses: Vec<Dw> = leaves.iter().map(|l| l.mass.unwrap().reduce()).collect();
-        assert!(masses.contains(&p0.reduce()) && masses.contains(&p1.reduce()));
+        assert!(masses.contains(&p0) && masses.contains(&p1));
     }
 }

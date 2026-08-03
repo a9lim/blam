@@ -1,6 +1,6 @@
 //! S2: the M^(1) operator census. Sweep every closed program of size
 //! 4..=N under the frozen signature `p h meas new cnot t`, through the
-//! KN-store fast path (`qkn`, lockstep-verified against `qvm`), and
+//! KN-store fast path (`qvm`, lockstep-verified against `qeval`), and
 //! accumulate exactly:
 //!
 //! - Ω_{success,≤N} (total halt mass) and its bracket (+ Unknown/Capacity
@@ -26,8 +26,8 @@
 
 use blc::dw::Dw;
 use blc::enumerate::{interleave_tasks, run_task, split_tasks};
-use blc::qkn::{Pool, QMachine};
-use blc::qvm::{Capacity, ErrKind, Fate, Prim, QBudget};
+use blc::qvm::{Pool, QMachine};
+use blc::qeval::{Capacity, ErrKind, Fate, Prim, QBudget};
 use rayon::prelude::*;
 use std::fmt::Write as _;
 use std::time::Instant;
@@ -218,7 +218,7 @@ fn cap_idx(c: Capacity) -> usize {
 fn sweep_one(
     pool: &mut Pool,
     m: &mut QMachine,
-    leaves: &mut Vec<blc::qvm::Leaf>,
+    leaves: &mut Vec<blc::qeval::Leaf>,
     enc: u64,
     len: u8,
     budget: &QBudget,
