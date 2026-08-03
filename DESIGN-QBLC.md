@@ -150,13 +150,23 @@ unchanged ⇒ prefix-free ⇒ Kraft). Run conventions: Object A evaluates
 p applied to the signature; Object B evaluates p applied to k̄ then the
 signature. The five-λ prefix is the *idiom*, not a constraint — every
 closed term is a program; most produce Err junk, as most classical
-programs produce garbage streams. Signature order is **parameterized
-through S1**: pilot all 120 permutations at a fixed cutoff with the
-predeclared functional (maximize Ω_{success,≤N}, lexicographic
-tie-break — the functional must be declared before the pilot runs,
-because each permutation is a different machine and any
-"measured-frequency" criterion is circular), freeze before canonical
-S2 data.
+programs produce garbage streams (measured: ~91% of leaves are Err at
+the pilot cutoff).
+
+**Signature order — FROZEN (pilot run 2026-08-02): application order
+`p h meas new cnot t`.** Procedure as predeclared: all 120
+permutations swept over the 19,048 closed terms of 4..=24 bits
+(`qpilot`, 61 s), functional = max Ω_{success,≤24} exact,
+lexicographic tie-break. Winner Ω_{success,≤24} = 46757/2^24 ≈
+0.0027869, in an exact tie with its h↔t mirror `t meas new cnot h`
+(every ranking row pairs with its mirror at identical exact mass —
+see LEDGER.md for the interpretation), broken lexicographically as
+predeclared. Note the winner gives `h` to the *first* argument
+(outermost binder = longest de Bruijn index inside the full five-λ
+idiom): the successful population at small sizes is dominated by
+short-prefix programs, so "who arrives first" beats "who is cheapest
+inside the deepest idiom" — the frequency intuition the pilot
+replaced.
 
 **Handles** are a new opaque value species Handle(qubit, epoch) — no
 intro form in syntax (only `new` creates them), and the *only*
@@ -336,14 +346,14 @@ is Unknown(Capacity), mass into the bracket.
 
 ## Staging
 
-S0 spec ratification (**done**, 2026-08-02) → S1 evaluator (naive
-reference core first — the executable spec, same doctrine as the
-classical pillar — with unnormalized ring vectors and parameterized
-signature; the KN-machine fast path comes after, lockstep-verified
-against the core; signature pilot over all 120 permutations with the
-predeclared functional, then freeze) → S2 M^(1) operator census →
-S3 M^(2), Ω_success bracket, rankings, G_k approximants → S4 Thm 8
-groundwork + interpreter transfer → S5 Lean. Each stage is a
+S0 spec ratification (**done**, 2026-08-02) → S1 evaluator (**core
+done**, 2026-08-02: naive small-step reference evaluator `src/qvm.rs`
++ exact ring `src/dw.rs` + pilot bin `src/bin/qpilot.rs`, all
+differential-/vector-tested; signature order frozen by the pilot;
+the KN-machine fast path remains, to be lockstep-verified against
+this core) → S2 M^(1) operator census → S3 M^(2), Ω_success bracket,
+rankings, G_k approximants → S4 Thm 8 groundwork + interpreter
+transfer → S5 Lean. Each stage is a
 publishable finding on its own; stopping early is a valid outcome of
 the investigation.
 
@@ -377,10 +387,12 @@ the investigation.
 
 ## Open questions
 
-- Signature order: procedure settled (S1 pilot, 120 permutations,
-  predeclared functional Ω_{success,≤N} at fixed cutoff,
-  lexicographic tie-break, then freeze) — the order itself is open
-  until the pilot runs.
+- Does the h↔t exact mass symmetry (and the dyadicity of every
+  permutation's Ω_{success,≤24}) break at larger N? Both should:
+  they hold iff no program yet both creates superposition and
+  branches to different fates on the outcomes. The first
+  fate-divergent measurement is a milestone worth catching — it is
+  where Ω_success first goes irrational.
 - `cnot` return convention: Church pair is v0; residual question is
   only whether a pair-projection idiom deserves a measured shorthand.
 - Output convention: whole-live-store (current) vs designated-output

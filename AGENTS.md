@@ -159,11 +159,13 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
 - **qBLC (second pillar)**: design ratified (DESIGN-QBLC.md; round
   record in LEDGER.md 2026-08-02). Two target objects — operator
   census M_Fock (Tr = Ω_success, number-superselected) and the
-  dimension-conditioned Gács family G_k. S1 in progress: naive
-  reference evaluator (`src/qvm.rs`, ring in `src/dw.rs`, pilot bin
-  `src/bin/qpilot.rs`), signature order frozen only after the
-  120-permutation pilot (predeclared functional: max Ω_{success,≤N},
-  lexicographic tie-break). Classical engines untouched — the
+  dimension-conditioned Gács family G_k. S1 core LANDED: naive
+  reference evaluator `src/qvm.rs` + exact ring `src/dw.rs` + pilot
+  `src/bin/qpilot.rs`; **signature order frozen: `p h meas new cnot
+  t`** (120-permutation pilot at ≤24 bits, 61 s; Ω_{success,≤24} =
+  46757/2^24; h↔t mirror tie broken lexicographically as
+  predeclared). Next: S2 operator census M^(1); KN-store fast path
+  when sweep sizes demand it. Classical engines untouched — the
   bit-identity bar applies to them, not to qBLC's new surface.
   Literature survey in `ref/QUANTUM_AIT.md` (untracked).
 

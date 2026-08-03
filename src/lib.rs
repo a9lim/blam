@@ -6,10 +6,12 @@
 
 pub mod bb;
 pub mod cert;
+pub mod dw;
 pub mod enumerate;
 pub mod eval;
 pub mod oracle;
 pub mod parse;
+pub mod qvm;
 pub mod term;
 pub mod vm;
 

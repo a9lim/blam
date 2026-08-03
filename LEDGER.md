@@ -97,3 +97,44 @@ The quantum pillar went from idea to ratified spec in one day.
   here, DESIGN-QBLC.md states the ratified design flat. AGENTS.md
   docket updated; S1 (naive reference evaluator + 120-permutation
   signature pilot) cleared to build.
+
+## 2026-08-02 — qBLC S1: reference evaluator landed, signature frozen
+
+First Rust of the quantum pillar, same session as ratification.
+
+- **`src/dw.rs`**: exact Clifford+T amplitudes in Z[ω]/√2^k — four
+  checked-i128 coefficients + √2-exponent, K_CAP=128, overflow is a
+  Capacity fate. Ring identities unit-tested (ω⁸=1, (ω−ω³)²=2, exact
+  sign of a+b√2 via the a²vs2b² trick).
+- **`src/qvm.rs`**: naive small-step normal-order evaluator over
+  terms + primitives + handles, per DESIGN-QBLC.md v0: species-blind
+  `new`, left-to-right WHNF primitive args, Err-before-effect,
+  epoch-atomic cnot with Church-pair return, branch-local stores,
+  unnormalized vectors (vv† sole mass). Differential-tested against
+  eval.rs on all prim-free closed terms ≤16 bits; sanity vectors:
+  coin-flip mass ½+½, Bell state amplitudes exact, (2±√2)/4
+  measurement weights exact, stale-epoch and same-qubit Err via the
+  Church-pair path. Two lessons mid-build: (1) under call-by-name a
+  β-substituted preparation DUPLICATES AS A RECIPE (two independent
+  qubits) — handle values only ever share through the cnot pair, so
+  clone-Errs are rarer than naively expected (pinned as test
+  `cbn_duplicates_recipes_not_states`); (2) cnot check order matters
+  for Err telemetry — epoch validity before coincidence.
+- **`src/bin/qpilot.rs` — the signature pilot, predeclared
+  functional**: all 120 permutations × 19,048 programs (4..=24 bits),
+  61 s wall on 18 threads, exact accumulation throughout.
+  **Winner, now frozen: `p h meas new cnot t`**, Ω_{success,≤24} =
+  46757/2^24 ≈ 0.0027869 (leaves: 1,835 halt / 17,265 err / 34
+  unknown / 0 capacity). Findings: (a) every permutation's ranking
+  row ties EXACTLY with its h↔t mirror, and (b) every Ω_{success,≤24}
+  is dyadic despite irrational leaf weights existing — both
+  observations are equivalent to "no ≤24-bit program both creates
+  superposition and sends the two outcomes to different fates"; both
+  should break at larger N, and the first fate-divergent measurement
+  is where Ω_success goes irrational (now an Open question in the
+  spec). (c) The winner hands `h` to the FIRST argument — the
+  short-prefix population beats deep-idiom cheapness, killing the
+  frequency intuition the predeclared functional replaced.
+- `cargo test --release` fully green (52 lib + all classical
+  integration suites; classical engines untouched). Pilot raw table
+  regenerable: `qpilot --max-n 24`.

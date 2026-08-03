@@ -1,0 +1,878 @@
+//! qBLC naive reference evaluator: the executable spec of DESIGN-QBLC.md v0.
+//!
+//! Small-step leftmost-outermost reduction over terms extended with primitive
+//! constants and opaque qubit handles, a branch-local quantum store of
+//! unnormalized Z[ω]/√2^k statevectors, and measurement branching with exact
+//! weights (nothing is ever sampled). Deliberately favors obvious correctness
+//! over speed, like `eval.rs`; the KN-store fast path will be lockstep-tested
+//! against this. Classical engines are untouched (DESIGN-QBLC.md obligation 4).
+//!
+//! Spec anchors, in order of the surprises they encode:
+//! - `new M → #(q,0)` discards M *unevaluated* (species-blind, K-style);
+//!   every other primitive takes its arguments strictly left-to-right to
+//!   WHNF, stays neutral on rigid-variable heads, Errs on non-handle values
+//!   *before* any effect, and consumes epochs atomically only when the full
+//!   redex is assembled.
+//! - A handle in operator position is Err, not a stuck normal form.
+//! - Unnormalized branch vectors: a Halt leaf's sole mass is ‖v‖² = Tr vv†.
+//! - Capacity (qubit count, denominator exponent, coefficient overflow,
+//!   branch count) is a fate, never a panic or a wrong number.
+
+use crate::dw::Dw;
+use crate::term::Term;
+use std::rc::Rc;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Prim {
+    New,
+    Meas,
+    Cnot,
+    T,
+    H,
+}
+
+impl Prim {
+    pub const ALL: [Prim; 5] = [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H];
+
+    fn arity(self) -> usize {
+        match self {
+            Prim::Cnot => 2,
+            _ => 1,
+        }
+    }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            Prim::New => "new",
+            Prim::Meas => "meas",
+            Prim::Cnot => "cnot",
+            Prim::T => "t",
+            Prim::H => "h",
+        }
+    }
+}
+
+/// Term extended with primitives and handles. Both extensions are closed
+/// constants: shift and substitution pass through them untouched. Handles
+/// have no syntactic intro form — only `new` mints them at runtime.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum QTerm {
+    Var(u32),
+    Lam(Rc<QTerm>),
+    App(Rc<QTerm>, Rc<QTerm>),
+    Prim(Prim),
+    /// (qubit id, epoch)
+    Handle(u32, u32),
+}
+
+pub fn qt_of_term(t: &Term) -> QTerm {
+    match t {
+        Term::Var(n) => QTerm::Var(*n),
+        Term::Lam(b) => QTerm::Lam(Rc::new(qt_of_term(b))),
+        Term::App(f, a) => QTerm::App(Rc::new(qt_of_term(f)), Rc::new(qt_of_term(a))),
+    }
+}
+
+/// Church booleans under the classical polarity convention:
+/// outcome 0 → true = λx.λy.x, outcome 1 → false = λx.λy.y.
+fn church_bool(outcome_zero: bool) -> QTerm {
+    let v = if outcome_zero { 2 } else { 1 };
+    QTerm::Lam(Rc::new(QTerm::Lam(Rc::new(QTerm::Var(v)))))
+}
+
+// ---------------------------------------------------------------------------
+// shift / subst / beta — eval.rs transplanted to QTerm.
+
+fn shift(t: &QTerm, d: i64, cutoff: u32) -> QTerm {
+    match t {
+        QTerm::Var(n) => {
+            if *n >= cutoff {
+                QTerm::Var((*n as i64 + d) as u32)
+            } else {
+                QTerm::Var(*n)
+            }
+        }
+        QTerm::Lam(b) => QTerm::Lam(Rc::new(shift(b, d, cutoff + 1))),
+        QTerm::App(f, a) => QTerm::App(Rc::new(shift(f, d, cutoff)), Rc::new(shift(a, d, cutoff))),
+        leaf => leaf.clone(),
+    }
+}
+
+fn subst(t: &QTerm, j: u32, s: &QTerm) -> QTerm {
+    match t {
+        QTerm::Var(n) => {
+            if *n == j {
+                s.clone()
+            } else {
+                QTerm::Var(*n)
+            }
+        }
+        QTerm::Lam(b) => QTerm::Lam(Rc::new(subst(b, j + 1, &shift(s, 1, 1)))),
+        QTerm::App(f, a) => QTerm::App(Rc::new(subst(f, j, s)), Rc::new(subst(a, j, s))),
+        leaf => leaf.clone(),
+    }
+}
+
+fn beta(body: &QTerm, arg: &QTerm) -> QTerm {
+    shift(&subst(body, 1, &shift(arg, 1, 1)), -1, 1)
+}
+
+// ---------------------------------------------------------------------------
+// The quantum store: branch-local, unnormalized.
+
+/// Tensor position: bit p of a statevector index is the p-th *live* qubit
+/// in allocation-rank order (LSB = earliest surviving allocation).
+#[derive(Clone, Debug)]
+pub struct Store {
+    /// Unnormalized amplitudes, length 2^live.
+    pub amps: Vec<Dw>,
+    /// Per qubit id: Some(epoch) while usable, None once retired (measured).
+    epochs: Vec<Option<u32>>,
+    /// Live qubit ids in allocation-rank order; position = tensor bit.
+    live: Vec<u32>,
+}
+
+impl Store {
+    fn new() -> Store {
+        Store { amps: vec![Dw::ONE], epochs: Vec::new(), live: Vec::new() }
+    }
+
+    pub fn live_count(&self) -> usize {
+        self.live.len()
+    }
+
+    /// ‖v‖² — the branch's exact mass. None on coefficient overflow.
+    pub fn mass(&self) -> Option<Dw> {
+        let mut m = Dw::ZERO;
+        for a in &self.amps {
+            m = m.add(a.norm_sq()?)?;
+        }
+        Some(m.reduce())
+    }
+
+    fn pos_of(&self, q: u32) -> Option<usize> {
+        self.live.iter().position(|&x| x == q)
+    }
+
+    fn alloc(&mut self, max_qubits: usize) -> Result<u32, Capacity> {
+        if self.live.len() >= max_qubits {
+            return Err(Capacity::Qubits);
+        }
+        let q = self.epochs.len() as u32;
+        self.epochs.push(Some(0));
+        self.live.push(q);
+        // Append |0⟩ as the new highest tensor bit: old amplitudes keep
+        // their indices, the bit-set half is zero.
+        let old = self.amps.len();
+        self.amps.resize(old * 2, Dw::ZERO);
+        Ok(q)
+    }
+
+    /// Check-and-bump an epoch (atomic consumption). Err = stale or retired.
+    fn consume(&mut self, q: u32, e: u32) -> Result<(), ErrKind> {
+        match self.epochs.get_mut(q as usize) {
+            Some(Some(cur)) if *cur == e => {
+                *cur += 1;
+                Ok(())
+            }
+            Some(Some(_)) => Err(ErrKind::StaleEpoch),
+            Some(None) => Err(ErrKind::Retired),
+            None => unreachable!("handle to unknown qubit"),
+        }
+    }
+
+    fn peek(&self, q: u32, e: u32) -> Result<(), ErrKind> {
+        match self.epochs.get(q as usize) {
+            Some(Some(cur)) if *cur == e => Ok(()),
+            Some(Some(_)) => Err(ErrKind::StaleEpoch),
+            Some(None) => Err(ErrKind::Retired),
+            None => unreachable!("handle to unknown qubit"),
+        }
+    }
+
+    fn apply_h(&mut self, q: u32) -> Result<(), Capacity> {
+        let p = self.pos_of(q).expect("H on non-live qubit");
+        let bit = 1usize << p;
+        for i in 0..self.amps.len() {
+            if i & bit == 0 {
+                let (v0, v1) = (self.amps[i], self.amps[i | bit]);
+                let s = v0.add(v1).ok_or(Capacity::Amplitude)?;
+                let dnew = v0.sub(v1).ok_or(Capacity::Amplitude)?;
+                self.amps[i] = s.div_sqrt2().ok_or(Capacity::Amplitude)?.reduce();
+                self.amps[i | bit] = dnew.div_sqrt2().ok_or(Capacity::Amplitude)?.reduce();
+            }
+        }
+        Ok(())
+    }
+
+    fn apply_t(&mut self, q: u32) -> Result<(), Capacity> {
+        let p = self.pos_of(q).expect("T on non-live qubit");
+        let bit = 1usize << p;
+        for i in 0..self.amps.len() {
+            if i & bit != 0 {
+                self.amps[i] = self.amps[i].mul(Dw::OMEGA).ok_or(Capacity::Amplitude)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn apply_cnot(&mut self, qc: u32, qt: u32) {
+        let pc = self.pos_of(qc).expect("CNOT control non-live");
+        let pt = self.pos_of(qt).expect("CNOT target non-live");
+        let (bc, bt) = (1usize << pc, 1usize << pt);
+        for i in 0..self.amps.len() {
+            // For control=1, swap target pair once (visit the target-0 index).
+            if i & bc != 0 && i & bt == 0 {
+                self.amps.swap(i, i | bt);
+            }
+        }
+    }
+
+    /// Project qubit q onto |outcome⟩, remove its tensor factor, retire it.
+    /// The surviving vector stays unnormalized — its norm² is the branch mass.
+    fn measure_project(&mut self, q: u32, outcome_one: bool) {
+        let p = self.pos_of(q).expect("measure on non-live qubit");
+        let bit = 1usize << p;
+        let mut kept = Vec::with_capacity(self.amps.len() / 2);
+        for i in 0..self.amps.len() {
+            if (i & bit != 0) == outcome_one {
+                kept.push(self.amps[i]);
+            }
+        }
+        self.amps = kept;
+        self.epochs[q as usize] = None;
+        self.live.remove(p);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Fates and budgets.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ErrKind {
+    /// Primitive met a canonical non-handle value.
+    Species,
+    /// Handle in operator position.
+    HandleApplied,
+    /// Epoch already consumed — a duplication was attempted.
+    StaleEpoch,
+    /// Qubit already measured.
+    Retired,
+    /// cnot with coincident arguments.
+    SameQubit,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Capacity {
+    Qubits,
+    Amplitude,
+    Branches,
+}
+
+#[derive(Clone, Debug)]
+pub enum Fate {
+    /// Full normal form reached; store is the leaf's live output.
+    Halt(Store),
+    /// β budget or transition budget exhausted on this branch.
+    Unknown,
+    /// Capacity charge fired (resource verdict, never a wrong number).
+    Capacity(Capacity),
+    /// Store-discipline violation; the branch's mass is excluded from
+    /// Ω_success by construction.
+    Err(ErrKind),
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct QBudget {
+    /// β-steps per branch.
+    pub beta: u64,
+    /// Small-step transitions per branch (redex searches).
+    pub trans: u64,
+    /// Max simultaneous live qubits per branch.
+    pub max_qubits: usize,
+    /// Max total branches per program.
+    pub max_branches: usize,
+}
+
+impl Default for QBudget {
+    fn default() -> Self {
+        QBudget { beta: 4096, trans: 1 << 16, max_qubits: 12, max_branches: 4096 }
+    }
+}
+
+/// One leaf of the (truncated) branch tree, with its exact mass.
+#[derive(Clone, Debug)]
+pub struct Leaf {
+    pub fate: Fate,
+    /// ‖v‖² at the leaf — mass of Halt leaves is the Ω_success contribution;
+    /// mass of Err/Unknown/Capacity leaves feeds the bracket / Err column.
+    /// None only if the mass itself overflowed (counted as Capacity).
+    pub mass: Option<Dw>,
+}
+
+// ---------------------------------------------------------------------------
+// Small-step reduction.
+
+enum Step {
+    /// One reduction applied (possibly with store effect); keep going.
+    Reduced(QTerm),
+    /// meas fired: two successor branches (outcome 0, outcome 1).
+    Forked(Box<(QTerm, Store, QTerm, Store)>),
+    /// No redex anywhere: full normal form.
+    Normal,
+    /// Branch died.
+    Died(Fate),
+}
+
+/// Outcome of searching a subterm for the leftmost-outermost redex.
+enum Found {
+    /// Redex found and contracted (β charged by caller via flag).
+    Rewritten(QTerm, bool),
+    /// Effectful contraction already applied to the store.
+    RewrittenEffect(QTerm),
+    /// meas redex: replacement terms for both outcomes.
+    Fork(QTerm, QTerm, u32),
+    /// Err fired.
+    Fail(ErrKind),
+    /// Capacity fired.
+    Full(Capacity),
+    /// No redex in this subterm (it is in normal form).
+    None,
+}
+
+/// How a primitive treats an argument subterm.
+enum ArgView {
+    /// A handle value — the species the primitive wants.
+    Handle(u32, u32),
+    /// A canonical non-handle value (λ, bare/undersaturated prim, pair):
+    /// species Err, fired before any effect and before the value's interior
+    /// is normalized ("Err precedes effects", DESIGN-QBLC.md).
+    Value,
+    /// Anything else: search inside for the next redex. If the interior is
+    /// already fully normal (rigid/neutral head), the search returns None
+    /// and the primitive application simply stays symbolic in the NF.
+    Search,
+}
+
+fn arg_view(t: &QTerm) -> ArgView {
+    match t {
+        QTerm::Handle(q, e) => ArgView::Handle(*q, *e),
+        QTerm::Lam(_) => ArgView::Value,
+        QTerm::Prim(_) => ArgView::Value,
+        QTerm::Var(_) => ArgView::Search,
+        QTerm::App(f, _) => {
+            // Walk the spine: rigid head → neutral (search-inside, may stay
+            // symbolic); undersaturated primitive head → a value (species
+            // Err); saturated prim / Lam / Handle head → reducible (search
+            // will find the redex or the Err).
+            let mut head = f;
+            let mut args = 1usize;
+            loop {
+                match &**head {
+                    QTerm::App(g, _) => {
+                        head = g;
+                        args += 1;
+                    }
+                    QTerm::Var(_) => return ArgView::Search,
+                    QTerm::Prim(p) if args < p.arity() => return ArgView::Value,
+                    _ => return ArgView::Search,
+                }
+            }
+        }
+    }
+}
+
+struct Ctx<'a> {
+    store: &'a mut Store,
+    budget: &'a QBudget,
+}
+
+/// Find and contract the leftmost-outermost redex in `t`, normal order:
+/// spine head first, then arguments left to right, then under binders.
+fn search(t: &QTerm, cx: &mut Ctx) -> Found {
+    match t {
+        QTerm::Var(_) | QTerm::Prim(_) | QTerm::Handle(_, _) => Found::None,
+        QTerm::Lam(b) => match search(b, cx) {
+            Found::Rewritten(nb, chg) => Found::Rewritten(QTerm::Lam(Rc::new(nb)), chg),
+            Found::RewrittenEffect(nb) => Found::RewrittenEffect(QTerm::Lam(Rc::new(nb))),
+            Found::Fork(b0, b1, q) => {
+                Found::Fork(QTerm::Lam(Rc::new(b0)), QTerm::Lam(Rc::new(b1)), q)
+            }
+            other => other,
+        },
+        QTerm::App(f, a) => {
+            // Decompose the spine to find the head.
+            match &**f {
+                QTerm::Lam(body) => return Found::Rewritten(beta(body, a), true),
+                QTerm::Handle(_, _) => return Found::Fail(ErrKind::HandleApplied),
+                QTerm::Prim(Prim::New) => {
+                    // new discards its argument unevaluated, species-blind.
+                    return match cx.store.alloc(cx.budget.max_qubits) {
+                        Ok(q) => Found::RewrittenEffect(QTerm::Handle(q, 0)),
+                        Err(c) => Found::Full(c),
+                    };
+                }
+                QTerm::Prim(p) if p.arity() == 1 => {
+                    return unary_prim(*p, f, a, cx);
+                }
+                _ => {}
+            }
+            // cnot: spine App(App(cnot, a1), a2).
+            if let QTerm::App(g, a1) = &**f {
+                if let QTerm::Prim(Prim::Cnot) = &**g {
+                    return cnot_prim(g, a1, a, f, cx);
+                }
+            }
+            // Otherwise: reduce inside f first (head position), then a.
+            match search(f, cx) {
+                Found::Rewritten(nf, chg) => {
+                    Found::Rewritten(QTerm::App(Rc::new(nf), a.clone()), chg)
+                }
+                Found::RewrittenEffect(nf) => {
+                    Found::RewrittenEffect(QTerm::App(Rc::new(nf), a.clone()))
+                }
+                Found::Fork(f0, f1, q) => Found::Fork(
+                    QTerm::App(Rc::new(f0), a.clone()),
+                    QTerm::App(Rc::new(f1), a.clone()),
+                    q,
+                ),
+                Found::None => match search(a, cx) {
+                    Found::Rewritten(na, chg) => {
+                        Found::Rewritten(QTerm::App(f.clone(), Rc::new(na)), chg)
+                    }
+                    Found::RewrittenEffect(na) => {
+                        Found::RewrittenEffect(QTerm::App(f.clone(), Rc::new(na)))
+                    }
+                    Found::Fork(a0, a1, q) => Found::Fork(
+                        QTerm::App(f.clone(), Rc::new(a0)),
+                        QTerm::App(f.clone(), Rc::new(a1)),
+                        q,
+                    ),
+                    other => other,
+                },
+                other => other,
+            }
+        }
+    }
+}
+
+/// Wrap a search result of an argument back into the surrounding context.
+fn wrap_arg(res: Found, rebuild: impl Fn(QTerm) -> QTerm) -> Found {
+    match res {
+        Found::Rewritten(n, chg) => Found::Rewritten(rebuild(n), chg),
+        Found::RewrittenEffect(n) => Found::RewrittenEffect(rebuild(n)),
+        Found::Fork(x0, x1, q) => Found::Fork(rebuild(x0), rebuild(x1), q),
+        other => other,
+    }
+}
+
+/// h/t/meas applied to one argument: argument to WHNF first (searching its
+/// interior — a neutral argument leaves the primitive symbolic in the NF);
+/// species Err on non-handle values precedes any effect.
+fn unary_prim(p: Prim, f: &Rc<QTerm>, a: &Rc<QTerm>, cx: &mut Ctx) -> Found {
+    match arg_view(a) {
+        ArgView::Search => {
+            let f2 = f.clone();
+            wrap_arg(search(a, cx), move |n| QTerm::App(f2.clone(), Rc::new(n)))
+        }
+        ArgView::Value => Found::Fail(ErrKind::Species),
+        ArgView::Handle(q, e) => match p {
+            Prim::H => match cx.store.consume(q, e) {
+                Ok(()) => match cx.store.apply_h(q) {
+                    Ok(()) => Found::RewrittenEffect(QTerm::Handle(q, e + 1)),
+                    Err(c) => Found::Full(c),
+                },
+                Err(k) => Found::Fail(k),
+            },
+            Prim::T => match cx.store.consume(q, e) {
+                Ok(()) => match cx.store.apply_t(q) {
+                    Ok(()) => Found::RewrittenEffect(QTerm::Handle(q, e + 1)),
+                    Err(c) => Found::Full(c),
+                },
+                Err(k) => Found::Fail(k),
+            },
+            Prim::Meas => match cx.store.peek(q, e) {
+                Ok(()) => Found::Fork(church_bool(true), church_bool(false), q),
+                Err(k) => Found::Fail(k),
+            },
+            _ => unreachable!("unary_prim on {:?}", p),
+        },
+    }
+}
+
+/// cnot with both arguments present: strictly left-to-right WHNF, species
+/// checks first, epoch consumption atomic once the full redex is assembled.
+fn cnot_prim(
+    g: &Rc<QTerm>,
+    a1: &Rc<QTerm>,
+    a2: &Rc<QTerm>,
+    f: &Rc<QTerm>,
+    cx: &mut Ctx,
+) -> Found {
+    // First argument.
+    let (q1, e1) = match arg_view(a1) {
+        ArgView::Search => {
+            let (g2, a2c) = (g.clone(), (**a2).clone());
+            let res = search(a1, cx);
+            let wrapped = wrap_arg(res, move |n| {
+                QTerm::App(
+                    Rc::new(QTerm::App(g2.clone(), Rc::new(n))),
+                    Rc::new(a2c.clone()),
+                )
+            });
+            // A fully-normal neutral first argument leaves the whole
+            // application symbolic, but the second argument's interior must
+            // still normalize for the full NF.
+            return match wrapped {
+                Found::None => {
+                    let f2 = f.clone();
+                    wrap_arg(search(a2, cx), move |n| QTerm::App(f2.clone(), Rc::new(n)))
+                }
+                other => other,
+            };
+        }
+        ArgView::Value => return Found::Fail(ErrKind::Species),
+        ArgView::Handle(q, e) => (q, e),
+    };
+    // Second argument.
+    let (q2v, e2v) = match arg_view(a2) {
+        ArgView::Search => {
+            let f2 = f.clone();
+            return wrap_arg(search(a2, cx), move |n| QTerm::App(f2.clone(), Rc::new(n)));
+        }
+        ArgView::Value => return Found::Fail(ErrKind::Species),
+        ArgView::Handle(q, e) => (q, e),
+    };
+    // Atomic consumption: epoch validity first (a stale handle is the more
+    // informative diagnosis than coincidence), then the same-qubit check,
+    // then both epochs bumped together.
+    if let Err(k) = cx.store.peek(q1, e1) {
+        return Found::Fail(k);
+    }
+    if let Err(k) = cx.store.peek(q2v, e2v) {
+        return Found::Fail(k);
+    }
+    if q1 == q2v {
+        return Found::Fail(ErrKind::SameQubit);
+    }
+    cx.store.consume(q1, e1).expect("peeked");
+    cx.store.consume(q2v, e2v).expect("peeked");
+    cx.store.apply_cnot(q1, q2v);
+    // Church pair of the fresh epochs: λz. z #(q1,e1+1) #(q2,e2+1).
+    Found::RewrittenEffect(QTerm::Lam(Rc::new(QTerm::App(
+        Rc::new(QTerm::App(
+            Rc::new(QTerm::Var(1)),
+            Rc::new(QTerm::Handle(q1, e1 + 1)),
+        )),
+        Rc::new(QTerm::Handle(q2v, e2v + 1)),
+    ))))
+}
+
+fn step(t: &QTerm, store: &mut Store, budget: &QBudget) -> Step {
+    let mut cx = Ctx { store, budget };
+    match search(t, &mut cx) {
+        Found::Rewritten(nt, _beta) => Step::Reduced(nt),
+        Found::RewrittenEffect(nt) => Step::Reduced(nt),
+        Found::Fork(t0, t1, q) => {
+            let mut s0 = store.clone();
+            let mut s1 = store.clone();
+            s0.measure_project(q, false);
+            s1.measure_project(q, true);
+            Step::Forked(Box::new((t0, s0, t1, s1)))
+        }
+        Found::None => Step::Normal,
+        Found::Fail(k) => Step::Died(Fate::Err(k)),
+        Found::Full(c) => Step::Died(Fate::Capacity(c)),
+    }
+}
+
+/// Run one program (already applied to its signature) to its truncated branch
+/// tree. Exact, deterministic, never samples.
+pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
+    let mut leaves = Vec::new();
+    let mut work: Vec<(QTerm, Store, u64, u64)> = vec![(term, Store::new(), 0, 0)];
+    let mut branches = 1usize;
+    while let Some((mut t, mut store, mut nbeta, mut ntrans)) = work.pop() {
+        loop {
+            if ntrans >= budget.trans || nbeta >= budget.beta {
+                let mass = store.mass();
+                leaves.push(Leaf { fate: Fate::Unknown, mass });
+                break;
+            }
+            ntrans += 1;
+            match step(&t, &mut store, budget) {
+                Step::Reduced(nt) => {
+                    nbeta += 1; // β and primitive contractions share the count
+                    t = nt;
+                }
+                Step::Forked(fork) => {
+                    let (t0, s0, t1, s1) = *fork;
+                    branches += 1;
+                    if branches > budget.max_branches {
+                        let mass = store.mass();
+                        leaves.push(Leaf { fate: Fate::Capacity(Capacity::Branches), mass });
+                        break;
+                    }
+                    work.push((t1, s1, nbeta, ntrans));
+                    t = t0;
+                    store = s0;
+                }
+                Step::Normal => {
+                    let mass = store.mass();
+                    match mass {
+                        Some(_) => leaves.push(Leaf { fate: Fate::Halt(store), mass }),
+                        None => leaves.push(Leaf {
+                            fate: Fate::Capacity(Capacity::Amplitude),
+                            mass: None,
+                        }),
+                    }
+                    break;
+                }
+                Step::Died(fate) => {
+                    let mass = store.mass();
+                    leaves.push(Leaf { fate, mass });
+                    break;
+                }
+            }
+        }
+    }
+    leaves
+}
+
+/// Apply a program term to the five primitives in the given order.
+pub fn apply_signature(p: &Term, order: &[Prim; 5]) -> QTerm {
+    let mut t = qt_of_term(p);
+    for pr in order {
+        t = QTerm::App(Rc::new(t), Rc::new(QTerm::Prim(*pr)));
+    }
+    t
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::parse_all;
+
+    fn sig_default() -> [Prim; 5] {
+        [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H]
+    }
+
+    fn run_str(src: &str) -> Vec<Leaf> {
+        // src is a BLC bit-string program, applied to the default signature.
+        let t = parse_all(src).unwrap();
+        run(apply_signature(&t, &sig_default()), &QBudget::default())
+    }
+
+    #[test]
+    fn identity_program_is_err() {
+        // (λx.x) new meas cnot t h → new meas … → #q cnot … → handle applied.
+        let leaves = run_str("0010");
+        assert_eq!(leaves.len(), 1);
+        assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::HandleApplied)));
+    }
+
+    #[test]
+    fn pure_terms_agree_with_reference_core() {
+        // Differential test: on prim-free closed terms the small-step
+        // evaluator must reach exactly eval.rs's normal form.
+        use crate::enumerate::{enc_to_string, for_each_closed};
+        for n in 4..=16 {
+            for_each_closed(n, &mut |enc, len| {
+                let src = enc_to_string(enc, len);
+                let t = parse_all(&src).unwrap();
+                let mut fuel = crate::Budget::new(4096);
+                let Ok(nf) = crate::normalize(&t, &mut fuel) else {
+                    return; // reference ran out of fuel; skip
+                };
+                let leaves = run(qt_of_term(&t), &QBudget::default());
+                assert_eq!(leaves.len(), 1, "{src}");
+                match &leaves[0].fate {
+                    Fate::Halt(store) => {
+                        assert_eq!(store.live_count(), 0, "{src}");
+                        let got = &leaves[0];
+                        assert_eq!(got.mass, Some(crate::dw::Dw::ONE), "{src}");
+                        // Compare normal forms structurally.
+                        let qnf = match run_to_nf(qt_of_term(&t)) {
+                            Some(x) => x,
+                            None => panic!("no NF for {src}"),
+                        };
+                        assert_eq!(qnf, qt_of_term(&nf), "{src}");
+                    }
+                    Fate::Unknown => {} // budget mismatch vs reference; fine
+                    other => panic!("{src}: unexpected fate {other:?}"),
+                }
+            });
+        }
+    }
+
+    fn run_to_nf(mut t: QTerm) -> Option<QTerm> {
+        let budget = QBudget::default();
+        let mut store = Store::new();
+        for _ in 0..budget.trans {
+            match step(&t, &mut store, &budget) {
+                Step::Reduced(nt) => t = nt,
+                Step::Normal => return Some(t),
+                _ => return None,
+            }
+        }
+        None
+    }
+
+    #[test]
+    fn coin_flip_two_leaves_mass_one() {
+        // λn.λm.λc.λt.λh. m (h (n m)) — prepare |+⟩, measure.
+        // Signature order [new, meas, cnot, t, h]: n=5, m=4, c=3, t=2, h=1.
+        // Body: 4 (1 (5 4)) — the `new` argument (m) is discarded unevaluated.
+        use crate::term::{app, lam, var};
+        let body = app(var(4), app(var(1), app(var(5), var(4))));
+        let p = lam(lam(lam(lam(lam(body)))));
+        let leaves = run(apply_signature(&p, &sig_default()), &QBudget::default());
+        assert_eq!(leaves.len(), 2);
+        let mut total = Dw::ZERO;
+        for l in &leaves {
+            match &l.fate {
+                Fate::Halt(store) => {
+                    assert_eq!(store.live_count(), 0);
+                    let m = l.mass.unwrap();
+                    // Each branch mass is exactly 1/2.
+                    assert_eq!(m, Dw { a: 1, b: 0, c: 0, d: 0, k: 2 });
+                    total = total.add(m).unwrap();
+                }
+                other => panic!("unexpected fate {other:?}"),
+            }
+        }
+        assert_eq!(total.reduce(), Dw::ONE);
+    }
+
+    #[test]
+    fn bell_state_exact() {
+        // λn.λm.λc.λt.λh. c (h (n n)) (n n) — Bell pair, unmeasured, via the
+        // cnot Church pair left in the normal form.
+        use crate::term::{app, lam, var};
+        let body = app(
+            app(var(3), app(var(1), app(var(5), var(5)))),
+            app(var(5), var(5)),
+        );
+        let p = lam(lam(lam(lam(lam(body)))));
+        let leaves = run(apply_signature(&p, &sig_default()), &QBudget::default());
+        assert_eq!(leaves.len(), 1);
+        match &leaves[0].fate {
+            Fate::Halt(store) => {
+                assert_eq!(store.live_count(), 2);
+                // (|00⟩ + |11⟩)/√2, allocation order: q0 is LSB.
+                let h = Dw { a: 1, b: 0, c: 0, d: 0, k: 1 };
+                assert_eq!(store.amps[0].reduce(), h);
+                assert_eq!(store.amps[1], Dw::ZERO);
+                assert_eq!(store.amps[2], Dw::ZERO);
+                assert_eq!(store.amps[3].reduce(), h);
+                assert_eq!(leaves[0].mass, Some(Dw::ONE));
+            }
+            other => panic!("unexpected fate {other:?}"),
+        }
+    }
+
+    fn qapp(f: QTerm, a: QTerm) -> QTerm {
+        QTerm::App(Rc::new(f), Rc::new(a))
+    }
+
+    fn fresh_qubit() -> QTerm {
+        // new h — allocates, discarding the (unevaluated) h argument.
+        qapp(QTerm::Prim(Prim::New), QTerm::Prim(Prim::H))
+    }
+
+    /// cnot on two fresh qubits, yielding the Church pair of handles.
+    fn cnot_pair() -> QTerm {
+        qapp(
+            qapp(QTerm::Prim(Prim::Cnot), fresh_qubit()),
+            fresh_qubit(),
+        )
+    }
+
+    #[test]
+    fn cbn_duplicates_recipes_not_states() {
+        // (λx. cnot x (t x)) (new h): call-by-name substitutes the
+        // *unevaluated* preparation, so `new` runs twice and the cnot gets
+        // two independent qubits — recipe duplication is legal, per spec.
+        let body = qapp(
+            qapp(QTerm::Prim(Prim::Cnot), QTerm::Var(1)),
+            qapp(QTerm::Prim(Prim::T), QTerm::Var(1)),
+        );
+        let t = qapp(QTerm::Lam(Rc::new(body)), fresh_qubit());
+        let leaves = run(t, &QBudget::default());
+        assert_eq!(leaves.len(), 1);
+        match &leaves[0].fate {
+            Fate::Halt(store) => assert_eq!(store.live_count(), 2),
+            other => panic!("unexpected fate {other:?}"),
+        }
+    }
+
+    #[test]
+    fn stale_epoch_is_err() {
+        // Handle VALUES only ever get shared via the cnot Church pair.
+        // pair (λa.λb. cnot a (t a)): `a` is a handle value used twice —
+        // t bumps its epoch, then cnot's atomic consumption sees the stale
+        // one. Duplication of state, caught by the store.
+        let sel = QTerm::Lam(Rc::new(QTerm::Lam(Rc::new(qapp(
+            qapp(QTerm::Prim(Prim::Cnot), QTerm::Var(2)),
+            qapp(QTerm::Prim(Prim::T), QTerm::Var(2)),
+        )))));
+        let t = qapp(cnot_pair(), sel);
+        let leaves = run(t, &QBudget::default());
+        assert_eq!(leaves.len(), 1);
+        assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::StaleEpoch)));
+    }
+
+    #[test]
+    fn cnot_same_qubit_is_err() {
+        // pair (λa.λb. cnot a a): the same handle value in both positions.
+        let sel = QTerm::Lam(Rc::new(QTerm::Lam(Rc::new(qapp(
+            qapp(QTerm::Prim(Prim::Cnot), QTerm::Var(2)),
+            QTerm::Var(2),
+        )))));
+        let t = qapp(cnot_pair(), sel);
+        let leaves = run(t, &QBudget::default());
+        assert_eq!(leaves.len(), 1);
+        assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::SameQubit)));
+    }
+
+    #[test]
+    fn species_err_before_effect() {
+        // h (λx. new x): argument is a Lam value — Err fires, nothing allocates.
+        let t = QTerm::App(
+            Rc::new(QTerm::Prim(Prim::H)),
+            Rc::new(QTerm::Lam(Rc::new(QTerm::App(
+                Rc::new(QTerm::Prim(Prim::New)),
+                Rc::new(QTerm::Var(1)),
+            )))),
+        );
+        let leaves = run(t, &QBudget::default());
+        assert_eq!(leaves.len(), 1);
+        assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::Species)));
+        match &leaves[0].fate {
+            Fate::Err(_) => assert_eq!(leaves[0].mass, Some(Dw::ONE)),
+            _ => unreachable!(),
+        }
+    }
+
+    #[test]
+    fn ht_measure_weights_are_exact() {
+        // T on |+⟩ then H then measure: P(0) = (2+√2)/4, P(1) = (2−√2)/4.
+        // Program: meas (h (t (h (new _)))).
+        let mk = |inner: QTerm, p: Prim| QTerm::App(Rc::new(QTerm::Prim(p)), Rc::new(inner));
+        let q = mk(QTerm::Prim(Prim::H), Prim::New);
+        let t = mk(mk(mk(mk(q, Prim::H), Prim::T), Prim::H), Prim::Meas);
+        let leaves = run(t, &QBudget::default());
+        assert_eq!(leaves.len(), 2);
+        let m0 = leaves.iter().find(|l| matches!(&l.fate, Fate::Halt(_)));
+        assert!(m0.is_some());
+        let total = leaves
+            .iter()
+            .fold(Dw::ZERO, |acc, l| acc.add(l.mass.unwrap()).unwrap());
+        assert_eq!(total.reduce(), Dw::ONE);
+        // Exact weights: (2 ± √2)/4 — never dyadic, exactly representable.
+        let p0 = Dw { a: 2, b: 1, c: 0, d: -1, k: 4 };
+        let p1 = Dw { a: 2, b: -1, c: 0, d: 1, k: 4 };
+        let masses: Vec<Dw> = leaves.iter().map(|l| l.mass.unwrap().reduce()).collect();
+        assert!(masses.contains(&p0.reduce()) && masses.contains(&p1.reduce()));
+    }
+}
