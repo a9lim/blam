@@ -297,10 +297,19 @@ is Unknown(Capacity), mass into the bracket.
    are not preserved (a program discarding a huge subterm unevaluated
    halts directly, while the interpreter parses the subterm first and
    can hit Unknown — trace equivalence is an unbounded-semantics
-   statement, not census-ladder equivalence); and the 170 bits is
-   `intL` alone — the qBLC constant includes the signature adapter
-   and continuation wrapper, so compile and measure the wrapper
-   before stating any number.
+   statement, not census-ladder equivalence); and no optimality claim
+   attaches to the constant below.
+   **Measured (2026-08-03, bin `qselfint`)**: the anticipated
+   signature adapter + continuation wrapper collapse to six bits —
+   qBLC passes primitives by application, so a decoded program
+   receives σ⃗ through ordinary β. **E_q = intL I, 176 bits**, tight
+   within the intL protocol (2 app + 170 + the unique 4-bit closed
+   term); a specialized-root search below 176 remains open. Quote is
+   linear: |E_q ⌜p⌝| = 184 + 14|p| + zeros(p). Verified empirically
+   at the effect-trace level (per-leaf root-to-leaf effect paths,
+   `qeval::run_traced`, β-stuttering erased by construction) over the
+   small-size population, plus a poisoned-seed-env canary; the
+   small-step bisimulation stays the proof obligation.
 3. **Convention-dependence**: for a fixed permutation π_k of
    allocation ranks, M'^(k) = P_{π_k} M^(k) P_{π_k}† exactly — an
    external representation theorem, no qBLC program involved.
