@@ -400,10 +400,7 @@ impl Machine {
                             // argument, which preorder wants first.
                             let mut run = 0usize;
                             while run < self.stack.len()
-                                && matches!(
-                                    self.stack[self.stack.len() - 1 - run],
-                                    Frame::Arg(..)
-                                )
+                                && matches!(self.stack[self.stack.len() - 1 - run], Frame::Arg(..))
                             {
                                 run += 1;
                             }

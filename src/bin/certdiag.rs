@@ -20,8 +20,8 @@
 
 use blam::cert::{
     check_reduces, check_reduces_star, generalize, head_step, match_wrapper, plug, spine,
-    strip_lams, verify, verify_htr, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm,
-    Ratchet, Step,
+    strip_lams, verify, verify_htr, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm, Ratchet,
+    Step,
 };
 use blam::parse::parse_all;
 use blam::term::Term;
@@ -119,12 +119,7 @@ fn selector_probe(cand: &Ratchet, max_nodes: u64) -> String {
     };
     // SELECT: W[Q] P[Z] →⁺ Z
     let wq = rename_meta(&cand.w, 0, 1);
-    let Ok(ksel) = check_reduces(
-        &PTerm::App(wq.into(), p.into()),
-        &m0,
-        K,
-        max_nodes,
-    ) else {
+    let Ok(ksel) = check_reduces(&PTerm::App(wq.into(), p.into()), &m0, K, max_nodes) else {
         return "select".into();
     };
     // BASE: C0 Z →* A Z
@@ -243,8 +238,7 @@ fn describe_fail(e: &CertFail, cand: &Ratchet, max_nodes: u64) -> String {
                 };
                 match spine(body) {
                     Some((h, args)) if **h == PTerm::Meta(0) => {
-                        let fp: Vec<String> =
-                            args.iter().take(4).map(|p| name(p)).collect();
+                        let fp: Vec<String> = args.iter().take(4).map(|p| name(p)).collect();
                         out.push_str(&format!(
                             ":lam{lams}:Z·{}{}",
                             fp.join("·"),
@@ -328,8 +322,7 @@ fn htr_probe(t: &Term, cand: &Ratchet, max_nodes: u64) -> String {
     }
     format!(
         "htr[{n_erasers}]:{}",
-        best.1
-            .replace(|c: char| c == ',' || c == ' ', ";")
+        best.1.replace(|c: char| c == ',' || c == ' ', ";")
     )
 }
 
@@ -414,7 +407,11 @@ fn diagnose(t: &Term, max_steps: u32, max_nodes: u64) -> Diag {
                             if plug(&w, x2) == *x3 {
                                 bump!("plug");
                                 if let (Some(a), Some(c0)) = (h.to_term(), x1.to_term()) {
-                                    let cand = Ratchet { a, w: w.clone(), c0 };
+                                    let cand = Ratchet {
+                                        a,
+                                        w: w.clone(),
+                                        c0,
+                                    };
                                     match verify(t, &cand, 2000, 2000, max_nodes) {
                                         Ok(_) => {
                                             d.stage = "KILL";
@@ -439,7 +436,11 @@ fn diagnose(t: &Term, max_steps: u32, max_nodes: u64) -> Diag {
                                 // a different wrapper around x2?
                                 let w2 = generalize(x3, x2);
                                 d.drift = if w2 != PTerm::Meta(0) && w2.contains_meta() {
-                                    if w2 == w { "consistent" } else { "drift" }
+                                    if w2 == w {
+                                        "consistent"
+                                    } else {
+                                        "drift"
+                                    }
                                 } else {
                                     "no-nest"
                                 };
@@ -516,7 +517,9 @@ fn main() {
         .filter(|l| !l.is_empty() && l.chars().all(|c| c == '0' || c == '1'))
         .collect();
 
-    println!("bits,n,stage,best_milestones,head_arities,max_arity,x1_closed,drift,verify_fail,sel,pdiag");
+    println!(
+        "bits,n,stage,best_milestones,head_arities,max_arity,x1_closed,drift,verify_fail,sel,pdiag"
+    );
     let rows: Vec<String> = terms
         .par_iter()
         .map(|bits| {

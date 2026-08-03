@@ -188,15 +188,11 @@ impl PartialEq for LTerm {
             (Var(a), Var(b)) => a == b,
             (Bot, Bot) => true,
             (Lam(x), Lam(y)) => {
-                Rc::ptr_eq(x, y)
-                    || (x.m.hash == y.m.hash && x.m.bits == y.m.bits && x.b == y.b)
+                Rc::ptr_eq(x, y) || (x.m.hash == y.m.hash && x.m.bits == y.m.bits && x.b == y.b)
             }
             (App(x), App(y)) => {
                 Rc::ptr_eq(x, y)
-                    || (x.m.hash == y.m.hash
-                        && x.m.bits == y.m.bits
-                        && x.f == y.f
-                        && x.a == y.a)
+                    || (x.m.hash == y.m.hash && x.m.bits == y.m.bits && x.f == y.f && x.a == y.a)
             }
             _ => false,
         }
@@ -483,8 +479,7 @@ fn lterm_bits(t: &LTerm, out: &mut String) {
 /// FUEL_REJECTS counts shape-matches abandoned solely because a probe
 /// ran out of fuel — a zero there over a full census certifies the
 /// cutoff lost nothing at that range.
-pub static REDLOOP_FIRES: std::sync::atomic::AtomicU64 =
-    std::sync::atomic::AtomicU64::new(0);
+pub static REDLOOP_FIRES: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
 pub static REDLOOP_FUEL_REJECTS: std::sync::atomic::AtomicU64 =
     std::sync::atomic::AtomicU64::new(0);
 
@@ -564,13 +559,7 @@ fn redloop(t: &LTerm) -> bool {
 // long escalation runs. Keys hash O(1) via the cached structural hash.
 type Hist = im_rc::HashSet<LTerm>;
 
-fn bb_nf(
-    weak: bool,
-    f: u32,
-    seen: &Hist,
-    cap: &mut i64,
-    t: &LTerm,
-) -> Result<LTerm, NoNf> {
+fn bb_nf(weak: bool, f: u32, seen: &Hist, cap: &mut i64, t: &LTerm) -> Result<LTerm, NoNf> {
     match t {
         App(tn) => {
             if work_exhausted() {
@@ -710,7 +699,7 @@ mod tests {
         // β-equivalence form (A itself is not syntactically normal; its
         // dormant T(Kx) reduces to x(Kx)).
         for bits in [
-            "01000110100001100100010110101000110",  // (\1 1)(\1 ((\1 1 1)(\2)))
+            "01000110100001100100010110101000110", // (\1 1)(\1 ((\1 1 1)(\2)))
             "010001100001100111000110000101101010", // (\1 (\1 (2 (\2))))(\1 1 1)
         ] {
             assert_eq!(
@@ -771,15 +760,9 @@ mod tests {
         // weak-mode spine argument where an erasing lambda discards it.
         // Without the history reset on the strong→weak switch this is a
         // false Diverge; with it, the true normal form comes out.
-        let w = lam(lam(app(
-            v(1),
-            app(app(v(2), v(2)), lam(v(2))),
-        )));
+        let w = lam(lam(app(v(1), app(app(v(2), v(2)), lam(v(2))))));
         let t = app(lam(app(v(1), v(1))), w);
-        assert_eq!(
-            normal_form(10_000_000, &t),
-            Ok(lam(app(v(1), v(1))))
-        );
+        assert_eq!(normal_form(10_000_000, &t), Ok(lam(app(v(1), v(1)))));
     }
 
     #[test]

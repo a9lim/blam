@@ -120,15 +120,13 @@ fn vm_handles_bb34_fast() {
     // (\1 1 1 1) C2 -> C65536: 327686-bit normal form. The whole point of
     // the machine — no fat stack, no ignore attribute, streaming size sink.
     let c2 = lam(lam(app(var(2), app(var(2), var(1)))));
-    let t = app(
-        lam(app(app(app(var(1), var(1)), var(1)), var(1))),
-        c2,
-    );
+    let t = app(lam(app(app(app(var(1), var(1)), var(1)), var(1))), c2);
     let mut pool = TermPool::new();
     let root = pool.from_term(&t);
     let mut vm = Machine::new();
     let mut sink = SizeSink::default();
-    vm.normalize(&pool, root, 10_000_000_000, &mut sink).unwrap();
+    vm.normalize(&pool, root, 10_000_000_000, &mut sink)
+        .unwrap();
     assert_eq!(sink.0, 327_686);
 }
 

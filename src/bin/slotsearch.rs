@@ -174,12 +174,23 @@ impl Counts {
         let nsub = subs.len();
         let depths = MAX_DEPTH + 1;
         let sizes = max_size as usize + 1;
-        let mut c = Counts { frame, idx, nsub, depths, tbl: vec![0; sizes * depths * nsub * nsub] };
+        let mut c = Counts {
+            frame,
+            idx,
+            nsub,
+            depths,
+            tbl: vec![0; sizes * depths * nsub * nsub],
+        };
         for size in 2..=max_size {
             for depth in 0..=MAX_DEPTH as u8 {
                 for &must in &subs {
                     for &forbid in &subs {
-                        let p = Pending { depth, size, must, forbid };
+                        let p = Pending {
+                            depth,
+                            size,
+                            must,
+                            forbid,
+                        };
                         let v = c.compute(p);
                         let i = c.slot(p);
                         c.tbl[i] = v;
@@ -211,7 +222,11 @@ impl Counts {
         let n = p.size;
         let mut tot = leaf_ok(self.frame, p) as u64;
         if n >= 4 {
-            tot += self.get(Pending { depth: p.depth + 1, size: n - 2, ..p });
+            tot += self.get(Pending {
+                depth: p.depth + 1,
+                size: n - 2,
+                ..p
+            });
         }
         for lsz in 2..=n.saturating_sub(4) {
             let rsz = n - 2 - lsz;
@@ -260,7 +275,11 @@ fn go(c: &Counts, pending: &mut Vec<Pending>, acc: u64, len: u8, f: &mut impl Fn
     }
     // Abstraction: 00 body — obligations pass through unchanged.
     if n >= 4 {
-        let q = Pending { depth: p.depth + 1, size: n - 2, ..p };
+        let q = Pending {
+            depth: p.depth + 1,
+            size: n - 2,
+            ..p
+        };
         if c.get(q) != 0 {
             pending.push(q);
             go(c, pending, acc << 2, len + 2, f);
@@ -276,7 +295,12 @@ fn go(c: &Counts, pending: &mut Vec<Pending>, acc: u64, len: u8, f: &mut impl Fn
         let mut s = p.must;
         loop {
             let rest = p.must & !s;
-            let r = Pending { depth: p.depth, size: rsz, must: rest, forbid: p.forbid };
+            let r = Pending {
+                depth: p.depth,
+                size: rsz,
+                must: rest,
+                forbid: p.forbid,
+            };
             let l = Pending {
                 depth: p.depth,
                 size: lsz,
@@ -319,14 +343,26 @@ fn expand(c: &Counts, t: &Task) -> Vec<Task> {
     let mut out = Vec::new();
     if leaf_ok(c.frame, p) {
         let bits = ((1u64 << (n - 1)) - 1) << 1;
-        out.push(Task { pending: pending.clone(), acc: t.acc << n | bits, len: t.len + n });
+        out.push(Task {
+            pending: pending.clone(),
+            acc: t.acc << n | bits,
+            len: t.len + n,
+        });
     }
     if n >= 4 {
-        let q = Pending { depth: p.depth + 1, size: n - 2, ..p };
+        let q = Pending {
+            depth: p.depth + 1,
+            size: n - 2,
+            ..p
+        };
         if c.get(q) != 0 {
             let mut v = pending.clone();
             v.push(q);
-            out.push(Task { pending: v, acc: t.acc << 2, len: t.len + 2 });
+            out.push(Task {
+                pending: v,
+                acc: t.acc << 2,
+                len: t.len + 2,
+            });
         }
     }
     for lsz in 2..=n.saturating_sub(4) {
@@ -334,7 +370,12 @@ fn expand(c: &Counts, t: &Task) -> Vec<Task> {
         let mut s = p.must;
         loop {
             let rest = p.must & !s;
-            let r = Pending { depth: p.depth, size: rsz, must: rest, forbid: p.forbid };
+            let r = Pending {
+                depth: p.depth,
+                size: rsz,
+                must: rest,
+                forbid: p.forbid,
+            };
             let l = Pending {
                 depth: p.depth,
                 size: lsz,
@@ -345,7 +386,11 @@ fn expand(c: &Counts, t: &Task) -> Vec<Task> {
                 let mut v = pending.clone();
                 v.push(r);
                 v.push(l);
-                out.push(Task { pending: v, acc: t.acc << 2 | 1, len: t.len + 2 });
+                out.push(Task {
+                    pending: v,
+                    acc: t.acc << 2 | 1,
+                    len: t.len + 2,
+                });
             }
             if s == 0 {
                 break;
@@ -361,7 +406,11 @@ fn expand(c: &Counts, t: &Task) -> Vec<Task> {
 /// frontier level by level: the App fan-out makes subtree sizes span orders
 /// of magnitude at every depth.
 fn split_tasks(c: &Counts, root: Pending, target: usize) -> Vec<Task> {
-    let mut store = vec![Task { pending: vec![root], acc: 0, len: 0 }];
+    let mut store = vec![Task {
+        pending: vec![root],
+        acc: 0,
+        len: 0,
+    }];
     let mut dead = vec![false];
     let mut heap: BinaryHeap<(u64, usize)> = BinaryHeap::new();
     let c0 = c.task_count(&store[0]);
@@ -388,7 +437,12 @@ fn split_tasks(c: &Counts, root: Pending, target: usize) -> Vec<Task> {
             heap.push((w, store.len() - 1));
         }
     }
-    store.into_iter().zip(dead).filter(|(_, d)| !d).map(|(t, _)| t).collect()
+    store
+        .into_iter()
+        .zip(dead)
+        .filter(|(_, d)| !d)
+        .map(|(t, _)| t)
+        .collect()
 }
 
 // ------------------------------------------------------------- closing + probe
@@ -541,10 +595,18 @@ fn adjudicate(
     let root = close(pool, work, slot.frame, enc, len);
     macro_rules! rung {
         ($b:expr, $t:expr) => {
-            let mut cmp = Cmp { g: golden, pos: 0, bad: false };
+            let mut cmp = Cmp {
+                g: golden,
+                pos: 0,
+                bad: false,
+            };
             match vm.normalize_capped(pool, root, $b, $t, &mut cmp) {
                 Ok(_) => {
-                    return if cmp.matched() { Verdict::Match } else { Verdict::Mismatch }
+                    return if cmp.matched() {
+                        Verdict::Match
+                    } else {
+                        Verdict::Mismatch
+                    }
                 }
                 Err(OutOfFuel::Aborted) => return Verdict::Mismatch,
                 Err(_) => {}
@@ -625,7 +687,10 @@ fn bits_of(s: &str) -> Vec<u8> {
 }
 
 fn enc_to_string(enc: u64, len: u8) -> String {
-    (0..len).rev().map(|j| if enc >> j & 1 == 1 { '1' } else { '0' }).collect()
+    (0..len)
+        .rev()
+        .map(|j| if enc >> j & 1 == 1 { '1' } else { '0' })
+        .collect()
 }
 
 /// Render with the slot's frame names and fresh local binder names.
@@ -747,8 +812,16 @@ fn main() {
         let mut vm = Machine::new();
         let mut work = Vec::new();
         let enc = u64::from_str_radix(slot.reference, 2).unwrap();
-        let v =
-            adjudicate(&mut pool, &mut vm, &mut work, slot, &golden, enc, ref_size, &mut [0; 4]);
+        let v = adjudicate(
+            &mut pool,
+            &mut vm,
+            &mut work,
+            slot,
+            &golden,
+            enc,
+            ref_size,
+            &mut [0; 4],
+        );
         assert_eq!(v, Verdict::Match, "reference slot failed its own harness");
         println!(
             "slot {}: frame {}, reference {} bits, golden nf {} bits, must-mask {:#010b}",
@@ -770,8 +843,18 @@ fn main() {
     );
     let (mut tn, mut tp) = (0u64, 0u64);
     for n in min_size..=max_size {
-        let naive = naive_counts.get(Pending { depth: 0, size: n, must: 0, forbid: 0 });
-        let pruned = counts.get(Pending { depth: 0, size: n, must: slot.must, forbid: 0 });
+        let naive = naive_counts.get(Pending {
+            depth: 0,
+            size: n,
+            must: 0,
+            forbid: 0,
+        });
+        let pruned = counts.get(Pending {
+            depth: 0,
+            size: n,
+            must: slot.must,
+            forbid: 0,
+        });
         tn += naive;
         tp += pruned;
         println!(
@@ -779,10 +862,20 @@ fn main() {
             n,
             naive,
             pruned,
-            if pruned == 0 { "-".to_string() } else { format!("{:.0}x", naive as f64 / pruned as f64) }
+            if pruned == 0 {
+                "-".to_string()
+            } else {
+                format!("{:.0}x", naive as f64 / pruned as f64)
+            }
         );
     }
-    println!("{:>4} {:>18} {:>18} {:>6.0}x", "sum", tn, tp, tn as f64 / tp.max(1) as f64);
+    println!(
+        "{:>4} {:>18} {:>18} {:>6.0}x",
+        "sum",
+        tn,
+        tp,
+        tn as f64 / tp.max(1) as f64
+    );
     if counts_only {
         return;
     }
@@ -802,7 +895,12 @@ fn main() {
     let t_all = Instant::now();
     let mut all = Stats::default();
     for n in min_size..=max_size {
-        let root = Pending { depth: 0, size: n, must: slot.must, forbid: 0 };
+        let root = Pending {
+            depth: 0,
+            size: n,
+            must: slot.must,
+            forbid: 0,
+        };
         if counts.get(root) == 0 {
             continue;
         }
@@ -817,10 +915,16 @@ fn main() {
                     let mut st = Stats::default();
                     let mut esc = [0u64; 4];
                     let mut pending = task.pending.clone();
-                    go(&counts, &mut pending, task.acc, task.len, &mut |enc, len| {
-                        let v = adjudicate(pool, vm, work, slot, &golden, enc, len, &mut esc);
-                        st.record(v, enc, len);
-                    });
+                    go(
+                        &counts,
+                        &mut pending,
+                        task.acc,
+                        task.len,
+                        &mut |enc, len| {
+                            let v = adjudicate(pool, vm, work, slot, &golden, enc, len, &mut esc);
+                            st.record(v, enc, len);
+                        },
+                    );
                     st.esc = esc;
                     st
                 },
@@ -852,7 +956,11 @@ fn main() {
             );
         }
         for (enc, len) in stats.unknowns.iter().take(8) {
-            println!("     UNKNOWN  {:>3} bits  {}", len, enc_to_string(*enc, *len));
+            println!(
+                "     UNKNOWN  {:>3} bits  {}",
+                len,
+                enc_to_string(*enc, *len)
+            );
         }
         all = all.merge(stats);
     }
@@ -886,9 +994,15 @@ fn main() {
             ref_size
         );
     } else if !sub.is_empty() {
-        println!("VERDICT: {} sub-reference survivor(s) -- VERIFY BEFORE BELIEVING", sub.len());
+        println!(
+            "VERDICT: {} sub-reference survivor(s) -- VERIFY BEFORE BELIEVING",
+            sub.len()
+        );
     } else {
-        println!("VERDICT: incomplete -- {} residual unknowns", all.unknowns.len());
+        println!(
+            "VERDICT: incomplete -- {} residual unknowns",
+            all.unknowns.len()
+        );
     }
 }
 
@@ -944,11 +1058,18 @@ mod tests {
     /// occurrence mask of the generated term. This is the ground truth the
     /// threaded obligations must reproduce.
     fn brute(frame: u8, n: u8, must: u8) -> Vec<(u64, u8)> {
-        let mut out: Vec<(u64, u8)> =
-            enumerate(frame, Pending { depth: 0, size: n, must: 0, forbid: 0 })
-                .into_iter()
-                .filter(|&(e, l)| must & !actual_mask(frame, e, l) == 0)
-                .collect();
+        let mut out: Vec<(u64, u8)> = enumerate(
+            frame,
+            Pending {
+                depth: 0,
+                size: n,
+                must: 0,
+                forbid: 0,
+            },
+        )
+        .into_iter()
+        .filter(|&(e, l)| must & !actual_mask(frame, e, l) == 0)
+        .collect();
         out.sort_unstable();
         out
     }
@@ -959,8 +1080,20 @@ mod tests {
             for must in [0u8, 0b1, 0b100001, 0b1100001] {
                 let must = must & ((1u16 << frame) - 1) as u8;
                 for n in 2..=17u8 {
-                    let via = enumerate(frame, Pending { depth: 0, size: n, must, forbid: 0 });
-                    assert_eq!(via, brute(frame, n, must), "frame={frame} must={must} n={n}");
+                    let via = enumerate(
+                        frame,
+                        Pending {
+                            depth: 0,
+                            size: n,
+                            must,
+                            forbid: 0,
+                        },
+                    );
+                    assert_eq!(
+                        via,
+                        brute(frame, n, must),
+                        "frame={frame} must={must} n={n}"
+                    );
                 }
             }
         }
@@ -972,7 +1105,12 @@ mod tests {
             for must in [0u8, 0b100001] {
                 let c = Counts::new(frame, must, 20);
                 for n in 2..=20u8 {
-                    let p = Pending { depth: 0, size: n, must, forbid: 0 };
+                    let p = Pending {
+                        depth: 0,
+                        size: n,
+                        must,
+                        forbid: 0,
+                    };
                     assert_eq!(c.get(p) as usize, enumerate(frame, p).len());
                 }
             }
@@ -984,7 +1122,16 @@ mod tests {
     fn spec_regression_counts() {
         let sum = |must: u8, hi: u8| -> u64 {
             let c = Counts::new(8, must, hi);
-            (2..=hi).map(|n| c.get(Pending { depth: 0, size: n, must, forbid: 0 })).sum()
+            (2..=hi)
+                .map(|n| {
+                    c.get(Pending {
+                        depth: 0,
+                        size: n,
+                        must,
+                        forbid: 0,
+                    })
+                })
+                .sum()
         };
         assert_eq!(sum(0, 40), 4_299_963_246);
         assert_eq!(sum(0, 42), 15_388_221_349);
@@ -997,7 +1144,12 @@ mod tests {
         for frame in [6u8, 8] {
             for must in [0u8, 0b100001] {
                 for n in [12u8, 17, 21] {
-                    let root = Pending { depth: 0, size: n, must, forbid: 0 };
+                    let root = Pending {
+                        depth: 0,
+                        size: n,
+                        must,
+                        forbid: 0,
+                    };
                     let c = Counts::new(frame, must, n);
                     let direct = enumerate(frame, root);
                     for target in [1usize, 7, 64, 1000] {
@@ -1007,7 +1159,10 @@ mod tests {
                             go(&c, &mut pending, t.acc, t.len, &mut |e, l| via.push((e, l)));
                         }
                         via.sort_unstable();
-                        assert_eq!(via, direct, "frame={frame} must={must} n={n} target={target}");
+                        assert_eq!(
+                            via, direct,
+                            "frame={frame} must={must} n={n} target={target}"
+                        );
                     }
                 }
             }
@@ -1081,14 +1236,23 @@ mod tests {
         use blam::vm::StringSink;
         for slot in SLOTS {
             let golden = bits_of(slot.golden);
-            let hi = if slot.frame == 6 { slot.reference.len() as u8 } else { 28 };
+            let hi = if slot.frame == 6 {
+                slot.reference.len() as u8
+            } else {
+                28
+            };
             let c = Counts::new(slot.frame, slot.must, hi);
             let mut pool = TermPool::new();
             let mut vm = Machine::new();
             let mut work = Vec::new();
             let mut checked = 0u64;
             for n in 2..=hi {
-                let root = Pending { depth: 0, size: n, must: slot.must, forbid: 0 };
+                let root = Pending {
+                    depth: 0,
+                    size: n,
+                    must: slot.must,
+                    forbid: 0,
+                };
                 if c.get(root) == 0 {
                     continue;
                 }
@@ -1097,7 +1261,14 @@ mod tests {
                 go(&c, &mut pending, 0, 0, &mut |e, l| items.push((e, l)));
                 for (e, l) in items {
                     let v = adjudicate(
-                        &mut pool, &mut vm, &mut work, slot, &golden, e, l, &mut [0; 4],
+                        &mut pool,
+                        &mut vm,
+                        &mut work,
+                        slot,
+                        &golden,
+                        e,
+                        l,
+                        &mut [0; 4],
                     );
                     let id = close(&mut pool, &mut work, slot.frame, e, l);
                     let mut s = StringSink::default();

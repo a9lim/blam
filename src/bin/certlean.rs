@@ -89,7 +89,10 @@ fn parse_num(c: &[char], mut pos: usize) -> (u32, usize) {
     while pos < c.len() && c[pos].is_ascii_digit() {
         pos += 1;
     }
-    (c[start..pos].iter().collect::<String>().parse().unwrap(), pos)
+    (
+        c[start..pos].iter().collect::<String>().parse().unwrap(),
+        pos,
+    )
 }
 
 /// Lean literal for a concrete term — 0-indexed (`Var(n)` → `.var (n-1)`).

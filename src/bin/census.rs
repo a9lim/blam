@@ -18,8 +18,8 @@
 //! parallel enumeration.)
 
 use blam::bb::{normal_form, LTerm, NoNf, Why};
-use blam::eval::OutOfFuel;
 use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
+use blam::eval::OutOfFuel;
 use blam::oracle::no_nf;
 use blam::vm::{Machine, SizeSink, TermPool};
 use rayon::prelude::*;
@@ -62,7 +62,10 @@ enum MemoV {
     /// steps=0 preserves the seed's "BB engine proved halt, canonical
     /// rescue exhausted" sentinel; the wrap inherits the seed's recorded
     /// verdict, not a claim about which path a direct run would take.
-    Halt { nf: u64, steps: u64 },
+    Halt {
+        nf: u64,
+        steps: u64,
+    },
     Diverge,
 }
 
@@ -194,7 +197,9 @@ fn census_term(
         }
     }
     pool.clear();
-    let root = pool.decode_u64(enc, len).expect("enumerator emits valid terms");
+    let root = pool
+        .decode_u64(enc, len)
+        .expect("enumerator emits valid terms");
 
     if cfg.prescan && !pool.has_redex(root) {
         stats.prescan_nf += 1;
@@ -209,9 +214,13 @@ fn census_term(
     // default floor (1<<22) would make it exactly as expensive as rung 2
     // on transition-bound terms, i.e. pure overhead (audit item 4).
     let mut sink = SizeSink::default();
-    if let Ok(steps) =
-        vm.normalize_capped(pool, root, cfg.budget1, cfg.budget1.saturating_mul(64), &mut sink)
-    {
+    if let Ok(steps) = vm.normalize_capped(
+        pool,
+        root,
+        cfg.budget1,
+        cfg.budget1.saturating_mul(64),
+        &mut sink,
+    ) {
         stats.record_halt(sink.0, steps, enc, len);
         return;
     }
@@ -220,8 +229,13 @@ fn census_term(
     // escalation+rescue path to the same verdict), while stuck rung-2
     // attempts burned the 1<<22 floor ~150k times per big size.
     let mut sink = SizeSink::default();
-    match vm.normalize_capped(pool, root, cfg.budget2, cfg.budget2.saturating_mul(64), &mut sink)
-    {
+    match vm.normalize_capped(
+        pool,
+        root,
+        cfg.budget2,
+        cfg.budget2.saturating_mul(64),
+        &mut sink,
+    ) {
         Ok(steps) => {
             if vm.last_trans > cfg.budget2.saturating_mul(64) {
                 stats.rung2_over += 1;
@@ -240,12 +254,20 @@ fn census_term(
             // β-count from the escalation engine isn't canonical (history
             // machinery, no step ledger) — recover it with a KN re-run.
             let mut sink = SizeSink::default();
-            match vm.normalize_capped(pool, root, cfg.rescue, cfg.rescue.saturating_mul(cfg.rescue_trans_mult), &mut sink) {
+            match vm.normalize_capped(
+                pool,
+                root,
+                cfg.rescue,
+                cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
+                &mut sink,
+            ) {
                 Ok(steps) => {
                     stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
                     stats.rescue_max_trans = stats.rescue_max_trans.max(vm.last_trans);
                     stats.record_halt(sink.0, steps, enc, len);
-                    stats.memo_out.push(((enc, len), MemoV::Halt { nf: sink.0, steps }));
+                    stats
+                        .memo_out
+                        .push(((enc, len), MemoV::Halt { nf: sink.0, steps }));
                 }
                 Err(e) => {
                     match e {
@@ -257,7 +279,10 @@ fn census_term(
                     stats.record_halt(nf.bit_size(), 0, enc, len);
                     stats.memo_out.push((
                         (enc, len),
-                        MemoV::Halt { nf: nf.bit_size(), steps: 0 },
+                        MemoV::Halt {
+                            nf: nf.bit_size(),
+                            steps: 0,
+                        },
                     ));
                 }
             }
@@ -268,7 +293,13 @@ fn census_term(
         }
         Err(NoNf::Unknown(why)) => {
             let mut sink = SizeSink::default();
-            match vm.normalize_capped(pool, root, cfg.rescue, cfg.rescue.saturating_mul(cfg.rescue_trans_mult), &mut sink) {
+            match vm.normalize_capped(
+                pool,
+                root,
+                cfg.rescue,
+                cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
+                &mut sink,
+            ) {
                 Ok(steps) => {
                     stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
                     stats.rescue_max_trans = stats.rescue_max_trans.max(vm.last_trans);
@@ -279,7 +310,9 @@ fn census_term(
                     r.0 += 1;
                     r.1 = r.1.max(steps);
                     stats.record_halt(sink.0, steps, enc, len);
-                    stats.memo_out.push(((enc, len), MemoV::Halt { nf: sink.0, steps }));
+                    stats
+                        .memo_out
+                        .push(((enc, len), MemoV::Halt { nf: sink.0, steps }));
                 }
                 Err(e) => {
                     match e {
@@ -371,7 +404,11 @@ fn main() {
     if let Some(bits) = term_arg {
         let mut pool = TermPool::new();
         let root = pool.decode_str(&bits).expect("parse");
-        println!("term: {} bits, redex: {}", pool.bit_size(root), pool.has_redex(root));
+        println!(
+            "term: {} bits, redex: {}",
+            pool.bit_size(root),
+            pool.has_redex(root)
+        );
         println!("oracle prefilter no_nf: {}", no_nf(0, (&pool, root)));
         let mut vm = Machine::new();
         for budget in [cfg.budget1, cfg.budget2, cfg.rescue] {
@@ -415,8 +452,11 @@ fn main() {
     // order. Combine with --bb-cap / --rescue to go beyond census defaults.
     if let Some(path) = terms_file {
         let text = std::fs::read_to_string(&path).expect("read terms file");
-        let terms: Vec<&str> =
-            text.lines().map(str::trim).filter(|l| !l.is_empty()).collect();
+        let terms: Vec<&str> = text
+            .lines()
+            .map(str::trim)
+            .filter(|l| !l.is_empty())
+            .collect();
         let t0 = Instant::now();
         // Verdicts stream as they land (stdout is line-buffered), so a
         // killed run keeps everything it finished. Order is completion
@@ -443,7 +483,13 @@ fn main() {
                     match normal_form(cfg.bb_cap, &lterm_of(pool, root)) {
                         Ok(nf) => {
                             let mut sink = SizeSink::default();
-                            match vm.normalize_capped(pool, root, cfg.rescue, cfg.rescue.saturating_mul(cfg.rescue_trans_mult), &mut sink) {
+                            match vm.normalize_capped(
+                                pool,
+                                root,
+                                cfg.rescue,
+                                cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
+                                &mut sink,
+                            ) {
                                 Ok(steps) => {
                                     format!("{bits} HALT nf={} steps={steps}", sink.0)
                                 }
@@ -453,7 +499,13 @@ fn main() {
                         Err(NoNf::Diverge) => format!("{bits} DIVERGE bb-engine"),
                         Err(NoNf::Unknown(_)) => {
                             let mut sink = SizeSink::default();
-                            match vm.normalize_capped(pool, root, cfg.rescue, cfg.rescue.saturating_mul(cfg.rescue_trans_mult), &mut sink) {
+                            match vm.normalize_capped(
+                                pool,
+                                root,
+                                cfg.rescue,
+                                cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
+                                &mut sink,
+                            ) {
                                 Ok(steps) => {
                                     format!("{bits} HALT nf={} steps={steps}", sink.0)
                                 }
@@ -500,8 +552,13 @@ fn main() {
     };
 
     // (n, A114852 count) and (n, BBλ(n)) reference values (BB1.lhs bb0).
-    let counts_ref: &[(u32, u64)] =
-        &[(20, 883), (24, 8574), (28, 89270), (32, 978447), (36, 11148652)];
+    let counts_ref: &[(u32, u64)] = &[
+        (20, 883),
+        (24, 8574),
+        (28, 89270),
+        (32, 978447),
+        (36, 11148652),
+    ];
     let bb_ref: &[(u32, u64)] = &[
         (4, 4),
         (20, 20),
@@ -515,7 +572,16 @@ fn main() {
 
     println!(
         "{:>3} {:>12} {:>12} {:>8} {:>8} {:>8} {:>10} {:>12} {:>9} {:>10}",
-        "n", "closed", "halt", "diverge", "unknown", "escal", "max|nf|", "beta_total", "time_s", "terms/s"
+        "n",
+        "closed",
+        "halt",
+        "diverge",
+        "unknown",
+        "escal",
+        "max|nf|",
+        "beta_total",
+        "time_s",
+        "terms/s"
     );
     // λ-wrap memo, rolling by size parity: slot n%2 holds size n−2's
     // expensive verdicts during size n, then is replaced by size n's.
@@ -574,7 +640,10 @@ fn main() {
         // witness term is the headline, not just its |nf|.
         if stats.max_nf > 0 {
             let (wenc, wlen) = stats.max_nf_witness;
-            let bits: String = (0..wlen).rev().map(|i| if (wenc >> i) & 1 == 1 { '1' } else { '0' }).collect();
+            let bits: String = (0..wlen)
+                .rev()
+                .map(|i| if (wenc >> i) & 1 == 1 { '1' } else { '0' })
+                .collect();
             println!("    max|nf| witness: {bits}");
         }
         if !stats.unknowns.is_empty() {

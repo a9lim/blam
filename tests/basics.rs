@@ -47,10 +47,7 @@ fn bit_size_matches_encoding_length() {
 #[test]
 fn parse_round_trips() {
     // S combinator among others; build, encode, reparse.
-    let s = lam(lam(lam(app(
-        app(var(3), var(1)),
-        app(var(2), var(1)),
-    ))));
+    let s = lam(lam(lam(app(app(var(3), var(1)), app(var(2), var(1))))));
     for t in [i(), k(), s, omega(), church(7)] {
         assert_eq!(parse_all(&t.to_bits()).unwrap(), t);
     }

@@ -442,8 +442,7 @@ pub fn verify(
 
     // BASE: C0 C0 →ₕ⁺ A (fully concrete)
     let base_l = papp(c0.clone(), c0.clone());
-    let base_steps =
-        check_reduces(&base_l, &a, lemma_steps, max_nodes).map_err(CertFail::Base)?;
+    let base_steps = check_reduces(&base_l, &a, lemma_steps, max_nodes).map_err(CertFail::Base)?;
 
     // INIT: T →ₕ* λᵏ.(A Wⁿ[C0] y⃗) for some k, n and any concrete trailing
     // vector y⃗ (v1.2; j = 0 is the v1 shape). Matching under leading
@@ -1040,10 +1039,7 @@ pub fn discover_stream(
                             // real growth (at least one occurrence replaced,
                             // wrapper is not the bare hole) and one
                             // consistency probe before offering upward
-                            if w != PTerm::Meta(0)
-                                && w.contains_meta()
-                                && plug(&w, x2) == *x3
-                            {
+                            if w != PTerm::Meta(0) && w.contains_meta() && plug(&w, x2) == *x3 {
                                 if let (Some(a), Some(c0)) = (h.to_term(), x1.to_term()) {
                                     let cand = Ratchet { a, w, c0 };
                                     if accept(&cand) {
@@ -1335,10 +1331,7 @@ mod tests {
         // (λx. x x x x) BIG would quadruple BIG in ONE step; the guard
         // must refuse before building it (between-steps caps alone are
         // a memory bomb — measured at 38 GB on the first sweep).
-        let quad = plam(papp(
-            papp(papp(pvar(1), pvar(1)), pvar(1)),
-            pvar(1),
-        ));
+        let quad = plam(papp(papp(papp(pvar(1), pvar(1)), pvar(1)), pvar(1)));
         // BIG: a chain of ~4000 nodes
         let mut big = pvar(1);
         for _ in 0..2000 {

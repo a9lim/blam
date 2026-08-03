@@ -33,7 +33,10 @@ struct Tally {
 
 impl Tally {
     fn new() -> Tally {
-        Tally { succ: Some(Dw::ZERO), ..Default::default() }
+        Tally {
+            succ: Some(Dw::ZERO),
+            ..Default::default()
+        }
     }
 
     fn merge(self, o: Tally) -> Tally {
@@ -72,9 +75,11 @@ fn eval_term(
             Fate::Halt(_) => {
                 tally.halt_n += 1;
                 tally.succ_f += w_f;
-                tally.succ = tally
-                    .succ
-                    .and_then(|acc| leaf.mass.and_then(|m| m.div_pow2(n)).and_then(|w| acc.add(w)));
+                tally.succ = tally.succ.and_then(|acc| {
+                    leaf.mass
+                        .and_then(|m| m.div_pow2(n))
+                        .and_then(|w| acc.add(w))
+                });
             }
             Fate::Err(_) => {
                 tally.err_n += 1;
@@ -126,7 +131,10 @@ fn order_name(order: &[Prim; 5]) -> String {
 fn main() {
     let mut max_n: u32 = 24;
     // trans is the fast machine's metric (transitions, not redex searches).
-    let mut budget = QBudget { trans: 1 << 26, ..QBudget::default() };
+    let mut budget = QBudget {
+        trans: 1 << 26,
+        ..QBudget::default()
+    };
     let mut threads: Option<usize> = None;
     let args: Vec<String> = std::env::args().skip(1).collect();
     let mut i = 0;
@@ -152,7 +160,10 @@ fn main() {
         }
     }
     if let Some(k) = threads {
-        rayon::ThreadPoolBuilder::new().num_threads(k).build_global().unwrap();
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(k)
+            .build_global()
+            .unwrap();
     }
 
     // Materialize all programs once, packed (Term is Rc-based and not Send;
@@ -183,8 +194,7 @@ fn main() {
             .fold(
                 || (Pool::new(), QMachine::new(), Vec::new(), Tally::new()),
                 |(mut pool, mut m, mut leaves, acc), &(enc, len, n)| {
-                    let t =
-                        eval_term(&mut pool, &mut m, &mut leaves, enc, len, n, &order, &budget);
+                    let t = eval_term(&mut pool, &mut m, &mut leaves, enc, len, n, &order, &budget);
                     let acc = acc.merge(t);
                     (pool, m, leaves, acc)
                 },

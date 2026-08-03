@@ -98,9 +98,9 @@ fn emit_lterm(t: &LTerm, sink: &mut KeySink) {
 
 #[derive(Clone, Copy)]
 struct Entry {
-    mass: u128,    // nontrivial mass, units of 2^-64
-    count: u64,    // nontrivial programs
-    k: u8,         // shortest program size seen (incl. nontrivial only)
+    mass: u128, // nontrivial mass, units of 2^-64
+    count: u64, // nontrivial programs
+    k: u8,      // shortest program size seen (incl. nontrivial only)
     k_prog: (u64, u8),
 }
 
@@ -288,8 +288,13 @@ fn main() {
                         match normal_form(bb_cap, &t) {
                             Ok(nf) => {
                                 sink.clear();
-                                match vm.normalize_capped(pool, root, rescue, rescue * 32, &mut sink)
-                                {
+                                match vm.normalize_capped(
+                                    pool,
+                                    root,
+                                    rescue,
+                                    rescue * 32,
+                                    &mut sink,
+                                ) {
                                     Ok(steps) => acc.record_halt(enc, len, &sink, steps),
                                     Err(_) => {
                                         // Canonical step count unavailable;
@@ -306,8 +311,13 @@ fn main() {
                             }
                             Err(NoNf::Unknown(_)) => {
                                 sink.clear();
-                                match vm.normalize_capped(pool, root, rescue, rescue * 32, &mut sink)
-                                {
+                                match vm.normalize_capped(
+                                    pool,
+                                    root,
+                                    rescue,
+                                    rescue * 32,
+                                    &mut sink,
+                                ) {
                                     Ok(steps) => acc.record_halt(enc, len, &sink, steps),
                                     Err(_) => {
                                         acc.unknown += 1;
@@ -338,7 +348,11 @@ fn main() {
         "terms {} | halt {} | diverge {} | unknown {}",
         acc.total, acc.halt, acc.diverge, acc.unknown
     );
-    println!("halt_mass     = {} * 2^-64 = {:.12}", acc.halt_mass, pm(acc.halt_mass));
+    println!(
+        "halt_mass     = {} * 2^-64 = {:.12}",
+        acc.halt_mass,
+        pm(acc.halt_mass)
+    );
     println!(
         "diverge_mass  = {} * 2^-64 = {:.12}",
         acc.diverge_mass,
@@ -349,7 +363,10 @@ fn main() {
         acc.unknown_mass,
         pm(acc.unknown_mass)
     );
-    println!("kraft covered = {:.12} (all closed terms {min_n}..{max_n})", pm(covered));
+    println!(
+        "kraft covered = {:.12} (all closed terms {min_n}..{max_n})",
+        pm(covered)
+    );
     println!(
         "Ω_plain restricted to |p|≤{max_n}: [{:.12}, {:.12}]",
         pm(acc.halt_mass),
@@ -372,7 +389,10 @@ fn main() {
         (std::cmp::Reverse(*xlen as i64 - e.k as i64), *xlen, *xenc)
     });
     println!("\n== most compressible normal forms (|x| − K ≤{max_n}(x)) ==");
-    println!("{:>5} {:>4} {:>6} {:>8}  program -> x", "|x|", "K", "gain", "#progs");
+    println!(
+        "{:>5} {:>4} {:>6} {:>8}  program -> x",
+        "|x|", "K", "gain", "#progs"
+    );
     for ((xenc, xlen), e) in by_compression.iter().take(top) {
         println!(
             "{:>5} {:>4} {:>6} {:>8}  {} -> {}",

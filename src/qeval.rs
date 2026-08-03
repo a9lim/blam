@@ -138,7 +138,11 @@ pub struct Store {
 
 impl Store {
     fn new() -> Store {
-        Store { amps: vec![Dw::ONE], epochs: Vec::new(), live: Vec::new() }
+        Store {
+            amps: vec![Dw::ONE],
+            epochs: Vec::new(),
+            live: Vec::new(),
+        }
     }
 
     pub fn live_count(&self) -> usize {
@@ -304,7 +308,12 @@ pub struct QBudget {
 
 impl Default for QBudget {
     fn default() -> Self {
-        QBudget { beta: 4096, trans: 1 << 16, max_qubits: 12, max_branches: 4096 }
+        QBudget {
+            beta: 4096,
+            trans: 1 << 16,
+            max_qubits: 12,
+            max_branches: 4096,
+        }
     }
 }
 
@@ -513,13 +522,7 @@ fn unary_prim(p: Prim, f: &Rc<QTerm>, a: &Rc<QTerm>, cx: &mut Ctx) -> Found {
 
 /// cnot with both arguments present: strictly left-to-right WHNF, species
 /// checks first, epoch consumption atomic once the full redex is assembled.
-fn cnot_prim(
-    g: &Rc<QTerm>,
-    a1: &Rc<QTerm>,
-    a2: &Rc<QTerm>,
-    f: &Rc<QTerm>,
-    cx: &mut Ctx,
-) -> Found {
+fn cnot_prim(g: &Rc<QTerm>, a1: &Rc<QTerm>, a2: &Rc<QTerm>, f: &Rc<QTerm>, cx: &mut Ctx) -> Found {
     // First argument.
     let (q1, e1) = match arg_view(a1) {
         ArgView::Search => {
@@ -607,7 +610,11 @@ pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
         loop {
             if ntrans >= budget.trans || nbeta >= budget.beta {
                 let mass = store.mass();
-                leaves.push(Leaf { fate: Fate::Unknown, mass, steps: nbeta });
+                leaves.push(Leaf {
+                    fate: Fate::Unknown,
+                    mass,
+                    steps: nbeta,
+                });
                 break;
             }
             ntrans += 1;
@@ -635,7 +642,11 @@ pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
                 Step::Normal => {
                     let mass = store.mass();
                     match mass {
-                        Some(_) => leaves.push(Leaf { fate: Fate::Halt(store), mass, steps: nbeta }),
+                        Some(_) => leaves.push(Leaf {
+                            fate: Fate::Halt(store),
+                            mass,
+                            steps: nbeta,
+                        }),
                         None => leaves.push(Leaf {
                             fate: Fate::Capacity(Capacity::Amplitude),
                             mass: None,
@@ -646,7 +657,11 @@ pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
                 }
                 Step::Died(fate) => {
                     let mass = store.mass();
-                    leaves.push(Leaf { fate, mass, steps: nbeta });
+                    leaves.push(Leaf {
+                        fate,
+                        mass,
+                        steps: nbeta,
+                    });
                     break;
                 }
             }
@@ -751,7 +766,16 @@ mod tests {
                     assert_eq!(store.live_count(), 0);
                     let m = l.mass.unwrap();
                     // Each branch mass is exactly 1/2.
-                    assert_eq!(m, Dw { a: 1, b: 0, c: 0, d: 0, k: 2 });
+                    assert_eq!(
+                        m,
+                        Dw {
+                            a: 1,
+                            b: 0,
+                            c: 0,
+                            d: 0,
+                            k: 2
+                        }
+                    );
                     total = total.add(m).unwrap();
                 }
                 other => panic!("unexpected fate {other:?}"),
@@ -776,7 +800,13 @@ mod tests {
             Fate::Halt(store) => {
                 assert_eq!(store.live_count(), 2);
                 // (|00⟩ + |11⟩)/√2, allocation order: q0 is LSB.
-                let h = Dw { a: 1, b: 0, c: 0, d: 0, k: 1 };
+                let h = Dw {
+                    a: 1,
+                    b: 0,
+                    c: 0,
+                    d: 0,
+                    k: 1,
+                };
                 assert_eq!(store.amps[0].reduce(), h);
                 assert_eq!(store.amps[1], Dw::ZERO);
                 assert_eq!(store.amps[2], Dw::ZERO);
@@ -798,10 +828,7 @@ mod tests {
 
     /// cnot on two fresh qubits, yielding the Church pair of handles.
     fn cnot_pair() -> QTerm {
-        qapp(
-            qapp(QTerm::Prim(Prim::Cnot), fresh_qubit()),
-            fresh_qubit(),
-        )
+        qapp(qapp(QTerm::Prim(Prim::Cnot), fresh_qubit()), fresh_qubit())
     }
 
     #[test]
@@ -886,8 +913,20 @@ mod tests {
             .fold(Dw::ZERO, |acc, l| acc.add(l.mass.unwrap()).unwrap());
         assert_eq!(total.reduce(), Dw::ONE);
         // Exact weights: (2 ± √2)/4 — never dyadic, exactly representable.
-        let p0 = Dw { a: 2, b: 1, c: 0, d: -1, k: 4 };
-        let p1 = Dw { a: 2, b: -1, c: 0, d: 1, k: 4 };
+        let p0 = Dw {
+            a: 2,
+            b: 1,
+            c: 0,
+            d: -1,
+            k: 4,
+        };
+        let p1 = Dw {
+            a: 2,
+            b: -1,
+            c: 0,
+            d: 1,
+            k: 4,
+        };
         let masses: Vec<Dw> = leaves.iter().map(|l| l.mass.unwrap().reduce()).collect();
         assert!(masses.contains(&p0.reduce()) && masses.contains(&p1.reduce()));
     }

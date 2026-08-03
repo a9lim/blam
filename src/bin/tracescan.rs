@@ -722,10 +722,16 @@ fn single_report(bits: &str, cfg: &Cfg) {
     println!("size_bits    {}", r.size_bits);
     println!("class        {}", r.class);
     println!("steps_run    {}", r.steps_run);
-    println!("size0/final/max  {} / {} / {}", r.size0, r.final_size, r.max_size);
+    println!(
+        "size0/final/max  {} / {} / {}",
+        r.size0, r.final_size, r.max_size
+    );
     println!("pos_delta_frac   {:.4}", r.pos_frac);
     println!("hit_node_cap {}", r.hit_cap);
-    println!("period       {} (first recur at {})", r.period, r.first_recur);
+    println!(
+        "period       {} (first recur at {})",
+        r.period, r.first_recur
+    );
     println!("head_bits    {}", r.head_bits);
     println!("head_k       {}", r.head_k);
     println!("head_count   {}", r.head_count);
@@ -813,7 +819,10 @@ fn verify_loop32(cfg: &Cfg) -> bool {
     let ok_class = r.class == "ratchet-candidate";
     let ok_head = r.head_bits == A_BITS;
     let ok_gaps = !gaps.is_empty() && gaps == pred;
-    println!("loop32 class      = {} (want ratchet-candidate) {}", r.class, ok_class);
+    println!(
+        "loop32 class      = {} (want ratchet-candidate) {}",
+        r.class, ok_class
+    );
     println!("loop32 head_bits  = {} {}", r.head_bits, ok_head);
     println!("loop32 head_k     = {}", r.head_k);
     println!("loop32 chain_len  = {}", r.chain_len);

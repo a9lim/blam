@@ -30,11 +30,20 @@ struct Cfg {
 /// and which certificate class fired (v1 Ratchet or v2 HeadTowerRatchet).
 enum Kill {
     Top(Ratchet),
-    Arg { path: String, cert: Ratchet },
+    Arg {
+        path: String,
+        cert: Ratchet,
+    },
     Top2(HeadTowerRatchet),
-    Arg2 { path: String, cert: HeadTowerRatchet },
+    Arg2 {
+        path: String,
+        cert: HeadTowerRatchet,
+    },
     Top3(SelectorRatchet),
-    Arg3 { path: String, cert: SelectorRatchet },
+    Arg3 {
+        path: String,
+        cert: SelectorRatchet,
+    },
 }
 
 /// Bounded head reduction to hnf. Some(hnf) if reached, None otherwise.

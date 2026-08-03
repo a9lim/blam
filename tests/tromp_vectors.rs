@@ -18,7 +18,8 @@ const UNI_196: &str = "010100011010000100000001100000010111001100001111111000010
 /// ait/quine — 66 bits, self-doubling under the universal machine.
 const QUINE_66: &str = "000101100100011010000000000001011011110010111100111111011111011010";
 /// bin/take256.blc — 81 bits, outputs first 256 input bits.
-const TAKE256_81: &str = "000100011100101011001100110100000000001011011100111011110000000100000011100111010";
+const TAKE256_81: &str =
+    "000100011100101011001100110100000000001011011100111011110000000100000011100111010";
 /// misc/truth — 58 bits.
 const TRUTH_58: &str = "0001100000010001101000000101101111001011111000001001110110";
 /// ait/Y.lam — 25 bits.
@@ -94,10 +95,7 @@ fn bb_20() {
 #[test]
 fn bb_21() {
     // \(\1 1) (1 (\2)) -> 22 bits
-    let t = lam(app(
-        lam(app(var(1), var(1))),
-        app(var(1), lam(var(2))),
-    ));
+    let t = lam(app(lam(app(var(1), var(1))), app(var(1), lam(var(2)))));
     assert_eq!(t.bit_size(), 21);
     assert_eq!(nf(&t, 1_000).bit_size(), 22);
 }
@@ -145,4 +143,3 @@ fn bb_33() {
     assert_eq!(t.bit_size(), 33);
     assert_eq!(nf(&t, 1_000_000).bit_size(), 1812);
 }
-

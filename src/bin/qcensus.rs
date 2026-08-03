@@ -31,8 +31,8 @@
 
 use blam::dw::Dw;
 use blam::enumerate::{interleave_tasks, run_task, split_tasks};
-use blam::qvm::{Pool, QMachine};
 use blam::qeval::{Capacity, ErrKind, Fate, Prim, QBudget};
+use blam::qvm::{Pool, QMachine};
 use rayon::prelude::*;
 use std::fmt::Write as _;
 use std::time::Instant;
@@ -51,7 +51,12 @@ struct Ex {
 }
 
 impl Ex {
-    const ZERO: Ex = Ex { v: Dw::ZERO, ok: true, re: 0.0, im: 0.0 };
+    const ZERO: Ex = Ex {
+        v: Dw::ZERO,
+        ok: true,
+        re: 0.0,
+        im: 0.0,
+    };
 
     fn add(&mut self, d: Option<Dw>) {
         match d {
@@ -267,8 +272,7 @@ fn sweep_one(
                 // Sector operator accumulation: M^(k) += v v† / 2^n, exact.
                 if live == 1 || live == 2 {
                     let dim = 1 << live;
-                    let acc: &mut [Ex] =
-                        if live == 1 { &mut t.m1 } else { &mut t.m2 };
+                    let acc: &mut [Ex] = if live == 1 { &mut t.m1 } else { &mut t.m2 };
                     for i in 0..dim {
                         for j in 0..dim {
                             let x = store.amps[i]
@@ -347,12 +351,7 @@ fn expect(m: &[Ex], psi: &[Dw]) -> Option<Dw> {
 
 /// Ranked ⟨ψ|M|ψ⟩ table for named (unnormalized) states; `halvings` is
 /// log₂‖ψ‖².
-fn rank_states(
-    r: &mut String,
-    label: &str,
-    m: &[Ex],
-    states: &[(&str, Vec<Dw>, u32)],
-) {
+fn rank_states(r: &mut String, label: &str, m: &[Ex], states: &[(&str, Vec<Dw>, u32)]) {
     let mut ranked: Vec<(String, f64, String)> = Vec::new();
     for (name, psi, halvings) in states {
         if let Some(v) = expect(m, psi) {
@@ -377,7 +376,10 @@ fn main() {
     let mut min_n: u32 = 4;
     let mut max_n: u32 = 28;
     let mut cond_k: Option<u32> = None;
-    let mut budget = QBudget { trans: 1 << 22, ..QBudget::default() };
+    let mut budget = QBudget {
+        trans: 1 << 22,
+        ..QBudget::default()
+    };
     let mut threads: Option<usize> = None;
     let mut out: Option<String> = None;
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -424,7 +426,10 @@ fn main() {
         }
     }
     if let Some(k) = threads {
-        rayon::ThreadPoolBuilder::new().num_threads(k).build_global().unwrap();
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(k)
+            .build_global()
+            .unwrap();
     }
     let nthreads = rayon::current_num_threads();
 
@@ -450,7 +455,14 @@ fn main() {
                 |(mut pool, mut m, mut leaves, mut t), task| {
                     run_task(task, &mut |enc, len| {
                         sweep_one(
-                            &mut pool, &mut m, &mut leaves, enc, len, cond_k, &budget, &mut t,
+                            &mut pool,
+                            &mut m,
+                            &mut leaves,
+                            enc,
+                            len,
+                            cond_k,
+                            &budget,
+                            &mut t,
                         );
                     });
                     (pool, m, leaves, t)
@@ -491,7 +503,10 @@ fn main() {
         "# sizes {min_n}..={max_n}  order [h meas new cnot t]  beta={} trans={} qubits={} branches={}",
         budget.beta, budget.trans, budget.max_qubits, budget.max_branches
     );
-    let _ = writeln!(r, "# exact values are (a,b,c,d,k): (a + b*w + c*w^2 + d*w^3)/sqrt(2)^k, w = e^(i pi/4)");
+    let _ = writeln!(
+        r,
+        "# exact values are (a,b,c,d,k): (a + b*w + c*w^2 + d*w^3)/sqrt(2)^k, w = e^(i pi/4)"
+    );
     let _ = writeln!(r, "#");
     let _ = writeln!(
         r,
@@ -512,7 +527,11 @@ fn main() {
         );
     }
     let _ = writeln!(r, "#");
-    let _ = writeln!(r, "## Totals ({} programs, {} leaves)", total.programs, total.leaves);
+    let _ = writeln!(
+        r,
+        "## Totals ({} programs, {} leaves)",
+        total.programs, total.leaves
+    );
     let _ = writeln!(
         r,
         "halt {}  err {:?} (species/handle-applied/stale/retired/same-qubit)  unk {} (by-trans {})  cap {:?} (qubits/amplitude/branches)  none-mass {}",
@@ -549,9 +568,16 @@ fn main() {
         total.unk_mass.re
     );
     let _ = writeln!(r, "#");
-    let _ = writeln!(r, "## Sectors (live qubits at Halt; number superselection by construction)");
+    let _ = writeln!(
+        r,
+        "## Sectors (live qubits at Halt; number superselection by construction)"
+    );
     for s in 0..SECT {
-        let label = if s == SECT - 1 { format!("{}+", s) } else { s.to_string() };
+        let label = if s == SECT - 1 {
+            format!("{}+", s)
+        } else {
+            s.to_string()
+        };
         let _ = writeln!(
             r,
             "k={:<3} halts {:>9}  Tr M^({}) = {}  = {:.15}",
@@ -591,7 +617,12 @@ fn main() {
             let _ = writeln!(
                 r,
                 "Tr = ({},{},{},{},{})  = {:.15}",
-                tr.a, tr.b, tr.c, tr.d, tr.k, tr.to_f64_re()
+                tr.a,
+                tr.b,
+                tr.c,
+                tr.d,
+                tr.k,
+                tr.to_f64_re()
             );
         }
         // det = m00·m11 − m01·m10. The full product's denominator exponent
@@ -599,7 +630,13 @@ fn main() {
         // numerator products, √2-aligning the (tiny) k mismatch.
         let det_sign = {
             let num = |x: Dw| Dw { k: 0, ..x };
-            let sqrt2 = Dw { a: 0, b: 1, c: 0, d: -1, k: 0 };
+            let sqrt2 = Dw {
+                a: 0,
+                b: 1,
+                c: 0,
+                d: -1,
+                k: 0,
+            };
             let mut p = num(m00).mul(num(m11)).expect("numerator product");
             let mut q = num(m01).mul(num(m10)).expect("numerator product");
             let (kp, kq) = (m00.k + m11.k, m01.k + m10.k);
@@ -664,8 +701,7 @@ fn main() {
         if total.m2.iter().all(|e| e.ok) {
             let herm = (0..4).all(|i| {
                 (0..4).all(|j| {
-                    total.m2[i * 4 + j].v.reduce()
-                        == total.m2[j * 4 + i].v.conj().reduce()
+                    total.m2[i * 4 + j].v.reduce() == total.m2[j * 4 + i].v.conj().reduce()
                 })
             });
             let _ = writeln!(r, "hermitian: {herm}");
@@ -707,7 +743,10 @@ fn main() {
             .unwrap_or_else(|| "none".into())
     );
     let _ = writeln!(r, "#");
-    let _ = writeln!(r, "## Budget headroom (raise caps before trusting a larger N)");
+    let _ = writeln!(
+        r,
+        "## Budget headroom (raise caps before trusting a larger N)"
+    );
     let _ = writeln!(
         r,
         "max steps {} / beta {}   max trans {} / cap {}   max leaves {} / branches {}   max live {} / qubits {}",

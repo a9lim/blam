@@ -344,10 +344,7 @@ impl QMachine {
                         // spine arguments.
                         let mut nargs = 0usize;
                         while nargs < self.stack.len()
-                            && matches!(
-                                self.stack[self.stack.len() - 1 - nargs],
-                                Frame::Arg(..)
-                            )
+                            && matches!(self.stack[self.stack.len() - 1 - nargs], Frame::Arg(..))
                         {
                             nargs += 1;
                         }
@@ -511,14 +508,22 @@ impl QMachine {
             let mass = store.mass();
             match end {
                 None => match mass {
-                    Some(_) => leaves.push(Leaf { fate: Fate::Halt(store), mass, steps: contr }),
+                    Some(_) => leaves.push(Leaf {
+                        fate: Fate::Halt(store),
+                        mass,
+                        steps: contr,
+                    }),
                     None => leaves.push(Leaf {
                         fate: Fate::Capacity(Capacity::Amplitude),
                         mass: None,
                         steps: contr,
                     }),
                 },
-                Some(f) => leaves.push(Leaf { fate: f, mass, steps: contr }),
+                Some(f) => leaves.push(Leaf {
+                    fate: f,
+                    mass,
+                    steps: contr,
+                }),
             }
             match self.work.pop() {
                 None => break,
@@ -603,7 +608,10 @@ mod tests {
     fn lockstep_population(max_n: u32, order: &[Prim; 5], ref_budget: &QBudget) {
         // Machine transition budget is engine-relative: generous, so only
         // the shared β/branch budgets bind.
-        let fast_budget = QBudget { trans: 1 << 26, ..*ref_budget };
+        let fast_budget = QBudget {
+            trans: 1 << 26,
+            ..*ref_budget
+        };
         let mut programs: Vec<(u64, u8)> = Vec::new();
         for n in 4..=max_n {
             for_each_closed(n, &mut |enc, len| programs.push((enc, len)));
@@ -638,7 +646,10 @@ mod tests {
         // (qeval performs the β-th contraction, then declares Unknown at the
         // next check — before any further effect).
         for beta in [1u64, 3, 8, 64] {
-            let b = QBudget { beta, ..QBudget::default() };
+            let b = QBudget {
+                beta,
+                ..QBudget::default()
+            };
             lockstep_population(18, &FROZEN, &b);
         }
     }
@@ -646,7 +657,10 @@ mod tests {
     #[test]
     fn lockstep_branch_capacity() {
         for max_branches in [1usize, 2, 3] {
-            let b = QBudget { max_branches, ..QBudget::default() };
+            let b = QBudget {
+                max_branches,
+                ..QBudget::default()
+            };
             lockstep_population(20, &FROZEN, &b);
         }
     }
@@ -654,7 +668,10 @@ mod tests {
     #[test]
     fn lockstep_qubit_capacity() {
         for max_qubits in [1usize, 2] {
-            let b = QBudget { max_qubits, ..QBudget::default() };
+            let b = QBudget {
+                max_qubits,
+                ..QBudget::default()
+            };
             lockstep_population(20, &FROZEN, &b);
         }
     }
@@ -664,7 +681,10 @@ mod tests {
     fn run_root(pool: &mut Pool, root: u32) -> Vec<Leaf> {
         let mut m = QMachine::new();
         let mut leaves = Vec::new();
-        let budget = QBudget { trans: 1 << 26, ..QBudget::default() };
+        let budget = QBudget {
+            trans: 1 << 26,
+            ..QBudget::default()
+        };
         m.run_into(pool, root, &budget, &mut leaves);
         leaves
     }
@@ -702,13 +722,20 @@ mod tests {
         let p = lam(lam(lam(lam(lam(body)))));
         let mut pool = Pool::new();
         let root = pool.from_term(&p);
-        let sig = pool.apply_signature(root, &[Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H]);
+        let sig =
+            pool.apply_signature(root, &[Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H]);
         let leaves = run_root(&mut pool, sig);
         assert_eq!(leaves.len(), 1);
         match &leaves[0].fate {
             Fate::Halt(store) => {
                 assert_eq!(store.live_count(), 2);
-                let h = Dw { a: 1, b: 0, c: 0, d: 0, k: 1 };
+                let h = Dw {
+                    a: 1,
+                    b: 0,
+                    c: 0,
+                    d: 0,
+                    k: 1,
+                };
                 assert_eq!(store.amps[0].reduce(), h);
                 assert_eq!(store.amps[1], Dw::ZERO);
                 assert_eq!(store.amps[2], Dw::ZERO);
@@ -804,12 +831,29 @@ mod tests {
         let sig = pool.apply_signature(root, &FROZEN);
         let mut m = QMachine::new();
         let mut got = Vec::new();
-        let budget = QBudget { trans: 1 << 26, ..QBudget::default() };
+        let budget = QBudget {
+            trans: 1 << 26,
+            ..QBudget::default()
+        };
         m.run_into(&mut pool, sig, &budget, &mut got);
         assert_eq!(got, expect);
         assert_eq!(got.len(), 2);
-        let p0 = Dw { a: 2, b: 1, c: 0, d: -1, k: 4 }.reduce();
-        let p1 = Dw { a: 2, b: -1, c: 0, d: 1, k: 4 }.reduce();
+        let p0 = Dw {
+            a: 2,
+            b: 1,
+            c: 0,
+            d: -1,
+            k: 4,
+        }
+        .reduce();
+        let p1 = Dw {
+            a: 2,
+            b: -1,
+            c: 0,
+            d: 1,
+            k: 4,
+        }
+        .reduce();
         let masses: Vec<Dw> = got.iter().map(|l| l.mass.unwrap().reduce()).collect();
         assert!(masses.contains(&p0) && masses.contains(&p1));
         assert!(got
@@ -834,8 +878,22 @@ mod tests {
             .iter()
             .fold(Dw::ZERO, |acc, l| acc.add(l.mass.unwrap()).unwrap());
         assert_eq!(total.reduce(), Dw::ONE);
-        let p0 = Dw { a: 2, b: 1, c: 0, d: -1, k: 4 }.reduce();
-        let p1 = Dw { a: 2, b: -1, c: 0, d: 1, k: 4 }.reduce();
+        let p0 = Dw {
+            a: 2,
+            b: 1,
+            c: 0,
+            d: -1,
+            k: 4,
+        }
+        .reduce();
+        let p1 = Dw {
+            a: 2,
+            b: -1,
+            c: 0,
+            d: 1,
+            k: 4,
+        }
+        .reduce();
         let masses: Vec<Dw> = leaves.iter().map(|l| l.mass.unwrap().reduce()).collect();
         assert!(masses.contains(&p0) && masses.contains(&p1));
     }

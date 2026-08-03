@@ -25,10 +25,28 @@ pub struct Dw {
 }
 
 impl Dw {
-    pub const ZERO: Dw = Dw { a: 0, b: 0, c: 0, d: 0, k: 0 };
-    pub const ONE: Dw = Dw { a: 1, b: 0, c: 0, d: 0, k: 0 };
+    pub const ZERO: Dw = Dw {
+        a: 0,
+        b: 0,
+        c: 0,
+        d: 0,
+        k: 0,
+    };
+    pub const ONE: Dw = Dw {
+        a: 1,
+        b: 0,
+        c: 0,
+        d: 0,
+        k: 0,
+    };
     /// ω itself (T-gate phase).
-    pub const OMEGA: Dw = Dw { a: 0, b: 1, c: 0, d: 0, k: 0 };
+    pub const OMEGA: Dw = Dw {
+        a: 0,
+        b: 1,
+        c: 0,
+        d: 0,
+        k: 0,
+    };
 
     pub fn is_zero(&self) -> bool {
         self.a == 0 && self.b == 0 && self.c == 0 && self.d == 0
@@ -69,7 +87,13 @@ impl Dw {
             if na2 % 2 != 0 || nb2 % 2 != 0 || nc2 % 2 != 0 || nd2 % 2 != 0 {
                 break;
             }
-            v = Dw { a: na2 / 2, b: nb2 / 2, c: nc2 / 2, d: nd2 / 2, k: v.k - 1 };
+            v = Dw {
+                a: na2 / 2,
+                b: nb2 / 2,
+                c: nc2 / 2,
+                d: nd2 / 2,
+                k: v.k - 1,
+            };
         }
         v
     }
@@ -92,7 +116,13 @@ impl Dw {
     }
 
     pub fn neg(self) -> Dw {
-        Dw { a: -self.a, b: -self.b, c: -self.c, d: -self.d, k: self.k }
+        Dw {
+            a: -self.a,
+            b: -self.b,
+            c: -self.c,
+            d: -self.d,
+            k: self.k,
+        }
     }
 
     pub fn mul(self, o: Dw) -> Option<Dw> {
@@ -123,7 +153,13 @@ impl Dw {
 
     /// Complex conjugate: ω̄ = −ω³, so (a,b,c,d) ↦ (a, −d, −c, −b).
     pub fn conj(self) -> Dw {
-        Dw { a: self.a, b: -self.d, c: -self.c, d: -self.b, k: self.k }
+        Dw {
+            a: self.a,
+            b: -self.d,
+            c: -self.c,
+            d: -self.b,
+            k: self.k,
+        }
     }
 
     /// |z|² = z·z̄ — always a real ring element (c = 0, b = −d form).
@@ -136,7 +172,10 @@ impl Dw {
         if self.k + 1 > K_CAP {
             return None;
         }
-        Some(Dw { k: self.k + 1, ..self })
+        Some(Dw {
+            k: self.k + 1,
+            ..self
+        })
     }
 
     /// Multiply the value by 2^(−e) (Kraft weighting): k += 2e.
@@ -172,11 +211,25 @@ impl Dw {
         }
         // Mixed signs: a + b√2 > 0 ⟺ (a > 0 and a² > 2b²) or (b > 0 and 2b² > a²).
         let a2 = a.checked_mul(a).expect("sign_real overflow");
-        let b2 = 2i128.checked_mul(b.checked_mul(b).expect("sign_real overflow")).expect("sign_real overflow");
+        let b2 = 2i128
+            .checked_mul(b.checked_mul(b).expect("sign_real overflow"))
+            .expect("sign_real overflow");
         if a > 0 {
-            if a2 > b2 { 1 } else if a2 < b2 { -1 } else { 0 }
+            if a2 > b2 {
+                1
+            } else if a2 < b2 {
+                -1
+            } else {
+                0
+            }
         } else {
-            if b2 > a2 { 1 } else if b2 < a2 { -1 } else { 0 }
+            if b2 > a2 {
+                1
+            } else if b2 < a2 {
+                -1
+            } else {
+                0
+            }
         }
     }
 
@@ -232,9 +285,24 @@ mod tests {
     #[test]
     fn sqrt2_squares_to_two() {
         // (ω − ω³)² = 2.
-        let s = Dw { a: 0, b: 1, c: 0, d: -1, k: 0 };
+        let s = Dw {
+            a: 0,
+            b: 1,
+            c: 0,
+            d: -1,
+            k: 0,
+        };
         let two = s.mul(s).unwrap().reduce();
-        assert_eq!(two, Dw { a: 2, b: 0, c: 0, d: 0, k: 0 });
+        assert_eq!(
+            two,
+            Dw {
+                a: 2,
+                b: 0,
+                c: 0,
+                d: 0,
+                k: 0
+            }
+        );
         assert_eq!(two.sign_real(), 1);
     }
 
@@ -243,7 +311,16 @@ mod tests {
         // |ω/√2|² = 1/2.
         let z = Dw::OMEGA.div_sqrt2().unwrap();
         let n = z.norm_sq().unwrap().reduce();
-        assert_eq!(n, Dw { a: 1, b: 0, c: 0, d: 0, k: 2 });
+        assert_eq!(
+            n,
+            Dw {
+                a: 1,
+                b: 0,
+                c: 0,
+                d: 0,
+                k: 2
+            }
+        );
         assert!(n.is_real());
         assert_eq!(n.to_f64_re(), 0.5);
     }
@@ -253,21 +330,56 @@ mod tests {
         // 1/√2 + 1/√2 = √2 = 2/√2.
         let h = Dw::ONE.div_sqrt2().unwrap();
         let s = h.add(h).unwrap();
-        assert_eq!(s.reduce(), Dw { a: 0, b: 1, c: 0, d: -1, k: 0 });
+        assert_eq!(
+            s.reduce(),
+            Dw {
+                a: 0,
+                b: 1,
+                c: 0,
+                d: -1,
+                k: 0
+            }
+        );
         assert!((s.to_f64_re() - std::f64::consts::SQRT_2).abs() < 1e-12);
     }
 
     #[test]
     fn reduce_roundtrips() {
         // 2/√2² = 1/1.
-        let v = Dw { a: 2, b: 0, c: 0, d: 0, k: 2 };
+        let v = Dw {
+            a: 2,
+            b: 0,
+            c: 0,
+            d: 0,
+            k: 2,
+        };
         assert_eq!(v.reduce(), Dw::ONE);
     }
 
     #[test]
     fn sign_mixed() {
         // 3 − √2 > 0 (3² > 2·1²), 1 − √2 < 0 (1² < 2·1²).
-        assert_eq!(Dw { a: 3, b: -1, c: 0, d: 1, k: 0 }.sign_real(), 1);
-        assert_eq!(Dw { a: 1, b: -1, c: 0, d: 1, k: 0 }.sign_real(), -1);
+        assert_eq!(
+            Dw {
+                a: 3,
+                b: -1,
+                c: 0,
+                d: 1,
+                k: 0
+            }
+            .sign_real(),
+            1
+        );
+        assert_eq!(
+            Dw {
+                a: 1,
+                b: -1,
+                c: 0,
+                d: 1,
+                k: 0
+            }
+            .sign_real(),
+            -1
+        );
     }
 }
