@@ -59,11 +59,20 @@ pub struct GenTask {
 /// Partition the size-n enumeration into at least `target` independent
 /// tasks (or as many as the tree allows).
 pub fn split_tasks(n: u32, target: usize) -> Vec<GenTask> {
-    assert!(n <= 63);
+    split_tasks_at(0, n, 0, 0, target)
+}
+
+/// `split_tasks` generalized to a seeded root: enumerate terms with `v`
+/// enclosing binders and size exactly `n`, emitted under an already-fixed
+/// bit prefix. The λ⁵-idiom sweeps seed (v=5, n−10) under the ten prefix
+/// bits of five abstractions; emitted (enc, len) pairs are then complete
+/// closed programs, directly runnable by the packed-term engines.
+pub fn split_tasks_at(v: u32, n: u32, prefix: u64, prefix_len: u8, target: usize) -> Vec<GenTask> {
+    assert!(n + prefix_len as u32 <= 63);
     let mut cur = vec![GenTask {
-        pending: vec![(0, n)],
-        acc: 0,
-        len: 0,
+        pending: vec![(v, n)],
+        acc: prefix,
+        len: prefix_len,
     }];
     while cur.len() < target {
         let mut next = Vec::new();
@@ -191,6 +200,29 @@ mod tests {
             for target in [1usize, 7, 64, 1000] {
                 let mut via = Vec::new();
                 for t in split_tasks(n, target) {
+                    run_task(&t, &mut |e, l| via.push((e, l)));
+                }
+                via.sort_unstable();
+                assert_eq!(via, direct, "n={n} target={target}");
+            }
+        }
+    }
+
+    #[test]
+    fn seeded_tasks_are_the_lambda5_slice() {
+        // The λ⁵-idiom seed must produce exactly the closed size-n programs
+        // whose wire code starts with five abstractions.
+        for n in [16u32, 20, 24] {
+            let mut direct = Vec::new();
+            for_each_closed(n, &mut |e, l| {
+                if enc_to_string(e, l).starts_with("0000000000") {
+                    direct.push((e, l));
+                }
+            });
+            direct.sort_unstable();
+            for target in [1usize, 13, 200] {
+                let mut via = Vec::new();
+                for t in split_tasks_at(5, n - 10, 0, 10, target) {
                     run_task(&t, &mut |e, l| via.push((e, l)));
                 }
                 via.sort_unstable();
