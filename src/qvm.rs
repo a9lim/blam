@@ -105,11 +105,8 @@ impl Pool {
                 },
                 true => {
                     let mut n: u32 = 1;
-                    loop {
-                        match bits.next()? {
-                            true => n += 1,
-                            false => break,
-                        }
+                    while bits.next()? {
+                        n += 1;
                     }
                     self.push(Node::Var(n))
                 }
@@ -565,6 +562,7 @@ impl QMachine {
     /// The Object-B entry point: run `p k̄ ⟨sig⟩` — the program receives the
     /// dimension as a Church numeral BEFORE the signature. `cond = None` is
     /// the unconditioned M_Fock sweep.
+    #[allow(clippy::too_many_arguments)]
     pub fn run_conditioned_into(
         &mut self,
         pool: &mut Pool,

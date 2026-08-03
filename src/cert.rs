@@ -386,12 +386,10 @@ pub fn tower_index(w: &PTerm, c0: &PTerm, x: &PTerm) -> Option<u32> {
         if cur == *c0 {
             return Some(n);
         }
-        match match_wrapper(w, &cur) {
-            Some(inner) => {
-                cur = inner;
-                n += 1;
-            }
-            None => return None,
+        {
+            let inner = match_wrapper(w, &cur)?;
+            cur = inner;
+            n += 1;
         }
     }
 }

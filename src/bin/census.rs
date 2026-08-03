@@ -524,7 +524,7 @@ fn main() {
                 }
                 let done = c.0 + c.1 + c.2;
                 println!("{line}");
-                if done % 100 == 0 {
+                if done.is_multiple_of(100) {
                     eprintln!(
                         "progress: {done}/{} ({:.0}s)",
                         terms.len(),

@@ -100,7 +100,7 @@ impl Ex {
 /// Is an exact real mass a dyadic rational?
 fn is_dyadic(m: Dw) -> bool {
     let r = m.reduce();
-    r.b == 0 && r.c == 0 && r.d == 0 && r.k % 2 == 0
+    r.b == 0 && r.c == 0 && r.d == 0 && r.k.is_multiple_of(2)
 }
 
 const SECT: usize = 5; // sectors 0,1,2,3, and 4 = "≥4"
@@ -231,6 +231,7 @@ fn cap_idx(c: Capacity) -> usize {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn sweep_one(
     pool: &mut Pool,
     m: &mut QMachine,

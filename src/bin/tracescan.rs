@@ -440,7 +440,7 @@ fn analyze(bits: &str, cfg: &Cfg) -> Rec {
     loop {
         // ---- observe state i
         max_size = max_size.max(t.size);
-        if i % 1000 == 0 {
+        if i.is_multiple_of(1000) {
             series.push((i as f64, t.size as f64));
             ck.insert(i, t.size);
         }
@@ -968,7 +968,7 @@ fn main() {
             .map(|b| {
                 let r = analyze(b, &cfg);
                 let d = done.fetch_add(1, Ordering::Relaxed) + 1;
-                if d % 100 == 0 {
+                if d.is_multiple_of(100) {
                     eprintln!("  {d}/{total}");
                 }
                 r

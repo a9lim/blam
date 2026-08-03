@@ -25,14 +25,6 @@ const TRUTH_58: &str = "00011000000100011010000001011011110010111110000010011101
 /// ait/Y.lam — 25 bits.
 const Y_25: &str = "0001000110100001110011010";
 
-fn church(n: u32) -> Term {
-    let mut body = var(1);
-    for _ in 0..n {
-        body = app(var(2), body);
-    }
-    lam(lam(body))
-}
-
 fn nf(t: &Term, limit: u64) -> Term {
     normalize(t, &mut Budget::new(limit)).expect("out of fuel")
 }

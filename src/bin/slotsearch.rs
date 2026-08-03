@@ -582,6 +582,7 @@ enum Verdict {
     Unknown,
 }
 
+#[allow(clippy::too_many_arguments)]
 fn adjudicate(
     pool: &mut TermPool,
     vm: &mut Machine,

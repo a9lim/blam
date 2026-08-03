@@ -92,7 +92,7 @@ struct Meta {
 
 use LTerm::*;
 
-impl<'a> LView for &'a LTerm {
+impl LView for &LTerm {
     fn node(self) -> NV<Self> {
         match self {
             Var(n) => NV::Var(*n),

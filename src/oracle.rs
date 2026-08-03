@@ -30,7 +30,7 @@ pub trait LView: Copy {
     fn node(self) -> NV<Self>;
 }
 
-impl<'a> LView for (&'a TermPool, u32) {
+impl LView for (&TermPool, u32) {
     fn node(self) -> NV<Self> {
         let (p, id) = self;
         match p.nodes[id as usize] {

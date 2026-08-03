@@ -320,10 +320,7 @@ fn htr_probe(t: &Term, cand: &Ratchet, max_nodes: u64) -> String {
             best = (depth, desc);
         }
     }
-    format!(
-        "htr[{n_erasers}]:{}",
-        best.1.replace(|c: char| c == ',' || c == ' ', ";")
-    )
+    format!("htr[{n_erasers}]:{}", best.1.replace([',', ' '], ";"))
 }
 
 fn diagnose(t: &Term, max_steps: u32, max_nodes: u64) -> Diag {

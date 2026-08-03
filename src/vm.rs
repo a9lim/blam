@@ -67,11 +67,8 @@ impl TermPool {
                 },
                 true => {
                     let mut n: u32 = 1;
-                    loop {
-                        match bits.next()? {
-                            true => n += 1,
-                            false => break,
-                        }
+                    while bits.next()? {
+                        n += 1;
                     }
                     self.push(Node::Var(n))
                 }
@@ -238,7 +235,7 @@ impl Sink for StringSink {
     }
     fn var(&mut self, n: u32) {
         self.0.reserve(n as usize + 1);
-        self.0.extend(std::iter::repeat('1').take(n as usize));
+        self.0.extend(std::iter::repeat_n('1', n as usize));
         self.0.push('0');
     }
 }

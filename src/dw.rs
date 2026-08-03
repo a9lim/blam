@@ -24,6 +24,7 @@ pub struct Dw {
     pub k: u32,
 }
 
+#[allow(clippy::should_implement_trait)] // add/sub/neg/mul are the ring's names; fallible (Option) signatures don't fit std ops
 impl Dw {
     pub const ZERO: Dw = Dw {
         a: 0,
