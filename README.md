@@ -156,13 +156,16 @@ across all 529M leaves):
   **|00⟩ ≫ Bell Φ⁺ > Bell Φ⁻ > |++⟩**, the Φ⁺/Φ⁻ gap being exactly
   twice the Bell coherence M²[0][3] = 3/2⁴³. Sectors open on
   predicted schedule: k=2 at n=33, k=3 by n=41.
-- Fate-divergent measurement exists from 22 bits (470,289 programs
-  by ≤41) — yet **every halt mass through n=41 is dyadic**, while
-  the operator's *entries* are already irrational: the √2-parts
-  cancel exactly in every trace. Ω_success first goes irrational
-  only once an h·t·h sandwich reaches a measurement (explicit
-  witness at 45 bits). To our knowledge this is the first computed
-  operator census of quantum-preparing programs.
+- **Irrationality invades the census in strict, measured layers.**
+  Fate-divergent measurement exists from 22 bits (470,289 programs
+  by ≤41), yet every halt mass through n=44 is dyadic — the first
+  irrational leaf mass appears at **exactly n=45** (exhaustive hunt
+  over 5.8B programs of 42–45 bits: the unique witness is
+  `λ⁵. meas (h (t (h (new t))))`, the minimal h·t·h sandwich, with
+  branch masses (2±√2)/4). The operator's *entries* go irrational
+  earlier (n=34), and Ω_success stays dyadic through 45 — each
+  layer's √2-parts cancel one level up. To our knowledge this is
+  the first computed operator census of quantum-preparing programs.
 - Two one-in-526-million events at n=41: the pillar's first
   clone-death Err (`SameQubit`) and its first capacity fate (a
   `new`-pump exceeding 12 live qubits).
@@ -251,11 +254,12 @@ default 4096).
 
 ## Roadmap
 
-- qBLC: the Gács-family G_k approximants at depth and the numeric
-  sandwich constants against M^(k); the dyadicity threshold (smallest
-  program with an irrational halt mass — none ≤41, witness at 45);
-  the uniform conditional simulation theorem; quantum Kraft in Lean
-  (`DESIGN-QBLC.md`, Staging and Open questions).
+- qBLC: the Gács-family G_k approximants at depth (first sandwich
+  probe: M^(1)|≤36 sits between 3.17·G_1 and 4.17·G_1); the
+  Ω-irrationality threshold (~low 50s, needs sandwich +
+  fate-divergence); the uniform conditional simulation theorem;
+  quantum Kraft in Lean (`DESIGN-QBLC.md`, Staging and Open
+  questions).
 - Certificate v4 classes (specs in `tools/cert/SPEC.md` §8, measured
   candidate maps in `tools/cert/CLASSIFY.md`): the PassengerDiagonal
   first (assembly fully derived, 4 probe-accepted exemplars), then a

@@ -785,6 +785,39 @@ mod tests {
     }
 
     #[test]
+    fn first_nondyadic_witness_at_45() {
+        // The measured dyadicity threshold (overnight 2026-08-03): sizes
+        // 42–44 are clean over 2.87B programs (β=512 hunt); n=45 yields
+        // exactly one witness program, λ⁵. meas (h (t (h (new t)))) —
+        // the predicted h·t·h sandwich, found tight. Both branches halt
+        // with masses (2±√2)/4: individually irrational, summing to 1,
+        // so Ω_success itself stays dyadic through 45. Pinned through
+        // BOTH engines.
+        let bits = "000000000001111100111111001100111111001111010";
+        let t = parse_all(bits).unwrap();
+        let expect = crate::qeval::run(
+            crate::qeval::apply_signature(&t, &FROZEN),
+            &QBudget::default(),
+        );
+        let mut pool = Pool::new();
+        let root = pool.from_term(&t);
+        let sig = pool.apply_signature(root, &FROZEN);
+        let mut m = QMachine::new();
+        let mut got = Vec::new();
+        let budget = QBudget { trans: 1 << 26, ..QBudget::default() };
+        m.run_into(&mut pool, sig, &budget, &mut got);
+        assert_eq!(got, expect);
+        assert_eq!(got.len(), 2);
+        let p0 = Dw { a: 2, b: 1, c: 0, d: -1, k: 4 }.reduce();
+        let p1 = Dw { a: 2, b: -1, c: 0, d: 1, k: 4 }.reduce();
+        let masses: Vec<Dw> = got.iter().map(|l| l.mass.unwrap().reduce()).collect();
+        assert!(masses.contains(&p0) && masses.contains(&p1));
+        assert!(got
+            .iter()
+            .all(|l| matches!(l.fate, Fate::Halt(ref s) if s.live_count() == 0)));
+    }
+
+    #[test]
     fn ht_measure_weights_exact_on_machine() {
         // meas (h (t (h (new h)))): P(0) = (2+√2)/4, P(1) = (2−√2)/4.
         let mut pool = Pool::new();

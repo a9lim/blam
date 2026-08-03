@@ -271,3 +271,62 @@ conservation held across all 529,359,246 leaves; zero ring overflows;
   the frozen winner; ≤18 sanity shows the S1 h↔t mirror tie intact).
   Note: table41's header line predates the mode label (binary
   compiled mid-run); regenerating will say `[M_Fock]`.
+
+## 2026-08-03 overnight, cont. — mirror-break at 28; G_k approximants
+
+- **Pilot robustness at ≤28 (fast machine, 120 perms × 197,263
+  programs): the frozen order `[h meas new cnot t]` remains the
+  winner — and the h↔t mirror tie BREAKS, dyadically.** The mirror
+  pair differs by exactly 1/2²⁹ with identical fate counts
+  (17,567/180,231/406 both): one 28-bit program's measured qubit is
+  |+⟩ under the h-order (P(halt-branch) = ½) and |0⟩ under the
+  t-order (P = 0 for the same branch). Third rank now distinct
+  ([meas h new cnot t]). So the S1 conjecture's milestones fully
+  separate: fate-divergence (22) < mirror-break (≤28, dyadic) <
+  irrationality (>41; hunt running). Spec Open question updated.
+- **G_1, G_2 approximants at ≤36** (`--cond-k`, scratchpad
+  g1_36/g2_36): G_1 Ω_success = 81504605/2³⁶ ≈ 0.001186, 1-qubit
+  sector Tr = 29209703/2³⁷ ≈ 2.125e-4, matrix PD with the same
+  |0⟩-dominant shape as M^(1); eyeball sandwich ratio M^(1)|≤36 vs
+  G_1|≤36 spans ~3.2 (|0⟩ weight) to ~4.2 (|1⟩/off-diag) — exact
+  generalized-eigenvalue probe at wrap-up. G_2's dimension-2 sector
+  holds only 9 halts at ≤36 — Object B approximants are early at
+  this depth; deeper G_2 needs the ≤41-scale run.
+
+## 2026-08-03 overnight, close — the dyadicity threshold: n = 45, tight
+
+The hunt swept 42..45 exhaustively at β=512/trans=2²⁰ (witnesses are
+shallow halters; caveat: a sub-45 witness needing >512 contractions
+would be missed — none plausible). 5.8B programs in ~22 min total at
+~4.4M programs/s aggregate:
+
+- n=42: 452,574,468 programs — clean (103 s)
+- n=43: 840,914,719 — clean (187 s)
+- n=44: 1,573,331,752 — clean (362 s)
+- n=45: 2,933,097,201 — **2 non-dyadic halt leaves** (652 s)
+
+The two leaves are BOTH branches of one program:
+`000000000001111100111111001100111111001111010` =
+**λ⁵. meas (h (t (h (new t))))** — the hand-predicted h·t·h sandwich
+witness, found tight by exhaustion; the 45-bit construction bound was
+exact, no compressed form exists. Branch masses (2+√2)/4 and
+(2−√2)/4, both halting (church booleans are NFs, qubit retired) —
+so their sum is 1 and the program's Ω contribution is a dyadic 2⁻⁴⁵:
+**Ω_success remains dyadic through 45.** The full picture, all
+measured: irrationality invades in strict layers, each cancelling
+one level up — operator interior (n=34: M^(1) diagonal splits) →
+individual leaf masses (n=45 exactly) → the scalar Ω, which needs
+the sandwich PLUS fate-divergent branches (bool applied to
+fate-differing continuations, ~low 50s; beyond sweep reach, open).
+Witness pinned cross-engine as `first_nondyadic_witness_at_45`
+(63rd test; suite green).
+
+Sandwich probe (display-grade f64, cutoff approximants): the
+generalized spectrum of (M^(1)|≤36, G_1|≤36) is **[3.168, 4.171]** —
+M^(1) sits between 3.17·G_1 and 4.17·G_1 in the Loewner order at
+this depth. Both constants O(1), ratio 1.32: the two target objects
+are near-proportional at census depth — the first numeric
+instantiation of the sandwich. (G_2's dimension-2 sector holds only
+9 halts at ≤36; deeper conditioning runs are future work.)
+
+Machine left clean; all work committed and pushed.

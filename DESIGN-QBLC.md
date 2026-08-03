@@ -397,15 +397,29 @@ is a valid outcome of the investigation.
 
 ## Open questions
 
-- Where does Ω_success go irrational? S2 separated two milestones
-  the S1 conjecture had fused: fate-divergent measurement exists
-  from 22 bits (`((meas (new new)) meas cnot) t` — outcome-1 is a
-  zero-mass halting branch) with 18,479 instances by ≤36, yet every
-  halt mass through n=36 is dyadic. Irrationality needs non-dyadic
-  outcome weights — the h·t·h sandwich; explicit witness
-  `meas (h (t (h (new X))))` at 45 bits, compressed forms plausibly
-  high-30s. The exact threshold is an open mini-search (and the h↔t
-  mirror symmetry of the pilot should break with it).
+- Where does Ω_success go irrational? The S1 conjecture fused three
+  milestones; the data split them one by one. (1) Fate-divergent
+  measurement from 22 bits (`((meas (new new)) meas cnot) t` —
+  outcome-1 a zero-mass halting branch); 470,289 instances by ≤41.
+  (2) The pilot's h↔t mirror symmetry breaks at ≤28 — dyadically:
+  the mirror pair differs by exactly 1/2²⁹ with identical fate
+  counts (a program whose measured qubit is |+⟩ under one order and
+  |0⟩ under the other, with fate-divergent outcomes). The frozen
+  order remains the winner at ≤28. (3) Non-dyadic leaf masses enter
+  at **exactly n=45, measured**: the exhaustive hunt (β=512; 42–44
+  clean over 5.2B programs) finds precisely one witness,
+  `λ⁵. meas (h (t (h (new t))))` — the predicted h·t·h sandwich,
+  tight, no compressed form below it (caveat: a sub-45 witness
+  needing >512 contractions to halt would be missed; none
+  plausible). M^(1)'s *entries* go irrational earlier (n=34), the
+  √2-parts cancelling in every trace. Pinned cross-engine as test
+  `first_nondyadic_witness_at_45`. (4) And Ω_success stays dyadic
+  through 45: the witness's branches BOTH halt, so
+  (2+√2)/4 + (2−√2)/4 = 1 cancels in the sum. Irrationality invades
+  in strict layers — operator interior (34) → leaf masses (45) →
+  the scalar Ω, which needs the sandwich *plus* fate-divergent
+  branches (an applied-boolean construction, ~low 50s; open, beyond
+  sweep reach).
 - `cnot` return convention: Church pair is v0; residual question is
   only whether a pair-projection idiom deserves a measured shorthand.
 - Output convention: whole-live-store (current) vs designated-output
