@@ -2,9 +2,17 @@
 name = "blam"
 version = "0.1.0"
 edition = "2021"
-description = "Binary lambda calculus engine for algorithmic information theory experiments"
+rust-version = "1.87"
+description = "Binary lambda calculus engine for algorithmic information theory: exhaustive term censuses, busy-beaver frontiers, exact Solomonoff/Kolmogorov measurements"
 license = "MIT"
 repository = "https://github.com/a9lim/blam"
+readme = "README.md"
+keywords = ["lambda-calculus", "busy-beaver", "kolmogorov", "solomonoff", "ait"]
+categories = ["science", "mathematics", "algorithms"]
+# The crate is the engine; measurement outputs, the Lean formalization,
+# the analysis tools, and the ref/AIT submodule ship via the repo, not
+# the package.
+include = ["/src", "/Cargo.toml", "/README.md", "/LICENSE"]
 
 [dependencies]
 im-rc = "15"
