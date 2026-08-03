@@ -1,10 +1,10 @@
 [package]
 name = "blam"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 rust-version = "1.87"
 description = "Binary lambda calculus engine for algorithmic information theory: exhaustive term censuses, busy-beaver frontiers, exact Solomonoff/Kolmogorov measurements"
-license = "MIT"
+license = "AGPL-3.0-or-later"
 repository = "https://github.com/a9lim/blam"
 readme = "README.md"
 keywords = ["lambda-calculus", "busy-beaver", "kolmogorov", "solomonoff", "ait"]

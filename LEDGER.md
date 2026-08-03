@@ -396,3 +396,7 @@ payload becomes a pinned, continuously-exercised artifact.
 - **Repo surface**: README badges (CI/crates/license) + submodule
   instructions + fork/licensing notes; ten GitHub topics; dev
   branch created — work lands on dev, main stays green.
+- **Pre-publish (same day)**: version 0.1.0 → 1.0.0; relicensed
+  MIT → AGPL-3.0-or-later (canonical gnu.org text; SPDX in
+  Cargo.toml; README badge/attribution and the PR letter's license
+  line updated). Package re-verified at 1.0.0. a9 publishes.

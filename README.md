@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/a9lim/blam/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/a9lim/blam/actions/workflows/ci.yml)
 [![crates.io](https://img.shields.io/crates/v/blam.svg)](https://crates.io/crates/blam)
-[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![license: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
 
 A fast Rust engine for [John Tromp's binary lambda
 calculus](https://tromp.github.io/cl/Binary_lambda_calculus.html), built
@@ -304,6 +304,7 @@ Built by [a9lim](https://github.com/a9lim) with Claude (Anthropic) and
 Codex (OpenAI) as agent collaborators — `LEDGER.md` and the commit
 history are the honest record of what that looked like.
 
-MIT license — covering this repo's own code. The `ref/AIT` submodule
-is upstream Tromp material (which carries no license file; rights
-remain the author's), referenced by pin, never vendored.
+AGPL-3.0-or-later — covering this repo's own code (© 2026 a9lim).
+The `ref/AIT` submodule is upstream Tromp material (which carries no
+license file; rights remain the author's), referenced by pin, never
+vendored.
