@@ -1,8 +1,10 @@
 # Working in this repo
 
 Rust engine for binary lambda calculus / AIT experiments, verified
-against Tromp's Haskell. README.md has the public story; DESIGN.md has
-architecture + measured results; LEDGER.md is the running lab notebook.
+against Tromp's Haskell. README.md has the public story; DESIGN-BLC.md
+has classical architecture + measured results; DESIGN-QBLC.md is the
+quantum pillar's design spec (pre-implementation); LEDGER.md is the
+running lab notebook.
 This file tracks what you need to work here now: conventions, live
 engine facts, live state, and the open docket.
 
@@ -153,6 +155,17 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   vectors in verify.sh), ~18× faster. PR kit ready (PR_KIT.md).
 
 ## Open docket
+
+- **qBLC (second pillar)**: design ratified (DESIGN-QBLC.md; round
+  record in LEDGER.md 2026-08-02). Two target objects — operator
+  census M_Fock (Tr = Ω_success, number-superselected) and the
+  dimension-conditioned Gács family G_k. S1 in progress: naive
+  reference evaluator (`src/qvm.rs`, ring in `src/dw.rs`, pilot bin
+  `src/bin/qpilot.rs`), signature order frozen only after the
+  120-permutation pilot (predeclared functional: max Ω_{success,≤N},
+  lexicographic tie-break). Classical engines untouched — the
+  bit-identity bar applies to them, not to qBLC's new surface.
+  Literature survey in `ref/QUANTUM_AIT.md` (untracked).
 
 - **v4 certificate classes, in Codex-ratified order — specs in
   `tools/cert/SPEC.md` §8**: (1) PassengerDiagonal (§8.1) — the

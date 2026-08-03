@@ -54,3 +54,46 @@ git rather than in the tree.
 - README/AGENTS re-pointed at canonical files only; attribution and
   ledger descriptions updated for the compaction convention.
 - `cargo test --release` green post-changes.
+
+## 2026-08-02 — qBLC pillar: survey, spec, two-round ratification
+
+The quantum pillar went from idea to ratified spec in one day.
+
+- **Literature survey** (three-agent web sweep) landed in
+  `ref/QUANTUM_AIT.md` (untracked): QTM computability/halting, the
+  three quantum-K definitions, Gács's universal semi-density matrix,
+  quantum Kraft, quantum λ-calculi. Verified negatives: no quantum
+  busy-beaver literature, no BLC-style wire format for quantum terms.
+- **DESIGN-QBLC.md** written (second core pillar; DESIGN.md renamed
+  DESIGN-BLC.md for symmetry). Target: the first concrete
+  approximations to Gács's universal matrix, as an operator-valued
+  census.
+- **Codex round 1 (gaslamp `blc-qblc`, REJECT)**: killed rev 1's
+  conflation of the trace-bounded census object with Gács's
+  dimension-conditioned family (σ_k = I/2^k forces any uniform
+  domination constant to 0 against a global Kraft budget); killed the
+  finite-sum extension of the rank-1 domination lemma (½I dominates
+  every qubit direction); forced unnormalized branch vectors
+  (post-measurement normalization escapes ℤ[ω]/√2^k — 2/√3
+  counterexample); killed "source size bounds live qubits" (loops
+  pump `new`); demanded CP-instrument terminology, branch-local
+  stores, countable branch trees, Err-before-effect. Confirmed the
+  Church-pair cnot and epoch model.
+- **Codex round 2 (CHANGE; S1 greenlit)**: killed the A/B =× identity
+  (wrappers give only c·m(k)·G_k ⪯ M^(k) ⪯ C·G_k; classical chain
+  rule needs (n,K(n))-conditioning); killed the home-class conjecture
+  as stated via a cross-sector-coherence counterexample — M_Fock is
+  number-superselected, class restricted to graded families;
+  RATIFIED the padding route for the uniform conditional simulation
+  theorem with explicit δ = ε/2^k (runtime, not description length,
+  absorbs the dimension dependence); stratified ring status (finite
+  approximants in-ring, limits escape — ⅓ from a coin loop; census
+  output = certified Loewner brackets); vv† sole-contribution
+  invariant (no separate weight factor — double-count hazard); pilot
+  functional must be predeclared (each signature permutation is a
+  different machine — "measured frequency" is circular). Adopted:
+  maximize Ω_{success,≤N}, lexicographic tie-break.
+- **Spec made live-state** (this discipline): round narration lives
+  here, DESIGN-QBLC.md states the ratified design flat. AGENTS.md
+  docket updated; S1 (naive reference evaluator + 120-permutation
+  signature pilot) cleared to build.

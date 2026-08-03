@@ -1,9 +1,10 @@
-# Engine design
+# Engine design (classical pillar)
 
 Architecture, the rationale behind it, and the measured results that
 justify it. Working document — argue with it. The running record of
 how results landed is LEDGER.md (recent) and git history (permanent);
-live operational facts are in AGENTS.md.
+live operational facts are in AGENTS.md. The quantum pillar's design
+spec is DESIGN-QBLC.md.
 
 ## Workload (measured, not assumed)
 

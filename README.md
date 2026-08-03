@@ -113,7 +113,7 @@ A ladder of increasingly expensive adjudicators, each sound:
 
 Every resource is bounded by one shared work meter charged on every
 primitive operation — the design lesson of the project (see
-`DESIGN.md`, "the work-meter lesson").
+`DESIGN-BLC.md`, "the work-meter lesson").
 
 Enumeration (`src/enumerate.rs`) packs terms ≤63 bits into `u64`s and
 splits the generation tree into subtree tasks fused with the consumers
@@ -158,7 +158,7 @@ default 4096).
   vectors.
 - Halt counts are invariant under every engine change in the repo's
   history (regression guarantee; soundness arguments live in
-  `DESIGN.md`).
+  `DESIGN-BLC.md`).
 - Conformance tests (`tests/tromp_vectors.rs`) parse Tromp's own
   corpus: clone it first with
   `git clone --depth 1 https://github.com/tromp/AIT ref/AIT`
@@ -180,7 +180,7 @@ default 4096).
   file, classifier maps); `tools/interp/` (the self-interpreter lab:
   slot searches, knot search, sound search spec, design notes);
   `tools/uni/` (the distilled interpreter + PR kit).
-- `DESIGN.md` — architecture, measured results, open questions.
+- `DESIGN-BLC.md` — architecture, measured results, open questions.
 - `LEDGER.md` — the running lab notebook: recent sessions, with
   compacted entries living on in git history.
 - Data: `census_full5.txt` (the canonical census table, 4–41),
