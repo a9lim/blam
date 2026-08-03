@@ -1,9 +1,10 @@
 [package]
-name = "blc"
+name = "blam"
 version = "0.1.0"
 edition = "2021"
 description = "Binary lambda calculus engine for algorithmic information theory experiments"
 license = "MIT"
+repository = "https://github.com/a9lim/blam"
 
 [dependencies]
 im-rc = "15"

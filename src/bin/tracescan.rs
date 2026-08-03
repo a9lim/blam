@@ -19,12 +19,12 @@
 //! per-term cap so one term cannot eat the sweep.
 //!
 //! Usage:
-//!   tracescan --file unknowns_v8.txt --out tools/cert/classify.csv [--threads N]
+//!   tracescan --file unknowns_41.txt --out tools/cert/classify.csv [--threads N]
 //!   tracescan --single <bits>                 # detailed single-term report
 //!   tracescan --verify-loop32                 # the reference-agreement gate
 //!   tracescan --dump <bits> --steps 10,100,1000   # cross-check state sizes
 
-use blc::{parse_all, Term};
+use blam::{parse_all, Term};
 use rayon::prelude::*;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};

@@ -2,7 +2,7 @@
 //!
 //! Usage: cargo run --example parse_file -- path/to/file.blc
 
-use blc::parse_all;
+use blam::parse_all;
 
 fn main() {
     let path = std::env::args().nth(1).expect("usage: parse_file <file>");

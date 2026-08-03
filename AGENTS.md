@@ -15,12 +15,12 @@ engine facts, live state, and the open docket.
   `tests/tromp_vectors.rs` needs it; the unit suite passes without it.
 - The verification bar for any engine change: `cargo test --release`
   green, then a census spot-check whose **halt counts are bit-identical**
-  to `census_full5.txt` at the sizes you touch. Halts have been invariant
+  to `census_table41.txt` at the sizes you touch. Halts have been invariant
   through every change in history; treat any drift as a bug in your
   change, not a discovery.
 - Data files in the repo root are results, not scratch, and only the
-  canonical generation lives in the tree: `census_full5.txt` (census
-  4..41), `unknowns_v8.txt` (live frontier: 4,235 terms — the
+  canonical generation lives in the tree: `census_table41.txt` (census
+  4..41), `unknowns_41.txt` (live frontier: 4,235 terms — the
   1,888-term 4..40 residue plus 2,347 at n=41, the 297 certificate
   kills in `tools/cert/ratchet_kills.txt` already subtracted), and
   `solomonoff_41.txt` + `solomonoff_table41.txt` (Ω/K sweep).
@@ -128,10 +128,10 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
 
 ## Live state (2026-08-01)
 
-- **Census**: canonical 4..41 in `census_full5.txt` (~16.5 min;
+- **Census**: canonical 4..41 in `census_table41.txt` (~16.5 min;
   4..40 alone ~7.2 min). BBλ(41) ≥ 1,074,266,118 bits. n=32 row has
   zero unknowns — BBλ(32) fully mechanical.
-- **Frontier**: `unknowns_v8.txt`, 4,235 terms. Ω|≤41 ∈
+- **Frontier**: `unknowns_41.txt`, 4,235 terms. Ω|≤41 ∈
   [0.124105086764, 0.124105092919] (round-nearest 12 digits, exact
   fractions in `solomonoff_41.txt` + the kills' mass).
 - **Certificates**: 297 kills in `tools/cert/ratchet_kills.txt`

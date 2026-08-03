@@ -51,7 +51,7 @@ loop term
 Hi John,
 
 I've been building a Rust engine for BLC/AIT experiments
-(github.com/a9lim/blc) and it's reached the point where two things
+(github.com/a9lim/blam) and it's reached the point where two things
 seemed worth sending your way.
 
 The small one is the PR alongside this note: a uni.rs for the

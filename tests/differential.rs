@@ -3,10 +3,10 @@
 //! lockstep — García-Pérez & Nogueira 2019), exhaustively over all closed
 //! terms of small sizes, divergers included.
 
-use blc::enumerate::{enc_to_string, for_each_closed};
-use blc::term::{app, lam, var, Term};
-use blc::vm::{Machine, SizeSink, StringSink, TermPool};
-use blc::{normalize, parse_all, Budget};
+use blam::enumerate::{enc_to_string, for_each_closed};
+use blam::term::{app, lam, var, Term};
+use blam::vm::{Machine, SizeSink, StringSink, TermPool};
+use blam::{normalize, parse_all, Budget};
 
 // Generous vs. the measured max of 11 β-steps for halting terms ≤ 24 bits;
 // kept modest because the naive whnf recurses once per step, so divergers

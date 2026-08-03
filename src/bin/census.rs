@@ -17,11 +17,11 @@
 //! (--chunk now sets the minimum generation-task count for the fused
 //! parallel enumeration.)
 
-use blc::bb::{normal_form, LTerm, NoNf, Why};
-use blc::eval::OutOfFuel;
-use blc::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
-use blc::oracle::no_nf;
-use blc::vm::{Machine, SizeSink, TermPool};
+use blam::bb::{normal_form, LTerm, NoNf, Why};
+use blam::eval::OutOfFuel;
+use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
+use blam::oracle::no_nf;
+use blam::vm::{Machine, SizeSink, TermPool};
 use rayon::prelude::*;
 use std::time::Instant;
 
@@ -156,11 +156,11 @@ impl Stats {
 }
 
 fn lterm_of(pool: &TermPool, id: u32) -> LTerm {
-    use blc::vm::Node;
+    use blam::vm::Node;
     match pool.nodes[id as usize] {
         Node::Var(n) => LTerm::Var(n),
-        Node::Lam(b) => blc::bb::lam(lterm_of(pool, b)),
-        Node::App(f, a) => blc::bb::app(lterm_of(pool, f), lterm_of(pool, a)),
+        Node::Lam(b) => blam::bb::lam(lterm_of(pool, b)),
+        Node::App(f, a) => blam::bb::app(lterm_of(pool, f), lterm_of(pool, a)),
     }
 }
 
@@ -636,7 +636,7 @@ fn main() {
         }
     }
     use std::sync::atomic::Ordering;
-    let fires = blc::bb::REDLOOP_FIRES.load(Ordering::Relaxed);
-    let fuel = blc::bb::REDLOOP_FUEL_REJECTS.load(Ordering::Relaxed);
+    let fires = blam::bb::REDLOOP_FIRES.load(Ordering::Relaxed);
+    let fuel = blam::bb::REDLOOP_FUEL_REJECTS.load(Ordering::Relaxed);
     println!("redloop: {fires} proofs, {fuel} shape-matches lost to probe fuel");
 }

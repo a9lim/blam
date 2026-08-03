@@ -12,10 +12,10 @@
 //! default test rather than a nightly. Terms whose probe runs out of
 //! fuel are skipped: not proven halters, nothing to assert.
 
-use blc::cert::{discover_stream, try_htr, try_selector, verify, Ratchet};
-use blc::enumerate::{enc_to_string, run_task, split_tasks};
-use blc::parse_all;
-use blc::vm::{Machine, SizeSink, TermPool};
+use blam::cert::{discover_stream, try_htr, try_selector, verify, Ratchet};
+use blam::enumerate::{enc_to_string, run_task, split_tasks};
+use blam::parse_all;
+use blam::vm::{Machine, SizeSink, TermPool};
 use rayon::prelude::*;
 
 #[test]

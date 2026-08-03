@@ -19,10 +19,10 @@
 //! Usage: solomonoff <min_n> <max_n> [--bb-cap N] [--rescue N] [--table FILE]
 //!        [--dump-max-x N] [--top N]
 
-use blc::bb::{normal_form, LTerm, NoNf};
-use blc::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
-use blc::oracle::no_nf;
-use blc::vm::{Machine, Sink, TermPool};
+use blam::bb::{normal_form, LTerm, NoNf};
+use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
+use blam::oracle::no_nf;
+use blam::vm::{Machine, Sink, TermPool};
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::time::Instant;
@@ -183,11 +183,11 @@ impl Acc {
 }
 
 fn lterm_of(pool: &TermPool, id: u32) -> LTerm {
-    use blc::vm::Node;
+    use blam::vm::Node;
     match pool.nodes[id as usize] {
         Node::Var(n) => LTerm::Var(n),
-        Node::Lam(b) => blc::bb::lam(lterm_of(pool, b)),
-        Node::App(f, a) => blc::bb::app(lterm_of(pool, f), lterm_of(pool, a)),
+        Node::Lam(b) => blam::bb::lam(lterm_of(pool, b)),
+        Node::App(f, a) => blam::bb::app(lterm_of(pool, f), lterm_of(pool, a)),
     }
 }
 

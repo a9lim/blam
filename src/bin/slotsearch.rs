@@ -37,10 +37,10 @@
 //! Usage: slotsearch <var|abs|app> [--min-size N] [--max-size N]
 //!        [--tasks N] [--counts-only] [--dump FILE]
 
-use blc::bb::{normal_form, LTerm, NoNf};
-use blc::oracle::no_nf;
-use blc::vm::{Machine, Node, Sink, TermPool};
-use blc::OutOfFuel;
+use blam::bb::{normal_form, LTerm, NoNf};
+use blam::oracle::no_nf;
+use blam::vm::{Machine, Node, Sink, TermPool};
+use blam::OutOfFuel;
 use rayon::prelude::*;
 use std::collections::BinaryHeap;
 use std::time::Instant;
@@ -578,8 +578,8 @@ fn adjudicate(
 fn lterm_of(pool: &TermPool, id: u32) -> LTerm {
     match pool.nodes[id as usize] {
         Node::Var(n) => LTerm::Var(n),
-        Node::Lam(b) => blc::bb::lam(lterm_of(pool, b)),
-        Node::App(f, a) => blc::bb::app(lterm_of(pool, f), lterm_of(pool, a)),
+        Node::Lam(b) => blam::bb::lam(lterm_of(pool, b)),
+        Node::App(f, a) => blam::bb::app(lterm_of(pool, f), lterm_of(pool, a)),
     }
 }
 
@@ -1078,7 +1078,7 @@ mod tests {
     /// the golden.
     #[test]
     fn adjudication_agrees_with_full_normalization() {
-        use blc::vm::StringSink;
+        use blam::vm::StringSink;
         for slot in SLOTS {
             let golden = bits_of(slot.golden);
             let hi = if slot.frame == 6 { slot.reference.len() as u8 } else { 28 };

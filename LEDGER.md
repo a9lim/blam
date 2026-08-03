@@ -330,3 +330,29 @@ instantiation of the sandwich. (G_2's dimension-2 sector holds only
 9 halts at ≤36; deeper conditioning runs are future work.)
 
 Machine left clean; all work committed and pushed.
+
+## 2026-08-03 — project renamed to blam; root data names harmonized
+
+`blc` is taken on crates.io (an active, unrelated BLC implementation,
+30k downloads), so the crate needed a new name regardless; rather
+than overload `qBLC` (which names the quantum pillar, not the
+umbrella) the project is now **blam** — binary lambda machine.
+Crate + lib paths, GitHub repo (`a9lim/blam`; old URLs redirect),
+and the PR_KIT letter all updated. BLC-the-calculus keeps its name
+everywhere: the DESIGN docs, `lean/Blc/`, `blcc.py`, `BLC_*` env
+vars are about the language, not the project.
+
+- Root data files now content-named like the quantum side (version
+  counters were redundant with git-history-holds-generations):
+  `census_full5.txt` → `census_table41.txt`, `unknowns_v8.txt` →
+  `unknowns_41.txt`. Referents updated (README, AGENTS, DESIGN-BLC,
+  CLASSIFY.md, the `certsearch` default path, the `tracescan` usage
+  header); ledger history deliberately untouched.
+- Cleanup pass found the tree already clean — the 2026-08-02 purge
+  did the real work. Every suspected one-off (`loop32_trace.py`,
+  `search_fix.py`, `classify41.csv`, the slotsearch logs) is
+  referenced and load-bearing; kept. Only the empty `tmp/` dir went
+  (now gitignored).
+- Verification: `cargo test --release` fully green under the new
+  crate name; census 4..36 rerun — closed/halt/diverge/unknown
+  columns bit-identical to `census_table41.txt` at every size.

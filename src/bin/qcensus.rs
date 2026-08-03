@@ -29,10 +29,10 @@
 //! `p K-bar <sig>` (dimension handed as a Church numeral before the
 //! signature) — the G_K approximant sweep.
 
-use blc::dw::Dw;
-use blc::enumerate::{interleave_tasks, run_task, split_tasks};
-use blc::qvm::{Pool, QMachine};
-use blc::qeval::{Capacity, ErrKind, Fate, Prim, QBudget};
+use blam::dw::Dw;
+use blam::enumerate::{interleave_tasks, run_task, split_tasks};
+use blam::qvm::{Pool, QMachine};
+use blam::qeval::{Capacity, ErrKind, Fate, Prim, QBudget};
 use rayon::prelude::*;
 use std::fmt::Write as _;
 use std::time::Instant;
@@ -229,7 +229,7 @@ fn cap_idx(c: Capacity) -> usize {
 fn sweep_one(
     pool: &mut Pool,
     m: &mut QMachine,
-    leaves: &mut Vec<blc::qeval::Leaf>,
+    leaves: &mut Vec<blam::qeval::Leaf>,
     enc: u64,
     len: u8,
     cond: Option<u32>,
@@ -326,7 +326,7 @@ fn sweep_one(
 }
 
 fn enc_str(enc: u64, len: u8) -> String {
-    blc::enumerate::enc_to_string(enc, len)
+    blam::enumerate::enc_to_string(enc, len)
 }
 
 /// ⟨ψ|M|ψ⟩ for unnormalized ψ; the caller divides by ‖ψ‖² afterwards.

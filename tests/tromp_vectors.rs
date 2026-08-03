@@ -8,8 +8,8 @@
 //! beaver metric is max *normal-form BLC bit-size* over closed terms of
 //! size exactly n — Tromp's tooling has no beta-step counter to match.
 
-use blc::term::{app, lam, var, Term};
-use blc::{normalize, parse_all, Budget};
+use blam::term::{app, lam, var, Term};
+use blam::{normalize, parse_all, Budget};
 
 /// ait/int.lam — the 170-bit self-interpreter (50_ft_lock, Dec 2025).
 const INT_170: &str = "01000110100001000000011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010010111110100101101010011010";

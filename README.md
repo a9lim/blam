@@ -1,4 +1,4 @@
-# blc
+# blam — binary lambda machine
 
 A fast Rust engine for [John Tromp's binary lambda
 calculus](https://tromp.github.io/cl/Binary_lambda_calculus.html), built
@@ -12,7 +12,7 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   min on an M5 Max (4–40 alone: ~7 min, vs ~4.3 h for the reference
   Haskell tooling). Every [A114852](https://oeis.org/A114852) count
   and every published [BBλ](https://oeis.org/A333479) value in range
-  reproduced exactly (`census_full5.txt`).
+  reproduced exactly (`census_table41.txt`).
 - **The first BBλ(41) bound: ≥ 1,074,266,118 bits** — the busy
   beaver's first billion-bit row, one size past every published
   table (241,372,280 of the 242,222,714 closed 41-bit terms proven
@@ -22,7 +22,7 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   hand-excluded even in Tromp's tree, now carries a machine-checked
   divergence certificate (the *ratchet*, below). Every closed term of
   ≤32 bits is adjudicated with no hand exclusions anywhere.
-- **4,235 unknowns survive maximum effort** (`unknowns_v8.txt`:
+- **4,235 unknowns survive maximum effort** (`unknowns_41.txt`:
   1,888 across 4–40, fewer than the reference ledger at every
   comparable size — at n=34–36 this engine proves strictly more
   terms divergent than the traced reference engine — plus 2,347 at
@@ -188,13 +188,13 @@ target/release/census 4 40 --verify
 target/release/census --term 010001101000011010
 
 # batch adjudication of a term list, full ladder, streamed verdicts
-target/release/census --terms-file unknowns_v8.txt
+target/release/census --terms-file unknowns_41.txt
 
 # Solomonoff prior / K-complexity / Ω sweep
 target/release/solomonoff 4 41 --table solomonoff_table41.txt
 
 # certificate sweep over the frontier (all three classes)
-target/release/certsearch --terms-file unknowns_v8.txt --threads 8
+target/release/certsearch --terms-file unknowns_41.txt --threads 8
 
 # regenerate the Lean certificate modules, then kernel-check them
 cargo run --release --bin certlean && cd lean && lake build Certs
@@ -246,8 +246,8 @@ default 4096).
   questions; `DESIGN-QBLC.md` — the quantum pillar's design spec.
 - `LEDGER.md` — the running lab notebook: recent sessions, with
   compacted entries living on in git history.
-- Data: `census_full5.txt` (the canonical census table, 4–41),
-  `unknowns_v8.txt` (the 4,235-term live frontier),
+- Data: `census_table41.txt` (the canonical census table, 4–41),
+  `unknowns_41.txt` (the 4,235-term live frontier),
   `solomonoff_41.txt`/`solomonoff_table41.txt` (the Ω/K sweep),
   `qcensus_table41.txt` (the quantum operator census).
   Superseded generations live in git history, not the tree.

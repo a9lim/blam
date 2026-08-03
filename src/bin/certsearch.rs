@@ -8,12 +8,12 @@
 //! `aᵢ` with a ratchet certificate kills the whole term. Open arguments
 //! are skipped (the v1 machinery assumes closed metavariables).
 
-use blc::cert::{
+use blam::cert::{
     discover_stream, head_step, try_htr, try_selector, verify, HeadTowerRatchet, PTerm, Ratchet,
     SelectorRatchet, Step,
 };
-use blc::parse::parse_all;
-use blc::term::Term;
+use blam::parse::parse_all;
+use blam::term::Term;
 use rayon::prelude::*;
 use std::io::Write;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -180,7 +180,7 @@ fn main() {
     let lines: Vec<String> = if let Some(bits) = term_arg {
         vec![bits]
     } else {
-        let path = file_arg.unwrap_or_else(|| "unknowns_v8.txt".to_string());
+        let path = file_arg.unwrap_or_else(|| "unknowns_41.txt".to_string());
         std::fs::read_to_string(&path)
             .unwrap_or_else(|e| panic!("read {path}: {e}"))
             .lines()

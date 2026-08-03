@@ -10,10 +10,10 @@
 //!
 //! Usage: qpilot [--max-n N] [--beta B] [--trans T] [--threads K]
 
-use blc::dw::Dw;
-use blc::enumerate::for_each_closed;
-use blc::qeval::{Fate, Prim, QBudget};
-use blc::qvm::{Pool, QMachine};
+use blam::dw::Dw;
+use blam::enumerate::for_each_closed;
+use blam::qeval::{Fate, Prim, QBudget};
+use blam::qvm::{Pool, QMachine};
 use rayon::prelude::*;
 use std::time::Instant;
 
@@ -56,7 +56,7 @@ impl Tally {
 fn eval_term(
     pool: &mut Pool,
     m: &mut QMachine,
-    leaves: &mut Vec<blc::qeval::Leaf>,
+    leaves: &mut Vec<blam::qeval::Leaf>,
     enc: u64,
     len: u8,
     n: u32,
