@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - run: cargo fmt --all --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+
+  test:
+    # --release is the repo's own verification bar (AGENTS.md): the cert
+    # battery pushes 196,848 provable halters through the sweep ladder and
+    # is built for release speed. The conformance suite (tromp_vectors)
+    # reads the ref/AIT submodule, so check it out.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --release --workspace
+      - name: uni.rs parity (byte-identical vs uni.py on Tromp's corpus)
+        run: bash tools/uni/verify.sh
+
+  census-spot-check:
+    # The standing regression guarantee: halt counts are bit-identical to
+    # census_table41.txt under every engine change. Rows 4..32 cover the
+    # full ladder including loop32's row and run in under a second locally;
+    # timing columns are excluded, everything else must match exactly.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --release --bin census
+      - run: |
+          target/release/census 4 32 --verify > spot.txt
+          awk 'NF>=10 && $1+0>0 {print $1,$2,$3,$4,$5,$6,$7,$8}' spot.txt > spot.cols
+          awk 'NF>=10 && $1+0>0 && $1<=32 {print $1,$2,$3,$4,$5,$6,$7,$8}' census_table41.txt > canon.cols
+          diff spot.cols canon.cols
+
+  lean:
+    # Kernel-check all 297 divergence certificates (zero sorries, no
+    # mathlib; ~2 s once the pinned toolchain is cached).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan
+            lean/.lake
+          key: lean-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain', 'lean/lake-manifest.json') }}
+      - run: curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+      - run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - run: lake build Certs
+        working-directory: lean
+
+  fork-additive:
+    # The ref/AIT submodule is the a9lim/AIT fork: upstream tromp/AIT plus
+    # additions only. The conformance goldens stay byte-identical to
+    # upstream's — the moment the fork *modifies* an upstream file, the
+    # oracle-vs-ours boundary is gone and this job fails.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - run: |
+          cd ref/AIT
+          git remote add upstream https://github.com/tromp/AIT.git
+          git fetch -q upstream master
+          viol=$(git diff --name-status upstream/master...HEAD | grep -v '^A' || true)
+          if [ -n "$viol" ]; then
+            echo "fork is not additive-only over upstream:"
+            echo "$viol"
+            exit 1
+          fi
