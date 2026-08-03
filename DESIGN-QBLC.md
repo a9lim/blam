@@ -346,16 +346,21 @@ is Unknown(Capacity), mass into the bracket.
 
 ## Staging
 
-S0 spec ratification (**done**, 2026-08-02) → S1 evaluator (**core
-done**, 2026-08-02: naive small-step reference evaluator `src/qvm.rs`
-+ exact ring `src/dw.rs` + pilot bin `src/bin/qpilot.rs`, all
-differential-/vector-tested; signature order frozen by the pilot;
-the KN-machine fast path remains, to be lockstep-verified against
-this core) → S2 M^(1) operator census → S3 M^(2), Ω_success bracket,
-rankings, G_k approximants → S4 Thm 8 groundwork + interpreter
-transfer → S5 Lean. Each stage is a
-publishable finding on its own; stopping early is a valid outcome of
-the investigation.
+S0 spec ratification (**done**, 2026-08-02) → S1 evaluator (**done**,
+2026-08-02: naive reference evaluator `src/qvm.rs` + exact ring
+`src/dw.rs` + pilot `src/bin/qpilot.rs`; signature order frozen) →
+S2 M^(1) operator census (**done**, 2026-08-03: KN-store fast path
+`src/qkn.rs`, lockstep-verified against qvm on leaf sequences — fate
+incl. store, exact mass, contraction count — over the full ≤24
+population; census bin `src/bin/qcensus.rs`; canonical
+`qcensus_table36.txt`, 24.3M programs in 58 s, β=4096/trans=2²⁶ with
+measured headroom; Ω_{success,≤36} = 105268717/2³⁵, M^(1) hermitian
+and positive definite with exact-sign det, ranking
+|0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩; k=2 sector opens at n=33; per-program
+mass conservation asserted sweep-wide) → S3 M^(2), Ω_success
+bracket, rankings, G_k approximants → S4 Thm 8 groundwork +
+interpreter transfer → S5 Lean. Each stage is a publishable finding
+on its own; stopping early is a valid outcome of the investigation.
 
 ## Rejected
 
@@ -387,19 +392,23 @@ the investigation.
 
 ## Open questions
 
-- Does the h↔t exact mass symmetry (and the dyadicity of every
-  permutation's Ω_{success,≤24}) break at larger N? Both should:
-  they hold iff no program yet both creates superposition and
-  branches to different fates on the outcomes. The first
-  fate-divergent measurement is a milestone worth catching — it is
-  where Ω_success first goes irrational.
+- Where does Ω_success go irrational? S2 separated two milestones
+  the S1 conjecture had fused: fate-divergent measurement exists
+  from 22 bits (`((meas (new new)) meas cnot) t` — outcome-1 is a
+  zero-mass halting branch) with 18,479 instances by ≤36, yet every
+  halt mass through n=36 is dyadic. Irrationality needs non-dyadic
+  outcome weights — the h·t·h sandwich; explicit witness
+  `meas (h (t (h (new X))))` at 45 bits, compressed forms plausibly
+  high-30s. The exact threshold is an open mini-search (and the h↔t
+  mirror symmetry of the pilot should break with it).
 - `cnot` return convention: Church pair is v0; residual question is
   only whether a pair-projection idiom deserves a measured shorthand.
 - Output convention: whole-live-store (current) vs designated-output
   list (uni-style). The latter would restore output compositionality
   and re-enable an internal relabeling program (obligation 3); the
-  former is simpler and parse-free. Decide before S2; both objects'
-  identities depend on it.
+  former is simpler and parse-free. S2 v1 data is whole-live-store
+  (the convention M_Fock is defined on); still open for Object B,
+  and a convention change costs one ~1-min census rerun.
 - Err-mass accounting: excluded from Ω_success by definition — but
   the Err mass is itself lower-semicomputable and may deserve its own
   census column (raw halting mass = success + Err + halting-Unknown

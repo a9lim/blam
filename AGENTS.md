@@ -156,18 +156,27 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
 
 ## Open docket
 
-- **qBLC (second pillar)**: design ratified (DESIGN-QBLC.md; round
-  record in LEDGER.md 2026-08-02). Two target objects — operator
-  census M_Fock (Tr = Ω_success, number-superselected) and the
-  dimension-conditioned Gács family G_k. S1 core LANDED: naive
-  reference evaluator `src/qvm.rs` + exact ring `src/dw.rs` + pilot
-  `src/bin/qpilot.rs`; **signature order frozen: `p h meas new cnot
-  t`** (120-permutation pilot at ≤24 bits, 61 s; Ω_{success,≤24} =
-  46757/2^24; h↔t mirror tie broken lexicographically as
-  predeclared). Next: S2 operator census M^(1); KN-store fast path
-  when sweep sizes demand it. Classical engines untouched — the
-  bit-identity bar applies to them, not to qBLC's new surface.
-  Literature survey in `ref/QUANTUM_AIT.md` (untracked).
+- **qBLC (second pillar)**: design ratified (DESIGN-QBLC.md; rounds
+  in LEDGER.md 2026-08-02/03). Two target objects — operator census
+  M_Fock (Tr = Ω_success, number-superselected) and the
+  dimension-conditioned Gács family G_k. **Signature order frozen:
+  `p h meas new cnot t`**. S1 landed (reference evaluator
+  `src/qvm.rs` + ring `src/dw.rs` + pilot); S2 LANDED (2026-08-03):
+  KN-store fast path `src/qkn.rs` (~200× naive on bulk, lockstep-
+  verified on full leaf sequences vs qvm over the ≤24 population —
+  keep that test green when touching either engine) + census bin
+  `src/bin/qcensus.rs` → canonical `qcensus_table36.txt`
+  (Ω_{success,≤36} = 105268717/2³⁵; M^(1) PD, ranking
+  |0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩; fate-divergence from 22 bits,
+  dyadicity unbroken through 36 — witness for the break at ≤45).
+  Budgets β=4096/trans=2²⁶ measured-headroom; β×16 resolves zero
+  unknowns (measured — the unk column is a real frontier). Next:
+  S3 (M^(2) matrix — sector opens n=33, entangled halts need 41 —
+  Ω bracket, G_k approximants); output-convention question still
+  open for Object B (v0 = whole-live-store; rerun is ~1 min).
+  Classical engines untouched — the bit-identity bar applies to
+  them, not to qBLC's new surface. Literature survey in
+  `ref/QUANTUM_AIT.md` (untracked).
 
 - **v4 certificate classes, in Codex-ratified order — specs in
   `tools/cert/SPEC.md` §8**: (1) PassengerDiagonal (§8.1) — the

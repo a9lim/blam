@@ -11,6 +11,7 @@ pub mod enumerate;
 pub mod eval;
 pub mod oracle;
 pub mod parse;
+pub mod qkn;
 pub mod qvm;
 pub mod term;
 pub mod vm;

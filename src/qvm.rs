@@ -34,7 +34,7 @@ pub enum Prim {
 impl Prim {
     pub const ALL: [Prim; 5] = [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H];
 
-    fn arity(self) -> usize {
+    pub(crate) fn arity(self) -> usize {
         match self {
             Prim::Cnot => 2,
             _ => 1,
@@ -122,7 +122,11 @@ fn beta(body: &QTerm, arg: &QTerm) -> QTerm {
 
 /// Tensor position: bit p of a statevector index is the p-th *live* qubit
 /// in allocation-rank order (LSB = earliest surviving allocation).
-#[derive(Clone, Debug)]
+///
+/// Methods are pub(crate): `qkn` (the fast path) reuses this exact effect
+/// implementation, so both engines share one definition of H/T/CNOT/project
+/// and stores compare bit-identically in the lockstep tests.
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Store {
     /// Unnormalized amplitudes, length 2^live.
     pub amps: Vec<Dw>,
@@ -154,7 +158,11 @@ impl Store {
         self.live.iter().position(|&x| x == q)
     }
 
-    fn alloc(&mut self, max_qubits: usize) -> Result<u32, Capacity> {
+    pub(crate) fn empty() -> Store {
+        Store::new()
+    }
+
+    pub(crate) fn alloc(&mut self, max_qubits: usize) -> Result<u32, Capacity> {
         if self.live.len() >= max_qubits {
             return Err(Capacity::Qubits);
         }
@@ -169,7 +177,7 @@ impl Store {
     }
 
     /// Check-and-bump an epoch (atomic consumption). Err = stale or retired.
-    fn consume(&mut self, q: u32, e: u32) -> Result<(), ErrKind> {
+    pub(crate) fn consume(&mut self, q: u32, e: u32) -> Result<(), ErrKind> {
         match self.epochs.get_mut(q as usize) {
             Some(Some(cur)) if *cur == e => {
                 *cur += 1;
@@ -181,7 +189,7 @@ impl Store {
         }
     }
 
-    fn peek(&self, q: u32, e: u32) -> Result<(), ErrKind> {
+    pub(crate) fn peek(&self, q: u32, e: u32) -> Result<(), ErrKind> {
         match self.epochs.get(q as usize) {
             Some(Some(cur)) if *cur == e => Ok(()),
             Some(Some(_)) => Err(ErrKind::StaleEpoch),
@@ -190,7 +198,7 @@ impl Store {
         }
     }
 
-    fn apply_h(&mut self, q: u32) -> Result<(), Capacity> {
+    pub(crate) fn apply_h(&mut self, q: u32) -> Result<(), Capacity> {
         let p = self.pos_of(q).expect("H on non-live qubit");
         let bit = 1usize << p;
         for i in 0..self.amps.len() {
@@ -205,7 +213,7 @@ impl Store {
         Ok(())
     }
 
-    fn apply_t(&mut self, q: u32) -> Result<(), Capacity> {
+    pub(crate) fn apply_t(&mut self, q: u32) -> Result<(), Capacity> {
         let p = self.pos_of(q).expect("T on non-live qubit");
         let bit = 1usize << p;
         for i in 0..self.amps.len() {
@@ -216,7 +224,7 @@ impl Store {
         Ok(())
     }
 
-    fn apply_cnot(&mut self, qc: u32, qt: u32) {
+    pub(crate) fn apply_cnot(&mut self, qc: u32, qt: u32) {
         let pc = self.pos_of(qc).expect("CNOT control non-live");
         let pt = self.pos_of(qt).expect("CNOT target non-live");
         let (bc, bt) = (1usize << pc, 1usize << pt);
@@ -230,7 +238,7 @@ impl Store {
 
     /// Project qubit q onto |outcome⟩, remove its tensor factor, retire it.
     /// The surviving vector stays unnormalized — its norm² is the branch mass.
-    fn measure_project(&mut self, q: u32, outcome_one: bool) {
+    pub(crate) fn measure_project(&mut self, q: u32, outcome_one: bool) {
         let p = self.pos_of(q).expect("measure on non-live qubit");
         let bit = 1usize << p;
         let mut kept = Vec::with_capacity(self.amps.len() / 2);
@@ -269,7 +277,7 @@ pub enum Capacity {
     Branches,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Fate {
     /// Full normal form reached; store is the leaf's live output.
     Halt(Store),
@@ -301,13 +309,16 @@ impl Default for QBudget {
 }
 
 /// One leaf of the (truncated) branch tree, with its exact mass.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Leaf {
     pub fate: Fate,
     /// ‖v‖² at the leaf — mass of Halt leaves is the Ω_success contribution;
     /// mass of Err/Unknown/Capacity leaves feeds the bracket / Err column.
     /// None only if the mass itself overflowed (counted as Capacity).
     pub mass: Option<Dw>,
+    /// Contractions (β + primitive firings) on this leaf's branch path —
+    /// the lockstep surface the fast path must reproduce exactly.
+    pub steps: u64,
 }
 
 // ---------------------------------------------------------------------------
@@ -596,7 +607,7 @@ pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
         loop {
             if ntrans >= budget.trans || nbeta >= budget.beta {
                 let mass = store.mass();
-                leaves.push(Leaf { fate: Fate::Unknown, mass });
+                leaves.push(Leaf { fate: Fate::Unknown, mass, steps: nbeta });
                 break;
             }
             ntrans += 1;
@@ -610,7 +621,11 @@ pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
                     branches += 1;
                     if branches > budget.max_branches {
                         let mass = store.mass();
-                        leaves.push(Leaf { fate: Fate::Capacity(Capacity::Branches), mass });
+                        leaves.push(Leaf {
+                            fate: Fate::Capacity(Capacity::Branches),
+                            mass,
+                            steps: nbeta,
+                        });
                         break;
                     }
                     work.push((t1, s1, nbeta, ntrans));
@@ -620,17 +635,18 @@ pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
                 Step::Normal => {
                     let mass = store.mass();
                     match mass {
-                        Some(_) => leaves.push(Leaf { fate: Fate::Halt(store), mass }),
+                        Some(_) => leaves.push(Leaf { fate: Fate::Halt(store), mass, steps: nbeta }),
                         None => leaves.push(Leaf {
                             fate: Fate::Capacity(Capacity::Amplitude),
                             mass: None,
+                            steps: nbeta,
                         }),
                     }
                     break;
                 }
                 Step::Died(fate) => {
                     let mass = store.mass();
-                    leaves.push(Leaf { fate, mass });
+                    leaves.push(Leaf { fate, mass, steps: nbeta });
                     break;
                 }
             }

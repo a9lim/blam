@@ -138,3 +138,85 @@ First Rust of the quantum pillar, same session as ratification.
 - `cargo test --release` fully green (52 lib + all classical
   integration suites; classical engines untouched). Pilot raw table
   regenerable: `qpilot --max-n 24`.
+
+## 2026-08-03 — qBLC S2: KN-store fast path + the M^(1) operator census
+
+The fast path built, lockstep-verified, and driven through the first
+operator census, one session after S1.
+
+- **`src/qkn.rs` — the KN-store machine**: vm.rs's defunctionalized
+  Crégut pattern (flat u32 nodes, explicit frame stack, append-only
+  env arena) extended with Prim/Handle node species, a store hook at
+  primitive application, and copy-on-fork at `meas` (fork clones only
+  the frame stack + store; env arena and node pool are append-only
+  and shared across branches). Store effects are qvm's own methods —
+  one implementation, so amplitudes compare bit-identically. The
+  design subtlety that would sink a naive port: when a primitive's
+  argument turns out NEUTRAL (rigid head), neutrality propagates
+  through the whole contiguous run of pending primitive frames at
+  once (`h (cnot x M)` with x rigid leaves both prims symbolic and M
+  a plain normalization job) — so a rigid arrival converts the entire
+  spine-context run (Arg→Norm, Cnot1→Norm on its held second
+  argument, Prim1/Cnot2→Skip) before readback, and species checks
+  fire only at *value* arrival. Caught at design time, pinned as test
+  `neutral_propagates_through_prim_frames`.
+- **Lockstep verification**: identical leaf sequences — fate
+  including the full store, exact mass, contraction count, leaf
+  order — over the whole ≤24-bit population at two signature orders,
+  plus tiny-β boundary mirrors (β ∈ {1,3,8,64}: qvm performs the
+  β-th contraction then declares Unknown at the next check; the
+  machine reproduces the off-by-one exactly), branch-capacity and
+  qubit-capacity mirrors. Zero divergences, first compile. `Leaf`
+  gained a `steps` field for this; Store/Fate/Leaf gained PartialEq;
+  qvm semantics untouched.
+- **Measured speed**: bulk-row throughput ~7.7M programs/s (n=23:
+  4,405 programs in 570 µs) ≈ 200× the naive core; full-sweep
+  aggregate 416k programs/s at ≤36 — wall is dominated by the
+  unknowns tail, each burning the full β budget at ~2k transitions
+  per contraction. β-sensitivity measured: ×16 β (65536) resolves
+  ZERO of the ≤28 unknowns at 50× the wall — β=4096 is the right
+  canonical budget; the unknown column is a genuine frontier, like
+  the classical census.
+- **`src/bin/qcensus.rs` — S2 canonical run** (`qcensus_table36.txt`,
+  spec-v0 output convention: live store at Halt): 24,325,850 programs
+  (4..=36 bits), 24,470,544 leaves, 58 s wall on 18 threads.
+  β=4096, trans=2²⁶ (measured max 8.4M — 8× headroom), qubits 12
+  (max seen 2), branches 4096 (max seen 6). Mass conservation
+  (Σ leaf masses = 1 exactly) asserted per program across the whole
+  sweep — zero violations, zero ring overflows. Ω_{success,≤24}
+  reconfirms the pilot's 46757/2²⁴ through an independent engine.
+- **The numbers**: Ω_{success,≤36} = 105268717/2³⁵ ≈ 0.0030637,
+  bracket upper +unk = 0.0030789; Err mass 0.1204 (14.85M species,
+  3.58M handle-applied; zero stale/retired/same-qubit — clone-death
+  needs the cnot pair, which first HALTS at 33 bits). Sectors:
+  Tr M^(0) = 0.00239 (1.77M halts), Tr M^(1) = 0.000673 (310k),
+  Tr M^(2) = 27/2³⁵ ≈ 7.9e-10 (29 halts — the k=2 sector OPENS at
+  n=33 exactly as predicted: `cnot (new X) (new Y)` costs 33 bits;
+  all still |00⟩, first entangled halt needs 41).
+- **M^(1) structure**: hermitian exactly, positive definite (det
+  sign +1, exact via √2-aligned numerator comparison — the naive
+  product exceeds K_CAP), eigenvalues ≈ 6.733e-4 and 3.78e-8.
+  Off-diagonal (4973, 0, −8, −220)/√2⁷⁴ — genuinely complex once
+  `t (h (new X))` fits (n=30). State ranking ⟨ψ|M^(1)|ψ⟩:
+  |0⟩ ≫ |+⟩ > T|+⟩ > TH₋ > |−⟩ ≫ |1⟩ — the census prefers phase
+  alignment with the |+⟩-heavy off-diagonal; |1⟩ mass is pure
+  h-leakage (5201/2³⁷).
+- **Milestone separation (corrects an S1 conjecture)**: fate
+  divergence and Ω-irrationality do NOT arrive together. First
+  fate-divergent program at 22 bits — λλλ. (2 (1 1)) 2 =
+  `((meas (new new)) meas cnot) t`: measuring a fresh |0⟩ forks into
+  outcome-0 (mass 1, dies Species at `meas t`) and outcome-1 (mass
+  EXACTLY 0, halts as the undersaturated normal form `cnot t`).
+  18,479 fate-divergent programs by ≤36; every halt mass still
+  dyadic — divergent fates ride zero-mass or dyadic branches.
+  Irrationality needs a measured qubit whose outcome weights are
+  non-dyadic, i.e. the h·t·h sandwich: explicit witness
+  `meas (h (t (h (new X))))` at 45 bits (5-λ form; trailing-
+  application compressions plausibly reach the high 30s). Measured:
+  zero non-dyadic halt leaves through n=36. The exact threshold is
+  an open mini-search.
+- Full suite green (62 lib + all integration; classical engines and
+  census untouched). Open per spec: the output-convention question
+  is still marked decide-before-S2 — this run is v0
+  (whole-live-store, the convention M_Fock is defined on); a
+  convention change costs one ~1-min rerun.
