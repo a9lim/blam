@@ -309,7 +309,9 @@ is Unknown(Capacity), mass into the bracket.
    at the effect-trace level (per-leaf root-to-leaf effect paths,
    `qeval::run_traced`, β-stuttering erased by construction) over the
    small-size population, plus a poisoned-seed-env canary; the
-   small-step bisimulation stays the proof obligation.
+   small-step bisimulation stays the proof obligation — precise
+   statement, relation, and case-ledger proof plan in SPEC-BISIM.md
+   (Codex-skeletoned, round 3 ratifies).
 3. **Convention-dependence**: for a fixed permutation π_k of
    allocation ranks, M'^(k) = P_{π_k} M^(k) P_{π_k}† exactly — an
    external representation theorem, no qBLC program involved.

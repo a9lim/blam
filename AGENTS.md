@@ -198,7 +198,8 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   tight within the intL protocol, global optimality open (bin
   `src/bin/qselfint.rs`, effect-trace verification via
   `qeval::run_traced` + qvm cross-check; bisimulation stays the
-  proof obligation — DESIGN-QBLC.md obligation 2 has the record).
+  proof obligation — statement + proof plan in SPEC-BISIM.md,
+  measured record in DESIGN-QBLC.md obligation 2).
   **Dyadicity threshold answered in the idiom sector** (2026-08-03,
   bin `src/bin/qradical.rs`, filter cross-checked against Codex's
   independent DP): per-size Σ_success √2-coefficient exactly 0 for
@@ -208,9 +209,14 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   programs; unknowns at 53 (752) are β-insensitive at 8×/64×
   budgets. Phase 2 (primitive-taint over the non-λ⁵ complement,
   46..53) is the remaining blocker on the full-population claim.
-  Next: phase-2 taint evaluator; G_k approximant runs + sandwich
-  constants; output-convention question still open for Object B
-  (v0 = whole-live-store).
+  Next (a9's pickup order, 2026-08-03): bisimulation proof lane —
+  SPEC-BISIM.md L1/L2 first, natural Lean seed (spec written, Codex
+  round-3 ratification in thread `qblc-selfint`); then phase-2 taint
+  evaluator (complete Codex design in thread `qblc-omega-witnesses`
+  round 2: one-sided may-analysis, H…T…H…meas monitor, k-partition;
+  their prior — 95% the full-population threshold stays 53); G_k
+  approximant runs + sandwich constants; output-convention question
+  still open for Object B (v0 = whole-live-store).
   Classical engines untouched — the bit-identity bar applies to
   them, not to qBLC's new surface. Literature survey in
   `ref/QUANTUM_AIT.md` (untracked).
