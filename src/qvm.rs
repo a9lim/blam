@@ -154,6 +154,17 @@ impl Pool {
         }
         r
     }
+
+    /// Church numeral k̄ = λf.λx. f^k x (Object B's dimension argument).
+    pub fn numeral(&mut self, k: u32) -> u32 {
+        let f = self.push(Node::Var(2));
+        let mut body = self.push(Node::Var(1));
+        for _ in 0..k {
+            body = self.push(Node::App(f, body));
+        }
+        let inner = self.push(Node::Lam(body));
+        self.push(Node::Lam(inner))
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -543,8 +554,28 @@ impl QMachine {
         budget: &QBudget,
         leaves: &mut Vec<Leaf>,
     ) {
+        self.run_conditioned_into(pool, enc, len, None, order, budget, leaves);
+    }
+
+    /// The Object-B entry point: run `p k̄ ⟨sig⟩` — the program receives the
+    /// dimension as a Church numeral BEFORE the signature. `cond = None` is
+    /// the unconditioned M_Fock sweep.
+    pub fn run_conditioned_into(
+        &mut self,
+        pool: &mut Pool,
+        enc: u64,
+        len: u8,
+        cond: Option<u32>,
+        order: &[Prim; 5],
+        budget: &QBudget,
+        leaves: &mut Vec<Leaf>,
+    ) {
         pool.reset();
-        let root = pool.decode_u64(enc, len).expect("well-formed closed term");
+        let mut root = pool.decode_u64(enc, len).expect("well-formed closed term");
+        if let Some(k) = cond {
+            let num = pool.numeral(k);
+            root = pool.push(Node::App(root, num));
+        }
         let sig = pool.apply_signature(root, order);
         self.run_into(pool, sig, budget, leaves);
     }

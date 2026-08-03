@@ -232,3 +232,42 @@ already conformant (`qcensus`, `qpilot`). README gained the quantum
 pillar (section, layout, roadmap — it had none of it); docs now fully
 current. Full suite green post-rename. a9 to bed; overnight
 authorization: chase the pillar as far as it goes.
+
+## 2026-08-03 overnight — S3 core: the operator census at classical depth
+
+The ≤41 canonical run — the full 526,039,969-program population, the
+classical census's exact range — through the fast path in 29.8 min
+(`qcensus_table41.txt`, table36 superseded to git history). Mass
+conservation held across all 529,359,246 leaves; zero ring overflows;
+4× transition headroom (max 16.8M / 2²⁶ cap).
+
+- **Ω_{success,≤41} = 3424188513/2⁴⁰ ≈ 0.003114281310445**, bracket
+  upper 0.003131 (+1,619,650 unknowns' mass — the qBLC frontier).
+  Err mass 0.1210.
+- **Entanglement enters at exactly n=41** as predicted
+  (`cnot (h (new X)) (new Y)` = Bell Φ⁺, 41 bits on the nose).
+  2-qubit ranking: |00⟩ ≫ Φ⁺ > Φ⁻ > |++⟩ ≫ basis-flipped states,
+  the Φ⁺/Φ⁻ gap exactly 2·M²[0][3] = 6/2⁴³. M^(2) is fully populated
+  (16/16 nonzero — fork-collapsed branches put mass into coherences
+  cheaper than pure unitary constructions do). Sectors: k=2 opened
+  at 33 (1,462 halts), k=3 by 41 (20 halts), k≥4 empty.
+- **The irrationality structure sharpened**: every halt MASS through
+  n=41 is dyadic (zero non-dyadic leaves in 43.66M halts), yet
+  M^(1)'s entries are already irrational — e.g. M¹[1][1] =
+  (−9 + 105858ω − 105858ω³)/√2⁸³. The √2-parts live in how mass
+  splits between |0⟩ and |1⟩ (h·t·h states from n=34) and cancel
+  exactly in every trace. Operator geometry goes irrational before
+  any scalar does.
+- **Two one-in-526M firsts at n=41**: the pillar's first clone-death
+  Err (SameQubit — err split [403,406,440 species / 80,676,647
+  handle-applied / 0 / 0 / 1]) and its first capacity fate (one
+  Qubits cap — a new-pump exceeding 12 live within β=4096). Max
+  branch tree 1,364 leaves; 470,289 fate-divergent programs; max
+  live 3.
+- Harness additions, all lockstep-green: M^(2) 4×4 exact accumulator
+  + Bell rankings, `--min-n`, `--cond-k K` (Object B mode: programs
+  run as `p k̄ ⟨sig⟩` with a Church-numeral dimension — G_k
+  approximant sweeps), qpilot ported to the fast machine (reproduces
+  the frozen winner; ≤18 sanity shows the S1 h↔t mirror tie intact).
+  Note: table41's header line predates the mode label (binary
+  compiled mid-run); regenerating will say `[M_Fock]`.

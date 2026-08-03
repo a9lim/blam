@@ -2,15 +2,18 @@
 //! over every closed term of size 4..=N, and rank them by the PREDECLARED
 //! functional (DESIGN-QBLC.md, Staging): maximize Ω_{success,≤N}, ties broken
 //! lexicographically on the permutation tuple. The functional and cutoff are
-//! fixed before any results are seen; the winner freezes the signature order
-//! for all canonical S2 data.
+//! fixed before any results are seen; the winner froze the signature order
+//! for all canonical data (S1, 2026-08-02, at ≤24 via the reference
+//! evaluator). Now runs the lockstep-verified fast machine (`qvm`) — the
+//! frozen result reproduces exactly; larger-N robustness reruns are
+//! informational only, never a re-freeze.
 //!
 //! Usage: qpilot [--max-n N] [--beta B] [--trans T] [--threads K]
 
 use blc::dw::Dw;
-use blc::enumerate::{enc_to_string, for_each_closed};
-use blc::qeval::{apply_signature, run, Fate, Prim, QBudget};
-use blc::{parse_all, Term};
+use blc::enumerate::for_each_closed;
+use blc::qeval::{Fate, Prim, QBudget};
+use blc::qvm::{Pool, QMachine};
 use rayon::prelude::*;
 use std::time::Instant;
 
@@ -50,9 +53,20 @@ impl Tally {
     }
 }
 
-fn eval_term(t: &Term, n: u32, order: &[Prim; 5], budget: &QBudget) -> Tally {
+fn eval_term(
+    pool: &mut Pool,
+    m: &mut QMachine,
+    leaves: &mut Vec<blc::qeval::Leaf>,
+    enc: u64,
+    len: u8,
+    n: u32,
+    order: &[Prim; 5],
+    budget: &QBudget,
+) -> Tally {
     let mut tally = Tally::new();
-    for leaf in run(apply_signature(t, order), budget) {
+    leaves.clear();
+    m.run_program_into(pool, enc, len, order, budget, leaves);
+    for leaf in leaves.iter() {
         let w_f = leaf.mass.map(|m| m.to_f64_re()).unwrap_or(0.0) / 2f64.powi(n as i32);
         match leaf.fate {
             Fate::Halt(_) => {
@@ -111,7 +125,8 @@ fn order_name(order: &[Prim; 5]) -> String {
 
 fn main() {
     let mut max_n: u32 = 24;
-    let mut budget = QBudget::default();
+    // trans is the fast machine's metric (transitions, not redex searches).
+    let mut budget = QBudget { trans: 1 << 26, ..QBudget::default() };
     let mut threads: Option<usize> = None;
     let args: Vec<String> = std::env::args().skip(1).collect();
     let mut i = 0;
@@ -165,10 +180,16 @@ fn main() {
         let t1 = Instant::now();
         let tally = programs
             .par_iter()
-            .map(|&(enc, len, n)| {
-                let t = parse_all(&enc_to_string(enc, len)).unwrap();
-                eval_term(&t, n, &order, &budget)
-            })
+            .fold(
+                || (Pool::new(), QMachine::new(), Vec::new(), Tally::new()),
+                |(mut pool, mut m, mut leaves, acc), &(enc, len, n)| {
+                    let t =
+                        eval_term(&mut pool, &mut m, &mut leaves, enc, len, n, &order, &budget);
+                    let acc = acc.merge(t);
+                    (pool, m, leaves, acc)
+                },
+            )
+            .map(|(_, _, _, t)| t)
             .reduce(Tally::new, Tally::merge);
         eprintln!(
             "[{:>3}/120] {}  omega_succ={:.9}  ({:.2?})",

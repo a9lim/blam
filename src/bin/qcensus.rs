@@ -21,8 +21,13 @@
 //! live store at Halt (M_Fock's definition). The designated-output
 //! alternative (DESIGN-QBLC.md, Open questions) changes G_k, not this.
 //!
-//! Usage: qcensus [--max-n N] [--beta B] [--trans T] [--qubits Q]
-//!                [--branches K] [--threads J] [--out FILE]
+//! Usage: qcensus [--min-n N] [--max-n N] [--beta B] [--trans T]
+//!                [--qubits Q] [--branches K] [--threads J] [--out FILE]
+//!                [--cond-k K]
+//!
+//! `--cond-k K` switches to Object B mode: every program runs as
+//! `p K-bar <sig>` (dimension handed as a Church numeral before the
+//! signature) — the G_K approximant sweep.
 
 use blc::dw::Dw;
 use blc::enumerate::{interleave_tasks, run_task, split_tasks};
@@ -113,6 +118,8 @@ struct Tally {
     sect_n: [u64; SECT],
     /// M^(1) row-major: [00, 01, 10, 11].
     m1: [Ex; 4],
+    /// M^(2) row-major 4×4 (basis |q1 q0⟩, first-allocated qubit = low bit).
+    m2: [Ex; 16],
     forked: u64,
     fate_div: u64,
     first_fate_div: Option<(u8, u64)>,
@@ -142,6 +149,7 @@ impl Tally {
             sect_mass: [Ex::ZERO; SECT],
             sect_n: [0; SECT],
             m1: [Ex::ZERO; 4],
+            m2: [Ex::ZERO; 16],
             forked: 0,
             fate_div: 0,
             first_fate_div: None,
@@ -177,6 +185,9 @@ impl Tally {
         }
         for i in 0..4 {
             self.m1[i].merge(&o.m1[i]);
+        }
+        for i in 0..16 {
+            self.m2[i].merge(&o.m2[i]);
         }
         self.forked += o.forked;
         self.fate_div += o.fate_div;
@@ -221,11 +232,12 @@ fn sweep_one(
     leaves: &mut Vec<blc::qeval::Leaf>,
     enc: u64,
     len: u8,
+    cond: Option<u32>,
     budget: &QBudget,
     t: &mut Tally,
 ) {
     leaves.clear();
-    m.run_program_into(pool, enc, len, &FROZEN, budget, leaves);
+    m.run_conditioned_into(pool, enc, len, cond, &FROZEN, budget, leaves);
     let n = len as u32;
     t.programs += 1;
     t.leaves += leaves.len() as u64;
@@ -252,17 +264,18 @@ fn sweep_one(
                 let s = live.min(SECT - 1);
                 t.sect_n[s] += 1;
                 t.sect_mass[s].add(w);
-                if live == 1 {
-                    // v v† / 2^n — exact complex entries.
-                    let (v0, v1) = (store.amps[0], store.amps[1]);
-                    let e = [
-                        v0.mul(v0.conj()),
-                        v0.mul(v1.conj()),
-                        v1.mul(v0.conj()),
-                        v1.mul(v1.conj()),
-                    ];
-                    for (acc, x) in t.m1.iter_mut().zip(e) {
-                        acc.add(x.and_then(|y| y.div_pow2(n)));
+                // Sector operator accumulation: M^(k) += v v† / 2^n, exact.
+                if live == 1 || live == 2 {
+                    let dim = 1 << live;
+                    let acc: &mut [Ex] =
+                        if live == 1 { &mut t.m1 } else { &mut t.m2 };
+                    for i in 0..dim {
+                        for j in 0..dim {
+                            let x = store.amps[i]
+                                .mul(store.amps[j].conj())
+                                .and_then(|y| y.div_pow2(n));
+                            acc[i * dim + j].add(x);
+                        }
                     }
                 }
                 if let Some(mv) = leaf.mass {
@@ -316,23 +329,54 @@ fn enc_str(enc: u64, len: u8) -> String {
     blc::enumerate::enc_to_string(enc, len)
 }
 
-/// ⟨ψ|M|ψ⟩ for unnormalized ψ = (c0, c1), divided by ‖ψ‖² later by caller.
-fn expect(m1: &[Ex; 4], c0: Dw, c1: Dw) -> Option<Dw> {
-    if !m1.iter().all(|e| e.ok) {
+/// ⟨ψ|M|ψ⟩ for unnormalized ψ; the caller divides by ‖ψ‖² afterwards.
+fn expect(m: &[Ex], psi: &[Dw]) -> Option<Dw> {
+    if !m.iter().all(|e| e.ok) {
         return None;
     }
+    let dim = psi.len();
     // ψ† M ψ = Σ_ij conj(c_i) M_ij c_j
     let mut acc = Dw::ZERO;
-    for (i, ci) in [c0, c1].iter().enumerate() {
-        for (j, cj) in [c0, c1].iter().enumerate() {
-            acc = acc.add(ci.conj().mul(m1[i * 2 + j].v)?.mul(*cj)?)?;
+    for (i, ci) in psi.iter().enumerate() {
+        for (j, cj) in psi.iter().enumerate() {
+            acc = acc.add(ci.conj().mul(m[i * dim + j].v)?.mul(*cj)?)?;
         }
     }
     Some(acc.reduce())
 }
 
+/// Ranked ⟨ψ|M|ψ⟩ table for named (unnormalized) states; `halvings` is
+/// log₂‖ψ‖².
+fn rank_states(
+    r: &mut String,
+    label: &str,
+    m: &[Ex],
+    states: &[(&str, Vec<Dw>, u32)],
+) {
+    let mut ranked: Vec<(String, f64, String)> = Vec::new();
+    for (name, psi, halvings) in states {
+        if let Some(v) = expect(m, psi) {
+            if let Some(v) = v.div_pow2(*halvings) {
+                let v = v.reduce();
+                ranked.push((
+                    name.to_string(),
+                    v.to_f64_re(),
+                    format!("({},{},{},{},{})", v.a, v.b, v.c, v.d, v.k),
+                ));
+            }
+        }
+    }
+    ranked.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+    let _ = writeln!(r, "state ranking <psi|{label}|psi>:");
+    for (name, f, e) in &ranked {
+        let _ = writeln!(r, "  {:<16} {}  = {:.15}", name, e, f);
+    }
+}
+
 fn main() {
+    let mut min_n: u32 = 4;
     let mut max_n: u32 = 28;
+    let mut cond_k: Option<u32> = None;
     let mut budget = QBudget { trans: 1 << 22, ..QBudget::default() };
     let mut threads: Option<usize> = None;
     let mut out: Option<String> = None;
@@ -340,6 +384,14 @@ fn main() {
     let mut i = 0;
     while i < args.len() {
         match args[i].as_str() {
+            "--min-n" => {
+                min_n = args[i + 1].parse().unwrap();
+                i += 2;
+            }
+            "--cond-k" => {
+                cond_k = Some(args[i + 1].parse().unwrap());
+                i += 2;
+            }
             "--max-n" => {
                 max_n = args[i + 1].parse().unwrap();
                 i += 2;
@@ -376,15 +428,19 @@ fn main() {
     }
     let nthreads = rayon::current_num_threads();
 
+    let mode = match cond_k {
+        None => "M_Fock".to_string(),
+        Some(k) => format!("G_{k} (p k-bar sig)"),
+    };
     eprintln!(
-        "qcensus: sizes 4..={max_n}, order [h meas new cnot t], beta={} trans={} qubits={} branches={}, {} threads",
+        "qcensus [{mode}]: sizes {min_n}..={max_n}, order [h meas new cnot t], beta={} trans={} qubits={} branches={}, {} threads",
         budget.beta, budget.trans, budget.max_qubits, budget.max_branches, nthreads
     );
 
     let t0 = Instant::now();
     let mut rows: Vec<(u32, Tally)> = Vec::new();
     let mut total = Tally::new();
-    for n in 4..=max_n {
+    for n in min_n..=max_n {
         let tn = Instant::now();
         let tasks = interleave_tasks(split_tasks(n, nthreads * 32));
         let tally = tasks
@@ -393,7 +449,9 @@ fn main() {
                 || (Pool::new(), QMachine::new(), Vec::new(), Tally::new()),
                 |(mut pool, mut m, mut leaves, mut t), task| {
                     run_task(task, &mut |enc, len| {
-                        sweep_one(&mut pool, &mut m, &mut leaves, enc, len, &budget, &mut t);
+                        sweep_one(
+                            &mut pool, &mut m, &mut leaves, enc, len, cond_k, &budget, &mut t,
+                        );
                     });
                     (pool, m, leaves, t)
                 },
@@ -424,10 +482,13 @@ fn main() {
 
     // ---- report -----------------------------------------------------------
     let mut r = String::new();
-    let _ = writeln!(r, "# qcensus S2 — M^(1) operator census, spec v0 (output = live store at Halt)");
     let _ = writeln!(
         r,
-        "# sizes 4..={max_n}  order [h meas new cnot t]  beta={} trans={} qubits={} branches={}",
+        "# qcensus [{mode}] — operator census, spec v0 (output = live store at Halt)"
+    );
+    let _ = writeln!(
+        r,
+        "# sizes {min_n}..={max_n}  order [h meas new cnot t]  beta={} trans={} qubits={} branches={}",
         budget.beta, budget.trans, budget.max_qubits, budget.max_branches
     );
     let _ = writeln!(r, "# exact values are (a,b,c,d,k): (a + b*w + c*w^2 + d*w^3)/sqrt(2)^k, w = e^(i pi/4)");
@@ -563,35 +624,65 @@ fn main() {
             (trf + disc) / 2.0,
             (trf - disc) / 2.0
         );
-        // State rankings: <psi|M|psi> for canonical single-qubit states,
-        // each with ||psi||^2 = 1 (|0>,|1>) or 2 (unnormalized (1,±1),(1,w)).
+        // Canonical single-qubit states, unnormalized; halvings = log2 |psi|^2.
         let one = Dw::ONE;
-        let states: Vec<(&str, Dw, Dw, u32)> = vec![
-            ("|0>", one, Dw::ZERO, 0),
-            ("|1>", Dw::ZERO, one, 0),
-            ("|+>", one, one, 1),
-            ("|->", one, one.neg(), 1),
-            ("T|+>", one, Dw::OMEGA, 1),
-            ("TH-> (1,-w)", one, Dw::OMEGA.neg(), 1),
+        let zero = Dw::ZERO;
+        let states: Vec<(&str, Vec<Dw>, u32)> = vec![
+            ("|0>", vec![one, zero], 0),
+            ("|1>", vec![zero, one], 0),
+            ("|+>", vec![one, one], 1),
+            ("|->", vec![one, one.neg()], 1),
+            ("T|+>", vec![one, Dw::OMEGA], 1),
+            ("TH-> (1,-w)", vec![one, Dw::OMEGA.neg()], 1),
         ];
-        let mut ranked: Vec<(String, f64, String)> = Vec::new();
-        for (name, c0, c1, halvings) in states {
-            if let Some(v) = expect(&total.m1, c0, c1) {
-                // divide by ||psi||^2 = 2^halvings
-                if let Some(v) = v.div_pow2(halvings) {
-                    let v = v.reduce();
-                    ranked.push((
-                        name.to_string(),
-                        v.to_f64_re(),
-                        format!("({},{},{},{},{})", v.a, v.b, v.c, v.d, v.k),
-                    ));
+        rank_states(&mut r, "M1", &total.m1, &states);
+    }
+    let _ = writeln!(r, "#");
+    let _ = writeln!(
+        r,
+        "## M^(2) (basis |q1 q0>, first-allocated qubit = low bit)"
+    );
+    {
+        let mut nonzero = 0usize;
+        for i in 0..4 {
+            for j in 0..4 {
+                let e = &total.m2[i * 4 + j];
+                if e.ok && e.v.is_zero() {
+                    continue;
                 }
+                nonzero += 1;
+                let _ = writeln!(
+                    r,
+                    "M2[{i}][{j}] = {}  = {:.15} {:+.15}i",
+                    e.exact_str(),
+                    e.re,
+                    e.im
+                );
             }
         }
-        ranked.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
-        let _ = writeln!(r, "state ranking <psi|M1|psi>:");
-        for (name, f, e) in &ranked {
-            let _ = writeln!(r, "  {:<14} {}  = {:.15}", name, e, f);
+        let _ = writeln!(r, "({nonzero} nonzero of 16 entries)");
+        if total.m2.iter().all(|e| e.ok) {
+            let herm = (0..4).all(|i| {
+                (0..4).all(|j| {
+                    total.m2[i * 4 + j].v.reduce()
+                        == total.m2[j * 4 + i].v.conj().reduce()
+                })
+            });
+            let _ = writeln!(r, "hermitian: {herm}");
+            let one = Dw::ONE;
+            let zero = Dw::ZERO;
+            // Bell states unnormalized: |Phi+> = (1,0,0,1), |Psi+> = (0,1,1,0).
+            let states2: Vec<(&str, Vec<Dw>, u32)> = vec![
+                ("|00>", vec![one, zero, zero, zero], 0),
+                ("|01> (q0=1)", vec![zero, one, zero, zero], 0),
+                ("|10> (q1=1)", vec![zero, zero, one, zero], 0),
+                ("|11>", vec![zero, zero, zero, one], 0),
+                ("|++>", vec![one, one, one, one], 2),
+                ("Bell Phi+", vec![one, zero, zero, one], 1),
+                ("Bell Phi-", vec![one, zero, zero, one.neg()], 1),
+                ("Bell Psi+", vec![zero, one, one, zero], 1),
+            ];
+            rank_states(&mut r, "M2", &total.m2, &states2);
         }
     }
     let _ = writeln!(r, "#");

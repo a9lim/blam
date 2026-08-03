@@ -352,15 +352,20 @@ S0 spec ratification (**done**, 2026-08-02) → S1 evaluator (**done**,
 S2 M^(1) operator census (**done**, 2026-08-03: KN-store fast path
 `src/qvm.rs`, lockstep-verified against qeval on leaf sequences — fate
 incl. store, exact mass, contraction count — over the full ≤24
-population; census bin `src/bin/qcensus.rs`; canonical
-`qcensus_table36.txt`, 24.3M programs in 58 s, β=4096/trans=2²⁶ with
-measured headroom; Ω_{success,≤36} = 105268717/2³⁵, M^(1) hermitian
-and positive definite with exact-sign det, ranking
-|0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩; k=2 sector opens at n=33; per-program
-mass conservation asserted sweep-wide) → S3 M^(2), Ω_success
-bracket, rankings, G_k approximants → S4 Thm 8 groundwork +
-interpreter transfer → S5 Lean. Each stage is a publishable finding
-on its own; stopping early is a valid outcome of the investigation.
+population; census bin `src/bin/qcensus.rs`; β=4096/trans=2²⁶ with
+measured headroom; per-program mass conservation asserted sweep-wide)
+→ S3 operator census at classical-census depth (**core done**,
+2026-08-03 overnight: canonical `qcensus_table41.txt` — the full
+526,039,969-program population 4..41 in ~30 min; Ω_{success,≤41} =
+3424188513/2⁴⁰; M^(1) PD, ranking |0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩ with
+irrational operator entries whose √2-parts cancel in every trace;
+M^(2) with the first entangled halts at exactly n=41, 2-qubit
+ranking |00⟩ ≫ Φ⁺ > Φ⁻ > |++⟩; sectors k=2 at 33, k=3 by 41; first
+SameQubit Err and first Qubits capacity, both single events at 41;
+`--cond-k` G_k harness built — G_k approximant runs and the sandwich
+constants remain) → S4 Thm 8 groundwork + interpreter transfer → S5
+Lean. Each stage is a publishable finding on its own; stopping early
+is a valid outcome of the investigation.
 
 ## Rejected
 
