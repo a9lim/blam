@@ -400,3 +400,11 @@ payload becomes a pinned, continuously-exercised artifact.
   MIT → AGPL-3.0-or-later (canonical gnu.org text; SPDX in
   Cargo.toml; README badge/attribution and the PR letter's license
   line updated). Package re-verified at 1.0.0. a9 publishes.
+- **Shipped + release automation (same day)**: a9 published blam
+  1.0.0 to crates.io manually; v1.0.0 tagged at the exact published
+  commit (0b50332) + GitHub release created. release.yml added in
+  ogdoad's vein: version-bump-armed on main, guard probes
+  crates.io/tag/release independently (self-resuming), publish via
+  trusted publishing (OIDC, environment `crates-io` — a9 configures
+  on crates.io), then tag + GH release. Born dormant: v1.0.0 already
+  tagged.

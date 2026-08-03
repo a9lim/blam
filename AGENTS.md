@@ -164,7 +164,11 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   ubuntu/macos, census spot-check 4..32 diffed against the canonical
   table, `lake build Certs`, fork-additivity guard. Work lands on
   `dev`; `main` stays green. crates.io packaging verified (`include`
-  allowlist ships the engine alone; name `blam` free).
+  allowlist ships the engine alone). Published: v1.0.0,
+  AGPL-3.0-or-later. Releasing = bump the Cargo.toml version on main;
+  release.yml publishes via trusted publishing (environment
+  `crates-io`) then tags + GH-releases, dormant while the version is
+  already tagged, self-resuming on partial failure.
 
 ## Open docket
 
