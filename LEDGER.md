@@ -356,3 +356,43 @@ vars are about the language, not the project.
 - Verification: `cargo test --release` fully green under the new
   crate name; census 4..36 rerun — closed/halt/diverge/unknown
   columns bit-identical to `census_table41.txt` at every size.
+
+## 2026-08-03 — publish prep: CI, dev branch, ref/AIT submodule, crates packaging
+
+Leadup to the upstream PR: the repo becomes publishable, and the PR
+payload becomes a pinned, continuously-exercised artifact.
+
+- **ref/AIT: gitignored clone → submodule.** a9 forked tromp/AIT
+  (a9lim/AIT); one additive commit (c0831de) puts `uni.rs` at the
+  fork root — exactly the tree the upstream PR ships. blam pins it
+  as the `ref/AIT` submodule, so the conformance goldens now live at
+  a reproducible SHA instead of upstream HEAD. `tools/uni/` keeps
+  kit + parity harness, drops its interpreter copy; verify.sh
+  compiles `ref/AIT/uni.rs`. Upstream carries no license file —
+  README notes rights remain the author's; referenced, never
+  vendored.
+- **CI** (`.github/workflows/ci.yml`): fmt; clippy at -D warnings;
+  release tests + uni parity on ubuntu/macos; census spot-check
+  4..32 with n/closed/halt/diverge/unknown/escal/max|nf|/beta
+  columns diffed against `census_table41.txt` (0.36 s locally);
+  `lake build Certs` (elan pinned by lean-toolchain, cached);
+  fork-additivity guard (`git diff upstream/master...HEAD` must be
+  all-A). Dependabot weekly on actions + the two runtime crates.
+- **Tree brought to the CI bar**: cargo fmt (18 files, mechanical);
+  clippy fixes (is_multiple_of ×3, two while-let rewrites in the
+  vm/qvm var readers, char-comparison) plus targeted allows (dw.rs
+  ring method names, four 8-arg adjudicators); dead `church` helper
+  dropped from tromp_vectors.
+- **Verified after the changes**: full `cargo test --release` green
+  (34 tests), verify.sh all vectors byte-identical from the
+  submodule, census 4..32 spot-check bit-identical to the canonical
+  table.
+- **crates.io**: name `blam` free (sparse index 404); Cargo.toml
+  gains rust-version 1.87, keywords/categories, readme, and an
+  `include` allowlist — package = engine sources + README/LICENSE,
+  27 files, ~112 KiB compressed, verified building in isolation.
+  Publishing stays manual (a9 holds the token); CI-side publishing
+  is a9's follow-up.
+- **Repo surface**: README badges (CI/crates/license) + submodule
+  instructions + fork/licensing notes; ten GitHub topics; dev
+  branch created — work lands on dev, main stays green.

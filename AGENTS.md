@@ -10,9 +10,13 @@ engine facts, live state, and the open docket.
 
 ## Ground rules
 
-- `ref/AIT` is a read-only clone of tromp/AIT (gitignored). Never edit
-  it. Recreate: `git clone --depth 1 https://github.com/tromp/AIT ref/AIT`.
-  `tests/tromp_vectors.rs` needs it; the unit suite passes without it.
+- `ref/AIT` is a submodule pinned to the a9lim/AIT fork: upstream
+  tromp/AIT plus additive commits only (currently one — `uni.rs` at
+  the root, the staged upstream PR; CI enforces additivity). Treat it
+  read-only here; fork changes happen in their own clone, land on the
+  fork's master, then a deliberate pin bump. Init:
+  `git submodule update --init`. `tests/tromp_vectors.rs` needs it;
+  the unit suite passes without it.
 - The verification bar for any engine change: `cargo test --release`
   green, then a census spot-check whose **halt counts are bit-identical**
   to `census_table41.txt` at the sizes you touch. Halts have been invariant
@@ -150,9 +154,17 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
 - **Interpreter lab** (`tools/interp/`): 170-bit self-interpreter
   certified locally optimal (all three slots exhaustive, unique
   survivor = reference, zero residual unknowns).
-- **uni.rs** (`tools/uni/`): distilled interpreter at call-by-name
-  parity with uni.py (three adversarial witnesses as regression
-  vectors in verify.sh), ~18× faster. PR kit ready (PR_KIT.md).
+- **uni.rs** (root of the `ref/AIT` fork; kit + parity harness in
+  `tools/uni/`): distilled interpreter at call-by-name parity with
+  uni.py (three adversarial witnesses as regression vectors in
+  verify.sh), ~18× faster. Staged as the fork's one additive commit;
+  a9 sends the PR (PR_KIT.md).
+- **Publish infra** (2026-08-03): CI on push/PR — fmt, clippy at
+  -D warnings (tree kept clean), release tests + uni parity on
+  ubuntu/macos, census spot-check 4..32 diffed against the canonical
+  table, `lake build Certs`, fork-additivity guard. Work lands on
+  `dev`; `main` stays green. crates.io packaging verified (`include`
+  allowlist ships the engine alone; name `blam` free).
 
 ## Open docket
 
@@ -201,9 +213,10 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
 - **Contextual slot search** (`tools/interp/SEARCH_SPEC.md` §2):
   drop the must-mask to 0; survivors are hypotheses needing
   whole-interpreter splice + battery, not proofs.
-- **Upstream PR**: a9 sends tromp/AIT the uni.rs PR herself
-  (PR_KIT.md has the text + letter). Never fork/push external repos
-  from a session.
+- **Upstream PR**: a9 sends tromp/AIT the uni.rs PR herself, from
+  a9lim/AIT master — already the staged payload, pinned as `ref/AIT`
+  (PR_KIT.md has the text + letter). Never push to repos outside a9's
+  own account from a session.
 
 ## Collaboration
 

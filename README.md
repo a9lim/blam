@@ -1,5 +1,9 @@
 # blam — binary lambda machine
 
+[![CI](https://github.com/a9lim/blam/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/a9lim/blam/actions/workflows/ci.yml)
+[![crates.io](https://img.shields.io/crates/v/blam.svg)](https://crates.io/crates/blam)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 A fast Rust engine for [John Tromp's binary lambda
 calculus](https://tromp.github.io/cl/Binary_lambda_calculus.html), built
 for algorithmic information theory: exhaustive term censuses,
@@ -179,6 +183,8 @@ over the entire ≤24-bit program population.
 ## Running it
 
 ```
+git clone --recurse-submodules https://github.com/a9lim/blam
+# (in an existing clone: git submodule update --init)
 cargo build --release
 
 # census of all closed terms of 4..40 bits, with self-verification
@@ -219,9 +225,11 @@ default 4096).
   history (regression guarantee; soundness arguments live in
   `DESIGN-BLC.md`).
 - Conformance tests (`tests/tromp_vectors.rs`) parse Tromp's own
-  corpus: clone it first with
-  `git clone --depth 1 https://github.com/tromp/AIT ref/AIT`
-  (gitignored, treated read-only).
+  corpus from the `ref/AIT` submodule — the
+  [a9lim/AIT](https://github.com/a9lim/AIT) fork, pinned at upstream
+  plus a single additive commit (`uni.rs`), so the goldens stay
+  byte-identical to upstream's at a reproducible SHA. CI enforces the
+  additive-only property.
 
 ## Layout
 
@@ -241,7 +249,12 @@ default 4096).
   `frontier.py`; `tools/cert/` (certificate spec, proofs, kills
   file, classifier maps); `tools/interp/` (the self-interpreter lab:
   slot searches, knot search, sound search spec, design notes);
-  `tools/uni/` (the distilled interpreter + PR kit).
+  `tools/uni/` (the uni.rs PR kit + parity harness — the interpreter
+  itself lives at the root of the `ref/AIT` fork).
+- `ref/AIT` — submodule: the [a9lim/AIT](https://github.com/a9lim/AIT)
+  fork of [tromp/AIT](https://github.com/tromp/AIT) (upstream plus
+  `uni.rs`), serving as conformance corpus, execution oracles, and the
+  staged upstream PR.
 - `DESIGN-BLC.md` — classical architecture, measured results, open
   questions; `DESIGN-QBLC.md` — the quantum pillar's design spec.
 - `LEDGER.md` — the running lab notebook: recent sessions, with
@@ -273,10 +286,11 @@ default 4096).
   sub-170.
 - n=42: needs a `--rescue` raise first (the n=41 rescue margin is
   1.06×; see `AGENTS.md`).
-- Upstream: `tools/uni/` holds the distilled `uni.rs` (call-by-name
-  parity with `uni.py`, byte-identical on the corpus plus three
-  adversarial witnesses, ~18× faster) with its PR kit — submission
-  pending.
+- Upstream: `uni.rs` (call-by-name parity with `uni.py`,
+  byte-identical on the corpus plus three adversarial witnesses, ~18×
+  faster) is staged at the root of the `ref/AIT` fork — the exact tree
+  the PR ships, exercised by CI on every push; kit in `tools/uni/`,
+  submission pending.
 
 ## Attribution
 
@@ -290,4 +304,6 @@ Built by [a9lim](https://github.com/a9lim) with Claude (Anthropic) and
 Codex (OpenAI) as agent collaborators — `LEDGER.md` and the commit
 history are the honest record of what that looked like.
 
-MIT license.
+MIT license — covering this repo's own code. The `ref/AIT` submodule
+is upstream Tromp material (which carries no license file; rights
+remain the author's), referenced by pin, never vendored.
