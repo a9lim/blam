@@ -14,12 +14,22 @@
 //! roots that canonicalization must preserve — higher-order values
 //! live in the port structure, not in the trace language.
 //!
-//! Acceptance is NEVER stored in a summary: `may_accept` computes
-//! the product with the mask automaton derived from the trusted
-//! `odd::step_h`/`step_t`/`step_meas` kernels. A projected word
-//! carries at most one `NewD` (the distinguished-allocation guess);
-//! `MeasD` retires; any cnot is the `OutOfScope` letter, a sink
-//! that stage 1a never accepts.
+//! Acceptance is NEVER stored in a summary: `may_accept_latent`
+//! computes the product with the mask automaton derived from the
+//! trusted `odd::step_h`/`step_t`/`step_meas` kernels. A projected
+//! word carries at most one `NewD` (the distinguished-allocation
+//! guess); `MeasD` retires; any cnot is the `OutOfScope` letter, a
+//! sink that stage 1a never accepts.
+//!
+//! SCHEMA STATUS (r5b): the `Label`/`Head` types here are the
+//! foundation cut. The transfer layer requires the r5b revision
+//! before it lands: RetIn/RetOut polarity with full `CapRel` on
+//! both, `CallTarget` (Free/Formal/Received) replacing bare de
+//! Bruijn call indices, alpha-stable binding slots, explicit port
+//! roles, `Prim` held-argument state, and the EvalHead/Apply/
+//! NF-descent context protocol. SPEC-ODDMIN.md §4 records the
+//! revised schema; the canon/product machinery below is
+//! label-generic and survives the change.
 
 use crate::odd::{step_h, step_meas, step_t};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
@@ -137,12 +147,15 @@ impl Summary {
     fn quotient(&self) -> Summary {
         let g = self.reachable();
         // Root-role color: bitset over (entry, port 0, port 1, ...).
+        // Trusted code must never silently alias roles — the u64
+        // bitset caps the port table, so enforce it.
+        assert!(g.ports.len() < 64, "port table exceeds role bitset");
         let mut color: BTreeMap<NodeId, u64> = BTreeMap::new();
         for n in 0..g.node_count {
             color.insert(n, 0);
         }
         for (bit, r) in g.roots().into_iter().enumerate() {
-            *color.get_mut(&r).unwrap() |= 1u64 << bit.min(63);
+            *color.get_mut(&r).unwrap() |= 1u64 << bit;
         }
         let mut class: Vec<u32> = (0..g.node_count)
             .map(|n| {
@@ -266,14 +279,23 @@ enum DState {
     Retired,
 }
 
-/// May any path of `s` realize a Galois-odd accepting measurement?
-/// Reachability product of the summary with the mask automaton:
+/// May any LATENT behavior of `s` realize a Galois-odd accepting
+/// measurement? Reachability product of the summary with the mask
+/// automaton, started from the entry AND every auxiliary port:
 /// `NewD` guesses the distinguished allocation (at most one),
 /// `HD`/`TD` step the mask, `MeasD` accepts iff `step_meas` fires
 /// and retires, `OutOfScope` is a dead end for stage 1a. Interface
 /// letters (`Call`/`Ret`) are epsilon for the product — their
 /// semantic content acts at transfer time, not accept time.
-pub fn may_accept(s: &Summary, ma: &MaskAutomaton) -> bool {
+///
+/// SCOPE (r5b): this over-approximates every behavior reachable in
+/// ANY context, including unapplied apply ports — sound for the
+/// lower bound, deliberately loose. Closed-program acceptance
+/// (qeval's actual NF discipline: head evaluation, rigid descent
+/// under surviving binders, species errors before bodies) is the
+/// top-level NF driver's job in the transfer layer; that driver
+/// runs this product from its single composed root.
+pub fn may_accept_latent(s: &Summary, ma: &MaskAutomaton) -> bool {
     let mut succ: BTreeMap<NodeId, Vec<(Label, NodeId)>> = BTreeMap::new();
     for &(a, l, b) in &s.edges {
         succ.entry(a).or_default().push((l, b));
@@ -368,9 +390,9 @@ mod tests {
         let ma = MaskAutomaton::build();
         use Label::*;
         // The abstract sandwich accepts; Clifford chains do not.
-        assert!(may_accept(&chain(&[NewD, HD, TD, HD, MeasD]), &ma));
-        assert!(!may_accept(&chain(&[NewD, HD, MeasD]), &ma));
-        assert!(!may_accept(&chain(&[NewD, TD, MeasD]), &ma));
+        assert!(may_accept_latent(&chain(&[NewD, HD, TD, HD, MeasD]), &ma));
+        assert!(!may_accept_latent(&chain(&[NewD, HD, MeasD]), &ma));
+        assert!(!may_accept_latent(&chain(&[NewD, TD, MeasD]), &ma));
         // Interface letters are epsilon for the product.
         let call = Call {
             i: 1,
@@ -378,16 +400,19 @@ mod tests {
             action: CapAction::Keep,
             cap_out: Cap::Cur,
         };
-        assert!(may_accept(&chain(&[NewD, HD, call, TD, HD, MeasD]), &ma));
+        assert!(may_accept_latent(
+            &chain(&[NewD, HD, call, TD, HD, MeasD]),
+            &ma
+        ));
         // OutOfScope is a stage-1a dead end even if odd would follow.
-        assert!(!may_accept(
+        assert!(!may_accept_latent(
             &chain(&[NewD, HD, TD, OutOfScope, HD, MeasD]),
             &ma
         ));
         // Effects before allocation are unrealizable in-summary.
-        assert!(!may_accept(&chain(&[HD, TD, HD, MeasD]), &ma));
+        assert!(!may_accept_latent(&chain(&[HD, TD, HD, MeasD]), &ma));
         // A second NewD on one lineage path is unrealizable.
-        assert!(!may_accept(
+        assert!(!may_accept_latent(
             &chain(&[NewD, MeasD, NewD, HD, TD, HD, MeasD]),
             &ma
         ));

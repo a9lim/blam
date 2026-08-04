@@ -1001,3 +1001,47 @@ the λx.x-vs-λx.HD;x defect class cannot re-enter through
 canonicalization (ported ≠ unported, differing heads stay
 distinct). 75 lib tests, clippy clean. Next brick: var_ref/lam_ref/
 app_ref + the four gate-zero adversarial checks.
+
+## 2026-08-04 — oddmin r5b: splice discipline ratified with four fixes; foundation defects caught and repaired
+
+The splice round (job cx-20260804-192420-f870) ruled on my draft's
+three open questions and found two real defects in the LANDED
+foundation code (Codex read src/oddmin.rs — the co-review works):
+
+- **(α) binding**: raw edge-index binding rejected (edges are not
+  semantic binders — quotient/relabel/dedup renumber them, and one
+  receive edge carries different dynamic closures); path-splitting
+  rejected (unbounded around cycles). Ruling: alpha-renamed BindId
+  slots + a finite SPECIALIZATION PRODUCT (caller node × binding
+  env : BindId → may-set⟨ValueRef⟩ × cap state); Enter branches
+  over the slot; merged nodes union; Top widening available. Edge
+  ids allowed only as transient one-splice keys.
+- **A trap I had half-stepped into**: bare Call(1) substitution is
+  operationally wrong — `((λx.λy.y) A) B` would install A into the
+  inner formal. Fix: CallTarget {Free, Formal(port), Received(bind)};
+  lam_ref does ALL rebasing (Free(1)→Formal(p), Free(i+1)→Free(i));
+  app_ref touches only Formal(p), never shifts ambient indices.
+- **(β) capability seam**: full CapRel composed as a relation, with
+  the precise-mode table (Keep/Advance/Create/Retire/Kill vs alias
+  fate × output generation); Kill terminates paths — no Dead value
+  through a seam.
+- **(γ)**: RetIn must carry the complete CapRel — identity(Keep) vs
+  H(Advance) return identical Handle-Cur heads but differ for
+  caller aliases. RetIn{head_pattern, bind, cap_rel} /
+  RetOut{head_value, cap_rel}; may-lattice matching.
+- **New protocol requirement**: EvalHead vs Apply vs NF-descent —
+  qeval finds lambda heads without normalizing bodies, but descends
+  under surviving binders (rigid formal, zero source cost) and
+  species-Errs before bodies. Closed acceptance = mask product from
+  ONE composed NF-driver root.
+- **Foundation repairs landed same hour**: root-role bitset now
+  asserts ports < 64 instead of silently aliasing at bit 63;
+  `may_accept` renamed `may_accept_latent` with honest scope docs
+  (all-roots = any-context latent query — sound-loose; closed
+  acceptance belongs to the NF driver). Module doc carries the
+  schema-revision notice. 75 tests, clippy clean.
+- SPEC-ODDMIN.md §4 rewritten to the binding rulings; gate-zero
+  grows to nine checks (nested binders, rigid descent, strictness,
+  latent-port non-acceptance, both halves of wrong-return).
+Next code block: the r5b schema (CallTarget, CapRel, polarity,
+port roles, prim held-arg) + transfers + the nine checks.

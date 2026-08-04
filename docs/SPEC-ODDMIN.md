@@ -121,32 +121,110 @@ correct traces; (3) a callee `Advance` invalidates an
 entry-generation alias; (4) inert vs effectful-spine neutrals stay
 distinct. Only then weight 16.
 
-## 4. Transfer functions (reference side)
+## 4. Transfer functions and the splice discipline (r5b-revised)
 
-Pure, total, deliberately naive:
+Pure, total, deliberately naive. The r5b round replaced three naive
+pieces of the first draft; the rulings below are binding.
 
-- `var_ref(depth, i)`: the machine that forces `Call(i)` and
-  behaves as the callee's returned value (head + capability from
-  the interface annotation), weight i+1.
-- `lam_ref(body)`: the value returns `Lam {apply}` — a port
-  entering `body` with `Call(1)` denoting the eventual argument;
-  free indices shift. Weight +2.
-- `app_ref(fun, arg)`: for each `Lam`-headed return of `fun`,
-  connect `arg`'s interface at the body's `Call(1)` edges and enter
-  through the apply port; re-entrant/recursive connections close as
-  cycles; then compute the complete same-weight LFP and
-  canonicalize every output. Returns the fully saturated finite
-  output SET. Weight w_f + w_a + 2. Other heads follow the §3 head
-  domain: `Prim` by its strictness/arity row, `Handle` applied =
-  species-Err (branch dies), `Neutral` extends the spine port
-  (arguments may still force Calls and emit effects), `Dead` is
-  absorbing.
+**Call ownership — bare de Bruijn call indices are unsafe.** Edges
+carry `CallTarget ∈ {Free(i), Formal(PortId), Received(BindId)}`.
+`lam_ref` does ALL binder rebasing: `Free(1) → Formal(p)` (its new
+apply port), `Free(i+1) → Free(i)`, `Formal(q) → Formal(q)`.
+`app_ref` substitutes ONLY `Formal(p)` of the entered lambda and
+never shifts ambient indices (App does not change ambient depth).
+Counterexamples on record: in `((λx.λy.y) A) B` a global Call(1)
+splice would install A into the INNER lambda's formal; in
+`((λx.λy.x) A) B` the inner closure must retain A — bare indices in
+a disjoint-union graph cannot separate these binders.
+
+**Splice (`app_ref(F, A)`).** The composed entry stays `F.entry` —
+the full evaluation prefix of F is preserved. For each lam-headed
+`RetOut{Lam{apply: p}}` occurrence, dissolve that return seam and
+enter port p with `Formal(p) ↦ A.entry`; every demand re-enters
+`A.entry` (call-by-name reuse, not memoization; an unused formal
+never evaluates A). Strictness is inherited: `new A` never enters
+A; H/T/Meas species-check before touching an argument body; a
+partial cnot holds its first-argument information for the second
+application. `Kill` terminates a path — no `Dead` value ever
+crosses a seam (earlier odd measurements stay visible on the
+prefix). Re-entrant/recursive splices close as cycles; the complete
+same-weight LFP saturates before canonicalization. Output = the
+fully saturated finite SET. Weight w_f + w_a + 2.
+
+**Binding (the α ruling).** Received values bind alpha-renamed
+`BindId` slots, resolved by a finite SPECIALIZATION PRODUCT during
+composition: specialized state = (caller node, binding environment,
+cap state), binding environment : BindId → may-set of ValueRef =
+(head, composed port, captured abstract environment). A matched
+return extends the environment; `Enter(bind)` branches over the
+slot's may-set; merged control nodes union environments; a slot may
+widen to Top. Finiteness: components, binders, heads, and cap
+states are all finite. Raw receive-edge indices may serve as
+TRANSIENT keys inside one splice but never appear in canonical
+summary bytes — quotienting/relabeling would merge or renumber
+them, and one receive edge can dynamically carry different
+closures. Soundness shape: every concrete call selects one
+compatible callee return; that exact return with its specialized
+continuation exists in the composed graph; extra compatible
+pairings and environment unions only ADD paths.
+
+**Interface letters (the γ ruling).** Both directions carry the
+complete capability relation:
+`RetIn {head_pattern, bind, cap_rel}` ·
+`RetOut {head_value, cap_rel}` with
+`CapRel = (cap_in, action, cap_out)`. Head+output-capability alone
+is insufficient — identity (`Keep`) and H (`Advance`) both return
+`Handle Cur`, but caller-retained aliases stay valid under one and
+go stale under the other. Matching is may-lattice order
+(`None ≤ Cur`), with action and output correlated per chosen path.
+
+**Capability seam (the β ruling), relative to the entry
+generation:** `Keep` — aliases stay current, same generation out;
+`Advance` — aliases go stale, fresh generation out; `Create` —
+requires absent lineage, fresh generation; `Retire` — absorbing,
+no current output; `Kill` — no continuation. One or many advances
+invalidate alike (no counters). A returned `Cur` after `Keep`
+aliases the entry generation; after `Advance`/`Create`, the output
+generation. Precise mode never lets aliases survive `Advance`; the
+nondeterministic survival belongs only to the explicitly-declared
+widened mode.
+
+**Head evaluation vs NF descent.** qeval discovers a lambda head
+without normalizing its body in function position, but fully
+reduces under binders when the lambda survives to the normal form,
+and raises species Err on a lambda primitive-argument BEFORE its
+body. The context protocol therefore distinguishes `EvalHead`,
+`Apply(arg)`, and `NormalizeValue`/`DescendLam` — a surviving
+lambda's NF descent reuses its apply port with the formal bound to
+a zero-cost rigid neutral; a species check chooses neither and
+dies. Closed-program acceptance runs the mask product from ONE
+composed top-level NF-driver root; `may_accept_latent` (the
+all-roots product in `src/oddmin.rs`) is the deliberately looser
+any-context query, and auxiliary ports are canonicalization roots
+only, never independent acceptance starts.
+
+- `var_ref(depth, i)`: force `Free(i)`, then behave as the received
+  value per its `RetIn` branches. Weight i+1.
+- `lam_ref(body)`: rebase binders as above; return
+  `Lam {apply: p}`. Weight +2.
+- `app_ref(fun, arg)`: the splice above. Other heads: `Prim` by its
+  strictness/arity row, `Handle` applied = species-Err, `Neutral`
+  extends the spine port (arguments may still force Calls and emit
+  effects), `Dead` absorbing.
 
 Iteration: outer Knuth min-weight agenda over Var/Lam/App
 hyperedges (all constructors strictly weight-increasing, so
 extraction order is sound); inner complete LFP saturation at fixed
 weight BEFORE the layer finalizes. If saturation streams, the layer
 finalizes only at quiescence.
+
+**Gate-zero additions (r5b):** beyond §3's four checks — (5) the
+two nested-binder counterexamples resolve correctly; (6) a final
+`λx.E` explores E under a rigid formal; (7) `h (λx.E)` Errs without
+exploring E; (8) `new E` discards E; (9) an unapplied latent apply
+port is never independently accepted; and check (2) verifies BOTH
+halves: every true pairing survives AND the wrong-return path
+appears only as declared looseness.
 
 ## 5. Trust architecture (r4b)
 
