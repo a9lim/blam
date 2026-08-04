@@ -570,3 +570,12 @@ extracted; mass-conservation asserted per program. Budgets β=512/2²⁰
 - src/ left flat on purpose: a module regroup is a public-API break
   on the published crate (forces a major bump through the armed
   release flow) and the clutter was never there.
+- Docs pass (same session): README gains the two newest qBLC
+  headlines (E_q = 176 bits; the idiom-sector dyadicity threshold at
+  53) and a current-only roadmap; DESIGN-QBLC header un-staled
+  (S1–S3 core landed) and the irrationality open question records
+  the measured n=53 layer + phase-2 route; DESIGN-BLC drops the
+  resolved crate-name question; AGENTS qBLC docket compressed to
+  current-state form (engines / measured state / next), live state
+  dated 2026-08-04, gaslamp thread list completed. Version bumped to
+  1.0.1 on dev — publishes via release.yml on the next main merge.

@@ -170,6 +170,22 @@ across all 529M leaves):
   earlier (n=34), and Ω_success stays dyadic through 45 — each
   layer's √2-parts cancel one level up. To our knowledge this is
   the first computed operator census of quantum-preparing programs.
+- **The aggregate falls at exactly n=53** (idiom sector): the
+  per-size success mass stays dyadic for 46–52, then picks up an
+  exact −√2/2⁵⁵ at 53 — one fate-divergent program, the sole
+  survivor of within-program cancellation across 90M λ⁵-prefixed
+  programs (`src/bin/qradical.rs`, filter cross-checked against an
+  independent implementation). Ω_{success,≤53} is irrational unless
+  the unmeasured non-idiom complement exactly cancels it — no
+  mechanism known; the phase-2 sweep of that complement is the one
+  remaining blocker on the full-population claim.
+- **qBLC self-interprets in 176 bits** (`src/bin/qselfint.rs`):
+  E_q = intL I — the 170-bit classical self-interpreter plus a
+  six-bit adapter (qBLC passes primitives by application, so the
+  HOAS environment collapses the anticipated signature wrapper).
+  Verified at the effect-trace level over the small-size population;
+  the bisimulation theorem it rests on is stated with a proof plan
+  in `docs/SPEC-BISIM.md`.
 - Two one-in-526-million events at n=41: the pillar's first
   clone-death Err (`SameQubit`) and its first capacity fate (a
   `new`-pump exceeding 12 live qubits).
@@ -267,12 +283,13 @@ default 4096).
 
 ## Roadmap
 
-- qBLC: the Gács-family G_k approximants at depth (first sandwich
-  probe: M^(1)|≤36 sits between 3.17·G_1 and 4.17·G_1); the
-  Ω-irrationality threshold (~low 50s, needs sandwich +
-  fate-divergence); the uniform conditional simulation theorem;
-  quantum Kraft in Lean (`docs/DESIGN-QBLC.md`, Staging and Open
-  questions).
+- qBLC: the self-interpretation bisimulation proof
+  (`docs/SPEC-BISIM.md`); the phase-2 taint sweep of the non-idiom
+  complement (closing the Ω-irrationality threshold at 53 for the
+  full population); the Gács-family G_k approximants at depth (first
+  sandwich probe: M^(1)|≤36 sits between 3.17·G_1 and 4.17·G_1); the
+  uniform conditional simulation theorem; quantum Kraft in Lean
+  (`docs/DESIGN-QBLC.md`, Staging and Open questions).
 - Certificate v4 classes (specs in `tools/cert/SPEC.md` §8, measured
   candidate maps in `tools/cert/CLASSIFY.md`): the PassengerDiagonal
   first (assembly fully derived, 4 probe-accepted exemplars), then a

@@ -140,7 +140,7 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
 - This is a9's daily driver. Leave RAM headroom, kill strays when
   done, `ps aux | grep census` before declaring the machine clean.
 
-## Live state (2026-08-01)
+## Live state (2026-08-04)
 
 - **Census**: canonical 4..41 in `data/census_table.txt` (~16.5 min;
   4..40 alone ~7.2 min). BBλ(41) ≥ 1,074,266,118 bits. n=32 row has
@@ -171,57 +171,49 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   a9 sends the PR (PR_KIT.md).
 - **Publish infra** (2026-08-03): CI on push/PR — fmt, clippy at
   -D warnings (tree kept clean), release tests + uni parity on
-  ubuntu/macos, census spot-check 4..32 diffed against the canonical
-  table, `lake build Certs`, fork-additivity guard. Work lands on
+  ubuntu/macos, census spot-check 4..32 via `scripts/spot-check.sh`,
+  `lake build Certs`, fork-additivity guard. Work lands on
   `dev`; `main` stays green. crates.io packaging verified (`include`
-  allowlist ships the engine alone). Published: v1.0.0,
-  AGPL-3.0-or-later. Releasing = bump the Cargo.toml version on main;
+  allowlist ships the engine alone). Published: v1.0.0; v1.0.1
+  (layout + docs pass) staged on dev, publishes on the next main
+  merge. AGPL-3.0-or-later.
+  Releasing = bump the Cargo.toml version on main;
   release.yml publishes via trusted publishing (environment
   `crates-io`) then tags + GH-releases, dormant while the version is
   already tagged, self-resuming on partial failure.
 
 ## Open docket
 
-- **qBLC (second pillar)**: design ratified (DESIGN-QBLC.md; rounds
-  in LEDGER.md 2026-08-02/03). Two target objects — operator census
-  M_Fock (Tr = Ω_success, number-superselected) and the
-  dimension-conditioned Gács family G_k. **Signature order frozen:
-  `p h meas new cnot t`**. S1 landed (reference evaluator
-  `src/qeval.rs` + ring `src/dw.rs` + pilot); S2 LANDED (2026-08-03):
-  KN-store fast path `src/qvm.rs` (~200× naive on bulk, lockstep-
-  verified on full leaf sequences vs qeval over the ≤24 population —
-  keep that test green when touching either engine) + census bin
-  `src/bin/qcensus.rs`. S3 core LANDED (overnight 2026-08-03):
-  canonical `data/qcensus_table.txt` = the FULL classical-census
-  population (526,039,969 programs, 4..41, ~30 min).
-  Ω_{success,≤41} = 3424188513/2⁴⁰; M^(1) PD, ranking
-  |0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩; M^(2): first entangled halts at
-  exactly n=41, ranking |00⟩ ≫ Φ⁺ > Φ⁻ > |++⟩; every halt mass
-  dyadic through 41 while operator ENTRIES are irrational (√2-parts
-  cancel in every trace); first SameQubit Err + first Qubits
-  capacity, single events at 41; qBLC frontier = 1,619,650 unknowns.
-  Budgets β=4096/trans=2²⁶ measured-headroom; β×16 resolves zero
-  unknowns (measured — the unk column is a real frontier).
-  `--cond-k K` runs Object B mode (`p k̄ ⟨sig⟩`).
-  **Self-interpretation measured** (2026-08-03): E_q = intL I =
-  **176 bits** — HOAS collapses the signature adapter to 6 bits;
-  tight within the intL protocol, global optimality open (bin
-  `src/bin/qselfint.rs`, effect-trace verification via
-  `qeval::run_traced` + qvm cross-check; bisimulation stays the
-  proof obligation — statement + proof plan in SPEC-BISIM.md,
-  measured record in DESIGN-QBLC.md obligation 2).
-  **Dyadicity threshold answered in the idiom sector** (2026-08-03,
-  bin `src/bin/qradical.rs`, filter cross-checked against Codex's
-  independent DP): per-size Σ_success √2-coefficient exactly 0 for
-  46..52, then **−1/4 at n=53** — the unique fate-divergent program
-  is P53 (pinned `first_fate_divergent_nondyadic_witness_at_53`),
-  the sole survivor of within-program cancellation over 90M idiom
-  programs; unknowns at 53 (752) are β-insensitive at 8×/64×
-  budgets. Phase 2 (primitive-taint over the non-λ⁵ complement,
-  46..53) is the remaining blocker on the full-population claim.
+- **qBLC (second pillar)**: design + staging history in
+  DESIGN-QBLC.md (ratified; S1–S3 core landed). Two target objects —
+  operator census M_Fock (Tr = Ω_success, number-superselected) and
+  the dimension-conditioned Gács family G_k. **Signature order
+  frozen: `p h meas new cnot t`**.
+  Engines: `src/qeval.rs` naive reference (the executable spec) +
+  ring `src/dw.rs`; `src/qvm.rs` KN-store fast path (~200× naive,
+  lockstep-verified vs qeval over the full ≤24 population — keep
+  that test green when touching either engine). Bins: `qcensus`
+  (`--cond-k K` = Object B mode `p k̄ ⟨sig⟩`), `qpilot`, `qselfint`,
+  `qradical`.
+  Measured state: canonical `data/qcensus_table.txt` = the full
+  526,039,969-program population 4..41 (~30 min) at β=4096/trans=2²⁶
+  (β×16 resolves zero unknowns — the 1,619,650-term unk column is a
+  real frontier). Ω_{success,≤41} = 3424188513/2⁴⁰; M^(1) PD,
+  ranking |0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩; first entangled halts at
+  exactly n=41 (|00⟩ ≫ Φ⁺ > Φ⁻ > |++⟩); halt masses dyadic through
+  41 while operator ENTRIES are irrational (√2-parts cancel in every
+  trace). Self-interpretation: E_q = intL I = **176 bits** (HOAS
+  collapses the adapter to 6 bits; tight within the intL protocol,
+  global optimality open; effect-trace verified — the bisimulation
+  is the proof obligation, statement + plan in SPEC-BISIM.md).
+  Dyadicity threshold: idiom-sector Σ_success non-dyadic at exactly
+  **n=53** (unique fate-divergent witness P53, pinned test; 53's
+  unknowns β-insensitive); phase 2 (primitive-taint over the non-λ⁵
+  complement, 46..53) is the remaining blocker on the
+  full-population claim.
   Next (a9's pickup order, 2026-08-03): bisimulation proof lane —
-  SPEC-BISIM.md L1/L2 first, natural Lean seed (spec written, Codex
-  round-3 ratification in thread `qblc-selfint`); then phase-2 taint
+  SPEC-BISIM.md L1/L2 first, natural Lean seed (Codex round-3
+  ratification in thread `qblc-selfint`); then the phase-2 taint
   evaluator (complete Codex design in thread `qblc-omega-witnesses`
   round 2: one-sided may-analysis, H…T…H…meas monitor, k-partition;
   their prior — 95% the full-population threshold stays 53); G_k
@@ -258,5 +250,7 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
 Claude and Codex are co-equal here; handoffs run over the `gaslamp`
 CLI. Existing threads: `blc-conformance` (the certificate exchange),
 `blc-interpreter` (design theory), `blc-interp-search` (slot-search
-spec). Send raw evidence — encodings, diffs, measured bits — not
-summaries.
+spec), `blc-qblc` (qBLC design ratification), `qblc-selfint`
+(self-interpretation + bisimulation), `qblc-omega-witnesses`
+(dyadicity hunt + phase-2 design). Send raw evidence — encodings,
+diffs, measured bits — not summaries.

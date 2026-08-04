@@ -246,8 +246,6 @@ deliberately retracted: don't rebuild that.
   as one contender.
 - Environment representation (cons-list vs flat vec) and explicit-stack
   vs `stacker`: unstudied, settle empirically.
-- Crate name: `blc` is taken on crates.io (ljedrz/blc). Decide before
-  any publish; local name unaffected.
 - Memoizing across shared structure: the λ-wrap memo realized the
   cheap end; the general shared-prefix normal-form memo remains
   unstudied.
