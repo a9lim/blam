@@ -706,3 +706,86 @@ First two sizes beyond the exhaustive horizon, under the new
   fatediv 0); 52/53 via 'i/m' slices. Unresolved streams in
   `.phase2/` (46/47 complete; the file's partial n=48 lines are
   harmless — adjudicate filters by size range).
+
+## 2026-08-04 — complement 48 and 49: √2 ≡ 0; the sandwich enters the complement, σ-paired; first unkT
+
+Third block of the chunked campaign (44 min; Claude session, sweeps
+running behind the theorem lane below):
+
+- **n=48**: run 12,450,443,456 of 19,282,848,050 (927.4s, 13.4M
+  prog/s). **√2 ≡ 0 exactly**; fatediv 0; radical-unk 0. halt
+  486,294,419; Σ_success(survivors) = 3570120787/2³. Unresolved
+  49,442,785 (0.397%), unkT = 0, cap 648; deferred √2 = 0.
+  **nondyadic leaves 2 — the complement's first**: one program,
+  decoded = λ³.((λλ.2) (λ. meas (h (1 (h (new 1)))))) — the minimal
+  H·T·H·meas sandwich re-plumbed at k=3 via a K-combinator that eats
+  the trailing cnot argument; both leaves (2±√2)/4, σ-paired, Σ = 1.
+  NOT a witness45 substring — an independent plumbing of the same
+  generator (verified by scratch qeval run, leaves reproduced).
+- **n=49**: run 23,369,015,304 of 36,140,122,614 (1699.8s, 13.7M
+  prog/s). **√2 ≡ 0 exactly**; fatediv 0; radical-unk 0. halt
+  913,388,873; Σ_success(survivors) = 6859486665575/2¹³. Unresolved
+  93,201,371 (0.399%), cap 9,316; deferred √2 = 0. nondyadic 2 =
+  the +1-bit sibling (payload `new new` for `new t`), verified
+  σ-paired. **unkT = 2 — the complement's first transition-bound
+  unknowns** (identically 0 through 48); both stream to adjudication.
+- Full-population per-size dyadicity now MEASURED through **49**
+  (idiom ≡ 0 + complement ≡ 0), standard β-insensitivity caveat.
+  Pending-bracket ok=false nit unchanged (√2/Σ tracks unaffected).
+- The theorem lane's read: generators (odd leaves) now appear in the
+  complement exactly where plumbing affords them, and pairing holds —
+  consistent with the T2 exclusion picture (see next entry). The
+  wrapped-witness45 prediction for n=51 (nondyadic ≥ 4, fatediv 0)
+  is two blocks out; n=50 launched at entry time.
+
+## 2026-08-04 — √2-cancellation theorem lane: T1 ratified, oddmin designed, n_{1/3} ≤ 85
+
+The "why does √2 keep cancelling" question, promoted from parked note
+to active lane (a9's green light; Codex spar rounds r1–r3 in
+`qblc-omega-witnesses`, jobs cx-…-266d/-df7f/-2a1c; working notes in
+session scratchpad, promoted here):
+
+- **Tier-A reframe (ratified)**: per-size √2 ≡ 0 with fatediv 0 is an
+  accounting identity of the instrument, PREMISED on deferred_sqrt2 =
+  0 and radical_unknown = 0 (both measured 0 at every size so far).
+  The campaign's information content is the fatediv column + absence
+  of cross-program cancellation where fatediv > 0.
+- **P53 = witness45 + 8 bits, mechanically verified**: P53 =
+  λ⁵.(W (1 1)) — the boolean applied to a 6-bit poison pill; KN
+  normalizes under the retained λ, forcing t·t → Err on one arm.
+  Minimal fate split is Halt-vs-Err at +8 (minimal within the
+  one-hole family; global bound is T2's job).
+- **T1 (finite-trace Galois identity), statement ratified**: paired
+  configurations, σ₅(v_s) = (−1)^{h(s)}·v♯_s, twist = semantic Z
+  after every T (no event, no epoch; a t⁴ source encoding would break
+  the trace bijection); Capacity excluded from the statement. For
+  infinite trees σ is NEVER applied to limits — the object is
+  Δ(C) = P_Halt(C) − P_Halt(C♯). Proof skeleton written (session
+  notes); paper write-up is the lane's first artifact.
+- **Theorem package**: T2 = "no closed program ≤ 52 realizes
+  Galois-odd branch mass + a success effect exposing it" (the real
+  lower bound; 45+8 does NOT compose past β-duplication — needs
+  quantitative subject reduction). T3 = infinite-tree control below
+  53, the only piece that ever discharges the unknown bracket.
+- **n_{1/3} ≤ 85, measured**: Codex's 85-bit rejection loop (halt on
+  00, Err-reject on first 0, retry on 11; P = 1/4 + P/4 = 1/3) run
+  through qeval: halt mass exactly (4^k−1)/3·4⁻ᵏ at k = 5/24/32
+  levels (β = 64/256/1024), √2-part 0, err:halt 2:1, K_CAP tail at
+  level 32. Non-dyadic RATIONAL limits are a separate threshold from
+  the √2 one, invisible to every finite-budget sweep by construction;
+  94-bit true-Diverge variant recorded in-thread (unverified).
+  Sub-53 existence open.
+- **oddmin (stage 1a) design frozen**: abstract-inhabitance DP for
+  "min wire weight of an odd measurement trace = 45". Domain = open
+  transducers over causal/handle states (Call(i) edges; app =
+  substitute-for-Call(1) + least fixed point) — closed summaries +
+  0/1/ω demand are provably too coarse (use-ordering vs gates).
+  Handle = {Dcur, Other, Dead}, current-epoch discipline enforced;
+  single Pauli lineage sound in 1a by the no-CNOT product-structure
+  argument; weight algebra w(Var i) = i+1, w(λM) = w(M)+2,
+  w(MN) = w(M)+w(N)+2, source weight paid once. Trusted side checks
+  CONSTRUCTOR CLOSURE of a complete fixed-point table (witness replay
+  proves attainability only). Anchor: first nondyadic halt leaf = 45
+  (qcensus footer 4..41 none; 2026-08-03 hunt, 42..44 clean over
+  5.2B) — **budget-qualified at β=512**; oddmin's bound is strictly
+  stronger than the measurement.

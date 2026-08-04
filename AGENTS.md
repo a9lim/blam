@@ -218,18 +218,29 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   validated on the 42..45 complement (√2 ≡ 0, ground truth
   reproduced; rung-0 counts double-DP-verified), n=42 adjudication
   99.93% β-insensitive with zero Σ shift. **Measured so far:
-  complement √2-coefficient EXACTLY 0 at every size 42..47** — the
-  full-population dyadicity claim now stands through 47. Runs are
-  chunked under a9's ≤1-2h-per-run protocol (per-size sweeps; 'i/m'
-  slices for 52/53; unresolved streams in `.phase2/`); remaining
-  blocks: 48+49 (~1h), 50 (~1h), 51 (~2h — pinned prediction:
-  wrapped witness45 gives nondyadic ≥ 4 with fatediv 0), 52 in ~2
-  and 53 in ~4 slices. The big adjudication is DEFERRED to its own
-  session — protocol on record in round 4 (exhaustive β=1024
-  re-sweep 46..52(+53), then event-stratified canonical samples);
-  small open task: widen/count-bound the pending-bracket reporting
-  (overflows ok=false at ≥46 scale; √2/Σ tracks unaffected).
+  complement √2-coefficient EXACTLY 0 at every size 42..49** — the
+  full-population dyadicity claim now stands through 49. New at
+  48/49: the complement's first nondyadic leaves (one K-plumbed
+  H·T·H·meas sandwich per size, σ-paired, decoded in the ledger) and
+  its first unkT (2 at n=49). Runs are chunked under a9's
+  ≤1-2h-per-run protocol (per-size sweeps; 'i/m' slices for 52/53;
+  unresolved streams in `.phase2/`); remaining blocks: 50 (~1h),
+  51 (~2h — pinned prediction: wrapped witness45 gives nondyadic ≥ 4
+  with fatediv 0), 52 in ~2 and 53 in ~4 slices. The big
+  adjudication is DEFERRED to its own session — protocol on record
+  in round 4 (exhaustive β=1024 re-sweep 46..52(+53), then
+  event-stratified canonical samples); small open task:
+  widen/count-bound the pending-bracket reporting (overflows
+  ok=false at ≥46 scale; √2/Σ tracks unaffected).
   Codex prior: 95% the threshold stays 53.
+  **√2-theorem lane (opened 2026-08-04, active)**: Tier-A identity +
+  T1 (finite-trace Galois twist, Δ(C) for limits) ratified over
+  rounds r1–r3; P53 = witness45 + 8-bit split verified; n_{1/3} ≤ 85
+  measured (rational-limit threshold ≠ √2 threshold); next build =
+  `oddmin` stage 1a (open-transducer abstract-inhabitance DP,
+  trusted constructor-closure certificate, target: first odd trace
+  = 45, upgrading the β=512-qualified anchor to a theorem). Full
+  state in the ledger entry.
   Bisimulation lane: **Lean seed landed** (`lean/Blc/Selfint.lean`;
   intL kernel-pinned via wire identity, |E_q|=176 kernel-checked,
   quote linearity proved; L1/L2 statements round-4-ratified — the
