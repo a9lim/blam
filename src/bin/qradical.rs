@@ -30,6 +30,7 @@ use blam::dw::Dw;
 use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks_at};
 use blam::qeval::{Fate, Leaf, Prim, QBudget};
 use blam::qvm::{Pool, QMachine};
+use blam::radical::{is_dyadic, radical_parts, show_parts, Exact};
 use rayon::prelude::*;
 use std::time::Instant;
 
@@ -79,51 +80,6 @@ fn frame_mentions(enc: u64, len: u8) -> u8 {
     }
     debug_assert_eq!(j, -1, "walk must consume the encoding exactly");
     mask
-}
-
-/// Exact Dw accumulator with a loud overflow escape (qcensus's Ex, minus
-/// the f64 shadow — the radical question is exact or nothing).
-#[derive(Clone, Copy)]
-struct Exact {
-    v: Dw,
-    ok: bool,
-}
-
-impl Exact {
-    const ZERO: Exact = Exact {
-        v: Dw::ZERO,
-        ok: true,
-    };
-
-    fn add(&mut self, d: Option<Dw>) {
-        match d {
-            Some(x) if self.ok => match self.v.add(x) {
-                Some(s) => self.v = s,
-                None => self.ok = false,
-            },
-            Some(_) => {}
-            None => self.ok = false,
-        }
-    }
-
-    fn merge(&mut self, o: &Exact) {
-        if !o.ok {
-            self.ok = false;
-        } else {
-            self.add(Some(o.v));
-        }
-    }
-}
-
-/// (rational part, √2 part) of a reduced REAL Dw, each as (num, 2^denom).
-fn radical_parts(m: Dw) -> ((i128, u32), (i128, u32)) {
-    let r = m.reduce();
-    assert!(r.c == 0 && r.d == -r.b, "aggregate must be real: {r:?}");
-    if r.k.is_multiple_of(2) {
-        ((r.a, r.k / 2), (r.b, r.k / 2))
-    } else {
-        ((r.b, (r.k - 1) / 2), (r.a, r.k.div_ceil(2)))
-    }
 }
 
 const WITNESS_CAP: usize = 100;
@@ -197,11 +153,6 @@ impl Tally {
     }
 }
 
-fn is_dyadic(m: Dw) -> bool {
-    let r = m.reduce();
-    r.b == 0 && r.c == 0 && r.d == 0 && r.k.is_multiple_of(2)
-}
-
 fn sweep_one(
     pool: &mut Pool,
     m: &mut QMachine,
@@ -262,11 +213,6 @@ fn sweep_one(
             }
         }
     }
-}
-
-fn show(parts: ((i128, u32), (i128, u32))) -> String {
-    let ((ra, re), (sa, se)) = parts;
-    format!("{ra}/2^{re} + ({sa}/2^{se})·√2")
 }
 
 fn main() {
@@ -355,7 +301,7 @@ fn main() {
             tally.max_steps,
             tn.elapsed()
         );
-        println!("      Σ_success = {}   [{sum:?}]", show(parts));
+        println!("      Σ_success = {}   [{sum:?}]", show_parts(parts));
         if !tally.unresolved.ok || !tally.unresolved.v.is_zero() {
             println!(
                 "      unresolved bracket: {:?} (ok={})",
@@ -381,7 +327,7 @@ fn main() {
         let parts = radical_parts(weighted.v.reduce());
         println!(
             "Ω_success contribution of the swept idiom sector: {}   [{:.1?} total]",
-            show(parts),
+            show_parts(parts),
             t0.elapsed()
         );
     }

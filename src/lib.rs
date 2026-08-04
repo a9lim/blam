@@ -15,6 +15,7 @@ pub mod oracle;
 pub mod parse;
 pub mod qeval;
 pub mod qvm;
+pub mod radical;
 pub mod term;
 pub mod vm;
 
