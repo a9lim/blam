@@ -305,7 +305,13 @@ is Unknown(Capacity), mass into the bracket.
    qBLC passes primitives by application, so a decoded program
    receives σ⃗ through ordinary β. **E_q = intL I, 176 bits**, tight
    within the intL protocol (2 app + 170 + the unique 4-bit closed
-   term); a specialized-root search below 176 remains open. Quote is
+   term). The specialized-root lane (SPEC-BISIM §8) closed its first
+   rung 2026-08-04: the two-entry/single-knot family minimum is
+   exactly 176 (Codex hand-compilation + exact accounting, LEDGER.md;
+   nearest loser 177), a local theorem under the frozen-branch
+   hypotheses — global optimality still open, sharpest remaining
+   mechanical lane a ≤25-bit joint root+knot context search around
+   the 150-bit generic core. Quote is
    linear: |E_q ⌜p⌝| = 184 + 14|p| + zeros(p). Verified empirically
    at the effect-trace level (per-leaf root-to-leaf effect paths,
    `qeval::run_traced`, β-stuttering erased by construction) over the

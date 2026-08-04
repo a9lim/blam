@@ -588,3 +588,37 @@ extracted; mass-conservation asserted per program. Budgets β=512/2²⁰
   links (crates.io readers get no repo-relative paths). Snippets are
   committed as examples/normalize.rs + examples/bell.rs so cargo
   test/clippy keep them honest.
+
+## 2026-08-04 — sub-176 lane opened and closed at this rung: two-entry minimum is exactly 176
+
+a9 green-lit the parked §8 lane (SPEC-BISIM); step 1 per the ratified
+protocol — hand-compile the two-entry knot families, exact bit
+accounting before any enumeration — handed to Codex (thread
+`qblc-selfint`, job `cx-20260804-152111-2cad`, sol tier).
+
+- **Verdict: no family in the two-entry/single-knot grammar reaches
+  ≤175; the minimum is exactly 176**, attained by the incumbent
+  `intL I` AND by its root-fused spelling `(λa. a a I)(λa. F (a a))`
+  — identical counts (L,A,X) = (16,26,38); fusing `I` into the knot
+  was the obvious one-bit candidate and it ties exactly. Stated as a
+  local theorem with 7 explicit hypotheses (frozen cons' + branch
+  meanings, (cont,list) protocol, one knot, root-non-VAR + cont=I +
+  dead tail, the enumerated knot classes, the five sharing
+  placements, no contextual rewrite into frozen branch bodies).
+- Family table (per-family minima): above-knot/self-app **176**;
+  continuation-timing **177** (excluded if branch meanings are
+  byte-frozen; the only near miss); two-level knot **179**; Curry Y
+  **188**; recursive-N **202**; factored-N **218**; mode/pair
+  **220**; specialized first unrolling **267**. The 150-bit generic
+  core F = 2(13)+4(21)+2+38; incumbent knot +20; opaque root call +6.
+- **Sharp next lane** (docketed, a9's call): any ≤175 winner has ≤25
+  bits outside F — generalize the tools/interp opaque-knot search
+  (14,803 contexts through 20 bits, incumbent unique survivor) to
+  accept the specialized root contract, extend to 25 bits, battery
+  the survivors. More compelling than enumerating hand families
+  further.
+- Classical reading: no family here approaches 170 (recursive-N's
+  generic export is 239); this pass opens no classical threat. A
+  contextual saving inside F would attack both constants; a
+  root-non-VAR/I-specific saving would attack only 176.
+- Expectation on record ("176 survives") held.
