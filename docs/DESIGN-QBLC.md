@@ -2,8 +2,9 @@
 
 Design spec for the quantum counterpart of the classical engine.
 Ratified 2026-08-02 after two adversarial Codex rounds (gaslamp thread
-`blc-qblc`; the round record is in LEDGER.md). S1 (evaluator) is
-cleared to build. Working document — argue with it. Sibling:
+`blc-qblc`; the round record is in LEDGER.md). S1–S3 core have landed
+(see Staging); the spec text is the living contract for what was
+built. Working document — argue with it. Sibling:
 DESIGN-BLC.md (classical pillar). Literature grounding:
 `ref/QUANTUM_AIT.md` (untracked survey); load-bearing sources: Gács
 quant-ph/0011046, Müller quant-ph/0605030 / 0707.2924, Vitányi
@@ -297,10 +298,21 @@ is Unknown(Capacity), mass into the bracket.
    are not preserved (a program discarding a huge subterm unevaluated
    halts directly, while the interpreter parses the subterm first and
    can hit Unknown — trace equivalence is an unbounded-semantics
-   statement, not census-ladder equivalence); and the 170 bits is
-   `intL` alone — the qBLC constant includes the signature adapter
-   and continuation wrapper, so compile and measure the wrapper
-   before stating any number.
+   statement, not census-ladder equivalence); and no optimality claim
+   attaches to the constant below.
+   **Measured (2026-08-03, bin `qselfint`)**: the anticipated
+   signature adapter + continuation wrapper collapse to six bits —
+   qBLC passes primitives by application, so a decoded program
+   receives σ⃗ through ordinary β. **E_q = intL I, 176 bits**, tight
+   within the intL protocol (2 app + 170 + the unique 4-bit closed
+   term); a specialized-root search below 176 remains open. Quote is
+   linear: |E_q ⌜p⌝| = 184 + 14|p| + zeros(p). Verified empirically
+   at the effect-trace level (per-leaf root-to-leaf effect paths,
+   `qeval::run_traced`, β-stuttering erased by construction) over the
+   small-size population, plus a poisoned-seed-env canary; the
+   small-step bisimulation stays the proof obligation — precise
+   statement, relation, and case-ledger proof plan in SPEC-BISIM.md
+   (Codex-skeletoned, round 3 ratifies).
 3. **Convention-dependence**: for a fixed permutation π_k of
    allocation ranks, M'^(k) = P_{π_k} M^(k) P_{π_k}† exactly — an
    external representation theorem, no qBLC program involved.
@@ -355,7 +367,7 @@ incl. store, exact mass, contraction count — over the full ≤24
 population; census bin `src/bin/qcensus.rs`; β=4096/trans=2²⁶ with
 measured headroom; per-program mass conservation asserted sweep-wide)
 → S3 operator census at classical-census depth (**core done**,
-2026-08-03 overnight: canonical `qcensus_table41.txt` — the full
+2026-08-03 overnight: canonical `data/qcensus_table.txt` — the full
 526,039,969-program population 4..41 in ~30 min; Ω_{success,≤41} =
 3424188513/2⁴⁰; M^(1) PD, ranking |0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩ with
 irrational operator entries whose √2-parts cancel in every trace;
@@ -413,13 +425,25 @@ is a valid outcome of the investigation.
   needing >512 contractions to halt would be missed; none
   plausible). M^(1)'s *entries* go irrational earlier (n=34), the
   √2-parts cancelling in every trace. Pinned cross-engine as test
-  `first_nondyadic_witness_at_45`. (4) And Ω_success stays dyadic
+  `first_nondyadic_witness_at_45`. (4) Ω_success stays dyadic
   through 45: the witness's branches BOTH halt, so
-  (2+√2)/4 + (2−√2)/4 = 1 cancels in the sum. Irrationality invades
-  in strict layers — operator interior (34) → leaf masses (45) →
-  the scalar Ω, which needs the sandwich *plus* fate-divergent
-  branches (an applied-boolean construction, ~low 50s; open, beyond
-  sweep reach).
+  (2+√2)/4 + (2−√2)/4 = 1 cancels in the sum. (5) **The per-size
+  aggregate falls at exactly n=53 — measured in the idiom sector**
+  (2026-08-03, `src/bin/qradical.rs`, λ⁵-prefix filter
+  cross-checked against Codex's independent DP): Σ_success has
+  √2-coefficient exactly 0 for 46..52, then −1/4 at 53
+  (Ω contribution −√2/2⁵⁵). The unique fate-divergent witness is
+  P53 (pinned `first_fate_divergent_nondyadic_witness_at_53`), the
+  sole survivor of within-program cancellation over 90M idiom
+  programs; the 752 unknowns at 53 are β-insensitive at 8×/64×
+  budgets. Irrationality invades in strict layers — operator
+  interior (34) → leaf masses (45) → per-size aggregates (53,
+  idiom sector). Remaining: phase 2, a one-sided primitive-taint
+  may-analysis over the non-λ⁵ complement 46..53 (complete Codex
+  design in thread `qblc-omega-witnesses` round 2; their prior —
+  95% the full-population threshold stays 53). Ω_{success,≤53} is
+  irrational unless that complement exactly cancels −√2/2⁵⁵ — no
+  mechanism known.
 - `cnot` return convention: Church pair is v0; residual question is
   only whether a pair-projection idiom deserves a measured shorthand.
 - Output convention: whole-live-store (current) vs designated-output

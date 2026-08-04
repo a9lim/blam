@@ -189,7 +189,7 @@ fn main() {
     let lines: Vec<String> = if let Some(bits) = term_arg {
         vec![bits]
     } else {
-        let path = file_arg.unwrap_or_else(|| "unknowns_41.txt".to_string());
+        let path = file_arg.unwrap_or_else(|| "data/unknowns.txt".to_string());
         std::fs::read_to_string(&path)
             .unwrap_or_else(|e| panic!("read {path}: {e}"))
             .lines()

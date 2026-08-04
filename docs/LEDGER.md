@@ -408,3 +408,183 @@ payload becomes a pinned, continuously-exercised artifact.
   trusted publishing (OIDC, environment `crates-io` — a9 configures
   on crates.io), then tag + GH release. Born dormant: v1.0.0 already
   tagged.
+
+## 2026-08-03 — qBLC self-interpretation measured: E_q = intL I, 176 bits
+
+DESIGN-QBLC.md proof obligation 2, compiled and measured (both Codex
+consults on record: thread `qblc-selfint`). The anticipated "signature
+adapter + continuation wrapper" collapses to six bits: qBLC passes its
+primitives by application, so a decoded program receives the signature
+through ordinary β — HOAS makes the quantum extension of the classical
+interpreter nearly free.
+
+- **Construction**: `E_q = intL I` — the 170-bit interp-lab optimum
+  applied to the identity continuation. Protocol `intL cont bits =
+  cont (\env.parsed) unparsed` puts the unparsed tail in the environment
+  slot; for closed programs the seed env is unreachable (lexical-depth
+  invariant, Codex-verified; Tromp's own `uni = intL (\z.z omega)` leans
+  on the same invariance with a divergent env). Quote: Church-pair list
+  of the wire bits, FALSE tail; |⌜p⌝| = 14|p| + zeros(p) + 6 exactly
+  (linear, NOT quadratic); |E_q ⌜p⌝| = 184 + 14|p| + zeros(p).
+- **176 is tight within the protocol** (app 2 + intL 170 + minimal
+  closed cont 4, and I is the unique 4-bit closed term). NOT claimed
+  globally optimal: a two-entry/shared-knot specialized root is the one
+  live search lane (Codex gut: 176 survives). Naive cont-fusion loses —
+  one head contraction of E_q expands to 328 bits.
+- **Verification** (bin `qselfint`; pinned tests in the bin + suite):
+  - Pure layer, KN machine: nf(E_q ⌜p⌝) ≡ nf(p) bit-exactly over the
+    full 4..=24 population — 19,014 verified / 34 skips /
+    0 mismatches, 25.3 ms. (The 34 are divergers by cross-reference
+    to the classical census, which has zero unknowns ≤24 — the bin's
+    own fuel exhaustion proves only resource-out; Codex nit, banked.)
+  - Quantum layer, reference evaluator, upgraded to TRUE effect-trace
+    comparison after Codex flagged endpoint-only leaves: qeval now has
+    `run_traced` (per-leaf root-to-leaf Effect paths — New/H/T/Cnot with
+    qubits+epochs, Meas with outcomes; β erased by construction).
+    Direct at β=4096/trans=2²⁶, interpreted at β=2²⁰/trans=2²⁴, plus an
+    independent qvm cross-check of every interpreted run — endpoint
+    level (fate/mass/steps); the effect-ORDER differential is
+    qeval-vs-qeval (Codex round-2 ratified that division of evidence).
+    Full 4..=24 population: **19,014 verified / 34 unresolved skips /
+    0 mismatches**, 2,433 s wall (contended with the radical sweeps).
+    β-stuttering: mean ×51.5, max ×212 (Σinterp/Σdirect contractions).
+  - witness45 reproduces its (2±√2)/4 leaves under interpretation
+    (18 → 784 contractions).
+  - Effectful-tail canary: seed env poisoned with QTerm-level `new t`,
+    deepest binder in strict primitive position — traces identical; the
+    parser provably never forces the seed.
+- **What 176 licenses**: a self-hosting evaluator constant; a
+  conditional-interpreter constant when ⌜p⌝ is supplied uncharged; the
+  quoted-program family bound above; a fixed uniform-in-k Kraft penalty
+  for a once-quoted simulator (Object B-relevant). NOT a K-invariance
+  constant (quote is linear ×14–15, and Object B's invariance route is
+  the simulation theorem). Not to be inserted into the A/B sandwich —
+  the direct λk̄.p wrapper is sharper on the upper side.
+- **Open**: event-labelled small-step bisimulation (the proof); the
+  specialized-root search lane; interpreted-run prefix comparison for
+  unresolved programs (Unknown leaves are resource outcomes, not
+  certified divergence — sweep skips are labelled accordingly).
+
+## 2026-08-03 — Ω dyadicity: involution broken at 53, threshold candidate drops
+
+Claude's swap-involution claim (fate-divergent selector programs pair
+off size-preservingly, √2-parts cancelling) sent through thread
+`qblc-omega-witnesses`; Codex broke its generality with the observation
+that KN reduction under binders lets a Church boolean fate-split on ONE
+argument: true E → λy.E keeps E alive (Species Err if E = t t), false E
+→ λy.y erases it and halts. No second continuation, no swap mate.
+
+- **P53** = λ⁵. (meas (h (t (h (new t))))) (t t), 53 bits:
+  `00000000000101111100111111001100111111001111010011010`
+  Leaves [Err(Species) at (2+√2)/4, Halt at (2−√2)/4] — halt mass
+  irrational, Ω contribution (2−√2)/2⁵⁵. Verified in-tree through both
+  engines and pinned (`first_fate_divergent_nondyadic_witness_at_53`).
+- What survives of the involution: the literal two-argument selector
+  subclass genuinely pairs (e.g. S t (t t) ↔ S (t t) t at 57). Codex's
+  one-hole-context sweep around the 35-bit sandwich body: no non-dyadic
+  successful context below overhead 8; at overhead 8, S (t t) is the
+  sole non-dyadic member of 13 contexts — P53 is minimal in family.
+- Corrections banked: (λb. b b) S duplicates the measurement RECIPE
+  under call-by-name (no sharing) — the b b intuition was misstated;
+  a syntactic "≥2 h" prescan is unsound under β-duplication (use
+  abstract primitive-taint instead).
+
+## 2026-08-03 — Radical-aggregate census: idiom sector goes non-dyadic at exactly 53
+
+The decisive measurement, built and run same-day (bin `qradical`,
+Codex-designed filter: λ⁵-idiom slice, {h,meas,new,t} all mentioned —
+sound within the idiom since β can duplicate but not conjure slot
+references; validated by EXACT count match with Codex's independent DP
+at n=53: 90,064,344 filtered of 12,255,471,630 enumerated, a 136× cut).
+Per-size exact Σ of successful mass in ℤ[ω]-radical form, √2-coefficient
+extracted; mass-conservation asserted per program. Budgets β=512/2²⁰
+(hunt precedent), 469 s total on 18 threads.
+
+- **Per-size Σ_success √2-coefficients, idiom sector**:
+  n=46..52 all EXACTLY 0 — while nondyadic-leaf programs proliferate
+  underneath (2, 4, 4, 16, 22, 66, 114 programs) — then
+  **n=53: Σ_success = 59195837/4 − (1/4)·√2 ≠ dyadic.**
+  The decomposition is not a coincidence of sums: per-program
+  fate-divergent accounting (Σ-halt-mass irrational per program, added
+  to the bin same-day with a witness45/P53 discriminator test) finds
+  **fatediv = 1 at n=53, and the unique program is bit-exactly P53**.
+  All 230 other nondyadic-leaf programs (of 231) cancel within-program
+  — the involution holds everywhere except the one term Codex
+  constructed to break it.
+- **Idiom-sector Ω contribution 46..53**:
+  463909831/2⁵⁵ − √2/2⁵⁵.
+- Caveats, each named: (1) n=53 has unk=752 — adjudicated at canonical
+  β=4096/trans=2²⁶ (8×/64× the sweep budgets): count IDENTICAL (752),
+  unresolved mass bracket IDENTICAL (1467/2, every pending mass
+  dyadic), Σ_success bit-identical; the only movement was +7,168
+  zero-mass Err leaves from deeper zero-amplitude forks. The unknowns
+  are β-insensitive loops — resource outcomes, same epistemic status
+  as every census unknown in the repo. (2) The non-idiom complement
+  (programs not opening with λ⁵ that still reach primitives through
+  β-plumbing) is unmeasured for 46..53 — phase 2 (abstract
+  primitive-taint evaluator) is the single remaining blocker on the
+  full-population statement. Full population is measured dyadic through
+  45 by the earlier hunt.
+- **Status**: first non-dyadic per-size success aggregate at exactly
+  n=53 in the idiom sector. Ω_{success,≤53} is irrational unless the
+  unmeasured complement exactly cancels −√2/2⁵⁵ — no mechanism known.
+  Threshold question effectively answered pending phase 2.
+- New infra: `src/bin/qradical.rs` (+3 unit tests: frame_mentions
+  classify, P53 aggregate = 1/2 − √2/4 exact, small-size dyadic idiom
+  aggregates; optional [beta] [trans] args; FATEDIV accounting),
+  `enumerate.rs::split_tasks_at` (seeded λ⁵ tasks + coverage test).
+
+## 2026-08-04 — repo reorganized: docs/, data/, scripts/; unversioned data names
+
+- Root de-cluttered into a by-type layout, discussed and picked by a9:
+  `docs/` (DESIGN-BLC, DESIGN-QBLC, SPEC-BISIM, LEDGER — filenames
+  unchanged, location only), `data/` (all canonical measurement
+  outputs), `scripts/` (standing protocols + bench). Root keeps
+  README, AGENTS/CLAUDE, LICENSE, Cargo.*. Sub-labs (`tools/cert`,
+  `tools/interp`, `tools/uni`) deliberately kept intact — the new-kill
+  protocol touches spec + kills + certlean + Lean as a unit, so the
+  cert lab stays one directory rather than being split by type.
+- Data filenames drop the `41` bound suffix: `census_table41.txt` →
+  `data/census_table.txt`, `unknowns_41.txt` → `data/unknowns.txt`,
+  `solomonoff_41.txt`/`solomonoff_table41.txt` →
+  `data/solomonoff{,_table}.txt`, `qcensus_table41.txt` →
+  `data/qcensus_table.txt`. Rationale: the covered range is stated
+  in-file and in AGENTS live state, superseded generations already
+  live in git history, and the n=42 era now regenerates in place with
+  zero path churn in CI, bin defaults, or docs. Contents untouched —
+  pure `git mv` (regenerate-don't-hand-edit respected).
+- Standing protocols encoded as runnable scripts, prose → shell:
+  `scripts/spot-check.sh` (the regression bar; CI's census-spot-check
+  job now calls it instead of inlining), `scripts/census-regen.sh`
+  (table + frontier with kill subtraction and the identity check
+  raw = frontier + kills; validated on the live tree: 4,532 = 4,235 +
+  297, zero overlap; installs to data/ only on the full range;
+  carries the n≥42 rescue-raise warning), `scripts/recert-kills.sh`
+  (4× re-cert with sorted byte-identical diff, then certlean + lake),
+  `scripts/solomonoff-regen.sh`. `bench.sh` moved in and made
+  location-independent.
+- Referents updated in living docs only (README, AGENTS, DESIGN-BLC,
+  DESIGN-QBLC, CLASSIFY.md, CI, certsearch/tracescan defaults);
+  ledger entries before this one keep their historical paths.
+  Cargo `include` allowlist untouched — crates.io packaging invariant.
+- src/ left flat on purpose: a module regroup is a public-API break
+  on the published crate (forces a major bump through the armed
+  release flow) and the clutter was never there.
+- Docs pass (same session): README gains the two newest qBLC
+  headlines (E_q = 176 bits; the idiom-sector dyadicity threshold at
+  53) and a current-only roadmap; DESIGN-QBLC header un-staled
+  (S1–S3 core landed) and the irrationality open question records
+  the measured n=53 layer + phase-2 route; DESIGN-BLC drops the
+  resolved crate-name question; AGENTS qBLC docket compressed to
+  current-state form (engines / measured state / next), live state
+  dated 2026-08-04, gaslamp thread list completed. Version bumped to
+  1.0.1 on dev — publishes via release.yml on the next main merge.
+- README reworked package-first (a9's call: it read as a findings
+  list): install → library tour with verified code snippets
+  (classical parse/normalize + KN machine; a qBLC Bell-pair program
+  that lands on exactly 41 bits, the census's entanglement
+  threshold, with exact amplitudes) → drivers table → verification →
+  findings compressed to one "Selected results" breath with absolute
+  links (crates.io readers get no repo-relative paths). Snippets are
+  committed as examples/normalize.rs + examples/bell.rs so cargo
+  test/clippy keep them honest.
