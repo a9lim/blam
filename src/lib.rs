@@ -11,6 +11,7 @@ pub mod cert;
 pub mod dw;
 pub mod enumerate;
 pub mod eval;
+pub mod odd;
 pub mod oracle;
 pub mod parse;
 pub mod qeval;

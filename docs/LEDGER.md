@@ -789,3 +789,16 @@ session scratchpad, promoted here):
   (qcensus footer 4..41 none; 2026-08-03 hunt, 42..44 clean over
   5.2B) — **budget-qualified at β=512**; oddmin's bound is strictly
   stronger than the measurement.
+- **Landed: `src/odd.rs`** — the trace-level monitor (per-qubit
+  may-set S ⊆ {X,Y,Z}×{even,odd}; H swaps X↔Z, T feeds X/Y both ways
+  grade-flipped, meas accepts on (Z,odd) and resets; cnot latches
+  conservative accept pending 1b). Tests: hand traces (sandwich
+  accepted, seven dyadic paths quiet); all four witnesses' odd
+  leaves accepted on their real qeval traces; exhaustive ≤22
+  soundness sweep — 6,069 programs, **zero accepts, zero false
+  positives** (tight, not merely sound, at small sizes; 0.01s).
+  Ops note for the record: a 23..26 extension on the naive core ran
+  away >120s and was killed — the deeper corpus probe needs a trace
+  surface on the fast machine (lane engineering item). The
+  compositional DP (open transducers + LFP) is the remaining build;
+  the monitor is its validation oracle and certificate replayer.
