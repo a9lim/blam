@@ -937,3 +937,43 @@ looseness-only by the may direction; {NoD,Dcur} epoch-staleness
 across interface crossings — the one I flag as potentially UNSOUND;
 DFA-vs-simulation-quotient canonicalization; head-kind
 sufficiency). Prototype code waits on the verdict.
+
+## 2026-08-04 — oddmin r5a: language-DFA domain rejected, interaction-NFA domain ratifiable
+
+The pre-build review earned its keep (job cx-20260804-190914-c2e5).
+Verdict on my §3: call-stack erasure IS sound as a may-abstraction
+(proof sketch on record: erasure connects every callee return to
+every compatible continuation; concrete well-nested runs survive,
+wrong-site returns only add), but **plain language-DFAs are
+compositionally UNSOUND for higher-order values** — `λx.x` and
+`λx.HD;x` both project to a bare Return(lam), language equivalence
+merges them, and app_ref can never recover which body runs; ditto
+returned closures, prim partials, effectful neutral spines. Fixes
+absorbed into SPEC-ODDMIN.md §3 same-day:
+- **Port-labeled colored interaction NFA** (eval/Call/Return/Apply
+  ports); a lambda's return carries its apply port as a colored
+  observation; canonicalization must never minimize ports away.
+- **Capability-action protocol** on calls/returns:
+  (cap_in, action, cap_out, head), action ∈ {Keep, Create, Advance,
+  Retire, Kill} — Advance invalidates caller aliases of the entry
+  generation without integer epochs; stored-never-forced stale
+  handles are None without killing the value; the alias widening is
+  stated and removable.
+- **Five-way head domain**: Lam{apply port} · Prim{which, supplied,
+  held} (New non-strict, unaries strict, cnot binary partial holds
+  arg — merging unsound) · Handle{role} · Neutral{RigidSlot|Inert,
+  spine port} (effectful spines must not merge with inert) · Dead.
+- **Structural-NFA canonicalization** (bisimulation quotient +
+  deterministic ordering; minimal-DFA only as a capped fingerprint)
+  — eager determinization is the wrong first risk; weaker dedup
+  overstates growth, never soundness.
+- **No mask states / accept bits inside summaries** (my draft mixed
+  the two representations); acceptance strictly by external product
+  with the odd.rs kernels. Spec status §§3–4 corrected to
+  "prototype domain proposal".
+- **Build gate zero** (before any weight-16 run): four adversarial
+  checks — distinct apply ports for λx.x vs λx.HD;x; shared-callee
+  wrong-return looseness visible AND both true traces retained;
+  Advance invalidates an alias; inert ≠ effectful neutral.
+Prototype code is now green-lit on the revised domain, gates 0 then
+16/20/24. Spec + this entry pushed; growth curve goes to r5b.

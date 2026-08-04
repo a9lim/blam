@@ -1,12 +1,11 @@
 # SPEC-ODDMIN — the stage-1a compositional DP
 
-*Status: buildable spec, frozen 2026-08-04 from `qblc-omega-witnesses`
-rounds r3–r4b. The trust architecture, iteration strategy,
-certificate discipline, and validation battery are Codex-ratified;
-§3's domain concretization (summaries as minimal DFAs) is this
-document's contribution and is the prototype's first empirical
-question. Companion theory: NOTE-GALOIS.md §4. Validation layer:
-`src/odd.rs`.*
+*Status: §§1–2 and 5–8 are ratified architecture (rounds r3–r4b,
+2026-08-04); §§3–4 are the PROTOTYPE DOMAIN PROPOSAL, revised to the
+r5a-ratifiable form (port-labeled interaction NFAs — the first draft's
+plain language-DFAs were compositionally unsound for higher-order
+values and were replaced same-day). Companion theory:
+NOTE-GALOIS.md §4. Validation layer: `src/odd.rs`.*
 
 ## 1. Theorem target
 
@@ -44,67 +43,104 @@ A projected word is **accepting** iff its `MeasD` fires with
 `NewD` — decided by the trusted kernels `odd::step_h/step_t/
 step_meas`, never stored.
 
-## 3. The abstract domain (the concretization decision)
+## 3. The abstract domain (r5a-revised)
 
-**A summary is the minimal DFA of a may-language** over the finite
-summary alphabet; canonical form = determinize + minimize + a fixed
-state ordering (BFS over lexicographically least edges), serialized
-deterministically. Canonicalization laws (tested, trusted):
-idempotence, congruence (language-equal machines canonicalize
-identically, by Myhill–Nerode), byte round-trip.
+**Central claim (r5a-ratifiable form).** A summary is a finite
+COLORED INTERACTION NFA with evaluation, Call, Return, and Apply
+ports. Its paths form a regular over-approximation of the concrete
+stack-disciplined interaction traces: call-stack erasure connects
+every compatible return to every compatible continuation, so every
+concrete finite trace is retained (induction on the interaction
+sequence — call↦Call edge, effect↦effect edge, return↦one of the
+added compatible return edges) while mismatched returns may only ADD
+spurious traces. β-reuse and recursion are graph cycles. The
+stage-1a effect language is a projection; odd acceptance is computed
+by product with the trusted monitor automaton (`odd.rs` kernels) —
+summaries carry NO mask states and NO accept bits. Regularity
+belongs to the deliberately flattened interaction graph, not to the
+exact higher-order trace semantics (which is not regular — see the
+port requirement below).
 
-The summary alphabet extends §2's with interface letters:
+**Why plain trace languages fail (first-draft defect, on record):**
+before application, `λx.x` and `λx. HD; x` both project to a bare
+`Return(lam)` — language equivalence merges them and `app_ref` can
+never recover which body runs. Same failure for closures returned
+by calls, primitive partials, and effectful neutral spines. Hence
+PORTS: a lambda's return carries an apply/body port as a colored
+observation; application connects the argument interface and enters
+that port. Canonicalization must never minimize ports away.
 
-- `Call(i)` — the term forces its i-th free thunk (i ≤ depth ≤ 26).
-  Within one summary a `Call(i)` edge is OPAQUE — the callee's
-  events belong to the argument summary and are spliced in at App
-  time. Ordered edges, never a multiset: ordering relative to
-  `HD`/`TD` is exactly what H·T·H detects.
-- Handle-flow letters: the interface must say when the distinguished
-  current-epoch handle crosses it. First cut: annotate `Call(i)` and
-  value-return with h ∈ {NoD, Dcur} (dead/stale handles collapse to
-  NoD — using them Errs in qeval and kills the branch). The epoch
-  discipline (each effect bumps D's epoch; only the current handle
-  is usable) is what keeps this a two-point lattice.
-- Return protocol: a value position carries a head kind
-  {lam, handle, prim-partial, neutral} so `app_ref` knows which
-  behaviors an application can select.
+**Interface protocol:**
 
-Why regular suffices: splicing an argument machine into finitely
-many `Call(i)` edges is regular substitution; β-reuse and recursive
-re-entry become CYCLES in the machine graph, interpreted as
-may-reachability — the finite cyclic NFA recognizes the may-language
-of its own infinite unfolding. Nesting depth is deliberately not
-distinguished (may-analysis); nothing visibly-pushdown is needed.
+- `Call(i)` — ordered opaque edges (i ≤ depth ≤ 26); the callee's
+  events splice at App time. Never a multiset: ordering relative to
+  `HD`/`TD` is what H·T·H detects.
+- Capability protocol on calls and returns —
+  `(cap_in, action, cap_out, head)` with cap ∈ {None, Cur} and
+  action ∈ {Keep, Create, Advance, Retire, Kill}: `Create` = NewD;
+  `Advance` = H/T consumed the entry generation and returned a
+  fresh Cur (aliases of the entry capability are now stale — one or
+  many advances invalidate alike, no integer epochs needed);
+  `Retire` = MeasD, absorbing; `Kill` = stale/species path, no
+  continuation. A stored-but-never-forced stale handle is `None`
+  WITHOUT killing the surrounding value. Prototype may widen "after
+  Advance, retained aliases nondeterministically remain Cur" —
+  sound, loose, stated, and removable later.
+- Head domain (return/apply selection):
+  `Lam {apply: PortId}` ·
+  `Prim {which, supplied, held}` (New is non-strict and discards;
+  H/T/Meas strict unary; Cnot strict binary whose partial holds its
+  first argument — merging these is unsound for app_ref) ·
+  `Handle {role: DistinguishedCur | Other}` ·
+  `Neutral {root: RigidSlot | Inert, spine: PortId}` (an effectful
+  spine still normalizes left-to-right and may force Calls; rigid
+  roots may be instantiated later — inert and effectful neutrals
+  must not merge) · `Dead`.
 
-Base states are interned: reachable mask ids from FRESH under
-step_h/step_t (small; computed once, trusted), lineage location
-{absent, current, other, dead}, control kind, flags
-{accepted-reachable, out-of-scope}. The DFA product with the mask
-automaton is the checker's accept computation.
+**Canonicalization (prototype):** structural NFA with sharing →
+bisimulation/partition-refinement quotient → deterministic
+color-and-edge sorting → cheap canonical labeling; an OPTIONAL
+minimal-DFA language fingerprint only under a hard subset-state cap
+(e.g. ≤4096 determinized states). Language-equivalent summaries may
+fail to dedup — that overstates the growth curve, never soundness.
+The certificate's reference canonicalizer may later be strengthened;
+prototype dedup need not solve language equivalence.
 
-**Known risks the prototype measures** (gate, §7): powerset blowup
-under determinization; interface-alphabet growth from the handle
-protocol; app-pair quadratics. Stop and redesign if canonical
-summaries exceed ~10⁶ at weight ≤ 24.
+**Finiteness at fixed W:** interface depth ≤ W bounds the alphabet;
+constructors add finitely many nodes; App connects shared argument
+graphs rather than unfolding; recursion adds back-edges; call sites
+are bounded by source nodes. Graph size is bounded by a finite
+function of W; the count of labeled graphs below the bound is
+finite (potentially astronomical — hence the §8 gates). No widening
+on Calls is needed; runtime repetition is cycles.
+
+**Pre-16 adversarial checks (build gate zero):** (1) `λx.x` and
+`λx.HD;x` yield distinct apply ports; (2) two calls to one shared
+callee exhibit the wrong-return false trace while retaining both
+correct traces; (3) a callee `Advance` invalidates an
+entry-generation alias; (4) inert vs effectful-spine neutrals stay
+distinct. Only then weight 16.
 
 ## 4. Transfer functions (reference side)
 
 Pure, total, deliberately naive:
 
-- `var_ref(depth, i)`: the two-edge machine `Call(i)` → behave as
-  the callee's value (head kind from the interface), weight i+1.
-- `lam_ref(body)`: package — the value has head kind lam; on
-  application, run `body` with `Call(1)` denoting the argument;
+- `var_ref(depth, i)`: the machine that forces `Call(i)` and
+  behaves as the callee's returned value (head + capability from
+  the interface annotation), weight i+1.
+- `lam_ref(body)`: the value returns `Lam {apply}` — a port
+  entering `body` with `Call(1)` denoting the eventual argument;
   free indices shift. Weight +2.
-- `app_ref(fun, arg)`: for each lam-headed behavior of `fun`,
-  splice `arg`'s machine at every `Call(1)` edge of the body
-  machine; re-entrant/recursive splices close as cycles; then
-  compute the complete same-weight LFP and canonicalize every
-  output. Returns the fully saturated finite output SET. Weight
-  w_f + w_a + 2. Non-lam heads: species-Err (branch dies), neutral
-  (application stays symbolic — a value whose behavior may still be
-  forced later), prim heads follow qeval's arities.
+- `app_ref(fun, arg)`: for each `Lam`-headed return of `fun`,
+  connect `arg`'s interface at the body's `Call(1)` edges and enter
+  through the apply port; re-entrant/recursive connections close as
+  cycles; then compute the complete same-weight LFP and
+  canonicalize every output. Returns the fully saturated finite
+  output SET. Weight w_f + w_a + 2. Other heads follow the §3 head
+  domain: `Prim` by its strictness/arity row, `Handle` applied =
+  species-Err (branch dies), `Neutral` extends the spine port
+  (arguments may still force Calls and emit effects), `Dead` is
+  absorbing.
 
 Iteration: outer Knuth min-weight agenda over Var/Lam/App
 hyperedges (all constructors strictly weight-increasing, so
