@@ -681,3 +681,28 @@ replacement: concrete-first, the abstract lattice deferred entirely.
   exactly 51 bits — must give nondyadic ≥ 4 with fatediv = 0.
 - Sweeps 46..49 running as the first ≤1h block at entry time;
   per-size results get their own entry as blocks land.
+
+## 2026-08-04 — complement 46 and 47 measured: √2-coefficient exactly 0; campaign parked
+
+First two sizes beyond the exhaustive horizon, under the new
+≤1-2h-per-run protocol (block auto-parked after 47 by a9's call):
+
+- **n=46**: run 3,539,258,498 of 5,352,721,434 complement (299.2s,
+  11.8M prog/s). **√2 ≡ 0 exactly**; fatediv 0; nondyadic leaves 0.
+  halt 138,103,527; Σ_success(survivors) = 2030407833/16. Unresolved
+  13,631,964 (0.385%), all β-bound (unkT = 0); the complement's first
+  Capacity leaves (984). Deferred-tree √2 also 0.
+- **n=47**: run 6,627,964,996 of 10,005,650,488 (497.6s, 13.3M
+  prog/s). **√2 ≡ 0 exactly**; fatediv 0; nondyadic 0.
+  halt 258,781,467; Σ_success(survivors) = 950338575/4. Unresolved
+  25,560,471 (0.386%); cap 320; deferred √2 = 0.
+- Full-population per-size dyadicity now MEASURED at 46 and 47
+  (phase-1 idiom ≡ 0 + complement ≡ 0), modulo the standard
+  β-insensitive-unknown caveat. Reporting nit at this scale: the
+  pending-bracket Exact overflows (ok=false printed; √2 and Σ tracks
+  unaffected) — open task to widen or count-bound it before 52/53.
+- Remaining campaign, chunked: 48+49 as one ≤1h block; 50 (~1h);
+  51 (~2h — the pinned wrapped-witness45 prediction: nondyadic ≥ 4,
+  fatediv 0); 52/53 via 'i/m' slices. Unresolved streams in
+  `.phase2/` (46/47 complete; the file's partial n=48 lines are
+  harmless — adjudicate filters by size range).
