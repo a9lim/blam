@@ -579,3 +579,12 @@ extracted; mass-conservation asserted per program. Budgets β=512/2²⁰
   current-state form (engines / measured state / next), live state
   dated 2026-08-04, gaslamp thread list completed. Version bumped to
   1.0.1 on dev — publishes via release.yml on the next main merge.
+- README reworked package-first (a9's call: it read as a findings
+  list): install → library tour with verified code snippets
+  (classical parse/normalize + KN machine; a qBLC Bell-pair program
+  that lands on exactly 41 bits, the census's entanglement
+  threshold, with exact amplitudes) → drivers table → verification →
+  findings compressed to one "Selected results" breath with absolute
+  links (crates.io readers get no repo-relative paths). Snippets are
+  committed as examples/normalize.rs + examples/bell.rs so cargo
+  test/clippy keep them honest.
