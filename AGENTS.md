@@ -4,8 +4,10 @@ Rust engine for binary lambda calculus / AIT experiments, verified
 against Tromp's Haskell. README.md has the public story; `docs/` holds
 the deep records — DESIGN-BLC.md (classical architecture + measured
 results), DESIGN-QBLC.md (the quantum pillar's design spec),
-SPEC-BISIM.md (bisimulation statement + proof plan), LEDGER.md (the
-running lab notebook; entries before 2026-08-04 cite pre-reorg paths).
+SPEC-BISIM.md (bisimulation statement + proof plan), NOTE-GALOIS.md
+(the Galois structure of qBLC halting mass: T1 proved, T2/T3 plans,
+the threshold zoo), LEDGER.md (the running lab notebook; entries
+before 2026-08-04 cite pre-reorg paths).
 Canonical measurement outputs live in `data/`; the standing protocols
 are runnable from `scripts/`.
 This file tracks what you need to work here now: conventions, live
@@ -239,8 +241,9 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   measured (rational-limit threshold ≠ √2 threshold); next build =
   `oddmin` stage 1a (open-transducer abstract-inhabitance DP,
   trusted constructor-closure certificate, target: first odd trace
-  = 45, upgrading the β=512-qualified anchor to a theorem). Full
-  state in the ledger entry.
+  = 45, upgrading the β=512-qualified anchor to a theorem). Monitor
+  layer landed (`src/odd.rs`, tight ≤22). Full state: NOTE-GALOIS.md
+  + the ledger entries.
   Bisimulation lane: **Lean seed landed** (`lean/Blc/Selfint.lean`;
   intL kernel-pinned via wire identity, |E_q|=176 kernel-checked,
   quote linearity proved; L1/L2 statements round-4-ratified — the
