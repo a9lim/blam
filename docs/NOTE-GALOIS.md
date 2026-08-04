@@ -4,8 +4,9 @@
 below (Lean formalization parked behind the L2 machine layer, which
 wants the same configuration formalization). T2/T3 are stated with
 proof plans; the oddmin instrument (stage 1a validation layer:
-`src/odd.rs`) is live. Spar record: `qblc-omega-witnesses` rounds
-r1–r3, 2026-08-04. Measured inputs: LEDGER entries of 2026-08-03/04.*
+`src/odd.rs`) is live and r4-hardened; the DP design is r4/r4b-frozen
+with a gated build. Spar record: `qblc-omega-witnesses` rounds
+r1–r4b, 2026-08-04. Measured inputs: LEDGER entries of 2026-08-03/04.*
 
 ## 1. Setting
 
@@ -99,15 +100,43 @@ Dyadicity of the full population is measured through 50 (complement
   closure of a complete fixed-point table (L[lam Φ] ≤ 2 + L[Φ],
   L[app(Φ,Ψ)] ≤ 2 + L[Φ] + L[Ψ] over every abstract output);
   witness replay proves attainability only.
-- **Stage 1 (oddmin): min odd-trace weight = 45.** Validation layer
-  live (`src/odd.rs`): per-qubit may-set S ⊆ {X,Y,Z}×{even,odd};
-  H swaps X↔Z, T feeds X/Y both ways grade-flipped, meas accepts on
-  (Z, odd). Sound by the product-structure argument (a product of
-  even Born factors is even, so an odd leaf forces an odd-readable
-  measurement); no-CNOT separability makes the single distinguished
-  lineage sound (stage 1b adds Pauli-string routing). Measured tight
-  at small sizes: ≤22 exhaustive, zero accepts, zero false
-  positives. The compositional DP is the remaining build.
+- **Stage 1a (oddmin): min CNOT-FREE odd-trace weight = 45.** The
+  scope restriction is forced, and measured: min cnot-trace weight
+  ∈ (22, 28] — the 28-bit λ⁴ witness `λ⁴.((1 (2 1)) (2 1))` fires a
+  Cnot effect (verified; same-qubit cnot Errs before the effect, so
+  two news are floor; ≤22 exhaustive has none) — so any monitor that
+  latched accept on cnot would cap its provable minimum at 28.
+  Validation layer live and r4-hardened (`src/odd.rs`): per-qubit
+  may-set S ⊆ {X,Y,Z}×{even,odd}; H swaps X↔Z, T feeds X/Y both
+  ways grade-flipped, meas accepts on (Z, odd); verdicts
+  {Even, MayOdd, NeedsCnot} with cnot as out-of-scope, never accept;
+  epoch-checked certificate replay rejects forged traces. Sound by
+  the product-structure argument (a product of even Born factors is
+  even, so an odd leaf forces an odd-readable measurement);
+  no-CNOT separability makes the single distinguished lineage
+  sound. Measured tight at small sizes: ≤22 exhaustive, zero
+  MayOdd. DP build plan (r4/r4b-frozen): ordered Call edges (a
+  multiset loses use-ordering), outer Knuth min-first + complete
+  same-weight LFP saturation (substitution is zero-cost — the
+  argument's weight was paid at the App), trusted/untrusted split
+  `oddmin_ref` / `oddmin` search / checker-invokes-ref-only, and a
+  GATED prototype: weights 16/20/24 first, stop if canonical
+  summaries exceed ~10⁶.
+- **Stage 1b (the cnot companion): Pauli-string path parity.** The
+  T-count shortcut is backwards — a T acting on even-grade X/Y
+  support is exactly how odd grade is created. The correct lemma
+  (Codex r4, statement level): expand the unnormalized branch
+  density operator in Pauli strings, grade coefficients by
+  √2-parity; New introduces even I/Z, H and CNOT conjugate strings
+  grade-flat (symplectic routing), T on local I/Z is grade-flat, T
+  on local X/Y branches and toggles grade, projectors preserve
+  grade. Hence: **a Galois-odd finite branch mass forces a
+  projector-compatible Pauli path whose count of X/Y-active T
+  transitions is odd.** Contrapositive: all-even path parity ⇒ even
+  mass, WITH cnot in scope. Monitor form: may-sets of
+  (x, z, g) ∈ F₂^{2n} × F₂. This is the lemma that removes stage
+  1a's cnot-free premise; source T-count alone can never decide it
+  because H/CNOT routing determines each T's local letter.
 - **T3 (infinite-tree control).** Below 53, every program has
   Δ(C) = 0 — the only piece that can discharge the β-insensitive
   unknown bracket (finite-tree theorems never do). Scoped to √2:

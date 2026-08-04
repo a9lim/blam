@@ -884,3 +884,29 @@ r3-frozen DP unchanged; two redesigns mandatory, both ratified.
   every real trace). 71 lib tests green.
 - Next build: the gated prototype. r4b (evidence + a trusted-vs-fast
   transfer split question) sent at entry time.
+
+## 2026-08-04 — oddmin r4b: trust architecture confirmed, design frozen
+
+Codex confirmed the reference/fast split (job cx-20260804-190342):
+`oddmin_ref` (trusted, deliberately dumb: domain types, canonicalizer,
+var/lam/app reference transfers, same-weight LFP) / `oddmin` search
+(fast, parallel, untrusted) / certificate checker invoking ONLY the
+reference side — a search bug can fail a certificate, never fake a
+lower bound. Refinements adopted: Origin records stay acyclic in
+source weight (Var/Lam/App only — LFP steps are internal, never
+serialized); checker verifies summary MEMBERSHIP in the recomputed
+reference output (no ordinal output_choice — fragile under
+canonical-order changes); widening, if any, frozen inside reference
+transfer; canonicalization is the one unavoidable shared trust point,
+kept small with law tests (idempotence, congruence, deterministic
+round-trip serialization); all-pairs closure O(N²) escape hatch = a
+trusted `compatible()` bucketing predicate where the checker verifies
+every omitted pair incompatible — never a search-supplied pair list.
+Differential gates before each weight raise: exhaustive ref-vs-fast
+output-set comparison at 16/20, sampled at 24, LFP-fixed-point
+asserts, shift/substitution identities — plus the separate qeval
+trace-inclusion battery, since ref-vs-fast agreement cannot catch a
+shared abstraction mistake; the closure check stays authoritative.
+NOTE-GALOIS.md §4 updated (stage-1a scope + the stage-1b Pauli-string
+path-parity lemma promoted into the note). Next: the gated prototype
+build (weights 16/20/24, growth curve to r5).
