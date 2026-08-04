@@ -977,3 +977,27 @@ absorbed into SPEC-ODDMIN.md §3 same-day:
   Advance invalidates an alias; inert ≠ effectful neutral.
 Prototype code is now green-lit on the revised domain, gates 0 then
 16/20/24. Spec + this entry pushed; growth curve goes to r5b.
+
+## 2026-08-04 — oddmin_ref foundation landed: graphs, canon laws, mask automaton, accept product
+
+First prototype brick on the r5a domain (`src/oddmin.rs`, trusted
+side only): the colored interaction NFA types (Label with the full
+capability-annotated Call/Ret letters; five-way Head with apply/
+spine PORTS), reachable-restriction + bisimulation quotient by
+partition refinement (initial partition = root roles, so ports
+survive) + deterministic BFS relabeling = `canon()`; the interned
+mask automaton built from odd.rs kernels — **17 reachable masks, 8
+odd-readable** (count cross-derived by an independent BFS outside
+the crate, pinned in-test); and `may_accept` = the external product
+(NewD guesses the lineage, HD/TD step masks, MeasD accepts via
+step_meas and retires, OutOfScope is a stage-1a dead end, Call/Ret
+are epsilon at accept time — semantics acts at transfer time).
+Tests: kernel-vs-automaton agreement + hth/Clifford spot checks
+mirroring odd.rs; product semantics (sandwich accepts, interface
+letters transparent, OutOfScope kills, pre-alloc and post-retire
+effects unrealizable); canon idempotence, congruence on a bisimilar
+duplicate, garbage collection; and the port-preservation tests —
+the λx.x-vs-λx.HD;x defect class cannot re-enter through
+canonicalization (ported ≠ unported, differing heads stay
+distinct). 75 lib tests, clippy clean. Next brick: var_ref/lam_ref/
+app_ref + the four gate-zero adversarial checks.
