@@ -54,11 +54,15 @@
 //! re-embedded as rationals, `radical::sqrt2_part`), decoupled from the
 //! full aggregate so it survives even a rational-part overflow.
 //!
-//! Usage: qcomplement [lo] [hi] [mode] [beta] [trans] [file]
+//! Usage: qcomplement [lo] [hi] [mode] [beta] [trans] [file] [slice]
 //!   mode ∈ sweep (default) | count | adjudicate
 //!   defaults: 46 53, sweep at 512/2²⁰ (hunt precedent), adjudicate at
 //!   4096/2²⁶ (canonical), file `qcomplement_unresolved.txt` (sweep
 //!   truncates it; adjudicate reads it and writes `<file>.rem`).
+//!   slice `i/m` (sweep/count): run every m-th interleaved task with
+//!   offset i — disjoint exact cover, so a big size splits into
+//!   independent runs under a9's ≤1-2h-per-run cap; slice tallies
+//!   merge by exact addition (unit-tested).
 
 use blam::dw::Dw;
 use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
@@ -507,13 +511,26 @@ fn main() {
         .get(6)
         .cloned()
         .unwrap_or_else(|| "qcomplement_unresolved.txt".into());
+    // Optional "i/m" slice spec: run only every m-th task (offset i) of
+    // the interleaved task list — disjoint, exactly covering slices, so
+    // a big size splits into independent ≤2h runs whose tallies merge
+    // by exact addition (unit-tested). Sweep/count modes only.
+    let slice: Option<(usize, usize)> = args.get(7).map(|s| {
+        let (i, m) = s.split_once('/').expect("slice spec: i/m");
+        let (i, m) = (i.parse().expect("slice i"), m.parse().expect("slice m"));
+        assert!(m >= 1 && i < m, "slice i/m needs i < m");
+        assert!(mode != "adjudicate", "slice applies to sweep/count only");
+        (i, m)
+    });
     assert!(lo >= 4 && hi <= 63 && lo <= hi);
 
     let nthreads = rayon::current_num_threads();
     eprintln!(
         "qcomplement [{mode}]: sizes {lo}..={hi}, non-λ⁵ complement, β={} trans={}, \
-         file {path}, {nthreads} threads",
-        budget.beta, budget.trans,
+         file {path}{}, {nthreads} threads",
+        budget.beta,
+        budget.trans,
+        slice.map_or(String::new(), |(i, m)| format!(", slice {i}/{m}")),
     );
 
     if mode == "adjudicate" {
@@ -535,7 +552,15 @@ fn main() {
     let t0 = Instant::now();
     for n in lo..=hi {
         let tn = Instant::now();
-        let tasks = interleave_tasks(split_tasks(n, nthreads * 2048));
+        let mut tasks = interleave_tasks(split_tasks(n, nthreads * 2048));
+        if let Some((si, sm)) = slice {
+            tasks = tasks
+                .into_iter()
+                .enumerate()
+                .filter(|(j, _)| j % sm == si)
+                .map(|(_, t)| t)
+                .collect();
+        }
         let done = std::sync::atomic::AtomicU64::new(0);
         let total_tasks = tasks.len() as u64;
         let tally = tasks
@@ -874,6 +899,55 @@ mod tests {
             );
             assert_eq!(adj.unresolved_n, single.unresolved_n, "n={n}");
             assert_eq!(adj.deferred.v.reduce(), single.deferred.v.reduce(), "n={n}");
+        }
+    }
+
+    #[test]
+    fn slice_union_matches_full_sweep() {
+        // The i/m task-list slices are a disjoint exact cover: merging
+        // the m slice tallies must reproduce the full sweep's tally,
+        // including the exact accumulators.
+        for n in [18u32, 22] {
+            let mut pool = Pool::new();
+            let mut m = QMachine::new();
+            let mut leaves = Vec::new();
+            let mut sweep_tasks = |tasks: Vec<blam::enumerate::GenTask>, t: &mut Tally| {
+                for task in &tasks {
+                    blam::enumerate::run_task(task, &mut |enc, len| {
+                        if rung0(enc, len, t) {
+                            sweep_one(&mut pool, &mut m, &mut leaves, enc, len, &HUNT, t, None);
+                        }
+                    });
+                }
+            };
+            let all = interleave_tasks(split_tasks(n, 64));
+            let mut full = Tally::new();
+            sweep_tasks(all.clone(), &mut full);
+            let mut merged = Tally::new();
+            for si in 0..3usize {
+                let slice: Vec<_> = all
+                    .iter()
+                    .enumerate()
+                    .filter(|(j, _)| j % 3 == si)
+                    .map(|(_, t)| t.clone())
+                    .collect();
+                let mut part = Tally::new();
+                sweep_tasks(slice, &mut part);
+                merged = merged.merge(part);
+            }
+            assert_eq!(merged.enumerated, full.enumerated, "n={n}");
+            assert_eq!(merged.enum_k, full.enum_k, "n={n}");
+            assert_eq!(merged.rejected_k, full.rejected_k, "n={n}");
+            assert_eq!(merged.run, full.run, "n={n}");
+            assert_eq!(merged.halt_n, full.halt_n, "n={n}");
+            assert_eq!(merged.err_n, full.err_n, "n={n}");
+            assert_eq!(merged.unk_beta, full.unk_beta, "n={n}");
+            assert_eq!(merged.unresolved_n, full.unresolved_n, "n={n}");
+            assert_eq!(merged.fate_div_n, full.fate_div_n, "n={n}");
+            assert!(merged.success.ok && full.success.ok, "n={n}");
+            assert_eq!(merged.success.v.reduce(), full.success.v.reduce(), "n={n}");
+            assert_eq!(merged.sqrt2.v.reduce(), full.sqrt2.v.reduce(), "n={n}");
+            assert_eq!(merged.max_steps, full.max_steps, "n={n}");
         }
     }
 
