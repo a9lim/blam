@@ -75,12 +75,13 @@ group is abelian (σ∘conj = conj∘σ) and the H-sign squares away. ∎
 | 45 | witness45 | first Galois-odd leaves anywhere (β=512-qualified); H·T·H·meas, both arms Halt, (2±√2)/4, σ-paired, Σ = 1 |
 | 48 | complement witness | same sandwich, K-plumbed at k=3 (eats cnot arg); σ-paired |
 | 49 | +1-bit sibling | payload `new new` for `new t`; σ-paired |
+| 50 | three plumbing variants | two payload extensions of the 48 frame (`new meas`, `new (λ.1)`) + a λ⁴ re-plumb discarding cnot; all σ-paired, (2±√2)/4 |
 | 51 | wrapped-witness45 pair | predicted (pre-registered): nondyadic ≥ 4, fatediv 0 |
 | 53 | P53 = λ⁵.(W (1 1)) | first UNPAIRED program: boolean applied to a 6-bit poison pill; Err at (2+√2)/4, Halt at (2−√2)/4. +8-bit split, minimal in the one-hole family |
 | 85 | 1/3-program | rejection loop, semantic P_Halt = 1/3 ∉ Z[1/2]: non-dyadic RATIONAL limits are a distinct threshold (n_{Q∖D} ≤ 85), invisible to every finite-budget sweep; sub-53 existence open |
 
-Dyadicity of the full population is measured through 49 (complement
-√2 ≡ 0 exactly at 42..49, fatediv 0 everywhere; idiom ≡ 0 through
+Dyadicity of the full population is measured through 50 (complement
+√2 ≡ 0 exactly at 42..50, fatediv 0 everywhere; idiom ≡ 0 through
 52, non-dyadic at exactly 53).
 
 ## 4. The theorem package (open)
@@ -124,5 +125,5 @@ masses, and the halting set is twist-invariant, so odd parts cancel
 program-by-program. At 53, eight bits buy the cheapest asymmetric
 continuation (apply the boolean to a poison pill; Err one arm), the
 twist-invariance of fates breaks, and Σ_success leaves Z[1/2]. The
-campaign's remaining sweeps (50–53) test exactly this story's
+campaign's remaining sweeps (51–53) test exactly this story's
 complement predictions.

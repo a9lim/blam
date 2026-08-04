@@ -220,13 +220,15 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   validated on the 42..45 complement (√2 ≡ 0, ground truth
   reproduced; rung-0 counts double-DP-verified), n=42 adjudication
   99.93% β-insensitive with zero Σ shift. **Measured so far:
-  complement √2-coefficient EXACTLY 0 at every size 42..49** — the
-  full-population dyadicity claim now stands through 49. New at
-  48/49: the complement's first nondyadic leaves (one K-plumbed
-  H·T·H·meas sandwich per size, σ-paired, decoded in the ledger) and
-  its first unkT (2 at n=49). Runs are chunked under a9's
-  ≤1-2h-per-run protocol (per-size sweeps; 'i/m' slices for 52/53;
-  unresolved streams in `.phase2/`); remaining blocks: 50 (~1h),
+  complement √2-coefficient EXACTLY 0 at every size 42..50** — the
+  full-population dyadicity claim now stands through 50. Complement
+  nondyadic leaves appeared at 48 and diversify with size (48/49:
+  one K-plumbed H·T·H·meas sandwich each; 50: three programs — two
+  payload extensions plus a λ⁴ re-plumb — all σ-paired, decoded in
+  the ledger; every witness wire is an `src/odd.rs` test fixture);
+  first unkT at 49 (2), growing at 50 (10). Runs are chunked under
+  a9's ≤1-2h-per-run protocol (per-size sweeps; 'i/m' slices for
+  52/53; unresolved streams in `.phase2/`); remaining blocks:
   51 (~2h — pinned prediction: wrapped witness45 gives nondyadic ≥ 4
   with fatediv 0), 52 in ~2 and 53 in ~4 slices. The big
   adjudication is DEFERRED to its own session — protocol on record

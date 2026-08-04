@@ -802,3 +802,32 @@ session scratchpad, promoted here):
   surface on the fast machine (lane engineering item). The
   compositional DP (open transducers + LFP) is the remaining build;
   the monitor is its validation oracle and certificate replayer.
+
+## 2026-08-04 — complement 50: √2 ≡ 0; the sandwich diversifies its plumbing
+
+Fourth block of the chunked campaign (49.7 min; chained behind 48/49
+while the theorem lane ran):
+
+- **n=50**: run 43,964,750,189 of 67,928,087,938 (2984.6s, 14.7M
+  prog/s). **√2 ≡ 0 exactly**; fatediv 0; radical-unk 0. halt
+  1,717,901,217; Σ_success(survivors) = 12894457950055/2¹³.
+  Unresolved 178,974,905 (0.407%), unkT = 10, cap 41,029; deferred
+  √2 = 0.
+- **nondyadic leaves 6 = three programs, all the same generator**,
+  every one verified by qeval replay: 2 leaves, both Halt, masses
+  (2±√2)/4, σ-paired, Σ = 1 — byte-for-byte the witness45 leaf
+  profile. Decoded: two are +2-bit payload extensions of the n=48
+  K-frame (payload `new meas` for `new t`; payload `new (λ.1)`), and
+  one is a NEW λ⁴ re-plumb — λ⁴.((λλ. meas (2 (1 (2 (new 1))))) h):
+  binds four signature slots, re-feeds h through an inner double
+  lambda, silently discards cnot, and reconstitutes
+  meas(h(t(h(new t)))). Plumbing diversity is growing with size
+  exactly as the affordability story predicts; pairing unbroken.
+- All three wires added to `src/odd.rs`'s witness fixture (odd
+  leaves present and accepted by the monitor; suite green).
+- Full-population per-size dyadicity now MEASURED through **50**.
+  Growth notes for the adjudication session: unkT 10 (was 2 at 49),
+  cap 41,029 (was 9,316), unresolved rate creeping 0.397 → 0.407%.
+  Pending-bracket ok=false nit unchanged (√2/Σ unaffected).
+- Next: n=51, the pre-registered prediction block (wrapped-witness45
+  pair ⇒ nondyadic ≥ 4 with fatediv 0), launched at entry time.

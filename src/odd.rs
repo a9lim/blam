@@ -158,13 +158,16 @@ mod tests {
         const W45: &str = "000000000001111100111111001100111111001111010";
         const W48: &str = "000000010000110000111100111110011001111100111010";
         const W49: &str = "0000000100001100001111001111100110011111001110110";
+        const W50A: &str = "00000000010000011111100111001100111001111101011110";
+        const W50B: &str = "00000001000011000011110011111001100111110011101110";
+        const W50C: &str = "00000001000011000011110011111001100111110011100010";
         const P53: &str = "00000000000101111100111111001100111111001111010011010";
         let budget = QBudget {
             beta: 512,
             trans: 1 << 20,
             ..QBudget::default()
         };
-        for src in [W45, W48, W49, P53] {
+        for src in [W45, W48, W49, W50A, W50B, W50C, P53] {
             let p = parse_all(src).expect("closed");
             let leaves = qeval::run_traced(qeval::apply_signature(&p, &FROZEN), &budget);
             let mut odd_seen = 0;
