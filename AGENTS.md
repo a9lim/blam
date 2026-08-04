@@ -4,7 +4,9 @@ Rust engine for binary lambda calculus / AIT experiments, verified
 against Tromp's Haskell. README.md has the public story; `docs/` holds
 the deep records — DESIGN-BLC.md (classical architecture + measured
 results), DESIGN-QBLC.md (the quantum pillar's design spec),
-SPEC-BISIM.md (bisimulation statement + proof plan), NOTE-GALOIS.md
+SPEC-BISIM.md (bisimulation statement + proof plan), SPEC-ODDMIN.md
+(the stage-1a compositional DP: domain, transfers, trust split,
+certificate, build gates), NOTE-GALOIS.md
 (the Galois structure of qBLC halting mass: T1 proved, T2/T3 plans,
 the threshold zoo), LEDGER.md (the running lab notebook; entries
 before 2026-08-04 cite pre-reorg paths).
@@ -250,8 +252,11 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   GATED: run weights 16/20/24, measure summary growth, stop if
   >10⁶. Monitor layer landed and r4-hardened (`src/odd.rs`: verdict
   {Even, MayOdd, NeedsCnot}, epoch-checked certificate replay, pure
-  step_h/t/meas kernels; tight ≤22). Full state: NOTE-GALOIS.md
-  + the ledger entries.
+  step_h/t/meas kernels; tight ≤22). Buildable spec landed:
+  docs/SPEC-ODDMIN.md — §3's domain concretization (summaries =
+  minimal DFAs of may-languages; call/return flattening; {NoD,Dcur}
+  handle interface) is under r5 adversarial review before any
+  prototype code. Full state: NOTE-GALOIS.md + the ledger entries.
   Bisimulation lane: **Lean seed landed** (`lean/Blc/Selfint.lean`;
   intL kernel-pinned via wire identity, |E_q|=176 kernel-checked,
   quote linearity proved; L1/L2 statements round-4-ratified — the

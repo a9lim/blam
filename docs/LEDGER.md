@@ -910,3 +910,30 @@ shared abstraction mistake; the closure check stays authoritative.
 NOTE-GALOIS.md §4 updated (stage-1a scope + the stage-1b Pauli-string
 path-parity lemma promoted into the note). Next: the gated prototype
 build (weights 16/20/24, growth curve to r5).
+
+## 2026-08-04 — SPEC-ODDMIN.md: the DP's buildable spec; domain concretized
+
+New doc `docs/SPEC-ODDMIN.md` freezes the stage-1a build: theorem
+target + forced scope (§1), the trace projection (§2), transfers/
+iteration (§4), trust split (§5), certificate + checker obligations
+(§6), S1/S2 + the three-layer validation battery (§7), and the
+16/20/24 growth gates (§8) — §§1,5–8 restate r4/r4b. The new
+content is §3, the domain concretization the spar left open:
+**summaries = minimal DFAs of may-languages** over the stage-1a
+alphabet (NewD/HD/TD/MeasD/Cnot-sink/τ-erasure of non-D effects +
+interface letters). Key moves: Call(i) edges are opaque within a
+summary, so App-splicing is regular substitution; β-reuse and
+recursion close as GRAPH CYCLES read by may-reachability — the
+finite cyclic NFA recognizes its own infinite unfolding's
+may-language, so no visibly-pushdown machinery for a may-analysis;
+canonical form = determinize+minimize+BFS ordering, giving the
+canonicalization laws by Myhill–Nerode; acceptance is NEVER stored —
+recomputed as a product with the trusted mask automaton
+(odd.rs kernels), matching the r4 checker discipline. Handle
+interface first cut: {NoD, Dcur} on Call/Return (dead/stale Errs on
+use, so Dead needn't cross). Sent to Codex as r5a with four named
+attack surfaces (call/return flattening soundness — I claim
+looseness-only by the may direction; {NoD,Dcur} epoch-staleness
+across interface crossings — the one I flag as potentially UNSOUND;
+DFA-vs-simulation-quotient canonicalization; head-kind
+sufficiency). Prototype code waits on the verdict.
