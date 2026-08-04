@@ -860,6 +860,68 @@ mod tests {
     }
 
     #[test]
+    fn first_fate_divergent_nondyadic_witness_at_53() {
+        // Codex counterexample (gaslamp thread qblc-omega-witnesses,
+        // 2026-08-03) to the swap-involution pairing claim: a Church boolean
+        // fate-splits on ONE argument, because reduction continues under
+        // binders. λ⁵. (meas (h (t (h (new t))))) (t t): outcome 0 gives
+        // true (t t) → λy. t t, and t t fires Species Err under the binder
+        // at mass (2+√2)/4; outcome 1 gives false (t t) → λy.y, halting at
+        // mass (2−√2)/4. One continuation — no size-preserving swap mate —
+        // so this is the minimal-family candidate for the first non-dyadic
+        // Ω_success contribution (cancellation at n=53 would need a global
+        // enumeration identity, no mechanism known). Pinned cross-engine.
+        use crate::term::{app, lam, var};
+        let bits = "00000000000101111100111111001100111111001111010011010";
+        let t = parse_all(bits).unwrap();
+        assert_eq!(t.bit_size(), 53);
+        // λh λm λn λc λt. (m (h (t (h (n t))))) (t t) under the frozen order.
+        let sandwich = app(
+            var(4),
+            app(var(5), app(var(1), app(var(5), app(var(3), var(1))))),
+        );
+        let built = lam(lam(lam(lam(lam(app(sandwich, app(var(1), var(1))))))));
+        assert_eq!(t, built);
+        let expect = crate::qeval::run(
+            crate::qeval::apply_signature(&t, &FROZEN),
+            &QBudget::default(),
+        );
+        let mut pool = Pool::new();
+        let root = pool.from_term(&t);
+        let sig = pool.apply_signature(root, &FROZEN);
+        let mut m = QMachine::new();
+        let mut got = Vec::new();
+        let budget = QBudget {
+            trans: 1 << 26,
+            ..QBudget::default()
+        };
+        m.run_into(&mut pool, sig, &budget, &mut got);
+        assert_eq!(got, expect);
+        assert_eq!(got.len(), 2);
+        // Depth-first, outcome-0 first: Err(Species) then Halt.
+        assert!(matches!(got[0].fate, Fate::Err(ErrKind::Species)));
+        assert!(matches!(got[1].fate, Fate::Halt(ref s) if s.live_count() == 0));
+        let w_plus = Dw {
+            a: 2,
+            b: 1,
+            c: 0,
+            d: -1,
+            k: 4,
+        }
+        .reduce();
+        let w_minus = Dw {
+            a: 2,
+            b: -1,
+            c: 0,
+            d: 1,
+            k: 4,
+        }
+        .reduce();
+        assert_eq!(got[0].mass.unwrap().reduce(), w_plus);
+        assert_eq!(got[1].mass.unwrap().reduce(), w_minus);
+    }
+
+    #[test]
     fn ht_measure_weights_exact_on_machine() {
         // meas (h (t (h (new h)))): P(0) = (2+√2)/4, P(1) = (2−√2)/4.
         let mut pool = Pool::new();

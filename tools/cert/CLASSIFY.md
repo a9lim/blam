@@ -6,7 +6,7 @@ terms by the *shape* of their normal-order reduction; `certdiag`
 (src/bin/certdiag.rs) runs the ratchet discovery pipeline and reports,
 per term, exactly where it drops out. Nothing here is a kill — the
 live kill state is `ratchet_kills.txt` + AGENTS.md. Raw tables
-regenerate in minutes (`tracescan --file unknowns_41.txt --out …`,
+regenerate in minutes (`tracescan --file data/unknowns.txt --out …`,
 `certdiag <terms> --threads 8`); superseded map generations live in
 git history.
 

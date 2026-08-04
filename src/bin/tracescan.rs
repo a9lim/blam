@@ -19,7 +19,7 @@
 //! per-term cap so one term cannot eat the sweep.
 //!
 //! Usage:
-//!   tracescan --file unknowns_41.txt --out tools/cert/classify.csv [--threads N]
+//!   tracescan --file data/unknowns.txt --out tools/cert/classify.csv [--threads N]
 //!   tracescan --single <bits>                 # detailed single-term report
 //!   tracescan --verify-loop32                 # the reference-agreement gate
 //!   tracescan --dump <bits> --steps 10,100,1000   # cross-check state sizes

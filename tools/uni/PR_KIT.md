@@ -94,7 +94,7 @@ A114852 count and BBλ value in range, and exact agreement with your
 BB.txt halt counts at n=32.
 
 One practical question: the AIT repo carries no license file. My repo
-is MIT with prominent attribution to you; if you have a preference for
+is AGPL with prominent attribution to you; if you have a preference for
 how derived work should be licensed, I'll follow it.
 
 Thanks for building this corner of mathematics — it's been a joy to

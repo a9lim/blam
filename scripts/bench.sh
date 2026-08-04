@@ -2,6 +2,7 @@
 # Variant benchmark: what does each census optimization actually buy?
 # Runs the same size range under ablations and prints the timing rows.
 set -e
+cd "$(dirname "$0")/.."
 RANGE="${1:-28} ${2:-31}"
 BIN=./target/release/census
 cargo build --release 2>/dev/null
