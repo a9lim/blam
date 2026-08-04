@@ -208,17 +208,29 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   is the proof obligation, statement + plan in SPEC-BISIM.md).
   Dyadicity threshold: idiom-sector Σ_success non-dyadic at exactly
   **n=53** (unique fate-divergent witness P53, pinned test; 53's
-  unknowns β-insensitive); phase 2 (primitive-taint over the non-λ⁵
-  complement, 46..53) is the remaining blocker on the
-  full-population claim.
-  Next (a9's pickup order, 2026-08-03): bisimulation proof lane —
-  SPEC-BISIM.md L1/L2 first, natural Lean seed (Codex round-3
-  ratification in thread `qblc-selfint`); then the phase-2 taint
-  evaluator (complete Codex design in thread `qblc-omega-witnesses`
-  round 2: one-sided may-analysis, H…T…H…meas monitor, k-partition;
-  their prior — 95% the full-population threshold stays 53); G_k
-  approximant runs + sandwich constants; output-convention question
-  still open for Object B (v0 = whole-live-store).
+  unknowns β-insensitive). **Phase 2 instrument live** (2026-08-04,
+  `qcomplement`; the taint design was replaced by a concrete-first
+  two-pass sweep after exact sizing — complement 46..53 is 933B
+  programs; rounds 3–4 in `qblc-omega-witnesses`, LEDGER.md):
+  validated on the 42..45 complement (√2 ≡ 0, ground truth
+  reproduced; rung-0 counts double-DP-verified), n=42 adjudication
+  99.93% β-insensitive with zero Σ shift. Runs are chunked under
+  a9's ≤1-2h-per-run protocol (per-size sweeps; 'i/m' slices for
+  52/53; unresolved files kept in `.phase2/`); the big adjudication
+  is DEFERRED to its own session — protocol on record in round 4
+  (exhaustive β=1024 re-sweep 46..52(+53), then event-stratified
+  canonical samples). Codex prior: 95% the threshold stays 53.
+  Bisimulation lane: **Lean seed landed** (`lean/Blc/Selfint.lean`;
+  intL kernel-pinned via wire identity, |E_q|=176 kernel-checked,
+  quote linearity proved; L1/L2 statements round-4-ratified — the
+  r4 counterexample forced ParserResult's residual-tail form; L2 =
+  VAR engine, ParserStatement = induction motor, closed L1 =
+  corollary; proofs open). Sub-176: the §8 two-entry lane is CLOSED
+  at exactly 176 (local theorem, LEDGER.md 2026-08-04); remaining
+  mechanical lane = ≤25-bit joint root+knot context search around
+  the 150-bit core F (a9's call). Still open: G_k approximant runs
+  + sandwich constants; Object B output convention (v0 =
+  whole-live-store).
   Classical engines untouched — the bit-identity bar applies to
   them, not to qBLC's new surface. Literature survey in
   `ref/QUANTUM_AIT.md` (untracked).
