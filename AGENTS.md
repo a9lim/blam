@@ -240,11 +240,17 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   **√2-theorem lane (opened 2026-08-04, active)**: Tier-A identity +
   T1 (finite-trace Galois twist, Δ(C) for limits) ratified over
   rounds r1–r3; P53 = witness45 + 8-bit split verified; n_{1/3} ≤ 85
-  measured (rational-limit threshold ≠ √2 threshold); next build =
-  `oddmin` stage 1a (open-transducer abstract-inhabitance DP,
-  trusted constructor-closure certificate, target: first odd trace
-  = 45, upgrading the β=512-qualified anchor to a theorem). Monitor
-  layer landed (`src/odd.rs`, tight ≤22). Full state: NOTE-GALOIS.md
+  measured (rational-limit threshold ≠ √2 threshold). Round 4
+  redesigned the DP before build: stage 1a is SCOPED CNOT-FREE
+  (min cnot-trace weight measured ∈ (22, 28] — a 28-bit λ⁴ witness
+  fires the effect, so any latch-based bound caps there; the global
+  claim needs stage 1b Pauli-string routing or a cnot-sector source
+  bound), Call(i) must be ordered edges not a multiset, iteration =
+  outer Knuth + same-weight LFP saturation, and the prototype is
+  GATED: run weights 16/20/24, measure summary growth, stop if
+  >10⁶. Monitor layer landed and r4-hardened (`src/odd.rs`: verdict
+  {Even, MayOdd, NeedsCnot}, epoch-checked certificate replay, pure
+  step_h/t/meas kernels; tight ≤22). Full state: NOTE-GALOIS.md
   + the ledger entries.
   Bisimulation lane: **Lean seed landed** (`lean/Blc/Selfint.lean`;
   intL kernel-pinned via wire identity, |E_q|=176 kernel-checked,

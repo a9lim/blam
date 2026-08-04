@@ -831,3 +831,56 @@ while the theorem lane ran):
   Pending-bracket ok=false nit unchanged (√2/Σ unaffected).
 - Next: n=51, the pre-registered prediction block (wrapped-witness45
   pair ⇒ nondyadic ≥ 4 with fatediv 0), launched at entry time.
+
+## 2026-08-04 — oddmin round 4: all-trace DP rejected, cnot scoped out, monitor hardened
+
+Design spar r4 (`qblc-omega-witnesses`, job cx-20260804-185318-15fc)
++ same-evening measurements and code. Verdict: do NOT build the
+r3-frozen DP unchanged; two redesigns mandatory, both ratified.
+
+- **Cnot caps any latch-based bound — now measured, not argued**:
+  min cnot-trace weight ∈ (22, 28]. Upper: 28-bit λ⁴ construction
+  `λ⁴.((1 (2 1)) (2 1))` = cnot (new _) (new _), binding only
+  H/Meas/New/Cnot (wire 0000000001011001110100111010), verified in
+  qeval — trace [New(0), New(1), Cnot(0,0,1,0), T(0,1)]; fate
+  irrelevant. Same-qubit shortcut impossible: cnot_prim Fails
+  SameQubit before the trace push. Lower: exhaustive ≤22 (6,069
+  programs) has zero cnot-bearing traces. So stage 1a is SCOPED
+  CNOT-FREE — theorem target "min cnot-free odd trace weight = 45";
+  Cnot is OutOfScope, never Accept.
+- **My T-count shortcut for the cnot sector was backwards** (Codex):
+  T acting on even X/Y support is how odd grade is CREATED. The
+  valid companion lemma is Pauli-string path parity — odd branch
+  mass forces a projector-compatible Pauli path with an odd count of
+  X/Y-active T transitions; H/CNOT route symplectically, grade-flat.
+  That is stage 1b's monitor: may-sets of (x, z, g) ∈ F₂^{2n}×F₂.
+- **DP concretization frozen (r4)**: ordered Call edges (a multiset
+  loses effect ordering — exactly what H·T·H needs); extensional
+  canonical summaries, interned reachable monitor masks, LFP on
+  graph cycles (never unfolding); iteration = outer Knuth min-first
+  agenda (constructors superior; substitution is ZERO-COST — the
+  argument's weight was paid at the App) + complete same-weight LFP
+  saturation before a layer finalizes. No credible state-space
+  estimate exists: the build is GATED — prototype weights 16/20/24,
+  report summaries/density/app-pairs/iterations, stop if >10⁶.
+- **Certificate schema outlined** (header/entry/origin replay +
+  constructor closure + witness replay; acceptance recomputed, never
+  trusted). S1 = trace-inclusion (Traces^¬CNOT ⊆ L(Abs), β lemma
+  Abs(β(B,A)) ⊑ substCall₁(Abs B, Abs A)); no coinduction needed —
+  accepting measurements occur at finite prefixes. Validation plan
+  upgraded: gate-word algebra vs Dw statevectors, open-term
+  adversarial transfer tests, qvm trace/fingerprint surface (≤22 +
+  witnesses is smoke, not evidence, for a new abstract interpreter).
+- **Landed: `src/odd.rs` rewritten to build-step 1**: verdict
+  {Even, MayOdd, NeedsCnot} (accept only fires pre-cnot; post-cnot
+  lineage is polluted and verdicts NeedsCnot); hardened replay for
+  certificate use — per-qubit epoch tracking, Meas retires ids,
+  NoNew/DupNew/Retired/StaleEpoch/SameQubit all reject (qeval never
+  emits these; forged certificates might); pure kernels step_h/
+  step_t/step_meas exposed for the future transfer code. Tests: 7
+  odd witnesses MayOdd on their odd leaves; the 28-bit cnot witness
+  NeedsCnot; forged traces rejected; ≤22 corpus may_odd = 0 now a
+  hard assert (needs_cnot = 0 too — the epoch model verified against
+  every real trace). 71 lib tests green.
+- Next build: the gated prototype. r4b (evidence + a trusted-vs-fast
+  transfer split question) sent at entry time.

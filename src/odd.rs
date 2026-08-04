@@ -3,10 +3,11 @@
 //!
 //! A sound may-abstraction of Galois-odd leaf mass for cnot-free
 //! effect traces. Replayed over a leaf's effect path (qeval's trace
-//! surface), `accepts` MUST return true whenever the leaf's
-//! unnormalized mass has a nonzero √2-coefficient; false positives
-//! are permitted (and measured by the tests, not merely tolerated —
-//! looseness below 45 would sink the oddmin lower bound).
+//! surface), the verdict MUST be `MayOdd` whenever the leaf's
+//! unnormalized mass has a nonzero √2-coefficient and the trace is
+//! cnot-free; false positives are permitted (and measured by the
+//! tests, not merely tolerated — looseness below 45 would sink the
+//! oddmin lower bound).
 //!
 //! Domain, per live qubit: the may-set S ⊆ {X, Y, Z} × {even, odd}
 //! of Pauli components its normalized conditional state may carry,
@@ -16,20 +17,32 @@
 //! TXT† = (X+Y)/√2 — cancellation deliberately ignored); a
 //! computational measurement reads the Z component, so it MAY
 //! produce a Galois-odd Born factor exactly when (Z, odd) ∈ S, and
-//! collapse resets the qubit to {(Z, even)}. A leaf mass is a
-//! product of Born factors, and a product of even factors is even —
-//! so any odd leaf forces some measurement to fire on (Z, odd),
-//! which is precisely the accept event (the product-structure
-//! argument, Codex round 3, `qblc-omega-witnesses`).
+//! collapse retires the qubit. A leaf mass is a product of Born
+//! factors, and a product of even factors is even — so any odd leaf
+//! forces some measurement to fire on (Z, odd), which is precisely
+//! the accept event (the product-structure argument, Codex round 3,
+//! `qblc-omega-witnesses`).
 //!
-//! cnot is OUT OF SCOPE for stage 1a: the monitor latches
-//! conservative acceptance on any Cnot effect (sound, maximally
-//! loose). Stage 1b replaces this with Pauli-string support routing.
+//! cnot is OUT OF SCOPE for stage 1a (round 4): a Cnot effect ends
+//! the sound single-lineage analysis, and the verdict becomes
+//! `NeedsCnot` — explicitly not a claim in either direction. The
+//! 28-bit witness λ⁴.((1 (2 1)) (2 1)) fires a Cnot effect, so any
+//! accept-latch reading would cap the provable minimum at 28 ≪ 45.
+//! Stage 1b (Pauli-string support with symplectic H/CNOT routing)
+//! is the companion that removes the premise.
+//!
+//! The replayer is HARDENED for certificate use (round 4): effects
+//! on unallocated or retired qubits, duplicate allocations, and
+//! stale epochs reject the trace as `Malformed` rather than being
+//! silently interpreted. qeval never emits such traces; a forged
+//! certificate might.
 //!
 //! This module is the trusted replayer of the planned oddmin
 //! certificate and the validation oracle for its compositional DP;
 //! it deliberately contains no term evaluation — pair it with
-//! qeval::run_traced.
+//! qeval::run_traced. The pure mask kernels (`step_h`, `step_t`,
+//! `step_meas`) are shared with the future certificate transfer
+//! code; keep them total and allocation-free.
 
 use crate::qeval::Effect;
 use std::collections::HashMap;
@@ -44,13 +57,13 @@ const FRESH: u8 = ZE;
 
 /// H: swap X↔Z support pairwise by grade (Y sign flips are invisible
 /// to support).
-fn h(s: u8) -> u8 {
+pub fn step_h(s: u8) -> u8 {
     (s & (YE | YO)) | ((s & (XE | XO)) << 4) | ((s & (ZE | ZO)) >> 4)
 }
 
 /// T: Z fixed; every X/Y component feeds both X and Y at flipped
 /// grade.
-fn t(s: u8) -> u8 {
+pub fn step_t(s: u8) -> u8 {
     let mut out = s & (ZE | ZO);
     if s & (XE | YE) != 0 {
         out |= XO | YO;
@@ -61,12 +74,53 @@ fn t(s: u8) -> u8 {
     out
 }
 
+/// Computational measurement: may the Born factor be Galois-odd?
+pub fn step_meas(s: u8) -> bool {
+    s & ZO != 0
+}
+
+/// Stage-1a verdict for one leaf's effect path.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Verdict {
+    /// Every Born factor is even: the leaf mass is Galois-even.
+    Even,
+    /// Some measurement may have produced an odd Born factor before
+    /// any Cnot effect — the sound stage-1a accept.
+    MayOdd,
+    /// A Cnot effect ended the single-lineage analysis with no prior
+    /// accept; stage 1a claims nothing about this trace.
+    NeedsCnot,
+}
+
+/// A trace the replayer refuses to interpret (certificate hardening;
+/// qeval never emits these).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Malformed {
+    /// New on a qubit id that is live or retired.
+    DupNew,
+    /// Effect on a qubit id never allocated.
+    NoNew,
+    /// Effect on a qubit id after its measurement retired it.
+    Retired,
+    /// Effect epoch does not match the qubit's next expected epoch.
+    StaleEpoch,
+    /// Cnot with control = target.
+    SameQubit,
+}
+
+#[derive(Clone, Copy, Debug)]
+enum Slot {
+    Live { next_epoch: u32, mask: u8 },
+    Gone,
+}
+
 /// Replay monitor over one leaf's effect path.
 #[derive(Clone, Debug, Default)]
 pub struct Monitor {
-    qubits: HashMap<u32, u8>,
-    accepted: bool,
+    qubits: HashMap<u32, Slot>,
+    may_odd: bool,
     cnot_seen: bool,
+    malformed: Option<Malformed>,
 }
 
 impl Monitor {
@@ -74,46 +128,107 @@ impl Monitor {
         Monitor::default()
     }
 
-    pub fn step(&mut self, e: &Effect) {
-        match e {
-            Effect::New(q) => {
-                self.qubits.insert(*q, FRESH);
+    /// Validity-check an effect on a live qubit and bump its epoch;
+    /// returns the current mask slot or records the malformation.
+    fn consume(&mut self, q: u32, e: u32) -> Option<&mut u8> {
+        match self.qubits.get_mut(&q) {
+            None => {
+                self.malformed = Some(Malformed::NoNew);
+                None
             }
-            Effect::H(q, _) => {
-                let s = self.qubits.entry(*q).or_insert(FRESH);
-                *s = h(*s);
+            Some(Slot::Gone) => {
+                self.malformed = Some(Malformed::Retired);
+                None
             }
-            Effect::T(q, _) => {
-                let s = self.qubits.entry(*q).or_insert(FRESH);
-                *s = t(*s);
-            }
-            Effect::Cnot(..) => self.cnot_seen = true,
-            Effect::Meas(q, _, _) => {
-                let s = self.qubits.entry(*q).or_insert(FRESH);
-                if *s & ZO != 0 {
-                    self.accepted = true;
+            Some(Slot::Live { next_epoch, mask }) => {
+                if *next_epoch != e {
+                    self.malformed = Some(Malformed::StaleEpoch);
+                    return None;
                 }
-                *s = FRESH;
+                *next_epoch += 1;
+                Some(mask)
             }
         }
     }
 
-    /// May this trace's leaf carry Galois-odd mass?
-    pub fn accepts(&self) -> bool {
-        self.accepted || self.cnot_seen
+    pub fn step(&mut self, eff: &Effect) {
+        if self.malformed.is_some() {
+            return;
+        }
+        match *eff {
+            Effect::New(q) => match self.qubits.entry(q) {
+                std::collections::hash_map::Entry::Occupied(_) => {
+                    self.malformed = Some(Malformed::DupNew);
+                }
+                std::collections::hash_map::Entry::Vacant(v) => {
+                    v.insert(Slot::Live {
+                        next_epoch: 0,
+                        mask: FRESH,
+                    });
+                }
+            },
+            Effect::H(q, e) => {
+                if let Some(m) = self.consume(q, e) {
+                    *m = step_h(*m);
+                }
+            }
+            Effect::T(q, e) => {
+                if let Some(m) = self.consume(q, e) {
+                    *m = step_t(*m);
+                }
+            }
+            Effect::Cnot(q1, e1, q2, e2) => {
+                if q1 == q2 {
+                    self.malformed = Some(Malformed::SameQubit);
+                    return;
+                }
+                self.consume(q1, e1);
+                if self.malformed.is_none() {
+                    self.consume(q2, e2);
+                }
+                self.cnot_seen = true;
+            }
+            Effect::Meas(q, e, _) => {
+                if let Some(m) = self.consume(q, e) {
+                    // Sound only pre-cnot; post-cnot the lineage math
+                    // is polluted and the verdict is NeedsCnot anyway.
+                    if step_meas(*m) && !self.cnot_seen {
+                        self.may_odd = true;
+                    }
+                    self.qubits.insert(q, Slot::Gone);
+                }
+            }
+        }
+    }
+
+    /// The stage-1a verdict for the effects replayed so far.
+    pub fn verdict(&self) -> Result<Verdict, Malformed> {
+        if let Some(m) = self.malformed {
+            return Err(m);
+        }
+        Ok(if self.may_odd {
+            Verdict::MayOdd
+        } else if self.cnot_seen {
+            Verdict::NeedsCnot
+        } else {
+            Verdict::Even
+        })
     }
 }
 
-/// Convenience: replay a whole path.
-pub fn trace_accepts(trace: &[Effect]) -> bool {
+/// Replay a whole path to its verdict.
+pub fn replay(trace: &[Effect]) -> Result<Verdict, Malformed> {
     let mut m = Monitor::new();
     for e in trace {
         m.step(e);
-        if m.accepts() {
-            return true;
-        }
     }
-    false
+    m.verdict()
+}
+
+/// Compatibility shim: may this valid trace's leaf carry Galois-odd
+/// mass? (`MayOdd` and `NeedsCnot` both answer "cannot rule it out".)
+pub fn trace_accepts(trace: &[Effect]) -> bool {
+    matches!(replay(trace), Ok(Verdict::MayOdd | Verdict::NeedsCnot))
 }
 
 #[cfg(test)]
@@ -126,29 +241,89 @@ mod tests {
 
     const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
+    /// Hand traces: one qubit per lowercase run, allocated up front,
+    /// epochs counted per qubit the way qeval emits them.
     fn seq(ops: &str) -> Vec<Effect> {
-        ops.chars()
-            .enumerate()
-            .map(|(i, c)| match c {
-                'h' => Effect::H(0, i as u32),
-                't' => Effect::T(0, i as u32),
-                'm' => Effect::Meas(0, i as u32, false),
+        let mut out = vec![Effect::New(0)];
+        let mut q = 0;
+        let mut e = 0;
+        for c in ops.chars() {
+            match c {
+                'h' => {
+                    out.push(Effect::H(q, e));
+                    e += 1;
+                }
+                't' => {
+                    out.push(Effect::T(q, e));
+                    e += 1;
+                }
+                'm' => {
+                    out.push(Effect::Meas(q, e, false));
+                    q += 1;
+                    e = 0;
+                    out.push(Effect::New(q));
+                }
                 _ => unreachable!(),
-            })
-            .collect()
+            }
+        }
+        out.pop(); // trailing New from the last 'm'
+        out
     }
 
     #[test]
     fn sandwich_accepted_clifford_paths_not() {
-        assert!(trace_accepts(&seq("hthm")));
+        assert_eq!(replay(&seq("hthm")), Ok(Verdict::MayOdd));
         // Dyadic single-qubit paths must stay quiet.
         for ops in ["m", "hm", "tm", "htm", "httm", "htthm", "hthhm", "ttttm"] {
-            assert!(!trace_accepts(&seq(ops)), "{ops} wrongly accepted");
+            assert_eq!(replay(&seq(ops)), Ok(Verdict::Even), "{ops} not Even");
         }
-        // After a measurement the qubit is fresh again.
-        assert!(!trace_accepts(&seq("hmhm")));
+        // Measurement retires the qubit; the next run is fresh.
+        assert_eq!(replay(&seq("hmhm")), Ok(Verdict::Even));
         // Odd support survives an intervening even segment.
-        assert!(trace_accepts(&seq("htthhthm")));
+        assert_eq!(replay(&seq("htthhthm")), Ok(Verdict::MayOdd));
+    }
+
+    #[test]
+    fn hardening_rejects_forged_traces() {
+        use Effect::*;
+        // Effect without allocation.
+        assert_eq!(replay(&[H(0, 0)]), Err(Malformed::NoNew));
+        // Duplicate allocation.
+        assert_eq!(replay(&[New(0), New(0)]), Err(Malformed::DupNew));
+        // Stale epoch (replayed effect).
+        assert_eq!(
+            replay(&[New(0), H(0, 0), H(0, 0)]),
+            Err(Malformed::StaleEpoch)
+        );
+        // Effect after measurement retired the qubit.
+        assert_eq!(
+            replay(&[New(0), Meas(0, 0, false), T(0, 1)]),
+            Err(Malformed::Retired)
+        );
+        // Self-cnot.
+        assert_eq!(
+            replay(&[New(0), Cnot(0, 0, 0, 0)]),
+            Err(Malformed::SameQubit)
+        );
+    }
+
+    /// The 28-bit cnot witness λ⁴.((1 (2 1)) (2 1)) must come back
+    /// NeedsCnot, not MayOdd — the stage-1a scope boundary.
+    #[test]
+    fn cnot_trace_is_out_of_scope() {
+        let src = "0000000001011001110100111010";
+        let p = parse_all(src).expect("closed");
+        let budget = QBudget {
+            beta: 512,
+            trans: 1 << 20,
+            ..QBudget::default()
+        };
+        let leaves = qeval::run_traced(qeval::apply_signature(&p, &FROZEN), &budget);
+        let cnot_leaves = leaves
+            .iter()
+            .filter(|(_, tr)| replay(tr) == Ok(Verdict::NeedsCnot))
+            .count();
+        assert!(cnot_leaves > 0, "no NeedsCnot leaf on the cnot witness");
     }
 
     /// Every known odd witness's odd leaves must be accepted, on the
@@ -176,7 +351,11 @@ mod tests {
                 let (_, (sa, _)) = radical_parts(m.reduce());
                 if sa != 0 {
                     odd_seen += 1;
-                    assert!(trace_accepts(trace), "odd leaf not accepted: {src}");
+                    assert_eq!(
+                        replay(trace),
+                        Ok(Verdict::MayOdd),
+                        "odd leaf not MayOdd: {src}"
+                    );
                 }
             }
             assert!(odd_seen > 0, "fixture has no odd leaf: {src}");
@@ -184,7 +363,8 @@ mod tests {
     }
 
     /// Exhaustive agreement on the small population: every leaf of
-    /// every closed program with a nonzero √2-part must be accepted.
+    /// every closed program with a nonzero √2-part must be accepted,
+    /// and every real qeval trace must replay as well-formed.
     /// Also records the abstraction's looseness (accepted programs
     /// with no odd leaf) — expected 0 at these sizes.
     #[test]
@@ -198,31 +378,35 @@ mod tests {
         // steep (a 23..26 extension ran away past 120s). A deeper
         // corpus probe needs a trace surface on the fast machine —
         // an oddmin-lane engineering item, not a test-budget knob.
-        let (mut programs, mut accepted_programs) = (0u64, 0u64);
+        let (mut programs, mut may_odd, mut needs_cnot) = (0u64, 0u64, 0u64);
         for n in 4..=22 {
             for_each_closed(n, &mut |enc, len| {
                 programs += 1;
                 let mut bits = (0..len).rev().map(|i| enc >> i & 1 == 1);
                 let p = crate::parse::parse_prefix(&mut bits).expect("enumerated term parses");
                 let leaves = qeval::run_traced(qeval::apply_signature(&p, &FROZEN), &budget);
-                let mut any_accept = false;
+                let (mut any_odd, mut any_cnot) = (false, false);
                 for (leaf, trace) in &leaves {
-                    let acc = trace_accepts(trace);
-                    any_accept |= acc;
+                    let v = replay(trace).unwrap_or_else(|m| {
+                        panic!("qeval trace malformed ({m:?}) at n={n}: {enc:b}")
+                    });
+                    any_odd |= v == Verdict::MayOdd;
+                    any_cnot |= v == Verdict::NeedsCnot;
                     let Some(m) = leaf.mass else { continue };
                     let (_, (sa, _)) = radical_parts(m.reduce());
                     assert!(
-                        sa == 0 || acc,
-                        "odd leaf not accepted at n={n}: {enc:0>width$b}",
+                        sa == 0 || v != Verdict::Even,
+                        "odd leaf judged Even at n={n}: {enc:0>width$b}",
                         width = len as usize
                     );
                 }
-                accepted_programs += u64::from(any_accept);
+                may_odd += u64::from(any_odd);
+                needs_cnot += u64::from(any_cnot);
             });
         }
-        // First odd trace is at 45; sub-23 accepts are pure looseness.
-        // cnot-latch accepts are expected once cnot-capable plumbing
-        // enumerates; print for the record rather than asserting 0.
-        println!("programs={programs} accepted={accepted_programs}");
+        // First odd trace is at 45; sub-23 MayOdd is pure looseness.
+        // NeedsCnot counts the out-of-scope sector, not accepts.
+        println!("programs={programs} may_odd={may_odd} needs_cnot={needs_cnot}");
+        assert_eq!(may_odd, 0, "stage-1a looseness appeared below 23");
     }
 }
