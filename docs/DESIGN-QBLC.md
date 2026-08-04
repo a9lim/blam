@@ -444,12 +444,18 @@ is a valid outcome of the investigation.
   programs; the 752 unknowns at 53 are β-insensitive at 8×/64×
   budgets. Irrationality invades in strict layers — operator
   interior (34) → leaf masses (45) → per-size aggregates (53,
-  idiom sector). Remaining: phase 2, a one-sided primitive-taint
-  may-analysis over the non-λ⁵ complement 46..53 (complete Codex
-  design in thread `qblc-omega-witnesses` round 2; their prior —
-  95% the full-population threshold stays 53). Ω_{success,≤53} is
-  irrational unless that complement exactly cancels −√2/2⁵⁵ — no
-  mechanism known.
+  idiom sector). Phase 2 (the non-λ⁵ complement, 933B programs
+  46..53) is RUNNING as of 2026-08-04 via `qcomplement` — the
+  round-2 taint design was replaced after exact sizing by a
+  concrete-first two-pass sweep (rounds 3–4 ratified; LEDGER.md has
+  the instrument, validation, and measured economics). Measured:
+  complement √2-coefficient EXACTLY 0 at every size 42..47; the
+  full-population claim stands through 47, remaining sizes chunked
+  (48..51 as ≤2h runs; 52/53 sliced), adjudication deferred to its
+  own session with the protocol on record. Codex prior — 95% the
+  full-population threshold stays 53. Ω_{success,≤53} is irrational
+  unless the complement exactly cancels −√2/2⁵⁵ — no mechanism
+  known.
 - `cnot` return convention: Church pair is v0; residual question is
   only whether a pair-projection idiom deserves a measured shorthand.
 - Output convention: whole-live-store (current) vs designated-output

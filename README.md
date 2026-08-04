@@ -171,7 +171,10 @@ operator census of quantum-preparing programs (to our knowledge) —
 Ω_success exactly, single- and two-qubit state rankings, entanglement
 entering at exactly 41 bits, irrationality invading in measured
 layers (operator entries at 34, leaf masses at 45, per-size
-aggregates at 53), and qBLC self-interpreting in 176 bits.
+aggregates at 53 in the idiom sector — the non-λ⁵ complement
+measured exactly dyadic through 47 so far), and qBLC
+self-interpreting in 176 bits (proven minimal across the two-entry
+interpreter families).
 
 The full story, with cross-checks and open questions:
 [DESIGN-BLC](https://github.com/a9lim/blam/blob/main/docs/DESIGN-BLC.md)

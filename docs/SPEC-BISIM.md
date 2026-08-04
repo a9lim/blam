@@ -318,6 +318,21 @@ Falsifier: any effect-order, label, mass, or fate mismatch between
 `p σ⃗` and `E_q ⌜p⌝ σ⃗` on any program — none observed at any size
 swept. A Lean lane for L1/L2 is the natural first mechanization
 (pure λ-calculus, no store); the quantum clauses ride on it.
+**Seed landed 2026-08-04** (`lean/Blc/Selfint.lean`, statements
+ratified in round 4, job `cx-20260804-155021-14ee`): intL
+kernel-pinned by wire identity; |E_q| = 176 and the §2 size
+identities kernel-checked; `Implements` under head reduction; the
+machine-level parser target is `ParserResult M R Q U` — the r4
+counterexample (int.lam's VAR branch passes
+`cont list1 (skipvar list1)`; head reduction never enters argument
+position) shows `C Q R` is unreachable as a machine execution, so
+the statement exposes the residual tail `U ⇒ R`, continuation
+quantified inside. The τ*-forms above (KN, which does normalize the
+residual) are unchanged. Over pure terms the mechanized statement is
+the β-non-forcing theorem; the effectful poisoned-seed remains its
+qBLC lifting. Proofs open; proof order per r4: L2 by induction on
+the unary selector, then `ParserStatement` by structural induction,
+closed L1 as corollary.
 
 ## 8. The parked sub-176 lane
 
