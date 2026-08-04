@@ -622,3 +622,62 @@ accounting before any enumeration — handed to Codex (thread
   contextual saving inside F would attack both constants; a
   root-non-VAR/I-specific saving would attack only 176.
 - Expectation on record ("176 survives") held.
+
+## 2026-08-04 — Phase 2 instrument: built, double-validated, protocol set; adjudication economics measured
+
+The dyadicity complement sweep (thread `qblc-omega-witnesses` rounds
+3–4). Sizing first: exact (size, depth)-DP counts, anchored
+bit-identically to TWO measured numbers (qcensus 4..41 total
+526,039,969; qradical's n=53 idiom enumeration 12,255,471,630) —
+**the complement 46..53 is 933,062,632,336 programs**, 36× phase 1's
+enumeration, killing round-2's abstract-evaluate-everything on
+contact. Round 3 (job cx-20260804-152110-ee13) ratified the
+replacement: concrete-first, the abstract lattice deferred entirely.
+
+- **Instrument** (`src/bin/qcomplement.rs`; shared exact accounting
+  extracted to `src/radical.rs`): rung-0 syntactic filter — leading-λ
+  count k = (leading zeros)/2 on the packed u64; consumed-binder
+  required-mention masks REQ[k] ({h,meas,new,t} ∩ consumed), sound by
+  the provenance lemma, NOTHING assumed about stack args — then a
+  hunt-budget sweep (512/2²⁰) where full resolution gives exact
+  per-program Σ_success (terminal stability, r3-corrected: resolved
+  trees are budget-independent; partial trees do NOT extend and
+  contribute nothing). Unresolved programs stream UNCAPPED to a file;
+  `adjudicate` mode re-runs exactly that file; two-pass composition
+  unit-tested ≡ single canonical sweep. The √2-coefficient rides its
+  own overflow-independent accumulator (rationally re-embedded
+  √2-parts) and is SECTOR-COMPLETE — rejects contribute exactly 0 to
+  it; the rational subtotal is survivors-only, labelled as such.
+  Slice mode ('i/m' over the interleaved task list, disjoint exact
+  cover, merge unit-tested) splits n=52/53 into ≤2h runs.
+- **Killed design, recorded**: v1 had an inline canonical rung;
+  trans-bound divergers cost ~trans·(node visits), so 2²⁶ inline
+  multiplies diverger cost ~64× — the first 42..45 attempt was killed
+  mid-run on this discovery. Two-pass (phase-1 economics) replaced it.
+- **Pre-run cross-validation**: rung-0 survivor counts at n=46 match
+  Codex's independent inclusion-exclusion DP bit-exactly
+  (3,539,258,498 entering the sweep; all four k-slices). Cumulative
+  rung-1 across 46..53: 621,961,800,725 (rung 0 removes 33.342%).
+- **Ground-truth validation, complement 42..45** (5.65B programs,
+  264.9s, 13–14.4M prog/s at 18 threads): **√2-coefficient EXACTLY 0
+  at every size, fatediv 0** — the exhaustive hunt reproduced
+  (witness45 is idiom-sector, k ≥ 5, correctly invisible). Unresolved
+  rate stable 0.36–0.38%, ALL β-bound: unkT = 0 — not one
+  transition-bound unknown in the entire complement through 45.
+- **Adjudication economics, measured**: canonical (4096/2²⁶)
+  adjudication costs ~8.8 ms/program (β-burners grow their terms).
+  n=42's full adjudication: of 1,062,530 unresolved, **758 resolved
+  (99.93% β-insensitive at 8×), all to Err/zero-mass leaves —
+  Σ_success shift EXACTLY 0, √2 track untouched** (phase 1's "count
+  IDENTICAL" pattern at 10³× scale). Extrapolated full-complement
+  adjudication ≈ 2.3B programs ≈ 13 days — DEFERRED to a future
+  session by a9's call (with the ≤1-2h-per-run protocol now standing:
+  iterate fast, chunk everything; sweeps checkpoint per size, slices
+  cover big sizes, unresolved files kept on disk for the adjudication
+  session; candidate protocols in the round-4 Codex reply, recorded
+  in-thread).
+- **Prediction pinned for n=51** (falsifiable, ahead of the run):
+  wrapped witness45 — `(λx.x)·W` at k=0 and `λ.(W 1)` at k=1, both
+  exactly 51 bits — must give nondyadic ≥ 4 with fatediv = 0.
+- Sweeps 46..49 running as the first ≤1h block at entry time;
+  per-size results get their own entry as blocks land.
