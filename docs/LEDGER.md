@@ -533,3 +533,40 @@ extracted; mass-conservation asserted per program. Budgets β=512/2²⁰
   classify, P53 aggregate = 1/2 − √2/4 exact, small-size dyadic idiom
   aggregates; optional [beta] [trans] args; FATEDIV accounting),
   `enumerate.rs::split_tasks_at` (seeded λ⁵ tasks + coverage test).
+
+## 2026-08-04 — repo reorganized: docs/, data/, scripts/; unversioned data names
+
+- Root de-cluttered into a by-type layout, discussed and picked by a9:
+  `docs/` (DESIGN-BLC, DESIGN-QBLC, SPEC-BISIM, LEDGER — filenames
+  unchanged, location only), `data/` (all canonical measurement
+  outputs), `scripts/` (standing protocols + bench). Root keeps
+  README, AGENTS/CLAUDE, LICENSE, Cargo.*. Sub-labs (`tools/cert`,
+  `tools/interp`, `tools/uni`) deliberately kept intact — the new-kill
+  protocol touches spec + kills + certlean + Lean as a unit, so the
+  cert lab stays one directory rather than being split by type.
+- Data filenames drop the `41` bound suffix: `census_table41.txt` →
+  `data/census_table.txt`, `unknowns_41.txt` → `data/unknowns.txt`,
+  `solomonoff_41.txt`/`solomonoff_table41.txt` →
+  `data/solomonoff{,_table}.txt`, `qcensus_table41.txt` →
+  `data/qcensus_table.txt`. Rationale: the covered range is stated
+  in-file and in AGENTS live state, superseded generations already
+  live in git history, and the n=42 era now regenerates in place with
+  zero path churn in CI, bin defaults, or docs. Contents untouched —
+  pure `git mv` (regenerate-don't-hand-edit respected).
+- Standing protocols encoded as runnable scripts, prose → shell:
+  `scripts/spot-check.sh` (the regression bar; CI's census-spot-check
+  job now calls it instead of inlining), `scripts/census-regen.sh`
+  (table + frontier with kill subtraction and the identity check
+  raw = frontier + kills; validated on the live tree: 4,532 = 4,235 +
+  297, zero overlap; installs to data/ only on the full range;
+  carries the n≥42 rescue-raise warning), `scripts/recert-kills.sh`
+  (4× re-cert with sorted byte-identical diff, then certlean + lake),
+  `scripts/solomonoff-regen.sh`. `bench.sh` moved in and made
+  location-independent.
+- Referents updated in living docs only (README, AGENTS, DESIGN-BLC,
+  DESIGN-QBLC, CLASSIFY.md, CI, certsearch/tracescan defaults);
+  ledger entries before this one keep their historical paths.
+  Cargo `include` allowlist untouched — crates.io packaging invariant.
+- src/ left flat on purpose: a module regroup is a public-API break
+  on the published crate (forces a major bump through the armed
+  release flow) and the clutter was never there.

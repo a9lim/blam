@@ -366,7 +366,7 @@ incl. store, exact mass, contraction count — over the full ≤24
 population; census bin `src/bin/qcensus.rs`; β=4096/trans=2²⁶ with
 measured headroom; per-program mass conservation asserted sweep-wide)
 → S3 operator census at classical-census depth (**core done**,
-2026-08-03 overnight: canonical `qcensus_table41.txt` — the full
+2026-08-03 overnight: canonical `data/qcensus_table.txt` — the full
 526,039,969-program population 4..41 in ~30 min; Ω_{success,≤41} =
 3424188513/2⁴⁰; M^(1) PD, ranking |0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩ with
 irrational operator entries whose √2-parts cancel in every trace;

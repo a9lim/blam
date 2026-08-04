@@ -125,7 +125,7 @@ count from β-count, so fuel would not be comparable across paths.
 
 ## Measured results
 
-Canonical table: `census_table41.txt` — every closed term of 4..41 bits
+Canonical table: `data/census_table.txt` — every closed term of 4..41 bits
 (526,039,969 terms) adjudicated in ~16.5 min on the M5 Max, 4..40
 alone ~7.2 min (vs ~4.3 h for the reference Haskell tooling over
 4..40). Headline numbers and their cross-checks are in README.md;
@@ -138,12 +138,12 @@ Halt counts have been invariant under every engine change in the
 repo's history.
 
 BBλ lower bounds at sizes with pending unknowns (max computed |nf|
-per `census_table41.txt`): 98,421 (n=35) · 1,441,774 (36) · 4,290,711
+per `data/census_table.txt`): 98,421 (n=35) · 1,441,774 (36) · 4,290,711
 (37) · **222,333,282 (38)** · 10,263,449 (39) · 222,333,284 (40, the
 λ-wrap of the 38-champion — a consistency check that fell out for
 free) · **1,074,266,118 (41)**.
 
-### What each optimization buys (ablations at n=28..31; `bench.sh`)
+### What each optimization buys (ablations at n=28..31; `scripts/bench.sh`)
 
 - **Oracle prefilter: ~3×.** Without it every diverger burns both KN
   budgets and a full escalation; with it 2/3 of divergers cost one

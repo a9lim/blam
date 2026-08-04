@@ -16,7 +16,7 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   min on an M5 Max (4–40 alone: ~7 min, vs ~4.3 h for the reference
   Haskell tooling). Every [A114852](https://oeis.org/A114852) count
   and every published [BBλ](https://oeis.org/A333479) value in range
-  reproduced exactly (`census_table41.txt`).
+  reproduced exactly (`data/census_table.txt`).
 - **The first BBλ(41) bound: ≥ 1,074,266,118 bits** — the busy
   beaver's first billion-bit row, one size past every published
   table (241,372,280 of the 242,222,714 closed 41-bit terms proven
@@ -26,7 +26,7 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   hand-excluded even in Tromp's tree, now carries a machine-checked
   divergence certificate (the *ratchet*, below). Every closed term of
   ≤32 bits is adjudicated with no hand exclusions anywhere.
-- **4,235 unknowns survive maximum effort** (`unknowns_41.txt`:
+- **4,235 unknowns survive maximum effort** (`data/unknowns.txt`:
   1,888 across 4–40, fewer than the reference ledger at every
   comparable size — at n=34–36 this engine proves strictly more
   terms divergent than the traced reference engine — plus 2,347 at
@@ -37,13 +37,13 @@ busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
   arithmetic from the census counts; the interval width *is* the
   total mass of the 4,235 unknowns — the census frontier expressed
   as bits of Ω. Cross-checked by independent regeneration
-  (`solomonoff_41.txt`): its pre-certificate upper bound minus the
+  (`data/solomonoff.txt`): its pre-certificate upper bound minus the
   297 kills' exact mass (1703·2⁻⁴¹) reproduces the interval to the
   last printed digit, and its internal unknown count is exactly
   frontier + kills (4,532 = 4,235 + 297).
 - **The coding theorem, watched live**: K(x) and −log₂ m(x) agree
   within a bit for every high-mass normal form in range
-  (`solomonoff_table41.txt`).
+  (`data/solomonoff_table.txt`).
 - **A semantic divergence certificate**: a generalization of the
   reference `redloop` rule (see below) that fires 11,367 times in the
   4–40 census and is fuel-robust — re-running the frontier at 16×
@@ -117,7 +117,7 @@ A ladder of increasingly expensive adjudicators, each sound:
 
 Every resource is bounded by one shared work meter charged on every
 primitive operation — the design lesson of the project (see
-`DESIGN-BLC.md`, "the work-meter lesson").
+`docs/DESIGN-BLC.md`, "the work-meter lesson").
 
 Enumeration (`src/enumerate.rs`) packs terms ≤63 bits into `u64`s and
 splits the generation tree into subtree tasks fused with the consumers
@@ -127,7 +127,7 @@ families don't serialize.
 ## The quantum pillar: qBLC
 
 The same census methodology extended to quantum-preparing programs
-(design spec: `DESIGN-QBLC.md`): untyped BLC plus five primitive
+(design spec: `docs/DESIGN-QBLC.md`): untyped BLC plus five primitive
 constants `new / meas / cnot / t / h` handed to every program as an
 application signature (order frozen by a predeclared 120-permutation
 pilot), classical control, a branch-local quantum store with *dynamic*
@@ -144,7 +144,7 @@ construction, with **Tr M_Fock = Ω_success**. (The dimension-
 conditioned Gács family G_k is the separate universality candidate;
 the two are provably distinct and sandwich-related — see the spec.)
 
-First results (`qcensus_table41.txt`: **the full 526,039,969-program
+First results (`data/qcensus_table.txt`: **the full 526,039,969-program
 population of 4–41 bits** — the classical census's exact range — in
 ~30 min, per-program mass conservation Σ‖leaf‖² = 1 asserted exactly
 across all 529M leaves):
@@ -194,19 +194,19 @@ target/release/census 4 40 --verify
 target/release/census --term 010001101000011010
 
 # batch adjudication of a term list, full ladder, streamed verdicts
-target/release/census --terms-file unknowns_41.txt
+target/release/census --terms-file data/unknowns.txt
 
 # Solomonoff prior / K-complexity / Ω sweep
-target/release/solomonoff 4 41 --table solomonoff_table41.txt
+target/release/solomonoff 4 41 --table data/solomonoff_table.txt
 
 # certificate sweep over the frontier (all three classes)
-target/release/certsearch --terms-file unknowns_41.txt --threads 8
+target/release/certsearch --terms-file data/unknowns.txt --threads 8
 
 # regenerate the Lean certificate modules, then kernel-check them
 cargo run --release --bin certlean && cd lean && lake build Certs
 
 # quantum operator census (M_Fock mode; --cond-k K for the G_k sweep)
-target/release/qcensus --max-n 41 --trans 67108864 --out qcensus_table41.txt
+target/release/qcensus --max-n 41 --trans 67108864 --out data/qcensus_table.txt
 ```
 
 Knobs: `BLC_WORK_MULT` (work-meter multiplier; `2` = memory-bounded
@@ -223,7 +223,7 @@ default 4096).
   vectors.
 - Halt counts are invariant under every engine change in the repo's
   history (regression guarantee; soundness arguments live in
-  `DESIGN-BLC.md`).
+  `docs/DESIGN-BLC.md`).
 - Conformance tests (`tests/tromp_vectors.rs`) parse Tromp's own
   corpus from the `ref/AIT` submodule — the
   [a9lim/AIT](https://github.com/a9lim/AIT) fork, pinned at upstream
@@ -255,14 +255,14 @@ default 4096).
   fork of [tromp/AIT](https://github.com/tromp/AIT) (upstream plus
   `uni.rs`), serving as conformance corpus, execution oracles, and the
   staged upstream PR.
-- `DESIGN-BLC.md` — classical architecture, measured results, open
-  questions; `DESIGN-QBLC.md` — the quantum pillar's design spec.
-- `LEDGER.md` — the running lab notebook: recent sessions, with
+- `docs/DESIGN-BLC.md` — classical architecture, measured results, open
+  questions; `docs/DESIGN-QBLC.md` — the quantum pillar's design spec.
+- `docs/LEDGER.md` — the running lab notebook: recent sessions, with
   compacted entries living on in git history.
-- Data: `census_table41.txt` (the canonical census table, 4–41),
-  `unknowns_41.txt` (the 4,235-term live frontier),
-  `solomonoff_41.txt`/`solomonoff_table41.txt` (the Ω/K sweep),
-  `qcensus_table41.txt` (the quantum operator census).
+- Data: `data/census_table.txt` (the canonical census table, 4–41),
+  `data/unknowns.txt` (the 4,235-term live frontier),
+  `data/solomonoff.txt`/`data/solomonoff_table.txt` (the Ω/K sweep),
+  `data/qcensus_table.txt` (the quantum operator census).
   Superseded generations live in git history, not the tree.
 
 ## Roadmap
@@ -271,7 +271,7 @@ default 4096).
   probe: M^(1)|≤36 sits between 3.17·G_1 and 4.17·G_1); the
   Ω-irrationality threshold (~low 50s, needs sandwich +
   fate-divergence); the uniform conditional simulation theorem;
-  quantum Kraft in Lean (`DESIGN-QBLC.md`, Staging and Open
+  quantum Kraft in Lean (`docs/DESIGN-QBLC.md`, Staging and Open
   questions).
 - Certificate v4 classes (specs in `tools/cert/SPEC.md` §8, measured
   candidate maps in `tools/cert/CLASSIFY.md`): the PassengerDiagonal
@@ -301,7 +301,7 @@ implementations, and the published values are all John Tromp's
 This repo is an independent engine, verified against his.
 
 Built by [a9lim](https://github.com/a9lim) with Claude (Anthropic) and
-Codex (OpenAI) as agent collaborators — `LEDGER.md` and the commit
+Codex (OpenAI) as agent collaborators — `docs/LEDGER.md` and the commit
 history are the honest record of what that looked like.
 
 AGPL-3.0-or-later — covering this repo's own code (© 2026 a9lim).

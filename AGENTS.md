@@ -1,10 +1,13 @@
 # Working in this repo
 
 Rust engine for binary lambda calculus / AIT experiments, verified
-against Tromp's Haskell. README.md has the public story; DESIGN-BLC.md
-has classical architecture + measured results; DESIGN-QBLC.md is the
-quantum pillar's design spec (pre-implementation); LEDGER.md is the
-running lab notebook.
+against Tromp's Haskell. README.md has the public story; `docs/` holds
+the deep records — DESIGN-BLC.md (classical architecture + measured
+results), DESIGN-QBLC.md (the quantum pillar's design spec),
+SPEC-BISIM.md (bisimulation statement + proof plan), LEDGER.md (the
+running lab notebook; entries before 2026-08-04 cite pre-reorg paths).
+Canonical measurement outputs live in `data/`; the standing protocols
+are runnable from `scripts/`.
 This file tracks what you need to work here now: conventions, live
 engine facts, live state, and the open docket.
 
@@ -18,18 +21,23 @@ engine facts, live state, and the open docket.
   `git submodule update --init`. `tests/tromp_vectors.rs` needs it;
   the unit suite passes without it.
 - The verification bar for any engine change: `cargo test --release`
-  green, then a census spot-check whose **halt counts are bit-identical**
-  to `census_table41.txt` at the sizes you touch. Halts have been invariant
-  through every change in history; treat any drift as a bug in your
-  change, not a discovery.
-- Data files in the repo root are results, not scratch, and only the
-  canonical generation lives in the tree: `census_table41.txt` (census
-  4..41), `unknowns_41.txt` (live frontier: 4,235 terms — the
-  1,888-term 4..40 residue plus 2,347 at n=41, the 297 certificate
-  kills in `tools/cert/ratchet_kills.txt` already subtracted), and
-  `solomonoff_41.txt` + `solomonoff_table41.txt` (Ω/K sweep).
-  Superseded generations live in git history. Regenerate rather than
-  hand-edit.
+  green, then a census spot-check (`scripts/spot-check.sh`) whose
+  **halt counts are bit-identical** to `data/census_table.txt` at the
+  sizes you touch. Halts have been invariant through every change in
+  history; treat any drift as a bug in your change, not a discovery.
+- `data/` holds results, not scratch, and only the canonical
+  generation lives in the tree: `census_table.txt` (census 4..41),
+  `unknowns.txt` (live frontier: 4,235 terms — the 1,888-term 4..40
+  residue plus 2,347 at n=41, the 297 certificate kills in
+  `tools/cert/ratchet_kills.txt` already subtracted),
+  `solomonoff.txt` + `solomonoff_table.txt` (Ω/K sweep), and
+  `qcensus_table.txt` (quantum operator census). Filenames are
+  unversioned on purpose: the covered range is stated in the file and
+  here, superseded generations live in git history, and a bound bump
+  regenerates in place with zero path churn in CI, bin defaults, or
+  docs. Regenerate rather than hand-edit — `scripts/census-regen.sh`
+  (table + frontier, kills subtracted, subtraction identity checked)
+  and `scripts/solomonoff-regen.sh`.
 
 ## Conventions that will bite you
 
@@ -91,10 +99,12 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   ladder per term, hnf descent into closed spine args → `-ARG`
   kills). Sweep defaults 1000 steps/100k nodes (measured
   kill-equivalent to 2000/200k); a full three-rung frontier sweep is
-  ~40 min at 8 threads. New-kill protocol: re-certify at 4× budgets
-  (`--steps 4000 --nodes 400000`, diff byte-identical), regenerate
-  the frontier file, trim Ω by exact fraction arithmetic, rerun
-  `certlean` + `lake build Certs`, ledger it.
+  ~40 min at 8 threads. New-kill protocol: append the kills to
+  `ratchet_kills.txt`, run `scripts/recert-kills.sh` (re-certifies
+  everything at 4× budgets with a byte-identical diff, then
+  `certlean` + `lake build Certs`), regenerate the frontier
+  (`scripts/census-regen.sh` subtracts kills), trim Ω by exact
+  fraction arithmetic, ledger it.
   `tests/cert_battery.rs` = soundness battery (196,848 provable
   halters ≤28 bits through the exact sweep ladder, zero fires,
   ~0.5 s); `src/bin/certdiag.rs` probes surviving candidates and
@@ -132,12 +142,12 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
 
 ## Live state (2026-08-01)
 
-- **Census**: canonical 4..41 in `census_table41.txt` (~16.5 min;
+- **Census**: canonical 4..41 in `data/census_table.txt` (~16.5 min;
   4..40 alone ~7.2 min). BBλ(41) ≥ 1,074,266,118 bits. n=32 row has
   zero unknowns — BBλ(32) fully mechanical.
-- **Frontier**: `unknowns_41.txt`, 4,235 terms. Ω|≤41 ∈
+- **Frontier**: `data/unknowns.txt`, 4,235 terms. Ω|≤41 ∈
   [0.124105086764, 0.124105092919] (round-nearest 12 digits, exact
-  fractions in `solomonoff_41.txt` + the kills' mass).
+  fractions in `data/solomonoff.txt` + the kills' mass).
 - **Certificates**: 297 kills in `tools/cert/ratchet_kills.txt`
   (214 RATCHET + 34 RATCHET2 + 39 SELECTOR + ten `-ARG` variants),
   all re-certified at 4× budgets. Spec + glue proofs in
@@ -182,7 +192,7 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   verified on full leaf sequences vs qeval over the ≤24 population —
   keep that test green when touching either engine) + census bin
   `src/bin/qcensus.rs`. S3 core LANDED (overnight 2026-08-03):
-  canonical `qcensus_table41.txt` = the FULL classical-census
+  canonical `data/qcensus_table.txt` = the FULL classical-census
   population (526,039,969 programs, 4..41, ~30 min).
   Ω_{success,≤41} = 3424188513/2⁴⁰; M^(1) PD, ranking
   |0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩; M^(2): first entangled halts at
