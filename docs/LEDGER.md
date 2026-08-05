@@ -1045,3 +1045,39 @@ foundation code (Codex read src/oddmin.rs — the co-review works):
   latent-port non-acceptance, both halves of wrong-return).
 Next code block: the r5b schema (CallTarget, CapRel, polarity,
 port roles, prim held-arg) + transfers + the nine checks.
+
+## 2026-08-04 — complement 51: pre-registered prediction confirmed; the wrapper orbit
+
+The n=51 complement sweep (5373s, 82,685,903,590 programs run of
+127,589,648,624 enumerated) landed: **√2-coefficient of Σ_success
+= 0 exactly, fatediv 0** — full-population dyadicity now measured
+through 51. Σ_success = 378529575635/2^7; unkβ 339,123,660 with
+338,111,279 unresolved programs streamed (0.41%), unkT 10
+(unchanged from 50), cap 45,630.
+
+**The prediction verdict: CONFIRMED, with a bonus.** The
+pre-registered call was "wrapped witness45 gives nondyadic ≥ 4 with
+fatediv 0" — the two 51-bit wrappings `(λx.x)·W45` and `λ.(W45 1)`
+at 2 σ-paired leaves each. Measured: nondyadic = 24 leaves across
+12 witness programs, fatediv 0. Both predicted wires are present
+byte-exactly (witnesses 7 and 8 of 12). The other ten are the SAME
+two wrappers relocated: identity-apply `(λ.1)·—` and eta-expansion
+`(— k)` pushed to interior depths of W45's λ⁵ binder prefix
+(relabeling the payload indices, hence no substring match), plus
+two K-plumbed variants (`(λλ.2)·—` frames in the style of the 48
+family) and one whose argument carries a `(1 1)` self-application —
+the first echo of P53's poison-pill shape below 53, but still
+σ-paired: both arms halt, masses conjugate, Σ rational. Every
+program contributes exactly 2 nondyadic leaves (24/12) — the σ-pair
+signature, no exceptions.
+
+Reading: at 51 the sandwich does not diversify further — the six
+extra bits over 45 buy only *frames around* witness45 (wrapper
+orbit), never an asymmetric continuation. The 2-bit gap to 53 is
+exactly what the T2 story requires: asymmetry (fate divergence)
+costs 8 bits over the naked sandwich, not 6.
+
+All 12 wires added to the odd.rs replay fixture
+(`witnesses_accepted_on_their_odd_leaves`) — every odd leaf's qeval
+trace replays Ok(MayOdd), 0.01s. Remaining sweeps: 52 (~2 slices),
+53 (~4 slices).

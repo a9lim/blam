@@ -77,13 +77,15 @@ group is abelian (σ∘conj = conj∘σ) and the H-sign squares away. ∎
 | 48 | complement witness | same sandwich, K-plumbed at k=3 (eats cnot arg); σ-paired |
 | 49 | +1-bit sibling | payload `new new` for `new t`; σ-paired |
 | 50 | three plumbing variants | two payload extensions of the 48 frame (`new meas`, `new (λ.1)`) + a λ⁴ re-plumb discarding cnot; all σ-paired, (2±√2)/4 |
-| 51 | wrapped-witness45 pair | predicted (pre-registered): nondyadic ≥ 4, fatediv 0 |
+| 51 | wrapper orbit, 12 programs | prediction CONFIRMED: the pre-registered pair `(λx.x)·W45` / `λ.(W45 1)` + the same id/eta wraps at interior λ-depths, two K-plumbs, one `(1 1)`-argument echo of P53; 24 leaves, all σ-paired, fatediv 0 |
 | 53 | P53 = λ⁵.(W (1 1)) | first UNPAIRED program: boolean applied to a 6-bit poison pill; Err at (2+√2)/4, Halt at (2−√2)/4. +8-bit split, minimal in the one-hole family |
 | 85 | 1/3-program | rejection loop, semantic P_Halt = 1/3 ∉ Z[1/2]: non-dyadic RATIONAL limits are a distinct threshold (n_{Q∖D} ≤ 85), invisible to every finite-budget sweep; sub-53 existence open |
 
-Dyadicity of the full population is measured through 50 (complement
-√2 ≡ 0 exactly at 42..50, fatediv 0 everywhere; idiom ≡ 0 through
-52, non-dyadic at exactly 53).
+Dyadicity of the full population is measured through 51 (complement
+√2 ≡ 0 exactly at 42..51, fatediv 0 everywhere; idiom ≡ 0 through
+52, non-dyadic at exactly 53). The 51 row sharpens the §5 story:
+six spare bits buy only frames *around* the sandwich — asymmetric
+continuation demonstrably costs 8.
 
 ## 4. The theorem package (open)
 
