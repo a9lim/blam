@@ -1,170 +1,180 @@
 # The Galois structure of qBLC halting mass
 
-*Status: working note, opened 2026-08-04. T1 is proved at paper level
-below (Lean formalization parked behind the L2 machine layer, which
-wants the same configuration formalization). T2/T3 are stated with
-proof plans. The stage-1a instruments are live: `src/odd.rs` (the
-hardened monitor) and `src/oddmin.rs` (the reference DP, design
-Codex-ratified through r6, gate-green — spec and measured findings
-in `oddmin.md`). Spar record: `qblc-omega-witnesses` rounds
-r1–r6, 2026-08-04. Measured inputs: LEDGER entries of 2026-08-03/04.*
+This note states the exact algebra behind qBLC's dyadicity measurements and
+the theorem program for explaining the observed thresholds. T1 is proved at
+paper level below. T2, the CNOT-capable companion, and T3 remain open.
+Current sweep bounds live in `../STATUS.md`; the stage-1a abstract interpreter
+is specified in `oddmin.md`.
 
-## 1. Setting
+## 1. Setting and accounting
 
-Amplitudes live in Z[ω]/√2^k, ω = e^{iπ/4} (`src/dw.rs`); real masses
-in Z[1/2, √2]. Gal(Q(ζ₈)/Q) = {σ₁, σ₃, σ₅, σ₇} ≅ V₄, with σ₇ =
-complex conjugation and σ₃, σ₅ the two √2-flippers (σ₅ = σ₇∘σ₃; they
-agree on real masses). We fix σ = σ₅ (ω ↦ −ω), under which
-σ(H) = −H and σ(T) = T·Z.
+Amplitudes live in `ℤ[ω]/√2^d`, with `ω = exp(iπ/4)`, as implemented by
+`src/dw.rs`. Real branch masses lie in `ℤ[1/2, √2]`. The Galois group
 
-A program's branch tree (qeval) carries unnormalized cylinder masses;
-a leaf's mass is a product of Born factors. The per-size census
-deliverable Σ_success and its √2-coefficient are sums of per-program
-Σ Halt masses (`qcomplement`'s sector-complete accumulator).
+```text
+Gal(ℚ(ζ₈)/ℚ) = {σ₁, σ₃, σ₅, σ₇} ≅ V₄
+```
 
-**Accounting identity (Tier A).** For resolved, non-overflowed
-programs, per-size √2-coefficient = Σ over programs of per-program
-√2-parts; `fatediv = 0` (no program with irrational Σ Halt mass)
-implies per-size √2 ≡ 0. Premises: `deferred_sqrt2 = 0` and
-`radical_unknown = 0` — both measured 0 at every size so far. The
-campaign's information content is the fatediv column, plus absence of
-cross-program cancellation where fatediv > 0.
+contains complex conjugation `σ₇` and two automorphisms that negate
+`√2`. Fix `σ = σ₅`, so `σ(ω) = −ω`, `σ(H) = −H`, and
+`σ(T) = TZ`.
 
-## 2. T1: the finite-trace Galois identity
+`qeval` carries unnormalized branch vectors. The mass of one branch is
+`v†v`, and a program's successful mass is the sum over its successful leaves.
+`qcomplement` accumulates these exact masses by source size.
 
-**Twisted semantics C♯**: identical evaluator, except every T firing
-applies TZ to the store. The Z is semantic — it emits no event and
-consumes no epoch (a source-level t⁴ encoding would break the trace
-bijection). Capacity/budget behavior is excluded from the statement.
+For a resolved, non-overflowed finite census, the coefficient of `√2` in
+the per-size aggregate is the sum of the per-program coefficients. Therefore
 
-**Theorem (T1).** For every program C and labeled outcome prefix s,
-the C and C♯ executions have identical terms, qubit ids, live/retired
-maps, epochs, and classical control state; if h(s) H-events have
-fired, their amplitude vectors satisfy σ(v_s) = (−1)^{h(s)} · v♯_s.
-Consequently every labeled leaf has the same fate tag at the same
-step count, and w_{C♯}(s) = σ(w_C(s)).
+```text
+fatediv = 0  ⇒  [√2] Σ_success = 0,
+```
 
-*Proof.* Induction along each branch, on the paired configurations.
-Classical steps (β, species/epoch checks, ArgView dispatch) never
-read amplitudes, so they act identically and preserve the pairing.
-New appends |0⟩ (σ-fixed). H: σ(Hv) = −Hσ(v) — the sign joins the
-(−1)^{h(s)} bookkeeping and cancels in vv†. T: σ(Tv) = TZ·σ(v),
-which is exactly the twisted step. CNOT is a rational permutation
-matrix, σ-fixed. A measurement with the same outcome label applies
-the same computational-basis projector, which commutes with
-entrywise σ; masses satisfy σ(m) = σ(v)·σ(v)† = m♯ since the Galois
-group is abelian (σ∘conj = conj∘σ) and the H-sign squares away. ∎
+provided `deferred_sqrt2 = 0` and `radical_unknown = 0`. Both side conditions
+are zero in every canonical row measured so far. When `fatediv > 0`, the
+aggregate coefficient additionally reveals whether odd parts cancel across
+programs.
 
-**Corollaries.**
-1. Per-program Galois-odd mass: [√2] Σ_Halt(C) =
-   (Σ_Halt(C) − Σ_Halt(C♯)) / (2√2) over any finite prefix-free Halt
-   set — the odd part is half the mass gap to the twisted shadow.
-   This is independently testable: run the twisted machine and diff
-   (a ~20-line qeval variant; cross-check instrument if wanted).
-2. The achievable-success-mass set is σ-closed up to size overhead:
-   Z = T⁴ makes the twist realizable in-language (bijective trees,
-   relabeled traces).
-3. **Limits.** σ does not extend to arbitrary real limits; for
-   unbounded trees define the twist asymmetry directly,
-   Δ(C) = P_Halt(C) − P_Halt(C♯) (both monotone approximants
-   converge). Δ is the correct "√2-scoped" object: Δ(C) = 0 is
-   compatible with P_Halt(C) = 1/3.
+## 2. T1: finite-trace Galois identity
 
-## 3. The threshold zoo (measured)
+Define the twisted semantics `C♯` to be the ordinary evaluator except that
+each source `T` effect applies `TZ` to the store. The extra `Z` is semantic: it
+emits no event and consumes no epoch. Encoding it as source-level `t⁴` would
+destroy the event-tree correspondence.
 
-| n  | artifact | structure |
-|----|----------|-----------|
-| 45 | witness45 | first Galois-odd leaves anywhere (β=512-qualified); H·T·H·meas, both arms Halt, (2±√2)/4, σ-paired, Σ = 1 |
-| 48 | complement witness | same sandwich, K-plumbed at k=3 (eats cnot arg); σ-paired |
-| 49 | +1-bit sibling | payload `new new` for `new t`; σ-paired |
-| 50 | three plumbing variants | two payload extensions of the 48 frame (`new meas`, `new (λ.1)`) + a λ⁴ re-plumb discarding cnot; all σ-paired, (2±√2)/4 |
-| 51 | wrapper orbit, 12 programs | prediction CONFIRMED: the pre-registered pair `(λx.x)·W45` / `λ.(W45 1)` + the same id/eta wraps at interior λ-depths, two K-plumbs, one `(1 1)`-argument echo of P53; 24 leaves, all σ-paired, fatediv 0 |
-| 53 | P53 = λ⁵.(W (1 1)) | first UNPAIRED program: boolean applied to a 6-bit poison pill; Err at (2+√2)/4, Halt at (2−√2)/4. +8-bit split, minimal in the one-hole family |
-| 85 | 1/3-program | rejection loop, semantic P_Halt = 1/3 ∉ Z[1/2]: non-dyadic RATIONAL limits are a distinct threshold (n_{Q∖D} ≤ 85), invisible to every finite-budget sweep; sub-53 existence open |
+> **T1.** For every program `C` and labeled outcome prefix `s`, the `C` and
+> `C♯` executions have identical terms, qubit identifiers, live/retired
+> maps, epochs, and classical control state. If `h(s)` Hadamard effects have
+> fired, their unnormalized vectors satisfy
+>
+> ```text
+> σ(v_s) = (−1)^h(s) v♯_s.
+> ```
+>
+> Consequently every labeled leaf has the same fate at the same classical
+> step count, and `w_C♯(s) = σ(w_C(s))`.
 
-Dyadicity of the full population is measured through 51 (complement
-√2 ≡ 0 exactly at 42..51, fatediv 0 everywhere; idiom ≡ 0 through
-52, non-dyadic at exactly 53). The 51 row sharpens the §5 story:
-six spare bits buy only frames *around* the sandwich — asymmetric
-continuation demonstrably costs 8.
+The proof is induction along paired branch configurations.
 
-## 4. The theorem package (open)
+- Pure β steps, species checks, epoch checks, and argument dispatch do not
+  inspect amplitudes, so they act identically.
+- `new` appends `|0⟩`, which is fixed by `σ`.
+- `σ(Hv) = −Hσ(v)`; the sign is absorbed into `(−1)^h` and cancels
+  in `vv†`.
+- `σ(Tv) = TZσ(v)`, exactly the twisted step.
+- CNOT is a rational permutation matrix and is fixed by `σ`.
+- Computational-basis projectors commute with entrywise `σ`. Matching
+  outcome labels therefore produce matching successor configurations and
+  Galois-conjugate masses.
 
-- **T2 (sub-53 exclusion, finite trees).** No closed program of size
-  ≤ 52 realizes a Galois-odd branch mass together with a downstream
-  success effect exposing it; the minimum realization is P53 at 53.
-  The 45+8 decomposition is evidence, not proof — β-duplication lets
-  one source occurrence serve several runtime roles, so the honest
-  bound needs quantitative subject reduction. Technology (r3-frozen):
-  weighted abstract inhabitance over OPEN TRANSDUCERS (Call(i)
-  edges; application substitutes for Call(1) + least fixed point;
-  closed summaries + 0/1/ω demand are provably too coarse — use
-  ordering vs gates matters). Trusted side checks constructor
-  closure of a complete fixed-point table (L[lam Φ] ≤ 2 + L[Φ],
-  L[app(Φ,Ψ)] ≤ 2 + L[Φ] + L[Ψ] over every abstract output);
-  witness replay proves attainability only.
-- **Stage 1a (oddmin): min CNOT-FREE odd-trace weight = 45.** The
-  scope restriction is forced, and measured: min cnot-trace weight
-  ∈ (22, 28] — the 28-bit λ⁴ witness `λ⁴.((1 (2 1)) (2 1))` fires a
-  Cnot effect (verified; same-qubit cnot Errs before the effect, so
-  two news are floor; ≤22 exhaustive has none) — so any monitor that
-  latched accept on cnot would cap its provable minimum at 28.
-  Validation layer live and r4-hardened (`src/odd.rs`): per-qubit
-  may-set S ⊆ {X,Y,Z}×{even,odd}; H swaps X↔Z, T feeds X/Y both
-  ways grade-flipped, meas accepts on (Z, odd); verdicts
-  {Even, MayOdd, NeedsCnot} with cnot as out-of-scope, never accept;
-  epoch-checked certificate replay rejects forged traces. Sound by
-  the product-structure argument (a product of even Born factors is
-  even, so an odd leaf forces an odd-readable measurement);
-  no-CNOT separability makes the single distinguished lineage
-  sound. Measured tight at small sizes: ≤22 exhaustive, zero
-  MayOdd. DP build plan (r4/r4b-frozen): ordered Call edges (a
-  multiset loses use-ordering), outer Knuth min-first + complete
-  same-weight LFP saturation (substitution is zero-cost — the
-  argument's weight was paid at the App), trusted/untrusted split
-  `oddmin_ref` / `oddmin` search / checker-invokes-ref-only, and a
-  GATED prototype: weights 16/20/24 first, stop if canonical
-  summaries exceed ~10⁶. **Prototype built and gate-green
-  (2026-08-04)**: witness45 composes to a 44-node summary and is
-  accepted through the closed pipeline; exact vs qeval on all
-  closed ≤22 (zero looseness); 96/751/6,346 summaries at
-  W=16/20/24 in seconds. Four measured domain revisions
-  (SPEC-ODDMIN §9: ★ observation fan, continuation-specialized
-  frames, closure-env restriction, one-shot closed evaluation)
-  await the r6 ruling; the open design hole is a component-scoped
-  Top widening for Ω-style self-appliers (⊤ cells) before the
-  ladder to 44.
-- **Stage 1b (the cnot companion): Pauli-string path parity.** The
-  T-count shortcut is backwards — a T acting on even-grade X/Y
-  support is exactly how odd grade is created. The correct lemma
-  (Codex r4, statement level): expand the unnormalized branch
-  density operator in Pauli strings, grade coefficients by
-  √2-parity; New introduces even I/Z, H and CNOT conjugate strings
-  grade-flat (symplectic routing), T on local I/Z is grade-flat, T
-  on local X/Y branches and toggles grade, projectors preserve
-  grade. Hence: **a Galois-odd finite branch mass forces a
-  projector-compatible Pauli path whose count of X/Y-active T
-  transitions is odd.** Contrapositive: all-even path parity ⇒ even
-  mass, WITH cnot in scope. Monitor form: may-sets of
-  (x, z, g) ∈ F₂^{2n} × F₂. This is the lemma that removes stage
-  1a's cnot-free premise; source T-count alone can never decide it
-  because H/CNOT routing determines each T's local letter.
-- **T3 (infinite-tree control).** Below 53, every program has
-  Δ(C) = 0 — the only piece that can discharge the β-insensitive
-  unknown bracket (finite-tree theorems never do). Scoped to √2:
-  rational non-dyadic limits are a separate threshold (§3, 85-bit
-  upper bound) and a separate minimization problem.
+Three consequences are useful.
 
-## 5. Why the pattern held (informal summary)
+1. For any finite prefix-free successful leaf set,
 
-Below 45 the wire grammar cannot afford the H–odd-T–H–meas sandwich
-at all, so every Born factor is even and every mass dyadic. From 45
-to 52 (measured; T2's claim) the sandwich exists but every affordable
-continuation treats the two σ-conjugate arms identically — the
-Galois twist maps each program's tree to itself with conjugate
-masses, and the halting set is twist-invariant, so odd parts cancel
-program-by-program. At 53, eight bits buy the cheapest asymmetric
-continuation (apply the boolean to a poison pill; Err one arm), the
-twist-invariance of fates breaks, and Σ_success leaves Z[1/2]. The
-campaign's remaining sweeps (51–53) test exactly this story's
-complement predictions.
+   ```text
+   [√2] Σ_Halt(C) =
+       (Σ_Halt(C) − Σ_Halt(C♯)) / (2√2).
+   ```
+
+   The odd coefficient is the successful-mass gap to the twisted shadow.
+2. The achievable successful-mass set is closed under the Galois twist up to
+   a constant source-size overhead because `Z = T⁴` is expressible in the
+   language.
+3. `σ` is not defined on arbitrary real limits. For an unbounded branch
+   tree, the correct observable is instead
+
+   ```text
+   Δ(C) = P_Halt(C) − P_Halt(C♯),
+   ```
+
+   defined from the two monotone probability limits. `Δ(C) = 0` does not
+   imply that `P_Halt(C)` is dyadic; a rational value such as `1/3` is
+   possible.
+
+## 3. Measured threshold zoo
+
+| size | artifact | exact structure |
+|---:|---|---|
+| 45 | `witness45` | first known Galois-odd leaves; `H·T·H·meas`, both arms Halt with masses `(2±√2)/4`, total 1 |
+| 48 | complement witness | same sandwich with different gate plumbing, still a paired total |
+| 49 | one-bit sibling | payload variation of the same paired construction |
+| 50 | three plumbing variants | paired `(2±√2)/4` leaves under alternative continuations |
+| 51 | twelve-program wrapper orbit | 24 paired leaves; total odd coefficient zero |
+| 53 | `P53` | first known unpaired fate split: one mass Err, its conjugate Halt, so total successful mass is non-dyadic |
+| ≤85 | rejection loop | successful probability `1/3`, proving that rational non-dyadic limits form a separate threshold problem |
+
+The exact complement aggregate has zero `√2` coefficient through 51, and
+the five-lambda idiom aggregate is zero through 52 before becoming nonzero at
+53. These are bounded exhaustive results, not global minima except where a
+separate theorem supplies the lower bound.
+
+The size decomposition behind P53 is informative: the 45-bit quantum
+sandwich creates conjugate branches, and the cheapest known asymmetric
+continuation costs eight more bits. Shorter wrappers can surround or replumb
+the sandwich but have so far preserved conjugate fates.
+
+## 4. Finite-tree theorem program
+
+### T2: sub-53 exclusion
+
+The target statement is:
+
+> No closed program of size at most 52 has a Galois-odd branch mass together
+> with a downstream fate distinction that exposes it in total successful
+> mass. `P53` attains the minimum at 53.
+
+The `45 + 8` decomposition is evidence, not a proof. Untyped β-duplication
+allows one source occurrence to serve multiple runtime roles, so any lower
+bound needs quantitative subject reduction or an exact compositional search.
+
+Stage 1a proves the restricted minimum for **CNOT-free traces**. Its trusted
+monitor projects one guessed qubit lineage to `{NewD, HD, TD, MeasD}` and
+accepts only an odd readable measurement. The current compositional search
+contract and validation evidence are in `oddmin.md`.
+
+The CNOT-free restriction is forced by the source language. A 28-bit program
+already fires CNOT, so treating every CNOT as automatic odd acceptance could
+never prove a 45-bit lower bound.
+
+### CNOT-capable companion
+
+The intended stage-1b invariant lives in the Pauli basis. Expand an
+unnormalized branch density operator in Pauli strings and grade coefficients
+by `√2` parity:
+
+- `new` introduces even `I/Z` support;
+- `H` and CNOT route Pauli strings without changing the grade;
+- `T` is grade-flat on `I/Z` and toggles grade when it mixes `X/Y`; and
+- computational-basis projectors preserve the grading.
+
+The target lemma is that a Galois-odd finite branch mass forces a
+projector-compatible Pauli path with an odd number of `X/Y`-active `T`
+transitions. Its contrapositive would bring CNOT into scope. Raw source
+T-count cannot replace this path invariant because H and CNOT determine the
+local Pauli letter seen by each T.
+
+## 5. Infinite-tree boundary
+
+T3 asks whether every program below 53 has `Δ(C) = 0`, including programs
+whose branch tree or classical reduction is infinite. A finite-tree lower
+bound cannot discharge unresolved mass at every budget, even when repeated
+budget increases leave the observed finite prefix unchanged.
+
+This theorem is deliberately scoped to the `√2` Galois asymmetry. The
+minimum program with rational but non-dyadic limiting successful probability
+is a different problem; the current `1/3` construction only gives the upper
+bound 85.
+
+## 6. Current interpretation
+
+The measured pattern has a coherent structural explanation:
+
+- below 45, the source grammar cannot afford the complete
+  `H–odd-T–H–meas` sandwich;
+- from 45 through 52, that sandwich exists but every measured continuation
+  treats the two conjugate branches symmetrically; and
+- at 53, an eight-bit poison continuation makes the two branch fates differ,
+  so cancellation no longer occurs inside the program.
+
+T1 proves why conjugate trees cancel. T2 and T3 are the missing lower-bound
+theorems needed to turn the measured threshold into a global statement.

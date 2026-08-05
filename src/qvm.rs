@@ -812,8 +812,8 @@ mod tests {
 
     #[test]
     fn first_nondyadic_witness_at_45() {
-        // The measured dyadicity threshold (overnight 2026-08-03): sizes
-        // 42–44 are clean over 2.87B programs (β=512 hunt); n=45 yields
+        // The measured leaf-mass threshold: sizes 42–44 are clean over
+        // 2.87B programs (β=512 hunt); n=45 yields
         // exactly one witness program, λ⁵. meas (h (t (h (new t)))) —
         // the predicted h·t·h sandwich, found tight. Both branches halt
         // with masses (2±√2)/4: individually irrational, summing to 1,
@@ -862,8 +862,7 @@ mod tests {
 
     #[test]
     fn first_fate_divergent_nondyadic_witness_at_53() {
-        // Codex counterexample (gaslamp thread qblc-omega-witnesses,
-        // 2026-08-03) to the swap-involution pairing claim: a Church boolean
+        // Counterexample to the swap-involution pairing claim: a Church boolean
         // fate-splits on ONE argument, because reduction continues under
         // binders. λ⁵. (meas (h (t (h (new t))))) (t t): outcome 0 gives
         // true (t t) → λy. t t, and t t fires Species Err under the binder

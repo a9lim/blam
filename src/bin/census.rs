@@ -50,9 +50,8 @@ struct Cfg {
 /// memoized terms proves the body is closed — no walk needed. Only
 /// terms that reach the escalation tier are memoized (the cheap 99.7%
 /// are cheaper to redo than to hash); memo hits re-insert themselves so
-/// λλ-chains stay free. Audit item "λ-wrap memoization", landed
-/// 2026-08-01; Unknown reuse removed same day on review: Halt and
-/// Diverge are SEMANTIC results and reusable under λ, but Unknown is a
+/// λλ-chains stay free. Halt and Diverge are SEMANTIC results and reusable
+/// under λ, but Unknown is a
 /// resource/proof-search outcome of the seed's run — copying it would
 /// not prove the wrap exhausts the same engine budget, so seed-Unknown
 /// wraps run the ordinary ladder instead (the census's advertised

@@ -1,4 +1,4 @@
-//! S2: the M^(1) operator census. Sweep every closed program of size
+//! The M^(1) operator census. Sweep every closed program of size
 //! 4..=N under the frozen signature `p h meas new cnot t`, through the
 //! KN-store fast path (`qvm`, lockstep-verified against `qeval`), and
 //! accumulate exactly:
@@ -8,7 +8,7 @@
 //! - per-live-qubit-count sector masses (number superselection is by
 //!   construction: sectors are keyed by live count, no cross terms exist);
 //! - the k=1 sector operator M^(1)|≤N = Σ_p 2^(−|p|) v_p v_p† as an exact
-//!   2×2 Hermitian matrix over Z[ω]/√2^k, with state rankings;
+//!   2×2 Hermitian matrix over `Z[ω]/√2^k`, with state rankings;
 //! - dyadicity and fate-divergence witnesses (where the pilot's mirror-tie
 //!   phenomenon first breaks);
 //! - budget-headroom telemetry (max β, max transitions, max branches).
@@ -17,10 +17,9 @@
 //! exactly 1 (CP instruments conserve mass); asserted per program across
 //! the entire sweep.
 //!
-//! Output convention note: this is spec v0 — the leaf output is the whole
-//! live store at Halt (M_Fock's definition). The designated-output
-//! alternative (`docs/quantum/architecture.md`, Open questions) changes G_k,
-//! not this.
+//! Output convention: the leaf output is the whole live store at Halt
+//! (M_Fock's definition). A designated-output alternative would define a
+//! different Object B experiment, not change this census.
 //!
 //! Usage: qcensus [--min-n N] [--max-n N] [--beta B] [--trans T]
 //!                [--qubits Q] [--branches K] [--threads J] [--out FILE]
@@ -38,7 +37,7 @@ use rayon::prelude::*;
 use std::fmt::Write as _;
 use std::time::Instant;
 
-/// The frozen signature order (`docs/quantum/architecture.md`, S1 pilot).
+/// The frozen signature order (`docs/quantum/architecture.md`).
 const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
 /// Exact accumulator with f64 mirror; `ok` false once any exact op

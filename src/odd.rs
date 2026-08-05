@@ -1,5 +1,5 @@
 //! Trace-level Pauli-support monitor — the validation layer of the
-//! oddmin lane (√2-cancellation theorem hunt, LEDGER 2026-08-04).
+//! oddmin √2-cancellation theorem lane.
 //!
 //! A sound may-abstraction of Galois-odd leaf mass for cnot-free
 //! effect traces. Replayed over a leaf's effect path (qeval's trace
@@ -20,10 +20,9 @@
 //! collapse retires the qubit. A leaf mass is a product of Born
 //! factors, and a product of even factors is even — so any odd leaf
 //! forces some measurement to fire on (Z, odd), which is precisely
-//! the accept event (the product-structure argument, Codex round 3,
-//! `qblc-omega-witnesses`).
+//! the accept event.
 //!
-//! cnot is OUT OF SCOPE for stage 1a (round 4): a Cnot effect ends
+//! cnot is OUT OF SCOPE for stage 1a: a Cnot effect ends
 //! the sound single-lineage analysis, and the verdict becomes
 //! `NeedsCnot` — explicitly not a claim in either direction. The
 //! 28-bit witness λ⁴.((1 (2 1)) (2 1)) fires a Cnot effect, so any
@@ -31,18 +30,18 @@
 //! Stage 1b (Pauli-string support with symplectic H/CNOT routing)
 //! is the companion that removes the premise.
 //!
-//! The replayer is HARDENED for certificate use (round 4): effects
+//! The replayer is hardened for certificate use: effects
 //! on unallocated or retired qubits, duplicate allocations, and
 //! stale epochs reject the trace as `Malformed` rather than being
 //! silently interpreted. qeval never emits such traces; a forged
 //! certificate might.
 //!
-//! This module is the trusted replayer of the planned oddmin
+//! This module is the trusted replayer for the oddmin
 //! certificate and the validation oracle for its compositional DP;
 //! it deliberately contains no term evaluation — pair it with
 //! qeval::run_traced. The pure mask kernels (`step_h`, `step_t`,
 //! `step_meas`) are shared with the future certificate transfer
-//! code; keep them total and allocation-free.
+//! transfers; keep them total and allocation-free.
 
 use crate::qeval::Effect;
 use std::collections::HashMap;

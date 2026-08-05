@@ -1,11 +1,11 @@
-//! S1 signature pilot: sweep all 120 permutations of {new, meas, cnot, t, h}
+//! Signature pilot: sweep all 120 permutations of {new, meas, cnot, t, h}
 //! over every closed term of size 4..=N, and rank them by the PREDECLARED
-//! functional (`docs/quantum/architecture.md`, Staging): maximize
+//! functional: maximize
 //! Ω_{success,≤N}, ties broken
 //! lexicographically on the permutation tuple. The functional and cutoff are
 //! fixed before any results are seen; the winner froze the signature order
-//! for all canonical data (S1, 2026-08-02, at ≤24 via the reference
-//! evaluator). Now runs the lockstep-verified fast machine (`qvm`) — the
+//! for all canonical data at ≤24 via the reference evaluator. The driver
+//! now runs the lockstep-verified fast machine (`qvm`); the
 //! frozen result reproduces exactly; larger-N robustness reruns are
 //! informational only, never a re-freeze.
 //!

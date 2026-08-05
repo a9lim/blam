@@ -1,6 +1,5 @@
 //! qcomplement: phase 2 of the dyadicity decision instrument — the exact
-//! radical aggregate of the non-λ⁵ complement, 46..53 (gaslamp thread
-//! `qblc-omega-witnesses`, rounds 2–3).
+//! radical aggregate of the non-λ⁵ complement, 46..53.
 //!
 //! Phase 1 (`qradical`) decided the idiom sector: the √2-coefficient of
 //! Σ_success is exactly 0 for 46..52 and −1/4 at n=53 (unique witness
@@ -11,14 +10,14 @@
 //! problem: 933,062,632,336 complement programs across 46..53 (exact DP,
 //! anchored bit-identically to the qcensus 4..41 total and qradical's
 //! n=53 idiom enumeration; rung-0 survivor counts independently
-//! DP-verified by Codex) — 36× phase 1's enumeration. The protocol:
+//! DP-verified) — 36× phase 1's enumeration. The protocol:
 //!
 //! - **Rung 0** (syntactic, one O(n) bit-walk): leading-λ count k comes
 //!   from the packed encoding's leading zeros (λᵏ = 2k zeros; a non-λ
 //!   body adds exactly one more for an app head, none for a var head, so
 //!   k = lz/2 either way). k ≥ 5 → phase 1's population, skipped. For
 //!   k ≥ 1, REJECT if a consumed REQUIRED argument's binder is
-//!   unreferenced in the body — the provenance lemma (β duplicates
+//!   unreferenced in the body — the source-origin lemma (β duplicates
 //!   origins, never conjures them): no occurrence ⇒ that primitive never
 //!   fires ⇒ no H / no measurement / no allocation ⇒ every branch mass
 //!   dyadic. Required = {h, meas, new, t} ∩ consumed: k=1 {h}, k=2
@@ -31,10 +30,10 @@
 //! - **The sweep rung** (concrete, hunt budgets β=512/trans=2²⁰): a
 //!   program whose tree fully resolves (all leaves Halt/Err) contributes
 //!   its exact per-program Σ_success — concrete resolution needs no
-//!   abstraction and no necessity lemma, and *terminal stability* makes
-//!   the tree budget-independent [Codex r3 audit: a resolved tree is
-//!   bit-identical at every larger budget; partial trees do NOT extend,
-//!   which is why unresolved programs contribute nothing here].
+//!   abstraction and no necessity lemma. *Terminal stability* makes
+//!   the tree budget-independent: a resolved tree is bit-identical at every
+//!   larger budget; partial trees do not extend, so unresolved programs
+//!   contribute nothing here.
 //!   Unresolved programs are counted, their pending mass bracketed,
 //!   their resolved-leaf halt mass reported separately (`deferred`), and
 //!   their wires streamed UNCAPPED to a file for the second pass.
@@ -54,7 +53,7 @@
 //! re-embedded as rationals, `radical::sqrt2_part`), decoupled from the
 //! full aggregate so it survives even a rational-part overflow.
 //!
-//! Usage: qcomplement [lo] [hi] [mode] [beta] [trans] [file] [slice]
+//! Usage: `qcomplement [lo] [hi] [mode] [beta] [trans] [file] [slice]`
 //!   mode ∈ sweep (default) | count | adjudicate
 //!   defaults: 46 53, sweep at 512/2²⁰ (hunt precedent), adjudicate at
 //!   4096/2²⁶ (canonical), file `qcomplement_unresolved.txt` (sweep
@@ -801,7 +800,7 @@ mod tests {
     fn rung0_rejections_are_dyadic() {
         // Every mention-rejected program, run at canonical budgets, must
         // show only dyadic resolved masses and a zero per-program √2 part
-        // — the provenance lemma's checkable shadow.
+        // — the source-origin lemma's checkable shadow.
         let mut pool = Pool::new();
         let mut m = QMachine::new();
         let mut leaves = Vec::new();

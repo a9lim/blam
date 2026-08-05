@@ -2,12 +2,12 @@
 //!
 //! Builds the weighted summary DP bottom-up (bases are VARIABLES
 //! ONLY — primitive axioms live exclusively in the closing
-//! environment, r6 gate 15) and reports, per weight: unique
+//! environment) and reports, per weight: unique
 //! canonical summaries, node/edge totals, app-pair volume, ⊤ cells
 //! (growth-gate aborts inside one splice), and closed-acceptance
 //! results at depth 0. Stop rule: > 10⁶ summaries at any weight.
 //!
-//! Usage: oddminproto [max_weight] (default 24; report printed per
+//! Usage: `oddminproto [max_weight]` (default 24; report printed per
 //! completed weight so a stop loses nothing).
 
 use blam::oddmin::{app_ref, closed_accepts, lam_ref, var_ref, MaskAutomaton, Summary};

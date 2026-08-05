@@ -1,6 +1,6 @@
 # Slot search results: VAR, ABS, APP are all exhaustively optimal
 
-Run 2026-07-31 on the M5 Max, `RAYON_NUM_THREADS=9`. Implementation:
+Measured on the M5 Max with `RAYON_NUM_THREADS=9`. Implementation:
 `src/bin/slotsearch.rs`, following the parametric contract of
 `search-spec.md` §1 and the obligation-aware enumerator of §4. Full run logs
 are in `data/self-interpreter/`.
@@ -27,7 +27,7 @@ from somewhere else — which, with `design.md` already closing fixpoint
 shape, continuation timing, cons-cell variants and binder placement, leaves
 the global evaluator/continuation representation as the only open door.
 
-## Method actually run
+## Method
 
 For a candidate `C` at frame width `f` (8 for ABS/APP, 6 for VAR), build
 
@@ -103,7 +103,7 @@ row, i.e. rung 5 was never needed). So the exhaustiveness claim has no
 residue: each of the 1.44 billion candidates is either a proven mismatch or a
 proven diverger.
 
-## Deviations from search-spec.md
+## Implemented refinements
 
 1. **Zero-count branch pruning is load-bearing, not an optimization.** The
    spec mentions "use zero counts to skip branches" in passing; without it the
@@ -129,7 +129,7 @@ proven diverger.
    spec's slot table). Its `must` mask `cont+list1` is derived by the same
    §4 argument.
 
-## Engine changes (verification bar met)
+## Supporting engine behavior
 
 - `Sink::CAN_ABORT` (associated const, default `false`) and
   `Sink::aborted()`; `normalize_inner` polls it once per transition **only**
@@ -140,8 +140,8 @@ proven diverger.
 - `TermPool::push` made `pub`, so a decoded candidate can be spliced into a
   closing context without a second decode pass.
 
-`cargo test --release` green (49 passing, 1 ignored). Census
-spot-check `n = 24..36` was bit-identical to the then-canonical table
+The final implementation passed `cargo test --release`. Census spot-check
+`n = 24..36` was bit-identical to the canonical table
 on every column — closed, halt, diverge, unknown, escal, max|nf|,
 beta_total — meeting the repo's verification bar for engine changes.
 
@@ -168,18 +168,18 @@ beta_total — meeting the repo's verification bar for engine changes.
   term's actual occurrence mask (`tests::obligations_match_brute_force`).
 - **Split coverage**: `split_tasks` at targets 1/7/64/1000 reproduces the
   direct enumeration exactly (`tests::split_covers_exactly`).
-- **Provenance**: `ref/AIT/ait/int.lam` → `tools/blcc.py` → 170 bits → passes
+- **Source chain**: `ref/AIT/ait/int.lam` → `tools/blcc.py` → 170 bits → passes
   the 10-program battery in `harness.py`; the three slots at their syntactic
   positions in that term are exactly the 21/43/41-bit strings searched, and
   re-splicing the survivors reproduces the same 170 bits with the battery
   still green.
 
-## Status of the Python lab
+## Supporting Python tools
 
 `search_var.py` and `search_abs.py` (the closed-Church-marker probes
 the spec was written to kill) are superseded and deleted — git
 history holds them. `lc.py`, `db.py` and `harness.py` remain live
-(used above for the golden cross-check and the provenance battery),
+(used above for the golden cross-check and source-chain battery),
 as does `tools/self-interpreter/search_fix.py` (the knot search of `design.md`).
 
 ## What this does not cover

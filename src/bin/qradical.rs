@@ -1,6 +1,5 @@
 //! qradical: the radical-aggregate census — phase 1 of the dyadicity
-//! decision instrument for Ω_success beyond the exhaustive 45-bit horizon
-//! (gaslamp thread `qblc-omega-witnesses`, 2026-08-03).
+//! decision instrument for Ω_success beyond the exhaustive 45-bit horizon.
 //!
 //! Per size n, accumulate the EXACT total successful (Halt) mass of the
 //! λ⁵-idiom population and report its √2-coefficient — not merely the count
@@ -22,9 +21,9 @@
 //! CLEAN phase-1 size is "no idiom-sector witness", not yet a theorem for
 //! the whole size.
 //!
-//! Usage: qradical [lo] [hi] [count]   (default 46 53; `count` skips the
-//! engine and reports enumeration/filter counts only — the n=53 filtered
-//! count has an independent DP cross-check of 90,064,344.)
+//! Usage: `qradical [lo] [hi] [count]` (default 46 53; `count` skips
+//! the engine and reports enumeration/filter counts only — the n=53
+//! filtered count has an independent DP cross-check of 90,064,344.)
 
 use blam::dw::Dw;
 use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks_at};

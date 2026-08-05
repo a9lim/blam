@@ -1,479 +1,295 @@
-# qBLC design (quantum pillar)
+# Quantum BLC architecture
 
-Design spec for the quantum counterpart of the classical engine.
-Ratified 2026-08-02 after two adversarial Codex rounds (gaslamp thread
-`blc-qblc`; the round record is in `../ledger/2026-08.md`). S1–S3 core have landed
-(see Staging); the spec text is the living contract for what was
-built. Working document — argue with it. Sibling:
-`../classical/architecture.md` (classical pillar). Literature grounding:
-`ref/QUANTUM_AIT.md` (untracked survey); load-bearing sources: Gács
-quant-ph/0011046, Müller quant-ph/0605030 / 0707.2924, Vitányi
-quant-ph/0102108, Schumacher–Westmoreland quant-ph/0011014,
-Kliuchnikov 1306.3200.
+This document is the durable architecture contract for blam's quantum
+pillar. It uses the same structure as the classical architecture so the two
+systems can be compared layer by layer. Current measurements and the open
+docket live in `../STATUS.md`; chronological development history lives in
+`../ledger/`.
 
-## Why this exists
+## 1. Purpose and target objects
 
-Quantum AIT has existence theorems and zero concrete machines. The
-invariance theorem took eight years (BvDL 2000 → Müller 2008) because
-nobody had a machine to point at; no wire format, no measured
-interpreter constant, and — to our knowledge — no concrete complexity
-bound for any quantum state exists in the literature. BLC's founding
-move — replace O(1) with a countable number — has never been made
-quantum-mechanically. This pillar makes it, treated as an
-investigation, not a build: the deliverables are measured objects, and
-a failure is a finding about what is genuinely possible.
+Quantum BLC (qBLC) keeps the ordinary prefix-free BLC program language and
+adds an exact quantum store behind a classical gate interface. The programs,
+control flow, and Kraft weights remain classical; only the states manipulated
+through that interface are quantum.
 
-## Target objects — there are two, and they cannot be one
+The pillar studies two related but distinct semidensity objects.
 
-**Object A — the operator census** (the Ω-flavored object):
+### Operator census
 
-    M_Fock = ⊕_k M^(k),   M^(k)|≤N = Σ_{p, |p|≤N} 2^(−|p|) · ρ_p^(k)
+For bare programs applied to the gate signature,
 
-over programs run bare (`p` applied to the signature), ρ_p^(k) the
-subnormalized k-live-qubit successful output. One global Kraft budget;
-Σ_k Tr M^(k) ≤ 1; **Tr M_Fock = Ω_success**, the successful-output
-mass (Err excluded by construction; distinct from raw halting
-probability — the name says so). Loewner-monotone in N; finite-census
-notation Ω_{success,≤N}. This is the census deliverable and the Ω|≤41
-sibling.
+```text
+M_Fock = ⊕_k M^(k)
+M^(k)|≤N = Σ_{p, |p|≤N} 2^(−|p|) ρ_p^(k).
+```
 
-**Object B — the conditional family** (the Gács candidate):
+Here `ρ_p^(k)` is the subnormalized successful output on the leaves with
+exactly `k` live qubits. One global Kraft budget is shared across all sectors,
+so
 
-    G_k = Σ_p 2^(−|p|) · ρ_{p,k}
+```text
+Σ_k Tr M^(k) ≤ 1
+Tr M_Fock = Ω_success.
+```
 
-where p receives k as a free condition — run as `p k̄ ⟨signature⟩`
-(k̄ a Church numeral) — and only Halt leaves with exactly k live qubits
-contribute. Each k has its **own full Kraft budget**, mirroring Gács's
-m(x|N): a fixed program can serve every k without its weight decaying
-in k. This is the object the universality theorem is about, and the
-algorithmic content is the **uniformity in k** — within any fixed k,
-domination is nearly vacuous (any full-rank computable density
-dominates the whole finite sector); the theorem lives in the single
-constant working across the family.
+`M_Fock` is number-superselected: the interface can allocate and retire
+qubits, but it cannot prepare coherent superpositions between live-qubit
+sectors. Its natural universality class is therefore the graded class of
+block-diagonal lower-semicomputable semidensities with a global trace bound,
+not arbitrary Fock-space operators.
 
-Object A is not a Gács candidate: its sector traces are summable
-(Σ t_k ≤ 1), so against the computable family σ_k = I/2^k any uniform
-constant dies (c ≤ t_k → 0). Do NOT repair A into B by normalizing
-sectors: t_k is only lower-semicomputable, and dividing by it destroys
-lower semicomputability. Derived scalars (from G_k):
-H̲(ψ|k) = −log⟨ψ|G_k|ψ⟩ with measured numbers for named states.
+### Conditional family
 
-**How A and B relate — a sandwich, not an identity:**
+For a Church numeral `k̄` supplied as a condition,
 
-    c·m(k)·G_k  ⪯  M^(k)  ⪯  C·G_k
+```text
+G_k = Σ_p 2^(−|p|) ρ_{p,k},
+```
 
-Discarding the condition (λk̄.p, 2 bits) gives M^(k) ⪯ 4·G_k; paying
-the address (sample k from an internal universal m(k)) gives
-M^(k) ⪰ 2^(−K(k)−O(1))·G_k. No stronger relation holds: the upper
-bound M^(k) ⪯ C·2^(−K(k))·G_k does not follow, and the classical
-mirror is the same sandwich — the prefix chain rule conditions on
-(n, K(n)), not n alone; an exact chain-rule analogue would need a
-(k, K(k))-conditioned family, which is a *different* family from
-Gács's G_k (not pursued in v0). The K(k) address tax in the lower
-bound is exactly the summability that blocks A's family-universality;
-B never pays it. B is NOT A conditioned on sector k — that quotient
-is the rejected normalization; B changes the experiment, not the
-conditioning. At small k the sandwich constants are a few bits, so
-*weights* agree within a few bits — but a few bits of slack can
-reorder nearby states, so eigenstructure and rankings do not transfer
-between A and B: compute both, compare as a finding.
+where the machine runs `p k̄ ⟨signature⟩` and retains only successful
+leaves with exactly `k` live qubits. Each `k` receives its own full Kraft
+budget. Uniformity in `k`, rather than domination within one finite sector,
+is the content required of a Gács-style conditional universality theorem.
 
-**Conjecture (A's home-class universality).** M_Fock is block-diagonal
-in live-qubit number — allocation count is **superselected**: the
-machine cannot prepare coherence between sectors, and no
-block-diagonal operator can dominate a class permitting cross-sector
-coherence (spread a computable unit vector coherently over 2^(2n)
-sectors at weight 2^(−n); AM–HM on the compressed diagonal forces the
-constant to 0). The conjecture is therefore stated over the graded
-class only: **M_Fock is universal among number-superselected lsc
-families ⊕_k σ_k with Σ_k Tr σ_k ≤ 1**, by direct global-increment
-simulation. The superselection rule itself is a finding: the census
-object's universality class is dictated by what the machine physically
-cannot prepare.
+The two objects satisfy a coding sandwich of the form
 
-## Design principle
+```text
+c m(k) G_k ⪯ M^(k) ⪯ C G_k,
+```
 
-Every fork is decided by **faithfulness to Gács's construction**. His
-μ is classical algorithmic probability pointing at quantum states —
-built from classically-described preparations, weighted by a classical
-prefix machine's Kraft mass, universal via monotone (lower
-semicomputable) limits, conditioned on dimension. The choices below
-are not conservative compromises; they are the construction.
-Interference cannot enter the prior (domination needs monotone
-positive limits; amplitude sums cancel), so nothing is lost by keeping
-the machinery classical except the states.
+where the lower comparison pays the algorithmic cost of addressing `k` and
+the upper comparison discards the condition at constant program cost. They
+are not equal. In particular, normalizing `M^(k)` by its sector trace does not
+produce `G_k`: the trace is only lower semicomputable and the quotient need
+not be lower semicomputable.
 
-## The forks (decided)
+## 2. Semantic contract
 
-1. **Control: classical** (Selinger–Valiron side, not Lineal). Gács's
-   μ, Perrier's Ξ_Q, Tadaki's Ω-operator are all classical-control
-   objects; quantum control imports the QTM halting swamp (Myers →
-   Ozawa → Linden–Popescu → Miyadera–Ohya, unresolved) plus the
-   algebraic-λ-calculus inconsistency: divergent terms produce
-   coefficient/norm blowup — the frontier terms are exactly where
-   quantum-control semantics stops being defined.
-2. **Duplication: full untyped BLC; linearity is a store discipline,
-   not a syntax discipline.** Universality requires Turing-complete
-   preparations, which live in duplication; syntactic linearity kills
-   the target theorem (the affine fragment strongly normalizes — its
-   G_k is computable and dominates nothing). No-cloning forbids
-   duplicating *states*, not *terms*: duplicating a preparation runs
-   the recipe twice and allocates two independent qubits — always
-   legal. Use-once is enforced dynamically on handles (epochs, below);
-   violation is a fate, not a type error. Measurement returns Church
-   booleans — duplicable classical data — placing the basis-copy
-   bridge exactly where physics puts it.
-3. **Effects: CP instruments, exact distribution tracking.** `meas`
-   branches the machine with exact weights; both branches are
-   followed; nothing is ever sampled. The outcome-summed instrument is
-   trace-preserving; the successful-halting output map is
-   trace-nonincreasing CP (not "CPTP" globally). A branch that
-   diverges loses its mass — subnormalization is the semimeasure
-   structure, arriving on its own.
-4. **Wire format: classical bits, byte-identical to BLC.** The code is
-   untouched (00 λ, 01 app, 1ⁿ0 var, 1-indexed); quantum enters
-   through an interface convention (the gate signature), the same move
-   as Tromp's I/O streams. Classical Kraft Σ2^(−|p|) ≤ 1 is what
-   bounds Tr M_Fock. Consequence accepted: BvDL qubit-program
-   complexity is out of scope; Vitányi (classical descriptions) and
-   Gács (via G_k) are in.
-5. **Gate set: Clifford+T** — signature {new, meas, cnot, t, h}.
-   Universal for BQP, and every reachable amplitude lies in
-   **ℤ[ω]/√2^k, ω = e^{iπ/4}** (√2 = ω − ω³): exact arithmetic, no
-   floating point anywhere in the pillar, and every preparable state
-   has algebraic entries — Clifford+T outputs are Gács-elementary
-   states by construction.
+### Language and invocation
 
-## Language spec (v0)
+Programs are ordinary closed BLC terms with the unchanged wire code and
+1-indexed de Bruijn convention. Quantum behavior enters only through five
+opaque primitives. The frozen signature application order is
 
-**Program** = any closed BLC term p, |p| its ordinary BLC size (code
-unchanged ⇒ prefix-free ⇒ Kraft). Run conventions: Object A evaluates
-p applied to the signature; Object B evaluates p applied to k̄ then the
-signature. The five-λ prefix is the *idiom*, not a constraint — every
-closed term is a program; most produce Err junk, as most classical
-programs produce garbage streams (measured: ~91% of leaves are Err at
-the pilot cutoff).
+```text
+p h meas new cnot t.
+```
 
-**Signature order — FROZEN (pilot run 2026-08-02): application order
-`p h meas new cnot t`.** Procedure as predeclared: all 120
-permutations swept over the 19,048 closed terms of 4..=24 bits
-(`qpilot`, 61 s), functional = max Ω_{success,≤24} exact,
-lexicographic tie-break. Winner Ω_{success,≤24} = 46757/2^24 ≈
-0.0027869, in an exact tie with its h↔t mirror `t meas new cnot h`
-(every ranking row pairs with its mirror at identical exact mass —
-see `../ledger/2026-08.md` for the interpretation), broken lexicographically as
-predeclared. Note the winner gives `h` to the *first* argument
-(outermost binder = longest de Bruijn index inside the full five-λ
-idiom): the successful population at small sizes is dominated by
-short-prefix programs, so "who arrives first" beats "who is cheapest
-inside the deepest idiom" — the frequency intuition the pilot
-replaced.
+The five-lambda wrapper is a common programming idiom, not a syntactic
+restriction. Object A runs a program on the signature; Object B first supplies
+the dimension condition and then the signature.
 
-**Handles** are a new opaque value species Handle(qubit, epoch) — no
-intro form in syntax (only `new` creates them), and the *only*
-elimination is as a primitive argument: a handle in operator position
-(`#q M`) is **Err**, not a stuck normal form (a stuck form would
-silently count as Halt and change the census). The store tracks the
-current epoch per qubit; gates consume an epoch and return a fresh
-one. Forgery is impossible (handles are not Church-encodable), which
-is what makes the dynamic linearity check meaningful. Allocation ids,
-epochs, and the store are **branch-local** after measurement splits.
+### Values, stores, and dynamic linearity
 
-**Reduction rules** (fire under KN normal order, wherever the redex
-is, including under binders; the machine is the spec). Primitive
-arguments evaluate strictly left-to-right to weak head normal form;
-epoch consumption is atomic, occurring only when the full primitive
-redex is assembled:
+`QTerm` extends classical terms with opaque primitive values and
+`Handle(qubit, epoch)`. Only `new` creates a handle. Every gate consumes the
+current epoch and returns a fresh one; a copied handle therefore becomes stale
+after the first use. Allocation identifiers, epochs, and stores are local to
+each measurement branch.
 
-- `new M → #(q,0)` — fresh qubit in |0⟩; M discarded unevaluated
-  (cheapest idiom: apply to any in-scope var, 2 bits).
-- `h #(q,e) → #(q,e+1)` — H applied to q in store. Same for `t` (T
-  gate).
-- `cnot #(q,e) #(r,f) → λz. z #(q,e+1) #(r,f+1)` — Church pair of
-  fresh epochs; q = r is Err. (Returning a single handle instead
-  would permanently strand the other live qubit — not an equivalent
-  optimization.)
-- `meas #(q,e)` — branches with exact weights; returns the Church
-  boolean of the outcome under the classical polarity convention
-  ('0' → true = λx.λy.x); the qubit is retired.
-- **Err** fires when a primitive meets a canonical non-handle value
-  (λ-abstraction, Church data, pair), a stale epoch (duplication was
-  attempted), a retired qubit, or coincident cnot arguments — and the
-  species check precedes any effect: `h (λx. new x)` is Err *before*
-  anything allocates. A primitive applied to a rigid (bound) variable
-  is neutral — it stays symbolic in the normal form; Err is a
-  value-level event, not an open-syntax event.
+This is a store discipline, not a linear type system. Ordinary BLC remains
+fully untyped and duplicative, so a preparation term can be copied and run
+twice to allocate two independent states. What cannot be duplicated is
+authority over one already-allocated qubit.
 
-**Fates**, per branch leaf: Halt(store), Diverge, Err,
-Unknown(resources). The mathematical branch tree may be countably
-infinite (a recursive coin-flip halts on countably many finite
-branches); only the resource-truncated evaluator returns a finite
-tree, with Unknown leaves carrying the truncated mass — the Loewner
-bracket absorbs it. Halting probability p_halt = Σ ‖v‖² over Halt
-leaves ∈ [0,1]: the classical trichotomy softens into a distribution,
-with Err a genuinely new fate class (clone-death statistics are a
-census question no one has asked).
+### Primitive effects
 
-**Output convention** (v0, provisional until S2): at a Halt leaf, the
-output state is the joint state of *live* qubits (allocated,
-unmeasured, unretired), tensor-ordered by allocation rank; sector
-k = live count (Object B: leaves with live count ≠ k are excluded).
-Err leaves contribute nothing anywhere (Ω_success := Tr M_Fock makes
-this automatic). Accepted consequence: inaccessible live garbage is
-part of the output — output behavior is *not* compositional under
-"discard an ancilla" intuitions. The normal form's shape is ignored
-except for halting; NF-bit-size metrics are defined only for
-handle-free NFs (serialization of handle occurrences: reserved).
-Alternative arm (designated-output list, uni-style) recorded under
-Open questions.
+Primitive arguments are evaluated strictly from left to right to weak head
+normal form. Species and epoch checks complete before an effect occurs.
 
-## Exact arithmetic
+- `new M` discards `M` without evaluating it and allocates `|0⟩`.
+- `h #q` and `t #q` apply the corresponding gate and return a fresh handle.
+- `cnot #q #r` updates distinct qubits and returns their fresh handles as a
+  Church pair. Equal operands are an error.
+- `meas #q` follows both exact outcome branches, retires the qubit, and
+  returns the outcome as a Church boolean using the classical polarity.
 
-**Branch vectors are unnormalized** — load-bearing, not stylistic:
-post-measurement normalization leaves the ring (a two-qubit
-HTH-prepare / cnot / measure-0 run leaves norm² = 3/4, and 2/√3 ∉
-ℤ[ω]/√2^k), while the unnormalized vector and the weighted projector
-stay inside. **The vv† invariant: a Halt leaf's sole contribution is
-vv† — its trace ‖v‖² already IS the branch probability.** No separate
-weight factor exists anywhere in the accumulation path; multiplying
-again would double-count, and the evaluator makes that impossible by
-construction. Amplitudes are elements of ℤ[ω]/√2^k: four integer
-coefficients (1, ω, ω², ω³) + a √2-denominator exponent — the
-standard exact Clifford+T representation. Coefficients use checked
-i128; overflow is a Capacity fate, not UB.
+A handle in operator position is an error, not a stuck normal form. A
+primitive applied to a canonical non-handle, stale handle, retired qubit, or
+invalid equal-qubit pair is also an error. A primitive applied to a rigid open
+variable remains neutral until enough information is available.
 
-**Ring status is stratified:** finite branch vectors and finite
-resource-truncated approximants have ring entries; the unbounded
-limits M^(k), G_k generally do NOT — a recursive coin loop (repeat on
-11, |0⟩ on 00, |1⟩ on 01/10) outputs ⅓|0⟩⟨0| + ⅔|1⟩⟨1|, and ⅓
-escapes every dyadic ring even though every finite branch is dyadic.
-Exact output representation = monotone finite ring-valued approximants
-plus a Loewner remainder bound; "computed exactly" always means
-*exact certified brackets*, the Ω|≤41 discipline lifted to operators:
-M_known ≤ M ≤ M_known + (unknown mass)·I.
+### Fates and outputs
 
-**Capacity is a fate, not an assumption.** Source size does NOT bound
-live qubits — an unbounded loop can pump one syntactic `new`
-arbitrarily many times, so the live-qubit count must be *measured*,
-never inferred from source size. The work-meter doctrine
-(`../classical/architecture.md`, "the work-meter lesson") extends with live-qubit /
-statevector / coefficient-magnitude capacity charges; exceeding any
-is Unknown(Capacity), mass into the bracket.
+Each branch ends in one typed fate:
 
-## Proof obligations (open)
+- `Halt(Store)` for successful normalization;
+- `Unknown` when a semantic work budget is exhausted;
+- `Capacity(Qubits | Amplitude | Branches)` when a representation limit is
+  reached; or
+- `Err(Species | HandleApplied | StaleEpoch | Retired | SameQubit)` for an
+  invalid quantum operation.
 
-1. **Uniform conditional simulation theorem** (the universality
-   theorem for Object B; route fixed, proof open): for every
-   uniformly lower-semicomputable semi-density family {σ_k}, a
-   constant c_σ > 0 with c_σ·σ_k ≤ G_k for all k simultaneously.
-   Strategy: one fixed program reads k̄ plus an enumeration index for
-   σ, samples increment s with mass w_s (fair-coin sampler over
-   computable weights), synthesizes ρ̃_s with ‖ρ_s − ρ̃_s‖_∞ ≤ δ at
-   runtime — gate count charged to *runtime*, not description length
-   (k-qubit synthesis rates are dimension-dependent, Kliuchnikov
-   1306.3200, which is why hard-coded approximant programs are the
-   wrong construction). Padding with **δ = ε/2^k**:
-   τ = (ρ̃ + δI)/(1+ε) is a density matrix with τ ⪰ ρ/(1+ε) — a
-   constant *independent of k*; δ shrinking with k costs runtime
-   depth only, so uniformity survives. Proof details owed:
-   (a) ancilla-free synthesis or explicit ancilla retirement — under
-   whole-live-store semantics a stray ancilla shifts the output
-   sector; (b) operational preparation of ρ̃ including exact sampling
-   of its eigenvalue mixture; (c) the fair-coin sampler for the
-   increment weights; (d) the final constant, simulator Kraft weight
-   included. Fallback if the proof fails: universality relative to an
-   *operationally defined* class — uniformly lsc output families of
-   conditional Clifford+T programs — with a realizability theorem
-   ("matrices with ring entries" is NOT automatically that class),
-   and the delta to full Gács documented as a finding. Either exit is
-   a result.
-2. **Effect-trace self-interpretation**: the claim is **weak trace
-   equivalence up to pure β-stuttering, in unbounded semantics** —
-   E⌜p⌝σ⃗ and pσ⃗ fire the same effects in the same order. The decode
-   phase of the standard interpreter is pure administrative work (the
-   call-by-name environment translation preserves thunk
-   duplication/discard), so the claim is expected; prove it by
-   small-step bisimulation covering allocation order and measurement
-   continuations. Two claims deliberately NOT made: resource fates
-   are not preserved (a program discarding a huge subterm unevaluated
-   halts directly, while the interpreter parses the subterm first and
-   can hit Unknown — trace equivalence is an unbounded-semantics
-   statement, not census-ladder equivalence); and no optimality claim
-   attaches to the constant below.
-   **Measured (2026-08-03, bin `qselfint`)**: the anticipated
-   signature adapter + continuation wrapper collapse to six bits —
-   qBLC passes primitives by application, so a decoded program
-   receives σ⃗ through ordinary β. **E_q = intL I, 176 bits**, tight
-   within the intL protocol (2 app + 170 + the unique 4-bit closed
-   term). The specialized-root lane (SPEC-BISIM §8) closed its first
-   rung 2026-08-04: the two-entry/single-knot family minimum is
-   exactly 176 (Codex hand-compilation + exact accounting,
-   `../ledger/2026-08.md`;
-   nearest loser 177), a local theorem under the frozen-branch
-   hypotheses — global optimality still open, sharpest remaining
-   mechanical lane a ≤25-bit joint root+knot context search around
-   the 150-bit generic core. Quote is
-   linear: |E_q ⌜p⌝| = 184 + 14|p| + zeros(p). Verified empirically
-   at the effect-trace level (per-leaf root-to-leaf effect paths,
-   `qeval::run_traced`, β-stuttering erased by construction) over the
-   small-size population, plus a poisoned-seed-env canary; the
-   small-step bisimulation stays the proof obligation — precise
-   statement, relation, and case-ledger proof plan in `bisimulation.md`
-   (Codex-skeletoned, round 3 ratifies).
-3. **Convention-dependence**: for a fixed permutation π_k of
-   allocation ranks, M'^(k) = P_{π_k} M^(k) P_{π_k}† exactly — an
-   external representation theorem, no qBLC program involved.
-   History-dependent conventions do not admit a single conjugating
-   unitary per sector, and under whole-live-store semantics there is
-   no internal O(1) relabeling program (inaccessible handles can't be
-   permuted); an internal version returns only if a designated-output
-   interface makes all outputs accessible.
-4. **Classical-engine isolation.** The classical census's bar
-   (bit-identical halt counts) is untouchable: qBLC is a separate
-   evaluator built on the same term repr and enumeration, not a
-   modification of `vm.rs`/`bb.rs` hot paths. The classical memos
-   (λ-wrap, oracle prefilter) do NOT transfer until re-audited under
-   effect semantics — the divergence oracle's soundness argument has
-   never seen an effectful redex.
+At a successful leaf, the output is the whole live store in allocation-rank
+order. The normal form matters only as evidence of halting; its syntax does
+not select an output subsystem. Measured or otherwise retired qubits do not
+appear in the output, while inaccessible but live qubits do. Changing to a
+designated-output convention would define a different census and remains an
+explicit open design question.
 
-## Deliverables
+## 3. Engine stack
 
-1. **M^(1), M^(2) at census sizes, as exact certified Loewner
-   brackets** (Object A; the limits escape the ring — brackets, not
-   single matrices) — to our knowledge the first computed
-   operator-census of quantum-preparing programs anywhere (novelty
-   search before any such claim ships). Eigenstructure; the census's
-   ranking of quantum states in measured bits: weight of |0⟩ vs |+⟩
-   vs T|+⟩ vs Bell.
-2. **Ω_success = Tr M_Fock** with an exact Loewner bracket;
-   Ω_{success,≤N} per census size.
-3. **G_1, G_2 approximants** (Object B) and H̲ bounds for named
-   states (|+⟩, Bell, GHZ_k, T-state). Gács Thm 8 sandwich
-   (H̲ ≤⁺ K_Vitányi ≤⁺ 4H̲ + 2log H̲): numeric instantiation only
-   after the paired machine constants are established — the
-   inequality is machine-relative and a raw shortest-preparation
-   search does not instantiate it by itself.
-4. **The softened fate census**: halting-probability histogram, Err
-   (clone-death) statistics, capacity-fate statistics, measured
-   live-qubit distribution, affine-fragment overlay.
-5. **Self-interpreter transfer** (obligation 2), with the measured
-   wrapper constant if the bisimulation holds.
-6. **The uniform conditional simulation theorem** (obligation 1) — or
-   its documented failure plus the operational-class fallback.
-7. **Lean lane (later)**: finite-dimensional quantum Kraft
-   Tr(2^(−Λ)) ≤ 1; the simulation theorem if it lands.
+### Reference semantics
 
-## Staging
+`src/qeval.rs` is the semantic reference. It evaluates branch distributions
+over `QTerm`, an exact `Store`, and a typed fate. Store operations are the one
+implementation of allocation, Clifford+T gates, measurement, and epoch
+validation.
 
-S0 spec ratification (**done**, 2026-08-02) → S1 evaluator (**done**,
-2026-08-02: naive reference evaluator `src/qeval.rs` + exact ring
-`src/dw.rs` + pilot `src/bin/qpilot.rs`; signature order frozen) →
-S2 M^(1) operator census (**done**, 2026-08-03: KN-store fast path
-`src/qvm.rs`, lockstep-verified against qeval on leaf sequences — fate
-incl. store, exact mass, contraction count — over the full ≤24
-population; census bin `src/bin/qcensus.rs`; β=4096/trans=2²⁶ with
-measured headroom; per-program mass conservation asserted sweep-wide)
-→ S3 operator census at classical-census depth (**core done**,
-2026-08-03 overnight: canonical `data/quantum/census_table.txt` — the full
-526,039,969-program population 4..41 in ~30 min; Ω_{success,≤41} =
-3424188513/2⁴⁰; M^(1) PD, ranking |0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩ with
-irrational operator entries whose √2-parts cancel in every trace;
-M^(2) with the first entangled halts at exactly n=41, 2-qubit
-ranking |00⟩ ≫ Φ⁺ > Φ⁻ > |++⟩; sectors k=2 at 33, k=3 by 41; first
-SameQubit Err and first Qubits capacity, both single events at 41;
-`--cond-k` G_k harness built — G_k approximant runs and the sandwich
-constants remain) → S4 Thm 8 groundwork + interpreter transfer → S5
-Lean. Each stage is a publishable finding on its own; stopping early
-is a valid outcome of the investigation.
+`src/dw.rs` implements exact arithmetic in the ring
+`ℤ[ω]/√2^d`, with `ω = exp(iπ/4)`. A scalar is four checked `i128`
+coefficients plus a denominator exponent. Arithmetic overflow becomes a
+capacity fate rather than wrapping or silently approximating.
 
-## Rejected
+### Fast normalization
 
-- **Quantum control (Lineal-style)**: halting swamp; norm blowup on
-  divergent terms (semantics undefined exactly on the census's subject
-  matter); unfaithful to the target — Gács needs no superposed
-  programs. Revisit only for the coherent self-interpreter question
-  (Müller's theorem as a λ-term), which is stage-∞ research, not this
-  prototype.
-- **Qubit wire format / BvDL complexity**: different target object;
-  coherent prefix parsing (condensable indeterminate-length codes) is
-  research-hard; breaks the census correspondence that makes the
-  operator census computable here at all.
-- **Static linear/affine typing**: kills universality or imports a
-  type system against BLC's grain; dynamic epochs give the same
-  physics with zero syntax.
-- **Sampling evaluator / floating point / normalized branch states**:
-  non-reproducible, non-exact, or ring-escaping. Unnormalized exact
-  vectors or nothing.
-- **Gate sets beyond Clifford+T**: break ring exactness (arbitrary
-  rotations) or bloat the signature; T suffices for universality and
-  keeps every state Gács-elementary.
-- **Normalizing Object A's sectors to fake Object B**: t_k is only
-  lower-semicomputable; division destroys lower semicomputability.
-  The two objects stay two objects.
-- **The A/B =× identity**: only the sandwich holds; the classical
-  chain rule needs (n, K(n))-conditioning, and a (k, K(k))-family is
-  a different object from Gács's.
+`src/qvm.rs` extends the classical KN design with opaque primitives, handles,
+and a branch-local store. It shares the reference store-effect methods rather
+than reimplementing quantum algebra. The fast path preserves the complete
+leaf distribution: fates, normal forms, stores, exact masses, and classical
+β-contraction counts.
 
-## Open questions
+### Drivers
 
-- Where does Ω_success go irrational? The S1 conjecture fused three
-  milestones; the data split them one by one. (1) Fate-divergent
-  measurement from 22 bits (`((meas (new new)) meas cnot) t` —
-  outcome-1 a zero-mass halting branch); 470,289 instances by ≤41.
-  (2) The pilot's h↔t mirror symmetry breaks at ≤28 — dyadically:
-  the mirror pair differs by exactly 1/2²⁹ with identical fate
-  counts (a program whose measured qubit is |+⟩ under one order and
-  |0⟩ under the other, with fate-divergent outcomes). The frozen
-  order remains the winner at ≤28. (3) Non-dyadic leaf masses enter
-  at **exactly n=45, measured**: the exhaustive hunt (β=512; 42–44
-  clean over 5.2B programs) finds precisely one witness,
-  `λ⁵. meas (h (t (h (new t))))` — the predicted h·t·h sandwich,
-  tight, no compressed form below it (caveat: a sub-45 witness
-  needing >512 contractions to halt would be missed; none
-  plausible). M^(1)'s *entries* go irrational earlier (n=34), the
-  √2-parts cancelling in every trace. Pinned cross-engine as test
-  `first_nondyadic_witness_at_45`. (4) Ω_success stays dyadic
-  through 45: the witness's branches BOTH halt, so
-  (2+√2)/4 + (2−√2)/4 = 1 cancels in the sum. (5) **The per-size
-  aggregate falls at exactly n=53 — measured in the idiom sector**
-  (2026-08-03, `src/bin/qradical.rs`, λ⁵-prefix filter
-  cross-checked against Codex's independent DP): Σ_success has
-  √2-coefficient exactly 0 for 46..52, then −1/4 at 53
-  (Ω contribution −√2/2⁵⁵). The unique fate-divergent witness is
-  P53 (pinned `first_fate_divergent_nondyadic_witness_at_53`), the
-  sole survivor of within-program cancellation over 90M idiom
-  programs; the 752 unknowns at 53 are β-insensitive at 8×/64×
-  budgets. Irrationality invades in strict layers — operator
-  interior (34) → leaf masses (45) → per-size aggregates (53,
-  idiom sector). Phase 2 (the non-λ⁵ complement, 933B programs
-  46..53) is RUNNING as of 2026-08-04 via `qcomplement` — the
-  round-2 taint design was replaced after exact sizing by a
-  concrete-first two-pass sweep (rounds 3–4 ratified;
-  `../ledger/2026-08.md` has
-  the instrument, validation, and measured economics). Measured:
-  complement √2-coefficient EXACTLY 0 at every size 42..47; the
-  full-population claim stands through 47, remaining sizes chunked
-  (48..51 as ≤2h runs; 52/53 sliced), adjudication deferred to its
-  own session with the protocol on record. Codex prior — 95% the
-  full-population threshold stays 53. Ω_{success,≤53} is irrational
-  unless the complement exactly cancels −√2/2⁵⁵ — no mechanism
-  known.
-- `cnot` return convention: Church pair is v0; residual question is
-  only whether a pair-projection idiom deserves a measured shorthand.
-- Output convention: whole-live-store (current) vs designated-output
-  list (uni-style). The latter would restore output compositionality
-  and re-enable an internal relabeling program (obligation 3); the
-  former is simpler and parse-free. S2 v1 data is whole-live-store
-  (the convention M_Fock is defined on); still open for Object B,
-  and a convention change costs one ~1-min census rerun.
-- Err-mass accounting: excluded from Ω_success by definition — but
-  the Err mass is itself lower-semicomputable and may deserve its own
-  census column (raw halting mass = success + Err + halting-Unknown
-  resolution).
-- Church-numeral k̄ vs unary-stream condition for Object B's dimension
-  input: numeral is the default; measure the constant it costs small
-  programs.
-- Does the escalation ladder transfer? Rung structure presumably
-  lifts per-branch, but the oracle prefilter and self-feedback
-  certificate are unsound until re-proven for effectful terms
-  (obligation 4).
+- `qcensus`: exhaustive successful-output census and sector operators;
+- `qpilot`: exact comparison of signature orders over a bounded census;
+- `qselfint`: effect-trace comparison for the classical self-interpreter;
+- `qradical`: exact radical-coefficient diagnostics for operator entries;
+- `qcomplement`: aggregate complement searches at larger sizes; and
+- `oddminproto`: bounded growth driver for the odd-sector abstract
+  interpreter.
+
+## 4. Exactness and resource model
+
+### Unnormalized branch vectors
+
+Every branch carries an unnormalized state vector. A successful leaf
+contributes exactly
+
+```text
+v v†,
+```
+
+whose trace is already the branch probability. There is no separate weight
+to multiply into the projector. This convention keeps measurement results in
+the exact ring and prevents probability from being counted twice.
+
+Finite programs at finite budgets produce exact ring-valued approximants.
+The unbounded lower-semicomputable limits need not lie in the ring: countably
+many dyadic branches can converge to a non-dyadic coefficient. An exact
+unbounded claim therefore consists of monotone Loewner brackets,
+
+```text
+M_known ⪯ M ⪯ M_known + ε I,
+```
+
+not a floating-point matrix or an assertion that the limit has a finite ring
+representation.
+
+### Typed budgets
+
+`QBudget` bounds β-contractions, machine transitions, live qubits, and branch
+count. Source size does not bound the first three: an untyped loop can perform
+unbounded classical work or repeatedly allocate from one syntactic `new`.
+Coefficient growth is separately checked by the exact scalar type.
+
+`Unknown`, `Capacity`, and `Err` are distinct. The first two say that a finite
+run did not deliver a semantic verdict; `Err` is a semantic outcome of the
+language. None contributes to the successful-output operator.
+
+## 5. Verification contract
+
+Every quantum engine change must satisfy:
+
+1. `cargo test --release --workspace`;
+2. exhaustive `qvm`/`qeval` lockstep over the configured closed-term range;
+3. equality of every leaf's fate, normal form, store, exact mass, and
+   β-contraction count;
+4. exact mass conservation across every primitive instrument, with losses
+   accounted for only by typed non-success fates;
+5. the pinned gate, measurement, entanglement, stale-handle, and
+   self-interpreter witnesses; and
+6. bit-identical classical census rows, because qBLC must remain isolated from
+   the classical engine's behavior.
+
+The lockstep battery currently covers all closed programs through 24 bits.
+The reference and fast engines deliberately share store effects but not their
+classical evaluators, so the comparison tests control flow and integration
+without maintaining two subtly different quantum algebras.
+
+Finite operator outputs are checked for Hermiticity, positive semidefiniteness,
+trace bounds, and exact agreement between accumulated branch mass and matrix
+trace. Research predicates such as radical-coefficient cancellation and odd
+rank are tested against direct exact evaluation before they are used to prune
+a search.
+
+## 6. Measured characteristics
+
+The canonical operator census covers every closed program from 4 through 41
+bits in about 30 minutes on the reference workstation. Its exact successful
+mass is
+
+```text
+Ω_success,≤41 = 3424188513 / 2^40.
+```
+
+The one-qubit operator is positive definite, so both computational-basis
+states receive finite measured complexity bounds. The first entangled
+successful output occurs at 41 bits. Three distinct thresholds must remain
+separate: the 34-bit shortest success from an arbitrary closed term, the
+45-bit shortest odd leaf mass from a five-lambda gate-signature idiom, and
+the 53-bit shortest known non-dyadic total successful mass.
+
+The exact complement census has zero aggregate `√2` coefficient through 51
+bits. This is evidence of structured cancellation, not a proof that the
+coefficient always vanishes. The classical self-interpreter wrapper is 176
+bits and has passed effect-trace comparison; its general bisimulation theorem
+remains open.
+
+The complete current matrices, rankings, frontier counts, and odd-sector
+search bounds are maintained in `../STATUS.md` and `../../data/quantum/`.
+
+## 7. Design decisions
+
+- **Classical control:** it gives monotone positive operator approximants and
+  avoids importing an unresolved quantum-halting semantics.
+- **Dynamic handle linearity:** full untyped computation remains available,
+  while stale epochs enforce no-cloning at the state-authority boundary.
+- **Clifford+T:** the gate set is computationally universal and supports exact
+  algebraic arithmetic for every finite run.
+- **Exact distribution tracking:** every measurement branch is followed; the
+  engine never samples and never uses floating point.
+- **Unnormalized states:** branch probability stays intrinsic to the vector
+  and exact-ring closure survives measurement.
+- **Separate census and conditional objects:** Object A has one global Kraft
+  budget; Object B has one budget per conditioned dimension. Neither is a
+  normalization of the other.
+- **Whole-live-store output:** this is the current executable convention. Any
+  designated-output alternative must be specified and measured as a separate
+  object.
+
+## 8. Boundaries and related documents
+
+The finite operational semantics and exact census are implemented. Three
+mathematical boundaries remain open:
+
+- a fully formal effect-trace bisimulation between qBLC evaluation and the
+  classical self-interpreter;
+- a uniform conditional universality theorem for the family `G_k`, including
+  a constructive monotone simulator with one constant across `k`; and
+- a proof or counterexample explaining the observed cancellation of the
+  `√2` operator coefficient beyond the measured range.
+
+The superselected universality claim for `M_Fock` is deliberately narrower
+than universality over arbitrary Fock-space semidensities. Cross-sector
+coherence is outside the machine's output language, and a block-diagonal
+operator cannot dominate families that place coherent mass across
+arbitrarily many sectors.
+
+- Classical counterpart: `../classical/architecture.md`
+- Effect-trace theorem and proof obligations: `bisimulation.md`
+- Conditional Gács construction: `galois.md`
+- Odd-sector abstract interpreter: `oddmin.md`
+- Moving measurements and docket: `../STATUS.md`
+- Canonical quantum evidence: `../../data/quantum/`

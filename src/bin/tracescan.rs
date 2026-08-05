@@ -21,9 +21,9 @@
 //! Usage:
 //!   tracescan --file data/classical/unknowns.txt \
 //!     --out data/certificates/frontier_classification.csv [--threads N]
-//!   tracescan --single <bits>                 # detailed single-term report
+//!   `tracescan --single <bits>`                 # detailed single-term report
 //!   tracescan --verify-loop32                 # the reference-agreement gate
-//!   tracescan --dump <bits> --steps 10,100,1000   # cross-check state sizes
+//!   `tracescan --dump <bits> --steps 10,100,1000` # cross-check state sizes
 
 use blam::{parse_all, Term};
 use rayon::prelude::*;

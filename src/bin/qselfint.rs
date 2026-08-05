@@ -1,5 +1,5 @@
-//! qBLC self-interpretation, measured (`docs/quantum/architecture.md`,
-//! proof obligation 2).
+//! qBLC self-interpretation, measured against the contract in
+//! `docs/quantum/bisimulation.md`.
 //!
 //! The interpreter is `E_q = intL I`: Tromp's 170-bit binary-LC interpreter
 //! applied to the identity as continuation. Protocol: intL cont bits =
@@ -18,7 +18,8 @@
 //! Unresolved programs (any Unknown/Capacity leaf) are skipped and counted:
 //! resource fates are explicitly out of scope for trace equivalence.
 //!
-//! Usage: qselfint [max_n] [phase]   (default: 24 all; phase ∈ all|quantum|nf)
+//! Usage: `qselfint [max_n] [phase]` (default: 24 all;
+//! phase ∈ all|quantum|nf).
 
 use blam::enumerate::{enc_to_string, for_each_closed};
 use blam::parse_all;
@@ -305,7 +306,7 @@ fn main() {
 mod tests {
     use super::*;
 
-    /// E_q's wire code, pinned: any drift in intL provenance or the adapter
+    /// E_q's wire code, pinned: any drift in intL or the adapter
     /// is a loud failure, not a silent constant change.
     const EQ_WIRE: &str = "01010001101000010000000110000001011100110000111111100001011100111111100000011110000001011101110011011110011111111000011111111000010111101001110100101111101001011010100110100010";
 
@@ -367,8 +368,8 @@ mod tests {
         }
     }
 
-    /// Codex-suggested canary (gaslamp thread qblc-selfint): poison the seed
-    /// environment with an EFFECTFUL tail — a QTerm-level `new t`, which
+    /// Poisoned-seed canary: give the environment an EFFECTFUL tail — a
+    /// QTerm-level `new t`, which
     /// allocates species-blind the moment `search` touches it. If the parser
     /// ever forces the seed env, the allocation fires, every later qubit id
     /// shifts, and the effect traces diverge loudly. Program uses the

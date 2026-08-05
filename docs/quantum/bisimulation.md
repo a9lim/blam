@@ -4,24 +4,15 @@ The precise statement and proof plan for `architecture.md` proof
 obligation 2: `E_q ⌜p⌝ σ⃗` and `p σ⃗` are equivalent up to pure
 β-stuttering, in unbounded semantics.
 
-**Provenance.** Skeleton by Codex (thread `qblc-selfint`, round 2,
-job `cx-20260803-143431-3639`), responding to Claude's proposed shape
-(event-labelled weak bisimulation, administrative τ = pure β).
-Spec-form translation, the C-DESCEND case, L4, and the
-selector-as-contract presentation are Claude's. Round 3 (job
-`cx-20260803-155219-bc28`) ratified conditional on six corrections —
-pair/cons' separation, FALSE = 6 bits, extensional L1, world-indexed
-ℛ with runtime diagonals + full frame grammar, tightened L3,
-signature-free base theorem — all incorporated below and marked
-[Codex r3]. Everything here is **stated, not proved** — the measured
-evidence (`../ledger/2026-08.md`, 2026-08-03: 19,014/34/0 at effect-trace level
-over 4..=24, poisoned-seed canary) is empirical support, and the
-obligations index (§7) is the ground truth on status.
+Everything here is stated as a proof target, not yet proved. The complete
+measured population through 24 bits agrees at the effect-tree level, and the
+poisoned-seed canary supports the selector invariant; §7 remains the
+authority on proof status.
 
 **Why bisimulation and not trace-set equality.** Plain trace-set
 equality identifies silent divergence with silent termination: a
 τ-only diverger and a silent halter both have empty visible trace.
-The relation must be divergence-sensitive (clause B5). [Codex]
+The relation must be divergence-sensitive (clause B5).
 
 ## 1. The unbounded labelled semantics
 
@@ -45,7 +36,7 @@ Transitions:
   labelled `0`/`1`. One transition with two labelled successors, not
   two unrelated nondeterministic steps: this makes preservation of
   the branch topology part of the relation, and corresponds exactly
-  to the implementation's per-path `Meas(q,e,b)` events. [Codex]
+  to the implementation's per-path `Meas(q,e,b)` events.
 
 Terminal observations: `Halt(N,S)` (N the residual normal form),
 `Err(kind,S)`, `Diverge`. Two deliberate deltas from the
@@ -62,10 +53,8 @@ therefore a deterministic tree branching only at measurements — the
 
 ## 2. Quote, stream, and the parser translation
 
-Two pairing constructors, deliberately distinct [Codex r3 — an
-earlier draft conflated them; the distinction is load-bearing
-because the unary raw-bit selector indexes `cons'`, not ordinary
-pairs]:
+Two pairing constructors are deliberately distinct because the unary raw-bit
+selector indexes `cons'`, not ordinary pairs:
 
 ```text
 pair  A P = λz. z A P                (the input stream)
@@ -77,8 +66,7 @@ cons' A P = λzx. λzy. zx A (zy P)   (int.lam's environment
 `stream(M,R)` is the `pair`-list carrying the exact BLC wire of `M`
 ('0' → true, per the repo's inverted polarity), with tail `R`. Our
 quote is the instance `⌜p⌝ = stream(p, FALSE)` with `FALSE = λλ.1`
-(6 bits). Sizes, for `R` a pure BLC-encodable term [Codex r3 — an
-arbitrary runtime QTerm tail, e.g. the canary's, has no BLC size]:
+(6 bits). For a pure BLC-encodable tail `R`:
 
 ```text
 |stream(p,R)| = 14|p| + zeros(p) + |R|
@@ -86,10 +74,10 @@ arbitrary runtime QTerm tail, e.g. the canary's, has no BLC size]:
 ```
 
 **The translation `P[·]` is a class of implementing closures, not a
-syntax function.** [Codex r3 — int.lam's VAR branch passes
+syntax function.** `int.lam`'s VAR branch passes
 `cont list1 (skipvar list1)`: the produced closure carries the dead
-post-variable wire suffix, so it is *not* a canonical closed
-selector independent of the stream. Correctness is extensional.]
+post-variable wire suffix, so it is not a canonical closed selector
+independent of the stream. Correctness is extensional.
 Write `Q ⊨ P[M]` for "Q implements the translation of M":
 
 ```text
@@ -130,8 +118,8 @@ related, and
 index 1 innermost, matching `Var 1`. Pairing is forced by β: a
 direct β-step stores the source argument `N`; the interpreted β-step
 stores an implementing closure of `P[N]` under `ρ`. Related, never
-syntactically identical — a single shared environment is unsound
-after the first source contraction. [Codex]
+syntactically identical. A single shared environment is unsound after the
+first source contraction.
 
 **L2 (selector / formal poisoned-seed).** Every closure the VAR
 branch of intL produces satisfies its `P[Var i]` contract: applied
@@ -142,27 +130,25 @@ programs never force the seed, and the effectful-tail canary
 (`qselfint`, QTerm-level `new t` in the seed) is its empirical
 shadow.
 
-**The relation is world-indexed and generated, not co-defined.**
-[Codex r3 — defining ℛ as a greatest bisimulation would let B4
-equate distinct silent normal forms and L4 would fail; ℛ must be the
-least compatible relation generated below, and B1–B5 are then
-*proved* of it.] `ℛ_k` (k the current readback/world depth) is the
-least relation containing:
+**The relation is world-indexed and generated, not co-defined.** Defining
+ℛ as an arbitrary greatest bisimulation would let B4 equate distinct
+silent normal forms and make L4 false. `ℛ_k` (k the current
+readback/world depth) is therefore the least compatible relation generated
+below; B1–B5 must be proved of it. It contains:
 
 - **translation pairs**: `(M[Δ], S) ℛ_k (Q ρ_R(Δ̂), S)` for `M`
   well-scoped at depth `d`, `Q ⊨ P[M]`, pointwise-related
   environments, arbitrary `R` — the **same** store `S` on both
   sides;
 - **the runtime diagonal**: every primitive, handle, Church boolean,
-  and cnot pair is related to itself [Codex r3 — without this, B2
-  cannot even discharge the post-`New` obligation relating the two
-  identical generated handles];
+  and cnot pair is related to itself; this discharges the post-`New`
+  obligation for the two identical generated handles;
 - **paired fresh neutrals**: at world depth `k`, a neutral level
   `ℓ = k+1` created on both sides is related at `k+1`;
 
-closed under the **complete synchronized evaluator-frame grammar**
-[Codex r3 — "application spines and under-binder positions" was a
-hole]: operator-position application frames; normal-form
+The relation is closed under the **complete synchronized evaluator-frame
+grammar**:
+operator-position application frames; normal-form
 argument/readback frames; unary strict-primitive frames (`Prim1`
 for h/t/meas); cnot first-argument frames holding related second
 thunks; cnot second-argument frames holding the *identical* first
@@ -193,7 +179,7 @@ divergence-sensitive, event-labelled weak bisimulation: for all
   transition, so does `D`, and conversely. Infinite visible/
   measurement trees are coupled coinductively — B1–B3 applied
   productively forever. This is the clause ordinary
-  divergence-insensitive weak bisimulation omits. [Codex]
+  divergence-insensitive weak bisimulation omits.
 
 ## 5. Case ledger — the proof plan
 
@@ -214,16 +200,15 @@ induction on `M`. Named obligations:
   depth `k`, open both bodies with the same fresh neutral level
   `ℓ = k+1` and prove the bodies related at world `k+1`. This is the
   rule used to prove binder compatibility, **not** an extra LTS
-  transition [Codex r3]: qeval realizes it as syntactic under-λ
-  descent, the KN machine as `Val::Rigid`/`Lvl`. [Claude's case;
-  under-binder reduction is where P53-style fate divergence lives,
-  so the case is load-bearing, not a formality.]
+  transition: qeval realizes it as syntactic under-λ descent and the KN
+  machine as `Val::Rigid`/`Lvl`. Under-binder reduction is where
+  P53-style fate divergence lives, so this case is load-bearing.
 - **C-STRICT (h, t, meas)** and **C-CNOT** ride on **L3**:
 
-  > **L3 (weak-head / ArgView preservation).** [Codex r3 — strict
-  > argument evaluation may itself emit effects, branch, Err, or
-  > diverge, so the species statement must be a full weak-head
-  > decomposition.] Place related terms in paired strict-argument
+  > **L3 (weak-head / ArgView preservation).** Strict argument
+  > evaluation may itself emit effects, branch, Err, or diverge, so the
+  > species statement must be a full weak-head decomposition. Place
+  > related terms in paired strict-argument
   > frames over the same store. Their weak executions satisfy B1–B3
   > until one of:
   > 1. both expose the same `Handle(q,e)`;
@@ -251,13 +236,12 @@ Once control correspondence is established, the quantum half is
 nearly tautological: identical stores plus the same visible
 primitive imply equal next stores, amplitudes, epochs, allocation
 ranks, and masses — every store operation is a deterministic
-function of `(label, S)`. [Codex]
+function of `(label, S)`.
 
 ## 6. The theorem
 
-Stated base-first so the corollaries actually follow [Codex r3 — a
-signature-applied-only statement does not yield the pure-NF
-corollary]:
+The theorem is stated base-first because a signature-applied-only statement
+does not imply the pure-normal-form corollary:
 
 > **Theorem (base).** For every closed BLC term `p`, arbitrary
 > stream tail `R`, and initial store `S`:
@@ -283,18 +267,17 @@ corollary]:
 
 The measured pure-NF result is *bit-exact* NF identity, which B4's
 "related residual" does not by itself deliver — the gap is closed by
-**L4 (readback collapse)**, stated for the translation-generated
-`ℛ_k` only [Codex r3 — for an arbitrary greatest bisimulation it is
-false]: fully reading back `ℛ_k`-related normal forms at the same
+**L4 (readback collapse)**, stated only for the translation-generated
+`ℛ_k`: fully reading back `ℛ_k`-related normal forms at the same
 final depth yields syntactically identical de Bruijn terms. By
 induction on the finite readback tree: identical runtime atoms
 reify identically; paired neutrals were created at the same level,
 so reification at the same depth maps them to the same index;
 lambda bodies use C-DESCEND and the induction hypothesis at `k+1`;
-neutral-spine arguments collapse inductively; selector thunks
-collapse by L2 before their dead suffix can be exposed. [Claude's
-addition — the skeleton stops at relatedness; the sweep measures
-identity, and the spec should owe what the measurement shows.]
+neutral-spine arguments collapse inductively; selector thunks collapse by L2
+before their dead suffix can be exposed. This lemma is necessary because the
+empirical sweep measures identity, while the bisimulation clauses alone stop
+at relatedness.
 
 Further corollaries: the poisoned-tail result (L2 instance, `R`
 arbitrary — the canary is the case `R` effectful); and the resource
@@ -312,33 +295,30 @@ why census-ladder equivalence is deliberately NOT claimed.
 | L3  | weak-head / ArgView preservation (§5)       | open   |
 | L4  | readback collapse for ℛ_k (§6)              | open   |
 | B1–B5 | the exhibited ℛ is a bisimulation (§4–§5) | open   |
-| —   | empirical: 19,014/34/0 effect-trace ≤24, canary, witness45 | measured (`../ledger/2026-08.md`, 2026-08-03) |
+| —   | complete ≤24 effect-tree sweep, canary, witness45 | measured |
 
 Falsifier: any effect-order, label, mass, or fate mismatch between
 `p σ⃗` and `E_q ⌜p⌝ σ⃗` on any program — none observed at any size
 swept. A Lean lane for L1/L2 is the natural first mechanization
 (pure λ-calculus, no store); the quantum clauses ride on it.
-**Seed landed 2026-08-04** (`lean/Blc/Selfint.lean`, statements
-ratified in round 4, job `cx-20260804-155021-14ee`): intL
-kernel-pinned by wire identity; |E_q| = 176 and the §2 size
-identities kernel-checked; `Implements` under head reduction; the
-machine-level parser target is `ParserResult M R Q U` — the r4
-counterexample (int.lam's VAR branch passes
-`cont list1 (skipvar list1)`; head reduction never enters argument
-position) shows `C Q R` is unreachable as a machine execution, so
+`lean/Blc/Selfint.lean` kernel-pins `intL` by wire identity, checks
+`|E_q| = 176` and the §2 size identities, and defines `Implements` under
+head reduction. Its machine-level parser target is `ParserResult M R Q U`:
+`int.lam`'s VAR branch passes `cont list1 (skipvar list1)`; because head
+reduction never enters argument position, `C Q R` is unreachable as a
+machine execution. The statement therefore
 the statement exposes the residual tail `U ⇒ R`, continuation
 quantified inside. The τ*-forms above (KN, which does normalize the
 residual) are unchanged. Over pure terms the mechanized statement is
 the β-non-forcing theorem; the effectful poisoned-seed remains its
-qBLC lifting. Proofs open; proof order per r4: L2 by induction on
+qBLC lifting. Proof order: L2 by induction on
 the unary selector, then `ParserStatement` by structural induction,
 closed L1 as corollary.
 
 ## 8. The parked sub-176 lane
 
-Codex round 2: the specialized-root search is parked until this spec
-exists and is ratified (round 3 ratified it, conditional on the
-corrections now incorporated) — but not until the full proof lands.
+The specialized-root search is parked until the theorem contract is stable,
+but it need not wait for the full proof.
 With `intL` opaque, sub-176 is impossible (any closed invocation
 already pays the six-bit `App + I`); a winner must reorganize the
 recursive knot and root entry jointly. The narrow lane, when opened:
@@ -348,4 +328,4 @@ the root entry may assume root-non-VAR, continuation `I`, tail
 arbitrary; enumerate compiled totals ≤175; probe both contracts;
 splice survivors through the full `qselfint` battery. Hand-compile
 the two-entry families and do bit accounting before any enumeration.
-Expectation on record: 176 survives.
+Working expectation: 176 remains minimal in this lane.

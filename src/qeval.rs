@@ -1,13 +1,12 @@
-//! qBLC naive reference evaluator: the executable spec of
-//! `docs/quantum/architecture.md` v0.
+//! qBLC naive reference evaluator: the executable semantics of
+//! `docs/quantum/architecture.md`.
 //!
 //! Small-step leftmost-outermost reduction over terms extended with primitive
 //! constants and opaque qubit handles, a branch-local quantum store of
-//! unnormalized Z[ω]/√2^k statevectors, and measurement branching with exact
+//! unnormalized `Z[ω]/√2^k` statevectors, and measurement branching with exact
 //! weights (nothing is ever sampled). Deliberately favors obvious correctness
-//! over speed, like `eval.rs`; the KN-store fast path will be lockstep-tested
-//! against this. Classical engines are untouched
-//! (`docs/quantum/architecture.md` obligation 4).
+//! over speed, like `eval.rs`; the KN-store fast path is lockstep-tested
+//! against this. Classical engines remain behaviorally isolated.
 //!
 //! Spec anchors, in order of the surprises they encode:
 //! - `new M → #(q,0)` discards M *unevaluated* (species-blind, K-style);

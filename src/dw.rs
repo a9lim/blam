@@ -1,4 +1,4 @@
-//! Exact Clifford+T amplitude arithmetic: the ring Z[ω]/√2^k, ω = e^{iπ/4}.
+//! Exact Clifford+T amplitude arithmetic: the ring `Z[ω]/√2^k`, ω = e^{iπ/4}.
 //!
 //! A value is (a + b·ω + c·ω² + d·ω³)/√2^k with integer coefficients and
 //! ω⁴ = −1. Every amplitude reachable by {H, T, CNOT} from |0…0⟩ lives here

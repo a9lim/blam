@@ -12,10 +12,10 @@
 //! Ratchet.lean) and `RATCHET2` lines through the HeadTowerRatchet
 //! assembly (lean/Blc/HeadTower.lean) and `SELECTOR` lines through
 //! the SelectorRatchet assembly (lean/Blc/Selector.lean). `*-ARG`
-//! lines certify divergence of a spine argument and need the
-//! rigid-head bridge (future lane).
+//! lines certify divergence of a spine argument through the rigid-head
+//! bridge in `lean/Blc/Rigid.lean`.
 //!
-//! Usage: certlean [kills_file] [lean_out_dir]
+//! Usage: `certlean [kills_file] [lean_out_dir]`
 //! Defaults: data/certificates/ratchet_kills.tsv lean
 
 use blam::cert::{
@@ -374,8 +374,7 @@ fn main() {
                  (cert_{bits}).noNormalForm ({kind}.valid_of_check (by decide))\n"
             );
             // Wire identity: the kernel, not this emitter, vouches that
-            // the certified term IS the term the theorem name's bits
-            // encode (Codex round eight).
+            // the certified term IS the term the theorem name's bits encode.
             let _ = writeln!(
                 blk,
                 "theorem wire_{bits} :\n    blcCode (cert_{bits}).T = [{}] := by decide\n",

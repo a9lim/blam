@@ -272,7 +272,7 @@ fn main() {
                         }
                         let mut sink = KeySink::default();
                         // Transition caps ported from the census's measured
-                        // trims (LEDGER 2026-07-31 daytime): rungs 64×β,
+                        // trims: rungs 64×β,
                         // rescue 32×β — verified verdict-identical there on
                         // the same 4..40 term set; output diffed on port.
                         for budget in [64u64, 4096] {

@@ -1,7 +1,7 @@
 //! oddmin reference side, stage 1a — trusted `oddmin_ref`.
 //!
-//! PROTOTYPE (`docs/quantum/oddmin.md` §§3–4, r5b schema). This module is the
-//! TRUSTED half of the split: the r5b interaction-NFA schema, the
+//! PROTOTYPE (`docs/quantum/oddmin.md` §§3–4). This module is the
+//! trusted reference side: the interaction-NFA schema, the
 //! structural canonicalizer with its laws, the interned mask
 //! automaton, the external accept product, and the three reference
 //! transfers `var_ref`/`lam_ref`/`app_ref` with the NF driver.
@@ -16,7 +16,7 @@
 //! higher-order values live in the port structure, not in the trace
 //! language.
 //!
-//! Interface protocol (r5b): `Call {target, arg}` demands a value
+//! Interface protocol: `Call {target, arg}` demands a value
 //! (`arg: None` forces an ambient thunk; `arg: Some(q)` applies the
 //! target value to own-thunk port q — needed because only lam heads
 //! with OWN ports can be dissolved at splice time; received lambdas
@@ -81,7 +81,7 @@ impl CapRel {
     };
 }
 
-/// Call ownership (the r5b rebasing ruling): `lam_ref` does ALL
+/// Call ownership: `lam_ref` does ALL
 /// binder rebasing (Free(1) → Formal(p), Free(i+1) → Free(i));
 /// `app_ref` substitutes only Formal(p) and never shifts ambient
 /// indices. `Received` targets a value bound by a `RetIn`.
@@ -119,7 +119,7 @@ pub enum Which {
     Cnot,
 }
 
-/// Head colors (r5b): what a value IS. `Prim`'s `held` is the cnot
+/// Head colors: what a value IS. `Prim`'s `held` is the cnot
 /// partial's first argument, kept unevaluated (call-by-name — qeval
 /// forces both cnot arguments left-to-right only at completion).
 /// `Neutral` is rigid-rooted; `spine: None` is a bare rigid formal,
@@ -144,8 +144,8 @@ pub enum Head {
     Opaque {
         bind: BindId,
     },
-    /// A pure-component value widened at the environment-depth cap
-    /// (the r6 narrow rung): provably effect-free, lambda-shaped.
+    /// A pure-component value widened at the environment-depth cap:
+    /// provably effect-free and lambda-shaped.
     /// Applying it yields it; primitives species-kill it.
     PureWiden,
 }
@@ -186,7 +186,7 @@ impl HeadPat {
 }
 
 /// Edge labels: projected distinguished-lineage effects plus the
-/// r5b interface letters. Non-D effects are erased (no τ letter).
+/// interface letters. Non-D effects are erased (no τ letter).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Label {
     NewD,
@@ -462,16 +462,16 @@ fn accept_product(s: &Summary, ma: &MaskAutomaton, roots: &[NodeId]) -> bool {
 /// SCOPE (revised under the ★ observation fan): open summaries no
 /// longer eagerly materialize the effects an ambient interaction
 /// COULD produce — those appear at resolution time — so this query
-/// is effect-edge reachability, NOT an any-context upper bound. Its
-/// r5b "deliberately loose any-context" formulation would need an
-/// opaque-ambient instantiation run (r6 item); the closed theorem
+/// is effect-edge reachability, NOT an any-context upper bound. A true
+/// any-context formulation would need an opaque-ambient instantiation run;
+/// the closed theorem
 /// path (`closed_accepts`) does not depend on it.
 pub fn materialized_accept_any_root(s: &Summary, ma: &MaskAutomaton) -> bool {
     accept_product(s, ma, &s.roots())
 }
 
 // ---------------------------------------------------------------------------
-// Reference transfers (SPEC-ODDMIN §4, r5b).
+// Reference transfers (SPEC-ODDMIN §4).
 // ---------------------------------------------------------------------------
 
 /// Source weight algebra, wire-exact: w(Var i) = i+1, w(λM) =
@@ -550,7 +550,7 @@ pub fn var_ref(i: u8) -> Summary {
 }
 
 /// `lam_ref(body)`: rebase binders (Free(1) → Formal(p), Free(i+1) →
-/// Free(i); Formal/Received untouched — the r5b rebasing ruling),
+/// Free(i); Formal/Received untouched),
 /// then return `Lam {apply: Own(p)}` where port p is the body's
 /// entry. Weight +2.
 pub fn lam_ref(body: &Summary) -> Summary {
@@ -640,7 +640,7 @@ pub fn rigid_summary() -> Summary {
 }
 
 // ---------------------------------------------------------------------------
-// app_ref: the splice (SPEC-ODDMIN §4, r5b + the r6-pre rulings).
+// app_ref: the splice (SPEC-ODDMIN §4).
 //
 // The composition is a memoized reachability closure over SPECIALIZED
 // STATES (subgraph port × source node × environment × frame-relative
@@ -650,8 +650,7 @@ pub fn rigid_summary() -> Summary {
 // configuration — the declared wrong-return looseness — and nothing
 // else. Environments, values, ports, and continuations are interned
 // (hash-consed by id order, hence acyclic); revisiting a cycle hits
-// the memo instead of minting fresh state (the r6 memoization
-// ruling). Capability three-way (r6): a Handle head carries its role
+// the memo instead of minting fresh state. A Handle head carries its role
 // and the value cap — {DCur, Cur} is a live distinguished handle,
 // {DCur, None} is stale (forcing it kills the path), {Other, _} is
 // legitimate non-D. Own HD/TD/MeasD edges and Advance/Retire seams
@@ -669,7 +668,7 @@ pub enum Abort {
     PortCap,
     DescendCap,
     /// Closed-mode invariant breach: a live closed path met an
-    /// unresolved ambient observation (r6: measured, not implicit).
+    /// unresolved ambient observation.
     UnresolvedAmbient,
 }
 
@@ -1108,7 +1107,7 @@ impl<'a> Composer<'a> {
     }
 
     /// Stale every live distinguished alias in `env` if the crossed
-    /// net stales (the r6 three-way ruling: DCur+Cur → DCur+None).
+    /// net advances or retires it: DCur+Cur → DCur+None.
     fn stale_env(&mut self, env: EnvId, net: Net) -> EnvId {
         if !net.stales() {
             return env;
@@ -1322,7 +1321,7 @@ impl<'a> Composer<'a> {
         }
     }
 
-    /// The application dispatch rows (r6-pre (iii), amended).
+    /// The application dispatch rows.
     fn apply_val(&mut self, at: ONode, fval: ValId, inflight: Net, arg: CPortId, ret_to: ContId) {
         let v = self.vals[fval as usize];
         match v.head {
@@ -1345,7 +1344,7 @@ impl<'a> Composer<'a> {
                         root: Root::Port(p),
                         env: env3,
                     });
-                    // The r6 narrow-rung widening: a provably pure
+                    // Narrow pure widening: a provably pure
                     // component whose capture chain exceeds the
                     // depth cap stops unfolding — it can produce no
                     // effect and only lambda-shaped values, both of
@@ -1508,7 +1507,7 @@ impl<'a> Composer<'a> {
             CHead::Lam { .. } | CHead::Prim { .. } | CHead::PureWiden => {}
             CHead::Handle { role: Role::DCur } => {
                 if v.cap != Cap::Cur {
-                    // Stale distinguished handle — Kill (r6 (iv)).
+                    // Stale distinguished handle: no continuation.
                     return;
                 }
                 match which {
@@ -1616,7 +1615,7 @@ impl<'a> Composer<'a> {
     }
 
     /// Measurement outcomes: BOTH selector summaries as may-branches
-    /// (never merged into a colorless head — r6 (iii)). The library
+    /// (never merged into a colorless head). The library
     /// entries purely return their lambdas, so entering them with the
     /// caller's continuation delivers the two selector values.
     fn deliver_bools(&mut self, at: ONode, net: Net, ret_to: ContId) {
@@ -1631,8 +1630,8 @@ impl<'a> Composer<'a> {
         }
     }
 
-    /// cnot first-argument row (r6 (iii): neutral survives, no
-    /// effect; stale kills; species kills).
+    /// cnot first-argument row: neutral survives without an effect;
+    /// stale and wrong-species paths have no continuation.
     fn cnot_a1(&mut self, at: ONode, val: ValId, inflight: Net, a2: CPortId, ret_to: ContId) {
         let v = self.vals[val as usize];
         match v.head {
@@ -1726,8 +1725,8 @@ impl<'a> Composer<'a> {
         }
     }
 
-    /// NF descent (r6 (i): never replaces EvalHead — this runs only
-    /// at the driver's normal-form surface).
+    /// NF descent. It never replaces EvalHead and runs only at the
+    /// driver's normal-form surface.
     fn descend(&mut self, at: ONode, val: ValId, inflight: Net, self_cont: ContId, ret_to: ContId) {
         let v = self.vals[val as usize];
         // Opaque received values pass through: their normalization
@@ -2038,7 +2037,7 @@ impl<'a> Composer<'a> {
     }
 
     /// Is a composed port transitively pure (its subgraph and every
-    /// captured import)? The r6 narrow-rung precondition: no
+    /// captured import)? The precondition is no
     /// imported primitive, handle, ambient, or effect-capable
     /// origin.
     fn cport_pure(&mut self, cp: CPortId) -> bool {
@@ -2089,10 +2088,10 @@ impl<'a> Composer<'a> {
     /// local binding, and which formal ports it can reach, jumping
     /// through own-port head references.
     ///
-    /// Freeness is decided by a MUST-BOUND forward dataflow (the r6
-    /// dominance ruling): must_bound[n] = intersection over incoming
+    /// Freeness is decided by a MUST-BOUND forward dataflow:
+    /// `must_bound[n]` is the intersection over incoming
     /// paths of binds definitely bound by a RetIn on the way; a
-    /// reference at n to b not in must_bound[n] is free. The old
+    /// reference at n to b not in `must_bound[n]` is free. The old
     /// "referenced minus bound-anywhere" rule was unsound. The meet
     /// may only RETAIN extra captures, never drop a required one.
     fn side_refs(&mut self, side: Side, root: NodeId) -> (BTreeSet<BindId>, BTreeSet<PortId>) {
@@ -2380,8 +2379,7 @@ impl<'a> Composer<'a> {
                     .collect();
                 for val in vals {
                     match arg {
-                        // Dispatch the stored value: NEVER replays
-                        // its producer (r6 check).
+                        // Dispatch the stored value; never replay its producer.
                         None => self.deliver(at, val, Net::default(), cont),
                         Some(q) => {
                             let argp = self.sub_cport(side, q, env);
@@ -2760,10 +2758,10 @@ fn boundary(head: CHead, cap: Cap) -> (HeadPat, Cap) {
 pub const COMPOSE_STATE_CAP: usize = 100_000;
 
 /// Capture-chain depth beyond which a provably pure component stops
-/// unfolding and widens to `PureWiden` (the r6 narrow rung).
+/// unfolding and widens to `PureWiden`.
 pub const WIDEN_DEPTH: u32 = 6;
 
-/// `app_ref(F, A)`: the r5b splice. Returns the canonical composed
+/// `app_ref(F, A)`: returns the canonical composed
 /// summary, or the growth-gate abort. Weight accounting (w_f + w_a +
 /// 2) is the caller's job.
 pub fn app_ref(f: &Summary, a: &Summary) -> Result<Summary, Abort> {
@@ -2779,7 +2777,7 @@ pub fn nf_descend(m: &Summary) -> Result<Summary, Abort> {
     Composer::new(m, &dummy, Mode::Descend, COMPOSE_STATE_CAP).run()
 }
 
-/// Closed-program PREFIX acceptance (r6-pre (v)): does some abstract
+/// Closed-program prefix acceptance: does some abstract
 /// path of `M h meas new cnot t`, normalized, fire an odd-readable
 /// distinguished measurement before any cnot? Sound for the lower
 /// bound: a concrete cnot-free odd leaf implies an odd measurement
@@ -2796,8 +2794,8 @@ pub fn closed_accepts(m: &Summary, _ma: &MaskAutomaton) -> Result<bool, Abort> {
 
 /// Reference summary of a source term via the three transfers. The
 /// weighted DP builds tables instead; this is the direct compositional
-/// route for validation and spot queries. Primitive axioms are NEVER
-/// introduced here (r6: they exist only in the closing environment).
+/// route for validation and spot queries. Primitive axioms are never
+/// introduced here; they exist only in the closing environment.
 pub fn term_summary(t: &crate::term::Term) -> Result<Summary, Abort> {
     use crate::term::Term;
     match t {
@@ -3151,9 +3149,8 @@ mod tests {
             "rigid formal treated as handle"
         );
         // Under the ★ fan, ambient effects are not materialized in
-        // open summaries, so the latent query no longer accepts here
-        // (its any-context upper-bound role is an r6 item); what
-        // check 9 requires is the closed rejection above.
+        // open summaries, so the latent query no longer accepts here.
+        // The closed rejection above is the required invariant.
         assert!(
             !materialized_accept_any_root(&s, &ma),
             "no materialized effect path should exist in the open summary"
@@ -3262,8 +3259,7 @@ mod tests {
                         // S1 tolerates it ONLY on concretely non-odd
                         // programs; the known ⊤ family ≤22 is the
                         // Ω-style self-appliers, whose captured-env
-                        // chains deepen without bound (the r6
-                        // widening item).
+                        // chains deepen without bound.
                         assert!(!odd, "S1 violation: concretely odd program aborted");
                         aborts += 1;
                     }

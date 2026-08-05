@@ -16,7 +16,7 @@
 //! whether the window base is closed, and wrapper drift
 //! (generalize(x3,x2) vs generalize(x2,x1) — a level-dependent W).
 //!
-//! Usage: certdiag <terms-file> [--steps N] [--nodes N] [--threads N]
+//! Usage: `certdiag <terms-file> [--steps N] [--nodes N] [--threads N]`
 
 use blam::cert::{
     check_reduces, check_reduces_star, generalize, head_step, match_wrapper, plug, spine,
@@ -42,8 +42,7 @@ struct Diag {
     pdiag: String,
 }
 
-/// Rename metavariable ids (Codex round nine: SELECT needs `W[Q]`
-/// alongside `P[Z]`).
+/// Rename metavariable ids: SELECT needs `W[Q]` alongside `P[Z]`.
 fn rename_meta(t: &PTerm, from: u32, to: u32) -> PTerm {
     match t {
         PTerm::Meta(i) if *i == from => PTerm::Meta(to),
@@ -83,7 +82,7 @@ fn trace_to_metahead(start: &PTerm, max_steps: u32, max_nodes: u64) -> Option<PT
     None
 }
 
-/// SelectorRatchet probe (Codex round nine): BASE `C0 Z →* A Z`,
+/// SelectorRatchet probe: BASE `C0 Z →* A Z`,
 /// OPEN `A Z →⁺ Z W[Z]`, FAN `W[Z] Q →⁺ Q P[Z] Q` (P extracted),
 /// SELECT `W[Q] P[Z] →⁺ Z`. Returns "ok:kO:kF:kSel" or the failing
 /// obligation.
@@ -136,7 +135,7 @@ fn selector_probe(cand: &Ratchet, max_nodes: u64) -> String {
     format!("ok:{ko}:{kf}:{ksel}")
 }
 
-/// PassengerDiagonalRatchet probe (Codex round nine): OPEN
+/// PassengerDiagonalRatchet probe: OPEN
 /// `A Z →⁺ Z (Z P[Z]) W[Z]` (P and W extracted from the endpoint),
 /// UNWRAP `W[Z] Q →⁺ Q Z`, DROP `P[Z] Q →⁺ Z`, SEED `C0 Q →⁺ A`.
 fn pdiag_probe(cand: &Ratchet, max_nodes: u64) -> String {

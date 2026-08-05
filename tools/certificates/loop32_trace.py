@@ -58,9 +58,9 @@ def step(t):
 
     Head-only on purpose: no descent into application arguments. The
     certificate's soundness backbone is infinite *head* reduction, so
-    the reference must never take a non-head step (Codex review caught
-    an arg-descent branch here; it was never exercised by loop32, but
-    the discipline must be head-only by construction)."""
+    the reference must never take a non-head step. An argument-descent
+    branch would violate the certificate contract even if loop32 did not
+    exercise it."""
     tag = t[0]
     if tag == 'v':
         return None

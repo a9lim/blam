@@ -14,8 +14,8 @@ work; do not duplicate its moving state here.
 ## Ground rules
 
 - `ref/AIT` is a submodule pinned to the a9lim/AIT fork: upstream tromp/AIT
-  plus additive commits only (currently one, `uni.rs` at the root, the staged
-  upstream PR; CI enforces additivity). Treat it read-only here; fork changes
+  plus additive commits only (currently one, `uni.rs` at the root; CI enforces
+  additivity). Treat it read-only here; fork changes
   happen in their own clone, land on the fork's master, then a deliberate pin
   bump. Initialize with `git submodule update --init`.
   `tests/tromp_vectors.rs` needs it; the unit suite passes without it.

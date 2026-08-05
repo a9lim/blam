@@ -49,9 +49,10 @@ assert_eq!(nf.to_bits(), "0010"); // λx.x
 ```
 
 `vm` is the production engine: a defunctionalized Crégut-style
-strong-normalization machine (~166M β/s single-thread), arena-backed,
-with β *and* transition budgets and the normal form streamed to a
-`Sink` — measuring a gigabyte-scale normal form costs O(1) space.
+strong-normalization machine (~166M β/s single-thread), backed by a
+reusable flat `Vec<Node>` pool, with β *and* transition budgets and the
+normal form streamed to a `Sink`. Measuring a gigabyte-scale normal form
+therefore needs no gigabyte-scale output allocation.
 
 ```rust
 use blam::vm::{Machine, StringSink, TermPool};
@@ -76,11 +77,10 @@ the reference evaluator, `qvm` the lockstep-verified fast path, `dw`
 the exact ring. Programs are ordinary untyped BLC — quantum enters
 through an application signature of five primitives
 (`new / meas / cnot / t / h`, order frozen by a predeclared pilot).
-Qubits are opaque runtime handles with dynamic linearity (cloning is
-a runtime `Err`, not a type error), measurement branches the machine
-with exact weights — nothing is ever sampled — and each branch leaf
-carries a typed fate: `Halt(store)`, `Diverge`-by-budget (`Unknown`),
-`Capacity`, or `Err`.
+Qubits are opaque runtime handles with dynamic linearity (reusing a
+consumed handle is a runtime `Err`, not a type error), measurement branches
+the machine with exact weights — nothing is ever sampled — and each branch
+leaf carries a typed fate: `Halt(store)`, `Unknown`, `Capacity`, or `Err`.
 
 ```rust
 use blam::qeval::{apply_signature, run, Prim, QBudget};
@@ -105,7 +105,8 @@ Runnable versions of these snippets: `examples/normalize.rs`,
 
 ## Drivers
 
-The measurements live in `src/bin/`, all rayon-parallel:
+The measurement drivers live in `src/bin/`; production sweeps use rayon,
+while `oddminproto` remains an intentionally direct reference driver:
 
 | bin | what it does |
 |---|---|
@@ -227,10 +228,10 @@ implementations, and the published values are all John Tromp's
 `src/oracle.rs` re-implement algorithms from `BB.lhs`/`AIT.lhs`. This
 repo is an independent engine, verified against his.
 
-Built by [a9lim](https://github.com/a9lim) with Claude (Anthropic) and
-Codex (OpenAI) as agent collaborators —
-[docs/ledger/](https://github.com/a9lim/blam/tree/main/docs/ledger)
-and the commit history are the honest record of what that looked like.
+Built by [a9lim](https://github.com/a9lim). Development history is preserved
+in the
+[monthly ledger](https://github.com/a9lim/blam/tree/main/docs/ledger)
+and the commit graph; the live documentation describes the current system.
 
 AGPL-3.0-or-later — covering this repo's own code (© 2026 a9lim).
 The `ref/AIT` submodule is upstream Tromp material (which carries no

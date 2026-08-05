@@ -87,8 +87,8 @@ fn spine(t: &PTerm) -> (u32, &PTerm, Vec<&PTerm>) {
 fn try_kill(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<Kill> {
     // Streaming discovery: each candidate triple is tried against BOTH
     // trusted checkers; a rejection retires only that milestone family,
-    // so later families still get their shot (Codex round three:
-    // first-candidate masking was the main completeness gap).
+    // so later families still get their shot. Stopping at the first
+    // candidate would mask later valid families.
     let mut found: Option<Kill> = None;
     discover_stream(t, cfg.steps, cfg.nodes, &mut |cand: &Ratchet| {
         if verify(t, cand, cfg.lemma_steps, cfg.steps, cfg.nodes).is_ok() {
@@ -114,7 +114,7 @@ fn try_kill(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<Kill> {
             });
             return true;
         }
-        // v3: same triple, SelectorRatchet obligations (Codex round nine)
+        // v3: same triple, SelectorRatchet obligations.
         if let Some((sel, _)) = try_selector(t, cand, cfg.lemma_steps, cfg.steps, cfg.nodes) {
             found = Some(if path.is_empty() {
                 Kill::Top3(sel)

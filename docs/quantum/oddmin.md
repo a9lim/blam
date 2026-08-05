@@ -1,445 +1,323 @@
-# SPEC-ODDMIN — the stage-1a compositional DP
+# SPEC-ODDMIN — the stage-1a compositional search
 
-*Status: ratified architecture through r6 (rounds r3–r6,
-2026-08-04). §§1–8 are the design as ratified round-by-round; §9
-records the four r6-measured domain revisions (all ratified) and §10
-the r6 verdict, amendments, and stage-2 queue — read §§9–10 as the
-operative deltas over §§3–4's text. Implementation:
-`src/odd.rs` (monitor) + `src/oddmin.rs` (reference DP) +
-`src/bin/oddminproto.rs` (gated driver). Companion theory:
-`galois.md` §4.*
+This document is the current contract for the CNOT-free lower-bound lane.
+The implementation is split between `src/odd.rs` (trusted trace monitor),
+`src/oddmin.rs` (reference abstract interpreter), and `oddminproto` (bounded
+growth driver). The algebraic motivation and the CNOT-capable successor are
+in `galois.md`; moving measurements and next work live in `../STATUS.md`.
 
-## 1. Theorem target
+## 1. Theorem target and scope
 
-**Stage 1a.** The minimum source weight of a closed program with a
-cnot-free qeval effect trace whose leaf mass is Galois-odd is **45**
-(witness45; wire in `src/odd.rs`).
+Stage 1a targets the statement:
 
-Scope is forced, not chosen: min cnot-trace weight ∈ (22, 28] — the
-28-bit witness `λ⁴.((1 (2 1)) (2 1))` fires a Cnot effect, so a
-monitor latching accept on cnot caps its provable minimum at ≤ 28.
-Cnot traces verdict `NeedsCnot` (out of scope, never accepted); the
-companion that removes the premise is stage 1b's Pauli-string path
-parity (`galois.md` §4). Weight algebra (wire-exact):
-w(Var i) = i+1, w(λM) = w(M)+2, w(MN) = w(M)+w(N)+2 — source weight
-is paid once at construction; substitution is zero-cost.
+> The minimum BLC wire size of a closed program with a CNOT-free qBLC effect
+> trace and a Galois-odd leaf mass is 45.
 
-## 2. Concrete anchor and projection
+`witness45`, pinned in `src/odd.rs`, establishes the upper bound. The search
+must prove the lower bound by retaining every concrete CNOT-free odd trace in
+a finite compositional abstraction.
 
-Concrete semantics: `qeval::run_traced` under the frozen signature
-`[H, Meas, New, Cnot, T]`. A leaf's trace is projected to the
-**stage-1a alphabet** by nondeterministically guessing one
-allocation as the distinguished qubit D:
+The CNOT-free premise is necessary for this stage. A 28-bit closed witness
+already fires CNOT, while no program through 22 bits does. Treating CNOT as
+automatic odd acceptance would cap any lower bound at 28. CNOT effects are
+therefore represented by the dead-end letter `OutOfScope`, never by
+acceptance. Stage 1b replaces this restriction with Pauli-string path parity.
 
-- `NewD` — D's allocation (mask := FRESH);
-- `HD`, `TD` — unary effect on D's current-epoch handle;
-- `MeasD` — measurement of D (retires it);
-- `Cnot` — any cnot at all → the `OutOfScope` sink;
-- effects on non-D qubits — erased (τ). Sound because cnot-free
-  evolution never couples lineages (the product-structure argument:
-  an odd leaf mass forces an odd Born factor on SOME qubit; guess
-  that one).
+The source-weight algebra is exact:
 
-A projected word is **accepting** iff its `MeasD` fires with
-(Z, odd) in the mask determined by the `HD`/`TD` prefix since
-`NewD` — decided by the trusted kernels `odd::step_h/step_t/
-step_meas`, never stored.
+```text
+w(Var i) = i + 1
+w(λM)    = w(M) + 2
+w(M N)   = w(M) + w(N) + 2.
+```
 
-## 3. The abstract domain (r5a-revised)
+Source weight is paid once when a term is constructed. Runtime substitution
+and repeated demand add no source weight.
 
-**Central claim (r5a-ratifiable form).** A summary is a finite
-COLORED INTERACTION NFA with evaluation, Call, Return, and Apply
-ports. Its paths form a regular over-approximation of the concrete
-stack-disciplined interaction traces: call-stack erasure connects
-every compatible return to every compatible continuation, so every
-concrete finite trace is retained (induction on the interaction
-sequence — call↦Call edge, effect↦effect edge, return↦one of the
-added compatible return edges) while mismatched returns may only ADD
-spurious traces. β-reuse and recursion are graph cycles. The
-stage-1a effect language is a projection; odd acceptance is computed
-by product with the trusted monitor automaton (`odd.rs` kernels) —
-summaries carry NO mask states and NO accept bits. Regularity
-belongs to the deliberately flattened interaction graph, not to the
-exact higher-order trace semantics (which is not regular — see the
-port requirement below).
+## 2. Concrete projection and trusted monitor
 
-**Why plain trace languages fail (first-draft defect, on record):**
-before application, `λx.x` and `λx. HD; x` both project to a bare
-`Return(lam)` — language equivalence merges them and `app_ref` can
-never recover which body runs. Same failure for closures returned
-by calls, primitive partials, and effectful neutral spines. Hence
-PORTS: a lambda's return carries an apply/body port as a colored
-observation; application connects the argument interface and enters
-that port. Canonicalization must never minimize ports away.
+The concrete anchor is `qeval::run_traced` under the frozen signature
+`[H, Meas, New, Cnot, T]`. For a CNOT-free trace, nondeterministically choose
+one allocation as the distinguished lineage D and project to:
 
-**Interface protocol:**
+- `NewD`: allocate D and initialize the monitor to FRESH;
+- `HD` and `TD`: apply the corresponding exact mask transition;
+- `MeasD`: measure and retire D;
+- `OutOfScope`: any CNOT effect; and
+- no letter for effects on other qubit lineages.
 
-- `Call(i)` — ordered opaque edges (i ≤ depth ≤ 26); the callee's
-  events splice at App time. Never a multiset: ordering relative to
-  `HD`/`TD` is what H·T·H detects.
-- Capability protocol on calls and returns —
-  `(cap_in, action, cap_out, head)` with cap ∈ {None, Cur} and
-  action ∈ {Keep, Create, Advance, Retire, Kill}: `Create` = NewD;
-  `Advance` = H/T consumed the entry generation and returned a
-  fresh Cur (aliases of the entry capability are now stale — one or
-  many advances invalidate alike, no integer epochs needed);
-  `Retire` = MeasD, absorbing; `Kill` = stale/species path, no
-  continuation. A stored-but-never-forced stale handle is `None`
-  WITHOUT killing the surrounding value. Prototype may widen "after
-  Advance, retained aliases nondeterministically remain Cur" —
-  sound, loose, stated, and removable later.
-- Head domain (return/apply selection):
-  `Lam {apply: PortId}` ·
-  `Prim {which, supplied, held}` (New is non-strict and discards;
-  H/T/Meas strict unary; Cnot strict binary whose partial holds its
-  first argument — merging these is unsound for app_ref) ·
-  `Handle {role: DistinguishedCur | Other}` ·
-  `Neutral {root: RigidSlot | Inert, spine: PortId}` (an effectful
-  spine still normalizes left-to-right and may force Calls; rigid
-  roots may be instantiated later — inert and effectful neutrals
-  must not merge) · `Dead`.
+The mask is a may-set over Pauli support and `√2` parity. `odd::step_h`,
+`odd::step_t`, and `odd::step_meas` are the trusted transition kernels. A
+projected word accepts exactly when `MeasD` sees odd Z-readable support.
 
-**Canonicalization (prototype):** structural NFA with sharing →
-bisimulation/partition-refinement quotient → deterministic
-color-and-edge sorting → cheap canonical labeling; an OPTIONAL
-minimal-DFA language fingerprint only under a hard subset-state cap
-(e.g. ≤4096 determinized states). Language-equivalent summaries may
-fail to dedup — that overstates the growth curve, never soundness.
-The certificate's reference canonicalizer may later be strengthened;
-prototype dedup need not solve language equivalence.
+The projection is sound because a CNOT-free branch state factors by qubit
+lineage. If the product Born mass is Galois-odd, at least one single-lineage
+factor is odd; guessing that lineage retains an accepting projection.
 
-**Finiteness at fixed W:** interface depth ≤ W bounds the alphabet;
-constructors add finitely many nodes; App connects shared argument
-graphs rather than unfolding; recursion adds back-edges; call sites
-are bounded by source nodes. Graph size is bounded by a finite
-function of W; the count of labeled graphs below the bound is
-finite (potentially astronomical — hence the §8 gates). No widening
-on Calls is needed; runtime repetition is cycles.
+## 3. Abstract domain
 
-**Pre-16 adversarial checks (build gate zero):** (1) `λx.x` and
-`λx.HD;x` yield distinct apply ports; (2) two calls to one shared
-callee exhibit the wrong-return false trace while retaining both
-correct traces; (3) a callee `Advance` invalidates an
-entry-generation alias; (4) inert vs effectful-spine neutrals stay
-distinct. Only then weight 16.
+### Colored interaction graph
 
-## 4. Transfer functions and the splice discipline (r5b-revised)
+A `Summary` is a finite colored interaction NFA:
 
-Pure, total, deliberately naive. The r5b round replaced three naive
-pieces of the first draft; the rulings below are binding.
+```text
+Summary {
+    entry: NodeId,
+    ports: Vec<NodeId>,
+    edges: Vec<(NodeId, Label, NodeId)>
+}
+```
 
-**Call ownership — bare de Bruijn call indices are unsafe.** Edges
-carry `CallTarget ∈ {Free(i), Formal(PortId), Received(BindId)}`.
-`lam_ref` does ALL binder rebasing: `Free(1) → Formal(p)` (its new
-apply port), `Free(i+1) → Free(i)`, `Formal(q) → Formal(q)`.
-`app_ref` substitutes ONLY `Formal(p)` of the entered lambda and
-never shifts ambient indices (App does not change ambient depth).
-Counterexamples on record: in `((λx.λy.y) A) B` a global Call(1)
-splice would install A into the INNER lambda's formal; in
-`((λx.λy.x) A) B` the inner closure must retain A — bare indices in
-a disjoint-union graph cannot separate these binders.
+`entry` is the evaluation root. Ports name apply bodies and neutral-spine
+subgraphs. The port structure is semantic: two values can have identical
+currently visible effect traces but behave differently when later applied.
+Canonicalization must therefore preserve root roles.
 
-**Splice (`app_ref(F, A)`).** The composed entry stays `F.entry` —
-the full evaluation prefix of F is preserved. For each lam-headed
-`RetOut{Lam{apply: p}}` occurrence, dissolve that return seam and
-enter port p with `Formal(p) ↦ A.entry`; every demand re-enters
-`A.entry` (call-by-name reuse, not memoization; an unused formal
-never evaluates A). Strictness is inherited: `new A` never enters
-A; H/T/Meas species-check before touching an argument body; a
-partial cnot holds its first-argument information for the second
-application. `Kill` terminates a path — no `Dead` value ever
-crosses a seam (earlier odd measurements stay visible on the
-prefix). Re-entrant/recursive splices close as cycles; the complete
-same-weight LFP saturates before canonicalization. Output = the
-fully saturated finite SET. Weight w_f + w_a + 2.
+Edges carry either a projected effect, internal epsilon, or an interface
+event:
 
-**Binding (the α ruling).** Received values bind alpha-renamed
-`BindId` slots, resolved by a finite SPECIALIZATION PRODUCT during
-composition: specialized state = (caller node, binding environment,
-cap state), binding environment : BindId → may-set of ValueRef =
-(head, composed port, captured abstract environment). A matched
-return extends the environment; `Enter(bind)` branches over the
-slot's may-set; merged control nodes union environments; a slot may
-widen to Top. Finiteness: components, binders, heads, and cap
-states are all finite. Raw receive-edge indices may serve as
-TRANSIENT keys inside one splice but never appear in canonical
-summary bytes — quotienting/relabeling would merge or renumber
-them, and one receive edge can dynamically carry different
-closures. Soundness shape: every concrete call selects one
-compatible callee return; that exact return with its specialized
-continuation exists in the composed graph; extra compatible
-pairings and environment unions only ADD paths.
+```text
+Call { target, arg }
+RetIn { pat, bind, rel }
+RetOut { head, rel }.
+```
 
-**Interface letters (the γ ruling).** Both directions carry the
-complete capability relation:
-`RetIn {head_pattern, bind, cap_rel}` ·
-`RetOut {head_value, cap_rel}` with
-`CapRel = (cap_in, action, cap_out)`. Head+output-capability alone
-is insufficient — identity (`Keep`) and H (`Advance`) both return
-`Handle Cur`, but caller-retained aliases stay valid under one and
-go stale under the other. Matching is may-lattice order
-(`None ≤ Cur`), with action and output correlated per chosen path.
+`CallTarget` distinguishes a free variable, a lambda formal port, and a value
+received at an earlier interface. This separation prevents nested binders
+from accidentally capturing one another during graph composition.
 
-**Capability seam (the β ruling), relative to the entry
-generation:** `Keep` — aliases stay current, same generation out;
-`Advance` — aliases go stale, fresh generation out; `Create` —
-requires absent lineage, fresh generation; `Retire` — absorbing,
-no current output; `Kill` — no continuation. One or many advances
-invalidate alike (no counters). A returned `Cur` after `Keep`
-aliases the entry generation; after `Advance`/`Create`, the output
-generation. Precise mode never lets aliases survive `Advance`; the
-nondeterministic survival belongs only to the explicitly-declared
-widened mode.
+### Returned values and capabilities
 
-**Head evaluation vs NF descent.** qeval discovers a lambda head
-without normalizing its body in function position, but fully
-reduces under binders when the lambda survives to the normal form,
-and raises species Err on a lambda primitive-argument BEFORE its
-body. The context protocol therefore distinguishes `EvalHead`,
-`Apply(arg)`, and `NormalizeValue`/`DescendLam` — a surviving
-lambda's NF descent reuses its apply port with the formal bound to
-a zero-cost rigid neutral; a species check chooses neither and
-dies. Closed-program acceptance runs the mask product from ONE
-composed top-level NF-driver root; `may_accept_latent` (the
-all-roots product in `src/oddmin.rs`) is the deliberately looser
-any-context query, and auxiliary ports are canonicalization roots
-only, never independent acceptance starts.
+`Head` records the operational species of a returned value:
 
-- `var_ref(depth, i)`: force `Free(i)`, then behave as the received
-  value per its `RetIn` branches. Weight i+1.
-- `lam_ref(body)`: rebase binders as above; return
-  `Lam {apply: p}`. Weight +2.
-- `app_ref(fun, arg)`: the splice above. Other heads: `Prim` by its
-  strictness/arity row, `Handle` applied = species-Err, `Neutral`
-  extends the spine port (arguments may still force Calls and emit
-  effects), `Dead` absorbing.
+- lambda plus its apply port;
+- primitive plus an optional held first CNOT argument;
+- handle with distinguished-lineage role;
+- rigid neutral plus optional spine port;
+- opaque received value keyed by `BindId`; or
+- `PureWiden`, a lambda-shaped effect-free widening value.
 
-Iteration: outer Knuth min-weight agenda over Var/Lam/App
-hyperedges (all constructors strictly weight-increasing, so
-extraction order is sound); inner complete LFP saturation at fixed
-weight BEFORE the layer finalizes. If saturation streams, the layer
-finalizes only at quiescence.
+Both interface directions carry a `CapRel = (cap_in, action, cap_out)`.
+Capabilities are `None` or `Cur`; actions are `Keep`, `Create`, `Advance`, or
+`Retire`. The relation distinguishes identity from a unary gate: both return
+a current handle, but only the gate invalidates aliases to the input epoch.
+Invalid species and stale-handle paths have no continuation rather than a
+synthetic `Kill` edge.
 
-**Gate-zero additions (r5b):** beyond §3's four checks — (5) the
-two nested-binder counterexamples resolve correctly; (6) a final
-`λx.E` explores E under a rigid formal; (7) `h (λx.E)` Errs without
-exploring E; (8) `new E` discards E; (9) an unapplied latent apply
-port is never independently accepted; and check (2) verifies BOTH
-halves: every true pairing survives AND the wrong-return path
-appears only as declared looseness.
+### Opaque observations
 
-## 5. Trust architecture (r4b)
+Forcing an ambient thunk emits one `HeadPat::Any` observation and binds an
+opaque value. Use sites then branch over the operational cases they need.
+Eagerly enumerating every possible return pattern at the seam creates an
+exponential fan without adding information; the information is consumed only
+when the value is used.
 
-- `oddmin_ref` (trusted): domain types, canonicalizer, the three
-  reference transfers, same-weight LFP, mask kernels (shared with
-  `src/odd.rs`), the `compatible()` interface predicate.
-- `oddmin` search (untrusted): rayon, interning shortcuts, fast
-  transfer with its OWN algorithms (never a cached wrapper around
-  ref — that tests plumbing, not independence), Knuth agenda,
-  pruning, certificate emission.
-- Checker (trusted, small): invokes only `oddmin_ref`. A search bug
-  can fail a certificate or miss an optimum — never fake a bound.
+As a consequence, `materialized_accept_any_root` means exactly what its name
+says: reachability through effects already present in a summary. It is not an
+upper bound over every possible ambient context. Closed-program acceptance
+does not depend on that diagnostic query.
 
-Shared between the sides: immutable data types, the tiny kernels,
-serialization. Nothing else.
+### Canonical form and finiteness
 
-## 6. Certificate
+The reference canonicalizer:
 
-Header {magic, version, domain hash, max weight W, sector =
-NoCnotTrace, entry count, claimed min accept, witness wire} +
-entries {id, depth, canonical summary bytes, min weight, origin}.
-Origins are acyclic in source weight — `Var{depth, i}` /
-`Lam{body}` / `App{fun, arg}` only; LFP steps are internal to
-transfer and never serialized. No trusted accept bits; acceptance
-is recomputed (mask-automaton product).
+1. drops nodes unreachable from `entry` and the ports;
+2. computes a bisimulation quotient while preserving every root role;
+3. relabels nodes by deterministic root-first BFS; and
+4. sorts and deduplicates edges.
 
-Checker obligations: (1) header/domain-hash/ordering; (2) no
-duplicate summaries per depth; (3) canonical-form validity of every
-entry; (4) origin replay — recompute weight and the reference
-transfer, require the entry's summary be a MEMBER of the output set
-(membership, not ordinal choice); (5) all variable bases present per
-depth; (6) constructor closure — every lam output of every entry
-with m+2 ≤ W covered by an entry at ≤ m+2; every compatible pair
-with m_f+m_a+2 ≤ W: every saturated app output covered at ≤
-m_f+m_a+2 (coverage = subsumption ⊑, recomputed); (7) every
-cnot-firing output marked OutOfScope, never accepted; (8) the
-minimum over accepting depth-0 summaries equals 45; (9) witness
-replay — parse the 45-bit wire, replay origins, require abstract
-acceptance. If bucketing via `compatible()` is used, the checker
-verifies every omitted pair incompatible by the same predicate;
-never trust a search-supplied pair list.
+It is idempotent and maps bisimilar graphs with the same port roles to equal
+bytes. It does not yet alpha-normalize `BindId` or identify weak-epsilon
+variants; this is the source of the remaining conservative cells.
 
-## 7. Soundness obligations and validation
+At a fixed source bound W, the variable alphabet, source nodes, interface
+depth, and graph size are finite. Recursion appears as graph cycles rather
+than infinite unfolding. Composition still has explicit growth caps; an
+abort is interpreted as top, never as rejection.
 
-- **S1 (operational abstraction)**: for every open term, related
-  environments, and finite cnot-free qeval prefix, `Abs(M)` has a
-  path with the same projected trace ending related — so
-  Traces^¬cnot(p) ⊆ L(Abs(p)) for closed p. Induction on qeval
-  steps; the β lemma is
-  Abs(β(B, A)) ⊑ substCall₁(Abs(B), Abs(A)),
-  which must preserve repeated and interleaved calls (why ordered
-  edges, not demand counts). No coinduction: accepting measurements
-  occur at finite prefixes.
-- **S2 (monitor soundness)**: cnot-free ∧ [√2]w(s) ≠ 0 ⇒ MayOdd.
-  Product-structure + grading induction (proved at monitor level;
-  the DP inherits it through the mask-automaton product).
+## 4. Reference transfer functions
 
-Validation battery, in addition to the ≤22 corpus + 7 witnesses
-(smoke only): (A) cnot-free gate-word enumeration on 1–3 qubits vs
-exact `Dw` statevectors — tests S2 across cancellation patterns
-without lambda involvement; (B) open-term transfer tests at depths
-1–3 with an adversarial instantiation basis (primitives, K/I/booleans,
-effectful/duplicated thunks, under-binder effects, self-application,
-species errors) — tests Call substitution and interleaving, the
-actual risk surface; (C) a qvm trace/fingerprint surface,
-lockstepped vs qeval on ≤24, then swept through the low-30s with
-primitive-mention filters, witness context mutations, and the
-28-bit cnot family. Differential gates before every weight raise:
-exhaustive ref-vs-fast output-set equality at 16/20, sampled at 24,
-LFP fixed-point asserts F(S) = S, shift/substitution identities.
-Ref-vs-fast agreement cannot catch a shared abstraction mistake;
-the closure check and S1/S2 are authoritative.
+The transfers are pure, deterministic, and intentionally direct.
 
-## 8. Build gates
+### Variables and lambdas
 
-Prototype `oddmin_ref` + a naive driver only, weights 16 → 20 → 24.
-Report per weight: unique canonical summaries, transition density,
-compatible app pairs, LFP iterations to quiescence. STOP and
-redesign if summaries exceed ~10⁶ or app pairing goes
-quadratic-dominant. No fast path, no certificate freeze, no weight
-45 until the growth curve is measured and r5-reviewed.
+`var_ref(i)` emits a `Call(Free(i))`, receives one opaque result, and returns
+that result. `lam_ref(body)` owns all binder rebasing:
 
-## 9. Prototype findings (r6, 2026-08-04 — measured; ratification pending)
+```text
+Free(1)   → Formal(new_apply_port)
+Free(i+1) → Free(i).
+```
 
-The §8 gate was built and run. Four domain-level revisions were forced
-by measurement; each is a deviation from the §§3–4 text awaiting the
-r6 ruling, and all are strictly on the transfer/representation side —
-§1–2, §5–7 stand unchanged.
+Existing `Formal` and `Received` targets are unchanged. Application never
+shifts ambient indices.
 
-- **The ★ observation fan.** The letter-enumerated RetIn fan
-  (pat × action × cap_out ≈ 43 letters per ambient seam) multiplies
-  per application depth: open app chains measured fan^depth
-  (level-3 app > 10⁵ specialized states; witness45 unreachable). The
-  information the fan splits on is only consumed at USE sites, where
-  value dispatch case-splits anyway — so the transfers emit ONE
-  `HeadPat::Any` observation binding an opaque value
-  (`Head::Opaque`), and use sites branch: apply defers a symbolic
-  call, strict prims branch over {D-current handle + effect,
-  other-handle τ, stuck neutral} with species kills absent.
-  Result: witness45's summary is 44 nodes / 43 edges / 10 ports,
-  LINEAR per constructor. Ambient seams no longer stale aliases
-  (unknown action) — sound looseness, and real seams stale with the
-  real net at delivery. Consequence: `may_accept_latent` is now
-  effect-edge reachability, NOT an any-context upper bound; its r5b
-  role needs an opaque-ambient instantiation run if wanted.
-- **Continuation-specialized frames replace maximal call-stack
-  erasure.** With frames keyed only by (subgraph, captured env),
-  shared configurations (the primitive library entries) BRIDGE call
-  sites: a root-reachable library node carries ε-edges into frames
-  never semantically entered, and gates 7/8 fail with false accepts.
-  Frames now carry the return continuation id; recursion with a
-  stable continuation memoizes; the declared wrong-return looseness
-  is gone (nothing needed it). Unbounded continuation growth aborts
-  at the state cap (⊤ cell).
-- **Closure-environment restriction.** Captured environments are
-  restricted to the port subgraph's free references (memoized
-  side-analysis). Without it, env-specialized argument ports
-  explode the interface (> 63 ports on `(5 (3 1))`); with it the
-  specialization product and port table stay small. `Label::Eps` is
-  a first-class internal letter (ε-elimination by edge copying is
-  quadratic).
-- **One-shot closed evaluation.** Staged signature application
-  (five app_refs, flatten between) re-specializes the whole graph
-  per stage and blew past 3×10⁶ states on witness45. `Mode::Closed`
-  runs one specialization universe (prims as library thunks in a
-  single continuation chain, NF descent inline) and the product runs
-  directly on the internal graph — no flatten, no canon.
+### Application
 
-**The open hole: Ω-family widening.** Self-application builds
-structurally distinct deepening captured-env chains; hash-consing
-cannot close them, and the state cap fires (⊤). Nine ⊤ programs in
-the closed ≤22 population, all Ω-style, all concretely effect-free
-divergers. ⊤ = conservative accept, so any ⊤ below 45 breaks the
-bound: the r5b "widen to Top" ruling needs a Top SCOPED to the
-component's own constructible heads (an unscoped Top's use-site
-branches include handle effects and would falsely accept Ω at 18).
-This is the main r6 design question.
+`app_ref(F, A)` preserves the full evaluation prefix of F and specializes the
+entered lambda body with its formal port mapped to A. Each demand re-enters
+the argument graph, matching call-by-name rather than memoization; an unused
+formal never evaluates A.
 
-**Gate measurements** (naive single-thread ref):
+Composition runs over states specialized by subgraph, captured environment,
+and continuation. Continuations are part of the memo key, so returns dispatch
+only to the call site that created them. This preserves stack discipline and
+prevents shared library nodes from bridging unrelated calls.
 
-| W | unique summaries | closed | time (total) | ⊤ splices | accepts |
-|----|-----|-----|--------|----|----|
-| 16 | 96 | 96 | 12 ms | 0 | none |
-| 20 | 751 | 751 | 0.21 s | 2 | none |
-| 24 | 6,346 | 6,346 | 2.5 s | 28 | none |
+Captured environments retain references proven necessary by a forward
+must-bound analysis. Extra captures are sound; dropping a capture without
+the must-bound proof is not. Internal sequencing remains explicit as
+`Label::Eps`; copying edges to eliminate epsilon caused quadratic growth.
 
-Growth ≈ ×1.7 per bit ⇒ the 10⁶ stop rule is met at 16/20/24 with
-three orders of margin, but extrapolates past it near weight ~34 —
-the ladder to 44 needs search-side pruning and/or stronger
-canonical dedup (per-copy BindIds overstate the count; see §3).
-Validation: the 12-test gate battery is green (all §3/§4 checks
-constructible under the revised schema), and the closed ≤22
-differential vs qeval is EXACT — 6,069 programs, zero abstract
-accepts, zero looseness, nine ⊤ — with witness45 accepting and the
-28-bit cnot witness rejecting through the full pipeline in
-milliseconds.
+Opaque received values are resolved at use sites:
 
-## 10. r6 verdict and the post-verdict build (2026-08-04, late)
+- applying a lambda enters its apply port;
+- applying a primitive follows its arity and strictness rule;
+- applying a handle has no continuation;
+- applying a neutral extends its spine;
+- applying `PureWiden` returns the same pure value; and
+- applying an unresolved ambient value branches over the compatible cases.
 
-Codex independently reran cdd4610 (tests, differential, driver,
-witness pair — all reproduced) and RATIFIED all four §9 revisions,
-with amendments, all landed same night:
+Primitive semantics match qBLC exactly. `new` discards its argument. H, T,
+and measurement species-check before descending into a value. CNOT evaluates
+its arguments left-to-right and retains the first handle until the second is
+available.
 
-- **§9 table label correction**: 96/751/6,346 are the CLOSED
-  depth-0 slice counts; the open-union rows at W=16/20/24 of a
-  max_w=24 run are 552/3,273/6,346.
-- **★ fan** ratified; certificate v1 requires generated RetIn
-  letters to be `HeadPat::Any` (patterned observations = domain
-  version bump). `may_accept_latent` renamed
-  `materialized_accept_any_root`, quarantined as diagnostics. The
-  closed-mode invariant "every ambient observation resolves on live
-  paths" is now MEASURED: `Abort::UnresolvedAmbient` fires on any
-  live-continuation opaque apply (liveness = the continuation chain
-  bottoms out at TopRet, not the Iface sentinel).
-- **ctx frames** ratified; S1's motor: each concrete machine
-  continuation maps to one abstract ContId; entering
-  creates/reuses (component, environment, continuation); returns
-  dispatch only there. Abort = honest partial analysis pre-widening.
-- **ε** ratified. **Closure restriction amended**: the
-  bound-anywhere freeness rule was unsound (dominance); replaced by
-  the ratified MUST-BOUND forward dataflow (intersection over
-  incoming paths; port jumps carry the set; may only retain extra
-  captures).
-- **One-shot closed** ratified; two-lemma proof shape recorded in
-  the r6 reply.
-- **Ω widening**: the narrow first rung landed —
-  `Head::PureWiden`: a component with no effect edges, no Free
-  calls, no Prim/Handle heads reachable, and transitively pure
-  captures, whose capture chain exceeds `WIDEN_DEPTH`, stops
-  unfolding into a lambda-shaped, effect-free, apply-idempotent,
-  species-killable value (over-approximating divergence too).
-  Result: ZERO splice-⊤ through W=24 (was 28), and the driver run
-  dropped to 1.1 s. The general component-scoped post-fixpoint
-  (ScopeId'd origins, seeds ⊆ S ∧ Transfer(S) ⊆ S checked by the
-  trusted side) is specced in the r6 reply for stage 2.
+### Normal-form descent and closed evaluation
 
-**Found by the new assertion**: flatten renumbered ports for heads
-and call arguments but left `Call{Formal(p)}` targets on the old
-side-local numbering — descend-installed thunks landed under new
-indices while bodies looked up old ones (silently ambient; masked
-at cdd4610 by coincidental numbering). Fixed: `PreLabel::CallF`
-resolves the formal to its composed port at explore time, so
-flatten numbers target and owning head consistently.
+Weak-head discovery and normal-form descent are distinct. A lambda in
+function position exposes its head without reducing the body; a lambda that
+survives into the normal form is opened with a rigid neutral and its body is
+normalized. A primitive species error does not descend into the rejected
+lambda.
 
-**Remaining ⊤ class (19 closed programs ≤22, all concretely
-non-odd, S1-checked)**: nested-descent formal identity — call-site
-and head-site captures can restrict to different environments,
-yielding different composed ports for one formal. This is the
-"port identity is alpha-only" canonicalization loss; it heads the
-stage-2 queue Codex ordered: (1) pure widening [DONE, zero
-splice-⊤], (2) BindId alpha-normalization + weak-ε canonicalization
-+ canonical port renumbering, (3) rerun 24 and probe 26/28/30,
-(4) simulation-preorder antichain after constructor-monotonicity
-checks. Also on record from r6: the handle-aliasing lemma is scoped
-"closed, pre-CNOT" (CNOT's Church pair materializes handles into
-lambdas, so stale aliasing returns in stage 1b).
+`closed_accepts` applies all five signature primitives and performs final
+normal-form descent in one specialization universe. This avoids repeatedly
+flattening and re-specializing the entire graph at each signature argument.
+Every live ambient observation must resolve; `Abort::UnresolvedAmbient`
+exposes a violation rather than silently accepting it.
+
+### Pure widening and aborts
+
+Self-application can generate ever-deeper captured environments even when a
+component is provably effect-free. Once such a capture chain exceeds
+`WIDEN_DEPTH`, the reference transfer may replace it with `PureWiden` only if
+the component has:
+
+- no reachable effect edges;
+- no free calls;
+- no primitive or handle heads; and
+- only transitively pure captures.
+
+`PureWiden` over-approximates both a pure lambda value and divergence. It can
+never introduce an accepting effect. General effectful widening is not
+implemented.
+
+Other growth failures are `StateCap`, `PortCap`, or `DescendCap`. Every abort
+is conservative top. No lower-bound claim may treat it as non-acceptance.
+
+## 5. Acceptance and soundness obligations
+
+Closed acceptance composes the program with the gate signature, descends its
+normal form, and runs the trusted mask product from the single composed root.
+Interface and epsilon edges are silent to the product; `OutOfScope` is a dead
+end.
+
+The proof requires two lemmas.
+
+**S1 — operational abstraction.** For every open term, related environment,
+and finite CNOT-free `qeval` prefix, the summary contains a path with the same
+projected trace and a related endpoint. The critical application lemma is
+
+```text
+Abs(β(B,A)) ⊑ substCall₁(Abs(B), Abs(A)).
+```
+
+It must preserve repeated and interleaved calls, strictness, binder identity,
+and normal-form descent. The proof is induction on concrete machine steps,
+using the continuation-specialized simulation relation.
+
+**S2 — monitor soundness.** For a CNOT-free leaf, a nonzero `√2`
+coefficient in its mass implies acceptance of at least one distinguished
+lineage. This follows from the product structure of CNOT-free states and the
+grading invariant of the trusted mask kernels.
+
+Only finite prefixes are needed: an accepting measurement occurs at a finite
+point even if the surrounding program later diverges.
+
+## 6. Verification battery
+
+The current tests cover the abstraction's causal surface:
+
+- monitor transitions against exact gate-word statevectors;
+- canonicalization idempotence and preservation of port roles;
+- variable rebasing and nested-binder selection;
+- call-by-name reuse and unused-argument non-evaluation;
+- species errors before lambda-body descent;
+- `new` discarding its argument;
+- normal-form descent under surviving binders;
+- stale-handle invalidation and CNOT rejection;
+- witness45 acceptance and the 28-bit CNOT witness rejection; and
+- differential comparison with exact `qeval` over all 6,069 closed programs
+  through 22 bits.
+
+The differential currently has zero concrete odd leaves and zero false
+negative accepts. Its conservative cells are therefore measured looseness,
+not evidence for the theorem. Reference-versus-future-fast-path agreement
+will not replace S1/S2: shared abstraction mistakes can survive a differential
+test.
+
+## 7. Measured growth
+
+`oddminproto W` enumerates canonical summaries bottom-up by source weight and
+free-variable depth. Primitive axioms are introduced only by closed signature
+application, never as source-term bases.
+
+Current closed-slice measurements:
+
+| W | summaries | splice top | closed top | accepts | total time |
+|---:|---:|---:|---:|---:|---:|
+| 16 | 96 | 0 | 0 | 0 | about 0.01 s |
+| 20 | 743 | 0 | 3 | 0 | about 0.11 s |
+| 24 | 6,271 | 0 | 37 | 0 | about 1.1 s |
+
+Witness45 composes to 44 nodes, 43 edges, and ten ports. In the direct
+≤22 differential, the 19 conservative programs are concretely non-odd and arise
+from one formal acquiring different composed port identities under different
+captured environments. This is a canonicalization loss, not an effectful
+widening failure.
+
+Growth is approximately 1.7× per bit, projecting the million-summary stop
+near W≈34. Reaching 44 therefore requires canonicalization and search-side
+pruning before a certificate generation is practical.
+
+## 8. Certificate boundary and next work
+
+The current implementation is a trusted reference prototype; it does not yet
+emit a completeness certificate. The intended production split is:
+
+- a small trusted reference transfer and checker;
+- an independent untrusted parallel search; and
+- a certificate containing canonical summaries, minimum weights, and acyclic
+  Var/Lam/App origins.
+
+The checker must recompute canonical forms, replay every origin, verify
+constructor closure through W, treat every CNOT path as out of scope,
+recompute acceptance, and replay witness45. Search-supplied pair omissions are
+trusted only after the checker proves them incompatible. No accept bit and no
+post-fixpoint supplied by search is accepted without recomputation.
+
+The next implementation sequence is:
+
+1. alpha-normalize `BindId`, canonicalize weak-epsilon structure, and
+   renumber ports canonically;
+2. probe W=26, 28, and 30 after the W=24 regression;
+3. prove constructor monotonicity and add a simulation-preorder antichain;
+4. add a general component-scoped post-fixpoint whose ScopeId origins and
+   closure are checked by the trusted side; and
+5. add an independent search implementation and freeze the certificate
+   format only after the growth curve is viable.
+
+The stage-1a handle-aliasing argument applies only to closed pre-CNOT traces.
+CNOT returns a Church pair containing handles, so stage 1b must model aliasing
+inside lambda values explicitly.
