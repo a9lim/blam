@@ -19,7 +19,8 @@
 //!
 //! Output convention note: this is spec v0 — the leaf output is the whole
 //! live store at Halt (M_Fock's definition). The designated-output
-//! alternative (DESIGN-QBLC.md, Open questions) changes G_k, not this.
+//! alternative (`docs/quantum/architecture.md`, Open questions) changes G_k,
+//! not this.
 //!
 //! Usage: qcensus [--min-n N] [--max-n N] [--beta B] [--trans T]
 //!                [--qubits Q] [--branches K] [--threads J] [--out FILE]
@@ -37,7 +38,7 @@ use rayon::prelude::*;
 use std::fmt::Write as _;
 use std::time::Instant;
 
-/// The frozen signature order (DESIGN-QBLC.md, S1 pilot).
+/// The frozen signature order (`docs/quantum/architecture.md`, S1 pilot).
 const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
 /// Exact accumulator with f64 mirror; `ok` false once any exact op

@@ -1,6 +1,6 @@
 /-
 qBLC self-interpretation, the pure fragment: definitions and kernel
-anchors for SPEC-BISIM.md §2–3 — the L1/L2 seed, the natural first
+anchors for `docs/quantum/bisimulation.md` §2–3 — the L1/L2 seed, the natural first
 mechanization (pure λ-calculus, no store; the quantum clauses ride on
 this layer).
 

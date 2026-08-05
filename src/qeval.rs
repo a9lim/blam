@@ -1,11 +1,13 @@
-//! qBLC naive reference evaluator: the executable spec of DESIGN-QBLC.md v0.
+//! qBLC naive reference evaluator: the executable spec of
+//! `docs/quantum/architecture.md` v0.
 //!
 //! Small-step leftmost-outermost reduction over terms extended with primitive
 //! constants and opaque qubit handles, a branch-local quantum store of
 //! unnormalized Z[ω]/√2^k statevectors, and measurement branching with exact
 //! weights (nothing is ever sampled). Deliberately favors obvious correctness
 //! over speed, like `eval.rs`; the KN-store fast path will be lockstep-tested
-//! against this. Classical engines are untouched (DESIGN-QBLC.md obligation 4).
+//! against this. Classical engines are untouched
+//! (`docs/quantum/architecture.md` obligation 4).
 //!
 //! Spec anchors, in order of the surprises they encode:
 //! - `new M → #(q,0)` discards M *unevaluated* (species-blind, K-style);
@@ -282,7 +284,8 @@ pub enum Capacity {
 }
 
 /// One store effect, as it fired. The per-leaf effect path (root to leaf,
-/// `Meas` outcomes included) is the trace surface of DESIGN-QBLC.md's
+/// `Meas` outcomes included) is the trace surface of
+/// `docs/quantum/architecture.md`'s
 /// obligation 2: two runs are effect-trace equivalent when their leaf
 /// sequences carry identical paths — β-steps are erased by construction,
 /// since only primitive firings append events.
@@ -385,7 +388,7 @@ enum ArgView {
     Handle(u32, u32),
     /// A canonical non-handle value (λ, bare/undersaturated prim, pair):
     /// species Err, fired before any effect and before the value's interior
-    /// is normalized ("Err precedes effects", DESIGN-QBLC.md).
+    /// is normalized ("Err precedes effects", `docs/quantum/architecture.md`).
     Value,
     /// Anything else: search inside for the next redex. If the interior is
     /// already fully normal (rigid/neutral head), the search returns None

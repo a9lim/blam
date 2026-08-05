@@ -34,7 +34,7 @@ use blam::radical::{is_dyadic, radical_parts, show_parts, Exact};
 use rayon::prelude::*;
 use std::time::Instant;
 
-/// The frozen signature order (DESIGN-QBLC.md): p h meas new cnot t.
+/// The frozen signature order (`docs/quantum/architecture.md`): p h meas new cnot t.
 const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
 /// Frame slots by innermost-first de Bruijn index under the λ⁵ idiom:

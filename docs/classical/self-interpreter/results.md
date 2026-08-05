@@ -2,8 +2,8 @@
 
 Run 2026-07-31 on the M5 Max, `RAYON_NUM_THREADS=9`. Implementation:
 `src/bin/slotsearch.rs`, following the parametric contract of
-`SEARCH_SPEC.md` §1 and the obligation-aware enumerator of §4. Full run
-logs: `slotsearch_{var,abs,app}.log` beside this file.
+`search-spec.md` §1 and the obligation-aware enumerator of §4. Full run logs
+are in `data/self-interpreter/`.
 
 ## Verdict
 
@@ -23,7 +23,7 @@ APP  41  intL (\exp2. cont (\args. exp args (exp2 args)))
 ```
 
 There is no micro-trick hiding in the branch bodies. Sub-170 has to come
-from somewhere else — which, with `DESIGN_NOTES.md` already closing fixpoint
+from somewhere else — which, with `design.md` already closing fixpoint
 shape, continuation timing, cons-cell variants and binder placement, leaves
 the global evaluator/continuation representation as the only open door.
 
@@ -45,7 +45,7 @@ instantiation of the frame. Applying to `rest` widens acceptance from β to
 
 Goldens (independently recomputed from `ref/AIT/ait/int.lam` via
 `tools/blcc.py` + `lc.py`, and byte-identical to the two published in
-`SEARCH_SPEC.md`):
+`search-spec.md`):
 
 ```text
 VAR  45 bits  000000000000000101011111010010110101011111110
@@ -73,7 +73,7 @@ since a candidate is free to erase them.
 | ABS ≤43 | 29,148,078,982 | 1,430,813,728 | 20× |
 
 Per-size tables are in the logs. Spot values, as regression anchors (all four
-`SEARCH_SPEC.md` §4 published counts reproduce exactly, asserted in
+`search-spec.md` §4 published counts reproduce exactly, asserted in
 `tests::spec_regression_counts`):
 
 ```text
@@ -103,7 +103,7 @@ row, i.e. rung 5 was never needed). So the exhaustiveness claim has no
 residue: each of the 1.44 billion candidates is either a proven mismatch or a
 proven diverger.
 
-## Deviations from SEARCH_SPEC.md
+## Deviations from search-spec.md
 
 1. **Zero-count branch pruning is load-bearing, not an optimization.** The
    spec mentions "use zero counts to skip branches" in passing; without it the
@@ -180,13 +180,13 @@ beta_total — meeting the repo's verification bar for engine changes.
 the spec was written to kill) are superseded and deleted — git
 history holds them. `lc.py`, `db.py` and `harness.py` remain live
 (used above for the golden cross-check and the provenance battery),
-as does `search_fix.py` (the knot search of DESIGN_NOTES.md).
+as does `tools/self-interpreter/search_fix.py` (the knot search of `design.md`).
 
 ## What this does not cover
 
 The parametric contract only. A fragment that works *only* because `bit1`,
 `list1`, `a` and `intL` have their particular runtime relationships is
-excluded by construction — that is `SEARCH_SPEC.md`'s contextual lane (§2),
+excluded by construction — that is `search-spec.md`'s contextual lane (§2),
 which cannot support an optimality claim without splicing and exhaustive
 small-program differential testing. `slotsearch.rs` has the hook for it: drop
 the `must` mask to 0 and the enumerator sweeps every occurrence mask (ABS

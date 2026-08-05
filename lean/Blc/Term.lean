@@ -6,7 +6,7 @@ wire format's `1^{i+1}0` encodes wire index i+1, our `var i`). The
 Rust engine (src/cert.rs) is 1-indexed; the mapping is `var (n-1)`.
 
 Substitution is the one-pass β-substitution used by the checker and
-the reference reducer (tools/cert/loop32_trace.py): substitute and
+the reference reducer (tools/certificates/loop32_trace.py): substitute and
 decrement the free variables above the cut in a single walk.
 -/
 

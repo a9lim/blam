@@ -1,6 +1,7 @@
 //! Ratchet divergence certificates for growing-context loops.
 //!
-//! Contract and soundness proof: `tools/cert/SPEC.md`. A certificate is a
+//! Contract and soundness proof: `docs/classical/certificates/specification.md`.
+//! A certificate is a
 //! triple `(A, W, C0)`; four checks (OPEN / DESC / BASE / INIT) reduce
 //! "T has no normal form" to bounded symbolic head reductions. `verify`
 //! is the trusted core; `discover` is untrusted search — a bad candidate
@@ -140,7 +141,7 @@ fn shift(t: &PTerm, d: u32, cutoff: u32) -> PTerm {
 
 /// Substitute `s` for `Var(j)` and decrement free variables above `j`
 /// (the one-pass β-substitution; matches the reference reducer in
-/// `tools/cert/loop32_trace.py`).
+/// `tools/certificates/loop32_trace.py`).
 fn subst_dec(t: &PTerm, j: u32, s: &PTerm) -> PTerm {
     match t {
         PTerm::Var(n) => {
@@ -1132,7 +1133,7 @@ mod tests {
     fn loop32_manual_certificate_verifies() {
         let t = parse_all(LOOP32).unwrap();
         let rep = verify(&t, &loop32_cert(), 64, 64, 1 << 20).unwrap();
-        // Measured in tools/cert/loop32_trace.py: OPEN is one step,
+        // Measured in tools/certificates/loop32_trace.py: OPEN is one step,
         // DESC two, BASE one, and the first milestone is one step in.
         assert_eq!(rep.open_steps, 1);
         assert_eq!(rep.desc_steps, 2);

@@ -23,7 +23,8 @@ conditions; the **generic ratchet assemblies** turn certificate
 *data* into that conclusion mechanically; and the **rigid-head
 argument bridge** lifts a spine argument's divergence to the whole
 term. `Certs/` holds **297 generated kernel-checked `¬HasNormalForm`
-theorems** — every line of `ratchet_kills.txt`: RATCHET through the
+theorems** — every line of `data/certificates/ratchet_kills.tsv`:
+RATCHET through the
 generic v1.2 assembly, RATCHET2 through the HeadTowerRatchet (v2),
 SELECTOR through the SelectorRatchet (v3), and every `*-ARG` variant
 through `argKill` on top of its inner assembly — emitted by the

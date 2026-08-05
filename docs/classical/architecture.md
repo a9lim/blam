@@ -2,9 +2,9 @@
 
 Architecture, the rationale behind it, and the measured results that
 justify it. Working document — argue with it. The running record of
-how results landed is LEDGER.md (recent) and git history (permanent);
-live operational facts are in AGENTS.md. The quantum pillar's design
-spec is DESIGN-QBLC.md.
+how results landed is `../ledger/2026-08.md` (recent) and git history
+(permanent); current research state is in `../STATUS.md`. The quantum
+pillar's design spec is `../quantum/architecture.md`.
 
 ## Workload (measured, not assumed)
 
@@ -120,16 +120,17 @@ count from β-count, so fuel would not be comparable across paths.
 - **Optimal (Lévy) reduction:** not a reasonable cost model (Lawall &
   Mairson 1996); wrong unit for AIT regardless of speed.
 - **Fork of tromp/AIT as project home:** PR mechanism only (the repo
-  actively merges outside PRs); `tools/uni/` holds the distilled
+  actively merges outside PRs); `contrib/ait-uni/` holds the distilled
   interpreter and its PR kit.
 
 ## Measured results
 
-Canonical table: `data/census_table.txt` — every closed term of 4..41 bits
+Canonical table: `data/classical/census_table.txt` — every closed term of 4..41 bits
 (526,039,969 terms) adjudicated in ~16.5 min on the M5 Max, 4..40
 alone ~7.2 min (vs ~4.3 h for the reference Haskell tooling over
-4..40). Headline numbers and their cross-checks are in README.md;
-operational state (frontier, Ω bracket, rescue margins) in AGENTS.md.
+4..40). Headline numbers and their cross-checks are in the root `README.md`;
+moving research state (frontier, Ω bracket, and docket) is in
+`../STATUS.md`; engine rescue margins remain in `AGENTS.md`.
 
 Verification: A114852 counts exact at every published size (20, 24, 28,
 32, 36, 40); BBλ(n) reproduced for every published value 4..34,
@@ -138,7 +139,7 @@ Halt counts have been invariant under every engine change in the
 repo's history.
 
 BBλ lower bounds at sizes with pending unknowns (max computed |nf|
-per `data/census_table.txt`): 98,421 (n=35) · 1,441,774 (36) · 4,290,711
+per `data/classical/census_table.txt`): 98,421 (n=35) · 1,441,774 (36) · 4,290,711
 (37) · **222,333,282 (38)** · 10,263,449 (39) · 222,333,284 (40, the
 λ-wrap of the 38-champion — a consistency check that fell out for
 free) · **1,074,266,118 (41)**.
@@ -197,7 +198,8 @@ All frontier seeds ≤36 bits were re-adjudicated at `--bb-cap 42000000`
 stayed UNKNOWN**, at both the full work meter and `BLC_WORK_MULT=2`
 (identical verdicts wherever both ran). The engine's proving power
 saturates by 2M capacity; more fuel is not where new kills come from.
-That is why the certificate campaign (`tools/cert/`) exists.
+That is why the certificate campaign exists. Its contract and findings live
+under `certificates/`, with instruments in `tools/certificates/`.
 
 Cross-matching BB.txt's per-term `-- TODO:` fail traces
 (`tools/bbtxt.py`): 123 of the reference's 128 traced fails are exactly
@@ -226,7 +228,7 @@ Besides its kills (11,367 proofs on the 4–40 census), it makes the
 census *faster* (n=32: 2.79 → 1.14 s): loops that previously burned
 both meters now exit on a cheap probe. At n=32 the engine reaches
 exact parity with Tromp's ledger — both sides fail only `loop32`,
-which the ratchet certificate (`tools/cert/SPEC.md`) then killed and
+which the ratchet certificate (`certificates/specification.md`) then killed and
 the Lean formalization proved twice.
 
 ### The λ-wrap memo

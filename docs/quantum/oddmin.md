@@ -7,7 +7,7 @@ the r6 verdict, amendments, and stage-2 queue — read §§9–10 as the
 operative deltas over §§3–4's text. Implementation:
 `src/odd.rs` (monitor) + `src/oddmin.rs` (reference DP) +
 `src/bin/oddminproto.rs` (gated driver). Companion theory:
-NOTE-GALOIS.md §4.*
+`galois.md` §4.*
 
 ## 1. Theorem target
 
@@ -20,7 +20,7 @@ Scope is forced, not chosen: min cnot-trace weight ∈ (22, 28] — the
 monitor latching accept on cnot caps its provable minimum at ≤ 28.
 Cnot traces verdict `NeedsCnot` (out of scope, never accepted); the
 companion that removes the premise is stage 1b's Pauli-string path
-parity (NOTE-GALOIS.md §4). Weight algebra (wire-exact):
+parity (`galois.md` §4). Weight algebra (wire-exact):
 w(Var i) = i+1, w(λM) = w(M)+2, w(MN) = w(M)+w(N)+2 — source weight
 is paid once at construction; substitution is zero-cost.
 

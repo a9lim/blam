@@ -1,6 +1,6 @@
 //! oddmin reference side, stage 1a — trusted `oddmin_ref`.
 //!
-//! PROTOTYPE (SPEC-ODDMIN.md §§3–4, r5b schema). This module is the
+//! PROTOTYPE (`docs/quantum/oddmin.md` §§3–4, r5b schema). This module is the
 //! TRUSTED half of the split: the r5b interaction-NFA schema, the
 //! structural canonicalizer with its laws, the interned mask
 //! automaton, the external accept product, and the three reference

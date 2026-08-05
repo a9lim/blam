@@ -1,4 +1,5 @@
-//! qBLC self-interpretation, measured (DESIGN-QBLC.md, proof obligation 2).
+//! qBLC self-interpretation, measured (`docs/quantum/architecture.md`,
+//! proof obligation 2).
 //!
 //! The interpreter is `E_q = intL I`: Tromp's 170-bit binary-LC interpreter
 //! applied to the identity as continuation. Protocol: intL cont bits =
@@ -321,7 +322,7 @@ mod tests {
         assert_eq!(eq.to_bits(), EQ_WIRE);
     }
 
-    /// Trace equivalence (DESIGN-QBLC.md obligation 2) on a fast core:
+    /// Trace equivalence (`docs/quantum/architecture.md` obligation 2) on a fast core:
     /// the full ≤14 population plus the n=45 nondyadic witness. The full
     /// ≤24 sweep lives in the bin (`qselfint 24`), not the suite.
     #[test]

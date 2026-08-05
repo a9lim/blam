@@ -70,7 +70,8 @@ opaque closed metavariable (OPEN: A Z →+ (Z Z) W[Z]; DESC:
 W[Z] W[Z] →+ Z Z; BASE: C0 C0 →+ A), and a small glue theorem turns
 them into an infinite head reduction, hence no normal form by
 standardization. The spec with soundness proof is in the repo
-(tools/cert/SPEC.md), adversarially reviewed in the spirit of "try to
+(`docs/classical/certificates/specification.md`), adversarially reviewed in
+the spirit of "try to
 break it before trusting it." With it, BBλ(32) is fully mechanical —
 every closed term of ≤32 bits machine-adjudicated with no hand
 exclusions — and sweeping the certificate (plus two further classes,

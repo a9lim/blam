@@ -593,7 +593,8 @@ mod tests {
     use crate::qeval;
     use rayon::prelude::*;
 
-    /// The frozen signature order (DESIGN-QBLC.md): p h meas new cnot t.
+    /// The frozen signature order (`docs/quantum/architecture.md`):
+    /// p h meas new cnot t.
     const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
     fn qeval_leaves(src: &str, order: &[Prim; 5], budget: &QBudget) -> Vec<Leaf> {

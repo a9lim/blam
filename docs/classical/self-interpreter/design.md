@@ -4,7 +4,7 @@ The structural question (worked with Codex, gaslamp thread
 `blc-interpreter`): is there a route below the 170-bit
 self-interpreter through *global* rearrangement — fixpoint shape,
 continuation timing, environment representation — as opposed to the
-slot-local searches of SEARCH_SPEC.md? All candidates below were
+slot-local searches of `search-spec.md`? All candidates below were
 compiled with `tools/blcc.py` and run through the semantic battery;
 bit counts are verified, not estimated.
 
@@ -93,9 +93,9 @@ independent floor estimate from the reverse-engineering lane
 paradigm).
 
 The slot-local exhaustive searches have since run to completion
-(SEARCH_RESULTS.md): VAR, ABS and APP are each certified optimal with
+(`results.md`): VAR, ABS and APP are each certified optimal with
 the reference as unique survivor and zero residual unknowns. No
 micro-trick was hiding in the branch bodies. The one mechanical route
-left is the contextual lane (SEARCH_SPEC.md §2) — and a survivor
+left is the contextual lane (`search-spec.md` §2) — and a survivor
 there is a hypothesis needing whole-interpreter splice + battery, not
 a proof.

@@ -2,7 +2,7 @@
 # Regenerate the canonical census table and the unknown frontier
 # (AGENTS.md, Ground rules: regenerate, never hand-edit). The frontier
 # is the raw census unknowns minus the certificate kills in
-# tools/cert/ratchet_kills.txt; the subtraction identity
+# data/certificates/ratchet_kills.tsv; the subtraction identity
 # (raw = frontier + kills present, zero overlap) is reported.
 #
 # Full 4..41 is ~16.5 min on the M5 Max (4..40 alone ~7.2 min).
@@ -25,7 +25,7 @@ target/release/census "$MIN" "$MAX" --verify --dump-unknowns "$OUT/raw_unknowns.
     > "$OUT/census_table.txt"
 # census only creates the dump when unknowns exist; empty is a valid state
 touch "$OUT/raw_unknowns.txt"
-cut -f2 tools/cert/ratchet_kills.txt | sort -u > "$OUT/kill_bits.txt"
+cut -f2 data/certificates/ratchet_kills.tsv | sort -u > "$OUT/kill_bits.txt"
 grep -vxF -f "$OUT/kill_bits.txt" "$OUT/raw_unknowns.txt" > "$OUT/unknowns.txt" || true
 RAW=$(wc -l < "$OUT/raw_unknowns.txt")
 FIN=$(wc -l < "$OUT/unknowns.txt")
@@ -37,9 +37,9 @@ if [ "$RAW" -ne $((FIN + HIT)) ]; then
     exit 1
 fi
 if [ "$MIN" -eq 4 ] && [ "$MAX" -ge 41 ]; then
-    mv "$OUT/census_table.txt" data/census_table.txt
-    mv "$OUT/unknowns.txt" data/unknowns.txt
-    echo "census-regen: installed data/census_table.txt + data/unknowns.txt"
+    mv "$OUT/census_table.txt" data/classical/census_table.txt
+    mv "$OUT/unknowns.txt" data/classical/unknowns.txt
+    echo "census-regen: installed data/classical/census_table.txt + data/classical/unknowns.txt"
 else
     echo "census-regen: partial range — outputs left in $OUT/, data/ untouched"
 fi

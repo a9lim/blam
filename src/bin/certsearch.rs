@@ -1,5 +1,6 @@
 //! Ratchet-certificate sweep over a terms file (default: the live
-//! unknown frontier). Spec: tools/cert/SPEC.md. Discovery is untrusted;
+//! unknown frontier). Spec: `docs/classical/certificates/specification.md`.
+//! Discovery is untrusted;
 //! every reported RATCHET line has passed the trusted `verify`.
 //!
 //! Sound hnf descent (`--no-descend` disables): if the bounded head
@@ -189,7 +190,7 @@ fn main() {
     let lines: Vec<String> = if let Some(bits) = term_arg {
         vec![bits]
     } else {
-        let path = file_arg.unwrap_or_else(|| "data/unknowns.txt".to_string());
+        let path = file_arg.unwrap_or_else(|| "data/classical/unknowns.txt".to_string());
         std::fs::read_to_string(&path)
             .unwrap_or_else(|e| panic!("read {path}: {e}"))
             .lines()

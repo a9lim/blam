@@ -2,10 +2,10 @@
 
 Design spec for the quantum counterpart of the classical engine.
 Ratified 2026-08-02 after two adversarial Codex rounds (gaslamp thread
-`blc-qblc`; the round record is in LEDGER.md). S1–S3 core have landed
+`blc-qblc`; the round record is in `../ledger/2026-08.md`). S1–S3 core have landed
 (see Staging); the spec text is the living contract for what was
 built. Working document — argue with it. Sibling:
-DESIGN-BLC.md (classical pillar). Literature grounding:
+`../classical/architecture.md` (classical pillar). Literature grounding:
 `ref/QUANTUM_AIT.md` (untracked survey); load-bearing sources: Gács
 quant-ph/0011046, Müller quant-ph/0605030 / 0707.2924, Vitányi
 quant-ph/0102108, Schumacher–Westmoreland quant-ph/0011014,
@@ -161,7 +161,7 @@ permutations swept over the 19,048 closed terms of 4..=24 bits
 lexicographic tie-break. Winner Ω_{success,≤24} = 46757/2^24 ≈
 0.0027869, in an exact tie with its h↔t mirror `t meas new cnot h`
 (every ranking row pairs with its mirror at identical exact mass —
-see LEDGER.md for the interpretation), broken lexicographically as
+see `../ledger/2026-08.md` for the interpretation), broken lexicographically as
 predeclared. Note the winner gives `h` to the *first* argument
 (outermost binder = longest de Bruijn index inside the full five-λ
 idiom): the successful population at small sizes is dominated by
@@ -256,7 +256,7 @@ M_known ≤ M ≤ M_known + (unknown mass)·I.
 live qubits — an unbounded loop can pump one syntactic `new`
 arbitrarily many times, so the live-qubit count must be *measured*,
 never inferred from source size. The work-meter doctrine
-(DESIGN-BLC.md, "the work-meter lesson") extends with live-qubit /
+(`../classical/architecture.md`, "the work-meter lesson") extends with live-qubit /
 statevector / coefficient-magnitude capacity charges; exceeding any
 is Unknown(Capacity), mass into the bracket.
 
@@ -307,7 +307,8 @@ is Unknown(Capacity), mass into the bracket.
    within the intL protocol (2 app + 170 + the unique 4-bit closed
    term). The specialized-root lane (SPEC-BISIM §8) closed its first
    rung 2026-08-04: the two-entry/single-knot family minimum is
-   exactly 176 (Codex hand-compilation + exact accounting, LEDGER.md;
+   exactly 176 (Codex hand-compilation + exact accounting,
+   `../ledger/2026-08.md`;
    nearest loser 177), a local theorem under the frozen-branch
    hypotheses — global optimality still open, sharpest remaining
    mechanical lane a ≤25-bit joint root+knot context search around
@@ -317,7 +318,7 @@ is Unknown(Capacity), mass into the bracket.
    `qeval::run_traced`, β-stuttering erased by construction) over the
    small-size population, plus a poisoned-seed-env canary; the
    small-step bisimulation stays the proof obligation — precise
-   statement, relation, and case-ledger proof plan in SPEC-BISIM.md
+   statement, relation, and case-ledger proof plan in `bisimulation.md`
    (Codex-skeletoned, round 3 ratifies).
 3. **Convention-dependence**: for a fixed permutation π_k of
    allocation ranks, M'^(k) = P_{π_k} M^(k) P_{π_k}† exactly — an
@@ -373,7 +374,7 @@ incl. store, exact mass, contraction count — over the full ≤24
 population; census bin `src/bin/qcensus.rs`; β=4096/trans=2²⁶ with
 measured headroom; per-program mass conservation asserted sweep-wide)
 → S3 operator census at classical-census depth (**core done**,
-2026-08-03 overnight: canonical `data/qcensus_table.txt` — the full
+2026-08-03 overnight: canonical `data/quantum/census_table.txt` — the full
 526,039,969-program population 4..41 in ~30 min; Ω_{success,≤41} =
 3424188513/2⁴⁰; M^(1) PD, ranking |0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩ with
 irrational operator entries whose √2-parts cancel in every trace;
@@ -447,7 +448,8 @@ is a valid outcome of the investigation.
   idiom sector). Phase 2 (the non-λ⁵ complement, 933B programs
   46..53) is RUNNING as of 2026-08-04 via `qcomplement` — the
   round-2 taint design was replaced after exact sizing by a
-  concrete-first two-pass sweep (rounds 3–4 ratified; LEDGER.md has
+  concrete-first two-pass sweep (rounds 3–4 ratified;
+  `../ledger/2026-08.md` has
   the instrument, validation, and measured economics). Measured:
   complement √2-coefficient EXACTLY 0 at every size 42..47; the
   full-population claim stands through 47, remaining sizes chunked

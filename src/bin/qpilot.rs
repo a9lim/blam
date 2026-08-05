@@ -1,6 +1,7 @@
 //! S1 signature pilot: sweep all 120 permutations of {new, meas, cnot, t, h}
 //! over every closed term of size 4..=N, and rank them by the PREDECLARED
-//! functional (DESIGN-QBLC.md, Staging): maximize Ω_{success,≤N}, ties broken
+//! functional (`docs/quantum/architecture.md`, Staging): maximize
+//! Ω_{success,≤N}, ties broken
 //! lexicographically on the permutation tuple. The functional and cutoff are
 //! fixed before any results are seen; the winner froze the signature order
 //! for all canonical data (S1, 2026-08-02, at ≤24 via the reference

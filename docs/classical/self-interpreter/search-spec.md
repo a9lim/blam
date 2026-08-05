@@ -5,7 +5,7 @@
 Two search contracts; do not blur them:
 
 1. **Parametric slot search — implemented** (`src/bin/slotsearch.rs`;
-   results in SEARCH_RESULTS.md: all three slots exhaustively optimal).
+   results in `results.md`: all three slots exhaustively optimal).
    Close the open slot under rigid binders and compare its complete β-normal form with the reference. A pass is a proof of contextual correctness for every substitution, not merely evidence from test markers.
 
 2. **Fixed-interpreter/context-sharing search — the open lane** (§2;
@@ -440,7 +440,7 @@ If a hole occurs more than once, multiply by its occurrence count; preferably re
 ### Status
 
 The parametric ABS/APP/VAR harness is implemented and its sweeps are
-complete (SEARCH_RESULTS.md). The contextual lane (§2, drop the must
+complete (`results.md`). The contextual lane (§2, drop the must
 mask to 0) is the open mechanical route; the skeleton sweep above is
 the lane after that. Both remain architecture-family searches — not
 interpreter optimality proofs — and contextual multi-hole survivors

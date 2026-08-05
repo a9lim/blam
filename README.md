@@ -115,7 +115,8 @@ The measurements live in `src/bin/`, all rayon-parallel:
 | `certlean` | emit the certificate kills as Lean 4 modules for kernel checking |
 | `certdiag` / `tracescan` | frontier classification and probe instruments |
 | `qcensus` | the quantum operator census (`--cond-k K` for the dimension-conditioned mode) |
-| `qpilot` / `qselfint` / `qradical` | signature-order pilot, self-interpretation measurement, dyadicity hunt |
+| `qpilot` / `qselfint` / `qradical` / `qcomplement` | signature-order pilot, self-interpretation measurement, and the two-stage dyadicity campaign |
+| `oddminproto` | gated reference-DP driver for the CNOT-free √2 theorem lane |
 | `slotsearch` | exhaustive self-interpreter slot searches |
 
 ```bash
@@ -128,11 +129,11 @@ target/release/census 4 40 --verify
 target/release/census --term 010001101000011010
 
 # Ω / K sweep;  quantum census
-target/release/solomonoff 4 41 --table data/solomonoff_table.txt
-target/release/qcensus --max-n 41 --trans 67108864 --out data/qcensus_table.txt
+target/release/solomonoff 4 41 --table data/classical/solomonoff_table.txt
+target/release/qcensus --max-n 41 --trans 67108864 --out data/quantum/census_table.txt
 
 # certificate sweep, then kernel-check the kills in Lean
-target/release/certsearch --terms-file data/unknowns.txt
+target/release/certsearch --terms-file data/classical/unknowns.txt
 cargo run --release --bin certlean && cd lean && lake build Certs
 ```
 
@@ -172,20 +173,22 @@ operator census of quantum-preparing programs (to our knowledge) —
 entering at exactly 41 bits, irrationality invading in measured
 layers (operator entries at 34, leaf masses at 45, per-size
 aggregates at 53 in the idiom sector — the non-λ⁵ complement
-measured exactly dyadic through 47 so far), and qBLC
+measured exactly dyadic through 51 so far), and qBLC
 self-interpreting in 176 bits (proven minimal across the two-entry
 interpreter families).
 
-The full story, with cross-checks and open questions:
-[DESIGN-BLC](https://github.com/a9lim/blam/blob/main/docs/DESIGN-BLC.md)
+The current research boundary and ordered docket live in
+[STATUS](https://github.com/a9lim/blam/blob/main/docs/STATUS.md). The durable
+architecture is split into
+[classical](https://github.com/a9lim/blam/blob/main/docs/classical/architecture.md)
 and
-[DESIGN-QBLC](https://github.com/a9lim/blam/blob/main/docs/DESIGN-QBLC.md)
-(architecture and measured results),
-[LEDGER](https://github.com/a9lim/blam/blob/main/docs/LEDGER.md) (the
-lab notebook), the canonical tables in
-[data/](https://github.com/a9lim/blam/tree/main/data), and the Lean
-formalization in
-[lean/](https://github.com/a9lim/blam/tree/main/lean).
+[quantum](https://github.com/a9lim/blam/blob/main/docs/quantum/architecture.md)
+pillars; proof plans and research notes are grouped beneath those domains.
+Canonical evidence lives in
+[data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
+in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological
+record in the
+[monthly ledger](https://github.com/a9lim/blam/tree/main/docs/ledger).
 
 ## Layout
 
@@ -194,19 +197,27 @@ formalization in
 - `examples/` — the README snippets, runnable.
 - `tests/` — unit, differential, conformance, and certificate
   soundness batteries.
-- `docs/` — design specs, proof plans, the lab notebook.
-- `data/` — canonical measurement outputs (regenerated, never
-  hand-edited; superseded generations live in git history).
+- `docs/STATUS.md` — the sole authority for moving results and the open
+  docket; `docs/classical/` and `docs/quantum/` hold durable architecture,
+  specifications, proof plans, and research notes; `docs/ledger/` is
+  chronological history.
+- `data/` — canonical evidence, divided into classical, quantum,
+  certificate, and self-interpreter domains (regenerated, never hand-edited;
+  superseded generations live in git history).
 - `scripts/` — the standing protocols, runnable.
 - `lean/` — the Lean 4 formalization (own README).
-- `tools/` — analysis sub-labs: `cert/` (certificate spec + kills),
-  `interp/` (self-interpreter lab), `uni/` (upstream PR kit),
-  `blcc.py` (the .lam→.blc encoder oracle).
+- `tools/` — reusable low-level utilities and analyzers; prose and canonical
+  outputs do not live here.
+- `contrib/ait-uni/` — the portable upstream `uni.rs` PR kit and parity
+  harness.
 - `ref/AIT` — submodule: the conformance corpus and execution
   oracles.
 
-The crates.io package ships the engine alone (`src/` + this README);
-everything else lives in the repo.
+This root README is the repository's reading map and stable public story.
+Moving facts belong only in `docs/STATUS.md`; architecture documents state
+durable contracts, and the ledger is append-only history. The crates.io
+package ships the Rust crate and driver sources (`src/` + this README);
+research evidence, proofs, and supporting utilities live only in the repo.
 
 ## Attribution
 
@@ -218,7 +229,7 @@ repo is an independent engine, verified against his.
 
 Built by [a9lim](https://github.com/a9lim) with Claude (Anthropic) and
 Codex (OpenAI) as agent collaborators —
-[docs/LEDGER.md](https://github.com/a9lim/blam/blob/main/docs/LEDGER.md)
+[docs/ledger/](https://github.com/a9lim/blam/tree/main/docs/ledger)
 and the commit history are the honest record of what that looked like.
 
 AGPL-3.0-or-later — covering this repo's own code (© 2026 a9lim).

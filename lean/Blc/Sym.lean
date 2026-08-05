@@ -228,7 +228,7 @@ theorem symSteps_sound {ρ : Nat → Term} (hρ : ClosedEnv ρ) :
 
 /-- Head reduction whose every proper source is a non-abstraction —
 exactly the side condition for lifting through `HeadStep.appL`
-(tools/cert/SPEC.md's "proper source states"). -/
+(`docs/classical/certificates/specification.md`'s "proper source states"). -/
 inductive LiftReds : Nat → Term → Term → Prop where
   | refl (t : Term) : LiftReds 0 t t
   | head {t u v : Term} {n : Nat}

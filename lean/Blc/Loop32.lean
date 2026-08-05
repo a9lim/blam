@@ -1,7 +1,7 @@
 /-
 loop32 = `01000110001100001011010000110110`, the 32-bit closed term
 whose only prior divergence proof was by hand. This file certifies the
-ratchet (tools/cert/SPEC.md) in Lean: the head reduction from loop32
+ratchet (`docs/classical/certificates/specification.md`) in Lean: the head reduction from loop32
 is infinite. Blc/NoNf.lean lifts this to ¬ HasNormalForm loop32 via
 the single-redex discipline (no standardization needed).
 

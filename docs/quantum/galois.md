@@ -6,7 +6,7 @@ wants the same configuration formalization). T2/T3 are stated with
 proof plans. The stage-1a instruments are live: `src/odd.rs` (the
 hardened monitor) and `src/oddmin.rs` (the reference DP, design
 Codex-ratified through r6, gate-green — spec and measured findings
-in SPEC-ODDMIN.md). Spar record: `qblc-omega-witnesses` rounds
+in `oddmin.md`). Spar record: `qblc-omega-witnesses` rounds
 r1–r6, 2026-08-04. Measured inputs: LEDGER entries of 2026-08-03/04.*
 
 ## 1. Setting

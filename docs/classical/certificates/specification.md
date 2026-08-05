@@ -8,7 +8,8 @@ trusted, discovery untrusted; every class's assembly theorem is
 additionally **machine-checked in Lean**
 (`lean/Blc/{Ratchet,HeadTower,Selector,Rigid}.lean` — the last is the
 rigid-head bridge for `-ARG` kills), and every kill in
-`ratchet_kills.txt` is a kernel-checked `¬HasNormalForm` theorem
+`data/certificates/ratchet_kills.tsv` is a kernel-checked
+`¬HasNormalForm` theorem
 (`lean/Certs/`). Every class was adversarially reviewed with Codex
 (ten rounds, thread `blc-conformance`; the round-by-round log lives
 in git history). Discovery keys milestone
@@ -139,7 +140,7 @@ exactly as a top-level state — head reduction is defined under leading
 binders, so the body's infinite head chain is the state's. Candidates
 whose extracted triple captures an ambient variable fail the closedness
 checks and never certify. Motivation: the frontier classification
-(tools/cert/CLASSIFY.md) found 1,320/2,032 unknowns presenting as bare
+(`frontier.md`) found 1,320/2,032 unknowns presenting as bare
 abstractions, invisible to top-level spine matching.
 
 **Trailing-vector extension (v1.2).** INIT (and discovery's milestone
@@ -369,7 +370,7 @@ budgets.
 Build order ratified in review round ten: **PassengerDiagonal first**,
 then a zfirst variant derived from an actual survivor trace; drift
 stays gated on a finite generator. The measured candidate map behind
-these families is `tools/cert/CLASSIFY.md`.
+these families is `frontier.md`.
 
 ### 8.1 PassengerDiagonalRatchet
 

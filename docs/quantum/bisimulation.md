@@ -1,6 +1,6 @@
 # SPEC-BISIM — Effect-trace self-interpretation: the bisimulation theorem
 
-The precise statement and proof plan for DESIGN-QBLC.md proof
+The precise statement and proof plan for `architecture.md` proof
 obligation 2: `E_q ⌜p⌝ σ⃗` and `p σ⃗` are equivalent up to pure
 β-stuttering, in unbounded semantics.
 
@@ -14,7 +14,7 @@ pair/cons' separation, FALSE = 6 bits, extensional L1, world-indexed
 ℛ with runtime diagonals + full frame grammar, tightened L3,
 signature-free base theorem — all incorporated below and marked
 [Codex r3]. Everything here is **stated, not proved** — the measured
-evidence (LEDGER.md 2026-08-03: 19,014/34/0 at effect-trace level
+evidence (`../ledger/2026-08.md`, 2026-08-03: 19,014/34/0 at effect-trace level
 over 4..=24, poisoned-seed canary) is empirical support, and the
 obligations index (§7) is the ground truth on status.
 
@@ -29,7 +29,7 @@ Configurations are pairs `(M, S)`: `M` a term of the reduction
 grammar (BLC term whose positions may hold runtime values —
 primitives, handles, Church booleans, the cnot pair), `S` an exact
 branch-local store (`src/dw.rs` amplitudes; allocation ranks and
-epochs as in DESIGN-QBLC.md). Reduction is the KN strategy of the
+epochs as in `architecture.md`). Reduction is the KN strategy of the
 engines: normal order, reducing under binders.
 
 Transitions:
@@ -312,7 +312,7 @@ why census-ladder equivalence is deliberately NOT claimed.
 | L3  | weak-head / ArgView preservation (§5)       | open   |
 | L4  | readback collapse for ℛ_k (§6)              | open   |
 | B1–B5 | the exhibited ℛ is a bisimulation (§4–§5) | open   |
-| —   | empirical: 19,014/34/0 effect-trace ≤24, canary, witness45 | measured (LEDGER.md 2026-08-03) |
+| —   | empirical: 19,014/34/0 effect-trace ≤24, canary, witness45 | measured (`../ledger/2026-08.md`, 2026-08-03) |
 
 Falsifier: any effect-order, label, mass, or fate mismatch between
 `p σ⃗` and `E_q ⌜p⌝ σ⃗` on any program — none observed at any size

@@ -4,9 +4,11 @@ Two untrusted instruments map the unknowns frontier for the
 certificate campaign: `tracescan` (src/bin/tracescan.rs) classifies
 terms by the *shape* of their normal-order reduction; `certdiag`
 (src/bin/certdiag.rs) runs the ratchet discovery pipeline and reports,
-per term, exactly where it drops out. Nothing here is a kill — the
-live kill state is `ratchet_kills.txt` + AGENTS.md. Raw tables
-regenerate in minutes (`tracescan --file data/unknowns.txt --out …`,
+per term, exactly where it drops out. Nothing here is a kill — the live kill
+state is `data/certificates/ratchet_kills.tsv`, summarized in
+`docs/STATUS.md`. Raw tables
+regenerate in minutes
+(`tracescan --file data/classical/unknowns.txt --out data/certificates/frontier_classification.csv`,
 `certdiag <terms> --threads 8`); superseded map generations live in
 git history.
 
@@ -82,7 +84,8 @@ git history):
 | `blowup` | 351 | 17.3% |
 | `opaque` | 594 | 29.2% |
 
-**n=41 residue** (`classify41.csv`, measured 2026-08-01 on the 2,381
+**n=41 residue** (`data/certificates/frontier_classification.csv`, measured
+2026-08-01 on the 2,381
 terms unresolved after the v1/v2 sweeps; the selector sweep since
 killed 34, leaving 2,347 live): opaque 775, blowup 580,
 head-recurrent-other 570, ratchet-candidate 231, monotone-growth 225.

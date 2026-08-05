@@ -51,11 +51,11 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo test --release --workspace
       - name: uni.rs parity (byte-identical vs uni.py on Tromp's corpus)
-        run: bash tools/uni/verify.sh
+        run: bash contrib/ait-uni/verify.sh
 
   census-spot-check:
     # The standing regression guarantee: halt counts are bit-identical to
-    # data/census_table.txt under every engine change. Rows 4..32 cover the
+    # data/classical/census_table.txt under every engine change. Rows 4..32 cover the
     # full ladder including loop32's row and run in under a second locally;
     # timing columns are excluded, everything else must match exactly.
     runs-on: ubuntu-latest

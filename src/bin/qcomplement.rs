@@ -74,7 +74,7 @@ use std::io::{BufRead, BufWriter, Write};
 use std::sync::Mutex;
 use std::time::Instant;
 
-/// The frozen signature order (DESIGN-QBLC.md): p h meas new cnot t.
+/// The frozen signature order (`docs/quantum/architecture.md`): p h meas new cnot t.
 const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
 /// Required consumed-binder masks per leading-λ count k (bit s−1 for
