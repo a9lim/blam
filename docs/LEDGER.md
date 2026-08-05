@@ -1081,3 +1081,54 @@ All 12 wires added to the odd.rs replay fixture
 (`witnesses_accepted_on_their_odd_leaves`) — every odd leaf's qeval
 trace replays Ok(MayOdd), 0.01s. Remaining sweeps: 52 (~2 slices),
 53 (~4 slices).
+
+## 2026-08-04 — oddmin r6 build: the DP prototype is live and gate-green; four measured domain revisions
+
+The §8 gated build ran end-to-end tonight (src/oddmin.rs transfer
+layer + src/bin/oddminproto.rs driver; r6-pre rulings job
+cx-20260804-203019-9804 absorbed before app_ref landed). Headline:
+**the reference DP composes witness45 to a 44-node summary, accepts
+it through the full closed pipeline, rejects the 28-bit cnot
+witness, and is EXACT against qeval on all 6,069 closed programs
+≤22 bits — zero looseness — in about a second.** Gate numbers:
+96 / 751 / 6,346 unique canonical summaries at W = 16 / 20 / 24
+(12 ms / 0.2 s / 2.5 s), three orders under the 10⁶ stop rule.
+
+Getting there burned down four designs by measurement, each now a
+SPEC-ODDMIN §9 revision awaiting the r6 ruling:
+
+1. The r5b letter-enumerated observation fan (~43 RetIn letters per
+   ambient seam) measured fan^depth on open app chains — replaced by
+   the ★ observation (`HeadPat::Any` + `Head::Opaque`) with use-site
+   case splits; witness45's summary dropped from ABORT to 44 nodes,
+   LINEAR per constructor.
+2. Maximal call-stack erasure let shared primitive-library frames
+   BRIDGE call sites (false accepts on the species/new-discard
+   gates) — frames are now continuation-specialized; recursion
+   memoizes on stable continuations; the wrong-return looseness is
+   simply gone.
+3. Captured environments are restricted to the subgraph's free
+   references (the closure-trimming); without it the interface
+   exceeded 63 ports on a two-app body. ε is a first-class letter.
+4. Staged signature application re-specialized the graph per stage
+   (>3M states on witness45) — closed evaluation is ONE
+   specialization universe with prims as library thunks and inline
+   NF descent, product run directly on the internal graph.
+
+The surviving hole is principled: Ω-style self-appliers deepen
+captured-env chains beyond any hash-consing and abort as ⊤ (nine in
+the ≤22 population, all concretely effect-free divergers). A ⊤
+below 45 would break the bound, so the r5b Top-widening needs a
+component-scoped form — the r6 design question sent to Codex.
+
+Also recorded: CBN substitutes unevaluated preparations, so handle
+aliasing via thunks cannot occur in closed programs (every re-force
+re-allocates) — check 3's alias staling is exercised only by the
+open-transfer seams; the mechanism is in and unit-covered, the
+closed pipeline can't reach it. And `may_accept_latent` under ★ is
+effect-edge reachability, not an any-context upper bound; the §4
+protocol's closed query never depended on it.
+
+83 lib tests, clippy clean, fmt. Campaign note: a9 paused the
+complement sweeps at 51 (52/53 parked); the 52 slice-0 run was
+killed cleanly mid-flight and its partial outputs removed.

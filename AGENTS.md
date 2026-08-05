@@ -234,8 +234,9 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   every witness wire is an `src/odd.rs` test fixture); first unkT
   at 49 (2), 10 at both 50 and 51. Runs are chunked under a9's
   ≤1-2h-per-run protocol (per-size sweeps; 'i/m' slices for 52/53;
-  unresolved streams in `.phase2/`); remaining blocks:
-  52 in ~2 and 53 in ~4 slices. The big
+  unresolved streams in `.phase2/`); campaign PAUSED at 51 (a9's
+  call, 2026-08-04 — wrap the thread at the confirmed prediction);
+  remaining when resumed: 52 in ~2 and 53 in ~4 slices. The big
   adjudication is DEFERRED to its own session — protocol on record
   in round 4 (exhaustive β=1024 re-sweep 46..52(+53), then
   event-stratified canonical samples); small open task:
@@ -255,14 +256,24 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   GATED: run weights 16/20/24, measure summary growth, stop if
   >10⁶. Monitor layer landed and r4-hardened (`src/odd.rs`: verdict
   {Even, MayOdd, NeedsCnot}, epoch-checked certificate replay, pure
-  step_h/t/meas kernels; tight ≤22). Spec landed and r5a-revised:
-  docs/SPEC-ODDMIN.md — the domain is port-labeled interaction NFAs
-  (the language-DFA first draft was unsound for higher-order values;
-  defect + fix ledgered), capability-action protocol, five-way
-  heads, accept strictly by external product with the odd.rs
-  kernels. Prototype green-lit: gate-zero adversarial checks, then
-  weights 16/20/24 with the growth-curve stop rule. Full state:
-  NOTE-GALOIS.md + the ledger entries.
+  step_h/t/meas kernels; tight ≤22). Spec landed (docs/SPEC-ODDMIN
+  .md — port-labeled interaction NFAs, capability-action protocol,
+  five-way heads, accept by external product with the odd.rs
+  kernels). **r6 build DONE (2026-08-04): the DP prototype is live
+  and gate-green** (`src/oddmin.rs` transfers + `oddminproto` bin;
+  12-test battery; witness45 → 44-node summary, accepted closed;
+  cnot28 rejected; EXACT vs qeval on all 6,069 closed ≤22 — zero
+  looseness; gates 96/751/6,346 summaries at W=16/20/24 in
+  12ms/0.2s/2.5s). Four measured domain revisions recorded in
+  SPEC-ODDMIN §9 pending Codex ratification: ★ observation fan
+  (letter fans measured fan^depth), continuation-specialized frames
+  (maximal erasure bridged shared lib frames → false accepts),
+  closure-env restriction + first-class ε, one-shot closed
+  evaluation. Open hole: Ω-family ⊤ cells (deepening captured-env
+  chains; nine ≤22, all effect-free divergers) — needs a
+  COMPONENT-SCOPED Top widening before the ladder to 44, plus
+  search-side pruning (growth ≈ ×1.7/bit crosses 10⁶ near W≈34).
+  Full state: SPEC-ODDMIN §9, NOTE-GALOIS.md, the ledger.
   Bisimulation lane: **Lean seed landed** (`lean/Blc/Selfint.lean`;
   intL kernel-pinned via wire identity, |E_q|=176 kernel-checked,
   quote linearity proved; L1/L2 statements round-4-ratified — the

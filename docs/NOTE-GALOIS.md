@@ -123,7 +123,16 @@ continuation demonstrably costs 8.
   argument's weight was paid at the App), trusted/untrusted split
   `oddmin_ref` / `oddmin` search / checker-invokes-ref-only, and a
   GATED prototype: weights 16/20/24 first, stop if canonical
-  summaries exceed ~10⁶.
+  summaries exceed ~10⁶. **Prototype built and gate-green
+  (2026-08-04)**: witness45 composes to a 44-node summary and is
+  accepted through the closed pipeline; exact vs qeval on all
+  closed ≤22 (zero looseness); 96/751/6,346 summaries at
+  W=16/20/24 in seconds. Four measured domain revisions
+  (SPEC-ODDMIN §9: ★ observation fan, continuation-specialized
+  frames, closure-env restriction, one-shot closed evaluation)
+  await the r6 ruling; the open design hole is a component-scoped
+  Top widening for Ω-style self-appliers (⊤ cells) before the
+  ladder to 44.
 - **Stage 1b (the cnot companion): Pauli-string path parity.** The
   T-count shortcut is backwards — a T acting on even-grade X/Y
   support is exactly how odd grade is created. The correct lemma

@@ -306,3 +306,78 @@ compatible app pairs, LFP iterations to quiescence. STOP and
 redesign if summaries exceed ~10⁶ or app pairing goes
 quadratic-dominant. No fast path, no certificate freeze, no weight
 45 until the growth curve is measured and r5-reviewed.
+
+## 9. Prototype findings (r6, 2026-08-04 — measured; ratification pending)
+
+The §8 gate was built and run. Four domain-level revisions were forced
+by measurement; each is a deviation from the §§3–4 text awaiting the
+r6 ruling, and all are strictly on the transfer/representation side —
+§1–2, §5–7 stand unchanged.
+
+- **The ★ observation fan.** The letter-enumerated RetIn fan
+  (pat × action × cap_out ≈ 43 letters per ambient seam) multiplies
+  per application depth: open app chains measured fan^depth
+  (level-3 app > 10⁵ specialized states; witness45 unreachable). The
+  information the fan splits on is only consumed at USE sites, where
+  value dispatch case-splits anyway — so the transfers emit ONE
+  `HeadPat::Any` observation binding an opaque value
+  (`Head::Opaque`), and use sites branch: apply defers a symbolic
+  call, strict prims branch over {D-current handle + effect,
+  other-handle τ, stuck neutral} with species kills absent.
+  Result: witness45's summary is 44 nodes / 43 edges / 10 ports,
+  LINEAR per constructor. Ambient seams no longer stale aliases
+  (unknown action) — sound looseness, and real seams stale with the
+  real net at delivery. Consequence: `may_accept_latent` is now
+  effect-edge reachability, NOT an any-context upper bound; its r5b
+  role needs an opaque-ambient instantiation run if wanted.
+- **Continuation-specialized frames replace maximal call-stack
+  erasure.** With frames keyed only by (subgraph, captured env),
+  shared configurations (the primitive library entries) BRIDGE call
+  sites: a root-reachable library node carries ε-edges into frames
+  never semantically entered, and gates 7/8 fail with false accepts.
+  Frames now carry the return continuation id; recursion with a
+  stable continuation memoizes; the declared wrong-return looseness
+  is gone (nothing needed it). Unbounded continuation growth aborts
+  at the state cap (⊤ cell).
+- **Closure-environment restriction.** Captured environments are
+  restricted to the port subgraph's free references (memoized
+  side-analysis). Without it, env-specialized argument ports
+  explode the interface (> 63 ports on `(5 (3 1))`); with it the
+  specialization product and port table stay small. `Label::Eps` is
+  a first-class internal letter (ε-elimination by edge copying is
+  quadratic).
+- **One-shot closed evaluation.** Staged signature application
+  (five app_refs, flatten between) re-specializes the whole graph
+  per stage and blew past 3×10⁶ states on witness45. `Mode::Closed`
+  runs one specialization universe (prims as library thunks in a
+  single continuation chain, NF descent inline) and the product runs
+  directly on the internal graph — no flatten, no canon.
+
+**The open hole: Ω-family widening.** Self-application builds
+structurally distinct deepening captured-env chains; hash-consing
+cannot close them, and the state cap fires (⊤). Nine ⊤ programs in
+the closed ≤22 population, all Ω-style, all concretely effect-free
+divergers. ⊤ = conservative accept, so any ⊤ below 45 breaks the
+bound: the r5b "widen to Top" ruling needs a Top SCOPED to the
+component's own constructible heads (an unscoped Top's use-site
+branches include handle effects and would falsely accept Ω at 18).
+This is the main r6 design question.
+
+**Gate measurements** (naive single-thread ref):
+
+| W | unique summaries | closed | time (total) | ⊤ splices | accepts |
+|----|-----|-----|--------|----|----|
+| 16 | 96 | 96 | 12 ms | 0 | none |
+| 20 | 751 | 751 | 0.21 s | 2 | none |
+| 24 | 6,346 | 6,346 | 2.5 s | 28 | none |
+
+Growth ≈ ×1.7 per bit ⇒ the 10⁶ stop rule is met at 16/20/24 with
+three orders of margin, but extrapolates past it near weight ~34 —
+the ladder to 44 needs search-side pruning and/or stronger
+canonical dedup (per-copy BindIds overstate the count; see §3).
+Validation: the 12-test gate battery is green (all §3/§4 checks
+constructible under the revised schema), and the closed ≤22
+differential vs qeval is EXACT — 6,069 programs, zero abstract
+accepts, zero looseness, nine ⊤ — with witness45 accepting and the
+28-bit cnot witness rejecting through the full pipeline in
+milliseconds.
