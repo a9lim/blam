@@ -1132,3 +1132,27 @@ protocol's closed query never depended on it.
 83 lib tests, clippy clean, fmt. Campaign note: a9 paused the
 complement sweeps at 51 (52/53 parked); the 52 slice-0 run was
 killed cleanly mid-flight and its partial outputs removed.
+
+## 2026-08-04 — oddmin r6 verdict: all four revisions ratified; widening lands, zero splice-⊤
+
+Codex reran cdd4610 itself — tests, differential, driver, witness
+pair all reproduced — and ratified the ★ fan, ctx frames, ε, and
+one-shot closed evaluation, with amendments landed the same night
+(SPEC-ODDMIN §10): the must-bound dataflow replacing the unsound
+bound-anywhere freeness rule; `materialized_accept_any_root` as the
+quarantined diagnostic; the closed-mode resolution invariant
+MEASURED via `Abort::UnresolvedAmbient` with continuation-chain
+liveness; and the narrow-rung pure-component widening
+(`Head::PureWiden`, capture-depth gated, purity-checked) — which
+discharged every Ω splice abort: **zero splice-⊤ through W=24**,
+driver at 1.1 s.
+
+The new assertion immediately earned its keep: it exposed a latent
+formal-renumbering bug (flatten remapped head and argument ports
+but not `Call{Formal}` targets — masked at cdd4610 by coincidental
+numbering, 397 false ambients once asserted). Fixed by resolving
+formals to composed ports at explore time (`PreLabel::CallF`).
+Remaining ⊤: 19 nested-descent formal-identity cases ≤22 (all
+concretely non-odd; S1-checked) — exactly the alpha-only port
+identity loss heading Codex's stage-2 canonicalization queue.
+83 lib tests green, clippy clean.

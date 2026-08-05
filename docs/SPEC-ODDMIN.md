@@ -381,3 +381,63 @@ differential vs qeval is EXACT — 6,069 programs, zero abstract
 accepts, zero looseness, nine ⊤ — with witness45 accepting and the
 28-bit cnot witness rejecting through the full pipeline in
 milliseconds.
+
+## 10. r6 verdict and the post-verdict build (2026-08-04, late)
+
+Codex independently reran cdd4610 (tests, differential, driver,
+witness pair — all reproduced) and RATIFIED all four §9 revisions,
+with amendments, all landed same night:
+
+- **§9 table label correction**: 96/751/6,346 are the CLOSED
+  depth-0 slice counts; the open-union rows at W=16/20/24 of a
+  max_w=24 run are 552/3,273/6,346.
+- **★ fan** ratified; certificate v1 requires generated RetIn
+  letters to be `HeadPat::Any` (patterned observations = domain
+  version bump). `may_accept_latent` renamed
+  `materialized_accept_any_root`, quarantined as diagnostics. The
+  closed-mode invariant "every ambient observation resolves on live
+  paths" is now MEASURED: `Abort::UnresolvedAmbient` fires on any
+  live-continuation opaque apply (liveness = the continuation chain
+  bottoms out at TopRet, not the Iface sentinel).
+- **ctx frames** ratified; S1's motor: each concrete machine
+  continuation maps to one abstract ContId; entering
+  creates/reuses (component, environment, continuation); returns
+  dispatch only there. Abort = honest partial analysis pre-widening.
+- **ε** ratified. **Closure restriction amended**: the
+  bound-anywhere freeness rule was unsound (dominance); replaced by
+  the ratified MUST-BOUND forward dataflow (intersection over
+  incoming paths; port jumps carry the set; may only retain extra
+  captures).
+- **One-shot closed** ratified; two-lemma proof shape recorded in
+  the r6 reply.
+- **Ω widening**: the narrow first rung landed —
+  `Head::PureWiden`: a component with no effect edges, no Free
+  calls, no Prim/Handle heads reachable, and transitively pure
+  captures, whose capture chain exceeds `WIDEN_DEPTH`, stops
+  unfolding into a lambda-shaped, effect-free, apply-idempotent,
+  species-killable value (over-approximating divergence too).
+  Result: ZERO splice-⊤ through W=24 (was 28), and the driver run
+  dropped to 1.1 s. The general component-scoped post-fixpoint
+  (ScopeId'd origins, seeds ⊆ S ∧ Transfer(S) ⊆ S checked by the
+  trusted side) is specced in the r6 reply for stage 2.
+
+**Found by the new assertion**: flatten renumbered ports for heads
+and call arguments but left `Call{Formal(p)}` targets on the old
+side-local numbering — descend-installed thunks landed under new
+indices while bodies looked up old ones (silently ambient; masked
+at cdd4610 by coincidental numbering). Fixed: `PreLabel::CallF`
+resolves the formal to its composed port at explore time, so
+flatten numbers target and owning head consistently.
+
+**Remaining ⊤ class (19 closed programs ≤22, all concretely
+non-odd, S1-checked)**: nested-descent formal identity — call-site
+and head-site captures can restrict to different environments,
+yielding different composed ports for one formal. This is the
+"port identity is alpha-only" canonicalization loss; it heads the
+stage-2 queue Codex ordered: (1) pure widening [DONE, zero
+splice-⊤], (2) BindId alpha-normalization + weak-ε canonicalization
++ canonical port renumbering, (3) rerun 24 and probe 26/28/30,
+(4) simulation-preorder antichain after constructor-monotonicity
+checks. Also on record from r6: the handle-aliasing lemma is scoped
+"closed, pre-CNOT" (CNOT's Church pair materializes handles into
+lambdas, so stale aliasing returns in stage 1b).

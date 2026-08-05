@@ -144,6 +144,10 @@ pub enum Head {
     Opaque {
         bind: BindId,
     },
+    /// A pure-component value widened at the environment-depth cap
+    /// (the r6 narrow rung): provably effect-free, lambda-shaped.
+    /// Applying it yields it; primitives species-kill it.
+    PureWiden,
 }
 
 /// Observable pattern of a received value (RetIn side). Patterns own
@@ -462,7 +466,7 @@ fn accept_product(s: &Summary, ma: &MaskAutomaton, roots: &[NodeId]) -> bool {
 /// r5b "deliberately loose any-context" formulation would need an
 /// opaque-ambient instantiation run (r6 item); the closed theorem
 /// path (`closed_accepts`) does not depend on it.
-pub fn may_accept_latent(s: &Summary, ma: &MaskAutomaton) -> bool {
+pub fn materialized_accept_any_root(s: &Summary, ma: &MaskAutomaton) -> bool {
     accept_product(s, ma, &s.roots())
 }
 
@@ -664,6 +668,9 @@ pub enum Abort {
     StateCap,
     PortCap,
     DescendCap,
+    /// Closed-mode invariant breach: a live closed path met an
+    /// unresolved ambient observation (r6: measured, not implicit).
+    UnresolvedAmbient,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -715,6 +722,8 @@ enum CHead {
     /// Ambient-received via ★: use sites case-split over the
     /// possible concrete heads.
     Opaque(BindId),
+    /// Pure-component widening (see `Head::PureWiden`).
+    PureWiden,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -896,6 +905,11 @@ struct Composer<'a> {
     // the specialization product and the port table finite in
     // practice.
     refs_memo: BTreeMap<(Side, NodeId), (BTreeSet<BindId>, BTreeSet<PortId>)>,
+    cport_depth: Vec<u32>,
+    env_depth: Vec<u32>,
+    side_pure_memo: BTreeMap<(Side, NodeId), bool>,
+    cport_pure_memo: BTreeMap<CPortId, bool>,
+    unresolved_ambient: u64,
     // Worklists: unexplored spec states and pending deliveries (the
     // delivery engine is iterative — deep chains must not recurse).
     todo: VecDeque<SpecId>,
@@ -928,6 +942,15 @@ enum PreLabel {
         pat: HeadPat,
         bind: BindId,
         rel: CapRel,
+    },
+    /// An unsubstituted formal call, target resolved to its composed
+    /// port at explore time so flatten numbers it consistently with
+    /// the head that owns it (a raw side-local index would dangle
+    /// after port renumbering — caught by the closed-mode ambient
+    /// assertion).
+    CallF {
+        fcport: CPortId,
+        arg: Option<CPortId>,
     },
     /// The composed summary's own top-level return: always interface.
     RetOut {
@@ -980,6 +1003,11 @@ impl<'a> Composer<'a> {
             delivered: BTreeSet::new(),
             bind_ids: BTreeMap::new(),
             refs_memo: BTreeMap::new(),
+            cport_depth: Vec::new(),
+            env_depth: Vec::new(),
+            side_pure_memo: BTreeMap::new(),
+            cport_pure_memo: BTreeMap::new(),
+            unresolved_ambient: 0,
             todo: VecDeque::new(),
             dq: VecDeque::new(),
             state_cap,
@@ -999,8 +1027,17 @@ impl<'a> Composer<'a> {
         if let Some(&id) = self.cport_ids.get(&p) {
             return id;
         }
+        let depth = match &p {
+            CPort::Sub { env, .. } => 1 + self.env_depth[*env as usize],
+            CPort::Recv(_) => 0,
+            CPort::Spine(prev, arg) => prev
+                .map(|c| self.cport_depth[c as usize])
+                .unwrap_or(0)
+                .max(self.cport_depth[*arg as usize]),
+        };
         let id = self.cports.len() as CPortId;
         self.cports.push(p.clone());
+        self.cport_depth.push(depth);
         self.cport_ids.insert(p, id);
         id
     }
@@ -1008,8 +1045,26 @@ impl<'a> Composer<'a> {
         if let Some(&id) = self.env_ids.get(&e) {
             return id;
         }
+        let mut depth = 0;
+        for &cp in e.thunks.values() {
+            depth = depth.max(self.cport_depth[cp as usize]);
+        }
+        for set in e.vals.values() {
+            for &vid in set {
+                let r = match self.vals[vid as usize].head {
+                    CHead::Lam { apply } => Some(apply),
+                    CHead::Prim { held, .. } => held,
+                    CHead::Neutral { spine } => spine,
+                    _ => None,
+                };
+                if let Some(cp) = r {
+                    depth = depth.max(self.cport_depth[cp as usize]);
+                }
+            }
+        }
         let id = self.envs.len() as EnvId;
         self.envs.push(e.clone());
+        self.env_depth.push(depth);
         self.env_ids.insert(e, id);
         id
     }
@@ -1238,6 +1293,23 @@ impl<'a> Composer<'a> {
         }
     }
 
+    /// Does this continuation chain bottom out at the composed
+    /// top-level (live) rather than the Iface sentinel (symbolic
+    /// interface exploration)? Chains are finite by construction.
+    fn cont_live(&self, c: ContId) -> bool {
+        match self.conts[c as usize] {
+            Cont::Iface => false,
+            Cont::TopRet => true,
+            Cont::Match { ctx, .. } => self.cont_live(ctx),
+            Cont::Apply { ret_to, .. }
+            | Cont::PrimArg { ret_to, .. }
+            | Cont::CnotA1 { ret_to, .. }
+            | Cont::CnotA2 { ret_to, .. }
+            | Cont::Descend { ret_to }
+            | Cont::Seq { ret_to, .. } => self.cont_live(ret_to),
+        }
+    }
+
     /// Enter a thunk whose returns should flow to `cont`, from `at`.
     fn enter_from(&mut self, at: ONode, thunk: CPortId, cont: ContId, inflight: Net) {
         match self.cports[thunk as usize].clone() {
@@ -1273,6 +1345,20 @@ impl<'a> Composer<'a> {
                         root: Root::Port(p),
                         env: env3,
                     });
+                    // The r6 narrow-rung widening: a provably pure
+                    // component whose capture chain exceeds the
+                    // depth cap stops unfolding — it can produce no
+                    // effect and only lambda-shaped values, both of
+                    // which PureWiden over-approximates (including
+                    // its possible divergence).
+                    if self.env_depth[env3 as usize] > WIDEN_DEPTH && self.cport_pure(entered) {
+                        let pv = self.intern_val(Val {
+                            head: CHead::PureWiden,
+                            cap: Cap::None,
+                        });
+                        self.deliver(at, pv, inflight, ret_to);
+                        return;
+                    }
                     self.enter(Some(at), entered, ret_to, inflight);
                 }
                 CPort::Recv(b) => {
@@ -1368,9 +1454,22 @@ impl<'a> Composer<'a> {
                 let desc = self.intern_cont(Cont::Descend { ret_to: seq });
                 self.enter_from(at, arg, desc, inflight);
             }
+            CHead::PureWiden => {
+                let pv = self.intern_val(Val {
+                    head: CHead::PureWiden,
+                    cap: Cap::None,
+                });
+                self.deliver(at, pv, inflight, ret_to);
+            }
             CHead::Opaque(b) => {
                 // Applying an ambient value: symbolic deferred call +
-                // a single ★ observation.
+                // a single ★ observation. In closed mode this must
+                // never happen on a LIVE path (interface-frame
+                // exploration under the Iface sentinel is symbolic
+                // and expected).
+                if self.mode == Mode::Closed && self.cont_live(ret_to) {
+                    self.unresolved_ambient += 1;
+                }
                 self.ensure_port_spec(arg);
                 let mid = self.fresh_extra();
                 self.out_edges.push((
@@ -1404,8 +1503,9 @@ impl<'a> Composer<'a> {
     fn prim_arg(&mut self, at: ONode, val: ValId, inflight: Net, which: Which, ret_to: ContId) {
         let v = self.vals[val as usize];
         match v.head {
-            // Species error before the body — Kill.
-            CHead::Lam { .. } | CHead::Prim { .. } => {}
+            // Species error before the body — Kill. PureWiden is
+            // lambda-shaped, so it species-kills too.
+            CHead::Lam { .. } | CHead::Prim { .. } | CHead::PureWiden => {}
             CHead::Handle { role: Role::DCur } => {
                 if v.cap != Cap::Cur {
                     // Stale distinguished handle — Kill (r6 (iv)).
@@ -1536,7 +1636,7 @@ impl<'a> Composer<'a> {
     fn cnot_a1(&mut self, at: ONode, val: ValId, inflight: Net, a2: CPortId, ret_to: ContId) {
         let v = self.vals[val as usize];
         match v.head {
-            CHead::Lam { .. } | CHead::Prim { .. } => {}
+            CHead::Lam { .. } | CHead::Prim { .. } | CHead::PureWiden => {}
             CHead::Neutral { spine } => {
                 // Neutral control: normalize a2, return stuck neutral,
                 // no OutOfScope.
@@ -1589,7 +1689,7 @@ impl<'a> Composer<'a> {
         let v2 = self.vals[val as usize];
         let v1 = self.vals[first as usize];
         match v2.head {
-            CHead::Lam { .. } | CHead::Prim { .. } => {}
+            CHead::Lam { .. } | CHead::Prim { .. } | CHead::PureWiden => {}
             CHead::Neutral { spine } => {
                 let nv = self.intern_val(Val {
                     head: CHead::Neutral { spine },
@@ -1874,25 +1974,19 @@ impl<'a> Composer<'a> {
         }
     }
 
-    /// Free-reference analysis of the subgraph rooted at `root`:
-    /// which received binds (minus locally bound) and formal ports it
-    /// can reach, jumping through own-port head references.
-    fn side_refs(&mut self, side: Side, root: NodeId) -> (BTreeSet<BindId>, BTreeSet<PortId>) {
-        if let Some(r) = self.refs_memo.get(&(side, root)) {
-            return r.clone();
+    /// Is the side subgraph rooted at `root` provably pure: no
+    /// effect edges, no Free calls, no Prim/Handle heads anywhere
+    /// reachable (with port jumps)? Conservative: anything
+    /// unrecognized is impure.
+    fn side_pure(&mut self, side: Side, root: NodeId) -> bool {
+        if let Some(&r) = self.side_pure_memo.get(&(side, root)) {
+            return r;
         }
         let s = self.side_summary(side);
-        let mut referenced: BTreeSet<BindId> = BTreeSet::new();
-        let mut bound: BTreeSet<BindId> = BTreeSet::new();
-        let mut formals: BTreeSet<PortId> = BTreeSet::new();
         let mut seen: BTreeSet<NodeId> = BTreeSet::new();
         let mut q: VecDeque<NodeId> = VecDeque::from([root]);
-        let port_jump = |p: PortId, q: &mut VecDeque<NodeId>| {
-            if let Some(&n) = s.ports.get(p as usize) {
-                q.push_back(n);
-            }
-        };
-        while let Some(n) = q.pop_front() {
+        let mut pure = true;
+        'scan: while let Some(n) = q.pop_front() {
             if !seen.insert(n) {
                 continue;
             }
@@ -1901,48 +1995,192 @@ impl<'a> Composer<'a> {
                     continue;
                 }
                 match l {
+                    Label::NewD | Label::HD | Label::TD | Label::MeasD | Label::OutOfScope => {
+                        pure = false;
+                        break 'scan;
+                    }
+                    Label::Eps | Label::RetIn { .. } => {}
+                    Label::Call { target, arg } => {
+                        if matches!(target, CallTarget::Free(_)) {
+                            pure = false;
+                            break 'scan;
+                        }
+                        if let Some(p) = arg {
+                            if let Some(&pn) = s.ports.get(p as usize) {
+                                q.push_back(pn);
+                            }
+                        }
+                    }
+                    Label::RetOut { head, .. } => match head {
+                        Head::Prim { .. } | Head::Handle { .. } => {
+                            pure = false;
+                            break 'scan;
+                        }
+                        Head::PureWiden | Head::Opaque { .. } => {}
+                        Head::Lam {
+                            apply: PortRef::Own(p),
+                        }
+                        | Head::Neutral {
+                            spine: Some(PortRef::Own(p)),
+                        } => {
+                            if let Some(&pn) = s.ports.get(p as usize) {
+                                q.push_back(pn);
+                            }
+                        }
+                        _ => {}
+                    },
+                }
+                q.push_back(b);
+            }
+        }
+        self.side_pure_memo.insert((side, root), pure);
+        pure
+    }
+
+    /// Is a composed port transitively pure (its subgraph and every
+    /// captured import)? The r6 narrow-rung precondition: no
+    /// imported primitive, handle, ambient, or effect-capable
+    /// origin.
+    fn cport_pure(&mut self, cp: CPortId) -> bool {
+        if let Some(&r) = self.cport_pure_memo.get(&cp) {
+            return r;
+        }
+        // Seed false to break reference cycles conservatively.
+        self.cport_pure_memo.insert(cp, false);
+        let pure =
+            match self.cports[cp as usize].clone() {
+                CPort::Recv(_) => false,
+                CPort::Spine(prev, arg) => {
+                    prev.map(|c| self.cport_pure(c)).unwrap_or(true) && self.cport_pure(arg)
+                }
+                CPort::Sub { side, root, env } => {
+                    let s = self.side_summary(side);
+                    let node = match root {
+                        Root::Entry => s.entry,
+                        Root::Port(q) => s.ports[q as usize],
+                    };
+                    if !self.side_pure(side, node) {
+                        false
+                    } else {
+                        let e = self.envs[env as usize].clone();
+                        let thunks_ok = e.thunks.values().all(|&t| self.cport_pure(t));
+                        let vals_ok = e.vals.values().flatten().all(|&vid| {
+                            match self.vals[vid as usize].head {
+                                CHead::Lam { apply } => self.cport_pure(apply),
+                                CHead::Neutral { spine } => {
+                                    spine.map(|sp| self.cport_pure(sp)).unwrap_or(true)
+                                }
+                                CHead::PureWiden => true,
+                                CHead::Prim { .. } | CHead::Handle { .. } | CHead::Opaque(_) => {
+                                    false
+                                }
+                            }
+                        });
+                        thunks_ok && vals_ok
+                    }
+                }
+            };
+        self.cport_pure_memo.insert(cp, pure);
+        pure
+    }
+
+    /// Free-reference analysis of the subgraph rooted at `root`:
+    /// which received binds it can reference WITHOUT a definite
+    /// local binding, and which formal ports it can reach, jumping
+    /// through own-port head references.
+    ///
+    /// Freeness is decided by a MUST-BOUND forward dataflow (the r6
+    /// dominance ruling): must_bound[n] = intersection over incoming
+    /// paths of binds definitely bound by a RetIn on the way; a
+    /// reference at n to b not in must_bound[n] is free. The old
+    /// "referenced minus bound-anywhere" rule was unsound. The meet
+    /// may only RETAIN extra captures, never drop a required one.
+    fn side_refs(&mut self, side: Side, root: NodeId) -> (BTreeSet<BindId>, BTreeSet<PortId>) {
+        if let Some(r) = self.refs_memo.get(&(side, root)) {
+            return r.clone();
+        }
+        let s = self.side_summary(side);
+        let mut mb: BTreeMap<NodeId, BTreeSet<BindId>> = BTreeMap::new();
+        mb.insert(root, BTreeSet::new());
+        let mut q: VecDeque<NodeId> = VecDeque::from([root]);
+        fn meet(
+            mb: &mut BTreeMap<NodeId, BTreeSet<BindId>>,
+            q: &mut VecDeque<NodeId>,
+            n: NodeId,
+            incoming: &BTreeSet<BindId>,
+        ) {
+            match mb.get_mut(&n) {
+                None => {
+                    mb.insert(n, incoming.clone());
+                    q.push_back(n);
+                }
+                Some(cur) => {
+                    let met: BTreeSet<BindId> = cur.intersection(incoming).copied().collect();
+                    if met != *cur {
+                        *cur = met;
+                        q.push_back(n);
+                    }
+                }
+            }
+        }
+        let mut free: BTreeSet<BindId> = BTreeSet::new();
+        let mut formals: BTreeSet<PortId> = BTreeSet::new();
+        while let Some(n) = q.pop_front() {
+            let here = mb.get(&n).cloned().unwrap_or_default();
+            for &(a, l, b) in &s.edges {
+                if a != n {
+                    continue;
+                }
+                let reference = |bb: BindId, free: &mut BTreeSet<BindId>| {
+                    if !here.contains(&bb) {
+                        free.insert(bb);
+                    }
+                };
+                let mut out = here.clone();
+                match l {
                     Label::Call { target, arg } => {
                         match target {
-                            CallTarget::Received(bb) => {
-                                referenced.insert(bb);
-                            }
+                            CallTarget::Received(bb) => reference(bb, &mut free),
                             CallTarget::Formal(p) => {
                                 formals.insert(p);
                             }
                             CallTarget::Free(_) => {}
                         }
                         if let Some(p) = arg {
-                            port_jump(p, &mut q);
+                            if let Some(&pn) = s.ports.get(p as usize) {
+                                meet(&mut mb, &mut q, pn, &here);
+                            }
                         }
                     }
                     Label::RetIn { bind, .. } => {
-                        bound.insert(bind);
+                        out.insert(bind);
                     }
                     Label::RetOut { head, .. } => {
                         let pr = match head {
                             Head::Lam { apply } => Some(apply),
                             Head::Prim { held, .. } => held,
                             Head::Neutral { spine } => spine,
-                            Head::Handle { .. } => None,
+                            Head::Handle { .. } | Head::PureWiden => None,
                             Head::Opaque { bind } => {
-                                referenced.insert(bind);
+                                reference(bind, &mut free);
                                 None
                             }
                         };
                         match pr {
-                            Some(PortRef::Received(bb)) => {
-                                referenced.insert(bb);
+                            Some(PortRef::Received(bb)) => reference(bb, &mut free),
+                            Some(PortRef::Own(p)) => {
+                                if let Some(&pn) = s.ports.get(p as usize) {
+                                    meet(&mut mb, &mut q, pn, &here);
+                                }
                             }
-                            Some(PortRef::Own(p)) => port_jump(p, &mut q),
                             None => {}
                         }
                     }
                     _ => {}
                 }
-                q.push_back(b);
+                meet(&mut mb, &mut q, b, &out);
             }
         }
-        let free: BTreeSet<BindId> = referenced.difference(&bound).copied().collect();
         let out = (free, formals);
         self.refs_memo.insert((side, root), out.clone());
         out
@@ -2041,6 +2279,10 @@ impl<'a> Composer<'a> {
                     cap: Cap::None,
                 })]
             }
+            Head::PureWiden => vec![self.intern_val(Val {
+                head: CHead::PureWiden,
+                cap: Cap::None,
+            })],
             // Behave as the bound value(s).
             Head::Opaque { bind } => self.envs[env as usize]
                 .vals
@@ -2109,8 +2351,10 @@ impl<'a> Composer<'a> {
                         }
                     },
                     None => {
-                        // Unsubstituted formal: symbolic passthrough.
+                        // Unsubstituted formal: symbolic passthrough,
+                        // target as a composed port (see CallF).
                         let arg2 = arg.map(|q| self.sub_cport(side, q, env));
+                        let fcport = self.sub_cport(side, p, env);
                         let s2 = self.intern_spec(Spec {
                             cport,
                             node: m,
@@ -2120,10 +2364,7 @@ impl<'a> Composer<'a> {
                         });
                         self.out_edges.push((
                             at,
-                            PreLabel::Call {
-                                target: CallTarget::Formal(p),
-                                arg: arg2,
-                            },
+                            PreLabel::CallF { fcport, arg: arg2 },
                             ONode::S(s2),
                         ));
                     }
@@ -2210,6 +2451,9 @@ impl<'a> Composer<'a> {
         let (root_cport, first) = self.close();
         if let Some(a) = self.aborted {
             return Err(a);
+        }
+        if self.unresolved_ambient > 0 {
+            return Err(Abort::UnresolvedAmbient);
         }
         let empty = self.intern_env(Env::default());
         let root = *self
@@ -2345,6 +2589,18 @@ impl<'a> Composer<'a> {
                                 });
                                 fs.edges.push((n, Label::Call { target, arg: arg2 }, b));
                             }
+                            PreLabel::CallF { fcport, arg } => {
+                                let target = match fs.assign(cx, fcport) {
+                                    PortRef::Own(p) => CallTarget::Formal(p),
+                                    // Formal ports are always own.
+                                    PortRef::Received(_) => CallTarget::Formal(0),
+                                };
+                                let arg2 = arg.map(|cp| match fs.assign(cx, cp) {
+                                    PortRef::Own(p) => p,
+                                    PortRef::Received(_) => 0,
+                                });
+                                fs.edges.push((n, Label::Call { target, arg: arg2 }, b));
+                            }
                             PreLabel::RetOut { head, rel } => {
                                 let h = fs.head(cx, head);
                                 fs.edges.push((n, Label::RetOut { head: h, rel }, b));
@@ -2474,6 +2730,7 @@ impl Flat {
                 spine: spine.map(|s| self.assign(cx, s)),
             },
             CHead::Opaque(bind) => Head::Opaque { bind },
+            CHead::PureWiden => Head::PureWiden,
         }
     }
 }
@@ -2495,11 +2752,16 @@ fn boundary(head: CHead, cap: Cap) -> (HeadPat, Cap) {
         ),
         CHead::Neutral { .. } => (HeadPat::Neutral, Cap::None),
         CHead::Opaque(_) => (HeadPat::Any, Cap::None),
+        CHead::PureWiden => (HeadPat::Lam, Cap::None),
     }
 }
 
 /// Default per-splice specialized-state cap (growth gate).
 pub const COMPOSE_STATE_CAP: usize = 100_000;
+
+/// Capture-chain depth beyond which a provably pure component stops
+/// unfolding and widens to `PureWiden` (the r6 narrow rung).
+pub const WIDEN_DEPTH: u32 = 6;
 
 /// `app_ref(F, A)`: the r5b splice. Returns the canonical composed
 /// summary, or the growth-gate abort. Weight accounting (w_f + w_a +
@@ -2605,27 +2867,39 @@ mod tests {
         let ma = MaskAutomaton::build();
         use Label::*;
         // The abstract sandwich accepts; Clifford chains do not.
-        assert!(may_accept_latent(&chain(&[NewD, HD, TD, HD, MeasD]), &ma));
-        assert!(!may_accept_latent(&chain(&[NewD, HD, MeasD]), &ma));
-        assert!(!may_accept_latent(&chain(&[NewD, TD, MeasD]), &ma));
+        assert!(materialized_accept_any_root(
+            &chain(&[NewD, HD, TD, HD, MeasD]),
+            &ma
+        ));
+        assert!(!materialized_accept_any_root(
+            &chain(&[NewD, HD, MeasD]),
+            &ma
+        ));
+        assert!(!materialized_accept_any_root(
+            &chain(&[NewD, TD, MeasD]),
+            &ma
+        ));
         // Interface letters are epsilon for the product.
         let call = Call {
             target: CallTarget::Free(1),
             arg: None,
         };
-        assert!(may_accept_latent(
+        assert!(materialized_accept_any_root(
             &chain(&[NewD, HD, call, TD, HD, MeasD]),
             &ma
         ));
         // OutOfScope is a stage-1a dead end even if odd would follow.
-        assert!(!may_accept_latent(
+        assert!(!materialized_accept_any_root(
             &chain(&[NewD, HD, TD, OutOfScope, HD, MeasD]),
             &ma
         ));
         // Effects before allocation are unrealizable in-summary.
-        assert!(!may_accept_latent(&chain(&[HD, TD, HD, MeasD]), &ma));
+        assert!(!materialized_accept_any_root(
+            &chain(&[HD, TD, HD, MeasD]),
+            &ma
+        ));
         // A second NewD on one lineage path is unrealizable.
-        assert!(!may_accept_latent(
+        assert!(!materialized_accept_any_root(
             &chain(&[NewD, MeasD, NewD, HD, TD, HD, MeasD]),
             &ma
         ));
@@ -2881,7 +3155,7 @@ mod tests {
         // (its any-context upper-bound role is an r6 item); what
         // check 9 requires is the closed rejection above.
         assert!(
-            !may_accept_latent(&s, &ma),
+            !materialized_accept_any_root(&s, &ma),
             "no materialized effect path should exist in the open summary"
         );
     }
@@ -3107,7 +3381,7 @@ mod debug_aborts {
         let mut shown = 0;
         for n in 14..=22 {
             for_each_closed(n, &mut |enc, len| {
-                if shown >= 8 {
+                if shown >= 14 {
                     return;
                 }
                 let mut bits = (0..len).rev().map(|i| enc >> i & 1 == 1);

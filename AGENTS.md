@@ -264,16 +264,29 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   12-test battery; witness45 → 44-node summary, accepted closed;
   cnot28 rejected; EXACT vs qeval on all 6,069 closed ≤22 — zero
   looseness; gates 96/751/6,346 summaries at W=16/20/24 in
-  12ms/0.2s/2.5s). Four measured domain revisions recorded in
-  SPEC-ODDMIN §9 pending Codex ratification: ★ observation fan
-  (letter fans measured fan^depth), continuation-specialized frames
-  (maximal erasure bridged shared lib frames → false accepts),
-  closure-env restriction + first-class ε, one-shot closed
-  evaluation. Open hole: Ω-family ⊤ cells (deepening captured-env
-  chains; nine ≤22, all effect-free divergers) — needs a
-  COMPONENT-SCOPED Top widening before the ladder to 44, plus
-  search-side pruning (growth ≈ ×1.7/bit crosses 10⁶ near W≈34).
-  Full state: SPEC-ODDMIN §9, NOTE-GALOIS.md, the ledger.
+  12ms/0.2s/2.5s; the headline figures are the closed depth-0
+  slices). Four measured domain revisions in SPEC-ODDMIN §9 — ★
+  observation fan, continuation-specialized frames, closure-env
+  restriction + first-class ε, one-shot closed evaluation — ALL
+  RATIFIED by Codex r6 (it reran cdd4610 itself; amendments landed
+  same night, §10): must-bound freeness dataflow (bound-anywhere
+  was unsound), quarantined diagnostic rename, and the MEASURED
+  closed-resolution invariant (Abort::UnresolvedAmbient +
+  continuation liveness — which immediately exposed and fixed a
+  latent formal-renumbering bug, PreLabel::CallF). The narrow-rung
+  pure-component widening (Head::PureWiden) landed: ZERO splice-⊤
+  through W=24, driver 1.1 s. Remaining ⊤: 19 nested-descent
+  formal-identity cases ≤22 (all concretely non-odd) = the
+  alpha-only port-identity canon loss. Stage-2 queue
+  (Codex-ordered): BindId alpha-normalization + weak-ε canon +
+  port renumbering → rerun 24, probe 26/28/30 → simulation-
+  preorder antichain after constructor-monotonicity checks → the
+  general component-scoped post-fixpoint (ScopeId origins; checker
+  verifies post-fixpoint only). Growth ≈ ×1.7/bit crosses 10⁶ near
+  W≈34 — search-side pruning needed for the ladder to 44.
+  Handle-aliasing lemma scoped "closed, pre-CNOT" (cnot's Church
+  pair re-enables aliasing in stage 1b). Full state: SPEC-ODDMIN
+  §§9–10, NOTE-GALOIS.md, the ledger.
   Bisimulation lane: **Lean seed landed** (`lean/Blc/Selfint.lean`;
   intL kernel-pinned via wire identity, |E_q|=176 kernel-checked,
   quote linearity proved; L1/L2 statements round-4-ratified — the
