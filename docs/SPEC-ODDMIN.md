@@ -1,11 +1,13 @@
 # SPEC-ODDMIN — the stage-1a compositional DP
 
-*Status: §§1–2 and 5–8 are ratified architecture (rounds r3–r4b,
-2026-08-04); §§3–4 are the PROTOTYPE DOMAIN PROPOSAL, revised to the
-r5a-ratifiable form (port-labeled interaction NFAs — the first draft's
-plain language-DFAs were compositionally unsound for higher-order
-values and were replaced same-day). Companion theory:
-NOTE-GALOIS.md §4. Validation layer: `src/odd.rs`.*
+*Status: ratified architecture through r6 (rounds r3–r6,
+2026-08-04). §§1–8 are the design as ratified round-by-round; §9
+records the four r6-measured domain revisions (all ratified) and §10
+the r6 verdict, amendments, and stage-2 queue — read §§9–10 as the
+operative deltas over §§3–4's text. Implementation:
+`src/odd.rs` (monitor) + `src/oddmin.rs` (reference DP) +
+`src/bin/oddminproto.rs` (gated driver). Companion theory:
+NOTE-GALOIS.md §4.*
 
 ## 1. Theorem target
 

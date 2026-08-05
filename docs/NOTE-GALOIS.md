@@ -3,10 +3,11 @@
 *Status: working note, opened 2026-08-04. T1 is proved at paper level
 below (Lean formalization parked behind the L2 machine layer, which
 wants the same configuration formalization). T2/T3 are stated with
-proof plans; the oddmin instrument (stage 1a validation layer:
-`src/odd.rs`) is live and r4-hardened; the DP design is r4/r4b-frozen
-with a gated build. Spar record: `qblc-omega-witnesses` rounds
-r1–r4b, 2026-08-04. Measured inputs: LEDGER entries of 2026-08-03/04.*
+proof plans. The stage-1a instruments are live: `src/odd.rs` (the
+hardened monitor) and `src/oddmin.rs` (the reference DP, design
+Codex-ratified through r6, gate-green — spec and measured findings
+in SPEC-ODDMIN.md). Spar record: `qblc-omega-witnesses` rounds
+r1–r6, 2026-08-04. Measured inputs: LEDGER entries of 2026-08-03/04.*
 
 ## 1. Setting
 

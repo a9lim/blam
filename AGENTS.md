@@ -215,78 +215,51 @@ verdict-identical on full sweeps. Census 4..40: ~7.2 min; 4..41:
   is the proof obligation, statement + plan in SPEC-BISIM.md).
   Dyadicity threshold: idiom-sector Σ_success non-dyadic at exactly
   **n=53** (unique fate-divergent witness P53, pinned test; 53's
-  unknowns β-insensitive). **Phase 2 instrument live** (2026-08-04,
-  `qcomplement`; the taint design was replaced by a concrete-first
-  two-pass sweep after exact sizing — complement 46..53 is 933B
-  programs; rounds 3–4 in `qblc-omega-witnesses`, LEDGER.md):
-  validated on the 42..45 complement (√2 ≡ 0, ground truth
-  reproduced; rung-0 counts double-DP-verified), n=42 adjudication
-  99.93% β-insensitive with zero Σ shift. **Measured so far:
-  complement √2-coefficient EXACTLY 0 at every size 42..51** — the
-  full-population dyadicity claim now stands through 51. Complement
-  nondyadic leaves appeared at 48 and diversify with size (48/49:
-  one K-plumbed H·T·H·meas sandwich each; 50: three programs — two
-  payload extensions plus a λ⁴ re-plumb; 51: the wrapper orbit —
-  12 programs, the PRE-REGISTERED PREDICTION CONFIRMED: both
-  wrapped-witness45 wires present byte-exactly, the rest id/eta
-  wraps at interior λ-depths + two K-plumbs + one `(1 1)`-argument
-  echo of P53, 24 leaves — all σ-paired, decoded in the ledger;
-  every witness wire is an `src/odd.rs` test fixture); first unkT
-  at 49 (2), 10 at both 50 and 51. Runs are chunked under a9's
-  ≤1-2h-per-run protocol (per-size sweeps; 'i/m' slices for 52/53;
-  unresolved streams in `.phase2/`); campaign PAUSED at 51 (a9's
-  call, 2026-08-04 — wrap the thread at the confirmed prediction);
-  remaining when resumed: 52 in ~2 and 53 in ~4 slices. The big
-  adjudication is DEFERRED to its own session — protocol on record
-  in round 4 (exhaustive β=1024 re-sweep 46..52(+53), then
-  event-stratified canonical samples); small open task:
-  widen/count-bound the pending-bracket reporting (overflows
-  ok=false at ≥46 scale; √2/Σ tracks unaffected).
-  Codex prior: 95% the threshold stays 53.
-  **√2-theorem lane (opened 2026-08-04, active)**: Tier-A identity +
-  T1 (finite-trace Galois twist, Δ(C) for limits) ratified over
-  rounds r1–r3; P53 = witness45 + 8-bit split verified; n_{1/3} ≤ 85
-  measured (rational-limit threshold ≠ √2 threshold). Round 4
-  redesigned the DP before build: stage 1a is SCOPED CNOT-FREE
-  (min cnot-trace weight measured ∈ (22, 28] — a 28-bit λ⁴ witness
-  fires the effect, so any latch-based bound caps there; the global
-  claim needs stage 1b Pauli-string routing or a cnot-sector source
-  bound), Call(i) must be ordered edges not a multiset, iteration =
-  outer Knuth + same-weight LFP saturation, and the prototype is
-  GATED: run weights 16/20/24, measure summary growth, stop if
-  >10⁶. Monitor layer landed and r4-hardened (`src/odd.rs`: verdict
-  {Even, MayOdd, NeedsCnot}, epoch-checked certificate replay, pure
-  step_h/t/meas kernels; tight ≤22). Spec landed (docs/SPEC-ODDMIN
-  .md — port-labeled interaction NFAs, capability-action protocol,
-  five-way heads, accept by external product with the odd.rs
-  kernels). **r6 build DONE (2026-08-04): the DP prototype is live
-  and gate-green** (`src/oddmin.rs` transfers + `oddminproto` bin;
-  12-test battery; witness45 → 44-node summary, accepted closed;
-  cnot28 rejected; EXACT vs qeval on all 6,069 closed ≤22 — zero
-  looseness; gates 96/751/6,346 summaries at W=16/20/24 in
-  12ms/0.2s/2.5s; the headline figures are the closed depth-0
-  slices). Four measured domain revisions in SPEC-ODDMIN §9 — ★
-  observation fan, continuation-specialized frames, closure-env
-  restriction + first-class ε, one-shot closed evaluation — ALL
-  RATIFIED by Codex r6 (it reran cdd4610 itself; amendments landed
-  same night, §10): must-bound freeness dataflow (bound-anywhere
-  was unsound), quarantined diagnostic rename, and the MEASURED
-  closed-resolution invariant (Abort::UnresolvedAmbient +
-  continuation liveness — which immediately exposed and fixed a
-  latent formal-renumbering bug, PreLabel::CallF). The narrow-rung
-  pure-component widening (Head::PureWiden) landed: ZERO splice-⊤
-  through W=24, driver 1.1 s. Remaining ⊤: 19 nested-descent
-  formal-identity cases ≤22 (all concretely non-odd) = the
-  alpha-only port-identity canon loss. Stage-2 queue
-  (Codex-ordered): BindId alpha-normalization + weak-ε canon +
-  port renumbering → rerun 24, probe 26/28/30 → simulation-
-  preorder antichain after constructor-monotonicity checks → the
-  general component-scoped post-fixpoint (ScopeId origins; checker
-  verifies post-fixpoint only). Growth ≈ ×1.7/bit crosses 10⁶ near
-  W≈34 — search-side pruning needed for the ladder to 44.
-  Handle-aliasing lemma scoped "closed, pre-CNOT" (cnot's Church
-  pair re-enables aliasing in stage 1b). Full state: SPEC-ODDMIN
-  §§9–10, NOTE-GALOIS.md, the ledger.
+  unknowns β-insensitive). **Phase-2 dyadicity campaign**
+  (`qcomplement`, per-size sweeps of the non-λ⁵ complement at
+  β=512/trans=2²⁰, unresolved streamed to `.phase2/`, runs chunked
+  under a9's ≤1-2h protocol): **complement √2-coefficient EXACTLY 0
+  at every size 42..51, fatediv 0 — full-population dyadicity
+  stands through 51**, and the 51 row confirmed the pre-registered
+  prediction (wrapped-witness45 wrapper orbit: 12 programs, 24
+  σ-paired leaves). The witness zoo lives in NOTE-GALOIS.md §3;
+  every witness wire is an `src/odd.rs` test fixture; per-size
+  detail in the ledger. Campaign PAUSED at 51 (a9, 2026-08-04);
+  remaining when resumed: 52 in ~2 'i/m' slices, 53 in ~4. The big
+  adjudication is DEFERRED to its own session (protocol in the
+  ledger: exhaustive β=1024 re-sweep 46..52(+53), then
+  event-stratified canonical samples); small open task: widen/
+  count-bound the pending-bracket reporting (overflows ok=false at
+  ≥46 scale; √2/Σ tracks unaffected). Codex prior: 95% the
+  threshold stays 53.
+  **√2-theorem lane (active)**. Proved/ratified: Tier-A accounting
+  identity + T1 (finite-trace Galois twist; Δ(C) for limits);
+  P53 = witness45 + 8-bit split; n_{1/3} ≤ 85 (rational-limit
+  threshold is a separate problem). Stage 1a is SCOPED CNOT-FREE —
+  min cnot-trace weight ∈ (22, 28], so any latch-based bound caps
+  at 28; the cnot sector belongs to stage 1b (Pauli-string path
+  parity, statement in NOTE-GALOIS.md §4). Instruments live:
+  `src/odd.rs` (trusted monitor: verdicts {Even, MayOdd,
+  NeedsCnot}, epoch-checked replay, pure step_h/t/meas kernels,
+  tight ≤22) and `src/oddmin.rs` + `oddminproto` (the reference DP:
+  ★-observation interaction-NFA domain, continuation-specialized
+  frames, must-bound closure restriction, one-shot closed
+  evaluation, pure-component widening — design Codex-ratified
+  through r6, spec + measured findings in SPEC-ODDMIN.md §§1–10).
+  Current measured state: witness45 accepts closed (44-node
+  summary), cnot28 rejects, EXACT vs qeval on all 6,069 closed ≤22
+  (zero looseness; 19 ⊤ cells, all concretely non-odd — the
+  alpha-only port-identity canon loss); zero splice-⊤ through
+  W=24; closed-slice counts 96/751/6,346 at W=16/20/24, driver
+  1.1 s; growth ≈ ×1.7/bit crosses the 10⁶ stop near W≈34.
+  NEXT (stage 2, Codex-ordered): BindId alpha-normalization +
+  weak-ε canon + port renumbering (kills the 19 ⊤s) → rerun 24,
+  probe 26/28/30 → simulation-preorder antichain after
+  constructor-monotonicity checks → the general component-scoped
+  post-fixpoint (ScopeId origins; checker verifies post-fixpoint
+  only) → search-side pruning for the ladder to 44. Scope note:
+  the handle-aliasing lemma is "closed, pre-CNOT" only (cnot's
+  Church pair re-enables aliasing in stage 1b).
   Bisimulation lane: **Lean seed landed** (`lean/Blc/Selfint.lean`;
   intL kernel-pinned via wire identity, |E_q|=176 kernel-checked,
   quote linearity proved; L1/L2 statements round-4-ratified — the
