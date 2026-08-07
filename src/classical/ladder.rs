@@ -39,8 +39,8 @@ use crate::classical::oracle::no_nf;
 use crate::classical::OutOfFuel;
 
 /// Transition cap per β on the two KN rungs. Measured across 4..40:
-/// exactly ONE rung-2 success ever exceeded it (n=39; it now takes the
-/// escalation+rescue path to the same verdict), while stuck rung-2
+/// exactly ONE rung-2 success ever exceeded it (n=39, which the
+/// escalation+rescue path carries to the same verdict), while stuck rung-2
 /// attempts burned the machine's default `1 << 22` floor ~150k times per
 /// big size. Rung 1 with the floor would cost exactly as much as rung 2
 /// on transition-bound terms, i.e. pure overhead.

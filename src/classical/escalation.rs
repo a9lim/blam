@@ -41,10 +41,10 @@
 //! computable O(1) from cached counts; `subst` also bills the per-binder
 //! `shift` of its argument: nodes(t) + lams(t)·nodes(s)). Executed slow
 //! paths charge identically by construction. The meter therefore reaches
-//! every `work_exhausted` check site with the same value as the old
-//! engine, and all verdicts — including which resource dies first — are
+//! every `work_exhausted` check site with the same value the unshared
+//! walk produces, and all verdicts — including which resource dies first — are
 //! bit-identical. (Sole theoretical exception: logical sizes past u64
-//! saturate and charge i64::MAX, where the old engine would grind
+//! saturate and charge i64::MAX, where an unshared walk would grind
 //! unboundedly; no census term reaches that regime.)
 
 use crate::classical::oracle::{no_nf, LView, NV};
@@ -163,7 +163,7 @@ impl LTerm {
         }
     }
 
-    /// Lam+App node count: exactly the work the old engine charged to
+    /// Lam+App node count: exactly the work the unshared walk charges to
     /// rebuild this subtree. O(1).
     fn nodes_la(&self) -> u64 {
         let (l, a) = self.counts();
@@ -298,7 +298,7 @@ pub fn app(f: LTerm, a: LTerm) -> LTerm {
 
 fn shift(t: &LTerm, d: i64, cutoff: u32) -> LTerm {
     if t.mf() < cutoff {
-        // No variable at or above the cutoff: the old walk rebuilt the
+        // No variable at or above the cutoff: the unshared walk rebuilds the
         // term unchanged, one charge per Lam/App. Same charge, no walk.
         charge(t.nodes_la());
         return t.clone();
@@ -341,7 +341,7 @@ fn beta(body: &LTerm, arg: &LTerm) -> LTerm {
 
 fn noccur(i: u32, t: &LTerm) -> u32 {
     if t.mf() < i {
-        return 0; // allocation-free in the old engine too: no charge
+        return 0; // allocation-free under the unshared walk too: no charge
     }
     match t {
         Var(n) => (*n == i) as u32,
@@ -356,7 +356,7 @@ fn noccur(i: u32, t: &LTerm) -> u32 {
 /// inside an armed `normal_form*` run.
 fn simplify(t: &LTerm) -> LTerm {
     if t.counts().1 == 0 {
-        // App-free ⇒ simplify is the identity; old walk charged one per Lam.
+        // App-free ⇒ simplify is the identity; the unshared walk charges one per Lam.
         charge(t.counts().0);
         return t.clone();
     }
@@ -399,7 +399,7 @@ fn simp_a(body: &LTerm, arg: &LTerm) -> LTerm {
 /// Var i will be bound to an erasing function: its arguments are dead.
 fn simp_e(i: u32, t: &LTerm) -> LTerm {
     if t.mf() < i {
-        // Var i absent: old walk rebuilt everything unchanged.
+        // Var i absent: the unshared walk rebuilds everything unchanged.
         charge(t.nodes_la());
         return t.clone();
     }
@@ -438,7 +438,7 @@ fn simp_i(i: u32, t: &LTerm) -> LTerm {
 /// Replace variables free at depth `d` by ⊥ (BB.lhs `botFree`).
 fn bot_free(d: u32, t: &LTerm) -> LTerm {
     if t.mf() <= d {
-        // No variable free above depth d: old walk rebuilt unchanged.
+        // No variable free above depth d: the unshared walk rebuilds unchanged.
         charge(t.nodes_la());
         return t.clone();
     }
@@ -877,43 +877,15 @@ pub fn normal_form_spine_with(
     run_nf(&run, cfg, cap_bits, t)
 }
 
-/// Phase-3 legacy shim — DEPRECATED, use [`normal_form_with`]. This is
-/// the only environment read left in the library: `BLC_WORK_MULT` and
-/// `BLC_PROBE_FUEL` (both `OnceLock`-cached, so a mid-run `set_var` is
-/// not seen) stand in for an explicit [`EngineCfg`]. It also republishes
-/// the no-whnf marker so `take_head_diverge` keeps working. The
-/// remaining callers are the quantum drivers and the slot search; they
-/// migrate with their own lanes.
-pub fn normal_form(cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
-    let (out, spine) = normal_form_with(env_cfg(), cap_bits, t);
-    HEAD_DIVERGE.with(|c| c.set(spine));
-    out
-}
-
-/// Phase-3 legacy shim — DEPRECATED, use [`normal_form_spine_with`].
-pub fn normal_form_spine(cap_bits: i64, t: &LTerm) -> (Result<LTerm, NoNf>, bool) {
-    normal_form_spine_with(env_cfg(), cap_bits, t)
-}
-
-/// `EngineCfg` from the environment, defaults where unset or unparseable.
-fn env_cfg() -> EngineCfg {
-    use std::sync::OnceLock;
-    static CFG: OnceLock<EngineCfg> = OnceLock::new();
-    *CFG.get_or_init(|| {
-        let d = EngineCfg::default();
-        fn get<T: std::str::FromStr>(k: &str) -> Option<T> {
-            std::env::var(k).ok().and_then(|s| s.parse().ok())
-        }
-        EngineCfg {
-            work_mult: get("BLC_WORK_MULT").unwrap_or(d.work_mult),
-            probe_fuel: get("BLC_PROBE_FUEL").unwrap_or(d.probe_fuel),
-        }
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The engine at its measured defaults — what every test means by
+    /// "the escalation engine" unless it is exercising a knob.
+    fn normal_form(cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
+        normal_form_with(EngineCfg::default(), cap_bits, t).0
+    }
 
     fn v(n: u32) -> LTerm {
         Var(n)
@@ -1004,23 +976,34 @@ mod tests {
     }
 
     #[test]
-    fn explicit_config_matches_the_environment_shim() {
-        // The Phase-3 split must be a no-op at the default settings:
-        // `normal_form` (env-backed) and `normal_form_with` (explicit)
-        // are the same engine, so they agree verdict for verdict.
-        for bits in [
-            "010001101000011010",               // Ω
-            "01000110100010",                   // (λx.x x) I
-            "010001101000011001001010",         // growing-wrapper loop
-            "01000110001100001011010000110110", // loop32, stays Unknown
-            "01000110100001100110000110001110", // a redloop kill
-        ] {
+    fn default_config_verdicts_are_pinned() {
+        // The five reference behaviors the engine must keep at the
+        // measured default settings, stated as data.
+        enum Want {
+            Halt,
+            Div,
+            Unknown,
+        }
+        // The spine flags are part of the pin: an oracle fire (Ω, the
+        // growing wrapper) proves no-nf but not no-whnf, so it must NOT
+        // set the spine marker the census head memo feeds on; a redloop
+        // fire on the root's own head chain does.
+        let cases = [
+            ("010001101000011010", Want::Div, false), // Ω (oracle fire)
+            ("01000110100010", Want::Halt, false),    // (λx.x x) I
+            ("010001101000011001001010", Want::Div, false), // growing wrapper (oracle)
+            ("01000110001100001011010000110110", Want::Unknown, false), // loop32
+            ("01000110100001100110000110001110", Want::Div, true), // redloop kill
+        ];
+        for (bits, want, want_spine) in cases {
             let t = from_bits(bits);
-            let legacy = normal_form(2_000_000, &t);
-            let legacy_spine = take_head_diverge();
-            let (explicit, spine) = normal_form_with(EngineCfg::default(), 2_000_000, &t);
-            assert_eq!(legacy, explicit, "{bits}");
-            assert_eq!(legacy_spine, spine, "{bits}");
+            let (got, spine) = normal_form_with(EngineCfg::default(), 2_000_000, &t);
+            match want {
+                Want::Halt => assert!(got.is_ok(), "{bits}"),
+                Want::Div => assert_eq!(got, Err(NoNf::Diverge), "{bits}"),
+                Want::Unknown => assert!(matches!(got, Err(NoNf::Unknown(_))), "{bits}"),
+            }
+            assert_eq!(spine, want_spine, "{bits}");
         }
     }
 

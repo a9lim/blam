@@ -43,7 +43,7 @@
 
 use crate::blc::reduction::beta;
 use crate::blc::{app, lam, Term};
-use crate::classical::escalation::{normal_form, LTerm, NoNf};
+use crate::classical::escalation::{normal_form_with, EngineCfg, LTerm, NoNf};
 use crate::classical::machine::{Machine, Pool, SizeSink};
 use crate::classical::oracle;
 use crate::quantum::sig;
@@ -281,6 +281,10 @@ pub struct TransferCaps {
     pub kn_beta: u64,
     /// Escalation-engine capacity on the residual (the census default).
     pub residual_cap: i64,
+    /// Escalation-engine settings for the residual run — explicit data,
+    /// like every engine config in the library (the CLI resolves
+    /// flag → env → default and passes the result down).
+    pub engine: EngineCfg,
 }
 
 impl Default for TransferCaps {
@@ -288,6 +292,7 @@ impl Default for TransferCaps {
         TransferCaps {
             kn_beta: 65_536,
             residual_cap: 2_000_000,
+            engine: EngineCfg::default(),
         }
     }
 }
@@ -376,7 +381,7 @@ pub fn adjudicate_with_transfer(
                     nf_bits: sink.0,
                     via: Via::Kn,
                 },
-                Err(_) => match normal_form(transfer.residual_cap, &lt) {
+                Err(_) => match normal_form_with(transfer.engine, transfer.residual_cap, &lt).0 {
                     Ok(nf) => Transfer::Halt {
                         steps,
                         nf_bits: nf.bit_size(),
@@ -514,7 +519,12 @@ mod tests {
                 // The classical escalation engine proves the residual
                 // diverges — the full transfer chain.
                 assert_eq!(
-                    normal_form(2_000_000, &LTerm::from_term(&residual)),
+                    normal_form_with(
+                        EngineCfg::default(),
+                        2_000_000,
+                        &LTerm::from_term(&residual)
+                    )
+                    .0,
                     Err(NoNf::Diverge)
                 );
             }

@@ -233,7 +233,7 @@ impl Pool {
 /// `1ⁿ0` loop is O(n) in the variable index, and n = depth − level + 1
 /// is bounded only by the machine's transition cap, which does NOT
 /// charge for emitted bits. An O(n) `var` on a deep spine burned 99.9%
-/// of a profiled solomonoff tail (the work-meter lesson, instance #4).
+/// of a profiled solomonoff tail.
 pub trait Sink {
     /// Opt in to early termination. When `false` (the default) the machine
     /// never calls `aborted`, and monomorphization deletes the check — the

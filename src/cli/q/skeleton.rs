@@ -1,15 +1,11 @@
-//! `blam q skeleton FILE` — the trusted-checker sweep, extracted from
-//! `qcensus --skeleton-only`.
+//! `blam q skeleton FILE` — the trusted-checker sweep over a terms
+//! file.
 //!
 //! No qvm run at all: the whole point is that a skeleton kill is orders
 //! of magnitude cheaper than paying the quantum Unknown budget per
 //! program. The classical skeleton is the program applied to one rigid
 //! placeholder per signature slot; where that reduction settles, the
 //! quantum fate follows. One streamed line per program.
-//!
-//! It never touched `Pool`, `QMachine`, or `Tally`, so it was never
-//! really a census mode — and sharing `--terms-file` with `q census`'s
-//! batch re-adjudication meant one flag selected two unrelated engines.
 //!
 //! The ladder itself lives in `quantum::certificate` beside the transfer
 //! theorems that license it (`adjudicate_with_transfer`); this file is the
@@ -34,8 +30,10 @@ usage: blam q skeleton FILE [flags]
   --steps N       skeleton reduction steps per program (default 256)
   --size N        skeleton size ceiling in bits (default 16384)
   --threads N     rayon threads (0 = ambient, the default)
-  --work-mult N   BLC_WORK_MULT for this run (default 16)
-  --probe-fuel N  BLC_PROBE_FUEL for this run (default 4096)
+  --work-mult N   escalation work-meter multiplier (default 16;
+                  BLC_WORK_MULT honored as fallback)
+  --probe-fuel N  redloop probe fuel (default 4096; BLC_PROBE_FUEL
+                  honored as fallback)
 
 Prints `<bits> skel2=<verdict>` per program: loop, halt-inert,
 holedemanded, capout, halt, div, or residual-unknown.";
@@ -97,7 +95,7 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     let mut caps = SkelCaps::default();
     let mut threads = 0usize;
-    let mut work_mult: Option<u64> = None;
+    let mut work_mult: Option<i64> = None;
     let mut probe_fuel: Option<u64> = None;
     // Only the arity of the signature reaches the checker — one hole per
     // slot — but `--sig` is spelled the same as everywhere else so an
@@ -123,15 +121,16 @@ pub fn run(argv: &[String]) -> R<()> {
             args::hint("q skeleton")
         ));
     };
-    // Phase 3: becomes explicit library config.
-    args::apply_engine_env(work_mult, probe_fuel);
     // Big worker stacks: the skeleton reducer and Term drops recurse
     // over term depth (the size cap bounds it at thousands of frames).
     args::build_pool(threads)?;
 
     let owned = args::read_terms_file(path)?;
     let programs: Vec<&str> = owned.iter().map(String::as_str).collect();
-    let transfer = TransferCaps::default();
+    let transfer = TransferCaps {
+        engine: args::engine_cfg(work_mult, probe_fuel),
+        ..TransferCaps::default()
+    };
     let t0 = Instant::now();
     // Lock-free tallying: one counter per verdict, one progress counter.
     // The old per-item Mutex serialised every worker on a HashMap update

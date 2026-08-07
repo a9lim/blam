@@ -154,9 +154,7 @@ usage: blam cert search [flags]
   --nodes N        node ceiling (default 100000)
   --lemma-steps N  obligation step budget (default 4096)
   --no-descend     do not descend into closed hnf spine arguments
-  --threads N      rayon threads (0 = ambient, the default)
-  --work-mult N    BLC_WORK_MULT for this run (default 16)
-  --probe-fuel N   BLC_PROBE_FUEL for this run (default 4096)";
+  --threads N      rayon threads (0 = ambient, the default)";
 
     pub fn run(argv: &[String]) -> R<()> {
         if args::wants_help(argv) {
@@ -172,8 +170,6 @@ usage: blam cert search [flags]
         };
         let mut term_arg: Option<String> = None;
         let mut file_arg: Option<String> = None;
-        let mut work_mult: Option<u64> = None;
-        let mut probe_fuel: Option<u64> = None;
 
         let mut p = Args::new("cert search", argv);
         while let Some(tok) = p.next() {
@@ -182,8 +178,6 @@ usage: blam cert search [flags]
                 "--nodes" => cfg.budgets.nodes = p.num(tok)?,
                 "--lemma-steps" => cfg.budgets.lemma_steps = p.num(tok)?,
                 "--threads" => cfg.threads = p.num(tok)?,
-                "--work-mult" => work_mult = Some(p.num(tok)?),
-                "--probe-fuel" => probe_fuel = Some(p.num(tok)?),
                 "--term" => term_arg = Some(p.value(tok)?.to_string()),
                 "--file" => file_arg = Some(p.value(tok)?.to_string()),
                 "--no-descend" => {
@@ -199,8 +193,6 @@ usage: blam cert search [flags]
                 args::hint("cert search")
             ));
         }
-        // Phase 3: becomes explicit library config.
-        args::apply_engine_env(work_mult, probe_fuel);
 
         let lines: Vec<String> = if let Some(bits) = term_arg {
             vec![bits]

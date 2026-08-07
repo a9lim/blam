@@ -39,7 +39,7 @@
 
 use crate::args::{self, Args, R};
 use blam::blc::wire::enc_to_string;
-use blam::classical::escalation::{normal_form, LTerm, NoNf};
+use blam::classical::escalation::{normal_form_with, EngineCfg, LTerm, NoNf};
 use blam::classical::machine::{Machine, Node, Pool, Sink};
 use blam::classical::oracle::no_nf;
 use blam::classical::OutOfFuel;
@@ -562,6 +562,14 @@ fn close(pool: &mut Pool, work: &mut Vec<P>, frame: u8, enc: u64, len: u8) -> u3
 }
 
 // Rung 1: the spec's recommended first rung for a ~73-bit closure.
+/// Engine settings, resolved once at the CLI layer (env fallback, then
+/// the library defaults). The slot search exposes no knob flags.
+fn engine_cfg() -> EngineCfg {
+    use std::sync::OnceLock;
+    static CFG: OnceLock<EngineCfg> = OnceLock::new();
+    *CFG.get_or_init(|| args::engine_cfg(None, None))
+}
+
 const BETA1: u64 = 256;
 const TRANS1: u64 = 16_384;
 // Rung 2: a cheap second look before the expensive proof machinery. Escalation
@@ -630,7 +638,9 @@ fn adjudicate(
     esc[2] += 1;
     // The escalation engine carries the self-feedback certificate, so it
     // decides loops the syntactic oracle alone cannot.
-    match normal_form(BB_CAP, &LTerm::from_pool(pool, root)) {
+    // Engine settings resolve env → default once at the CLI layer; the
+    // slot search exposes no knob flags (its budgets are its own consts).
+    match normal_form_with(engine_cfg(), BB_CAP, &LTerm::from_pool(pool, root)).0 {
         Err(NoNf::Diverge) => return Verdict::Diverge,
         Ok(nf) if nf.bit_size() != golden.len() as u64 => return Verdict::Mismatch,
         _ => {}

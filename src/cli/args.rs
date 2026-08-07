@@ -224,22 +224,6 @@ pub fn engine_cfg(work_mult: Option<i64>, probe_fuel: Option<u64>) -> EngineCfg 
     }
 }
 
-/// The pre-Phase-3 channel, still used by the subcommands whose engine
-/// calls have not been migrated to an explicit [`EngineCfg`] (the
-/// quantum drivers and certificate search): the escalation engine reads
-/// its work-meter multiplier and probe fuel from the environment through
-/// a `OnceLock`, so the CLI writes the variables before any compute
-/// starts. A flag wins over a pre-set environment variable; leaving the
-/// flag off leaves the environment alone.
-pub fn apply_engine_env(work_mult: Option<u64>, probe_fuel: Option<u64>) {
-    if let Some(v) = work_mult {
-        std::env::set_var("BLC_WORK_MULT", v.to_string());
-    }
-    if let Some(v) = probe_fuel {
-        std::env::set_var("BLC_PROBE_FUEL", v.to_string());
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

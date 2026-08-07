@@ -315,9 +315,9 @@ pub fn run(argv: &[String]) -> R<()> {
         .filter(|((_, xlen), e)| e.k < *xlen)
         .map(|(k, e)| (*k, *e))
         .collect();
-    // Deterministic tiebreak (xlen, xenc): the gain classes are wide and
-    // `take(top)` used to cut inside them in HashMap/merge order, making
-    // output diffs meaningless between identical runs (survey finding).
+    // Deterministic tiebreak (xlen, xenc): the gain classes are wide, and
+    // an unordered `take(top)` would cut inside them in HashMap/merge
+    // order, making output diffs meaningless between identical runs.
     by_compression.sort_by_key(|((xenc, xlen), e)| {
         (std::cmp::Reverse(*xlen as i64 - e.k as i64), *xlen, *xenc)
     });

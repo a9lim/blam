@@ -60,7 +60,7 @@ pub(crate) fn spend_work() {
 /// traversal would have charged (meter parity: exhaustion happens at
 /// the same check sites as the pre-sharing engine). Saturating: a
 /// logical-size overflow charges "everything", which is the verdict
-/// the old engine reached by grinding.
+/// an unbounded grind reaches.
 pub(crate) fn spend_work_n(n: i64) {
     WORK.with(|w| w.set(w.get().saturating_sub(n)));
 }

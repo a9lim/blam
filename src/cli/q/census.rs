@@ -461,8 +461,10 @@ run
   --dump-unknowns FILE   programs with an Unknown leaf
   --checkpoint FILE      kill-safe group-level resume
   --groups K             groups per size for --checkpoint (default 64)
-  --work-mult N   BLC_WORK_MULT for this run (default 16)
-  --probe-fuel N  BLC_PROBE_FUEL for this run (default 4096)
+  --work-mult N   escalation work-meter multiplier (default 16;
+                  BLC_WORK_MULT honored as fallback)
+  --probe-fuel N  redloop probe fuel (default 4096; BLC_PROBE_FUEL
+                  honored as fallback)
 
 batch re-adjudication (--terms-file)
   --terms-file FILE      one program per line; one verdict line per program
@@ -485,7 +487,7 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut skeleton_cap: Option<i64> = None;
     let mut ckpt_path: Option<String> = None;
     let mut groups_flag = 0usize;
-    let mut work_mult: Option<u64> = None;
+    let mut work_mult: Option<i64> = None;
     let mut probe_fuel: Option<u64> = None;
     // The canonical universe unless --sig overrides (alternate universes
     // are deliberately-labeled siblings; canonical data stays frozen).
@@ -520,7 +522,7 @@ pub fn run(argv: &[String]) -> R<()> {
         p.range(4)?
     };
     // Phase 3: becomes explicit library config.
-    args::apply_engine_env(work_mult, probe_fuel);
+    let ecfg = args::engine_cfg(work_mult, probe_fuel);
     // Big worker stacks: the skeleton reducer and Term drops recurse
     // over term depth, which the size cap bounds at thousands of frames
     // (same lesson as the census escalation pool).
@@ -579,7 +581,7 @@ pub fn run(argv: &[String]) -> R<()> {
                 // (δ-rules continue where the rigid form stopped).
                 let skel = skeleton_cap.map(|cap| {
                     use blam::blc::term::app;
-                    use blam::classical::escalation::{normal_form_spine, LTerm, NoNf};
+                    use blam::classical::escalation::{normal_form_spine_with, LTerm, NoNf};
                     use blam::quantum::sig::{church_numeral, with_holes};
                     // Both skeleton shapes come from `quantum::sig` — the
                     // hole application and the Object-B Church numeral —
@@ -590,7 +592,7 @@ pub fn run(argv: &[String]) -> R<()> {
                         None => t.clone(),
                     };
                     let sk = with_holes(&head, sig.len() as u32);
-                    match normal_form_spine(cap, &LTerm::from_term(&sk)) {
+                    match normal_form_spine_with(ecfg, cap, &LTerm::from_term(&sk)) {
                         (Err(NoNf::Diverge), true) => "nowhnf",
                         (Err(NoNf::Diverge), false) => "offspine-div",
                         (Ok(_), _) => "halt",
