@@ -12,6 +12,13 @@
 //! the invoking run must be REFUSED, loudly. Silently merging two
 //! measurements into one row is the failure mode this file exists to
 //! make impossible.
+//!
+//! And the third property, the one a stdout-only check cannot see: a
+//! resume must LEAVE the file resumable. Discarding a torn tail from
+//! this run's view while appending past it on disk keeps the numbers
+//! right and makes every later resume recompute everything after the
+//! tear, forever. So the tear test resumes TWICE and asserts on the
+//! file: same length, every group restored, nothing recomputed.
 #![cfg(feature = "cli")]
 
 use std::path::{Path, PathBuf};
@@ -71,6 +78,26 @@ fn census(args: &[&str]) -> (String, String, bool) {
 /// Cut the file down to `frac` of its length — byte-for-byte the state a
 /// SIGKILL mid-append leaves behind, but at a chosen point instead of a
 /// raced one.
+/// How many group records a resume replayed, from the census's own
+/// `checkpoint: restored N group records` line. `0` when it printed none
+/// (a fresh file, or one it restored nothing from).
+fn restored_count(err: &str) -> u64 {
+    err.lines()
+        .find_map(|l| {
+            l.trim()
+                .strip_prefix("checkpoint: restored ")?
+                .split_whitespace()
+                .next()?
+                .parse()
+                .ok()
+        })
+        .unwrap_or(0)
+}
+
+fn len_of(path: &Path) -> u64 {
+    std::fs::metadata(path).expect("stat checkpoint").len()
+}
+
 fn truncate_to(path: &Path, frac: f64) {
     let len = std::fs::metadata(path).expect("stat checkpoint").len();
     let keep = (len as f64 * frac) as u64;
@@ -139,11 +166,34 @@ fn resume_reproduces_the_monolithic_table() {
         "the tear should be announced: {err}"
     );
     assert_eq!(normalize(&torn_resume), want, "resume after a torn tail");
+    let healed_len = len_of(&ck2);
+    // 11 sizes (16..=26) x 8 groups: the repaired file must carry the
+    // whole run, and the tear's own partial record must be GONE — not
+    // sitting in the middle of the file where the next parse stops.
+    let all_groups = (26 - 16 + 1) * 8;
 
-    // And the completed file resumes to the same place with no work.
+    // The property a stdout check cannot see: resume again. If the tear
+    // was only skipped rather than truncated, everything the first
+    // resume computed sits after poison bytes — so this run would
+    // restore only the pre-tear prefix and recompute (and re-append)
+    // the rest, growing the file every time.
     let (again, err, ok) = census(&["--checkpoint", ckp2, "--groups", "8"]);
     assert!(ok, "second resume failed: {err}");
     assert_eq!(normalize(&again), want, "idempotent resume");
+    assert!(
+        !err.contains("discarding torn tail"),
+        "the tear was healed by the first resume, so this one must see none: {err}"
+    );
+    assert_eq!(
+        restored_count(&err),
+        all_groups,
+        "every group must come back from the file, not the engine: {err}"
+    );
+    assert_eq!(
+        len_of(&ck2),
+        healed_len,
+        "a fully-restored resume recomputes nothing, so it appends nothing"
+    );
 
     let _ = std::fs::remove_dir_all(&dir);
 }
@@ -224,6 +274,15 @@ fn config_mismatch_is_refused_loudly() {
     // The unchanged invocation still resumes.
     let (_, err, ok) = census(&["--checkpoint", ckp, "--groups", "4"]);
     assert!(ok, "matching config was refused: {err}");
+
+    // A file that is not a checkpoint at all — the mistyped path — is a
+    // refusal naming it, not an internal panic on a missing header field.
+    let alien = dir.join("notes.txt");
+    std::fs::write(&alien, "some other file entirely\n").expect("write alien file");
+    let (_, err, ok) = census(&["--checkpoint", alien.to_str().unwrap()]);
+    assert!(!ok, "a non-checkpoint file was accepted");
+    assert!(err.contains("not a blam checkpoint"), "{err}");
+    assert!(!err.contains("panicked"), "{err}");
 
     let _ = std::fs::remove_dir_all(&dir);
 }

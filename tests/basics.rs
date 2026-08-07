@@ -1,6 +1,6 @@
-use blam::blc::term::{app, lam, var, Term};
 use blam::classical::reference::normalize;
 use blam::classical::{Budget, OutOfFuel};
+use blam::{app, lam, var, Term};
 use blam::{parse_all, parse_prefix, ParseError};
 
 fn nf(t: &Term, limit: u64) -> Result<Term, OutOfFuel> {

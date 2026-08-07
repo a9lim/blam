@@ -121,14 +121,18 @@ pub fn run(argv: &[String]) -> R<()> {
             args::hint("q skeleton")
         ));
     };
+    let engine = args::engine_cfg("q skeleton", work_mult, probe_fuel)?;
+    // The file is validated line by line here, sequentially, BEFORE the
+    // pool exists: an open program used to reach `adjudicate_with_
+    // transfer` on a worker and panic there, mid-sweep.
+    let owned = args::read_terms_file(path)?;
     // Big worker stacks: the skeleton reducer and Term drops recurse
     // over term depth (the size cap bounds it at thousands of frames).
     args::build_pool(threads)?;
 
-    let owned = args::read_terms_file(path)?;
     let programs: Vec<&str> = owned.iter().map(String::as_str).collect();
     let transfer = TransferCaps {
-        engine: args::engine_cfg(work_mult, probe_fuel),
+        engine,
         ..TransferCaps::default()
     };
     let t0 = Instant::now();
@@ -142,7 +146,9 @@ pub fn run(argv: &[String]) -> R<()> {
     programs
         .par_iter()
         .for_each_init(TransferScratch::new, |scratch, bits| {
-            let p = blam::parse_all(bits).expect("parse program line");
+            // Both unreachable: the preflight above parsed every line and
+            // proved it closed.
+            let p = blam::parse_all(bits).expect("preflighted program line");
             let verdict = adjudicate_with_transfer(&p, slots, &caps, &transfer, scratch)
                 .unwrap_or_else(|e| panic!("{bits}: {e}"));
             if let Transfer::CapOut(c) = verdict {

@@ -1,4 +1,4 @@
-//! tracescan — classify frontier terms by the *shape* of their normal-order
+//! `blam trace` — classify frontier terms by the *shape* of their normal-order
 //! reduction behaviour.
 //!
 //! Reduction discipline is a from-scratch re-implementation of
@@ -25,7 +25,6 @@ use blam::{parse_all, Term};
 use rayon::prelude::*;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
-use std::fs;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -979,6 +978,15 @@ pub fn run(argv: &[String]) -> R<()> {
         ));
     };
 
+    // The CSV is a full-run product; prove its path writable before the
+    // scan rather than after it.
+    if let Some(dir) = std::path::Path::new(&out).parent() {
+        if !dir.as_os_str().is_empty() {
+            crate::out::create_dir("trace scan", "--out", &dir.to_string_lossy())?;
+        }
+    }
+    let mut csv = crate::out::create("trace scan", "--out", &out)?;
+
     let mut terms = args::read_terms_file(&file)?;
     if let Some(n) = limit {
         terms.truncate(n);
@@ -1012,10 +1020,7 @@ pub fn run(argv: &[String]) -> R<()> {
         s.push_str(&csv_line(r));
         s.push('\n');
     }
-    if let Some(dir) = std::path::Path::new(&out).parent() {
-        let _ = fs::create_dir_all(dir);
-    }
-    fs::write(&out, s).expect("write csv");
+    crate::out::write_all("trace scan", &out, &mut csv, s.as_bytes())?;
 
     let mut by_class: HashMap<&str, usize> = HashMap::new();
     for r in &recs {

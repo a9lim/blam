@@ -23,7 +23,6 @@
 
 use crate::args::{self, Args, R};
 use blam::blc::enumerate::for_each_closed;
-use blam::blc::term::{app, lam, var, Term};
 use blam::blc::wire::enc_to_string;
 use blam::classical::machine::{Machine, Pool, StringSink};
 use blam::parse_all;
@@ -31,6 +30,7 @@ use blam::quantum::machine as qvm;
 use blam::quantum::reference as qeval;
 use blam::quantum::sig::FROZEN;
 use blam::quantum::{Budget as QBudget, Effect, Fate, Leaf};
+use blam::{app, lam, var, Term};
 use rayon::prelude::*;
 use std::time::Instant;
 
@@ -201,7 +201,7 @@ pub fn run(argv: &[String]) -> R<()> {
     println!("wire: {}", eq.to_bits());
 
     // Direct: canonical census β with a generous transition cap (qeval's
-    // default 2¹⁶ trans is NOT the canonical qcensus 2²⁶ — report actuals).
+    // default 2¹⁶ trans is NOT the canonical `q census` 2²⁶ — report actuals).
     let direct_budget = QBudget {
         trans: 1 << 26,
         ..QBudget::default()

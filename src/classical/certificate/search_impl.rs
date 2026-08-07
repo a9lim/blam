@@ -117,7 +117,7 @@ pub(crate) fn closed_subterms(t: &PTerm, max_nodes: u64, out: &mut Vec<PTerm>) {
 }
 
 /// Replace every occurrence of `needle` in `hay` by `Meta` (discovery
-/// aid — untrusted; also used by the certdiag instrument).
+/// aid — untrusted; also used by the `blam cert diag` instrument).
 pub fn generalize(hay: &PTerm, needle: &PTerm) -> PTerm {
     if hay == needle {
         return PTerm::Meta(0);
@@ -251,7 +251,7 @@ pub fn peel_to_bottom(w: &PTerm, c0: &PTerm) -> PTerm {
 
 /// `try_htr`'s eraser candidate pool: the identity first, then small
 /// closed subterms of `A` and `W`, deduplicated in discovery order. Pure
-/// heuristic — exported so the certdiag instrument replays the same pool
+/// heuristic — exported so the `blam cert diag` instrument replays the same pool
 /// instead of keeping a copy that can drift.
 pub fn htr_eraser_candidates(cert: &Ratchet) -> Vec<Term> {
     let mut cands: Vec<Term> = vec![Term::Lam(Rc::new(Term::Var(1)))];

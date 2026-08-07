@@ -3,6 +3,10 @@
 //! checker used as the quantum escalation ladder's cheap rung; `q
 //! selfint` measures self-interpretation. `q galois` and `q oddmin` are
 //! research instruments behind the `lab` feature.
+//!
+//! `sweep` is the per-program step (run plus the mass-conservation
+//! battery) that every measurement here shares — measurement plumbing,
+//! so it lives beside the measurements rather than in the library.
 
 use crate::args::R;
 
@@ -10,11 +14,24 @@ mod census;
 mod run;
 mod selfint;
 mod skeleton;
+mod sweep;
 
 #[cfg(feature = "lab")]
 mod galois;
 #[cfg(feature = "lab")]
 mod oddmin;
+
+/// Pack a wire string MSB-first, for the fixed program vectors the
+/// tests here name in bits. One helper: three copies of it used to sit
+/// in `sweep` and twice in `galois`.
+#[cfg(test)]
+pub fn pack(bits: &str) -> (u64, u8) {
+    let mut enc = 0u64;
+    for c in bits.bytes() {
+        enc = enc << 1 | u64::from(c == b'1');
+    }
+    (enc, bits.len() as u8)
+}
 
 const USAGE: &str = "\
 blam q — the quantum pillar (qBLC)

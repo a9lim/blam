@@ -129,22 +129,31 @@ impl Pool {
         self.decode(&mut (0..len).rev().map(|j| (enc >> j) & 1 == 1))
     }
 
-    /// Decode a '0'/'1' string (whitespace ignored). `None` on a
-    /// truncated stream *or* on any other character — a stray byte is a
-    /// malformed input, never silently a `0`.
+    /// Decode a '0'/'1' string (whitespace ignored) that must encode
+    /// EXACTLY one term. `None` on a truncated stream, on any other
+    /// character (a stray byte is malformed input, never silently a `0`),
+    /// and on bits left over past the term — the code is prefix-free, so
+    /// a complete prefix of a longer string is a *different* program and
+    /// must not be silently substituted for it.
+    ///
+    /// Use [`Pool::decode`] where a prefix parse is what is wanted.
     pub fn decode_str(&mut self, s: &str) -> Option<u32> {
         let mut bad = false;
-        let root = self.decode(&mut s.chars().filter(|c| !c.is_whitespace()).map_while(
-            |c| match c {
+        let mut bits = s
+            .chars()
+            .filter(|c| !c.is_whitespace())
+            .map_while(|c| match c {
                 '0' => Some(false),
                 '1' => Some(true),
                 _ => {
                     bad = true;
                     None
                 }
-            },
-        ));
-        if bad {
+            });
+        let root = self.decode(&mut bits);
+        // Drains the iterator, which also releases its `&mut bad` borrow.
+        let leftover = bits.count();
+        if bad || leftover > 0 {
             return None;
         }
         root
@@ -316,6 +325,11 @@ pub struct Machine {
     /// Transitions consumed by the most recent `normalize*` call
     /// (telemetry: measures real transition/β ratios so budget caps can
     /// be set from data instead of the blanket 64× heuristic).
+    ///
+    /// LAST, not max: a classical run is one linear reduction, so the
+    /// most recent call's own total is the figure — where the quantum
+    /// `Machine::max_trans` maxes over a run's branch tree, because there
+    /// the cap binds per branch, not per program.
     pub last_trans: u64,
 }
 
@@ -598,5 +612,47 @@ mod tests {
         assert_eq!(after, before, "root index must collide for this to bite");
         assert!(!pool.has_redex(after));
         assert_eq!(pool.has_redex(after), traverse_has_redex(&pool, after));
+    }
+
+    /// `decode_str` is EXACT, matching its own contract and `parse_all`:
+    /// stopping at a complete prefix and ignoring the rest would hand the
+    /// engine a different program than the one the user named.
+    #[test]
+    fn decode_str_rejects_trailing_bits_short_streams_and_stray_bytes() {
+        let mut pool = Pool::new();
+        assert!(pool.decode_str("0010").is_some(), "exact term");
+        assert!(
+            pool.decode_str(" 00 10 ").is_some(),
+            "whitespace is skipped"
+        );
+        for bad in [
+            "00100010",  // λ1 followed by a second complete term
+            "00101",     // λ1 plus a lone bit
+            "0010 0010", // and with whitespace between them
+            "00",        // truncated
+            "",          // empty
+            "0012",      // stray byte
+            "abc",
+        ] {
+            pool.clear();
+            assert!(pool.decode_str(bad).is_none(), "{bad:?} must not decode");
+        }
+        // Every closed term decodes, and none of them decodes with a
+        // suffix bolted on: prefix-freeness is what makes that a
+        // different program rather than the same one.
+        for n in [4u32, 10, 16, 20] {
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                let bits = crate::blc::wire::enc_to_string(enc, len);
+                pool.clear();
+                assert!(pool.decode_str(&bits).is_some(), "{bits}");
+                for suffix in ["0", "1", "0010"] {
+                    pool.clear();
+                    assert!(
+                        pool.decode_str(&format!("{bits}{suffix}")).is_none(),
+                        "{bits} + {suffix}"
+                    );
+                }
+            });
+        }
     }
 }

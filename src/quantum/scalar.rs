@@ -353,7 +353,8 @@ enum Sum {
 /// overflow, only [`ExactSum::value`] (`Option`), [`ExactSum::expect_exact`]
 /// (loud), and [`ExactSum::partial`] (explicitly diagnostics-only). This
 /// replaces the old `Exact { v, ok }`, whose public `v` read the same
-/// whether or not `ok` held, and qcensus's private `Ex` twin.
+/// whether or not `ok` held, and the private twin the operator census
+/// used to carry beside it.
 #[derive(Clone, Copy)]
 pub struct ExactSum {
     sum: Sum,

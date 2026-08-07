@@ -19,7 +19,15 @@
 //! ```
 //! Accumulator merging must be order-independent for chunked runs to
 //! reproduce monolithic output; each driver owns that proof (the census
-//! Stats witness tie-break, the exact Dw ring in qcensus).
+//! Stats witness tie-break, the exact Dw ring in `q census`).
+//!
+//! A torn tail is TRUNCATED, not merely skipped. Appending past the
+//! poison bytes leaves them in the middle of the file, where the next
+//! resume's parse stops again — so every group computed after the tear
+//! is invisible to every later resume. The results stay correct and the
+//! recomputation is unbounded, which is the worst shape a bug can take
+//! in a kill-safe format. `open` therefore `set_len`s the file back to
+//! the end of the last complete record before appending to it.
 //!
 //! The v3→v4 bump widened what the config string must pin: not just the
 //! ladder budgets but the record format version, the engine tunables
@@ -27,6 +35,7 @@
 //! of any seeded memo file — a resume onto records computed with
 //! different cross-size facts would merge two different measurements.
 
+use crate::args::R;
 use std::collections::HashMap;
 use std::io::{BufRead, Write};
 
@@ -47,17 +56,27 @@ pub trait CkptRecord: Default {
 /// Completed group records by (size, group index), each with the wall
 /// seconds it cost — replayed from the file so a resume reports the same
 /// totals the uninterrupted run would have.
-type Restored<R> = HashMap<(u32, usize), (R, f64)>;
+type Restored<Rec> = HashMap<(u32, usize), (Rec, f64)>;
 
-pub struct Ckpt<R> {
+pub struct Ckpt<Rec> {
     file: std::fs::File,
     /// Task-split target pinned by the header.
     pub target: usize,
     pub groups: usize,
-    restored: Restored<R>,
+    restored: Restored<Rec>,
 }
 
-impl<R: CkptRecord> Ckpt<R> {
+/// What an existing checkpoint file yielded: the pinned split, the
+/// replayed records, and the byte offset just past the last COMPLETE
+/// record (everything after it is a torn tail).
+struct Existing<Rec> {
+    target: usize,
+    groups: usize,
+    restored: Restored<Rec>,
+    valid_len: u64,
+}
+
+impl<Rec: CkptRecord> Ckpt<Rec> {
     /// Open or create. On an existing file the config part of the header
     /// must match exactly; target/groups are adopted from the file. On a
     /// fresh file, `groups` defaults to 64 when the flag is 0 and
@@ -65,40 +84,56 @@ impl<R: CkptRecord> Ckpt<R> {
     /// load-balances internally across the pool). "Threads" is
     /// `available_parallelism`, which is what rayon sizes its default
     /// pool from — same number, without the library depending on rayon.
-    pub fn open(path: &str, config: &str, groups_flag: usize) -> Ckpt<R> {
+    ///
+    /// A file that is not a checkpoint at all, or one written under
+    /// different flags, is a user-facing refusal (exit 2), never a panic:
+    /// pointing `--checkpoint` at the wrong path is a typo, not a bug.
+    pub fn open(cmd: &'static str, path: &str, config: &str, groups_flag: usize) -> R<Ckpt<Rec>> {
         // Streamed, not slurped: a long sweep's checkpoint carries every
         // memo and frontier record it has produced, which for a 4..41 run
         // is far larger than the accumulators it rebuilds into.
-        let existing = std::fs::File::open(path)
-            .ok()
-            .and_then(|f| Self::read_existing(f, config, groups_flag));
+        let existing = match std::fs::File::open(path) {
+            Ok(f) => Self::read_existing(path, f, config, groups_flag)?,
+            Err(_) => None,
+        };
         let fresh = existing.is_none();
-        let (target, groups, restored) = existing.unwrap_or_else(|| {
-            let groups = if groups_flag == 0 { 64 } else { groups_flag };
-            let threads = std::thread::available_parallelism()
-                .map(|n| n.get())
-                .unwrap_or(16);
-            // Every sequential group still load-balances internally
-            // across the pool, so the split stays finer than the groups.
-            (threads * 16 * groups, groups, HashMap::new())
-        });
-        let mut file = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(path)
-            .expect("open checkpoint");
+        let (target, groups, restored, valid_len) = match existing {
+            Some(e) => (e.target, e.groups, e.restored, Some(e.valid_len)),
+            None => {
+                let groups = if groups_flag == 0 { 64 } else { groups_flag };
+                let threads = std::thread::available_parallelism()
+                    .map(|n| n.get())
+                    .unwrap_or(16);
+                // Every sequential group still load-balances internally
+                // across the pool, so the split stays finer than the groups.
+                (threads * 16 * groups, groups, HashMap::new(), None)
+            }
+        };
+        let mut file = crate::out::append(cmd, "--checkpoint", path)?;
         if fresh {
-            writeln!(file, "{VERSION} {config} target={target} groups={groups}").unwrap();
-            file.flush().unwrap();
-        } else if !restored.is_empty() {
-            eprintln!("    checkpoint: restored {} group records", restored.len());
+            writeln!(file, "{VERSION} {config} target={target} groups={groups}")
+                .and_then(|()| file.flush())
+                .map_err(|e| format!("blam: cannot write the checkpoint header to {path}: {e}"))?;
+        } else {
+            // Cut the torn tail off the FILE, not just off this run's
+            // view of it. Appending past poison bytes would hide every
+            // later group from every later resume.
+            if let Some(len) = valid_len {
+                if len < std::fs::metadata(path).map(|m| m.len()).unwrap_or(len) {
+                    file.set_len(len)
+                        .map_err(|e| format!("blam: cannot trim the torn tail of {path}: {e}"))?;
+                }
+            }
+            if !restored.is_empty() {
+                eprintln!("    checkpoint: restored {} group records", restored.len());
+            }
         }
-        Ckpt {
+        Ok(Ckpt {
             file,
             target,
             groups,
             restored,
-        }
+        })
     }
 
     /// Header check plus record replay for an existing file. `None` when
@@ -106,44 +141,67 @@ impl<R: CkptRecord> Ckpt<R> {
     /// and the header's flush leaves exactly that, and an empty file has
     /// nothing to resume from, so it is treated as fresh.
     fn read_existing(
+        path: &str,
         f: std::fs::File,
         config: &str,
         groups_flag: usize,
-    ) -> Option<(usize, usize, Restored<R>)> {
+    ) -> R<Option<Existing<Rec>>> {
         let mut lines = std::io::BufReader::new(f).lines().map_while(Result::ok);
-        let head = lines.next()?;
-        let get = |k: &str| -> usize {
+        let Some(head) = lines.next() else {
+            return Ok(None);
+        };
+        let not_ours = || {
+            format!(
+                "blam: {path} is not a blam checkpoint (expected a `{VERSION}` header)\n\
+                 file:     {head}\n\
+                 Point --checkpoint at a fresh path, or remove that file."
+            )
+        };
+        let get = |k: &str| -> R<usize> {
             head.split_whitespace()
                 .find_map(|t| t.strip_prefix(&format!("{k}=")))
-                .unwrap_or_else(|| panic!("checkpoint header missing {k}: {head}"))
-                .parse()
-                .expect("checkpoint header field")
+                .and_then(|v| v.parse().ok())
+                .ok_or_else(not_ours)
         };
-        let target = get("target");
-        let groups = get("groups");
+        if !head.starts_with(VERSION) {
+            return Err(not_ours());
+        }
+        let target = get("target")?;
+        let groups = get("groups")?;
         let expect = format!("{VERSION} {config} target={target} groups={groups}");
         if head != expect {
             // Loud and specific: the header is the only thing standing
             // between a resumed run and two different measurements
             // merged into one table row.
-            panic!(
-                "checkpoint config mismatch — this file was written by a different run.\n\
+            return Err(format!(
+                "blam: checkpoint config mismatch — this file was written by a different run.\n\
                  file:     {head}\n\
                  this run: {expect}\n\
                  Rerun with the flags it was created under, or point \
                  --checkpoint at a fresh path."
-            );
+            ));
         }
         if groups_flag != 0 && groups_flag != groups {
             eprintln!("    checkpoint: --groups {groups_flag} ignored, file pins {groups}");
         }
-        Some((target, groups, Self::parse_records(lines)))
+        // The header line and its newline are the first valid bytes.
+        let (restored, valid_len) = Self::parse_records(lines, head.len() as u64 + 1);
+        Ok(Some(Existing {
+            target,
+            groups,
+            restored,
+            valid_len,
+        }))
     }
 
-    fn parse_records(lines: impl Iterator<Item = String>) -> Restored<R> {
+    /// Replay records, returning them plus the byte offset just past the
+    /// last complete one. `start` is the offset the records begin at.
+    fn parse_records(lines: impl Iterator<Item = String>, start: u64) -> (Restored<Rec>, u64) {
         let mut done = HashMap::new();
-        let mut pending: Option<((u32, usize), R, f64)> = None;
+        let mut pending: Option<((u32, usize), Rec, f64)> = None;
         let mut torn = false;
+        let mut pos = start;
+        let mut valid = start;
         for line in lines {
             let ok = (|| -> Option<()> {
                 let mut it = line.split_whitespace();
@@ -152,7 +210,7 @@ impl<R: CkptRecord> Ckpt<R> {
                         let n: u32 = it.next()?.parse().ok()?;
                         let gi: usize = it.next()?.parse().ok()?;
                         let secs = f64::from_bits(it.next()?.parse().ok()?);
-                        pending = Some(((n, gi), R::default(), secs));
+                        pending = Some(((n, gi), Rec::default(), secs));
                         Some(())
                     }
                     "E" => {
@@ -172,18 +230,24 @@ impl<R: CkptRecord> Ckpt<R> {
                 torn = true;
                 break;
             }
+            // `lines()` strips exactly one '\n'; a record only ever
+            // commits through `append`, which always writes one.
+            pos += line.len() as u64 + 1;
+            if pending.is_none() {
+                valid = pos;
+            }
         }
         if torn || pending.is_some() {
             eprintln!("    checkpoint: discarding torn tail, resuming after last complete group");
         }
-        done
+        (done, valid)
     }
 
-    pub fn take_restored(&mut self, n: u32, gi: usize) -> Option<(R, f64)> {
+    pub fn take_restored(&mut self, n: u32, gi: usize) -> Option<(Rec, f64)> {
         self.restored.remove(&(n, gi))
     }
 
-    pub fn append(&mut self, n: u32, gi: usize, secs: f64, r: &R) {
+    pub fn append(&mut self, n: u32, gi: usize, secs: f64, r: &Rec) {
         let mut out = String::new();
         {
             use std::fmt::Write as _;

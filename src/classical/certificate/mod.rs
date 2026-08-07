@@ -138,6 +138,8 @@ impl fmt::Display for PTermParseError {
     }
 }
 
+impl std::error::Error for PTermParseError {}
+
 impl FromStr for PTerm {
     type Err = PTermParseError;
 

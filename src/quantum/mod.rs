@@ -4,9 +4,12 @@
 //! `reference` is the executable semantics of
 //! `docs/quantum/architecture.md`, `machine` the lockstep-verified fast
 //! path, `scalar` the exact ring both run on, `sig` the frozen signature
-//! order, `certificate` the trusted skeleton checker of the quantum
-//! escalation ladder, and `sweep` the per-program step (run plus the
-//! mass-conservation battery) every measurement driver shares.
+//! order, and `certificate` the trusted skeleton checker of the quantum
+//! escalation ladder.
+//!
+//! The per-program measurement step every driver shares — run plus the
+//! mass-conservation battery — is measurement plumbing rather than
+//! engine surface, and lives with the drivers in `src/cli/q/sweep.rs`.
 //!
 //! The types every layer shares — the primitive alphabet, the store,
 //! fates, budgets, and leaves — live here at the pillar root so both
@@ -17,7 +20,6 @@ pub mod machine;
 pub mod reference;
 pub mod scalar;
 pub mod sig;
-pub mod sweep;
 
 use scalar::Dw;
 

@@ -62,7 +62,7 @@ pub enum LTerm {
 
 /// A λ node. Fields are private: the body is reachable only through the
 /// engine's own traversals and [`emit_bits`], so no caller can build an
-/// `LTerm` whose cached [`Meta`] disagrees with its shape.
+/// `LTerm` whose cached (private) `Meta` disagrees with its shape.
 #[derive(Debug)]
 pub struct LamN {
     b: LTerm,
@@ -502,14 +502,6 @@ impl<T: Copy + 'static> Drop for Restore<T> {
     fn drop(&mut self) {
         self.key.with(|c| c.set(self.old));
     }
-}
-
-/// Read and clear the no-whnf marker left by the last legacy
-/// [`normal_form`] call on this thread. Prefer the second component of
-/// [`normal_form_with`], which carries the same fact without the
-/// ambient hop.
-pub fn take_head_diverge() -> bool {
-    HEAD_DIVERGE.with(|c| c.replace(false))
 }
 
 /// Per-run engine settings, fixed for the duration of one `normal_form*`

@@ -93,33 +93,24 @@ pub fn run(argv: &[String]) -> R<()> {
     let Some(bits) = p.positional().first().copied() else {
         return Err(format!("blam q run: missing BITS\n{}", args::hint("q run")));
     };
-    if bits.is_empty() || bits.len() > 64 || !bits.bytes().all(|b| b == b'0' || b == b'1') {
+    // One check for all four defects — stray character, truncated term,
+    // trailing bits, OPEN term. The last used to reach the engine and
+    // panic there, because a free index is indistinguishable from a
+    // signature slot once the signature is applied.
+    let (enc, len) = args::parse_packed("q run", bits)?;
+    budget
+        .validate()
+        .map_err(|e| format!("blam q run: {e}\n{}", args::hint("q run")))?;
+    if budget.max_qubits < 1 || budget.max_branches < 1 {
         return Err(format!(
-            "blam q run: `{bits}` is not a 1..64-bit 0/1 program\n{}",
+            "blam q run: --qubits and --branches must be at least 1\n{}",
             args::hint("q run")
         ));
-    }
-    let t = blam::parse_all(bits).map_err(|e| {
-        format!(
-            "blam q run: `{bits}` is not a closed BLC term: {e:?}\n{}",
-            args::hint("q run")
-        )
-    })?;
-    if t.bit_size() as usize != bits.len() {
-        return Err(format!(
-            "blam q run: `{bits}` has trailing bits past the term\n{}",
-            args::hint("q run")
-        ));
-    }
-    let mut enc = 0u64;
-    for c in bits.bytes() {
-        enc = enc << 1 | u64::from(c == b'1');
     }
 
     let order: Vec<&str> = sig.iter().map(|p| p.name()).collect();
     println!(
-        "program {bits} ({} bits), order [{}], beta={} trans={} qubits={} branches={}",
-        bits.len(),
+        "program {bits} ({len} bits), order [{}], beta={} trans={} qubits={} branches={}",
         order.join(" "),
         budget.beta,
         budget.trans,
@@ -128,7 +119,9 @@ pub fn run(argv: &[String]) -> R<()> {
     );
     // One program, one call: the library owns the arenas here (sweeps
     // reuse theirs through `Machine::run_into_with` instead).
-    let r = machine::run(&QProgram::new(enc, bits.len() as u8, &sig), &budget);
+    let prog = QProgram::new(enc, len, None, &sig)
+        .map_err(|e| format!("blam q run: `{bits}`: {e}\n{}", args::hint("q run")))?;
+    let r = machine::run(&prog, &budget);
     for (i, leaf) in r.leaves.iter().enumerate() {
         let fate = match &leaf.fate {
             Fate::Halt(store) => format!("Halt(live={})", store.live_count()),

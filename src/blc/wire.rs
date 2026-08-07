@@ -13,6 +13,23 @@ pub enum ParseError {
     BadChar(char),
 }
 
+/// Deliberately exhaustive (no `#[non_exhaustive]`): the CLI matches on
+/// every variant to name the defect back to the user, and a new variant
+/// SHOULD break that match rather than fall into a catch-all.
+impl std::fmt::Display for ParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ParseError::UnexpectedEof => write!(f, "bit stream ends mid-term"),
+            ParseError::TrailingBits { consumed } => {
+                write!(f, "trailing bits past the term (it ends at bit {consumed})")
+            }
+            ParseError::BadChar(c) => write!(f, "`{c}` is not a 0/1 bit"),
+        }
+    }
+}
+
+impl std::error::Error for ParseError {}
+
 /// Parse one term off the front of a bit stream, leaving the rest unconsumed.
 /// The BLC term code is a prefix code, so this is exactly the "program parses
 /// itself off the input stream" step of the prefix machine.

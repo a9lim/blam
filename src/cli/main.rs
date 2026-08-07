@@ -15,6 +15,7 @@ mod census;
 mod cert;
 mod ckpt;
 mod normalize;
+mod out;
 mod q;
 mod solomonoff;
 
@@ -55,7 +56,8 @@ INSTRUMENTS
                                                                  (lab feature)
 
 Engine knobs: --work-mult N / --probe-fuel N on the ladder subcommands
-(BLC_WORK_MULT / BLC_PROBE_FUEL are honoured as fallbacks).";
+(BLC_WORK_MULT / BLC_PROBE_FUEL are honoured as fallbacks).
+`blam --version` prints the crate version.";
 
 /// What a lab-gated subcommand says when the feature is off.
 #[cfg(not(feature = "lab"))]
@@ -70,6 +72,10 @@ fn dispatch(argv: &[String]) -> Result<(), String> {
     };
     if cmd == "--help" || cmd == "-h" || cmd == "help" {
         println!("{USAGE}");
+        return Ok(());
+    }
+    if cmd == "--version" || cmd == "-V" {
+        println!("blam {}", env!("CARGO_PKG_VERSION"));
         return Ok(());
     }
     let rest = &argv[1..];

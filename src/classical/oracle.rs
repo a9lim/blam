@@ -185,7 +185,7 @@ fn is_b23<T: LView>(is: u64, t: T) -> bool {
 /// normal form. `false` claims nothing.
 ///
 /// THE ANSWER IS CONTEXT-DEPENDENT IN ONE DIRECTION. The thread-local
-/// [`WORK`] meter above is armed for the duration of an
+/// (private) `WORK` meter above is armed for the duration of an
 /// `escalation::normal_form*` call (by an RAII guard, so it is disarmed
 /// again on every exit including a panic). Called from inside one — the
 /// per-App prefilter — an exhausted meter forces every predicate here to

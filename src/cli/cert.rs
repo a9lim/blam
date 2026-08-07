@@ -60,10 +60,10 @@ mod search {
     //! are skipped (the v1 machinery assumes closed metavariables).
 
     use crate::args::{self, Args, R};
-    use blam::blc::term::Term;
     use blam::blc::wire::parse_all;
     use blam::classical::certificate::search::{try_kill, CertBudgets, Kill};
     use blam::classical::certificate::{head_step, PTerm, Step};
+    use blam::Term;
     use rayon::prelude::*;
     use std::io::Write;
     use std::sync::atomic::{AtomicU64, Ordering};
@@ -195,6 +195,11 @@ usage: blam cert search [flags]
         }
 
         let lines: Vec<String> = if let Some(bits) = term_arg {
+            // Same preflight a --file line gets: a stray character, an
+            // open term, or bits past the term are all exit 2 here,
+            // rather than a `parse error on ...` note and a silent
+            // zero-term sweep.
+            args::parse_program("cert search", &bits)?;
             vec![bits]
         } else {
             let path = file_arg.unwrap_or_else(|| "data/classical/unknowns.txt".to_string());
@@ -214,13 +219,8 @@ usage: blam cert search [flags]
             AtomicU64::new(0),
         );
         lines.par_iter().for_each(|bits| {
-            let t = match parse_all(bits) {
-                Ok(t) => t,
-                Err(e) => {
-                    eprintln!("parse error on {bits}: {e:?}");
-                    return;
-                }
-            };
+            // Unreachable: both sources are preflighted above.
+            let t = parse_all(bits).expect("preflighted term");
             let line = match kill_with_descent(&t, &cfg, 0, "") {
                 Some((path, kill)) => {
                     // One tag per class, `-ARG` when the certificate sits
@@ -286,7 +286,7 @@ usage: blam cert search [flags]
             writeln!(lock, "{line}").unwrap();
         });
         eprintln!(
-        "certsearch: {} terms; ratchet {} top + {} arg, htr {}, selector {}; total {}; unresolved {}",
+        "cert search: {} terms; ratchet {} top + {} arg, htr {}, selector {}; total {}; unresolved {}",
         lines.len(),
         kills_top.load(Ordering::Relaxed),
         kills_arg.load(Ordering::Relaxed),
@@ -303,7 +303,8 @@ usage: blam cert search [flags]
 }
 
 mod lean {
-    //! certlean: emit Lean 4 certificate modules from ratchet_kills.txt.
+    //! `blam cert lean`: emit Lean 4 certificate modules from the kills
+    //! file (`data/certificates/ratchet_kills.tsv`).
     //!
     //! UNTRUSTED by design — the Lean kernel replays every obligation
     //! (`RatchetCert.check`, one `decide` per certificate) against the
@@ -320,16 +321,20 @@ mod lean {
     //! lines certify divergence of a spine argument through the rigid-head
     //! bridge in `lean/Blc/Rigid.lean`.
     //!
-    //! Usage: `certlean [kills_file] [lean_out_dir]`
+    //! Usage: `blam cert lean [KILLS] [OUTDIR]`
     //! Defaults: data/certificates/ratchet_kills.tsv lean
+    //!
+    //! The kills file is data the repo generates, but it is also a path
+    //! a user names, so every field of every recognised line is parsed
+    //! into a `file:line` error rather than an index panic.
 
     use crate::args::{self, Args, R};
-    use blam::blc::term::Term;
     use blam::blc::wire::parse_all;
     use blam::classical::certificate::{
         head_step, init_landing, spine, strip_lams, verify, verify_htr, verify_selector,
         HeadTowerRatchet, PTerm, Ratchet, SelectorRatchet, Step,
     };
+    use blam::Term;
     use std::collections::BTreeMap;
     use std::fmt::Write as _;
 
@@ -339,9 +344,17 @@ mod lean {
 
     /// The kills file spells wrappers in `PTerm`'s `Display` syntax;
     /// `FromStr` is its inverse (round-tripped in the certificate module).
-    fn parse_pterm(s: &str) -> PTerm {
-        s.parse()
-            .unwrap_or_else(|e| panic!("wrapper parse on `{s}`: {e}"))
+    fn parse_pterm(s: &str) -> Result<PTerm, String> {
+        s.parse::<PTerm>()
+            .map_err(|e| format!("bad wrapper `{s}`: {e}"))
+    }
+
+    /// A closed term column of the kills file.
+    fn parse_term(col: &str, s: &str) -> Result<Term, String> {
+        if s.is_empty() {
+            return Err(format!("missing `{col}=` column"));
+        }
+        parse_all(s).map_err(|e| format!("bad `{col}={s}`: {e}"))
     }
 
     /// Lean literal for a concrete term — 0-indexed (`Var(n)` → `.var (n-1)`).
@@ -421,11 +434,18 @@ untrusted: the Lean kernel replays every obligation.";
 
         let text =
             std::fs::read_to_string(kills).map_err(|e| format!("blam cert lean: {kills}: {e}"))?;
+        // The output root before the first parse: a run that cannot
+        // write must say so before it re-verifies 297 certificates.
+        crate::out::create_dir("cert lean", "OUTDIR", &format!("{out_dir}/Certs"))?;
         let mut by_size: BTreeMap<usize, Vec<String>> = BTreeMap::new();
         let mut emitted = 0usize;
         let mut skipped = 0usize;
 
-        for line in text.lines() {
+        for (lineno, line) in text.lines().enumerate() {
+            // Every rejection below carries the file and the line: a
+            // malformed kills line is bad data to be located, not a
+            // stack trace to be decoded.
+            let at = |d: String| format!("blam cert lean: {kills}:{}: {d}", lineno + 1);
             let mut cols = line.split('\t');
             let raw_tag = cols.next().unwrap_or("");
             let (tag, is_arg) = match raw_tag.strip_suffix("-ARG") {
@@ -436,7 +456,9 @@ untrusted: the Lean kernel replays every obligation.";
                 skipped += 1;
                 continue;
             }
-            let bits = cols.next().expect("term bits");
+            let bits = cols
+                .next()
+                .ok_or_else(|| at(format!("`{raw_tag}` line has no term column")))?;
             let mut head = "";
             let mut w = "";
             let mut c0 = "";
@@ -458,7 +480,7 @@ untrusted: the Lean kernel replays every obligation.";
                     at_path = v;
                 }
             }
-            let outer = parse_all(bits).expect("target parse");
+            let outer = parse_term("term", bits).map_err(&at)?;
 
             // `-ARG` kills: the certificate applies to a closed spine
             // argument of the outer term's head normal form. Replay the
@@ -481,20 +503,26 @@ untrusted: the Lean kernel replays every obligation.";
                         other => panic!("hnf replay stalled on {bits}: {other:?}"),
                     }
                 }
-                let idx: usize = at_path
-                    .parse()
-                    .expect("only single-level ARG paths are emitted");
+                let idx: usize = at_path.parse().map_err(|e| {
+                    at(format!(
+                        "bad `at={at_path}` (only single-level ARG paths are emitted): {e}"
+                    ))
+                })?;
                 let (_, body) = strip_lams(&hnf);
                 let (_, sargs) = spine(body).expect("hnf is not an application");
-                let a_term = sargs[idx].to_term().expect("ARG must be concrete");
+                let a_term = sargs
+                    .get(idx)
+                    .ok_or_else(|| at(format!("`at={idx}` past the hnf spine on {bits}")))?
+                    .to_term()
+                    .ok_or_else(|| at(format!("ARG must be concrete on {bits}")))?;
                 let hnf_term = hnf.to_term().expect("hnf must be concrete");
                 (a_term, Some((k_h, hnf_term)))
             } else {
                 (outer.clone(), None)
             };
-            let a = parse_all(head).expect("head parse");
-            let c0t = parse_all(c0).expect("c0 parse");
-            let wp = parse_pterm(w);
+            let a = parse_term("head", head).map_err(&at)?;
+            let c0t = parse_term("c0", c0).map_err(&at)?;
+            let wp = parse_pterm(w).map_err(&at)?;
 
             // Re-verify with the matching trusted checker; collect the
             // obligation counts and the INIT step count.
@@ -519,7 +547,7 @@ untrusted: the Lean kernel replays every obligation.";
                 let sel = SelectorRatchet {
                     a: a.clone(),
                     w: wp.clone(),
-                    p: parse_pterm(selp),
+                    p: parse_pterm(selp).map_err(&at)?,
                     c0: c0t.clone(),
                 };
                 let rep = verify_selector(&t, &sel, LEMMA_STEPS, INIT_STEPS, MAX_NODES)
@@ -535,7 +563,7 @@ untrusted: the Lean kernel replays every obligation.";
                     a: a.clone(),
                     w: wp.clone(),
                     c0: c0t.clone(),
-                    i: parse_all(eraser).expect("eraser parse"),
+                    i: parse_term("i", eraser).map_err(&at)?,
                 };
                 let rep = verify_htr(&t, &htr, LEMMA_STEPS, INIT_STEPS, MAX_NODES)
                     .unwrap_or_else(|e| panic!("htr re-verify failed on {bits}: {e:?}"));
@@ -586,11 +614,11 @@ untrusted: the Lean kernel replays every obligation.";
             lean_term(&c0t, &mut blk);
             if kind == "HTRCert" {
                 blk.push_str("\n  E := ");
-                lean_term(&parse_all(eraser).unwrap(), &mut blk);
+                lean_term(&parse_term("i", eraser).map_err(&at)?, &mut blk);
             }
             if kind == "SelCert" {
                 blk.push_str("\n  P := ");
-                lean_pterm(&parse_pterm(selp), &mut blk);
+                lean_pterm(&parse_pterm(selp).map_err(&at)?, &mut blk);
             }
             blk.push('\n');
             for (name, val) in &counts {
@@ -659,7 +687,6 @@ untrusted: the Lean kernel replays every obligation.";
             emitted += 1;
         }
 
-        std::fs::create_dir_all(format!("{out_dir}/Certs")).expect("mkdir");
         let mut root = String::from(
             "/-\nGenerated by `blam cert lean` from\n\
          data/certificates/ratchet_kills.tsv — DO NOT EDIT. Each module carries\n\
@@ -681,11 +708,14 @@ untrusted: the Lean kernel replays every obligation.";
             }
             f.push_str("end Blc.Certs\n");
             let path = format!("{out_dir}/Certs/Size{size}.lean");
-            std::fs::write(&path, f).expect("write module");
+            std::fs::write(&path, f)
+                .map_err(|e| format!("blam cert lean: cannot write {path}: {e}"))?;
             let _ = writeln!(root, "import Certs.Size{size}");
             println!("wrote {path} ({} certs)", blocks.len());
         }
-        std::fs::write(format!("{out_dir}/Certs.lean"), root).expect("write root");
+        let root_path = format!("{out_dir}/Certs.lean");
+        std::fs::write(&root_path, root)
+            .map_err(|e| format!("blam cert lean: cannot write {root_path}: {e}"))?;
         println!(
         "emitted {emitted} certificates across {} size modules ({skipped} non-RATCHET lines skipped)",
         by_size.len()
@@ -696,7 +726,7 @@ untrusted: the Lean kernel replays every obligation.";
 
 #[cfg(feature = "lab")]
 mod diag {
-    //! certdiag: instrument the ratchet discovery pipeline over a term
+    //! `blam cert diag`: instrument the ratchet discovery pipeline over a term
     //! list and report, per term, exactly where the pipeline drops it.
     //! Pure diagnostics — nothing here is trusted, nothing is a kill.
     //!
@@ -707,7 +737,7 @@ mod diag {
     //!   growth        growing window, but x1 never occurs in x2
     //!   occur         wrapper extracted, but plug(w, x2) != x3
     //!   plug          consistent candidate offered; verify failed (stage says which)
-    //!   KILL          verify accepted (would be a certsearch regression)
+    //!   KILL          verify accepted (would be a `cert search` regression)
     //!
     //! Extra columns: milestone count of the best family, arity spread of
     //! the most-recurrent head (spine-growth evidence for the v3 lane),
@@ -717,13 +747,13 @@ mod diag {
     //! Usage: `blam cert diag FILE [--steps N] [--nodes N] [--threads N]`
 
     use crate::args::{self, Args, R};
-    use blam::blc::term::Term;
     use blam::blc::wire::parse_all;
     use blam::classical::certificate::search::{generalize, htr_eraser_candidates, peel_to_bottom};
     use blam::classical::certificate::{
         check_reduces, check_reduces_star, head_step, plug, rename_meta, spine, strip_lams, verify,
         verify_htr, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm, Ratchet, Step,
     };
+    use blam::Term;
     use rayon::prelude::*;
     use std::collections::HashMap;
     use std::rc::Rc;
@@ -945,7 +975,7 @@ mod diag {
     /// Replay try_htr's eraser loop — same peel, same candidate pool, both
     /// imported from the discovery layer — recording the DEEPEST obligation
     /// any eraser reaches before failing (Base=0 … Erase=5, Init=6) and
-    /// that failure's kind. `HTR-KILL` would be a certsearch regression.
+    /// that failure's kind. `HTR-KILL` would be a `cert search` regression.
     fn htr_probe(t: &Term, cand: &Ratchet, max_nodes: u64) -> String {
         let Some(c0) = peel_to_bottom(&cand.w, &PTerm::from_term(&cand.c0)).to_term() else {
             return "htr:no-bottom".into();

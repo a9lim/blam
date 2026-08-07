@@ -562,12 +562,19 @@ fn close(pool: &mut Pool, work: &mut Vec<P>, frame: u8, enc: u64, len: u8) -> u3
 }
 
 // Rung 1: the spec's recommended first rung for a ~73-bit closure.
-/// Engine settings, resolved once at the CLI layer (env fallback, then
-/// the library defaults). The slot search exposes no knob flags.
+/// Engine settings, resolved and VALIDATED once at startup (env
+/// fallback, then the library defaults) by [`resolve_engine_cfg`]. The
+/// slot search exposes no knob flags, so the environment is the only
+/// channel — and a nonsense `BLC_WORK_MULT` there is still exit 2.
+static ENGINE: std::sync::OnceLock<EngineCfg> = std::sync::OnceLock::new();
+
+fn resolve_engine_cfg() -> R<()> {
+    let _ = ENGINE.set(args::engine_cfg("slots", None, None)?);
+    Ok(())
+}
+
 fn engine_cfg() -> EngineCfg {
-    use std::sync::OnceLock;
-    static CFG: OnceLock<EngineCfg> = OnceLock::new();
-    *CFG.get_or_init(|| args::engine_cfg(None, None))
+    *ENGINE.get().expect("resolved at startup")
 }
 
 const BETA1: u64 = 256;
@@ -813,6 +820,12 @@ pub fn run(argv: &[String]) -> R<()> {
             args::hint("slots")
         ));
     };
+    resolve_engine_cfg()?;
+    // The dump is a full-run product; prove its path writable now.
+    let mut dump_file = match &dump {
+        Some(path) => Some(crate::out::create("slots", "--dump", path)?),
+        None => None,
+    };
     let golden = bits_of(slot.golden);
     let ref_size = slot.reference.len() as u8;
     let max_size = max_size.unwrap_or(ref_size);
@@ -984,15 +997,16 @@ pub fn run(argv: &[String]) -> R<()> {
         all.unknowns.len(),
         all.matches.len()
     );
-    if let Some(path) = dump {
-        use std::io::Write;
-        let mut f = std::fs::File::create(path).unwrap();
+    if let (Some(path), Some(f)) = (&dump, dump_file.as_mut()) {
+        use std::fmt::Write as _;
+        let mut body = String::new();
         for (enc, len) in &all.matches {
-            writeln!(f, "MATCH {}", enc_to_string(*enc, *len)).unwrap();
+            let _ = writeln!(body, "MATCH {}", enc_to_string(*enc, *len));
         }
         for (enc, len) in &all.unknowns {
-            writeln!(f, "UNKNOWN {}", enc_to_string(*enc, *len)).unwrap();
+            let _ = writeln!(body, "UNKNOWN {}", enc_to_string(*enc, *len));
         }
+        crate::out::write_all("slots", path, f, body.as_bytes())?;
     }
     let sub: Vec<_> = all.matches.iter().filter(|(_, l)| *l < ref_size).collect();
     if sub.is_empty() && all.unknowns.is_empty() {

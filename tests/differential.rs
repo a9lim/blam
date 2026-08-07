@@ -4,12 +4,12 @@
 //! terms of small sizes, divergers included.
 
 use blam::blc::enumerate::for_each_closed;
-use blam::blc::term::{app, lam, var, Term};
 use blam::blc::wire::enc_to_string;
 use blam::classical::machine::{Machine, Pool, SizeSink, StringSink};
 use blam::classical::reference::normalize;
 use blam::classical::Budget;
 use blam::parse_all;
+use blam::{app, lam, var, Term};
 
 // Generous vs. the measured max of 11 β-steps for halting terms ≤ 24 bits;
 // kept modest because the naive whnf recurses once per step, so divergers
@@ -60,7 +60,7 @@ fn exhaustive_agreement_body() {
 }
 
 #[test]
-fn vm_reproduces_bb_witnesses() {
+fn machine_reproduces_bb_witnesses() {
     // Same witnesses as tests/tromp_vectors.rs, now on the fast machine.
     let cases: Vec<(Term, u64)> = vec![
         (
@@ -119,7 +119,7 @@ fn vm_reproduces_bb_witnesses() {
 }
 
 #[test]
-fn vm_handles_bb34_fast() {
+fn machine_handles_bb34_fast() {
     // (\1 1 1 1) C2 -> C65536: 327686-bit normal form. The whole point of
     // the machine — no fat stack, no ignore attribute, streaming size sink.
     let c2 = lam(lam(app(var(2), app(var(2), var(1)))));
@@ -134,7 +134,7 @@ fn vm_handles_bb34_fast() {
 }
 
 #[test]
-fn vm_survives_corpus_diverger() {
+fn machine_survives_corpus_diverger() {
     // The 170-bit self-interpreter is built with Y-injected recursion, so
     // the bare term has NO normal form — normalizing it must exhaust fuel
     // gracefully (deep env chains, growing spine), not hang or crash.

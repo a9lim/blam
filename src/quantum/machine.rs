@@ -46,7 +46,7 @@ pub enum Node {
     Handle(u32, u32),
 }
 
-/// Church booleans, pre-interned by `Pool::reset` at fixed indices.
+/// Church booleans, pre-interned by `Pool::clear` at fixed indices.
 /// Polarity: outcome 0 → true = λx.λy.x.
 const TRUE_NODE: u32 = 2;
 const FALSE_NODE: u32 = 5;
@@ -70,7 +70,7 @@ impl Default for Pool {
 impl Pool {
     pub fn new() -> Pool {
         let mut p = Pool { nodes: Vec::new() };
-        p.reset();
+        p.clear();
         p
     }
 
@@ -90,7 +90,13 @@ impl Pool {
         self.nodes.is_empty()
     }
 
-    pub fn reset(&mut self) {
+    /// Empty the arena for the next program — the symmetric verb with
+    /// [`crate::classical::machine::Pool::clear`], with a different
+    /// residue: this arena is never empty afterwards, because the Church
+    /// booleans `TRUE_NODE`/`FALSE_NODE` are re-interned at their fixed
+    /// indices as part of clearing. A `Pool` without them is not a usable
+    /// qBLC arena, which is also why `Default` goes through `new`.
+    pub fn clear(&mut self) {
         self.nodes.clear();
         self.nodes.push(Node::Var(2)); // 0
         self.nodes.push(Node::Lam(0)); // 1
@@ -237,6 +243,11 @@ pub struct Machine {
     /// Max transitions consumed by any branch path of the most recent run
     /// (telemetry: measures real trans/β headroom so sweep caps are set
     /// from data, not the blanket heuristic).
+    ///
+    /// MAX, not last: the transition cap binds per BRANCH, so the figure
+    /// that decides headroom is the worst branch of the run — where the
+    /// classical `Machine::last_trans` is a single linear reduction's own
+    /// total and needs no aggregation.
     pub max_trans: u64,
 }
 
@@ -600,10 +611,12 @@ impl Machine {
         budget: &Budget,
         leaves: &mut Vec<Leaf>,
     ) {
-        pool.reset();
+        pool.clear();
+        // Infallible: `QProgram` cannot be built from bits that do not
+        // decode to exactly one term of exactly `len` bits.
         let mut root = pool
             .decode_u64(prog.enc, prog.len)
-            .expect("well-formed closed term");
+            .expect("QProgram guarantees a canonical encoding");
         if let Some(k) = prog.cond {
             let num = pool.numeral(k);
             root = pool.push(Node::App(root, num));
@@ -613,29 +626,136 @@ impl Machine {
     }
 }
 
+/// Why a packed (bits, length) pair is not a qBLC program.
+///
+/// Exhaustive on purpose (no `#[non_exhaustive]`): both rejections are
+/// user-facing messages, and a third one SHOULD break the matches that
+/// phrase them.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum BadProgram {
+    /// Length outside 1..=64 — the wire bits live in a `u64`.
+    Length(u8),
+    /// The low `len` bits are not exactly one BLC term: truncated, left
+    /// over, or with bits set above `len`.
+    NotCanonical { enc: u64, len: u8 },
+}
+
+impl std::fmt::Display for BadProgram {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BadProgram::Length(n) => {
+                write!(f, "{n} bits, but a packed program must be 1..=64")
+            }
+            BadProgram::NotCanonical { enc, len } => write!(
+                f,
+                "({enc:#x}, {len}) is not exactly one BLC term's encoding"
+            ),
+        }
+    }
+}
+
+impl std::error::Error for BadProgram {}
+
+/// Do the low `len` bits of `enc` encode exactly one BLC term, with
+/// nothing left over and nothing set above them? Pure bit walk — no
+/// arena, no allocation, so it is affordable per program in a sweep.
+fn is_canonical(enc: u64, len: u8) -> bool {
+    if len < 64 && enc >> len != 0 {
+        return false;
+    }
+    let mut i = len; // bits still unread: positions i-1 .. 0
+    let mut pending = 1u32; // subterms still owed
+    while pending > 0 {
+        if i < 2 {
+            // A lambda/application opener needs two bits, and the
+            // shortest variable (`10`) needs two as well.
+            return false;
+        }
+        if (enc >> (i - 1)) & 1 == 0 {
+            // `00` λ (still owes its body) or `01` app (owes one more).
+            if (enc >> (i - 2)) & 1 == 1 {
+                pending += 1;
+            }
+            i -= 2;
+        } else {
+            // `1ⁿ0`
+            while i > 0 && (enc >> (i - 1)) & 1 == 1 {
+                i -= 1;
+            }
+            if i == 0 {
+                return false; // ran out before the terminating 0
+            }
+            i -= 1;
+            pending -= 1;
+        }
+    }
+    i == 0
+}
+
 /// One qBLC program as the sweeps hand it over: packed wire bits, the
 /// optional Object-B dimension, and the signature universe it runs under.
+///
+/// Fields are private and [`QProgram::new`] is the only constructor, so
+/// holding one is proof that the bits decode — which is what lets
+/// [`Machine::run_into_with`] decode without a fallible path.
 #[derive(Clone, Copy, Debug)]
 pub struct QProgram<'a> {
     /// Packed wire bits, MSB-first in the low `len` bits.
-    pub enc: u64,
-    pub len: u8,
+    enc: u64,
+    len: u8,
     /// Object-B dimension, handed to the program as a Church numeral
     /// before the signature. `None` = the unconditioned M_Fock sweep.
-    pub cond: Option<u32>,
+    cond: Option<u32>,
     /// Signature order (the canonical universe is [`crate::quantum::sig::FROZEN`]).
-    pub order: &'a [Prim],
+    order: &'a [Prim],
 }
 
 impl<'a> QProgram<'a> {
-    /// The plain M_Fock program: bits under a signature, no conditioning.
-    pub fn new(enc: u64, len: u8, order: &'a [Prim]) -> QProgram<'a> {
-        QProgram {
+    /// A program from packed bits: `cond = None` is the unconditioned
+    /// M_Fock sweep, `Some(k)` the Object-B `p k̄ ⟨sig⟩` form.
+    ///
+    /// Validates that `len` is 1..=64 and that the bits are a canonical
+    /// encoding — exactly one term, nothing trailing.
+    pub fn new(
+        enc: u64,
+        len: u8,
+        cond: Option<u32>,
+        order: &'a [Prim],
+    ) -> Result<QProgram<'a>, BadProgram> {
+        if len == 0 || len > 64 {
+            return Err(BadProgram::Length(len));
+        }
+        if !is_canonical(enc, len) {
+            return Err(BadProgram::NotCanonical { enc, len });
+        }
+        Ok(QProgram {
             enc,
             len,
-            cond: None,
+            cond,
             order,
-        }
+        })
+    }
+
+    /// The packed wire bits, MSB-first in the low [`QProgram::len_bits`] bits.
+    pub fn enc(&self) -> u64 {
+        self.enc
+    }
+
+    /// The program's size in bits (1..=64) — `len_bits`, not `len`,
+    /// because a program is never empty and there is no `is_empty` to
+    /// pair with.
+    pub fn len_bits(&self) -> u8 {
+        self.len
+    }
+
+    /// The Object-B dimension, if this is a G_K program.
+    pub fn cond(&self) -> Option<u32> {
+        self.cond
+    }
+
+    /// The signature universe the program runs under.
+    pub fn order(&self) -> &'a [Prim] {
+        self.order
     }
 }
 
@@ -701,7 +821,7 @@ mod tests {
                 let mut got = Vec::new();
                 m.run_into_with(
                     pool,
-                    &QProgram::new(enc, len, order),
+                    &QProgram::new(enc, len, None, order).expect("enumerator emits valid terms"),
                     &fast_budget,
                     &mut got,
                 );
@@ -1135,5 +1255,53 @@ mod tests {
         .reduce();
         let masses: Vec<Dw> = leaves.iter().map(|l| l.mass.unwrap().reduce()).collect();
         assert!(masses.contains(&p0) && masses.contains(&p1));
+    }
+
+    /// `QProgram::new` is the only door, so the validation behind it is
+    /// what stands between a malformed packed pair and the decoder's
+    /// `expect` in `run_into_with`.
+    #[test]
+    fn qprogram_refuses_lengths_and_non_canonical_encodings() {
+        use super::BadProgram;
+        let of = |bits: &str| {
+            let mut enc = 0u64;
+            for c in bits.bytes() {
+                enc = enc << 1 | u64::from(c == b'1');
+            }
+            QProgram::new(enc, bits.len() as u8, None, &FROZEN)
+        };
+        assert!(of("0010").is_ok());
+        assert!(of("010001101000011010").is_ok(), "omega");
+        // Truncated, over-long, and two-terms-in-one all fail.
+        for bad in ["00", "0", "1", "00100010", "00101", "0100"] {
+            assert!(matches!(
+                of(bad),
+                Err(BadProgram::NotCanonical { .. }) | Err(BadProgram::Length(_))
+            ));
+        }
+        assert_eq!(
+            QProgram::new(0, 0, None, &FROZEN).unwrap_err(),
+            BadProgram::Length(0)
+        );
+        assert_eq!(
+            QProgram::new(0b0010, 65, None, &FROZEN).unwrap_err(),
+            BadProgram::Length(65)
+        );
+        // Bits set above `len` make the pair ambiguous, not merely wide.
+        assert_eq!(
+            QProgram::new(0b1_0010, 4, None, &FROZEN).unwrap_err(),
+            BadProgram::NotCanonical {
+                enc: 0b1_0010,
+                len: 4
+            }
+        );
+        // And the whole enumerated population passes, at every size the
+        // census actually walks.
+        for n in 4..=22 {
+            for_each_closed(n, &mut |enc, len| {
+                let p = QProgram::new(enc, len, None, &FROZEN).expect("closed term");
+                assert_eq!((p.enc(), p.len_bits()), (enc, len));
+            });
+        }
     }
 }

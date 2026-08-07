@@ -7,6 +7,10 @@
 //! drifted on the phrasing, which is exactly the shape of a bug that only
 //! shows up as two numbers that should have matched.
 //!
+//! This is measurement plumbing, not engine surface: the library owns the
+//! semantics (`quantum::machine`) and this owns what the drivers do with
+//! them, so it sits with the drivers rather than in the pillar.
+//!
 //! The soundness battery lives here, so it cannot be dropped from one
 //! sweep and kept in another: CP instruments conserve mass, so a program's
 //! leaf masses sum to exactly 1, asserted per program across every sweep
@@ -15,11 +19,18 @@
 //! resource outcome, never a wrong number — and says so rather than
 //! silently folding a `None` away.
 
-use crate::quantum::machine::{Machine, Pool, QProgram};
-use crate::quantum::scalar::Dw;
-use crate::quantum::{Budget, Fate, Leaf};
+use blam::quantum::machine::{Machine, Pool, QProgram};
+use blam::quantum::scalar::Dw;
+use blam::quantum::{Budget, Fate, Leaf};
 
 /// What every sweep reads off a program's leaves beyond its own tally.
+///
+/// The whole struct is the shared contract, so it is stated once and in
+/// full: `halt_mass` and `resolved` belong to the dyadicity sweeps
+/// (`q galois`, lab-gated), `total_mass` to the tests below, and a build
+/// without `lab` therefore leaves some of it unread rather than meaning
+/// something different.
+#[allow(dead_code)]
 #[derive(Clone, Copy, Debug)]
 pub struct Summary {
     /// Largest contraction count over the branch tree (budget headroom).
@@ -34,6 +45,9 @@ pub struct Summary {
     pub resolved: bool,
     /// Σ over all leaves, `None` on overflow — the battery's own witness,
     /// exposed so a caller can report the vacuous case if it wants to.
+    /// No driver does today; the tests below are what read it, and they
+    /// are the reason it stays (an assertion nobody can inspect is a
+    /// weaker claim than one anybody can).
     pub total_mass: Option<Dw>,
 }
 
@@ -68,8 +82,8 @@ pub fn run_and_summarize(
             s.reduce(),
             Dw::ONE,
             "mass conservation violated at program ({:#x},{})",
-            prog.enc,
-            prog.len
+            prog.enc(),
+            prog.len_bits()
         );
     }
     Summary {
@@ -83,15 +97,8 @@ pub fn run_and_summarize(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::quantum::sig::FROZEN;
-
-    fn pack(bits: &str) -> (u64, u8) {
-        let mut enc = 0u64;
-        for c in bits.bytes() {
-            enc = enc << 1 | u64::from(c == b'1');
-        }
-        (enc, bits.len() as u8)
-    }
+    use crate::q::pack;
+    use blam::quantum::sig::FROZEN;
 
     #[test]
     fn witness45_summarises_as_a_resolved_dyadic_pair() {
@@ -104,7 +111,7 @@ mod tests {
         let s = run_and_summarize(
             &mut m,
             &mut pool,
-            &QProgram::new(enc, len, &FROZEN),
+            &QProgram::new(enc, len, None, &FROZEN).expect("wire vector"),
             &Budget::default(),
             &mut leaves,
         );
@@ -125,13 +132,13 @@ mod tests {
         let s = run_and_summarize(
             &mut m,
             &mut pool,
-            &QProgram::new(enc, len, &FROZEN),
+            &QProgram::new(enc, len, None, &FROZEN).expect("wire vector"),
             &Budget::default(),
             &mut leaves,
         );
         assert!(s.resolved);
         assert_eq!(s.total_mass.unwrap().reduce(), Dw::ONE);
-        let (_, (sa, se)) = crate::quantum::scalar::radical_parts(s.halt_mass.unwrap());
+        let (_, (sa, se)) = blam::quantum::scalar::radical_parts(s.halt_mass.unwrap());
         assert_eq!((sa, se), (-1, 2));
     }
 
@@ -145,7 +152,7 @@ mod tests {
         let s = run_and_summarize(
             &mut m,
             &mut pool,
-            &QProgram::new(enc, len, &FROZEN),
+            &QProgram::new(enc, len, None, &FROZEN).expect("wire vector"),
             &Budget::default(),
             &mut leaves,
         );

@@ -39,17 +39,12 @@ use blam::blc::wire::enc_to_string as enc_str;
 use blam::quantum::machine::{Machine as QMachine, Pool, QProgram};
 use blam::quantum::scalar::{is_dyadic, Dw, ExactSum};
 use blam::quantum::sig::FROZEN;
-use blam::quantum::sweep::run_and_summarize;
 use blam::quantum::{Budget as QBudget, Capacity, ErrKind, Fate, Prim};
 use rayon::prelude::*;
 use std::fmt::Write as _;
 use std::time::Instant;
 
-/// The exact accumulator, with its f64 mirror and its checkpoint codec —
-/// `quantum::scalar::ExactSum`. The census used to carry a private twin of
-/// the dyadicity campaign's accumulator, differing only in the mirror; the
-/// alias keeps the (very dense) `Tally` declarations readable.
-type Ex = ExactSum;
+use super::sweep::run_and_summarize;
 
 const SECT: usize = 5; // sectors 0,1,2,3, and 4 = "≥4"
 
@@ -63,16 +58,16 @@ struct Tally {
     unk_by_trans: u64,
     cap_n: [u64; 3], // by Capacity kind
     none_mass_n: u64,
-    omega: Ex,
-    err_mass: Ex,
-    unk_mass: Ex,
-    cap_mass: Ex,
-    sect_mass: [Ex; SECT],
+    omega: ExactSum,
+    err_mass: ExactSum,
+    unk_mass: ExactSum,
+    cap_mass: ExactSum,
+    sect_mass: [ExactSum; SECT],
     sect_n: [u64; SECT],
     /// M^(1) row-major: [00, 01, 10, 11].
-    m1: [Ex; 4],
+    m1: [ExactSum; 4],
     /// M^(2) row-major 4×4 (basis |q1 q0⟩, first-allocated qubit = low bit).
-    m2: [Ex; 16],
+    m2: [ExactSum; 16],
     forked: u64,
     fate_div: u64,
     first_fate_div: Option<(u8, u64)>,
@@ -97,14 +92,14 @@ impl Tally {
             unk_by_trans: 0,
             cap_n: [0; 3],
             none_mass_n: 0,
-            omega: Ex::ZERO,
-            err_mass: Ex::ZERO,
-            unk_mass: Ex::ZERO,
-            cap_mass: Ex::ZERO,
-            sect_mass: [Ex::ZERO; SECT],
+            omega: ExactSum::ZERO,
+            err_mass: ExactSum::ZERO,
+            unk_mass: ExactSum::ZERO,
+            cap_mass: ExactSum::ZERO,
+            sect_mass: [ExactSum::ZERO; SECT],
             sect_n: [0; SECT],
-            m1: [Ex::ZERO; 4],
-            m2: [Ex::ZERO; 16],
+            m1: [ExactSum::ZERO; 4],
+            m2: [ExactSum::ZERO; 16],
             forked: 0,
             fate_div: 0,
             first_fate_div: None,
@@ -266,18 +261,18 @@ impl crate::ckpt::CkptRecord for Tally {
                         Some((l.parse().ok()?, e.parse().ok()?))
                     };
                 }
-                self.omega = Ex::parse_ckpt(&mut it)?;
-                self.err_mass = Ex::parse_ckpt(&mut it)?;
-                self.unk_mass = Ex::parse_ckpt(&mut it)?;
-                self.cap_mass = Ex::parse_ckpt(&mut it)?;
+                self.omega = ExactSum::parse_ckpt(&mut it)?;
+                self.err_mass = ExactSum::parse_ckpt(&mut it)?;
+                self.unk_mass = ExactSum::parse_ckpt(&mut it)?;
+                self.cap_mass = ExactSum::parse_ckpt(&mut it)?;
                 for i in 0..SECT {
-                    self.sect_mass[i] = Ex::parse_ckpt(&mut it)?;
+                    self.sect_mass[i] = ExactSum::parse_ckpt(&mut it)?;
                 }
                 for i in 0..4 {
-                    self.m1[i] = Ex::parse_ckpt(&mut it)?;
+                    self.m1[i] = ExactSum::parse_ckpt(&mut it)?;
                 }
                 for i in 0..16 {
-                    self.m2[i] = Ex::parse_ckpt(&mut it)?;
+                    self.m2[i] = ExactSum::parse_ckpt(&mut it)?;
                 }
                 Some(())
             }
@@ -318,9 +313,9 @@ fn sweep_one(
     budget: &QBudget,
     t: &mut Tally,
 ) {
-    let (enc, len) = (prog.enc, prog.len);
+    let (enc, len) = (prog.enc(), prog.len_bits());
     // The shared per-program step: run, plus the mass-conservation
-    // battery every quantum sweep owes (quantum::sweep).
+    // battery every quantum sweep owes (cli/q/sweep.rs).
     let summary = run_and_summarize(m, pool, prog, budget, leaves);
     let n = len as u32;
     t.programs += 1;
@@ -348,7 +343,7 @@ fn sweep_one(
                 // Sector operator accumulation: M^(k) += v v† / 2^n, exact.
                 if live == 1 || live == 2 {
                     let dim = 1 << live;
-                    let acc: &mut [Ex] = if live == 1 { &mut t.m1 } else { &mut t.m2 };
+                    let acc: &mut [ExactSum] = if live == 1 { &mut t.m1 } else { &mut t.m2 };
                     for i in 0..dim {
                         for j in 0..dim {
                             let x = store.amps[i]
@@ -402,7 +397,7 @@ fn sweep_one(
 }
 
 /// ⟨ψ|M|ψ⟩ for unnormalized ψ; the caller divides by ‖ψ‖² afterwards.
-fn expect(m: &[Ex], psi: &[Dw]) -> Option<Dw> {
+fn expect(m: &[ExactSum], psi: &[Dw]) -> Option<Dw> {
     let dim = psi.len();
     // ψ† M ψ = Σ_ij conj(c_i) M_ij c_j. Every entry is visited, so an
     // overflowed one short-circuits the whole expectation to None.
@@ -417,7 +412,7 @@ fn expect(m: &[Ex], psi: &[Dw]) -> Option<Dw> {
 
 /// Ranked ⟨ψ|M|ψ⟩ table for named (unnormalized) states; `halvings` is
 /// log₂‖ψ‖².
-fn rank_states(r: &mut String, label: &str, m: &[Ex], states: &[(&str, Vec<Dw>, u32)]) {
+fn rank_states(r: &mut String, label: &str, m: &[ExactSum], states: &[(&str, Vec<Dw>, u32)]) {
     let mut ranked: Vec<(String, f64, String)> = Vec::new();
     for (name, psi, halvings) in states {
         if let Some(v) = expect(m, psi) {
@@ -514,15 +509,80 @@ pub fn run(argv: &[String]) -> R<()> {
             _ => p.push(tok),
         }
     }
-    // The sweep needs a size range; batch re-adjudication reads its
-    // population from the file and takes none.
-    let (min_n, max_n) = if terms_file.is_some() && p.positional().is_empty() {
+    // Two modes, and the flags of one are not silently tolerated by the
+    // other: batch re-adjudication reads its population from a file and
+    // produces a verdict stream, so a size range, a checkpoint, an
+    // unknown dump, and a report file all mean nothing there — and
+    // `--skeleton` is a column of that stream, so it means nothing
+    // without it.
+    if terms_file.is_some() {
+        let f = "--terms-file";
+        if !p.positional().is_empty() {
+            return Err(p.incompatible(
+                "a size range",
+                f,
+                "the batch mode's population is the file",
+            ));
+        }
+        for (flag, why) in [
+            (
+                "--checkpoint",
+                "the batch mode streams verdicts, it has no groups to resume",
+            ),
+            (
+                "--dump-unknowns",
+                "the batch mode prints every program's leaf counts already",
+            ),
+            (
+                "--out",
+                "the batch mode has no report, only the per-program stream",
+            ),
+        ] {
+            if p.given(flag) {
+                return Err(p.incompatible(flag, f, why));
+            }
+        }
+    } else if p.given("--skeleton") {
+        return Err(p.incompatible(
+            "--skeleton",
+            "no --terms-file",
+            "the skeleton column belongs to the batch verdict stream",
+        ));
+    }
+    if p.given("--groups") && ckpt_path.is_none() {
+        return Err(p.incompatible(
+            "--groups",
+            "no --checkpoint",
+            "groups only slice a checkpointed run",
+        ));
+    }
+    // The sweep needs a size range; batch re-adjudication takes none.
+    let (min_n, max_n) = if terms_file.is_some() {
         (0, 0)
     } else {
-        p.range(4)?
+        p.range_packed(4)?
     };
+    budget
+        .validate()
+        .map_err(|e| format!("blam q census: {e}\n{}", args::hint("q census")))?;
+    if budget.max_qubits < 1 || budget.max_branches < 1 {
+        return Err(format!(
+            "blam q census: --qubits and --branches must be at least 1\n{}",
+            args::hint("q census")
+        ));
+    }
     // Phase 3: becomes explicit library config.
-    let ecfg = args::engine_cfg(work_mult, probe_fuel);
+    let ecfg = args::engine_cfg("q census", work_mult, probe_fuel)?;
+    // Every declared output path, opened (and truncated) before any
+    // compute: a mistyped --out used to panic after the whole sweep.
+    let mut dump = match &dump_unknowns {
+        Some(path) => Some(crate::out::Dump::create("q census", path)?),
+        None => None,
+    };
+    let mut out_file = match &out {
+        Some(path) => Some(crate::out::create("q census", "--out", path)?),
+        None => None,
+    };
     // Big worker stacks: the skeleton reducer and Term drops recurse
     // over term depth, which the size cap bounds at thousands of frames
     // (same lesson as the census escalation pool).
@@ -535,29 +595,30 @@ pub fn run(argv: &[String]) -> R<()> {
     // the escalation rung for census Unknowns. Streams in completion
     // order; a killed run keeps everything finished.
     if let Some(path) = terms_file {
-        let owned = args::read_terms_file(&path)?;
-        let programs: Vec<&str> = owned.iter().map(String::as_str).collect();
+        // Preflight, sequential and before the pool: every line is one
+        // closed program of at most 64 bits. The old path packed the
+        // line's LOW 64 bits and asserted `bit_size == len`, which
+        // checks canonicality rather than packability — so a 68-bit
+        // halter was silently truncated into a different (Species-error)
+        // program, and a 66-bit line hit the assert mid-sweep.
+        let owned = args::read_packed_terms_file(&path)?;
+        let programs: Vec<(&str, QProgram)> = owned
+            .iter()
+            .map(|(bits, enc, len)| {
+                QProgram::new(*enc, *len, cond_k, &sig)
+                    .map(|p| (bits.as_str(), p))
+                    .map_err(|e| format!("blam: {path}: `{bits}`: {e}"))
+            })
+            .collect::<R<Vec<_>>>()?;
         let t0 = Instant::now();
         let done = std::sync::atomic::AtomicU64::new(0);
         programs.par_iter().for_each_init(
             || (Pool::new(), QMachine::new(), Vec::new()),
-            |(pool, m, leaves), bits| {
-                let t = blam::parse_all(bits).expect("parse program line");
-                let mut enc = 0u64;
-                for c in bits.chars() {
-                    enc = enc << 1 | (c == '1') as u64;
-                }
-                assert_eq!(t.bit_size() as usize, bits.len(), "u64-packable");
-                let prog = QProgram {
-                    enc,
-                    len: bits.len() as u8,
-                    cond: cond_k,
-                    order: &sig,
-                };
-                let summary = run_and_summarize(m, pool, &prog, &budget, leaves);
+            |(pool, m, leaves), (bits, prog)| {
+                let summary = run_and_summarize(m, pool, prog, &budget, leaves);
                 let max_steps = summary.max_steps;
                 let (mut h, mut e, mut u, mut c) = (0u64, 0u64, 0u64, 0u64);
-                let mut halt_mass = Ex::ZERO;
+                let mut halt_mass = ExactSum::ZERO;
                 for leaf in leaves.iter() {
                     match &leaf.fate {
                         Fate::Halt(_) => {
@@ -580,16 +641,18 @@ pub fn run(argv: &[String]) -> R<()> {
                 // outcome could still erase it; skeleton halts say nothing
                 // (δ-rules continue where the rigid form stopped).
                 let skel = skeleton_cap.map(|cap| {
-                    use blam::blc::term::app;
+                    use blam::app;
                     use blam::classical::escalation::{normal_form_spine_with, LTerm, NoNf};
                     use blam::quantum::sig::{church_numeral, with_holes};
+                    // Unreachable: the preflight parsed every line.
+                    let t = blam::parse_all(bits).expect("preflighted program line");
                     // Both skeleton shapes come from `quantum::sig` — the
                     // hole application and the Object-B Church numeral —
                     // so this column and the trusted checker cannot drift
                     // into adjudicating different terms.
                     let head = match cond_k {
-                        Some(k) => app(t.clone(), church_numeral(k)),
-                        None => t.clone(),
+                        Some(k) => app(t, church_numeral(k)),
+                        None => t,
                     };
                     let sk = with_holes(&head, sig.len() as u32);
                     match normal_form_spine_with(ecfg, cap, &LTerm::from_term(&sk)) {
@@ -645,9 +708,15 @@ pub fn run(argv: &[String]) -> R<()> {
         cond_k.map_or("-".into(), |k| k.to_string()),
         sig.iter().map(|p| p.name()).collect::<Vec<_>>().join(",")
     );
-    let mut ckpt = ckpt_path
-        .as_ref()
-        .map(|p| crate::ckpt::Ckpt::<Tally>::open(p, &ckpt_config, groups_flag));
+    let mut ckpt = match &ckpt_path {
+        Some(p) => Some(crate::ckpt::Ckpt::<Tally>::open(
+            "q census",
+            p,
+            &ckpt_config,
+            groups_flag,
+        )?),
+        None => None,
+    };
     // Per-size unknown dumping would duplicate lines across resumed
     // runs; under a checkpoint, collect and rewrite the file at the end.
     let mut deferred_unknowns: Vec<(u64, u8)> = Vec::new();
@@ -667,12 +736,8 @@ pub fn run(argv: &[String]) -> R<()> {
                     || (Pool::new(), QMachine::new(), Vec::new(), Tally::new()),
                     |(mut pool, mut m, mut leaves, mut t), task| {
                         run_task(task, &mut |enc, len| {
-                            let prog = QProgram {
-                                enc,
-                                len,
-                                cond: cond_k,
-                                order: &sig,
-                            };
+                            let prog = QProgram::new(enc, len, cond_k, &sig)
+                                .expect("enumerator emits valid terms");
                             sweep_one(&mut pool, &mut m, &mut leaves, &prog, &budget, &mut t);
                         });
                         (pool, m, leaves, t)
@@ -721,37 +786,21 @@ pub fn run(argv: &[String]) -> R<()> {
         // Sorted per size: accumulation order is task order (split- and
         // thread-count dependent); sorted output is machine-independent.
         tally.unknowns.sort_unstable();
-        if dump_unknowns.is_some() && ckpt.is_some() {
+        if ckpt.is_some() {
             deferred_unknowns.extend(tally.unknowns.iter().copied());
-        } else if let Some(path) = &dump_unknowns {
-            use std::io::Write;
-            let mut u = tally.unknowns.clone();
-            u.sort_unstable();
-            let mut f = std::fs::OpenOptions::new()
-                .create(true)
-                .append(true)
-                .open(path)
-                .expect("open dump file");
-            let mut s = String::new();
-            for (enc, len) in u {
-                s.push_str(&enc_str(enc, len));
-                s.push('\n');
-            }
-            f.write_all(s.as_bytes()).unwrap();
+        } else if let Some(d) = dump.as_mut() {
+            // The file was truncated at run start, so this is THIS run's
+            // frontier. Appending unconditionally used to double the file
+            // on every rerun, and a stale mixed-size dump then fed
+            // `q skeleton` inflated tallies.
+            d.append(&tally.unknowns)?;
         }
         total = total.merge(tally.clone());
         rows.push((n, tally));
     }
     if ckpt.is_some() {
-        if let Some(path) = &dump_unknowns {
-            use std::io::Write;
-            let mut f = std::fs::File::create(path).expect("create dump file");
-            let mut s = String::new();
-            for (enc, len) in &deferred_unknowns {
-                s.push_str(&enc_str(*enc, *len));
-                s.push('\n');
-            }
-            f.write_all(s.as_bytes()).unwrap();
+        if let Some(d) = dump.as_mut() {
+            d.append(&deferred_unknowns)?;
         }
     }
     let wall = t0.elapsed();
@@ -1029,8 +1078,8 @@ pub fn run(argv: &[String]) -> R<()> {
     );
 
     print!("{r}");
-    if let Some(path) = out {
-        std::fs::write(&path, &r).expect("write output file");
+    if let (Some(path), Some(f)) = (&out, out_file.as_mut()) {
+        crate::out::write_all("q census", path, f, r.as_bytes())?;
         eprintln!("wrote {path}");
     }
     Ok(())

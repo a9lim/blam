@@ -152,8 +152,9 @@ struct Stats {
     unknowns: Vec<(u64, u8)>,
     /// Terms proven to have NO WEAK HEAD NORMAL FORM this size:
     /// escalation Diverges whose proof landed on the root's own spine
-    /// (bb::take_head_diverge), plus head-memo kills (an application of
-    /// a no-whnf head is itself no-whnf). Feeds the cross-size set.
+    /// (the second component of `escalation::normal_form_with`), plus
+    /// head-memo kills (an application of a no-whnf head is itself
+    /// no-whnf). Feeds the cross-size set.
     no_whnf_out: Vec<(u64, u8)>,
     /// App-rooted terms killed by the no-whnf head memo.
     head_hits: u64,
@@ -403,30 +404,6 @@ fn head_of(enc: u64, len: u8) -> (u64, u8) {
     }
     let hlen = (len - 2) - i;
     ((enc >> i) & ((1u64 << hlen) - 1), hlen)
-}
-
-/// Append `unknowns` to the dump file, truncating it on the run's FIRST
-/// write (`started` flips there). Appending unconditionally made the
-/// file an accumulation across every run that ever named the path — a
-/// stale frontier that `scripts/census-regen.sh`'s subtraction identity
-/// would then silently mis-count.
-fn write_unknowns(path: &str, unknowns: &[(u64, u8)], started: &mut bool) -> R<()> {
-    use std::io::Write;
-    let mut f = std::fs::OpenOptions::new()
-        .create(true)
-        .write(true)
-        .append(*started)
-        .truncate(!*started)
-        .open(path)
-        .map_err(|e| format!("blam census: cannot open --dump-unknowns {path}: {e}"))?;
-    *started = true;
-    let mut out = String::new();
-    for (enc, len) in unknowns {
-        out.push_str(&enc_to_string(*enc, *len));
-        out.push('\n');
-    }
-    f.write_all(out.as_bytes())
-        .map_err(|e| format!("blam census: cannot write {path}: {e}"))
 }
 
 /// Hasher for the memo keys. A key is a `(u64, u8)` packed term, and the
@@ -793,16 +770,36 @@ pub fn run(argv: &[String]) -> R<()> {
             _ => p.push(tok),
         }
     }
-    let (min_n, max_n) = p.range(4)?;
-    let engine = args::engine_cfg(work_mult, probe_fuel);
+    let (min_n, max_n) = p.range_packed(4)?;
+    let engine = args::engine_cfg("census", work_mult, probe_fuel)?;
     cfg.ladder.work_mult = engine.work_mult;
     cfg.ladder.probe_fuel = engine.probe_fuel;
+    // `--groups` slices a checkpoint's task list; without one it names
+    // nothing, so taking it silently would misreport what ran.
+    if p.given("--groups") && ckpt_path.is_none() {
+        return Err(p.incompatible(
+            "--groups",
+            "no --checkpoint",
+            "groups only slice a checkpointed run",
+        ));
+    }
     if chunk_given && ckpt_path.is_some() {
         eprintln!(
             "    warning: --chunk is ignored under --checkpoint; the task split comes \
              from the checkpoint header (target=), which pins it across resumes"
         );
     }
+    // Every output path the run promised, opened (and truncated) now:
+    // a run that dies here has lost nothing, and one that gets past
+    // here cannot die on an unwritable path with the sweep in hand.
+    let mut dump = match &dump_path {
+        Some(p) => Some(crate::out::Dump::create("census", p)?),
+        None => None,
+    };
+    let mut memo_out = match &memo_out_path {
+        Some(p) => Some(crate::out::append("census", "--memo-out", p)?),
+        None => None,
+    };
 
     // Escalation recursion can go deep on tower terms; give workers room.
     args::build_pool(threads)?;
@@ -826,6 +823,14 @@ pub fn run(argv: &[String]) -> R<()> {
         (34, 327686),
     ];
 
+    // Opened before the table header: a refusal here (wrong file, wrong
+    // config, unwritable path) should not arrive under a header
+    // promising rows that will never come.
+    let ckpt_cfg = ckpt_config(&cfg, min_n, max_n, memo_in_path.as_deref());
+    let mut ckpt = match &ckpt_path {
+        Some(p) => Some(Ckpt::<Stats>::open("census", p, &ckpt_cfg, groups_flag)?),
+        None => None,
+    };
     println!(
         "{:>3} {:>12} {:>12} {:>8} {:>8} {:>8} {:>10} {:>12} {:>9} {:>10}",
         "n",
@@ -839,10 +844,6 @@ pub fn run(argv: &[String]) -> R<()> {
         "time_s",
         "terms/s"
     );
-    let ckpt_cfg = ckpt_config(&cfg, min_n, max_n, memo_in_path.as_deref());
-    let mut ckpt = ckpt_path
-        .as_ref()
-        .map(|p| Ckpt::<Stats>::open(p, &ckpt_cfg, groups_flag));
 
     // λ-wrap memo, rolling by size parity: slot n%2 holds size n−2's
     // expensive verdicts during size n, then is replaced by size n's.
@@ -892,9 +893,8 @@ pub fn run(argv: &[String]) -> R<()> {
         );
     }
     // With a checkpoint, per-size unknown dumping would duplicate lines
-    // across resumed runs; collect and rewrite the file once at the end.
+    // across resumed runs; collect and write the file once at the end.
     let mut deferred_unknowns: Vec<(u64, u8)> = Vec::new();
-    let mut dump_started = false;
     for n in min_n..=max_n {
         // Generation is fused into the workers: each task enumerates its
         // subtree of the term space and censuses terms as they appear.
@@ -950,8 +950,7 @@ pub fn run(argv: &[String]) -> R<()> {
         }
         // Persist size n's memo records (sorted for stable diffs). Loads
         // dedup by key, so re-appends from resumed runs are harmless.
-        if let Some(path) = &memo_out_path {
-            use std::io::Write;
+        if let (Some(path), Some(f)) = (&memo_out_path, memo_out.as_mut()) {
             let mut recs: Vec<((u64, u8), MemoV)> = memo_by_parity[(n % 2) as usize]
                 .iter()
                 .map(|(k, v)| (*k, *v))
@@ -966,12 +965,7 @@ pub fn run(argv: &[String]) -> R<()> {
             for k in wrecs {
                 Rec::NoWhnf(k).write(&mut out);
             }
-            let mut f = std::fs::OpenOptions::new()
-                .create(true)
-                .append(true)
-                .open(path)
-                .expect("open memo-out file");
-            f.write_all(out.as_bytes()).unwrap();
+            crate::out::write_all("census", path, f, out.as_bytes())?;
         }
         // Fold size n's no-whnf facts into the cross-size set.
         let new_whnf = stats.no_whnf_out.len();
@@ -1055,13 +1049,12 @@ pub fn run(argv: &[String]) -> R<()> {
             if stats.unknowns.len() > 16 {
                 println!("    ... and {} more unknowns", stats.unknowns.len() - 16);
             }
-            if dump_path.is_some() && ckpt.is_some() {
+            if ckpt.is_some() {
                 deferred_unknowns.extend(stats.unknowns.iter().copied());
-            } else if let Some(path) = &dump_path {
-                // Truncate on the FIRST write of this run, append after:
-                // the file is this run's frontier, not an accumulation
-                // over every run that ever named the path.
-                write_unknowns(path, &stats.unknowns, &mut dump_started)?;
+            } else if let Some(d) = dump.as_mut() {
+                // The file was truncated at run start, so this appends
+                // to THIS run's frontier and nothing else.
+                d.append(&stats.unknowns)?;
             }
         }
         if verify {
@@ -1076,11 +1069,11 @@ pub fn run(argv: &[String]) -> R<()> {
         }
     }
     if ckpt.is_some() {
-        if let Some(path) = &dump_path {
-            // Same truncate-then-append contract; with a checkpoint the
-            // whole run lands in one write, so a resumed run replaces
-            // rather than duplicates the earlier attempt's lines.
-            write_unknowns(path, &deferred_unknowns, &mut dump_started)?;
+        if let Some(d) = dump.as_mut() {
+            // With a checkpoint the whole run lands in one write, so a
+            // resumed run replaces rather than duplicates the earlier
+            // attempt's lines.
+            d.append(&deferred_unknowns)?;
         }
     }
     let fires = blam::classical::escalation::REDLOOP_FIRES.load(Ordering::Relaxed);

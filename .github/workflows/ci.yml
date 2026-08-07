@@ -33,6 +33,50 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 
+  rustdoc:
+    # The published API's own docs: a broken intra-doc link, or a public
+    # item pointing at a private one, is a reader following a promise
+    # that is not kept. 2.0.0 ships this surface, so the gate is hard.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo doc --all-features --no-deps
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+  msrv:
+    # rust-version in Cargo.toml is a promise to anyone who depends on
+    # the crate; nothing enforces it but this job.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@1.87
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo check --all-features --all-targets
+
+  stale-invocations:
+    # One binary, `blam`, with subcommands. Every predecessor bin name
+    # (qcensus, certsearch, tracescan, …) is gone, so a script or doc
+    # that still invokes one is a command that cannot run. Historical
+    # prose under docs/ and ledger/ is exempt — that is the record of
+    # what WAS — and so is the vendored ref/AIT.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: no invocations of retired binaries
+        run: |
+          bins='census|qcensus|qradical|qcomplement|certsearch|certlean|certdiag|tracescan|slotsearch|oddminproto|solomonoff|adjudicate|normalize|selfint|qskeleton'
+          hits=$(grep -rnE "target/(release|debug)/($bins)\b|--bin +($bins)\b" \
+                   --exclude-dir=.git --exclude-dir=target --exclude-dir=ref \
+                   --exclude-dir=docs --exclude-dir=ledger . || true)
+          if [ -n "$hits" ]; then
+            echo "stale invocations of retired binaries:"
+            echo "$hits"
+            exit 1
+          fi
+
   test:
     # --release is the repo's own verification bar (AGENTS.md): the cert
     # battery pushes 196,848 provable halters through the sweep ladder and
@@ -49,9 +93,9 @@ jobs:
           submodules: true
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      # --all-features so the `lab` targets (research instruments, the
-      # untrusted certificate discovery surface, and the three bins that
-      # use them) are compiled and tested too.
+      # --all-features so the `lab` surface (research instruments, the
+      # untrusted certificate discovery layer, and the `blam` subcommands
+      # built on them) is compiled and tested too.
       - run: cargo test --release --workspace --all-features
       # Default features: the no-lab dispatcher arms actually run.
       - run: cargo test --release

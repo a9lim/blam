@@ -42,13 +42,13 @@ pub fn run(argv: &[String]) -> R<()> {
             args::hint("normalize")
         ));
     };
+    // Validated before the arena sees it, so the three ways a BITS
+    // argument can be wrong — a stray character, an open term, and a
+    // complete prefix of a longer string — each name themselves. The
+    // decode below is then the same one it always was, and cannot fail.
+    args::parse_program("normalize", bits)?;
     let mut pool = Pool::new();
-    let Some(root) = pool.decode_str(bits) else {
-        return Err(format!(
-            "blam normalize: `{bits}` is not a closed BLC term\n{}",
-            args::hint("normalize")
-        ));
-    };
+    let root = pool.decode_str(bits).expect("validated above");
     let mut vm = Machine::new();
     let mut nf = StringSink::default();
     match vm.normalize(&pool, root, beta, &mut nf) {

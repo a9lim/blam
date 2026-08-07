@@ -320,8 +320,8 @@ impl Summary {
         }
         // Distinct colors, ranked once: the initial class of a node is
         // its color's rank. (Rebuilding the color set inside the
-        // per-node map made this O(n² log n) — 16.3% of an
-        // oddminproto-28 run.)
+        // per-node map made this O(n² log n) — 16.3% of the w=28 run
+        // that measured it.)
         let ranks: BTreeMap<u64, u32> = color
             .iter()
             .copied()

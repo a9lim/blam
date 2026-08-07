@@ -124,7 +124,7 @@ fn consumed_mentions(enc: u64, len: u8, k: u32) -> u8 {
 }
 
 mod idiom {
-    //! qradical: the radical-aggregate census — phase 1 of the dyadicity
+    //! `blam q galois idiom`: the radical-aggregate census — phase 1 of the dyadicity
     //! decision instrument for Ω_success beyond the exhaustive 45-bit horizon.
     //!
     //! Per size n, accumulate the EXACT total successful (Halt) mass of the
@@ -154,12 +154,12 @@ mod idiom {
 
     use super::{consumed_mentions, CappedWitnesses, WITNESS_CAP};
     use crate::args::{self, Args, R};
+    use crate::q::sweep::run_and_summarize;
     use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks_at};
     use blam::blc::wire::enc_to_string;
     use blam::quantum::machine::{Machine as QMachine, Pool, QProgram};
     use blam::quantum::scalar::{is_dyadic, radical_parts, show_parts, ExactSum};
     use blam::quantum::sig::FROZEN;
-    use blam::quantum::sweep::run_and_summarize;
     use blam::quantum::{Budget as QBudget, Fate, Leaf};
     use rayon::prelude::*;
     use std::time::Instant;
@@ -244,10 +244,16 @@ mod idiom {
         t: &mut Tally,
     ) {
         t.run += 1;
-        // Run plus the shared mass-conservation battery (quantum::sweep):
+        // Run plus the shared mass-conservation battery (cli/q/sweep.rs):
         // Σ leaf mass = 1 exactly, asserted for every program of every
         // sweep, in one place none of the three can quietly skip.
-        let summary = run_and_summarize(m, pool, &QProgram::new(enc, len, &FROZEN), budget, leaves);
+        let summary = run_and_summarize(
+            m,
+            pool,
+            &QProgram::new(enc, len, None, &FROZEN).expect("enumerator emits valid terms"),
+            budget,
+            leaves,
+        );
         t.max_steps = t.max_steps.max(summary.max_steps);
         let mut nondyadic_here = false;
         for leaf in leaves.iter() {
@@ -341,7 +347,7 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
         }
         let nthreads = rayon::current_num_threads();
         eprintln!(
-            "qradical [{}]: sizes {lo}..={hi}, λ⁵ idiom, filter {{h,meas,new,t}}, \
+            "q galois idiom [{}]: sizes {lo}..={hi}, λ⁵ idiom, filter {{h,meas,new,t}}, \
          beta={} trans={}, {nthreads} threads",
             if count_only { "count" } else { "sweep" },
             budget.beta,
@@ -442,13 +448,7 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
         use super::*;
         use blam::quantum::scalar::Dw;
 
-        fn pack(bits: &str) -> (u64, u8) {
-            let mut enc = 0u64;
-            for c in bits.bytes() {
-                enc = enc << 1 | u64::from(c == b'1');
-            }
-            (enc, bits.len() as u8)
-        }
+        use crate::q::pack;
 
         const WITNESS45: &str = "000000000001111100111111001100111111001111010";
         const P53: &str = "00000000000101111100111111001100111111001111010011010";
@@ -538,17 +538,17 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
 }
 
 mod complement {
-    //! qcomplement: phase 2 of the dyadicity decision instrument — the exact
+    //! `blam q galois complement`: phase 2 of the dyadicity decision instrument — the exact
     //! radical aggregate of the non-λ⁵ complement, 46..53.
     //!
-    //! Phase 1 (`qradical`) decided the idiom sector: the √2-coefficient of
+    //! Phase 1 (`q galois idiom`) decided the idiom sector: the √2-coefficient of
     //! Σ_success is exactly 0 for 46..52 and −1/4 at n=53 (unique witness
     //! P53). This bin sweeps everything else: closed programs with k < 5
     //! leading lambdas, whose signature arguments are consumed partly by the
     //! leading binders (the first k, in application order h meas new cnot t)
     //! and partly by whatever the body reduces to. The population is the
     //! problem: 933,062,632,336 complement programs across 46..53 (exact DP,
-    //! anchored bit-identically to the qcensus 4..41 total and qradical's
+    //! anchored bit-identically to the `q census` 4..41 total and phase 1's
     //! n=53 idiom enumeration; rung-0 survivor counts independently
     //! DP-verified) — 36× phase 1's enumeration. The protocol:
     //!
@@ -605,12 +605,12 @@ mod complement {
 
     use super::{consumed_mentions, CappedWitnesses, WITNESS_CAP};
     use crate::args::{self, Args, R};
+    use crate::q::sweep::run_and_summarize;
     use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
     use blam::blc::wire::enc_to_string;
     use blam::quantum::machine::{Machine as QMachine, Pool, QProgram};
     use blam::quantum::scalar::{is_dyadic, radical_parts, show_parts, sqrt2_part, ExactSum};
     use blam::quantum::sig::FROZEN;
-    use blam::quantum::sweep::run_and_summarize;
     use blam::quantum::{Budget as QBudget, Fate, Leaf};
     use rayon::prelude::*;
     use std::io::{BufRead, BufWriter, Write};
@@ -800,9 +800,15 @@ mod complement {
         sink: Option<&Sink>,
     ) -> bool {
         t.run += 1;
-        // Run plus the shared mass-conservation battery (quantum::sweep),
+        // Run plus the shared mass-conservation battery (cli/q/sweep.rs),
         // which also settles resolvedness and the per-program Σ Halt mass.
-        let summary = run_and_summarize(m, pool, &QProgram::new(enc, len, &FROZEN), budget, leaves);
+        let summary = run_and_summarize(
+            m,
+            pool,
+            &QProgram::new(enc, len, None, &FROZEN).expect("enumerator emits valid terms"),
+            budget,
+            leaves,
+        );
         t.max_steps = t.max_steps.max(summary.max_steps);
         let resolved = summary.resolved;
         let hsum = summary.halt_mass;
@@ -1065,7 +1071,7 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
 
         let nthreads = rayon::current_num_threads();
         eprintln!(
-            "qcomplement [{mode}]: sizes {lo}..={hi}, non-λ⁵ complement, β={} trans={}, \
+            "q galois complement [{mode}]: sizes {lo}..={hi}, non-λ⁵ complement, β={} trans={}, \
          file {path}{}, {nthreads} threads",
             budget.beta,
             budget.trans,
@@ -1247,13 +1253,7 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
         use super::*;
         use blam::quantum::scalar::Dw;
 
-        fn pack(bits: &str) -> (u64, u8) {
-            let mut enc = 0u64;
-            for c in bits.bytes() {
-                enc = enc << 1 | u64::from(c == b'1');
-            }
-            (enc, bits.len() as u8)
-        }
+        use crate::q::pack;
 
         const P53: &str = "00000000000101111100111111001100111111001111010011010";
 
@@ -1356,7 +1356,8 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
                     leaves.clear();
                     m.run_into_with(
                         &mut pool,
-                        &QProgram::new(enc, len, &FROZEN),
+                        &QProgram::new(enc, len, None, &FROZEN)
+                            .expect("enumerator emits valid terms"),
                         &CANONICAL,
                         &mut leaves,
                     );

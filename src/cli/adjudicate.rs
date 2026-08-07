@@ -98,7 +98,17 @@ pub fn run(argv: &[String]) -> R<()> {
         }
         _ => {}
     }
-    let engine = args::engine_cfg(work_mult, probe_fuel);
+    // `--threads` sizes the rayon pool for --file mode; on one term it
+    // buys nothing, so accepting it silently would be a lie about what
+    // the run did.
+    if bits.is_some() && p.given("--threads") {
+        return Err(p.incompatible(
+            "--threads",
+            "BITS",
+            "single-term mode runs on this thread; --threads is for --file",
+        ));
+    }
+    let engine = args::engine_cfg("adjudicate", work_mult, probe_fuel)?;
     cfg.work_mult = engine.work_mult;
     cfg.probe_fuel = engine.probe_fuel;
     if verbose {
@@ -143,13 +153,11 @@ fn rung_name(r: Rung) -> &'static str {
 
 /// One-term adjudication: run the ladder verbosely on given bits.
 fn single(cfg: &LadderCfg, bits: &str) -> R<()> {
+    // An open term used to be reported as a HALT here, and a term with
+    // trailing bits as a verdict about a DIFFERENT (shorter) program.
+    args::parse_program("adjudicate", bits)?;
     let mut pool = Pool::new();
-    let Some(root) = pool.decode_str(bits) else {
-        return Err(format!(
-            "blam adjudicate: `{bits}` is not a closed BLC term\n{}",
-            args::hint("adjudicate")
-        ));
-    };
+    let root = pool.decode_str(bits).expect("validated above");
     println!(
         "term: {} bits, redex: {}",
         pool.bit_size(root),
@@ -243,7 +251,9 @@ fn batch(cfg: &LadderCfg, path: &str) -> R<()> {
         || (Pool::new(), Machine::new(), SizeSink::default()),
         |(pool, vm, sink), bits| {
             pool.clear();
-            let root = pool.decode_str(bits).expect("parse term line");
+            // Unreachable: `read_terms_file` parsed every line before the
+            // pool was built (args.rs, preflight).
+            let root = pool.decode_str(bits).expect("preflighted term line");
             let o = ladder::adjudicate(cfg, pool, vm, root, sink);
             let line = verdict_line(bits, &o, sink.0);
             let mut c = counts.lock().unwrap();

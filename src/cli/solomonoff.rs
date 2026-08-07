@@ -208,16 +208,13 @@ pub fn run(argv: &[String]) -> R<()> {
             _ => p.push(tok),
         }
     }
-    let (min_n, max_n) = p.range(4)?;
-    if max_n > 63 {
-        return Err(format!(
-            "blam solomonoff: MAX {max_n} exceeds 63 (masses are u128 in units of 2^-64)\n{}",
-            args::hint("solomonoff")
-        ));
-    }
-    let engine = args::engine_cfg(work_mult, probe_fuel);
+    let (min_n, max_n) = p.range_packed(4)?;
+    let engine = args::engine_cfg("solomonoff", work_mult, probe_fuel)?;
     cfg.work_mult = engine.work_mult;
     cfg.probe_fuel = engine.probe_fuel;
+    // The table is a full-run product, so its path is proved writable
+    // now rather than after the sweep.
+    let mut table = crate::out::create("solomonoff", "--table", &table_path)?;
     args::build_pool(threads)?;
 
     let t0 = Instant::now();
@@ -382,14 +379,13 @@ pub fn run(argv: &[String]) -> R<()> {
     }
 
     // ---- full table dump for small x ----
-    use std::io::Write;
-    let mut f = std::io::BufWriter::new(std::fs::File::create(&table_path).unwrap());
-    writeln!(f, "# x |x| K_N count nontrivial_mass_2^-64 min_program").unwrap();
+    use std::fmt::Write as _;
+    let mut body = String::from("# x |x| K_N count nontrivial_mass_2^-64 min_program\n");
     let mut dumped = 0u64;
     for ((xenc, xlen), e) in rows.iter() {
         if *xlen <= dump_max_x {
-            writeln!(
-                f,
+            let _ = writeln!(
+                body,
                 "{} {} {} {} {} {}",
                 enc_to_string(*xenc, *xlen),
                 xlen,
@@ -397,11 +393,11 @@ pub fn run(argv: &[String]) -> R<()> {
                 e.count,
                 e.mass,
                 enc_to_string(e.k_prog.0, e.k_prog.1)
-            )
-            .unwrap();
+            );
             dumped += 1;
         }
     }
+    crate::out::write_all("solomonoff", &table_path, &mut table, body.as_bytes())?;
     println!(
         "\ntable: {} distinct nontrivial nfs total; {dumped} with |x|≤{dump_max_x} dumped to {table_path}",
         rows.len()

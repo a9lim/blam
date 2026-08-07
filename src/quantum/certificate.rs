@@ -113,6 +113,8 @@ impl std::fmt::Display for OpenProgram {
     }
 }
 
+impl std::error::Error for OpenProgram {}
+
 pub struct SkelCaps {
     /// Reduction steps before giving up.
     pub steps: u64,

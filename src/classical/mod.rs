@@ -27,6 +27,21 @@ pub enum OutOfFuel {
     Aborted,
 }
 
+/// Exhaustive by choice (no `#[non_exhaustive]`): every caller that
+/// reports a stall names the resource, and a new resource SHOULD break
+/// those matches rather than print a catch-all.
+impl std::fmt::Display for OutOfFuel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            OutOfFuel::Beta => write!(f, "beta budget exhausted"),
+            OutOfFuel::Transitions => write!(f, "transition cap exhausted"),
+            OutOfFuel::Aborted => write!(f, "the sink asked to stop"),
+        }
+    }
+}
+
+impl std::error::Error for OutOfFuel {}
+
 /// Beta-step budget. `steps` is left at the count reached so far, so a
 /// successful run reports its cost and an exhausted one shows the limit.
 #[derive(Clone, Copy, Debug)]
