@@ -21,10 +21,24 @@ pub enum Node {
     App(u32, u32),
 }
 
+/// Pending constructor on `decode`'s explicit build stack.
+enum P {
+    Lam,
+    App0,      // waiting for function child
+    App1(u32), // has function child, waiting for argument
+}
+
 /// Flat term storage, reused across terms via `clear`.
 #[derive(Default)]
 pub struct Pool {
     nodes: Vec<Node>,
+    /// `decode`'s build stack, owned by the pool so the hot loop
+    /// allocates nothing per term (every closed term opens with `00` or
+    /// `01`, so an inline stack malloc'd on every one of census n=36's
+    /// 11.1M decodes). Deliberately NOT touched by `clear`: `clear`'s
+    /// soundness argument is about `decoded`, and this buffer carries no
+    /// term state.
+    dwork: Vec<P>,
     /// `(root, has_redex)` for the most recent [`Pool::decode`]. That
     /// decode already visits every `App` it builds, so it can settle the
     /// pre-scan question in passing; [`Pool::has_redex`] reads it back in
@@ -71,13 +85,20 @@ impl Pool {
 
     /// Decode one BLC term off a bit stream. Returns the root index.
     pub fn decode(&mut self, bits: &mut impl Iterator<Item = bool>) -> Option<u32> {
-        // Explicit build stack: each entry is a pending constructor.
-        enum P {
-            Lam,
-            App0,      // waiting for function child
-            App1(u32), // has function child, waiting for argument
-        }
-        let mut work: Vec<P> = Vec::new();
+        // Taken out for the duration and put back whole, so the `?`
+        // early returns cannot leak the buffer.
+        let mut work = std::mem::take(&mut self.dwork);
+        work.clear();
+        let r = self.decode_into(bits, &mut work);
+        self.dwork = work;
+        r
+    }
+
+    fn decode_into(
+        &mut self,
+        bits: &mut impl Iterator<Item = bool>,
+        work: &mut Vec<P>,
+    ) -> Option<u32> {
         // Pre-scan answer, accumulated for free: every App this decode
         // builds is tested as it closes, on a child index that is already
         // hot. Equivalent to a full re-traversal because `decode` visits
@@ -297,13 +318,11 @@ impl Sink for StringSink {
     }
 }
 
-#[derive(Clone, Copy)]
-enum Val {
-    /// Unevaluated closure: (term, env).
-    Clo(u32, u32),
-    /// Rigid variable, by 1-based de Bruijn level.
-    Lvl(u32),
-}
+/// Marks an env cell as a rigid level rather than a closure. Steals bit
+/// 31 of the cell's first word, which caps arena node indices at 2^31 —
+/// far above any reachable arena (nodes per term are bounded by the
+/// term's bit count, and env cells live in their own vector).
+const LVL_TAG: u32 = 1 << 31;
 
 #[derive(Clone, Copy)]
 enum Frame {
@@ -320,7 +339,15 @@ const NIL: u32 = u32::MAX;
 /// The machine. Reused across terms; arenas reset per `normalize` call.
 #[derive(Default)]
 pub struct Machine {
-    envs: Vec<(Val, u32)>,
+    /// Env cell payloads: `(term, env)` for an unevaluated closure,
+    /// `(LVL_TAG | level, 0)` for a rigid de Bruijn level. Split from
+    /// `parents` so a cell is 12 B across the two vectors instead of the
+    /// 16 B of the old `(Val, u32)` tuple — the de Bruijn walk chases
+    /// 4-byte hops through a dense array, and the discriminant is a bit
+    /// test instead of an enum load.
+    envs: Vec<(u32, u32)>,
+    /// Per env cell: the enclosing cell's index (the walk's linked list).
+    parents: Vec<u32>,
     stack: Vec<Frame>,
     /// Transitions consumed by the most recent `normalize*` call
     /// (telemetry: measures real transition/β ratios so budget caps can
@@ -338,8 +365,19 @@ impl Machine {
         Self::default()
     }
 
-    fn push_env(&mut self, v: Val, parent: u32) -> u32 {
-        self.envs.push((v, parent));
+    #[inline(always)]
+    fn push_clo(&mut self, t: u32, e: u32, parent: u32) -> u32 {
+        debug_assert!(t & LVL_TAG == 0, "arena index reached the tag bit");
+        self.envs.push((t, e));
+        self.parents.push(parent);
+        (self.envs.len() - 1) as u32
+    }
+
+    #[inline(always)]
+    fn push_lvl(&mut self, k: u32, parent: u32) -> u32 {
+        debug_assert!(k & LVL_TAG == 0, "level reached the tag bit");
+        self.envs.push((k | LVL_TAG, 0));
+        self.parents.push(parent);
         (self.envs.len() - 1) as u32
     }
 
@@ -369,7 +407,7 @@ impl Machine {
         sink: &mut S,
     ) -> Result<u64, OutOfFuel> {
         let r = self.normalize_inner(pool, root, limit, trans_limit, sink);
-        // A transition-capped run can leave multi-GB arenas behind (16 B
+        // A transition-capped run can leave multi-GB arenas behind (12 B
         // per env node × up to trans_limit); don't hold the peak forever.
         //
         // Reassignment is deliberate, and the two obvious "improvements"
@@ -388,6 +426,9 @@ impl Machine {
         if self.envs.capacity() > KEEP {
             self.envs = Vec::with_capacity(KEEP);
         }
+        if self.parents.capacity() > KEEP {
+            self.parents = Vec::with_capacity(KEEP);
+        }
         if self.stack.capacity() > KEEP {
             self.stack = Vec::with_capacity(KEEP);
         }
@@ -403,6 +444,7 @@ impl Machine {
         sink: &mut S,
     ) -> Result<u64, OutOfFuel> {
         self.envs.clear();
+        self.parents.clear();
         self.stack.clear();
         let mut steps = 0u64;
         let mut depth = 0u32;
@@ -413,7 +455,7 @@ impl Machine {
         // the β-count — the classic machine-steps-vs-β gap. The transition
         // cap turns "astronomically slow" into an honest resource error,
         // and since each transition allocates at most one env node or
-        // frame, it bounds memory too (up to ~16 B × trans_limit per
+        // frame, it bounds memory too (up to ~12 B × trans_limit per
         // worker — release oversized buffers on exit, below).
         let mut trans = 0u64;
         'eval: loop {
@@ -440,7 +482,7 @@ impl Machine {
                             self.last_trans = trans;
                             return Err(OutOfFuel::Beta);
                         }
-                        env = self.push_env(Val::Clo(at, ae), env);
+                        env = self.push_clo(at, ae, env);
                         t = b;
                     } else {
                         // Unapplied abstraction in normal-form position:
@@ -448,7 +490,7 @@ impl Machine {
                         sink.zero();
                         sink.zero();
                         depth += 1;
-                        env = self.push_env(Val::Lvl(depth), env);
+                        env = self.push_lvl(depth, env);
                         self.stack.push(Frame::LamEnd);
                         t = b;
                     }
@@ -456,57 +498,56 @@ impl Machine {
                 Node::Var(i) => {
                     let mut e = env;
                     for _ in 1..i {
-                        e = self.envs[e as usize].1;
+                        e = self.parents[e as usize];
                     }
-                    match self.envs[e as usize].0 {
-                        Val::Clo(ct, ce) => {
-                            // Call-by-name: enter the stored closure.
-                            t = ct;
-                            env = ce;
+                    let (w0, w1) = self.envs[e as usize];
+                    if w0 & LVL_TAG == 0 {
+                        // Call-by-name: enter the stored closure.
+                        t = w0;
+                        env = w1;
+                    } else {
+                        let k = w0 & !LVL_TAG;
+                        // Rigid head. The contiguous run of Arg frames
+                        // above is its spine; emit the application tags
+                        // and head var (preorder), then convert the run
+                        // to Norm frames — top of stack is the innermost
+                        // argument, which preorder wants first.
+                        let mut run = 0usize;
+                        while run < self.stack.len()
+                            && matches!(self.stack[self.stack.len() - 1 - run], Frame::Arg(..))
+                        {
+                            run += 1;
                         }
-                        Val::Lvl(k) => {
-                            // Rigid head. The contiguous run of Arg frames
-                            // above is its spine; emit the application tags
-                            // and head var (preorder), then convert the run
-                            // to Norm frames — top of stack is the innermost
-                            // argument, which preorder wants first.
-                            let mut run = 0usize;
-                            while run < self.stack.len()
-                                && matches!(self.stack[self.stack.len() - 1 - run], Frame::Arg(..))
-                            {
-                                run += 1;
+                        for _ in 0..run {
+                            sink.zero();
+                            sink.one();
+                        }
+                        sink.var(depth - k + 1);
+                        let base = self.stack.len() - run;
+                        for f in self.stack[base..].iter_mut() {
+                            if let Frame::Arg(a, e) = *f {
+                                *f = Frame::Norm(a, e);
                             }
-                            for _ in 0..run {
-                                sink.zero();
-                                sink.one();
+                        }
+                        // Readback: pull the next pending job.
+                        loop {
+                            trans += 1;
+                            if trans > trans_limit {
+                                self.last_trans = trans;
+                                return Err(OutOfFuel::Transitions);
                             }
-                            sink.var(depth - k + 1);
-                            let base = self.stack.len() - run;
-                            for f in self.stack[base..].iter_mut() {
-                                if let Frame::Arg(a, e) = *f {
-                                    *f = Frame::Norm(a, e);
-                                }
-                            }
-                            // Readback: pull the next pending job.
-                            loop {
-                                trans += 1;
-                                if trans > trans_limit {
+                            match self.stack.pop() {
+                                None => {
                                     self.last_trans = trans;
-                                    return Err(OutOfFuel::Transitions);
+                                    return Ok(steps);
                                 }
-                                match self.stack.pop() {
-                                    None => {
-                                        self.last_trans = trans;
-                                        return Ok(steps);
-                                    }
-                                    Some(Frame::LamEnd) => depth -= 1,
-                                    Some(Frame::Norm(nt, ne)) => {
-                                        t = nt;
-                                        env = ne;
-                                        continue 'eval;
-                                    }
-                                    Some(Frame::Arg(..)) => unreachable!(),
+                                Some(Frame::LamEnd) => depth -= 1,
+                                Some(Frame::Norm(nt, ne)) => {
+                                    t = nt;
+                                    env = ne;
+                                    continue 'eval;
                                 }
+                                Some(Frame::Arg(..)) => unreachable!(),
                             }
                         }
                     }
