@@ -472,21 +472,27 @@ fn head_of(enc: u64, len: u8) -> (u64, u8) {
     ((enc >> i) & ((1u64 << hlen) - 1), hlen)
 }
 
+/// The census's cross-size verdict memory, read-only within a size:
+/// the parity-rolled λ-wrap memo and the monotone no-whnf head set.
+struct Memos<'a> {
+    wrap: &'a std::collections::HashMap<(u64, u8), MemoV>,
+    no_whnf: &'a std::collections::HashSet<(u64, u8)>,
+}
+
 fn census_term(
     cfg: &Cfg,
     pool: &mut TermPool,
     vm: &mut Machine,
     stats: &mut Stats,
-    memo: &std::collections::HashMap<(u64, u8), MemoV>,
-    no_whnf: &std::collections::HashSet<(u64, u8)>,
+    memos: &Memos,
     enc: u64,
     len: u8,
 ) {
     stats.total += 1;
     // λ-wrap memo: bits are packed MSB-first, so a Lam-headed term is
     // top-two-bits 00 and its body key is simply (enc, len−2).
-    if !memo.is_empty() && len >= 3 && (enc >> (len - 2)) & 0b11 == 0 {
-        if let Some(v) = memo.get(&(enc, len - 2)) {
+    if !memos.wrap.is_empty() && len >= 3 && (enc >> (len - 2)) & 0b11 == 0 {
+        if let Some(v) = memos.wrap.get(&(enc, len - 2)) {
             stats.memo_hits += 1;
             let bumped = match *v {
                 MemoV::Halt { nf, steps } => {
@@ -508,14 +514,15 @@ fn census_term(
     // are strict subterms, so the set (facts from strictly smaller
     // sizes) is read-only during a size. The kill is itself a no-whnf
     // fact and a valid λ-wrap Diverge seed.
-    if !no_whnf.is_empty() && (enc >> (len - 2)) & 0b11 == 0b01 {
-        if no_whnf.contains(&head_of(enc, len)) {
-            stats.diverge += 1;
-            stats.head_hits += 1;
-            stats.no_whnf_out.push((enc, len));
-            stats.memo_out.push(((enc, len), MemoV::Diverge));
-            return;
-        }
+    if !memos.no_whnf.is_empty()
+        && (enc >> (len - 2)) & 0b11 == 0b01
+        && memos.no_whnf.contains(&head_of(enc, len))
+    {
+        stats.diverge += 1;
+        stats.head_hits += 1;
+        stats.no_whnf_out.push((enc, len));
+        stats.memo_out.push(((enc, len), MemoV::Diverge));
+        return;
     }
     pool.clear();
     let root = pool
@@ -994,8 +1001,11 @@ fn main() {
             None => cfg.chunk,
         };
         let tasks = interleave_tasks(split_tasks(n, target));
-        let memo = &memo_by_parity[(n % 2) as usize];
-        let nw = &no_whnf;
+        let memos = Memos {
+            wrap: &memo_by_parity[(n % 2) as usize],
+            no_whnf: &no_whnf,
+        };
+        let memos = &memos;
         let run_slice = |slice: &[GenTask]| -> Stats {
             slice
                 .par_iter()
@@ -1004,7 +1014,7 @@ fn main() {
                     |(pool, vm), task| {
                         let mut stats = Stats::default();
                         run_task(task, &mut |enc, len| {
-                            census_term(&cfg, pool, vm, &mut stats, memo, nw, enc, len);
+                            census_term(&cfg, pool, vm, &mut stats, memos, enc, len);
                         });
                         stats
                     },
