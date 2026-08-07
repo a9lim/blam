@@ -4,7 +4,7 @@
 //! count. The census's per-program view, without the census.
 
 use crate::args::{self, Args, R};
-use blam::quantum::machine::{Machine, Pool};
+use blam::quantum::machine::{self, QProgram};
 use blam::quantum::scalar::Dw;
 use blam::quantum::sig::FROZEN;
 use blam::quantum::{Budget, Fate, Prim};
@@ -126,11 +126,10 @@ pub fn run(argv: &[String]) -> R<()> {
         budget.max_qubits,
         budget.max_branches
     );
-    let mut pool = Pool::new();
-    let mut m = Machine::new();
-    let mut leaves = Vec::new();
-    m.run_program_into(&mut pool, enc, bits.len() as u8, &sig, &budget, &mut leaves);
-    for (i, leaf) in leaves.iter().enumerate() {
+    // One program, one call: the library owns the arenas here (sweeps
+    // reuse theirs through `Machine::run_into_with` instead).
+    let r = machine::run(&QProgram::new(enc, bits.len() as u8, &sig), &budget);
+    for (i, leaf) in r.leaves.iter().enumerate() {
         let fate = match &leaf.fate {
             Fate::Halt(store) => format!("Halt(live={})", store.live_count()),
             Fate::Err(k) => format!("Err({k:?})"),
@@ -143,6 +142,6 @@ pub fn run(argv: &[String]) -> R<()> {
             leaf.steps
         );
     }
-    println!("{} leaves, max trans {}", leaves.len(), m.max_trans);
+    println!("{} leaves, max trans {}", r.leaves.len(), r.max_trans);
     Ok(())
 }

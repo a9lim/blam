@@ -8,8 +8,9 @@
 //! cover a size exactly.
 //!
 //! Shared here rather than duplicated: the packed prefix-binder walker
-//! (`mentions`), which phase 1 uses at the idiom's fixed k = 5 and phase
-//! 2 at each k it meets, and the witness-list cap both tallies enforce.
+//! (`consumed_mentions`), which phase 1 uses at the idiom's fixed k = 5
+//! and phase 2 at each k it meets, and the capped witness list both
+//! tallies enforce.
 
 use crate::args::R;
 
@@ -46,9 +47,35 @@ pub fn run(argv: &[String]) -> R<()> {
 /// sectors enforce the same cap so their reports compare directly.
 const WITNESS_CAP: usize = 100;
 
-fn push_capped(v: &mut Vec<(u64, u8)>, w: (u64, u8)) {
-    if v.len() < WITNESS_CAP {
-        v.push(w);
+/// A witness list that stops growing at [`WITNESS_CAP`]. The cap used to
+/// be reimplemented at every push and every merge arm, in two tallies
+/// with eight lists between them; here it is one invariant with one
+/// place to break it.
+#[derive(Clone, Default)]
+struct CappedWitnesses(Vec<(u64, u8)>);
+
+impl CappedWitnesses {
+    fn push(&mut self, w: (u64, u8)) {
+        if self.0.len() < WITNESS_CAP {
+            self.0.push(w);
+        }
+    }
+
+    /// Fold another list in, keeping the same cap (rayon reduce).
+    fn merge(&mut self, o: CappedWitnesses) {
+        for w in o.0 {
+            self.push(w);
+        }
+    }
+
+    /// Has the list stopped recording? (The reports say so explicitly:
+    /// a truncated witness list must never read as an exhaustive one.)
+    fn is_capped(&self) -> bool {
+        self.0.len() == WITNESS_CAP
+    }
+
+    fn iter(&self) -> std::slice::Iter<'_, (u64, u8)> {
+        self.0.iter()
     }
 }
 
@@ -58,10 +85,11 @@ fn push_capped(v: &mut Vec<(u64, u8)>, w: (u64, u8)) {
 /// depth d references prefix slot i−d when i > d (closedness bounds
 /// i ≤ d+k).
 ///
-/// Phase 1 calls this at k = 5 (the idiom's own prefix) and phase 2 at
-/// the k it read off the encoding's leading zeros; the walk is the same
-/// either way, which is why it lives here.
-fn mentions(enc: u64, len: u8, k: u32) -> u8 {
+/// Phase 1 calls this at k = 5 (the idiom's own prefix — the binders it
+/// consumes by construction) and phase 2 at the k it read off the
+/// encoding's leading zeros; the walk is the same either way, which is
+/// why it lives here and why neither sector keeps a fixed-k alias.
+fn consumed_mentions(enc: u64, len: u8, k: u32) -> u8 {
     let mut mask = 0u8;
     let mut stack: Vec<u32> = vec![0];
     let mut j = len as i32 - 2 * k as i32 - 1; // next bit (msb-first walk)
@@ -124,29 +152,26 @@ mod idiom {
     //! enumeration/filter counts only — the n=53 filtered count has an
     //! independent DP cross-check of 90,064,344.)
 
-    use super::{mentions, WITNESS_CAP};
+    use super::{consumed_mentions, CappedWitnesses, WITNESS_CAP};
     use crate::args::{self, Args, R};
     use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks_at};
     use blam::blc::wire::enc_to_string;
-    use blam::quantum::machine::{Machine as QMachine, Pool};
-    use blam::quantum::scalar::Dw;
-    use blam::quantum::scalar::{is_dyadic, radical_parts, show_parts, Exact};
+    use blam::quantum::machine::{Machine as QMachine, Pool, QProgram};
+    use blam::quantum::scalar::{is_dyadic, radical_parts, show_parts, ExactSum};
     use blam::quantum::sig::FROZEN;
+    use blam::quantum::sweep::run_and_summarize;
     use blam::quantum::{Budget as QBudget, Fate, Leaf};
     use rayon::prelude::*;
     use std::time::Instant;
+
+    /// The λ⁵ idiom's own prefix: five leading binders, consumed in
+    /// signature order.
+    const IDIOM_K: u32 = 5;
 
     /// Frame slots by innermost-first de Bruijn index under the λ⁵ idiom:
     /// t=1, cnot=2, new=3, meas=4, h=5. Required for a √2-capable trace:
     /// t, new, meas, h (cnot is permitted, not required).
     const REQUIRED: u8 = 0b11101;
-
-    /// Bitmask of frame slots referenced by the λ⁵-idiom program `enc`
-    /// (bit s−1 for slot s ∈ 1..=5) — the shared prefix-binder walker at
-    /// k = 5, the idiom's leading-λ count.
-    fn frame_mentions(enc: u64, len: u8) -> u8 {
-        mentions(enc, len, 5)
-    }
 
     #[derive(Clone)]
     struct Tally {
@@ -158,17 +183,17 @@ mod idiom {
         cap_n: u64,
         nondyadic_leaves: u64,
         /// Programs with ≥1 non-dyadic Halt leaf (wire bits), capped.
-        witnesses: Vec<(u64, u8)>,
+        witnesses: CappedWitnesses,
         /// Programs whose per-program Σ Halt mass is itself irrational — the
         /// unpaired fate-divergent class, the only one that can push a size
         /// aggregate off the dyadics (witness45's leaves cancel within the
         /// program; P53's do not).
         fate_div_n: u64,
-        fate_div: Vec<(u64, u8)>,
+        fate_div: CappedWitnesses,
         /// Σ Halt mass, raw (per-size; weight by 2^−n only across sizes).
-        success: Exact,
+        success: ExactSum,
         /// Σ Unknown/Capacity mass — the caveat bracket for this size.
-        unresolved: Exact,
+        unresolved: ExactSum,
         max_steps: u64,
     }
 
@@ -182,11 +207,11 @@ mod idiom {
                 unk_n: 0,
                 cap_n: 0,
                 nondyadic_leaves: 0,
-                witnesses: Vec::new(),
+                witnesses: CappedWitnesses::default(),
                 fate_div_n: 0,
-                fate_div: Vec::new(),
-                success: Exact::ZERO,
-                unresolved: Exact::ZERO,
+                fate_div: CappedWitnesses::default(),
+                success: ExactSum::ZERO,
+                unresolved: ExactSum::ZERO,
                 max_steps: 0,
             }
         }
@@ -199,17 +224,9 @@ mod idiom {
             self.unk_n += o.unk_n;
             self.cap_n += o.cap_n;
             self.nondyadic_leaves += o.nondyadic_leaves;
-            for w in o.witnesses {
-                if self.witnesses.len() < WITNESS_CAP {
-                    self.witnesses.push(w);
-                }
-            }
+            self.witnesses.merge(o.witnesses);
             self.fate_div_n += o.fate_div_n;
-            for w in o.fate_div {
-                if self.fate_div.len() < WITNESS_CAP {
-                    self.fate_div.push(w);
-                }
-            }
+            self.fate_div.merge(o.fate_div);
             self.success.merge(&o.success);
             self.unresolved.merge(&o.unresolved);
             self.max_steps = self.max_steps.max(o.max_steps);
@@ -227,19 +244,17 @@ mod idiom {
         t: &mut Tally,
     ) {
         t.run += 1;
-        leaves.clear();
-        m.run_program_into(pool, enc, len, &FROZEN, budget, leaves);
+        // Run plus the shared mass-conservation battery (quantum::sweep):
+        // Σ leaf mass = 1 exactly, asserted for every program of every
+        // sweep, in one place none of the three can quietly skip.
+        let summary = run_and_summarize(m, pool, &QProgram::new(enc, len, &FROZEN), budget, leaves);
+        t.max_steps = t.max_steps.max(summary.max_steps);
         let mut nondyadic_here = false;
-        let mut msum = Some(Dw::ZERO);
-        let mut hsum = Some(Dw::ZERO);
         for leaf in leaves.iter() {
-            t.max_steps = t.max_steps.max(leaf.steps);
-            msum = msum.and_then(|s| leaf.mass.and_then(|x| s.add(x)));
             match &leaf.fate {
                 Fate::Halt(_) => {
                     t.halt_n += 1;
                     t.success.add(leaf.mass);
-                    hsum = hsum.and_then(|s| leaf.mass.and_then(|x| s.add(x)));
                     if let Some(mv) = leaf.mass {
                         if !is_dyadic(mv) {
                             t.nondyadic_leaves += 1;
@@ -258,23 +273,14 @@ mod idiom {
                 }
             }
         }
-        if let Some(s) = msum {
-            assert_eq!(
-                s.reduce(),
-                Dw::ONE,
-                "mass conservation violated at ({enc:#x},{len})"
-            );
-        }
-        if nondyadic_here && t.witnesses.len() < WITNESS_CAP {
+        if nondyadic_here {
             t.witnesses.push((enc, len));
         }
-        if let Some(h) = hsum {
+        if let Some(h) = summary.halt_mass {
             let (_, (s2, _)) = radical_parts(h);
             if s2 != 0 {
                 t.fate_div_n += 1;
-                if t.fate_div.len() < WITNESS_CAP {
-                    t.fate_div.push((enc, len));
-                }
+                t.fate_div.push((enc, len));
             }
         }
     }
@@ -343,7 +349,7 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
         );
 
         // Weighted running Ω-contribution across sizes: Σ 2^−n · Σ_success(n).
-        let mut weighted = Exact::ZERO;
+        let mut weighted = ExactSum::ZERO;
         let t0 = Instant::now();
         for n in lo..=hi {
             let tn = Instant::now();
@@ -355,7 +361,7 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
                     |(mut pool, mut m, mut leaves, mut t), task| {
                         run_task(task, &mut |enc, len| {
                             t.enumerated += 1;
-                            if frame_mentions(enc, len) & REQUIRED != REQUIRED {
+                            if consumed_mentions(enc, len, IDIOM_K) & REQUIRED != REQUIRED {
                                 return;
                             }
                             if count_only {
@@ -379,8 +385,10 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
                 );
                 continue;
             }
-            assert!(tally.success.ok, "n={n}: success aggregate overflowed");
-            let sum = tally.success.v.reduce();
+            let sum = tally
+                .success
+                .expect_exact(&format!("n={n}: idiom success aggregate"))
+                .reduce();
             let parts = radical_parts(sum);
             weighted.add(sum.div_pow2(n));
             println!(
@@ -398,29 +406,28 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
                 tn.elapsed()
             );
             println!("      Σ_success = {}   [{sum:?}]", show_parts(parts));
-            if !tally.unresolved.ok || !tally.unresolved.v.is_zero() {
+            if !tally.unresolved.is_exact() || !tally.unresolved.partial().is_zero() {
                 println!(
                     "      unresolved bracket: {:?} (ok={})",
-                    tally.unresolved.v.reduce(),
-                    tally.unresolved.ok
+                    tally.unresolved.partial().reduce(),
+                    tally.unresolved.is_exact()
                 );
             }
             for &(enc, len) in tally.fate_div.iter() {
                 println!("      FATEDIV {}", enc_to_string(enc, len));
             }
-            if tally.fate_div.len() == WITNESS_CAP {
+            if tally.fate_div.is_capped() {
                 println!("      (fate-div list capped at {WITNESS_CAP})");
             }
             for &(enc, len) in tally.witnesses.iter() {
                 println!("      WITNESS {}", enc_to_string(enc, len));
             }
-            if tally.witnesses.len() == WITNESS_CAP {
+            if tally.witnesses.is_capped() {
                 println!("      (witness list capped at {WITNESS_CAP})");
             }
         }
         if !count_only {
-            assert!(weighted.ok, "weighted aggregate overflowed");
-            let parts = radical_parts(weighted.v.reduce());
+            let parts = radical_parts(weighted.expect_exact("weighted aggregate").reduce());
             println!(
                 "Ω_success contribution of the swept idiom sector: {}   [{:.1?} total]",
                 show_parts(parts),
@@ -433,6 +440,7 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
     #[cfg(test)]
     mod tests {
         use super::*;
+        use blam::quantum::scalar::Dw;
 
         fn pack(bits: &str) -> (u64, u8) {
             let mut enc = 0u64;
@@ -447,20 +455,21 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
 
         #[test]
         fn frame_mentions_classify() {
+            let frame = |e, l| consumed_mentions(e, l, IDIOM_K);
             // witness45 and P53 mention exactly {t, new, meas, h}.
             let (e, l) = pack(WITNESS45);
-            assert_eq!(frame_mentions(e, l), REQUIRED);
+            assert_eq!(frame(e, l), REQUIRED);
             let (e, l) = pack(P53);
-            assert_eq!(frame_mentions(e, l), REQUIRED);
+            assert_eq!(frame(e, l), REQUIRED);
             // λ⁵. t t mentions only t.
             let (e, l) = pack("000000000001101010");
-            assert_eq!(frame_mentions(e, l), 0b00001);
+            assert_eq!(frame(e, l), 0b00001);
             // Local binders shift indices: λ⁵. λ.1 mentions nothing;
             // λ⁵. λ.2 reaches t through one local binder.
             let (e, l) = pack("00000000000010");
-            assert_eq!(frame_mentions(e, l), 0);
+            assert_eq!(frame(e, l), 0);
             let (e, l) = pack("000000000000110");
-            assert_eq!(frame_mentions(e, l), 0b00001);
+            assert_eq!(frame(e, l), 0b00001);
         }
 
         #[test]
@@ -482,7 +491,7 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
             sweep_one(&mut pool, &mut m, &mut leaves, e, l, &budget, &mut t);
             assert_eq!(t.nondyadic_leaves, 2);
             assert_eq!(t.fate_div_n, 0); // leaves cancel within the program
-            assert_eq!(t.success.v.reduce(), Dw::ONE);
+            assert_eq!(t.success.expect_exact("witness45").reduce(), Dw::ONE);
 
             // P53: Err at (2+√2)/4, Halt at (2−√2)/4 — the unpaired witness;
             // its success aggregate IS the irrational mass.
@@ -492,7 +501,7 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
             assert_eq!(t.nondyadic_leaves, 1);
             assert_eq!(t.fate_div_n, 1); // the unpaired class, detected
             assert_eq!(t.err_n, 1);
-            let ((ra, re), (sa, se)) = radical_parts(t.success.v);
+            let ((ra, re), (sa, se)) = radical_parts(t.success.expect_exact("P53"));
             assert_eq!((ra, re), (1, 1)); // rational part 1/2
             assert_eq!((sa, se), (-1, 2)); // √2 part −√2/4
         }
@@ -515,14 +524,13 @@ usage: blam q galois idiom [LO] [HI] [flags]      (default 46 53)
                 for task in split_tasks_at(5, n - 10, 0, 10, 1) {
                     run_task(&task, &mut |enc, len| {
                         t.enumerated += 1;
-                        if frame_mentions(enc, len) & REQUIRED == REQUIRED {
+                        if consumed_mentions(enc, len, IDIOM_K) & REQUIRED == REQUIRED {
                             sweep_one(&mut pool, &mut m, &mut leaves, enc, len, &budget, &mut t);
                         }
                     });
                 }
                 assert_eq!(t.nondyadic_leaves, 0, "n={n}");
-                assert!(t.success.ok, "n={n}");
-                let (_, (sa, _)) = radical_parts(t.success.v);
+                let (_, (sa, _)) = radical_parts(t.success.expect_exact(&format!("n={n}")));
                 assert_eq!(sa, 0, "n={n}: idiom aggregate has a √2 part");
             }
         }
@@ -595,14 +603,14 @@ mod complement {
     //!   independent runs under a9's ≤1-2h-per-run cap; slice tallies
     //!   merge by exact addition (unit-tested).
 
-    use super::{mentions, push_capped, WITNESS_CAP};
+    use super::{consumed_mentions, CappedWitnesses, WITNESS_CAP};
     use crate::args::{self, Args, R};
     use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
     use blam::blc::wire::enc_to_string;
-    use blam::quantum::machine::{Machine as QMachine, Pool};
-    use blam::quantum::scalar::Dw;
-    use blam::quantum::scalar::{is_dyadic, radical_parts, show_parts, sqrt2_part, Exact};
+    use blam::quantum::machine::{Machine as QMachine, Pool, QProgram};
+    use blam::quantum::scalar::{is_dyadic, radical_parts, show_parts, sqrt2_part, ExactSum};
     use blam::quantum::sig::FROZEN;
+    use blam::quantum::sweep::run_and_summarize;
     use blam::quantum::{Budget as QBudget, Fate, Leaf};
     use rayon::prelude::*;
     use std::io::{BufRead, BufWriter, Write};
@@ -621,12 +629,6 @@ mod complement {
     fn leading_lambdas(enc: u64, len: u8) -> u32 {
         debug_assert!(enc != 0, "closed terms contain a variable");
         (enc.leading_zeros() - (64 - len as u32)) / 2
-    }
-
-    /// Bitmask of the k prefix binders referenced by the body of λᵏ.M —
-    /// the shared prefix-binder walker.
-    fn consumed_mentions(enc: u64, len: u8, k: u32) -> u8 {
-        mentions(enc, len, k)
     }
 
     /// An exact dyadic fraction num/2^exp on plain i128 — for the weighted
@@ -680,7 +682,7 @@ mod complement {
         /// Programs with ≥1 Unknown/Capacity leaf — contribute NOTHING to
         /// success/√2 in this pass; streamed for adjudication.
         unresolved_n: u64,
-        unresolved_w: Vec<(u64, u8)>,
+        unresolved_w: CappedWitnesses,
         // Leaf counts (over all evaluated programs).
         halt_n: u64,
         err_n: u64,
@@ -691,29 +693,29 @@ mod complement {
         cap_n: u64,
         nondyadic_leaves: u64,
         /// Resolved programs with ≥1 non-dyadic Halt leaf, capped.
-        witnesses: Vec<(u64, u8)>,
+        witnesses: CappedWitnesses,
         /// Resolved programs whose Σ Halt mass is irrational — the unpaired
         /// fate-divergent class, the only one that can move a size aggregate
         /// off the dyadics.
         fate_div_n: u64,
-        fate_div: Vec<(u64, u8)>,
+        fate_div: CappedWitnesses,
         /// Resolved programs whose Σ Halt mass overflowed Dw (√2 part
         /// undecided — would need individual adjudication; expected zero).
         radical_unknown_n: u64,
-        radical_unknown_w: Vec<(u64, u8)>,
+        radical_unknown_w: CappedWitnesses,
         /// Σ Halt mass over RESOLVED programs (per-size; weight by 2^−n only
         /// across sizes).
-        success: Exact,
+        success: ExactSum,
         /// The threshold deliverable: Σ over resolved programs of the
-        /// √2-coefficient of their Σ Halt mass (radical::sqrt2_part).
-        sqrt2: Exact,
+        /// √2-coefficient of their Σ Halt mass (scalar::sqrt2_part).
+        sqrt2: ExactSum,
         /// Unresolved programs' Halt-leaf mass (partial trees) — reported,
         /// never added to `success`; adjudication re-derives it whole.
-        deferred: Exact,
+        deferred: ExactSum,
         /// √2 part of `deferred` (the caveat's radical exposure).
-        deferred_sqrt2: Exact,
+        deferred_sqrt2: ExactSum,
         /// Σ Unknown/Capacity leaf mass — the pending bracket.
-        unresolved: Exact,
+        unresolved: ExactSum,
         max_steps: u64,
     }
 
@@ -726,23 +728,23 @@ mod complement {
                 rejected_k: [0; 5],
                 run: 0,
                 unresolved_n: 0,
-                unresolved_w: Vec::new(),
+                unresolved_w: CappedWitnesses::default(),
                 halt_n: 0,
                 err_n: 0,
                 unk_beta: 0,
                 unk_trans: 0,
                 cap_n: 0,
                 nondyadic_leaves: 0,
-                witnesses: Vec::new(),
+                witnesses: CappedWitnesses::default(),
                 fate_div_n: 0,
-                fate_div: Vec::new(),
+                fate_div: CappedWitnesses::default(),
                 radical_unknown_n: 0,
-                radical_unknown_w: Vec::new(),
-                success: Exact::ZERO,
-                sqrt2: Exact::ZERO,
-                deferred: Exact::ZERO,
-                deferred_sqrt2: Exact::ZERO,
-                unresolved: Exact::ZERO,
+                radical_unknown_w: CappedWitnesses::default(),
+                success: ExactSum::ZERO,
+                sqrt2: ExactSum::ZERO,
+                deferred: ExactSum::ZERO,
+                deferred_sqrt2: ExactSum::ZERO,
+                unresolved: ExactSum::ZERO,
                 max_steps: 0,
             }
         }
@@ -770,9 +772,7 @@ mod complement {
                 (&mut self.fate_div, o.fate_div),
                 (&mut self.radical_unknown_w, o.radical_unknown_w),
             ] {
-                for w in src {
-                    push_capped(dst, w);
-                }
+                dst.merge(src);
             }
             self.success.merge(&o.success);
             self.sqrt2.merge(&o.sqrt2);
@@ -800,31 +800,18 @@ mod complement {
         sink: Option<&Sink>,
     ) -> bool {
         t.run += 1;
-        leaves.clear();
-        m.run_program_into(pool, enc, len, &FROZEN, budget, leaves);
-        // Mass conservation on every run whose masses are representable.
-        let msum = leaves
-            .iter()
-            .try_fold(Dw::ZERO, |s, l| l.mass.and_then(|x| s.add(x)));
-        if let Some(s) = msum {
-            assert_eq!(
-                s.reduce(),
-                Dw::ONE,
-                "mass conservation violated at ({enc:#x},{len})"
-            );
-        }
-        let resolved = leaves
-            .iter()
-            .all(|l| matches!(l.fate, Fate::Halt(_) | Fate::Err(_)));
+        // Run plus the shared mass-conservation battery (quantum::sweep),
+        // which also settles resolvedness and the per-program Σ Halt mass.
+        let summary = run_and_summarize(m, pool, &QProgram::new(enc, len, &FROZEN), budget, leaves);
+        t.max_steps = t.max_steps.max(summary.max_steps);
+        let resolved = summary.resolved;
+        let hsum = summary.halt_mass;
 
         let mut nondyadic_here = false;
-        let mut hsum = Some(Dw::ZERO);
         for leaf in leaves.iter() {
-            t.max_steps = t.max_steps.max(leaf.steps);
             match &leaf.fate {
                 Fate::Halt(_) => {
                     t.halt_n += 1;
-                    hsum = hsum.and_then(|s| leaf.mass.and_then(|x| s.add(x)));
                     if resolved {
                         t.success.add(leaf.mass);
                     } else {
@@ -855,11 +842,8 @@ mod complement {
 
         if !resolved {
             t.unresolved_n += 1;
-            push_capped(&mut t.unresolved_w, (enc, len));
-            match hsum {
-                Some(h) => t.deferred_sqrt2.add(Some(sqrt2_part(h))),
-                None => t.deferred_sqrt2.add(None),
-            }
+            t.unresolved_w.push((enc, len));
+            t.deferred_sqrt2.add(hsum.map(sqrt2_part));
             if let Some(s) = sink {
                 let mut w = s.lock().unwrap();
                 writeln!(w, "{} {}", len, enc_to_string(enc, len)).expect("unresolved sink write");
@@ -867,7 +851,7 @@ mod complement {
             return false;
         }
         if nondyadic_here {
-            push_capped(&mut t.witnesses, (enc, len));
+            t.witnesses.push((enc, len));
         }
         match hsum {
             Some(h) => {
@@ -875,14 +859,14 @@ mod complement {
                 if !s2.is_zero() {
                     t.sqrt2.add(Some(s2));
                     t.fate_div_n += 1;
-                    push_capped(&mut t.fate_div, (enc, len));
+                    t.fate_div.push((enc, len));
                 }
             }
             None => {
                 // Halt mass overflowed: the program's √2 part is undecided.
                 t.sqrt2.add(None);
                 t.radical_unknown_n += 1;
-                push_capped(&mut t.radical_unknown_w, (enc, len));
+                t.radical_unknown_w.push((enc, len));
             }
         }
         true
@@ -905,11 +889,11 @@ mod complement {
         true
     }
 
-    fn print_witness_lines(label: &str, list: &[(u64, u8)], total: u64) {
-        for &(enc, len) in list {
+    fn print_witness_lines(label: &str, list: &CappedWitnesses, total: u64) {
+        for &(enc, len) in list.iter() {
             println!("      {label} {}", enc_to_string(enc, len));
         }
-        if list.len() == WITNESS_CAP && total > WITNESS_CAP as u64 {
+        if list.is_capped() && total > WITNESS_CAP as u64 {
             println!("      ({label} list capped at {WITNESS_CAP} of {total})");
         }
     }
@@ -931,23 +915,26 @@ mod complement {
             tally.radical_unknown_n,
             tally.max_steps,
         );
-        if tally.success.ok {
-            let sum = tally.success.v.reduce();
-            println!(
-                "      Σ_success (resolved rung-0 survivors) = {}   [{sum:?}]",
-                show_parts(radical_parts(sum))
-            );
-        } else {
-            println!(
+        match tally.success.value() {
+            Some(v) => {
+                let sum = v.reduce();
+                println!(
+                    "      Σ_success (resolved rung-0 survivors) = {}   [{sum:?}]",
+                    show_parts(radical_parts(sum))
+                );
+            }
+            None => println!(
                 "      Σ_success (resolved): rational aggregate OVERFLOWED (√2 track unaffected)"
-            );
+            ),
         }
-        assert!(
-            tally.sqrt2.ok,
+        // The threshold deliverable rides its own accumulator precisely so
+        // it survives a rational-part overflow; if THIS one is poisoned
+        // there is no number to report.
+        let s2 = tally.sqrt2.expect_exact(&format!(
             "n={n}: √2 accumulator poisoned — adjudicate the radical-unk witnesses"
-        );
+        ));
         let (s2n, s2e) = {
-            let r = tally.sqrt2.v.reduce();
+            let r = s2.reduce();
             assert!(r.b == 0 && r.c == 0 && r.d == 0 && r.k.is_multiple_of(2));
             (r.a, r.k / 2)
         };
@@ -955,15 +942,15 @@ mod complement {
         if s2n != 0 {
             weighted_s2.add(s2n, s2e + n);
         }
-        if !tally.unresolved.ok || !tally.unresolved.v.is_zero() {
+        if !tally.unresolved.is_exact() || !tally.unresolved.partial().is_zero() {
             println!(
             "      unresolved bracket: {:?} (ok={})   deferred halt mass: {:?} (ok={}, √2 {:?} ok={})",
-            tally.unresolved.v.reduce(),
-            tally.unresolved.ok,
-            tally.deferred.v.reduce(),
-            tally.deferred.ok,
-            tally.deferred_sqrt2.v.reduce(),
-            tally.deferred_sqrt2.ok,
+            tally.unresolved.partial().reduce(),
+            tally.unresolved.is_exact(),
+            tally.deferred.partial().reduce(),
+            tally.deferred.is_exact(),
+            tally.deferred_sqrt2.partial().reduce(),
+            tally.deferred_sqrt2.is_exact(),
         );
         }
         print_witness_lines("FATEDIV", &tally.fate_div, tally.fate_div_n);
@@ -974,7 +961,7 @@ mod complement {
         );
         print_witness_lines("WITNESS", &tally.witnesses, tally.nondyadic_leaves);
         print_witness_lines("UNRESOLVED", &tally.unresolved_w, tally.unresolved_n);
-        tally.success.ok
+        tally.success.is_exact()
     }
 
     const USAGE: &str = "\
@@ -1258,6 +1245,7 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
     #[cfg(test)]
     mod tests {
         use super::*;
+        use blam::quantum::scalar::Dw;
 
         fn pack(bits: &str) -> (u64, u8) {
             let mut enc = 0u64;
@@ -1345,8 +1333,7 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
             assert_eq!(t.fate_div_n, 1);
             assert_eq!(t.nondyadic_leaves, 1);
             assert_eq!(t.err_n, 1);
-            assert!(t.sqrt2.ok);
-            let r = t.sqrt2.v.reduce();
+            let r = t.sqrt2.expect_exact("wrapped P53 √2").reduce();
             assert_eq!((r.a, r.k), (-1, 4), "√2 part is −1/4");
         }
 
@@ -1367,7 +1354,12 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
                         return;
                     }
                     leaves.clear();
-                    m.run_program_into(&mut pool, enc, len, &FROZEN, &CANONICAL, &mut leaves);
+                    m.run_into_with(
+                        &mut pool,
+                        &QProgram::new(enc, len, &FROZEN),
+                        &CANONICAL,
+                        &mut leaves,
+                    );
                     let mut hsum = Some(Dw::ZERO);
                     for leaf in leaves.iter() {
                         if let Some(mv) = leaf.mass {
@@ -1440,18 +1432,29 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
                 // Composition: resolved-Σ pieces add; the residue matches.
                 let mut composed = sweep.success;
                 composed.merge(&adj.success);
-                assert!(composed.ok && single.success.ok, "n={n}");
-                assert_eq!(composed.v.reduce(), single.success.v.reduce(), "n={n}");
+                assert_eq!(
+                    composed.expect_exact("composed").reduce(),
+                    single.success.expect_exact("single").reduce(),
+                    "n={n}"
+                );
                 let mut composed_s2 = sweep.sqrt2;
                 composed_s2.merge(&adj.sqrt2);
-                assert_eq!(composed_s2.v.reduce(), single.sqrt2.v.reduce(), "n={n}");
+                assert_eq!(
+                    composed_s2.expect_exact("composed √2").reduce(),
+                    single.sqrt2.expect_exact("single √2").reduce(),
+                    "n={n}"
+                );
                 assert_eq!(
                     sweep.fate_div_n + adj.fate_div_n,
                     single.fate_div_n,
                     "n={n}"
                 );
                 assert_eq!(adj.unresolved_n, single.unresolved_n, "n={n}");
-                assert_eq!(adj.deferred.v.reduce(), single.deferred.v.reduce(), "n={n}");
+                assert_eq!(
+                    adj.deferred.expect_exact("adj deferred").reduce(),
+                    single.deferred.expect_exact("single deferred").reduce(),
+                    "n={n}"
+                );
             }
         }
 
@@ -1497,9 +1500,16 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
                 assert_eq!(merged.unk_beta, full.unk_beta, "n={n}");
                 assert_eq!(merged.unresolved_n, full.unresolved_n, "n={n}");
                 assert_eq!(merged.fate_div_n, full.fate_div_n, "n={n}");
-                assert!(merged.success.ok && full.success.ok, "n={n}");
-                assert_eq!(merged.success.v.reduce(), full.success.v.reduce(), "n={n}");
-                assert_eq!(merged.sqrt2.v.reduce(), full.sqrt2.v.reduce(), "n={n}");
+                assert_eq!(
+                    merged.success.expect_exact("merged").reduce(),
+                    full.success.expect_exact("full").reduce(),
+                    "n={n}"
+                );
+                assert_eq!(
+                    merged.sqrt2.expect_exact("merged √2").reduce(),
+                    full.sqrt2.expect_exact("full √2").reduce(),
+                    "n={n}"
+                );
                 assert_eq!(merged.max_steps, full.max_steps, "n={n}");
             }
         }
@@ -1559,8 +1569,11 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
                 let idiom_expect = if nu >= 12 { dp[5][nu - 10] } else { 0 };
                 assert_eq!(t.idiom, idiom_expect, "n={n} idiom");
                 // Dyadicity: both √2 tracks identically zero.
-                assert!(t.sqrt2.ok && t.sqrt2.v.is_zero(), "n={n}");
-                assert!(t.deferred_sqrt2.ok && t.deferred_sqrt2.v.is_zero(), "n={n}");
+                assert!(t.sqrt2.expect_exact("√2").is_zero(), "n={n}");
+                assert!(
+                    t.deferred_sqrt2.expect_exact("deferred √2").is_zero(),
+                    "n={n}"
+                );
                 assert_eq!(t.fate_div_n, 0, "n={n}");
                 assert_eq!(t.radical_unknown_n, 0, "n={n}");
             }

@@ -105,6 +105,12 @@ pub enum Malformed {
     StaleEpoch,
     /// Cnot with control = target.
     SameQubit,
+    /// An effect from outside the canonical universe (S/X/Z). The mask
+    /// algebra is derived for {h, t, cnot, meas} only, so an alternate
+    /// signature universe's trace is out of the monitor's soundness scope
+    /// — a refusal to interpret, exactly like a forged trace, and NOT a
+    /// verdict in either direction.
+    OutOfUniverse,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -199,9 +205,12 @@ impl Monitor {
             }
             // The mask algebra is derived for the canonical universe's
             // gates only; traces from alternate signature universes are
-            // out of the monitor's soundness scope by construction.
+            // out of the monitor's soundness scope by construction. The
+            // fence stays — it just reports instead of aborting, so a
+            // caller that reaches one gets a `Malformed` it can handle
+            // rather than a panic mid-sweep.
             Effect::S(..) | Effect::X(..) | Effect::Z(..) => {
-                unreachable!("odd monitor is canonical-universe (h/t/cnot/meas) only")
+                self.malformed = Some(Malformed::OutOfUniverse);
             }
         }
     }
@@ -304,6 +313,11 @@ mod tests {
             replay(&[New(0), Cnot(0, 0, 0, 0)]),
             Err(Malformed::SameQubit)
         );
+        // Alternate-universe gates: refused, not silently monitored and
+        // not a panic — the soundness fence is a verdict now.
+        for e in [S(0, 0), X(0, 0), Z(0, 0)] {
+            assert_eq!(replay(&[New(0), e]), Err(Malformed::OutOfUniverse));
+        }
     }
 
     /// The 28-bit cnot witness λ⁴.((1 (2 1)) (2 1)) must come back

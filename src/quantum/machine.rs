@@ -276,7 +276,7 @@ impl Machine {
         budget: &Budget,
         leaves: &mut Vec<Leaf>,
     ) {
-        assert!(budget.beta >= 1 && budget.trans >= 1, "degenerate budgets");
+        budget.validate().expect("degenerate budget");
         // TRUE_NODE/FALSE_NODE are positional: they name the fixed slots
         // `Pool::reset` pushes. A pool that skipped reset would silently
         // return the wrong Church boolean at every measurement.
@@ -307,19 +307,27 @@ impl Machine {
                     // Readback: pull the next pending normalization job.
                     // Invariant: only Norm/Skip are reachable here (rigid
                     // arrivals convert whole runs; value arrivals enter
-                    // readback only over Norm/Skip). Arg/Cnot1 are handled
-                    // identically to Norm for robustness; Prim1/Cnot2 as
-                    // Skip.
+                    // readback only over Norm/Skip). Debug builds assert
+                    // it; release keeps the defensive arms, which handle
+                    // Arg/Cnot1 identically to Norm and Prim1/Cnot2 as
+                    // Skip, so a broken invariant degrades rather than
+                    // corrupting a sweep mid-flight.
                     match self.stack.pop() {
                         None => break 'run None,
-                        Some(Frame::Norm(nt, ne))
-                        | Some(Frame::Arg(nt, ne))
-                        | Some(Frame::Cnot1(nt, ne)) => {
-                            t = nt;
-                            env = ne;
-                            reading = false;
+                        Some(f) => {
+                            debug_assert!(
+                                matches!(f, Frame::Norm(..) | Frame::Skip),
+                                "readback reached a non-readback frame: {f:?}"
+                            );
+                            match f {
+                                Frame::Norm(nt, ne) | Frame::Arg(nt, ne) | Frame::Cnot1(nt, ne) => {
+                                    t = nt;
+                                    env = ne;
+                                    reading = false;
+                                }
+                                Frame::Skip | Frame::Prim1(_) | Frame::Cnot2(..) => {}
+                            }
                         }
-                        Some(Frame::Skip) | Some(Frame::Prim1(_)) | Some(Frame::Cnot2(..)) => {}
                     }
                     continue;
                 }
@@ -574,40 +582,80 @@ impl Machine {
     }
 
     /// Decode + apply signature + run: the sweep entry point.
-    pub fn run_program_into(
+    ///
+    /// One entry for both modes. `cond = Some(k)` is Object B — the program
+    /// receives the dimension as a Church numeral BEFORE the signature,
+    /// `p k̄ ⟨sig⟩`; `cond = None` is the unconditioned M_Fock sweep.
+    /// (Two entry points and a seven-argument list were the same function
+    /// twice; the bundle is what retired the `too_many_arguments` allow.)
+    pub fn run_into_with(
         &mut self,
         pool: &mut Pool,
-        enc: u64,
-        len: u8,
-        order: &[Prim],
-        budget: &Budget,
-        leaves: &mut Vec<Leaf>,
-    ) {
-        self.run_conditioned_into(pool, enc, len, None, order, budget, leaves);
-    }
-
-    /// The Object-B entry point: run `p k̄ ⟨sig⟩` — the program receives the
-    /// dimension as a Church numeral BEFORE the signature. `cond = None` is
-    /// the unconditioned M_Fock sweep.
-    #[allow(clippy::too_many_arguments)]
-    pub fn run_conditioned_into(
-        &mut self,
-        pool: &mut Pool,
-        enc: u64,
-        len: u8,
-        cond: Option<u32>,
-        order: &[Prim],
+        prog: &QProgram,
         budget: &Budget,
         leaves: &mut Vec<Leaf>,
     ) {
         pool.reset();
-        let mut root = pool.decode_u64(enc, len).expect("well-formed closed term");
-        if let Some(k) = cond {
+        let mut root = pool
+            .decode_u64(prog.enc, prog.len)
+            .expect("well-formed closed term");
+        if let Some(k) = prog.cond {
             let num = pool.numeral(k);
             root = pool.push(Node::App(root, num));
         }
-        let sig = pool.apply_signature(root, order);
+        let sig = pool.apply_signature(root, prog.order);
         self.run_into(pool, sig, budget, leaves);
+    }
+}
+
+/// One qBLC program as the sweeps hand it over: packed wire bits, the
+/// optional Object-B dimension, and the signature universe it runs under.
+#[derive(Clone, Copy, Debug)]
+pub struct QProgram<'a> {
+    /// Packed wire bits, MSB-first in the low `len` bits.
+    pub enc: u64,
+    pub len: u8,
+    /// Object-B dimension, handed to the program as a Church numeral
+    /// before the signature. `None` = the unconditioned M_Fock sweep.
+    pub cond: Option<u32>,
+    /// Signature order (the canonical universe is [`crate::quantum::sig::FROZEN`]).
+    pub order: &'a [Prim],
+}
+
+impl<'a> QProgram<'a> {
+    /// The plain M_Fock program: bits under a signature, no conditioning.
+    pub fn new(enc: u64, len: u8, order: &'a [Prim]) -> QProgram<'a> {
+        QProgram {
+            enc,
+            len,
+            cond: None,
+            order,
+        }
+    }
+}
+
+/// One program's run: its leaves plus the engine telemetry a single-run
+/// caller reports. (Telemetry lives on the `Machine`, which the one-call
+/// entry owns and drops, so it has to come back out here.)
+pub struct Run {
+    pub leaves: Vec<Leaf>,
+    /// Max transitions consumed by any branch path of this run.
+    pub max_trans: u64,
+}
+
+/// Run one program to its leaves, owning the arenas.
+///
+/// The single-program entry (`blam q run`, one-off adjudications, tests).
+/// Sweeps use [`Machine::run_into_with`] with a reused `Pool`/`Machine`
+/// instead: this allocates a fresh pair per call by design.
+pub fn run(prog: &QProgram, budget: &Budget) -> Run {
+    let mut pool = Pool::new();
+    let mut m = Machine::new();
+    let mut leaves = Vec::new();
+    m.run_into_with(&mut pool, prog, budget, &mut leaves);
+    Run {
+        leaves,
+        max_trans: m.max_trans,
     }
 }
 
@@ -646,7 +694,12 @@ mod tests {
                 let src = enc_to_string(enc, len);
                 let expect = qeval_leaves(&src, order, ref_budget);
                 let mut got = Vec::new();
-                m.run_program_into(pool, enc, len, order, &fast_budget, &mut got);
+                m.run_into_with(
+                    pool,
+                    &QProgram::new(enc, len, order),
+                    &fast_budget,
+                    &mut got,
+                );
                 assert_eq!(got, expect, "program {src}");
             },
         );
@@ -736,6 +789,47 @@ mod tests {
                 ..Budget::default()
             };
             lockstep_population(18, &FROZEN, &b);
+        }
+        // β = 0 is the one point below the boundary where the mirror
+        // CANNOT hold: the reference tests before selecting a redex, the
+        // fast machine after the contraction it charged, so a program
+        // needing no contraction would Halt on one and be Unknown on the
+        // other. Both engines refuse the budget instead — one shared
+        // `validate`, so the refusal cannot drift to one side.
+        for bad in [
+            Budget {
+                beta: 0,
+                ..Budget::default()
+            },
+            Budget {
+                trans: 0,
+                ..Budget::default()
+            },
+        ] {
+            assert!(bad.validate().is_err(), "{bad:?} accepted");
+        }
+        assert!(Budget::default().validate().is_ok());
+    }
+
+    #[test]
+    fn church_numerals_agree_across_the_two_builders() {
+        // `sig::church_numeral` (tree) and `Pool::numeral` (arena) build
+        // Object B's dimension argument independently. A skeleton built
+        // from one and a run from the other would adjudicate different
+        // programs, so pin them structurally equal.
+        fn same(pool: &Pool, a: u32, b: u32) -> bool {
+            match (pool.node(a), pool.node(b)) {
+                (Node::Var(x), Node::Var(y)) => x == y,
+                (Node::Lam(x), Node::Lam(y)) => same(pool, x, y),
+                (Node::App(f1, a1), Node::App(f2, a2)) => same(pool, f1, f2) && same(pool, a1, a2),
+                _ => false,
+            }
+        }
+        for k in 0..6u32 {
+            let mut pool = Pool::new();
+            let arena = pool.numeral(k);
+            let tree = pool.from_term(&crate::quantum::sig::church_numeral(k));
+            assert!(same(&pool, arena, tree), "k={k}");
         }
     }
 

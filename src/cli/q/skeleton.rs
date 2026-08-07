@@ -10,11 +10,18 @@
 //! It never touched `Pool`, `QMachine`, or `Tally`, so it was never
 //! really a census mode — and sharing `--terms-file` with `q census`'s
 //! batch re-adjudication meant one flag selected two unrelated engines.
+//!
+//! The ladder itself lives in `quantum::certificate` beside the transfer
+//! theorems that license it (`adjudicate_with_transfer`); this file is the
+//! driver — parse, fan out, render, tally.
 
 use crate::args::{self, Args, R};
-use blam::quantum::certificate::SkelCaps;
+use blam::quantum::certificate::{
+    adjudicate_with_transfer, CapReason, SkelCaps, Transfer, TransferCaps, TransferScratch, Via,
+};
 use blam::quantum::sig::FROZEN;
 use rayon::prelude::*;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
 const USAGE: &str = "\
@@ -22,6 +29,8 @@ blam q skeleton FILE — trusted skeleton sweep over a terms file
 
 usage: blam q skeleton FILE [flags]
 
+  --sig LIST      comma-separated signature order (default the frozen five);
+                  only its LENGTH matters here — one hole per slot
   --steps N       skeleton reduction steps per program (default 256)
   --size N        skeleton size ceiling in bits (default 16384)
   --threads N     rayon threads (0 = ambient, the default)
@@ -31,8 +40,55 @@ usage: blam q skeleton FILE [flags]
 Prints `<bits> skel2=<verdict>` per program: loop, halt-inert,
 holedemanded, capout, halt, div, or residual-unknown.";
 
-/// The classical residual's escalation capacity — the census default.
-const RESIDUAL_CAP: i64 = 2_000_000;
+/// The verdict labels, in the order the summary prints them (sorted, as
+/// the old `HashMap` + `sort` produced). Index = `Kind as usize`.
+const KINDS: [&str; 7] = [
+    "capout",
+    "div",
+    "halt",
+    "halt-inert",
+    "holedemanded",
+    "loop",
+    "residual-unknown",
+];
+
+#[derive(Clone, Copy)]
+enum Kind {
+    CapOut = 0,
+    Div = 1,
+    Halt = 2,
+    HaltInert = 3,
+    HoleDemanded = 4,
+    Loop = 5,
+    ResidualUnknown = 6,
+}
+
+/// One result line: the label and the trailing detail the ladder earned.
+fn render(t: &Transfer) -> (Kind, String) {
+    match *t {
+        Transfer::Loop { steps } => (Kind::Loop, format!(" steps={steps}")),
+        Transfer::HaltInert { steps } => (Kind::HaltInert, format!(" steps={steps}")),
+        Transfer::HoleDemanded { steps } => (Kind::HoleDemanded, format!(" steps={steps}")),
+        Transfer::CapOut(_) => (Kind::CapOut, String::new()),
+        Transfer::Halt { steps, nf_bits, .. } => {
+            (Kind::Halt, format!(" steps={steps} nf={nf_bits}"))
+        }
+        // KN can only ever prove a HALT, so `via=kn` is unreachable on a
+        // Div — the two divergence provers are the oracle and the
+        // escalation engine.
+        Transfer::Div { steps, via } => (
+            Kind::Div,
+            format!(
+                " steps={steps} via={}",
+                match via {
+                    Via::Oracle => "oracle",
+                    Via::Bb | Via::Kn => "bb",
+                }
+            ),
+        ),
+        Transfer::ResidualUnknown { .. } => (Kind::ResidualUnknown, String::new()),
+    }
+}
 
 pub fn run(argv: &[String]) -> R<()> {
     if args::wants_help(argv) {
@@ -43,9 +99,14 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut threads = 0usize;
     let mut work_mult: Option<u64> = None;
     let mut probe_fuel: Option<u64> = None;
+    // Only the arity of the signature reaches the checker — one hole per
+    // slot — but `--sig` is spelled the same as everywhere else so an
+    // alternate universe's frontier can be swept with its own slot count.
+    let mut slots = FROZEN.len() as u32;
     let mut p = Args::new("q skeleton", argv);
     while let Some(tok) = p.next() {
         match tok {
+            "--sig" => slots = super::run::parse_sig("q skeleton", p.value(tok)?)?.len() as u32,
             "--steps" => caps.steps = p.num(tok)?,
             "--size" => caps.size_bits = p.num(tok)?,
             "--threads" => threads = p.num(tok)?,
@@ -70,63 +131,63 @@ pub fn run(argv: &[String]) -> R<()> {
 
     let owned = args::read_terms_file(path)?;
     let programs: Vec<&str> = owned.iter().map(String::as_str).collect();
-    let slots = FROZEN.len() as u32;
+    let transfer = TransferCaps::default();
     let t0 = Instant::now();
-    let counts = std::sync::Mutex::new(std::collections::HashMap::<&'static str, u64>::new());
-    programs.par_iter().for_each(|bits| {
-        use blam::classical::escalation::{normal_form, LTerm, NoNf};
-        use blam::classical::machine::{Machine, Pool, SizeSink};
-        use blam::quantum::certificate::{adjudicate, SkelVerdict};
-        let p = blam::parse_all(bits).expect("parse program line");
-        let (kind, detail) = match adjudicate(&p, slots, &caps) {
-            SkelVerdict::Loop { steps } => ("loop", format!(" steps={steps}")),
-            SkelVerdict::NormalWithHoles { steps } => ("halt-inert", format!(" steps={steps}")),
-            SkelVerdict::HoleDemanded { steps } => ("holedemanded", format!(" steps={steps}")),
-            SkelVerdict::CapOut => ("capout", String::new()),
-            SkelVerdict::HoleFree { residual, steps } => {
-                // Classical semantic ladder on the closed residual;
-                // Halt AND proven no-NF both transfer.
-                let lt = LTerm::from_term(&residual);
-                if blam::classical::oracle::no_nf(0, &lt) {
-                    ("div", format!(" steps={steps} via=oracle"))
-                } else {
-                    let mut pool = Pool::new();
-                    let root = pool.decode_str(&residual.to_bits()).expect("residual bits");
-                    let mut sink = SizeSink::default();
-                    match Machine::new().normalize(&pool, root, 65_536, &mut sink) {
-                        Ok(_) => ("halt", format!(" steps={steps} nf={}", sink.0)),
-                        Err(_) => match normal_form(RESIDUAL_CAP, &lt) {
-                            Ok(nf) => ("halt", format!(" steps={steps} nf={}", nf.bit_size())),
-                            Err(NoNf::Diverge) => ("div", format!(" steps={steps} via=bb")),
-                            Err(NoNf::Unknown(_)) => ("residual-unknown", String::new()),
-                        },
-                    }
+    // Lock-free tallying: one counter per verdict, one progress counter.
+    // The old per-item Mutex serialised every worker on a HashMap update
+    // that only ever incremented one of seven fixed slots.
+    let counts: [AtomicU64; KINDS.len()] = std::array::from_fn(|_| AtomicU64::new(0));
+    let cap_steps = AtomicU64::new(0);
+    let cap_size = AtomicU64::new(0);
+    let done = AtomicU64::new(0);
+    programs
+        .par_iter()
+        .for_each_init(TransferScratch::new, |scratch, bits| {
+            let p = blam::parse_all(bits).expect("parse program line");
+            let verdict = adjudicate_with_transfer(&p, slots, &caps, &transfer, scratch)
+                .unwrap_or_else(|e| panic!("{bits}: {e}"));
+            if let Transfer::CapOut(c) = verdict {
+                match c.reason {
+                    CapReason::Steps => &cap_steps,
+                    CapReason::Size => &cap_size,
                 }
+                .fetch_add(1, Ordering::Relaxed);
             }
-        };
-        println!("{bits} skel2={kind}{detail}");
-        let mut c = counts.lock().unwrap();
-        *c.entry(kind).or_insert(0) += 1;
-        let done: u64 = c.values().sum();
-        if done.is_multiple_of(50000) {
-            eprintln!(
-                "progress: {done}/{} ({:.0}s)",
-                programs.len(),
-                t0.elapsed().as_secs_f64()
-            );
-        }
-    });
-    let c = counts.lock().unwrap();
-    let mut ks: Vec<_> = c.iter().collect();
-    ks.sort();
+            let (kind, detail) = render(&verdict);
+            println!("{bits} skel2={}{detail}", KINDS[kind as usize]);
+            counts[kind as usize].fetch_add(1, Ordering::Relaxed);
+            let d = done.fetch_add(1, Ordering::Relaxed) + 1;
+            if d.is_multiple_of(50000) {
+                eprintln!(
+                    "progress: {d}/{} ({:.0}s)",
+                    programs.len(),
+                    t0.elapsed().as_secs_f64()
+                );
+            }
+        });
     eprintln!(
         "skeleton sweep: {} programs in {:.1}s — {}",
         programs.len(),
         t0.elapsed().as_secs_f64(),
-        ks.iter()
+        KINDS
+            .iter()
+            .zip(&counts)
+            .map(|(k, v)| (k, v.load(Ordering::Relaxed)))
+            .filter(|(_, v)| *v > 0)
             .map(|(k, v)| format!("{k}={v}"))
             .collect::<Vec<_>>()
             .join(" ")
     );
+    // Rung-3's stratification input (escalation.md): size-bound monotone
+    // growers go to pattern discovery, step-bound bounded-size terms
+    // justify another exact-cycle tier. Additive — the verdict stream on
+    // stdout is unchanged.
+    let (cs, cz) = (
+        cap_steps.load(Ordering::Relaxed),
+        cap_size.load(Ordering::Relaxed),
+    );
+    if cs + cz > 0 {
+        eprintln!("capout split: steps-bound {cs}  size-bound {cz}");
+    }
     Ok(())
 }

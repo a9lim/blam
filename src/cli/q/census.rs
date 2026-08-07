@@ -36,132 +36,20 @@
 use crate::args::{self, Args, R};
 use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
 use blam::blc::wire::enc_to_string as enc_str;
-use blam::quantum::machine::{Machine as QMachine, Pool};
-use blam::quantum::scalar::Dw;
+use blam::quantum::machine::{Machine as QMachine, Pool, QProgram};
+use blam::quantum::scalar::{is_dyadic, Dw, ExactSum};
 use blam::quantum::sig::FROZEN;
+use blam::quantum::sweep::run_and_summarize;
 use blam::quantum::{Budget as QBudget, Capacity, ErrKind, Fate, Prim};
 use rayon::prelude::*;
 use std::fmt::Write as _;
 use std::time::Instant;
 
-/// Exact accumulator with f64 mirror; `ok` false once any exact op
-/// overflowed (the mirror is then display-grade only).
-#[derive(Clone, Copy)]
-struct Ex {
-    v: Dw,
-    ok: bool,
-    re: f64,
-    im: f64,
-}
-
-impl Ex {
-    const ZERO: Ex = Ex {
-        v: Dw::ZERO,
-        ok: true,
-        re: 0.0,
-        im: 0.0,
-    };
-
-    fn add(&mut self, d: Option<Dw>) {
-        match d {
-            Some(x) => {
-                if self.ok {
-                    match self.v.add(x) {
-                        Some(s) => self.v = s,
-                        None => self.ok = false,
-                    }
-                }
-                self.re += x.to_f64_re();
-                self.im += x.to_f64_im();
-            }
-            None => self.ok = false,
-        }
-    }
-
-    fn merge(&mut self, o: &Ex) {
-        if self.ok && o.ok {
-            match self.v.add(o.v) {
-                Some(s) => self.v = s,
-                None => self.ok = false,
-            }
-        } else {
-            self.ok = false;
-        }
-        self.re += o.re;
-        self.im += o.im;
-    }
-
-    fn exact_str(&self) -> String {
-        if self.ok {
-            let r = self.v.reduce();
-            format!("({},{},{},{},{})", r.a, r.b, r.c, r.d, r.k)
-        } else {
-            "OVERFLOW".into()
-        }
-    }
-
-    /// Display real part: derived from the exact value while it holds
-    /// (correctly rounded and independent of accumulation grouping — the
-    /// running f64 mirror's rounding is merge-order dependent, which
-    /// would make checkpointed runs differ from monolithic in display
-    /// low bits); the mirror only ever surfaces for OVERFLOW rows.
-    fn re(&self) -> f64 {
-        if self.ok {
-            self.v.reduce().to_f64_re()
-        } else {
-            self.re
-        }
-    }
-
-    fn im(&self) -> f64 {
-        if self.ok {
-            self.v.reduce().to_f64_im()
-        } else {
-            self.im
-        }
-    }
-
-    fn write_ckpt(&self, out: &mut String) {
-        use std::fmt::Write as _;
-        let r = self.v;
-        write!(
-            out,
-            " {} {} {} {} {} {} {} {}",
-            self.ok as u8,
-            r.a,
-            r.b,
-            r.c,
-            r.d,
-            r.k,
-            self.re.to_bits(),
-            self.im.to_bits()
-        )
-        .unwrap();
-    }
-
-    fn parse_ckpt(it: &mut std::str::SplitWhitespace) -> Option<Ex> {
-        let ok = it.next()?.parse::<u8>().ok()? != 0;
-        let a = it.next()?.parse().ok()?;
-        let b = it.next()?.parse().ok()?;
-        let c = it.next()?.parse().ok()?;
-        let d = it.next()?.parse().ok()?;
-        let k = it.next()?.parse().ok()?;
-        let re = f64::from_bits(it.next()?.parse().ok()?);
-        let im = f64::from_bits(it.next()?.parse().ok()?);
-        Some(Ex {
-            v: Dw { a, b, c, d, k },
-            ok,
-            re,
-            im,
-        })
-    }
-}
-
-/// Is an exact real mass a dyadic rational?
-fn is_dyadic(m: Dw) -> bool {
-    let r = m.reduce();
-    r.b == 0 && r.c == 0 && r.d == 0 && r.k.is_multiple_of(2)
-}
+/// The exact accumulator, with its f64 mirror and its checkpoint codec —
+/// `quantum::scalar::ExactSum`. The census used to carry a private twin of
+/// the dyadicity campaign's accumulator, differing only in the mirror; the
+/// alias keeps the (very dense) `Tally` declarations readable.
+type Ex = ExactSum;
 
 const SECT: usize = 5; // sectors 0,1,2,3, and 4 = "≥4"
 
@@ -422,32 +310,27 @@ fn cap_idx(c: Capacity) -> usize {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 fn sweep_one(
     pool: &mut Pool,
     m: &mut QMachine,
     leaves: &mut Vec<blam::quantum::Leaf>,
-    enc: u64,
-    len: u8,
-    cond: Option<u32>,
-    sig: &[Prim],
+    prog: &QProgram,
     budget: &QBudget,
     t: &mut Tally,
 ) {
-    leaves.clear();
-    m.run_conditioned_into(pool, enc, len, cond, sig, budget, leaves);
+    let (enc, len) = (prog.enc, prog.len);
+    // The shared per-program step: run, plus the mass-conservation
+    // battery every quantum sweep owes (quantum::sweep).
+    let summary = run_and_summarize(m, pool, prog, budget, leaves);
     let n = len as u32;
     t.programs += 1;
     t.leaves += leaves.len() as u64;
     t.max_leaves = t.max_leaves.max(leaves.len() as u64);
     t.max_trans = t.max_trans.max(m.max_trans);
+    t.max_steps = t.max_steps.max(summary.max_steps);
 
-    // Mass conservation: Σ leaf masses = 1 exactly (skip if any overflowed).
-    let mut msum = Some(Dw::ZERO);
     let mut kinds = [false; 4]; // halt, err, unk, cap seen
     for leaf in leaves.iter() {
-        t.max_steps = t.max_steps.max(leaf.steps);
-        msum = msum.and_then(|s| leaf.mass.and_then(|x| s.add(x)));
         let w = leaf.mass.and_then(|x| x.div_pow2(n));
         if leaf.mass.is_none() {
             t.none_mass_n += 1;
@@ -504,13 +387,6 @@ fn sweep_one(
             }
         }
     }
-    if let Some(s) = msum {
-        assert_eq!(
-            s.reduce(),
-            Dw::ONE,
-            "mass conservation violated at program ({enc:#x},{len})"
-        );
-    }
     if kinds[2] {
         t.unknowns.push((enc, len));
     }
@@ -527,15 +403,13 @@ fn sweep_one(
 
 /// ⟨ψ|M|ψ⟩ for unnormalized ψ; the caller divides by ‖ψ‖² afterwards.
 fn expect(m: &[Ex], psi: &[Dw]) -> Option<Dw> {
-    if !m.iter().all(|e| e.ok) {
-        return None;
-    }
     let dim = psi.len();
-    // ψ† M ψ = Σ_ij conj(c_i) M_ij c_j
+    // ψ† M ψ = Σ_ij conj(c_i) M_ij c_j. Every entry is visited, so an
+    // overflowed one short-circuits the whole expectation to None.
     let mut acc = Dw::ZERO;
     for (i, ci) in psi.iter().enumerate() {
         for (j, cj) in psi.iter().enumerate() {
-            acc = acc.add(ci.conj().mul(m[i * dim + j].v)?.mul(*cj)?)?;
+            acc = acc.add(ci.conj().mul(m[i * dim + j].value()?)?.mul(*cj)?)?;
         }
     }
     Some(acc.reduce())
@@ -672,21 +546,17 @@ pub fn run(argv: &[String]) -> R<()> {
                     enc = enc << 1 | (c == '1') as u64;
                 }
                 assert_eq!(t.bit_size() as usize, bits.len(), "u64-packable");
-                leaves.clear();
-                m.run_conditioned_into(
-                    pool,
+                let prog = QProgram {
                     enc,
-                    bits.len() as u8,
-                    cond_k,
-                    &sig,
-                    &budget,
-                    leaves,
-                );
+                    len: bits.len() as u8,
+                    cond: cond_k,
+                    order: &sig,
+                };
+                let summary = run_and_summarize(m, pool, &prog, &budget, leaves);
+                let max_steps = summary.max_steps;
                 let (mut h, mut e, mut u, mut c) = (0u64, 0u64, 0u64, 0u64);
                 let mut halt_mass = Ex::ZERO;
-                let mut max_steps = 0u64;
                 for leaf in leaves.iter() {
-                    max_steps = max_steps.max(leaf.steps);
                     match &leaf.fate {
                         Fate::Halt(_) => {
                             h += 1;
@@ -708,21 +578,18 @@ pub fn run(argv: &[String]) -> R<()> {
                 // outcome could still erase it; skeleton halts say nothing
                 // (δ-rules continue where the rigid form stopped).
                 let skel = skeleton_cap.map(|cap| {
+                    use blam::blc::term::app;
                     use blam::classical::escalation::{normal_form_spine, LTerm, NoNf};
-                    use blam::blc::term::{app, var};
-                    let mut sk = t.clone();
-                    if let Some(k) = cond_k {
-                        // Church numeral k̄ = λf.λx. f^k x, matching
-                        // qvm::Pool::numeral.
-                        let mut body = var(1);
-                        for _ in 0..k {
-                            body = app(var(2), body);
-                        }
-                        sk = app(sk, blam::blc::term::lam(blam::blc::term::lam(body)));
-                    }
-                    for i in 0..sig.len() as u32 {
-                        sk = app(sk, var(i + 1));
-                    }
+                    use blam::quantum::sig::{church_numeral, with_holes};
+                    // Both skeleton shapes come from `quantum::sig` — the
+                    // hole application and the Object-B Church numeral —
+                    // so this column and the trusted checker cannot drift
+                    // into adjudicating different terms.
+                    let head = match cond_k {
+                        Some(k) => app(t.clone(), church_numeral(k)),
+                        None => t.clone(),
+                    };
+                    let sk = with_holes(&head, sig.len() as u32);
                     match normal_form_spine(cap, &LTerm::from_term(&sk)) {
                         (Err(NoNf::Diverge), true) => "nowhnf",
                         (Err(NoNf::Diverge), false) => "offspine-div",
@@ -798,17 +665,13 @@ pub fn run(argv: &[String]) -> R<()> {
                     || (Pool::new(), QMachine::new(), Vec::new(), Tally::new()),
                     |(mut pool, mut m, mut leaves, mut t), task| {
                         run_task(task, &mut |enc, len| {
-                            sweep_one(
-                                &mut pool,
-                                &mut m,
-                                &mut leaves,
+                            let prog = QProgram {
                                 enc,
                                 len,
-                                cond_k,
-                                &sig,
-                                &budget,
-                                &mut t,
-                            );
+                                cond: cond_k,
+                                order: &sig,
+                            };
+                            sweep_one(&mut pool, &mut m, &mut leaves, &prog, &budget, &mut t);
                         });
                         (pool, m, leaves, t)
                     },
@@ -1008,11 +871,9 @@ pub fn run(argv: &[String]) -> R<()> {
             );
         }
     }
-    if total.m1.iter().all(|e| e.ok) {
-        let m00 = total.m1[0].v.reduce();
-        let m01 = total.m1[1].v.reduce();
-        let m10 = total.m1[2].v.reduce();
-        let m11 = total.m1[3].v.reduce();
+    if total.m1.iter().all(|e| e.is_exact()) {
+        let entry = |k: usize| total.m1[k].expect_exact("M^(1) entry").reduce();
+        let (m00, m01, m10, m11) = (entry(0), entry(1), entry(2), entry(3));
         let _ = writeln!(
             r,
             "hermitian: {}   diagonals real: {}",
@@ -1090,7 +951,7 @@ pub fn run(argv: &[String]) -> R<()> {
         for i in 0..4 {
             for j in 0..4 {
                 let e = &total.m2[i * 4 + j];
-                if e.ok && e.v.is_zero() {
+                if e.value().is_some_and(|v| v.is_zero()) {
                     continue;
                 }
                 nonzero += 1;
@@ -1104,11 +965,10 @@ pub fn run(argv: &[String]) -> R<()> {
             }
         }
         let _ = writeln!(r, "({nonzero} nonzero of 16 entries)");
-        if total.m2.iter().all(|e| e.ok) {
+        if total.m2.iter().all(|e| e.is_exact()) {
+            let entry = |k: usize| total.m2[k].expect_exact("M^(2) entry");
             let herm = (0..4).all(|i| {
-                (0..4).all(|j| {
-                    total.m2[i * 4 + j].v.reduce() == total.m2[j * 4 + i].v.conj().reduce()
-                })
+                (0..4).all(|j| entry(i * 4 + j).reduce() == entry(j * 4 + i).conj().reduce())
             });
             let _ = writeln!(r, "hermitian: {herm}");
             let one = Dw::ONE;

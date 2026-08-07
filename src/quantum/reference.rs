@@ -392,6 +392,9 @@ pub fn run(term: QTerm, budget: &Budget) -> Vec<Leaf> {
 /// `Meas` outcomes included). Two runs are effect-trace equivalent when the
 /// leaf sequences pair up with identical paths, fates, and masses.
 pub fn run_traced(term: QTerm, budget: &Budget) -> Vec<(Leaf, Vec<Effect>)> {
+    // Shared with the fast path: a degenerate budget is where the two
+    // engines' β-check placement stops agreeing, so neither accepts one.
+    budget.validate().expect("degenerate budget");
     let mut leaves = Vec::new();
     let mut work: Vec<(QTerm, Store, Vec<Effect>, u64, u64)> =
         vec![(term, Store::new(), Vec::new(), 0, 0)];

@@ -42,7 +42,11 @@
 //! opaquely.
 
 use crate::blc::reduction::beta;
-use crate::blc::{app, lam, var, Term};
+use crate::blc::{app, lam, Term};
+use crate::classical::escalation::{normal_form, LTerm, NoNf};
+use crate::classical::machine::{Machine, Pool, SizeSink};
+use crate::classical::oracle;
+use crate::quantum::sig;
 use std::collections::HashSet;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -59,8 +63,54 @@ pub enum SkelVerdict {
     NormalWithHoles { steps: u64 },
     /// A hole reached operator position; out of this checker's scope.
     HoleDemanded { steps: u64 },
-    /// Budget exhausted (steps or term size).
-    CapOut,
+    /// Budget exhausted (steps or term size), with the telemetry rung 3
+    /// needs to stratify its survivors.
+    CapOut(CapOut),
+}
+
+/// Which cap fired, and where the chain had got to.
+///
+/// `docs/quantum/escalation.md`, rung 3: "CapOut must record which cap
+/// fired and the high-water state, so that a stratified sample can split
+/// the population — size-bound monotone growers go to pattern discovery,
+/// step-bound bounded-size terms justify another exact-cycle tier." Both
+/// abort sites already knew which one they were; the verdict just did not
+/// carry it.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct CapOut {
+    pub reason: CapReason,
+    /// Reduction steps taken before the abort.
+    pub steps: u64,
+    /// Largest term size (BLC bits) reached along the chain.
+    pub high_water_bits: u64,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CapReason {
+    /// The step budget ran out at bounded size — an exact-cycle candidate.
+    Steps,
+    /// The term grew past the size ceiling — a monotone grower, pattern
+    /// discovery's population.
+    Size,
+}
+
+/// `adjudicate`'s input contract: the checker adjudicates CLOSED programs,
+/// because holes are exactly the root-free variables and a program's own
+/// free variable would be silently reinterpreted as a signature slot.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct OpenProgram {
+    /// Largest free de Bruijn index found at the root.
+    pub max_free: u32,
+}
+
+impl std::fmt::Display for OpenProgram {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "skeleton adjudication needs a closed program (free index {})",
+            self.max_free
+        )
+    }
 }
 
 pub struct SkelCaps {
@@ -120,52 +170,213 @@ fn step(t: &Term, depth: u32) -> Step {
 }
 
 /// Adjudicate closed `p` applied to `slots` holes.
-pub fn adjudicate(p: &Term, slots: u32, caps: &SkelCaps) -> SkelVerdict {
-    debug_assert!(p.is_closed());
-    let mut t = p.clone();
-    for i in 1..=slots {
-        t = app(t, var(i));
+///
+/// An open `p` is an input error, not a verdict: its own free variables
+/// are indistinguishable from holes at the root, so adjudicating one would
+/// silently reinterpret them as signature slots and hand back a
+/// conclusion about a different program.
+pub fn adjudicate(p: &Term, slots: u32, caps: &SkelCaps) -> Result<SkelVerdict, OpenProgram> {
+    let max_free = p.max_free(0);
+    if max_free != 0 {
+        return Err(OpenProgram { max_free });
     }
+    let mut t = sig::with_holes(p, slots);
     let mut seen: HashSet<String> = HashSet::new();
     let mut steps = 0u64;
+    let mut high_water = t.bit_size();
+    let cap = |reason, steps, high_water_bits| {
+        Ok(SkelVerdict::CapOut(CapOut {
+            reason,
+            steps,
+            high_water_bits,
+        }))
+    };
     loop {
         if t.max_free(0) == 0 {
-            return SkelVerdict::HoleFree { residual: t, steps };
+            return Ok(SkelVerdict::HoleFree { residual: t, steps });
         }
-        if t.bit_size() > caps.size_bits {
-            return SkelVerdict::CapOut;
+        let bits = t.bit_size();
+        high_water = high_water.max(bits);
+        if bits > caps.size_bits {
+            return cap(CapReason::Size, steps, high_water);
         }
         if !seen.insert(t.to_bits()) {
-            return SkelVerdict::Loop { steps };
+            return Ok(SkelVerdict::Loop { steps });
         }
         if steps >= caps.steps {
-            return SkelVerdict::CapOut;
+            return cap(CapReason::Steps, steps, high_water);
         }
         match step(&t, 0) {
             Step::Did(nt) => {
                 t = nt;
                 steps += 1;
             }
-            Step::Nf => return SkelVerdict::NormalWithHoles { steps },
-            Step::Hole => return SkelVerdict::HoleDemanded { steps },
+            Step::Nf => return Ok(SkelVerdict::NormalWithHoles { steps }),
+            Step::Hole => return Ok(SkelVerdict::HoleDemanded { steps }),
         }
     }
+}
+
+// ---------------------------------------------------------------------------
+// The transfer ladder: skeleton verdict + the classical rung that turns a
+// hole-free residual into a quantum fate.
+
+/// Reusable arenas for the residual ladder. A sweep threads one of these
+/// per worker (`for_each_init`): both the KN pool and the KN machine reset
+/// themselves per call, so reuse is verdict-neutral and only saves the
+/// per-program allocation the driver used to pay.
+#[derive(Default)]
+pub struct TransferScratch {
+    pool: Pool,
+    kn: Machine,
+}
+
+impl TransferScratch {
+    pub fn new() -> TransferScratch {
+        TransferScratch::default()
+    }
+}
+
+/// Budgets for the residual (rung-2) classical ladder.
+pub struct TransferCaps {
+    /// KN β budget on the closed residual before escalating.
+    pub kn_beta: u64,
+    /// Escalation-engine capacity on the residual (the census default).
+    pub residual_cap: i64,
+}
+
+impl Default for TransferCaps {
+    fn default() -> Self {
+        TransferCaps {
+            kn_beta: 65_536,
+            residual_cap: 2_000_000,
+        }
+    }
+}
+
+/// How a hole-free residual's classical fate was established.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Via {
+    /// The syntactic no-nf oracle fired on the residual.
+    Oracle,
+    /// The KN machine normalised it within `kn_beta`.
+    Kn,
+    /// The escalation engine settled it (halt or proven Diverge).
+    Bb,
+}
+
+/// The full ladder's outcome for one program.
+///
+/// Rung 1 (`Loop` / `HaltInert` / `HoleDemanded` / `CapOut`) is the trusted
+/// checker's own verdict; rung 2 (`Halt` / `Div` / `ResidualUnknown`) is the
+/// classical adjudication of a `HoleFree` residual. Only `Loop`, `HaltInert`,
+/// `Halt`, and `Div` transfer to the quantum run — see the transfer theorems
+/// on `SkelVerdict` and `docs/quantum/escalation.md`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Transfer {
+    /// Exact recurrence of a hole-inert chain: proven quantum diverger.
+    Loop { steps: u64 },
+    /// Symbolic normal form with inert holes: proven quantum Halt, empty store.
+    HaltInert { steps: u64 },
+    /// A hole reached operator position; the quantum engines keep this one.
+    HoleDemanded { steps: u64 },
+    /// Rung 1's budget ran out.
+    CapOut(CapOut),
+    /// Hole-free residual with a classical normal form: quantum Halt.
+    Halt { steps: u64, nf_bits: u64, via: Via },
+    /// Hole-free residual proven to have no normal form: no Halt leaf.
+    Div { steps: u64, via: Via },
+    /// Hole-free residual the classical ladder could not settle — a new
+    /// hard classical term, compactly generated (escalation.md, rung 2).
+    ResidualUnknown { steps: u64 },
+}
+
+/// Rung 1 + rung 2 in one call: adjudicate the skeleton, and where it
+/// erases every hole, run the closed residual through the classical
+/// semantic ladder (oracle → KN → escalation engine).
+///
+/// This is the ladder `blam q skeleton` used to carry inline. Promoting it
+/// keeps the transfer argument — which classical verdicts may be believed
+/// about a residual, and why — beside the checker whose theorem licenses
+/// it, instead of in a driver.
+pub fn adjudicate_with_transfer(
+    p: &Term,
+    slots: u32,
+    caps: &SkelCaps,
+    transfer: &TransferCaps,
+    scratch: &mut TransferScratch,
+) -> Result<Transfer, OpenProgram> {
+    Ok(match adjudicate(p, slots, caps)? {
+        SkelVerdict::Loop { steps } => Transfer::Loop { steps },
+        SkelVerdict::NormalWithHoles { steps } => Transfer::HaltInert { steps },
+        SkelVerdict::HoleDemanded { steps } => Transfer::HoleDemanded { steps },
+        SkelVerdict::CapOut(c) => Transfer::CapOut(c),
+        SkelVerdict::HoleFree { residual, steps } => {
+            // Classical semantic ladder on the closed residual; Halt AND
+            // proven no-NF both transfer (`HoleFree`'s theorem: both
+            // machines now run the same closed pure term).
+            let lt = LTerm::from_term(&residual);
+            if oracle::no_nf(0, &lt) {
+                return Ok(Transfer::Div {
+                    steps,
+                    via: Via::Oracle,
+                });
+            }
+            scratch.pool.clear();
+            // Straight from the tree — the residual is already in hand, so
+            // a to_bits/decode_str round-trip through the wire format was
+            // pure ceremony (and it re-parses a residual that rung 2 grows
+            // into the thousands of bits).
+            let root = scratch.pool.from_term(&residual);
+            let mut sink = SizeSink::default();
+            match scratch
+                .kn
+                .normalize(&scratch.pool, root, transfer.kn_beta, &mut sink)
+            {
+                Ok(_) => Transfer::Halt {
+                    steps,
+                    nf_bits: sink.0,
+                    via: Via::Kn,
+                },
+                Err(_) => match normal_form(transfer.residual_cap, &lt) {
+                    Ok(nf) => Transfer::Halt {
+                        steps,
+                        nf_bits: nf.bit_size(),
+                        via: Via::Bb,
+                    },
+                    Err(NoNf::Diverge) => Transfer::Div {
+                        steps,
+                        via: Via::Bb,
+                    },
+                    Err(NoNf::Unknown(_)) => Transfer::ResidualUnknown { steps },
+                },
+            }
+        }
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::blc::var;
     use crate::blc::wire::parse_all;
 
     fn d() -> Term {
         lam(app(var(1), var(1)))
     }
 
+    /// Every fixture here is a closed program, so the input contract is
+    /// satisfied by construction; unwrapping keeps the assertions about
+    /// verdicts rather than about `Result`.
+    fn adj(p: &Term, slots: u32) -> SkelVerdict {
+        adjudicate(p, slots, &SkelCaps::default()).expect("fixture is closed")
+    }
+
     #[test]
     fn omega_sig_loops() {
         // Ω x⃗: D D recurs exactly after one step.
         let omega = app(d(), d());
-        match adjudicate(&omega, 5, &SkelCaps::default()) {
+        match adj(&omega, 5) {
             SkelVerdict::Loop { steps } => assert!(steps <= 2, "{steps}"),
             other => panic!("{other:?}"),
         }
@@ -175,10 +386,81 @@ mod tests {
     fn wrapped_omega_loops() {
         // (λ.Ω) x₁ … discards a hole then loops.
         let p = lam(app(d(), d()));
-        assert!(matches!(
-            adjudicate(&p, 5, &SkelCaps::default()),
-            SkelVerdict::Loop { .. }
-        ));
+        assert!(matches!(adj(&p, 5), SkelVerdict::Loop { .. }));
+    }
+
+    #[test]
+    fn open_input_is_an_error_not_a_verdict() {
+        // λ.(1 2) has a free index: adjudicating it would silently read
+        // that variable as a signature slot.
+        let open = lam(app(var(1), var(2)));
+        assert_eq!(
+            adjudicate(&open, 5, &SkelCaps::default()),
+            Err(OpenProgram { max_free: 1 })
+        );
+    }
+
+    #[test]
+    fn capout_records_which_cap_fired() {
+        // λa. (G G) a with G = λx. x x x: the head chain G G → G G G → …
+        // grows without bound while the hole rides along inert in
+        // argument position, so nothing recurs and nothing is demanded —
+        // the size ceiling is what stops it.
+        let g = lam(app(app(var(1), var(1)), var(1)));
+        let grower = lam(app(app(g.clone(), g), var(1)));
+        let caps = SkelCaps {
+            steps: 1000,
+            size_bits: 64,
+        };
+        match adjudicate(&grower, 1, &caps).unwrap() {
+            SkelVerdict::CapOut(c) => {
+                assert_eq!(c.reason, CapReason::Size);
+                assert!(c.high_water_bits > caps.size_bits, "{c:?}");
+                assert!(c.steps > 0, "{c:?}");
+            }
+            other => panic!("{other:?}"),
+        }
+        // Bounded size, no room to step: the step cap fires instead, and
+        // the two are distinguishable — which is the whole point of the
+        // telemetry (escalation.md's rung-3 stratification).
+        let caps = SkelCaps {
+            steps: 0,
+            size_bits: 1 << 14,
+        };
+        match adjudicate(&app(d(), d()), 5, &caps).unwrap() {
+            SkelVerdict::CapOut(c) => {
+                assert_eq!(c.reason, CapReason::Steps);
+                assert_eq!(c.steps, 0);
+                assert!(c.high_water_bits <= caps.size_bits, "{c:?}");
+            }
+            other => panic!("{other:?}"),
+        }
+    }
+
+    #[test]
+    fn transfer_ladder_settles_both_directions() {
+        let mut scratch = TransferScratch::new();
+        let caps = SkelCaps::default();
+        let tc = TransferCaps::default();
+        let mut go = |p: &Term, slots: u32| {
+            adjudicate_with_transfer(p, slots, &caps, &tc, &mut scratch).expect("closed")
+        };
+        // D (λx.λy. x x): erases every hole, residual W W diverges. Which
+        // rung proves it is the ladder's business (the oracle gets first
+        // refusal); that it is a Div is the transfer claim.
+        let w = lam(lam(app(var(2), var(2))));
+        assert!(matches!(go(&app(d(), w), 5), Transfer::Div { .. }));
+        // λ⁶.1 erases the signature and halts at λ.1 — two bits of NF.
+        let halter = lam(lam(lam(lam(lam(lam(var(1)))))));
+        match go(&halter, 5) {
+            Transfer::Halt { nf_bits, via, .. } => {
+                assert_eq!(via, Via::Kn);
+                assert_eq!(nf_bits, lam(var(1)).bit_size());
+            }
+            other => panic!("{other:?}"),
+        }
+        // Ω is rung 1's own verdict; the residual ladder never runs.
+        assert!(matches!(go(&app(d(), d()), 5), Transfer::Loop { .. }));
     }
 
     #[test]
@@ -188,12 +470,11 @@ mod tests {
         // off-spine family from the frontier measurement.
         let w = lam(lam(app(var(2), var(2))));
         let p = app(d(), w);
-        match adjudicate(&p, 5, &SkelCaps::default()) {
+        match adj(&p, 5) {
             SkelVerdict::HoleFree { residual, .. } => {
                 assert!(residual.is_closed());
                 // The classical escalation engine proves the residual
                 // diverges — the full transfer chain.
-                use crate::classical::escalation::{normal_form, LTerm, NoNf};
                 assert_eq!(
                     normal_form(2_000_000, &LTerm::from_term(&residual)),
                     Err(NoNf::Diverge)
@@ -207,7 +488,7 @@ mod tests {
     fn erasing_halter_transfers_halt() {
         // λλλλλ.(λ.1): erases the signature, halts at λ.1.
         let p = lam(lam(lam(lam(lam(lam(var(1)))))));
-        match adjudicate(&p, 5, &SkelCaps::default()) {
+        match adj(&p, 5) {
             SkelVerdict::HoleFree { residual, .. } => {
                 assert_eq!(residual, lam(var(1)));
             }
@@ -219,10 +500,7 @@ mod tests {
     fn identity_demands_a_hole() {
         // (λ.1) x₁ … → x₁ x₂ …: hole in operator position, no claim.
         let p = lam(var(1));
-        assert!(matches!(
-            adjudicate(&p, 5, &SkelCaps::default()),
-            SkelVerdict::HoleDemanded { .. }
-        ));
+        assert!(matches!(adj(&p, 5), SkelVerdict::HoleDemanded { .. }));
     }
 
     #[test]
@@ -230,10 +508,7 @@ mod tests {
         // p = λx.λy. y (λz.z): after consuming both holes the second
         // heads an application — under σ a primitive could fire there.
         let p = lam(lam(app(var(1), lam(var(1)))));
-        assert!(matches!(
-            adjudicate(&p, 2, &SkelCaps::default()),
-            SkelVerdict::HoleDemanded { .. }
-        ));
+        assert!(matches!(adj(&p, 2), SkelVerdict::HoleDemanded { .. }));
     }
 
     #[test]
@@ -243,19 +518,13 @@ mod tests {
         // Under σ that is λz. z prim: a quantum normal form, Halt with
         // empty store.
         let p = lam(lam(app(var(1), var(2))));
-        assert!(matches!(
-            adjudicate(&p, 1, &SkelCaps::default()),
-            SkelVerdict::NormalWithHoles { .. }
-        ));
+        assert!(matches!(adj(&p, 1), SkelVerdict::NormalWithHoles { .. }));
     }
 
     #[test]
     fn frontier_smoke_matches_discovery() {
         // The 18-bit Ω sig program from the measured frontier.
         let p = parse_all("010001101000011010").unwrap();
-        assert!(matches!(
-            adjudicate(&p, 5, &SkelCaps::default()),
-            SkelVerdict::Loop { .. }
-        ));
+        assert!(matches!(adj(&p, 5), SkelVerdict::Loop { .. }));
     }
 }

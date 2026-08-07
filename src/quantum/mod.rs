@@ -4,8 +4,9 @@
 //! `reference` is the executable semantics of
 //! `docs/quantum/architecture.md`, `machine` the lockstep-verified fast
 //! path, `scalar` the exact ring both run on, `sig` the frozen signature
-//! order, and `certificate` the trusted skeleton checker of the quantum
-//! escalation ladder.
+//! order, `certificate` the trusted skeleton checker of the quantum
+//! escalation ladder, and `sweep` the per-program step (run plus the
+//! mass-conservation battery) every measurement driver shares.
 //!
 //! The types every layer shares — the primitive alphabet, the store,
 //! fates, budgets, and leaves — live here at the pillar root so both
@@ -16,6 +17,7 @@ pub mod machine;
 pub mod reference;
 pub mod scalar;
 pub mod sig;
+pub mod sweep;
 
 use scalar::Dw;
 
@@ -359,6 +361,28 @@ pub struct Budget {
     pub max_qubits: usize,
     /// Max total branches per program.
     pub max_branches: usize,
+}
+
+impl Budget {
+    /// Reject degenerate budgets, in ONE place both engines call.
+    ///
+    /// Zero is not a tighter budget, it is outside the contract: the two
+    /// engines place their β check differently on purpose (`reference`
+    /// tests before selecting a redex, `machine` after the contraction it
+    /// charged), and at β = 0 that difference becomes visible — a program
+    /// whose normal form needs no contraction Halts on one engine and is
+    /// Unknown on the other. `trans = 0` is the same story one step
+    /// earlier. Both are caller bugs, so both engines refuse rather than
+    /// silently un-lockstep.
+    pub fn validate(&self) -> Result<(), &'static str> {
+        if self.beta < 1 {
+            return Err("Budget.beta must be at least 1");
+        }
+        if self.trans < 1 {
+            return Err("Budget.trans must be at least 1");
+        }
+        Ok(())
+    }
 }
 
 impl Default for Budget {
