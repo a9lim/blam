@@ -19,7 +19,7 @@ fn main() {
             }
         }
         Err(e) => {
-            println!("parse error: {e:?}");
+            eprintln!("parse error: {e}");
             std::process::exit(1);
         }
     }

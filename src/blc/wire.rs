@@ -36,7 +36,12 @@ impl std::error::Error for ParseError {}
 ///
 /// Explicit pending-constructor stack (the shape of
 /// `classical::machine::Pool::decode`): a λ-tower of depth d costs d heap
-/// slots, not d stack frames, so wire-legal input can never overflow.
+/// slots, not d stack frames, so wire-legal input can never overflow — and
+/// neither can anything done with the term it returns. Printing
+/// ([`Term::to_bits`], [`std::fmt::Display`]), measuring ([`Term::bit_size`],
+/// [`Term::max_free`]), and dropping are iterative too. The derived
+/// [`PartialEq`] and [`Debug`] on [`Term`] are the standing exceptions: both
+/// recurse with the term's depth.
 pub fn parse_prefix(bits: &mut impl Iterator<Item = bool>) -> Result<Term, ParseError> {
     /// A constructor waiting on its children.
     enum P {
@@ -124,20 +129,41 @@ mod tests {
     use super::*;
     use crate::blc::enumerate::for_each_closed;
 
+    /// The recursive rendering `Display` replaced, kept here as the spec the
+    /// iterative printer is differential-tested against.
+    fn show_recursive(t: &Term) -> String {
+        match t {
+            Term::Var(n) => n.to_string(),
+            Term::Lam(b) => format!("\\{}", show_recursive(b)),
+            Term::App(x, a) => {
+                let head = match **x {
+                    Term::Lam(_) => format!("({})", show_recursive(x)),
+                    _ => show_recursive(x),
+                };
+                match **a {
+                    Term::Var(_) => format!("{head} {}", show_recursive(a)),
+                    _ => format!("{head} ({})", show_recursive(a)),
+                }
+            }
+        }
+    }
+
     #[test]
-    fn deep_lambda_tower_parses() {
-        // A 100k-deep λ tower is wire-legal and must not consume stack in
-        // proportion to its depth — the recursive-descent parser this
-        // replaced overflowed here.
-        const DEPTH: usize = 100_000;
+    fn deep_lambda_tower_survives_every_operation() {
+        // A million-deep λ tower is wire-legal, so nothing about the term it
+        // parses to may consume stack in proportion to its depth. The
+        // recursive-descent parser this replaced overflowed on the way in;
+        // printing, sizing, and `Rc<Term>`'s derived drop glue each
+        // overflowed on the way out.
+        const DEPTH: usize = 1_000_000;
         let mut s = String::with_capacity(2 * DEPTH + 2);
         for _ in 0..DEPTH {
             s.push_str("00");
         }
         s.push_str("10");
         let t = parse_all(&s).expect("deep tower parses");
-        // Walk it iteratively; the term's own recursive methods are not
-        // what is under test here.
+
+        // Structure, by an explicit reference walk.
         let mut depth = 0usize;
         let mut cur = &t;
         while let Term::Lam(b) = cur {
@@ -146,13 +172,30 @@ mod tests {
         }
         assert_eq!(depth, DEPTH);
         assert_eq!(*cur, Term::Var(1));
-        // Tear down iteratively too: `Rc<Term>`'s drop glue is recursive.
-        let mut cur = t;
-        while let Term::Lam(b) = cur {
-            cur = match Rc::try_unwrap(b) {
-                Ok(inner) => inner,
-                Err(_) => break,
-            };
+
+        assert_eq!(t.bit_size(), 2 * DEPTH as u64 + 2);
+        assert_eq!(t.max_free(0), 0);
+        assert!(t.is_closed());
+        assert_eq!(t.to_bits(), s);
+
+        let shown = t.to_string();
+        assert_eq!(shown.len(), DEPTH + 1);
+        assert!(shown.ends_with("\\1"));
+        assert!(shown.bytes().take(DEPTH).all(|b| b == b'\\'));
+
+        // And an ordinary drop: `impl Drop for Term` is the guarantee now,
+        // so the teardown needs no help from the caller.
+        drop(t);
+    }
+
+    #[test]
+    fn display_matches_the_recursive_spec_to_20_bits() {
+        for n in 4..=20 {
+            for_each_closed(n, &mut |enc, len| {
+                let bits = enc_to_string(enc, len);
+                let t = parse_all(&bits).expect("closed term parses");
+                assert_eq!(t.to_string(), show_recursive(&t), "at n={n} on {bits}");
+            });
         }
     }
 
