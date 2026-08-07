@@ -19,7 +19,7 @@ The relation must be divergence-sensitive (clause B5).
 Configurations are pairs `(M, S)`: `M` a term of the reduction
 grammar (BLC term whose positions may hold runtime values —
 primitives, handles, Church booleans, the cnot pair), `S` an exact
-branch-local store (`src/dw.rs` amplitudes; allocation ranks and
+branch-local store (`src/quantum/scalar.rs` amplitudes; allocation ranks and
 epochs as in `architecture.md`). Reduction is the KN strategy of the
 engines: normal order, reducing under binders.
 
@@ -29,7 +29,7 @@ Transitions:
   untouched): `(M,S) —τ→ (M',S)`.
 - **Visible, non-branching** — `α ∈ {New(q), H(q,e), T(q,e),
   Cnot(q,e,r,f)}`, exactly the successful-firing labels of
-  `qeval::Effect`, store updated deterministically:
+  `quantum::Effect`, store updated deterministically:
   `(M,S) —α→ (M',S')`.
 - **Measurement** — one *binary* transition
   `(M,S) —Meas(q,e)→ ⟨(M₀,S₀), (M₁,S₁)⟩` with successor edges
@@ -127,7 +127,7 @@ to `ρ_R(Δ̂)` with `d ≥ i`, it reduces to `Âᵢ`, and the reduction
 neither evaluates nor inspects `R` or the closure's own dead wire
 suffix. This is the lexical-depth invariant as a lemma: closed
 programs never force the seed, and the effectful-tail canary
-(`qselfint`, QTerm-level `new t` in the seed) is its empirical
+(`blam q selfint`, QTerm-level `new t` in the seed) is its empirical
 shadow.
 
 **The relation is world-indexed and generated, not co-defined.** Defining
@@ -200,9 +200,10 @@ induction on `M`. Named obligations:
   depth `k`, open both bodies with the same fresh neutral level
   `ℓ = k+1` and prove the bodies related at world `k+1`. This is the
   rule used to prove binder compatibility, **not** an extra LTS
-  transition: qeval realizes it as syntactic under-λ descent and the KN
-  machine as `Val::Rigid`/`Lvl`. Under-binder reduction is where
-  P53-style fate divergence lives, so this case is load-bearing.
+  transition: `quantum::reference` realizes it as syntactic under-λ
+  descent and the KN machine as `Val::Rigid`/`Lvl`. Under-binder
+  reduction is where P53-style fate divergence lives, so this case is
+  load-bearing.
 - **C-STRICT (h, t, meas)** and **C-CNOT** ride on **L3**:
 
   > **L3 (weak-head / ArgView preservation).** Strict argument
@@ -326,6 +327,6 @@ freeze `cons'` and the three certified recursive branch meanings;
 one generic recursive entry + one closed-root entry sharing a knot;
 the root entry may assume root-non-VAR, continuation `I`, tail
 arbitrary; enumerate compiled totals ≤175; probe both contracts;
-splice survivors through the full `qselfint` battery. Hand-compile
+splice survivors through the full `blam q selfint` battery. Hand-compile
 the two-entry families and do bit accounting before any enumeration.
 Working expectation: 176 remains minimal in this lane.

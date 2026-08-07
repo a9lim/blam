@@ -64,7 +64,7 @@ removing the shared tail binder saves 2 bits, the necessary constant
 thunk costs 3. A lambda-free repair using the selector itself
 (`\x\y\zx. zx (zx x) (\zy.zy y)`) is also correct, at 172.
 
-## Exhaustive knot search (`search_fix.py`)
+## Exhaustive knot search (`tools/self-interpreter/search_fix.py`)
 
 Treat the interpreter body as an opaque zero-cost atom `H` and
 enumerate every closed BLC context around it:

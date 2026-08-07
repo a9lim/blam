@@ -36,8 +36,8 @@ jobs:
   test:
     # --release is the repo's own verification bar (AGENTS.md): the cert
     # battery pushes 196,848 provable halters through the sweep ladder and
-    # is built for release speed. The conformance suite (tromp_vectors)
-    # reads the ref/AIT submodule, so check it out.
+    # is built for release speed. tromp_vectors inlines its vectors; the
+    # ref/AIT checkout is for the uni.rs parity step (contrib/ait-uni).
     strategy:
       fail-fast: false
       matrix:

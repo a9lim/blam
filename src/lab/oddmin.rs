@@ -81,8 +81,9 @@ use std::sync::OnceLock;
 pub type NodeId = u32;
 /// Index into a summary's port table.
 pub type PortId = u8;
-/// Alpha-stable binder slot for received values. Renumbered to
-/// BFS-first-use order by `canon`; distinct copies of one original
+/// Alpha-stable binder slot for received values. NOT renumbered by
+/// `canon` (they are semantic identities within the summary; alpha
+/// normalization is docket work); distinct copies of one original
 /// binder may end distinct (overstates growth, never soundness).
 pub type BindId = u16;
 

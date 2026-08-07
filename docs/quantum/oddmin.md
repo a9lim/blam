@@ -1,10 +1,11 @@
 # SPEC-ODDMIN — the stage-1a compositional search
 
 This document is the current contract for the CNOT-free lower-bound lane.
-The implementation is split between `src/odd.rs` (trusted trace monitor),
-`src/oddmin.rs` (reference abstract interpreter), and `oddminproto` (bounded
-growth driver). The algebraic motivation and the CNOT-capable successor are
-in `galois.md`; moving measurements and next work live in `../STATUS.md`.
+The implementation is split between `src/lab/odd.rs` (trusted trace monitor),
+`src/lab/oddmin.rs` (reference abstract interpreter), and `blam q oddmin`
+(bounded growth driver). All three sit behind the non-default `lab` feature.
+The algebraic motivation and the CNOT-capable successor are in `galois.md`;
+moving measurements and next work live in `../STATUS.md`.
 
 ## 1. Theorem target and scope
 
@@ -13,9 +14,9 @@ Stage 1a targets the statement:
 > The minimum BLC wire size of a closed program with a CNOT-free qBLC effect
 > trace and a Galois-odd leaf mass is 45.
 
-`witness45`, pinned in `src/odd.rs`, establishes the upper bound. The search
-must prove the lower bound by retaining every concrete CNOT-free odd trace in
-a finite compositional abstraction.
+`witness45`, pinned in `src/lab/odd.rs`, establishes the upper bound. The
+search must prove the lower bound by retaining every concrete CNOT-free odd
+trace in a finite compositional abstraction.
 
 The CNOT-free premise is necessary for this stage. A 28-bit closed witness
 already fires CNOT, while no program through 22 bits does. Treating CNOT as
@@ -36,9 +37,10 @@ and repeated demand add no source weight.
 
 ## 2. Concrete projection and trusted monitor
 
-The concrete anchor is `qeval::run_traced` under the frozen signature
-`[H, Meas, New, Cnot, T]`. For a CNOT-free trace, nondeterministically choose
-one allocation as the distinguished lineage D and project to:
+The concrete anchor is `quantum::reference::run_traced` under the frozen
+signature `[H, Meas, New, Cnot, T]`. For a CNOT-free trace,
+nondeterministically choose one allocation as the distinguished lineage D and
+project to:
 
 - `NewD`: allocate D and initialize the monitor to FRESH;
 - `HD` and `TD`: apply the corresponding exact mask transition;
@@ -46,9 +48,11 @@ one allocation as the distinguished lineage D and project to:
 - `OutOfScope`: any CNOT effect; and
 - no letter for effects on other qubit lineages.
 
-The mask is a may-set over Pauli support and `√2` parity. `odd::step_h`,
-`odd::step_t`, and `odd::step_meas` are the trusted transition kernels. A
-projected word accepts exactly when `MeasD` sees odd Z-readable support.
+The mask is a may-set over Pauli support and `√2` parity. `lab::odd::step_h`,
+`lab::odd::step_t`, and `lab::odd::step_meas` are the trusted transition
+kernels; effects outside the frozen universe are refused as
+`Malformed::OutOfUniverse` rather than approximated. A projected word accepts
+exactly when `MeasD` sees odd Z-readable support.
 
 The projection is sound because a CNOT-free branch state factors by qubit
 lineage. If the product Born mass is Galois-odd, at least one single-lineage
@@ -62,11 +66,23 @@ A `Summary` is a finite colored interaction NFA:
 
 ```text
 Summary {
+    node_count: u32,
+    edges: Vec<(NodeId, Label, NodeId)>,
     entry: NodeId,
     ports: Vec<NodeId>,
-    edges: Vec<(NodeId, Label, NodeId)>
 }
 ```
+
+The fields are given in declaration order because that order *is* the
+comparison order: `Summary` derives `PartialEq`/`Ord`, and the DP keys its
+`BTreeSet` cells on the whole tuple, so `node_count` participates in canonical
+equality alongside the edge list. Canonicalization recomputes it from the
+quotient, so equal canonical bytes do imply equal node counts; a raw,
+un-canonicalized summary carrying padding nodes is a *different* value.
+
+`NodeId` is a `u32`. `PortId` is a `u8` and `BindId` a `u16`: the port index
+is deliberately narrow because port roles are carried in a role bitset, which
+is what fixes the `MAX_PORTS` ceiling of §4.
 
 `entry` is the evaluation root. Ports name apply bodies and neutral-spine
 subgraphs. The port structure is semantic: two values can have identical
@@ -213,8 +229,15 @@ the component has:
 never introduce an accepting effect. General effectful widening is not
 implemented.
 
-Other growth failures are `StateCap` or `PortCap`. Every abort
-is conservative top. No lower-bound claim may treat it as non-acceptance.
+Other growth failures are `StateCap` or `PortCap`, the latter fired by the
+named `MAX_PORTS = 63` ceiling — the port table is addressed by a role bitset,
+so a summary that would expose a 64th port aborts instead of overflowing it.
+Two further aborts are invariant breaches rather than growth gates:
+`UnresolvedAmbient` (a live closed path met an unresolved ambient
+observation) and `UnrootedPort` (flatten exposed a port with no rooted
+interface state, reported loudly instead of silently rooted at node 0). Every
+abort is conservative top. No lower-bound claim may treat it as
+non-acceptance.
 
 ## 5. Acceptance and soundness obligations
 
@@ -226,8 +249,9 @@ end.
 The proof requires two lemmas.
 
 **S1 — operational abstraction.** For every open term, related environment,
-and finite CNOT-free `qeval` prefix, the summary contains a path with the same
-projected trace and a related endpoint. The critical application lemma is
+and finite CNOT-free `quantum::reference` prefix, the summary contains a path
+with the same projected trace and a related endpoint. The critical application
+lemma is
 
 ```text
 Abs(β(B,A)) ⊑ substCall₁(Abs(B), Abs(A)).
@@ -247,19 +271,37 @@ point even if the surrounding program later diverges.
 
 ## 6. Verification battery
 
-The current tests cover the abstraction's causal surface:
+The current tests cover the abstraction's causal surface. All of them are
+crate unit tests, run by `cargo test --release --features lab`; each claim
+below names the function that carries it.
 
-- monitor transitions against exact gate-word statevectors;
-- canonicalization idempotence and preservation of port roles;
-- variable rebasing and nested-binder selection;
-- call-by-name reuse and unused-argument non-evaluation;
-- species errors before lambda-body descent;
-- `new` discarding its argument;
-- normal-form descent under surviving binders;
-- stale-handle invalidation and CNOT rejection;
-- witness45 acceptance and the 28-bit CNOT witness rejection; and
-- differential comparison with exact `qeval` over all 6,069 closed programs
-  through 22 bits.
+| claim | test |
+| --- | --- |
+| the interned mask automaton reproduces the trusted kernels on every reachable mask | `lab::oddmin::tests::mask_automaton_matches_kernels` |
+| on hand gate words the `H·T·H·meas` sandwich is `MayOdd` and Clifford-only paths stay `Even` | `lab::odd::tests::sandwich_accepted_clifford_paths_not` |
+| forged traces are refused as `Malformed`: effect without allocation, duplicate allocation, stale epoch, retired qubit, self-CNOT, out-of-universe gate | `lab::odd::tests::hardening_rejects_forged_traces` |
+| the 28-bit CNOT witness replays `NeedsCnot`, never `MayOdd` | `lab::odd::tests::cnot_trace_is_out_of_scope` |
+| every known odd witness (45, 48, 49, three at 50, the twelve-program 51 orbit, P53) is accepted on its own odd leaves | `lab::odd::tests::witnesses_accepted_on_their_odd_leaves` |
+| exhaustive monitor soundness through 22 bits: no odd leaf judged Even, every real trace well-formed | `lab::odd::tests::enumeration_soundness_small_sizes` |
+| the abstract accept product matches monitor semantics — interface letters silent, `OutOfScope` a dead end, pre-allocation effects unrealizable | `lab::oddmin::tests::accept_product_matches_monitor_semantics` |
+| canonicalization is idempotent, congruent on bisimilar duplicates, and drops unreachable garbage | `lab::oddmin::tests::canon_laws` |
+| canonicalization preserves port roles | `lab::oddmin::tests::canon_preserves_port_structure` |
+| variable and lambda transfers, and binder rebasing | `lab::oddmin::tests::var_lam_transfers_are_sane` |
+| apply-port structure is not collapsed by visible-effect equality | `lab::oddmin::tests::gate_distinct_apply_ports` |
+| nested-binder selection, and call-by-name non-evaluation of a discarded thunk | `lab::oddmin::tests::gate_nested_binders_select_correctly` |
+| normal-form descent under a surviving binder; a latent apply port is not independently accepted by the closed query | `lab::oddmin::tests::gate_rigid_descent_vs_latent_port` |
+| a species error fires before descending into the rejected lambda's body | `lab::oddmin::tests::gate_species_error_before_body` |
+| `new` discards its argument unevaluated | `lab::oddmin::tests::gate_new_discards_argument` |
+| witness45 accepts and the 28-bit CNOT witness does not | `lab::oddmin::tests::gate_witness45_accepts_cnot28_does_not` |
+| differential against the exact reference evaluator over all 6,069 closed programs through 22 bits | `lab::oddmin::tests::small_population_agreement_vs_qeval` |
+
+Two claims this list used to make are withdrawn for want of a test. There is
+no statevector comparison: the monitor is checked against the trusted kernels
+and against hand traces, not against an independent exact simulation of the
+gate word. And there is no abstract stale-handle gate: the `StaleEpoch`
+rejection above is trace-replay hardening, not a test that the interpreter
+invalidates captured aliases after an `Advance` or `Retire` seam. Both are
+open coverage gaps, not known failures.
 
 The differential currently has zero concrete odd leaves and zero false
 negative accepts. Its conservative cells are therefore measured looseness,
@@ -269,17 +311,29 @@ test.
 
 ## 7. Measured growth
 
-`oddminproto W` enumerates canonical summaries bottom-up by source weight and
-free-variable depth. Primitive axioms are introduced only by closed signature
-application, never as source-term bases.
+`blam q oddmin W` enumerates canonical summaries bottom-up by source weight
+and free-variable depth. Primitive axioms are introduced only by closed
+signature application, never as source-term bases.
 
-Current closed-slice measurements:
+Current closed-slice measurements. **Every row is a separate run**: the
+depth ceiling is `dmax(w) = (max_w − w) / 2`, the enclosing-lambda budget a
+cell must still fit inside, so it depends on the run's `W` and the same
+weight's cells are not the same cells in a taller run. Reading a row off a
+larger run's intermediate line gives different numbers for the same `w`.
+Splice-⊤ is cumulative over the run; the reported row is its final value.
 
 | W | summaries | splice top | closed top | accepts | total time |
 |---:|---:|---:|---:|---:|---:|
 | 16 | 96 | 0 | 0 | 0 | about 0.01 s |
-| 20 | 743 | 0 | 3 | 0 | about 0.11 s |
-| 24 | 6,271 | 0 | 37 | 0 | about 1.1 s |
+| 20 | 743 | 0 | 3 | 0 | about 0.1 s |
+| 24 | 6,271 | 0 | 37 | 0 | about 1.05 s |
+| 26 | 18,812 | 2 | 149 | 0 | about 3.5 s |
+| 28 | 57,324 | 8 | 555 | 0 | about 14 s |
+
+At the run's top weight the depth ceiling is zero, so the summaries column is
+both the unique-summary count and the closed-slice count. Splice-⊤ first
+appears at W=25 — a W=24 run has none — which is the first ceiling tall enough
+for a depth-1 cell at weight 23 to be spliced.
 
 Witness45 composes to 44 nodes, 43 edges, and ten ports. In the direct
 ≤22 differential, the 19 conservative programs are concretely non-odd and arise
@@ -287,9 +341,10 @@ from one formal acquiring different composed port identities under different
 captured environments. This is a canonicalization loss, not an effectful
 widening failure.
 
-Growth is approximately 1.7× per bit, projecting the million-summary stop
-near W≈34. Reaching 44 therefore requires canonicalization and search-side
-pruning before a certificate generation is practical.
+Growth is approximately 1.74× per unit of source weight — measured 3.0× per
+two units across both 24→26 and 26→28 — projecting the million-summary stop
+rule near W≈33. Reaching 44 therefore requires canonicalization and
+search-side pruning before a certificate generation is practical.
 
 ## 8. Certificate boundary and next work
 
@@ -311,7 +366,7 @@ The next implementation sequence is:
 
 1. alpha-normalize `BindId`, canonicalize weak-epsilon structure, and
    renumber ports canonically;
-2. probe W=26, 28, and 30 after the W=24 regression;
+2. probe W=30 (W=26 and W=28 are measured — §7);
 3. prove constructor monotonicity and add a simulation-preorder antichain;
 4. add a general component-scoped post-fixpoint whose ScopeId origins and
    closure are checked by the trusted side; and

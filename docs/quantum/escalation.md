@@ -1,7 +1,8 @@
 # Divergence adjudication for the operator-census Unknown frontier
 
-The operator census is a single-rung engine: one qvm run per program at
-fixed budgets, with Unknown as the only outcome for anything unresolved.
+The operator census is a single-rung engine: one `quantum::machine` run per
+program at fixed budgets, with Unknown as the only outcome for anything
+unresolved.
 This document is the durable design for the escalation ladder above that
 rung: what is proven, what is measured, and what each rung's soundness
 rests on. Moving counts live in `STATUS.md`.
@@ -30,26 +31,30 @@ contributes exactly zero to Ω_success; its mass leaves the bracket's
 unknown term.
 
 Discovery and trust are split, mirroring the classical certificate
-architecture (`certsearch` / `cert.rs`):
+architecture (`classical::certificate::search` under the untrusted
+`blam cert search`, `classical::certificate` as the checker):
 
-- **Discovery** is `bb::normal_form_spine`: the escalation engine with
-  the syntactic oracle disabled (the oracle's no-nf verdict is not
-  spine-attributable) and a spine flag threaded so a Diverge is tagged
-  when its proof landed on the root's own head-reduction chain. Full
-  strength — simplify, history, redloop — but its fires are
-  *candidates*, never kills.
-- **The trusted checker** is `src/skel.rs`: holes are root-free de
-  Bruijn variables (distinct, never collapsed to ⊥), reduction is
-  plain leftmost-outermost β — no simplify, no bot_free, no oracle —
-  recurrence is exact whole-term equality on wire bits, and the
-  checker aborts the moment a hole reaches operator position.
+- **Discovery** is `classical::escalation::normal_form_spine`: the
+  escalation engine with the syntactic oracle disabled (the oracle's
+  no-nf verdict is not spine-attributable) and a spine flag threaded so
+  a Diverge is tagged when its proof landed on the root's own
+  head-reduction chain. Full strength — simplify, history, redloop —
+  but its fires are *candidates*, never kills. It is driven as the
+  skeleton column of `blam q census --skeleton CAP`, which builds its
+  skeleton from `quantum::sig` so the column and the checker cannot
+  drift into adjudicating different terms.
+- **The trusted checker** is `src/quantum/certificate.rs`: holes are
+  root-free de Bruijn variables (distinct, never collapsed to ⊥),
+  reduction is plain leftmost-outermost β — no simplify, no bot_free,
+  no oracle — recurrence is exact whole-term equality on wire bits,
+  and the checker aborts the moment a hole reaches operator position.
   Verdicts: `Loop` (exact recurrence of a hole-inert chain; the
   transfer theorem applies), `HoleFree` (rung 2), `NormalWithHoles`
   (a normal form whose holes are inert is a quantum Halt with empty
   store), `HoleDemanded`, `CapOut`. Skeleton halts prove nothing
   about the quantum run (δ-rules continue where the rigid form
-  stopped); only `Loop` and `HoleFree`-with-classical-verdict
-  transfer.
+  stopped); only `Loop`, `NormalWithHoles`, and
+  `HoleFree`-with-classical-verdict transfer.
 
 **Why the split is load-bearing.** The original design promoted
 spine-tagged discovery fires directly, on a uniformity argument: along
@@ -76,10 +81,14 @@ programs that consume and *discard* signature arguments, then diverge
 (or halt) with no hole left. The checker's `HoleFree` verdict is this
 rung: once the reduct contains no hole, the classical and quantum
 machines run the *same closed term*, so classical fates transfer
-wholesale, in both directions. The residual ladder in
-`qcensus --skeleton-only` is oracle → KN at 65,536 β → bb at cap 2M.
-This is the degenerate no-measurement case of the rung-5 calculus and
-needs no store abstraction.
+wholesale, in both directions. The residual ladder is oracle → KN at
+65,536 β → escalation engine at cap 2M; it lives in
+`quantum::certificate::adjudicate_with_transfer`, beside the theorem
+that licenses it, and `blam q skeleton FILE` is the thin driver that
+sweeps a terms file through it (one streamed line per program;
+`--sig LIST` changes only the slot count, for alternate-universe
+frontiers). This is the degenerate no-measurement case of the rung-5
+calculus and needs no store abstraction.
 
 One field lesson: pure β does not respect encoding size — duplication
 grows it — so ≤41-bit sources leave closed residuals of up to
@@ -119,13 +128,23 @@ demanded; the β-reduction is infinite, so the qBLC execution has one
 infinite branch, never forks, never touches the store, and has no
 Halt leaf.
 
-Prerequisite instrumentation: `CapOut` must record which cap fired
-and the high-water state (`reason: Steps | Size`, steps taken,
-current and maximum bits), so that a stratified sample can split the
-population — size-bound monotone growers go to pattern discovery;
-step-bound bounded-size terms justify another exact-cycle tier. A
-blind full sweep at higher caps is sound but low-information per
-CPU-hour.
+Prerequisite instrumentation — **landed**. `CapOut` is now a struct,
+`{ reason: CapReason::{Steps, Size}, steps, high_water_bits }`: which
+cap fired, the reduction steps taken before the abort, and the largest
+term size in BLC bits reached anywhere along the chain. Both abort
+sites always knew which one they were; the verdict simply did not
+carry it. `blam q skeleton` tallies the two reasons and prints an
+additive stderr line
+
+```text
+capout split: steps-bound N  size-bound M
+```
+
+leaving the per-program verdict stream on stdout unchanged. That line
+is the stratification input this rung asked for: size-bound monotone
+growers go to pattern discovery; step-bound bounded-size terms justify
+another exact-cycle tier. A blind full sweep at higher caps is sound
+but low-information per CPU-hour.
 
 ## Canonical recording of skeleton kills
 

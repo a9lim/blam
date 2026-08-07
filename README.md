@@ -10,7 +10,7 @@ calculus](https://tromp.github.io/cl/Binary_lambda_calculus.html), plus
 for algorithmic information theory — exhaustive term censuses,
 busy-beaver frontiers, exact Solomonoff/Kolmogorov measurement,
 machine-checked divergence certificates — and shipped as a library
-with a set of measurement drivers on top.
+with one measurement CLI on top.
 
 Design principles throughout: every fast path is differential-tested
 against a naive executable spec; every engine is total (fuel
@@ -21,11 +21,18 @@ charged on a shared work meter); every quantum amplitude is exact
 ## Install
 
 ```bash
-cargo add blam
+cargo add blam                        # library plus the `blam` driver binary
+cargo add blam --no-default-features  # engines only — one dependency, im-rc
 ```
 
+The default `cli` feature carries the binary and owns the rayon
+dependency; the library engines themselves need nothing but `im-rc`.
+The non-default `lab` feature adds the research instruments (`lab::*`),
+the untrusted certificate-discovery surface, and the subcommands built
+on them.
+
 For the full lab — canonical data tables, the Lean formalization, and
-Tromp's reference corpus for conformance tests:
+Tromp's reference corpus for the `uni.rs` parity harness:
 
 ```bash
 git clone --recurse-submodules https://github.com/a9lim/blam
@@ -33,11 +40,19 @@ git clone --recurse-submodules https://github.com/a9lim/blam
 
 ## Library
 
-The reference core is `term` / `parse` / `eval`: a textbook-faithful
-normal-order normalizer that serves as the executable spec. Terms use
-**1-indexed de Bruijn** (`Var(1)` = innermost binder), matching the
-wire format (`00` λ, `01` application, `1ⁿ0` variable n); closed-term
-code is prefix-free, which is what makes the Kraft sums of AIT exact.
+Three layers: `blc` is the substrate both pillars share (terms, the wire
+format, closed-term enumeration, the reduction kernel), `classical` and
+`quantum` are the two pillars — each a `reference` executable spec, a
+`machine` differential-tested against it, and a `certificate` layer of
+trusted checkers — and `lab` holds the instruments nothing canonical
+depends on. One verb pair, semantic rather than cosmetic: classical
+terms `normalize`, quantum programs `run`.
+
+`classical::reference` is a textbook-faithful normal-order normalizer
+that serves as the executable spec. Terms use **1-indexed de Bruijn**
+(`Var(1)` = innermost binder), matching the wire format (`00` λ, `01`
+application, `1ⁿ0` variable n); closed-term code is prefix-free, which
+is what makes the Kraft sums of AIT exact.
 
 ```rust
 use blam::classical::reference::normalize;
@@ -71,19 +86,26 @@ prefilter), `classical::escalation` (redex-history loop detection plus a
 semantic self-feedback divergence certificate), `classical::certificate`
 (trusted checkers for three machine-checkable divergence-certificate
 classes), and `blc::enumerate` (parallel closed-term enumeration,
-`u64`-packed).
+`u64`-packed). `classical::ladder` is the one cheapest-verdict-first
+halting pipeline over all of them — pre-scan, oracle, two machine rungs,
+escalation, rescue — configured by an explicit `LadderCfg` whose
+defaults are the budgets the canonical census table was generated at.
+Every sweep driver in the repo adjudicates through it.
 
 ### qBLC
 
 The quantum pillar mirrors the classical layout: `quantum::reference`
 is the reference evaluator, `quantum::machine` the lockstep-verified
-fast path, `quantum::scalar` the exact ring. Programs are ordinary untyped BLC — quantum enters
-through an application signature of five primitives
-(`new / meas / cnot / t / h`, order frozen by a predeclared pilot).
-Qubits are opaque runtime handles with dynamic linearity (reusing a
-consumed handle is a runtime `Err`, not a type error), measurement branches
-the machine with exact weights — nothing is ever sampled — and each branch
-leaf carries a typed fate: `Halt(store)`, `Unknown`, `Capacity`, or `Err`.
+fast path, `quantum::scalar` the exact ring, `quantum::certificate` the
+trusted skeleton checker. Programs are ordinary untyped BLC — quantum
+enters through an application signature of five primitives in the order a
+predeclared pilot fixed (`h / meas / new / cnot / t`; `quantum::sig::FROZEN`
+and a pinning test hold it, because every number in `data/quantum/` is
+relative to it). Qubits are opaque runtime handles with dynamic linearity
+(reusing a consumed handle is a runtime `Err`, not a type error),
+measurement branches the machine with exact weights — nothing is ever
+sampled — and each branch leaf carries a typed fate: `Halt(store)`,
+`Unknown`, `Capacity`, or `Err`.
 
 ```rust
 use blam::quantum::reference::{apply_signature, run};
@@ -109,11 +131,12 @@ Runnable versions of these snippets: `examples/normalize.rs`,
 
 ## Drivers
 
-One binary, `blam`, whose subcommands live in `src/cli/`; production
-sweeps use rayon, while `q oddmin` remains an intentionally direct
-reference driver. Subcommands marked *(lab)* need `--features lab` — a
-binary built without it names them and says so rather than pretending
-they do not exist.
+One binary, `blam`, whose subcommands live in `src/cli/` and whose command
+table is grouped by epistemic tier rather than typing depth: engines,
+measurements, certificates, instruments. Production sweeps use rayon;
+`q oddmin` is an intentionally direct reference driver. Subcommands marked
+*(lab)* need `--features lab` — a binary built without it names them and
+says how to get them rather than pretending they do not exist.
 
 | subcommand | what it does |
 |---|---|
@@ -123,16 +146,19 @@ they do not exist.
 | `solomonoff` | Solomonoff prior m(x), prefix complexity K(x), two-sided Ω bounds — exact 2⁻⁶⁴-unit arithmetic |
 | `cert search` *(lab)* | divergence-certificate discovery sweep over a frontier file |
 | `cert lean` | emit the certificate kills as Lean 4 modules for kernel checking |
-| `cert diag` *(lab)* / `trace` *(lab)* | frontier classification and probe instruments |
-| `q census` | the quantum operator census (`--cond-k K` dimension-conditioned mode, `--sig` alternate signature universes) |
-| `q skeleton` | the trusted divergence sweep over census Unknowns |
+| `cert diag` *(lab)* | where the discovery pipeline drops a term, stage by stage |
+| `trace` *(lab)* | reduction-shape classifier and probe instruments |
 | `q run` | run one qBLC program, one line per branch leaf |
-| `q selfint` / `q galois idiom` *(lab)* / `q galois complement` *(lab)* | self-interpretation measurement and the two-stage dyadicity campaign |
+| `q census` | the quantum operator census (`--cond-k K` dimension-conditioned mode, `--sig` alternate signature universes) |
+| `q skeleton` | the trusted divergence sweep over census Unknowns (`--sig` sets the hole count by its length) |
+| `q selfint` | qBLC self-interpretation and effect-tree bisimulation measurement |
+| `q galois idiom` / `q galois complement` *(lab)* | the two-stage dyadicity campaign |
 | `q oddmin` *(lab)* | gated reference-DP driver for the CNOT-free √2 theorem lane |
 | `slots` *(lab)* | exhaustive self-interpreter slot searches |
 
 ```bash
-cargo build --release                   # add --features lab for the instruments
+cargo build --release                 # census, solomonoff, q census, cert lean
+cargo build --release --features lab  # …plus every subcommand marked (lab)
 
 # census of all closed terms of 4..40 bits, with self-verification
 target/release/blam census 4 40 --verify
@@ -149,25 +175,37 @@ target/release/blam cert search --file data/classical/unknowns.txt
 target/release/blam cert lean && cd lean && lake build Certs
 ```
 
-Knobs: `BLC_WORK_MULT` (work-meter multiplier; `2` = memory-bounded
-adjudication), `BLC_PROBE_FUEL` (certificate probe β budget). The
-standing measurement protocols are encoded in `scripts/`
-(spot-check, census regeneration, certificate re-certification).
+Engine knobs are flags on the ladder subcommands: `--work-mult`
+(escalation work meter per capacity bit; `2` = memory-bounded
+adjudication) and `--probe-fuel` (the redloop probe's β budget), with
+`BLC_WORK_MULT` / `BLC_PROBE_FUEL` honoured as fallbacks. The standing
+measurement protocols are encoded in `scripts/` (spot-check, census
+regeneration, Ω/K regeneration, certificate re-certification).
 
 ## Verification
 
-- The fast VM is lockstep-verified against the naive spec — output
+- The fast machine is lockstep-verified against the naive spec — output
   bits *and* β-step counts — over every closed term ≤18 bits; the
   quantum fast path likewise, over full leaf sequences (fates,
   stores, exact masses) for the entire ≤24-bit population.
-- Conformance tests parse Tromp's own corpus from the `ref/AIT`
-  submodule (the [a9lim/AIT](https://github.com/a9lim/AIT) fork,
-  pinned at upstream plus one additive commit; CI enforces
-  additivity). Every published A114852 count and BBλ value in range
-  is reproduced exactly.
+- Conformance vectors from Tromp's corpus are inlined in
+  `tests/tromp_vectors.rs`, so the suite needs no clone; every
+  published A114852 count and BBλ value in range is reproduced
+  exactly. The `ref/AIT` submodule — the
+  [a9lim/AIT](https://github.com/a9lim/AIT) fork, pinned at upstream
+  plus one additive commit, additivity enforced in CI — backs the
+  `uni.rs` parity harness in `contrib/ait-uni/`.
+- The certificate soundness battery is a crate unit test rather than an
+  integration test, so plain `cargo test` streams every provable halter
+  ≤28 bits through all three trusted checkers and asserts nothing fires.
 - Halt counts are invariant under every engine change in the repo's
   history — CI diffs a census spot-check against the canonical table
   on every push.
+- CI checks formatting and clippy-with-warnings-denied, then runs the
+  release test suite on Ubuntu and macOS in three shapes —
+  `--all-features`, default features, and `--no-default-features` — so
+  the lab targets, the no-lab dispatcher arms, and the im-rc-only
+  library are each exercised.
 - Every one of the 297 certificate kills is an individually
   kernel-checked `¬HasNormalForm` theorem in Lean 4 (zero sorries, no
   mathlib), pinned to its wire bits by a kernel-checked encoding.
@@ -205,10 +243,15 @@ record in the
 ## Layout
 
 - `src/` — the library (`blc` substrate, `classical` and `quantum`
-  pillars, `lab` instruments); `src/cli/` — the `blam` binary.
+  pillars, `lab` instruments behind the `lab` feature); `src/cli/` — the
+  `blam` binary.
 - `examples/` — the README snippets, runnable.
-- `tests/` — unit, differential, conformance, and certificate
-  soundness batteries.
+- `tests/` — the integration suites: differential lockstep, Tromp
+  conformance vectors, term and parser basics, and the checkpoint-resume
+  contract driven through the real binary. The certificate soundness
+  battery lives inside the crate, at
+  `src/classical/certificate/battery.rs`, so it runs under plain
+  `cargo test` while discovery stays off the default public surface.
 - `docs/STATUS.md` — the sole authority for moving results and the open
   docket; `docs/classical/` and `docs/quantum/` hold durable architecture,
   specifications, proof plans, and research notes; `docs/ledger/` is
@@ -222,22 +265,23 @@ record in the
   outputs do not live here.
 - `contrib/ait-uni/` — the portable upstream `uni.rs` PR kit and parity
   harness.
-- `ref/AIT` — submodule: the conformance corpus and execution
-  oracles.
+- `ref/AIT` — submodule: Tromp's corpus and execution oracles, read by
+  the parity harness.
 
 This root README is the repository's reading map and stable public story.
 Moving facts belong only in `docs/STATUS.md`; architecture documents state
 durable contracts, and the ledger is append-only history. The crates.io
-package ships the Rust crate and driver sources (`src/` + this README);
-research evidence, proofs, and supporting utilities live only in the repo.
+package ships the engine and its drivers (`src/`, `examples/`, this
+README, the license); research evidence, proofs, and supporting utilities
+live only in the repo.
 
 ## Attribution
 
 The λ-calculus, the encoding, the BBλ problem, the reference
 implementations, and the published values are all John Tromp's
-([tromp/AIT](https://github.com/tromp/AIT)); `src/bb.rs` and
-`src/oracle.rs` re-implement algorithms from `BB.lhs`/`AIT.lhs`. This
-repo is an independent engine, verified against his.
+([tromp/AIT](https://github.com/tromp/AIT)); `classical::escalation` and
+`classical::oracle` re-implement algorithms from `BB.lhs`/`AIT.lhs`.
+This repo is an independent engine, verified against his.
 
 Built by [a9lim](https://github.com/a9lim). Development history is preserved
 in the

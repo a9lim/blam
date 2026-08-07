@@ -1,7 +1,8 @@
 # Slot search results: VAR, ABS, APP are all exhaustively optimal
 
 Measured on the M5 Max with `RAYON_NUM_THREADS=9`. Implementation:
-`src/bin/slotsearch.rs`, following the parametric contract of
+`blam slots var|abs|app` (`src/cli/slots.rs`, behind the `lab` feature),
+following the parametric contract of
 `search-spec.md` §1 and the obligation-aware enumerator of §4. Full run logs
 are in `data/self-interpreter/`.
 
@@ -91,9 +92,10 @@ Never turns a cap into a rejection.
    Early abort on the first disagreeing bit — sound because KN readback emits
    the normal form in order, so a disagreeing bit proves the normal forms
    differ whether or not the run would have terminated.
-2. `oracle::no_nf` — cheap sound divergence proof.
+2. `classical::oracle::no_nf` — cheap sound divergence proof.
 3. KN at β 4,096 / transitions 262,144.
-4. `bb::normal_form` at cap 2,000,000 (carries the self-feedback certificate).
+4. `classical::escalation::normal_form` at cap 2,000,000 (carries the
+   self-feedback certificate).
 5. KN at β 2²⁰ / transitions 2²².
 6. Otherwise: reported as an honest `UNKNOWN`.
 
@@ -119,7 +121,7 @@ proven diverger.
    heaviest task (subtree weight = product of the DP counts of its pending
    obligations) until there are `threads × 64` of them. Subtree sizes span
    orders of magnitude at every depth, so the frontier-expansion approach used
-   by `enumerate.rs` (plus bit-reversal interleaving) balances badly here.
+   by `blc/enumerate.rs` (plus bit-reversal interleaving) balances badly here.
 
 3. **Ladder shape.** The spec's rung 1 is used verbatim; rungs 2–5 above are
    new. They exist because escalation is where all the time would go, so the
@@ -137,10 +139,11 @@ proven diverger.
   `StringSink` and the census path is unchanged instruction for instruction.
 - New `OutOfFuel::Aborted`. It is *not* a resource verdict — the caller owns
   the reason. No existing match on `OutOfFuel` was exhaustive.
-- `TermPool::push` made `pub`, so a decoded candidate can be spliced into a
-  closing context without a second decode pass.
+- `Pool::push` (`classical::machine`) made `pub`, so a decoded candidate can
+  be spliced into a closing context without a second decode pass.
 
-The final implementation passed `cargo test --release`. Census spot-check
+The final implementation passed `cargo test --release --all-features` (the
+harness's own tests are behind the `lab` feature). Census spot-check
 `n = 24..36` was bit-identical to the canonical table
 on every column — closed, halt, diverge, unknown, escal, max|nf|,
 beta_total — meeting the repo's verification bar for engine changes.
@@ -188,7 +191,7 @@ The parametric contract only. A fragment that works *only* because `bit1`,
 `list1`, `a` and `intL` have their particular runtime relationships is
 excluded by construction — that is `search-spec.md`'s contextual lane (§2),
 which cannot support an optimality claim without splicing and exhaustive
-small-program differential testing. `slotsearch.rs` has the hook for it: drop
+small-program differential testing. `blam slots` has the hook for it: drop
 the `must` mask to 0 and the enumerator sweeps every occurrence mask (ABS
 then costs 29.1B candidates ≈ 11 min at the measured 45M candidates/s, APP
 8.1B ≈ 3 min) — but a survivor there is a hypothesis, not a proof.

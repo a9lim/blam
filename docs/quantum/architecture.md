@@ -80,6 +80,15 @@ The five-lambda wrapper is a common programming idiom, not a syntactic
 restriction. Object A runs a program on the signature; Object B first supplies
 the dimension condition and then the signature.
 
+The order was chosen once, by an exhaustive 120-permutation pilot against a
+predeclared functional. That campaign is finished history and is recorded in
+`../ledger/`; the driver that ran it no longer exists. The frozen order's
+single home in code is `quantum::sig::FROZEN`, and unit tests pin both the
+sequence and its being a permutation of `Prim::CANONICAL_SET`, because every
+canonical number in `../../data/quantum/` is relative to it. Alternate orders
+remain reachable through `--sig` and produce non-canonical data by
+construction.
+
 ### Values, stores, and dynamic linearity
 
 `QTerm` extends classical terms with opaque primitive values and
@@ -130,35 +139,91 @@ explicit open design question.
 
 ## 3. Engine stack
 
+The pillar is one Rust module tree, `blam::quantum`. The types every layer
+shares — `Prim`, `Store`, `ErrKind`, `Capacity`, `Effect`, `Fate`, `Leaf`,
+`Budget` — live at the pillar root so both engines name one definition and
+stores compare bit-identically.
+
 ### Reference semantics
 
-`src/qeval.rs` is the semantic reference. It evaluates branch distributions
-over `QTerm`, an exact `Store`, and a typed fate. Store operations are the one
-implementation of allocation, Clifford+T gates, measurement, and epoch
-validation.
+`src/quantum/reference.rs` is the semantic reference. It evaluates branch
+distributions over `QTerm`, an exact `Store`, and a typed fate. Store
+operations are the one implementation of allocation, Clifford+T gates,
+measurement, and epoch validation.
 
-`src/dw.rs` implements exact arithmetic in the ring
-`ℤ[ω]/√2^d`, with `ω = exp(iπ/4)`. A scalar is four checked `i128`
-coefficients plus a denominator exponent. Arithmetic overflow becomes a
-capacity fate rather than wrapping or silently approximating.
+### Exact scalar ring
+
+`src/quantum/scalar.rs` implements exact arithmetic in the ring
+`ℤ[ω]/√2^d`, with `ω = exp(iπ/4)`. A scalar (`Dw`) is four checked `i128`
+coefficients plus a denominator exponent, capped at `K_CAP`. Arithmetic
+overflow becomes a capacity fate rather than wrapping or silently
+approximating.
+
+The Galois accounting is merged into the same module rather than living in a
+separate radical layer: `radical_parts` splits a real scalar into its rational
+and `√2` halves, `sqrt2_part` re-embeds the `√2` coefficient so it can ride
+its own accumulator, and `is_dyadic` is the predicate the dyadicity campaign
+tests. `ExactSum` is the one exact accumulator every sweep, census, and
+campaign uses. It is structurally overflow-safe — an overflowed total has no
+readable field, only an `Option` value, a loud `expect_exact`, and an
+explicitly diagnostic partial — and carries an f64 mirror for display columns
+plus its own checkpoint codec.
 
 ### Fast normalization
 
-`src/qvm.rs` extends the classical KN design with opaque primitives, handles,
-and a branch-local store. It shares the reference store-effect methods rather
-than reimplementing quantum algebra. The fast path preserves the complete
-leaf distribution: fates, normal forms, stores, exact masses, and classical
-β-contraction counts.
+`src/quantum/machine.rs` extends the classical KN design with opaque
+primitives, handles, and a branch-local store. It shares the reference
+store-effect methods rather than reimplementing quantum algebra. The fast path
+preserves the complete leaf distribution: fates, normal forms, stores, exact
+masses, and classical β-contraction counts.
+
+### Trusted skeleton checker
+
+`src/quantum/certificate.rs` adjudicates a program by exact symbolic reduction
+of `p X₁ … X_k`, one opaque hole per signature slot, under plain
+leftmost-outermost β — no simplify, no oracle, no history abstraction. Its
+verdicts are `Loop`, `HoleFree`, `NormalWithHoles`, `HoleDemanded`, and
+`CapOut`; the last carries which cap fired and the chain's high-water size.
+
+**Transfer theorem.** If the symbolic chain never exposes a hole in operator
+position, then under the primitive substitution `σ` no δ-rule is ever demanded,
+so the quantum machine walks the identical chain: an exact recurrence is a
+proven diverger contributing zero to `Ω_success`, a hole-inert normal form is a
+quantum Halt with empty store at full mass, and a hole-free residual is a
+closed pure term both machines share, so classical semantic verdicts transfer
+wholesale in both directions. Skeleton halts alone prove nothing, and a
+demanded hole yields no claim. `escalation.md` is the authority on the ladder
+built from this checker, its rungs, and the residual adjudication that follows
+`HoleFree`; this section does not restate them.
+
+### Shared sweep step
+
+`src/quantum/sweep.rs` is the per-program step all three measurements share —
+the operator census and both dyadicity sectors — with the mass-conservation
+battery inside it, so no sweep can drop the check the others keep.
+`src/quantum/sig.rs` is the frozen order's single home and supplies the hole
+application and the Object-B Church numeral, so the census skeleton column and
+the trusted checker cannot drift into adjudicating different terms.
 
 ### Drivers
 
-- `qcensus`: exhaustive successful-output census and sector operators;
-- `qpilot`: exact comparison of signature orders over a bounded census;
-- `qselfint`: effect-trace comparison for the classical self-interpreter;
-- `qradical`: exact radical-coefficient diagnostics for operator entries;
-- `qcomplement`: aggregate complement searches at larger sizes; and
-- `oddminproto`: bounded growth driver for the odd-sector abstract
+All quantum drivers are subcommands of the single `blam` binary, under `q`.
+
+- `blam q run BITS`: one program, one line per leaf, exact masses;
+- `blam q census [MIN] MAX`: exhaustive successful-output census and sector
+  operators (Object A; `--cond-k K` switches to the Object-B `G_k`
+  approximant, `--skeleton CAP` adds the classical skeleton column);
+- `blam q skeleton FILE`: the trusted-checker sweep over a terms file;
+- `blam q selfint [MAX_N] [PHASE]`: effect-trace comparison for the classical
+  self-interpreter;
+- `blam q galois idiom|complement`: the dyadicity campaign — exact aggregate
+  masses and their `√2` coefficients, phase 1 over the `λ⁵` signature idiom
+  and phase 2 over its complement; and
+- `blam q oddmin [W]`: bounded growth driver for the odd-sector abstract
   interpreter.
+
+The last two are research instruments behind the non-default `lab` feature; a
+default build recognises them and says how to get them.
 
 ## 4. Exactness and resource model
 
@@ -189,10 +254,14 @@ representation.
 
 ### Typed budgets
 
-`QBudget` bounds β-contractions, machine transitions, live qubits, and branch
-count. Source size does not bound the first three: an untyped loop can perform
-unbounded classical work or repeatedly allocate from one syntactic `new`.
-Coefficient growth is separately checked by the exact scalar type.
+`quantum::Budget` bounds β-contractions, machine transitions, live qubits, and
+branch count. Source size does not bound the first three: an untyped loop can
+perform unbounded classical work or repeatedly allocate from one syntactic
+`new`. Coefficient growth is separately checked by the exact scalar type. A
+zero β or transition budget is a typed rejection shared by both engines, not a
+tighter budget: the two place their β check on opposite sides of the
+contraction they charge, and at zero that difference would surface as a
+lockstep disagreement.
 
 `Unknown`, `Capacity`, and `Err` are distinct. The first two say that a finite
 run did not deliver a semantic verdict; `Err` is a semantic outcome of the
@@ -202,8 +271,9 @@ language. None contributes to the successful-output operator.
 
 Every quantum engine change must satisfy:
 
-1. `cargo test --release --workspace`;
-2. exhaustive `qvm`/`qeval` lockstep over the configured closed-term range;
+1. `cargo test --release`;
+2. exhaustive `quantum::machine`/`quantum::reference` lockstep over the
+   configured closed-term range;
 3. equality of every leaf's fate, normal form, store, exact mass, and
    β-contraction count;
 4. exact mass conservation across every primitive instrument, with losses

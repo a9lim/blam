@@ -9,7 +9,8 @@ is specified in `oddmin.md`.
 ## 1. Setting and accounting
 
 Amplitudes live in `ℤ[ω]/√2^d`, with `ω = exp(iπ/4)`, as implemented by
-`src/dw.rs`. Real branch masses lie in `ℤ[1/2, √2]`. The Galois group
+`src/quantum/scalar.rs`. Real branch masses lie in `ℤ[1/2, √2]`.
+The Galois group
 
 ```text
 Gal(ℚ(ζ₈)/ℚ) = {σ₁, σ₃, σ₅, σ₇} ≅ V₄
@@ -19,9 +20,12 @@ contains complex conjugation `σ₇` and two automorphisms that negate
 `√2`. Fix `σ = σ₅`, so `σ(ω) = −ω`, `σ(H) = −H`, and
 `σ(T) = TZ`.
 
-`qeval` carries unnormalized branch vectors. The mass of one branch is
-`v†v`, and a program's successful mass is the sum over its successful leaves.
-`qcomplement` accumulates these exact masses by source size.
+`quantum::reference` carries unnormalized branch vectors. The mass of one
+branch is `v†v`, and a program's successful mass is the sum over its
+successful leaves. `blam q galois complement` accumulates these exact masses
+by source size (`blam q galois idiom` is the `λ⁵` half); both ride the shared
+`quantum::scalar::ExactSum` accumulator, so an overflowed aggregate reports
+itself rather than a wrong number.
 
 For a resolved, non-overflowed finite census, the coefficient of `√2` in
 the per-size aggregate is the sum of the per-program coefficients. Therefore

@@ -1,6 +1,9 @@
 # Ratchet certificates: mechanical divergence proofs for growing-context loops
 
-Status: three classes live in `src/cert.rs` and `src/bin/certsearch.rs`:
+Status: three classes live in `src/classical/certificate/` — trusted
+checkers in `mod.rs`, untrusted discovery in `search_impl.rs` (public as
+`classical::certificate::search` behind the `lab` feature, driven by
+`blam cert search`):
 v1–v1.2 (§3), `HeadTowerRatchet` (§5), and `SelectorRatchet` (§6).
 Section 8 specifies the planned v4 classes. All checkers are trusted and
 discovery is untrusted; every implemented assembly theorem is
@@ -338,13 +341,14 @@ independently observed positions 0, 1, 6, 15, 28, 45, 66, 91, ….
 **Discovery** (untrusted): reuse the v1 stream's `(A, W, C0)`
 candidates; trace `W[Z] Q` to its first opaque-head state, match it
 as `Q P Q` to read off P, peel the base to the tower bottom, hand to
-`verify_selector`. Checkers: `verify_selector` in src/cert.rs;
-driver `try_selector`; sweep tag `SELECTOR` (± `-ARG`).
+`verify_selector`. Checkers: `verify_selector` in
+`src/classical/certificate/mod.rs`; discovery driver `try_selector` in
+`search_impl.rs`; sweep tag `SELECTOR` (± `-ARG`).
 
 The class's frontier sweep finds **40 kills** — 10 more than the
-30 the single-candidate `certdiag` probe had accepted, because
+30 the single-candidate `blam cert diag` probe had accepted, because
 streaming discovery proposes candidate triples the probe never tried.
-The standing lesson: **certdiag buckets are abort fingerprints under
+The standing lesson: **cert diag buckets are abort fingerprints under
 one candidate triple, not class boundaries** — probe counts bound
 classes from below only. All 40 re-certified byte-identically at 4×
 budgets.
@@ -355,6 +359,9 @@ budgets.
 - Soundness battery: run discovery+checker over all census *halters*
   at small sizes and assert zero certificates fire (they can't, if the
   checker is correct — this tests the implementation, not the math).
+  Implemented as a crate unit test, `src/classical/certificate/battery.rs`:
+  every provable halter of 4..28 bits through the whole three-rung sweep
+  ladder (`try_kill`), so it runs under plain `cargo test`.
 - The four redloop true-positives at 32 bits must NOT certify via
   ratchet unless they genuinely have the shape (no requirement either
   way; ratchet and redloop are complementary).

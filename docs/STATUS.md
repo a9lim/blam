@@ -12,13 +12,20 @@ Last updated: 2026-08-07.
 ### Census and algorithmic probability
 
 - `data/classical/census_table.txt` covers every closed BLC term from 4
-  through 41 bits: 526,039,969 programs in about 16.5 minutes on the M5 Max.
-  The 4..40 prefix takes about 7.2 minutes. The 2026-08-07 regeneration
-  under the r7 engine (no-whnf head memo, partition-independent witness
-  tie-break, sorted unknown order) is fate-invariant at every size:
+  through 41 bits: 526,039,969 programs. The 4..40 prefix takes about six
+  minutes wall on the M5 Max (two 2026-08-07 runs under the two-phase group
+  scheduler, 323.6 s and 397.9 s, ~1,980 s user each — wall tracks ambient
+  load, user does not). The full 4..41 range has not been re-timed since the
+  scheduler landed, so its last measured 16.5 minutes stands as an upper
+  bound. The KN machine's single-thread throughput stands at its last
+  measurement, about 166M β-contractions per second on the M5 Max (the
+  figure README cites; this line is its authority). The 2026-08-07
+  regeneration under the r7 engine (no-whnf head memo,
+  partition-independent witness tie-break, sorted unknown order) is
+  fate-invariant at every size:
   halt/diverge/unknown, max|nf|, and β totals bit-identical; only the
   escalation-path distribution, witness lines, and ordering moved. Census
-  runs are now group-checkpointed and delta-runnable (`--checkpoint`,
+  runs are group-checkpointed and delta-runnable (`--checkpoint`,
   `--memo-in/out`; engine facts in AGENTS.md).
 - BBλ(41) is at least 1,074,266,118 normal-form bits. The n=32 row has no
   unknowns, so BBλ(32) is fully mechanical.
@@ -40,11 +47,11 @@ Last updated: 2026-08-07.
   identities in about two seconds. The development has no sorries and no
   mathlib dependency; its only reported axioms are `propext` and
   `Quot.sound`.
-- `src/cert.rs` is the trusted checker layer. `certsearch` is untrusted
-  discovery, and `certlean` generates `lean/Certs/`; generated files are not
-  edited by hand.
-- `certdiag` buckets are abort fingerprints for one proposed candidate, not
-  semantic class boundaries. Class counts inferred from those buckets are
+- `classical::certificate` is the trusted checker layer. `blam cert search`
+  is untrusted discovery, and `blam cert lean` generates `lean/Certs/`;
+  generated files are not edited by hand.
+- `blam cert diag` buckets are abort fingerprints for one proposed candidate,
+  not semantic class boundaries. Class counts inferred from those buckets are
   lower bounds only.
 
 ### Self-interpreter
@@ -65,8 +72,8 @@ Last updated: 2026-08-07.
 1. Implement PassengerDiagonalRatchet as a distinct v4 certificate class,
    using the assembly in `classical/certificates/specification.md` §8.
 2. Derive the next selector/zfirst class from a concrete surviving trace.
-   Do not promote a `certdiag` bucket into a class without an exemplar and a
-   finite recurrence.
+   Do not promote a `blam cert diag` bucket into a class without an exemplar
+   and a finite recurrence.
 3. Leave Drift gated until an exemplar exposes a finite generator
    `R_(n+1) = G[R_n]`; an unconstrained family is not a certificate.
 4. Raise `census --rescue` before n=42. The largest successful n=41 rescue
@@ -89,8 +96,9 @@ Last updated: 2026-08-07.
 - The 1,619,650 Unknown leaves sit on 1,619,647 programs. Budget was never
   the frontier: 16× β resolves none, and 16× transitions resolve none of
   the ≤26-bit population.
-- The trusted skeleton checker (`src/skel.rs`, ladder in
-  `docs/quantum/escalation.md`) has adjudicated the full frontier:
+- The trusted skeleton checker (`quantum::certificate`, driven by `blam q
+  skeleton`; ladder in `docs/quantum/escalation.md`) has adjudicated the
+  full frontier:
   **815,700 programs are proven divergers** — 712,299 by exact recurrence
   of the hole-inert reduction chain, 103,401 by hole-free residuals the
   classical engines kill (58,373 oracle, 45,028 bb; split from Codex's
@@ -106,25 +114,29 @@ Last updated: 2026-08-07.
   enumerated ≤41 range (β-duplication grows encodings), so they are new
   compactly-generated hard classical terms, not frontier members; 28 of
   their *source programs* are verbatim classical-frontier members. The
-  tier-2 capout sweep was stopped by design: a 41,843-verdict sample was
-  100% capout, and `CapOut` currently records neither the fired cap nor
-  high-water state, so a blind full sweep is low-information — telemetry
-  first, then a stratified sample. The census table itself is unchanged —
-  kills are an adjudication layer above it; the canonical recording
-  protocol is settled (`quantum/escalation.md`) and its manifest build is
-  docket work.
-- The signature is now parametric end to end (`qcensus --sig`, exact
+  tier-2 capout sweep is stopped by design: a 41,843-verdict sample was
+  100% capout, so a blind full sweep is low-information. `CapOut` carries
+  the fired cap (`reason: Steps | Size`), the step count, and the high-water
+  size in bits, and `blam q skeleton` reports the aggregate split on stderr,
+  so the next move is a stratified sample rather than a blind sweep. The
+  census table itself is unchanged — kills are an adjudication layer above
+  it; the canonical recording protocol is settled
+  (`quantum/escalation.md`) and its manifest build is docket work.
+- The signature is parametric end to end (`blam q census --sig`, exact
   S/X/Z gates): alternate universes are runnable, lockstep-verified, and
-  deliberately labeled; canonical data stays on the frozen five.
+  deliberately labeled; canonical data stays on the frozen five. The frozen
+  order itself is `quantum::sig::FROZEN` with an order-pinning test.
 
 Escalation-lane docket, in order:
 
-1. Add CapOut telemetry (`reason: Steps | Size`, steps, high-water
-   bits), run a deterministic source-size-stratified sample of the
-   619,466 capouts, and let it aim the next instrument: size-bound
-   growers go to the hole-parametric pattern-recurrence rung (design
-   ratified, `quantum/escalation.md` rung 3); step-bound bounded-size
-   terms justify another exact-cycle tier.
+1. Run a deterministic source-size-stratified sample of the 619,466
+   capouts and let it aim the next instrument: size-bound growers go to
+   the hole-parametric pattern-recurrence rung (design ratified,
+   `quantum/escalation.md` rung 3); step-bound bounded-size terms justify
+   another exact-cycle tier. The telemetry this needs is in place —
+   `reason`, `steps`, and `high_water_bits` on every `CapOut`, plus the
+   aggregate `capout split` line — so what is open is the sample and its
+   analysis.
 2. Build the canonical skeleton-kill manifest per the settled protocol
    (`quantum/escalation.md`): sorted-verdict-stream digest
    `3d89539b63d1…`, sorted-input digest `1ba28e2ffaf9…`, Div provenance
@@ -171,29 +183,32 @@ the infinite-tree statement T3 remain open.
 
 Stage 1a asks for the minimum source weight of a closed, CNOT-free trace with
 a Galois-odd leaf mass. The reference monitor and compositional DP are
-`src/odd.rs`, `src/oddmin.rs`, and `oddminproto`; their current contract is
+`lab::odd` and `lab::oddmin`, driven by `blam q oddmin` (all behind the
+`lab` feature); their current contract is
 `quantum/oddmin.md`.
 
 Current measurements:
 
 - witness45 is accepted with a 44-node summary, while the 28-bit CNOT witness
   is rejected as out of scope;
-- exact agreement with `qeval` holds on all 6,069 closed programs through 22
-  bits;
+- exact agreement with the reference evaluator (`quantum::reference`) holds
+  on all 6,069 closed programs through 22 bits;
 - the remaining 19 conservative cells are all concretely non-odd and arise
   from alpha-only port identity;
-- splice-level top has been eliminated through W=24;
-- closed-slice summary counts are 96, 743, and 6,271 at W=16, 20, and 24;
-  closed-acceptance top counts are 0, 3, and 37 respectively, while
-  splice-level top remains zero; the W=24 run takes about 1.1 seconds; and
-- measured growth is about 1.7× per bit, projecting the million-summary
-  stop near W≈34.
+- splice-level top is zero through W=24 and first appears at W=25 (2 cells);
+- closed-slice summary counts are 96, 743, 6,271, 18,812, and 57,324 at
+  W=16, 20, 24, 26, and 28; closed-acceptance top counts are 0, 3, 37, 149,
+  and 555 respectively, with splice-level top at 0, 0, 0, 2, and 2 (8 at
+  W=28); the W=24 run takes about one second and W=28 about 13 seconds
+  (2026-08-07, post-optimization); and
+- measured growth is about 1.74× per weight unit, projecting the
+  million-summary stop near W≈33.
 
 Next steps, in order:
 
 1. BindId alpha-normalization, weak-epsilon canonicalization, and canonical
    port renumbering;
-2. rerun W=24 and probe W=26/28/30;
+2. probe W=30 (26 and 28 are measured above);
 3. add a simulation-preorder antichain after proving constructor
    monotonicity;
 4. add the general component-scoped post-fixpoint with ScopeId origins and a
@@ -222,8 +237,8 @@ Church pair reintroduces handles inside lambda values and belongs to stage
 
 ### Conditional family `G_k`
 
-The conditional object is implemented by `qcensus --cond-k K` but has not
-yet received its first canonical data generation. The next work is:
+The conditional object is implemented by `blam q census --cond-k K` but has
+not yet received its first canonical data generation. The next work is:
 
 1. decide whether Object B retains the current whole-live-store output or
    defines a separate designated-output convention;
@@ -238,12 +253,30 @@ the whole-live-store operator census.
 
 ## Repository and release state
 
-- Crate version: v1.1.0 on dev (checkpointed sweeps, parametric
-  signatures, the escalation ladder); the crates.io release is v1.0.1
-  until a9 publishes.
-- CI runs formatting, clippy with warnings denied, release tests and `uni.rs`
-  parity on Ubuntu and macOS, the classical 4..32 census spot-check, all Lean
-  certificates, and the `ref/AIT` additivity guard.
+- The v2 shape is on `dev`: one `blam` binary in place of the thirteen
+  driver bins, a three-layer library (`blc` substrate, symmetric `classical`
+  and `quantum` pillars, `lab` behind a non-default feature), the halting
+  ladder consolidated into `classical::ladder`, engine config carried as data
+  on that path rather than through the environment, and `qpilot` deleted —
+  the frozen signature order lives as `quantum::sig::FROZEN` plus an
+  order-pinning test, and its pilot campaign in the ledger.
+- Checkpoints are `blamckpt v4` and memo files use a shared tag-first codec.
+  Both formats break their predecessors: any checkpoint or memo file from
+  before the bump is invalid and must be regenerated. Nothing in `data/`
+  uses either format, so the cost is recompute only.
+- The census two-phase group scheduler measures 1.97× on a controlled
+  sequential A/B at 4..38 (250.8 s → 127.0 s) and 2.24× with
+  `--checkpoint --groups 64` (389.5 s → 174.0 s), with every canonical output
+  bit-identical — including a 140,883-term survivor manifest, partition
+  invariance across threads {1, 2, 18} × groups {1, 7, 64}, and resume after
+  a SIGKILL mid-phase-B.
+- Crate version: the `Cargo.toml` version is v1.1.0 and the crates.io release
+  is v1.0.1 until a9 publishes. The v2 reshape is breaking at the library and
+  CLI surface, so the intended next release is a 2.0.0 major.
+- CI runs formatting, clippy with warnings denied, the release test suite in
+  three feature shapes (`--all-features`, default, `--no-default-features`)
+  on Ubuntu and macOS, `uni.rs` parity, the classical 4..32 census
+  spot-check, all Lean certificates, and the `ref/AIT` additivity guard.
 - `ref/AIT` is the a9lim/AIT fork at upstream plus one additive `uni.rs`
   commit. `contrib/ait-uni/` contains the portable source, parity harness, and
   upstream PR kit. No upstream pull request is currently open.

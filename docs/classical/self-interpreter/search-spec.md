@@ -4,7 +4,8 @@
 
 Two search contracts; do not blur them:
 
-1. **Parametric slot search — implemented** (`src/bin/slotsearch.rs`;
+1. **Parametric slot search — implemented** (`blam slots var|abs|app`,
+   `src/cli/slots.rs`, behind the `lab` feature;
    results in `results.md`: all three slots exhaustively optimal).
    Close the open slot under rigid binders and compare its complete β-normal form with the reference. A pass is a proof of contextual correctness for every substitution, not merely evidence from test markers.
 
@@ -103,7 +104,7 @@ U(C) =β N =β U(REF)
 
 β-equivalence is preserved by substitution and enclosing contexts. Therefore every instantiation of all eight frame variables and `rest` produces β-equivalent behavior. This is stronger than any finite family of closed markers, streams, or continuations.
 
-A candidate that passes this test is observationally correct wherever the slot is used. The 11-program battery is then an engineering check on extraction, closing, and splicing—not the semantic proof.
+A candidate that passes this test is observationally correct wherever the slot is used. The 10-program battery in `tools/self-interpreter/harness.py` is then an engineering check on extraction, closing, and splicing—not the semantic proof.
 
 The limitation is deliberate: a fragment that only works because `bit1`, `list1`, `a`, and `intL` have their particular runtime relationships may fail this universal test. Such a fragment belongs to the contextual lane and cannot support a parametric optimality claim.
 
@@ -187,7 +188,7 @@ Expected:
 
 Here `g` and `t` are distinct rigid variables. This eliminates the same marker/tail aliasing class that caused the VAR false positive.
 
-After the 11 programs, run all normalizing closed terms through at least 18 bits—658 terms already enumerated by the repository—and compare the same symbolic-tail closure. That is cheap for a small survivor set and materially stronger than adding more hand-selected examples.
+After the 10 programs, run all normalizing closed terms through at least 18 bits—658 terms already enumerated by the repository—and compare the same symbolic-tail closure. That is cheap for a small survivor set and materially stronger than adding more hand-selected examples.
 
 ## 3. Closing strategy and resource verdicts
 

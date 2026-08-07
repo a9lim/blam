@@ -4,8 +4,9 @@
 //! order is part of the measured universe: every canonical number in
 //! `data/quantum/` is relative to it. `docs/quantum/architecture.md`
 //! records why this ordering was frozen; THIS is its single home in
-//! code. Alternate universes (`qcensus --sig`) pass their own slice and
-//! produce non-canonical data by construction.
+//! code. Alternate universes (`blam q census --sig`, `blam q skeleton
+//! --sig`) pass their own slice and produce non-canonical data by
+//! construction.
 
 use super::Prim;
 use crate::blc::term::{app, lam, var};

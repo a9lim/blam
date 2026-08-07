@@ -1,17 +1,19 @@
 # Frontier candidate maps
 
 Two untrusted instruments map the unknowns frontier for the
-certificate campaign: `tracescan` (src/bin/tracescan.rs) classifies
-terms by the *shape* of their normal-order reduction; `certdiag`
-(src/bin/certdiag.rs) runs the ratchet discovery pipeline and reports,
-per term, exactly where it drops out. Nothing here is a kill. The current
+certificate campaign: `blam trace` (src/cli/trace.rs) classifies
+terms by the *shape* of their normal-order reduction; `blam cert diag`
+(the `diag` module of src/cli/cert.rs) runs the ratchet discovery
+pipeline and reports,
+per term, exactly where it drops out. Both live behind the `lab`
+feature. Nothing here is a kill. The current
 kill set is `data/certificates/ratchet_kills.tsv`, summarized in
 `../../STATUS.md`. Raw tables regenerate in minutes
-(`tracescan --file data/classical/unknowns.txt --out data/certificates/frontier_classification.csv`,
-`certdiag <terms> --threads 8`); superseded map generations live in
+(`blam trace scan --file data/classical/unknowns.txt --out data/certificates/frontier_classification.csv`,
+`blam cert diag <terms> --threads 8`); superseded map generations live in
 git history.
 
-**The standing caveat:** certdiag
+**The standing caveat:** cert diag
 buckets are abort fingerprints under ONE candidate triple, not class
 boundaries. The zfirst bucket's single-candidate probe accepted 30
 terms; the streaming sweep then killed 40. Bucket counts bound
@@ -20,7 +22,7 @@ be derived from an actual exemplar's trace, never from a bucket.
 
 ## The instruments
 
-**tracescan** is a from-scratch normal-order stepper (1-indexed de
+**`blam trace`** is a from-scratch normal-order stepper (1-indexed de
 Bruijn; contract the head redex; reduce under lambdas), reduction
 discipline identical to `loop32_trace.py`. Nodes cache tree size, max
 free index, is-normal, and a 128-bit structural hash: closed subterms
@@ -32,7 +34,7 @@ allocation meters (measured non-binding: every term either completes
 
 Agreement gates, run before any sweep:
 
-- `tracescan --verify-loop32`: loop32 lands in `ratchet-candidate`
+- `blam trace verify-loop32`: loop32 lands in `ratchet-candidate`
   with head `0001011010000110110` = `A = \x. x x (\y. y x)`, arity
   k=1, milestone steps 1;3;7;13;21;31;43;57;73;91;111;133 and cycle
   gaps exactly 2n+2.
@@ -49,12 +51,12 @@ form** here — every input already survived 10⁷ β of KN plus the 2M-cap
 escalation engine, so an `ANOMALY-nf` row is a stepper bug, not a
 discovery.
 
-**certdiag** instruments the discovery pipeline stage by stage
+**`blam cert diag`** instruments the discovery pipeline stage by stage
 (no-family → family → window → growth → occur → plug → verify), plus
 HTR/selector obligation probes and wrapper-drift measurement. A
-`KILL` row would be a certsearch regression.
+`KILL` row would be a `blam cert search` regression.
 
-## Reduction-shape classes (tracescan)
+## Reduction-shape classes (blam trace)
 
 First match wins; `blowup` sits after the structural classes, so a
 capped term showing a recurring head reports under the head class
@@ -133,7 +135,7 @@ are as structured as ratchets. A certificate here needs an obligation
 whose conclusion has one more spine argument than its premise — a
 well-defined extension, unbuilt.
 
-## Discovery abort map (certdiag)
+## Discovery abort map (blam cert diag)
 
 Measured over the 456 ratchet candidates in the diagnostic populations
 (225 at 4..40 and 231 at 41), before SelectorRatchet removal. Headline:
