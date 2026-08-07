@@ -423,6 +423,14 @@ impl Machine {
         trans_limit: u64,
         sink: &mut S,
     ) -> Result<u64, OutOfFuel> {
+        // Each transition allocates at most one env cell, so clamping the
+        // cap under LVL_TAG makes "an env index never reaches the tag
+        // bit" structural rather than assumed — with no check in the hot
+        // loop. A caller asking for more transitions than the index space
+        // holds gets an honest Transitions verdict at the clamp (2^31−1
+        // is ~6.7× the canonical rescue cap, and the cells alone would
+        // cost ~25 GB before the old u32 index wrapped).
+        let trans_limit = trans_limit.min(LVL_TAG as u64 - 1);
         self.envs.clear();
         self.parents.clear();
         self.stack.clear();
