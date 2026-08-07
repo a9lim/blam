@@ -10,9 +10,9 @@
 //! leave a truncated *suffix*: the first malformed line ends the valid
 //! prefix and everything from there is discarded and recomputed.
 //!
-//! Record format (v3):
+//! Record format (v4):
 //! ```text
-//! blamckpt v3 <driver config ...> target=N groups=K
+//! blamckpt v4 <driver config ...> target=N groups=K
 //! G <n> <gi> <secs as f64 bits>
 //! <record body lines, driver-owned tags — anything but G/E>
 //! E <n> <gi>
@@ -20,9 +20,19 @@
 //! Accumulator merging must be order-independent for chunked runs to
 //! reproduce monolithic output; each driver owns that proof (the census
 //! Stats witness tie-break, the exact Dw ring in qcensus).
+//!
+//! The v3→v4 bump widened what the config string must pin: not just the
+//! ladder budgets but the record format version, the engine tunables
+//! that change verdicts (work multiplier, probe fuel), and the CONTENT
+//! of any seeded memo file — a resume onto records computed with
+//! different cross-size facts would merge two different measurements.
 
 use std::collections::HashMap;
-use std::io::Write;
+use std::io::{BufRead, Write};
+
+/// Format tag on the header line. Bump when a change makes existing
+/// records unmergeable with new ones.
+const VERSION: &str = "blamckpt v4";
 
 /// A driver's per-group accumulator: how it serializes to and parses
 /// from checkpoint body lines.
@@ -34,12 +44,17 @@ pub trait CkptRecord: Default {
     fn parse_line(&mut self, line: &str) -> Option<()>;
 }
 
+/// Completed group records by (size, group index), each with the wall
+/// seconds it cost — replayed from the file so a resume reports the same
+/// totals the uninterrupted run would have.
+type Restored<R> = HashMap<(u32, usize), (R, f64)>;
+
 pub struct Ckpt<R> {
     file: std::fs::File,
     /// Task-split target pinned by the header.
     pub target: usize,
     pub groups: usize,
-    restored: HashMap<(u32, usize), (R, f64)>,
+    restored: Restored<R>,
 }
 
 impl<R: CkptRecord> Ckpt<R> {
@@ -51,51 +66,29 @@ impl<R: CkptRecord> Ckpt<R> {
     /// `available_parallelism`, which is what rayon sizes its default
     /// pool from — same number, without the library depending on rayon.
     pub fn open(path: &str, config: &str, groups_flag: usize) -> Ckpt<R> {
-        use std::io::Read;
-        let existing = std::fs::File::open(path).ok().map(|mut f| {
-            let mut s = String::new();
-            f.read_to_string(&mut s).expect("read checkpoint");
-            s
-        });
-        let (target, groups, restored) = match &existing {
-            Some(text) => {
-                let head = text.lines().next().unwrap_or_default();
-                let get = |k: &str| -> usize {
-                    head.split_whitespace()
-                        .find_map(|t| t.strip_prefix(&format!("{k}=")))
-                        .unwrap_or_else(|| panic!("checkpoint header missing {k}: {head}"))
-                        .parse()
-                        .expect("checkpoint header field")
-                };
-                let target = get("target");
-                let groups = get("groups");
-                let expect = format!("blamckpt v3 {config} target={target} groups={groups}");
-                assert_eq!(
-                    head, expect,
-                    "checkpoint config mismatch: rerun with the flags it was created under"
-                );
-                if groups_flag != 0 && groups_flag != groups {
-                    eprintln!("    checkpoint: --groups {groups_flag} ignored, file pins {groups}");
-                }
-                (target, groups, Self::parse_records(text))
-            }
-            None => {
-                let groups = if groups_flag == 0 { 64 } else { groups_flag };
-                let threads = std::thread::available_parallelism()
-                    .map(|n| n.get())
-                    .unwrap_or(16);
-                let target = threads * 16 * groups;
-                (target, groups, HashMap::new())
-            }
-        };
+        // Streamed, not slurped: a long sweep's checkpoint carries every
+        // memo and frontier record it has produced, which for a 4..41 run
+        // is far larger than the accumulators it rebuilds into.
+        let existing = std::fs::File::open(path)
+            .ok()
+            .and_then(|f| Self::read_existing(f, config, groups_flag));
         let fresh = existing.is_none();
+        let (target, groups, restored) = existing.unwrap_or_else(|| {
+            let groups = if groups_flag == 0 { 64 } else { groups_flag };
+            let threads = std::thread::available_parallelism()
+                .map(|n| n.get())
+                .unwrap_or(16);
+            // Every sequential group still load-balances internally
+            // across the pool, so the split stays finer than the groups.
+            (threads * 16 * groups, groups, HashMap::new())
+        });
         let mut file = std::fs::OpenOptions::new()
             .create(true)
             .append(true)
             .open(path)
             .expect("open checkpoint");
         if fresh {
-            writeln!(file, "blamckpt v3 {config} target={target} groups={groups}").unwrap();
+            writeln!(file, "{VERSION} {config} target={target} groups={groups}").unwrap();
             file.flush().unwrap();
         } else if !restored.is_empty() {
             eprintln!("    checkpoint: restored {} group records", restored.len());
@@ -108,11 +101,50 @@ impl<R: CkptRecord> Ckpt<R> {
         }
     }
 
-    fn parse_records(text: &str) -> HashMap<(u32, usize), (R, f64)> {
+    /// Header check plus record replay for an existing file. `None` when
+    /// the file carries no header line at all — a kill between `create`
+    /// and the header's flush leaves exactly that, and an empty file has
+    /// nothing to resume from, so it is treated as fresh.
+    fn read_existing(
+        f: std::fs::File,
+        config: &str,
+        groups_flag: usize,
+    ) -> Option<(usize, usize, Restored<R>)> {
+        let mut lines = std::io::BufReader::new(f).lines().map_while(Result::ok);
+        let head = lines.next()?;
+        let get = |k: &str| -> usize {
+            head.split_whitespace()
+                .find_map(|t| t.strip_prefix(&format!("{k}=")))
+                .unwrap_or_else(|| panic!("checkpoint header missing {k}: {head}"))
+                .parse()
+                .expect("checkpoint header field")
+        };
+        let target = get("target");
+        let groups = get("groups");
+        let expect = format!("{VERSION} {config} target={target} groups={groups}");
+        if head != expect {
+            // Loud and specific: the header is the only thing standing
+            // between a resumed run and two different measurements
+            // merged into one table row.
+            panic!(
+                "checkpoint config mismatch — this file was written by a different run.\n\
+                 file:     {head}\n\
+                 this run: {expect}\n\
+                 Rerun with the flags it was created under, or point \
+                 --checkpoint at a fresh path."
+            );
+        }
+        if groups_flag != 0 && groups_flag != groups {
+            eprintln!("    checkpoint: --groups {groups_flag} ignored, file pins {groups}");
+        }
+        Some((target, groups, Self::parse_records(lines)))
+    }
+
+    fn parse_records(lines: impl Iterator<Item = String>) -> Restored<R> {
         let mut done = HashMap::new();
         let mut pending: Option<((u32, usize), R, f64)> = None;
         let mut torn = false;
-        for line in text.lines().skip(1) {
+        for line in lines {
             let ok = (|| -> Option<()> {
                 let mut it = line.split_whitespace();
                 match it.next()? {
@@ -133,7 +165,7 @@ impl<R: CkptRecord> Ckpt<R> {
                         done.insert((n, gi), (r, secs));
                         Some(())
                     }
-                    _ => pending.as_mut()?.1.parse_line(line),
+                    _ => pending.as_mut()?.1.parse_line(&line),
                 }
             })();
             if ok.is_none() {
@@ -164,5 +196,154 @@ impl<R: CkptRecord> Ckpt<R> {
         }
         self.file.write_all(out.as_bytes()).unwrap();
         self.file.flush().unwrap();
+    }
+}
+
+/// First 16 hex digits of the SHA-256 of a file's contents — the
+/// checkpoint header's fingerprint for an input file whose *content*,
+/// not its path, decides what the records mean (the census's `--memo-in`
+/// facts change fates at App-rooted compositions). Unreadable file ⇒
+/// `"unreadable"`, which mismatches every real digest and so refuses the
+/// resume rather than silently resuming without the facts.
+///
+/// Sixty-four bits of a collision-resistant digest, not a fast hash:
+/// this is a correctness fence, and the cost is one read per run.
+pub fn sha256_16(path: &str) -> String {
+    let Ok(bytes) = std::fs::read(path) else {
+        return "unreadable".to_string();
+    };
+    let d = sha256(&bytes);
+    let mut s = String::with_capacity(16);
+    for b in &d[..8] {
+        use std::fmt::Write as _;
+        write!(s, "{b:02x}").unwrap();
+    }
+    s
+}
+
+/// SHA-256 (FIPS 180-4), the whole message in memory. Self-contained so
+/// the checkpoint fence costs no dependency; the standard "abc" and
+/// empty-string vectors are asserted in the tests below.
+fn sha256(msg: &[u8]) -> [u8; 32] {
+    const K: [u32; 64] = [
+        0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4,
+        0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe,
+        0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f,
+        0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+        0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc,
+        0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
+        0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116,
+        0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+        0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7,
+        0xc67178f2,
+    ];
+    let mut h: [u32; 8] = [
+        0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab,
+        0x5be0cd19,
+    ];
+    // Message + 0x80 + zero padding to 56 mod 64 + 64-bit big-endian length.
+    let mut m = msg.to_vec();
+    let bits = (msg.len() as u64).wrapping_mul(8);
+    m.push(0x80);
+    while m.len() % 64 != 56 {
+        m.push(0);
+    }
+    m.extend_from_slice(&bits.to_be_bytes());
+    let mut w = [0u32; 64];
+    for chunk in m.chunks_exact(64) {
+        for (i, word) in chunk.chunks_exact(4).enumerate() {
+            w[i] = u32::from_be_bytes([word[0], word[1], word[2], word[3]]);
+        }
+        for i in 16..64 {
+            let s0 = w[i - 15].rotate_right(7) ^ w[i - 15].rotate_right(18) ^ (w[i - 15] >> 3);
+            let s1 = w[i - 2].rotate_right(17) ^ w[i - 2].rotate_right(19) ^ (w[i - 2] >> 10);
+            w[i] = w[i - 16]
+                .wrapping_add(s0)
+                .wrapping_add(w[i - 7])
+                .wrapping_add(s1);
+        }
+        let [mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut hh] = h;
+        for i in 0..64 {
+            let s1 = e.rotate_right(6) ^ e.rotate_right(11) ^ e.rotate_right(25);
+            let ch = (e & f) ^ (!e & g);
+            let t1 = hh
+                .wrapping_add(s1)
+                .wrapping_add(ch)
+                .wrapping_add(K[i])
+                .wrapping_add(w[i]);
+            let s0 = a.rotate_right(2) ^ a.rotate_right(13) ^ a.rotate_right(22);
+            let maj = (a & b) ^ (a & c) ^ (b & c);
+            let t2 = s0.wrapping_add(maj);
+            hh = g;
+            g = f;
+            f = e;
+            e = d.wrapping_add(t1);
+            d = c;
+            c = b;
+            b = a;
+            a = t1.wrapping_add(t2);
+        }
+        for (dst, src) in h.iter_mut().zip([a, b, c, d, e, f, g, hh]) {
+            *dst = dst.wrapping_add(src);
+        }
+    }
+    let mut out = [0u8; 32];
+    for (i, v) in h.iter().enumerate() {
+        out[i * 4..i * 4 + 4].copy_from_slice(&v.to_be_bytes());
+    }
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn hex(d: &[u8]) -> String {
+        d.iter().map(|b| format!("{b:02x}")).collect()
+    }
+
+    #[test]
+    fn sha256_matches_the_published_vectors() {
+        assert_eq!(
+            hex(&sha256(b"")),
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        );
+        assert_eq!(
+            hex(&sha256(b"abc")),
+            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        );
+        // Two blocks, exercising the multi-chunk path and the length
+        // encoding past the one-block padding boundary.
+        assert_eq!(
+            hex(&sha256(
+                b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
+            )),
+            "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+        );
+        // Exactly at the 56-byte boundary: padding must add a whole block.
+        assert_eq!(
+            hex(&sha256(&[b'a'; 56])),
+            "b35439a4ac6f0948b6d6f9e3c6af0f5f590ce20f1bde7090ef7970686ec6738a"
+        );
+    }
+
+    #[test]
+    fn fingerprint_is_content_addressed_and_fails_loud() {
+        let dir = std::env::temp_dir().join(format!("blam-ckpt-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let a = dir.join("a.txt");
+        let b = dir.join("b.txt");
+        std::fs::write(&a, "1 4 D\n").unwrap();
+        std::fs::write(&b, "1 4 D\n").unwrap();
+        let fa = sha256_16(a.to_str().unwrap());
+        assert_eq!(fa.len(), 16);
+        assert_eq!(fa, sha256_16(b.to_str().unwrap()), "same content, same fp");
+        std::fs::write(&b, "1 4 H 4 0\n").unwrap();
+        assert_ne!(fa, sha256_16(b.to_str().unwrap()), "content decides");
+        assert_eq!(
+            sha256_16(dir.join("nope.txt").to_str().unwrap()),
+            "unreadable"
+        );
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

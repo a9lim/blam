@@ -9,6 +9,7 @@
 //! produce a message naming the offender plus a pointer to
 //! `blam <cmd> --help`, and never an index panic or an `unwrap`.
 
+use blam::classical::escalation::EngineCfg;
 use std::collections::HashSet;
 use std::str::FromStr;
 
@@ -203,11 +204,33 @@ pub fn build_pool_plain(threads: usize) -> R<()> {
         .map_err(|e| format!("blam: cannot build the thread pool: {e}"))
 }
 
-/// Phase 3: becomes explicit library config. Until then the escalation
-/// engine reads its work-meter multiplier and probe fuel from the
-/// environment through a `OnceLock`, so the CLI writes the variables
-/// before any compute starts. A flag wins over a pre-set environment
-/// variable; leaving the flag off leaves the environment alone.
+/// Resolve the escalation engine's tunables for one run: an explicit
+/// flag wins, then the environment (`BLC_WORK_MULT` / `BLC_PROBE_FUEL`,
+/// the pre-Phase-3 channel, kept as documented fallbacks), then the
+/// engine's own measured defaults. The result is passed down as data —
+/// nothing in the library reads the environment on this path.
+pub fn engine_cfg(work_mult: Option<i64>, probe_fuel: Option<u64>) -> EngineCfg {
+    fn env<T: FromStr>(k: &str) -> Option<T> {
+        std::env::var(k).ok().and_then(|s| s.parse().ok())
+    }
+    let d = EngineCfg::default();
+    EngineCfg {
+        work_mult: work_mult
+            .or_else(|| env("BLC_WORK_MULT"))
+            .unwrap_or(d.work_mult),
+        probe_fuel: probe_fuel
+            .or_else(|| env("BLC_PROBE_FUEL"))
+            .unwrap_or(d.probe_fuel),
+    }
+}
+
+/// The pre-Phase-3 channel, still used by the subcommands whose engine
+/// calls have not been migrated to an explicit [`EngineCfg`] (the
+/// quantum drivers and certificate search): the escalation engine reads
+/// its work-meter multiplier and probe fuel from the environment through
+/// a `OnceLock`, so the CLI writes the variables before any compute
+/// starts. A flag wins over a pre-set environment variable; leaving the
+/// flag off leaves the environment alone.
 pub fn apply_engine_env(work_mult: Option<u64>, probe_fuel: Option<u64>) {
     if let Some(v) = work_mult {
         std::env::set_var("BLC_WORK_MULT", v.to_string());

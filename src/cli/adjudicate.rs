@@ -1,21 +1,20 @@
 //! Targeted halting adjudication: the census ladder run on named terms
-//! instead of a whole size class. Extracted verbatim from `census
-//! --term` (the verbose single-term report) and `census --terms-file`
-//! (the streaming batch sweep).
+//! instead of a whole size class.
 //!
-//! Phase 3 note: the two paths do NOT run identical budgets. The single-
-//! term report calls `Machine::normalize`, which applies the machine's
-//! own transition floor (`1 << 22`) rather than the census's measured
-//! `64x beta` rung caps, and the batch path does the same on rungs 1 and
-//! 2 before switching to `normalize_capped` for the rescue. Both are
-//! looser than the sweep's ladder and were kept bit-for-bit on the move,
-//! because tightening them here would change published verdict lines.
-//! The Phase 3 ladder unification makes all three modes identical by
-//! construction; until then this is a deliberate, documented divergence.
+//! Both modes run `classical::ladder::adjudicate` at the census's own
+//! budgets, so a term's verdict here is by construction the verdict the
+//! sweep gives it. That closes a documented Phase-3 divergence: these
+//! paths used to call `Machine::normalize`, whose transition floor
+//! (`1 << 22`) is LOOSER than the ladder's measured `64 × beta` rung
+//! caps, and the single-term mode ran its big-budget KN attempt *before*
+//! the escalation engine rather than after it. Both were verdict-
+//! compatible — the loose rungs can only reach halts the ladder's far
+//! larger rescue also reaches — but neither was the sweep's ladder, and
+//! "what does the census say about this term?" is the whole question
+//! this subcommand exists to answer.
 
 use crate::args::{self, Args, R};
-use crate::census::{default_cfg, lterm_of};
-use blam::classical::escalation::{normal_form, NoNf};
+use blam::classical::ladder::{self, LadderCfg, Rung, Verdict};
 use blam::classical::machine::{Machine, Pool, SizeSink};
 use blam::classical::oracle::no_nf;
 use rayon::prelude::*;
@@ -33,10 +32,10 @@ ladder (defaults are the census ladder's)
   --bb-cap N             escalation-engine capacity (default 2000000)
   --rescue N             KN rescue beta budget (default 10000000)
   --rescue-trans-mult N  rescue transition cap = rescue x N (default 32)
-  --no-prescan           skip the redex-free pre-scan (--file mode)
-  --no-oracle            skip the divergence-oracle prefilter (--file mode)
-  --work-mult N          BLC_WORK_MULT for this run (default 16)
-  --probe-fuel N         BLC_PROBE_FUEL for this run (default 4096)
+  --no-prescan           skip the redex-free pre-scan
+  --no-oracle            skip the divergence-oracle prefilter
+  --work-mult N          escalation work meter per capacity bit (default 16)
+  --probe-fuel N         redloop probe beta budget (default 4096)
 
 run
   --file FILE            terms to adjudicate, one bit string per line
@@ -48,11 +47,11 @@ pub fn run(argv: &[String]) -> R<()> {
         println!("{USAGE}");
         return Ok(());
     }
-    let mut cfg = default_cfg();
+    let mut cfg = LadderCfg::default();
     let mut file: Option<String> = None;
     let mut threads = 0usize;
     let mut verbose = false;
-    let mut work_mult: Option<u64> = None;
+    let mut work_mult: Option<i64> = None;
     let mut probe_fuel: Option<u64> = None;
     let mut p = Args::new("adjudicate", argv);
     while let Some(tok) = p.next() {
@@ -99,19 +98,11 @@ pub fn run(argv: &[String]) -> R<()> {
         }
         _ => {}
     }
-    // Phase 3: becomes explicit library config.
-    args::apply_engine_env(work_mult, probe_fuel);
+    let engine = args::engine_cfg(work_mult, probe_fuel);
+    cfg.work_mult = engine.work_mult;
+    cfg.probe_fuel = engine.probe_fuel;
     if verbose {
-        eprintln!(
-            "ladder: budget1={} budget2={} bb-cap={} rescue={} x{} trans; prescan={} oracle={}",
-            cfg.budget1,
-            cfg.budget2,
-            cfg.bb_cap,
-            cfg.rescue,
-            cfg.rescue_trans_mult,
-            cfg.prescan,
-            cfg.oracle
-        );
+        eprintln!("ladder: {}", describe(&cfg));
     }
 
     if let Some(bits) = bits {
@@ -122,8 +113,36 @@ pub fn run(argv: &[String]) -> R<()> {
     batch(&cfg, &file.expect("checked above"))
 }
 
+fn describe(cfg: &LadderCfg) -> String {
+    format!(
+        "budget1={} budget2={} bb-cap={} rescue={} x{} trans; prescan={} oracle={} \
+         work-mult={} probe-fuel={}",
+        cfg.budget1,
+        cfg.budget2,
+        cfg.bb_cap,
+        cfg.rescue,
+        cfg.rescue_trans_mult,
+        cfg.prescan,
+        cfg.oracle,
+        cfg.work_mult,
+        cfg.probe_fuel,
+    )
+}
+
+/// The rung name as it appears in a report.
+fn rung_name(r: Rung) -> &'static str {
+    match r {
+        Rung::Prescan => "prescan",
+        Rung::Oracle => "oracle",
+        Rung::Kn1 => "KN rung 1",
+        Rung::Kn2 => "KN rung 2",
+        Rung::Escalation => "escalation engine",
+        Rung::Rescue => "KN rescue",
+    }
+}
+
 /// One-term adjudication: run the ladder verbosely on given bits.
-fn single(cfg: &crate::census::Cfg, bits: &str) -> R<()> {
+fn single(cfg: &LadderCfg, bits: &str) -> R<()> {
     let mut pool = Pool::new();
     let Some(root) = pool.decode_str(bits) else {
         return Err(format!(
@@ -136,42 +155,83 @@ fn single(cfg: &crate::census::Cfg, bits: &str) -> R<()> {
         pool.bit_size(root),
         pool.has_redex(root)
     );
+    // Reported unconditionally, even when --no-oracle keeps it out of
+    // the ladder: it is the cheapest fact anyone asks this command for.
     println!("oracle prefilter no_nf: {}", no_nf(0, (&pool, root)));
+    println!("ladder: {}", describe(cfg));
+
     let mut vm = Machine::new();
-    for budget in [cfg.budget1, cfg.budget2, cfg.rescue] {
-        let mut sink = SizeSink::default();
-        let t = Instant::now();
-        match vm.normalize(&pool, root, budget, &mut sink) {
-            Ok(steps) => {
-                println!(
-                    "KN budget {budget}: HALT |nf|={} in {} beta ({:.3}s)",
-                    sink.0,
-                    steps,
-                    t.elapsed().as_secs_f64()
-                );
-                return Ok(());
-            }
-            Err(_) => println!(
-                "KN budget {budget}: out of fuel ({:.3}s)",
-                t.elapsed().as_secs_f64()
-            ),
-        }
-    }
+    let mut sink = SizeSink::default();
     let t = Instant::now();
-    let verdict = normal_form(cfg.bb_cap, &lterm_of(&pool, root));
-    println!(
-        "BB engine cap {}: {:?} ({:.3}s)",
-        cfg.bb_cap,
-        verdict.as_ref().map(|nf| nf.bit_size()),
-        t.elapsed().as_secs_f64()
-    );
+    let o = ladder::adjudicate(cfg, &pool, &mut vm, root, &mut sink);
+    let secs = t.elapsed().as_secs_f64();
+
+    println!("decided at: {}", rung_name(o.rung));
+    match o.verdict {
+        Verdict::Halt {
+            nf,
+            steps,
+            steps_exact,
+        } => {
+            let n = nf.resolve(sink.0);
+            if steps_exact {
+                println!("verdict: HALT |nf|={n} in {steps} beta ({secs:.3}s)");
+            } else {
+                // Proven halt without a canonical count: the engine's
+                // simplify inlines betas, so it reports none, and the
+                // rescue that would recover it ran out of fuel.
+                println!("verdict: HALT |nf|={n}, beta count unrecovered ({secs:.3}s)");
+            }
+        }
+        Verdict::Diverge => println!("verdict: DIVERGE ({secs:.3}s)"),
+        Verdict::Unknown(why) => println!("verdict: UNKNOWN — {why:?} exhausted ({secs:.3}s)"),
+    }
+    if o.tel.head_diverge {
+        println!("no whnf: the proof landed on the term's own head chain");
+    }
+    if let Some(e) = o.tel.kn2_stuck {
+        println!("rung 2 out of fuel: {e:?}");
+    }
+    if let Some(e) = o.tel.rescue_stuck {
+        println!("rescue out of fuel: {e:?}");
+    }
+    if o.tel.last_trans > 0 {
+        println!("last KN run: {} transitions", o.tel.last_trans);
+    }
     Ok(())
+}
+
+/// The verdict line for one term: the streamed batch format.
+fn verdict_line(bits: &str, o: &ladder::LadderOutcome, nf_streamed: u64) -> String {
+    match o.verdict {
+        Verdict::Halt {
+            nf,
+            steps,
+            steps_exact,
+        } => {
+            let n = nf.resolve(nf_streamed);
+            if steps_exact {
+                format!("{bits} HALT nf={n} steps={steps}")
+            } else {
+                format!("{bits} HALT nf={n} steps=?")
+            }
+        }
+        Verdict::Diverge => {
+            let by = if o.rung == Rung::Oracle {
+                "oracle"
+            } else {
+                "bb-engine"
+            };
+            format!("{bits} DIVERGE {by}")
+        }
+        Verdict::Unknown(_) => format!("{bits} UNKNOWN"),
+    }
 }
 
 /// Batch adjudication: run the full ladder on each bitstring in FILE
 /// (one per line), in parallel, and print one verdict per line. Combine
 /// with --bb-cap / --rescue to go beyond census defaults.
-fn batch(cfg: &crate::census::Cfg, path: &str) -> R<()> {
+fn batch(cfg: &LadderCfg, path: &str) -> R<()> {
     let owned = args::read_terms_file(path)?;
     let terms: Vec<&str> = owned.iter().map(String::as_str).collect();
     let t0 = Instant::now();
@@ -180,64 +240,17 @@ fn batch(cfg: &crate::census::Cfg, path: &str) -> R<()> {
     // order; downstream analysis groups by content, not position.
     let counts = std::sync::Mutex::new((0u64, 0u64, 0u64));
     terms.par_iter().for_each_init(
-        || (Pool::new(), Machine::new()),
-        |(pool, vm), bits| {
+        || (Pool::new(), Machine::new(), SizeSink::default()),
+        |(pool, vm, sink), bits| {
             pool.clear();
             let root = pool.decode_str(bits).expect("parse term line");
-            let line = 'v: {
-                if cfg.prescan && !pool.has_redex(root) {
-                    break 'v format!("{bits} HALT nf={} steps=0", pool.bit_size(root));
-                }
-                if cfg.oracle && no_nf(0, (&*pool, root)) {
-                    break 'v format!("{bits} DIVERGE oracle");
-                }
-                for budget in [cfg.budget1, cfg.budget2] {
-                    let mut sink = SizeSink::default();
-                    if let Ok(steps) = vm.normalize(pool, root, budget, &mut sink) {
-                        break 'v format!("{bits} HALT nf={} steps={steps}", sink.0);
-                    }
-                }
-                match normal_form(cfg.bb_cap, &lterm_of(pool, root)) {
-                    Ok(nf) => {
-                        let mut sink = SizeSink::default();
-                        match vm.normalize_capped(
-                            pool,
-                            root,
-                            cfg.rescue,
-                            cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
-                            &mut sink,
-                        ) {
-                            Ok(steps) => {
-                                format!("{bits} HALT nf={} steps={steps}", sink.0)
-                            }
-                            Err(_) => format!("{bits} HALT nf={} steps=?", nf.bit_size()),
-                        }
-                    }
-                    Err(NoNf::Diverge) => format!("{bits} DIVERGE bb-engine"),
-                    Err(NoNf::Unknown(_)) => {
-                        let mut sink = SizeSink::default();
-                        match vm.normalize_capped(
-                            pool,
-                            root,
-                            cfg.rescue,
-                            cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
-                            &mut sink,
-                        ) {
-                            Ok(steps) => {
-                                format!("{bits} HALT nf={} steps={steps}", sink.0)
-                            }
-                            Err(_) => format!("{bits} UNKNOWN"),
-                        }
-                    }
-                }
-            };
+            let o = ladder::adjudicate(cfg, pool, vm, root, sink);
+            let line = verdict_line(bits, &o, sink.0);
             let mut c = counts.lock().unwrap();
-            if line.contains(" HALT ") {
-                c.0 += 1;
-            } else if line.contains(" DIVERGE") {
-                c.1 += 1;
-            } else {
-                c.2 += 1;
+            match o.verdict {
+                Verdict::Halt { .. } => c.0 += 1,
+                Verdict::Diverge => c.1 += 1,
+                Verdict::Unknown(_) => c.2 += 1,
             }
             let done = c.0 + c.1 + c.2;
             println!("{line}");

@@ -3,11 +3,13 @@
 //! `reference` is the executable spec, `machine` the fast KN path
 //! differential-tested against it, `oracle` Tromp's syntactic divergence
 //! predicate, `escalation` the instrumented reducer that adjudicates what
-//! the budget ladder cannot, and `certificate` the trusted checker layer
-//! for ratchet divergence proofs.
+//! the budget ladder cannot, `ladder` the one assembly of all four into
+//! the cheapest-verdict-first pipeline every driver runs, and
+//! `certificate` the trusted checker layer for ratchet divergence proofs.
 
 pub mod certificate;
 pub mod escalation;
+pub mod ladder;
 pub mod machine;
 pub mod oracle;
 pub mod reference;

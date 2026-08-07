@@ -2,14 +2,13 @@
 //! totals, and the busy beaver statistic max |nf| — cross-checked against
 //! Tromp's published values.
 //!
-//! Pipeline per term (cheapest verdict first):
-//!   1. decode u64 → arena; pre-scan: no redex ⇒ term is its own nf
-//!   2. divergence-oracle prefilter on the raw term
-//!   3. KN machine, small budget (resolves the 99.7% fast)
-//!   4. KN machine, medium budget
-//!   5. BB.lhs-style escalation engine (oracle at every App + redex
-//!      history): proven Diverge, Halt, or Unknown (capacity out)
-//!   6. Unknowns get one last big-budget KN attempt
+//! Per term this decodes the packed u64 into the arena and hands it to
+//! [`blam::classical::ladder`], which owns the cheapest-verdict-first
+//! pipeline (pre-scan → oracle → two KN rungs → escalation → KN rescue).
+//! What lives HERE and not in the ladder is the census's cross-size
+//! memory — the λ-wrap verdict memo and the no-whnf head memo — because
+//! those reuse one term's fate for a *different* term, which is a fact
+//! about an enumeration rather than about a term.
 //!
 //! Usage: `blam census [MIN] MAX [flags]` — see `USAGE` below.
 //! (--chunk sets the minimum generation-task count for the fused
@@ -37,12 +36,12 @@
 //! run through n−1 the row is bit-identical, escal column included.
 
 use crate::args::{self, Args, R};
-use crate::ckpt::{Ckpt, CkptRecord};
+use crate::ckpt::{sha256_16, Ckpt, CkptRecord};
 use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks, GenTask};
 use blam::blc::wire::enc_to_string;
-use blam::classical::escalation::{normal_form, take_head_diverge, LTerm, NoNf, Why};
+use blam::classical::escalation::Why;
+use blam::classical::ladder::{self, LadderCfg, Rung, Verdict};
 use blam::classical::machine::{Machine, Pool, SizeSink};
-use blam::classical::oracle::no_nf;
 use blam::classical::OutOfFuel;
 use rayon::prelude::*;
 use std::time::Instant;
@@ -60,8 +59,8 @@ ladder
   --rescue-trans-mult N  rescue transition cap = rescue x N (default 32)
   --no-prescan           skip the redex-free pre-scan
   --no-oracle            skip the divergence-oracle prefilter
-  --work-mult N          BLC_WORK_MULT for this run (default 16)
-  --probe-fuel N         BLC_PROBE_FUEL for this run (default 4096)
+  --work-mult N          escalation work meter per capacity bit (default 16)
+  --probe-fuel N         redloop probe beta budget (default 4096)
 
 run
   --threads N            rayon threads (0 = ambient, the default)
@@ -73,21 +72,14 @@ run
   --memo-in FILE         seed the lambda-wrap and no-whnf memos
   --memo-out FILE        persist them as sizes complete";
 
-#[derive(Clone, Copy)]
-pub(crate) struct Cfg {
-    pub(crate) budget1: u64,
-    pub(crate) budget2: u64,
-    pub(crate) bb_cap: i64,
-    pub(crate) rescue: u64,
-    /// Rescue transition cap = rescue × this. Measured: no successful
-    /// rescue in 4..40 exceeds 17.0 transitions/β (the n=38 champion:
-    /// 9,452,558 β via 160,434,707 trans); 32 keeps a 1.88× margin and
-    /// halves the cost of transition-bound stuck rescues vs the old
-    /// blanket 64. `--rescue-trans-mult` overrides.
-    pub(crate) rescue_trans_mult: u64,
-    pub(crate) prescan: bool,
-    pub(crate) oracle: bool,
-    pub(crate) chunk: usize,
+/// The sweep's configuration: the shared ladder's budgets plus the one
+/// knob that belongs to the enumeration rather than to a term.
+#[derive(Clone, Copy, Default)]
+struct Cfg {
+    ladder: LadderCfg,
+    /// Minimum generation-task count for the fused parallel enumeration
+    /// (0 = auto, threads × 64).
+    chunk: usize,
 }
 
 /// Cross-size verdict memo entry for λ-wrap reuse. A closed term T and
@@ -141,10 +133,9 @@ struct Stats {
     /// Failed rescues by which fuel died: (β-bound, transition-bound).
     /// β-bound burns ~ms; transition-bound burns the full 64×β cap (~3 s).
     rescue_stuck: (u64, u64),
-    /// Rung-2 cost structure: successes needing > 64×β transitions
-    /// (the 1<<22 floor's beneficiaries — big-readback halters), and
-    /// failures by fuel type. Decides whether rung 2's floor can drop.
-    rung2_over: u64,
+    /// Failed rung-2 attempts by fuel type (β-bound, transition-bound):
+    /// the cost of the rung that the 1<<22 transition floor used to
+    /// charge ~150k times per big size.
     rung2_stuck: (u64, u64),
     memo_hits: u64,
     /// (term, verdict) records feeding the next-size-plus-two memo:
@@ -191,7 +182,6 @@ impl Stats {
             self.rescue_stuck.0 + o.rescue_stuck.0,
             self.rescue_stuck.1 + o.rescue_stuck.1,
         );
-        self.rung2_over += o.rung2_over;
         self.rung2_stuck = (
             self.rung2_stuck.0 + o.rung2_stuck.0,
             self.rung2_stuck.1 + o.rung2_stuck.1,
@@ -219,17 +209,84 @@ impl Stats {
     }
 }
 
+/// Version of the [`Rec`] line grammar, pinned in the checkpoint header
+/// so a format change cannot silently resume onto stale records.
+const REC_FMT: u32 = 1;
+
+/// One verdict record. This is the ONE line grammar for both files the
+/// census persists — checkpoint bodies and `--memo-out` — so the two
+/// cannot drift; a single fmt/parse pair, exercised by both readers.
+///
+/// ```text
+/// H <enc> <len> <nf_bits> <beta>   λ-wrap memo: proven halt
+/// D <enc> <len>                    λ-wrap memo: proven divergence
+/// W <enc> <len>                    no-whnf fact (transfers under App)
+/// U <enc> <len>                    unknown frontier member
+/// ```
+///
+/// `G`/`E` are reserved by `blam::ckpt` for its own framing, and `S` by
+/// the [`Stats`] scalar line; none of the tags here collide.
+#[derive(Clone, Copy)]
+enum Rec {
+    Wrap((u64, u8), MemoV),
+    NoWhnf((u64, u8)),
+    Unknown((u64, u8)),
+}
+
+impl Rec {
+    fn write(&self, out: &mut String) {
+        use std::fmt::Write as _;
+        match self {
+            Rec::Wrap((enc, len), MemoV::Halt { nf, steps }) => {
+                writeln!(out, "H {enc} {len} {nf} {steps}")
+            }
+            Rec::Wrap((enc, len), MemoV::Diverge) => writeln!(out, "D {enc} {len}"),
+            Rec::NoWhnf((enc, len)) => writeln!(out, "W {enc} {len}"),
+            Rec::Unknown((enc, len)) => writeln!(out, "U {enc} {len}"),
+        }
+        .unwrap()
+    }
+
+    fn parse(line: &str) -> Option<Rec> {
+        let mut it = line.split_whitespace();
+        let tag = it.next()?;
+        let key = (it.next()?.parse().ok()?, it.next()?.parse().ok()?);
+        Some(match tag {
+            "H" => Rec::Wrap(
+                key,
+                MemoV::Halt {
+                    nf: it.next()?.parse().ok()?,
+                    steps: it.next()?.parse().ok()?,
+                },
+            ),
+            "D" => Rec::Wrap(key, MemoV::Diverge),
+            "W" => Rec::NoWhnf(key),
+            "U" => Rec::Unknown(key),
+            _ => return None,
+        })
+    }
+}
+
 /// Driver config string pinned in the checkpoint header (`blam::ckpt`).
-fn ckpt_config(cfg: &Cfg, min_n: u32, max_n: u32) -> String {
+/// Everything that can change a group record's *contents* belongs here:
+/// the ladder budgets, the engine tunables, the record format, and the
+/// identity of the seeded memo file (whose facts decide fates at
+/// App-rooted compositions).
+fn ckpt_config(cfg: &Cfg, min_n: u32, max_n: u32, memo_in: Option<&str>) -> String {
+    let l = &cfg.ladder;
     format!(
-        "census min={min_n} max={max_n} b1={} b2={} cap={} rescue={} rtm={} prescan={} oracle={}",
-        cfg.budget1,
-        cfg.budget2,
-        cfg.bb_cap,
-        cfg.rescue,
-        cfg.rescue_trans_mult,
-        cfg.prescan as u8,
-        cfg.oracle as u8
+        "census min={min_n} max={max_n} b1={} b2={} cap={} rescue={} rtm={} prescan={} \
+         oracle={} fmt={REC_FMT} work={} probe={} memoin={}",
+        l.budget1,
+        l.budget2,
+        l.bb_cap,
+        l.rescue,
+        l.rescue_trans_mult,
+        l.prescan as u8,
+        l.oracle as u8,
+        l.work_mult,
+        l.probe_fuel,
+        memo_in.map_or_else(|| "none".to_string(), sha256_16),
     )
 }
 
@@ -258,7 +315,6 @@ impl CkptRecord for Stats {
             self.rescue_max_trans,
             self.rescue_stuck.0,
             self.rescue_stuck.1,
-            self.rung2_over,
             self.rung2_stuck.0,
             self.rung2_stuck.1,
             self.memo_hits,
@@ -267,84 +323,48 @@ impl CkptRecord for Stats {
             write!(out, " {v}").unwrap();
         }
         out.push('\n');
-        for ((enc, len), v) in &self.memo_out {
-            match v {
-                MemoV::Halt { nf, steps } => writeln!(out, "M {enc} {len} H {nf} {steps}").unwrap(),
-                MemoV::Diverge => writeln!(out, "M {enc} {len} D").unwrap(),
-            }
+        for (k, v) in &self.memo_out {
+            Rec::Wrap(*k, *v).write(out);
         }
-        for (enc, len) in &self.unknowns {
-            writeln!(out, "U {enc} {len}").unwrap();
+        for k in &self.unknowns {
+            Rec::Unknown(*k).write(out);
         }
-        for (enc, len) in &self.no_whnf_out {
-            writeln!(out, "W {enc} {len}").unwrap();
+        for k in &self.no_whnf_out {
+            Rec::NoWhnf(*k).write(out);
         }
     }
 
     fn parse_line(&mut self, line: &str) -> Option<()> {
-        let mut it = line.split_whitespace();
-        match it.next()? {
-            "S" => {
-                let mut num = || -> Option<u64> { it.next()?.parse().ok() };
-                self.total = num()?;
-                self.prescan_nf = num()?;
-                self.halt = num()?;
-                self.diverge = num()?;
-                self.unknown = num()?;
-                self.unknown_cap = num()?;
-                self.unknown_work = num()?;
-                self.escalated = num()?;
-                self.beta_total = num()?;
-                self.max_nf = num()?;
-                self.max_nf_witness = (num()?, num()? as u8);
-                self.max_rescue_beta = num()?;
-                self.rescue_cap = (num()?, num()?);
-                self.rescue_work = (num()?, num()?);
-                self.rescue_max_trans = num()?;
-                self.rescue_stuck = (num()?, num()?);
-                self.rung2_over = num()?;
-                self.rung2_stuck = (num()?, num()?);
-                self.memo_hits = num()?;
-                self.head_hits = num()?;
-                Some(())
-            }
-            "M" => {
-                let enc: u64 = it.next()?.parse().ok()?;
-                let len: u8 = it.next()?.parse().ok()?;
-                let v = match it.next()? {
-                    "H" => MemoV::Halt {
-                        nf: it.next()?.parse().ok()?,
-                        steps: it.next()?.parse().ok()?,
-                    },
-                    "D" => MemoV::Diverge,
-                    _ => return None,
-                };
-                self.memo_out.push(((enc, len), v));
-                Some(())
-            }
-            "U" => {
-                let enc: u64 = it.next()?.parse().ok()?;
-                let len: u8 = it.next()?.parse().ok()?;
-                self.unknowns.push((enc, len));
-                Some(())
-            }
-            "W" => {
-                let enc: u64 = it.next()?.parse().ok()?;
-                let len: u8 = it.next()?.parse().ok()?;
-                self.no_whnf_out.push((enc, len));
-                Some(())
-            }
-            _ => None,
+        if let Some(rest) = line.strip_prefix("S ") {
+            let mut it = rest.split_whitespace();
+            let mut num = || -> Option<u64> { it.next()?.parse().ok() };
+            self.total = num()?;
+            self.prescan_nf = num()?;
+            self.halt = num()?;
+            self.diverge = num()?;
+            self.unknown = num()?;
+            self.unknown_cap = num()?;
+            self.unknown_work = num()?;
+            self.escalated = num()?;
+            self.beta_total = num()?;
+            self.max_nf = num()?;
+            self.max_nf_witness = (num()?, num()? as u8);
+            self.max_rescue_beta = num()?;
+            self.rescue_cap = (num()?, num()?);
+            self.rescue_work = (num()?, num()?);
+            self.rescue_max_trans = num()?;
+            self.rescue_stuck = (num()?, num()?);
+            self.rung2_stuck = (num()?, num()?);
+            self.memo_hits = num()?;
+            self.head_hits = num()?;
+            return Some(());
         }
-    }
-}
-
-pub(crate) fn lterm_of(pool: &Pool, id: u32) -> LTerm {
-    use blam::classical::machine::Node;
-    match pool.node(id) {
-        Node::Var(n) => LTerm::Var(n),
-        Node::Lam(b) => blam::classical::escalation::lam(lterm_of(pool, b)),
-        Node::App(f, a) => blam::classical::escalation::app(lterm_of(pool, f), lterm_of(pool, a)),
+        match Rec::parse(line)? {
+            Rec::Wrap(k, v) => self.memo_out.push((k, v)),
+            Rec::NoWhnf(k) => self.no_whnf_out.push(k),
+            Rec::Unknown(k) => self.unknowns.push(k),
+        }
+        Some(())
     }
 }
 
@@ -375,6 +395,30 @@ fn head_of(enc: u64, len: u8) -> (u64, u8) {
     }
     let hlen = (len - 2) - i;
     ((enc >> i) & ((1u64 << hlen) - 1), hlen)
+}
+
+/// Append `unknowns` to the dump file, truncating it on the run's FIRST
+/// write (`started` flips there). Appending unconditionally made the
+/// file an accumulation across every run that ever named the path — a
+/// stale frontier that `scripts/census-regen.sh`'s subtraction identity
+/// would then silently mis-count.
+fn write_unknowns(path: &str, unknowns: &[(u64, u8)], started: &mut bool) -> R<()> {
+    use std::io::Write;
+    let mut f = std::fs::OpenOptions::new()
+        .create(true)
+        .write(true)
+        .append(*started)
+        .truncate(!*started)
+        .open(path)
+        .map_err(|e| format!("blam census: cannot open --dump-unknowns {path}: {e}"))?;
+    *started = true;
+    let mut out = String::new();
+    for (enc, len) in unknowns {
+        out.push_str(&enc_to_string(*enc, *len));
+        out.push('\n');
+    }
+    f.write_all(out.as_bytes())
+        .map_err(|e| format!("blam census: cannot write {path}: {e}"))
 }
 
 /// The census's cross-size verdict memory, read-only within a size:
@@ -434,159 +478,76 @@ fn census_term(
         .decode_u64(enc, len)
         .expect("enumerator emits valid terms");
 
-    if cfg.prescan && !pool.has_redex(root) {
+    let mut sink = SizeSink::default();
+    let o = ladder::adjudicate(&cfg.ladder, pool, vm, root, &mut sink);
+
+    // Path telemetry, verdict-independent.
+    if o.rung == Rung::Prescan {
         stats.prescan_nf += 1;
-        stats.record_halt(len as u64, 0, enc, len);
-        return;
     }
-    if cfg.oracle && no_nf(0, (&*pool, root)) {
-        stats.diverge += 1;
-        return;
+    if o.tel.escalated {
+        stats.escalated += 1;
     }
-    // Rung 1 gets a transition cap proportional to its β budget; the
-    // default floor (1<<22) would make it exactly as expensive as rung 2
-    // on transition-bound terms, i.e. pure overhead (audit item 4).
-    let mut sink = SizeSink::default();
-    if let Ok(steps) = vm.normalize_capped(
-        pool,
-        root,
-        cfg.budget1,
-        cfg.budget1.saturating_mul(64),
-        &mut sink,
-    ) {
-        stats.record_halt(sink.0, steps, enc, len);
-        return;
+    let bump = |c: &mut (u64, u64), e: OutOfFuel| match e {
+        OutOfFuel::Beta => c.0 += 1,
+        _ => c.1 += 1,
+    };
+    if let Some(e) = o.tel.kn2_stuck {
+        bump(&mut stats.rung2_stuck, e);
     }
-    // Rung 2 at 64×β transitions too: measured across 4..40, exactly ONE
-    // rung-2 success ever exceeded that (n=39; it now takes the
-    // escalation+rescue path to the same verdict), while stuck rung-2
-    // attempts burned the 1<<22 floor ~150k times per big size.
-    let mut sink = SizeSink::default();
-    match vm.normalize_capped(
-        pool,
-        root,
-        cfg.budget2,
-        cfg.budget2.saturating_mul(64),
-        &mut sink,
-    ) {
-        Ok(steps) => {
-            if vm.last_trans > cfg.budget2.saturating_mul(64) {
-                stats.rung2_over += 1;
-            }
-            stats.record_halt(sink.0, steps, enc, len);
-            return;
-        }
-        Err(OutOfFuel::Beta) => stats.rung2_stuck.0 += 1,
-        Err(_) => stats.rung2_stuck.1 += 1,
+    if let Some(e) = o.tel.rescue_stuck {
+        bump(&mut stats.rescue_stuck, e);
     }
-    // Escalation: full BB.lhs semantics.
-    stats.escalated += 1;
-    let t = lterm_of(pool, root);
-    match normal_form(cfg.bb_cap, &t) {
-        Ok(nf) => {
-            // β-count from the escalation engine isn't canonical (history
-            // machinery, no step ledger) — recover it with a KN re-run.
-            let mut sink = SizeSink::default();
-            match vm.normalize_capped(
-                pool,
-                root,
-                cfg.rescue,
-                cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
-                &mut sink,
-            ) {
-                Ok(steps) => {
-                    stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
-                    stats.rescue_max_trans = stats.rescue_max_trans.max(vm.last_trans);
-                    stats.record_halt(sink.0, steps, enc, len);
-                    stats
-                        .memo_out
-                        .push(((enc, len), MemoV::Halt { nf: sink.0, steps }));
-                }
-                Err(e) => {
-                    match e {
-                        OutOfFuel::Beta => stats.rescue_stuck.0 += 1,
-                        _ => stats.rescue_stuck.1 += 1,
-                    }
-                    // Halts per BB engine but out of rescue fuel for the
-                    // canonical count; record with the engine's nf size.
-                    stats.record_halt(nf.bit_size(), 0, enc, len);
-                    stats.memo_out.push((
-                        (enc, len),
-                        MemoV::Halt {
-                            nf: nf.bit_size(),
-                            steps: 0,
-                        },
-                    ));
-                }
-            }
-        }
-        Err(NoNf::Diverge) => {
-            stats.diverge += 1;
-            stats.memo_out.push(((enc, len), MemoV::Diverge));
-            // Spine-certified proof: the term has no whnf, a fact that
-            // transfers to every application headed by it.
-            if take_head_diverge() {
-                stats.no_whnf_out.push((enc, len));
-            }
-        }
-        Err(NoNf::Unknown(why)) => {
-            let mut sink = SizeSink::default();
-            match vm.normalize_capped(
-                pool,
-                root,
-                cfg.rescue,
-                cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
-                &mut sink,
-            ) {
-                Ok(steps) => {
-                    stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
-                    stats.rescue_max_trans = stats.rescue_max_trans.max(vm.last_trans);
+
+    match o.verdict {
+        // `steps` is 0 when the escalation engine proved the halt but the
+        // rescue could not recover the canonical count, so beta_total
+        // stays a sum of *known* β counts, never an estimate.
+        Verdict::Halt { nf, steps, .. } => {
+            let nf_bits = nf.resolve(sink.0);
+            if o.rung == Rung::Rescue {
+                stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
+                stats.rescue_max_trans = stats.rescue_max_trans.max(o.tel.last_trans);
+                // Rescues OFF the Unknown branch are the interesting
+                // ones: they say which engine resource a bigger budget
+                // would have to buy back.
+                if let Some(why) = o.tel.escal_why {
                     let r = match why {
                         Why::Capacity => &mut stats.rescue_cap,
                         Why::WorkMeter => &mut stats.rescue_work,
                     };
                     r.0 += 1;
                     r.1 = r.1.max(steps);
-                    stats.record_halt(sink.0, steps, enc, len);
-                    stats
-                        .memo_out
-                        .push(((enc, len), MemoV::Halt { nf: sink.0, steps }));
                 }
-                Err(e) => {
-                    match e {
-                        OutOfFuel::Beta => stats.rescue_stuck.0 += 1,
-                        _ => stats.rescue_stuck.1 += 1,
-                    }
-                    stats.unknown += 1;
-                    match why {
-                        Why::Capacity => stats.unknown_cap += 1,
-                        Why::WorkMeter => stats.unknown_work += 1,
-                    }
-                    stats.unknowns.push((enc, len));
+            }
+            stats.record_halt(nf_bits, steps, enc, len);
+            if o.tel.escalated {
+                stats
+                    .memo_out
+                    .push(((enc, len), MemoV::Halt { nf: nf_bits, steps }));
+            }
+        }
+        Verdict::Diverge => {
+            stats.diverge += 1;
+            if o.tel.escalated {
+                stats.memo_out.push(((enc, len), MemoV::Diverge));
+                // Spine-certified proof: the term has no whnf, a fact
+                // that transfers to every application headed by it. The
+                // oracle's cheaper fires never qualify — and never reach
+                // here, since they land on `Rung::Oracle`.
+                if o.tel.head_diverge {
+                    stats.no_whnf_out.push((enc, len));
                 }
             }
         }
-    }
-}
-
-/// The census ladder's default configuration, shared verbatim with
-/// `blam adjudicate` so the two cannot drift apart.
-pub(crate) fn default_cfg() -> Cfg {
-    Cfg {
-        budget1: 64,
-        budget2: 4096,
-        // Tromp runs 42M because his BB reducer is his only engine; ours
-        // only needs to catch loops (small redexes) before handing
-        // big-growth halters to the far faster KN rescue. A tight cap
-        // keeps the naive-substitution engine away from exploding terms.
-        bb_cap: 2_000_000,
-        // 50x the BB(34) witness's measured 192757 beta; with the VM's
-        // 64x transition cap a stuck rescue costs ~3s, not 2 hours.
-        rescue: 10_000_000,
-        rescue_trans_mult: 32,
-        prescan: true,
-        oracle: true,
-        chunk: 0, // 0 = auto (threads * 64)
+        Verdict::Unknown(why) => {
+            stats.unknown += 1;
+            match why {
+                Why::Capacity => stats.unknown_cap += 1,
+                Why::WorkMeter => stats.unknown_work += 1,
+            }
+            stats.unknowns.push((enc, len));
+        }
     }
 }
 
@@ -595,7 +556,7 @@ pub fn run(argv: &[String]) -> R<()> {
         println!("{USAGE}");
         return Ok(());
     }
-    let mut cfg = default_cfg();
+    let mut cfg = Cfg::default();
     let mut verify = false;
     let mut dump_path: Option<String> = None;
     let mut ckpt_path: Option<String> = None;
@@ -603,17 +564,21 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut memo_in_path: Option<String> = None;
     let mut memo_out_path: Option<String> = None;
     let mut threads = 0usize;
-    let mut work_mult: Option<u64> = None;
+    let mut work_mult: Option<i64> = None;
     let mut probe_fuel: Option<u64> = None;
+    let mut chunk_given = false;
     let mut p = Args::new("census", argv);
     while let Some(tok) = p.next() {
         match tok {
-            "--budget1" => cfg.budget1 = p.num(tok)?,
-            "--budget2" => cfg.budget2 = p.num(tok)?,
-            "--bb-cap" => cfg.bb_cap = p.num(tok)?,
-            "--rescue" => cfg.rescue = p.num(tok)?,
-            "--rescue-trans-mult" => cfg.rescue_trans_mult = p.num(tok)?,
-            "--chunk" => cfg.chunk = p.num(tok)?,
+            "--budget1" => cfg.ladder.budget1 = p.num(tok)?,
+            "--budget2" => cfg.ladder.budget2 = p.num(tok)?,
+            "--bb-cap" => cfg.ladder.bb_cap = p.num(tok)?,
+            "--rescue" => cfg.ladder.rescue = p.num(tok)?,
+            "--rescue-trans-mult" => cfg.ladder.rescue_trans_mult = p.num(tok)?,
+            "--chunk" => {
+                cfg.chunk = p.num(tok)?;
+                chunk_given = true;
+            }
             "--threads" => threads = p.num(tok)?,
             "--work-mult" => work_mult = Some(p.num(tok)?),
             "--probe-fuel" => probe_fuel = Some(p.num(tok)?),
@@ -624,11 +589,11 @@ pub fn run(argv: &[String]) -> R<()> {
             "--memo-out" => memo_out_path = Some(p.value(tok)?.to_string()),
             "--no-prescan" => {
                 p.flag(tok)?;
-                cfg.prescan = false;
+                cfg.ladder.prescan = false;
             }
             "--no-oracle" => {
                 p.flag(tok)?;
-                cfg.oracle = false;
+                cfg.ladder.oracle = false;
             }
             "--verify" => {
                 p.flag(tok)?;
@@ -639,8 +604,15 @@ pub fn run(argv: &[String]) -> R<()> {
         }
     }
     let (min_n, max_n) = p.range(4)?;
-    // Phase 3: becomes explicit library config.
-    args::apply_engine_env(work_mult, probe_fuel);
+    let engine = args::engine_cfg(work_mult, probe_fuel);
+    cfg.ladder.work_mult = engine.work_mult;
+    cfg.ladder.probe_fuel = engine.probe_fuel;
+    if chunk_given && ckpt_path.is_some() {
+        eprintln!(
+            "    warning: --chunk is ignored under --checkpoint; the task split comes \
+             from the checkpoint header (target=), which pins it across resumes"
+        );
+    }
 
     // Escalation recursion can go deep on tower terms; give workers room.
     args::build_pool(threads)?;
@@ -677,9 +649,10 @@ pub fn run(argv: &[String]) -> R<()> {
         "time_s",
         "terms/s"
     );
+    let ckpt_cfg = ckpt_config(&cfg, min_n, max_n, memo_in_path.as_deref());
     let mut ckpt = ckpt_path
         .as_ref()
-        .map(|p| Ckpt::<Stats>::open(p, &ckpt_config(&cfg, min_n, max_n), groups_flag));
+        .map(|p| Ckpt::<Stats>::open(p, &ckpt_cfg, groups_flag));
 
     // λ-wrap memo, rolling by size parity: slot n%2 holds size n−2's
     // expensive verdicts during size n, then is replaced by size n's.
@@ -696,27 +669,26 @@ pub fn run(argv: &[String]) -> R<()> {
     // (the sweep derives them from smaller sizes; a delta run cannot),
     // so --memo-in is part of the delta protocol, not a speedup.
     if let Some(path) = &memo_in_path {
-        let text = std::fs::read_to_string(path).expect("read memo file");
-        for line in text.lines() {
-            let mut it = line.split_whitespace();
-            let (Some(e), Some(l)) = (it.next(), it.next()) else {
+        let text = std::fs::read_to_string(path)
+            .map_err(|e| format!("blam census: cannot read --memo-in {path}: {e}"))?;
+        for (k, line) in text.lines().enumerate() {
+            if line.trim().is_empty() {
                 continue;
-            };
-            let enc: u64 = e.parse().unwrap();
-            let len: u8 = l.parse().unwrap();
-            match it.next() {
-                Some("W") => {
-                    no_whnf.insert((enc, len));
+            }
+            let rec = Rec::parse(line).ok_or_else(|| {
+                format!(
+                    "blam census: {path}:{}: malformed memo record: `{line}`",
+                    k + 1
+                )
+            })?;
+            match rec {
+                Rec::NoWhnf(key) => {
+                    no_whnf.insert(key);
                 }
-                Some(tag) if (len as u32) + 2 == min_n || (len as u32) + 1 == min_n => {
-                    let v = match tag {
-                        "H" => MemoV::Halt {
-                            nf: it.next().unwrap().parse().unwrap(),
-                            steps: it.next().unwrap().parse().unwrap(),
-                        },
-                        _ => MemoV::Diverge,
-                    };
-                    memo_by_parity[(len % 2) as usize].insert((enc, len), v);
+                // Only the two live parity slots matter; other sizes'
+                // H/D records are inert here.
+                Rec::Wrap(key, v) if (key.1 as u32) + 2 == min_n || (key.1 as u32) + 1 == min_n => {
+                    memo_by_parity[(key.1 % 2) as usize].insert(key, v);
                 }
                 _ => {}
             }
@@ -733,6 +705,7 @@ pub fn run(argv: &[String]) -> R<()> {
     // With a checkpoint, per-size unknown dumping would duplicate lines
     // across resumed runs; collect and rewrite the file once at the end.
     let mut deferred_unknowns: Vec<(u64, u8)> = Vec::new();
+    let mut dump_started = false;
     for n in min_n..=max_n {
         // Generation is fused into the workers: each task enumerates its
         // subtree of the term space and censuses terms as they appear.
@@ -803,7 +776,6 @@ pub fn run(argv: &[String]) -> R<()> {
         // Persist size n's memo records (sorted for stable diffs). Loads
         // dedup by key, so re-appends from resumed runs are harmless.
         if let Some(path) = &memo_out_path {
-            use std::fmt::Write as _;
             use std::io::Write;
             let mut recs: Vec<((u64, u8), MemoV)> = memo_by_parity[(n % 2) as usize]
                 .iter()
@@ -811,18 +783,13 @@ pub fn run(argv: &[String]) -> R<()> {
                 .collect();
             recs.sort_unstable_by_key(|(k, _)| *k);
             let mut out = String::new();
-            for ((enc, len), v) in recs {
-                match v {
-                    MemoV::Halt { nf, steps } => {
-                        writeln!(out, "{enc} {len} H {nf} {steps}").unwrap()
-                    }
-                    MemoV::Diverge => writeln!(out, "{enc} {len} D").unwrap(),
-                }
+            for (k, v) in recs {
+                Rec::Wrap(k, v).write(&mut out);
             }
             let mut wrecs = stats.no_whnf_out.clone();
             wrecs.sort_unstable();
-            for (enc, len) in wrecs {
-                writeln!(out, "{enc} {len} W").unwrap();
+            for k in wrecs {
+                Rec::NoWhnf(k).write(&mut out);
             }
             let mut f = std::fs::OpenOptions::new()
                 .create(true)
@@ -856,6 +823,14 @@ pub fn run(argv: &[String]) -> R<()> {
             secs,
             stats.total as f64 / secs
         );
+        // How much of the size class never reached an engine at all: the
+        // redex-free terms, each its own normal form. Their share is the
+        // ladder's cheapest rung and the baseline every other cost is
+        // measured against.
+        println!(
+            "    prescan: {} redex-free of {} closed terms",
+            stats.prescan_nf, stats.total
+        );
         // The BBλ champion's own bits — at record-setting sizes the
         // witness term is the headline, not just its |nf|.
         if stats.max_nf > 0 {
@@ -888,10 +863,10 @@ pub fn run(argv: &[String]) -> R<()> {
                 stats.rescue_stuck.0, stats.rescue_stuck.1
             );
         }
-        if stats.rung2_over + stats.rung2_stuck.0 + stats.rung2_stuck.1 > 0 {
+        if stats.rung2_stuck.0 + stats.rung2_stuck.1 > 0 {
             println!(
-                "    rung2: {} successes past 64x trans; stuck {} beta-bound, {} transition-bound",
-                stats.rung2_over, stats.rung2_stuck.0, stats.rung2_stuck.1
+                "    rung2 stuck: {} beta-bound, {} transition-bound",
+                stats.rung2_stuck.0, stats.rung2_stuck.1
             );
         }
         // Preview and dump in sorted order: accumulation order is task
@@ -908,15 +883,10 @@ pub fn run(argv: &[String]) -> R<()> {
             if dump_path.is_some() && ckpt.is_some() {
                 deferred_unknowns.extend(stats.unknowns.iter().copied());
             } else if let Some(path) = &dump_path {
-                use std::io::Write;
-                let mut f = std::fs::OpenOptions::new()
-                    .create(true)
-                    .append(true)
-                    .open(path)
-                    .expect("open dump file");
-                for (enc, len) in &stats.unknowns {
-                    writeln!(f, "{}", enc_to_string(*enc, *len)).unwrap();
-                }
+                // Truncate on the FIRST write of this run, append after:
+                // the file is this run's frontier, not an accumulation
+                // over every run that ever named the path.
+                write_unknowns(path, &stats.unknowns, &mut dump_started)?;
             }
         }
         if verify {
@@ -932,11 +902,10 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     if ckpt.is_some() {
         if let Some(path) = &dump_path {
-            use std::io::Write;
-            let mut f = std::fs::File::create(path).expect("create dump file");
-            for (enc, len) in &deferred_unknowns {
-                writeln!(f, "{}", enc_to_string(*enc, *len)).unwrap();
-            }
+            // Same truncate-then-append contract; with a checkpoint the
+            // whole run lands in one write, so a resumed run replaces
+            // rather than duplicates the earlier attempt's lines.
+            write_unknowns(path, &deferred_unknowns, &mut dump_started)?;
         }
     }
     use std::sync::atomic::Ordering;
@@ -944,4 +913,138 @@ pub fn run(argv: &[String]) -> R<()> {
     let fuel = blam::classical::escalation::REDLOOP_FUEL_REJECTS.load(Ordering::Relaxed);
     println!("redloop: {fires} proofs, {fuel} shape-matches lost to probe fuel");
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The whole point of `Rec` is that ONE grammar serves the memo file
+    /// and the checkpoint body, so a memo written by one reader is read
+    /// back identically by the other.
+    #[test]
+    fn record_codec_round_trips_every_tag() {
+        let recs = [
+            Rec::Wrap((0, 4), MemoV::Diverge),
+            Rec::Wrap((u64::MAX, 63), MemoV::Diverge),
+            Rec::Wrap((7, 12), MemoV::Halt { nf: 0, steps: 0 }),
+            Rec::Wrap(
+                (12345, 41),
+                MemoV::Halt {
+                    nf: 327686,
+                    steps: 9_457_564,
+                },
+            ),
+            Rec::NoWhnf((99, 24)),
+            Rec::Unknown((1 << 40, 41)),
+        ];
+        let mut text = String::new();
+        for r in &recs {
+            r.write(&mut text);
+        }
+        // Straight through the census's own reader: the checkpoint body
+        // parser, which is also what `--memo-in` lines feed.
+        let mut s = Stats::default();
+        for line in text.lines() {
+            s.parse_line(line).expect("every written line parses");
+        }
+        assert_eq!(s.memo_out.len(), 4);
+        assert_eq!(s.no_whnf_out, vec![(99, 24)]);
+        assert_eq!(s.unknowns, vec![(1 << 40, 41)]);
+        assert!(matches!(
+            s.memo_out[3],
+            (
+                (12345, 41),
+                MemoV::Halt {
+                    nf: 327686,
+                    steps: 9_457_564
+                }
+            )
+        ));
+        // Re-emitting the parsed records reproduces the bytes exactly.
+        let mut again = String::new();
+        for (k, v) in &s.memo_out {
+            Rec::Wrap(*k, *v).write(&mut again);
+        }
+        for k in &s.unknowns {
+            Rec::Unknown(*k).write(&mut again);
+        }
+        for k in &s.no_whnf_out {
+            Rec::NoWhnf(*k).write(&mut again);
+        }
+        let mut want = String::new();
+        for r in [&recs[0], &recs[1], &recs[2], &recs[3], &recs[5], &recs[4]] {
+            r.write(&mut want);
+        }
+        assert_eq!(again, want);
+    }
+
+    #[test]
+    fn malformed_records_are_rejected_not_guessed() {
+        for bad in [
+            "",
+            "Z 1 4",          // unknown tag
+            "H 1",            // truncated key
+            "H 1 4 7",        // halt missing its step count
+            "D 1 four",       // non-numeric length
+            "W 1 4 extra ok", // trailing junk is fine, but…
+        ] {
+            let ok = Rec::parse(bad).is_some();
+            assert_eq!(ok, bad.starts_with("W 1 4"), "{bad:?}");
+        }
+    }
+
+    /// The Stats line and the record lines share a file; their tags must
+    /// not collide, and a torn `S` line must read as a tear.
+    #[test]
+    fn stats_line_round_trips_and_short_lines_tear() {
+        let s = Stats {
+            total: 11_148_652,
+            prescan_nf: 4_000_000,
+            max_nf_witness: (1 << 35, 36),
+            max_nf: 327_686,
+            rescue_stuck: (22, 22),
+            head_hits: 9,
+            ..Default::default()
+        };
+        let mut text = String::new();
+        s.write_body(&mut text);
+        let line = text.lines().next().unwrap();
+        let mut back = Stats::default();
+        back.parse_line(line).expect("stats line parses");
+        assert_eq!(
+            (back.total, back.prescan_nf, back.max_nf, back.head_hits),
+            (11_148_652, 4_000_000, 327_686, 9)
+        );
+        assert_eq!(back.max_nf_witness, (1 << 35, 36));
+        assert_eq!(back.rescue_stuck, (22, 22));
+        assert!(Stats::default().parse_line("S 1 2 3").is_none());
+    }
+
+    #[test]
+    fn ckpt_config_pins_every_verdict_relevant_knob() {
+        let base = ckpt_config(&Cfg::default(), 4, 41, None);
+        assert!(base.contains("fmt=1"), "{base}");
+        assert!(base.contains("work=16"), "{base}");
+        assert!(base.contains("probe=4096"), "{base}");
+        assert!(base.contains("memoin=none"), "{base}");
+        for mutate in [
+            (|c: &mut Cfg| c.ladder.budget1 = 128) as fn(&mut Cfg),
+            |c: &mut Cfg| c.ladder.work_mult = 2,
+            |c: &mut Cfg| c.ladder.probe_fuel = 8192,
+            |c: &mut Cfg| c.ladder.oracle = false,
+        ] {
+            let mut c = Cfg::default();
+            mutate(&mut c);
+            assert_ne!(base, ckpt_config(&c, 4, 41, None));
+        }
+        // `chunk` is a scheduling knob, not a verdict knob: it must NOT
+        // fence, or a rerun at a different thread count would refuse a
+        // perfectly valid checkpoint.
+        let c = Cfg {
+            chunk: 4096,
+            ..Default::default()
+        };
+        assert_eq!(base, ckpt_config(&c, 4, 41, None));
+    }
 }

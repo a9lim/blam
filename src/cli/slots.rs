@@ -630,7 +630,7 @@ fn adjudicate(
     esc[2] += 1;
     // The escalation engine carries the self-feedback certificate, so it
     // decides loops the syntactic oracle alone cannot.
-    match normal_form(BB_CAP, &lterm_of(pool, root)) {
+    match normal_form(BB_CAP, &LTerm::from_pool(pool, root)) {
         Err(NoNf::Diverge) => return Verdict::Diverge,
         Ok(nf) if nf.bit_size() != golden.len() as u64 => return Verdict::Mismatch,
         _ => {}
@@ -638,14 +638,6 @@ fn adjudicate(
     esc[3] += 1;
     rung!(BETA3, TRANS3);
     Verdict::Unknown
-}
-
-fn lterm_of(pool: &Pool, id: u32) -> LTerm {
-    match pool.node(id) {
-        Node::Var(n) => LTerm::Var(n),
-        Node::Lam(b) => blam::classical::escalation::lam(lterm_of(pool, b)),
-        Node::App(f, a) => blam::classical::escalation::app(lterm_of(pool, f), lterm_of(pool, a)),
-    }
 }
 
 // ------------------------------------------------------------------ reporting

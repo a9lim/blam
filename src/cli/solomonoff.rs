@@ -21,9 +21,8 @@
 use crate::args::{self, Args, R};
 use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
 use blam::blc::wire::enc_to_string;
-use blam::classical::escalation::{normal_form, LTerm, NoNf};
+use blam::classical::ladder::{self, LadderCfg, Verdict};
 use blam::classical::machine::{Machine, Pool, Sink};
-use blam::classical::oracle::no_nf;
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::time::Instant;
@@ -43,9 +42,6 @@ struct KeySink {
 }
 
 impl KeySink {
-    fn clear(&mut self) {
-        *self = KeySink::default();
-    }
     fn push(&mut self, bit: bool) {
         self.len += 1;
         if self.len > 63 {
@@ -74,26 +70,6 @@ impl Sink for KeySink {
             self.overflow = true;
         }
         self.len += need;
-    }
-}
-
-fn emit_lterm(t: &LTerm, sink: &mut KeySink) {
-    match t {
-        LTerm::Var(n) => {
-            sink.var(*n);
-        }
-        LTerm::Lam(x) => {
-            sink.zero();
-            sink.zero();
-            emit_lterm(&x.b, sink);
-        }
-        LTerm::App(x) => {
-            sink.zero();
-            sink.one();
-            emit_lterm(&x.f, sink);
-            emit_lterm(&x.a, sink);
-        }
-        LTerm::Bot => unreachable!("normal forms are bot-free"),
     }
 }
 
@@ -183,15 +159,6 @@ impl Acc {
     }
 }
 
-fn lterm_of(pool: &Pool, id: u32) -> LTerm {
-    use blam::classical::machine::Node;
-    match pool.node(id) {
-        Node::Var(n) => LTerm::Var(n),
-        Node::Lam(b) => blam::classical::escalation::lam(lterm_of(pool, b)),
-        Node::App(f, a) => blam::classical::escalation::app(lterm_of(pool, f), lterm_of(pool, a)),
-    }
-}
-
 /// Format a 2^-64-unit mass as a decimal probability.
 fn pm(units: u128) -> f64 {
     units as f64 / 2f64.powi(64)
@@ -208,27 +175,29 @@ usage: blam solomonoff [MIN] MAX [flags]     (MIN defaults to 4, MAX <= 63)
   --dump-max-x N   dump table rows with |x| <= N (default 20)
   --top N          rows per analytics section (default 40)
   --threads N      rayon threads (0 = ambient, the default)
-  --work-mult N    BLC_WORK_MULT for this run (default 16)
-  --probe-fuel N   BLC_PROBE_FUEL for this run (default 4096)";
+  --work-mult N    escalation work meter per capacity bit (default 16)
+  --probe-fuel N   redloop probe beta budget (default 4096)";
 
 pub fn run(argv: &[String]) -> R<()> {
     if args::wants_help(argv) {
         println!("{USAGE}");
         return Ok(());
     }
-    let mut bb_cap: i64 = 2_000_000;
-    let mut rescue: u64 = 10_000_000;
+    // The census ladder, verbatim: this sweep and `blam census` must
+    // agree term for term, since Ω's bounds are the census's halt/
+    // diverge split re-weighted by 2^-|p|.
+    let mut cfg = LadderCfg::default();
     let mut table_path = String::from("solomonoff_table.txt");
     let mut dump_max_x: u8 = 20;
     let mut top: usize = 40;
     let mut threads = 0usize;
-    let mut work_mult: Option<u64> = None;
+    let mut work_mult: Option<i64> = None;
     let mut probe_fuel: Option<u64> = None;
     let mut p = Args::new("solomonoff", argv);
     while let Some(tok) = p.next() {
         match tok {
-            "--bb-cap" => bb_cap = p.num(tok)?,
-            "--rescue" => rescue = p.num(tok)?,
+            "--bb-cap" => cfg.bb_cap = p.num(tok)?,
+            "--rescue" => cfg.rescue = p.num(tok)?,
             "--table" => table_path = p.value(tok)?.to_string(),
             "--dump-max-x" => dump_max_x = p.num(tok)?,
             "--top" => top = p.num(tok)?,
@@ -246,8 +215,9 @@ pub fn run(argv: &[String]) -> R<()> {
             args::hint("solomonoff")
         ));
     }
-    // Phase 3: becomes explicit library config.
-    args::apply_engine_env(work_mult, probe_fuel);
+    let engine = args::engine_cfg(work_mult, probe_fuel);
+    cfg.work_mult = engine.work_mult;
+    cfg.probe_fuel = engine.probe_fuel;
     args::build_pool(threads)?;
 
     let t0 = Instant::now();
@@ -261,73 +231,32 @@ pub fn run(argv: &[String]) -> R<()> {
                 || (Pool::new(), Machine::new()),
                 |(pool, vm), task| {
                     let mut acc = Acc::default();
+                    let mut sink = KeySink::default();
                     run_task(task, &mut |enc, len| {
                         acc.total += 1;
                         pool.clear();
                         let root = pool.decode_u64(enc, len).expect("valid term");
-                        if !pool.has_redex(root) {
-                            acc.record_halt(enc, len, &KeySink::default(), 0);
-                            return;
-                        }
-                        if no_nf(0, (&*pool, root)) {
-                            acc.diverge += 1;
-                            acc.diverge_mass += mass_of(len);
-                            return;
-                        }
-                        let mut sink = KeySink::default();
-                        // Transition caps ported from the census's measured
-                        // trims: rungs 64×β,
-                        // rescue 32×β — verified verdict-identical there on
-                        // the same 4..40 term set; output diffed on port.
-                        for budget in [64u64, 4096] {
-                            sink.clear();
-                            if let Ok(steps) =
-                                vm.normalize_capped(pool, root, budget, budget * 64, &mut sink)
-                            {
+                        let o = ladder::adjudicate(&cfg, pool, vm, root, &mut sink);
+                        match o.verdict {
+                            // `steps` marks the program: 0 means the
+                            // pre-scan found a normal form (a trivial
+                            // self-computation, no m(x) mass), and a
+                            // rescue-less engine halt reports 1 — the
+                            // canonical count is unavailable but the
+                            // program is genuinely nontrivial.
+                            Verdict::Halt {
+                                steps, steps_exact, ..
+                            } => {
+                                let steps = if steps_exact { steps } else { 1 };
                                 acc.record_halt(enc, len, &sink, steps);
-                                return;
                             }
-                        }
-                        let t = lterm_of(pool, root);
-                        match normal_form(bb_cap, &t) {
-                            Ok(nf) => {
-                                sink.clear();
-                                match vm.normalize_capped(
-                                    pool,
-                                    root,
-                                    rescue,
-                                    rescue * 32,
-                                    &mut sink,
-                                ) {
-                                    Ok(steps) => acc.record_halt(enc, len, &sink, steps),
-                                    Err(_) => {
-                                        // Canonical step count unavailable;
-                                        // 1 keeps it marked nontrivial.
-                                        sink.clear();
-                                        emit_lterm(&nf, &mut sink);
-                                        acc.record_halt(enc, len, &sink, 1);
-                                    }
-                                }
-                            }
-                            Err(NoNf::Diverge) => {
+                            Verdict::Diverge => {
                                 acc.diverge += 1;
                                 acc.diverge_mass += mass_of(len);
                             }
-                            Err(NoNf::Unknown(_)) => {
-                                sink.clear();
-                                match vm.normalize_capped(
-                                    pool,
-                                    root,
-                                    rescue,
-                                    rescue * 32,
-                                    &mut sink,
-                                ) {
-                                    Ok(steps) => acc.record_halt(enc, len, &sink, steps),
-                                    Err(_) => {
-                                        acc.unknown += 1;
-                                        acc.unknown_mass += mass_of(len);
-                                    }
-                                }
+                            Verdict::Unknown(_) => {
+                                acc.unknown += 1;
+                                acc.unknown_mass += mass_of(len);
                             }
                         }
                     });

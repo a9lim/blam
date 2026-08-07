@@ -184,10 +184,17 @@ fn is_b23<T: LView>(is: u64, t: T) -> bool {
 /// `true` ⇒ the term (at free-variable threshold `f` binders) has no
 /// normal form. `false` claims nothing.
 ///
-/// The thread-local work meter above is armed by the escalation engine,
-/// so on a thread inside `escalation::normal_form` an exhausted meter
-/// can force a conservative `false` here that a fresh thread would not
-/// give. Never a wrong `true`.
+/// THE ANSWER IS CONTEXT-DEPENDENT IN ONE DIRECTION. The thread-local
+/// [`WORK`] meter above is armed for the duration of an
+/// `escalation::normal_form*` call (by an RAII guard, so it is disarmed
+/// again on every exit including a panic). Called from inside one — the
+/// per-App prefilter — an exhausted meter forces every predicate here to
+/// answer `false`, so this function can decline on a thread where the
+/// same term would be flagged outside. That asymmetry is the whole
+/// safety argument: exhaustion only ever loses a `true`, never invents
+/// one, and a lost `true` costs an escalation path, not a verdict. The
+/// census prefilter runs with the meter disarmed (`i64::MAX`) and so
+/// sees the predicate's full strength.
 pub fn no_nf<T: LView>(f: u32, t: T) -> bool {
     if f >= 62 {
         return false;

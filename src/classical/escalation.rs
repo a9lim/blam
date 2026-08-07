@@ -60,16 +60,20 @@ pub enum LTerm {
     Bot,
 }
 
+/// A λ node. Fields are private: the body is reachable only through the
+/// engine's own traversals and [`emit_bits`], so no caller can build an
+/// `LTerm` whose cached [`Meta`] disagrees with its shape.
 #[derive(Debug)]
 pub struct LamN {
-    pub b: LTerm,
+    b: LTerm,
     m: Meta,
 }
 
+/// An application node; private for the same reason as [`LamN`].
 #[derive(Debug)]
 pub struct AppN {
-    pub f: LTerm,
-    pub a: LTerm,
+    f: LTerm,
+    a: LTerm,
     m: Meta,
 }
 
@@ -176,6 +180,43 @@ impl LTerm {
             Term::Lam(b) => lam(LTerm::from_term(b)),
             Term::App(f, a) => app(LTerm::from_term(f), LTerm::from_term(a)),
         }
+    }
+
+    /// Import the subterm at `id` from a KN [`Pool`](crate::classical::machine::Pool).
+    /// The one converter for every ladder driver: census, solomonoff, and
+    /// the slot search each carried a private copy of this walk.
+    pub fn from_pool(pool: &crate::classical::machine::Pool, id: u32) -> LTerm {
+        use crate::classical::machine::Node;
+        match pool.node(id) {
+            Node::Var(n) => Var(n),
+            Node::Lam(b) => lam(LTerm::from_pool(pool, b)),
+            Node::App(f, a) => app(LTerm::from_pool(pool, f), LTerm::from_pool(pool, a)),
+        }
+    }
+}
+
+/// Stream a closed, ⊥-free `LTerm` as BLC bits into a
+/// [`Sink`](crate::classical::machine::Sink) — the inverse of
+/// [`LTerm::from_pool`], and the one emitter for every consumer (the
+/// redloop probe's re-decode, and solomonoff's packed normal-form key).
+///
+/// Panics on ⊥: every call site holds either a normal form or a closed
+/// probe subject, both ⊥-free by construction.
+pub fn emit_bits<S: crate::classical::machine::Sink>(t: &LTerm, sink: &mut S) {
+    match t {
+        Var(n) => sink.var(*n),
+        Lam(x) => {
+            sink.zero();
+            sink.zero();
+            emit_bits(&x.b, sink);
+        }
+        App(x) => {
+            sink.zero();
+            sink.one();
+            emit_bits(&x.f, sink);
+            emit_bits(&x.a, sink);
+        }
+        Bot => unreachable!("emit_bits on a term containing ⊥"),
     }
 }
 
@@ -305,7 +346,9 @@ fn noccur(i: u32, t: &LTerm) -> u32 {
 }
 
 /// BB.lhs `simplify`: semantics-preserving argument canonicalization.
-pub fn simplify(t: &LTerm) -> LTerm {
+/// Private: it charges the shared work meter, so it is only meaningful
+/// inside an armed `normal_form*` run.
+fn simplify(t: &LTerm) -> LTerm {
     if t.counts().1 == 0 {
         // App-free ⇒ simplify is the identity; old walk charged one per Lam.
         charge(t.counts().0);
@@ -422,27 +465,94 @@ pub enum NoNf {
 // fact (unlike plain no-nf) transfers through application: M no-whnf ⇒
 // app(M, N) no-whnf ⇒ no nf, for every N. Oracle fires never set it:
 // `no_nf` proves the current spine state has no nf, which leaves a
-// whnf possible. Read-and-clear via `take_head_diverge` immediately
-// after `normal_form`; meaningful only when it returned Diverge and
-// the input term was App-rooted (λ-rooted terms trivially have whnf,
-// and `normal_form` peels them, so the flag stays false there).
+// whnf possible. It is set deep inside the recursion, so it stays a
+// thread-local rather than a return value; the entry points read it
+// before their RAII guard restores the ambient value and hand it back
+// as the second component. Meaningful only when the call returned
+// Diverge and the input term was App-rooted (λ-rooted terms trivially
+// have whnf, and the entry points peel them, so it stays false there).
 thread_local! {
     static HEAD_DIVERGE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
 }
 
-// The syntactic oracle preempts the history/redloop checks (it is first
-// in the short-circuit chain), which costs spine attribution: on Ω the
-// oracle fires before the history reoccurrence that would have proven
-// no-whnf. `normal_form_spine` disables it so every Diverge is
-// attributable; default true keeps the canonical engine bit-identical.
-thread_local! {
-    static ORACLE_ON: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
+/// Restore a `Cell` thread-local on scope exit — including on an early
+/// `?` return or a panic. The engine's ambient state (work meter,
+/// no-whnf marker) used to be reset by hand at the single success path,
+/// so a panicking term left a poisoned meter behind for every later
+/// term on that rayon worker.
+struct Restore<T: Copy + 'static> {
+    key: &'static std::thread::LocalKey<std::cell::Cell<T>>,
+    old: T,
 }
 
-/// Read and clear the no-whnf marker for the last `normal_form` call on
-/// this thread.
+impl<T: Copy + 'static> Restore<T> {
+    fn set(key: &'static std::thread::LocalKey<std::cell::Cell<T>>, new: T) -> Restore<T> {
+        let old = key.with(|c| c.replace(new));
+        Restore { key, old }
+    }
+}
+
+impl<T: Copy + 'static> Drop for Restore<T> {
+    fn drop(&mut self) {
+        self.key.with(|c| c.set(self.old));
+    }
+}
+
+/// Read and clear the no-whnf marker left by the last legacy
+/// [`normal_form`] call on this thread. Prefer the second component of
+/// [`normal_form_with`], which carries the same fact without the
+/// ambient hop.
 pub fn take_head_diverge() -> bool {
     HEAD_DIVERGE.with(|c| c.replace(false))
+}
+
+/// Per-run engine settings, fixed for the duration of one `normal_form*`
+/// call and threaded explicitly through the recursion — no environment
+/// reads, no ambient state. Defaults are the census-measured values.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct EngineCfg {
+    /// Work-meter units armed per capacity bit. 16 is generous for
+    /// honest reductions and a hard wall for substitution/simplify
+    /// blowups; `2` bounds live memory to ~4 GB/worker for big
+    /// adjudications and has never lost a verdict. Diagnostic value:
+    /// it separates meter-starved Unknowns from capacity-out Unknowns
+    /// (Tromp's lazy graph reduction shares subst work our eager engine
+    /// pays in full, so his capacity stretches further at equal cap).
+    pub work_mult: i64,
+    /// β budget for the redloop certificate's KN probes. Verified
+    /// insensitive through 65,536 on the whole frontier;
+    /// `REDLOOP_FUEL_REJECTS` says whether a given setting lost a proof.
+    pub probe_fuel: u64,
+}
+
+impl Default for EngineCfg {
+    fn default() -> EngineCfg {
+        EngineCfg {
+            work_mult: 16,
+            probe_fuel: 4096,
+        }
+    }
+}
+
+/// The escalation capacity the census ladder is measured at. Tromp runs
+/// 42M because his BB reducer is his only engine; ours only needs to
+/// catch loops (small redexes) before handing big-growth halters to the
+/// far faster KN rescue, and a tight cap keeps the naive-substitution
+/// engine away from exploding terms.
+pub const DEFAULT_CAP: i64 = 2_000_000;
+
+/// What one `normal_form*` call carries down the recursion besides the
+/// term itself: the tunables, plus whether the syntactic oracle runs.
+///
+/// The oracle preempts the history/redloop checks (it is first in the
+/// short-circuit chain), which costs spine attribution: on Ω it fires
+/// before the history reoccurrence that would have proven no-whnf.
+/// `normal_form_spine*` turns it off so every Diverge is attributable;
+/// `true` keeps the canonical engine bit-identical.
+#[derive(Clone, Copy)]
+struct Run {
+    oracle: bool,
+    probe_fuel: u64,
 }
 
 /// Which resource died. Capacity (redex-history bits) smells like a
@@ -452,28 +562,6 @@ pub fn take_head_diverge() -> bool {
 pub enum Why {
     Capacity,
     WorkMeter,
-}
-
-/// Render closed `t` as BLC bits (⊥-free by construction at call sites).
-fn lterm_bits(t: &LTerm, out: &mut String) {
-    match t {
-        Var(n) => {
-            for _ in 0..*n {
-                out.push('1');
-            }
-            out.push('0');
-        }
-        Lam(x) => {
-            out.push_str("00");
-            lterm_bits(&x.b, out);
-        }
-        App(x) => {
-            out.push_str("01");
-            lterm_bits(&x.f, out);
-            lterm_bits(&x.a, out);
-        }
-        Bot => unreachable!("lterm_bits on a term containing ⊥"),
-    }
 }
 
 /// Self-feedback divergence certificate — the semantic generalization of
@@ -514,21 +602,13 @@ pub static REDLOOP_FUEL_REJECTS: std::sync::atomic::AtomicU64 =
 
 /// Bounded pure normalization of a closed ⊥-free LTerm on the KN
 /// machine; `None` on fuel-out (recorded in REDLOOP_FUEL_REJECTS).
-/// `BLC_PROBE_FUEL` tunes the β budget (default 4096); the telemetry
-/// says whether the census result is fuel-sensitive at a given setting.
-fn probe_nf(t: &LTerm) -> Option<String> {
-    use std::sync::OnceLock;
-    static FUEL: OnceLock<u64> = OnceLock::new();
-    let fuel = *FUEL.get_or_init(|| {
-        std::env::var("BLC_PROBE_FUEL")
-            .ok()
-            .and_then(|s| s.parse().ok())
-            .unwrap_or(4096)
-    });
-    let mut bits = String::new();
-    lterm_bits(t, &mut bits);
+/// `fuel` is [`EngineCfg::probe_fuel`]; the telemetry says whether the
+/// census result is fuel-sensitive at a given setting.
+fn probe_nf(fuel: u64, t: &LTerm) -> Option<String> {
+    let mut bits = crate::classical::machine::StringSink::default();
+    emit_bits(t, &mut bits);
     let mut pool = crate::classical::machine::Pool::new();
-    let root = pool.decode_str(&bits)?;
+    let root = pool.decode_str(&bits.0)?;
     let mut vm = crate::classical::machine::Machine::new();
     let mut sink = crate::classical::machine::StringSink::default();
     if vm.normalize(&pool, root, fuel, &mut sink).is_err() {
@@ -538,7 +618,7 @@ fn probe_nf(t: &LTerm) -> Option<String> {
     Some(sink.0)
 }
 
-fn redloop(t: &LTerm) -> bool {
+fn redloop(run: &Run, t: &LTerm) -> bool {
     spend_work();
     // Self-application A A, syntactically. (A redex D A with D = λx.x x
     // contracts to A A one step later, so this shape subsumes the D A
@@ -572,7 +652,10 @@ fn redloop(t: &LTerm) -> bool {
     }
     // Fire iff nf(A) and nf(Q(A)) both exist and coincide — equal normal
     // forms witness Q(A) =β A, which is all the recurrence needs.
-    let (Some(na), Some(nq)) = (probe_nf(a), probe_nf(&probe)) else {
+    let (Some(na), Some(nq)) = (
+        probe_nf(run.probe_fuel, a),
+        probe_nf(run.probe_fuel, &probe),
+    ) else {
         return false;
     };
     if na == nq {
@@ -595,6 +678,7 @@ type Hist = im_rc::HashSet<LTerm>;
 /// evaluation order of the divergence checks, and every meter charge
 /// are bit-identical to the unparameterized engine.
 fn bb_nf(
+    run: &Run,
     weak: bool,
     f: u32,
     seen: &Hist,
@@ -614,7 +698,7 @@ fn bb_nf(
                 empty = Hist::new();
                 &empty
             };
-            let a = bb_nf(true, f, sub_seen, cap, &tn.f, spine)?;
+            let a = bb_nf(run, true, f, sub_seen, cap, &tn.f, spine)?;
             let b = simplify(&tn.a);
             let ab = app(a.clone(), b.clone());
             let r = bot_free(0, &ab);
@@ -628,10 +712,10 @@ fn bb_nf(
             // history reoccurrence or redloop proves the head chain
             // itself cycles or self-feeds — no whnf. Short-circuit
             // order among the three checks is exactly the original.
-            if ORACLE_ON.with(|c| c.get()) && no_nf(f, &ab) {
+            if run.oracle && no_nf(f, &ab) {
                 return Err(NoNf::Diverge);
             }
-            if seen.contains(&rn.f) || redloop(&ab) {
+            if seen.contains(&rn.f) || redloop(run, &ab) {
                 if spine {
                     HEAD_DIVERGE.with(|c| c.set(true));
                 }
@@ -647,72 +731,112 @@ fn bb_nf(
                     }
                     let mut seen2 = seen.clone();
                     seen2.insert(r);
-                    bb_nf(weak, f, &seen2, cap, &beta(&an.b, &b), spine)
+                    bb_nf(run, weak, f, &seen2, cap, &beta(&an.b, &b), spine)
                 }
                 _ if weak => Ok(ab),
                 _ => {
                     let mut seen2 = seen.clone();
                     seen2.insert(r);
-                    let a2 = bb_nf(false, f, &seen2, cap, &a, false)?;
-                    let b2 = bb_nf(false, f, &seen2, cap, &b, false)?;
+                    let a2 = bb_nf(run, false, f, &seen2, cap, &a, false)?;
+                    let b2 = bb_nf(run, false, f, &seen2, cap, &b, false)?;
                     Ok(app(a2, b2))
                 }
             }
         }
-        Lam(x) if !weak => Ok(lam(bb_nf(weak, f + 1, seen, cap, &x.b, false)?)),
+        Lam(x) if !weak => Ok(lam(bb_nf(run, weak, f + 1, seen, cap, &x.b, false)?)),
         _ => Ok(t.clone()),
     }
 }
 
 /// BB.lhs `normalForm`: peel leading lambdas (they are never applied, so
 /// the free threshold stays 0), then reduce with oracle + history.
-/// The work meter is armed at 16 nodes per capacity bit — generous for
-/// honest reductions, a hard wall for substitution/simplify blowups.
-/// `BLC_WORK_MULT` overrides the 16 (diagnostic: distinguishes
-/// meter-starved Unknowns from capacity-out Unknowns — Tromp's lazy
-/// graph reduction shares subst work our eager engine pays in full,
-/// so his capacity stretches further at equal cap).
-pub fn normal_form(cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
-    use std::sync::OnceLock;
-    static WORK_MULT: OnceLock<i64> = OnceLock::new();
-    let mult = *WORK_MULT.get_or_init(|| {
-        std::env::var("BLC_WORK_MULT")
-            .ok()
-            .and_then(|s| s.parse().ok())
-            .unwrap_or(16)
-    });
+///
+/// The second component is the no-whnf marker (see `HEAD_DIVERGE`): true
+/// iff the Diverge proof landed on the root's own head-reduction chain.
+fn run_nf(run: &Run, cfg: EngineCfg, cap_bits: i64, t: &LTerm) -> (Result<LTerm, NoNf>, bool) {
     let mut cap = cap_bits;
     // `root` survives only while no λ has been peeled: a λ-rooted term
     // has a whnf by construction, so spine facts under the binder are
     // about the body, not the term.
-    fn nf0(cap: &mut i64, t: &LTerm, root: bool) -> Result<LTerm, NoNf> {
+    fn nf0(run: &Run, cap: &mut i64, t: &LTerm, root: bool) -> Result<LTerm, NoNf> {
         match t {
-            Lam(x) => Ok(lam(nf0(cap, &x.b, false)?)),
-            _ => bb_nf(false, 0, &Hist::new(), cap, t, root),
+            Lam(x) => Ok(lam(nf0(run, cap, &x.b, false)?)),
+            _ => bb_nf(run, false, 0, &Hist::new(), cap, t, root),
         }
     }
-    HEAD_DIVERGE.with(|c| c.set(false));
-    WORK.with(|w| w.set(cap_bits.saturating_mul(mult)));
-    let out = nf0(&mut cap, t, true);
-    WORK.with(|w| w.set(i64::MAX));
+    // Both guards restore on the way out, panic included; the marker is
+    // read while this one is still live, so the fact leaves as a value.
+    let _head = Restore::set(&HEAD_DIVERGE, false);
+    let _work = Restore::set(&WORK, cap_bits.saturating_mul(cfg.work_mult));
+    let out = nf0(run, &mut cap, t, true);
+    let spine = HEAD_DIVERGE.with(|c| c.get());
+    (out, spine)
+}
+
+/// The escalation engine at an explicit configuration — the entry point
+/// for every ladder driver. No environment reads, no ambient state: what
+/// the run does is exactly `cfg` plus `cap_bits`.
+pub fn normal_form_with(cfg: EngineCfg, cap_bits: i64, t: &LTerm) -> (Result<LTerm, NoNf>, bool) {
+    let run = Run {
+        oracle: true,
+        probe_fuel: cfg.probe_fuel,
+    };
+    run_nf(&run, cfg, cap_bits, t)
+}
+
+/// [`normal_form_with`] with the syntactic oracle disabled, plus the
+/// no-whnf attribution: every Diverge comes from redex-history
+/// reoccurrence or redloop, so a `true` second component certifies the
+/// (App-rooted) input has no weak head normal form. This is the
+/// adjudicator for generic-argument questions — "does `p x⃗` head-cycle
+/// for rigid x⃗?" — where the oracle's cheaper no-nf verdict would
+/// destroy the attribution (it fires first on exactly the Ω-shapes the
+/// history proves on-spine). Slower per term than `normal_form_with`;
+/// use for targeted adjudication, never enumeration throughput.
+pub fn normal_form_spine_with(
+    cfg: EngineCfg,
+    cap_bits: i64,
+    t: &LTerm,
+) -> (Result<LTerm, NoNf>, bool) {
+    let run = Run {
+        oracle: false,
+        probe_fuel: cfg.probe_fuel,
+    };
+    run_nf(&run, cfg, cap_bits, t)
+}
+
+/// Phase-3 legacy shim — DEPRECATED, use [`normal_form_with`]. This is
+/// the only environment read left in the library: `BLC_WORK_MULT` and
+/// `BLC_PROBE_FUEL` (both `OnceLock`-cached, so a mid-run `set_var` is
+/// not seen) stand in for an explicit [`EngineCfg`]. It also republishes
+/// the no-whnf marker so `take_head_diverge` keeps working. The
+/// remaining callers are the quantum drivers and the slot search; they
+/// migrate with their own lanes.
+pub fn normal_form(cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
+    let (out, spine) = normal_form_with(env_cfg(), cap_bits, t);
+    HEAD_DIVERGE.with(|c| c.set(spine));
     out
 }
 
-/// `normal_form` with the syntactic oracle disabled, plus the no-whnf
-/// attribution: every Diverge comes from redex-history reoccurrence or
-/// redloop, so a `true` second component certifies the (App-rooted)
-/// input has no weak head normal form. This is the adjudicator for
-/// generic-argument questions — "does `p x⃗` head-cycle for rigid x⃗?" —
-/// where the oracle's cheaper no-nf verdict would destroy the
-/// attribution (it fires first on exactly the Ω-shapes the history
-/// proves on-spine). Slower per term than `normal_form`; use for
-/// targeted adjudication, never enumeration throughput.
+/// Phase-3 legacy shim — DEPRECATED, use [`normal_form_spine_with`].
 pub fn normal_form_spine(cap_bits: i64, t: &LTerm) -> (Result<LTerm, NoNf>, bool) {
-    ORACLE_ON.with(|c| c.set(false));
-    let out = normal_form(cap_bits, t);
-    ORACLE_ON.with(|c| c.set(true));
-    let spine = take_head_diverge();
-    (out, spine)
+    normal_form_spine_with(env_cfg(), cap_bits, t)
+}
+
+/// `EngineCfg` from the environment, defaults where unset or unparseable.
+fn env_cfg() -> EngineCfg {
+    use std::sync::OnceLock;
+    static CFG: OnceLock<EngineCfg> = OnceLock::new();
+    *CFG.get_or_init(|| {
+        let d = EngineCfg::default();
+        fn get<T: std::str::FromStr>(k: &str) -> Option<T> {
+            std::env::var(k).ok().and_then(|s| s.parse().ok())
+        }
+        EngineCfg {
+            work_mult: get("BLC_WORK_MULT").unwrap_or(d.work_mult),
+            probe_fuel: get("BLC_PROBE_FUEL").unwrap_or(d.probe_fuel),
+        }
+    })
 }
 
 #[cfg(test)]
@@ -748,6 +872,69 @@ mod tests {
                 assert!(set.contains(&from_bits(&bits)), "{bits}");
             });
         }
+    }
+
+    #[test]
+    fn pool_import_and_bit_emission_are_inverses() {
+        // from_pool ∘ emit_bits is the identity on every closed term ≤ 20
+        // bits — the two halves of the ladder's LTerm boundary, checked
+        // against each other rather than against a third rendering.
+        use crate::classical::machine::{Pool, StringSink};
+        for n in [4u32, 10, 16, 20] {
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                let bits = crate::blc::wire::enc_to_string(enc, len);
+                let mut pool = Pool::new();
+                let root = pool.decode_str(&bits).expect("closed term");
+                let t = LTerm::from_pool(&pool, root);
+                let mut out = StringSink::default();
+                emit_bits(&t, &mut out);
+                assert_eq!(out.0, bits);
+                assert_eq!(t.bit_size(), len as u64, "{bits}");
+            });
+        }
+    }
+
+    #[test]
+    fn explicit_config_matches_the_environment_shim() {
+        // The Phase-3 split must be a no-op at the default settings:
+        // `normal_form` (env-backed) and `normal_form_with` (explicit)
+        // are the same engine, so they agree verdict for verdict.
+        for bits in [
+            "010001101000011010",               // Ω
+            "01000110100010",                   // (λx.x x) I
+            "010001101000011001001010",         // growing-wrapper loop
+            "01000110001100001011010000110110", // loop32, stays Unknown
+            "01000110100001100110000110001110", // a redloop kill
+        ] {
+            let t = from_bits(bits);
+            let legacy = normal_form(2_000_000, &t);
+            let legacy_spine = take_head_diverge();
+            let (explicit, spine) = normal_form_with(EngineCfg::default(), 2_000_000, &t);
+            assert_eq!(legacy, explicit, "{bits}");
+            assert_eq!(legacy_spine, spine, "{bits}");
+        }
+    }
+
+    #[test]
+    fn the_work_meter_is_disarmed_again_after_a_panicking_run() {
+        // The RAII guard, not the success path, is what puts the ambient
+        // meter back: a worker that panics inside the engine must not
+        // poison every later term on its thread.
+        let t = app(lam(app(Var(1), Var(1))), lam(app(Var(1), Var(1))));
+        let _ = std::panic::catch_unwind(|| {
+            let _ = normal_form_with(EngineCfg::default(), 1_000, &t);
+            panic!("simulated worker panic while the meter is armed");
+        });
+        assert!(
+            !crate::classical::oracle::work_exhausted(),
+            "meter left armed after an unwind"
+        );
+        // And a subsequent honest reduction still gets its full budget.
+        let c2 = lam(lam(app(Var(2), app(Var(2), Var(1)))));
+        let tower = app(app(c2.clone(), c2.clone()), c2);
+        assert!(normal_form_with(EngineCfg::default(), 10_000_000, &tower)
+            .0
+            .is_ok());
     }
 
     #[test]
