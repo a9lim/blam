@@ -30,9 +30,18 @@ pub enum Prim {
     Cnot,
     T,
     H,
+    /// Phase gate S = T² = diag(1, i). Clifford; exact in ℤ[ω].
+    S,
+    /// Pauli X (bit flip). Clifford; a permutation of amplitudes.
+    X,
+    /// Pauli Z = S² = diag(1, −1). Clifford.
+    Z,
 }
 
 impl Prim {
+    /// The canonical universe: the five primitives of the frozen pilot.
+    /// S/X/Z exist for alternate signature universes (`qcensus --sig`);
+    /// the canonical census and all frozen thresholds use only these five.
     pub const ALL: [Prim; 5] = [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H];
 
     pub(crate) fn arity(self) -> usize {
@@ -49,7 +58,30 @@ impl Prim {
             Prim::Cnot => "cnot",
             Prim::T => "t",
             Prim::H => "h",
+            Prim::S => "s",
+            Prim::X => "x",
+            Prim::Z => "z",
         }
+    }
+
+    /// Inverse of `name` (signature parsing).
+    pub fn by_name(s: &str) -> Option<Prim> {
+        Some(match s {
+            "new" => Prim::New,
+            "meas" => Prim::Meas,
+            "cnot" => Prim::Cnot,
+            "t" => Prim::T,
+            "h" => Prim::H,
+            "s" => Prim::S,
+            "x" => Prim::X,
+            "z" => Prim::Z,
+            _ => return None,
+        })
+    }
+
+    /// Unary store gate (everything except the special forms new/meas/cnot).
+    pub(crate) fn is_gate1(self) -> bool {
+        matches!(self, Prim::H | Prim::T | Prim::S | Prim::X | Prim::Z)
     }
 }
 
@@ -229,6 +261,60 @@ impl Store {
         Ok(())
     }
 
+    pub(crate) fn apply_s(&mut self, q: u32) -> Result<(), Capacity> {
+        // S = diag(1, i); i = ω² exactly.
+        let i_unit = Dw {
+            a: 0,
+            b: 0,
+            c: 1,
+            d: 0,
+            k: 0,
+        };
+        let p = self.pos_of(q).expect("S on non-live qubit");
+        let bit = 1usize << p;
+        for i in 0..self.amps.len() {
+            if i & bit != 0 {
+                self.amps[i] = self.amps[i].mul(i_unit).ok_or(Capacity::Amplitude)?;
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn apply_x(&mut self, q: u32) -> Result<(), Capacity> {
+        // Pure permutation: infallible, kept Result-shaped for uniformity.
+        let p = self.pos_of(q).expect("X on non-live qubit");
+        let bit = 1usize << p;
+        for i in 0..self.amps.len() {
+            if i & bit == 0 {
+                self.amps.swap(i, i | bit);
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn apply_z(&mut self, q: u32) -> Result<(), Capacity> {
+        let p = self.pos_of(q).expect("Z on non-live qubit");
+        let bit = 1usize << p;
+        for i in 0..self.amps.len() {
+            if i & bit != 0 {
+                self.amps[i] = self.amps[i].neg();
+            }
+        }
+        Ok(())
+    }
+
+    /// Dispatch a unary gate primitive (H/T/S/X/Z).
+    pub(crate) fn apply_gate1(&mut self, p: Prim, q: u32) -> Result<(), Capacity> {
+        match p {
+            Prim::H => self.apply_h(q),
+            Prim::T => self.apply_t(q),
+            Prim::S => self.apply_s(q),
+            Prim::X => self.apply_x(q),
+            Prim::Z => self.apply_z(q),
+            _ => unreachable!("apply_gate1 on {:?}", p),
+        }
+    }
+
     pub(crate) fn apply_cnot(&mut self, qc: u32, qt: u32) {
         let pc = self.pos_of(qc).expect("CNOT control non-live");
         let pt = self.pos_of(qt).expect("CNOT target non-live");
@@ -300,6 +386,24 @@ pub enum Effect {
     Cnot(u32, u32, u32, u32),
     /// Measurement of (qubit, epoch) with this branch's outcome.
     Meas(u32, u32, bool),
+    /// S applied to (qubit, consumed epoch). Alternate universes only.
+    S(u32, u32),
+    /// X applied to (qubit, consumed epoch). Alternate universes only.
+    X(u32, u32),
+    /// Z applied to (qubit, consumed epoch). Alternate universes only.
+    Z(u32, u32),
+}
+
+/// The trace event for a unary gate firing.
+fn gate1_effect(p: Prim, q: u32, e: u32) -> Effect {
+    match p {
+        Prim::H => Effect::H(q, e),
+        Prim::T => Effect::T(q, e),
+        Prim::S => Effect::S(q, e),
+        Prim::X => Effect::X(q, e),
+        Prim::Z => Effect::Z(q, e),
+        _ => unreachable!("gate1_effect on {:?}", p),
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -525,20 +629,10 @@ fn unary_prim(p: Prim, f: &Rc<QTerm>, a: &Rc<QTerm>, cx: &mut Ctx) -> Found {
         }
         ArgView::Value => Found::Fail(ErrKind::Species),
         ArgView::Handle(q, e) => match p {
-            Prim::H => match cx.store.consume(q, e) {
-                Ok(()) => match cx.store.apply_h(q) {
+            g if g.is_gate1() => match cx.store.consume(q, e) {
+                Ok(()) => match cx.store.apply_gate1(g, q) {
                     Ok(()) => {
-                        cx.trace.push(Effect::H(q, e));
-                        Found::RewrittenEffect(QTerm::Handle(q, e + 1))
-                    }
-                    Err(c) => Found::Full(c),
-                },
-                Err(k) => Found::Fail(k),
-            },
-            Prim::T => match cx.store.consume(q, e) {
-                Ok(()) => match cx.store.apply_t(q) {
-                    Ok(()) => {
-                        cx.trace.push(Effect::T(q, e));
+                        cx.trace.push(gate1_effect(g, q, e));
                         Found::RewrittenEffect(QTerm::Handle(q, e + 1))
                     }
                     Err(c) => Found::Full(c),
@@ -738,8 +832,10 @@ pub fn run_traced(term: QTerm, budget: &QBudget) -> Vec<(Leaf, Vec<Effect>)> {
     leaves
 }
 
-/// Apply a program term to the five primitives in the given order.
-pub fn apply_signature(p: &Term, order: &[Prim; 5]) -> QTerm {
+/// Apply a program term to its signature — the primitives, in order.
+/// The canonical universe is the frozen five; alternate universes pass
+/// any length and any gate set.
+pub fn apply_signature(p: &Term, order: &[Prim]) -> QTerm {
     let mut t = qt_of_term(p);
     for pr in order {
         t = QTerm::App(Rc::new(t), Rc::new(QTerm::Prim(*pr)));

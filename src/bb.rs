@@ -415,6 +415,27 @@ pub enum NoNf {
     Unknown(Why),
 }
 
+// Set when the Diverge proof landed while reduction was still the root
+// term's own head-reduction chain (`spine` below) via redex-history
+// reoccurrence or redloop — both certify that head reduction itself
+// never terminates, i.e. the root has NO WEAK HEAD NORMAL FORM. That
+// fact (unlike plain no-nf) transfers through application: M no-whnf ⇒
+// app(M, N) no-whnf ⇒ no nf, for every N. Oracle fires never set it:
+// `no_nf` proves the current spine state has no nf, which leaves a
+// whnf possible. Read-and-clear via `take_head_diverge` immediately
+// after `normal_form`; meaningful only when it returned Diverge and
+// the input term was App-rooted (λ-rooted terms trivially have whnf,
+// and `normal_form` peels them, so the flag stays false there).
+thread_local! {
+    static HEAD_DIVERGE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// Read and clear the no-whnf marker for the last `normal_form` call on
+/// this thread.
+pub fn take_head_diverge() -> bool {
+    HEAD_DIVERGE.with(|c| c.replace(false))
+}
+
 /// Which resource died. Capacity (redex-history bits) smells like a
 /// missed loop; the work meter (subst/simplify blowup) smells like a
 /// big-growth halter that the KN rescue can still win.
@@ -558,7 +579,20 @@ fn redloop(t: &LTerm) -> bool {
 // long escalation runs. Keys hash O(1) via the cached structural hash.
 type Hist = im_rc::HashSet<LTerm>;
 
-fn bb_nf(weak: bool, f: u32, seen: &Hist, cap: &mut i64, t: &LTerm) -> Result<LTerm, NoNf> {
+/// `spine`: this call is still the root term's own head-reduction
+/// demand — carried through head descents and β-contracta, dropped on
+/// argument descents and under lambdas (both mean the root reached a
+/// whnf first). Only controls the HEAD_DIVERGE marker; verdicts, the
+/// evaluation order of the divergence checks, and every meter charge
+/// are bit-identical to the unparameterized engine.
+fn bb_nf(
+    weak: bool,
+    f: u32,
+    seen: &Hist,
+    cap: &mut i64,
+    t: &LTerm,
+    spine: bool,
+) -> Result<LTerm, NoNf> {
     match t {
         App(tn) => {
             if work_exhausted() {
@@ -571,7 +605,7 @@ fn bb_nf(weak: bool, f: u32, seen: &Hist, cap: &mut i64, t: &LTerm) -> Result<LT
                 empty = Hist::new();
                 &empty
             };
-            let a = bb_nf(true, f, sub_seen, cap, &tn.f)?;
+            let a = bb_nf(true, f, sub_seen, cap, &tn.f, spine)?;
             let b = simplify(&tn.a);
             let ab = app(a.clone(), b.clone());
             let r = bot_free(0, &ab);
@@ -580,29 +614,43 @@ fn bb_nf(weak: bool, f: u32, seen: &Hist, cap: &mut i64, t: &LTerm) -> Result<LT
             if *cap < 0 {
                 return Err(NoNf::Unknown(Why::Capacity));
             }
-            if no_nf(f, &ab) || seen.contains(&rn.f) || redloop(&ab) {
+            // Split only to attribute the fire: the oracle proves no-nf
+            // of the current state (whnf still possible), while a
+            // history reoccurrence or redloop proves the head chain
+            // itself cycles or self-feeds — no whnf. Short-circuit
+            // order among the three checks is exactly the original.
+            if no_nf(f, &ab) {
+                return Err(NoNf::Diverge);
+            }
+            if seen.contains(&rn.f) || redloop(&ab) {
+                if spine {
+                    HEAD_DIVERGE.with(|c| c.set(true));
+                }
                 return Err(NoNf::Diverge);
             }
             match &a {
                 Lam(an) => {
                     if seen.contains(&r) {
+                        if spine {
+                            HEAD_DIVERGE.with(|c| c.set(true));
+                        }
                         return Err(NoNf::Diverge);
                     }
                     let mut seen2 = seen.clone();
                     seen2.insert(r);
-                    bb_nf(weak, f, &seen2, cap, &beta(&an.b, &b))
+                    bb_nf(weak, f, &seen2, cap, &beta(&an.b, &b), spine)
                 }
                 _ if weak => Ok(ab),
                 _ => {
                     let mut seen2 = seen.clone();
                     seen2.insert(r);
-                    let a2 = bb_nf(false, f, &seen2, cap, &a)?;
-                    let b2 = bb_nf(false, f, &seen2, cap, &b)?;
+                    let a2 = bb_nf(false, f, &seen2, cap, &a, false)?;
+                    let b2 = bb_nf(false, f, &seen2, cap, &b, false)?;
                     Ok(app(a2, b2))
                 }
             }
         }
-        Lam(x) if !weak => Ok(lam(bb_nf(weak, f + 1, seen, cap, &x.b)?)),
+        Lam(x) if !weak => Ok(lam(bb_nf(weak, f + 1, seen, cap, &x.b, false)?)),
         _ => Ok(t.clone()),
     }
 }
@@ -625,14 +673,18 @@ pub fn normal_form(cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
             .unwrap_or(16)
     });
     let mut cap = cap_bits;
-    fn nf0(cap: &mut i64, t: &LTerm) -> Result<LTerm, NoNf> {
+    // `root` survives only while no λ has been peeled: a λ-rooted term
+    // has a whnf by construction, so spine facts under the binder are
+    // about the body, not the term.
+    fn nf0(cap: &mut i64, t: &LTerm, root: bool) -> Result<LTerm, NoNf> {
         match t {
-            Lam(x) => Ok(lam(nf0(cap, &x.b)?)),
-            _ => bb_nf(false, 0, &Hist::new(), cap, t),
+            Lam(x) => Ok(lam(nf0(cap, &x.b, false)?)),
+            _ => bb_nf(false, 0, &Hist::new(), cap, t, root),
         }
     }
+    HEAD_DIVERGE.with(|c| c.set(false));
     WORK.with(|w| w.set(cap_bits.saturating_mul(mult)));
-    let out = nf0(&mut cap, t);
+    let out = nf0(&mut cap, t, true);
     WORK.with(|w| w.set(i64::MAX));
     out
 }

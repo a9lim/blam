@@ -142,8 +142,9 @@ impl Pool {
         }
     }
 
-    /// Apply a program to the five primitives in signature order.
-    pub fn apply_signature(&mut self, root: u32, order: &[Prim; 5]) -> u32 {
+    /// Apply a program to its signature primitives in order (any length;
+    /// the canonical universe is the frozen five).
+    pub fn apply_signature(&mut self, root: u32, order: &[Prim]) -> u32 {
         let mut r = root;
         for &p in order {
             let pn = self.push(Node::Prim(p));
@@ -363,14 +364,6 @@ impl QMachine {
                                         Err(c) => break 'run Some(Fate::Capacity(c)),
                                     }
                                 }
-                                Prim::H | Prim::T | Prim::Meas => {
-                                    let Some(Frame::Arg(at, ae)) = self.stack.pop() else {
-                                        unreachable!()
-                                    };
-                                    self.stack.push(Frame::Prim1(p));
-                                    t = at;
-                                    env = ae;
-                                }
                                 Prim::Cnot => {
                                     let Some(Frame::Arg(a1t, a1e)) = self.stack.pop() else {
                                         unreachable!()
@@ -381,6 +374,16 @@ impl QMachine {
                                     self.stack.push(Frame::Cnot1(a2t, a2e));
                                     t = a1t;
                                     env = a1e;
+                                }
+                                // Every remaining prim is unary: gates and
+                                // meas share the wait-for-WHNF frame.
+                                _ => {
+                                    let Some(Frame::Arg(at, ae)) = self.stack.pop() else {
+                                        unreachable!()
+                                    };
+                                    self.stack.push(Frame::Prim1(p));
+                                    t = at;
+                                    env = ae;
                                 }
                             }
                         } else if matches!(
@@ -404,15 +407,11 @@ impl QMachine {
                         Some(Frame::Arg(..)) => {
                             break 'run Some(Fate::Err(ErrKind::HandleApplied));
                         }
-                        Some(Frame::Prim1(p @ (Prim::H | Prim::T))) => {
+                        Some(Frame::Prim1(p)) if p != Prim::Meas => {
                             self.stack.pop();
                             match store.consume(q, e) {
                                 Ok(()) => {
-                                    let r = if p == Prim::H {
-                                        store.apply_h(q)
-                                    } else {
-                                        store.apply_t(q)
-                                    };
+                                    let r = store.apply_gate1(p, q);
                                     match r {
                                         Ok(()) => {
                                             t = pool.push(Node::Handle(q, e + 1));
@@ -455,7 +454,6 @@ impl QMachine {
                                 Err(k) => break 'run Some(Fate::Err(k)),
                             }
                         }
-                        Some(Frame::Prim1(_)) => unreachable!("Prim1 holds only h/t/meas"),
                         Some(Frame::Cnot1(a2t, a2e)) => {
                             self.stack.pop();
                             self.stack.push(Frame::Cnot2(q, e));
@@ -552,7 +550,7 @@ impl QMachine {
         pool: &mut Pool,
         enc: u64,
         len: u8,
-        order: &[Prim; 5],
+        order: &[Prim],
         budget: &QBudget,
         leaves: &mut Vec<Leaf>,
     ) {
@@ -569,7 +567,7 @@ impl QMachine {
         enc: u64,
         len: u8,
         cond: Option<u32>,
-        order: &[Prim; 5],
+        order: &[Prim],
         budget: &QBudget,
         leaves: &mut Vec<Leaf>,
     ) {
@@ -597,14 +595,14 @@ mod tests {
     /// p h meas new cnot t.
     const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
-    fn qeval_leaves(src: &str, order: &[Prim; 5], budget: &QBudget) -> Vec<Leaf> {
+    fn qeval_leaves(src: &str, order: &[Prim], budget: &QBudget) -> Vec<Leaf> {
         let t = parse_all(src).unwrap();
         qeval::run(qeval::apply_signature(&t, order), budget)
     }
 
     /// Lockstep over every closed program of size 4..=max_n: identical leaf
     /// sequences (fate incl. full store, exact mass, contraction count).
-    fn lockstep_population(max_n: u32, order: &[Prim; 5], ref_budget: &QBudget) {
+    fn lockstep_population(max_n: u32, order: &[Prim], ref_budget: &QBudget) {
         // Machine transition budget is engine-relative: generous, so only
         // the shared β/branch budgets bind.
         let fast_budget = QBudget {
@@ -637,6 +635,67 @@ mod tests {
         // A different permutation exercises different prim adjacencies.
         let order = [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H];
         lockstep_population(20, &order, &QBudget::default());
+    }
+
+    #[test]
+    fn lockstep_extended_six_prim_universe() {
+        // Alternate universe: the frozen five plus S — six binders'
+        // worth of signature, exercising arbitrary-length application
+        // and the extended gate dispatch on both engines.
+        let order = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T, Prim::S];
+        lockstep_population(18, &order, &QBudget::default());
+    }
+
+    #[test]
+    fn lockstep_pauli_universe() {
+        // Clifford-only alternate universe with X/Z in gate position.
+        let order = [Prim::X, Prim::Meas, Prim::New, Prim::Z, Prim::S];
+        lockstep_population(18, &order, &QBudget::default());
+    }
+
+    #[test]
+    fn sxz_gates_exact() {
+        // Exact single-qubit actions through the machine:
+        // S(H|0⟩) = (|0⟩ + i|1⟩)/√2; X|0⟩ = |1⟩; Z(H|0⟩) = (|0⟩ − |1⟩)/√2.
+        let build = |gates: &[Prim]| {
+            let mut pool = Pool::new();
+            let nw = pool.push(Node::Prim(Prim::New));
+            let dummy = pool.push(Node::Prim(Prim::T));
+            let mut cur = pool.push(Node::App(nw, dummy));
+            for &g in gates {
+                let pn = pool.push(Node::Prim(g));
+                cur = pool.push(Node::App(pn, cur));
+            }
+            let leaves = run_root(&mut pool, cur);
+            assert_eq!(leaves.len(), 1);
+            match &leaves[0].fate {
+                Fate::Halt(store) => store.amps.clone(),
+                other => panic!("unexpected fate {other:?}"),
+            }
+        };
+        let h = Dw {
+            a: 1,
+            b: 0,
+            c: 0,
+            d: 0,
+            k: 1,
+        };
+        let ih = Dw {
+            a: 0,
+            b: 0,
+            c: 1,
+            d: 0,
+            k: 1,
+        };
+        let s_plus = build(&[Prim::H, Prim::S]);
+        assert_eq!(s_plus[0].reduce(), h);
+        assert_eq!(s_plus[1].reduce(), ih);
+        let x0 = build(&[Prim::X]);
+        assert_eq!(x0[0], Dw::ZERO);
+        assert_eq!(x0[1].reduce(), Dw::ONE);
+        let z_plus = build(&[Prim::H, Prim::Z]);
+        assert_eq!(z_plus[0].reduce(), h);
+        assert_eq!(z_plus[1].reduce(), h.neg());
     }
 
     #[test]

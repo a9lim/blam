@@ -239,11 +239,12 @@ fn sweep_one(
     enc: u64,
     len: u8,
     cond: Option<u32>,
+    sig: &[Prim],
     budget: &QBudget,
     t: &mut Tally,
 ) {
     leaves.clear();
-    m.run_conditioned_into(pool, enc, len, cond, &FROZEN, budget, leaves);
+    m.run_conditioned_into(pool, enc, len, cond, sig, budget, leaves);
     let n = len as u32;
     t.programs += 1;
     t.leaves += leaves.len() as u64;
@@ -383,6 +384,9 @@ fn main() {
     };
     let mut threads: Option<usize> = None;
     let mut out: Option<String> = None;
+    // The canonical universe unless --sig overrides (alternate universes
+    // are deliberately-labeled siblings; canonical data stays frozen).
+    let mut sig: Vec<Prim> = FROZEN.to_vec();
     let args: Vec<String> = std::env::args().skip(1).collect();
     let mut i = 0;
     while i < args.len() {
@@ -423,6 +427,17 @@ fn main() {
                 out = Some(args[i + 1].clone());
                 i += 2;
             }
+            "--sig" => {
+                sig = args[i + 1]
+                    .split(',')
+                    .map(|s| {
+                        Prim::by_name(s.trim())
+                            .unwrap_or_else(|| panic!("unknown primitive {s:?} in --sig"))
+                    })
+                    .collect();
+                assert!(!sig.is_empty(), "--sig needs at least one primitive");
+                i += 2;
+            }
             other => panic!("unknown arg {other}"),
         }
     }
@@ -438,8 +453,9 @@ fn main() {
         None => "M_Fock".to_string(),
         Some(k) => format!("G_{k} (p k-bar sig)"),
     };
+    let sig_str = sig.iter().map(|p| p.name()).collect::<Vec<_>>().join(" ");
     eprintln!(
-        "qcensus [{mode}]: sizes {min_n}..={max_n}, order [h meas new cnot t], beta={} trans={} qubits={} branches={}, {} threads",
+        "qcensus [{mode}]: sizes {min_n}..={max_n}, order [{sig_str}], beta={} trans={} qubits={} branches={}, {} threads",
         budget.beta, budget.trans, budget.max_qubits, budget.max_branches, nthreads
     );
 
@@ -462,6 +478,7 @@ fn main() {
                             enc,
                             len,
                             cond_k,
+                            &sig,
                             &budget,
                             &mut t,
                         );
@@ -501,7 +518,7 @@ fn main() {
     );
     let _ = writeln!(
         r,
-        "# sizes {min_n}..={max_n}  order [h meas new cnot t]  beta={} trans={} qubits={} branches={}",
+        "# sizes {min_n}..={max_n}  order [{sig_str}]  beta={} trans={} qubits={} branches={}",
         budget.beta, budget.trans, budget.max_qubits, budget.max_branches
     );
     let _ = writeln!(

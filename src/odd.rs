@@ -197,6 +197,12 @@ impl Monitor {
                     self.qubits.insert(q, Slot::Gone);
                 }
             }
+            // The mask algebra is derived for the canonical universe's
+            // gates only; traces from alternate signature universes are
+            // out of the monitor's soundness scope by construction.
+            Effect::S(..) | Effect::X(..) | Effect::Z(..) => {
+                unreachable!("odd monitor is canonical-universe (h/t/cnot/meas) only")
+            }
         }
     }
 

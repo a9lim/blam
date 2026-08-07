@@ -28,15 +28,17 @@
 //! Verdict merging is order-independent with a total witness tie-break,
 //! so a chunked run's table rows are bit-identical to a monolithic run's.
 //!
-//! Delta runs: the λ-wrap memo rolls by size parity, so size n reuses
-//! size n−2's escalation-tier verdicts. `--memo-out FILE` appends each
-//! size's records; `--memo-in FILE` seeds the two parity slots before the
-//! first size. A cold `census n n` is verdict-identical to the monolithic
-//! row (fates, |nf|, β totals) but re-escalates memo-covered wraps; with
-//! `--memo-in` from a run through n−1 the row is bit-identical, escal
-//! column included.
+//! Delta runs: the λ-wrap memo rolls by size parity (size n reuses size
+//! n−2's escalation-tier verdicts), and the no-whnf head memo accumulates
+//! across all sizes (an application whose head has no weak head normal
+//! form diverges for every argument). `--memo-out FILE` appends both as
+//! sizes complete; `--memo-in FILE` seeds them. A cold `census n n` is
+//! halt-identical to the monolithic row (halts, |nf|, β totals) but may
+//! report Unknown where the sweep's accumulated no-whnf facts prove
+//! Diverge, and re-escalates memo-covered wraps; with `--memo-in` from a
+//! run through n−1 the row is bit-identical, escal column included.
 
-use blam::bb::{normal_form, LTerm, NoNf, Why};
+use blam::bb::{normal_form, take_head_diverge, LTerm, NoNf, Why};
 use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks, GenTask};
 use blam::eval::OutOfFuel;
 use blam::oracle::no_nf;
@@ -122,6 +124,13 @@ struct Stats {
     /// escalated terms and memo hits (chain propagation).
     memo_out: Vec<((u64, u8), MemoV)>,
     unknowns: Vec<(u64, u8)>,
+    /// Terms proven to have NO WEAK HEAD NORMAL FORM this size:
+    /// escalation Diverges whose proof landed on the root's own spine
+    /// (bb::take_head_diverge), plus head-memo kills (an application of
+    /// a no-whnf head is itself no-whnf). Feeds the cross-size set.
+    no_whnf_out: Vec<(u64, u8)>,
+    /// App-rooted terms killed by the no-whnf head memo.
+    head_hits: u64,
 }
 
 impl Stats {
@@ -163,6 +172,8 @@ impl Stats {
         self.memo_hits += o.memo_hits;
         self.memo_out.extend(o.memo_out);
         self.unknowns.extend(o.unknowns);
+        self.no_whnf_out.extend(o.no_whnf_out);
+        self.head_hits += o.head_hits;
         self
     }
 
@@ -197,7 +208,7 @@ struct Ckpt {
 
 fn ckpt_header(cfg: &Cfg, min_n: u32, max_n: u32, target: usize, groups: usize) -> String {
     format!(
-        "blamckpt v1 min={min_n} max={max_n} b1={} b2={} cap={} rescue={} rtm={} prescan={} oracle={} target={target} groups={groups}",
+        "blamckpt v2 min={min_n} max={max_n} b1={} b2={} cap={} rescue={} rtm={} prescan={} oracle={} target={target} groups={groups}",
         cfg.budget1, cfg.budget2, cfg.bb_cap, cfg.rescue, cfg.rescue_trans_mult,
         cfg.prescan as u8, cfg.oracle as u8
     )
@@ -318,6 +329,7 @@ impl Ckpt {
                 s.rung2_over = num()?;
                 s.rung2_stuck = (num()?, num()?);
                 s.memo_hits = num()?;
+                s.head_hits = num()?;
                 *pending = Some(((n, gi), s, secs));
                 Some(())
             }
@@ -341,6 +353,13 @@ impl Ckpt {
                 let enc: u64 = it.next()?.parse().ok()?;
                 let len: u8 = it.next()?.parse().ok()?;
                 p.1.unknowns.push((enc, len));
+                Some(())
+            }
+            Some("W") => {
+                let p = pending.as_mut()?;
+                let enc: u64 = it.next()?.parse().ok()?;
+                let len: u8 = it.next()?.parse().ok()?;
+                p.1.no_whnf_out.push((enc, len));
                 Some(())
             }
             Some("E") => {
@@ -392,6 +411,7 @@ impl Ckpt {
             s.rung2_stuck.0,
             s.rung2_stuck.1,
             s.memo_hits,
+            s.head_hits,
         ] {
             write!(out, " {v}").unwrap();
         }
@@ -404,6 +424,9 @@ impl Ckpt {
         }
         for (enc, len) in &s.unknowns {
             writeln!(out, "U {enc} {len}").unwrap();
+        }
+        for (enc, len) in &s.no_whnf_out {
+            writeln!(out, "W {enc} {len}").unwrap();
         }
         writeln!(out, "E {n} {gi}").unwrap();
         self.file.write_all(out.as_bytes()).unwrap();
@@ -420,12 +443,42 @@ fn lterm_of(pool: &TermPool, id: u32) -> LTerm {
     }
 }
 
+/// For an App-rooted packed term (top two bits 01), the (enc, len) of
+/// its head subterm: the unique complete term after the application tag
+/// (the code is prefix-free). At top level both components of a closed
+/// application are themselves closed, so the head's bits are exactly a
+/// key into the closed-term verdict sets. Pure bit walk, no decode.
+fn head_of(enc: u64, len: u8) -> (u64, u8) {
+    debug_assert_eq!((enc >> (len - 2)) & 0b11, 0b01);
+    let mut i = len - 2; // positions i-1 .. 0 remain unread
+    let mut rem = 1u32; // pending subterms of the head
+    while rem > 0 {
+        match (enc >> (i - 2)) & 0b11 {
+            0b00 => i -= 2,
+            0b01 => {
+                i -= 2;
+                rem += 1;
+            }
+            _ => {
+                while (enc >> (i - 1)) & 1 == 1 {
+                    i -= 1;
+                }
+                i -= 1;
+                rem -= 1;
+            }
+        }
+    }
+    let hlen = (len - 2) - i;
+    ((enc >> i) & ((1u64 << hlen) - 1), hlen)
+}
+
 fn census_term(
     cfg: &Cfg,
     pool: &mut TermPool,
     vm: &mut Machine,
     stats: &mut Stats,
     memo: &std::collections::HashMap<(u64, u8), MemoV>,
+    no_whnf: &std::collections::HashSet<(u64, u8)>,
     enc: u64,
     len: u8,
 ) {
@@ -446,6 +499,21 @@ fn census_term(
                 }
             };
             stats.memo_out.push(((enc, len), bumped));
+            return;
+        }
+    }
+    // No-whnf head memo: an App-rooted term whose head has no weak head
+    // normal form cannot reach a whnf itself — head reduction IS the
+    // head's head reduction — so it has no nf, for any argument. Heads
+    // are strict subterms, so the set (facts from strictly smaller
+    // sizes) is read-only during a size. The kill is itself a no-whnf
+    // fact and a valid λ-wrap Diverge seed.
+    if !no_whnf.is_empty() && (enc >> (len - 2)) & 0b11 == 0b01 {
+        if no_whnf.contains(&head_of(enc, len)) {
+            stats.diverge += 1;
+            stats.head_hits += 1;
+            stats.no_whnf_out.push((enc, len));
+            stats.memo_out.push(((enc, len), MemoV::Diverge));
             return;
         }
     }
@@ -543,6 +611,11 @@ fn census_term(
         Err(NoNf::Diverge) => {
             stats.diverge += 1;
             stats.memo_out.push(((enc, len), MemoV::Diverge));
+            // Spine-certified proof: the term has no whnf, a fact that
+            // transfers to every application headed by it.
+            if take_head_diverge() {
+                stats.no_whnf_out.push((enc, len));
+            }
         }
         Err(NoNf::Unknown(why)) => {
             let mut sink = SizeSink::default();
@@ -864,10 +937,16 @@ fn main() {
     // expensive verdicts during size n, then is replaced by size n's.
     let mut memo_by_parity: [std::collections::HashMap<(u64, u8), MemoV>; 2] =
         [Default::default(), Default::default()];
-    // Seed the two live parity slots (sizes min_n−2 and min_n−1) from a
-    // prior run's --memo-out file; other sizes' records are inert here.
-    // Loads dedup by key (same key ⇒ same deterministic verdict), so a
-    // memo file with duplicate lines from resumed runs is harmless.
+    // Cross-size no-whnf fact set (grows monotonically; never rolled).
+    // Heads are strict subterms, so the set is read-only within a size.
+    let mut no_whnf: std::collections::HashSet<(u64, u8)> = Default::default();
+    // Seed the two live parity slots (sizes min_n−2 and min_n−1) and the
+    // whole no-whnf set from a prior run's --memo-out file; other sizes'
+    // H/D records are inert here. Loads dedup by key (same key ⇒ same
+    // deterministic verdict), so duplicate lines from resumed runs are
+    // harmless. Fates at App-rooted compositions depend on these facts
+    // (the sweep derives them from smaller sizes; a delta run cannot),
+    // so --memo-in is part of the delta protocol, not a speedup.
     if let Some(path) = &memo_in_path {
         let text = std::fs::read_to_string(path).expect("read memo file");
         for line in text.lines() {
@@ -877,23 +956,30 @@ fn main() {
             };
             let enc: u64 = e.parse().unwrap();
             let len: u8 = l.parse().unwrap();
-            if (len as u32) + 2 == min_n || (len as u32) + 1 == min_n {
-                let v = match it.next().unwrap() {
-                    "H" => MemoV::Halt {
-                        nf: it.next().unwrap().parse().unwrap(),
-                        steps: it.next().unwrap().parse().unwrap(),
-                    },
-                    _ => MemoV::Diverge,
-                };
-                memo_by_parity[(len % 2) as usize].insert((enc, len), v);
+            match it.next() {
+                Some("W") => {
+                    no_whnf.insert((enc, len));
+                }
+                Some(tag) if (len as u32) + 2 == min_n || (len as u32) + 1 == min_n => {
+                    let v = match tag {
+                        "H" => MemoV::Halt {
+                            nf: it.next().unwrap().parse().unwrap(),
+                            steps: it.next().unwrap().parse().unwrap(),
+                        },
+                        _ => MemoV::Diverge,
+                    };
+                    memo_by_parity[(len % 2) as usize].insert((enc, len), v);
+                }
+                _ => {}
             }
         }
         eprintln!(
-            "    memo-in: seeded {} + {} records for sizes {}/{}",
+            "    memo-in: seeded {} + {} records for sizes {}/{}; {} no-whnf facts",
             memo_by_parity[(min_n % 2) as usize].len(),
             memo_by_parity[((min_n + 1) % 2) as usize].len(),
             min_n.saturating_sub(2),
-            min_n.saturating_sub(1)
+            min_n.saturating_sub(1),
+            no_whnf.len()
         );
     }
     // With a checkpoint, per-size unknown dumping would duplicate lines
@@ -909,6 +995,7 @@ fn main() {
         };
         let tasks = interleave_tasks(split_tasks(n, target));
         let memo = &memo_by_parity[(n % 2) as usize];
+        let nw = &no_whnf;
         let run_slice = |slice: &[GenTask]| -> Stats {
             slice
                 .par_iter()
@@ -917,7 +1004,7 @@ fn main() {
                     |(pool, vm), task| {
                         let mut stats = Stats::default();
                         run_task(task, &mut |enc, len| {
-                            census_term(&cfg, pool, vm, &mut stats, memo, enc, len);
+                            census_term(&cfg, pool, vm, &mut stats, memo, nw, enc, len);
                         });
                         stats
                     },
@@ -981,12 +1068,28 @@ fn main() {
                     MemoV::Diverge => writeln!(out, "{enc} {len} D").unwrap(),
                 }
             }
+            let mut wrecs = stats.no_whnf_out.clone();
+            wrecs.sort_unstable();
+            for (enc, len) in wrecs {
+                writeln!(out, "{enc} {len} W").unwrap();
+            }
             let mut f = std::fs::OpenOptions::new()
                 .create(true)
                 .append(true)
                 .open(path)
                 .expect("open memo-out file");
             f.write_all(out.as_bytes()).unwrap();
+        }
+        // Fold size n's no-whnf facts into the cross-size set.
+        let new_whnf = stats.no_whnf_out.len();
+        no_whnf.extend(stats.no_whnf_out.drain(..));
+        if stats.head_hits > 0 || new_whnf > 0 {
+            eprintln!(
+                "    no-whnf: {} head-memo kills; {} new facts ({} total)",
+                stats.head_hits,
+                new_whnf,
+                no_whnf.len()
+            );
         }
 
         println!(
