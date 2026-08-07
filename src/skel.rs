@@ -3,8 +3,8 @@
 //!
 //! Adjudicates a qBLC program `p` by exact symbolic reduction of
 //! `p X₁ … X_k` with one opaque hole per signature slot. Holes are
-//! represented as root-free de Bruijn variables (at depth d, an index
-//! > d): named, mutually distinct, and never collapsed — deliberately
+//! represented as root-free de Bruijn variables (at depth d, any index
+//! exceeding d): named, mutually distinct, never collapsed — deliberately
 //! NOT the escalation engine's ⊥-abstraction, whose `simplify`/`bot_free`
 //! machinery distinguishes live placeholders from dead ⊥ and therefore
 //! breaks shape-replay uniformity (counterexample on the ratification
