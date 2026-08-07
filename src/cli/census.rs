@@ -15,6 +15,13 @@
 //! parallel enumeration.) Single-term and batch adjudication moved to
 //! `blam adjudicate`.
 //!
+//! Scheduling: each group of generation tasks runs in two phases (see
+//! [`run_group`]) — generation fused with the ladder's cheap rungs
+//! across a range-split `par_iter`, then the ~0.3% of survivors through
+//! a one-term-at-a-time work queue. The unit of parallelism for an
+//! expensive term is that term, not the enumeration subtree it happened
+//! to be generated in.
+//!
 //! Checkpointing: `--checkpoint FILE` splits each size into K sequential
 //! groups (`--groups`, default 64) of parallel tasks and appends each
 //! group's full Stats to FILE as it completes; rerunning the same command
@@ -44,6 +51,7 @@ use blam::classical::ladder::{self, LadderCfg, Rung, Verdict};
 use blam::classical::machine::{Machine, Pool, SizeSink};
 use blam::classical::OutOfFuel;
 use rayon::prelude::*;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Instant;
 
 const USAGE: &str = "\
@@ -428,16 +436,9 @@ struct Memos<'a> {
     no_whnf: &'a std::collections::HashSet<(u64, u8)>,
 }
 
-fn census_term(
-    cfg: &Cfg,
-    pool: &mut Pool,
-    vm: &mut Machine,
-    stats: &mut Stats,
-    memos: &Memos,
-    enc: u64,
-    len: u8,
-) {
-    stats.total += 1;
+/// The memo layer: the two cross-size facts that can settle a term
+/// without running any engine. Returns true when one did.
+fn memo_verdict(stats: &mut Stats, memos: &Memos, enc: u64, len: u8) -> bool {
     // λ-wrap memo: bits are packed MSB-first, so a Lam-headed term is
     // top-two-bits 00 and its body key is simply (enc, len−2).
     if !memos.wrap.is_empty() && len >= 3 && (enc >> (len - 2)) & 0b11 == 0 {
@@ -454,7 +455,7 @@ fn census_term(
                 }
             };
             stats.memo_out.push(((enc, len), bumped));
-            return;
+            return true;
         }
     }
     // No-whnf head memo: an App-rooted term whose head has no weak head
@@ -471,16 +472,86 @@ fn census_term(
         stats.head_hits += 1;
         stats.no_whnf_out.push((enc, len));
         stats.memo_out.push(((enc, len), MemoV::Diverge));
+        return true;
+    }
+    false
+}
+
+/// Phase A per term: count it, try the memos, then the cheap ladder
+/// rungs. Returns true when the term SURVIVES to phase B — nothing has
+/// been recorded for it and `census_slow` owns it from here.
+fn census_fast(
+    cfg: &Cfg,
+    pool: &mut Pool,
+    vm: &mut Machine,
+    stats: &mut Stats,
+    memos: &Memos,
+    enc: u64,
+    len: u8,
+) -> bool {
+    stats.total += 1;
+    if memo_verdict(stats, memos, enc, len) {
+        return false;
+    }
+    let root = decode(pool, enc, len);
+    let mut sink = SizeSink::default();
+    match ladder::adjudicate_fast(&cfg.ladder, pool, vm, root, &mut sink) {
+        ladder::FastOutcome::Done(o) => {
+            record(stats, &o, sink.0, enc, len);
+            false
+        }
+        ladder::FastOutcome::Survivor => true,
+    }
+}
+
+/// Phase B per term: rung 2 onward, on a worker that has never seen this
+/// term. Re-decoding into a fresh pool is free at this scale and is what
+/// lets the survivors be scheduled independently of where they were
+/// generated; the machine clears its own state, so the run — β count,
+/// transition count, verdict — is the one the single pass would have
+/// produced. `total` is NOT touched: phase A already counted the term.
+fn census_slow(cfg: &Cfg, pool: &mut Pool, vm: &mut Machine, stats: &mut Stats, enc: u64, len: u8) {
+    let root = decode(pool, enc, len);
+    let mut sink = SizeSink::default();
+    let o = ladder::adjudicate_slow(&cfg.ladder, pool, vm, root, &mut sink);
+    record(stats, &o, sink.0, enc, len);
+}
+
+/// The unsplit path, for the differential test that pins the split: one
+/// term, memos then the whole ladder, recorded exactly as the two phases
+/// between them record it.
+#[cfg(test)]
+fn census_one_pass(
+    cfg: &Cfg,
+    pool: &mut Pool,
+    vm: &mut Machine,
+    stats: &mut Stats,
+    memos: &Memos,
+    enc: u64,
+    len: u8,
+) {
+    stats.total += 1;
+    if memo_verdict(stats, memos, enc, len) {
         return;
     }
-    pool.clear();
-    let root = pool
-        .decode_u64(enc, len)
-        .expect("enumerator emits valid terms");
-
+    let root = decode(pool, enc, len);
     let mut sink = SizeSink::default();
     let o = ladder::adjudicate(&cfg.ladder, pool, vm, root, &mut sink);
+    record(stats, &o, sink.0, enc, len);
+}
 
+/// A packed term into a scratch arena, replacing whatever was there.
+fn decode(pool: &mut Pool, enc: u64, len: u8) -> u32 {
+    pool.clear();
+    pool.decode_u64(enc, len)
+        .expect("enumerator emits valid terms")
+}
+
+/// Fold one adjudicated term into the accumulator. `nf_bits` is what the
+/// ladder's sink received. Shared by both phases and by the one-pass
+/// reference, so which phase resolved a term cannot change what is
+/// recorded about it.
+fn record(stats: &mut Stats, o: &ladder::LadderOutcome, nf_bits: u64, enc: u64, len: u8) {
     // Path telemetry, verdict-independent.
     if o.rung == Rung::Prescan {
         stats.prescan_nf += 1;
@@ -504,7 +575,7 @@ fn census_term(
         // rescue could not recover the canonical count, so beta_total
         // stays a sum of *known* β counts, never an estimate.
         Verdict::Halt { nf, steps, .. } => {
-            let nf_bits = nf.resolve(sink.0);
+            let nf_bits = nf.resolve(nf_bits);
             if o.rung == Rung::Rescue {
                 stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
                 stats.rescue_max_trans = stats.rescue_max_trans.max(o.tel.last_trans);
@@ -549,6 +620,84 @@ fn census_term(
             stats.unknowns.push((enc, len));
         }
     }
+}
+
+/// Census one group of generation tasks, in two phases.
+///
+/// The single-phase version stranded whole sizes on one core. Rayon
+/// splits `par_iter` by index range, so a task that happens to contain
+/// a 9-million-β rescue owns that cost alone while seventeen threads sit
+/// idle — and at n=38 the tail is minutes long. The fix is not a finer
+/// split (the expensive terms are individually expensive, so no
+/// partition of the *generation* helps) but a change of unit:
+///
+/// - **Phase A** keeps generation fused with the cheap ladder rungs, so
+///   every task's cost is roughly proportional to how many terms it
+///   emits — which is what a range split balances well. It returns the
+///   ~0.3% of terms that survived rung 1.
+/// - **Phase B** re-schedules those survivors ONE AT A TIME through an
+///   atomic counter, so the longest single term costs the group its own
+///   runtime and nothing more. Each logical worker keeps one `Pool` and
+///   `Machine` for its whole run of the queue.
+///
+/// Groups stay sequential and a group is appended only after both
+/// phases, so the checkpoint contract is untouched: a kill during phase
+/// B costs exactly the current group, as before.
+///
+/// Nothing about a term's fate depends on which phase or worker ran it.
+/// Both memos are immutable for the whole size (the λ-wrap map is size
+/// n−2's; no-whnf heads are strict subterms, hence smaller sizes), and
+/// [`ladder::adjudicate_slow`] on a freshly decoded term reproduces the
+/// single pass exactly. Only the ORDER of the three record vectors
+/// changes, and every consumer of those sorts or set-collects.
+fn run_group(cfg: &Cfg, memos: &Memos, tasks: &[GenTask]) -> Stats {
+    let (fast, survivors) = tasks
+        .par_iter()
+        .map_init(
+            || (Pool::new(), Machine::new()),
+            |(pool, vm), task| {
+                let mut stats = Stats::default();
+                let mut survivors: Vec<(u64, u8)> = Vec::new();
+                run_task(task, &mut |enc, len| {
+                    if census_fast(cfg, pool, vm, &mut stats, memos, enc, len) {
+                        survivors.push((enc, len));
+                    }
+                });
+                (stats, survivors)
+            },
+        )
+        .reduce(
+            || (Stats::default(), Vec::new()),
+            |(a_stats, mut a_terms), (b_stats, b_terms)| {
+                a_terms.extend(b_terms);
+                (a_stats.merge(b_stats), a_terms)
+            },
+        );
+    if survivors.is_empty() {
+        return fast;
+    }
+
+    let next = AtomicUsize::new(0);
+    // One consumer per thread, never more than there is work for. Rayon
+    // may still place two on one thread; the queue does not care.
+    let workers = rayon::current_num_threads().min(survivors.len());
+    let slow = (0..workers)
+        .into_par_iter()
+        .map(|_| {
+            let mut pool = Pool::new();
+            let mut vm = Machine::new();
+            let mut stats = Stats::default();
+            loop {
+                let i = next.fetch_add(1, Ordering::Relaxed);
+                let Some(&(enc, len)) = survivors.get(i) else {
+                    break;
+                };
+                census_slow(cfg, &mut pool, &mut vm, &mut stats, enc, len);
+            }
+            stats
+        })
+        .reduce(Stats::default, Stats::merge);
+    fast.merge(slow)
 }
 
 pub fn run(argv: &[String]) -> R<()> {
@@ -720,21 +869,7 @@ pub fn run(argv: &[String]) -> R<()> {
             no_whnf: &no_whnf,
         };
         let memos = &memos;
-        let run_slice = |slice: &[GenTask]| -> Stats {
-            slice
-                .par_iter()
-                .map_init(
-                    || (Pool::new(), Machine::new()),
-                    |(pool, vm), task| {
-                        let mut stats = Stats::default();
-                        run_task(task, &mut |enc, len| {
-                            census_term(&cfg, pool, vm, &mut stats, memos, enc, len);
-                        });
-                        stats
-                    },
-                )
-                .reduce(Stats::default, Stats::merge)
-        };
+        let run_slice = |slice: &[GenTask]| run_group(&cfg, memos, slice);
         let (mut stats, secs) = match &mut ckpt {
             Some(c) => {
                 let per = tasks.len().div_ceil(c.groups).max(1);
@@ -908,7 +1043,6 @@ pub fn run(argv: &[String]) -> R<()> {
             write_unknowns(path, &deferred_unknowns, &mut dump_started)?;
         }
     }
-    use std::sync::atomic::Ordering;
     let fires = blam::classical::escalation::REDLOOP_FIRES.load(Ordering::Relaxed);
     let fuel = blam::classical::escalation::REDLOOP_FUEL_REJECTS.load(Ordering::Relaxed);
     println!("redloop: {fires} proofs, {fuel} shape-matches lost to probe fuel");
@@ -918,6 +1052,106 @@ pub fn run(argv: &[String]) -> R<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::{HashMap, HashSet};
+
+    /// A `Stats` reduced to bytes, with the three record vectors sorted:
+    /// everything the identity contract says must match, and nothing
+    /// (accumulation order) it says may drift. `write_body` is the
+    /// checkpoint's own serializer, so this compares exactly what a
+    /// checkpoint record would carry.
+    fn canon(s: &Stats) -> String {
+        let mut s = s.clone();
+        s.memo_out.sort_unstable_by_key(|(k, _)| *k);
+        s.unknowns.sort_unstable();
+        s.no_whnf_out.sort_unstable();
+        let mut out = String::new();
+        s.write_body(&mut out);
+        out
+    }
+
+    /// Sweep `4..=max_n` the way `run` does — rolling λ-wrap memo,
+    /// accumulating no-whnf set — and return each size's canonical
+    /// record. `groups = 0` runs the one-pass reference sequentially;
+    /// otherwise the real two-phase scheduler, in that many sequential
+    /// groups.
+    fn sweep(max_n: u32, groups: usize) -> Vec<String> {
+        let cfg = Cfg::default();
+        let mut memo_by_parity: [HashMap<(u64, u8), MemoV>; 2] = [HashMap::new(), HashMap::new()];
+        let mut no_whnf: HashSet<(u64, u8)> = HashSet::new();
+        let mut out = Vec::new();
+        for n in 4..=max_n {
+            let tasks = interleave_tasks(split_tasks(n, 32));
+            let mut stats = {
+                let memos = Memos {
+                    wrap: &memo_by_parity[(n % 2) as usize],
+                    no_whnf: &no_whnf,
+                };
+                if groups == 0 {
+                    let mut s = Stats::default();
+                    let (mut pool, mut vm) = (Pool::new(), Machine::new());
+                    for t in &tasks {
+                        run_task(t, &mut |enc, len| {
+                            census_one_pass(&cfg, &mut pool, &mut vm, &mut s, &memos, enc, len);
+                        });
+                    }
+                    s
+                } else {
+                    let per = tasks.len().div_ceil(groups).max(1);
+                    let mut acc = Stats::default();
+                    for gi in 0..groups {
+                        let lo = (gi * per).min(tasks.len());
+                        let hi = ((gi + 1) * per).min(tasks.len());
+                        acc = acc.merge(run_group(&cfg, &memos, &tasks[lo..hi]));
+                    }
+                    acc
+                }
+            };
+            out.push(canon(&stats));
+            memo_by_parity[(n % 2) as usize] = stats.memo_out.drain(..).collect();
+            no_whnf.extend(stats.no_whnf_out.drain(..));
+        }
+        out
+    }
+
+    /// The scheduler gate: the two-phase sweep must produce, size by
+    /// size, exactly the record the unsplit one-pass sweep produces —
+    /// every scalar, the memo H/D set, the unknown set, the no-whnf set.
+    /// Exhaustive through 28 bits, which is where escalation, the
+    /// redloop certificate, and the λ-wrap memo are all live, and run at
+    /// three group counts because the group boundary is where phase A
+    /// hands off to phase B.
+    #[test]
+    fn the_two_phase_scheduler_reproduces_the_one_pass_sweep() {
+        // Own pool: escalation recursion wants more than a default
+        // worker stack, and a test must not install a global one.
+        let workers = rayon::ThreadPoolBuilder::new()
+            .stack_size(64 << 20)
+            .build()
+            .expect("build test pool");
+        let want = sweep(28, 0);
+        // The reference has to be reaching the slow half at all, or the
+        // comparison is vacuous.
+        let mut escal = Stats::default();
+        for line in want.iter().filter_map(|r| r.lines().next()) {
+            let mut s = Stats::default();
+            s.parse_line(line).expect("S line");
+            escal = escal.merge(s);
+        }
+        assert!(
+            escal.escalated > 100,
+            "only {} escalations",
+            escal.escalated
+        );
+        assert!(escal.memo_hits > 0, "the memo path never fired");
+
+        for groups in [1usize, 7, 64] {
+            assert_eq!(
+                workers.install(|| sweep(28, groups)),
+                want,
+                "two-phase sweep in {groups} groups"
+            );
+        }
+    }
 
     /// The whole point of `Rec` is that ONE grammar serves the memo file
     /// and the checkpoint body, so a memo written by one reader is read

@@ -148,6 +148,44 @@ fn resume_reproduces_the_monolithic_table() {
     let _ = std::fs::remove_dir_all(&dir);
 }
 
+/// Partition invariance, the property every other guarantee here rests
+/// on. The census schedules a size in two phases per checkpoint group —
+/// a range-split parallel generation pass, then a dynamic one-term queue
+/// over the survivors — so three things move the partition: the thread
+/// count (it sets the task-split target and the number of phase-B
+/// consumers), the group count (it slices the task list), and which
+/// terms happen to land together. None of them may move a measurement.
+#[test]
+fn thread_and_group_partitions_all_agree() {
+    let dir = tmpdir("partition");
+    let (mono, _, ok) = census(&[]);
+    assert!(ok, "monolithic run failed");
+    let want = normalize(&mono);
+
+    for threads in ["1", "2", "18"] {
+        for groups in ["1", "7", "64"] {
+            let ck = dir.join(format!("t{threads}g{groups}.ckpt"));
+            let (out, err, ok) = census(&[
+                "--threads",
+                threads,
+                "--checkpoint",
+                ck.to_str().unwrap(),
+                "--groups",
+                groups,
+            ]);
+            assert!(ok, "threads={threads} groups={groups} failed: {err}");
+            assert_eq!(normalize(&out), want, "threads={threads} groups={groups}");
+        }
+    }
+    // And without a checkpoint, where the split target is threads × 64.
+    for threads in ["1", "2", "18"] {
+        let (out, err, ok) = census(&["--threads", threads]);
+        assert!(ok, "unchecked threads={threads} failed: {err}");
+        assert_eq!(normalize(&out), want, "unchecked threads={threads}");
+    }
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
 #[test]
 fn config_mismatch_is_refused_loudly() {
     let dir = tmpdir("mismatch");

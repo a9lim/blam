@@ -18,6 +18,13 @@
 //! are the values the canonical census table was generated at, and the
 //! field docs carry the measurement that fixed each one.
 //!
+//! [`adjudicate`] runs the whole ladder and is what single-term drivers
+//! want. It is defined as [`adjudicate_fast`] (rungs 1–3) followed, on a
+//! `Survivor`, by [`adjudicate_slow`] (rungs 4–6) — one implementation,
+//! two entry points, so a scheduler that wants to run the cheap half of
+//! a whole size class before touching the expensive half gets the same
+//! verdicts by construction rather than by parallel maintenance.
+//!
 //! What is NOT here: the census's cross-size memos (the λ-wrap verdict
 //! memo and the no-whnf head memo). Those sit in the census driver ON
 //! TOP of this ladder, because they are facts about a whole enumeration
@@ -195,6 +202,16 @@ pub struct LadderOutcome {
     pub tel: Telemetry,
 }
 
+/// What the cheap half of the ladder ([`adjudicate_fast`]) concluded.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum FastOutcome {
+    /// Resolved on rung 1–3; this is the whole answer.
+    Done(LadderOutcome),
+    /// Survived to the expensive rungs. Nothing has been recorded and
+    /// the sink holds garbage; hand the term to [`adjudicate_slow`].
+    Survivor,
+}
+
 /// Run the ladder on the term at `root` in `pool`.
 ///
 /// On every Halt except [`Rung::Prescan`], `sink` is left holding the
@@ -209,8 +226,33 @@ pub fn adjudicate<S: Sink + Default>(
     root: u32,
     sink: &mut S,
 ) -> LadderOutcome {
+    match adjudicate_fast(cfg, pool, vm, root, sink) {
+        FastOutcome::Done(o) => o,
+        FastOutcome::Survivor => adjudicate_slow(cfg, pool, vm, root, sink),
+    }
+}
+
+/// The cheap half: pre-scan, oracle, and the rung-1 KN run — the three
+/// rungs that resolve 99.7% of a size class in bounded time per term.
+///
+/// Split out for the census's two-phase scheduler: fusing generation
+/// with this half alone keeps every worker's per-term cost small enough
+/// that a range-split `par_iter` stays balanced, and the handful of
+/// survivors go to a dynamic queue instead of stranding whichever leaf
+/// happened to contain them. A `Survivor` leaves NO telemetry behind
+/// (rung 1's failure is not recorded anywhere), which is exactly why
+/// [`adjudicate_slow`] can start from a fresh [`Telemetry`] — and why
+/// `adjudicate` composing the two is identical to the single pass it
+/// replaced, on every field.
+pub fn adjudicate_fast<S: Sink + Default>(
+    cfg: &LadderCfg,
+    pool: &Pool,
+    vm: &mut Machine,
+    root: u32,
+    sink: &mut S,
+) -> FastOutcome {
     let mut tel = Telemetry::default();
-    let out = |verdict, rung, tel| LadderOutcome { verdict, rung, tel };
+    let out = |verdict, rung, tel| FastOutcome::Done(LadderOutcome { verdict, rung, tel });
 
     if cfg.prescan && !pool.has_redex(root) {
         let halt = Verdict::Halt {
@@ -223,32 +265,68 @@ pub fn adjudicate<S: Sink + Default>(
     if cfg.oracle && no_nf(0, (pool, root)) {
         return out(Verdict::Diverge, Rung::Oracle, tel);
     }
-
-    // The two KN rungs.
-    for (rung, budget) in [(Rung::Kn1, cfg.budget1), (Rung::Kn2, cfg.budget2)] {
-        *sink = S::default();
-        match vm.normalize_capped(
-            pool,
-            root,
-            budget,
-            budget.saturating_mul(KN_TRANS_MULT),
-            sink,
-        ) {
-            Ok(steps) => {
-                tel.last_trans = vm.last_trans;
-                return out(
-                    Verdict::Halt {
-                        nf: NfSize::Streamed,
-                        steps,
-                        steps_exact: true,
-                    },
-                    rung,
-                    tel,
-                );
-            }
-            Err(e) if rung == Rung::Kn2 => tel.kn2_stuck = Some(e),
-            Err(_) => {}
+    *sink = S::default();
+    match vm.normalize_capped(
+        pool,
+        root,
+        cfg.budget1,
+        cfg.budget1.saturating_mul(KN_TRANS_MULT),
+        sink,
+    ) {
+        Ok(steps) => {
+            tel.last_trans = vm.last_trans;
+            out(
+                Verdict::Halt {
+                    nf: NfSize::Streamed,
+                    steps,
+                    steps_exact: true,
+                },
+                Rung::Kn1,
+                tel,
+            )
         }
+        Err(_) => FastOutcome::Survivor,
+    }
+}
+
+/// The expensive half: rung 2, the escalation engine, and the KN rescue.
+///
+/// Call only on an [`adjudicate_fast`] `Survivor`, and with the same
+/// `cfg`, term, and (any) machine — [`Machine::normalize_capped`] clears
+/// its semantic state on entry, so re-decoding the term into a fresh
+/// pool and running this on a different worker gives bit-identical
+/// results, transition counts included.
+pub fn adjudicate_slow<S: Sink + Default>(
+    cfg: &LadderCfg,
+    pool: &Pool,
+    vm: &mut Machine,
+    root: u32,
+    sink: &mut S,
+) -> LadderOutcome {
+    let mut tel = Telemetry::default();
+    let out = |verdict, rung, tel| LadderOutcome { verdict, rung, tel };
+
+    *sink = S::default();
+    match vm.normalize_capped(
+        pool,
+        root,
+        cfg.budget2,
+        cfg.budget2.saturating_mul(KN_TRANS_MULT),
+        sink,
+    ) {
+        Ok(steps) => {
+            tel.last_trans = vm.last_trans;
+            return out(
+                Verdict::Halt {
+                    nf: NfSize::Streamed,
+                    steps,
+                    steps_exact: true,
+                },
+                Rung::Kn2,
+                tel,
+            );
+        }
+        Err(e) => tel.kn2_stuck = Some(e),
     }
 
     // Escalation: full BB.lhs semantics.
@@ -400,5 +478,90 @@ mod tests {
             panic!("I halts")
         };
         assert_eq!((nf.resolve(sink.0), steps), (4, 0));
+    }
+
+    /// The split is only allowed to exist if it is invisible. Every
+    /// closed term up to 30 bits — which reaches escalation, the redloop
+    /// certificate, transition-bound rung-2 attempts, and the rescue —
+    /// through both entry points, comparing the FULL outcome (verdict,
+    /// rung, every telemetry field) and the sink the caller reads |nf|
+    /// off. Run under the prefilter permutations too, since disabling
+    /// them moves which rung the fast half hands over on.
+    #[test]
+    fn the_split_reproduces_the_single_pass_on_every_closed_term() {
+        use crate::blc::enumerate::{run_task, split_tasks};
+        use rayon::prelude::*;
+
+        // 647,463 terms × 2 adjudications × 4 configs is a sweep, so it
+        // runs like one. Own pool, not the global one: escalation
+        // recursion wants more than a default worker stack, and a unit
+        // test must not install a global pool the rest of the suite
+        // would inherit.
+        let workers = rayon::ThreadPoolBuilder::new()
+            .stack_size(64 << 20)
+            .build()
+            .expect("build test pool");
+        let jobs: Vec<(u32, _)> = (4..=30u32)
+            .flat_map(|n| split_tasks(n, 64).into_iter().map(move |t| (n, t)))
+            .collect();
+
+        for (prescan, oracle) in [(true, true), (false, true), (true, false), (false, false)] {
+            let cfg = LadderCfg {
+                prescan,
+                oracle,
+                ..LadderCfg::default()
+            };
+            let (checked, split_reached) = workers.install(|| {
+                jobs.par_iter()
+                    .map_init(
+                        || (Pool::new(), Machine::new()),
+                        |(pool, vm), (n, task)| {
+                            let (mut checked, mut split_reached) = (0u64, 0u64);
+                            run_task(task, &mut |enc, len| {
+                                pool.clear();
+                                let root = pool.decode_u64(enc, len).expect("closed term");
+
+                                let mut one = SizeSink::default();
+                                let whole = adjudicate(&cfg, pool, vm, root, &mut one);
+
+                                let mut two = SizeSink::default();
+                                let split = match adjudicate_fast(&cfg, pool, vm, root, &mut two) {
+                                    FastOutcome::Done(o) => o,
+                                    FastOutcome::Survivor => {
+                                        split_reached += 1;
+                                        // Re-adjudicated from a FRESH
+                                        // pool and machine, exactly as
+                                        // the census's phase B does it —
+                                        // that re-decode is the thing
+                                        // the identity contract rests on.
+                                        let mut p2 = Pool::new();
+                                        let r2 = p2.decode_u64(enc, len).expect("closed term");
+                                        let mut vm2 = Machine::new();
+                                        adjudicate_slow(&cfg, &p2, &mut vm2, r2, &mut two)
+                                    }
+                                };
+                                assert_eq!(
+                                    whole, split,
+                                    "n={n} enc={enc} prescan={prescan} oracle={oracle}"
+                                );
+                                // The sink is half the contract: |nf| is
+                                // read off it on every Halt but Prescan.
+                                if whole.rung != Rung::Prescan {
+                                    assert_eq!(one.0, two.0, "sink: n={n} enc={enc}");
+                                }
+                                checked += 1;
+                            });
+                            (checked, split_reached)
+                        },
+                    )
+                    .reduce(|| (0, 0), |a, b| (a.0 + b.0, a.1 + b.1))
+            });
+            assert_eq!(checked, 647_463, "the whole 4..=30 census, every time");
+            assert!(
+                split_reached > 100,
+                "prescan={prescan} oracle={oracle}: only {split_reached} terms \
+                 reached the slow half — the test would prove nothing"
+            );
+        }
     }
 }
