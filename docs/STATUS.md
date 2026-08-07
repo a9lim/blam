@@ -93,29 +93,44 @@ Last updated: 2026-08-07.
   `docs/quantum/escalation.md`) has adjudicated the full frontier:
   **815,700 programs are proven divergers** — 712,299 by exact recurrence
   of the hole-inert reduction chain, 103,401 by hole-free residuals the
-  classical engines kill — contributing exactly zero to Ω_success. Killed
-  mass 27,958,835/2⁴¹ is 74.45% of the unknown mass; the bracket upper
-  endpoint tightens from 860,741,351/2³⁸ ≈ 0.0031313588 to
-  6,857,971,973/2⁴¹ ≈ 0.0031186446 (3.91× narrower). Zero slow halters
-  surfaced. Residue: 184,444 hole-demanded (genuinely quantum), 619,466
-  tier-1 capouts (tier-2 sweep pending), 37 hole-free residuals undecided
-  classically (28 are verbatim classical-frontier members). The census
-  table itself is unchanged — kills are an adjudication layer above it;
-  canonical recording protocol is docket work.
+  classical engines kill (58,373 oracle, 45,028 bb; split from Codex's
+  independent recount, to be re-pinned by the manifest regeneration) —
+  contributing exactly zero to Ω_success. Killed mass 27,958,835/2⁴¹ is
+  74.45% of the unknown mass; the bracket upper endpoint tightens from
+  860,741,351/2³⁸ ≈ 0.0031313588 to 6,857,971,973/2⁴¹ ≈ 0.0031186446
+  (3.91× narrower). Verdict counts, exact masses, and the sorted-stream
+  digests are double-computed (blam and Codex independently agree).
+  Zero slow halters surfaced. Residue: 184,444 hole-demanded (genuinely
+  quantum), 619,466 tier-1 capouts, and 37 hole-free residuals undecided
+  classically. Those 37 residuals are 74..11,978 bits — all outside the
+  enumerated ≤41 range (β-duplication grows encodings), so they are new
+  compactly-generated hard classical terms, not frontier members; 28 of
+  their *source programs* are verbatim classical-frontier members. The
+  tier-2 capout sweep was stopped by design: a 41,843-verdict sample was
+  100% capout, and `CapOut` currently records neither the fired cap nor
+  high-water state, so a blind full sweep is low-information — telemetry
+  first, then a stratified sample. The census table itself is unchanged —
+  kills are an adjudication layer above it; the canonical recording
+  protocol is settled (`quantum/escalation.md`) and its manifest build is
+  docket work.
 - The signature is now parametric end to end (`qcensus --sig`, exact
   S/X/Z gates): alternate universes are runnable, lockstep-verified, and
   deliberately labeled; canonical data stays on the frozen five.
 
 Escalation-lane docket, in order:
 
-1. Tier the skeleton caps on the 619,466 capouts, then build the
-   hole-parametric pattern-recurrence rung (design thread
-   `qblc-divergence`) for growing loops that never exactly recur.
-2. Settle the canonical recording protocol for skeleton kills: the set is
-   too large for the classical kills-tsv pattern; the working proposal is
-   exact killed-mass fraction + verdict counts + verdict-file hash + the
-   deterministic regenerating command.
-3. Rungs 3–4 for the hole-demanded residue: reference-configuration cycle
+1. Add CapOut telemetry (`reason: Steps | Size`, steps, high-water
+   bits), run a deterministic source-size-stratified sample of the
+   619,466 capouts, and let it aim the next instrument: size-bound
+   growers go to the hole-parametric pattern-recurrence rung (design
+   ratified, `quantum/escalation.md` rung 3); step-bound bounded-size
+   terms justify another exact-cycle tier.
+2. Build the canonical skeleton-kill manifest per the settled protocol
+   (`quantum/escalation.md`): sorted-verdict-stream digest
+   `3d89539b63d1…`, sorted-input digest `1ba28e2ffaf9…`, Div provenance
+   split, per-size verdict aggregates, exact masses and bracket
+   fractions, and the 37 residual-Unknown provenance rows.
+3. Rungs 4–5 for the hole-demanded residue: reference-configuration cycle
    detection between measurements, then the E∞ universal-safety
    certificate calculus (design ratified, `quantum/escalation.md`).
 4. If wholesale promotion of the discovery engine is wanted, repair the
