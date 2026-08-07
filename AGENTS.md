@@ -83,6 +83,27 @@ verdict-identical on full sweeps. Census 4..40 is ~7.2 min; 4..41 ~16.5 min.
   same steps, chains propagate. Unknown is a resource outcome, not a fate,
   so seed-Unknown wraps run the ordinary ladder. Do not extend the memo to
   Unknowns; that reuse was built and deliberately removed.
+- The census no-whnf head memo kills App-rooted terms whose head is a
+  spine-certified no-whnf diverger (`bb` threads a spine flag; history and
+  redloop fires on the root's own head chain qualify, oracle fires never
+  do). Sound because no-whnf — unlike no-nf — transfers through
+  application heads. Fates measured bit-identical across 4..40; only the
+  escal path distribution moves.
+- `census --checkpoint FILE --groups K` gives kill-safe group-level
+  resume (config-pinned header, torn tails discarded); `--memo-out` /
+  `--memo-in` persist the λ-wrap and no-whnf memos across runs. A cold
+  delta run (`census n n`) is halt-identical to the monolithic row but
+  needs `--memo-in` for fate-identical Unknown/Diverge attribution at
+  App-rooted compositions and for the escal column — memo files are part
+  of the delta protocol, not a speedup.
+- `bb::normal_form_spine` is the oracle-free adjudicator for
+  generic-argument questions (`p x⃗` with rigid placeholders): every
+  Diverge is history/redloop and spine-attributable. Targeted
+  adjudication only, never enumeration throughput. The quantum escalation
+  ladder built on it lives in `docs/quantum/escalation.md`; qcensus grew
+  `--dump-unknowns`, `--terms-file`, `--skeleton CAP` (and `--sig` for
+  alternate signature universes — canonical data stays on the frozen
+  five).
 - `src/cert.rs` is the trusted checker layer for v1.2 Ratchet, v2
   HeadTowerRatchet, and v3 SelectorRatchet. `src/bin/certsearch.rs` is
   untrusted rayon discovery, including HNF descent into closed spine

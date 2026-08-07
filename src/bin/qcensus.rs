@@ -394,6 +394,9 @@ fn main() {
     let mut dump_unknowns: Option<String> = None;
     let mut terms_file: Option<String> = None;
     let mut skeleton_cap: Option<i64> = None;
+    let mut skeleton_only = false;
+    let mut skel_steps = blam::skel::SkelCaps::default().steps;
+    let mut skel_size = blam::skel::SkelCaps::default().size_bits;
     // The canonical universe unless --sig overrides (alternate universes
     // are deliberately-labeled siblings; canonical data stays frozen).
     let mut sig: Vec<Prim> = FROZEN.to_vec();
@@ -460,6 +463,18 @@ fn main() {
                 skeleton_cap = Some(args[i + 1].parse().unwrap());
                 i += 2;
             }
+            "--skeleton-only" => {
+                skeleton_only = true;
+                i += 1;
+            }
+            "--skel-steps" => {
+                skel_steps = args[i + 1].parse().unwrap();
+                i += 2;
+            }
+            "--skel-size" => {
+                skel_size = args[i + 1].parse().unwrap();
+                i += 2;
+            }
             other => panic!("unknown arg {other}"),
         }
     }
@@ -476,6 +491,90 @@ fn main() {
     // program with leaf-fate counts and its summed exact halt mass —
     // the escalation rung for census Unknowns. Streams in completion
     // order; a killed run keeps everything finished.
+    // Trusted-checker sweep: no qvm run at all — the whole point is that
+    // the skeleton kill is orders cheaper than paying the quantum Unknown
+    // budget per program. One line per program, streaming.
+    if skeleton_only {
+        let path = terms_file.expect("--skeleton-only needs --terms-file");
+        let text = std::fs::read_to_string(&path).expect("read terms file");
+        let programs: Vec<&str> = text
+            .lines()
+            .map(str::trim)
+            .filter(|l| !l.is_empty())
+            .collect();
+        let bbcap = skeleton_cap.unwrap_or(2_000_000);
+        let caps = blam::skel::SkelCaps {
+            steps: skel_steps,
+            size_bits: skel_size,
+        };
+        let t0 = Instant::now();
+        let counts = std::sync::Mutex::new(std::collections::HashMap::<&'static str, u64>::new());
+        programs.par_iter().for_each(|bits| {
+            use blam::bb::{normal_form, LTerm, NoNf};
+            use blam::skel::{adjudicate, SkelVerdict};
+            use blam::vm::{Machine, SizeSink, TermPool};
+            let mut p = blam::parse_all(bits).expect("parse program line");
+            if let Some(k) = cond_k {
+                use blam::term::{app, lam, var};
+                let mut body = var(1);
+                for _ in 0..k {
+                    body = app(var(2), body);
+                }
+                p = app(p, lam(lam(body)));
+            }
+            let (kind, detail) = match adjudicate(&p, sig.len() as u32, &caps) {
+                SkelVerdict::Loop { steps } => ("loop", format!(" steps={steps}")),
+                SkelVerdict::NormalWithHoles { steps } => ("halt-inert", format!(" steps={steps}")),
+                SkelVerdict::HoleDemanded { steps } => ("holedemanded", format!(" steps={steps}")),
+                SkelVerdict::CapOut => ("capout", String::new()),
+                SkelVerdict::HoleFree { residual, steps } => {
+                    // Classical semantic ladder on the closed residual;
+                    // Halt AND proven no-NF both transfer.
+                    let lt = LTerm::from_term(&residual);
+                    if blam::oracle::no_nf(0, &lt) {
+                        ("div", format!(" steps={steps} via=oracle"))
+                    } else {
+                        let mut pool = TermPool::new();
+                        let root = pool.decode_str(&residual.to_bits()).expect("residual bits");
+                        let mut sink = SizeSink::default();
+                        match Machine::new().normalize(&pool, root, 65_536, &mut sink) {
+                            Ok(_) => ("halt", format!(" steps={steps} nf={}", sink.0)),
+                            Err(_) => match normal_form(bbcap, &lt) {
+                                Ok(nf) => ("halt", format!(" steps={steps} nf={}", nf.bit_size())),
+                                Err(NoNf::Diverge) => ("div", format!(" steps={steps} via=bb")),
+                                Err(NoNf::Unknown(_)) => ("residual-unknown", String::new()),
+                            },
+                        }
+                    }
+                }
+            };
+            println!("{bits} skel2={kind}{detail}");
+            let mut c = counts.lock().unwrap();
+            *c.entry(kind).or_insert(0) += 1;
+            let done: u64 = c.values().sum();
+            if done.is_multiple_of(50000) {
+                eprintln!(
+                    "progress: {done}/{} ({:.0}s)",
+                    programs.len(),
+                    t0.elapsed().as_secs_f64()
+                );
+            }
+        });
+        let c = counts.lock().unwrap();
+        let mut ks: Vec<_> = c.iter().collect();
+        ks.sort();
+        eprintln!(
+            "skeleton sweep: {} programs in {:.1}s — {}",
+            programs.len(),
+            t0.elapsed().as_secs_f64(),
+            ks.iter()
+                .map(|(k, v)| format!("{k}={v}"))
+                .collect::<Vec<_>>()
+                .join(" ")
+        );
+        return;
+    }
+
     if let Some(path) = terms_file {
         let text = std::fs::read_to_string(&path).expect("read terms file");
         let programs: Vec<&str> = text

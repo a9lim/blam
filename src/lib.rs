@@ -8,6 +8,7 @@
 
 pub mod bb;
 pub mod cert;
+pub mod ckpt;
 pub mod dw;
 pub mod enumerate;
 pub mod eval;
@@ -18,6 +19,7 @@ pub mod parse;
 pub mod qeval;
 pub mod qvm;
 pub mod radical;
+pub mod skel;
 pub mod term;
 pub mod vm;
 

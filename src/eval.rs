@@ -45,7 +45,7 @@ impl Budget {
 }
 
 /// Add `d` to every variable with index >= `cutoff`.
-fn shift(t: &Term, d: i64, cutoff: u32) -> Term {
+pub(crate) fn shift(t: &Term, d: i64, cutoff: u32) -> Term {
     match t {
         Term::Var(n) => {
             if *n >= cutoff {
@@ -60,7 +60,7 @@ fn shift(t: &Term, d: i64, cutoff: u32) -> Term {
 }
 
 /// Capture-avoiding substitution of `s` for variable `j` in `t`.
-fn subst(t: &Term, j: u32, s: &Term) -> Term {
+pub(crate) fn subst(t: &Term, j: u32, s: &Term) -> Term {
     match t {
         Term::Var(n) => {
             if *n == j {
@@ -75,7 +75,7 @@ fn subst(t: &Term, j: u32, s: &Term) -> Term {
 }
 
 /// Contract the redex `(\body) arg`: TAPL's `shift(-1, [1 := shift(1, arg)] body)`.
-fn beta(body: &Term, arg: &Term) -> Term {
+pub(crate) fn beta(body: &Term, arg: &Term) -> Term {
     shift(&subst(body, 1, &shift(arg, 1, 1)), -1, 1)
 }
 
