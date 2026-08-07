@@ -14,11 +14,30 @@
 //! Usage: census <min_n> <max_n> [--budget1 N] [--budget2 N] [--bb-cap N]
 //!        [--rescue N] [--rescue-trans-mult N] [--no-prescan] [--no-oracle]
 //!        [--verify] [--chunk N] [--dump-unknowns FILE] [--terms-file FILE]
+//!        [--checkpoint FILE] [--groups K] [--memo-in FILE] [--memo-out FILE]
 //! (--chunk now sets the minimum generation-task count for the fused
 //! parallel enumeration.)
+//!
+//! Checkpointing: `--checkpoint FILE` splits each size into K sequential
+//! groups (`--groups`, default 64) of parallel tasks and appends each
+//! group's full Stats to FILE as it completes; rerunning the same command
+//! resumes after the last complete group. Group records are valid only up
+//! to their end marker, so a kill mid-append costs exactly one group. The
+//! header pins the engine config and the task split (the default split is
+//! thread-count dependent), and resume refuses a mismatched config.
+//! Verdict merging is order-independent with a total witness tie-break,
+//! so a chunked run's table rows are bit-identical to a monolithic run's.
+//!
+//! Delta runs: the λ-wrap memo rolls by size parity, so size n reuses
+//! size n−2's escalation-tier verdicts. `--memo-out FILE` appends each
+//! size's records; `--memo-in FILE` seeds the two parity slots before the
+//! first size. A cold `census n n` is verdict-identical to the monolithic
+//! row (fates, |nf|, β totals) but re-escalates memo-covered wraps; with
+//! `--memo-in` from a run through n−1 the row is bit-identical, escal
+//! column included.
 
 use blam::bb::{normal_form, LTerm, NoNf, Why};
-use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
+use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks, GenTask};
 use blam::eval::OutOfFuel;
 use blam::oracle::no_nf;
 use blam::vm::{Machine, SizeSink, TermPool};
@@ -150,10 +169,245 @@ impl Stats {
     fn record_halt(&mut self, nf_bits: u64, steps: u64, enc: u64, len: u8) {
         self.halt += 1;
         self.beta_total += steps;
-        if nf_bits > self.max_nf {
+        // Same total order as merge: at tied |nf| the max (enc, len) wins
+        // everywhere, so the reported witness is independent of task
+        // partitioning (and thus thread count / checkpoint grouping) —
+        // first-hit-wins here would make per-task representatives depend
+        // on which tied terms share a task.
+        if (nf_bits, (enc, len)) > (self.max_nf, self.max_nf_witness) {
             self.max_nf = nf_bits;
             self.max_nf_witness = (enc, len);
         }
+    }
+}
+
+/// Group-checkpoint state: a text file of per-(size, group) Stats records
+/// behind a config header. Records are append-only and committed by an
+/// `E n gi` end marker; an un-terminated trailing record (killed run) is
+/// discarded on load. All fields are plain decimal, one logical record =
+/// one `G` line plus its `M`(memo)/`U`(unknown) lines.
+struct Ckpt {
+    file: std::fs::File,
+    /// Task-split target pinned by the header (the live default is
+    /// thread-count dependent; resume must reuse the original split).
+    target: usize,
+    groups: usize,
+    restored: std::collections::HashMap<(u32, usize), (Stats, f64)>,
+}
+
+fn ckpt_header(cfg: &Cfg, min_n: u32, max_n: u32, target: usize, groups: usize) -> String {
+    format!(
+        "blamckpt v1 min={min_n} max={max_n} b1={} b2={} cap={} rescue={} rtm={} prescan={} oracle={} target={target} groups={groups}",
+        cfg.budget1, cfg.budget2, cfg.bb_cap, cfg.rescue, cfg.rescue_trans_mult,
+        cfg.prescan as u8, cfg.oracle as u8
+    )
+}
+
+impl Ckpt {
+    /// Open or create. On an existing file the config part of the header
+    /// must match exactly; target/groups are adopted from the file.
+    fn open(path: &str, cfg: &Cfg, min_n: u32, max_n: u32, groups_flag: usize) -> Ckpt {
+        use std::io::Read;
+        let existing = std::fs::File::open(path).ok().map(|mut f| {
+            let mut s = String::new();
+            f.read_to_string(&mut s).expect("read checkpoint");
+            s
+        });
+        let (target, groups, restored) = match &existing {
+            Some(text) => {
+                let head = text.lines().next().unwrap_or_default();
+                let get = |k: &str| -> u64 {
+                    head.split_whitespace()
+                        .find_map(|t| t.strip_prefix(&format!("{k}=")))
+                        .unwrap_or_else(|| panic!("checkpoint header missing {k}: {head}"))
+                        .parse()
+                        .expect("checkpoint header field")
+                };
+                let target = get("target") as usize;
+                let groups = get("groups") as usize;
+                let expect = ckpt_header(cfg, min_n, max_n, target, groups);
+                assert_eq!(
+                    head, expect,
+                    "checkpoint config mismatch: rerun with the flags it was created under"
+                );
+                if groups_flag != 0 && groups_flag != groups {
+                    eprintln!("    checkpoint: --groups {groups_flag} ignored, file pins {groups}");
+                }
+                (target, groups, Self::parse_records(text))
+            }
+            None => {
+                let groups = if groups_flag == 0 { 64 } else { groups_flag };
+                // Enough tasks that every sequential group still
+                // load-balances internally across the thread pool.
+                let target = rayon::current_num_threads() * 16 * groups;
+                (target, groups, Default::default())
+            }
+        };
+        let fresh = existing.is_none();
+        let mut file = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(path)
+            .expect("open checkpoint");
+        if fresh {
+            use std::io::Write;
+            writeln!(file, "{}", ckpt_header(cfg, min_n, max_n, target, groups)).unwrap();
+            file.flush().unwrap();
+        } else if !restored.is_empty() {
+            eprintln!("    checkpoint: restored {} group records", restored.len());
+        }
+        Ckpt {
+            file,
+            target,
+            groups,
+            restored,
+        }
+    }
+
+    /// Records are appended as one buffered write each, so a killed run
+    /// can only leave a truncated *suffix*: the first malformed line ends
+    /// the valid prefix, and everything from there (plus any open record)
+    /// is discarded and recomputed.
+    fn parse_records(text: &str) -> std::collections::HashMap<(u32, usize), (Stats, f64)> {
+        let mut done = std::collections::HashMap::new();
+        let mut pending: Option<((u32, usize), Stats, f64)> = None;
+        let mut torn = false;
+        for line in text.lines().skip(1) {
+            if Self::parse_line(line, &mut pending, &mut done).is_none() {
+                torn = true;
+                break;
+            }
+        }
+        if torn || pending.is_some() {
+            eprintln!("    checkpoint: discarding torn tail, resuming after last complete group");
+        }
+        done
+    }
+
+    /// One checkpoint line; None = malformed (torn write).
+    fn parse_line(
+        line: &str,
+        pending: &mut Option<((u32, usize), Stats, f64)>,
+        done: &mut std::collections::HashMap<(u32, usize), (Stats, f64)>,
+    ) -> Option<()> {
+        let mut it = line.split_whitespace();
+        match it.next() {
+            Some("G") => {
+                let mut num = || -> Option<u64> { it.next()?.parse().ok() };
+                let (n, gi) = (num()? as u32, num()? as usize);
+                let secs = f64::from_bits(num()?);
+                let mut s = Stats {
+                    total: num()?,
+                    prescan_nf: num()?,
+                    halt: num()?,
+                    diverge: num()?,
+                    unknown: num()?,
+                    unknown_cap: num()?,
+                    unknown_work: num()?,
+                    escalated: num()?,
+                    beta_total: num()?,
+                    max_nf: num()?,
+                    ..Default::default()
+                };
+                s.max_nf_witness = (num()?, num()? as u8);
+                s.max_rescue_beta = num()?;
+                s.rescue_cap = (num()?, num()?);
+                s.rescue_work = (num()?, num()?);
+                s.rescue_max_trans = num()?;
+                s.rescue_stuck = (num()?, num()?);
+                s.rung2_over = num()?;
+                s.rung2_stuck = (num()?, num()?);
+                s.memo_hits = num()?;
+                *pending = Some(((n, gi), s, secs));
+                Some(())
+            }
+            Some("M") => {
+                let p = pending.as_mut()?;
+                let enc: u64 = it.next()?.parse().ok()?;
+                let len: u8 = it.next()?.parse().ok()?;
+                let v = match it.next()? {
+                    "H" => MemoV::Halt {
+                        nf: it.next()?.parse().ok()?,
+                        steps: it.next()?.parse().ok()?,
+                    },
+                    "D" => MemoV::Diverge,
+                    _ => return None,
+                };
+                p.1.memo_out.push(((enc, len), v));
+                Some(())
+            }
+            Some("U") => {
+                let p = pending.as_mut()?;
+                let enc: u64 = it.next()?.parse().ok()?;
+                let len: u8 = it.next()?.parse().ok()?;
+                p.1.unknowns.push((enc, len));
+                Some(())
+            }
+            Some("E") => {
+                let ((n, gi), s, secs) = pending.take()?;
+                let en: u32 = it.next()?.parse().ok()?;
+                let egi: usize = it.next()?.parse().ok()?;
+                if (n, gi) != (en, egi) {
+                    return None;
+                }
+                done.insert((n, gi), (s, secs));
+                Some(())
+            }
+            _ => None,
+        }
+    }
+
+    fn take_restored(&mut self, n: u32, gi: usize) -> Option<(Stats, f64)> {
+        self.restored.remove(&(n, gi))
+    }
+
+    fn append(&mut self, n: u32, gi: usize, secs: f64, s: &Stats) {
+        use std::io::Write;
+        let mut out = String::new();
+        use std::fmt::Write as _;
+        // secs as f64 bits: exact round-trip without a decimal formatter.
+        write!(out, "G {n} {gi} {}", secs.to_bits()).unwrap();
+        for v in [
+            s.total,
+            s.prescan_nf,
+            s.halt,
+            s.diverge,
+            s.unknown,
+            s.unknown_cap,
+            s.unknown_work,
+            s.escalated,
+            s.beta_total,
+            s.max_nf,
+            s.max_nf_witness.0,
+            s.max_nf_witness.1 as u64,
+            s.max_rescue_beta,
+            s.rescue_cap.0,
+            s.rescue_cap.1,
+            s.rescue_work.0,
+            s.rescue_work.1,
+            s.rescue_max_trans,
+            s.rescue_stuck.0,
+            s.rescue_stuck.1,
+            s.rung2_over,
+            s.rung2_stuck.0,
+            s.rung2_stuck.1,
+            s.memo_hits,
+        ] {
+            write!(out, " {v}").unwrap();
+        }
+        out.push('\n');
+        for ((enc, len), v) in &s.memo_out {
+            match v {
+                MemoV::Halt { nf, steps } => writeln!(out, "M {enc} {len} H {nf} {steps}").unwrap(),
+                MemoV::Diverge => writeln!(out, "M {enc} {len} D").unwrap(),
+            }
+        }
+        for (enc, len) in &s.unknowns {
+            writeln!(out, "U {enc} {len}").unwrap();
+        }
+        writeln!(out, "E {n} {gi}").unwrap();
+        self.file.write_all(out.as_bytes()).unwrap();
+        self.file.flush().unwrap();
     }
 }
 
@@ -353,6 +607,10 @@ fn main() {
     let mut term_arg: Option<String> = None;
     let mut dump_path: Option<String> = None;
     let mut terms_file: Option<String> = None;
+    let mut ckpt_path: Option<String> = None;
+    let mut groups_flag = 0usize;
+    let mut memo_in_path: Option<String> = None;
+    let mut memo_out_path: Option<String> = None;
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
@@ -387,6 +645,22 @@ fn main() {
             "--dump-unknowns" => {
                 i += 1;
                 dump_path = Some(args[i].clone());
+            }
+            "--checkpoint" => {
+                i += 1;
+                ckpt_path = Some(args[i].clone());
+            }
+            "--groups" => {
+                i += 1;
+                groups_flag = args[i].parse().unwrap();
+            }
+            "--memo-in" => {
+                i += 1;
+                memo_in_path = Some(args[i].clone());
+            }
+            "--memo-out" => {
+                i += 1;
+                memo_out_path = Some(args[i].clone());
             }
             "--terms-file" => {
                 i += 1;
@@ -582,35 +856,102 @@ fn main() {
         "time_s",
         "terms/s"
     );
+    let mut ckpt = ckpt_path
+        .as_ref()
+        .map(|p| Ckpt::open(p, &cfg, min_n, max_n, groups_flag));
+
     // λ-wrap memo, rolling by size parity: slot n%2 holds size n−2's
     // expensive verdicts during size n, then is replaced by size n's.
     let mut memo_by_parity: [std::collections::HashMap<(u64, u8), MemoV>; 2] =
         [Default::default(), Default::default()];
+    // Seed the two live parity slots (sizes min_n−2 and min_n−1) from a
+    // prior run's --memo-out file; other sizes' records are inert here.
+    // Loads dedup by key (same key ⇒ same deterministic verdict), so a
+    // memo file with duplicate lines from resumed runs is harmless.
+    if let Some(path) = &memo_in_path {
+        let text = std::fs::read_to_string(path).expect("read memo file");
+        for line in text.lines() {
+            let mut it = line.split_whitespace();
+            let (Some(e), Some(l)) = (it.next(), it.next()) else {
+                continue;
+            };
+            let enc: u64 = e.parse().unwrap();
+            let len: u8 = l.parse().unwrap();
+            if (len as u32) + 2 == min_n || (len as u32) + 1 == min_n {
+                let v = match it.next().unwrap() {
+                    "H" => MemoV::Halt {
+                        nf: it.next().unwrap().parse().unwrap(),
+                        steps: it.next().unwrap().parse().unwrap(),
+                    },
+                    _ => MemoV::Diverge,
+                };
+                memo_by_parity[(len % 2) as usize].insert((enc, len), v);
+            }
+        }
+        eprintln!(
+            "    memo-in: seeded {} + {} records for sizes {}/{}",
+            memo_by_parity[(min_n % 2) as usize].len(),
+            memo_by_parity[((min_n + 1) % 2) as usize].len(),
+            min_n.saturating_sub(2),
+            min_n.saturating_sub(1)
+        );
+    }
+    // With a checkpoint, per-size unknown dumping would duplicate lines
+    // across resumed runs; collect and rewrite the file once at the end.
+    let mut deferred_unknowns: Vec<(u64, u8)> = Vec::new();
     for n in min_n..=max_n {
         // Generation is fused into the workers: each task enumerates its
         // subtree of the term space and censuses terms as they appear.
-        let t0 = Instant::now();
-        let target = if cfg.chunk == 0 {
-            rayon::current_num_threads() * 64
-        } else {
-            cfg.chunk
+        let target = match &ckpt {
+            Some(c) => c.target,
+            None if cfg.chunk == 0 => rayon::current_num_threads() * 64,
+            None => cfg.chunk,
         };
         let tasks = interleave_tasks(split_tasks(n, target));
         let memo = &memo_by_parity[(n % 2) as usize];
-        let mut stats = tasks
-            .par_iter()
-            .map_init(
-                || (TermPool::new(), Machine::new()),
-                |(pool, vm), task| {
-                    let mut stats = Stats::default();
-                    run_task(task, &mut |enc, len| {
-                        census_term(&cfg, pool, vm, &mut stats, memo, enc, len);
-                    });
-                    stats
-                },
-            )
-            .reduce(Stats::default, Stats::merge);
-        let secs = t0.elapsed().as_secs_f64();
+        let run_slice = |slice: &[GenTask]| -> Stats {
+            slice
+                .par_iter()
+                .map_init(
+                    || (TermPool::new(), Machine::new()),
+                    |(pool, vm), task| {
+                        let mut stats = Stats::default();
+                        run_task(task, &mut |enc, len| {
+                            census_term(&cfg, pool, vm, &mut stats, memo, enc, len);
+                        });
+                        stats
+                    },
+                )
+                .reduce(Stats::default, Stats::merge)
+        };
+        let (mut stats, secs) = match &mut ckpt {
+            Some(c) => {
+                let per = tasks.len().div_ceil(c.groups).max(1);
+                let mut acc = Stats::default();
+                let mut secs = 0.0;
+                for gi in 0..c.groups {
+                    if let Some((s, gsecs)) = c.take_restored(n, gi) {
+                        acc = acc.merge(s);
+                        secs += gsecs;
+                        continue;
+                    }
+                    let lo = (gi * per).min(tasks.len());
+                    let hi = ((gi + 1) * per).min(tasks.len());
+                    let t0 = Instant::now();
+                    let gs = run_slice(&tasks[lo..hi]);
+                    let gsecs = t0.elapsed().as_secs_f64();
+                    c.append(n, gi, gsecs, &gs);
+                    acc = acc.merge(gs);
+                    secs += gsecs;
+                }
+                (acc, secs)
+            }
+            None => {
+                let t0 = Instant::now();
+                let s = run_slice(&tasks);
+                (s, t0.elapsed().as_secs_f64())
+            }
+        };
         let memo_in = memo_by_parity[(n % 2) as usize].len();
         memo_by_parity[(n % 2) as usize] = stats.memo_out.drain(..).collect();
         if stats.memo_hits > 0 || memo_in > 0 {
@@ -620,6 +961,32 @@ fn main() {
                 memo_in,
                 memo_by_parity[(n % 2) as usize].len()
             );
+        }
+        // Persist size n's memo records (sorted for stable diffs). Loads
+        // dedup by key, so re-appends from resumed runs are harmless.
+        if let Some(path) = &memo_out_path {
+            use std::fmt::Write as _;
+            use std::io::Write;
+            let mut recs: Vec<((u64, u8), MemoV)> = memo_by_parity[(n % 2) as usize]
+                .iter()
+                .map(|(k, v)| (*k, *v))
+                .collect();
+            recs.sort_unstable_by_key(|(k, _)| *k);
+            let mut out = String::new();
+            for ((enc, len), v) in recs {
+                match v {
+                    MemoV::Halt { nf, steps } => {
+                        writeln!(out, "{enc} {len} H {nf} {steps}").unwrap()
+                    }
+                    MemoV::Diverge => writeln!(out, "{enc} {len} D").unwrap(),
+                }
+            }
+            let mut f = std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(path)
+                .expect("open memo-out file");
+            f.write_all(out.as_bytes()).unwrap();
         }
 
         println!(
@@ -673,6 +1040,10 @@ fn main() {
                 stats.rung2_over, stats.rung2_stuck.0, stats.rung2_stuck.1
             );
         }
+        // Preview and dump in sorted order: accumulation order is task
+        // order, which depends on the split target (thread count or
+        // checkpoint grouping); sorted output is machine-independent.
+        stats.unknowns.sort_unstable();
         if !stats.unknowns.is_empty() {
             for (enc, len) in stats.unknowns.iter().take(16) {
                 println!("    unknown: {}", enc_to_string(*enc, *len));
@@ -680,7 +1051,9 @@ fn main() {
             if stats.unknowns.len() > 16 {
                 println!("    ... and {} more unknowns", stats.unknowns.len() - 16);
             }
-            if let Some(path) = &dump_path {
+            if dump_path.is_some() && ckpt.is_some() {
+                deferred_unknowns.extend(stats.unknowns.iter().copied());
+            } else if let Some(path) = &dump_path {
                 use std::io::Write;
                 let mut f = std::fs::OpenOptions::new()
                     .create(true)
@@ -700,6 +1073,15 @@ fn main() {
             if let Some((_, b)) = bb_ref.iter().find(|(m, _)| *m == n) {
                 assert_eq!(stats.max_nf, *b, "BBλ mismatch at n={n}");
                 println!("    verify: max|nf| matches BBλ({n})");
+            }
+        }
+    }
+    if ckpt.is_some() {
+        if let Some(path) = &dump_path {
+            use std::io::Write;
+            let mut f = std::fs::File::create(path).expect("create dump file");
+            for (enc, len) in &deferred_unknowns {
+                writeln!(f, "{}", enc_to_string(*enc, *len)).unwrap();
             }
         }
     }
