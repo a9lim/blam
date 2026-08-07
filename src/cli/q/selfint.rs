@@ -18,9 +18,10 @@
 //! Unresolved programs (any Unknown/Capacity leaf) are skipped and counted:
 //! resource fates are explicitly out of scope for trace equivalence.
 //!
-//! Usage: `qselfint [max_n] [phase]` (default: 24 all;
-//! phase ∈ all|quantum|nf).
+//! Usage: `blam q selfint [MAX_N] [PHASE]` (default: 24 all;
+//! PHASE ∈ all|quantum|nf).
 
+use crate::args::{self, Args, R};
 use blam::blc::enumerate::for_each_closed;
 use blam::blc::term::{app, lam, var, Term};
 use blam::blc::wire::enc_to_string;
@@ -156,17 +157,41 @@ fn check(src: &str, eq: &Term, direct_budget: &QBudget, interp_budget: &QBudget)
     }
 }
 
-fn main() {
-    let max_n: u32 = std::env::args()
-        .nth(1)
-        .map(|s| s.parse().expect("max_n"))
-        .unwrap_or(24);
-    let phase = std::env::args().nth(2).unwrap_or_else(|| "all".into());
-    let (run_quantum, run_nf) = match phase.as_str() {
+const USAGE: &str = "\
+blam q selfint — qBLC self-interpretation measurement
+
+usage: blam q selfint [MAX_N] [PHASE]
+
+  MAX_N   largest program size to verify (default 24)
+  PHASE   all (default) | quantum | nf
+
+Exits 1 if any trace or normal-form mismatch is found.";
+
+pub fn run(argv: &[String]) -> R<()> {
+    if args::wants_help(argv) {
+        println!("{USAGE}");
+        return Ok(());
+    }
+    let mut p = Args::new("q selfint", argv);
+    while let Some(tok) = p.next() {
+        match tok {
+            _ if tok.starts_with('-') => return Err(p.unknown(tok)),
+            _ => p.push(tok),
+        }
+    }
+    p.at_most(2)?;
+    let max_n: u32 = p.pos_num(0)?.unwrap_or(24);
+    let phase = p.positional().get(1).copied().unwrap_or("all");
+    let (run_quantum, run_nf) = match phase {
         "all" => (true, true),
         "quantum" => (true, false),
         "nf" => (false, true),
-        other => panic!("unknown phase {other:?} (all|quantum|nf)"),
+        other => {
+            return Err(format!(
+                "blam q selfint: unknown phase `{other}` (all|quantum|nf)\n{}",
+                args::hint("q selfint")
+            ))
+        }
     };
 
     let intl = parse_all(INTL).expect("intL parses");
@@ -301,6 +326,7 @@ fn main() {
     if !mismatches.is_empty() || !nf_bad.is_empty() {
         std::process::exit(1);
     }
+    Ok(())
 }
 
 #[cfg(test)]

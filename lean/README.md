@@ -28,7 +28,7 @@ RATCHET through the
 generic v1.2 assembly, RATCHET2 through the HeadTowerRatchet (v2),
 SELECTOR through the SelectorRatchet (v3), and every `*-ARG` variant
 through `argKill` on top of its inner assembly — emitted by the
-untrusted `certlean` tool and replayed obligation-by-obligation by
+untrusted `blam cert lean` emitter and replayed obligation-by-obligation by
 the kernel (`by decide`; the whole batch checks in ~1.9 s), each
 with a `wire_*` theorem pinning the certified term to its named
 bits.
@@ -117,7 +117,7 @@ Layout:
   generated certificate carries a `wire_*` theorem pinning its term
   to the bits in its name (the emitter is untrusted, the kernel
   vouches for the decoding).
-- `Certs/` — GENERATED (by `cargo run --release --bin certlean`,
+- `Certs/` — GENERATED (by `blam cert lean`,
   untrusted): one module per term size, 297 certificate literals
   (222 `RatchetCert` + 35 `HTRCert` + 40 `SelCert`; the ten `*-ARG`
   lines — 8/1/1 per class — reach their target through `argKill`)

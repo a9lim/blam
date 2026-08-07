@@ -18,13 +18,9 @@
 //! lesson): a per-step cap so one substitution cannot blow live memory, and a
 //! per-term cap so one term cannot eat the sweep.
 //!
-//! Usage:
-//!   tracescan --file data/classical/unknowns.txt \
-//!     --out data/certificates/frontier_classification.csv [--threads N]
-//!   `tracescan --single <bits>`                 # detailed single-term report
-//!   tracescan --verify-loop32                 # the reference-agreement gate
-//!   `tracescan --dump <bits> --steps 10,100,1000` # cross-check state sizes
+//! Usage: `blam trace scan|single|dump|verify-loop32` — see `USAGE`.
 
+use crate::args::{self, Args, R};
 use blam::{parse_all, Term};
 use rayon::prelude::*;
 use std::cell::Cell;
@@ -865,92 +861,125 @@ fn csv_line(r: &Rec) -> String {
 
 const CSV_HEADER: &str = "term_bits,size_bits,class,steps_run,size0,final_size,max_size,pos_delta_frac,hit_node_cap,period,first_recur_step,head_bits,head_k,head_count,chain_len,milestone_steps,milestone_arg_sizes,growth,ckpt_0_1k_5k_10k_20k,k0_frac,max_k,final_k,notes";
 
-fn main() {
-    let args: Vec<String> = std::env::args().collect();
+const USAGE: &str = "\
+blam trace — classify terms by the shape of their reduction
+
+usage: blam trace scan --file FILE [flags]     sweep a terms file to CSV
+       blam trace single BITS [flags]          detailed one-term report
+       blam trace dump BITS [--at LIST]        state sizes at given steps
+       blam trace verify-loop32                the reference-agreement gate
+
+caps (all subcommands)
+  --max-steps N        reduction steps per term (default 20000)
+  --node-cap N         state-size ceiling (default 500000)
+  --term-alloc-cap N   allocation meter per term (default 8000000000)
+  --verbose            name each `opaque` term on stderr
+
+scan only
+  --file FILE          terms to classify, one bit string per line
+  --out FILE           CSV output
+                       (default data/certificates/frontier_classification.csv)
+  --limit N            classify only the first N terms
+  --threads N          local pool size (default 6; memory-budgeted, 256 MB
+                       worker stacks — this one does NOT touch the global pool)
+
+dump only
+  --at LIST            comma-separated step numbers (default 10,100,1000)";
+
+pub fn run(argv: &[String]) -> R<()> {
+    let Some(sub) = argv.first() else {
+        println!("{USAGE}");
+        return Ok(());
+    };
+    if sub == "--help" || sub == "-h" || sub == "help" {
+        println!("{USAGE}");
+        return Ok(());
+    }
+    let known = ["scan", "single", "dump", "verify-loop32"];
+    if !known.contains(&sub.as_str()) {
+        return Err(format!(
+            "blam trace: unknown subcommand `{sub}`\ntry `blam trace --help`"
+        ));
+    }
+    let rest = &argv[1..];
+    if args::wants_help(rest) {
+        println!("{USAGE}");
+        return Ok(());
+    }
     let mut cfg = Cfg::default();
     let mut file: Option<String> = None;
     let mut out = "data/certificates/frontier_classification.csv".to_string();
-    let mut single: Option<String> = None;
-    let mut dump_bits: Option<String> = None;
     let mut dump_steps: Vec<u64> = vec![10, 100, 1000];
     let mut threads = 6usize;
-    let mut verify = false;
     let mut limit: Option<usize> = None;
 
-    let mut i = 1;
-    while i < args.len() {
-        match args[i].as_str() {
-            "--file" => {
-                i += 1;
-                file = Some(args[i].clone());
+    let cmd: &'static str = known[known.iter().position(|k| k == sub).expect("checked")];
+    let node: &'static str = match cmd {
+        "scan" => "trace scan",
+        "single" => "trace single",
+        "dump" => "trace dump",
+        _ => "trace verify-loop32",
+    };
+    let mut p = Args::new(node, rest);
+    while let Some(tok) = p.next() {
+        match tok {
+            "--max-steps" => cfg.max_steps = p.num(tok)?,
+            "--node-cap" => cfg.node_cap = p.num(tok)?,
+            "--term-alloc-cap" => cfg.term_alloc_cap = p.num(tok)?,
+            "--verbose" => {
+                p.flag(tok)?;
+                cfg.verbose = true;
             }
-            "--out" => {
-                i += 1;
-                out = args[i].clone();
+            "--file" if cmd == "scan" => file = Some(p.value(tok)?.to_string()),
+            "--out" if cmd == "scan" => out = p.value(tok)?.to_string(),
+            "--limit" if cmd == "scan" => limit = Some(p.num(tok)?),
+            "--threads" if cmd == "scan" => threads = p.num(tok)?,
+            "--at" if cmd == "dump" => {
+                let v = p.value(tok)?;
+                dump_steps = v
+                    .split(',')
+                    .map(|s| {
+                        s.trim().parse::<u64>().map_err(|e| {
+                            format!(
+                                "blam {node}: `--at {v}`: bad step `{s}`: {e}\n{}",
+                                args::hint(node)
+                            )
+                        })
+                    })
+                    .collect::<Result<Vec<u64>, String>>()?;
             }
-            "--single" => {
-                i += 1;
-                single = Some(args[i].clone());
-            }
-            "--dump" => {
-                i += 1;
-                dump_bits = Some(args[i].clone());
-            }
-            "--steps" => {
-                i += 1;
-                dump_steps = args[i].split(',').filter_map(|s| s.parse().ok()).collect();
-            }
-            "--max-steps" => {
-                i += 1;
-                cfg.max_steps = args[i].parse().unwrap();
-            }
-            "--node-cap" => {
-                i += 1;
-                cfg.node_cap = args[i].parse().unwrap();
-            }
-            "--term-alloc-cap" => {
-                i += 1;
-                cfg.term_alloc_cap = args[i].parse().unwrap();
-            }
-            "--threads" => {
-                i += 1;
-                threads = args[i].parse().unwrap();
-            }
-            "--limit" => {
-                i += 1;
-                limit = Some(args[i].parse().unwrap());
-            }
-            "--verify-loop32" => verify = true,
-            "--verbose" => cfg.verbose = true,
-            a => panic!("unknown arg {a}"),
+            _ if tok.starts_with('-') => return Err(p.unknown(tok)),
+            _ => p.push(tok),
         }
-        i += 1;
     }
 
-    if verify {
+    if cmd == "verify-loop32" {
+        p.at_most(0)?;
         let ok = verify_loop32(&cfg);
         println!("VERIFY {}", if ok { "PASS" } else { "FAIL" });
         std::process::exit(if ok { 0 } else { 1 });
     }
-    if let Some(b) = dump_bits {
-        dump(&b, &dump_steps, &cfg);
-        return;
+    if cmd == "dump" || cmd == "single" {
+        p.at_most(1)?;
+        let Some(bits) = p.positional().first().copied() else {
+            return Err(format!("blam {node}: missing BITS\n{}", args::hint(node)));
+        };
+        if cmd == "dump" {
+            dump(bits, &dump_steps, &cfg);
+        } else {
+            single_report(bits, &cfg);
+        }
+        return Ok(());
     }
-    if let Some(b) = single {
-        single_report(&b, &cfg);
-        return;
-    }
+    p.at_most(0)?;
     let Some(file) = file else {
-        eprintln!("need --file or --single or --dump or --verify-loop32");
-        std::process::exit(2);
+        return Err(format!(
+            "blam trace scan: missing --file FILE\n{}",
+            args::hint("trace scan")
+        ));
     };
 
-    let text = fs::read_to_string(&file).expect("read terms file");
-    let mut terms: Vec<String> = text
-        .lines()
-        .map(|l| l.trim().to_string())
-        .filter(|l| !l.is_empty())
-        .collect();
+    let mut terms = args::read_terms_file(&file)?;
     if let Some(n) = limit {
         terms.truncate(n);
     }
@@ -999,4 +1028,5 @@ fn main() {
         println!("  {c:22} {n}");
     }
     println!("wrote {out}");
+    Ok(())
 }

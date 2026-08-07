@@ -4,8 +4,8 @@
 set -e
 cd "$(dirname "$0")/.."
 RANGE="${1:-28} ${2:-31}"
-BIN=./target/release/census
-cargo build --release 2>/dev/null
+BIN="./target/release/blam census"
+cargo build --release --bin blam 2>/dev/null
 
 echo "== baseline (prescan + oracle + ladder + fused parallel gen)"
 $BIN $RANGE | tail -n +2

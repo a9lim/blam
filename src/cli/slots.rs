@@ -35,9 +35,9 @@
 //! is never a rejection; those candidates escalate and, if still unresolved,
 //! are reported as residual unknowns.
 //!
-//! Usage: slotsearch <var|abs|app> [--min-size N] [--max-size N]
-//!        [--tasks N] [--counts-only] [--dump FILE]
+//! Usage: `blam slots (var|abs|app) [flags]` — see `USAGE` below.
 
+use crate::args::{self, Args, R};
 use blam::blc::wire::enc_to_string;
 use blam::classical::escalation::{normal_form, LTerm, NoNf};
 use blam::classical::machine::{Machine, Node, Pool, Sink};
@@ -762,41 +762,54 @@ fn render(slot: &Slot, enc: u64, len: u8) -> String {
     s
 }
 
-fn main() {
-    let args: Vec<String> = std::env::args().skip(1).collect();
-    let mut slot_name = String::new();
+const USAGE: &str = "\
+blam slots — exhaustive parametric slot search for the self-interpreter
+
+usage: blam slots (var|abs|app) [flags]
+
+  --min-size N    smallest candidate size in bits (default 2)
+  --max-size N    largest candidate size (default: the reference's size)
+  --tasks N       generation tasks per thread (default 64)
+  --counts-only   print the enumeration-count table and stop
+  --dump FILE     write MATCH / UNKNOWN survivors to FILE";
+
+pub fn run(argv: &[String]) -> R<()> {
+    if args::wants_help(argv) {
+        println!("{USAGE}");
+        return Ok(());
+    }
     let mut min_size: u8 = 2;
     let mut max_size: Option<u8> = None;
     let mut tasks_per_thread = 64usize;
     let mut counts_only = false;
     let mut dump: Option<String> = None;
-    let mut i = 0;
-    while i < args.len() {
-        match args[i].as_str() {
-            "--min-size" => {
-                i += 1;
-                min_size = args[i].parse().unwrap();
+    let mut p = Args::new("slots", argv);
+    while let Some(tok) = p.next() {
+        match tok {
+            "--min-size" => min_size = p.num(tok)?,
+            "--max-size" => max_size = Some(p.num(tok)?),
+            "--tasks" => tasks_per_thread = p.num(tok)?,
+            "--dump" => dump = Some(p.value(tok)?.to_string()),
+            "--counts-only" => {
+                p.flag(tok)?;
+                counts_only = true;
             }
-            "--max-size" => {
-                i += 1;
-                max_size = Some(args[i].parse().unwrap());
-            }
-            "--tasks" => {
-                i += 1;
-                tasks_per_thread = args[i].parse().unwrap();
-            }
-            "--counts-only" => counts_only = true,
-            "--dump" => {
-                i += 1;
-                dump = Some(args[i].clone());
-            }
-            s => slot_name = s.to_string(),
+            _ if tok.starts_with('-') => return Err(p.unknown(tok)),
+            _ => p.push(tok),
         }
-        i += 1;
     }
+    p.at_most(1)?;
+    let Some(slot_name) = p.positional().first().copied() else {
+        return Err(format!(
+            "blam slots: missing slot name (var | abs | app)\n{}",
+            args::hint("slots")
+        ));
+    };
     let Some(slot) = SLOTS.iter().find(|s| s.name == slot_name) else {
-        eprintln!("usage: slotsearch <var|abs|app> [--min-size N] [--max-size N] [--tasks N] [--counts-only] [--dump FILE]");
-        std::process::exit(2);
+        return Err(format!(
+            "blam slots: unknown slot `{slot_name}` (expected var, abs, or app)\n{}",
+            args::hint("slots")
+        ));
     };
     let golden = bits_of(slot.golden);
     let ref_size = slot.reference.len() as u8;
@@ -873,7 +886,7 @@ fn main() {
         tn as f64 / tp.max(1) as f64
     );
     if counts_only {
-        return;
+        return Ok(());
     }
 
     println!(
@@ -1000,6 +1013,7 @@ fn main() {
             all.unknowns.len()
         );
     }
+    Ok(())
 }
 
 #[cfg(test)]

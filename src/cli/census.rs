@@ -11,12 +11,10 @@
 //!      history): proven Diverge, Halt, or Unknown (capacity out)
 //!   6. Unknowns get one last big-budget KN attempt
 //!
-//! Usage: census <min_n> <max_n> [--budget1 N] [--budget2 N] [--bb-cap N]
-//!        [--rescue N] [--rescue-trans-mult N] [--no-prescan] [--no-oracle]
-//!        [--verify] [--chunk N] [--dump-unknowns FILE] [--terms-file FILE]
-//!        [--checkpoint FILE] [--groups K] [--memo-in FILE] [--memo-out FILE]
-//! (--chunk now sets the minimum generation-task count for the fused
-//! parallel enumeration.)
+//! Usage: `blam census [MIN] MAX [flags]` — see `USAGE` below.
+//! (--chunk sets the minimum generation-task count for the fused
+//! parallel enumeration.) Single-term and batch adjudication moved to
+//! `blam adjudicate`.
 //!
 //! Checkpointing: `--checkpoint FILE` splits each size into K sequential
 //! groups (`--groups`, default 64) of parallel tasks and appends each
@@ -38,9 +36,10 @@
 //! Diverge, and re-escalates memo-covered wraps; with `--memo-in` from a
 //! run through n−1 the row is bit-identical, escal column included.
 
+use crate::args::{self, Args, R};
+use crate::ckpt::{Ckpt, CkptRecord};
 use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks, GenTask};
 use blam::blc::wire::enc_to_string;
-use blam::ckpt::{Ckpt, CkptRecord};
 use blam::classical::escalation::{normal_form, take_head_diverge, LTerm, NoNf, Why};
 use blam::classical::machine::{Machine, Pool, SizeSink};
 use blam::classical::oracle::no_nf;
@@ -48,21 +47,47 @@ use blam::classical::OutOfFuel;
 use rayon::prelude::*;
 use std::time::Instant;
 
+const USAGE: &str = "\
+blam census [MIN] MAX — exhaustive closed-term census by size
+
+usage: blam census [MIN] MAX [flags]        (MIN defaults to 4)
+
+ladder
+  --budget1 N            rung-1 beta budget (default 64)
+  --budget2 N            rung-2 beta budget (default 4096)
+  --bb-cap N             escalation-engine capacity (default 2000000)
+  --rescue N             KN rescue beta budget (default 10000000)
+  --rescue-trans-mult N  rescue transition cap = rescue x N (default 32)
+  --no-prescan           skip the redex-free pre-scan
+  --no-oracle            skip the divergence-oracle prefilter
+  --work-mult N          BLC_WORK_MULT for this run (default 16)
+  --probe-fuel N         BLC_PROBE_FUEL for this run (default 4096)
+
+run
+  --threads N            rayon threads (0 = ambient, the default)
+  --chunk N              minimum generation-task count (0 = threads x 64)
+  --verify               assert A114852 counts and BB-lambda values
+  --dump-unknowns FILE   write the unknown frontier
+  --checkpoint FILE      kill-safe group-level resume
+  --groups K             groups per size for --checkpoint (default 64)
+  --memo-in FILE         seed the lambda-wrap and no-whnf memos
+  --memo-out FILE        persist them as sizes complete";
+
 #[derive(Clone, Copy)]
-struct Cfg {
-    budget1: u64,
-    budget2: u64,
-    bb_cap: i64,
-    rescue: u64,
+pub(crate) struct Cfg {
+    pub(crate) budget1: u64,
+    pub(crate) budget2: u64,
+    pub(crate) bb_cap: i64,
+    pub(crate) rescue: u64,
     /// Rescue transition cap = rescue × this. Measured: no successful
     /// rescue in 4..40 exceeds 17.0 transitions/β (the n=38 champion:
     /// 9,452,558 β via 160,434,707 trans); 32 keeps a 1.88× margin and
     /// halves the cost of transition-bound stuck rescues vs the old
     /// blanket 64. `--rescue-trans-mult` overrides.
-    rescue_trans_mult: u64,
-    prescan: bool,
-    oracle: bool,
-    chunk: usize,
+    pub(crate) rescue_trans_mult: u64,
+    pub(crate) prescan: bool,
+    pub(crate) oracle: bool,
+    pub(crate) chunk: usize,
 }
 
 /// Cross-size verdict memo entry for λ-wrap reuse. A closed term T and
@@ -314,7 +339,7 @@ impl CkptRecord for Stats {
     }
 }
 
-fn lterm_of(pool: &Pool, id: u32) -> LTerm {
+pub(crate) fn lterm_of(pool: &Pool, id: u32) -> LTerm {
     use blam::classical::machine::Node;
     match pool.node(id) {
         Node::Var(n) => LTerm::Var(n),
@@ -544,10 +569,10 @@ fn census_term(
     }
 }
 
-fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    let mut pos = Vec::new();
-    let mut cfg = Cfg {
+/// The census ladder's default configuration, shared verbatim with
+/// `blam adjudicate` so the two cannot drift apart.
+pub(crate) fn default_cfg() -> Cfg {
+    Cfg {
         budget1: 64,
         budget2: 4096,
         // Tromp runs 42M because his BB reducer is his only engine; ours
@@ -562,227 +587,63 @@ fn main() {
         prescan: true,
         oracle: true,
         chunk: 0, // 0 = auto (threads * 64)
-    };
+    }
+}
+
+pub fn run(argv: &[String]) -> R<()> {
+    if args::wants_help(argv) {
+        println!("{USAGE}");
+        return Ok(());
+    }
+    let mut cfg = default_cfg();
     let mut verify = false;
-    let mut term_arg: Option<String> = None;
     let mut dump_path: Option<String> = None;
-    let mut terms_file: Option<String> = None;
     let mut ckpt_path: Option<String> = None;
     let mut groups_flag = 0usize;
     let mut memo_in_path: Option<String> = None;
     let mut memo_out_path: Option<String> = None;
-    let mut i = 1;
-    while i < args.len() {
-        match args[i].as_str() {
-            "--term" => {
-                i += 1;
-                term_arg = Some(args[i].clone());
+    let mut threads = 0usize;
+    let mut work_mult: Option<u64> = None;
+    let mut probe_fuel: Option<u64> = None;
+    let mut p = Args::new("census", argv);
+    while let Some(tok) = p.next() {
+        match tok {
+            "--budget1" => cfg.budget1 = p.num(tok)?,
+            "--budget2" => cfg.budget2 = p.num(tok)?,
+            "--bb-cap" => cfg.bb_cap = p.num(tok)?,
+            "--rescue" => cfg.rescue = p.num(tok)?,
+            "--rescue-trans-mult" => cfg.rescue_trans_mult = p.num(tok)?,
+            "--chunk" => cfg.chunk = p.num(tok)?,
+            "--threads" => threads = p.num(tok)?,
+            "--work-mult" => work_mult = Some(p.num(tok)?),
+            "--probe-fuel" => probe_fuel = Some(p.num(tok)?),
+            "--dump-unknowns" => dump_path = Some(p.value(tok)?.to_string()),
+            "--checkpoint" => ckpt_path = Some(p.value(tok)?.to_string()),
+            "--groups" => groups_flag = p.num(tok)?,
+            "--memo-in" => memo_in_path = Some(p.value(tok)?.to_string()),
+            "--memo-out" => memo_out_path = Some(p.value(tok)?.to_string()),
+            "--no-prescan" => {
+                p.flag(tok)?;
+                cfg.prescan = false;
             }
-            "--budget1" => {
-                i += 1;
-                cfg.budget1 = args[i].parse().unwrap();
+            "--no-oracle" => {
+                p.flag(tok)?;
+                cfg.oracle = false;
             }
-            "--budget2" => {
-                i += 1;
-                cfg.budget2 = args[i].parse().unwrap();
+            "--verify" => {
+                p.flag(tok)?;
+                verify = true;
             }
-            "--bb-cap" => {
-                i += 1;
-                cfg.bb_cap = args[i].parse().unwrap();
-            }
-            "--rescue" => {
-                i += 1;
-                cfg.rescue = args[i].parse().unwrap();
-            }
-            "--rescue-trans-mult" => {
-                i += 1;
-                cfg.rescue_trans_mult = args[i].parse().unwrap();
-            }
-            "--chunk" => {
-                i += 1;
-                cfg.chunk = args[i].parse().unwrap();
-            }
-            "--dump-unknowns" => {
-                i += 1;
-                dump_path = Some(args[i].clone());
-            }
-            "--checkpoint" => {
-                i += 1;
-                ckpt_path = Some(args[i].clone());
-            }
-            "--groups" => {
-                i += 1;
-                groups_flag = args[i].parse().unwrap();
-            }
-            "--memo-in" => {
-                i += 1;
-                memo_in_path = Some(args[i].clone());
-            }
-            "--memo-out" => {
-                i += 1;
-                memo_out_path = Some(args[i].clone());
-            }
-            "--terms-file" => {
-                i += 1;
-                terms_file = Some(args[i].clone());
-            }
-            "--no-prescan" => cfg.prescan = false,
-            "--no-oracle" => cfg.oracle = false,
-            "--verify" => verify = true,
-            a => pos.push(a.parse::<u32>().expect("size argument")),
+            _ if tok.starts_with('-') => return Err(p.unknown(tok)),
+            _ => p.push(tok),
         }
-        i += 1;
     }
-    // One-term adjudication mode: run the ladder verbosely on given bits.
-    if let Some(bits) = term_arg {
-        let mut pool = Pool::new();
-        let root = pool.decode_str(&bits).expect("parse");
-        println!(
-            "term: {} bits, redex: {}",
-            pool.bit_size(root),
-            pool.has_redex(root)
-        );
-        println!("oracle prefilter no_nf: {}", no_nf(0, (&pool, root)));
-        let mut vm = Machine::new();
-        for budget in [cfg.budget1, cfg.budget2, cfg.rescue] {
-            let mut sink = SizeSink::default();
-            let t = Instant::now();
-            match vm.normalize(&pool, root, budget, &mut sink) {
-                Ok(steps) => {
-                    println!(
-                        "KN budget {budget}: HALT |nf|={} in {} beta ({:.3}s)",
-                        sink.0,
-                        steps,
-                        t.elapsed().as_secs_f64()
-                    );
-                    return;
-                }
-                Err(_) => println!(
-                    "KN budget {budget}: out of fuel ({:.3}s)",
-                    t.elapsed().as_secs_f64()
-                ),
-            }
-        }
-        let t = Instant::now();
-        let verdict = normal_form(cfg.bb_cap, &lterm_of(&pool, root));
-        println!(
-            "BB engine cap {}: {:?} ({:.3}s)",
-            cfg.bb_cap,
-            verdict.as_ref().map(|nf| nf.bit_size()),
-            t.elapsed().as_secs_f64()
-        );
-        return;
-    }
+    let (min_n, max_n) = p.range(4)?;
+    // Phase 3: becomes explicit library config.
+    args::apply_engine_env(work_mult, probe_fuel);
 
     // Escalation recursion can go deep on tower terms; give workers room.
-    rayon::ThreadPoolBuilder::new()
-        .stack_size(256 << 20)
-        .build_global()
-        .unwrap();
-
-    // Batch adjudication: run the full ladder on each bitstring in FILE
-    // (one per line), in parallel, and print one verdict per line in input
-    // order. Combine with --bb-cap / --rescue to go beyond census defaults.
-    if let Some(path) = terms_file {
-        let text = std::fs::read_to_string(&path).expect("read terms file");
-        let terms: Vec<&str> = text
-            .lines()
-            .map(str::trim)
-            .filter(|l| !l.is_empty())
-            .collect();
-        let t0 = Instant::now();
-        // Verdicts stream as they land (stdout is line-buffered), so a
-        // killed run keeps everything it finished. Order is completion
-        // order; downstream analysis groups by content, not position.
-        let counts = std::sync::Mutex::new((0u64, 0u64, 0u64));
-        terms.par_iter().for_each_init(
-            || (Pool::new(), Machine::new()),
-            |(pool, vm), bits| {
-                pool.clear();
-                let root = pool.decode_str(bits).expect("parse term line");
-                let line = 'v: {
-                    if cfg.prescan && !pool.has_redex(root) {
-                        break 'v format!("{bits} HALT nf={} steps=0", pool.bit_size(root));
-                    }
-                    if cfg.oracle && no_nf(0, (&*pool, root)) {
-                        break 'v format!("{bits} DIVERGE oracle");
-                    }
-                    for budget in [cfg.budget1, cfg.budget2] {
-                        let mut sink = SizeSink::default();
-                        if let Ok(steps) = vm.normalize(pool, root, budget, &mut sink) {
-                            break 'v format!("{bits} HALT nf={} steps={steps}", sink.0);
-                        }
-                    }
-                    match normal_form(cfg.bb_cap, &lterm_of(pool, root)) {
-                        Ok(nf) => {
-                            let mut sink = SizeSink::default();
-                            match vm.normalize_capped(
-                                pool,
-                                root,
-                                cfg.rescue,
-                                cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
-                                &mut sink,
-                            ) {
-                                Ok(steps) => {
-                                    format!("{bits} HALT nf={} steps={steps}", sink.0)
-                                }
-                                Err(_) => format!("{bits} HALT nf={} steps=?", nf.bit_size()),
-                            }
-                        }
-                        Err(NoNf::Diverge) => format!("{bits} DIVERGE bb-engine"),
-                        Err(NoNf::Unknown(_)) => {
-                            let mut sink = SizeSink::default();
-                            match vm.normalize_capped(
-                                pool,
-                                root,
-                                cfg.rescue,
-                                cfg.rescue.saturating_mul(cfg.rescue_trans_mult),
-                                &mut sink,
-                            ) {
-                                Ok(steps) => {
-                                    format!("{bits} HALT nf={} steps={steps}", sink.0)
-                                }
-                                Err(_) => format!("{bits} UNKNOWN"),
-                            }
-                        }
-                    }
-                };
-                let mut c = counts.lock().unwrap();
-                if line.contains(" HALT ") {
-                    c.0 += 1;
-                } else if line.contains(" DIVERGE") {
-                    c.1 += 1;
-                } else {
-                    c.2 += 1;
-                }
-                let done = c.0 + c.1 + c.2;
-                println!("{line}");
-                if done.is_multiple_of(100) {
-                    eprintln!(
-                        "progress: {done}/{} ({:.0}s)",
-                        terms.len(),
-                        t0.elapsed().as_secs_f64()
-                    );
-                }
-            },
-        );
-        let (h, d, u) = *counts.lock().unwrap();
-        eprintln!(
-            "adjudicated {} terms: {h} halt, {d} diverge, {u} unknown ({:.1}s)",
-            terms.len(),
-            t0.elapsed().as_secs_f64()
-        );
-        return;
-    }
-
-    let (min_n, max_n) = match pos.as_slice() {
-        [a] => (*a, *a),
-        [a, b] => (*a, *b),
-        _ => {
-            eprintln!("usage: census <min_n> [max_n] [flags]");
-            std::process::exit(2);
-        }
-    };
+    args::build_pool(threads)?;
 
     // (n, A114852 count) and (n, BBλ(n)) reference values (BB1.lhs bb0).
     let counts_ref: &[(u32, u64)] = &[
@@ -1082,4 +943,5 @@ fn main() {
     let fires = blam::classical::escalation::REDLOOP_FIRES.load(Ordering::Relaxed);
     let fuel = blam::classical::escalation::REDLOOP_FUEL_REJECTS.load(Ordering::Relaxed);
     println!("redloop: {fires} proofs, {fuel} shape-matches lost to probe fuel");
+    Ok(())
 }

@@ -19,7 +19,6 @@
 //! `normalize`, quantum programs `run`.
 
 pub mod blc;
-pub mod ckpt;
 pub mod classical;
 pub mod quantum;
 

@@ -20,8 +20,8 @@ cd "$(dirname "$0")/.."
 MIN="${1:-4}" MAX="${2:-41}"
 OUT=tmp/census-regen
 mkdir -p "$OUT"
-cargo build --release --bin census
-target/release/census "$MIN" "$MAX" --verify --dump-unknowns "$OUT/raw_unknowns.txt" \
+cargo build --release --bin blam
+target/release/blam census "$MIN" "$MAX" --verify --dump-unknowns "$OUT/raw_unknowns.txt" \
     > "$OUT/census_table.txt"
 # census only creates the dump when unknowns exist; empty is a valid state
 touch "$OUT/raw_unknowns.txt"

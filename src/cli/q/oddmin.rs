@@ -7,18 +7,37 @@
 //! (growth-gate aborts inside one splice), and closed-acceptance
 //! results at depth 0. Stop rule: > 10⁶ summaries at any weight.
 //!
-//! Usage: `oddminproto [max_weight]` (default 24; report printed per
-//! completed weight so a stop loses nothing).
+//! Usage: `blam q oddmin [W]` (default 24; report printed per completed
+//! weight so a stop loses nothing).
 
+use crate::args::{self, Args, R};
 use blam::lab::oddmin::{app_ref, closed_accepts, lam_ref, var_ref, MaskAutomaton, Summary};
 use std::collections::BTreeSet;
 use std::time::Instant;
 
-fn main() {
-    let max_w: u32 = std::env::args()
-        .nth(1)
-        .map(|s| s.parse().expect("max weight"))
-        .unwrap_or(24);
+const USAGE: &str = "\
+blam q oddmin [W] — gated growth run for the CNOT-free sqrt(2) lane
+
+usage: blam q oddmin [W]
+
+  W   maximum weight (default 24)
+
+Stop rule: more than 10^6 summaries at any weight ends the run.";
+
+pub fn run(argv: &[String]) -> R<()> {
+    if args::wants_help(argv) {
+        println!("{USAGE}");
+        return Ok(());
+    }
+    let mut p = Args::new("q oddmin", argv);
+    while let Some(tok) = p.next() {
+        match tok {
+            _ if tok.starts_with('-') => return Err(p.unknown(tok)),
+            _ => p.push(tok),
+        }
+    }
+    p.at_most(1)?;
+    let max_w: u32 = p.pos_num(0)?.unwrap_or(24);
     let ma = MaskAutomaton::build();
     // cells[w][d] = canonical summaries of weight-w terms with free
     // vars ≤ d; d is capped by the enclosing-lambda budget
@@ -110,8 +129,9 @@ fn main() {
         );
         if uniq.len() > 1_000_000 {
             println!("STOP RULE: >10^6 summaries at weight {w}");
-            return;
+            return Ok(());
         }
         cells[w as usize] = per_d;
     }
+    Ok(())
 }

@@ -8,10 +8,10 @@
 set -e
 cd "$(dirname "$0")/.."
 MIN="${1:-4}" MAX="${2:-32}"
-cargo build --release --bin census
+cargo build --release --bin blam
 T=$(mktemp -d)
 trap 'rm -rf "$T"' EXIT
-target/release/census "$MIN" "$MAX" --verify > "$T/spot.txt"
+target/release/blam census "$MIN" "$MAX" --verify > "$T/spot.txt"
 awk 'NF>=10 && $1+0>0 {print $1,$2,$3,$4,$5,$6,$7,$8}' "$T/spot.txt" > "$T/spot.cols"
 awk -v lo="$MIN" -v hi="$MAX" 'NF>=10 && $1+0>0 && $1>=lo && $1<=hi {print $1,$2,$3,$4,$5,$6,$7,$8}' \
     data/classical/census_table.txt > "$T/canon.cols"

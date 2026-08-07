@@ -53,6 +53,8 @@ jobs:
       # untrusted certificate discovery surface, and the three bins that
       # use them) are compiled and tested too.
       - run: cargo test --release --workspace --all-features
+      # Default features: the no-lab dispatcher arms actually run.
+      - run: cargo test --release
       # The engine must also build with im-rc alone.
       - run: cargo test --release --no-default-features
       - name: uni.rs parity (byte-identical vs uni.py on Tromp's corpus)

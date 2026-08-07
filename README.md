@@ -109,37 +109,44 @@ Runnable versions of these snippets: `examples/normalize.rs`,
 
 ## Drivers
 
-The measurement drivers live in `src/bin/`; production sweeps use rayon,
-while `oddminproto` remains an intentionally direct reference driver:
+One binary, `blam`, whose subcommands live in `src/cli/`; production
+sweeps use rayon, while `q oddmin` remains an intentionally direct
+reference driver. Subcommands marked *(lab)* need `--features lab` — a
+binary built without it names them and says so rather than pretending
+they do not exist.
 
-| bin | what it does |
+| subcommand | what it does |
 |---|---|
 | `census` | adjudicate every closed term in a size range (halt / diverge / unknown) through a ladder of engines |
+| `adjudicate` | the same ladder on one term or a file of them, verbosely |
+| `normalize` | normalize a closed term on the KN machine |
 | `solomonoff` | Solomonoff prior m(x), prefix complexity K(x), two-sided Ω bounds — exact 2⁻⁶⁴-unit arithmetic |
-| `certsearch` | divergence-certificate discovery sweep over a frontier file |
-| `certlean` | emit the certificate kills as Lean 4 modules for kernel checking |
-| `certdiag` / `tracescan` | frontier classification and probe instruments |
-| `qcensus` | the quantum operator census (`--cond-k K` dimension-conditioned mode, `--sig` alternate signature universes, `--skeleton-only` the trusted divergence sweep over census Unknowns) |
-| `qpilot` / `qselfint` / `qradical` / `qcomplement` | signature-order pilot, self-interpretation measurement, and the two-stage dyadicity campaign |
-| `oddminproto` | gated reference-DP driver for the CNOT-free √2 theorem lane |
-| `slotsearch` | exhaustive self-interpreter slot searches |
+| `cert search` *(lab)* | divergence-certificate discovery sweep over a frontier file |
+| `cert lean` | emit the certificate kills as Lean 4 modules for kernel checking |
+| `cert diag` *(lab)* / `trace` *(lab)* | frontier classification and probe instruments |
+| `q census` | the quantum operator census (`--cond-k K` dimension-conditioned mode, `--sig` alternate signature universes) |
+| `q skeleton` | the trusted divergence sweep over census Unknowns |
+| `q run` | run one qBLC program, one line per branch leaf |
+| `q selfint` / `q galois idiom` *(lab)* / `q galois complement` *(lab)* | self-interpretation measurement and the two-stage dyadicity campaign |
+| `q oddmin` *(lab)* | gated reference-DP driver for the CNOT-free √2 theorem lane |
+| `slots` *(lab)* | exhaustive self-interpreter slot searches |
 
 ```bash
-cargo build --release
+cargo build --release                   # add --features lab for the instruments
 
 # census of all closed terms of 4..40 bits, with self-verification
-target/release/census 4 40 --verify
+target/release/blam census 4 40 --verify
 
 # one-term verbose adjudication
-target/release/census --term 010001101000011010
+target/release/blam adjudicate 010001101000011010
 
 # Ω / K sweep;  quantum census
-target/release/solomonoff 4 41 --table data/classical/solomonoff_table.txt
-target/release/qcensus --max-n 41 --trans 67108864 --out data/quantum/census_table.txt
+target/release/blam solomonoff 4 41 --table data/classical/solomonoff_table.txt
+target/release/blam q census 4 41 --trans 67108864 --out data/quantum/census_table.txt
 
 # certificate sweep, then kernel-check the kills in Lean
-target/release/certsearch --terms-file data/classical/unknowns.txt
-cargo run --release --bin certlean && cd lean && lake build Certs
+target/release/blam cert search --file data/classical/unknowns.txt
+target/release/blam cert lean && cd lean && lake build Certs
 ```
 
 Knobs: `BLC_WORK_MULT` (work-meter multiplier; `2` = memory-bounded
@@ -197,8 +204,8 @@ record in the
 
 ## Layout
 
-- `src/` — the library (reference core + engines, quantum pillar
-  `q`-prefixed); `src/bin/` — the drivers.
+- `src/` — the library (`blc` substrate, `classical` and `quantum`
+  pillars, `lab` instruments); `src/cli/` — the `blam` binary.
 - `examples/` — the README snippets, runnable.
 - `tests/` — unit, differential, conformance, and certificate
   soundness batteries.

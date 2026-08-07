@@ -12,8 +12,8 @@ cd "$(dirname "$0")/.."
 MIN="${1:-4}" MAX="${2:-41}"
 OUT=tmp/solomonoff-regen
 mkdir -p "$OUT"
-cargo build --release --bin solomonoff
-target/release/solomonoff "$MIN" "$MAX" --table "$OUT/solomonoff_table.txt" \
+cargo build --release --bin blam
+target/release/blam solomonoff "$MIN" "$MAX" --table "$OUT/solomonoff_table.txt" \
     > "$OUT/solomonoff.txt"
 if [ "$MIN" -eq 4 ] && [ "$MAX" -ge 41 ]; then
     mv "$OUT/solomonoff.txt" data/classical/solomonoff.txt

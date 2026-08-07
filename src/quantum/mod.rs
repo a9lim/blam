@@ -35,10 +35,10 @@ pub enum Prim {
 }
 
 impl Prim {
-    /// The canonical universe as an unordered five-gate SET, used as a
-    /// permutation seed (`qpilot` enumerates its orderings). S/X/Z exist
-    /// for alternate signature universes (`qcensus --sig`); the canonical
-    /// census and all frozen thresholds use only these five.
+    /// The canonical universe as an unordered five-gate SET — the seed
+    /// the signature-order campaign permuted. S/X/Z exist for alternate
+    /// signature universes (`blam q census --sig`); the canonical census
+    /// and all frozen thresholds use only these five.
     ///
     /// This is NOT the signature order — that is `sig::FROZEN`, the single
     /// home for the ordering the pilot froze.

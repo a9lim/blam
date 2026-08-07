@@ -21,14 +21,19 @@
 //! (M_Fock's definition). A designated-output alternative would define a
 //! different Object B experiment, not change this census.
 //!
-//! Usage: qcensus [--min-n N] [--max-n N] [--beta B] [--trans T]
-//!                [--qubits Q] [--branches K] [--threads J] [--out FILE]
-//!                [--cond-k K]
+//! Usage: `blam q census [MIN] MAX [flags]` — see `USAGE` below.
 //!
 //! `--cond-k K` switches to Object B mode: every program runs as
 //! `p K-bar <sig>` (dimension handed as a Church numeral before the
 //! signature) — the G_K approximant sweep.
+//!
+//! The trusted-checker sweep that used to ride along as
+//! `--skeleton-only` is its own subcommand now (`blam q skeleton`): it
+//! never touched Pool/QMachine/Tally, and sharing `--terms-file` with
+//! the batch re-adjudication mode meant one flag selected two
+//! unrelated engines.
 
+use crate::args::{self, Args, R};
 use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
 use blam::blc::wire::enc_to_string as enc_str;
 use blam::quantum::machine::{Machine as QMachine, Pool};
@@ -278,7 +283,7 @@ impl Default for Tally {
     }
 }
 
-impl blam::ckpt::CkptRecord for Tally {
+impl crate::ckpt::CkptRecord for Tally {
     fn write_body(&self, out: &mut String) {
         use std::fmt::Write as _;
         out.push('S');
@@ -559,121 +564,93 @@ fn rank_states(r: &mut String, label: &str, m: &[Ex], states: &[(&str, Vec<Dw>, 
     }
 }
 
-fn main() {
-    let mut min_n: u32 = 4;
-    let mut max_n: u32 = 28;
+const USAGE: &str = "\
+blam q census [MIN] MAX — the M^(1) operator census
+
+usage: blam q census [MIN] MAX [flags]        (MIN defaults to 4)
+       blam q census --terms-file FILE [flags]   batch re-adjudication
+
+budgets
+  --beta B        beta-steps per branch (default 4096)
+  --trans T       transitions per branch (default 4194304)
+  --qubits Q      live qubits per branch (default 12)
+  --branches K    branches per program (default 4096)
+
+universe
+  --sig LIST      comma-separated signature order (default the frozen five;
+                  alternate universes produce non-canonical data)
+  --cond-k K      Object B mode: run `p K-bar <sig>` (the G_K sweep)
+
+run
+  --threads J     rayon threads (0 = ambient, the default)
+  --out FILE      write the report to FILE as well as stdout
+  --dump-unknowns FILE   programs with an Unknown leaf
+  --checkpoint FILE      kill-safe group-level resume
+  --groups K             groups per size for --checkpoint (default 64)
+  --work-mult N   BLC_WORK_MULT for this run (default 16)
+  --probe-fuel N  BLC_PROBE_FUEL for this run (default 4096)
+
+batch re-adjudication (--terms-file)
+  --terms-file FILE      one program per line; one verdict line per program
+  --skeleton CAP         add the classical skeleton column at capacity CAP";
+
+pub fn run(argv: &[String]) -> R<()> {
+    if args::wants_help(argv) {
+        println!("{USAGE}");
+        return Ok(());
+    }
     let mut cond_k: Option<u32> = None;
     let mut budget = QBudget {
         trans: 1 << 22,
         ..QBudget::default()
     };
-    let mut threads: Option<usize> = None;
+    let mut threads = 0usize;
     let mut out: Option<String> = None;
     let mut dump_unknowns: Option<String> = None;
     let mut terms_file: Option<String> = None;
     let mut skeleton_cap: Option<i64> = None;
-    let mut skeleton_only = false;
-    let mut skel_steps = blam::quantum::certificate::SkelCaps::default().steps;
-    let mut skel_size = blam::quantum::certificate::SkelCaps::default().size_bits;
     let mut ckpt_path: Option<String> = None;
     let mut groups_flag = 0usize;
+    let mut work_mult: Option<u64> = None;
+    let mut probe_fuel: Option<u64> = None;
     // The canonical universe unless --sig overrides (alternate universes
     // are deliberately-labeled siblings; canonical data stays frozen).
     let mut sig: Vec<Prim> = FROZEN.to_vec();
-    let args: Vec<String> = std::env::args().skip(1).collect();
-    let mut i = 0;
-    while i < args.len() {
-        match args[i].as_str() {
-            "--min-n" => {
-                min_n = args[i + 1].parse().unwrap();
-                i += 2;
-            }
-            "--cond-k" => {
-                cond_k = Some(args[i + 1].parse().unwrap());
-                i += 2;
-            }
-            "--max-n" => {
-                max_n = args[i + 1].parse().unwrap();
-                i += 2;
-            }
-            "--beta" => {
-                budget.beta = args[i + 1].parse().unwrap();
-                i += 2;
-            }
-            "--trans" => {
-                budget.trans = args[i + 1].parse().unwrap();
-                i += 2;
-            }
-            "--qubits" => {
-                budget.max_qubits = args[i + 1].parse().unwrap();
-                i += 2;
-            }
-            "--branches" => {
-                budget.max_branches = args[i + 1].parse().unwrap();
-                i += 2;
-            }
-            "--threads" => {
-                threads = Some(args[i + 1].parse().unwrap());
-                i += 2;
-            }
-            "--out" => {
-                out = Some(args[i + 1].clone());
-                i += 2;
-            }
-            "--sig" => {
-                sig = args[i + 1]
-                    .split(',')
-                    .map(|s| {
-                        Prim::by_name(s.trim())
-                            .unwrap_or_else(|| panic!("unknown primitive {s:?} in --sig"))
-                    })
-                    .collect();
-                assert!(!sig.is_empty(), "--sig needs at least one primitive");
-                i += 2;
-            }
-            "--dump-unknowns" => {
-                dump_unknowns = Some(args[i + 1].clone());
-                i += 2;
-            }
-            "--checkpoint" => {
-                ckpt_path = Some(args[i + 1].clone());
-                i += 2;
-            }
-            "--groups" => {
-                groups_flag = args[i + 1].parse().unwrap();
-                i += 2;
-            }
-            "--terms-file" => {
-                terms_file = Some(args[i + 1].clone());
-                i += 2;
-            }
-            "--skeleton" => {
-                skeleton_cap = Some(args[i + 1].parse().unwrap());
-                i += 2;
-            }
-            "--skeleton-only" => {
-                skeleton_only = true;
-                i += 1;
-            }
-            "--skel-steps" => {
-                skel_steps = args[i + 1].parse().unwrap();
-                i += 2;
-            }
-            "--skel-size" => {
-                skel_size = args[i + 1].parse().unwrap();
-                i += 2;
-            }
-            other => panic!("unknown arg {other}"),
+    let mut p = Args::new("q census", argv);
+    while let Some(tok) = p.next() {
+        match tok {
+            "--cond-k" => cond_k = Some(p.num(tok)?),
+            "--beta" => budget.beta = p.num(tok)?,
+            "--trans" => budget.trans = p.num(tok)?,
+            "--qubits" => budget.max_qubits = p.num(tok)?,
+            "--branches" => budget.max_branches = p.num(tok)?,
+            "--threads" => threads = p.num(tok)?,
+            "--work-mult" => work_mult = Some(p.num(tok)?),
+            "--probe-fuel" => probe_fuel = Some(p.num(tok)?),
+            "--out" => out = Some(p.value(tok)?.to_string()),
+            "--sig" => sig = super::run::parse_sig("q census", p.value(tok)?)?,
+            "--dump-unknowns" => dump_unknowns = Some(p.value(tok)?.to_string()),
+            "--checkpoint" => ckpt_path = Some(p.value(tok)?.to_string()),
+            "--groups" => groups_flag = p.num(tok)?,
+            "--terms-file" => terms_file = Some(p.value(tok)?.to_string()),
+            "--skeleton" => skeleton_cap = Some(p.num(tok)?),
+            _ if tok.starts_with('-') => return Err(p.unknown(tok)),
+            _ => p.push(tok),
         }
     }
+    // The sweep needs a size range; batch re-adjudication reads its
+    // population from the file and takes none.
+    let (min_n, max_n) = if terms_file.is_some() && p.positional().is_empty() {
+        (0, 0)
+    } else {
+        p.range(4)?
+    };
+    // Phase 3: becomes explicit library config.
+    args::apply_engine_env(work_mult, probe_fuel);
     // Big worker stacks: the skeleton reducer and Term drops recurse
     // over term depth, which the size cap bounds at thousands of frames
     // (same lesson as the census escalation pool).
-    let mut pool = rayon::ThreadPoolBuilder::new().stack_size(256 << 20);
-    if let Some(k) = threads {
-        pool = pool.num_threads(k);
-    }
-    pool.build_global().unwrap();
+    args::build_pool(threads)?;
     let nthreads = rayon::current_num_threads();
 
     // Batch re-adjudication: run every program in FILE (one bit-string per
@@ -681,97 +658,9 @@ fn main() {
     // program with leaf-fate counts and its summed exact halt mass —
     // the escalation rung for census Unknowns. Streams in completion
     // order; a killed run keeps everything finished.
-    // Trusted-checker sweep: no qvm run at all — the whole point is that
-    // the skeleton kill is orders cheaper than paying the quantum Unknown
-    // budget per program. One line per program, streaming.
-    if skeleton_only {
-        let path = terms_file.expect("--skeleton-only needs --terms-file");
-        let text = std::fs::read_to_string(&path).expect("read terms file");
-        let programs: Vec<&str> = text
-            .lines()
-            .map(str::trim)
-            .filter(|l| !l.is_empty())
-            .collect();
-        let bbcap = skeleton_cap.unwrap_or(2_000_000);
-        let caps = blam::quantum::certificate::SkelCaps {
-            steps: skel_steps,
-            size_bits: skel_size,
-        };
-        let t0 = Instant::now();
-        let counts = std::sync::Mutex::new(std::collections::HashMap::<&'static str, u64>::new());
-        programs.par_iter().for_each(|bits| {
-            use blam::classical::escalation::{normal_form, LTerm, NoNf};
-            use blam::classical::machine::{Machine, Pool, SizeSink};
-            use blam::quantum::certificate::{adjudicate, SkelVerdict};
-            let mut p = blam::parse_all(bits).expect("parse program line");
-            if let Some(k) = cond_k {
-                use blam::blc::term::{app, lam, var};
-                let mut body = var(1);
-                for _ in 0..k {
-                    body = app(var(2), body);
-                }
-                p = app(p, lam(lam(body)));
-            }
-            let (kind, detail) = match adjudicate(&p, sig.len() as u32, &caps) {
-                SkelVerdict::Loop { steps } => ("loop", format!(" steps={steps}")),
-                SkelVerdict::NormalWithHoles { steps } => ("halt-inert", format!(" steps={steps}")),
-                SkelVerdict::HoleDemanded { steps } => ("holedemanded", format!(" steps={steps}")),
-                SkelVerdict::CapOut => ("capout", String::new()),
-                SkelVerdict::HoleFree { residual, steps } => {
-                    // Classical semantic ladder on the closed residual;
-                    // Halt AND proven no-NF both transfer.
-                    let lt = LTerm::from_term(&residual);
-                    if blam::classical::oracle::no_nf(0, &lt) {
-                        ("div", format!(" steps={steps} via=oracle"))
-                    } else {
-                        let mut pool = Pool::new();
-                        let root = pool.decode_str(&residual.to_bits()).expect("residual bits");
-                        let mut sink = SizeSink::default();
-                        match Machine::new().normalize(&pool, root, 65_536, &mut sink) {
-                            Ok(_) => ("halt", format!(" steps={steps} nf={}", sink.0)),
-                            Err(_) => match normal_form(bbcap, &lt) {
-                                Ok(nf) => ("halt", format!(" steps={steps} nf={}", nf.bit_size())),
-                                Err(NoNf::Diverge) => ("div", format!(" steps={steps} via=bb")),
-                                Err(NoNf::Unknown(_)) => ("residual-unknown", String::new()),
-                            },
-                        }
-                    }
-                }
-            };
-            println!("{bits} skel2={kind}{detail}");
-            let mut c = counts.lock().unwrap();
-            *c.entry(kind).or_insert(0) += 1;
-            let done: u64 = c.values().sum();
-            if done.is_multiple_of(50000) {
-                eprintln!(
-                    "progress: {done}/{} ({:.0}s)",
-                    programs.len(),
-                    t0.elapsed().as_secs_f64()
-                );
-            }
-        });
-        let c = counts.lock().unwrap();
-        let mut ks: Vec<_> = c.iter().collect();
-        ks.sort();
-        eprintln!(
-            "skeleton sweep: {} programs in {:.1}s — {}",
-            programs.len(),
-            t0.elapsed().as_secs_f64(),
-            ks.iter()
-                .map(|(k, v)| format!("{k}={v}"))
-                .collect::<Vec<_>>()
-                .join(" ")
-        );
-        return;
-    }
-
     if let Some(path) = terms_file {
-        let text = std::fs::read_to_string(&path).expect("read terms file");
-        let programs: Vec<&str> = text
-            .lines()
-            .map(str::trim)
-            .filter(|l| !l.is_empty())
-            .collect();
+        let owned = args::read_terms_file(&path)?;
+        let programs: Vec<&str> = owned.iter().map(String::as_str).collect();
         let t0 = Instant::now();
         let done = std::sync::atomic::AtomicU64::new(0);
         programs.par_iter().for_each_init(
@@ -862,7 +751,7 @@ fn main() {
             programs.len(),
             t0.elapsed().as_secs_f64()
         );
-        return;
+        return Ok(());
     }
 
     let mode = match cond_k {
@@ -876,7 +765,7 @@ fn main() {
     );
 
     let t0 = Instant::now();
-    // Group checkpointing (blam::ckpt): config pins everything verdict-
+    // Group checkpointing (crate::ckpt): config pins everything verdict-
     // relevant — range, budgets, mode, and the signature universe.
     let ckpt_config = format!(
         "qcensus min={min_n} max={max_n} beta={} trans={} qubits={} branches={} cond={} sig={}",
@@ -889,7 +778,7 @@ fn main() {
     );
     let mut ckpt = ckpt_path
         .as_ref()
-        .map(|p| blam::ckpt::Ckpt::<Tally>::open(p, &ckpt_config, groups_flag));
+        .map(|p| crate::ckpt::Ckpt::<Tally>::open(p, &ckpt_config, groups_flag));
     // Per-size unknown dumping would duplicate lines across resumed
     // runs; under a checkpoint, collect and rewrite the file at the end.
     let mut deferred_unknowns: Vec<(u64, u8)> = Vec::new();
@@ -1282,4 +1171,5 @@ fn main() {
         std::fs::write(&path, &r).expect("write output file");
         eprintln!("wrote {path}");
     }
+    Ok(())
 }

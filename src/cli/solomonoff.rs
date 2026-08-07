@@ -16,9 +16,9 @@
 //! at print time. Normal forms wider than 63 bits can't be u64-keyed and
 //! are aggregated by size (identity dropped, counts and mass kept).
 //!
-//! Usage: solomonoff <min_n> <max_n> [--bb-cap N] [--rescue N] [--table FILE]
-//!        [--dump-max-x N] [--top N]
+//! Usage: `blam solomonoff [MIN] MAX [flags]` — see `USAGE` below.
 
+use crate::args::{self, Args, R};
 use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
 use blam::blc::wire::enc_to_string;
 use blam::classical::escalation::{normal_form, LTerm, NoNf};
@@ -197,55 +197,58 @@ fn pm(units: u128) -> f64 {
     units as f64 / 2f64.powi(64)
 }
 
-fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    let mut pos = Vec::new();
+const USAGE: &str = "\
+blam solomonoff [MIN] MAX — Solomonoff prior, K(x), and Omega bounds
+
+usage: blam solomonoff [MIN] MAX [flags]     (MIN defaults to 4, MAX <= 63)
+
+  --bb-cap N       escalation-engine capacity (default 2000000)
+  --rescue N       KN rescue beta budget (default 10000000)
+  --table FILE     per-x m/K table (default solomonoff_table.txt)
+  --dump-max-x N   dump table rows with |x| <= N (default 20)
+  --top N          rows per analytics section (default 40)
+  --threads N      rayon threads (0 = ambient, the default)
+  --work-mult N    BLC_WORK_MULT for this run (default 16)
+  --probe-fuel N   BLC_PROBE_FUEL for this run (default 4096)";
+
+pub fn run(argv: &[String]) -> R<()> {
+    if args::wants_help(argv) {
+        println!("{USAGE}");
+        return Ok(());
+    }
     let mut bb_cap: i64 = 2_000_000;
     let mut rescue: u64 = 10_000_000;
     let mut table_path = String::from("solomonoff_table.txt");
     let mut dump_max_x: u8 = 20;
     let mut top: usize = 40;
-    let mut i = 1;
-    while i < args.len() {
-        match args[i].as_str() {
-            "--bb-cap" => {
-                i += 1;
-                bb_cap = args[i].parse().unwrap();
-            }
-            "--rescue" => {
-                i += 1;
-                rescue = args[i].parse().unwrap();
-            }
-            "--table" => {
-                i += 1;
-                table_path = args[i].clone();
-            }
-            "--dump-max-x" => {
-                i += 1;
-                dump_max_x = args[i].parse().unwrap();
-            }
-            "--top" => {
-                i += 1;
-                top = args[i].parse().unwrap();
-            }
-            a => pos.push(a.parse::<u32>().expect("size argument")),
+    let mut threads = 0usize;
+    let mut work_mult: Option<u64> = None;
+    let mut probe_fuel: Option<u64> = None;
+    let mut p = Args::new("solomonoff", argv);
+    while let Some(tok) = p.next() {
+        match tok {
+            "--bb-cap" => bb_cap = p.num(tok)?,
+            "--rescue" => rescue = p.num(tok)?,
+            "--table" => table_path = p.value(tok)?.to_string(),
+            "--dump-max-x" => dump_max_x = p.num(tok)?,
+            "--top" => top = p.num(tok)?,
+            "--threads" => threads = p.num(tok)?,
+            "--work-mult" => work_mult = Some(p.num(tok)?),
+            "--probe-fuel" => probe_fuel = Some(p.num(tok)?),
+            _ if tok.starts_with('-') => return Err(p.unknown(tok)),
+            _ => p.push(tok),
         }
-        i += 1;
     }
-    let (min_n, max_n) = match pos.as_slice() {
-        [a] => (4u32, *a),
-        [a, b] => (*a, *b),
-        _ => {
-            eprintln!("usage: solomonoff <min_n> [max_n] [flags]");
-            std::process::exit(2);
-        }
-    };
-    assert!(max_n <= 63);
-
-    rayon::ThreadPoolBuilder::new()
-        .stack_size(256 << 20)
-        .build_global()
-        .unwrap();
+    let (min_n, max_n) = p.range(4)?;
+    if max_n > 63 {
+        return Err(format!(
+            "blam solomonoff: MAX {max_n} exceeds 63 (masses are u128 in units of 2^-64)\n{}",
+            args::hint("solomonoff")
+        ));
+    }
+    // Phase 3: becomes explicit library config.
+    args::apply_engine_env(work_mult, probe_fuel);
+    args::build_pool(threads)?;
 
     let t0 = Instant::now();
     let mut acc = Acc::default();
@@ -474,4 +477,5 @@ fn main() {
         "\ntable: {} distinct nontrivial nfs total; {dumped} with |x|≤{dump_max_x} dumped to {table_path}",
         rows.len()
     );
+    Ok(())
 }
