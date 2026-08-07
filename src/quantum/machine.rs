@@ -31,6 +31,7 @@
 //! meeting a Prim1/Cnot1/Cnot2 on top), which is exactly the reference's "Err
 //! precedes effects, before the value's interior is normalized".
 
+use crate::blc::wire;
 use crate::quantum::{Budget, Capacity, ErrKind, Fate, Leaf, Prim, Store};
 
 /// Term arena node. Children are indices into the pool. `Prim` and `Handle`
@@ -65,6 +66,22 @@ pub struct Pool {
 impl Default for Pool {
     fn default() -> Pool {
         Pool::new()
+    }
+}
+
+impl wire::Build for Pool {
+    type Id = u32;
+    #[inline]
+    fn var(&mut self, n: u32) -> u32 {
+        self.push(Node::Var(n))
+    }
+    #[inline]
+    fn lam(&mut self, b: u32) -> u32 {
+        self.push(Node::Lam(b))
+    }
+    #[inline]
+    fn app(&mut self, f: u32, a: u32) -> u32 {
+        self.push(Node::App(f, a))
     }
 }
 
@@ -103,48 +120,11 @@ impl Pool {
         (self.nodes.len() - 1) as u32
     }
 
-    /// Decode one BLC term off a packed (bits, length) pair — the same
-    /// explicit-stack decoder as `classical::machine::Pool`, no string round-trip.
+    /// Decode one BLC term off a packed (bits, length) pair — the one
+    /// wire-grammar decoder ([`wire::decode`]), no string round-trip.
     pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {
         let mut bits = (0..len).rev().map(|j| (enc >> j) & 1 == 1);
-        enum P {
-            Lam,
-            App0,
-            App1(u32),
-        }
-        let mut work: Vec<P> = Vec::new();
-        loop {
-            let mut done: u32 = match bits.next()? {
-                false => match bits.next()? {
-                    false => {
-                        work.push(P::Lam);
-                        continue;
-                    }
-                    true => {
-                        work.push(P::App0);
-                        continue;
-                    }
-                },
-                true => {
-                    let mut n: u32 = 1;
-                    while bits.next()? {
-                        n += 1;
-                    }
-                    self.push(Node::Var(n))
-                }
-            };
-            loop {
-                match work.pop() {
-                    None => return Some(done),
-                    Some(P::Lam) => done = self.push(Node::Lam(done)),
-                    Some(P::App0) => {
-                        work.push(P::App1(done));
-                        break;
-                    }
-                    Some(P::App1(f)) => done = self.push(Node::App(f, done)),
-                }
-            }
-        }
+        wire::decode(&mut bits, &mut Vec::new(), self)
     }
 
     /// Import a tree-side term (tests).

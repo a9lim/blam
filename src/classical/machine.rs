@@ -10,7 +10,7 @@
 //! `classical::reference::normalize`. Explicit stacks throughout; nothing
 //! here recurses.
 
-use crate::blc::Term;
+use crate::blc::{wire, Term};
 use crate::classical::OutOfFuel;
 
 /// Term arena node. Children are indices into the pool.
@@ -21,12 +21,29 @@ pub enum Node {
     App(u32, u32),
 }
 
-/// Pending constructor on `decode`'s explicit build stack.
-#[derive(Debug)]
-enum P {
-    Lam,
-    App0,      // waiting for function child
-    App1(u32), // has function child, waiting for argument
+/// [`wire::Build`] into a [`Pool`], noting in passing whether any App
+/// closed over a Lam function child — the pre-scan question, answered
+/// at decode time (see [`Pool::has_redex`]).
+struct RedexScan<'a> {
+    pool: &'a mut Pool,
+    redex: bool,
+}
+
+impl wire::Build for RedexScan<'_> {
+    type Id = u32;
+    #[inline]
+    fn var(&mut self, n: u32) -> u32 {
+        self.pool.push(Node::Var(n))
+    }
+    #[inline]
+    fn lam(&mut self, b: u32) -> u32 {
+        self.pool.push(Node::Lam(b))
+    }
+    #[inline]
+    fn app(&mut self, f: u32, a: u32) -> u32 {
+        self.redex |= matches!(self.pool.nodes[f as usize], Node::Lam(_));
+        self.pool.push(Node::App(f, a))
+    }
 }
 
 /// Flat term storage, reused across terms via `clear`.
@@ -39,7 +56,7 @@ pub struct Pool {
     /// 11.1M decodes). Deliberately NOT touched by `clear`: `clear`'s
     /// soundness argument is about `decoded`, and this buffer carries no
     /// term state.
-    dwork: Vec<P>,
+    dwork: Vec<wire::Pending<u32>>,
     /// `(root, has_redex)` for the most recent [`Pool::decode`]. That
     /// decode already visits every `App` it builds, so it can settle the
     /// pre-scan question in passing; [`Pool::has_redex`] reads it back in
@@ -84,67 +101,29 @@ impl Pool {
         (self.nodes.len() - 1) as u32
     }
 
-    /// Decode one BLC term off a bit stream. Returns the root index.
+    /// Decode one BLC term off a bit stream (the one wire-grammar
+    /// decoder, [`wire::decode`], building into this arena). Returns the
+    /// root index.
     pub fn decode(&mut self, bits: &mut impl Iterator<Item = bool>) -> Option<u32> {
-        // Taken out for the duration and put back whole, so the `?`
-        // early returns cannot leak the buffer.
+        // The build stack is taken out for the duration and put back
+        // whole, so an early EOF return cannot leak the buffer.
         let mut work = std::mem::take(&mut self.dwork);
-        work.clear();
-        let r = self.decode_into(bits, &mut work);
+        // The builder wrapper accumulates the pre-scan answer for free:
+        // every App the decode builds is tested as it closes, on a child
+        // index that is already hot. Equivalent to a full re-traversal
+        // because the decoder visits exactly the nodes of the term it
+        // returns.
+        let mut b = RedexScan {
+            pool: self,
+            redex: false,
+        };
+        let r = wire::decode(bits, &mut work, &mut b);
+        let redex = b.redex;
         self.dwork = work;
-        r
-    }
-
-    fn decode_into(
-        &mut self,
-        bits: &mut impl Iterator<Item = bool>,
-        work: &mut Vec<P>,
-    ) -> Option<u32> {
-        // Pre-scan answer, accumulated for free: every App this decode
-        // builds is tested as it closes, on a child index that is already
-        // hot. Equivalent to a full re-traversal because `decode` visits
-        // exactly the nodes of the term it returns.
-        let mut redex = false;
-        loop {
-            // parse one leaf-or-opener
-            let mut done: u32 = match bits.next()? {
-                false => match bits.next()? {
-                    false => {
-                        work.push(P::Lam);
-                        continue;
-                    }
-                    true => {
-                        work.push(P::App0);
-                        continue;
-                    }
-                },
-                true => {
-                    let mut n: u32 = 1;
-                    while bits.next()? {
-                        n += 1;
-                    }
-                    self.push(Node::Var(n))
-                }
-            };
-            // close as many constructors as `done` completes
-            loop {
-                match work.pop() {
-                    None => {
-                        self.decoded = Some((done, redex));
-                        return Some(done);
-                    }
-                    Some(P::Lam) => done = self.push(Node::Lam(done)),
-                    Some(P::App0) => {
-                        work.push(P::App1(done));
-                        break;
-                    }
-                    Some(P::App1(f)) => {
-                        redex |= matches!(self.nodes[f as usize], Node::Lam(_));
-                        done = self.push(Node::App(f, done));
-                    }
-                }
-            }
+        if let Some(root) = r {
+            self.decoded = Some((root, redex));
         }
+        r
     }
 
     pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {

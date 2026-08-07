@@ -30,67 +30,106 @@ impl std::fmt::Display for ParseError {
 
 impl std::error::Error for ParseError {}
 
-/// Parse one term off the front of a bit stream, leaving the rest unconsumed.
-/// The BLC term code is a prefix code, so this is exactly the "program parses
-/// itself off the input stream" step of the prefix machine.
+/// A constructor waiting on its children — one frame of the wire
+/// decoder's explicit build stack.
+#[derive(Debug)]
+pub(crate) enum Pending<I> {
+    Lam,
+    App0,    // waiting for function child
+    App1(I), // has function child, waiting for argument
+}
+
+/// What the wire decoder builds into. One implementation per arena —
+/// `Term` trees here, the two machine pools in their own modules — so
+/// the `00`/`01`/`1ⁿ0` grammar below is written exactly once.
+pub(crate) trait Build {
+    type Id;
+    fn var(&mut self, n: u32) -> Self::Id;
+    fn lam(&mut self, b: Self::Id) -> Self::Id;
+    fn app(&mut self, f: Self::Id, a: Self::Id) -> Self::Id;
+}
+
+/// The one decoder for the BLC term grammar. `None` = the stream ended
+/// mid-term; callers own their error shape. `work` is caller-owned so a
+/// sweep can reuse one buffer across millions of decodes; it is cleared
+/// here, and left holding whatever a failed parse accumulated.
 ///
-/// Explicit pending-constructor stack (the shape of
-/// `classical::machine::Pool::decode`): a λ-tower of depth d costs d heap
-/// slots, not d stack frames, so wire-legal input can never overflow — and
-/// neither can anything done with the term it returns. Printing
-/// ([`Term::to_bits`], [`std::fmt::Display`]), measuring ([`Term::bit_size`],
-/// [`Term::max_free`]), and dropping are iterative too. The derived
-/// [`PartialEq`] and [`Debug`] on [`Term`] are the standing exceptions: both
-/// recurse with the term's depth.
-pub fn parse_prefix(bits: &mut impl Iterator<Item = bool>) -> Result<Term, ParseError> {
-    /// A constructor waiting on its children.
-    enum P {
-        Lam,
-        App0,       // waiting for function child
-        App1(Term), // has function child, waiting for argument
-    }
-    let mut work: Vec<P> = Vec::new();
+/// Explicit pending-constructor stack: a λ-tower of depth d costs d heap
+/// slots, not d stack frames, so wire-legal input can never overflow.
+pub(crate) fn decode<B: Build>(
+    bits: &mut impl Iterator<Item = bool>,
+    work: &mut Vec<Pending<B::Id>>,
+    b: &mut B,
+) -> Option<B::Id> {
+    work.clear();
     loop {
         // parse one leaf-or-opener
-        let mut done: Term = match bits.next().ok_or(ParseError::UnexpectedEof)? {
-            false => match bits.next().ok_or(ParseError::UnexpectedEof)? {
+        let mut done: B::Id = match bits.next()? {
+            false => match bits.next()? {
                 // 00: lambda
                 false => {
-                    work.push(P::Lam);
+                    work.push(Pending::Lam);
                     continue;
                 }
                 // 01: application
                 true => {
-                    work.push(P::App0);
+                    work.push(Pending::App0);
                     continue;
                 }
             },
             // 1^n 0: variable n (n >= 1)
             true => {
                 let mut n: u32 = 1;
-                loop {
-                    match bits.next() {
-                        Some(true) => n += 1,
-                        Some(false) => break,
-                        None => return Err(ParseError::UnexpectedEof),
-                    }
+                while bits.next()? {
+                    n += 1;
                 }
-                Term::Var(n)
+                b.var(n)
             }
         };
         // close as many constructors as `done` completes
         loop {
             match work.pop() {
-                None => return Ok(done),
-                Some(P::Lam) => done = Term::Lam(Rc::new(done)),
-                Some(P::App0) => {
-                    work.push(P::App1(done));
+                None => return Some(done),
+                Some(Pending::Lam) => done = b.lam(done),
+                Some(Pending::App0) => {
+                    work.push(Pending::App1(done));
                     break;
                 }
-                Some(P::App1(f)) => done = Term::App(Rc::new(f), Rc::new(done)),
+                Some(Pending::App1(f)) => done = b.app(f, done),
             }
         }
     }
+}
+
+/// [`Build`] into plain `Rc` term trees.
+struct TermBuilder;
+
+impl Build for TermBuilder {
+    type Id = Term;
+    fn var(&mut self, n: u32) -> Term {
+        Term::Var(n)
+    }
+    fn lam(&mut self, b: Term) -> Term {
+        Term::Lam(Rc::new(b))
+    }
+    fn app(&mut self, f: Term, a: Term) -> Term {
+        Term::App(Rc::new(f), Rc::new(a))
+    }
+}
+
+/// Parse one term off the front of a bit stream, leaving the rest unconsumed.
+/// The BLC term code is a prefix code, so this is exactly the "program parses
+/// itself off the input stream" step of the prefix machine.
+///
+/// Stack-safe end to end: a λ-tower of depth d costs d heap slots, not d
+/// stack frames, so wire-legal input can never overflow — and neither can
+/// anything done with the term it returns. Printing ([`Term::to_bits`],
+/// [`std::fmt::Display`]), measuring ([`Term::bit_size`],
+/// [`Term::max_free`]), and dropping are iterative too. The derived
+/// [`PartialEq`] and [`Debug`] on [`Term`] are the standing exceptions: both
+/// recurse with the term's depth.
+pub fn parse_prefix(bits: &mut impl Iterator<Item = bool>) -> Result<Term, ParseError> {
+    decode(bits, &mut Vec::new(), &mut TermBuilder).ok_or(ParseError::UnexpectedEof)
 }
 
 /// Parse a '0'/'1' string (whitespace ignored) that must encode exactly one term.
