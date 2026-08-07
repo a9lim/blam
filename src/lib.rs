@@ -11,10 +11,13 @@ pub mod cert;
 pub mod dw;
 pub mod enumerate;
 pub mod eval;
+pub mod odd;
+pub mod oddmin;
 pub mod oracle;
 pub mod parse;
 pub mod qeval;
 pub mod qvm;
+pub mod radical;
 pub mod term;
 pub mod vm;
 

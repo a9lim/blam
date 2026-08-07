@@ -1,4 +1,4 @@
-//! Certificate soundness battery (SPEC.md §7): stream discovery's
+//! Certificate soundness battery (certificate specification §7): stream discovery's
 //! candidates through ALL trusted verifiers (v1 ratchet, HTR,
 //! SelectorRatchet — the exact sweep ladder) over every closed term
 //! of 4..=28 bits that

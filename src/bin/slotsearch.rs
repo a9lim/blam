@@ -1,5 +1,6 @@
 //! Exhaustive **parametric** slot search for the 170-bit BLC self-interpreter
-//! (`ref/AIT/ait/int.lam`), per `tools/interp/SEARCH_SPEC.md` §1 and §4.
+//! (`ref/AIT/ait/int.lam`), per
+//! `docs/classical/self-interpreter/search-spec.md` §1 and §4.
 //!
 //! The interpreter's three branch bodies sit under a stack of rigid binders:
 //!
@@ -52,7 +53,7 @@ use std::time::Instant;
 /// that occur *rigidly* in that golden normal form: β-reduction cannot invent
 /// a free variable, so a candidate lacking one cannot reach the golden. That
 /// is the only enumeration constraint used, and it is a theorem, not a
-/// heuristic (SEARCH_SPEC.md §4).
+/// heuristic (`docs/classical/self-interpreter/search-spec.md` §4).
 struct Slot {
     name: &'static str,
     /// Number of rigid frame binders in scope at the slot.
@@ -1118,7 +1119,8 @@ mod tests {
         }
     }
 
-    /// The published regression values from SEARCH_SPEC.md §4.
+    /// The published regression values from
+    /// `docs/classical/self-interpreter/search-spec.md` §4.
     #[test]
     fn spec_regression_counts() {
         let sum = |must: u8, hi: u8| -> u64 {

@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
-import sys, os, tempfile
-sys.path.insert(0,'.'); sys.path.insert(0,'/Users/a9lim/Work/blc/tools')
+import os
+from pathlib import Path
+import sys
+import tempfile
+
+HERE = Path(__file__).resolve().parent
+TOOLS = HERE.parent
+sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(TOOLS))
+
 from lc import decode, enc, size, show, nf, Fuel, TRUE, FALSE, bitlist
 import blcc
 

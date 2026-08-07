@@ -17,7 +17,7 @@ jobs:
   fmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
@@ -26,7 +26,7 @@ jobs:
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
@@ -44,39 +44,34 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: true
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo test --release --workspace
       - name: uni.rs parity (byte-identical vs uni.py on Tromp's corpus)
-        run: bash tools/uni/verify.sh
+        run: bash contrib/ait-uni/verify.sh
 
   census-spot-check:
     # The standing regression guarantee: halt counts are bit-identical to
-    # census_table41.txt under every engine change. Rows 4..32 cover the
+    # data/classical/census_table.txt under every engine change. Rows 4..32 cover the
     # full ladder including loop32's row and run in under a second locally;
     # timing columns are excluded, everything else must match exactly.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo build --release --bin census
-      - run: |
-          target/release/census 4 32 --verify > spot.txt
-          awk 'NF>=10 && $1+0>0 {print $1,$2,$3,$4,$5,$6,$7,$8}' spot.txt > spot.cols
-          awk 'NF>=10 && $1+0>0 && $1<=32 {print $1,$2,$3,$4,$5,$6,$7,$8}' census_table41.txt > canon.cols
-          diff spot.cols canon.cols
+      - run: bash scripts/spot-check.sh 4 32
 
   lean:
     # Kernel-check all 297 divergence certificates (zero sorries, no
     # mathlib; ~2 s once the pinned toolchain is cached).
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.elan
@@ -94,7 +89,7 @@ jobs:
     # oracle-vs-ours boundary is gone and this job fails.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: true
       - run: |

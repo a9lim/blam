@@ -2,7 +2,7 @@
 //! reduction behaviour.
 //!
 //! Reduction discipline is a from-scratch re-implementation of
-//! `tools/cert/loop32_trace.py` (leftmost-outermost, contract the head redex,
+//! `tools/certificates/loop32_trace.py` (leftmost-outermost, contract the head redex,
 //! reduce under lambdas, 1-indexed de Bruijn). The node type here is a hash-
 //! consing-free `Rc` tree that caches, per node: tree size, max free index,
 //! "is normal form", and a 128-bit structural hash. Those caches are what make
@@ -19,10 +19,11 @@
 //! per-term cap so one term cannot eat the sweep.
 //!
 //! Usage:
-//!   tracescan --file unknowns_41.txt --out tools/cert/classify.csv [--threads N]
-//!   tracescan --single <bits>                 # detailed single-term report
+//!   tracescan --file data/classical/unknowns.txt \
+//!     --out data/certificates/frontier_classification.csv [--threads N]
+//!   `tracescan --single <bits>`                 # detailed single-term report
 //!   tracescan --verify-loop32                 # the reference-agreement gate
-//!   tracescan --dump <bits> --steps 10,100,1000   # cross-check state sizes
+//!   `tracescan --dump <bits> --steps 10,100,1000` # cross-check state sizes
 
 use blam::{parse_all, Term};
 use rayon::prelude::*;
@@ -868,7 +869,7 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     let mut cfg = Cfg::default();
     let mut file: Option<String> = None;
-    let mut out = "tools/cert/classify.csv".to_string();
+    let mut out = "data/certificates/frontier_classification.csv".to_string();
     let mut single: Option<String> = None;
     let mut dump_bits: Option<String> = None;
     let mut dump_steps: Vec<u64> = vec![10, 100, 1000];

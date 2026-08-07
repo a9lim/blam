@@ -1,11 +1,12 @@
-//! qBLC naive reference evaluator: the executable spec of DESIGN-QBLC.md v0.
+//! qBLC naive reference evaluator: the executable semantics of
+//! `docs/quantum/architecture.md`.
 //!
 //! Small-step leftmost-outermost reduction over terms extended with primitive
 //! constants and opaque qubit handles, a branch-local quantum store of
-//! unnormalized Z[ω]/√2^k statevectors, and measurement branching with exact
+//! unnormalized `Z[ω]/√2^k` statevectors, and measurement branching with exact
 //! weights (nothing is ever sampled). Deliberately favors obvious correctness
-//! over speed, like `eval.rs`; the KN-store fast path will be lockstep-tested
-//! against this. Classical engines are untouched (DESIGN-QBLC.md obligation 4).
+//! over speed, like `eval.rs`; the KN-store fast path is lockstep-tested
+//! against this. Classical engines remain behaviorally isolated.
 //!
 //! Spec anchors, in order of the surprises they encode:
 //! - `new M → #(q,0)` discards M *unevaluated* (species-blind, K-style);
@@ -281,6 +282,26 @@ pub enum Capacity {
     Branches,
 }
 
+/// One store effect, as it fired. The per-leaf effect path (root to leaf,
+/// `Meas` outcomes included) is the trace surface of
+/// `docs/quantum/architecture.md`'s
+/// obligation 2: two runs are effect-trace equivalent when their leaf
+/// sequences carry identical paths — β-steps are erased by construction,
+/// since only primitive firings append events.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Effect {
+    /// Allocation: the fresh qubit id.
+    New(u32),
+    /// H applied to (qubit, consumed epoch).
+    H(u32, u32),
+    /// T applied to (qubit, consumed epoch).
+    T(u32, u32),
+    /// cnot (control qubit, control epoch, target qubit, target epoch).
+    Cnot(u32, u32, u32, u32),
+    /// Measurement of (qubit, epoch) with this branch's outcome.
+    Meas(u32, u32, bool),
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Fate {
     /// Full normal form reached; store is the leaf's live output.
@@ -336,8 +357,8 @@ pub struct Leaf {
 enum Step {
     /// One reduction applied (possibly with store effect); keep going.
     Reduced(QTerm),
-    /// meas fired: two successor branches (outcome 0, outcome 1).
-    Forked(Box<(QTerm, Store, QTerm, Store)>),
+    /// meas fired on (qubit, epoch): two successor branches (outcome 0, 1).
+    Forked(Box<(QTerm, Store, QTerm, Store)>, u32, u32),
     /// No redex anywhere: full normal form.
     Normal,
     /// Branch died.
@@ -350,8 +371,8 @@ enum Found {
     Rewritten(QTerm, bool),
     /// Effectful contraction already applied to the store.
     RewrittenEffect(QTerm),
-    /// meas redex: replacement terms for both outcomes.
-    Fork(QTerm, QTerm, u32),
+    /// meas redex on (qubit, epoch): replacement terms for both outcomes.
+    Fork(QTerm, QTerm, u32, u32),
     /// Err fired.
     Fail(ErrKind),
     /// Capacity fired.
@@ -366,7 +387,7 @@ enum ArgView {
     Handle(u32, u32),
     /// A canonical non-handle value (λ, bare/undersaturated prim, pair):
     /// species Err, fired before any effect and before the value's interior
-    /// is normalized ("Err precedes effects", DESIGN-QBLC.md).
+    /// is normalized ("Err precedes effects", `docs/quantum/architecture.md`).
     Value,
     /// Anything else: search inside for the next redex. If the interior is
     /// already fully normal (rigid/neutral head), the search returns None
@@ -405,6 +426,8 @@ fn arg_view(t: &QTerm) -> ArgView {
 struct Ctx<'a> {
     store: &'a mut Store,
     budget: &'a QBudget,
+    /// Effect path of the current branch; primitives append as they fire.
+    trace: &'a mut Vec<Effect>,
 }
 
 /// Find and contract the leftmost-outermost redex in `t`, normal order:
@@ -415,8 +438,8 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
         QTerm::Lam(b) => match search(b, cx) {
             Found::Rewritten(nb, chg) => Found::Rewritten(QTerm::Lam(Rc::new(nb)), chg),
             Found::RewrittenEffect(nb) => Found::RewrittenEffect(QTerm::Lam(Rc::new(nb))),
-            Found::Fork(b0, b1, q) => {
-                Found::Fork(QTerm::Lam(Rc::new(b0)), QTerm::Lam(Rc::new(b1)), q)
+            Found::Fork(b0, b1, q, e) => {
+                Found::Fork(QTerm::Lam(Rc::new(b0)), QTerm::Lam(Rc::new(b1)), q, e)
             }
             other => other,
         },
@@ -428,7 +451,10 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
                 QTerm::Prim(Prim::New) => {
                     // new discards its argument unevaluated, species-blind.
                     return match cx.store.alloc(cx.budget.max_qubits) {
-                        Ok(q) => Found::RewrittenEffect(QTerm::Handle(q, 0)),
+                        Ok(q) => {
+                            cx.trace.push(Effect::New(q));
+                            Found::RewrittenEffect(QTerm::Handle(q, 0))
+                        }
                         Err(c) => Found::Full(c),
                     };
                 }
@@ -451,10 +477,11 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
                 Found::RewrittenEffect(nf) => {
                     Found::RewrittenEffect(QTerm::App(Rc::new(nf), a.clone()))
                 }
-                Found::Fork(f0, f1, q) => Found::Fork(
+                Found::Fork(f0, f1, q, e) => Found::Fork(
                     QTerm::App(Rc::new(f0), a.clone()),
                     QTerm::App(Rc::new(f1), a.clone()),
                     q,
+                    e,
                 ),
                 Found::None => match search(a, cx) {
                     Found::Rewritten(na, chg) => {
@@ -463,10 +490,11 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
                     Found::RewrittenEffect(na) => {
                         Found::RewrittenEffect(QTerm::App(f.clone(), Rc::new(na)))
                     }
-                    Found::Fork(a0, a1, q) => Found::Fork(
+                    Found::Fork(a0, a1, q, e) => Found::Fork(
                         QTerm::App(f.clone(), Rc::new(a0)),
                         QTerm::App(f.clone(), Rc::new(a1)),
                         q,
+                        e,
                     ),
                     other => other,
                 },
@@ -481,7 +509,7 @@ fn wrap_arg(res: Found, rebuild: impl Fn(QTerm) -> QTerm) -> Found {
     match res {
         Found::Rewritten(n, chg) => Found::Rewritten(rebuild(n), chg),
         Found::RewrittenEffect(n) => Found::RewrittenEffect(rebuild(n)),
-        Found::Fork(x0, x1, q) => Found::Fork(rebuild(x0), rebuild(x1), q),
+        Found::Fork(x0, x1, q, e) => Found::Fork(rebuild(x0), rebuild(x1), q, e),
         other => other,
     }
 }
@@ -499,20 +527,26 @@ fn unary_prim(p: Prim, f: &Rc<QTerm>, a: &Rc<QTerm>, cx: &mut Ctx) -> Found {
         ArgView::Handle(q, e) => match p {
             Prim::H => match cx.store.consume(q, e) {
                 Ok(()) => match cx.store.apply_h(q) {
-                    Ok(()) => Found::RewrittenEffect(QTerm::Handle(q, e + 1)),
+                    Ok(()) => {
+                        cx.trace.push(Effect::H(q, e));
+                        Found::RewrittenEffect(QTerm::Handle(q, e + 1))
+                    }
                     Err(c) => Found::Full(c),
                 },
                 Err(k) => Found::Fail(k),
             },
             Prim::T => match cx.store.consume(q, e) {
                 Ok(()) => match cx.store.apply_t(q) {
-                    Ok(()) => Found::RewrittenEffect(QTerm::Handle(q, e + 1)),
+                    Ok(()) => {
+                        cx.trace.push(Effect::T(q, e));
+                        Found::RewrittenEffect(QTerm::Handle(q, e + 1))
+                    }
                     Err(c) => Found::Full(c),
                 },
                 Err(k) => Found::Fail(k),
             },
             Prim::Meas => match cx.store.peek(q, e) {
-                Ok(()) => Found::Fork(church_bool(true), church_bool(false), q),
+                Ok(()) => Found::Fork(church_bool(true), church_bool(false), q, e),
                 Err(k) => Found::Fail(k),
             },
             _ => unreachable!("unary_prim on {:?}", p),
@@ -572,6 +606,7 @@ fn cnot_prim(g: &Rc<QTerm>, a1: &Rc<QTerm>, a2: &Rc<QTerm>, f: &Rc<QTerm>, cx: &
     cx.store.consume(q1, e1).expect("peeked");
     cx.store.consume(q2v, e2v).expect("peeked");
     cx.store.apply_cnot(q1, q2v);
+    cx.trace.push(Effect::Cnot(q1, e1, q2v, e2v));
     // Church pair of the fresh epochs: λz. z #(q1,e1+1) #(q2,e2+1).
     Found::RewrittenEffect(QTerm::Lam(Rc::new(QTerm::App(
         Rc::new(QTerm::App(
@@ -582,17 +617,21 @@ fn cnot_prim(g: &Rc<QTerm>, a1: &Rc<QTerm>, a2: &Rc<QTerm>, f: &Rc<QTerm>, cx: &
     ))))
 }
 
-fn step(t: &QTerm, store: &mut Store, budget: &QBudget) -> Step {
-    let mut cx = Ctx { store, budget };
+fn step(t: &QTerm, store: &mut Store, trace: &mut Vec<Effect>, budget: &QBudget) -> Step {
+    let mut cx = Ctx {
+        store,
+        budget,
+        trace,
+    };
     match search(t, &mut cx) {
         Found::Rewritten(nt, _beta) => Step::Reduced(nt),
         Found::RewrittenEffect(nt) => Step::Reduced(nt),
-        Found::Fork(t0, t1, q) => {
+        Found::Fork(t0, t1, q, e) => {
             let mut s0 = store.clone();
             let mut s1 = store.clone();
             s0.measure_project(q, false);
             s1.measure_project(q, true);
-            Step::Forked(Box::new((t0, s0, t1, s1)))
+            Step::Forked(Box::new((t0, s0, t1, s1)), q, e)
         }
         Found::None => Step::Normal,
         Found::Fail(k) => Step::Died(Fate::Err(k)),
@@ -603,65 +642,94 @@ fn step(t: &QTerm, store: &mut Store, budget: &QBudget) -> Step {
 /// Run one program (already applied to its signature) to its truncated branch
 /// tree. Exact, deterministic, never samples.
 pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
+    run_traced(term, budget)
+        .into_iter()
+        .map(|(leaf, _)| leaf)
+        .collect()
+}
+
+/// `run`, additionally returning each leaf's effect path (root to leaf,
+/// `Meas` outcomes included). Two runs are effect-trace equivalent when the
+/// leaf sequences pair up with identical paths, fates, and masses.
+pub fn run_traced(term: QTerm, budget: &QBudget) -> Vec<(Leaf, Vec<Effect>)> {
     let mut leaves = Vec::new();
-    let mut work: Vec<(QTerm, Store, u64, u64)> = vec![(term, Store::new(), 0, 0)];
+    let mut work: Vec<(QTerm, Store, Vec<Effect>, u64, u64)> =
+        vec![(term, Store::new(), Vec::new(), 0, 0)];
     let mut branches = 1usize;
-    while let Some((mut t, mut store, mut nbeta, mut ntrans)) = work.pop() {
+    while let Some((mut t, mut store, mut trace, mut nbeta, mut ntrans)) = work.pop() {
         loop {
             if ntrans >= budget.trans || nbeta >= budget.beta {
                 let mass = store.mass();
-                leaves.push(Leaf {
-                    fate: Fate::Unknown,
-                    mass,
-                    steps: nbeta,
-                });
+                leaves.push((
+                    Leaf {
+                        fate: Fate::Unknown,
+                        mass,
+                        steps: nbeta,
+                    },
+                    trace,
+                ));
                 break;
             }
             ntrans += 1;
-            match step(&t, &mut store, budget) {
+            match step(&t, &mut store, &mut trace, budget) {
                 Step::Reduced(nt) => {
                     nbeta += 1; // β and primitive contractions share the count
                     t = nt;
                 }
-                Step::Forked(fork) => {
+                Step::Forked(fork, q, e) => {
                     let (t0, s0, t1, s1) = *fork;
                     branches += 1;
                     if branches > budget.max_branches {
                         let mass = store.mass();
-                        leaves.push(Leaf {
-                            fate: Fate::Capacity(Capacity::Branches),
-                            mass,
-                            steps: nbeta,
-                        });
+                        leaves.push((
+                            Leaf {
+                                fate: Fate::Capacity(Capacity::Branches),
+                                mass,
+                                steps: nbeta,
+                            },
+                            trace,
+                        ));
                         break;
                     }
-                    work.push((t1, s1, nbeta, ntrans));
+                    let mut trace1 = trace.clone();
+                    trace1.push(Effect::Meas(q, e, true));
+                    trace.push(Effect::Meas(q, e, false));
+                    work.push((t1, s1, trace1, nbeta, ntrans));
                     t = t0;
                     store = s0;
                 }
                 Step::Normal => {
                     let mass = store.mass();
                     match mass {
-                        Some(_) => leaves.push(Leaf {
-                            fate: Fate::Halt(store),
-                            mass,
-                            steps: nbeta,
-                        }),
-                        None => leaves.push(Leaf {
-                            fate: Fate::Capacity(Capacity::Amplitude),
-                            mass: None,
-                            steps: nbeta,
-                        }),
+                        Some(_) => leaves.push((
+                            Leaf {
+                                fate: Fate::Halt(store),
+                                mass,
+                                steps: nbeta,
+                            },
+                            trace,
+                        )),
+                        None => leaves.push((
+                            Leaf {
+                                fate: Fate::Capacity(Capacity::Amplitude),
+                                mass: None,
+                                steps: nbeta,
+                            },
+                            trace,
+                        )),
                     }
                     break;
                 }
                 Step::Died(fate) => {
                     let mass = store.mass();
-                    leaves.push(Leaf {
-                        fate,
-                        mass,
-                        steps: nbeta,
-                    });
+                    leaves.push((
+                        Leaf {
+                            fate,
+                            mass,
+                            steps: nbeta,
+                        },
+                        trace,
+                    ));
                     break;
                 }
             }
@@ -739,8 +807,9 @@ mod tests {
     fn run_to_nf(mut t: QTerm) -> Option<QTerm> {
         let budget = QBudget::default();
         let mut store = Store::new();
+        let mut trace = Vec::new();
         for _ in 0..budget.trans {
-            match step(&t, &mut store, &budget) {
+            match step(&t, &mut store, &mut trace, &budget) {
                 Step::Reduced(nt) => t = nt,
                 Step::Normal => return Some(t),
                 _ => return None,

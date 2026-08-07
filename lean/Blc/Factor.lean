@@ -3,7 +3,7 @@ The head-factorization bridge: a term with a β-normal form has a
 terminating head reduction, hence HeadDiverges → ¬HasNormalForm — for
 EVERY term, not only single-redex disciplines. This is the general
 theorem that lets any head-divergence certificate (every ratchet in
-tools/cert/ratchet_kills.txt) conclude no-normal-form.
+data/certificates/ratchet_kills.tsv) conclude no-normal-form.
 
 Route (Codex round five, Accattoli–Faggian–Guerrieri): the indexed
 split peels AT MOST ONE head step from a parallel step — the index

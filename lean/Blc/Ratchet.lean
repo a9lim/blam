@@ -5,7 +5,8 @@ one concrete INIT trace via `headSteps`), and the glue theorem turning
 any valid certificate into `HeadDiverges` — then `¬ HasNormalForm`
 through the general bridge (Blc/Factor.lean).
 
-This is tools/cert/SPEC.md §3 formalized, including both extensions:
+This is `docs/classical/certificates/specification.md` §3 formalized,
+including both extensions:
 under-binder (v1.1, the `binders` field) and trailing-vector (v1.2,
 the `trail` field — arguments may be open; they are lifted past, never
 inspected). The glue proof is Blc/Loop32.lean's cycle argument run
@@ -235,7 +236,7 @@ end RatchetCert
 /-!
 Proof of concept: loop32's certificate as pure data, every obligation
 replayed by the kernel in one `decide`. This is the file shape the
-translator emits for each line of tools/cert/ratchet_kills.txt.
+translator emits for each line of data/certificates/ratchet_kills.tsv.
 -/
 
 /-- loop32's ratchet: `A = λx.x x (λy.y x)`, `W[Z] = λy.y Z`,

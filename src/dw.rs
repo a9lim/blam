@@ -1,8 +1,8 @@
-//! Exact Clifford+T amplitude arithmetic: the ring Z[ω]/√2^k, ω = e^{iπ/4}.
+//! Exact Clifford+T amplitude arithmetic: the ring `Z[ω]/√2^k`, ω = e^{iπ/4}.
 //!
 //! A value is (a + b·ω + c·ω² + d·ω³)/√2^k with integer coefficients and
 //! ω⁴ = −1. Every amplitude reachable by {H, T, CNOT} from |0…0⟩ lives here
-//! exactly (DESIGN-QBLC.md "Exact arithmetic"): H's 1/√2 raises k, T
+//! exactly (`docs/quantum/architecture.md`, "Exact arithmetic"): H's 1/√2 raises k, T
 //! multiplies by ω, CNOT permutes. √2 = ω − ω³ sits in the numerator ring,
 //! so denominator alignment is numerator multiplication by √2.
 //!

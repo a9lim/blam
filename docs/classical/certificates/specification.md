@@ -1,18 +1,16 @@
 # Ratchet certificates: mechanical divergence proofs for growing-context loops
 
-Status: three classes live in `src/cert.rs` + `src/bin/certsearch.rs`
-— v1–v1.2 (§3), the v2 `HeadTowerRatchet` (§5, co-designed with
-Codex), and the v3 `SelectorRatchet` (§6, derived by Codex from a
-forcing exemplar); §8 specs the planned v4 classes. All checkers
-trusted, discovery untrusted; every class's assembly theorem is
+Status: three classes live in `src/cert.rs` and `src/bin/certsearch.rs`:
+v1–v1.2 (§3), `HeadTowerRatchet` (§5), and `SelectorRatchet` (§6).
+Section 8 specifies the planned v4 classes. All checkers are trusted and
+discovery is untrusted; every implemented assembly theorem is
 additionally **machine-checked in Lean**
 (`lean/Blc/{Ratchet,HeadTower,Selector,Rigid}.lean` — the last is the
 rigid-head bridge for `-ARG` kills), and every kill in
-`ratchet_kills.txt` is a kernel-checked `¬HasNormalForm` theorem
-(`lean/Certs/`). Every class was adversarially reviewed with Codex
-(ten rounds, thread `blc-conformance`; the round-by-round log lives
-in git history). Discovery keys milestone
-families by (head, spine arity): the deep family passes through both
+`data/certificates/ratchet_kills.tsv` is a kernel-checked
+`¬HasNormalForm` theorem
+(`lean/Certs/`). Discovery keys milestone families by (head, spine arity):
+the deep family passes through both
 `A Xₙ` milestones and `A I Xₘ Xₙ` rank-step interiors, and merging
 the streams destroys the growing window.
 
@@ -139,7 +137,7 @@ exactly as a top-level state — head reduction is defined under leading
 binders, so the body's infinite head chain is the state's. Candidates
 whose extracted triple captures an ambient variable fail the closedness
 checks and never certify. Motivation: the frontier classification
-(tools/cert/CLASSIFY.md) found 1,320/2,032 unknowns presenting as bare
+(`frontier.md`) found 1,320/2,032 unknowns presenting as bare
 abstractions, invisible to top-level spine matching.
 
 **Trailing-vector extension (v1.2).** INIT (and discovery's milestone
@@ -182,14 +180,14 @@ inductive structure (DESC peeling one tower layer) is precisely the
 part no windowed history mechanism can express. In TRS terms this is
 the analog of non-looping nontermination via pattern rules —
 Emmes–Enger–Giesl, *Proving Non-Looping Non-Termination Automatically*,
-IJCAR 2012 (citation verified by Codex; the ratchet is a specialized
-head-strategy, closed-metavariable instance of the pattern-rule idea).
+IJCAR 2012. The ratchet is a specialized head-strategy,
+closed-metavariable instance of the pattern-rule idea.
 Related: TRS loop certificates `s →⁺ C[sσ]` (Thiemann–Giesl–
 Schneider-Kamp, *Decision Procedures for Loop Detection*) and the
 static higher-order dependency-pair framework (Fuhs–Kop) — the latter
-lives in typed higher-order rewriting, not untyped β. Codex found no
-closer automatic untyped-λ certificate in the searched literature (a
-search finding, not an exhaustive novelty claim). Tromp's 2020 commit
+lives in typed higher-order rewriting, not untyped β. No closer automatic
+untyped-λ certificate was found in the literature search; this is not an
+exhaustive novelty claim. Tromp's 2020 commit
 `346c99f` adds loop32's hand reduction and hard exclusion; no
 repository issue or discussion presents a mechanical certificate.
 
@@ -205,14 +203,14 @@ concrete head trace with per-state snapshots and:
 3. hands `(A, W, C0)` to the checker. Garbage in ⇒ ABORT, never a
    wrong certificate.
 
-## 5. v2: the `HeadTowerRatchet` (co-designed with Codex)
+## 5. v2: the `HeadTowerRatchet`
 
 v1 hard-codes the state shape `A Wⁿ[C0]` and the collapse core `Z Z`.
 The forcing example is the 35-bit frontier term
 `01000110100001100001010110001011010`: its wrapper is perfectly
 consistent, but OPEN's natural endpoint is `Z W[Z]` — the tower
 argument itself takes head position, where v1's opacity must abort
-(MetaHead). Codex derived its exact recurrence: with `I = λu.u`,
+(MetaHead). Its exact recurrence uses `I = λu.u`,
 `A = λx. x W[x]`, `W[Z] = λy. y I Z y`, `C0 = A`, the rank step
 `R(m,N): Xₘ₊₁ Xₙ →ₕ⁺ Xₘ Xₙ` takes exactly 11+3(m+N) steps and the
 full cycle `A Xₙ →ₕ⁺ A Xₙ₊₁` takes 1 + (9n²+25n)/2 — matching the
@@ -286,7 +284,7 @@ example requires it. Shapes plausibly still beyond this class
 (alternating heads, growth in outer evaluation contexts,
 normalization-equal milestones) wait for their own forcing examples.
 
-## 6. v3: the SelectorRatchet (derived by Codex)
+## 6. v3: the SelectorRatchet
 
 Forced by the 35-bit exemplar `01000110100001100001011000001111010`
 (A = C0 = λx. x W[x], W[Z] = λq. q P[Z] q, P[Z] = λa.λb.Z), which v1
@@ -343,7 +341,7 @@ as `Q P Q` to read off P, peel the base to the tower bottom, hand to
 `verify_selector`. Checkers: `verify_selector` in src/cert.rs;
 driver `try_selector`; sweep tag `SELECTOR` (± `-ARG`).
 
-The class's frontier sweep landed **40 kills** — 10 more than the
+The class's frontier sweep finds **40 kills** — 10 more than the
 30 the single-candidate `certdiag` probe had accepted, because
 streaming discovery proposes candidate triples the probe never tried.
 The standing lesson: **certdiag buckets are abort fingerprints under
@@ -366,10 +364,10 @@ budgets.
 
 ## 8. v4: the next classes (specified, not yet implemented)
 
-Build order ratified in review round ten: **PassengerDiagonal first**,
-then a zfirst variant derived from an actual survivor trace; drift
+Build order: **PassengerDiagonal first**, then a zfirst variant derived
+from an actual survivor trace; drift
 stays gated on a finite generator. The measured candidate map behind
-these families is `tools/cert/CLASSIFY.md`.
+these families is `frontier.md`.
 
 ### 8.1 PassengerDiagonalRatchet
 
@@ -393,7 +391,7 @@ one record.
 | SEED | `C0 Q →ₕ⁺ A` | all closed Q |
 | INIT | `T →ₕ* λᵏ.(A Wⁿ[C0] y⃗)` | concrete, bounded (v1.2 landing) |
 
-**Assembly** (derived and checked in review round ten). Write
+**Assembly.** Write
 `Xₙ = Wⁿ[C0]`, `Pₙ = P[Xₙ]`. The non-base rank step:
 
 ```

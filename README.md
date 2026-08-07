@@ -5,186 +5,122 @@
 [![license: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
 
 A fast Rust engine for [John Tromp's binary lambda
-calculus](https://tromp.github.io/cl/Binary_lambda_calculus.html), built
-for algorithmic information theory: exhaustive term censuses,
-busy-beaver frontiers, and exact Solomonoff/Kolmogorov measurements.
+calculus](https://tromp.github.io/cl/Binary_lambda_calculus.html), plus
+**qBLC**, a quantum extension with exact Clifford+T semantics. Built
+for algorithmic information theory — exhaustive term censuses,
+busy-beaver frontiers, exact Solomonoff/Kolmogorov measurement,
+machine-checked divergence certificates — and shipped as a library
+with a set of measurement drivers on top.
 
-## Headline numbers
+Design principles throughout: every fast path is differential-tested
+against a naive executable spec; every engine is total (fuel
+exhaustion is a typed verdict, never a hang, and resource limits are
+charged on a shared work meter); every quantum amplitude is exact
+(ℤ[ω]/√2^k integers — no floating point anywhere).
 
-- **Complete census of every closed λ-term of 4–41 bits**:
-  526,039,969 terms adjudicated (halt / diverge / unknown) in ~16.5
-  min on an M5 Max (4–40 alone: ~7 min, vs ~4.3 h for the reference
-  Haskell tooling). Every [A114852](https://oeis.org/A114852) count
-  and every published [BBλ](https://oeis.org/A333479) value in range
-  reproduced exactly (`census_table41.txt`).
-- **The first BBλ(41) bound: ≥ 1,074,266,118 bits** — the busy
-  beaver's first billion-bit row, one size past every published
-  table (241,372,280 of the 242,222,714 closed 41-bit terms proven
-  halting; the census left 2,500 unknowns, since cut to 2,347 by the
-  certificate campaign).
-- **BBλ(32) is fully mechanical** — `loop32`, the famous 32-bit term
-  hand-excluded even in Tromp's tree, now carries a machine-checked
-  divergence certificate (the *ratchet*, below). Every closed term of
-  ≤32 bits is adjudicated with no hand exclusions anywhere.
-- **4,235 unknowns survive maximum effort** (`unknowns_41.txt`:
-  1,888 across 4–40, fewer than the reference ledger at every
-  comparable size — at n=34–36 this engine proves strictly more
-  terms divergent than the traced reference engine — plus 2,347 at
-  the new n=41 frontier).
-- **The halting probability, exactly bracketed**:
-  Ω restricted to programs ≤41 bits lies in
-  **[0.124105086764, 0.124105092919]**, computed in exact rational
-  arithmetic from the census counts; the interval width *is* the
-  total mass of the 4,235 unknowns — the census frontier expressed
-  as bits of Ω. Cross-checked by independent regeneration
-  (`solomonoff_41.txt`): its pre-certificate upper bound minus the
-  297 kills' exact mass (1703·2⁻⁴¹) reproduces the interval to the
-  last printed digit, and its internal unknown count is exactly
-  frontier + kills (4,532 = 4,235 + 297).
-- **The coding theorem, watched live**: K(x) and −log₂ m(x) agree
-  within a bit for every high-mass normal form in range
-  (`solomonoff_table41.txt`).
-- **A semantic divergence certificate**: a generalization of the
-  reference `redloop` rule (see below) that fires 11,367 times in the
-  4–40 census and is fuel-robust — re-running the frontier at 16×
-  probe fuel flips nothing.
-- **The ratchet certificate**: a machine-checked proof format for
-  *unbounded-period* loops — states `A Wⁿ[C0]` growing forever, which
-  no exact-recurrence window can see. Bounded symbolic head
-  reductions over closed metavariables plus a glue theorem; checkers
-  in `src/cert.rs`, spec and proofs in `tools/cert/SPEC.md`,
-  co-designed and adversarially reviewed with Codex across ten
-  rounds. Three certificate classes: the v1 ratchet (with
-  under-binder and trailing-spine-vector extensions), the v2
-  `HeadTowerRatchet` (six replayed obligations over named
-  metavariables, for loops whose tower argument itself takes head
-  position), and the v3 `SelectorRatchet` (the wrapper *selects*:
-  FAN hands control to the fresh argument carrying a second pattern
-  `P[Z]`, SELECT contracts a wrapper layer back to the stored one —
-  derived from a 35-bit forcing exemplar the v1/v2 verifiers
-  measurably reject). Together they kill **297 frontier terms**
-  including `loop32` — 144 across the 4–40 frontier plus 153 of the
-  2,500 fresh n=41 unknowns (`tools/cert/ratchet_kills.txt`),
-  re-certified byte-identically at 4× discovery budgets, with a
-  soundness battery running every provable halter ≤28 bits (196,848
-  of them) through the exact three-checker sweep ladder — zero false
-  fires, in under a second (`tests/cert_battery.rs`).
-- **Every certificate is a kernel-checked theorem** (`lean/`): the
-  first mechanical BLC formalization anywhere — zero sorries, no
-  mathlib. `¬ HasNormalForm loop32` twice over (a single-redex
-  invariant argument on `propext` alone, and as a corollary of the
-  general head-factorization bridge `HeadDiverges → ¬HasNormalForm`,
-  proven for every term via indexed parallel reduction); a symbolic
-  checker layer whose one trusted rule is a commuting square; generic
-  assemblies for all three certificate classes plus a rigid-head
-  argument bridge (head factorization *with normal-form transport* —
-  no confluence needed); and `certlean`, an untrusted emitter that
-  turns `ratchet_kills.txt` into **297 individually kernel-checked
-  `¬HasNormalForm` theorems** — every kill in the campaign — each
-  pinned to its named bits by a kernel-checked wire encoding
-  (`lean/Certs/`, ~1.9 s for the whole batch, axioms `propext` +
-  `Quot.sound`). Details in `lean/README.md`.
-- **The 170-bit self-interpreter is certified locally optimal**: all
-  three parser branches are exhaustively optimal — VAR (21 bits, 2,672
-  pruned candidates), APP (41 bits, 10.2M), ABS (43 bits, **1.43
-  billion candidates in 32 s**) — each with the reference as unique
-  survivor and *zero* residual unknowns (every capped candidate proven
-  divergent). A design-space sweep places every credible structural
-  rearrangement at 171–179 bits with the fixpoint knot unique through
-  20 bits. Beating 170 now requires a new representation idea, not a
-  better search (`src/bin/slotsearch.rs`, `tools/interp/`).
+## Install
 
-## The engine
-
-A ladder of increasingly expensive adjudicators, each sound:
-
-1. **Prescan** — a term with no redex is its own normal form.
-2. **Divergence oracle** — Tromp's `noNF`/`isW` prefilter, ported.
-3. **KN machine** (`src/vm.rs`) — a defunctionalized Crégut-style
-   strong-normalization machine (≡ NbE), ~166M β/s single-thread,
-   β-fuel *and* transition caps, normal-form bits streamed to a sink
-   (nf size costs O(1) space).
-4. **Escalation engine** (`src/bb.rs`) — a port of the reference
-   `normalForm`: divergence oracle at every application, redex-history
-   loop detection, plus the **self-feedback certificate**: for a
-   self-application `A A` with `A = λx.x Q(x) …` closed and ⊥-free,
-   if bounded probes give nf(A) = nf(Q(A)), then `A A` has no head
-   normal form (the iterates `Tₙ₊₁ = Q(Tₙ)` are all β-equivalent and
-   the rigid head re-demands the spine forever). Exact-equality
-   `redloop` is the special case.
-5. **KN rescue** at 10⁷ β — big-growth halters (the BBλ champions)
-   that choke a substitution-based reducer normalize here in ms.
-
-Every resource is bounded by one shared work meter charged on every
-primitive operation — the design lesson of the project (see
-`DESIGN-BLC.md`, "the work-meter lesson").
-
-Enumeration (`src/enumerate.rs`) packs terms ≤63 bits into `u64`s and
-splits the generation tree into subtree tasks fused with the consumers
-(rayon), bit-reversal-interleaved so prefix-clustered expensive
-families don't serialize.
-
-## The quantum pillar: qBLC
-
-The same census methodology extended to quantum-preparing programs
-(design spec: `DESIGN-QBLC.md`): untyped BLC plus five primitive
-constants `new / meas / cnot / t / h` handed to every program as an
-application signature (order frozen by a predeclared 120-permutation
-pilot), classical control, a branch-local quantum store with *dynamic*
-linearity (epoch-tracked handles — cloning a qubit is a runtime `Err`,
-not a type error), and measurement as exact branching: nothing is ever
-sampled, every amplitude lives in **Z[ω]/√2^k exactly** (`src/dw.rs`,
-ω = e^{iπ/4}), and resource exhaustion is a typed fate, never a wrong
-number.
-
-The target object is an operator-valued Solomonoff prior: the census
-operator **M_Fock = ⊕ₖ M^(k)**, where M^(k)|≤N = Σₚ 2^(−|p|) vₚvₚ†
-over programs halting with k live qubits — number-superselected by
-construction, with **Tr M_Fock = Ω_success**. (The dimension-
-conditioned Gács family G_k is the separate universality candidate;
-the two are provably distinct and sandwich-related — see the spec.)
-
-First results (`qcensus_table41.txt`: **the full 526,039,969-program
-population of 4–41 bits** — the classical census's exact range — in
-~30 min, per-program mass conservation Σ‖leaf‖² = 1 asserted exactly
-across all 529M leaves):
-
-- **Ω_{success,≤41} = 3424188513/2⁴⁰ ≈ 0.0031143**, exactly
-  bracketed.
-- **M^(1) is Hermitian and positive definite** (exact determinant
-  sign), eigenvalues ≈ 6.8·10⁻⁴ and 4.8·10⁻⁸; the census's measured
-  ranking of single-qubit states:
-  **|0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩**.
-- **Entanglement enters at exactly n=41** (`cnot (h (new X)) (new Y)`
-  = a Bell pair): the 2-qubit ranking is
-  **|00⟩ ≫ Bell Φ⁺ > Bell Φ⁻ > |++⟩**, the Φ⁺/Φ⁻ gap being exactly
-  twice the Bell coherence M²[0][3] = 3/2⁴³. Sectors open on
-  predicted schedule: k=2 at n=33, k=3 by n=41.
-- **Irrationality invades the census in strict, measured layers.**
-  Fate-divergent measurement exists from 22 bits (470,289 programs
-  by ≤41), yet every halt mass through n=44 is dyadic — the first
-  irrational leaf mass appears at **exactly n=45** (exhaustive hunt
-  over 5.8B programs of 42–45 bits: the unique witness is
-  `λ⁵. meas (h (t (h (new t))))`, the minimal h·t·h sandwich, with
-  branch masses (2±√2)/4). The operator's *entries* go irrational
-  earlier (n=34), and Ω_success stays dyadic through 45 — each
-  layer's √2-parts cancel one level up. To our knowledge this is
-  the first computed operator census of quantum-preparing programs.
-- Two one-in-526-million events at n=41: the pillar's first
-  clone-death Err (`SameQubit`) and its first capacity fate (a
-  `new`-pump exceeding 12 live qubits).
-
-The engines mirror the classical layout: `src/qeval.rs` is the naive
-reference evaluator (the executable spec), `src/qvm.rs` the KN-store
-machine (~200× faster on bulk) — lockstep-verified on *full leaf
-sequences* (fates including stores, exact masses, contraction counts)
-over the entire ≤24-bit program population.
-
-## Running it
-
+```bash
+cargo add blam
 ```
+
+For the full lab — canonical data tables, the Lean formalization, and
+Tromp's reference corpus for conformance tests:
+
+```bash
 git clone --recurse-submodules https://github.com/a9lim/blam
-# (in an existing clone: git submodule update --init)
+```
+
+## Library
+
+The reference core is `term` / `parse` / `eval`: a textbook-faithful
+normal-order normalizer that serves as the executable spec. Terms use
+**1-indexed de Bruijn** (`Var(1)` = innermost binder), matching the
+wire format (`00` λ, `01` application, `1ⁿ0` variable n); closed-term
+code is prefix-free, which is what makes the Kraft sums of AIT exact.
+
+```rust
+use blam::{normalize, parse_all, Budget};
+
+// (λx.x x)(λx.x) — bits in, bits out
+let term = parse_all("01000110100010")?;
+let nf = normalize(&term, &mut Budget::new(1_000))?;
+assert_eq!(nf.to_bits(), "0010"); // λx.x
+```
+
+`vm` is the production engine: a defunctionalized Crégut-style
+strong-normalization machine (~166M β/s single-thread), backed by a
+reusable flat `Vec<Node>` pool, with β *and* transition budgets and the
+normal form streamed to a `Sink`. Measuring a gigabyte-scale normal form
+therefore needs no gigabyte-scale output allocation.
+
+```rust
+use blam::vm::{Machine, StringSink, TermPool};
+
+let mut pool = TermPool::new();
+let root = pool.decode_str("01000110100010").unwrap();
+let mut nf = StringSink(String::new());
+let steps = Machine::new().normalize(&pool, root, 1_000, &mut nf)?;
+assert_eq!((nf.0.as_str(), steps), ("0010", 2));
+```
+
+Around the core: `oracle` (Tromp's syntactic divergence prefilter),
+`bb` (the escalation engine: redex-history loop detection plus a
+semantic self-feedback divergence certificate), `cert` (trusted
+checkers for three machine-checkable divergence-certificate classes),
+and `enumerate` (parallel closed-term enumeration, `u64`-packed).
+
+### qBLC
+
+The quantum pillar mirrors the layout with a `q` prefix: `qeval` is
+the reference evaluator, `qvm` the lockstep-verified fast path, `dw`
+the exact ring. Programs are ordinary untyped BLC — quantum enters
+through an application signature of five primitives
+(`new / meas / cnot / t / h`, order frozen by a predeclared pilot).
+Qubits are opaque runtime handles with dynamic linearity (reusing a
+consumed handle is a runtime `Err`, not a type error), measurement branches
+the machine with exact weights — nothing is ever sampled — and each branch
+leaf carries a typed fate: `Halt(store)`, `Unknown`, `Capacity`, or `Err`.
+
+```rust
+use blam::qeval::{apply_signature, run, Prim, QBudget};
+use blam::term::{app, lam, var};
+
+// λ⁵. cnot (h (new t)) (new t) — a Bell pair, in 41 bits (the size
+// where entanglement first enters the census)
+let body = app(
+    app(var(2), app(var(5), app(var(3), var(1)))),
+    app(var(3), var(1)),
+);
+let p = (0..5).fold(body, |b, _| lam(b));
+
+let order = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
+let leaves = run(apply_signature(&p, &order), &QBudget::default());
+// one Halt leaf: 2 live qubits, amplitudes exactly (|00⟩ + |11⟩)/√2,
+// mass exactly 1, in 9 contractions
+```
+
+Runnable versions of these snippets: `examples/normalize.rs`,
+`examples/bell.rs`, `examples/parse_file.rs`.
+
+## Drivers
+
+The measurement drivers live in `src/bin/`; production sweeps use rayon,
+while `oddminproto` remains an intentionally direct reference driver:
+
+| bin | what it does |
+|---|---|
+| `census` | adjudicate every closed term in a size range (halt / diverge / unknown) through a ladder of engines |
+| `solomonoff` | Solomonoff prior m(x), prefix complexity K(x), two-sided Ω bounds — exact 2⁻⁶⁴-unit arithmetic |
+| `certsearch` | divergence-certificate discovery sweep over a frontier file |
+| `certlean` | emit the certificate kills as Lean 4 modules for kernel checking |
+| `certdiag` / `tracescan` | frontier classification and probe instruments |
+| `qcensus` | the quantum operator census (`--cond-k K` for the dimension-conditioned mode) |
+| `qpilot` / `qselfint` / `qradical` / `qcomplement` | signature-order pilot, self-interpretation measurement, and the two-stage dyadicity campaign |
+| `oddminproto` | gated reference-DP driver for the CNOT-free √2 theorem lane |
+| `slotsearch` | exhaustive self-interpreter slot searches |
+
+```bash
 cargo build --release
 
 # census of all closed terms of 4..40 bits, with self-verification
@@ -193,116 +129,109 @@ target/release/census 4 40 --verify
 # one-term verbose adjudication
 target/release/census --term 010001101000011010
 
-# batch adjudication of a term list, full ladder, streamed verdicts
-target/release/census --terms-file unknowns_41.txt
+# Ω / K sweep;  quantum census
+target/release/solomonoff 4 41 --table data/classical/solomonoff_table.txt
+target/release/qcensus --max-n 41 --trans 67108864 --out data/quantum/census_table.txt
 
-# Solomonoff prior / K-complexity / Ω sweep
-target/release/solomonoff 4 41 --table solomonoff_table41.txt
-
-# certificate sweep over the frontier (all three classes)
-target/release/certsearch --terms-file unknowns_41.txt --threads 8
-
-# regenerate the Lean certificate modules, then kernel-check them
+# certificate sweep, then kernel-check the kills in Lean
+target/release/certsearch --terms-file data/classical/unknowns.txt
 cargo run --release --bin certlean && cd lean && lake build Certs
-
-# quantum operator census (M_Fock mode; --cond-k K for the G_k sweep)
-target/release/qcensus --max-n 41 --trans 67108864 --out qcensus_table41.txt
 ```
 
 Knobs: `BLC_WORK_MULT` (work-meter multiplier; `2` = memory-bounded
-adjudication mode), `BLC_PROBE_FUEL` (certificate probe β budget,
-default 4096).
+adjudication), `BLC_PROBE_FUEL` (certificate probe β budget). The
+standing measurement protocols are encoded in `scripts/`
+(spot-check, census regeneration, certificate re-certification).
 
 ## Verification
 
-- A114852 term counts exact at every size; all published BBλ witnesses
-  4..34 reproduced (including the 327,686-bit normal form at n=34).
-- The fast VM is lockstep-verified against a naive reference
-  normalizer (`src/eval.rs`, the executable spec) — output bits *and*
-  β-step counts — on all 658 closed terms ≤18 bits, plus targeted
-  vectors.
+- The fast VM is lockstep-verified against the naive spec — output
+  bits *and* β-step counts — over every closed term ≤18 bits; the
+  quantum fast path likewise, over full leaf sequences (fates,
+  stores, exact masses) for the entire ≤24-bit population.
+- Conformance tests parse Tromp's own corpus from the `ref/AIT`
+  submodule (the [a9lim/AIT](https://github.com/a9lim/AIT) fork,
+  pinned at upstream plus one additive commit; CI enforces
+  additivity). Every published A114852 count and BBλ value in range
+  is reproduced exactly.
 - Halt counts are invariant under every engine change in the repo's
-  history (regression guarantee; soundness arguments live in
-  `DESIGN-BLC.md`).
-- Conformance tests (`tests/tromp_vectors.rs`) parse Tromp's own
-  corpus from the `ref/AIT` submodule — the
-  [a9lim/AIT](https://github.com/a9lim/AIT) fork, pinned at upstream
-  plus a single additive commit (`uni.rs`), so the goldens stay
-  byte-identical to upstream's at a reproducible SHA. CI enforces the
-  additive-only property.
+  history — CI diffs a census spot-check against the canonical table
+  on every push.
+- Every one of the 297 certificate kills is an individually
+  kernel-checked `¬HasNormalForm` theorem in Lean 4 (zero sorries, no
+  mathlib), pinned to its wire bits by a kernel-checked encoding.
+
+## Selected results
+
+The measurements this engine exists for, in one breath: the complete
+census of all 526,039,969 closed terms of 4–41 bits (~16.5 min on an
+M5 Max) giving the first BBλ(41) bound (≥ 1,074,266,118 bits) and a
+fully mechanical BBλ(32); Ω restricted to ≤41 bits exactly bracketed
+in [0.124105086764, 0.124105092919]; the 170-bit self-interpreter
+certified locally optimal; and on the quantum side the first computed
+operator census of quantum-preparing programs (to our knowledge) —
+Ω_success exactly, single- and two-qubit state rankings, entanglement
+entering at exactly 41 bits, irrationality invading in measured
+layers (operator entries at 34, leaf masses at 45, per-size
+aggregates at 53 in the idiom sector — the non-λ⁵ complement
+measured exactly dyadic through 51 so far), and qBLC
+self-interpreting in 176 bits (proven minimal across the two-entry
+interpreter families).
+
+The current research boundary and ordered docket live in
+[STATUS](https://github.com/a9lim/blam/blob/main/docs/STATUS.md). The durable
+architecture is split into
+[classical](https://github.com/a9lim/blam/blob/main/docs/classical/architecture.md)
+and
+[quantum](https://github.com/a9lim/blam/blob/main/docs/quantum/architecture.md)
+pillars; proof plans and research notes are grouped beneath those domains.
+Canonical evidence lives in
+[data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
+in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological
+record in the
+[monthly ledger](https://github.com/a9lim/blam/tree/main/docs/ledger).
 
 ## Layout
 
-- `src/` — engine (`term`, `parse`, `eval` naive reference, `vm` KN
-  machine, `oracle`, `bb` escalation + certificate, `enumerate`,
-  `cert` the trusted certificate checkers; quantum pillar with the
-  same layout `q`-prefixed: `qeval` naive reference, `qvm` KN-store
-  machine, `dw` the exact Z[ω]/√2^k ring).
-- `src/bin/` — drivers: `census` and `solomonoff` (the measurements),
-  `certsearch` (certificate discovery sweep), `certdiag` (frontier
-  classifier/probe instrument), `certlean` (Lean certificate
-  emitter), `slotsearch` (interpreter slot searches), `qcensus` and
-  `qpilot` (the quantum census and signature pilot).
+- `src/` — the library (reference core + engines, quantum pillar
+  `q`-prefixed); `src/bin/` — the drivers.
+- `examples/` — the README snippets, runnable.
+- `tests/` — unit, differential, conformance, and certificate
+  soundness batteries.
+- `docs/STATUS.md` — the sole authority for moving results and the open
+  docket; `docs/classical/` and `docs/quantum/` hold durable architecture,
+  specifications, proof plans, and research notes; `docs/ledger/` is
+  chronological history.
+- `data/` — canonical evidence, divided into classical, quantum,
+  certificate, and self-interpreter domains (regenerated, never hand-edited;
+  superseded generations live in git history).
+- `scripts/` — the standing protocols, runnable.
 - `lean/` — the Lean 4 formalization (own README).
-- `tools/` — analysis: `blcc.py` (.lam→.blc compiler, byte-exact
-  against 8 repo goldens), `bbtxt.py` (BB.txt trace cross-matcher),
-  `frontier.py`; `tools/cert/` (certificate spec, proofs, kills
-  file, classifier maps); `tools/interp/` (the self-interpreter lab:
-  slot searches, knot search, sound search spec, design notes);
-  `tools/uni/` (the uni.rs PR kit + parity harness — the interpreter
-  itself lives at the root of the `ref/AIT` fork).
-- `ref/AIT` — submodule: the [a9lim/AIT](https://github.com/a9lim/AIT)
-  fork of [tromp/AIT](https://github.com/tromp/AIT) (upstream plus
-  `uni.rs`), serving as conformance corpus, execution oracles, and the
-  staged upstream PR.
-- `DESIGN-BLC.md` — classical architecture, measured results, open
-  questions; `DESIGN-QBLC.md` — the quantum pillar's design spec.
-- `LEDGER.md` — the running lab notebook: recent sessions, with
-  compacted entries living on in git history.
-- Data: `census_table41.txt` (the canonical census table, 4–41),
-  `unknowns_41.txt` (the 4,235-term live frontier),
-  `solomonoff_41.txt`/`solomonoff_table41.txt` (the Ω/K sweep),
-  `qcensus_table41.txt` (the quantum operator census).
-  Superseded generations live in git history, not the tree.
+- `tools/` — reusable low-level utilities and analyzers; prose and canonical
+  outputs do not live here.
+- `contrib/ait-uni/` — the portable upstream `uni.rs` PR kit and parity
+  harness.
+- `ref/AIT` — submodule: the conformance corpus and execution
+  oracles.
 
-## Roadmap
-
-- qBLC: the Gács-family G_k approximants at depth (first sandwich
-  probe: M^(1)|≤36 sits between 3.17·G_1 and 4.17·G_1); the
-  Ω-irrationality threshold (~low 50s, needs sandwich +
-  fate-divergence); the uniform conditional simulation theorem;
-  quantum Kraft in Lean (`DESIGN-QBLC.md`, Staging and Open
-  questions).
-- Certificate v4 classes (specs in `tools/cert/SPEC.md` §8, measured
-  candidate maps in `tools/cert/CLASSIFY.md`): the PassengerDiagonal
-  first (assembly fully derived, 4 probe-accepted exemplars), then a
-  zfirst variant derived from an actual survivor trace; level-indexed
-  "drift" wrappers stay gated until an exemplar exhibits a finite
-  generator.
-- Lean: prefix-freeness/Kraft, then machine-checked K upper bounds.
-- The contextual slot search (drop the parametric contract's must-use
-  mask): survivors there are hypotheses needing whole-interpreter
-  splice + battery, not proofs — the one mechanical route left to
-  sub-170.
-- n=42: needs a `--rescue` raise first (the n=41 rescue margin is
-  1.06×; see `AGENTS.md`).
-- Upstream: `uni.rs` (call-by-name parity with `uni.py`,
-  byte-identical on the corpus plus three adversarial witnesses, ~18×
-  faster) is staged at the root of the `ref/AIT` fork — the exact tree
-  the PR ships, exercised by CI on every push; kit in `tools/uni/`,
-  submission pending.
+This root README is the repository's reading map and stable public story.
+Moving facts belong only in `docs/STATUS.md`; architecture documents state
+durable contracts, and the ledger is append-only history. The crates.io
+package ships the Rust crate and driver sources (`src/` + this README);
+research evidence, proofs, and supporting utilities live only in the repo.
 
 ## Attribution
 
 The λ-calculus, the encoding, the BBλ problem, the reference
 implementations, and the published values are all John Tromp's
 ([tromp/AIT](https://github.com/tromp/AIT)); `src/bb.rs` and
-`src/oracle.rs` re-implement algorithms from `BB.lhs`/`AIT.lhs`.
-This repo is an independent engine, verified against his.
+`src/oracle.rs` re-implement algorithms from `BB.lhs`/`AIT.lhs`. This
+repo is an independent engine, verified against his.
 
-Built by [a9lim](https://github.com/a9lim) with Claude (Anthropic) and
-Codex (OpenAI) as agent collaborators — `LEDGER.md` and the commit
-history are the honest record of what that looked like.
+Built by [a9lim](https://github.com/a9lim). Development history is preserved
+in the
+[monthly ledger](https://github.com/a9lim/blam/tree/main/docs/ledger)
+and the commit graph; the live documentation describes the current system.
 
 AGPL-3.0-or-later — covering this repo's own code (© 2026 a9lim).
 The `ref/AIT` submodule is upstream Tromp material (which carries no

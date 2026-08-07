@@ -1,10 +1,9 @@
 # Design theory: why 170 bits is a local optimum
 
-The structural question (worked with Codex, gaslamp thread
-`blc-interpreter`): is there a route below the 170-bit
+The structural question is whether there is a route below the 170-bit
 self-interpreter through *global* rearrangement — fixpoint shape,
 continuation timing, environment representation — as opposed to the
-slot-local searches of SEARCH_SPEC.md? All candidates below were
+slot-local searches of `search-spec.md`? All candidates below were
 compiled with `tools/blcc.py` and run through the semantic battery;
 bit counts are verified, not estimated.
 
@@ -65,7 +64,7 @@ removing the shared tail binder saves 2 bits, the necessary constant
 thunk costs 3. A lambda-free repair using the selector itself
 (`\x\y\zx. zx (zx x) (\zy.zy y)`) is also correct, at 172.
 
-## Exhaustive knot search (`search_fix.py`, new tool)
+## Exhaustive knot search (`search_fix.py`)
 
 Treat the interpreter body as an opaque zero-cost atom `H` and
 enumerate every closed BLC context around it:
@@ -92,10 +91,10 @@ independent floor estimate from the reverse-engineering lane
 (165–168 plausible only via a new micro-trick; ~150 needs a new
 paradigm).
 
-The slot-local exhaustive searches have since run to completion
-(SEARCH_RESULTS.md): VAR, ABS and APP are each certified optimal with
+The slot-local exhaustive searches are complete
+(`results.md`): VAR, ABS and APP are each certified optimal with
 the reference as unique survivor and zero residual unknowns. No
 micro-trick was hiding in the branch bodies. The one mechanical route
-left is the contextual lane (SEARCH_SPEC.md §2) — and a survivor
+left is the contextual lane (`search-spec.md` §2) — and a survivor
 there is a hypothesis needing whole-interpreter splice + battery, not
 a proof.

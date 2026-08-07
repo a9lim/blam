@@ -447,8 +447,7 @@ fn lterm_bits(t: &LTerm, out: &mut String) {
 }
 
 /// Self-feedback divergence certificate — the semantic generalization of
-/// BBold.lhs's `redloop` (designed across a 2026-07-31 gaslamp exchange
-/// with Codex, soundness co-derived). For a self-application `A A` with
+/// BBold.lhs's `redloop`. For a self-application `A A` with
 /// `A = λx.x Q(x) R̄(x)` CLOSED and ⊥-free (the displayed application
 /// being B's left spine):
 ///
@@ -475,7 +474,7 @@ fn lterm_bits(t: &LTerm, out: &mut String) {
 /// re-entering this engine or the oracle — and any failure (no match,
 /// ⊥, open term, fuel out, nf mismatch) claims nothing.
 ///
-/// Completeness telemetry (per Codex's review): FIRES counts proofs,
+/// Completeness telemetry: FIRES counts proofs,
 /// FUEL_REJECTS counts shape-matches abandoned solely because a probe
 /// ran out of fuel — a zero there over a full census certifies the
 /// cutoff lost nothing at that range.
@@ -676,8 +675,7 @@ mod tests {
     #[test]
     fn redloop_proves_the_four_32bit_loops() {
         // The four D A loops BBold.lhs's redloop proves and current BB.lhs
-        // cannot (identified in the 2026-07-31 conformance cross-match;
-        // hand loop-analyses in ref/AIT/BB/BB.txt).
+        // cannot; hand loop analyses live in ref/AIT/BB/BB.txt.
         for bits in [
             "01000110100001100110000110001110", // (\1 1)(\1 (1 (\1 (\3))))
             "01000110100001011001100011000110", // (\1 1)(\1 (1 (\2)) (\2))

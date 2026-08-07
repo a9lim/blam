@@ -1,6 +1,7 @@
 //! Ratchet divergence certificates for growing-context loops.
 //!
-//! Contract and soundness proof: `tools/cert/SPEC.md`. A certificate is a
+//! Contract and soundness proof: `docs/classical/certificates/specification.md`.
+//! A certificate is a
 //! triple `(A, W, C0)`; four checks (OPEN / DESC / BASE / INIT) reduce
 //! "T has no normal form" to bounded symbolic head reductions. `verify`
 //! is the trusted core; `discover` is untrusted search — a bad candidate
@@ -16,9 +17,9 @@ use std::rc::Rc;
 
 /// Pattern term: `Term` plus opaque *named* metavariables `Meta(id)`,
 /// each standing for an arbitrary *closed* term. Closedness is what
-/// makes `shift`/`subst` no-ops on `Meta` sound (SPEC.md §3, symbolic
+/// makes `shift`/`subst` no-ops on `Meta` sound (`docs/classical/certificates/specification.md` §3, symbolic
 /// step rules). Occurrences with the same id denote the same closed
-/// term; different ids are independent (SPEC.md §5 — SPREAD needs two).
+/// term; different ids are independent (the specification's §5 SPREAD needs two).
 /// v1 code uses only `Meta(0)` (displayed `Z`); the HeadTowerRatchet
 /// checker also uses `Meta(1)` (displayed `Q`).
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -140,7 +141,7 @@ fn shift(t: &PTerm, d: u32, cutoff: u32) -> PTerm {
 
 /// Substitute `s` for `Var(j)` and decrement free variables above `j`
 /// (the one-pass β-substitution; matches the reference reducer in
-/// `tools/cert/loop32_trace.py`).
+/// `tools/certificates/loop32_trace.py`).
 fn subst_dec(t: &PTerm, j: u32, s: &PTerm) -> PTerm {
     match t {
         PTerm::Var(n) => {
@@ -176,8 +177,8 @@ fn count_var(t: &PTerm, j: u32) -> u64 {
 /// One symbolic head step. `Did` carries the exact node-count delta of
 /// the contraction (result − redex, computable redex-locally), so
 /// callers can track term size incrementally instead of re-walking the
-/// whole tree every step — the walk was the dominant cost of long
-/// discovery traces (survey, 2026-07-31 late).
+/// whole tree every step; the walk was the dominant cost of long
+/// discovery traces.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Step {
     Did(PTerm, i64),
@@ -196,7 +197,7 @@ pub enum Step {
 /// position `((λ.M) N) t₂ … tₖ`, under leading lambdas. Only *concrete*
 /// lambdas are ever contracted; the spine path traversed contains no
 /// `Meta`, so the located redex is the head redex under every closed
-/// instantiation of `Meta` (SPEC.md §3).
+/// instantiation of `Meta` (certificate specification §3).
 ///
 /// `max_nodes` bounds the *redex-local result* of the contraction
 /// (`|body| + occurrences × |arg|`), computed before allocating.
@@ -236,7 +237,7 @@ pub enum CheckFail {
     /// Head normal form reached without hitting the target.
     ReachedNf(u32),
     /// A proper source state (the start, or any state before the end)
-    /// was an abstraction or bare `Meta` — the lifting lemma (SPEC.md
+    /// was an abstraction or bare `Meta` — the lifting lemma (certificate spec
     /// §2) would not apply, so the chain cannot be composed inside a
     /// left spine. Step 0 marks the start state itself.
     BadIntermediate(u32),
@@ -258,8 +259,7 @@ pub enum CheckFail {
 /// head step in a left-spine context would consume that abstraction via
 /// the outer redex instead of reducing beneath it. In v1 every check
 /// starts from an application, so the distinction is latent; it is
-/// enforced here so v2 lemma systems cannot fall through the gap
-/// (Codex review, blc-conformance 2026-07-31).
+/// enforced here so later lemma systems cannot fall through the gap.
 pub fn check_reduces(
     l: &PTerm,
     r: &PTerm,
@@ -305,7 +305,7 @@ pub fn strip_lams(mut t: &PTerm) -> (u32, &PTerm) {
     (k, t)
 }
 
-/// A ratchet certificate (SPEC.md §3): head `A`, wrapper `W[Z]`, base `C0`.
+/// A ratchet certificate (certificate specification §3): head `A`, wrapper `W[Z]`, base `C0`.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Ratchet {
     pub a: Term,
@@ -395,7 +395,7 @@ pub fn tower_index(w: &PTerm, c0: &PTerm, x: &PTerm) -> Option<u32> {
 }
 
 /// The trusted verifier. Establishes that `t` has no normal form
-/// (per the glue theorem, SPEC.md §3) or fails.
+/// (per the glue theorem in certificate specification §3) or fails.
 pub fn verify(
     t: &Term,
     cert: &Ratchet,
@@ -457,7 +457,7 @@ pub fn verify(
     // never compares trailing vectors across observed milestones: it
     // selects ONE state, and the lifted certified execution preserves that
     // exact vector, open or closed — y⃗ is never substituted into,
-    // shifted, or inspected. [Codex round-2 review wording.]
+    // shifted, or inspected.
     let (init_steps, init_tower, init_trail) =
         init_search(t, &a, &w, &c0, init_steps, max_nodes).ok_or(CertFail::Init)?;
     Ok(CertReport {
@@ -524,7 +524,7 @@ pub fn check_reduces_star(
     check_reduces(l, r, max_steps, max_nodes)
 }
 
-/// A `HeadTowerRatchet` certificate (SPEC.md §5, co-designed with Codex):
+/// A `HeadTowerRatchet` certificate (certificate specification §5):
 /// closed head `A`, wrapper pattern `W[Z]` (holes `Meta(0)`), closed
 /// tower base `C0`, closed eraser `I`. Certifies loops whose tower
 /// argument itself takes head position — the shape v1's opacity must
@@ -560,7 +560,7 @@ pub enum HtrFail {
 }
 
 /// The trusted HeadTowerRatchet verifier. Establishes that `t` has no
-/// normal form, per the fixed assembly theorem (SPEC.md §5): the six
+/// normal form, per the fixed assembly theorem (certificate specification §5): the six
 /// obligations mechanically derive the rank step
 /// `R(m,N): Xₘ₊₁ X_N →ₕ⁺ Xₘ X_N` (SPREAD; PEEL×N; BASE+BOUNCE; PEEL×m;
 /// BASE+ERASE — each lemma lifted into its right-spine context, licensed
@@ -672,8 +672,7 @@ pub fn verify_htr(
 /// least none of any other id). The wrapper helpers `plug` /
 /// `match_wrapper` collapse ALL hole ids into one — sound only for
 /// single-id wrappers, so both trusted verifiers gate on this before
-/// any multi-meta v3 code can meet the old helpers by accident
-/// (Codex round-three hardening).
+/// any multi-meta v3 code can meet the old helpers by accident.
 fn wrapper_holes_are_meta0(t: &PTerm) -> bool {
     match t {
         PTerm::Meta(i) => *i == 0,
@@ -696,8 +695,7 @@ pub fn rename_meta(t: &PTerm, from: u32, to: u32) -> PTerm {
     }
 }
 
-/// A SelectorRatchet certificate (SPEC.md §6, derived by Codex in
-/// round nine from the 35-bit forcing exemplar
+/// A SelectorRatchet certificate (certificate specification §6), forced by the 35-bit exemplar
 /// `01000110100001100001011000001111010`): the wrapper is a
 /// *selector* — applied to a fresh argument it hands control to that
 /// argument carrying a second unary pattern `P[Z]` (FAN), and one
@@ -734,7 +732,7 @@ pub enum SelFail {
 }
 
 /// The trusted SelectorRatchet verifier. Establishes that `t` has no
-/// normal form per the glue theorem (SPEC.md §6): with `Xₙ = Wⁿ[C0]`,
+/// normal form per the glue theorem (certificate specification §6): with `Xₙ = Wⁿ[C0]`,
 /// the rank step is FAN at (Z:=Xₘ₋₁, Q:=Xₙ₊₁) followed by SELECT at
 /// (Q:=Xₙ, Z:=Xₘ₋₁) lifted through the trailing `Xₙ₊₁`
 /// (`Xₘ Xₙ₊₁ →ₕ⁺ Xₙ₊₁ P[Xₘ₋₁] Xₙ₊₁ = W[Xₙ] P[Xₘ₋₁] Xₙ₊₁ →ₕ⁺
@@ -882,7 +880,7 @@ pub fn try_selector(
 
 /// Untrusted HeadTowerRatchet driver: reuse a discovered `(A, W, C0)`
 /// triple, peel the observed base to the true tower bottom (a witnessed
-/// milestone argument is Wᵏ[C0ₜᵣᵤₑ] — v1 may use it directly, the
+/// milestone argument is `Wᵏ[C0ₜᵣᵤₑ]` — v1 may use it directly, the
 /// assembly theorem needs the bottom), then try small closed candidate
 /// erasers, the identity first. Garbage in ⇒ no certificate, never a
 /// wrong one: `verify_htr` alone is trusted.
@@ -964,9 +962,7 @@ pub fn generalize(hay: &PTerm, needle: &PTerm) -> PTerm {
 ///
 /// Returns the FIRST consistent candidate. Callers that can reject a
 /// candidate (checker says no) should prefer `discover_stream`, which
-/// keeps scanning across families instead of stopping at the first —
-/// Codex round three identified first-candidate masking as the main
-/// completeness gap.
+/// keeps scanning across families instead of stopping at the first.
 pub fn discover(t: &Term, max_steps: u32, max_nodes: u64) -> Option<Ratchet> {
     discover_stream(t, max_steps, max_nodes, &mut |_| true)
 }
@@ -979,8 +975,8 @@ pub fn discover(t: &Term, max_steps: u32, max_nodes: u64) -> Option<Ratchet> {
 /// triples whose rejection cause persists; distinct families are the
 /// completeness win). Family count is capped: spine ratchets push a
 /// fresh arity almost every state (observed arity up to 8,228), and
-/// each would otherwise hold a milestone window alive (Codex
-/// round-three resource note). All policy here is untrusted — the
+/// each would otherwise hold a milestone window alive. All policy here is
+/// untrusted — the
 /// checkers alone decide soundness.
 pub fn discover_stream(
     t: &Term,
@@ -1081,7 +1077,7 @@ mod tests {
         Ratchet { a, w, c0 }
     }
 
-    /// The 35-bit SelectorRatchet forcing exemplar (Codex round nine):
+    /// The 35-bit SelectorRatchet forcing exemplar:
     /// A = C0 = λx. x W[x], W[Z] = λq. q P[Z] q, P[Z] = λa.λb.Z.
     /// v1 rejects it (OPEN endpoint is `Z W[Z]`), HTR rejects it
     /// (SPREAD endpoint is `Q P[Z] Q`, not `Q I Z Q`); the selector
@@ -1132,7 +1128,7 @@ mod tests {
     fn loop32_manual_certificate_verifies() {
         let t = parse_all(LOOP32).unwrap();
         let rep = verify(&t, &loop32_cert(), 64, 64, 1 << 20).unwrap();
-        // Measured in tools/cert/loop32_trace.py: OPEN is one step,
+        // Measured in tools/certificates/loop32_trace.py: OPEN is one step,
         // DESC two, BASE one, and the first milestone is one step in.
         assert_eq!(rep.open_steps, 1);
         assert_eq!(rep.desc_steps, 2);
@@ -1190,7 +1186,7 @@ mod tests {
         // The 35-bit deep-family forcing term: wrapper perfectly
         // consistent, but OPEN ends Z W[Z] — the tower takes head
         // position, so v1's opacity must abort. The HeadTowerRatchet
-        // certifies it with the obligation lengths Codex derived
+        // certifies it with obligation lengths
         // (BASE 0 because C0 = A; then 1,1,3,3,7) and I = λ.1.
         let t = parse_all("01000110100001100001010110001011010").unwrap();
         let cert = discover(&t, 4096, 1 << 20).expect("discovery finds the triple");
@@ -1247,8 +1243,7 @@ mod tests {
         // body (it is the stripped binder's variable). Lifting never
         // substitutes into, shifts, or inspects y⃗, so openness is
         // harmless; this pins the exact claim the closed-trailing and
-        // under-binder tests each cover only half of. [Codex round-2
-        // requested test.]
+        // under-binder tests each cover only half of.
         let a = parse_all("0001011010000110110").unwrap();
         let c0 = parse_all("000001011010000110110").unwrap();
         let body = Term::App(
@@ -1299,8 +1294,8 @@ mod tests {
 
     #[test]
     fn abstraction_start_state_is_rejected() {
-        // Codex review: the lifting lemma constrains every proper
-        // SOURCE state, including the start. λ.(λ.1)1 →ₕ λ.1 is a real
+        // The lifting lemma constrains every proper SOURCE state,
+        // including the start. λ.(λ.1)1 →ₕ λ.1 is a real
         // head reduction, but it must not check — lifted under an
         // argument the composite's head step would consume the outer
         // abstraction instead.

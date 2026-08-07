@@ -4,13 +4,14 @@ Two untrusted instruments map the unknowns frontier for the
 certificate campaign: `tracescan` (src/bin/tracescan.rs) classifies
 terms by the *shape* of their normal-order reduction; `certdiag`
 (src/bin/certdiag.rs) runs the ratchet discovery pipeline and reports,
-per term, exactly where it drops out. Nothing here is a kill — the
-live kill state is `ratchet_kills.txt` + AGENTS.md. Raw tables
-regenerate in minutes (`tracescan --file unknowns_41.txt --out …`,
+per term, exactly where it drops out. Nothing here is a kill. The current
+kill set is `data/certificates/ratchet_kills.tsv`, summarized in
+`../../STATUS.md`. Raw tables regenerate in minutes
+(`tracescan --file data/classical/unknowns.txt --out data/certificates/frontier_classification.csv`,
 `certdiag <terms> --threads 8`); superseded map generations live in
 git history.
 
-**The standing caveat, proved by the selector sweep**: certdiag
+**The standing caveat:** certdiag
 buckets are abort fingerprints under ONE candidate triple, not class
 boundaries. The zfirst bucket's single-candidate probe accepted 30
 terms; the streaming sweep then killed 40. Bucket counts bound
@@ -68,11 +69,13 @@ capped term showing a recurring head reports under the head class
 | `blowup` | hit the 500k-node cap (or the per-step allocation cap) with none of the above |
 | `opaque` | 20,000 steps exhausted, none of the above |
 
-## Measured maps
+## Measured diagnostic maps
 
-**4..40** (measured 2026-07-31 on the then-2,032-term pre-certificate
-frontier; the campaign has since killed 144 of them — raw table in
-git history):
+These tables characterize the populations on which the instruments were run;
+they are not the current frontier counts. `../../STATUS.md` and
+`data/classical/unknowns.txt` are authoritative for the live frontier.
+
+**4..40 pre-certificate population** (2,032 terms):
 
 | class | count | share |
 |---|---:|---:|
@@ -82,10 +85,11 @@ git history):
 | `blowup` | 351 | 17.3% |
 | `opaque` | 594 | 29.2% |
 
-**n=41 residue** (`classify41.csv`, measured 2026-08-01 on the 2,381
-terms unresolved after the v1/v2 sweeps; the selector sweep since
-killed 34, leaving 2,347 live): opaque 775, blowup 580,
+**n=41 post-v1/v2 population** (`data/certificates/frontier_classification.csv`,
+2,381 terms): opaque 775, blowup 580,
 head-recurrent-other 570, ratchet-candidate 231, monotone-growth 225.
+Later certificate classes remove terms from this population; regenerate the
+map before using its counts as a live distribution.
 
 ## Structural findings that drive the class roadmap
 
@@ -131,30 +135,30 @@ well-defined extension, unbuilt.
 
 ## Discovery abort map (certdiag)
 
-Measured 2026-08-01 over the 456 then-live ratchet-candidates (225 at
-4..40 + 231 at 41), before the selector sweep. Headline: **387/456
+Measured over the 456 ratchet candidates in the diagnostic populations
+(225 at 4..40 and 231 at 41), before SelectorRatchet removal. Headline:
+**387/456
 produce a fully plug-consistent candidate triple that the trusted
 verifier rejects** (369 at OPEN, 18 at DESC) — discovery is not the
-gap; the certificate *shapes* are. Family census by abort signature,
-with the readings that survived adversarial review:
+gap; the certificate *shapes* are. Family census by abort signature:
 
 - **zfirst, 131** — OPEN aborts at exactly `Z W[Z]`; HTR's SPREAD
   then aborts on an endpoint mismatch (not a Z-headed reduction). On
   the forcing exemplar the wrapper is a *selector* — this bucket
   yielded the v3 SelectorRatchet and its 40 kills. The residue is a
   different shape; next variant comes from a survivor trace
-  (SPEC.md §8.2). Exemplar: `01000110100001100001011000001111010`.
+  (`specification.md` §8.2). Exemplar: `01000110100001100001011000001111010`.
 - **resource, 74** — the candidate's OPEN blows the symbolic budget
   (giant cycles or wrong-family candidates).
 - **drift, 63** — consecutive milestones nest under a *different*
   wrapper each level. Not yet evidence for a level-indexed family:
   the exemplar's milestones share no finite generator, and the class
-  is gated until one is exhibited (SPEC.md §8.3).
+  is gated until one is exhibited (`specification.md` §8.3).
   Exemplar: `0100011010000110000110011100111000110`.
 - **passenger, 48** — OPEN aborts at `Z ⟨Z P[Z]⟩ W[Z]`; the
   interleaved argument is metavariable-bearing and controls the
   descent. This is the PassengerDiagonalRatchet, first in the v4
-  build order — assembly fully derived in SPEC.md §8.1, 4
+  build order — assembly fully derived in `specification.md` §8.1, four
   probe-accepted exemplars (a lower bound).
   Exemplar: `010001101000010110011000110000110110`.
 - **selfapp, 26** — OPEN ends at bare `Z Z`: the cycle mints no
