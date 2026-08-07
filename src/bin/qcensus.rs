@@ -95,6 +95,62 @@ impl Ex {
             "OVERFLOW".into()
         }
     }
+
+    /// Display real part: derived from the exact value while it holds
+    /// (correctly rounded and independent of accumulation grouping — the
+    /// running f64 mirror's rounding is merge-order dependent, which
+    /// would make checkpointed runs differ from monolithic in display
+    /// low bits); the mirror only ever surfaces for OVERFLOW rows.
+    fn re(&self) -> f64 {
+        if self.ok {
+            self.v.reduce().to_f64_re()
+        } else {
+            self.re
+        }
+    }
+
+    fn im(&self) -> f64 {
+        if self.ok {
+            self.v.reduce().to_f64_im()
+        } else {
+            self.im
+        }
+    }
+
+    fn write_ckpt(&self, out: &mut String) {
+        use std::fmt::Write as _;
+        let r = self.v;
+        write!(
+            out,
+            " {} {} {} {} {} {} {} {}",
+            self.ok as u8,
+            r.a,
+            r.b,
+            r.c,
+            r.d,
+            r.k,
+            self.re.to_bits(),
+            self.im.to_bits()
+        )
+        .unwrap();
+    }
+
+    fn parse_ckpt(it: &mut std::str::SplitWhitespace) -> Option<Ex> {
+        let ok = it.next()?.parse::<u8>().ok()? != 0;
+        let a = it.next()?.parse().ok()?;
+        let b = it.next()?.parse().ok()?;
+        let c = it.next()?.parse().ok()?;
+        let d = it.next()?.parse().ok()?;
+        let k = it.next()?.parse().ok()?;
+        let re = f64::from_bits(it.next()?.parse().ok()?);
+        let im = f64::from_bits(it.next()?.parse().ok()?);
+        Some(Ex {
+            v: Dw { a, b, c, d, k },
+            ok,
+            re,
+            im,
+        })
+    }
 }
 
 /// Is an exact real mass a dyadic rational?
@@ -214,6 +270,133 @@ impl Tally {
         self.max_live = self.max_live.max(o.max_live);
         self.unknowns.extend(o.unknowns);
         self
+    }
+}
+
+impl Default for Tally {
+    fn default() -> Tally {
+        Tally::new()
+    }
+}
+
+impl blam::ckpt::CkptRecord for Tally {
+    fn write_body(&self, out: &mut String) {
+        use std::fmt::Write as _;
+        out.push('S');
+        for v in [
+            self.programs,
+            self.leaves,
+            self.halt_n,
+            self.err_n[0],
+            self.err_n[1],
+            self.err_n[2],
+            self.err_n[3],
+            self.err_n[4],
+            self.unk_n,
+            self.unk_by_trans,
+            self.cap_n[0],
+            self.cap_n[1],
+            self.cap_n[2],
+            self.none_mass_n,
+            self.sect_n[0],
+            self.sect_n[1],
+            self.sect_n[2],
+            self.sect_n[3],
+            self.sect_n[4],
+            self.forked,
+            self.fate_div,
+            self.nondyadic,
+            self.max_steps,
+            self.max_trans,
+            self.max_leaves,
+            self.max_live as u64,
+        ] {
+            write!(out, " {v}").unwrap();
+        }
+        for o in [self.first_fate_div, self.first_nondyadic] {
+            match o {
+                Some((l, e)) => write!(out, " {l} {e}").unwrap(),
+                None => write!(out, " - -").unwrap(),
+            }
+        }
+        self.omega.write_ckpt(out);
+        self.err_mass.write_ckpt(out);
+        self.unk_mass.write_ckpt(out);
+        self.cap_mass.write_ckpt(out);
+        for e in &self.sect_mass {
+            e.write_ckpt(out);
+        }
+        for e in &self.m1 {
+            e.write_ckpt(out);
+        }
+        for e in &self.m2 {
+            e.write_ckpt(out);
+        }
+        out.push('\n');
+        for (enc, len) in &self.unknowns {
+            writeln!(out, "U {enc} {len}").unwrap();
+        }
+    }
+
+    fn parse_line(&mut self, line: &str) -> Option<()> {
+        let mut it = line.split_whitespace();
+        match it.next()? {
+            "S" => {
+                let mut num = || -> Option<u64> { it.next()?.parse().ok() };
+                self.programs = num()?;
+                self.leaves = num()?;
+                self.halt_n = num()?;
+                for i in 0..5 {
+                    self.err_n[i] = num()?;
+                }
+                self.unk_n = num()?;
+                self.unk_by_trans = num()?;
+                for i in 0..3 {
+                    self.cap_n[i] = num()?;
+                }
+                self.none_mass_n = num()?;
+                for i in 0..SECT {
+                    self.sect_n[i] = num()?;
+                }
+                self.forked = num()?;
+                self.fate_div = num()?;
+                self.nondyadic = num()?;
+                self.max_steps = num()?;
+                self.max_trans = num()?;
+                self.max_leaves = num()?;
+                self.max_live = num()? as usize;
+                for slot in [&mut self.first_fate_div, &mut self.first_nondyadic] {
+                    let l = it.next()?;
+                    let e = it.next()?;
+                    *slot = if l == "-" {
+                        None
+                    } else {
+                        Some((l.parse().ok()?, e.parse().ok()?))
+                    };
+                }
+                self.omega = Ex::parse_ckpt(&mut it)?;
+                self.err_mass = Ex::parse_ckpt(&mut it)?;
+                self.unk_mass = Ex::parse_ckpt(&mut it)?;
+                self.cap_mass = Ex::parse_ckpt(&mut it)?;
+                for i in 0..SECT {
+                    self.sect_mass[i] = Ex::parse_ckpt(&mut it)?;
+                }
+                for i in 0..4 {
+                    self.m1[i] = Ex::parse_ckpt(&mut it)?;
+                }
+                for i in 0..16 {
+                    self.m2[i] = Ex::parse_ckpt(&mut it)?;
+                }
+                Some(())
+            }
+            "U" => {
+                let enc: u64 = it.next()?.parse().ok()?;
+                let len: u8 = it.next()?.parse().ok()?;
+                self.unknowns.push((enc, len));
+                Some(())
+            }
+            _ => None,
+        }
     }
 }
 
@@ -397,6 +580,8 @@ fn main() {
     let mut skeleton_only = false;
     let mut skel_steps = blam::skel::SkelCaps::default().steps;
     let mut skel_size = blam::skel::SkelCaps::default().size_bits;
+    let mut ckpt_path: Option<String> = None;
+    let mut groups_flag = 0usize;
     // The canonical universe unless --sig overrides (alternate universes
     // are deliberately-labeled siblings; canonical data stays frozen).
     let mut sig: Vec<Prim> = FROZEN.to_vec();
@@ -453,6 +638,14 @@ fn main() {
             }
             "--dump-unknowns" => {
                 dump_unknowns = Some(args[i + 1].clone());
+                i += 2;
+            }
+            "--checkpoint" => {
+                ckpt_path = Some(args[i + 1].clone());
+                i += 2;
+            }
+            "--groups" => {
+                groups_flag = args[i + 1].parse().unwrap();
                 i += 2;
             }
             "--terms-file" => {
@@ -686,47 +879,100 @@ fn main() {
     );
 
     let t0 = Instant::now();
+    // Group checkpointing (blam::ckpt): config pins everything verdict-
+    // relevant — range, budgets, mode, and the signature universe.
+    let ckpt_config = format!(
+        "qcensus min={min_n} max={max_n} beta={} trans={} qubits={} branches={} cond={} sig={}",
+        budget.beta,
+        budget.trans,
+        budget.max_qubits,
+        budget.max_branches,
+        cond_k.map_or("-".into(), |k| k.to_string()),
+        sig.iter().map(|p| p.name()).collect::<Vec<_>>().join(",")
+    );
+    let mut ckpt = ckpt_path
+        .as_ref()
+        .map(|p| blam::ckpt::Ckpt::<Tally>::open(p, &ckpt_config, groups_flag));
+    // Per-size unknown dumping would duplicate lines across resumed
+    // runs; under a checkpoint, collect and rewrite the file at the end.
+    let mut deferred_unknowns: Vec<(u64, u8)> = Vec::new();
+
     let mut rows: Vec<(u32, Tally)> = Vec::new();
     let mut total = Tally::new();
     for n in min_n..=max_n {
-        let tn = Instant::now();
-        let tasks = interleave_tasks(split_tasks(n, nthreads * 32));
-        let tally = tasks
-            .par_iter()
-            .fold(
-                || (Pool::new(), QMachine::new(), Vec::new(), Tally::new()),
-                |(mut pool, mut m, mut leaves, mut t), task| {
-                    run_task(task, &mut |enc, len| {
-                        sweep_one(
-                            &mut pool,
-                            &mut m,
-                            &mut leaves,
-                            enc,
-                            len,
-                            cond_k,
-                            &sig,
-                            &budget,
-                            &mut t,
-                        );
-                    });
-                    (pool, m, leaves, t)
-                },
-            )
-            .map(|(_, _, _, t)| t)
-            .reduce(Tally::new, Tally::merge);
+        let target = match &ckpt {
+            Some(c) => c.target,
+            None => nthreads * 32,
+        };
+        let tasks = interleave_tasks(split_tasks(n, target));
+        let run_slice = |slice: &[blam::enumerate::GenTask]| -> Tally {
+            slice
+                .par_iter()
+                .fold(
+                    || (Pool::new(), QMachine::new(), Vec::new(), Tally::new()),
+                    |(mut pool, mut m, mut leaves, mut t), task| {
+                        run_task(task, &mut |enc, len| {
+                            sweep_one(
+                                &mut pool,
+                                &mut m,
+                                &mut leaves,
+                                enc,
+                                len,
+                                cond_k,
+                                &sig,
+                                &budget,
+                                &mut t,
+                            );
+                        });
+                        (pool, m, leaves, t)
+                    },
+                )
+                .map(|(_, _, _, t)| t)
+                .reduce(Tally::new, Tally::merge)
+        };
+        let (mut tally, secs) = match &mut ckpt {
+            Some(c) => {
+                let per = tasks.len().div_ceil(c.groups).max(1);
+                let mut acc = Tally::new();
+                let mut secs = 0.0;
+                for gi in 0..c.groups {
+                    if let Some((t, gsecs)) = c.take_restored(n, gi) {
+                        acc = acc.merge(t);
+                        secs += gsecs;
+                        continue;
+                    }
+                    let lo = (gi * per).min(tasks.len());
+                    let hi = ((gi + 1) * per).min(tasks.len());
+                    let tg0 = Instant::now();
+                    let gt = run_slice(&tasks[lo..hi]);
+                    let gsecs = tg0.elapsed().as_secs_f64();
+                    c.append(n, gi, gsecs, &gt);
+                    acc = acc.merge(gt);
+                    secs += gsecs;
+                }
+                (acc, secs)
+            }
+            None => {
+                let tn = Instant::now();
+                let t = run_slice(&tasks);
+                (t, tn.elapsed().as_secs_f64())
+            }
+        };
         eprintln!(
-            "n={n:>2}: {:>9} programs  halt {:>8}  err {:>8}  unk {:>6}  cap {:>4}  omega+={:.3e}  ({:.2?})",
+            "n={n:>2}: {:>9} programs  halt {:>8}  err {:>8}  unk {:>6}  cap {:>4}  omega+={:.3e}  ({secs:.2}s)",
             tally.programs,
             tally.halt_n,
             tally.err_n.iter().sum::<u64>(),
             tally.unk_n,
             tally.cap_n.iter().sum::<u64>(),
-            tally.omega.re,
-            tn.elapsed()
+            tally.omega.re(),
         );
         // Sorted per size: accumulation order is task order (split- and
         // thread-count dependent); sorted output is machine-independent.
-        if let Some(path) = &dump_unknowns {
+        tally.unknowns.sort_unstable();
+        if dump_unknowns.is_some() && ckpt.is_some() {
+            deferred_unknowns.extend(tally.unknowns.iter().copied());
+        } else if let Some(path) = &dump_unknowns {
             use std::io::Write;
             let mut u = tally.unknowns.clone();
             u.sort_unstable();
@@ -744,6 +990,18 @@ fn main() {
         }
         total = total.merge(tally.clone());
         rows.push((n, tally));
+    }
+    if ckpt.is_some() {
+        if let Some(path) = &dump_unknowns {
+            use std::io::Write;
+            let mut f = std::fs::File::create(path).expect("create dump file");
+            let mut s = String::new();
+            for (enc, len) in &deferred_unknowns {
+                s.push_str(&enc_str(*enc, *len));
+                s.push('\n');
+            }
+            f.write_all(s.as_bytes()).unwrap();
+        }
     }
     let wall = t0.elapsed();
     eprintln!(
@@ -785,7 +1043,7 @@ fn main() {
             t.unk_n,
             t.cap_n.iter().sum::<u64>(),
             t.omega.exact_str(),
-            t.omega.re,
+            t.omega.re(),
         );
     }
     let _ = writeln!(r, "#");
@@ -803,7 +1061,7 @@ fn main() {
         r,
         "Omega_success  = {}  = {:.15}",
         total.omega.exact_str(),
-        total.omega.re
+        total.omega.re()
     );
     let upper = {
         let mut u = total.omega;
@@ -815,19 +1073,19 @@ fn main() {
         r,
         "bracket upper  = {}  = {:.15}   (success + unknown + capacity mass)",
         upper.exact_str(),
-        upper.re
+        upper.re()
     );
     let _ = writeln!(
         r,
         "err mass       = {}  = {:.15}   (excluded by construction)",
         total.err_mass.exact_str(),
-        total.err_mass.re
+        total.err_mass.re()
     );
     let _ = writeln!(
         r,
         "unk mass       = {}  = {:.15}",
         total.unk_mass.exact_str(),
-        total.unk_mass.re
+        total.unk_mass.re()
     );
     let _ = writeln!(r, "#");
     let _ = writeln!(
@@ -847,7 +1105,7 @@ fn main() {
             total.sect_n[s],
             label,
             total.sect_mass[s].exact_str(),
-            total.sect_mass[s].re
+            total.sect_mass[s].re()
         );
     }
     let _ = writeln!(r, "#");
@@ -859,8 +1117,8 @@ fn main() {
                 r,
                 "M1[{i}][{j}] = {}  = {:.15} {:+.15}i",
                 e.exact_str(),
-                e.re,
-                e.im
+                e.re(),
+                e.im()
             );
         }
     }
@@ -954,8 +1212,8 @@ fn main() {
                     r,
                     "M2[{i}][{j}] = {}  = {:.15} {:+.15}i",
                     e.exact_str(),
-                    e.re,
-                    e.im
+                    e.re(),
+                    e.im()
                 );
             }
         }
