@@ -139,7 +139,23 @@ pub fn interleave_tasks(tasks: Vec<GenTask>) -> Vec<GenTask> {
     let bits = usize::BITS - (m - 1).leading_zeros();
     let mut order: Vec<usize> = (0..m).collect();
     order.sort_unstable_by_key(|&i| i.reverse_bits() >> (usize::BITS - bits));
-    order.into_iter().map(|i| tasks[i].clone()).collect()
+    // Move each task to its new slot instead of cloning it — a `GenTask`
+    // owns a heap `pending`, so the old `tasks[i].clone()` allocated once
+    // per task and dropped the originals immediately after. The key is
+    // injective on 0..m (it is a bit-reversal of the low `bits` bits, and
+    // m ≤ 2^bits), so `order` is a permutation and every `take` finds its
+    // task present exactly once — pinned by `interleave_is_a_permutation`.
+    // Output order is unchanged, which `interleave_order_is_pinned`
+    // holds to the pre-refactor goldens.
+    let mut slots: Vec<Option<GenTask>> = tasks.into_iter().map(Some).collect();
+    order
+        .into_iter()
+        .map(|i| {
+            slots[i]
+                .take()
+                .expect("bit-reversal order is a permutation")
+        })
+        .collect()
 }
 
 /// Produce every term in a task's subtree.
@@ -220,6 +236,82 @@ mod tests {
                 via.sort_unstable();
                 assert_eq!(via, direct, "n={n} target={target}");
             }
+        }
+    }
+
+    /// Tasks distinguishable by `acc`, so a permutation is readable off
+    /// the result.
+    fn numbered_tasks(m: usize) -> Vec<GenTask> {
+        (0..m)
+            .map(|i| GenTask {
+                pending: vec![(i as u32, 0)],
+                acc: i as u64,
+                len: 0,
+            })
+            .collect()
+    }
+
+    fn interleaved_order(m: usize) -> Vec<usize> {
+        interleave_tasks(numbered_tasks(m))
+            .iter()
+            .map(|t| t.acc as usize)
+            .collect()
+    }
+
+    /// AGENTS.md pins the bit-reversal interleave: "tasks are
+    /// bit-reversal-interleaved on purpose ... do not simplify the order
+    /// back". This is the guard that makes that pin mechanical. Goldens
+    /// are the orders the pre-refactor implementation produced.
+    #[test]
+    fn interleave_order_is_pinned() {
+        assert_eq!(interleaved_order(8), vec![0, 4, 2, 6, 1, 5, 3, 7]);
+        assert_eq!(interleaved_order(5), vec![0, 4, 2, 1, 3]);
+        assert_eq!(
+            interleaved_order(12),
+            vec![0, 8, 4, 2, 10, 6, 1, 9, 5, 3, 11, 7]
+        );
+        assert_eq!(interleaved_order(1), vec![0]);
+        assert_eq!(interleaved_order(2), vec![0, 1]);
+        assert_eq!(interleaved_order(3), vec![0, 2, 1]);
+    }
+
+    /// The same order, characterized independently of the implementation:
+    /// walk 0..2^bits in bit-reversed order and keep the indices that
+    /// exist. Ties cannot arise — the key is injective on 0..m — so the
+    /// order does not depend on sort stability.
+    #[test]
+    fn interleave_matches_bit_reversal_formula() {
+        // m < 2 short-circuits in the implementation and has no `bits`.
+        assert_eq!(interleaved_order(1), vec![0]);
+        for m in 2usize..=300 {
+            let bits = usize::BITS - (m - 1).leading_zeros();
+            let expect: Vec<usize> = (0..(1usize << bits))
+                .map(|j| j.reverse_bits() >> (usize::BITS - bits))
+                .filter(|&i| i < m)
+                .collect();
+            assert_eq!(interleaved_order(m), expect, "m={m}");
+        }
+    }
+
+    /// Whatever the order, it must move every task exactly once — no
+    /// drop, no duplicate. The refactor away from per-task cloning is
+    /// only safe if this holds.
+    #[test]
+    fn interleave_is_a_permutation() {
+        for m in [1usize, 2, 3, 7, 64, 100, 1024, 1153] {
+            let mut got = interleaved_order(m);
+            assert_eq!(got.len(), m, "m={m}");
+            got.sort_unstable();
+            assert_eq!(got, (0..m).collect::<Vec<_>>(), "m={m}");
+        }
+    }
+
+    /// The payload travels with the index: interleaving must not shear
+    /// `pending` off the `acc` it belongs to.
+    #[test]
+    fn interleave_keeps_task_fields_together() {
+        for t in interleave_tasks(numbered_tasks(37)) {
+            assert_eq!(t.pending, vec![(t.acc as u32, 0)]);
         }
     }
 

@@ -107,8 +107,14 @@ impl LView for &LTerm {
     }
 }
 
-// splitmix64 finalizer: cheap, well-mixed.
-fn mix(mut z: u64) -> u64 {
+/// splitmix64 finalizer: cheap, well-mixed, and the crate's one mixer.
+///
+/// Public because it is not really an escalation concept — it is the
+/// avalanche step behind [`LTerm`]'s structural hash, and the census
+/// builds its memo `BuildHasher` out of it rather than growing a second
+/// mixer with the same job. Not a stable-output guarantee: nothing
+/// persists its results, so the constants may change.
+pub fn mix(mut z: u64) -> u64 {
     z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
     z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
     z ^ (z >> 31)
@@ -600,22 +606,88 @@ pub static REDLOOP_FIRES: std::sync::atomic::AtomicU64 = std::sync::atomic::Atom
 pub static REDLOOP_FUEL_REJECTS: std::sync::atomic::AtomicU64 =
     std::sync::atomic::AtomicU64::new(0);
 
+impl crate::classical::machine::Pool {
+    /// Build `t` into the arena directly, returning the root index.
+    ///
+    /// Lives here rather than beside `Pool::from_term` because `LamN` and
+    /// `AppN` keep their fields private to this module — the cached
+    /// `Meta` is only trustworthy if nothing outside can take a term
+    /// apart and put it back together.
+    ///
+    /// Exactly the term `decode_str(emit_bits(t))` produced, without the
+    /// bit-`String` in between: `emit_bits` writes `00`/`01`/`1ⁿ0` for
+    /// Lam/App/Var and `decode` reads those back as Lam/App/Var, so the
+    /// round trip was the identity on structure. `Bot` is `unreachable!`
+    /// in both, and for the same reason — the probe callers check
+    /// `has_bot` first.
+    // Named for symmetry with `Pool::from_term`, which is the same
+    // method for `blc::Term` and has the same `&mut self` shape; it
+    // escapes `wrong_self_convention` only because it is exported and
+    // clippy defaults to `avoid-breaking-exported-api`. Both append into
+    // an existing arena rather than constructing a `Pool`.
+    #[allow(clippy::wrong_self_convention)]
+    fn from_lterm(&mut self, t: &LTerm) -> u32 {
+        use crate::classical::machine::Node;
+        match t {
+            Var(n) => self.push(Node::Var(*n)),
+            Lam(x) => {
+                let b = self.from_lterm(&x.b);
+                self.push(Node::Lam(b))
+            }
+            App(x) => {
+                let f = self.from_lterm(&x.f);
+                let a = self.from_lterm(&x.a);
+                self.push(Node::App(f, a))
+            }
+            Bot => unreachable!("from_lterm on a term containing ⊥"),
+        }
+    }
+}
+
+// One (Pool, Machine) per rayon worker, reused across every probe that
+// worker runs. `probe_nf` used to build both from scratch per call —
+// two fresh arenas plus a bit-`String`, for a run bounded at a few
+// thousand β. Reuse is state-free: `Pool::clear` resets the arena and
+// `Machine::normalize_capped` clears its own semantic state on entry,
+// so a reused pair gives bit-identical verdicts, β counts and
+// transition counts. Not re-entrant, and does not need to be — probes
+// run on the pure KN machine, which never calls back into this engine.
+// What the pair retains between probes is bounded by the machine's own
+// arena-release rule (`normalize_capped`'s KEEP), so a worker holds a
+// working buffer, not a probe's peak.
+thread_local! {
+    static PROBE: std::cell::RefCell<(
+        crate::classical::machine::Pool,
+        crate::classical::machine::Machine,
+    )> = std::cell::RefCell::new((
+        crate::classical::machine::Pool::new(),
+        crate::classical::machine::Machine::new(),
+    ));
+}
+
 /// Bounded pure normalization of a closed ⊥-free LTerm on the KN
 /// machine; `None` on fuel-out (recorded in REDLOOP_FUEL_REJECTS).
 /// `fuel` is [`EngineCfg::probe_fuel`]; the telemetry says whether the
 /// census result is fuel-sensitive at a given setting.
+///
+/// Returns the normal form's full bit string, and that is deliberate:
+/// `redloop` fires on `nf(A) == nf(Q(A))`, and the certificate's
+/// soundness is exactly the claim that those two normal forms are the
+/// same term. A hash or digest here would turn a collision into a false
+/// divergence proof — an unsound census row, not a slow one. The
+/// comparison stays exact string equality.
 fn probe_nf(fuel: u64, t: &LTerm) -> Option<String> {
-    let mut bits = crate::classical::machine::StringSink::default();
-    emit_bits(t, &mut bits);
-    let mut pool = crate::classical::machine::Pool::new();
-    let root = pool.decode_str(&bits.0)?;
-    let mut vm = crate::classical::machine::Machine::new();
-    let mut sink = crate::classical::machine::StringSink::default();
-    if vm.normalize(&pool, root, fuel, &mut sink).is_err() {
-        REDLOOP_FUEL_REJECTS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        return None;
-    }
-    Some(sink.0)
+    PROBE.with(|cell| {
+        let (pool, vm) = &mut *cell.borrow_mut();
+        pool.clear();
+        let root = pool.from_lterm(t);
+        let mut sink = crate::classical::machine::StringSink::default();
+        if vm.normalize(pool, root, fuel, &mut sink).is_err() {
+            REDLOOP_FUEL_REJECTS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            return None;
+        }
+        Some(sink.0)
+    })
 }
 
 fn redloop(run: &Run, t: &LTerm) -> bool {
@@ -890,6 +962,43 @@ mod tests {
                 emit_bits(&t, &mut out);
                 assert_eq!(out.0, bits);
                 assert_eq!(t.bit_size(), len as u64, "{bits}");
+            });
+        }
+    }
+
+    #[test]
+    fn from_lterm_equals_the_bit_string_round_trip_it_replaced() {
+        // `probe_nf` used to reach the KN machine as
+        // decode_str(emit_bits(t)); it now builds the arena directly.
+        // Those must be the same arena, node for node, or redloop is
+        // deciding on a different term than it used to. Checked on every
+        // closed term at four sizes, and on the λ-wrapped and
+        // self-applied shapes redloop actually probes.
+        use crate::classical::machine::{Pool, StringSink};
+        let same = |t: &LTerm| {
+            let mut viastr = Pool::new();
+            let mut bits = StringSink::default();
+            emit_bits(t, &mut bits);
+            let r1 = viastr.decode_str(&bits.0).expect("closed term");
+            let mut direct = Pool::new();
+            let r2 = direct.from_lterm(t);
+            assert_eq!(r1, r2, "root index");
+            assert_eq!(direct.len(), viastr.len(), "node count");
+            for i in 0..direct.len() as u32 {
+                assert_eq!(direct.node(i), viastr.node(i), "node {i} of {}", bits.0);
+            }
+        };
+        for n in [4u32, 10, 16, 20] {
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                let bits = crate::blc::wire::enc_to_string(enc, len);
+                let mut pool = Pool::new();
+                let root = pool.decode_str(&bits).expect("closed term");
+                let t = LTerm::from_pool(&pool, root);
+                same(&t);
+                // The self-application A A is the exact shape redloop
+                // hands to `probe_nf`.
+                same(&app(t.clone(), t.clone()));
+                same(&lam(t));
             });
         }
     }

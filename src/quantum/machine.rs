@@ -572,6 +572,11 @@ impl Machine {
         }
 
         // Don't hold peak arenas forever (the classical machine's lesson).
+        // Reassignment rather than `shrink_to`, for the reason measured at
+        // the classical machine's copy of this block: dropping the vector
+        // `free`s the oversized block outright, while a shrinking
+        // `realloc` can be satisfied in place and keeps the pages charged
+        // to the process.
         const KEEP: usize = 1 << 20;
         if self.envs.capacity() > KEEP {
             self.envs = Vec::with_capacity(KEEP);

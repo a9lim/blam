@@ -46,7 +46,7 @@ use crate::args::{self, Args, R};
 use crate::ckpt::{sha256_16, Ckpt, CkptRecord};
 use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks, GenTask};
 use blam::blc::wire::enc_to_string;
-use blam::classical::escalation::Why;
+use blam::classical::escalation::{mix, Why};
 use blam::classical::ladder::{self, LadderCfg, Rung, Verdict};
 use blam::classical::machine::{Machine, Pool, SizeSink};
 use blam::classical::OutOfFuel;
@@ -429,11 +429,52 @@ fn write_unknowns(path: &str, unknowns: &[(u64, u8)], started: &mut bool) -> R<(
         .map_err(|e| format!("blam census: cannot write {path}: {e}"))
 }
 
+/// Hasher for the memo keys. A key is a `(u64, u8)` packed term, and the
+/// lookup around it is two shifts and a compare — SipHash, std's
+/// default, is the expensive part of the probe. This runs the key
+/// through the engine's own splitmix64 finalizer instead: one
+/// multiply-xor-shift chain per word, which gives hashbrown the
+/// avalanche it wants for both the bucket index and the top-7-bit
+/// control byte.
+///
+/// Safe to swap in because iteration order is never observable. The two
+/// memo maps are only ever `get`/`contains`/`insert`/`len`/`is_empty`;
+/// the single place either is iterated (the `--memo-out` writer) sorts
+/// by key immediately afterwards, and the keys are unique, so the file
+/// is byte-identical under any hasher. The census table, the checkpoint
+/// records, and the unknown dump all come from `Vec`s that are sorted
+/// (or already order-independent) before they reach output.
+#[derive(Default)]
+struct MixHasher(u64);
+
+impl std::hash::Hasher for MixHasher {
+    fn finish(&self) -> u64 {
+        self.0
+    }
+    fn write(&mut self, bytes: &[u8]) {
+        for &b in bytes {
+            self.0 = mix(self.0 ^ b as u64);
+        }
+    }
+    // `(u64, u8)` hashes as one `write_u64` then one `write_u8`; both
+    // land here rather than in the byte loop.
+    fn write_u64(&mut self, n: u64) {
+        self.0 = mix(self.0 ^ n);
+    }
+    fn write_u8(&mut self, n: u8) {
+        self.0 = mix(self.0 ^ n as u64);
+    }
+}
+
+type MixBuild = std::hash::BuildHasherDefault<MixHasher>;
+type MemoMap = std::collections::HashMap<(u64, u8), MemoV, MixBuild>;
+type NoWhnfSet = std::collections::HashSet<(u64, u8), MixBuild>;
+
 /// The census's cross-size verdict memory, read-only within a size:
 /// the parity-rolled λ-wrap memo and the monotone no-whnf head set.
 struct Memos<'a> {
-    wrap: &'a std::collections::HashMap<(u64, u8), MemoV>,
-    no_whnf: &'a std::collections::HashSet<(u64, u8)>,
+    wrap: &'a MemoMap,
+    no_whnf: &'a NoWhnfSet,
 }
 
 /// The memo layer: the two cross-size facts that can settle a term
@@ -805,11 +846,10 @@ pub fn run(argv: &[String]) -> R<()> {
 
     // λ-wrap memo, rolling by size parity: slot n%2 holds size n−2's
     // expensive verdicts during size n, then is replaced by size n's.
-    let mut memo_by_parity: [std::collections::HashMap<(u64, u8), MemoV>; 2] =
-        [Default::default(), Default::default()];
+    let mut memo_by_parity: [MemoMap; 2] = [Default::default(), Default::default()];
     // Cross-size no-whnf fact set (grows monotonically; never rolled).
     // Heads are strict subterms, so the set is read-only within a size.
-    let mut no_whnf: std::collections::HashSet<(u64, u8)> = Default::default();
+    let mut no_whnf: NoWhnfSet = Default::default();
     // Seed the two live parity slots (sizes min_n−2 and min_n−1) and the
     // whole no-whnf set from a prior run's --memo-out file; other sizes'
     // H/D records are inert here. Loads dedup by key (same key ⇒ same
@@ -1052,7 +1092,6 @@ pub fn run(argv: &[String]) -> R<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::collections::{HashMap, HashSet};
 
     /// A `Stats` reduced to bytes, with the three record vectors sorted:
     /// everything the identity contract says must match, and nothing
@@ -1076,8 +1115,8 @@ mod tests {
     /// groups.
     fn sweep(max_n: u32, groups: usize) -> Vec<String> {
         let cfg = Cfg::default();
-        let mut memo_by_parity: [HashMap<(u64, u8), MemoV>; 2] = [HashMap::new(), HashMap::new()];
-        let mut no_whnf: HashSet<(u64, u8)> = HashSet::new();
+        let mut memo_by_parity: [MemoMap; 2] = [MemoMap::default(), MemoMap::default()];
+        let mut no_whnf: NoWhnfSet = NoWhnfSet::default();
         let mut out = Vec::new();
         for n in 4..=max_n {
             let tasks = interleave_tasks(split_tasks(n, 32));

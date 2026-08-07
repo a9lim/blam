@@ -25,6 +25,11 @@ pub enum Node {
 #[derive(Default)]
 pub struct Pool {
     nodes: Vec<Node>,
+    /// `(root, has_redex)` for the most recent [`Pool::decode`]. That
+    /// decode already visits every `App` it builds, so it can settle the
+    /// pre-scan question in passing; [`Pool::has_redex`] reads it back in
+    /// O(1). `None` when no decode owns the current arena contents.
+    decoded: Option<(u32, bool)>,
 }
 
 impl Pool {
@@ -34,6 +39,10 @@ impl Pool {
 
     pub fn clear(&mut self) {
         self.nodes.clear();
+        // Indices are about to be reused, so the cached root no longer
+        // names the term it was computed from. Dropping it here is what
+        // makes the cache sound (see `has_redex`).
+        self.decoded = None;
     }
 
     /// The node at `id`. Arena indices come from `push`/`decode*`, so an
@@ -69,6 +78,11 @@ impl Pool {
             App1(u32), // has function child, waiting for argument
         }
         let mut work: Vec<P> = Vec::new();
+        // Pre-scan answer, accumulated for free: every App this decode
+        // builds is tested as it closes, on a child index that is already
+        // hot. Equivalent to a full re-traversal because `decode` visits
+        // exactly the nodes of the term it returns.
+        let mut redex = false;
         loop {
             // parse one leaf-or-opener
             let mut done: u32 = match bits.next()? {
@@ -93,13 +107,19 @@ impl Pool {
             // close as many constructors as `done` completes
             loop {
                 match work.pop() {
-                    None => return Some(done),
+                    None => {
+                        self.decoded = Some((done, redex));
+                        return Some(done);
+                    }
                     Some(P::Lam) => done = self.push(Node::Lam(done)),
                     Some(P::App0) => {
                         work.push(P::App1(done));
                         break;
                     }
-                    Some(P::App1(f)) => done = self.push(Node::App(f, done)),
+                    Some(P::App1(f)) => {
+                        redex |= matches!(self.nodes[f as usize], Node::Lam(_));
+                        done = self.push(Node::App(f, done));
+                    }
                 }
             }
         }
@@ -169,7 +189,25 @@ impl Pool {
 
     /// Does any redex (App whose function child is a Lam) occur?
     /// If not, the term is its own normal form — the pre-scan fast path.
+    ///
+    /// O(1) when `root` is the arena's most recent [`Pool::decode`], which
+    /// is every census and solomonoff term: that decode already answered
+    /// the question. The cache is exact, not approximate — nodes are
+    /// append-only between `clear`s and `clear` drops the cache, so a
+    /// cached root's subterm cannot change under it. The census ran the
+    /// old body 11.1M times at n=36, each time allocating a traversal
+    /// `Vec` and re-walking a term `decode` had just walked.
+    ///
+    /// The root-scoped traversal below stays for every other caller —
+    /// pools built by `push`/`from_term`, and splicing callers that hold
+    /// several terms in one arena, where the answer is genuinely
+    /// per-root and only the traversal can give it.
     pub fn has_redex(&self, root: u32) -> bool {
+        if let Some((r, redex)) = self.decoded {
+            if r == root {
+                return redex;
+            }
+        }
         let mut work = vec![root];
         while let Some(id) = work.pop() {
             match self.nodes[id as usize] {
@@ -319,6 +357,19 @@ impl Machine {
         let r = self.normalize_inner(pool, root, limit, trans_limit, sink);
         // A transition-capped run can leave multi-GB arenas behind (16 B
         // per env node × up to trans_limit); don't hold the peak forever.
+        //
+        // Reassignment is deliberate, and the two obvious "improvements"
+        // are measured non-wins — census 36 36, four interleaved runs per
+        // arm, peak RSS via `/usr/bin/time -l`:
+        //   this (drop + fresh KEEP)  1819-2126 MiB   11.7 s / 44.0 s user
+        //   clear() + shrink_to(KEEP) 2315-2516 MiB   11.6 s / 44.0 s user
+        //   drop to Vec::new()        2018-2283 MiB   11.7 s / 44.3 s user
+        // `with_capacity` does not commit anything: it is a bare `alloc`,
+        // and the pages cost RSS only once they are touched. Dropping the
+        // vector, by contrast, `free`s a multi-GB block the allocator
+        // hands straight back to the OS, which is the whole point of this
+        // block. `shrink_to` is the regression — a shrinking `realloc`
+        // can be satisfied in place, so the pages stay charged to us.
         const KEEP: usize = 1 << 20;
         if self.envs.capacity() > KEEP {
             self.envs = Vec::with_capacity(KEEP);
@@ -448,5 +499,104 @@ impl Machine {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The pre-scan question answered the slow, obvious way, with no
+    /// cache in the path — the oracle for everything below.
+    fn traverse_has_redex(pool: &Pool, root: u32) -> bool {
+        let mut work = vec![root];
+        while let Some(id) = work.pop() {
+            match pool.node(id) {
+                Node::Var(_) => {}
+                Node::Lam(b) => work.push(b),
+                Node::App(f, a) => {
+                    if matches!(pool.node(f), Node::Lam(_)) {
+                        return true;
+                    }
+                    work.push(f);
+                    work.push(a);
+                }
+            }
+        }
+        false
+    }
+
+    /// `has_redex`'s decode-time cache must agree with a full traversal
+    /// on every closed term the census will hand it. A wrong answer here
+    /// is a wrong halt count: `false` routes the term to `Rung::Prescan`
+    /// as its own normal form.
+    #[test]
+    fn has_redex_cache_matches_traversal_exhaustively() {
+        let mut pool = Pool::new();
+        let mut n_terms = 0u64;
+        for n in 4..=24 {
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                pool.clear();
+                let root = pool.decode_u64(enc, len).expect("valid term");
+                assert_eq!(
+                    pool.has_redex(root),
+                    traverse_has_redex(&pool, root),
+                    "size {n}, enc {enc:#x}"
+                );
+                n_terms += 1;
+            });
+        }
+        assert_eq!(n_terms, 19048, "all closed terms 4..=24");
+    }
+
+    /// Several terms in one arena — the slot-search shape. The cache
+    /// names exactly one root, so every other root must still get its own
+    /// per-root answer. This is the case a whole-arena scan gets wrong.
+    #[test]
+    fn has_redex_is_per_root_across_a_spliced_arena() {
+        let mut pool = Pool::new();
+        let id = pool.decode_str("0010").expect("\\1"); // λ1, redex-free
+        assert!(!pool.has_redex(id));
+        // Splice a redex on top, reusing `id` as both children: (λ1)(λ1).
+        let app = pool.push(Node::App(id, id));
+        assert!(pool.has_redex(app));
+        assert_eq!(pool.has_redex(app), traverse_has_redex(&pool, app));
+        // `id` is still redex-free even though the arena now holds one.
+        assert!(!pool.has_redex(id));
+    }
+
+    /// A second decode into a live arena retargets the cache; the earlier
+    /// root must fall back to the traversal rather than inherit the new
+    /// term's answer.
+    #[test]
+    fn a_second_decode_does_not_poison_the_first_roots_answer() {
+        let mut pool = Pool::new();
+        let plain = pool.decode_str("0010").expect("\\1");
+        let redexy = pool.decode_str("0100100010").expect("(\\1)(\\1)");
+        assert!(pool.has_redex(redexy));
+        assert!(!pool.has_redex(plain));
+    }
+
+    /// `clear` must drop the cache: indices are reused, so a stale
+    /// (root, flag) pair would answer for a completely different term.
+    /// Both terms here put their root at index 4.
+    #[test]
+    fn clear_invalidates_the_cache_even_when_the_root_index_repeats() {
+        let mut pool = Pool::new();
+        let before = pool.decode_str("0100100010").expect("(\\1)(\\1)");
+        assert_eq!(before, 4);
+        assert!(pool.has_redex(before));
+
+        pool.clear();
+        // Rebuild by hand, redex-free, landing the root on index 4 again:
+        // ((1 1) 1) — every App has a non-Lam function child.
+        let v0 = pool.push(Node::Var(1));
+        let v1 = pool.push(Node::Var(1));
+        let inner = pool.push(Node::App(v0, v1));
+        let v3 = pool.push(Node::Var(1));
+        let after = pool.push(Node::App(inner, v3));
+        assert_eq!(after, before, "root index must collide for this to bite");
+        assert!(!pool.has_redex(after));
+        assert_eq!(pool.has_redex(after), traverse_has_redex(&pool, after));
     }
 }
