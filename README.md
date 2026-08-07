@@ -73,13 +73,11 @@ is what makes the Kraft sums of AIT exact.
 
 ```rust
 use blam::classical::reference::normalize;
-use blam::classical::Budget;
 use blam::parse_all;
 
 // (λx.x x)(λx.x) — bits in, bits out
-let term = parse_all("01000110100010")?;
-let nf = normalize(&term, &mut Budget::new(1_000))?;
-assert_eq!(nf.to_bits(), "0010"); // λx.x
+let (nf, steps) = normalize(&parse_all("01000110100010")?, 1_000)?;
+assert_eq!((nf.to_bits().as_str(), steps), ("0010", 2)); // λx.x
 ```
 
 `classical::machine` is the production engine: a defunctionalized Crégut-style

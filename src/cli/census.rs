@@ -152,9 +152,9 @@ struct Stats {
     unknowns: Vec<(u64, u8)>,
     /// Terms proven to have NO WEAK HEAD NORMAL FORM this size:
     /// escalation Diverges whose proof landed on the root's own spine
-    /// (the second component of `escalation::normal_form_with`), plus
-    /// head-memo kills (an application of a no-whnf head is itself
-    /// no-whnf). Feeds the cross-size set.
+    /// (`NoNf::Diverge { head_chain: true }`), plus head-memo kills (an
+    /// application of a no-whnf head is itself no-whnf). Feeds the
+    /// cross-size set.
     no_whnf_out: Vec<(u64, u8)>,
     /// App-rooted terms killed by the no-whnf head memo.
     head_hits: u64,
@@ -293,8 +293,8 @@ fn ckpt_config(cfg: &Cfg, min_n: u32, max_n: u32, memo_in: Option<&str>) -> Stri
         l.rescue_trans_mult,
         l.prescan as u8,
         l.oracle as u8,
-        l.work_mult,
-        l.probe_fuel,
+        l.engine.work_mult,
+        l.engine.probe_fuel,
         memo_in.map_or_else(|| "none".to_string(), sha256_16),
     )
 }
@@ -574,7 +574,7 @@ fn record(stats: &mut Stats, o: &ladder::LadderOutcome, nf_bits: u64, enc: u64, 
     if o.rung == Rung::Prescan {
         stats.prescan_nf += 1;
     }
-    if o.tel.escalated {
+    if o.escalated() {
         stats.escalated += 1;
     }
     let bump = |c: &mut (u64, u64), e: OutOfFuel| match e {
@@ -589,10 +589,12 @@ fn record(stats: &mut Stats, o: &ladder::LadderOutcome, nf_bits: u64, enc: u64, 
     }
 
     match o.verdict {
-        // `steps` is 0 when the escalation engine proved the halt but the
-        // rescue could not recover the canonical count, so beta_total
-        // stays a sum of *known* β counts, never an estimate.
-        Verdict::Halt { nf, steps, .. } => {
+        // `steps` is None when the escalation engine proved the halt but
+        // the rescue could not recover the canonical count; recorded as 0
+        // so beta_total stays a sum of *known* β counts, never an
+        // estimate, and the memo record keeps its width.
+        Verdict::Halt { nf, steps } => {
+            let steps = steps.unwrap_or(0);
             let nf_bits = nf.resolve(nf_bits);
             if o.rung == Rung::Rescue {
                 stats.max_rescue_beta = stats.max_rescue_beta.max(steps);
@@ -610,7 +612,7 @@ fn record(stats: &mut Stats, o: &ladder::LadderOutcome, nf_bits: u64, enc: u64, 
                 }
             }
             stats.record_halt(nf_bits, steps, enc, len);
-            if o.tel.escalated {
+            if o.escalated() {
                 stats
                     .memo_out
                     .push(((enc, len), MemoV::Halt { nf: nf_bits, steps }));
@@ -618,7 +620,7 @@ fn record(stats: &mut Stats, o: &ladder::LadderOutcome, nf_bits: u64, enc: u64, 
         }
         Verdict::Diverge => {
             stats.diverge += 1;
-            if o.tel.escalated {
+            if o.escalated() {
                 stats.memo_out.push(((enc, len), MemoV::Diverge));
                 // Spine-certified proof: the term has no whnf, a fact
                 // that transfers to every application headed by it. The
@@ -771,9 +773,7 @@ pub fn run(argv: &[String]) -> R<()> {
         }
     }
     let (min_n, max_n) = p.range_packed(4)?;
-    let engine = args::engine_cfg("census", work_mult, probe_fuel)?;
-    cfg.ladder.work_mult = engine.work_mult;
-    cfg.ladder.probe_fuel = engine.probe_fuel;
+    cfg.ladder.engine = args::engine_cfg("census", work_mult, probe_fuel)?;
     // `--groups` slices a checkpoint's task list; without one it names
     // nothing, so taking it silently would misreport what ran.
     if p.given("--groups") && ckpt_path.is_none() {
@@ -1296,8 +1296,8 @@ mod tests {
         assert!(base.contains("memoin=none"), "{base}");
         for mutate in [
             (|c: &mut Cfg| c.ladder.budget1 = 128) as fn(&mut Cfg),
-            |c: &mut Cfg| c.ladder.work_mult = 2,
-            |c: &mut Cfg| c.ladder.probe_fuel = 8192,
+            |c: &mut Cfg| c.ladder.engine.work_mult = 2,
+            |c: &mut Cfg| c.ladder.engine.probe_fuel = 8192,
             |c: &mut Cfg| c.ladder.oracle = false,
         ] {
             let mut c = Cfg::default();

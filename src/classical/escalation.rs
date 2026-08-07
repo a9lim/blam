@@ -107,13 +107,11 @@ impl LView for &LTerm {
     }
 }
 
-/// splitmix64 finalizer: cheap, well-mixed, and the crate's one mixer.
-///
-/// Public because it is not really an escalation concept — it is the
-/// avalanche step behind [`LTerm`]'s structural hash, and the census
-/// builds its memo `BuildHasher` out of it rather than growing a second
-/// mixer with the same job. Not a stable-output guarantee: nothing
-/// persists its results, so the constants may change.
+/// splitmix64 finalizer: the avalanche step behind [`LTerm`]'s
+/// structural hash. Public because the `blam` census (a separate bin
+/// crate) builds its memo `BuildHasher` out of it rather than growing a
+/// second mixer with the same job. Not a stable-output guarantee:
+/// nothing persists its results, so the constants may change.
 pub fn mix(mut z: u64) -> u64 {
     z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
     z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
@@ -459,26 +457,21 @@ fn bot_free(d: u32, t: &LTerm) -> LTerm {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NoNf {
     /// Proven: oracle hit or redex reoccurrence.
-    Diverge,
+    Diverge {
+        /// The proof landed while reduction was still the root term's own
+        /// head-reduction chain, via redex-history reoccurrence or redloop
+        /// — both certify that head reduction itself never terminates,
+        /// i.e. the root has NO WEAK HEAD NORMAL FORM. That fact (unlike
+        /// plain no-nf) transfers through application: M no-whnf ⇒
+        /// app(M, N) no-whnf ⇒ no nf, for every N. Oracle fires never set
+        /// it: `no_nf` proves the current spine state has no nf, which
+        /// leaves a whnf possible. Meaningful only when the input term was
+        /// App-rooted (λ-rooted terms trivially have whnf, and the entry
+        /// points peel them, so it stays false there).
+        head_chain: bool,
+    },
     /// Resource exhausted before a verdict — the reason says which.
     Unknown(Why),
-}
-
-// Set when the Diverge proof landed while reduction was still the root
-// term's own head-reduction chain (`spine` below) via redex-history
-// reoccurrence or redloop — both certify that head reduction itself
-// never terminates, i.e. the root has NO WEAK HEAD NORMAL FORM. That
-// fact (unlike plain no-nf) transfers through application: M no-whnf ⇒
-// app(M, N) no-whnf ⇒ no nf, for every N. Oracle fires never set it:
-// `no_nf` proves the current spine state has no nf, which leaves a
-// whnf possible. It is set deep inside the recursion, so it stays a
-// thread-local rather than a return value; the entry points read it
-// before their RAII guard restores the ambient value and hand it back
-// as the second component. Meaningful only when the call returned
-// Diverge and the input term was App-rooted (λ-rooted terms trivially
-// have whnf, and the entry points peel them, so it stays false there).
-thread_local! {
-    static HEAD_DIVERGE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
 }
 
 /// Restore a `Cell` thread-local on scope exit — including on an early
@@ -562,39 +555,23 @@ pub enum Why {
     WorkMeter,
 }
 
-/// Self-feedback divergence certificate — the semantic generalization of
-/// BBold.lhs's `redloop`. For a self-application `A A` with
-/// `A = λx.x Q(x) R̄(x)` CLOSED and ⊥-free (the displayed application
-/// being B's left spine):
-///
-///   nf(A) = nf(Q(A))  ⇒  A A has no head normal form.
-///
-/// Equal normal forms witness Q(A) =β A. With T₀ = A, Tₙ₊₁ = Q(Tₙ),
-/// congruence gives every Tₙ =β A; B's head is the RIGID bound variable,
-/// so nf(A) necessarily has shape λx.x⋯ and every Tₙ shares that hnf
-/// (Böhm invariance). Each configuration `Tₙ Tₙ₊₁ Γ` head-normalizes its
-/// head to λx.x⋯ and re-demands Tₙ₊₁ at the head — unboundedly many head
-/// contractions, never a rigid head or unapplied λ: no hnf, no nf.
-/// Pending Γ arguments cannot interfere (normal order resolves the
-/// function spine first, and the recurrence is uniform in Γ).
-///
-/// The exact-equality rule (nf(Q(A)) == A, requiring A normal) is the
-/// special case that proves 4 of the 5 traced 32-bit loops; the
-/// β-equivalence form additionally proves the 35-bit and 36-bit
-/// residual unknowns (which reach `A A` and `(A A) A` respectively).
-/// The fifth 32-bit loop (outer function not λx.x x, never reaching a
-/// self-application of this shape) remains — hand-excluded in Tromp's
-/// tree too; nobody proves it mechanically.
-///
-/// Probes run on the pure KN machine with a fixed small budget — never
-/// re-entering this engine or the oracle — and any failure (no match,
-/// ⊥, open term, fuel out, nf mismatch) claims nothing.
-///
-/// Completeness telemetry: FIRES counts proofs,
-/// FUEL_REJECTS counts shape-matches abandoned solely because a probe
-/// ran out of fuel — a zero there over a full census certifies the
-/// cutoff lost nothing at that range.
+/// Exhaustive by choice, like the crate's other verdict enums: a new
+/// resource SHOULD break this match rather than print a catch-all.
+impl std::fmt::Display for Why {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Why::Capacity => write!(f, "capacity"),
+            Why::WorkMeter => write!(f, "work meter"),
+        }
+    }
+}
+
+/// Redloop certificate proofs on this process (global: a resumed run
+/// counts only what it recomputed). See [`redloop`]'s doc for the
+/// theorem.
 pub static REDLOOP_FIRES: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+/// Shape-matches abandoned solely because a probe ran out of fuel — a
+/// zero over a full census certifies `probe_fuel` lost nothing there.
 pub static REDLOOP_FUEL_REJECTS: std::sync::atomic::AtomicU64 =
     std::sync::atomic::AtomicU64::new(0);
 
@@ -682,6 +659,35 @@ fn probe_nf(fuel: u64, t: &LTerm) -> Option<String> {
     })
 }
 
+/// Self-feedback divergence certificate — the semantic generalization of
+/// BBold.lhs's `redloop`. For a self-application `A A` with
+/// `A = λx.x Q(x) R̄(x)` CLOSED and ⊥-free (the displayed application
+/// being B's left spine):
+///
+///   nf(A) = nf(Q(A))  ⇒  A A has no head normal form.
+///
+/// Equal normal forms witness Q(A) =β A. With T₀ = A, Tₙ₊₁ = Q(Tₙ),
+/// congruence gives every Tₙ =β A; B's head is the RIGID bound variable,
+/// so nf(A) necessarily has shape λx.x⋯ and every Tₙ shares that hnf
+/// (Böhm invariance). Each configuration `Tₙ Tₙ₊₁ Γ` head-normalizes its
+/// head to λx.x⋯ and re-demands Tₙ₊₁ at the head — unboundedly many head
+/// contractions, never a rigid head or unapplied λ: no hnf, no nf.
+/// Pending Γ arguments cannot interfere (normal order resolves the
+/// function spine first, and the recurrence is uniform in Γ).
+///
+/// The exact-equality rule (nf(Q(A)) == A, requiring A normal) is the
+/// special case that proves 4 of the 5 traced 32-bit loops; the
+/// β-equivalence form additionally proves the 35-bit and 36-bit
+/// residual unknowns (which reach `A A` and `(A A) A` respectively).
+/// The fifth 32-bit loop (outer function not λx.x x, never reaching a
+/// self-application of this shape) remains — hand-excluded in Tromp's
+/// tree too; nobody proves it mechanically.
+///
+/// Probes run on the pure KN machine with a fixed small budget — never
+/// re-entering this engine or the oracle — and any failure (no match,
+/// ⊥, open term, fuel out, nf mismatch) claims nothing. Telemetry:
+/// [`REDLOOP_FIRES`] counts proofs, [`REDLOOP_FUEL_REJECTS`] counts
+/// fuel-outs.
 fn redloop(run: &Run, t: &LTerm) -> bool {
     spend_work();
     // Self-application A A, syntactically. (A redex D A with D = λx.x x
@@ -738,9 +744,9 @@ type Hist = im_rc::HashSet<LTerm>;
 /// `spine`: this call is still the root term's own head-reduction
 /// demand — carried through head descents and β-contracta, dropped on
 /// argument descents and under lambdas (both mean the root reached a
-/// whnf first). Only controls the HEAD_DIVERGE marker; verdicts, the
-/// evaluation order of the divergence checks, and every meter charge
-/// are bit-identical to the unparameterized engine.
+/// whnf first). Only controls the `head_chain` payload of a Diverge;
+/// verdicts, the evaluation order of the divergence checks, and every
+/// meter charge are bit-identical to the unparameterized engine.
 fn bb_nf(
     run: &Run,
     weak: bool,
@@ -777,21 +783,15 @@ fn bb_nf(
             // itself cycles or self-feeds — no whnf. Short-circuit
             // order among the three checks is exactly the original.
             if run.oracle && no_nf(f, &ab) {
-                return Err(NoNf::Diverge);
+                return Err(NoNf::Diverge { head_chain: false });
             }
             if seen.contains(&rn.f) || redloop(run, &ab) {
-                if spine {
-                    HEAD_DIVERGE.with(|c| c.set(true));
-                }
-                return Err(NoNf::Diverge);
+                return Err(NoNf::Diverge { head_chain: spine });
             }
             match &a {
                 Lam(an) => {
                     if seen.contains(&r) {
-                        if spine {
-                            HEAD_DIVERGE.with(|c| c.set(true));
-                        }
-                        return Err(NoNf::Diverge);
+                        return Err(NoNf::Diverge { head_chain: spine });
                     }
                     let mut seen2 = seen.clone();
                     seen2.insert(r);
@@ -814,10 +814,11 @@ fn bb_nf(
 
 /// BB.lhs `normalForm`: peel leading lambdas (they are never applied, so
 /// the free threshold stays 0), then reduce with oracle + history.
-///
-/// The second component is the no-whnf marker (see `HEAD_DIVERGE`): true
-/// iff the Diverge proof landed on the root's own head-reduction chain.
-fn run_nf(run: &Run, cfg: EngineCfg, cap_bits: i64, t: &LTerm) -> (Result<LTerm, NoNf>, bool) {
+fn run_nf(oracle: bool, cfg: EngineCfg, cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
+    let run = Run {
+        oracle,
+        probe_fuel: cfg.probe_fuel,
+    };
     let mut cap = cap_bits;
     // `root` survives only while no λ has been peeled: a λ-rooted term
     // has a whnf by construction, so spine facts under the binder are
@@ -828,45 +829,29 @@ fn run_nf(run: &Run, cfg: EngineCfg, cap_bits: i64, t: &LTerm) -> (Result<LTerm,
             _ => bb_nf(run, false, 0, &Hist::new(), cap, t, root),
         }
     }
-    // Both guards restore on the way out, panic included; the marker is
-    // read while this one is still live, so the fact leaves as a value.
-    let _head = Restore::set(&HEAD_DIVERGE, false);
+    // Restores on the way out, panic included.
     let _work = Restore::set(&WORK, cap_bits.saturating_mul(cfg.work_mult));
-    let out = nf0(run, &mut cap, t, true);
-    let spine = HEAD_DIVERGE.with(|c| c.get());
-    (out, spine)
+    nf0(&run, &mut cap, t, true)
 }
 
 /// The escalation engine at an explicit configuration — the entry point
 /// for every ladder driver. No environment reads, no ambient state: what
 /// the run does is exactly `cfg` plus `cap_bits`.
-pub fn normal_form_with(cfg: EngineCfg, cap_bits: i64, t: &LTerm) -> (Result<LTerm, NoNf>, bool) {
-    let run = Run {
-        oracle: true,
-        probe_fuel: cfg.probe_fuel,
-    };
-    run_nf(&run, cfg, cap_bits, t)
+pub fn normal_form(cfg: EngineCfg, cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
+    run_nf(true, cfg, cap_bits, t)
 }
 
-/// [`normal_form_with`] with the syntactic oracle disabled, plus the
+/// [`normal_form`] with the syntactic oracle disabled, for the sake of
 /// no-whnf attribution: every Diverge comes from redex-history
-/// reoccurrence or redloop, so a `true` second component certifies the
-/// (App-rooted) input has no weak head normal form. This is the
+/// reoccurrence or redloop, so `Diverge { head_chain: true }` certifies
+/// the (App-rooted) input has no weak head normal form. This is the
 /// adjudicator for generic-argument questions — "does `p x⃗` head-cycle
 /// for rigid x⃗?" — where the oracle's cheaper no-nf verdict would
 /// destroy the attribution (it fires first on exactly the Ω-shapes the
-/// history proves on-spine). Slower per term than `normal_form_with`;
+/// history proves on-spine). Slower per term than [`normal_form`];
 /// use for targeted adjudication, never enumeration throughput.
-pub fn normal_form_spine_with(
-    cfg: EngineCfg,
-    cap_bits: i64,
-    t: &LTerm,
-) -> (Result<LTerm, NoNf>, bool) {
-    let run = Run {
-        oracle: false,
-        probe_fuel: cfg.probe_fuel,
-    };
-    run_nf(&run, cfg, cap_bits, t)
+pub fn normal_form_spine(cfg: EngineCfg, cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
+    run_nf(false, cfg, cap_bits, t)
 }
 
 #[cfg(test)]
@@ -875,8 +860,8 @@ mod tests {
 
     /// The engine at its measured defaults — what every test means by
     /// "the escalation engine" unless it is exercising a knob.
-    fn normal_form(cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
-        normal_form_with(EngineCfg::default(), cap_bits, t).0
+    fn nf_default(cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
+        normal_form(EngineCfg::default(), cap_bits, t)
     }
 
     fn v(n: u32) -> LTerm {
@@ -976,10 +961,10 @@ mod tests {
             Div,
             Unknown,
         }
-        // The spine flags are part of the pin: an oracle fire (Ω, the
-        // growing wrapper) proves no-nf but not no-whnf, so it must NOT
-        // set the spine marker the census head memo feeds on; a redloop
-        // fire on the root's own head chain does.
+        // The `head_chain` payloads are part of the pin: an oracle fire
+        // (Ω, the growing wrapper) proves no-nf but not no-whnf, so it
+        // must NOT claim the head chain the census head memo feeds on; a
+        // redloop fire on the root's own head chain does.
         let cases = [
             ("010001101000011010", Want::Div, false), // Ω (oracle fire)
             ("01000110100010", Want::Halt, false),    // (λx.x x) I
@@ -989,13 +974,18 @@ mod tests {
         ];
         for (bits, want, want_spine) in cases {
             let t = from_bits(bits);
-            let (got, spine) = normal_form_with(EngineCfg::default(), 2_000_000, &t);
+            let got = normal_form(EngineCfg::default(), 2_000_000, &t);
             match want {
                 Want::Halt => assert!(got.is_ok(), "{bits}"),
-                Want::Div => assert_eq!(got, Err(NoNf::Diverge), "{bits}"),
+                Want::Div => assert_eq!(
+                    got,
+                    Err(NoNf::Diverge {
+                        head_chain: want_spine
+                    }),
+                    "{bits}"
+                ),
                 Want::Unknown => assert!(matches!(got, Err(NoNf::Unknown(_))), "{bits}"),
             }
-            assert_eq!(spine, want_spine, "{bits}");
         }
     }
 
@@ -1006,7 +996,7 @@ mod tests {
         // poison every later term on its thread.
         let t = app(lam(app(Var(1), Var(1))), lam(app(Var(1), Var(1))));
         let _ = std::panic::catch_unwind(|| {
-            let _ = normal_form_with(EngineCfg::default(), 1_000, &t);
+            let _ = nf_default(1_000, &t);
             panic!("simulated worker panic while the meter is armed");
         });
         assert!(
@@ -1016,9 +1006,7 @@ mod tests {
         // And a subsequent honest reduction still gets its full budget.
         let c2 = lam(lam(app(Var(2), app(Var(2), Var(1)))));
         let tower = app(app(c2.clone(), c2.clone()), c2);
-        assert!(normal_form_with(EngineCfg::default(), 10_000_000, &tower)
-            .0
-            .is_ok());
+        assert!(nf_default(10_000_000, &tower).is_ok());
     }
 
     #[test]
@@ -1032,8 +1020,8 @@ mod tests {
             "01000110100001011001011000101010", // (\1 1)(\1 (1 (\1) 1) 1)
         ] {
             assert_eq!(
-                normal_form(2_000_000, &from_bits(bits)),
-                Err(NoNf::Diverge),
+                nf_default(2_000_000, &from_bits(bits)),
+                Err(NoNf::Diverge { head_chain: true }),
                 "{bits}"
             );
         }
@@ -1050,8 +1038,8 @@ mod tests {
             "010001100001100111000110000101101010", // (\1 (\1 (2 (\2))))(\1 1 1)
         ] {
             assert_eq!(
-                normal_form(2_000_000, &from_bits(bits)),
-                Err(NoNf::Diverge),
+                nf_default(2_000_000, &from_bits(bits)),
+                Err(NoNf::Diverge { head_chain: true }),
                 "{bits}"
             );
         }
@@ -1064,7 +1052,7 @@ mod tests {
         // guard correctly refuses. Documents parity: nobody proves this
         // mechanically.
         let t = from_bits("01000110001100001011010000110110");
-        assert!(matches!(normal_form(2_000_000, &t), Err(NoNf::Unknown(_))));
+        assert!(matches!(nf_default(2_000_000, &t), Err(NoNf::Unknown(_))));
     }
 
     #[test]
@@ -1075,21 +1063,24 @@ mod tests {
         let a = lam(app(v(1), lam(v(1))));
         let d = lam(app(v(1), v(1)));
         let t = app(d, a);
-        assert_eq!(normal_form(2_000_000, &t), Ok(lam(v(1))));
+        assert_eq!(nf_default(2_000_000, &t), Ok(lam(v(1))));
     }
 
     #[test]
     fn halts_on_normalizers() {
         // (\x. x x)(\y. y) -> \y. y
         let t = app(lam(app(v(1), v(1))), lam(v(1)));
-        assert_eq!(normal_form(100_000, &t), Ok(lam(v(1))));
+        assert_eq!(nf_default(100_000, &t), Ok(lam(v(1))));
     }
 
     #[test]
     fn omega_diverges() {
         let w = lam(app(v(1), v(1)));
         let t = app(w.clone(), w);
-        assert_eq!(normal_form(100_000, &t), Err(NoNf::Diverge));
+        assert_eq!(
+            nf_default(100_000, &t),
+            Err(NoNf::Diverge { head_chain: false })
+        );
     }
 
     #[test]
@@ -1097,7 +1088,10 @@ mod tests {
         // Y = \f.(\x. f (x x))(\x. f (x x)); Y alone has no nf.
         let inner = lam(app(v(2), app(v(1), v(1))));
         let y = lam(app(inner.clone(), inner));
-        assert_eq!(normal_form(1_000_000, &y), Err(NoNf::Diverge));
+        assert_eq!(
+            nf_default(1_000_000, &y),
+            Err(NoNf::Diverge { head_chain: false })
+        );
     }
 
     #[test]
@@ -1109,7 +1103,7 @@ mod tests {
         // false Diverge; with it, the true normal form comes out.
         let w = lam(lam(app(v(1), app(app(v(2), v(2)), lam(v(2))))));
         let t = app(lam(app(v(1), v(1))), w);
-        assert_eq!(normal_form(10_000_000, &t), Ok(lam(app(v(1), v(1)))));
+        assert_eq!(nf_default(10_000_000, &t), Ok(lam(app(v(1), v(1)))));
     }
 
     #[test]
@@ -1119,7 +1113,10 @@ mod tests {
         // simplify collapses I W' → W', making the loop key recur.
         let wp = lam(app(v(1), app(lam(v(1)), v(1))));
         let t = app(lam(app(v(1), v(1))), wp);
-        assert_eq!(normal_form(1_000_000, &t), Err(NoNf::Diverge));
+        assert_eq!(
+            nf_default(1_000_000, &t),
+            Err(NoNf::Diverge { head_chain: false })
+        );
     }
 
     #[test]
@@ -1127,7 +1124,7 @@ mod tests {
         // C2 C2 C2 = C16: deep but convergent.
         let c2 = lam(lam(app(v(2), app(v(2), v(1)))));
         let t = app(app(c2.clone(), c2.clone()), c2);
-        let nf = normal_form(10_000_000, &t).unwrap();
+        let nf = nf_default(10_000_000, &t).unwrap();
         assert_eq!(nf.bit_size(), 6 + 5 * 16);
     }
 }

@@ -12,44 +12,6 @@ use crate::blc::Term;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-/// Budgets for one three-rung sweep. `steps` bounds both the discovery
-/// trace and the trusted checkers' INIT search; `lemma_steps` bounds each
-/// symbolic obligation; `nodes` caps every intermediate pattern term.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct CertBudgets {
-    pub steps: u32,
-    pub nodes: u64,
-    pub lemma_steps: u32,
-}
-
-impl CertBudgets {
-    /// Sweep defaults: 1000/100k is measured kill-equivalent to 2000/200k
-    /// over a full frontier sweep (byte-identical certificates) at ~4×
-    /// less wall. Raise via flags for thorough runs; the fuel controls ran
-    /// at 8000/800k.
-    pub const SWEEP: CertBudgets = CertBudgets {
-        steps: 1000,
-        nodes: 100_000,
-        lemma_steps: 4096,
-    };
-
-    /// The soundness battery's budgets — the doubled trace bound whose
-    /// kill-equivalence to `SWEEP` was measured. The battery pays it
-    /// because a missed candidate there is a missed chance to catch a
-    /// checker bug.
-    pub const THOROUGH: CertBudgets = CertBudgets {
-        steps: 2000,
-        nodes: 200_000,
-        lemma_steps: 4096,
-    };
-}
-
-impl Default for CertBudgets {
-    fn default() -> Self {
-        CertBudgets::SWEEP
-    }
-}
-
 /// Which certificate class killed a term, with the trusted checker's own
 /// report. Only a `verify*` return builds one of these.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -81,17 +43,17 @@ impl Kill {
 pub fn try_kill(t: &Term, b: &CertBudgets) -> Option<Kill> {
     let mut found: Option<Kill> = None;
     discover_stream(t, b.steps, b.nodes, &mut |cand: &Ratchet| {
-        if let Ok(rep) = verify(t, cand, b.lemma_steps, b.steps, b.nodes) {
+        if let Ok(rep) = verify(t, cand, b) {
             found = Some(Kill::V1(cand.clone(), rep));
             return true;
         }
         // v2: same discovered triple, HeadTowerRatchet obligations.
-        if let Some((htr, rep)) = try_htr(t, cand, b.lemma_steps, b.steps, b.nodes) {
+        if let Some((htr, rep)) = try_htr(t, cand, b) {
             found = Some(Kill::Htr(htr, rep));
             return true;
         }
         // v3: same triple, SelectorRatchet obligations.
-        if let Some((sel, rep)) = try_selector(t, cand, b.lemma_steps, b.steps, b.nodes) {
+        if let Some((sel, rep)) = try_selector(t, cand, b) {
             found = Some(Kill::Selector(sel, rep));
             return true;
         }
@@ -274,13 +236,7 @@ pub fn htr_eraser_candidates(cert: &Ratchet) -> Vec<Term> {
 /// assembly theorem needs the bottom), then try small closed candidate
 /// erasers, the identity first. Garbage in ⇒ no certificate, never a
 /// wrong one: `verify_htr` alone is trusted.
-pub fn try_htr(
-    t: &Term,
-    cert: &Ratchet,
-    lemma_steps: u32,
-    init_steps: u32,
-    max_nodes: u64,
-) -> Option<(HeadTowerRatchet, HtrReport)> {
+pub fn try_htr(t: &Term, cert: &Ratchet, b: &CertBudgets) -> Option<(HeadTowerRatchet, HtrReport)> {
     let c0 = peel_to_bottom(&cert.w, &PTerm::from_term(&cert.c0)).to_term()?;
 
     for i in htr_eraser_candidates(cert) {
@@ -290,7 +246,7 @@ pub fn try_htr(
             c0: c0.clone(),
             i,
         };
-        if let Ok(rep) = verify_htr(t, &htr, lemma_steps, init_steps, max_nodes) {
+        if let Ok(rep) = verify_htr(t, &htr, b) {
             return Some((htr, rep));
         }
     }
@@ -305,15 +261,13 @@ pub fn try_htr(
 pub fn try_selector(
     t: &Term,
     cand: &Ratchet,
-    lemma_steps: u32,
-    init_steps: u32,
-    max_nodes: u64,
+    b: &CertBudgets,
 ) -> Option<(SelectorRatchet, SelReport)> {
     // FAN trace to the first opaque-head state.
     let mut cur = papp(cand.w.clone(), PTerm::Meta(1));
-    let mut fuel = lemma_steps;
+    let mut fuel = b.lemma_steps;
     loop {
-        match head_step(&cur, max_nodes) {
+        match head_step(&cur, b.nodes) {
             Step::Did(next, _) => {
                 cur = next;
                 if fuel == 0 {
@@ -341,14 +295,19 @@ pub fn try_selector(
         p,
         c0,
     };
-    verify_selector(t, &cert, lemma_steps, init_steps, max_nodes)
-        .ok()
-        .map(|rep| (cert, rep))
+    verify_selector(t, &cert, b).ok().map(|rep| (cert, rep))
 }
 
 #[cfg(test)]
 mod tests {
     use super::super::tests::{loop32_cert, LOOP32};
+
+    /// The unit tests' budgets: tight lemma bound, roomy INIT and nodes.
+    const TB: CertBudgets = CertBudgets {
+        steps: 4096,
+        nodes: 1 << 20,
+        lemma_steps: 64,
+    };
     use super::*;
     use crate::blc::wire::parse_all;
 
@@ -388,10 +347,24 @@ mod tests {
         let mut found = None;
         discover_stream(&t, 1000, 100_000, &mut |cand: &Ratchet| {
             assert!(
-                verify(&t, cand, 1000, 1000, 100_000).is_err(),
+                verify(
+                    &t,
+                    cand,
+                    &CertBudgets {
+                        steps: 1000,
+                        nodes: 100_000,
+                        lemma_steps: 1000
+                    }
+                )
+                .is_err(),
                 "v1 must reject the selector exemplar"
             );
-            if let Some(pair) = try_selector(&t, cand, 1000, 1000, 100_000) {
+            let sb = CertBudgets {
+                steps: 1000,
+                nodes: 100_000,
+                lemma_steps: 1000,
+            };
+            if let Some(pair) = try_selector(&t, cand, &sb) {
                 found = Some(pair);
                 return true;
             }
@@ -412,7 +385,12 @@ mod tests {
         let t = parse_all("01000110100010").unwrap();
         let mut fired = false;
         discover_stream(&t, 1000, 100_000, &mut |cand: &Ratchet| {
-            if try_selector(&t, cand, 1000, 1000, 100_000).is_some() {
+            let sb = CertBudgets {
+                steps: 1000,
+                nodes: 100_000,
+                lemma_steps: 1000,
+            };
+            if try_selector(&t, cand, &sb).is_some() {
                 fired = true;
                 return true;
             }
@@ -426,7 +404,7 @@ mod tests {
         let t = parse_all(LOOP32).unwrap();
         let cert = discover(&t, 4096, 1 << 20).expect("discovery");
         assert_eq!(cert.a, loop32_cert().a);
-        verify(&t, &cert, 64, 4096, 1 << 20).expect("verify");
+        verify(&t, &cert, &TB).expect("verify");
     }
 
     #[test]
@@ -438,7 +416,7 @@ mod tests {
         let t = Term::Lam(Rc::new(parse_all(LOOP32).unwrap()));
         let cert = discover(&t, 4096, 1 << 20).expect("discovery under binder");
         assert_eq!(cert.a, loop32_cert().a);
-        verify(&t, &cert, 64, 4096, 1 << 20).expect("verify under binder");
+        verify(&t, &cert, &TB).expect("verify under binder");
     }
 
     #[test]
@@ -450,7 +428,7 @@ mod tests {
         let t = parse_all("010001011000110100001011010000110110").unwrap();
         let cert = discover(&t, 4096, 1 << 20).expect("discovery with trailing arg");
         assert_eq!(cert.a, loop32_cert().a);
-        let rep = verify(&t, &cert, 64, 4096, 1 << 20).expect("verify with trailing arg");
+        let rep = verify(&t, &cert, &TB).expect("verify with trailing arg");
         assert_eq!(rep.init_trail, 1);
     }
 
@@ -461,7 +439,7 @@ mod tests {
         let t = parse_all("010001100110001100001011010000110110").unwrap();
         let cert = discover(&t, 4096, 1 << 20).expect("discovery with two trailing args");
         assert_eq!(cert.a, loop32_cert().a);
-        let rep = verify(&t, &cert, 64, 4096, 1 << 20).expect("verify with two trailing args");
+        let rep = verify(&t, &cert, &TB).expect("verify with two trailing args");
         assert_eq!(rep.init_trail, 2);
     }
 
@@ -475,10 +453,10 @@ mod tests {
         let t = parse_all(HTR35).unwrap();
         let cert = discover(&t, 4096, 1 << 20).expect("discovery finds the triple");
         assert!(
-            verify(&t, &cert, 64, 4096, 1 << 20).is_err(),
+            verify(&t, &cert, &TB).is_err(),
             "v1 must NOT certify the deep family"
         );
-        let (htr, rep) = try_htr(&t, &cert, 64, 4096, 1 << 20).expect("htr certifies");
+        let (htr, rep) = try_htr(&t, &cert, &TB).expect("htr certifies");
         assert_eq!(htr.i, parse_all("0010").unwrap()); // λ.1
         assert_eq!(htr.c0, htr.a); // C0 = A for this family
         assert_eq!(rep.obligation_steps, [0, 1, 1, 3, 3, 7]);
@@ -495,7 +473,7 @@ mod tests {
             c0: bottom.to_term().unwrap(),
             i: cert.a.clone(), // wrong: the head is not an eraser
         };
-        assert!(verify_htr(&t, &htr, 64, 4096, 1 << 20).is_err());
+        assert!(verify_htr(&t, &htr, &TB).is_err());
     }
 
     #[test]
@@ -504,8 +482,8 @@ mod tests {
         // The v1 ratchet certifies it; the HeadTowerRatchet must not.
         let t = parse_all(LOOP32).unwrap();
         let cert = discover(&t, 4096, 1 << 20).unwrap();
-        assert!(verify(&t, &cert, 64, 4096, 1 << 20).is_ok());
-        assert!(try_htr(&t, &cert, 64, 4096, 1 << 20).is_none());
+        assert!(verify(&t, &cert, &TB).is_ok());
+        assert!(try_htr(&t, &cert, &TB).is_none());
     }
 
     #[test]
@@ -513,8 +491,8 @@ mod tests {
         // D(λx.xI) halts; neither discovery path may produce a cert.
         let t = parse_all("01000110100001100010").unwrap();
         if let Some(cert) = discover(&t, 4096, 1 << 20) {
-            assert!(verify(&t, &cert, 64, 4096, 1 << 20).is_err());
-            assert!(try_htr(&t, &cert, 64, 4096, 1 << 20).is_none());
+            assert!(verify(&t, &cert, &TB).is_err());
+            assert!(try_htr(&t, &cert, &TB).is_none());
         }
     }
 
@@ -534,7 +512,7 @@ mod tests {
         let t = Term::Lam(Rc::new(body));
         let cert = discover(&t, 4096, 1 << 20).expect("discovery with open trailing arg");
         assert_eq!(cert.a, a);
-        let rep = verify(&t, &cert, 64, 4096, 1 << 20).expect("verify with open trailing arg");
+        let rep = verify(&t, &cert, &TB).expect("verify with open trailing arg");
         assert_eq!(rep.init_trail, 1);
     }
 

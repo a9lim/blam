@@ -108,9 +108,7 @@ pub fn run(argv: &[String]) -> R<()> {
             "single-term mode runs on this thread; --threads is for --file",
         ));
     }
-    let engine = args::engine_cfg("adjudicate", work_mult, probe_fuel)?;
-    cfg.work_mult = engine.work_mult;
-    cfg.probe_fuel = engine.probe_fuel;
+    cfg.engine = args::engine_cfg("adjudicate", work_mult, probe_fuel)?;
     if verbose {
         eprintln!("ladder: {}", describe(&cfg));
     }
@@ -134,8 +132,8 @@ fn describe(cfg: &LadderCfg) -> String {
         cfg.rescue_trans_mult,
         cfg.prescan,
         cfg.oracle,
-        cfg.work_mult,
-        cfg.probe_fuel,
+        cfg.engine.work_mult,
+        cfg.engine.probe_fuel,
     )
 }
 
@@ -176,32 +174,27 @@ fn single(cfg: &LadderCfg, bits: &str) -> R<()> {
 
     println!("decided at: {}", rung_name(o.rung));
     match o.verdict {
-        Verdict::Halt {
-            nf,
-            steps,
-            steps_exact,
-        } => {
+        Verdict::Halt { nf, steps } => {
             let n = nf.resolve(sink.0);
-            if steps_exact {
-                println!("verdict: HALT |nf|={n} in {steps} beta ({secs:.3}s)");
-            } else {
+            match steps {
+                Some(steps) => println!("verdict: HALT |nf|={n} in {steps} beta ({secs:.3}s)"),
                 // Proven halt without a canonical count: the engine's
                 // simplify inlines betas, so it reports none, and the
                 // rescue that would recover it ran out of fuel.
-                println!("verdict: HALT |nf|={n}, beta count unrecovered ({secs:.3}s)");
+                None => println!("verdict: HALT |nf|={n}, beta count unrecovered ({secs:.3}s)"),
             }
         }
         Verdict::Diverge => println!("verdict: DIVERGE ({secs:.3}s)"),
-        Verdict::Unknown(why) => println!("verdict: UNKNOWN — {why:?} exhausted ({secs:.3}s)"),
+        Verdict::Unknown(why) => println!("verdict: UNKNOWN — {why} exhausted ({secs:.3}s)"),
     }
     if o.tel.head_diverge {
         println!("no whnf: the proof landed on the term's own head chain");
     }
     if let Some(e) = o.tel.kn2_stuck {
-        println!("rung 2 out of fuel: {e:?}");
+        println!("rung 2 out of fuel: {e}");
     }
     if let Some(e) = o.tel.rescue_stuck {
-        println!("rescue out of fuel: {e:?}");
+        println!("rescue out of fuel: {e}");
     }
     if o.tel.last_trans > 0 {
         println!("last KN run: {} transitions", o.tel.last_trans);
@@ -212,16 +205,11 @@ fn single(cfg: &LadderCfg, bits: &str) -> R<()> {
 /// The verdict line for one term: the streamed batch format.
 fn verdict_line(bits: &str, o: &ladder::LadderOutcome, nf_streamed: u64) -> String {
     match o.verdict {
-        Verdict::Halt {
-            nf,
-            steps,
-            steps_exact,
-        } => {
+        Verdict::Halt { nf, steps } => {
             let n = nf.resolve(nf_streamed);
-            if steps_exact {
-                format!("{bits} HALT nf={n} steps={steps}")
-            } else {
-                format!("{bits} HALT nf={n} steps=?")
+            match steps {
+                Some(steps) => format!("{bits} HALT nf={n} steps={steps}"),
+                None => format!("{bits} HALT nf={n} steps=?"),
             }
         }
         Verdict::Diverge => {

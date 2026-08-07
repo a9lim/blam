@@ -642,7 +642,7 @@ pub fn run(argv: &[String]) -> R<()> {
                 // (δ-rules continue where the rigid form stopped).
                 let skel = skeleton_cap.map(|cap| {
                     use blam::app;
-                    use blam::classical::escalation::{normal_form_spine_with, LTerm, NoNf};
+                    use blam::classical::escalation::{normal_form_spine, LTerm, NoNf};
                     use blam::quantum::sig::{church_numeral, with_holes};
                     // Unreachable: the preflight parsed every line.
                     let t = blam::parse_all(bits).expect("preflighted program line");
@@ -655,11 +655,11 @@ pub fn run(argv: &[String]) -> R<()> {
                         None => t,
                     };
                     let sk = with_holes(&head, sig.len() as u32);
-                    match normal_form_spine_with(ecfg, cap, &LTerm::from_term(&sk)) {
-                        (Err(NoNf::Diverge), true) => "nowhnf",
-                        (Err(NoNf::Diverge), false) => "offspine-div",
-                        (Ok(_), _) => "halt",
-                        (Err(NoNf::Unknown(_)), _) => "unknown",
+                    match normal_form_spine(ecfg, cap, &LTerm::from_term(&sk)) {
+                        Err(NoNf::Diverge { head_chain: true }) => "nowhnf",
+                        Err(NoNf::Diverge { head_chain: false }) => "offspine-div",
+                        Ok(_) => "halt",
+                        Err(NoNf::Unknown(_)) => "unknown",
                     }
                 });
                 let skel_col = skel.map(|s| format!(" skel={s}")).unwrap_or_default();

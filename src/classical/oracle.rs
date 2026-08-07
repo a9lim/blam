@@ -72,9 +72,12 @@ pub(crate) fn work_exhausted() -> bool {
 /// Bit budget guard: shifting past this loses soundness, so go silent.
 const MAX_IS: u64 = 1 << 62;
 
-/// var n (1-based) is marked and is not the sentinel.
+/// var n (1-based) is marked and is not the sentinel. Index 0 is not a
+/// legal de Bruijn variable under the crate's 1-based convention and is
+/// never marked (the lower bound also keeps `n - 1` from underflowing on
+/// hand-built `Var(0)` terms, which the wire format cannot produce).
 fn istest(is: u64, n: u32) -> bool {
-    n < 63 && is >> (n - 1) & 1 == 1 && is >= 1 << n
+    (1..63).contains(&n) && is >> (n - 1) & 1 == 1 && is >= 1 << n
 }
 
 /// term's head variable is free (at or above the sentinel).

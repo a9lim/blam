@@ -39,7 +39,7 @@
 
 use crate::args::{self, Args, R};
 use blam::blc::wire::enc_to_string;
-use blam::classical::escalation::{normal_form_with, EngineCfg, LTerm, NoNf};
+use blam::classical::escalation::{normal_form, EngineCfg, LTerm, NoNf};
 use blam::classical::machine::{Machine, Node, Pool, Sink};
 use blam::classical::oracle::no_nf;
 use blam::classical::OutOfFuel;
@@ -647,8 +647,8 @@ fn adjudicate(
     // decides loops the syntactic oracle alone cannot.
     // Engine settings resolve env → default once at the CLI layer; the
     // slot search exposes no knob flags (its budgets are its own consts).
-    match normal_form_with(engine_cfg(), BB_CAP, &LTerm::from_pool(pool, root)).0 {
-        Err(NoNf::Diverge) => return Verdict::Diverge,
+    match normal_form(engine_cfg(), BB_CAP, &LTerm::from_pool(pool, root)) {
+        Err(NoNf::Diverge { .. }) => return Verdict::Diverge,
         Ok(nf) if nf.bit_size() != golden.len() as u64 => return Verdict::Mismatch,
         _ => {}
     }

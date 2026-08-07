@@ -550,8 +550,7 @@ mod tests {
             for_each_closed(n, &mut |enc, len| {
                 let src = enc_to_string(enc, len);
                 let t = parse_all(&src).unwrap();
-                let mut fuel = crate::classical::Budget::new(4096);
-                let Ok(nf) = crate::classical::reference::normalize(&t, &mut fuel) else {
+                let Ok((nf, _)) = crate::classical::reference::normalize(&t, 4096) else {
                     return; // reference ran out of fuel; skip
                 };
                 let leaves = run(qt_of_term(&t), &Budget::default());

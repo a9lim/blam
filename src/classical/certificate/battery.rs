@@ -16,7 +16,8 @@
 //! running under plain `cargo test` while `search` stays off the default
 //! public surface.
 
-use super::search_impl::{try_kill, CertBudgets};
+use super::search_impl::try_kill;
+use super::CertBudgets;
 use crate::blc::enumerate::{run_task, split_tasks};
 use crate::blc::wire::{enc_to_string, parse_all};
 use crate::classical::machine::{Machine, Pool, SizeSink};

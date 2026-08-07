@@ -71,15 +71,13 @@ pub struct LadderCfg {
     pub prescan: bool,
     /// Run the divergence-oracle prefilter (rung 2).
     pub oracle: bool,
-    /// Escalation work-meter units per capacity bit.
-    pub work_mult: i64,
-    /// β budget for the escalation engine's redloop probes.
-    pub probe_fuel: u64,
+    /// The escalation engine's slice of this config; [`EngineCfg`]'s own
+    /// field docs are the single home for what the knobs mean.
+    pub engine: EngineCfg,
 }
 
 impl Default for LadderCfg {
     fn default() -> LadderCfg {
-        let e = EngineCfg::default();
         LadderCfg {
             budget1: 64,
             budget2: 4096,
@@ -88,18 +86,7 @@ impl Default for LadderCfg {
             rescue_trans_mult: 32,
             prescan: true,
             oracle: true,
-            work_mult: e.work_mult,
-            probe_fuel: e.probe_fuel,
-        }
-    }
-}
-
-impl LadderCfg {
-    /// The escalation-engine slice of this config.
-    pub fn engine(&self) -> EngineCfg {
-        EngineCfg {
-            work_mult: self.work_mult,
-            probe_fuel: self.probe_fuel,
+            engine: EngineCfg::default(),
         }
     }
 }
@@ -107,9 +94,9 @@ impl LadderCfg {
 /// Which rung produced the verdict.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Rung {
-    /// Redex-free pre-scan. The sink is left UNTOUCHED (this is the
-    /// majority path; filling it would dominate a sweep) and `nf_bits`
-    /// is the term's own bit size, which is its normal form's.
+    /// Redex-free pre-scan. The sink is left UNTOUCHED — the term IS its
+    /// own normal form, so readback would only re-emit bits the caller
+    /// already holds — and `nf` is `NfSize::Untouched(|term|)`.
     Prescan,
     /// Syntactic divergence oracle on the raw term.
     Oracle,
@@ -155,13 +142,12 @@ pub enum Verdict {
     Halt {
         /// How to read the normal form's bit size off this run.
         nf: NfSize,
-        /// β steps under leftmost-outermost reduction, when exact.
-        steps: u64,
-        /// False when the escalation engine proved the halt but the
-        /// rescue ran out of fuel before recovering the canonical count
-        /// (the engine's own count is distorted by simplify's
-        /// β-inlining, so it reports none). `steps` is 0 there.
-        steps_exact: bool,
+        /// β steps under leftmost-outermost reduction. `None` when the
+        /// escalation engine proved the halt but the rescue ran out of
+        /// fuel before recovering the canonical count (the engine's own
+        /// count is distorted by simplify's β-inlining, so it reports
+        /// none).
+        steps: Option<u64>,
     },
     /// Proven: oracle hit, redex reoccurrence, or the redloop certificate.
     Diverge,
@@ -173,8 +159,6 @@ pub enum Verdict {
 /// died where, and the no-whnf attribution.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Telemetry {
-    /// The escalation engine ran (rung 5 was reached).
-    pub escalated: bool,
     /// Why the escalation engine stopped short, when it did — the
     /// attribution a rescue inherits (capacity smells like a missed
     /// loop, the work meter like a big-growth halter).
@@ -202,6 +186,13 @@ pub struct LadderOutcome {
     pub tel: Telemetry,
 }
 
+impl LadderOutcome {
+    /// The escalation engine ran (rung 5 was reached).
+    pub fn escalated(&self) -> bool {
+        matches!(self.rung, Rung::Escalation | Rung::Rescue)
+    }
+}
+
 /// What the cheap half of the ladder ([`adjudicate_fast`]) concluded.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FastOutcome {
@@ -218,7 +209,9 @@ pub enum FastOutcome {
 /// normal form's BLC bits (the ladder resets it before each attempt, so
 /// a failed rung leaves no partial bits behind). On Prescan the sink is
 /// untouched and the term itself is the normal form; on Diverge and
-/// Unknown the sink's contents are meaningless.
+/// Unknown the sink's contents are meaningless. Read |nf| through
+/// [`NfSize::resolve`] with what the sink counted — never off the sink
+/// alone, or every Prescan halt reads as size 0.
 pub fn adjudicate<S: Sink + Default>(
     cfg: &LadderCfg,
     pool: &Pool,
@@ -257,8 +250,7 @@ pub fn adjudicate_fast<S: Sink + Default>(
     if cfg.prescan && !pool.has_redex(root) {
         let halt = Verdict::Halt {
             nf: NfSize::Untouched(pool.bit_size(root)),
-            steps: 0,
-            steps_exact: true,
+            steps: Some(0),
         };
         return out(halt, Rung::Prescan, tel);
     }
@@ -278,8 +270,7 @@ pub fn adjudicate_fast<S: Sink + Default>(
             out(
                 Verdict::Halt {
                     nf: NfSize::Streamed,
-                    steps,
-                    steps_exact: true,
+                    steps: Some(steps),
                 },
                 Rung::Kn1,
                 tel,
@@ -319,8 +310,7 @@ pub fn adjudicate_slow<S: Sink + Default>(
             return out(
                 Verdict::Halt {
                     nf: NfSize::Streamed,
-                    steps,
-                    steps_exact: true,
+                    steps: Some(steps),
                 },
                 Rung::Kn2,
                 tel,
@@ -330,9 +320,8 @@ pub fn adjudicate_slow<S: Sink + Default>(
     }
 
     // Escalation: full BB.lhs semantics.
-    tel.escalated = true;
     let t = LTerm::from_pool(pool, root);
-    let (verdict, spine) = escalation::normal_form_with(cfg.engine(), cfg.bb_cap, &t);
+    let verdict = escalation::normal_form(cfg.engine, cfg.bb_cap, &t);
     // The rescue, shared by the engine-Halt and engine-Unknown paths:
     // the engine's β-count isn't canonical (history machinery, no step
     // ledger, and simplify inlines βs), so a KN re-run recovers it —
@@ -358,8 +347,7 @@ pub fn adjudicate_slow<S: Sink + Default>(
     };
     let rescued = |steps| Verdict::Halt {
         nf: NfSize::Streamed,
-        steps,
-        steps_exact: true,
+        steps: Some(steps),
     };
     match verdict {
         Ok(nf) => match rescue(vm, sink, &mut tel) {
@@ -375,16 +363,15 @@ pub fn adjudicate_slow<S: Sink + Default>(
                 out(
                     Verdict::Halt {
                         nf: NfSize::Streamed,
-                        steps: 0,
-                        steps_exact: false,
+                        steps: None,
                     },
                     Rung::Escalation,
                     tel,
                 )
             }
         },
-        Err(NoNf::Diverge) => {
-            tel.head_diverge = spine;
+        Err(NoNf::Diverge { head_chain }) => {
+            tel.head_diverge = head_chain;
             out(Verdict::Diverge, Rung::Escalation, tel)
         }
         Err(NoNf::Unknown(why)) => {
@@ -420,8 +407,7 @@ mod tests {
             o.verdict,
             Verdict::Halt {
                 nf: NfSize::Untouched(4),
-                steps: 0,
-                steps_exact: true
+                steps: Some(0),
             }
         );
         assert_eq!(emitted, 0, "prescan must not pay for readback");
@@ -432,7 +418,7 @@ mod tests {
         let (o, _) = run("010001101000011010");
         assert_eq!(o.rung, Rung::Oracle);
         assert_eq!(o.verdict, Verdict::Diverge);
-        assert!(!o.tel.escalated);
+        assert!(!o.escalated());
     }
 
     #[test]
@@ -440,14 +426,7 @@ mod tests {
         // (λx. x x)(λy. y) → λy. y, one β step.
         let (o, emitted) = run("01000110100010");
         assert_eq!(o.rung, Rung::Kn1);
-        assert!(matches!(
-            o.verdict,
-            Verdict::Halt {
-                steps: 2,
-                steps_exact: true,
-                ..
-            }
-        ));
+        assert!(matches!(o.verdict, Verdict::Halt { steps: Some(2), .. }));
         assert_eq!(emitted, 4, "the sink holds |nf| on a KN halt");
     }
 
@@ -458,7 +437,7 @@ mod tests {
         let (o, _) = run("010001101000011001001010");
         assert_eq!(o.verdict, Verdict::Diverge);
         assert_eq!(o.rung, Rung::Escalation);
-        assert!(o.tel.escalated);
+        assert!(o.escalated());
     }
 
     #[test]
@@ -474,10 +453,10 @@ mod tests {
         };
         let o = adjudicate(&cfg, &pool, &mut vm, root, &mut sink);
         assert_eq!(o.rung, Rung::Kn1);
-        let Verdict::Halt { nf, steps, .. } = o.verdict else {
+        let Verdict::Halt { nf, steps } = o.verdict else {
             panic!("I halts")
         };
-        assert_eq!((nf.resolve(sink.0), steps), (4, 0));
+        assert_eq!((nf.resolve(sink.0), steps), (4, Some(0)));
     }
 
     /// The split is only allowed to exist if it is invisible. Every

@@ -1,10 +1,10 @@
 use blam::classical::reference::normalize;
-use blam::classical::{Budget, OutOfFuel};
+use blam::classical::OutOfFuel;
 use blam::{app, lam, var, Term};
 use blam::{parse_all, parse_prefix, ParseError};
 
 fn nf(t: &Term, limit: u64) -> Result<Term, OutOfFuel> {
-    normalize(t, &mut Budget::new(limit))
+    normalize(t, limit).map(|(nf, _)| nf)
 }
 
 /// Church numeral: \f.\x. f^n x, i.e. \\ 2 (2 (... (2 1))).
@@ -139,19 +139,15 @@ fn normal_order_reaches_nf_where_applicative_would_not() {
 
 #[test]
 fn omega_exhausts_fuel() {
-    let mut fuel = Budget::new(1000);
-    assert_eq!(normalize(&omega(), &mut fuel), Err(OutOfFuel::Beta));
-    assert_eq!(fuel.steps, 1000);
+    assert_eq!(normalize(&omega(), 1000), Err(OutOfFuel::Beta));
 }
 
 #[test]
 fn step_counts() {
     // Each beta contraction is one tick.
-    let mut fuel = Budget::new(100);
-    normalize(&app(i(), i()), &mut fuel).unwrap();
-    assert_eq!(fuel.steps, 1);
+    let (_, steps) = normalize(&app(i(), i()), 100).unwrap();
+    assert_eq!(steps, 1);
 
-    let mut fuel = Budget::new(100);
-    normalize(&app(app(k(), i()), i()), &mut fuel).unwrap();
-    assert_eq!(fuel.steps, 2);
+    let (_, steps) = normalize(&app(app(k(), i()), i()), 100).unwrap();
+    assert_eq!(steps, 2);
 }

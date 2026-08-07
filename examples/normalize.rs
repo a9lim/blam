@@ -4,15 +4,19 @@
 
 use blam::classical::machine::{Machine, Pool, StringSink};
 use blam::classical::reference::normalize;
-use blam::classical::Budget;
 use blam::parse_all;
 
 fn main() {
     // Reference core: (λx.x x)(λx.x) → λx.x
     let term = parse_all("01000110100010").unwrap();
-    let nf = normalize(&term, &mut Budget::new(1_000)).unwrap();
-    assert_eq!(nf.to_bits(), "0010");
-    println!("reference nf: {} ({})", nf.to_bits(), nf);
+    let (nf, steps) = normalize(&term, 1_000).unwrap();
+    assert_eq!((nf.to_bits().as_str(), steps), ("0010", 2));
+    println!(
+        "reference nf: {} ({}) in {} beta-steps",
+        nf.to_bits(),
+        nf,
+        steps
+    );
 
     // Fast KN machine, β-steps returned, nf streamed to a sink
     let mut pool = Pool::new();

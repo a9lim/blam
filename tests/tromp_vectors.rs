@@ -9,7 +9,6 @@
 //! size exactly n — Tromp's tooling has no beta-step counter to match.
 
 use blam::classical::reference::normalize;
-use blam::classical::Budget;
 use blam::parse_all;
 use blam::{app, lam, var, Term};
 
@@ -28,7 +27,7 @@ const TRUTH_58: &str = "00011000000100011010000001011011110010111110000010011101
 const Y_25: &str = "0001000110100001110011010";
 
 fn nf(t: &Term, limit: u64) -> Term {
-    normalize(t, &mut Budget::new(limit)).expect("out of fuel")
+    normalize(t, limit).expect("out of fuel").0
 }
 
 #[test]

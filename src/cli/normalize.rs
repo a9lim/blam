@@ -8,7 +8,6 @@
 
 use crate::args::{self, Args, R};
 use blam::classical::machine::{Machine, Pool, StringSink};
-use blam::classical::OutOfFuel;
 
 const USAGE: &str = "\
 blam normalize — normalize a closed BLC term on the KN machine
@@ -56,14 +55,7 @@ pub fn run(argv: &[String]) -> R<()> {
             println!("{}", nf.0);
             println!("|nf| = {} bits, {steps} beta", nf.0.len());
         }
-        Err(e) => {
-            let why = match e {
-                OutOfFuel::Beta => "beta budget",
-                OutOfFuel::Transitions => "transition cap",
-                OutOfFuel::Aborted => "sink abort",
-            };
-            println!("no normal form within budget: out of fuel ({why})");
-        }
+        Err(e) => println!("no normal form within budget: {e}"),
     }
     Ok(())
 }

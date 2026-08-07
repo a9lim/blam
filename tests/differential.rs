@@ -7,7 +7,6 @@ use blam::blc::enumerate::for_each_closed;
 use blam::blc::wire::enc_to_string;
 use blam::classical::machine::{Machine, Pool, SizeSink, StringSink};
 use blam::classical::reference::normalize;
-use blam::classical::Budget;
 use blam::parse_all;
 use blam::{app, lam, var, Term};
 
@@ -38,15 +37,14 @@ fn exhaustive_agreement_body() {
             pool.clear();
             let root = pool.decode_u64(enc, len).unwrap();
 
-            let mut fuel = Budget::new(FUEL);
-            let naive = normalize(&t, &mut fuel);
+            let naive = normalize(&t, FUEL);
             let mut sink = StringSink::default();
             let fast = vm.normalize(&pool, root, FUEL, &mut sink);
 
             match (naive, fast) {
-                (Ok(nf), Ok(steps)) => {
+                (Ok((nf, nsteps)), Ok(steps)) => {
                     assert_eq!(nf.to_bits(), sink.0, "nf mismatch on {bits}");
-                    assert_eq!(fuel.steps, steps, "step mismatch on {bits}");
+                    assert_eq!(nsteps, steps, "step mismatch on {bits}");
                 }
                 (Err(_), Err(_)) => {} // both out of fuel: agreement
                 (a, b) => panic!("verdict mismatch on {bits}: naive {a:?} vs vm {b:?}"),

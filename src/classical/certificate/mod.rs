@@ -30,6 +30,46 @@ pub mod search {
     pub use super::search_impl::*;
 }
 
+/// Named budgets for discovery and the trusted checkers. `steps` bounds
+/// both the discovery trace and the checkers' INIT search; `lemma_steps`
+/// bounds each symbolic obligation; `nodes` caps every intermediate
+/// pattern term. Ungated: a default-features user holding a certificate
+/// needs the named triple as much as the lab sweep does.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct CertBudgets {
+    pub steps: u32,
+    pub nodes: u64,
+    pub lemma_steps: u32,
+}
+
+impl CertBudgets {
+    /// Sweep defaults: 1000/100k is measured kill-equivalent to 2000/200k
+    /// over a full frontier sweep (byte-identical certificates) at ~4×
+    /// less wall. Raise via flags for thorough runs; the fuel controls ran
+    /// at 8000/800k.
+    pub const SWEEP: CertBudgets = CertBudgets {
+        steps: 1000,
+        nodes: 100_000,
+        lemma_steps: 4096,
+    };
+
+    /// The soundness battery's budgets — the doubled trace bound whose
+    /// kill-equivalence to `SWEEP` was measured. The battery pays it
+    /// because a missed candidate there is a missed chance to catch a
+    /// checker bug.
+    pub const THOROUGH: CertBudgets = CertBudgets {
+        steps: 2000,
+        nodes: 200_000,
+        lemma_steps: 4096,
+    };
+}
+
+impl Default for CertBudgets {
+    fn default() -> Self {
+        CertBudgets::SWEEP
+    }
+}
+
 /// Pattern term: `Term` plus opaque *named* metavariables `Meta(id)`,
 /// each standing for an arbitrary *closed* term. Closedness is what
 /// makes `shift`/`subst` no-ops on `Meta` sound (`docs/classical/certificates/specification.md` §3, symbolic
@@ -255,7 +295,19 @@ fn shift_above(t: &PTerm, d: u32, cutoff: u32) -> PTerm {
 /// Substitute `s` for `Var(j)` and decrement free variables above `j`
 /// (the one-pass β-substitution; matches the reference reducer in
 /// `tools/certificates/loop32_trace.py`).
+///
+/// When `s` is pattern-closed, `shift_above(s, 1, 0)` is the identity —
+/// the cutoff tracks binder depth, so every `Var` in a closed `s`
+/// satisfies `n <= cutoff` and `Meta` is never touched — and the
+/// per-binder re-shift is skipped. Without the skip one contraction
+/// costs O(#Lam(body) × |arg|) on top of the O(|body| + occ × |arg|)
+/// that `head_step`'s pre-contraction bound budgets for; a sampled
+/// frontier sweep spent half its CPU inside `shift_above`.
 fn subst_dec(t: &PTerm, j: u32, s: &PTerm) -> PTerm {
+    subst_dec_c(t, j, s, s.max_free(0) == 0)
+}
+
+fn subst_dec_c(t: &PTerm, j: u32, s: &PTerm, s_closed: bool) -> PTerm {
     match t {
         PTerm::Var(n) => {
             if *n == j {
@@ -267,8 +319,12 @@ fn subst_dec(t: &PTerm, j: u32, s: &PTerm) -> PTerm {
             }
         }
         PTerm::Meta(i) => PTerm::Meta(*i),
-        PTerm::Lam(b) => plam(subst_dec(b, j + 1, &shift_above(s, 1, 0))),
-        PTerm::App(f, a) => papp(subst_dec(f, j, s), subst_dec(a, j, s)),
+        PTerm::Lam(b) if s_closed => plam(subst_dec_c(b, j + 1, s, true)),
+        PTerm::Lam(b) => plam(subst_dec_c(b, j + 1, &shift_above(s, 1, 0), false)),
+        PTerm::App(f, a) => papp(
+            subst_dec_c(f, j, s, s_closed),
+            subst_dec_c(a, j, s, s_closed),
+        ),
     }
 }
 
@@ -362,6 +418,23 @@ pub enum CheckFail {
     Shape(&'static str),
 }
 
+/// Exhaustive by choice, like the crate's other failure enums: a new
+/// variant SHOULD break this match rather than print a catch-all.
+impl fmt::Display for CheckFail {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            CheckFail::MetaHead(i) => write!(f, "Meta reached the spine head at step {i}"),
+            CheckFail::ReachedNf(i) => write!(f, "head normal form at step {i}, target unmatched"),
+            CheckFail::BadIntermediate(i) => write!(f, "abstraction/Meta source state at step {i}"),
+            CheckFail::Budget => write!(f, "step budget exhausted"),
+            CheckFail::TooBig(i) => write!(f, "node budget exceeded at step {i}"),
+            CheckFail::Shape(s) => f.write_str(s),
+        }
+    }
+}
+
+impl std::error::Error for CheckFail {}
+
 /// Verify the pattern reduction `l →ₕ⁺ r` (exact syntactic match) with
 /// every *proper source state* — `l` and every state before `r` — a
 /// non-abstraction and non-`Meta`, within `max_steps`. Returns the
@@ -448,6 +521,20 @@ pub enum CertFail {
     Init,
     Shape(&'static str),
 }
+
+impl fmt::Display for CertFail {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            CertFail::Open(c) => write!(f, "OPEN: {c}"),
+            CertFail::Desc(c) => write!(f, "DESC: {c}"),
+            CertFail::Base(c) => write!(f, "BASE: {c}"),
+            CertFail::Init => write!(f, "INIT never matched within its budgets"),
+            CertFail::Shape(s) => f.write_str(s),
+        }
+    }
+}
+
+impl std::error::Error for CertFail {}
 
 /// Match `x` against the wrapper pattern: if `x = W[y]` for a unique `y`
 /// filling every `Meta` position consistently, return `y`.
@@ -538,13 +625,8 @@ fn check_common_shape(t: &Term, a: &Term, c0: &Term, w: &PTerm) -> Result<(), &'
 
 /// The trusted verifier. Establishes that `t` has no normal form
 /// (per the glue theorem in certificate specification §3) or fails.
-pub fn verify(
-    t: &Term,
-    cert: &Ratchet,
-    lemma_steps: u32,
-    init_steps: u32,
-    max_nodes: u64,
-) -> Result<CertReport, CertFail> {
+pub fn verify(t: &Term, cert: &Ratchet, b: &CertBudgets) -> Result<CertReport, CertFail> {
+    let (lemma_steps, init_steps, max_nodes) = (b.lemma_steps, b.steps, b.nodes);
     check_common_shape(t, &cert.a, &cert.c0, &cert.w).map_err(CertFail::Shape)?;
 
     let a = PTerm::from_term(&cert.a);
@@ -706,6 +788,23 @@ pub enum HtrFail {
     Shape(&'static str),
 }
 
+impl fmt::Display for HtrFail {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            HtrFail::Base(c) => write!(f, "BASE: {c}"),
+            HtrFail::Open(c) => write!(f, "OPEN: {c}"),
+            HtrFail::Spread(c) => write!(f, "SPREAD: {c}"),
+            HtrFail::Peel(c) => write!(f, "PEEL: {c}"),
+            HtrFail::Bounce(c) => write!(f, "BOUNCE: {c}"),
+            HtrFail::Erase(c) => write!(f, "ERASE: {c}"),
+            HtrFail::Init => write!(f, "INIT never matched within its budgets"),
+            HtrFail::Shape(s) => f.write_str(s),
+        }
+    }
+}
+
+impl std::error::Error for HtrFail {}
+
 /// The trusted HeadTowerRatchet verifier. Establishes that `t` has no
 /// normal form, per the fixed assembly theorem (certificate specification §5): the six
 /// obligations mechanically derive the rank step
@@ -720,10 +819,9 @@ pub enum HtrFail {
 pub fn verify_htr(
     t: &Term,
     cert: &HeadTowerRatchet,
-    lemma_steps: u32,
-    init_steps: u32,
-    max_nodes: u64,
+    b: &CertBudgets,
 ) -> Result<HtrReport, HtrFail> {
+    let (lemma_steps, init_steps, max_nodes) = (b.lemma_steps, b.steps, b.nodes);
     check_common_shape(t, &cert.a, &cert.c0, &cert.w).map_err(HtrFail::Shape)?;
     if !cert.i.is_closed() {
         return Err(HtrFail::Shape("I not closed"));
@@ -860,6 +958,21 @@ pub enum SelFail {
     Shape(&'static str),
 }
 
+impl fmt::Display for SelFail {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            SelFail::Open(c) => write!(f, "OPEN: {c}"),
+            SelFail::Fan(c) => write!(f, "FAN: {c}"),
+            SelFail::Select(c) => write!(f, "SELECT: {c}"),
+            SelFail::Base(c) => write!(f, "BASE: {c}"),
+            SelFail::Init => write!(f, "INIT never matched within its budgets"),
+            SelFail::Shape(s) => f.write_str(s),
+        }
+    }
+}
+
+impl std::error::Error for SelFail {}
+
 /// The trusted SelectorRatchet verifier. Establishes that `t` has no
 /// normal form per the glue theorem (certificate specification §6): with `Xₙ = Wⁿ[C0]`,
 /// the rank step is FAN at (Z:=Xₘ₋₁, Q:=Xₙ₊₁) followed by SELECT at
@@ -872,10 +985,9 @@ pub enum SelFail {
 pub fn verify_selector(
     t: &Term,
     cert: &SelectorRatchet,
-    lemma_steps: u32,
-    init_steps: u32,
-    max_nodes: u64,
+    b: &CertBudgets,
 ) -> Result<SelReport, SelFail> {
+    let (lemma_steps, init_steps, max_nodes) = (b.lemma_steps, b.steps, b.nodes);
     check_common_shape(t, &cert.a, &cert.c0, &cert.w).map_err(SelFail::Shape)?;
     if cert.p.max_free(0) != 0 {
         return Err(SelFail::Shape("P not pattern-closed"));
@@ -954,7 +1066,12 @@ mod tests {
     #[test]
     fn loop32_manual_certificate_verifies() {
         let t = parse_all(LOOP32).unwrap();
-        let rep = verify(&t, &loop32_cert(), 64, 64, 1 << 20).unwrap();
+        let b = CertBudgets {
+            steps: 64,
+            nodes: 1 << 20,
+            lemma_steps: 64,
+        };
+        let rep = verify(&t, &loop32_cert(), &b).unwrap();
         // Measured in tools/certificates/loop32_trace.py: OPEN is one step,
         // DESC two, BASE one, and the first milestone is one step in.
         assert_eq!(rep.open_steps, 1);
@@ -970,10 +1087,12 @@ mod tests {
         // certificate against it must die in INIT, not certify.
         let t = parse_all("01000110100001100010").unwrap();
         assert!(t.is_closed());
-        assert!(matches!(
-            verify(&t, &loop32_cert(), 64, 4096, 1 << 20),
-            Err(CertFail::Init)
-        ));
+        let b = CertBudgets {
+            steps: 4096,
+            nodes: 1 << 20,
+            lemma_steps: 64,
+        };
+        assert!(matches!(verify(&t, &loop32_cert(), &b), Err(CertFail::Init)));
     }
 
     #[test]

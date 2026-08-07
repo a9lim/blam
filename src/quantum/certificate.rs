@@ -43,7 +43,7 @@
 
 use crate::blc::reduction::beta;
 use crate::blc::{app, lam, Term};
-use crate::classical::escalation::{normal_form_with, EngineCfg, LTerm, NoNf};
+use crate::classical::escalation::{normal_form, EngineCfg, LTerm, NoNf};
 use crate::classical::machine::{Machine, Pool, SizeSink};
 use crate::classical::oracle;
 use crate::quantum::sig;
@@ -383,13 +383,13 @@ pub fn adjudicate_with_transfer(
                     nf_bits: sink.0,
                     via: Via::Kn,
                 },
-                Err(_) => match normal_form_with(transfer.engine, transfer.residual_cap, &lt).0 {
+                Err(_) => match normal_form(transfer.engine, transfer.residual_cap, &lt) {
                     Ok(nf) => Transfer::Halt {
                         steps,
                         nf_bits: nf.bit_size(),
                         via: Via::Bb,
                     },
-                    Err(NoNf::Diverge) => Transfer::Div {
+                    Err(NoNf::Diverge { .. }) => Transfer::Div {
                         steps,
                         via: Via::Bb,
                     },
@@ -520,15 +520,14 @@ mod tests {
                 assert!(residual.is_closed());
                 // The classical escalation engine proves the residual
                 // diverges — the full transfer chain.
-                assert_eq!(
-                    normal_form_with(
+                assert!(matches!(
+                    normal_form(
                         EngineCfg::default(),
                         2_000_000,
                         &LTerm::from_term(&residual)
-                    )
-                    .0,
-                    Err(NoNf::Diverge)
-                );
+                    ),
+                    Err(NoNf::Diverge { .. })
+                ));
             }
             other => panic!("{other:?}"),
         }

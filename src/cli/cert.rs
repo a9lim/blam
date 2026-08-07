@@ -61,7 +61,8 @@ mod search {
 
     use crate::args::{self, Args, R};
     use blam::blc::wire::parse_all;
-    use blam::classical::certificate::search::{try_kill, CertBudgets, Kill};
+    use blam::classical::certificate::search::{try_kill, Kill};
+    use blam::classical::certificate::CertBudgets;
     use blam::classical::certificate::{head_step, PTerm, Step};
     use blam::Term;
     use rayon::prelude::*;
@@ -332,15 +333,21 @@ mod lean {
     use blam::blc::wire::parse_all;
     use blam::classical::certificate::{
         head_step, init_landing, spine, strip_lams, verify, verify_htr, verify_selector,
-        HeadTowerRatchet, PTerm, Ratchet, SelectorRatchet, Step,
+        CertBudgets, HeadTowerRatchet, PTerm, Ratchet, SelectorRatchet, Step,
     };
     use blam::Term;
     use std::collections::BTreeMap;
     use std::fmt::Write as _;
 
-    const LEMMA_STEPS: u32 = 2000;
-    const INIT_STEPS: u32 = 2000;
-    const MAX_NODES: u64 = 200_000;
+    /// The re-verify budgets, one named triple. `lemma_steps` 2000 is a
+    /// deliberate divergence from `CertBudgets::THOROUGH`'s 4096: every
+    /// checked-in kill passes at 2000, and the emitter wants the tighter
+    /// bound it will state to Lean.
+    const RECHECK: CertBudgets = CertBudgets {
+        steps: 2000,
+        nodes: 200_000,
+        lemma_steps: 2000,
+    };
 
     /// The kills file spells wrappers in `PTerm`'s `Display` syntax;
     /// `FromStr` is its inverse (round-tripped in the certificate module).
@@ -493,7 +500,7 @@ untrusted: the Lean kernel replays every obligation.";
                 let mut hnf = PTerm::from_term(&outer);
                 let mut k_h: u32 = 0;
                 loop {
-                    match head_step(&hnf, MAX_NODES) {
+                    match head_step(&hnf, RECHECK.nodes) {
                         Step::Did(next, _) => {
                             hnf = next;
                             k_h += 1;
@@ -532,7 +539,7 @@ untrusted: the Lean kernel replays every obligation.";
                     w: wp.clone(),
                     c0: c0t.clone(),
                 };
-                let rep = verify(&t, &cert, LEMMA_STEPS, INIT_STEPS, MAX_NODES)
+                let rep = verify(&t, &cert, &RECHECK)
                     .unwrap_or_else(|e| panic!("re-verify failed on {bits}: {e:?}"));
                 (
                     "RatchetCert",
@@ -550,7 +557,7 @@ untrusted: the Lean kernel replays every obligation.";
                     p: parse_pterm(selp).map_err(&at)?,
                     c0: c0t.clone(),
                 };
-                let rep = verify_selector(&t, &sel, LEMMA_STEPS, INIT_STEPS, MAX_NODES)
+                let rep = verify_selector(&t, &sel, &RECHECK)
                     .unwrap_or_else(|e| panic!("selector re-verify failed on {bits}: {e:?}"));
                 let [ko, kf, ksel, kb] = rep.obligation_steps;
                 (
@@ -565,7 +572,7 @@ untrusted: the Lean kernel replays every obligation.";
                     c0: c0t.clone(),
                     i: parse_term("i", eraser).map_err(&at)?,
                 };
-                let rep = verify_htr(&t, &htr, LEMMA_STEPS, INIT_STEPS, MAX_NODES)
+                let rep = verify_htr(&t, &htr, &RECHECK)
                     .unwrap_or_else(|e| panic!("htr re-verify failed on {bits}: {e:?}"));
                 let [kb, ko, ks, kp, kn, ke] = rep.obligation_steps;
                 (
@@ -590,8 +597,8 @@ untrusted: the Lean kernel replays every obligation.";
                 &PTerm::from_term(&a),
                 &wp,
                 &PTerm::from_term(&c0t),
-                INIT_STEPS,
-                MAX_NODES,
+                RECHECK.steps,
+                RECHECK.nodes,
             )
             .unwrap_or_else(|| panic!("INIT landing lost on {bits}"));
             debug_assert_eq!(landing.steps, init_steps);
@@ -751,7 +758,8 @@ mod diag {
     use blam::classical::certificate::search::{generalize, htr_eraser_candidates, peel_to_bottom};
     use blam::classical::certificate::{
         check_reduces, check_reduces_star, head_step, plug, rename_meta, spine, strip_lams, verify,
-        verify_htr, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm, Ratchet, Step,
+        verify_htr, CertBudgets, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm, Ratchet,
+        Step,
     };
     use blam::Term;
     use rayon::prelude::*;
@@ -990,7 +998,12 @@ mod diag {
                 c0: c0.clone(),
                 i,
             };
-            let (depth, desc) = match verify_htr(t, &htr, 2000, 2000, max_nodes) {
+            let b = CertBudgets {
+                steps: 2000,
+                nodes: max_nodes,
+                lemma_steps: 2000,
+            };
+            let (depth, desc) = match verify_htr(t, &htr, &b) {
                 Ok(_) => return "HTR-KILL".into(),
                 Err(HtrFail::Base(c)) => (0, format!("Base:{c:?}")),
                 Err(HtrFail::Open(c)) => (1, format!("Open:{c:?}")),
@@ -1094,7 +1107,12 @@ mod diag {
                                             w: w.clone(),
                                             c0,
                                         };
-                                        match verify(t, &cand, 2000, 2000, max_nodes) {
+                                        let b = CertBudgets {
+                                            steps: 2000,
+                                            nodes: max_nodes,
+                                            lemma_steps: 2000,
+                                        };
+                                        match verify(t, &cand, &b) {
                                             Ok(_) => {
                                                 d.stage = "KILL";
                                                 return d;

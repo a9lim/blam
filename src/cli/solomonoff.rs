@@ -209,9 +209,7 @@ pub fn run(argv: &[String]) -> R<()> {
         }
     }
     let (min_n, max_n) = p.range_packed(4)?;
-    let engine = args::engine_cfg("solomonoff", work_mult, probe_fuel)?;
-    cfg.work_mult = engine.work_mult;
-    cfg.probe_fuel = engine.probe_fuel;
+    cfg.engine = args::engine_cfg("solomonoff", work_mult, probe_fuel)?;
     // The table is a full-run product, so its path is proved writable
     // now rather than after the sweep.
     let mut table = crate::out::create("solomonoff", "--table", &table_path)?;
@@ -235,17 +233,14 @@ pub fn run(argv: &[String]) -> R<()> {
                         let root = pool.decode_u64(enc, len).expect("valid term");
                         let o = ladder::adjudicate(&cfg, pool, vm, root, &mut sink);
                         match o.verdict {
-                            // `steps` marks the program: 0 means the
+                            // `steps` marks the program: Some(0) means the
                             // pre-scan found a normal form (a trivial
                             // self-computation, no m(x) mass), and a
-                            // rescue-less engine halt reports 1 — the
+                            // rescue-less engine halt maps to 1 — the
                             // canonical count is unavailable but the
                             // program is genuinely nontrivial.
-                            Verdict::Halt {
-                                steps, steps_exact, ..
-                            } => {
-                                let steps = if steps_exact { steps } else { 1 };
-                                acc.record_halt(enc, len, &sink, steps);
+                            Verdict::Halt { steps, .. } => {
+                                acc.record_halt(enc, len, &sink, steps.unwrap_or(1));
                             }
                             Verdict::Diverge => {
                                 acc.diverge += 1;

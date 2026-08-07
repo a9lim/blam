@@ -100,13 +100,14 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
   The self-feedback certificate (`redloop`) fires on syntactic
   self-applications. Probes run at `probe_fuel` β (default 4096; verified
   insensitive through 65,536 on the whole frontier). Verdicts are typed:
-  `NoNf::Diverge` versus `NoNf::Unknown(Why::{Capacity, WorkMeter})`.
+  `NoNf::Diverge { head_chain }` versus `NoNf::Unknown(Why::{Capacity,
+  WorkMeter})`.
 - Engine config is data, not ambient: the library reads no environment at
   all. Every driver resolves the tunables at the CLI layer —
   `args::engine_cfg` takes flag → environment (`BLC_WORK_MULT` /
   `BLC_PROBE_FUEL`, kept as documented fallbacks) → measured default and
   passes an `EngineCfg` down, and the engine's only public entry points
-  (`escalation::normal_form_with`, `normal_form_spine_with`) take it as an
+  (`escalation::normal_form`, `normal_form_spine`) take it as an
   argument. `census`, `adjudicate`, `solomonoff`, `q census`, and
   `q skeleton` expose `--work-mult` / `--probe-fuel`; `blam slots` has no
   knob flags and resolves the environment alone, once, through a private
@@ -153,7 +154,7 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
 - The census's trailing `redloop:` line reads process-global atomics, so a
   *resumed* run counts only the fires it recomputed. Compare that line between
   monolithic runs only.
-- `escalation::normal_form_spine_with` is the oracle-free adjudicator for
+- `escalation::normal_form_spine` is the oracle-free adjudicator for
   generic-argument questions (`p x⃗` with rigid placeholders): every
   Diverge is history/redloop and spine-attributable. Targeted
   adjudication only, never enumeration throughput. The quantum escalation

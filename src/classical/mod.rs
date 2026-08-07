@@ -41,25 +41,3 @@ impl std::fmt::Display for OutOfFuel {
 }
 
 impl std::error::Error for OutOfFuel {}
-
-/// Beta-step budget. `steps` is left at the count reached so far, so a
-/// successful run reports its cost and an exhausted one shows the limit.
-#[derive(Clone, Copy, Debug)]
-pub struct Budget {
-    pub limit: u64,
-    pub steps: u64,
-}
-
-impl Budget {
-    pub fn new(limit: u64) -> Self {
-        Budget { limit, steps: 0 }
-    }
-
-    fn tick(&mut self) -> Result<(), OutOfFuel> {
-        if self.steps >= self.limit {
-            return Err(OutOfFuel::Beta);
-        }
-        self.steps += 1;
-        Ok(())
-    }
-}
