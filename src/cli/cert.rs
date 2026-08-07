@@ -27,6 +27,8 @@ pub fn run(argv: &[String]) -> R<()> {
     };
     let rest = &argv[1..];
     match sub.as_str() {
+        // `blam cert help lean` is `blam cert lean --help`.
+        "help" if !rest.is_empty() => run(&[rest, &["--help".to_string()][..]].concat()),
         "--help" | "-h" | "help" => {
             println!("{USAGE}");
             Ok(())
@@ -204,7 +206,7 @@ usage: blam cert search [flags]
             vec![bits]
         } else {
             let path = file_arg.unwrap_or_else(|| "data/classical/unknowns.txt".to_string());
-            args::read_terms_file(&path)?
+            args::read_terms_file("cert search", &path)?
         };
 
         args::build_pool_plain(cfg.threads)?;
@@ -1214,7 +1216,7 @@ one CSV row per term to stdout.";
             ));
         };
         args::build_pool_plain(threads)?;
-        let owned = args::read_terms_file(path)?;
+        let owned = args::read_terms_file("cert diag", path)?;
         let terms: Vec<&str> = owned.iter().map(String::as_str).collect();
 
         println!(

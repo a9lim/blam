@@ -116,8 +116,11 @@ pub fn parse_all(s: &str) -> Result<Term, ParseError> {
     Ok(term)
 }
 
-/// Render a packed term as a '0'/'1' string.
+/// Render a packed term as a '0'/'1' string. The packing contract is
+/// `len <= 64` (a `u64` holds at most 64 bits); a larger `len` is a
+/// caller bug, caught in debug builds.
 pub fn enc_to_string(enc: u64, len: u8) -> String {
+    debug_assert!(len <= 64, "a u64 packs at most 64 bits");
     (0..len)
         .rev()
         .map(|j| if enc >> j & 1 == 1 { '1' } else { '0' })

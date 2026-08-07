@@ -1092,7 +1092,10 @@ mod tests {
             nodes: 1 << 20,
             lemma_steps: 64,
         };
-        assert!(matches!(verify(&t, &loop32_cert(), &b), Err(CertFail::Init)));
+        assert!(matches!(
+            verify(&t, &loop32_cert(), &b),
+            Err(CertFail::Init)
+        ));
     }
 
     #[test]

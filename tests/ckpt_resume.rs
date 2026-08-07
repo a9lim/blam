@@ -41,13 +41,15 @@ fn tmpdir(tag: &str) -> PathBuf {
 }
 
 /// Census stdout with everything run-dependent removed: the two timing
-/// columns of each table row, and the `redloop:` telemetry line (process
-/// atomics — a resumed run only re-runs the groups it lost, so it
-/// legitimately counts fewer fires). What survives is the measurement.
+/// columns of each table row, and the `# redloop:` telemetry line
+/// (process atomics — a resumed run only re-runs the groups it lost, so
+/// it legitimately counts fewer fires). What survives is the
+/// measurement — including the `#` provenance block, whose version,
+/// range, and ladder budgets must match across every leg.
 fn normalize(out: &str) -> String {
     let mut s = String::new();
     for line in out.lines() {
-        if line.starts_with("redloop:") {
+        if line.starts_with("# redloop:") {
             continue;
         }
         let f: Vec<&str> = line.split_whitespace().collect();

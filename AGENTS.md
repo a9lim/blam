@@ -151,7 +151,7 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
   needs `--memo-in` for fate-identical Unknown/Diverge attribution at
   App-rooted compositions and for the escal column — memo files are part
   of the delta protocol, not a speedup.
-- The census's trailing `redloop:` line reads process-global atomics, so a
+- The census's trailing `# redloop:` line reads process-global atomics, so a
   *resumed* run counts only the fires it recomputed. Compare that line between
   monolithic runs only.
 - `escalation::normal_form_spine` is the oracle-free adjudicator for
@@ -180,11 +180,12 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
   battery's 2000/200k (`::THOROUGH`). A complete three-rung frontier sweep
   has not been timed end to end since the v2 reshape. Estimate, not
   measurement: a proportional 202-term sample (every 21st line of the
-  4,235-term frontier, 2026-08-07) ran 307 s wall / 1,400 s user at
-  `--threads 8` on the M5 Max, so the full frontier is about eight
-  core-hours — order 1–2 h wall, nearer the low end since the sample only
-  filled 4.6 of the 8 threads. The pre-refactor "~40 min" this replaces was
-  never re-measured; time the real thing before planning around either.
+  4,235-term frontier, 2026-08-07) ran 263 s wall / 702 s user at
+  `--threads 8` on the M5 Max under the subst_dec closedness skip
+  (pre-skip the same sample was 307 s / 1,400 s), so the full frontier is
+  about four core-hours — order 1 h wall, likely less since the sample
+  only filled a fraction of the 8 threads and wall is tail-bound by two
+  argument-heavy terms. Time the real thing before planning around it.
   For a new kill, append to
   `data/certificates/ratchet_kills.tsv`, run `scripts/recert-kills.sh`,
   regenerate the frontier with `scripts/census-regen.sh`, trim Ω by exact

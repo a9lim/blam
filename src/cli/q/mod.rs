@@ -53,6 +53,8 @@ pub fn run(argv: &[String]) -> R<()> {
     };
     let rest = &argv[1..];
     match sub.as_str() {
+        // `blam q help census` is `blam q census --help`.
+        "help" if !rest.is_empty() => run(&[rest, &["--help".to_string()][..]].concat()),
         "--help" | "-h" | "help" => {
             println!("{USAGE}");
             Ok(())

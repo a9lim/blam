@@ -40,7 +40,8 @@ ladder (defaults are the census ladder's)
 run
   --file FILE            terms to adjudicate, one bit string per line
   --threads N            rayon threads for --file mode (0 = ambient)
-  -v, --verbose          echo the ladder budgets to stderr before running";
+  -v, --verbose          echo the ladder budgets to stderr in --file mode
+                         (the single-term report prints them anyway)";
 
 pub fn run(argv: &[String]) -> R<()> {
     if args::wants_help(argv) {
@@ -108,6 +109,16 @@ pub fn run(argv: &[String]) -> R<()> {
             "single-term mode runs on this thread; --threads is for --file",
         ));
     }
+    // Same reason: on one term the echo is a duplicate of a line the
+    // report already prints, so taking the flag would promise something
+    // it does not add.
+    if bits.is_some() && p.given("--verbose") {
+        return Err(p.incompatible(
+            "--verbose",
+            "BITS",
+            "the single-term report always prints the ladder line",
+        ));
+    }
     cfg.engine = args::engine_cfg("adjudicate", work_mult, probe_fuel)?;
     if verbose {
         eprintln!("ladder: {}", describe(&cfg));
@@ -121,7 +132,10 @@ pub fn run(argv: &[String]) -> R<()> {
     batch(&cfg, &file.expect("checked above"))
 }
 
-fn describe(cfg: &LadderCfg) -> String {
+/// The ladder's budgets on one line — the provenance every classical
+/// driver stamps on its output, so a report, a `--file` run's stderr
+/// echo, and the census table's header all name the same run.
+pub(crate) fn describe(cfg: &LadderCfg) -> String {
     format!(
         "budget1={} budget2={} bb-cap={} rescue={} x{} trans; prescan={} oracle={} \
          work-mult={} probe-fuel={}",
@@ -228,7 +242,7 @@ fn verdict_line(bits: &str, o: &ladder::LadderOutcome, nf_streamed: u64) -> Stri
 /// (one per line), in parallel, and print one verdict per line. Combine
 /// with --bb-cap / --rescue to go beyond census defaults.
 fn batch(cfg: &LadderCfg, path: &str) -> R<()> {
-    let owned = args::read_terms_file(path)?;
+    let owned = args::read_terms_file("adjudicate", path)?;
     let terms: Vec<&str> = owned.iter().map(String::as_str).collect();
     let t0 = Instant::now();
     // Verdicts stream as they land (stdout is line-buffered), so a

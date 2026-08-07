@@ -259,31 +259,40 @@ pub fn parse_packed(cmd: &str, bits: &str) -> R<(u64, u8)> {
 /// rather than a latent panic, and it happens BEFORE the rayon pool is
 /// touched, so a bad file is exit 2 with a `file:line`, not a worker
 /// panic somewhere in the middle of a sweep.
-pub fn read_terms_file(path: &str) -> R<Vec<String>> {
-    read_lines(path, |t| program_of(t).map(|_| t.to_string()))
+pub fn read_terms_file(cmd: &'static str, path: &str) -> R<Vec<String>> {
+    read_lines(cmd, path, |t| program_of(t).map(|_| t.to_string()))
 }
 
 /// [`read_terms_file`] for consumers that pack each line into a
 /// `(u64, u8)` pair: the same preflight plus the 1..=64-bit window,
 /// with the packing done once, here.
-pub fn read_packed_terms_file(path: &str) -> R<Vec<(String, u64, u8)>> {
-    read_lines(path, |t| {
+pub fn read_packed_terms_file(cmd: &'static str, path: &str) -> R<Vec<(String, u64, u8)>> {
+    read_lines(cmd, path, |t| {
         packed_of(t).map(|(enc, len)| (t.to_string(), enc, len))
     })
 }
 
 /// The shared line loop: skip blanks, enforce the 0/1 alphabet, then hand
 /// each line to `of`, whose bare defect phrase gets the `file:line`.
-fn read_lines<T>(path: &str, of: impl Fn(&str) -> Result<T, String>) -> R<Vec<T>> {
-    let text =
-        std::fs::read_to_string(path).map_err(|e| format!("blam: cannot read {path}: {e}"))?;
+///
+/// `cmd` is what puts these two failures in the same shape as every other
+/// refusal the binary prints — named subcommand, then the defect, then the
+/// pointer at that subcommand's help. An unreadable `--file` used to be
+/// the one error in the CLI that named neither.
+fn read_lines<T>(
+    cmd: &'static str,
+    path: &str,
+    of: impl Fn(&str) -> Result<T, String>,
+) -> R<Vec<T>> {
+    let text = std::fs::read_to_string(path)
+        .map_err(|e| format!("blam {cmd}: cannot read {path}: {e}\n{}", hint(cmd)))?;
     let mut out = Vec::new();
     for (k, line) in text.lines().enumerate() {
         let t = line.trim();
         if t.is_empty() {
             continue;
         }
-        let at = |d: String| format!("blam: {path}:{}: {d}", k + 1);
+        let at = |d: String| format!("blam {cmd}: {path}:{}: {d}\n{}", k + 1, hint(cmd));
         if !t.bytes().all(|b| b == b'0' || b == b'1') {
             return Err(at(format!("not a 0/1 bit string: `{t}`")));
         }
@@ -537,43 +546,69 @@ mod tests {
         let good = dir.join("good.txt");
         std::fs::write(&good, "0010\n\n  000010 \n").unwrap();
         assert_eq!(
-            read_terms_file(good.to_str().unwrap()).unwrap(),
+            read_terms_file("adjudicate", good.to_str().unwrap()).unwrap(),
             vec!["0010".to_string(), "000010".to_string()]
         );
         let bad = dir.join("bad.txt");
         std::fs::write(&bad, "0010\nTODO: 42 things\n").unwrap();
-        let e = read_terms_file(bad.to_str().unwrap()).unwrap_err();
+        let e = read_terms_file("adjudicate", bad.to_str().unwrap()).unwrap_err();
         assert!(e.contains(":2:"), "{e}");
         assert!(e.contains("not a 0/1 bit string"), "{e}");
         // The preflight: a line that IS bits but is not a program is
         // located by line, not left for a worker to panic on.
         let open = dir.join("open.txt");
         std::fs::write(&open, "0010\n10\n").unwrap();
-        let e = read_terms_file(open.to_str().unwrap()).unwrap_err();
+        let e = read_terms_file("adjudicate", open.to_str().unwrap()).unwrap_err();
         assert!(e.contains(":2:"), "{e}");
         assert!(e.contains("open term: free index 1"), "{e}");
         let trail = dir.join("trail.txt");
         std::fs::write(&trail, "00100010\n").unwrap();
-        let e = read_terms_file(trail.to_str().unwrap()).unwrap_err();
+        let e = read_terms_file("adjudicate", trail.to_str().unwrap()).unwrap_err();
         assert!(e.contains(":1:"), "{e}");
         assert!(e.contains("trailing bits"), "{e}");
         // And the packed reader adds the width rule, with the same framing.
         let wide = dir.join("wide.txt");
         let long = format!("{}10", "00".repeat(34));
         std::fs::write(&wide, format!("0010\n{long}\n")).unwrap();
-        assert_eq!(read_terms_file(wide.to_str().unwrap()).unwrap().len(), 2);
-        let e = read_packed_terms_file(wide.to_str().unwrap()).unwrap_err();
+        assert_eq!(
+            read_terms_file("adjudicate", wide.to_str().unwrap())
+                .unwrap()
+                .len(),
+            2
+        );
+        let e = read_packed_terms_file("q census", wide.to_str().unwrap()).unwrap_err();
         assert!(e.contains(":2:"), "{e}");
         assert!(e.contains("1..=64"), "{e}");
         assert_eq!(
-            read_packed_terms_file(good.to_str().unwrap()).unwrap(),
+            read_packed_terms_file("q census", good.to_str().unwrap()).unwrap(),
             vec![
                 ("0010".to_string(), 0b0010, 4),
                 ("000010".to_string(), 0b000010, 6)
             ]
         );
-        let e = read_terms_file(dir.join("missing.txt").to_str().unwrap()).unwrap_err();
+        let e =
+            read_terms_file("adjudicate", dir.join("missing.txt").to_str().unwrap()).unwrap_err();
         assert!(e.contains("cannot read"), "{e}");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// Both file failures wear the house shape: named subcommand, then
+    /// the defect, then that subcommand's help — the same three parts
+    /// every other refusal in the binary has.
+    #[test]
+    fn file_read_failures_name_the_subcommand_and_its_help() {
+        let dir = std::env::temp_dir().join(format!("blam-argsh-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let missing = dir.join("nope.txt");
+        let e = read_terms_file("q skeleton", missing.to_str().unwrap()).unwrap_err();
+        assert!(e.starts_with("blam q skeleton: cannot read "), "{e}");
+        assert!(e.ends_with("try `blam q skeleton --help`"), "{e}");
+        let bad = dir.join("bad.txt");
+        std::fs::write(&bad, "0010\nTODO: 42 things\n").unwrap();
+        let e = read_terms_file("cert search", bad.to_str().unwrap()).unwrap_err();
+        assert!(e.starts_with("blam cert search: "), "{e}");
+        assert!(e.contains(":2: not a 0/1 bit string"), "{e}");
+        assert!(e.ends_with("try `blam cert search --help`"), "{e}");
         let _ = std::fs::remove_dir_all(&dir);
     }
 

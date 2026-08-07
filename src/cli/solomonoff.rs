@@ -169,14 +169,22 @@ blam solomonoff [MIN] MAX — Solomonoff prior, K(x), and Omega bounds
 
 usage: blam solomonoff [MIN] MAX [flags]     (MIN defaults to 4, MAX <= 63)
 
-  --bb-cap N       escalation-engine capacity (default 2000000)
-  --rescue N       KN rescue beta budget (default 10000000)
-  --table FILE     per-x m/K table (default solomonoff_table.txt)
-  --dump-max-x N   dump table rows with |x| <= N (default 20)
-  --top N          rows per analytics section (default 40)
-  --threads N      rayon threads (0 = ambient, the default)
-  --work-mult N    escalation work meter per capacity bit (default 16)
-  --probe-fuel N   redloop probe beta budget (default 4096)";
+ladder
+  --budget1 N            rung-1 beta budget (default 64)
+  --budget2 N            rung-2 beta budget (default 4096)
+  --bb-cap N             escalation-engine capacity (default 2000000)
+  --rescue N             KN rescue beta budget (default 10000000)
+  --rescue-trans-mult N  rescue transition cap = rescue x N (default 32)
+  --no-prescan           skip the redex-free pre-scan
+  --no-oracle            skip the divergence-oracle prefilter
+  --work-mult N          escalation work meter per capacity bit (default 16)
+  --probe-fuel N         redloop probe beta budget (default 4096)
+
+run
+  --table FILE           per-x m/K table (default: none)
+  --dump-max-x N         dump table rows with |x| <= N (default 20)
+  --top N                rows per analytics section (default 40)
+  --threads N            rayon threads (0 = ambient, the default)";
 
 pub fn run(argv: &[String]) -> R<()> {
     if args::wants_help(argv) {
@@ -187,7 +195,10 @@ pub fn run(argv: &[String]) -> R<()> {
     // agree term for term, since Ω's bounds are the census's halt/
     // diverge split re-weighted by 2^-|p|.
     let mut cfg = LadderCfg::default();
-    let mut table_path = String::from("solomonoff_table.txt");
+    // Opt-in: this used to default to ./solomonoff_table.txt, the one
+    // file output in the CLI with a default path, and truncate it before
+    // any compute on every run that never asked for a table.
+    let mut table_path: Option<String> = None;
     let mut dump_max_x: u8 = 20;
     let mut top: usize = 40;
     let mut threads = 0usize;
@@ -196,14 +207,25 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut p = Args::new("solomonoff", argv);
     while let Some(tok) = p.next() {
         match tok {
+            "--budget1" => cfg.budget1 = p.num(tok)?,
+            "--budget2" => cfg.budget2 = p.num(tok)?,
             "--bb-cap" => cfg.bb_cap = p.num(tok)?,
             "--rescue" => cfg.rescue = p.num(tok)?,
-            "--table" => table_path = p.value(tok)?.to_string(),
+            "--rescue-trans-mult" => cfg.rescue_trans_mult = p.num(tok)?,
+            "--table" => table_path = Some(p.value(tok)?.to_string()),
             "--dump-max-x" => dump_max_x = p.num(tok)?,
             "--top" => top = p.num(tok)?,
             "--threads" => threads = p.num(tok)?,
             "--work-mult" => work_mult = Some(p.num(tok)?),
             "--probe-fuel" => probe_fuel = Some(p.num(tok)?),
+            "--no-prescan" => {
+                p.flag(tok)?;
+                cfg.prescan = false;
+            }
+            "--no-oracle" => {
+                p.flag(tok)?;
+                cfg.oracle = false;
+            }
             _ if tok.starts_with('-') => return Err(p.unknown(tok)),
             _ => p.push(tok),
         }
@@ -212,7 +234,10 @@ pub fn run(argv: &[String]) -> R<()> {
     cfg.engine = args::engine_cfg("solomonoff", work_mult, probe_fuel)?;
     // The table is a full-run product, so its path is proved writable
     // now rather than after the sweep.
-    let mut table = crate::out::create("solomonoff", "--table", &table_path)?;
+    let mut table = match &table_path {
+        Some(path) => Some(crate::out::create("solomonoff", "--table", path)?),
+        None => None,
+    };
     args::build_pool(threads)?;
 
     let t0 = Instant::now();
@@ -373,29 +398,34 @@ pub fn run(argv: &[String]) -> R<()> {
         );
     }
 
-    // ---- full table dump for small x ----
-    use std::fmt::Write as _;
-    let mut body = String::from("# x |x| K_N count nontrivial_mass_2^-64 min_program\n");
-    let mut dumped = 0u64;
-    for ((xenc, xlen), e) in rows.iter() {
-        if *xlen <= dump_max_x {
-            let _ = writeln!(
-                body,
-                "{} {} {} {} {} {}",
-                enc_to_string(*xenc, *xlen),
-                xlen,
-                e.k.min(*xlen),
-                e.count,
-                e.mass,
-                enc_to_string(e.k_prog.0, e.k_prog.1)
+    // ---- full table dump for small x, only when one was asked for ----
+    match (&table_path, table.as_mut()) {
+        (Some(path), Some(f)) => {
+            use std::fmt::Write as _;
+            let mut body = String::from("# x |x| K_N count nontrivial_mass_2^-64 min_program\n");
+            let mut dumped = 0u64;
+            for ((xenc, xlen), e) in rows.iter() {
+                if *xlen <= dump_max_x {
+                    let _ = writeln!(
+                        body,
+                        "{} {} {} {} {} {}",
+                        enc_to_string(*xenc, *xlen),
+                        xlen,
+                        e.k.min(*xlen),
+                        e.count,
+                        e.mass,
+                        enc_to_string(e.k_prog.0, e.k_prog.1)
+                    );
+                    dumped += 1;
+                }
+            }
+            crate::out::write_all("solomonoff", path, f, body.as_bytes())?;
+            println!(
+                "\ntable: {} distinct nontrivial nfs total; {dumped} with |x|≤{dump_max_x} dumped to {path}",
+                rows.len()
             );
-            dumped += 1;
         }
+        _ => println!("\ntable: {} distinct nontrivial nfs total", rows.len()),
     }
-    crate::out::write_all("solomonoff", &table_path, &mut table, body.as_bytes())?;
-    println!(
-        "\ntable: {} distinct nontrivial nfs total; {dumped} with |x|≤{dump_max_x} dumped to {table_path}",
-        rows.len()
-    );
     Ok(())
 }

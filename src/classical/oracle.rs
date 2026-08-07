@@ -18,7 +18,7 @@ use crate::classical::machine::{Node, Pool};
 
 /// Read-only view of a lambda term, so the oracle runs on both the flat
 /// pool (census prefilter) and the escalation engine's boxed terms.
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub enum NV<T> {
     Var(u32),
     Lam(T),

@@ -24,6 +24,10 @@ cli = ["dep:rayon"]
 # built on them (cert search/diag, trace, slots, q galois, q oddmin).
 lab = []
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
 [dependencies]
 im-rc = "15"
 rayon = { version = "1", optional = true }

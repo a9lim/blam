@@ -11,9 +11,15 @@ MIN="${1:-4}" MAX="${2:-32}"
 cargo build --release --bin blam
 T=$(mktemp -d)
 trap 'rm -rf "$T"' EXIT
+# Rows only, from both sides: `#` opens every provenance and telemetry
+# line the census prints, and a row is the only line that starts with a
+# number. Comparing rows is what makes this robust to prose changes —
+# and to comparing a fresh run against a table generated before them.
 target/release/blam census "$MIN" "$MAX" --verify > "$T/spot.txt"
-awk 'NF>=10 && $1+0>0 {print $1,$2,$3,$4,$5,$6,$7,$8}' "$T/spot.txt" > "$T/spot.cols"
-awk -v lo="$MIN" -v hi="$MAX" 'NF>=10 && $1+0>0 && $1>=lo && $1<=hi {print $1,$2,$3,$4,$5,$6,$7,$8}' \
+awk '/^[[:space:]]*#/ {next} /^[[:space:]]*[0-9]/ {print $1,$2,$3,$4,$5,$6,$7,$8}' \
+    "$T/spot.txt" > "$T/spot.cols"
+awk -v lo="$MIN" -v hi="$MAX" \
+    '/^[[:space:]]*#/ {next} /^[[:space:]]*[0-9]/ && $1>=lo && $1<=hi {print $1,$2,$3,$4,$5,$6,$7,$8}' \
     data/classical/census_table.txt > "$T/canon.cols"
 diff "$T/spot.cols" "$T/canon.cols"
 echo "spot-check OK: rows $MIN..$MAX bit-identical to data/classical/census_table.txt"

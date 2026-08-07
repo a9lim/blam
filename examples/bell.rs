@@ -25,7 +25,7 @@ fn main() {
             Fate::Halt(store) => println!(
                 "Halt: {} live qubits, amps {:?}, mass {:?}, {} contractions",
                 store.live_count(),
-                store.amps,
+                store.amps(),
                 leaf.mass,
                 leaf.steps
             ),

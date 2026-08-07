@@ -15,6 +15,12 @@
 //! parallel enumeration.) Single-term and batch adjudication moved to
 //! `blam adjudicate`.
 //!
+//! Output: stdout is the measurement. `data/classical/census_table.txt`
+//! is a verbatim capture of it, so the stream opens with `#` provenance
+//! (binary version, size range, ladder budgets) and marks every line
+//! that is not a table row `#` — the shape `q census` already prints.
+//! Progress, memo, and checkpoint telemetry stay on stderr.
+//!
 //! Scheduling: each group of generation tasks runs in two phases (see
 //! [`run_group`]) — generation fused with the ladder's cheap rungs
 //! across a range-split `par_iter`, then the ~0.3% of survivors through
@@ -42,6 +48,7 @@
 //! Diverge, and re-escalates memo-covered wraps; with `--memo-in` from a
 //! run through n−1 the row is bit-identical, escal column included.
 
+use crate::adjudicate::describe;
 use crate::args::{self, Args, R};
 use crate::ckpt::{sha256_16, Ckpt, CkptRecord};
 use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks, GenTask};
@@ -831,19 +838,6 @@ pub fn run(argv: &[String]) -> R<()> {
         Some(p) => Some(Ckpt::<Stats>::open("census", p, &ckpt_cfg, groups_flag)?),
         None => None,
     };
-    println!(
-        "{:>3} {:>12} {:>12} {:>8} {:>8} {:>8} {:>10} {:>12} {:>9} {:>10}",
-        "n",
-        "closed",
-        "halt",
-        "diverge",
-        "unknown",
-        "escal",
-        "max|nf|",
-        "beta_total",
-        "time_s",
-        "terms/s"
-    );
 
     // λ-wrap memo, rolling by size parity: slot n%2 holds size n−2's
     // expensive verdicts during size n, then is replaced by size n's.
@@ -852,7 +846,10 @@ pub fn run(argv: &[String]) -> R<()> {
     // Heads are strict subterms, so the set is read-only within a size.
     let mut no_whnf: NoWhnfSet = Default::default();
     // Seed the two live parity slots (sizes min_n−2 and min_n−1) and the
-    // whole no-whnf set from a prior run's --memo-out file; other sizes'
+    // whole no-whnf set from a prior run's --memo-out file. Read here,
+    // above the header, for the checkpoint's reason: a missing or
+    // malformed memo file is a refusal, and it must not arrive under a
+    // header promising rows that will never come. Other sizes'
     // H/D records are inert here. Loads dedup by key (same key ⇒ same
     // deterministic verdict), so duplicate lines from resumed runs are
     // harmless. Fates at App-rooted compositions depend on these facts
@@ -892,6 +889,32 @@ pub fn run(argv: &[String]) -> R<()> {
             no_whnf.len()
         );
     }
+
+    // Provenance, then the table — the shape `q census` already prints.
+    // This stdout stream IS a measurement (data/classical/census_table.txt
+    // is a verbatim capture of it), so it says which binary, which range,
+    // and at which budgets it was produced, and every line that is not a
+    // table row is marked `#` so a reader can strip the prose without
+    // guessing at indentation.
+    println!("# blam census {}", env!("CARGO_PKG_VERSION"));
+    println!("# sizes {min_n}..={max_n}");
+    println!("# ladder: {}", describe(&cfg.ladder));
+    // `# ` occupies the width the row's own `n` column is right-aligned
+    // in, so the header still sits over its columns.
+    println!(
+        "# {:>1} {:>12} {:>12} {:>8} {:>8} {:>8} {:>10} {:>12} {:>9} {:>10}",
+        "n",
+        "closed",
+        "halt",
+        "diverge",
+        "unknown",
+        "escal",
+        "max|nf|",
+        "beta_total",
+        "time_s",
+        "terms/s"
+    );
+
     // With a checkpoint, per-size unknown dumping would duplicate lines
     // across resumed runs; collect and write the file once at the end.
     let mut deferred_unknowns: Vec<(u64, u8)> = Vec::new();
@@ -926,7 +949,7 @@ pub fn run(argv: &[String]) -> R<()> {
                     let t0 = Instant::now();
                     let gs = run_slice(&tasks[lo..hi]);
                     let gsecs = t0.elapsed().as_secs_f64();
-                    c.append(n, gi, gsecs, &gs);
+                    c.append(n, gi, gsecs, &gs)?;
                     acc = acc.merge(gs);
                     secs += gsecs;
                 }
@@ -997,7 +1020,7 @@ pub fn run(argv: &[String]) -> R<()> {
         // ladder's cheapest rung and the baseline every other cost is
         // measured against.
         println!(
-            "    prescan: {} redex-free of {} closed terms",
+            "#   prescan: {} redex-free of {} closed terms",
             stats.prescan_nf, stats.total
         );
         // The BBλ champion's own bits — at record-setting sizes the
@@ -1008,17 +1031,17 @@ pub fn run(argv: &[String]) -> R<()> {
                 .rev()
                 .map(|i| if (wenc >> i) & 1 == 1 { '1' } else { '0' })
                 .collect();
-            println!("    max|nf| witness: {bits}");
+            println!("#   max|nf| witness: {bits}");
         }
         if !stats.unknowns.is_empty() {
             println!(
-                "    unknowns by cause: {} capacity, {} work-meter; max successful rescue {} beta",
+                "#   unknowns by cause: {} capacity, {} work-meter; max successful rescue {} beta",
                 stats.unknown_cap, stats.unknown_work, stats.max_rescue_beta
             );
         }
         if stats.rescue_cap.0 + stats.rescue_work.0 > 0 {
             println!(
-                "    rescued: {} from capacity (max {} beta), {} from work-meter (max {} beta); max trans {}",
+                "#   rescued: {} from capacity (max {} beta), {} from work-meter (max {} beta); max trans {}",
                 stats.rescue_cap.0,
                 stats.rescue_cap.1,
                 stats.rescue_work.0,
@@ -1028,13 +1051,13 @@ pub fn run(argv: &[String]) -> R<()> {
         }
         if stats.rescue_stuck.0 + stats.rescue_stuck.1 > 0 {
             println!(
-                "    stuck rescues: {} beta-bound, {} transition-bound",
+                "#   stuck rescues: {} beta-bound, {} transition-bound",
                 stats.rescue_stuck.0, stats.rescue_stuck.1
             );
         }
         if stats.rung2_stuck.0 + stats.rung2_stuck.1 > 0 {
             println!(
-                "    rung2 stuck: {} beta-bound, {} transition-bound",
+                "#   rung2 stuck: {} beta-bound, {} transition-bound",
                 stats.rung2_stuck.0, stats.rung2_stuck.1
             );
         }
@@ -1044,10 +1067,10 @@ pub fn run(argv: &[String]) -> R<()> {
         stats.unknowns.sort_unstable();
         if !stats.unknowns.is_empty() {
             for (enc, len) in stats.unknowns.iter().take(16) {
-                println!("    unknown: {}", enc_to_string(*enc, *len));
+                println!("#   unknown: {}", enc_to_string(*enc, *len));
             }
             if stats.unknowns.len() > 16 {
-                println!("    ... and {} more unknowns", stats.unknowns.len() - 16);
+                println!("#   ... and {} more unknowns", stats.unknowns.len() - 16);
             }
             if ckpt.is_some() {
                 deferred_unknowns.extend(stats.unknowns.iter().copied());
@@ -1060,11 +1083,11 @@ pub fn run(argv: &[String]) -> R<()> {
         if verify {
             if let Some((_, c)) = counts_ref.iter().find(|(m, _)| *m == n) {
                 assert_eq!(stats.total, *c, "A114852 mismatch at n={n}");
-                println!("    verify: count matches A114852");
+                println!("#   verify: count matches A114852");
             }
             if let Some((_, b)) = bb_ref.iter().find(|(m, _)| *m == n) {
                 assert_eq!(stats.max_nf, *b, "BBλ mismatch at n={n}");
-                println!("    verify: max|nf| matches BBλ({n})");
+                println!("#   verify: max|nf| matches BBλ({n})");
             }
         }
     }
@@ -1078,7 +1101,7 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     let fires = blam::classical::escalation::REDLOOP_FIRES.load(Ordering::Relaxed);
     let fuel = blam::classical::escalation::REDLOOP_FUEL_REJECTS.load(Ordering::Relaxed);
-    println!("redloop: {fires} proofs, {fuel} shape-matches lost to probe fuel");
+    println!("# redloop: {fires} proofs, {fuel} shape-matches lost to probe fuel");
     Ok(())
 }
 

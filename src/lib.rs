@@ -1,3 +1,5 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
+#![warn(missing_debug_implementations)]
 //! Binary lambda calculus engine for algorithmic information theory
 //! experiments.
 //!
@@ -17,12 +19,17 @@
 //!
 //! One verb pair, semantic rather than cosmetic: classical terms
 //! `normalize`, quantum programs `run`.
+//!
+//! Design documents referenced from doc comments (`docs/...`) live in
+//! the repository <https://github.com/a9lim/blam>, not in the published
+//! package.
 
 pub mod blc;
 pub mod classical;
 pub mod quantum;
 
 #[cfg(feature = "lab")]
+#[cfg_attr(docsrs, doc(cfg(feature = "lab")))]
 pub mod lab;
 
 pub use blc::wire::{parse_all, parse_prefix, ParseError};

@@ -70,6 +70,11 @@ fn dispatch(argv: &[String]) -> Result<(), String> {
         println!("{USAGE}");
         return Ok(());
     };
+    // `blam help census` asks census's question, not the top-level one;
+    // it used to answer with the command table and lose the request.
+    if cmd == "help" && argv.len() > 1 {
+        return dispatch(&[&argv[1..], &["--help".to_string()][..]].concat());
+    }
     if cmd == "--help" || cmd == "-h" || cmd == "help" {
         println!("{USAGE}");
         return Ok(());
@@ -149,6 +154,34 @@ mod tests {
         for group in ["ENGINES", "MEASUREMENTS", "CERTIFICATES", "INSTRUMENTS"] {
             assert!(USAGE.contains(group), "{group} missing from the help");
         }
+    }
+
+    /// `blam help census` is the same request as `blam census --help`.
+    /// Printing the top-level table would also return `Ok`, so the proof
+    /// that the re-dispatch really happened is the unknown-name case:
+    /// only a routed `help` can fail.
+    #[test]
+    fn help_with_a_subcommand_routes_to_that_subcommand() {
+        for path in [
+            vec!["help", "census"],
+            vec!["help", "adjudicate"],
+            vec!["help", "solomonoff"],
+            vec!["help", "q", "census"],
+            vec!["help", "cert", "lean"],
+        ] {
+            assert!(dispatch(&argv(&path)).is_ok(), "{path:?}");
+        }
+        // Bare `help` still prints the command table.
+        assert!(dispatch(&argv(&["help"])).is_ok());
+        // And a name nobody owns is still named, not swallowed by it.
+        let e = dispatch(&argv(&["help", "ceusus"])).unwrap_err();
+        assert!(e.contains("unknown command `ceusus`"), "{e}");
+        let e = dispatch(&argv(&["help", "q", "sensus"])).unwrap_err();
+        assert!(e.contains("unknown subcommand `sensus`"), "{e}");
+        let e = dispatch(&argv(&["q", "help", "sensus"])).unwrap_err();
+        assert!(e.contains("unknown subcommand `sensus`"), "{e}");
+        let e = dispatch(&argv(&["cert", "help", "serch"])).unwrap_err();
+        assert!(e.contains("unknown subcommand `serch`"), "{e}");
     }
 
     #[test]

@@ -22,6 +22,7 @@ pub enum Node {
 }
 
 /// Pending constructor on `decode`'s explicit build stack.
+#[derive(Debug)]
 enum P {
     Lam,
     App0,      // waiting for function child
@@ -29,7 +30,7 @@ enum P {
 }
 
 /// Flat term storage, reused across terms via `clear`.
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct Pool {
     nodes: Vec<Node>,
     /// `decode`'s build stack, owned by the pool so the hot loop
@@ -285,7 +286,7 @@ pub trait Sink {
 }
 
 /// Counts bits only — the BBλ metric, no materialization.
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct SizeSink(pub u64);
 
 impl Sink for SizeSink {
@@ -301,7 +302,7 @@ impl Sink for SizeSink {
 }
 
 /// Materializes the normal form's bit string (differential tests, m(x) keys).
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct StringSink(pub String);
 
 impl Sink for StringSink {
@@ -324,7 +325,7 @@ impl Sink for StringSink {
 /// term's bit count, and env cells live in their own vector).
 const LVL_TAG: u32 = 1 << 31;
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 enum Frame {
     /// Pending application argument (eval phase).
     Arg(u32, u32),
@@ -337,7 +338,7 @@ enum Frame {
 const NIL: u32 = u32::MAX;
 
 /// The machine. Reused across terms; arenas reset per `normalize` call.
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct Machine {
     /// Env cell payloads: `(term, env)` for an unevaluated closure,
     /// `(LVL_TAG | level, 0)` for a rigid de Bruijn level. Split from

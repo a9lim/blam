@@ -60,6 +60,9 @@ type Restored<Rec> = HashMap<(u32, usize), (Rec, f64)>;
 
 pub struct Ckpt<Rec> {
     file: std::fs::File,
+    /// The path the handle came from, kept so a failed append can name
+    /// the file the sweep was promised — the handle itself cannot.
+    path: String,
     /// Task-split target pinned by the header.
     pub target: usize,
     pub groups: usize,
@@ -130,6 +133,7 @@ impl<Rec: CkptRecord> Ckpt<Rec> {
         }
         Ok(Ckpt {
             file,
+            path: path.to_string(),
             target,
             groups,
             restored,
@@ -247,7 +251,11 @@ impl<Rec: CkptRecord> Ckpt<Rec> {
         self.restored.remove(&(n, gi))
     }
 
-    pub fn append(&mut self, n: u32, gi: usize, secs: f64, r: &Rec) {
+    /// Commit one group record. A disk that fills (or a handle that goes
+    /// bad) mid-sweep is a refusal naming the file, the same shape the
+    /// header write above takes — never a panic on a worker with hours of
+    /// census in hand.
+    pub fn append(&mut self, n: u32, gi: usize, secs: f64, r: &Rec) -> R<()> {
         let mut out = String::new();
         {
             use std::fmt::Write as _;
@@ -258,8 +266,15 @@ impl<Rec: CkptRecord> Ckpt<Rec> {
             use std::fmt::Write as _;
             writeln!(out, "E {n} {gi}").unwrap();
         }
-        self.file.write_all(out.as_bytes()).unwrap();
-        self.file.flush().unwrap();
+        self.file
+            .write_all(out.as_bytes())
+            .and_then(|()| self.file.flush())
+            .map_err(|e| {
+                format!(
+                    "blam: cannot write the checkpoint record to {}: {e}",
+                    self.path
+                )
+            })
     }
 }
 
@@ -408,6 +423,43 @@ mod tests {
             sha256_16(dir.join("nope.txt").to_str().unwrap()),
             "unreadable"
         );
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// The smallest possible record: enough to drive `append`.
+    #[derive(Default)]
+    struct Unit;
+
+    impl CkptRecord for Unit {
+        fn write_body(&self, out: &mut String) {
+            out.push_str("U\n");
+        }
+        fn parse_line(&mut self, _line: &str) -> Option<()> {
+            Some(())
+        }
+    }
+
+    /// A group record that cannot reach the disk is a user-facing
+    /// refusal naming the checkpoint, not an `unwrap` panic on a worker
+    /// holding a whole sweep's accumulator.
+    #[test]
+    fn a_failed_append_names_the_checkpoint_and_does_not_panic() {
+        let dir = std::env::temp_dir().join(format!("blam-ckpt-ro-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let p = dir.join("ck.txt");
+        std::fs::write(&p, "").unwrap();
+        // A read-only handle stands in for the full disk / vanished
+        // mount: `write_all` fails, and the message has to come back.
+        let mut c: Ckpt<Unit> = Ckpt {
+            file: std::fs::File::open(&p).unwrap(),
+            path: p.to_string_lossy().into_owned(),
+            target: 1,
+            groups: 1,
+            restored: HashMap::new(),
+        };
+        let e = c.append(4, 0, 0.0, &Unit).unwrap_err();
+        assert!(e.contains("cannot write the checkpoint record"), "{e}");
+        assert!(e.contains("ck.txt"), "{e}");
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

@@ -107,6 +107,17 @@ escalation, rescue — configured by an explicit `LadderCfg` whose
 defaults are the budgets the canonical census table was generated at.
 Every sweep driver in the repo adjudicates through it.
 
+```rust
+use blam::classical::ladder::{self, LadderCfg, Verdict};
+
+let mut pool = Pool::new();
+let root = pool.decode_str("010001101000011010").unwrap(); // Ω
+let mut sink = SizeSink::default();
+let o = ladder::adjudicate(&LadderCfg::default(), &pool,
+                           &mut Machine::new(), root, &mut sink);
+assert_eq!(o.verdict, Verdict::Diverge); // proven, on the oracle rung
+```
+
 ### qBLC
 
 The quantum pillar mirrors the classical layout: `quantum::reference`
@@ -142,7 +153,8 @@ let leaves = run(apply_signature(&p, &FROZEN), &QBudget::default());
 ```
 
 Runnable versions of these snippets: `examples/normalize.rs`,
-`examples/bell.rs`, `examples/parse_file.rs`.
+`examples/adjudicate.rs`, `examples/enumerate.rs`, `examples/bell.rs`,
+`examples/parse_file.rs`.
 
 ## Drivers
 
@@ -183,7 +195,7 @@ target/release/blam adjudicate 010001101000011010
 
 # Ω / K sweep;  quantum census
 target/release/blam solomonoff 4 41 --table data/classical/solomonoff_table.txt
-target/release/blam q census 4 41 --trans 67108864 --out data/quantum/census_table.txt
+target/release/blam q census 4 41 --out data/quantum/census_table.txt
 
 # certificate sweep, then kernel-check the kills in Lean
 target/release/blam cert search --file data/classical/unknowns.txt

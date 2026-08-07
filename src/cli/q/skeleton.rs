@@ -125,7 +125,7 @@ pub fn run(argv: &[String]) -> R<()> {
     // The file is validated line by line here, sequentially, BEFORE the
     // pool exists: an open program used to reach `adjudicate_with_
     // transfer` on a worker and panic there, mid-sweep.
-    let owned = args::read_terms_file(path)?;
+    let owned = args::read_terms_file("q skeleton", path)?;
     // Big worker stacks: the skeleton reducer and Term drops recurse
     // over term depth (the size cap bounds it at thousands of frames).
     args::build_pool(threads)?;

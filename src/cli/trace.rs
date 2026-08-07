@@ -876,8 +876,7 @@ caps (all subcommands)
 
 scan only
   --file FILE          terms to classify, one bit string per line
-  --out FILE           CSV output
-                       (default data/certificates/frontier_classification.csv)
+  --out FILE           CSV output (required)
   --limit N            classify only the first N terms
   --threads N          local pool size (default 6; memory-budgeted, 256 MB
                        worker stacks — this one does NOT touch the global pool)
@@ -907,7 +906,10 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     let mut cfg = Cfg::default();
     let mut file: Option<String> = None;
-    let mut out = "data/certificates/frontier_classification.csv".to_string();
+    // No default: the old one was the checked-in canonical CSV, so a
+    // `trace scan` run without `--out` truncated a data/ product before
+    // it had classified a single term.
+    let mut out: Option<String> = None;
     let mut dump_steps: Vec<u64> = vec![10, 100, 1000];
     let mut threads = 6usize;
     let mut limit: Option<usize> = None;
@@ -930,7 +932,7 @@ pub fn run(argv: &[String]) -> R<()> {
                 cfg.verbose = true;
             }
             "--file" if cmd == "scan" => file = Some(p.value(tok)?.to_string()),
-            "--out" if cmd == "scan" => out = p.value(tok)?.to_string(),
+            "--out" if cmd == "scan" => out = Some(p.value(tok)?.to_string()),
             "--limit" if cmd == "scan" => limit = Some(p.num(tok)?),
             "--threads" if cmd == "scan" => threads = p.num(tok)?,
             "--at" if cmd == "dump" => {
@@ -977,6 +979,12 @@ pub fn run(argv: &[String]) -> R<()> {
             args::hint("trace scan")
         ));
     };
+    let Some(out) = out else {
+        return Err(format!(
+            "blam trace scan: missing --out FILE\n{}",
+            args::hint("trace scan")
+        ));
+    };
 
     // The CSV is a full-run product; prove its path writable before the
     // scan rather than after it.
@@ -987,7 +995,7 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     let mut csv = crate::out::create("trace scan", "--out", &out)?;
 
-    let mut terms = args::read_terms_file(&file)?;
+    let mut terms = args::read_terms_file("trace scan", &file)?;
     if let Some(n) = limit {
         terms.truncate(n);
     }

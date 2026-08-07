@@ -198,7 +198,7 @@ built from this checker, its rungs, and the residual adjudication that follows
 
 ### Shared sweep step
 
-`src/quantum/sweep.rs` is the per-program step all three measurements share —
+`src/cli/q/sweep.rs` is the per-program step all three measurements share — it sits with the drivers rather than in the `quantum` pillar (measurement plumbing, not engine surface; see `src/quantum/mod.rs`'s module doc) —
 the operator census and both dyadicity sectors — with the mass-conservation
 battery inside it, so no sweep can drop the check the others keep.
 `src/quantum/sig.rs` is the frozen order's single home and supplies the hole
