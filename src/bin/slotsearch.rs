@@ -38,10 +38,11 @@
 //! Usage: slotsearch <var|abs|app> [--min-size N] [--max-size N]
 //!        [--tasks N] [--counts-only] [--dump FILE]
 
-use blam::bb::{normal_form, LTerm, NoNf};
-use blam::oracle::no_nf;
-use blam::vm::{Machine, Node, Sink, TermPool};
-use blam::OutOfFuel;
+use blam::blc::wire::enc_to_string;
+use blam::classical::escalation::{normal_form, LTerm, NoNf};
+use blam::classical::machine::{Machine, Node, Pool, Sink};
+use blam::classical::oracle::no_nf;
+use blam::classical::OutOfFuel;
 use rayon::prelude::*;
 use std::collections::BinaryHeap;
 use std::time::Instant;
@@ -511,7 +512,7 @@ enum P {
 
 /// Decode `C` into the pool and close it: `\rest \...frame. C rest`.
 /// Reuses `work` so the hot loop allocates nothing per candidate.
-fn close(pool: &mut TermPool, work: &mut Vec<P>, frame: u8, enc: u64, len: u8) -> u32 {
+fn close(pool: &mut Pool, work: &mut Vec<P>, frame: u8, enc: u64, len: u8) -> u32 {
     pool.clear();
     work.clear();
     let mut bit = len as i32;
@@ -585,7 +586,7 @@ enum Verdict {
 
 #[allow(clippy::too_many_arguments)]
 fn adjudicate(
-    pool: &mut TermPool,
+    pool: &mut Pool,
     vm: &mut Machine,
     work: &mut Vec<P>,
     slot: &Slot,
@@ -639,11 +640,11 @@ fn adjudicate(
     Verdict::Unknown
 }
 
-fn lterm_of(pool: &TermPool, id: u32) -> LTerm {
-    match pool.nodes[id as usize] {
+fn lterm_of(pool: &Pool, id: u32) -> LTerm {
+    match pool.node(id) {
         Node::Var(n) => LTerm::Var(n),
-        Node::Lam(b) => blam::bb::lam(lterm_of(pool, b)),
-        Node::App(f, a) => blam::bb::app(lterm_of(pool, f), lterm_of(pool, a)),
+        Node::Lam(b) => blam::classical::escalation::lam(lterm_of(pool, b)),
+        Node::App(f, a) => blam::classical::escalation::app(lterm_of(pool, f), lterm_of(pool, a)),
     }
 }
 
@@ -688,28 +689,21 @@ fn bits_of(s: &str) -> Vec<u8> {
     s.bytes().map(|c| c - b'0').collect()
 }
 
-fn enc_to_string(enc: u64, len: u8) -> String {
-    (0..len)
-        .rev()
-        .map(|j| if enc >> j & 1 == 1 { '1' } else { '0' })
-        .collect()
-}
-
 /// Render with the slot's frame names and fresh local binder names.
 fn render(slot: &Slot, enc: u64, len: u8) -> String {
-    let mut pool = TermPool::new();
+    let mut pool = Pool::new();
     let mut work = Vec::new();
     // reuse `close`'s decoder but keep only the candidate root
     let closed = close(&mut pool, &mut work, slot.frame, enc, len);
     // closed = frame+1 lambdas over App(C, rest); peel them off
     let mut t = closed;
     for _ in 0..=slot.frame {
-        t = match pool.nodes[t as usize] {
+        t = match pool.node(t) {
             Node::Lam(b) => b,
             _ => unreachable!(),
         };
     }
-    let c = match pool.nodes[t as usize] {
+    let c = match pool.node(t) {
         Node::App(f, _) => f,
         _ => unreachable!(),
     };
@@ -721,8 +715,8 @@ fn render(slot: &Slot, enc: u64, len: u8) -> String {
             format!("x{d}")
         }
     }
-    fn pp(pool: &TermPool, slot: &Slot, id: u32, depth: usize, prec: u8, out: &mut String) {
-        match pool.nodes[id as usize] {
+    fn pp(pool: &Pool, slot: &Slot, id: u32, depth: usize, prec: u8, out: &mut String) {
+        match pool.node(id) {
             Node::Var(n) => {
                 let i = n as usize;
                 if i <= depth {
@@ -738,7 +732,7 @@ fn render(slot: &Slot, enc: u64, len: u8) -> String {
                 out.push('\\');
                 let mut b = id;
                 let mut d = depth;
-                while let Node::Lam(x) = pool.nodes[b as usize] {
+                while let Node::Lam(x) = pool.node(b) {
                     out.push_str(&local(d));
                     out.push(' ');
                     d += 1;
@@ -810,7 +804,7 @@ fn main() {
 
     // ---- soundness canary: the reference must pass its own harness.
     {
-        let mut pool = TermPool::new();
+        let mut pool = Pool::new();
         let mut vm = Machine::new();
         let mut work = Vec::new();
         let enc = u64::from_str_radix(slot.reference, 2).unwrap();
@@ -912,7 +906,7 @@ fn main() {
         let stats = tasks
             .par_iter()
             .map_init(
-                || (TermPool::new(), Machine::new(), Vec::new()),
+                || (Pool::new(), Machine::new(), Vec::new()),
                 |(pool, vm, work), task| {
                     let mut st = Stats::default();
                     let mut esc = [0u64; 4];
@@ -1024,23 +1018,23 @@ mod tests {
     /// The occurrence mask a *generated* term actually has — computed from the
     /// decoded syntax, independent of the obligation threading.
     fn actual_mask(frame: u8, e: u64, l: u8) -> u8 {
-        let mut pool = TermPool::new();
+        let mut pool = Pool::new();
         let mut work = Vec::new();
         let mut t = close(&mut pool, &mut work, frame, e, l);
         for _ in 0..=frame {
-            t = match pool.nodes[t as usize] {
+            t = match pool.node(t) {
                 Node::Lam(b) => b,
                 _ => unreachable!(),
             };
         }
-        let c = match pool.nodes[t as usize] {
+        let c = match pool.node(t) {
             Node::App(f, _) => f,
             _ => unreachable!(),
         };
         let mut mask = 0u8;
         let mut stack = vec![(c, 0u8)];
         while let Some((id, d)) = stack.pop() {
-            match pool.nodes[id as usize] {
+            match pool.node(id) {
                 Node::Var(k) => {
                     if let Some(o) = occurrence(frame, d, k as u8 + 1) {
                         mask |= o;
@@ -1177,7 +1171,7 @@ mod tests {
         for slot in SLOTS {
             let golden = bits_of(slot.golden);
             let enc = u64::from_str_radix(slot.reference, 2).unwrap();
-            let mut pool = TermPool::new();
+            let mut pool = Pool::new();
             let mut vm = Machine::new();
             let mut work = Vec::new();
             assert_eq!(
@@ -1209,7 +1203,7 @@ mod tests {
             // (\x. x) REF
             let s = format!("010010{}", slot.reference);
             let enc = u64::from_str_radix(&s, 2).unwrap();
-            let mut pool = TermPool::new();
+            let mut pool = Pool::new();
             let mut vm = Machine::new();
             let mut work = Vec::new();
             assert_eq!(
@@ -1236,7 +1230,7 @@ mod tests {
     /// the golden.
     #[test]
     fn adjudication_agrees_with_full_normalization() {
-        use blam::vm::StringSink;
+        use blam::classical::machine::StringSink;
         for slot in SLOTS {
             let golden = bits_of(slot.golden);
             let hi = if slot.frame == 6 {
@@ -1245,7 +1239,7 @@ mod tests {
                 28
             };
             let c = Counts::new(slot.frame, slot.must, hi);
-            let mut pool = TermPool::new();
+            let mut pool = Pool::new();
             let mut vm = Machine::new();
             let mut work = Vec::new();
             let mut checked = 0u64;

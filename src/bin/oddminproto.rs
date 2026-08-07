@@ -10,7 +10,7 @@
 //! Usage: `oddminproto [max_weight]` (default 24; report printed per
 //! completed weight so a stop loses nothing).
 
-use blam::oddmin::{app_ref, closed_accepts, lam_ref, var_ref, MaskAutomaton, Summary};
+use blam::lab::oddmin::{app_ref, closed_accepts, lam_ref, var_ref, MaskAutomaton, Summary};
 use std::collections::BTreeSet;
 use std::time::Instant;
 

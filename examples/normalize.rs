@@ -2,8 +2,10 @@
 //!
 //! Usage: cargo run --release --example normalize
 
-use blam::vm::{Machine, StringSink, TermPool};
-use blam::{normalize, parse_all, Budget};
+use blam::classical::machine::{Machine, Pool, StringSink};
+use blam::classical::reference::normalize;
+use blam::classical::Budget;
+use blam::parse_all;
 
 fn main() {
     // Reference core: (λx.x x)(λx.x) → λx.x
@@ -13,7 +15,7 @@ fn main() {
     println!("reference nf: {} ({})", nf.to_bits(), nf);
 
     // Fast KN machine, β-steps returned, nf streamed to a sink
-    let mut pool = TermPool::new();
+    let mut pool = Pool::new();
     let root = pool.decode_str("01000110100010").unwrap();
     let mut sink = StringSink(String::new());
     let steps = Machine::new()

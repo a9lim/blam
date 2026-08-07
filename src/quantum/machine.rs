@@ -1,19 +1,19 @@
-//! qBLC fast path: the defunctionalized Crégut KN machine of `vm.rs`
+//! qBLC fast path: the defunctionalized Crégut KN machine of `classical::machine`
 //! extended with a quantum store — primitive constants and opaque qubit
 //! handles as new node species, a store hook at primitive application, and
-//! copy-on-fork at `meas`. Lockstep-tested against `qeval.rs` (the executable
+//! copy-on-fork at `meas`. Lockstep-tested against `quantum::reference` (the executable
 //! spec) for identical leaf sequences: fate (including the full store),
 //! exact mass, and contraction count, over the whole small-size population.
 //!
 //! Sharing choices that make the lockstep meaningful:
 //! - `Store` and all effect methods (H/T/CNOT/project, epoch discipline) are
-//!   qeval's own — one implementation, so amplitudes compare bit-identically.
-//! - Fates, budgets, and leaves are qeval's types; `QBudget.beta` means the
-//!   same thing (contractions: β + primitive firings). `QBudget.trans` is
+//!   the reference evaluator's own — one implementation, so amplitudes compare bit-identically.
+//! - Fates, budgets, and leaves are the pillar-root types shared with it; `Budget.beta` means the
+//!   same thing (contractions: β + primitive firings). `Budget.trans` is
 //!   engine-relative (machine transitions here, redex searches there) —
 //!   Unknown is a resource outcome, not a fate, per the classical doctrine.
 //!
-//! Machine shape (vs `vm.rs`): flat u32 nodes, explicit frame stack, shared
+//! Machine shape (vs `classical::machine`): flat u32 nodes, explicit frame stack, shared
 //! append-only env arena. No readback emission — the census output is the
 //! live store at Halt, never the normal form — so there are no LamEnd
 //! frames and rigid values carry no level. Branch forks share the env arena
@@ -28,10 +28,10 @@
 //! rigid arrival converts the entire run (Arg→Norm, Cnot1→Norm on its held
 //! second argument, Prim1/Cnot2→Skip) before readback. Species checks
 //! happen only at *value* arrival (Lam / bare or undersaturated prim
-//! meeting a Prim1/Cnot1/Cnot2 on top), which is exactly qeval's "Err
+//! meeting a Prim1/Cnot1/Cnot2 on top), which is exactly the reference's "Err
 //! precedes effects, before the value's interior is normalized".
 
-use crate::qeval::{Capacity, ErrKind, Fate, Leaf, Prim, QBudget, Store};
+use crate::quantum::{Budget, Capacity, ErrKind, Fate, Leaf, Prim, Store};
 
 /// Term arena node. Children are indices into the pool. `Prim` and `Handle`
 /// are closed constants — substitution-free by construction here, since the
@@ -54,16 +54,40 @@ const FALSE_NODE: u32 = 5;
 /// Flat term storage. Reset per program; runtime results (handles, cnot
 /// pairs) are appended during evaluation, so the pool is append-only within
 /// a run and forked branches share it.
-#[derive(Default)]
 pub struct Pool {
-    pub nodes: Vec<Node>,
+    nodes: Vec<Node>,
+}
+
+/// `Default` must go through `new`: a bare empty arena is missing the
+/// interned Church booleans that `TRUE_NODE`/`FALSE_NODE` name, and
+/// deriving `Default` silently hands one out.
+impl Default for Pool {
+    fn default() -> Pool {
+        Pool::new()
+    }
 }
 
 impl Pool {
     pub fn new() -> Pool {
-        let mut p = Pool::default();
+        let mut p = Pool { nodes: Vec::new() };
         p.reset();
         p
+    }
+
+    /// The node at `id`. Arena indices come from `push`/`decode_u64`, so
+    /// an out-of-range id is a caller bug and panics.
+    #[inline]
+    pub fn node(&self, id: u32) -> Node {
+        self.nodes[id as usize]
+    }
+
+    /// Number of nodes currently in the arena.
+    pub fn len(&self) -> usize {
+        self.nodes.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.nodes.is_empty()
     }
 
     pub fn reset(&mut self) {
@@ -82,7 +106,7 @@ impl Pool {
     }
 
     /// Decode one BLC term off a packed (bits, length) pair — the same
-    /// explicit-stack decoder as `vm::TermPool`, no string round-trip.
+    /// explicit-stack decoder as `classical::machine::Pool`, no string round-trip.
     pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {
         let mut bits = (0..len).rev().map(|j| (enc >> j) & 1 == 1);
         enum P {
@@ -125,9 +149,9 @@ impl Pool {
         }
     }
 
-    /// Import an eval/qeval-side term (tests).
-    pub fn from_term(&mut self, t: &crate::term::Term) -> u32 {
-        use crate::term::Term;
+    /// Import a tree-side term (tests).
+    pub fn from_term(&mut self, t: &crate::blc::Term) -> u32 {
+        use crate::blc::Term;
         match t {
             Term::Var(n) => self.push(Node::Var(*n)),
             Term::Lam(b) => {
@@ -168,7 +192,7 @@ impl Pool {
 #[derive(Clone, Copy)]
 enum Val {
     /// Unevaluated closure: (term, env). Call-by-name, no memoization —
-    /// recipes duplicate, matching qeval's substitution semantics exactly.
+    /// recipes duplicate, matching the reference's substitution semantics exactly.
     Clo(u32, u32),
     /// Bound by an unapplied binder in the normal form: rigid.
     Rigid,
@@ -206,7 +230,7 @@ struct Branch {
 
 /// The machine. Reused across programs; arenas reset per `run`.
 #[derive(Default)]
-pub struct QMachine {
+pub struct Machine {
     envs: Vec<(Val, u32)>,
     stack: Vec<Frame>,
     work: Vec<Branch>,
@@ -216,7 +240,7 @@ pub struct QMachine {
     pub max_trans: u64,
 }
 
-impl QMachine {
+impl Machine {
     pub fn new() -> Self {
         Self::default()
     }
@@ -244,15 +268,20 @@ impl QMachine {
     }
 
     /// Run one root term to its truncated branch tree, appending leaves.
-    /// Leaf order matches qeval exactly (outcome-0 first, depth-first).
+    /// Leaf order matches the reference evaluator exactly (outcome-0 first, depth-first).
     pub fn run_into(
         &mut self,
         pool: &mut Pool,
         root: u32,
-        budget: &QBudget,
+        budget: &Budget,
         leaves: &mut Vec<Leaf>,
     ) {
         assert!(budget.beta >= 1 && budget.trans >= 1, "degenerate budgets");
+        // TRUE_NODE/FALSE_NODE are positional: they name the fixed slots
+        // `Pool::reset` pushes. A pool that skipped reset would silently
+        // return the wrong Church boolean at every measurement.
+        debug_assert!(matches!(pool.node(TRUE_NODE), Node::Lam(_)));
+        debug_assert!(matches!(pool.node(FALSE_NODE), Node::Lam(_)));
         self.envs.clear();
         self.stack.clear();
         self.work.clear();
@@ -294,7 +323,7 @@ impl QMachine {
                     }
                     continue;
                 }
-                match pool.nodes[t as usize] {
+                match pool.node(t) {
                     Node::App(f, a) => {
                         self.stack.push(Frame::Arg(a, env));
                         t = f;
@@ -464,7 +493,7 @@ impl QMachine {
                             self.stack.pop();
                             // Epoch validity first (the more informative
                             // diagnosis), then coincidence, then atomic
-                            // consumption — qeval's exact order.
+                            // consumption — the reference's exact order.
                             if let Err(k) = store.peek(q1, e1) {
                                 break 'run Some(Fate::Err(k));
                             }
@@ -534,7 +563,7 @@ impl QMachine {
             }
         }
 
-        // Don't hold peak arenas forever (vm.rs lesson).
+        // Don't hold peak arenas forever (the classical machine's lesson).
         const KEEP: usize = 1 << 20;
         if self.envs.capacity() > KEEP {
             self.envs = Vec::with_capacity(KEEP);
@@ -551,7 +580,7 @@ impl QMachine {
         enc: u64,
         len: u8,
         order: &[Prim],
-        budget: &QBudget,
+        budget: &Budget,
         leaves: &mut Vec<Leaf>,
     ) {
         self.run_conditioned_into(pool, enc, len, None, order, budget, leaves);
@@ -568,7 +597,7 @@ impl QMachine {
         len: u8,
         cond: Option<u32>,
         order: &[Prim],
-        budget: &QBudget,
+        budget: &Budget,
         leaves: &mut Vec<Leaf>,
     ) {
         pool.reset();
@@ -585,27 +614,25 @@ impl QMachine {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::dw::Dw;
-    use crate::enumerate::{enc_to_string, for_each_closed};
+    use crate::blc::enumerate::for_each_closed;
+    use crate::blc::wire::enc_to_string;
     use crate::parse_all;
-    use crate::qeval;
+    use crate::quantum::reference as qeval;
+    use crate::quantum::scalar::Dw;
+    use crate::quantum::sig::FROZEN;
     use rayon::prelude::*;
 
-    /// The frozen signature order (`docs/quantum/architecture.md`):
-    /// p h meas new cnot t.
-    const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
-
-    fn qeval_leaves(src: &str, order: &[Prim], budget: &QBudget) -> Vec<Leaf> {
+    fn qeval_leaves(src: &str, order: &[Prim], budget: &Budget) -> Vec<Leaf> {
         let t = parse_all(src).unwrap();
         qeval::run(qeval::apply_signature(&t, order), budget)
     }
 
     /// Lockstep over every closed program of size 4..=max_n: identical leaf
     /// sequences (fate incl. full store, exact mass, contraction count).
-    fn lockstep_population(max_n: u32, order: &[Prim], ref_budget: &QBudget) {
+    fn lockstep_population(max_n: u32, order: &[Prim], ref_budget: &Budget) {
         // Machine transition budget is engine-relative: generous, so only
         // the shared β/branch budgets bind.
-        let fast_budget = QBudget {
+        let fast_budget = Budget {
             trans: 1 << 26,
             ..*ref_budget
         };
@@ -614,7 +641,7 @@ mod tests {
             for_each_closed(n, &mut |enc, len| programs.push((enc, len)));
         }
         programs.par_iter().for_each_init(
-            || (Pool::new(), QMachine::new()),
+            || (Pool::new(), Machine::new()),
             |(pool, m), &(enc, len)| {
                 let src = enc_to_string(enc, len);
                 let expect = qeval_leaves(&src, order, ref_budget);
@@ -627,14 +654,14 @@ mod tests {
 
     #[test]
     fn lockstep_full_population_frozen_order() {
-        lockstep_population(24, &FROZEN, &QBudget::default());
+        lockstep_population(24, &FROZEN, &Budget::default());
     }
 
     #[test]
     fn lockstep_second_order() {
         // A different permutation exercises different prim adjacencies.
         let order = [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H];
-        lockstep_population(20, &order, &QBudget::default());
+        lockstep_population(20, &order, &Budget::default());
     }
 
     #[test]
@@ -643,14 +670,14 @@ mod tests {
         // worth of signature, exercising arbitrary-length application
         // and the extended gate dispatch on both engines.
         let order = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T, Prim::S];
-        lockstep_population(18, &order, &QBudget::default());
+        lockstep_population(18, &order, &Budget::default());
     }
 
     #[test]
     fn lockstep_pauli_universe() {
         // Clifford-only alternate universe with X/Z in gate position.
         let order = [Prim::X, Prim::Meas, Prim::New, Prim::Z, Prim::S];
-        lockstep_population(18, &order, &QBudget::default());
+        lockstep_population(18, &order, &Budget::default());
     }
 
     #[test]
@@ -701,12 +728,12 @@ mod tests {
     #[test]
     fn lockstep_beta_boundary() {
         // Tiny β budgets: the Unknown/Halt boundary must mirror exactly
-        // (qeval performs the β-th contraction, then declares Unknown at the
+        // (the reference performs the β-th contraction, then declares Unknown at the
         // next check — before any further effect).
         for beta in [1u64, 3, 8, 64] {
-            let b = QBudget {
+            let b = Budget {
                 beta,
-                ..QBudget::default()
+                ..Budget::default()
             };
             lockstep_population(18, &FROZEN, &b);
         }
@@ -715,9 +742,9 @@ mod tests {
     #[test]
     fn lockstep_branch_capacity() {
         for max_branches in [1usize, 2, 3] {
-            let b = QBudget {
+            let b = Budget {
                 max_branches,
-                ..QBudget::default()
+                ..Budget::default()
             };
             lockstep_population(20, &FROZEN, &b);
         }
@@ -726,22 +753,22 @@ mod tests {
     #[test]
     fn lockstep_qubit_capacity() {
         for max_qubits in [1usize, 2] {
-            let b = QBudget {
+            let b = Budget {
                 max_qubits,
-                ..QBudget::default()
+                ..Budget::default()
             };
             lockstep_population(20, &FROZEN, &b);
         }
     }
 
-    // ---- direct machine vectors (pool-built, independent of qeval) ---------
+    // ---- direct machine vectors (pool-built, independent of the reference) --
 
     fn run_root(pool: &mut Pool, root: u32) -> Vec<Leaf> {
-        let mut m = QMachine::new();
+        let mut m = Machine::new();
         let mut leaves = Vec::new();
-        let budget = QBudget {
+        let budget = Budget {
             trans: 1 << 26,
-            ..QBudget::default()
+            ..Budget::default()
         };
         m.run_into(pool, root, &budget, &mut leaves);
         leaves
@@ -772,7 +799,7 @@ mod tests {
     #[test]
     fn bell_state_exact_on_machine() {
         // λn.λm.λc.λt.λh. c (h (n n)) (n n) under order [new,meas,cnot,t,h].
-        use crate::term::{app, lam, var};
+        use crate::blc::term::{app, lam, var};
         let body = app(
             app(var(3), app(var(1), app(var(5), var(5)))),
             app(var(5), var(5)),
@@ -880,18 +907,15 @@ mod tests {
         // BOTH engines.
         let bits = "000000000001111100111111001100111111001111010";
         let t = parse_all(bits).unwrap();
-        let expect = crate::qeval::run(
-            crate::qeval::apply_signature(&t, &FROZEN),
-            &QBudget::default(),
-        );
+        let expect = qeval::run(qeval::apply_signature(&t, &FROZEN), &Budget::default());
         let mut pool = Pool::new();
         let root = pool.from_term(&t);
         let sig = pool.apply_signature(root, &FROZEN);
-        let mut m = QMachine::new();
+        let mut m = Machine::new();
         let mut got = Vec::new();
-        let budget = QBudget {
+        let budget = Budget {
             trans: 1 << 26,
-            ..QBudget::default()
+            ..Budget::default()
         };
         m.run_into(&mut pool, sig, &budget, &mut got);
         assert_eq!(got, expect);
@@ -930,7 +954,7 @@ mod tests {
         // so this is the minimal-family candidate for the first non-dyadic
         // Ω_success contribution (cancellation at n=53 would need a global
         // enumeration identity, no mechanism known). Pinned cross-engine.
-        use crate::term::{app, lam, var};
+        use crate::blc::term::{app, lam, var};
         let bits = "00000000000101111100111111001100111111001111010011010";
         let t = parse_all(bits).unwrap();
         assert_eq!(t.bit_size(), 53);
@@ -941,18 +965,15 @@ mod tests {
         );
         let built = lam(lam(lam(lam(lam(app(sandwich, app(var(1), var(1))))))));
         assert_eq!(t, built);
-        let expect = crate::qeval::run(
-            crate::qeval::apply_signature(&t, &FROZEN),
-            &QBudget::default(),
-        );
+        let expect = qeval::run(qeval::apply_signature(&t, &FROZEN), &Budget::default());
         let mut pool = Pool::new();
         let root = pool.from_term(&t);
         let sig = pool.apply_signature(root, &FROZEN);
-        let mut m = QMachine::new();
+        let mut m = Machine::new();
         let mut got = Vec::new();
-        let budget = QBudget {
+        let budget = Budget {
             trans: 1 << 26,
-            ..QBudget::default()
+            ..Budget::default()
         };
         m.run_into(&mut pool, sig, &budget, &mut got);
         assert_eq!(got, expect);

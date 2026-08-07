@@ -11,10 +11,10 @@
 //!
 //! Usage: qpilot [--max-n N] [--beta B] [--trans T] [--threads K]
 
-use blam::dw::Dw;
-use blam::enumerate::for_each_closed;
-use blam::qeval::{Fate, Prim, QBudget};
-use blam::qvm::{Pool, QMachine};
+use blam::blc::enumerate::for_each_closed;
+use blam::quantum::machine::{Machine as QMachine, Pool};
+use blam::quantum::scalar::Dw;
+use blam::quantum::{Budget as QBudget, Fate, Prim};
 use rayon::prelude::*;
 use std::time::Instant;
 
@@ -61,7 +61,7 @@ impl Tally {
 fn eval_term(
     pool: &mut Pool,
     m: &mut QMachine,
-    leaves: &mut Vec<blam::qeval::Leaf>,
+    leaves: &mut Vec<blam::quantum::Leaf>,
     enc: u64,
     len: u8,
     n: u32,
@@ -101,10 +101,10 @@ fn eval_term(
 }
 
 fn perms() -> Vec<[Prim; 5]> {
-    // Heap's algorithm over Prim::ALL, emitted in a deterministic order;
+    // Heap's algorithm over Prim::CANONICAL_SET, emitted in a deterministic order;
     // the lexicographic tie-break refers to this enumeration of tuples.
     let mut out = Vec::with_capacity(120);
-    let mut a = Prim::ALL;
+    let mut a = Prim::CANONICAL_SET;
     fn heap(k: usize, a: &mut [Prim; 5], out: &mut Vec<[Prim; 5]>) {
         if k == 1 {
             out.push(*a);

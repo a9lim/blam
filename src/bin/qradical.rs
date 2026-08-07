@@ -25,16 +25,15 @@
 //! the engine and reports enumeration/filter counts only — the n=53
 //! filtered count has an independent DP cross-check of 90,064,344.)
 
-use blam::dw::Dw;
-use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks_at};
-use blam::qeval::{Fate, Leaf, Prim, QBudget};
-use blam::qvm::{Pool, QMachine};
-use blam::radical::{is_dyadic, radical_parts, show_parts, Exact};
+use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks_at};
+use blam::blc::wire::enc_to_string;
+use blam::quantum::machine::{Machine as QMachine, Pool};
+use blam::quantum::scalar::Dw;
+use blam::quantum::scalar::{is_dyadic, radical_parts, show_parts, Exact};
+use blam::quantum::sig::FROZEN;
+use blam::quantum::{Budget as QBudget, Fate, Leaf};
 use rayon::prelude::*;
 use std::time::Instant;
-
-/// The frozen signature order (`docs/quantum/architecture.md`): p h meas new cnot t.
-const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
 /// Frame slots by innermost-first de Bruijn index under the λ⁵ idiom:
 /// t=1, cnot=2, new=3, meas=4, h=5. Required for a √2-capable trace:

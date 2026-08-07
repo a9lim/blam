@@ -148,25 +148,17 @@ pub fn run_task(task: &GenTask, f: &mut impl FnMut(u64, u8)) {
     go(&mut pending, task.acc, task.len, f);
 }
 
-/// Count closed terms of size exactly n (OEIS A114852).
-pub fn count_closed(n: u32) -> u64 {
-    let mut c = 0u64;
-    for_each_closed(n, &mut |_, _| c += 1);
-    c
-}
-
-/// Render a packed term as a '0'/'1' string.
-pub fn enc_to_string(enc: u64, len: u8) -> String {
-    (0..len)
-        .rev()
-        .map(|j| if enc >> j & 1 == 1 { '1' } else { '0' })
-        .collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parse_all;
+    use crate::blc::wire::{enc_to_string, parse_all};
+
+    /// Count closed terms of size exactly n (OEIS A114852).
+    fn count_closed(n: u32) -> u64 {
+        let mut c = 0u64;
+        for_each_closed(n, &mut |_, _| c += 1);
+        c
+    }
 
     #[test]
     fn counts_match_a114852() {

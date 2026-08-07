@@ -5,7 +5,7 @@
 //! constants and opaque qubit handles, a branch-local quantum store of
 //! unnormalized `Z[ω]/√2^k` statevectors, and measurement branching with exact
 //! weights (nothing is ever sampled). Deliberately favors obvious correctness
-//! over speed, like `eval.rs`; the KN-store fast path is lockstep-tested
+//! over speed, like `classical::reference`; the KN-store fast path is lockstep-tested
 //! against this. Classical engines remain behaviorally isolated.
 //!
 //! Spec anchors, in order of the surprises they encode:
@@ -19,71 +19,9 @@
 //! - Capacity (qubit count, denominator exponent, coefficient overflow,
 //!   branch count) is a fate, never a panic or a wrong number.
 
-use crate::dw::Dw;
-use crate::term::Term;
+use crate::blc::Term;
+use crate::quantum::{Budget, Capacity, Effect, ErrKind, Fate, Leaf, Prim, Store};
 use std::rc::Rc;
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Prim {
-    New,
-    Meas,
-    Cnot,
-    T,
-    H,
-    /// Phase gate S = T² = diag(1, i). Clifford; exact in ℤ[ω].
-    S,
-    /// Pauli X (bit flip). Clifford; a permutation of amplitudes.
-    X,
-    /// Pauli Z = S² = diag(1, −1). Clifford.
-    Z,
-}
-
-impl Prim {
-    /// The canonical universe: the five primitives of the frozen pilot.
-    /// S/X/Z exist for alternate signature universes (`qcensus --sig`);
-    /// the canonical census and all frozen thresholds use only these five.
-    pub const ALL: [Prim; 5] = [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H];
-
-    pub(crate) fn arity(self) -> usize {
-        match self {
-            Prim::Cnot => 2,
-            _ => 1,
-        }
-    }
-
-    pub fn name(self) -> &'static str {
-        match self {
-            Prim::New => "new",
-            Prim::Meas => "meas",
-            Prim::Cnot => "cnot",
-            Prim::T => "t",
-            Prim::H => "h",
-            Prim::S => "s",
-            Prim::X => "x",
-            Prim::Z => "z",
-        }
-    }
-
-    /// Inverse of `name` (signature parsing).
-    pub fn by_name(s: &str) -> Option<Prim> {
-        Some(match s {
-            "new" => Prim::New,
-            "meas" => Prim::Meas,
-            "cnot" => Prim::Cnot,
-            "t" => Prim::T,
-            "h" => Prim::H,
-            "s" => Prim::S,
-            "x" => Prim::X,
-            "z" => Prim::Z,
-            _ => return None,
-        })
-    }
-
-    /// Unary store gate (everything except the special forms new/meas/cnot).
-    pub(crate) fn is_gate1(self) -> bool {
-        matches!(self, Prim::H | Prim::T | Prim::S | Prim::X | Prim::Z)
-    }
-}
 
 /// Term extended with primitives and handles. Both extensions are closed
 /// constants: shift and substitution pass through them untouched. Handles
@@ -114,7 +52,8 @@ fn church_bool(outcome_zero: bool) -> QTerm {
 }
 
 // ---------------------------------------------------------------------------
-// shift / subst / beta — eval.rs transplanted to QTerm.
+// shift / subst / beta — the `blc::reduction` kernel transplanted to QTerm
+// (Prim/Handle are closed constants, so they pass through untouched).
 
 fn shift(t: &QTerm, d: i64, cutoff: u32) -> QTerm {
     match t {
@@ -150,250 +89,6 @@ fn beta(body: &QTerm, arg: &QTerm) -> QTerm {
     shift(&subst(body, 1, &shift(arg, 1, 1)), -1, 1)
 }
 
-// ---------------------------------------------------------------------------
-// The quantum store: branch-local, unnormalized.
-
-/// Tensor position: bit p of a statevector index is the p-th *live* qubit
-/// in allocation-rank order (LSB = earliest surviving allocation).
-///
-/// Methods are pub(crate): `qvm` (the fast path) reuses this exact effect
-/// implementation, so both engines share one definition of H/T/CNOT/project
-/// and stores compare bit-identically in the lockstep tests.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Store {
-    /// Unnormalized amplitudes, length 2^live.
-    pub amps: Vec<Dw>,
-    /// Per qubit id: Some(epoch) while usable, None once retired (measured).
-    epochs: Vec<Option<u32>>,
-    /// Live qubit ids in allocation-rank order; position = tensor bit.
-    live: Vec<u32>,
-}
-
-impl Store {
-    fn new() -> Store {
-        Store {
-            amps: vec![Dw::ONE],
-            epochs: Vec::new(),
-            live: Vec::new(),
-        }
-    }
-
-    pub fn live_count(&self) -> usize {
-        self.live.len()
-    }
-
-    /// ‖v‖² — the branch's exact mass. None on coefficient overflow.
-    pub fn mass(&self) -> Option<Dw> {
-        let mut m = Dw::ZERO;
-        for a in &self.amps {
-            m = m.add(a.norm_sq()?)?;
-        }
-        Some(m.reduce())
-    }
-
-    fn pos_of(&self, q: u32) -> Option<usize> {
-        self.live.iter().position(|&x| x == q)
-    }
-
-    pub(crate) fn empty() -> Store {
-        Store::new()
-    }
-
-    pub(crate) fn alloc(&mut self, max_qubits: usize) -> Result<u32, Capacity> {
-        if self.live.len() >= max_qubits {
-            return Err(Capacity::Qubits);
-        }
-        let q = self.epochs.len() as u32;
-        self.epochs.push(Some(0));
-        self.live.push(q);
-        // Append |0⟩ as the new highest tensor bit: old amplitudes keep
-        // their indices, the bit-set half is zero.
-        let old = self.amps.len();
-        self.amps.resize(old * 2, Dw::ZERO);
-        Ok(q)
-    }
-
-    /// Check-and-bump an epoch (atomic consumption). Err = stale or retired.
-    pub(crate) fn consume(&mut self, q: u32, e: u32) -> Result<(), ErrKind> {
-        match self.epochs.get_mut(q as usize) {
-            Some(Some(cur)) if *cur == e => {
-                *cur += 1;
-                Ok(())
-            }
-            Some(Some(_)) => Err(ErrKind::StaleEpoch),
-            Some(None) => Err(ErrKind::Retired),
-            None => unreachable!("handle to unknown qubit"),
-        }
-    }
-
-    pub(crate) fn peek(&self, q: u32, e: u32) -> Result<(), ErrKind> {
-        match self.epochs.get(q as usize) {
-            Some(Some(cur)) if *cur == e => Ok(()),
-            Some(Some(_)) => Err(ErrKind::StaleEpoch),
-            Some(None) => Err(ErrKind::Retired),
-            None => unreachable!("handle to unknown qubit"),
-        }
-    }
-
-    pub(crate) fn apply_h(&mut self, q: u32) -> Result<(), Capacity> {
-        let p = self.pos_of(q).expect("H on non-live qubit");
-        let bit = 1usize << p;
-        for i in 0..self.amps.len() {
-            if i & bit == 0 {
-                let (v0, v1) = (self.amps[i], self.amps[i | bit]);
-                let s = v0.add(v1).ok_or(Capacity::Amplitude)?;
-                let dnew = v0.sub(v1).ok_or(Capacity::Amplitude)?;
-                self.amps[i] = s.div_sqrt2().ok_or(Capacity::Amplitude)?.reduce();
-                self.amps[i | bit] = dnew.div_sqrt2().ok_or(Capacity::Amplitude)?.reduce();
-            }
-        }
-        Ok(())
-    }
-
-    pub(crate) fn apply_t(&mut self, q: u32) -> Result<(), Capacity> {
-        let p = self.pos_of(q).expect("T on non-live qubit");
-        let bit = 1usize << p;
-        for i in 0..self.amps.len() {
-            if i & bit != 0 {
-                self.amps[i] = self.amps[i].mul(Dw::OMEGA).ok_or(Capacity::Amplitude)?;
-            }
-        }
-        Ok(())
-    }
-
-    pub(crate) fn apply_s(&mut self, q: u32) -> Result<(), Capacity> {
-        // S = diag(1, i); i = ω² exactly.
-        let i_unit = Dw {
-            a: 0,
-            b: 0,
-            c: 1,
-            d: 0,
-            k: 0,
-        };
-        let p = self.pos_of(q).expect("S on non-live qubit");
-        let bit = 1usize << p;
-        for i in 0..self.amps.len() {
-            if i & bit != 0 {
-                self.amps[i] = self.amps[i].mul(i_unit).ok_or(Capacity::Amplitude)?;
-            }
-        }
-        Ok(())
-    }
-
-    pub(crate) fn apply_x(&mut self, q: u32) -> Result<(), Capacity> {
-        // Pure permutation: infallible, kept Result-shaped for uniformity.
-        let p = self.pos_of(q).expect("X on non-live qubit");
-        let bit = 1usize << p;
-        for i in 0..self.amps.len() {
-            if i & bit == 0 {
-                self.amps.swap(i, i | bit);
-            }
-        }
-        Ok(())
-    }
-
-    pub(crate) fn apply_z(&mut self, q: u32) -> Result<(), Capacity> {
-        let p = self.pos_of(q).expect("Z on non-live qubit");
-        let bit = 1usize << p;
-        for i in 0..self.amps.len() {
-            if i & bit != 0 {
-                self.amps[i] = self.amps[i].neg();
-            }
-        }
-        Ok(())
-    }
-
-    /// Dispatch a unary gate primitive (H/T/S/X/Z).
-    pub(crate) fn apply_gate1(&mut self, p: Prim, q: u32) -> Result<(), Capacity> {
-        match p {
-            Prim::H => self.apply_h(q),
-            Prim::T => self.apply_t(q),
-            Prim::S => self.apply_s(q),
-            Prim::X => self.apply_x(q),
-            Prim::Z => self.apply_z(q),
-            _ => unreachable!("apply_gate1 on {:?}", p),
-        }
-    }
-
-    pub(crate) fn apply_cnot(&mut self, qc: u32, qt: u32) {
-        let pc = self.pos_of(qc).expect("CNOT control non-live");
-        let pt = self.pos_of(qt).expect("CNOT target non-live");
-        let (bc, bt) = (1usize << pc, 1usize << pt);
-        for i in 0..self.amps.len() {
-            // For control=1, swap target pair once (visit the target-0 index).
-            if i & bc != 0 && i & bt == 0 {
-                self.amps.swap(i, i | bt);
-            }
-        }
-    }
-
-    /// Project qubit q onto |outcome⟩, remove its tensor factor, retire it.
-    /// The surviving vector stays unnormalized — its norm² is the branch mass.
-    pub(crate) fn measure_project(&mut self, q: u32, outcome_one: bool) {
-        let p = self.pos_of(q).expect("measure on non-live qubit");
-        let bit = 1usize << p;
-        let mut kept = Vec::with_capacity(self.amps.len() / 2);
-        for i in 0..self.amps.len() {
-            if (i & bit != 0) == outcome_one {
-                kept.push(self.amps[i]);
-            }
-        }
-        self.amps = kept;
-        self.epochs[q as usize] = None;
-        self.live.remove(p);
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Fates and budgets.
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum ErrKind {
-    /// Primitive met a canonical non-handle value.
-    Species,
-    /// Handle in operator position.
-    HandleApplied,
-    /// Epoch already consumed — a duplication was attempted.
-    StaleEpoch,
-    /// Qubit already measured.
-    Retired,
-    /// cnot with coincident arguments.
-    SameQubit,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Capacity {
-    Qubits,
-    Amplitude,
-    Branches,
-}
-
-/// One store effect, as it fired. The per-leaf effect path (root to leaf,
-/// `Meas` outcomes included) is the trace surface of
-/// `docs/quantum/architecture.md`'s
-/// obligation 2: two runs are effect-trace equivalent when their leaf
-/// sequences carry identical paths — β-steps are erased by construction,
-/// since only primitive firings append events.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Effect {
-    /// Allocation: the fresh qubit id.
-    New(u32),
-    /// H applied to (qubit, consumed epoch).
-    H(u32, u32),
-    /// T applied to (qubit, consumed epoch).
-    T(u32, u32),
-    /// cnot (control qubit, control epoch, target qubit, target epoch).
-    Cnot(u32, u32, u32, u32),
-    /// Measurement of (qubit, epoch) with this branch's outcome.
-    Meas(u32, u32, bool),
-    /// S applied to (qubit, consumed epoch). Alternate universes only.
-    S(u32, u32),
-    /// X applied to (qubit, consumed epoch). Alternate universes only.
-    X(u32, u32),
-    /// Z applied to (qubit, consumed epoch). Alternate universes only.
-    Z(u32, u32),
-}
-
 /// The trace event for a unary gate firing.
 fn gate1_effect(p: Prim, q: u32, e: u32) -> Effect {
     match p {
@@ -404,55 +99,6 @@ fn gate1_effect(p: Prim, q: u32, e: u32) -> Effect {
         Prim::Z => Effect::Z(q, e),
         _ => unreachable!("gate1_effect on {:?}", p),
     }
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Fate {
-    /// Full normal form reached; store is the leaf's live output.
-    Halt(Store),
-    /// β budget or transition budget exhausted on this branch.
-    Unknown,
-    /// Capacity charge fired (resource verdict, never a wrong number).
-    Capacity(Capacity),
-    /// Store-discipline violation; the branch's mass is excluded from
-    /// Ω_success by construction.
-    Err(ErrKind),
-}
-
-#[derive(Clone, Copy, Debug)]
-pub struct QBudget {
-    /// β-steps per branch.
-    pub beta: u64,
-    /// Small-step transitions per branch (redex searches).
-    pub trans: u64,
-    /// Max simultaneous live qubits per branch.
-    pub max_qubits: usize,
-    /// Max total branches per program.
-    pub max_branches: usize,
-}
-
-impl Default for QBudget {
-    fn default() -> Self {
-        QBudget {
-            beta: 4096,
-            trans: 1 << 16,
-            max_qubits: 12,
-            max_branches: 4096,
-        }
-    }
-}
-
-/// One leaf of the (truncated) branch tree, with its exact mass.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Leaf {
-    pub fate: Fate,
-    /// ‖v‖² at the leaf — mass of Halt leaves is the Ω_success contribution;
-    /// mass of Err/Unknown/Capacity leaves feeds the bracket / Err column.
-    /// None only if the mass itself overflowed (counted as Capacity).
-    pub mass: Option<Dw>,
-    /// Contractions (β + primitive firings) on this leaf's branch path —
-    /// the lockstep surface the fast path must reproduce exactly.
-    pub steps: u64,
 }
 
 // ---------------------------------------------------------------------------
@@ -529,7 +175,7 @@ fn arg_view(t: &QTerm) -> ArgView {
 
 struct Ctx<'a> {
     store: &'a mut Store,
-    budget: &'a QBudget,
+    budget: &'a Budget,
     /// Effect path of the current branch; primitives append as they fire.
     trace: &'a mut Vec<Effect>,
 }
@@ -711,7 +357,7 @@ fn cnot_prim(g: &Rc<QTerm>, a1: &Rc<QTerm>, a2: &Rc<QTerm>, f: &Rc<QTerm>, cx: &
     ))))
 }
 
-fn step(t: &QTerm, store: &mut Store, trace: &mut Vec<Effect>, budget: &QBudget) -> Step {
+fn step(t: &QTerm, store: &mut Store, trace: &mut Vec<Effect>, budget: &Budget) -> Step {
     let mut cx = Ctx {
         store,
         budget,
@@ -735,7 +381,7 @@ fn step(t: &QTerm, store: &mut Store, trace: &mut Vec<Effect>, budget: &QBudget)
 
 /// Run one program (already applied to its signature) to its truncated branch
 /// tree. Exact, deterministic, never samples.
-pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
+pub fn run(term: QTerm, budget: &Budget) -> Vec<Leaf> {
     run_traced(term, budget)
         .into_iter()
         .map(|(leaf, _)| leaf)
@@ -745,7 +391,7 @@ pub fn run(term: QTerm, budget: &QBudget) -> Vec<Leaf> {
 /// `run`, additionally returning each leaf's effect path (root to leaf,
 /// `Meas` outcomes included). Two runs are effect-trace equivalent when the
 /// leaf sequences pair up with identical paths, fates, and masses.
-pub fn run_traced(term: QTerm, budget: &QBudget) -> Vec<(Leaf, Vec<Effect>)> {
+pub fn run_traced(term: QTerm, budget: &Budget) -> Vec<(Leaf, Vec<Effect>)> {
     let mut leaves = Vec::new();
     let mut work: Vec<(QTerm, Store, Vec<Effect>, u64, u64)> =
         vec![(term, Store::new(), Vec::new(), 0, 0)];
@@ -846,7 +492,8 @@ pub fn apply_signature(p: &Term, order: &[Prim]) -> QTerm {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parse_all;
+    use crate::blc::wire::{enc_to_string, parse_all};
+    use crate::quantum::scalar::Dw;
 
     fn sig_default() -> [Prim; 5] {
         [Prim::New, Prim::Meas, Prim::Cnot, Prim::T, Prim::H]
@@ -855,7 +502,7 @@ mod tests {
     fn run_str(src: &str) -> Vec<Leaf> {
         // src is a BLC bit-string program, applied to the default signature.
         let t = parse_all(src).unwrap();
-        run(apply_signature(&t, &sig_default()), &QBudget::default())
+        run(apply_signature(&t, &sig_default()), &Budget::default())
     }
 
     #[test]
@@ -869,23 +516,23 @@ mod tests {
     #[test]
     fn pure_terms_agree_with_reference_core() {
         // Differential test: on prim-free closed terms the small-step
-        // evaluator must reach exactly eval.rs's normal form.
-        use crate::enumerate::{enc_to_string, for_each_closed};
+        // evaluator must reach exactly the classical reference normalizer's normal form.
+        use crate::blc::enumerate::for_each_closed;
         for n in 4..=16 {
             for_each_closed(n, &mut |enc, len| {
                 let src = enc_to_string(enc, len);
                 let t = parse_all(&src).unwrap();
-                let mut fuel = crate::Budget::new(4096);
-                let Ok(nf) = crate::normalize(&t, &mut fuel) else {
+                let mut fuel = crate::classical::Budget::new(4096);
+                let Ok(nf) = crate::classical::reference::normalize(&t, &mut fuel) else {
                     return; // reference ran out of fuel; skip
                 };
-                let leaves = run(qt_of_term(&t), &QBudget::default());
+                let leaves = run(qt_of_term(&t), &Budget::default());
                 assert_eq!(leaves.len(), 1, "{src}");
                 match &leaves[0].fate {
                     Fate::Halt(store) => {
                         assert_eq!(store.live_count(), 0, "{src}");
                         let got = &leaves[0];
-                        assert_eq!(got.mass, Some(crate::dw::Dw::ONE), "{src}");
+                        assert_eq!(got.mass, Some(Dw::ONE), "{src}");
                         // Compare normal forms structurally.
                         let qnf = match run_to_nf(qt_of_term(&t)) {
                             Some(x) => x,
@@ -901,7 +548,7 @@ mod tests {
     }
 
     fn run_to_nf(mut t: QTerm) -> Option<QTerm> {
-        let budget = QBudget::default();
+        let budget = Budget::default();
         let mut store = Store::new();
         let mut trace = Vec::new();
         for _ in 0..budget.trans {
@@ -919,10 +566,10 @@ mod tests {
         // λn.λm.λc.λt.λh. m (h (n m)) — prepare |+⟩, measure.
         // Signature order [new, meas, cnot, t, h]: n=5, m=4, c=3, t=2, h=1.
         // Body: 4 (1 (5 4)) — the `new` argument (m) is discarded unevaluated.
-        use crate::term::{app, lam, var};
+        use crate::blc::term::{app, lam, var};
         let body = app(var(4), app(var(1), app(var(5), var(4))));
         let p = lam(lam(lam(lam(lam(body)))));
-        let leaves = run(apply_signature(&p, &sig_default()), &QBudget::default());
+        let leaves = run(apply_signature(&p, &sig_default()), &Budget::default());
         assert_eq!(leaves.len(), 2);
         let mut total = Dw::ZERO;
         for l in &leaves {
@@ -953,13 +600,13 @@ mod tests {
     fn bell_state_exact() {
         // λn.λm.λc.λt.λh. c (h (n n)) (n n) — Bell pair, unmeasured, via the
         // cnot Church pair left in the normal form.
-        use crate::term::{app, lam, var};
+        use crate::blc::term::{app, lam, var};
         let body = app(
             app(var(3), app(var(1), app(var(5), var(5)))),
             app(var(5), var(5)),
         );
         let p = lam(lam(lam(lam(lam(body)))));
-        let leaves = run(apply_signature(&p, &sig_default()), &QBudget::default());
+        let leaves = run(apply_signature(&p, &sig_default()), &Budget::default());
         assert_eq!(leaves.len(), 1);
         match &leaves[0].fate {
             Fate::Halt(store) => {
@@ -1006,7 +653,7 @@ mod tests {
             qapp(QTerm::Prim(Prim::T), QTerm::Var(1)),
         );
         let t = qapp(QTerm::Lam(Rc::new(body)), fresh_qubit());
-        let leaves = run(t, &QBudget::default());
+        let leaves = run(t, &Budget::default());
         assert_eq!(leaves.len(), 1);
         match &leaves[0].fate {
             Fate::Halt(store) => assert_eq!(store.live_count(), 2),
@@ -1025,7 +672,7 @@ mod tests {
             qapp(QTerm::Prim(Prim::T), QTerm::Var(2)),
         )))));
         let t = qapp(cnot_pair(), sel);
-        let leaves = run(t, &QBudget::default());
+        let leaves = run(t, &Budget::default());
         assert_eq!(leaves.len(), 1);
         assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::StaleEpoch)));
     }
@@ -1038,7 +685,7 @@ mod tests {
             QTerm::Var(2),
         )))));
         let t = qapp(cnot_pair(), sel);
-        let leaves = run(t, &QBudget::default());
+        let leaves = run(t, &Budget::default());
         assert_eq!(leaves.len(), 1);
         assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::SameQubit)));
     }
@@ -1053,7 +700,7 @@ mod tests {
                 Rc::new(QTerm::Var(1)),
             )))),
         );
-        let leaves = run(t, &QBudget::default());
+        let leaves = run(t, &Budget::default());
         assert_eq!(leaves.len(), 1);
         assert!(matches!(leaves[0].fate, Fate::Err(ErrKind::Species)));
         match &leaves[0].fate {
@@ -1069,7 +716,7 @@ mod tests {
         let mk = |inner: QTerm, p: Prim| QTerm::App(Rc::new(QTerm::Prim(p)), Rc::new(inner));
         let q = mk(QTerm::Prim(Prim::H), Prim::New);
         let t = mk(mk(mk(mk(q, Prim::H), Prim::T), Prim::H), Prim::Meas);
-        let leaves = run(t, &QBudget::default());
+        let leaves = run(t, &Budget::default());
         assert_eq!(leaves.len(), 2);
         let m0 = leaves.iter().find(|l| matches!(&l.fate, Fate::Halt(_)));
         assert!(m0.is_some());

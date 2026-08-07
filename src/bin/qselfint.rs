@@ -21,12 +21,15 @@
 //! Usage: `qselfint [max_n] [phase]` (default: 24 all;
 //! phase ∈ all|quantum|nf).
 
-use blam::enumerate::{enc_to_string, for_each_closed};
+use blam::blc::enumerate::for_each_closed;
+use blam::blc::term::{app, lam, var, Term};
+use blam::blc::wire::enc_to_string;
+use blam::classical::machine::{Machine, Pool, StringSink};
 use blam::parse_all;
-use blam::qeval::{self, Effect, Fate, Leaf, Prim, QBudget};
-use blam::qvm;
-use blam::term::{app, lam, var, Term};
-use blam::vm::{Machine, StringSink, TermPool};
+use blam::quantum::machine as qvm;
+use blam::quantum::reference as qeval;
+use blam::quantum::sig::FROZEN;
+use blam::quantum::{Budget as QBudget, Effect, Fate, Leaf};
 use rayon::prelude::*;
 use std::time::Instant;
 
@@ -35,8 +38,6 @@ const INTL: &str = "010001101000010000000110000001011100110000111111100001011100
 
 /// λ⁵. meas (h (t (h (new t)))) — the first-nondyadic-leaves witness (n=45).
 const WITNESS45: &str = "000000000001111100111111001100111111001111010";
-
-const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
 fn church_bit(zero: bool) -> Term {
     // polarity: '0' → true = λx.λy.x
@@ -84,7 +85,7 @@ enum Outcome {
 /// pure program computes (every pure halter is Halt(empty store, mass 1)),
 /// so additionally pin term-level β-equivalence: nf(E_q ⌜p⌝) ≡ nf(p) as
 /// bit streams on the KN machine, whenever p has a normal form in fuel.
-fn nf_check(src: &str, eq: &Term, pool: &mut TermPool, vm: &mut Machine) -> Outcome {
+fn nf_check(src: &str, eq: &Term, pool: &mut Pool, vm: &mut Machine) -> Outcome {
     let p = parse_all(src).expect("closed program");
     pool.clear();
     let root_p = pool.from_term(&p);
@@ -138,7 +139,7 @@ fn check(src: &str, eq: &Term, direct_budget: &QBudget, interp_budget: &QBudget)
     let mut pool = qvm::Pool::new();
     let root = pool.from_term(&interp_term);
     let sig = pool.apply_signature(root, &FROZEN);
-    let mut m = qvm::QMachine::new();
+    let mut m = qvm::Machine::new();
     let mut fast = Vec::new();
     let fast_budget = QBudget {
         trans: 1 << 28,
@@ -265,7 +266,7 @@ fn main() {
                 || {
                     (
                         app(parse_all(INTL).expect("intL parses"), lam(var(1))),
-                        TermPool::new(),
+                        Pool::new(),
                         Machine::new(),
                     )
                 },
@@ -377,7 +378,8 @@ mod tests {
     /// environment walk passes directly over the cell holding the poison.
     #[test]
     fn selfint_effectful_tail_canary() {
-        use blam::qeval::{qt_of_term, run_traced, QTerm};
+        use blam::quantum::reference::{qt_of_term, run_traced, QTerm};
+        use blam::quantum::Prim;
         use std::rc::Rc;
         // p = λ⁵. meas (h (new t))
         let p = lam(lam(lam(lam(lam(app(
@@ -423,7 +425,7 @@ mod tests {
     #[test]
     fn selfint_pure_nf_leq14() {
         let eq = eq_term();
-        let mut pool = TermPool::new();
+        let mut pool = Pool::new();
         let mut vm = Machine::new();
         let mut programs: Vec<(u64, u8)> = Vec::new();
         for n in 4..=14 {

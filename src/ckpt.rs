@@ -47,7 +47,9 @@ impl<R: CkptRecord> Ckpt<R> {
     /// must match exactly; target/groups are adopted from the file. On a
     /// fresh file, `groups` defaults to 64 when the flag is 0 and
     /// `target` is `threads × 16 × groups` (every sequential group still
-    /// load-balances internally across the pool).
+    /// load-balances internally across the pool). "Threads" is
+    /// `available_parallelism`, which is what rayon sizes its default
+    /// pool from — same number, without the library depending on rayon.
     pub fn open(path: &str, config: &str, groups_flag: usize) -> Ckpt<R> {
         use std::io::Read;
         let existing = std::fs::File::open(path).ok().map(|mut f| {
@@ -79,7 +81,10 @@ impl<R: CkptRecord> Ckpt<R> {
             }
             None => {
                 let groups = if groups_flag == 0 { 64 } else { groups_flag };
-                let target = rayon::current_num_threads() * 16 * groups;
+                let threads = std::thread::available_parallelism()
+                    .map(|n| n.get())
+                    .unwrap_or(16);
+                let target = threads * 16 * groups;
                 (target, groups, HashMap::new())
             }
         };

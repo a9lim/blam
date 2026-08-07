@@ -9,12 +9,12 @@
 //! `aᵢ` with a ratchet certificate kills the whole term. Open arguments
 //! are skipped (the v1 machinery assumes closed metavariables).
 
-use blam::cert::{
-    discover_stream, head_step, try_htr, try_selector, verify, HeadTowerRatchet, PTerm, Ratchet,
-    SelectorRatchet, Step,
+use blam::blc::term::Term;
+use blam::blc::wire::parse_all;
+use blam::classical::certificate::search::{discover_stream, try_htr, try_selector};
+use blam::classical::certificate::{
+    head_step, verify, HeadTowerRatchet, PTerm, Ratchet, SelectorRatchet, Step,
 };
-use blam::parse::parse_all;
-use blam::term::Term;
 use rayon::prelude::*;
 use std::io::Write;
 use std::sync::atomic::{AtomicU64, Ordering};

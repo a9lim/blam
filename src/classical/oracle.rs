@@ -14,7 +14,7 @@
 //! form. A `false` answer claims nothing. Shift overflows return `false`
 //! (conservative, oracle silent).
 
-use crate::vm::{Node, TermPool};
+use crate::classical::machine::{Node, Pool};
 
 /// Read-only view of a lambda term, so the oracle runs on both the flat
 /// pool (census prefilter) and the escalation engine's boxed terms.
@@ -30,10 +30,10 @@ pub trait LView: Copy {
     fn node(self) -> NV<Self>;
 }
 
-impl LView for (&TermPool, u32) {
+impl LView for (&Pool, u32) {
     fn node(self) -> NV<Self> {
         let (p, id) = self;
-        match p.nodes[id as usize] {
+        match p.node(id) {
             Node::Var(n) => NV::Var(n),
             Node::Lam(b) => NV::Lam((p, b)),
             Node::App(f, a) => NV::App((p, f), (p, a)),
@@ -41,7 +41,7 @@ impl LView for (&TermPool, u32) {
     }
 }
 
-// Work meter shared with the escalation engine (armed by bb::normal_form,
+// Work meter shared with the escalation engine (armed by escalation::normal_form,
 // i64::MAX = disarmed). The oracle allocates nothing, so charging its
 // recursion here is what bounds it on the huge intermediate terms the
 // escalation capacity admits — one no_nf call is otherwise quadratic in
@@ -183,6 +183,11 @@ fn is_b23<T: LView>(is: u64, t: T) -> bool {
 
 /// `true` ⇒ the term (at free-variable threshold `f` binders) has no
 /// normal form. `false` claims nothing.
+///
+/// The thread-local work meter above is armed by the escalation engine,
+/// so on a thread inside `escalation::normal_form` an exhausted meter
+/// can force a conservative `false` here that a fresh thread would not
+/// give. Never a wrong `true`.
 pub fn no_nf<T: LView>(f: u32, t: T) -> bool {
     if f >= 62 {
         return false;
@@ -194,10 +199,10 @@ pub fn no_nf<T: LView>(f: u32, t: T) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::vm::TermPool;
+    use crate::classical::machine::Pool;
 
     fn check(bits: &str) -> bool {
-        let mut p = TermPool::new();
+        let mut p = Pool::new();
         let root = p.decode_str(bits).unwrap();
         no_nf(0, (&p, root))
     }

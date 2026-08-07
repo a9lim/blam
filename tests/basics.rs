@@ -1,5 +1,7 @@
-use blam::term::{app, lam, var, Term};
-use blam::{normalize, parse_all, parse_prefix, Budget, OutOfFuel, ParseError};
+use blam::blc::term::{app, lam, var, Term};
+use blam::classical::reference::normalize;
+use blam::classical::{Budget, OutOfFuel};
+use blam::{parse_all, parse_prefix, ParseError};
 
 fn nf(t: &Term, limit: u64) -> Result<Term, OutOfFuel> {
     normalize(t, &mut Budget::new(limit))

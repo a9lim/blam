@@ -18,13 +18,13 @@
 //!
 //! Usage: `certdiag <terms-file> [--steps N] [--nodes N] [--threads N]`
 
-use blam::cert::{
-    check_reduces, check_reduces_star, generalize, head_step, match_wrapper, plug, spine,
-    strip_lams, verify, verify_htr, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm, Ratchet,
-    Step,
+use blam::blc::term::Term;
+use blam::blc::wire::parse_all;
+use blam::classical::certificate::search::generalize;
+use blam::classical::certificate::{
+    check_reduces, check_reduces_star, head_step, match_wrapper, plug, spine, strip_lams, verify,
+    verify_htr, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm, Ratchet, Step,
 };
-use blam::parse::parse_all;
-use blam::term::Term;
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::rc::Rc;

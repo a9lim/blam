@@ -1,28 +1,30 @@
-//! Binary lambda calculus engine for algorithmic information theory experiments.
+//! Binary lambda calculus engine for algorithmic information theory
+//! experiments.
 //!
-//! The `term`/`parse`/`eval` modules form the *reference core*: a naive,
-//! textbook-faithful implementation that serves as the executable spec;
-//! `vm` is the fast abstract machine differential-tested against it.
-//! The quantum pillar mirrors the layout with a `q` prefix: `qeval` is
-//! the naive reference evaluator, `qvm` the lockstep-verified fast path.
+//! Three layers:
+//!
+//! - [`blc`] — the substrate both pillars share: terms, the wire format,
+//!   closed-term enumeration, and the reduction kernel.
+//! - [`classical`] and [`quantum`] — the two pillars, each shaped the
+//!   same way: a `reference` module that is the executable spec, a
+//!   `machine` that is the fast path differential-tested against it, and
+//!   a `certificate` layer of trusted checkers. The classical pillar
+//!   additionally carries the divergence `oracle` and the `escalation`
+//!   engine; the quantum pillar the exact `scalar` ring and the frozen
+//!   signature order.
+//! - `lab` — research instruments behind the `lab` feature, depended on
+//!   by nothing in the pillars.
+//!
+//! One verb pair, semantic rather than cosmetic: classical terms
+//! `normalize`, quantum programs `run`.
 
-pub mod bb;
-pub mod cert;
+pub mod blc;
 pub mod ckpt;
-pub mod dw;
-pub mod enumerate;
-pub mod eval;
-pub mod odd;
-pub mod oddmin;
-pub mod oracle;
-pub mod parse;
-pub mod qeval;
-pub mod qvm;
-pub mod radical;
-pub mod skel;
-pub mod term;
-pub mod vm;
+pub mod classical;
+pub mod quantum;
 
-pub use eval::{normalize, Budget, OutOfFuel};
-pub use parse::{parse_all, parse_prefix, ParseError};
-pub use term::Term;
+#[cfg(feature = "lab")]
+pub mod lab;
+
+pub use blc::wire::{parse_all, parse_prefix, ParseError};
+pub use blc::{app, lam, var, Term};

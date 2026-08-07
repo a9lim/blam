@@ -18,12 +18,12 @@
 //! Usage: `certlean [kills_file] [lean_out_dir]`
 //! Defaults: data/certificates/ratchet_kills.tsv lean
 
-use blam::cert::{
+use blam::blc::term::Term;
+use blam::blc::wire::parse_all;
+use blam::classical::certificate::{
     head_step, spine, strip_lams, tower_index, verify, verify_htr, verify_selector,
     HeadTowerRatchet, PTerm, Ratchet, SelectorRatchet, Step,
 };
-use blam::parse::parse_all;
-use blam::term::Term;
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
 

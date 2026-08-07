@@ -47,7 +47,7 @@
 //! saturate and charge i64::MAX, where the old engine would grind
 //! unboundedly; no census term reaches that regime.)
 
-use crate::oracle::{no_nf, LView, NV};
+use crate::classical::oracle::{no_nf, LView, NV};
 use std::rc::Rc;
 
 /// Term with ⊥, mirroring BB.lhs's `L`. 1-based de Bruijn. `Var`/`Bot`
@@ -169,8 +169,8 @@ impl LTerm {
         }
     }
 
-    pub fn from_term(t: &crate::term::Term) -> LTerm {
-        use crate::term::Term;
+    pub fn from_term(t: &crate::blc::term::Term) -> LTerm {
+        use crate::blc::Term;
         match t {
             Term::Var(n) => Var(*n),
             Term::Lam(b) => lam(LTerm::from_term(b)),
@@ -211,7 +211,7 @@ impl std::hash::Hash for LTerm {
 // engine work — simplify cascades, substitution into huge bodies, oracle
 // recursion on huge redexes — none of which the redex-size capacity sees.
 // Armed by `normal_form`; i64::MAX (disarmed) outside it.
-use crate::oracle::{spend_work, spend_work_n, work_exhausted, WORK};
+use crate::classical::oracle::{spend_work, spend_work_n, work_exhausted, WORK};
 
 /// Bill the meter for a skipped traversal (see METER PARITY INVARIANT).
 fn charge(n: u64) {
@@ -527,10 +527,10 @@ fn probe_nf(t: &LTerm) -> Option<String> {
     });
     let mut bits = String::new();
     lterm_bits(t, &mut bits);
-    let mut pool = crate::vm::TermPool::new();
+    let mut pool = crate::classical::machine::Pool::new();
     let root = pool.decode_str(&bits)?;
-    let mut vm = crate::vm::Machine::new();
-    let mut sink = crate::vm::StringSink::default();
+    let mut vm = crate::classical::machine::Machine::new();
+    let mut sink = crate::classical::machine::StringSink::default();
     if vm.normalize(&pool, root, fuel, &mut sink).is_err() {
         REDLOOP_FUEL_REJECTS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         return None;
@@ -735,16 +735,16 @@ mod tests {
         use std::collections::HashSet;
         for n in [8u32, 14, 20] {
             let mut set = HashSet::new();
-            crate::enumerate::for_each_closed(n, &mut |enc, len| {
-                let bits = crate::enumerate::enc_to_string(enc, len);
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                let bits = crate::blc::wire::enc_to_string(enc, len);
                 let t = from_bits(&bits);
                 assert_eq!(t.bit_size(), n as u64, "{bits}");
                 assert_eq!(t.mf(), 0, "{bits}");
                 assert!(!t.has_bot(), "{bits}");
                 set.insert(t);
             });
-            crate::enumerate::for_each_closed(n, &mut |enc, len| {
-                let bits = crate::enumerate::enc_to_string(enc, len);
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                let bits = crate::blc::wire::enc_to_string(enc, len);
                 assert!(set.contains(&from_bits(&bits)), "{bits}");
             });
         }

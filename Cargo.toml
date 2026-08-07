@@ -14,9 +14,86 @@ categories = ["science", "mathematics", "algorithms"]
 # the package.
 include = ["/src", "/Cargo.toml", "/README.md", "/LICENSE"]
 
+[features]
+default = ["cli"]
+# The 13 measurement drivers. Owns the rayon dependency; the library
+# engine itself needs only im-rc.
+cli = ["dep:rayon"]
+# Research instruments (`lab::*`) plus the untrusted certificate
+# discovery surface (`classical::certificate::search`).
+lab = []
+
 [dependencies]
 im-rc = "15"
+rayon = { version = "1", optional = true }
+
+[dev-dependencies]
 rayon = "1"
 
 [profile.release]
 debug = true
+
+[[bin]]
+name = "census"
+path = "src/bin/census.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "certdiag"
+path = "src/bin/certdiag.rs"
+required-features = ["cli", "lab"]
+
+[[bin]]
+name = "certlean"
+path = "src/bin/certlean.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "certsearch"
+path = "src/bin/certsearch.rs"
+required-features = ["cli", "lab"]
+
+[[bin]]
+name = "oddminproto"
+path = "src/bin/oddminproto.rs"
+required-features = ["cli", "lab"]
+
+[[bin]]
+name = "qcensus"
+path = "src/bin/qcensus.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "qcomplement"
+path = "src/bin/qcomplement.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "qpilot"
+path = "src/bin/qpilot.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "qradical"
+path = "src/bin/qradical.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "qselfint"
+path = "src/bin/qselfint.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "slotsearch"
+path = "src/bin/slotsearch.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "solomonoff"
+path = "src/bin/solomonoff.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "tracescan"
+path = "src/bin/tracescan.rs"
+required-features = ["cli"]

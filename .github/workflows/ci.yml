@@ -31,7 +31,7 @@ jobs:
         with:
           components: clippy
       - uses: Swatinem/rust-cache@v2
-      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 
   test:
     # --release is the repo's own verification bar (AGENTS.md): the cert
@@ -49,7 +49,12 @@ jobs:
           submodules: true
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo test --release --workspace
+      # --all-features so the `lab` targets (research instruments, the
+      # untrusted certificate discovery surface, and the three bins that
+      # use them) are compiled and tested too.
+      - run: cargo test --release --workspace --all-features
+      # The engine must also build with im-rc alone.
+      - run: cargo test --release --no-default-features
       - name: uni.rs parity (byte-identical vs uni.py on Tromp's corpus)
         run: bash contrib/ait-uni/verify.sh
 

@@ -39,11 +39,11 @@
 //! This module is the trusted replayer for the oddmin
 //! certificate and the validation oracle for its compositional DP;
 //! it deliberately contains no term evaluation — pair it with
-//! qeval::run_traced. The pure mask kernels (`step_h`, `step_t`,
+//! `quantum::reference::run_traced`. The pure mask kernels (`step_h`, `step_t`,
 //! `step_meas`) are shared with the future certificate transfer
 //! transfers; keep them total and allocation-free.
 
-use crate::qeval::Effect;
+use crate::quantum::Effect;
 use std::collections::HashMap;
 
 const XE: u8 = 1 << 0;
@@ -230,21 +230,15 @@ pub fn replay(trace: &[Effect]) -> Result<Verdict, Malformed> {
     m.verdict()
 }
 
-/// Compatibility shim: may this valid trace's leaf carry Galois-odd
-/// mass? (`MayOdd` and `NeedsCnot` both answer "cannot rule it out".)
-pub fn trace_accepts(trace: &[Effect]) -> bool {
-    matches!(replay(trace), Ok(Verdict::MayOdd | Verdict::NeedsCnot))
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::enumerate::for_each_closed;
-    use crate::parse_all;
-    use crate::qeval::{self, Prim, QBudget};
-    use crate::radical::radical_parts;
-
-    const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
+    use crate::blc::enumerate::for_each_closed;
+    use crate::blc::wire::parse_all;
+    use crate::quantum::reference as qeval;
+    use crate::quantum::scalar::radical_parts;
+    use crate::quantum::sig::FROZEN;
+    use crate::quantum::Budget as QBudget;
 
     /// Hand traces: one qubit per lowercase run, allocated up front,
     /// epochs counted per qubit the way qeval emits them.
@@ -410,7 +404,7 @@ mod tests {
             for_each_closed(n, &mut |enc, len| {
                 programs += 1;
                 let mut bits = (0..len).rev().map(|i| enc >> i & 1 == 1);
-                let p = crate::parse::parse_prefix(&mut bits).expect("enumerated term parses");
+                let p = crate::blc::wire::parse_prefix(&mut bits).expect("enumerated term parses");
                 let leaves = qeval::run_traced(qeval::apply_signature(&p, &FROZEN), &budget);
                 let (mut any_odd, mut any_cnot) = (false, false);
                 for (leaf, trace) in &leaves {

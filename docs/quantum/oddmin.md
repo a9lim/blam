@@ -213,7 +213,7 @@ the component has:
 never introduce an accepting effect. General effectful widening is not
 implemented.
 
-Other growth failures are `StateCap`, `PortCap`, or `DescendCap`. Every abort
+Other growth failures are `StateCap` or `PortCap`. Every abort
 is conservative top. No lower-bound claim may treat it as non-acceptance.
 
 ## 5. Acceptance and soundness obligations

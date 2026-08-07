@@ -29,16 +29,15 @@
 //! `p K-bar <sig>` (dimension handed as a Church numeral before the
 //! signature) — the G_K approximant sweep.
 
-use blam::dw::Dw;
-use blam::enumerate::{interleave_tasks, run_task, split_tasks};
-use blam::qeval::{Capacity, ErrKind, Fate, Prim, QBudget};
-use blam::qvm::{Pool, QMachine};
+use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
+use blam::blc::wire::enc_to_string as enc_str;
+use blam::quantum::machine::{Machine as QMachine, Pool};
+use blam::quantum::scalar::Dw;
+use blam::quantum::sig::FROZEN;
+use blam::quantum::{Budget as QBudget, Capacity, ErrKind, Fate, Prim};
 use rayon::prelude::*;
 use std::fmt::Write as _;
 use std::time::Instant;
-
-/// The frozen signature order (`docs/quantum/architecture.md`).
-const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
 /// Exact accumulator with f64 mirror; `ok` false once any exact op
 /// overflowed (the mirror is then display-grade only).
@@ -422,7 +421,7 @@ fn cap_idx(c: Capacity) -> usize {
 fn sweep_one(
     pool: &mut Pool,
     m: &mut QMachine,
-    leaves: &mut Vec<blam::qeval::Leaf>,
+    leaves: &mut Vec<blam::quantum::Leaf>,
     enc: u64,
     len: u8,
     cond: Option<u32>,
@@ -521,10 +520,6 @@ fn sweep_one(
     }
 }
 
-fn enc_str(enc: u64, len: u8) -> String {
-    blam::enumerate::enc_to_string(enc, len)
-}
-
 /// ⟨ψ|M|ψ⟩ for unnormalized ψ; the caller divides by ‖ψ‖² afterwards.
 fn expect(m: &[Ex], psi: &[Dw]) -> Option<Dw> {
     if !m.iter().all(|e| e.ok) {
@@ -578,8 +573,8 @@ fn main() {
     let mut terms_file: Option<String> = None;
     let mut skeleton_cap: Option<i64> = None;
     let mut skeleton_only = false;
-    let mut skel_steps = blam::skel::SkelCaps::default().steps;
-    let mut skel_size = blam::skel::SkelCaps::default().size_bits;
+    let mut skel_steps = blam::quantum::certificate::SkelCaps::default().steps;
+    let mut skel_size = blam::quantum::certificate::SkelCaps::default().size_bits;
     let mut ckpt_path: Option<String> = None;
     let mut groups_flag = 0usize;
     // The canonical universe unless --sig overrides (alternate universes
@@ -698,19 +693,19 @@ fn main() {
             .filter(|l| !l.is_empty())
             .collect();
         let bbcap = skeleton_cap.unwrap_or(2_000_000);
-        let caps = blam::skel::SkelCaps {
+        let caps = blam::quantum::certificate::SkelCaps {
             steps: skel_steps,
             size_bits: skel_size,
         };
         let t0 = Instant::now();
         let counts = std::sync::Mutex::new(std::collections::HashMap::<&'static str, u64>::new());
         programs.par_iter().for_each(|bits| {
-            use blam::bb::{normal_form, LTerm, NoNf};
-            use blam::skel::{adjudicate, SkelVerdict};
-            use blam::vm::{Machine, SizeSink, TermPool};
+            use blam::classical::escalation::{normal_form, LTerm, NoNf};
+            use blam::classical::machine::{Machine, Pool, SizeSink};
+            use blam::quantum::certificate::{adjudicate, SkelVerdict};
             let mut p = blam::parse_all(bits).expect("parse program line");
             if let Some(k) = cond_k {
-                use blam::term::{app, lam, var};
+                use blam::blc::term::{app, lam, var};
                 let mut body = var(1);
                 for _ in 0..k {
                     body = app(var(2), body);
@@ -726,10 +721,10 @@ fn main() {
                     // Classical semantic ladder on the closed residual;
                     // Halt AND proven no-NF both transfer.
                     let lt = LTerm::from_term(&residual);
-                    if blam::oracle::no_nf(0, &lt) {
+                    if blam::classical::oracle::no_nf(0, &lt) {
                         ("div", format!(" steps={steps} via=oracle"))
                     } else {
-                        let mut pool = TermPool::new();
+                        let mut pool = Pool::new();
                         let root = pool.decode_str(&residual.to_bits()).expect("residual bits");
                         let mut sink = SizeSink::default();
                         match Machine::new().normalize(&pool, root, 65_536, &mut sink) {
@@ -824,8 +819,8 @@ fn main() {
                 // outcome could still erase it; skeleton halts say nothing
                 // (δ-rules continue where the rigid form stopped).
                 let skel = skeleton_cap.map(|cap| {
-                    use blam::bb::{normal_form_spine, LTerm, NoNf};
-                    use blam::term::{app, var};
+                    use blam::classical::escalation::{normal_form_spine, LTerm, NoNf};
+                    use blam::blc::term::{app, var};
                     let mut sk = t.clone();
                     if let Some(k) = cond_k {
                         // Church numeral k̄ = λf.λx. f^k x, matching
@@ -834,7 +829,7 @@ fn main() {
                         for _ in 0..k {
                             body = app(var(2), body);
                         }
-                        sk = app(sk, blam::term::lam(blam::term::lam(body)));
+                        sk = app(sk, blam::blc::term::lam(blam::blc::term::lam(body)));
                     }
                     for i in 0..sig.len() as u32 {
                         sk = app(sk, var(i + 1));
@@ -907,7 +902,7 @@ fn main() {
             None => nthreads * 32,
         };
         let tasks = interleave_tasks(split_tasks(n, target));
-        let run_slice = |slice: &[blam::enumerate::GenTask]| -> Tally {
+        let run_slice = |slice: &[blam::blc::enumerate::GenTask]| -> Tally {
             slice
                 .par_iter()
                 .fold(

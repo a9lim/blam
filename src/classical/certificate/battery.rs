@@ -11,11 +11,16 @@
 //! the enumerator's subtree tasks; both are why the full ≤28 sweep is a
 //! default test rather than a nightly. Terms whose probe runs out of
 //! fuel are skipped: not proven halters, nothing to assert.
+//!
+//! It lives inside the crate rather than in `tests/` so that it keeps
+//! running under plain `cargo test` while `search` stays off the default
+//! public surface.
 
-use blam::cert::{discover_stream, try_htr, try_selector, verify, Ratchet};
-use blam::enumerate::{enc_to_string, run_task, split_tasks};
-use blam::parse_all;
-use blam::vm::{Machine, SizeSink, TermPool};
+use super::search_impl::{discover_stream, try_htr, try_selector};
+use super::{verify, Ratchet};
+use crate::blc::enumerate::{run_task, split_tasks};
+use crate::blc::wire::{enc_to_string, parse_all};
+use crate::classical::machine::{Machine, Pool, SizeSink};
 use rayon::prelude::*;
 
 #[test]
@@ -27,7 +32,7 @@ fn no_certificate_fires_on_any_small_halter() {
     let (halters, certified) = tasks
         .par_iter()
         .map(|task| {
-            let mut pool = TermPool::new();
+            let mut pool = Pool::new();
             let mut vm = Machine::new();
             let mut halters = 0u64;
             let mut certified = Vec::new();

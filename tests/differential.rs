@@ -3,10 +3,13 @@
 //! lockstep — García-Pérez & Nogueira 2019), exhaustively over all closed
 //! terms of small sizes, divergers included.
 
-use blam::enumerate::{enc_to_string, for_each_closed};
-use blam::term::{app, lam, var, Term};
-use blam::vm::{Machine, SizeSink, StringSink, TermPool};
-use blam::{normalize, parse_all, Budget};
+use blam::blc::enumerate::for_each_closed;
+use blam::blc::term::{app, lam, var, Term};
+use blam::blc::wire::enc_to_string;
+use blam::classical::machine::{Machine, Pool, SizeSink, StringSink};
+use blam::classical::reference::normalize;
+use blam::classical::Budget;
+use blam::parse_all;
 
 // Generous vs. the measured max of 11 β-steps for halting terms ≤ 24 bits;
 // kept modest because the naive whnf recurses once per step, so divergers
@@ -25,7 +28,7 @@ fn exhaustive_agreement_small_sizes() {
 }
 
 fn exhaustive_agreement_body() {
-    let mut pool = TermPool::new();
+    let mut pool = Pool::new();
     let mut vm = Machine::new();
     let mut checked = 0u64;
     for n in 4..=18 {
@@ -104,7 +107,7 @@ fn vm_reproduces_bb_witnesses() {
             327_686,
         ),
     ];
-    let mut pool = TermPool::new();
+    let mut pool = Pool::new();
     let mut vm = Machine::new();
     for (t, expect) in cases {
         pool.clear();
@@ -121,7 +124,7 @@ fn vm_handles_bb34_fast() {
     // the machine — no fat stack, no ignore attribute, streaming size sink.
     let c2 = lam(lam(app(var(2), app(var(2), var(1)))));
     let t = app(lam(app(app(app(var(1), var(1)), var(1)), var(1))), c2);
-    let mut pool = TermPool::new();
+    let mut pool = Pool::new();
     let root = pool.from_term(&t);
     let mut vm = Machine::new();
     let mut sink = SizeSink::default();
@@ -136,7 +139,7 @@ fn vm_survives_corpus_diverger() {
     // the bare term has NO normal form — normalizing it must exhaust fuel
     // gracefully (deep env chains, growing spine), not hang or crash.
     let int170 = "01000110100001000000011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010010111110100101101010011010";
-    let mut pool = TermPool::new();
+    let mut pool = Pool::new();
     let root = pool.decode_str(int170).unwrap();
     let mut vm = Machine::new();
     let mut sink = StringSink::default();

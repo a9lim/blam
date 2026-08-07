@@ -41,8 +41,8 @@
 //! in argument position is inert on both sides and travels through β
 //! opaquely.
 
-use crate::eval::beta;
-use crate::term::Term;
+use crate::blc::reduction::beta;
+use crate::blc::{app, lam, var, Term};
 use std::collections::HashSet;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -98,7 +98,7 @@ fn step(t: &Term, depth: u32) -> Step {
     match t {
         Term::Var(_) => Step::Nf,
         Term::Lam(b) => match step(b, depth + 1) {
-            Step::Did(nb) => Step::Did(crate::term::lam(nb)),
+            Step::Did(nb) => Step::Did(lam(nb)),
             other => other,
         },
         Term::App(f, a) => {
@@ -108,9 +108,9 @@ fn step(t: &Term, depth: u32) -> Step {
                 _ => {}
             }
             match step(f, depth) {
-                Step::Did(nf) => Step::Did(crate::term::app(nf, (**a).clone())),
+                Step::Did(nf) => Step::Did(app(nf, (**a).clone())),
                 Step::Nf => match step(a, depth) {
-                    Step::Did(na) => Step::Did(crate::term::app((**f).clone(), na)),
+                    Step::Did(na) => Step::Did(app((**f).clone(), na)),
                     other => other,
                 },
                 Step::Hole => Step::Hole,
@@ -124,7 +124,7 @@ pub fn adjudicate(p: &Term, slots: u32, caps: &SkelCaps) -> SkelVerdict {
     debug_assert!(p.is_closed());
     let mut t = p.clone();
     for i in 1..=slots {
-        t = crate::term::app(t, crate::term::var(i));
+        t = app(t, var(i));
     }
     let mut seen: HashSet<String> = HashSet::new();
     let mut steps = 0u64;
@@ -155,8 +155,7 @@ pub fn adjudicate(p: &Term, slots: u32, caps: &SkelCaps) -> SkelVerdict {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parse_all;
-    use crate::term::{app, lam, var};
+    use crate::blc::wire::parse_all;
 
     fn d() -> Term {
         lam(app(var(1), var(1)))
@@ -194,7 +193,7 @@ mod tests {
                 assert!(residual.is_closed());
                 // The classical escalation engine proves the residual
                 // diverges — the full transfer chain.
-                use crate::bb::{normal_form, LTerm, NoNf};
+                use crate::classical::escalation::{normal_form, LTerm, NoNf};
                 assert_eq!(
                     normal_form(2_000_000, &LTerm::from_term(&residual)),
                     Err(NoNf::Diverge)

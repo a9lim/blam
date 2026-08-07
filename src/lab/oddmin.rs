@@ -35,7 +35,7 @@
 //! the product run from the single composed root (§4's EvalHead /
 //! Apply / NF-descent protocol).
 
-use crate::odd::{step_h, step_meas, step_t};
+use super::odd::{step_h, step_meas, step_t};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 pub type NodeId = u32;
@@ -167,22 +167,6 @@ pub enum HeadPat {
     Prim { which: Which, partial: bool },
     Handle { role: Role },
     Neutral,
-}
-
-impl HeadPat {
-    /// May-lattice match: does a concrete head satisfy this pattern?
-    pub fn matches(&self, h: &Head) -> bool {
-        match (self, h) {
-            (HeadPat::Any, _) => true,
-            (HeadPat::Lam, Head::Lam { .. }) => true,
-            (HeadPat::Prim { which, partial }, Head::Prim { which: w, held }) => {
-                which == w && *partial == held.is_some()
-            }
-            (HeadPat::Handle { role }, Head::Handle { role: r }) => role == r,
-            (HeadPat::Neutral, Head::Neutral { .. }) => true,
-            _ => false,
-        }
-    }
 }
 
 /// Edge labels: projected distinguished-lineage effects plus the
@@ -379,7 +363,7 @@ pub struct MaskAutomaton {
 
 impl MaskAutomaton {
     pub fn build() -> MaskAutomaton {
-        const FRESH: u8 = 1 << 4; // ZE, as in odd.rs
+        const FRESH: u8 = 1 << 4; // ZE, as in `odd`
         let mut masks = vec![FRESH];
         let mut index: BTreeMap<u8, u8> = BTreeMap::new();
         index.insert(FRESH, 0);
@@ -473,12 +457,6 @@ pub fn materialized_accept_any_root(s: &Summary, ma: &MaskAutomaton) -> bool {
 // ---------------------------------------------------------------------------
 // Reference transfers (SPEC-ODDMIN §4).
 // ---------------------------------------------------------------------------
-
-/// Source weight algebra, wire-exact: w(Var i) = i+1, w(λM) =
-/// w(M)+2, w(MN) = w(M)+w(N)+2.
-pub fn var_weight(i: u8) -> u32 {
-    i as u32 + 1
-}
 
 /// The observation branches for a forced ambient thunk: a single ★
 /// letter (see `HeadPat::Any`). The rel is a placeholder — ambient
@@ -666,7 +644,6 @@ pub fn rigid_summary() -> Summary {
 pub enum Abort {
     StateCap,
     PortCap,
-    DescendCap,
     /// Closed-mode invariant breach: a live closed path met an
     /// unresolved ambient observation.
     UnresolvedAmbient,
@@ -895,7 +872,7 @@ struct Composer<'a> {
     // configuration.
     pending: BTreeMap<(CPortId, ContId), Vec<Net>>,
     returns: BTreeMap<(CPortId, ContId), Vec<Return>>,
-    delivered: BTreeSet<(ONode, ValId, Net, ContId, Net)>,
+    delivered: BTreeSet<(ONode, ValId, Net, ContId)>,
     // Deterministic output bind minting: keyed by the symbolic site.
     bind_ids: BTreeMap<(ONode, HeadPat, CapRel), BindId>,
     // Free-reference analysis memo per subgraph root: (free received
@@ -1221,10 +1198,7 @@ impl<'a> Composer<'a> {
         if self.aborted.is_some() {
             return;
         }
-        if !self
-            .delivered
-            .insert((at, val, inflight, cont, Net::default()))
-        {
+        if !self.delivered.insert((at, val, inflight, cont)) {
             return;
         }
         self.dq.push_back((at, val, inflight, cont));
@@ -2796,8 +2770,8 @@ pub fn closed_accepts(m: &Summary, _ma: &MaskAutomaton) -> Result<bool, Abort> {
 /// weighted DP builds tables instead; this is the direct compositional
 /// route for validation and spot queries. Primitive axioms are never
 /// introduced here; they exist only in the closing environment.
-pub fn term_summary(t: &crate::term::Term) -> Result<Summary, Abort> {
-    use crate::term::Term;
+pub fn term_summary(t: &crate::blc::Term) -> Result<Summary, Abort> {
+    use crate::blc::Term;
     match t {
         Term::Var(i) => {
             assert!(*i < 256, "variable index too large for the domain");
@@ -2842,7 +2816,7 @@ mod tests {
             assert_eq!(ma.masks[ma.t[i] as usize], step_t(m));
         }
         // The sandwich prefix reaches an odd-readable mask; pure
-        // Clifford prefixes never do (mirrors odd.rs hand tests).
+        // Clifford prefixes never do (mirrors `odd`'s hand tests).
         let path = |ops: &str| {
             let mut s = 0u8;
             for c in ops.chars() {
@@ -3042,10 +3016,10 @@ mod tests {
         )));
     }
 
-    use crate::term::{app, lam, var, Term};
+    use crate::blc::{app, lam, var, Term};
 
     fn wire_term(src: &str) -> Term {
-        crate::parse_all(src).expect("closed wire")
+        crate::blc::wire::parse_all(src).expect("closed wire")
     }
 
     /// Nest λ⁵ signature binders around a body.
@@ -3204,11 +3178,12 @@ mod tests {
     /// concrete odd leaf) — reported, not asserted.
     #[test]
     fn small_population_agreement_vs_qeval() {
-        use crate::enumerate::for_each_closed;
-        use crate::odd::{replay, Verdict};
-        use crate::qeval::{self, Prim, QBudget};
-        use crate::radical::radical_parts;
-        const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
+        use crate::blc::enumerate::for_each_closed;
+        use crate::lab::odd::{replay, Verdict};
+        use crate::quantum::reference as qeval;
+        use crate::quantum::scalar::radical_parts;
+        use crate::quantum::sig::FROZEN;
+        use crate::quantum::Budget as QBudget;
         let ma = MaskAutomaton::build();
         let budget = QBudget {
             beta: 128,
@@ -3221,7 +3196,7 @@ mod tests {
             for_each_closed(n, &mut |enc, len| {
                 programs += 1;
                 let mut bits = (0..len).rev().map(|i| enc >> i & 1 == 1);
-                let p = crate::parse::parse_prefix(&mut bits).expect("enumerated term parses");
+                let p = crate::blc::wire::parse_prefix(&mut bits).expect("enumerated term parses");
                 let leaves = qeval::run_traced(qeval::apply_signature(&p, &FROZEN), &budget);
                 let mut odd = false;
                 for (leaf, trace) in &leaves {
@@ -3284,7 +3259,7 @@ mod tests {
 #[cfg(test)]
 mod debug_growth {
     use super::*;
-    use crate::term::Term;
+    use crate::blc::Term;
 
     fn stats(t: &Term, depth: usize) -> Result<Summary, Abort> {
         let s = match t {
@@ -3315,7 +3290,8 @@ mod debug_growth {
     #[test]
     #[ignore]
     fn w45_growth_trace() {
-        let w45 = crate::parse_all("000000000001111100111111001100111111001111010").unwrap();
+        let w45 =
+            crate::blc::wire::parse_all("000000000001111100111111001100111111001111010").unwrap();
         match stats(&w45, 0) {
             Ok(s) => eprintln!("FINAL: nodes {} ports {}", s.node_count, s.ports.len()),
             Err(e) => eprintln!("ABORT: {e:?}"),
@@ -3331,7 +3307,8 @@ mod debug_stages {
     #[ignore]
     fn w45_stage_trace() {
         let ma = MaskAutomaton::build();
-        let w45 = crate::parse_all("000000000001111100111111001100111111001111010").unwrap();
+        let w45 =
+            crate::blc::wire::parse_all("000000000001111100111111001100111111001111010").unwrap();
         let mut g = term_summary(&w45).unwrap();
         for which in [Which::H, Which::Meas, Which::New, Which::Cnot, Which::T] {
             g = app_ref(&g, &prim_summary(which)).unwrap();
@@ -3372,7 +3349,7 @@ mod debug_aborts {
     #[test]
     #[ignore]
     fn find_aborting_wires() {
-        use crate::enumerate::for_each_closed;
+        use crate::blc::enumerate::for_each_closed;
         let ma = MaskAutomaton::build();
         let mut shown = 0;
         for n in 14..=22 {
@@ -3381,7 +3358,7 @@ mod debug_aborts {
                     return;
                 }
                 let mut bits = (0..len).rev().map(|i| enc >> i & 1 == 1);
-                let p = crate::parse::parse_prefix(&mut bits).expect("parses");
+                let p = crate::blc::wire::parse_prefix(&mut bits).expect("parses");
                 let wire: String = (0..len)
                     .rev()
                     .map(|i| if enc >> i & 1 == 1 { '1' } else { '0' })

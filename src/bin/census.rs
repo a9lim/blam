@@ -38,12 +38,13 @@
 //! Diverge, and re-escalates memo-covered wraps; with `--memo-in` from a
 //! run through n−1 the row is bit-identical, escal column included.
 
-use blam::bb::{normal_form, take_head_diverge, LTerm, NoNf, Why};
+use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks, GenTask};
+use blam::blc::wire::enc_to_string;
 use blam::ckpt::{Ckpt, CkptRecord};
-use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks, GenTask};
-use blam::eval::OutOfFuel;
-use blam::oracle::no_nf;
-use blam::vm::{Machine, SizeSink, TermPool};
+use blam::classical::escalation::{normal_form, take_head_diverge, LTerm, NoNf, Why};
+use blam::classical::machine::{Machine, Pool, SizeSink};
+use blam::classical::oracle::no_nf;
+use blam::classical::OutOfFuel;
 use rayon::prelude::*;
 use std::time::Instant;
 
@@ -313,12 +314,12 @@ impl CkptRecord for Stats {
     }
 }
 
-fn lterm_of(pool: &TermPool, id: u32) -> LTerm {
-    use blam::vm::Node;
-    match pool.nodes[id as usize] {
+fn lterm_of(pool: &Pool, id: u32) -> LTerm {
+    use blam::classical::machine::Node;
+    match pool.node(id) {
         Node::Var(n) => LTerm::Var(n),
-        Node::Lam(b) => blam::bb::lam(lterm_of(pool, b)),
-        Node::App(f, a) => blam::bb::app(lterm_of(pool, f), lterm_of(pool, a)),
+        Node::Lam(b) => blam::classical::escalation::lam(lterm_of(pool, b)),
+        Node::App(f, a) => blam::classical::escalation::app(lterm_of(pool, f), lterm_of(pool, a)),
     }
 }
 
@@ -360,7 +361,7 @@ struct Memos<'a> {
 
 fn census_term(
     cfg: &Cfg,
-    pool: &mut TermPool,
+    pool: &mut Pool,
     vm: &mut Machine,
     stats: &mut Stats,
     memos: &Memos,
@@ -634,7 +635,7 @@ fn main() {
     }
     // One-term adjudication mode: run the ladder verbosely on given bits.
     if let Some(bits) = term_arg {
-        let mut pool = TermPool::new();
+        let mut pool = Pool::new();
         let root = pool.decode_str(&bits).expect("parse");
         println!(
             "term: {} bits, redex: {}",
@@ -695,7 +696,7 @@ fn main() {
         // order; downstream analysis groups by content, not position.
         let counts = std::sync::Mutex::new((0u64, 0u64, 0u64));
         terms.par_iter().for_each_init(
-            || (TermPool::new(), Machine::new()),
+            || (Pool::new(), Machine::new()),
             |(pool, vm), bits| {
                 pool.clear();
                 let root = pool.decode_str(bits).expect("parse term line");
@@ -889,7 +890,7 @@ fn main() {
             slice
                 .par_iter()
                 .map_init(
-                    || (TermPool::new(), Machine::new()),
+                    || (Pool::new(), Machine::new()),
                     |(pool, vm), task| {
                         let mut stats = Stats::default();
                         run_task(task, &mut |enc, len| {
@@ -1078,7 +1079,7 @@ fn main() {
         }
     }
     use std::sync::atomic::Ordering;
-    let fires = blam::bb::REDLOOP_FIRES.load(Ordering::Relaxed);
-    let fuel = blam::bb::REDLOOP_FUEL_REJECTS.load(Ordering::Relaxed);
+    let fires = blam::classical::escalation::REDLOOP_FIRES.load(Ordering::Relaxed);
+    let fuel = blam::classical::escalation::REDLOOP_FUEL_REJECTS.load(Ordering::Relaxed);
     println!("redloop: {fires} proofs, {fuel} shape-matches lost to probe fuel");
 }

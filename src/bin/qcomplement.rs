@@ -63,18 +63,17 @@
 //!   independent runs under a9's ≤1-2h-per-run cap; slice tallies
 //!   merge by exact addition (unit-tested).
 
-use blam::dw::Dw;
-use blam::enumerate::{enc_to_string, interleave_tasks, run_task, split_tasks};
-use blam::qeval::{Fate, Leaf, Prim, QBudget};
-use blam::qvm::{Pool, QMachine};
-use blam::radical::{is_dyadic, radical_parts, show_parts, sqrt2_part, Exact};
+use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
+use blam::blc::wire::enc_to_string;
+use blam::quantum::machine::{Machine as QMachine, Pool};
+use blam::quantum::scalar::Dw;
+use blam::quantum::scalar::{is_dyadic, radical_parts, show_parts, sqrt2_part, Exact};
+use blam::quantum::sig::FROZEN;
+use blam::quantum::{Budget as QBudget, Fate, Leaf};
 use rayon::prelude::*;
 use std::io::{BufRead, BufWriter, Write};
 use std::sync::Mutex;
 use std::time::Instant;
-
-/// The frozen signature order (`docs/quantum/architecture.md`): p h meas new cnot t.
-const FROZEN: [Prim; 5] = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
 
 /// Required consumed-binder masks per leading-λ count k (bit s−1 for
 /// prefix slot s, innermost-first: slot s binds argument k+1−s). h is the
@@ -733,7 +732,7 @@ mod tests {
         // Bit-twiddled k must equal the count of leading 00-pairs, for
         // every closed term at small sizes.
         for n in 4..=20 {
-            blam::enumerate::for_each_closed(n, &mut |enc, len| {
+            blam::blc::enumerate::for_each_closed(n, &mut |enc, len| {
                 let s = enc_to_string(enc, len);
                 let mut k_ref = 0u32;
                 let mut rest = s.as_str();
@@ -805,7 +804,7 @@ mod tests {
         let mut m = QMachine::new();
         let mut leaves = Vec::new();
         for n in 4..=26 {
-            blam::enumerate::for_each_closed(n, &mut |enc, len| {
+            blam::blc::enumerate::for_each_closed(n, &mut |enc, len| {
                 let k = leading_lambdas(enc, len);
                 if !(1..5).contains(&k)
                     || consumed_mentions(enc, len, k) & REQ[k as usize] == REQ[k as usize]
@@ -841,7 +840,7 @@ mod tests {
             let mut sweep = Tally::new();
             let mut unresolved: Vec<(u64, u8)> = Vec::new();
             let mut single = Tally::new();
-            blam::enumerate::for_each_closed(n, &mut |enc, len| {
+            blam::blc::enumerate::for_each_closed(n, &mut |enc, len| {
                 if rung0(enc, len, &mut sweep)
                     && !sweep_one(
                         &mut pool,
@@ -910,9 +909,9 @@ mod tests {
             let mut pool = Pool::new();
             let mut m = QMachine::new();
             let mut leaves = Vec::new();
-            let mut sweep_tasks = |tasks: Vec<blam::enumerate::GenTask>, t: &mut Tally| {
+            let mut sweep_tasks = |tasks: Vec<blam::blc::enumerate::GenTask>, t: &mut Tally| {
                 for task in &tasks {
-                    blam::enumerate::run_task(task, &mut |enc, len| {
+                    blam::blc::enumerate::run_task(task, &mut |enc, len| {
                         if rung0(enc, len, t) {
                             sweep_one(&mut pool, &mut m, &mut leaves, enc, len, &HUNT, t, None);
                         }
@@ -978,7 +977,7 @@ mod tests {
         let mut leaves = Vec::new();
         for n in 4..=24u32 {
             let mut t = Tally::new();
-            blam::enumerate::for_each_closed(n, &mut |enc, len| {
+            blam::blc::enumerate::for_each_closed(n, &mut |enc, len| {
                 if rung0(enc, len, &mut t) {
                     sweep_one(
                         &mut pool,

@@ -40,7 +40,9 @@ wire format (`00` λ, `01` application, `1ⁿ0` variable n); closed-term
 code is prefix-free, which is what makes the Kraft sums of AIT exact.
 
 ```rust
-use blam::{normalize, parse_all, Budget};
+use blam::classical::reference::normalize;
+use blam::classical::Budget;
+use blam::parse_all;
 
 // (λx.x x)(λx.x) — bits in, bits out
 let term = parse_all("01000110100010")?;
@@ -48,33 +50,34 @@ let nf = normalize(&term, &mut Budget::new(1_000))?;
 assert_eq!(nf.to_bits(), "0010"); // λx.x
 ```
 
-`vm` is the production engine: a defunctionalized Crégut-style
+`classical::machine` is the production engine: a defunctionalized Crégut-style
 strong-normalization machine (~166M β/s single-thread), backed by a
 reusable flat `Vec<Node>` pool, with β *and* transition budgets and the
 normal form streamed to a `Sink`. Measuring a gigabyte-scale normal form
 therefore needs no gigabyte-scale output allocation.
 
 ```rust
-use blam::vm::{Machine, StringSink, TermPool};
+use blam::classical::machine::{Machine, Pool, StringSink};
 
-let mut pool = TermPool::new();
+let mut pool = Pool::new();
 let root = pool.decode_str("01000110100010").unwrap();
 let mut nf = StringSink(String::new());
 let steps = Machine::new().normalize(&pool, root, 1_000, &mut nf)?;
 assert_eq!((nf.0.as_str(), steps), ("0010", 2));
 ```
 
-Around the core: `oracle` (Tromp's syntactic divergence prefilter),
-`bb` (the escalation engine: redex-history loop detection plus a
-semantic self-feedback divergence certificate), `cert` (trusted
-checkers for three machine-checkable divergence-certificate classes),
-and `enumerate` (parallel closed-term enumeration, `u64`-packed).
+Around the core: `classical::oracle` (Tromp's syntactic divergence
+prefilter), `classical::escalation` (redex-history loop detection plus a
+semantic self-feedback divergence certificate), `classical::certificate`
+(trusted checkers for three machine-checkable divergence-certificate
+classes), and `blc::enumerate` (parallel closed-term enumeration,
+`u64`-packed).
 
 ### qBLC
 
-The quantum pillar mirrors the layout with a `q` prefix: `qeval` is
-the reference evaluator, `qvm` the lockstep-verified fast path, `dw`
-the exact ring. Programs are ordinary untyped BLC — quantum enters
+The quantum pillar mirrors the classical layout: `quantum::reference`
+is the reference evaluator, `quantum::machine` the lockstep-verified
+fast path, `quantum::scalar` the exact ring. Programs are ordinary untyped BLC — quantum enters
 through an application signature of five primitives
 (`new / meas / cnot / t / h`, order frozen by a predeclared pilot).
 Qubits are opaque runtime handles with dynamic linearity (reusing a
@@ -83,8 +86,10 @@ the machine with exact weights — nothing is ever sampled — and each branch
 leaf carries a typed fate: `Halt(store)`, `Unknown`, `Capacity`, or `Err`.
 
 ```rust
-use blam::qeval::{apply_signature, run, Prim, QBudget};
-use blam::term::{app, lam, var};
+use blam::quantum::reference::{apply_signature, run};
+use blam::quantum::sig::FROZEN;
+use blam::quantum::Budget as QBudget;
+use blam::{app, lam, var};
 
 // λ⁵. cnot (h (new t)) (new t) — a Bell pair, in 41 bits (the size
 // where entanglement first enters the census)
@@ -94,8 +99,7 @@ let body = app(
 );
 let p = (0..5).fold(body, |b, _| lam(b));
 
-let order = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
-let leaves = run(apply_signature(&p, &order), &QBudget::default());
+let leaves = run(apply_signature(&p, &FROZEN), &QBudget::default());
 // one Halt leaf: 2 live qubits, amplitudes exactly (|00⟩ + |11⟩)/√2,
 // mass exactly 1, in 9 contractions
 ```

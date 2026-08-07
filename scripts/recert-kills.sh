@@ -9,7 +9,9 @@
 # Omega trim, and the ledger entry.
 set -e
 cd "$(dirname "$0")/.."
-cargo build --release --bin certsearch --bin certlean
+# certsearch drives untrusted discovery, which lives behind the `lab`
+# feature; certlean uses only the trusted checkers.
+cargo build --release --features lab --bin certsearch --bin certlean
 T=$(mktemp -d)
 trap 'rm -rf "$T"' EXIT
 cut -f2 data/certificates/ratchet_kills.tsv > "$T/bits.txt"

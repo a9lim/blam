@@ -6,11 +6,12 @@
 //! Conventions: de Bruijn indices (1-based) in syntax, levels (1-based) in
 //! values; index = depth − level + 1 at readback. Call-by-name, so β-step
 //! counts match leftmost-outermost reduction exactly (García-Pérez &
-//! Nogueira lockstep) — differential-tested against `eval::normalize`.
-//! Explicit stacks throughout; nothing here recurses.
+//! Nogueira lockstep) — differential-tested against
+//! `classical::reference::normalize`. Explicit stacks throughout; nothing
+//! here recurses.
 
-use crate::eval::OutOfFuel;
-use crate::term::Term;
+use crate::blc::Term;
+use crate::classical::OutOfFuel;
 
 /// Term arena node. Children are indices into the pool.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -22,17 +23,33 @@ pub enum Node {
 
 /// Flat term storage, reused across terms via `clear`.
 #[derive(Default)]
-pub struct TermPool {
-    pub nodes: Vec<Node>,
+pub struct Pool {
+    nodes: Vec<Node>,
 }
 
-impl TermPool {
+impl Pool {
     pub fn new() -> Self {
         Self::default()
     }
 
     pub fn clear(&mut self) {
         self.nodes.clear();
+    }
+
+    /// The node at `id`. Arena indices come from `push`/`decode*`, so an
+    /// out-of-range id is a caller bug and panics.
+    #[inline]
+    pub fn node(&self, id: u32) -> Node {
+        self.nodes[id as usize]
+    }
+
+    /// Number of nodes currently in the arena.
+    pub fn len(&self) -> usize {
+        self.nodes.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.nodes.is_empty()
     }
 
     /// Append a node, returning its index. Public so callers can splice a
@@ -92,11 +109,28 @@ impl TermPool {
         self.decode(&mut (0..len).rev().map(|j| (enc >> j) & 1 == 1))
     }
 
+    /// Decode a '0'/'1' string (whitespace ignored). `None` on a
+    /// truncated stream *or* on any other character — a stray byte is a
+    /// malformed input, never silently a `0`.
     pub fn decode_str(&mut self, s: &str) -> Option<u32> {
-        self.decode(&mut s.chars().filter(|c| !c.is_whitespace()).map(|c| c == '1'))
+        let mut bad = false;
+        let root = self.decode(&mut s.chars().filter(|c| !c.is_whitespace()).map_while(
+            |c| match c {
+                '0' => Some(false),
+                '1' => Some(true),
+                _ => {
+                    bad = true;
+                    None
+                }
+            },
+        ));
+        if bad {
+            return None;
+        }
+        root
     }
 
-    /// Import an `eval`-side term (for tests / differential runs).
+    /// Import a reference-side term (for tests / differential runs).
     pub fn from_term(&mut self, t: &Term) -> u32 {
         match t {
             Term::Var(n) => self.push(Node::Var(*n)),
@@ -152,37 +186,16 @@ impl TermPool {
         }
         false
     }
-
-    /// Emit the subterm at `id` as BLC bits (preorder), for the pre-scan path.
-    pub fn emit<S: Sink>(&self, id: u32, sink: &mut S) {
-        let mut work = vec![id];
-        while let Some(id) = work.pop() {
-            match self.nodes[id as usize] {
-                Node::Var(n) => sink.var(n),
-                Node::Lam(b) => {
-                    sink.zero();
-                    sink.zero();
-                    work.push(b);
-                }
-                Node::App(f, a) => {
-                    sink.zero();
-                    sink.one();
-                    work.push(a);
-                    work.push(f);
-                }
-            }
-        }
-    }
 }
 
 /// Receives the normal form as a BLC bit stream during readback.
 ///
-/// CONTRACT: implementations MUST override `var` with an O(1) (or
-/// explicitly bounded) version. The default is O(n) in the variable
-/// index, and n = depth − level + 1 is bounded only by the machine's
-/// transition cap — which does NOT charge for emitted bits. An O(n)
-/// `var` on a deep spine burned 99.9% of a profiled solomonoff tail
-/// (the work-meter lesson, instance #4).
+/// CONTRACT: implementations MUST give `var` an O(1) (or explicitly
+/// bounded) body — which is why it carries no default. The obvious
+/// `1ⁿ0` loop is O(n) in the variable index, and n = depth − level + 1
+/// is bounded only by the machine's transition cap, which does NOT
+/// charge for emitted bits. An O(n) `var` on a deep spine burned 99.9%
+/// of a profiled solomonoff tail (the work-meter lesson, instance #4).
 pub trait Sink {
     /// Opt in to early termination. When `false` (the default) the machine
     /// never calls `aborted`, and monomorphization deletes the check — the
@@ -191,12 +204,9 @@ pub trait Sink {
 
     fn zero(&mut self);
     fn one(&mut self);
-    fn var(&mut self, n: u32) {
-        for _ in 0..n {
-            self.one();
-        }
-        self.zero();
-    }
+    /// Emit variable `n` as `1ⁿ0`. Required, not defaulted: see the
+    /// contract above.
+    fn var(&mut self, n: u32);
     /// Polled once per machine transition when `CAN_ABORT`. Returning true
     /// stops the run with `OutOfFuel::Aborted`; the bits already delivered
     /// are still a genuine prefix of the normal form (readback is in order),
@@ -285,7 +295,7 @@ impl Machine {
     /// Returns the β-step count, or `OutOfFuel` past `limit` steps.
     pub fn normalize<S: Sink>(
         &mut self,
-        pool: &TermPool,
+        pool: &Pool,
         root: u32,
         limit: u64,
         sink: &mut S,
@@ -300,7 +310,7 @@ impl Machine {
     /// as large ones on transition-bound terms).
     pub fn normalize_capped<S: Sink>(
         &mut self,
-        pool: &TermPool,
+        pool: &Pool,
         root: u32,
         limit: u64,
         trans_limit: u64,
@@ -321,7 +331,7 @@ impl Machine {
 
     fn normalize_inner<S: Sink>(
         &mut self,
-        pool: &TermPool,
+        pool: &Pool,
         root: u32,
         limit: u64,
         trans_limit: u64,

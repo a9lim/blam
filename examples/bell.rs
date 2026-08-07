@@ -2,8 +2,10 @@
 //!
 //! Usage: cargo run --release --example bell
 
-use blam::qeval::{apply_signature, run, Fate, Prim, QBudget};
-use blam::term::{app, lam, var};
+use blam::quantum::reference::{apply_signature, run};
+use blam::quantum::sig::FROZEN;
+use blam::quantum::{Budget as QBudget, Fate};
+use blam::{app, lam, var};
 
 fn main() {
     // The five-λ idiom binds the signature; under `p h meas new cnot t`
@@ -16,8 +18,7 @@ fn main() {
     let p = (0..5).fold(body, |b, _| lam(b));
     println!("program: {} bits  {}", p.bit_size(), p.to_bits());
 
-    let order = [Prim::H, Prim::Meas, Prim::New, Prim::Cnot, Prim::T];
-    let leaves = run(apply_signature(&p, &order), &QBudget::default());
+    let leaves = run(apply_signature(&p, &FROZEN), &QBudget::default());
 
     for leaf in &leaves {
         match &leaf.fate {
