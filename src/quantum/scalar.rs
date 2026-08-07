@@ -73,22 +73,69 @@ impl Dw {
     }
 
     /// Rewrite to denominator exponent `k2 ≥ k` (value unchanged).
+    ///
+    /// Two √2-multiplications are exactly a doubling — (ω − ω³)² = 2 — so
+    /// Δk costs at most one [`Dw::num_mul_sqrt2`] plus one shift by
+    /// 2^(Δk/2), instead of Δk numerator multiplications.
+    ///
+    /// The `None` contract is preserved point for point. Iterated doubling
+    /// is non-decreasing in max |coefficient| (|A+C| + |C−A| ≥ 2|A| and its
+    /// three siblings), and an out-of-range coefficient always forces an
+    /// out-of-range successor, so the iterated form returns `None` exactly
+    /// when the *final* value's coefficients leave i128 — which is what the
+    /// `checked_mul` by 2^(Δk/2) tests. Zeros are the one case where the
+    /// shortcut could invent an overflow the loop never hits (the factor
+    /// itself is built with `checked_pow`), so an all-zero numerator skips
+    /// the factor entirely. `K_CAP` bounds Δk/2 ≤ 64, so within the
+    /// contract the factor always fits and only the coefficients can fail.
     fn raise_k(self, k2: u32) -> Option<Dw> {
         if k2 > K_CAP {
             return None;
         }
-        let mut v = self;
-        while v.k < k2 {
-            v = v.num_mul_sqrt2()?;
-            v.k += 1;
+        if k2 <= self.k {
+            return Some(self);
         }
-        Some(v)
+        let delta = k2 - self.k;
+        // One √2 for the odd bit, then the rest is a power of two.
+        let v = if delta % 2 == 1 {
+            self.num_mul_sqrt2()?
+        } else {
+            self
+        };
+        let half = delta / 2;
+        let v = if half == 0 || v.is_zero() {
+            v
+        } else {
+            let f = 2i128.checked_pow(half)?;
+            Dw {
+                a: v.a.checked_mul(f)?,
+                b: v.b.checked_mul(f)?,
+                c: v.c.checked_mul(f)?,
+                d: v.d.checked_mul(f)?,
+                k: v.k,
+            }
+        };
+        Some(Dw { k: k2, ..v })
     }
 
     /// Canonical form: lower k while every coefficient stays integral under
     /// the inverse of num_mul_sqrt2 (A,B,C,D) ↦ ((B−D)/2, (A+C)/2, (B+D)/2, (C−A)/2).
     pub fn reduce(self) -> Dw {
         let mut v = self;
+        // Pair fast path: two inverse steps compose to a plain halving
+        // ((b−d)/2, (a+c)/2, (b+d)/2, (c−a)/2 applied twice returns
+        // (A/2, B/2, C/2, D/2)), and all four coefficients even makes both
+        // of those steps integral — so this can never over-reduce, and the
+        // single-step loop below still handles the tail.
+        while v.k >= 2 && (v.a | v.b | v.c | v.d) & 1 == 0 {
+            v = Dw {
+                a: v.a >> 1,
+                b: v.b >> 1,
+                c: v.c >> 1,
+                d: v.d >> 1,
+                k: v.k - 2,
+            };
+        }
         while v.k > 0 {
             // Inverse of (A,B,C,D) = (b−d, a+c, b+d, c−a):
             //   a = (B−D)/2, b = (A+C)/2, c = (B+D)/2, d = (C−A)/2.
@@ -501,6 +548,154 @@ pub fn show_parts(parts: ((i128, u32), (i128, u32))) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The pre-optimisation `raise_k`: one `num_mul_sqrt2` per unit of Δk.
+    /// Kept verbatim as the equivalence oracle for the shift form — value
+    /// AND `None` placement, which is the part that had to be argued.
+    fn raise_k_iterated(v: Dw, k2: u32) -> Option<Dw> {
+        if k2 > K_CAP {
+            return None;
+        }
+        let mut v = v;
+        while v.k < k2 {
+            v = v.num_mul_sqrt2()?;
+            v.k += 1;
+        }
+        Some(v)
+    }
+
+    /// The pre-optimisation `reduce`: single inverse steps only, no pair
+    /// fast path.
+    fn reduce_single_step(v: Dw) -> Dw {
+        let mut v = v;
+        while v.k > 0 {
+            let (na2, nb2, nc2, nd2) = (v.b - v.d, v.a + v.c, v.b + v.d, v.c - v.a);
+            if na2 % 2 != 0 || nb2 % 2 != 0 || nc2 % 2 != 0 || nd2 % 2 != 0 {
+                break;
+            }
+            v = Dw {
+                a: na2 / 2,
+                b: nb2 / 2,
+                c: nc2 / 2,
+                d: nd2 / 2,
+                k: v.k - 1,
+            };
+        }
+        v
+    }
+
+    #[test]
+    fn raise_k_matches_iterated_form_exhaustively() {
+        // Grid of small values × Δk 0..=40: covers Δk zero, odd, and even,
+        // every sign pattern, and both parities of the starting k.
+        let coeffs = [-3i128, -2, -1, 0, 1, 2, 5];
+        let mut cases = 0u64;
+        for &a in &coeffs {
+            for &b in &coeffs {
+                for &c in &coeffs {
+                    for &d in &coeffs {
+                        for k in [0u32, 1, 3, 8] {
+                            let v = Dw { a, b, c, d, k };
+                            for dk in 0..=40u32 {
+                                let k2 = k + dk;
+                                assert_eq!(
+                                    v.raise_k(k2),
+                                    raise_k_iterated(v, k2),
+                                    "{v:?} raised to k2={k2}"
+                                );
+                                cases += 1;
+                            }
+                            // Below the current k the rewrite is a no-op,
+                            // and past K_CAP it is None — both regardless
+                            // of the coefficients.
+                            assert_eq!(v.raise_k(0), raise_k_iterated(v, 0));
+                            assert_eq!(v.raise_k(K_CAP + 1), None);
+                        }
+                    }
+                }
+            }
+        }
+        assert_eq!(cases, 7 * 7 * 7 * 7 * 4 * 41);
+    }
+
+    #[test]
+    fn raise_k_overflow_boundary_matches_iterated_form() {
+        // Coefficients within one doubling of the i128 edge, including the
+        // asymmetric −2^127 that fits where +2^127 does not, and mixed
+        // pairs where the (b−d)/(a+c)/(c−a) combinations are what overflow.
+        let big = [
+            i128::MAX,
+            i128::MIN,
+            i128::MAX / 2,
+            i128::MIN / 2,
+            1i128 << 126,
+            -(1i128 << 126),
+            (1i128 << 126) - 1,
+            (1i128 << 100) + 7,
+        ];
+        let check = |v: Dw| {
+            for k2 in 0..=16u32 {
+                assert_eq!(v.raise_k(k2), raise_k_iterated(v, k2), "{v:?} k2={k2}");
+            }
+        };
+        for &x in &big {
+            for slot in 0..4 {
+                let mut v = Dw::ZERO;
+                match slot {
+                    0 => v.a = x,
+                    1 => v.b = x,
+                    2 => v.c = x,
+                    _ => v.d = x,
+                }
+                check(v);
+            }
+            // Cancelling pairs: a+c = 0 while c−a saturates, and b−d = 0
+            // while b+d saturates.
+            check(Dw {
+                a: x,
+                b: 0,
+                c: x.wrapping_neg(),
+                d: 0,
+                k: 0,
+            });
+            check(Dw {
+                a: 0,
+                b: x,
+                c: 0,
+                d: x,
+                k: 0,
+            });
+        }
+    }
+
+    #[test]
+    fn raise_k_on_zero_never_overflows() {
+        // Iterated doubling of a zero numerator never overflows, so the
+        // shortcut must not manufacture one at any reachable Δk.
+        for k2 in 0..=K_CAP {
+            let got = Dw::ZERO.raise_k(k2);
+            assert_eq!(got, raise_k_iterated(Dw::ZERO, k2), "k2={k2}");
+            assert_eq!(got, Some(Dw { k: k2, ..Dw::ZERO }));
+        }
+        assert_eq!(Dw::ZERO.raise_k(K_CAP + 1), None);
+    }
+
+    #[test]
+    fn reduce_pair_fast_path_matches_single_step() {
+        let coeffs = [-12i128, -8, -3, -2, -1, 0, 1, 2, 4, 9];
+        for &a in &coeffs {
+            for &b in &coeffs {
+                for &c in &coeffs {
+                    for &d in &coeffs {
+                        for k in 0..=9u32 {
+                            let v = Dw { a, b, c, d, k };
+                            assert_eq!(v.reduce(), reduce_single_step(v), "{v:?}");
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn omega_eighth_root() {

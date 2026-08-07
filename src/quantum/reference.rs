@@ -177,7 +177,20 @@ struct Ctx<'a> {
     store: &'a mut Store,
     budget: &'a Budget,
     /// Effect path of the current branch; primitives append as they fire.
-    trace: &'a mut Vec<Effect>,
+    /// `None` on the untraced path (`run`), which never materialises one —
+    /// the trace was pure overhead there, a `Vec` push per primitive plus a
+    /// full clone at every fork.
+    trace: Option<&'a mut Vec<Effect>>,
+}
+
+impl Ctx<'_> {
+    /// Record a fired effect. The event itself is only built when a trace
+    /// is being kept.
+    fn emit(&mut self, e: impl FnOnce() -> Effect) {
+        if let Some(t) = self.trace.as_deref_mut() {
+            t.push(e());
+        }
+    }
 }
 
 /// Find and contract the leftmost-outermost redex in `t`, normal order:
@@ -202,7 +215,7 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
                     // new discards its argument unevaluated, species-blind.
                     return match cx.store.alloc(cx.budget.max_qubits) {
                         Ok(q) => {
-                            cx.trace.push(Effect::New(q));
+                            cx.emit(|| Effect::New(q));
                             Found::RewrittenEffect(QTerm::Handle(q, 0))
                         }
                         Err(c) => Found::Full(c),
@@ -278,7 +291,7 @@ fn unary_prim(p: Prim, f: &Rc<QTerm>, a: &Rc<QTerm>, cx: &mut Ctx) -> Found {
             g if g.is_gate1() => match cx.store.consume(q, e) {
                 Ok(()) => match cx.store.apply_gate1(g, q) {
                     Ok(()) => {
-                        cx.trace.push(gate1_effect(g, q, e));
+                        cx.emit(|| gate1_effect(g, q, e));
                         Found::RewrittenEffect(QTerm::Handle(q, e + 1))
                     }
                     Err(c) => Found::Full(c),
@@ -346,7 +359,7 @@ fn cnot_prim(g: &Rc<QTerm>, a1: &Rc<QTerm>, a2: &Rc<QTerm>, f: &Rc<QTerm>, cx: &
     cx.store.consume(q1, e1).expect("peeked");
     cx.store.consume(q2v, e2v).expect("peeked");
     cx.store.apply_cnot(q1, q2v);
-    cx.trace.push(Effect::Cnot(q1, e1, q2v, e2v));
+    cx.emit(|| Effect::Cnot(q1, e1, q2v, e2v));
     // Church pair of the fresh epochs: λz. z #(q1,e1+1) #(q2,e2+1).
     Found::RewrittenEffect(QTerm::Lam(Rc::new(QTerm::App(
         Rc::new(QTerm::App(
@@ -357,7 +370,7 @@ fn cnot_prim(g: &Rc<QTerm>, a1: &Rc<QTerm>, a2: &Rc<QTerm>, f: &Rc<QTerm>, cx: &
     ))))
 }
 
-fn step(t: &QTerm, store: &mut Store, trace: &mut Vec<Effect>, budget: &Budget) -> Step {
+fn step(t: &QTerm, store: &mut Store, trace: Option<&mut Vec<Effect>>, budget: &Budget) -> Step {
     let mut cx = Ctx {
         store,
         budget,
@@ -382,7 +395,7 @@ fn step(t: &QTerm, store: &mut Store, trace: &mut Vec<Effect>, budget: &Budget) 
 /// Run one program (already applied to its signature) to its truncated branch
 /// tree. Exact, deterministic, never samples.
 pub fn run(term: QTerm, budget: &Budget) -> Vec<Leaf> {
-    run_traced(term, budget)
+    run_impl::<false>(term, budget)
         .into_iter()
         .map(|(leaf, _)| leaf)
         .collect()
@@ -392,6 +405,14 @@ pub fn run(term: QTerm, budget: &Budget) -> Vec<Leaf> {
 /// `Meas` outcomes included). Two runs are effect-trace equivalent when the
 /// leaf sequences pair up with identical paths, fates, and masses.
 pub fn run_traced(term: QTerm, budget: &Budget) -> Vec<(Leaf, Vec<Effect>)> {
+    run_impl::<true>(term, budget)
+}
+
+/// The one branch-tree driver, parameterised on whether effect paths are
+/// kept. Under `TRACE = false` — the lockstep and census path — every
+/// trace `Vec` stays empty and unallocated, and the per-fork clone the
+/// traced form pays disappears with it.
+fn run_impl<const TRACE: bool>(term: QTerm, budget: &Budget) -> Vec<(Leaf, Vec<Effect>)> {
     // Shared with the fast path: a degenerate budget is where the two
     // engines' β-check placement stops agreeing, so neither accepts one.
     budget.validate().expect("degenerate budget");
@@ -414,7 +435,8 @@ pub fn run_traced(term: QTerm, budget: &Budget) -> Vec<(Leaf, Vec<Effect>)> {
                 break;
             }
             ntrans += 1;
-            match step(&t, &mut store, &mut trace, budget) {
+            let tr = if TRACE { Some(&mut trace) } else { None };
+            match step(&t, &mut store, tr, budget) {
                 Step::Reduced(nt) => {
                     nbeta += 1; // β and primitive contractions share the count
                     t = nt;
@@ -434,9 +456,12 @@ pub fn run_traced(term: QTerm, budget: &Budget) -> Vec<(Leaf, Vec<Effect>)> {
                         ));
                         break;
                     }
-                    let mut trace1 = trace.clone();
-                    trace1.push(Effect::Meas(q, e, true));
-                    trace.push(Effect::Meas(q, e, false));
+                    let mut trace1 = Vec::new();
+                    if TRACE {
+                        trace1.clone_from(&trace);
+                        trace1.push(Effect::Meas(q, e, true));
+                        trace.push(Effect::Meas(q, e, false));
+                    }
                     work.push((t1, s1, trace1, nbeta, ntrans));
                     t = t0;
                     store = s0;
@@ -553,9 +578,8 @@ mod tests {
     fn run_to_nf(mut t: QTerm) -> Option<QTerm> {
         let budget = Budget::default();
         let mut store = Store::new();
-        let mut trace = Vec::new();
         for _ in 0..budget.trans {
-            match step(&t, &mut store, &mut trace, &budget) {
+            match step(&t, &mut store, None, &budget) {
                 Step::Reduced(nt) => t = nt,
                 Step::Normal => return Some(t),
                 _ => return None,

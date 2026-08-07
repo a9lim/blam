@@ -141,6 +141,33 @@ enum Step {
     Hole,
 }
 
+/// One traversal for the three things the adjudication loop asks of a
+/// term each step: its BLC bit-string (the recurrence key), that string's
+/// length (the size cap — `Var(n)` writes `n` ones and a zero, so
+/// `out.len()` grows by exactly `Term::bit_size`'s contribution at every
+/// node), and the largest free index (hole-freeness). The loop used to
+/// walk the term three times and build a `String` besides.
+fn write_bits_max_free(t: &Term, depth: u32, out: &mut String) -> u32 {
+    match t {
+        Term::Var(n) => {
+            for _ in 0..*n {
+                out.push('1');
+            }
+            out.push('0');
+            n.saturating_sub(depth)
+        }
+        Term::Lam(b) => {
+            out.push_str("00");
+            write_bits_max_free(b, depth + 1, out)
+        }
+        Term::App(f, a) => {
+            out.push_str("01");
+            let hf = write_bits_max_free(f, depth, out);
+            hf.max(write_bits_max_free(a, depth, out))
+        }
+    }
+}
+
 /// One leftmost-outermost step, holes inert, hole-headed applications
 /// fatal. `depth` = binders enclosing the current position; a Var with
 /// index > depth is a hole.
@@ -181,9 +208,18 @@ pub fn adjudicate(p: &Term, slots: u32, caps: &SkelCaps) -> Result<SkelVerdict, 
         return Err(OpenProgram { max_free });
     }
     let mut t = sig::with_holes(p, slots);
+    // The exact wire string is the trusted-proof recurrence key: `Loop` is
+    // only sound because two states that compare equal here ARE equal, so
+    // this stays a full `String` set and never becomes a hash.
     let mut seen: HashSet<String> = HashSet::new();
     let mut steps = 0u64;
-    let mut high_water = t.bit_size();
+    // Every read of `high_water` below is preceded by the `max` against the
+    // current term's size in the same iteration, so it starts at zero
+    // rather than costing an extra `bit_size` walk up front.
+    let mut high_water = 0u64;
+    // Reused across iterations: the key is only cloned into `seen` on a
+    // miss, so a growing chain no longer re-grows a fresh buffer per step.
+    let mut bits = String::new();
     let cap = |reason, steps, high_water_bits| {
         Ok(SkelVerdict::CapOut(CapOut {
             reason,
@@ -192,20 +228,22 @@ pub fn adjudicate(p: &Term, slots: u32, caps: &SkelCaps) -> Result<SkelVerdict, 
         }))
     };
     loop {
-        if t.max_free(0) == 0 {
+        bits.clear();
+        if write_bits_max_free(&t, 0, &mut bits) == 0 {
             return Ok(SkelVerdict::HoleFree { residual: t, steps });
         }
-        let bits = t.bit_size();
-        high_water = high_water.max(bits);
-        if bits > caps.size_bits {
+        let nbits = bits.len() as u64;
+        high_water = high_water.max(nbits);
+        if nbits > caps.size_bits {
             return cap(CapReason::Size, steps, high_water);
         }
-        if !seen.insert(t.to_bits()) {
+        if seen.contains(bits.as_str()) {
             return Ok(SkelVerdict::Loop { steps });
         }
         if steps >= caps.steps {
             return cap(CapReason::Steps, steps, high_water);
         }
+        seen.insert(bits.clone());
         match step(&t, 0) {
             Step::Did(nt) => {
                 t = nt;
