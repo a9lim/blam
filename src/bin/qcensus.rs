@@ -134,6 +134,8 @@ struct Tally {
     max_trans: u64,
     max_leaves: u64,
     max_live: usize,
+    /// Programs with at least one Unknown leaf (--dump-unknowns feed).
+    unknowns: Vec<(u64, u8)>,
 }
 
 impl Tally {
@@ -164,6 +166,7 @@ impl Tally {
             max_trans: 0,
             max_leaves: 0,
             max_live: 0,
+            unknowns: Vec::new(),
         }
     }
 
@@ -209,6 +212,7 @@ impl Tally {
         self.max_trans = self.max_trans.max(o.max_trans);
         self.max_leaves = self.max_leaves.max(o.max_leaves);
         self.max_live = self.max_live.max(o.max_live);
+        self.unknowns.extend(o.unknowns);
         self
     }
 }
@@ -320,6 +324,9 @@ fn sweep_one(
             "mass conservation violated at program ({enc:#x},{len})"
         );
     }
+    if kinds[2] {
+        t.unknowns.push((enc, len));
+    }
     if leaves.len() > 1 {
         t.forked += 1;
         if kinds.iter().filter(|&&k| k).count() > 1 {
@@ -384,6 +391,9 @@ fn main() {
     };
     let mut threads: Option<usize> = None;
     let mut out: Option<String> = None;
+    let mut dump_unknowns: Option<String> = None;
+    let mut terms_file: Option<String> = None;
+    let mut skeleton_cap: Option<i64> = None;
     // The canonical universe unless --sig overrides (alternate universes
     // are deliberately-labeled siblings; canonical data stays frozen).
     let mut sig: Vec<Prim> = FROZEN.to_vec();
@@ -438,6 +448,18 @@ fn main() {
                 assert!(!sig.is_empty(), "--sig needs at least one primitive");
                 i += 2;
             }
+            "--dump-unknowns" => {
+                dump_unknowns = Some(args[i + 1].clone());
+                i += 2;
+            }
+            "--terms-file" => {
+                terms_file = Some(args[i + 1].clone());
+                i += 2;
+            }
+            "--skeleton" => {
+                skeleton_cap = Some(args[i + 1].parse().unwrap());
+                i += 2;
+            }
             other => panic!("unknown arg {other}"),
         }
     }
@@ -448,6 +470,111 @@ fn main() {
             .unwrap();
     }
     let nthreads = rayon::current_num_threads();
+
+    // Batch re-adjudication: run every program in FILE (one bit-string per
+    // line) under the given budget/signature and print one line per
+    // program with leaf-fate counts and its summed exact halt mass —
+    // the escalation rung for census Unknowns. Streams in completion
+    // order; a killed run keeps everything finished.
+    if let Some(path) = terms_file {
+        let text = std::fs::read_to_string(&path).expect("read terms file");
+        let programs: Vec<&str> = text
+            .lines()
+            .map(str::trim)
+            .filter(|l| !l.is_empty())
+            .collect();
+        let t0 = Instant::now();
+        let done = std::sync::atomic::AtomicU64::new(0);
+        programs.par_iter().for_each_init(
+            || (Pool::new(), QMachine::new(), Vec::new()),
+            |(pool, m, leaves), bits| {
+                let t = blam::parse_all(bits).expect("parse program line");
+                let mut enc = 0u64;
+                for c in bits.chars() {
+                    enc = enc << 1 | (c == '1') as u64;
+                }
+                assert_eq!(t.bit_size() as usize, bits.len(), "u64-packable");
+                leaves.clear();
+                m.run_conditioned_into(
+                    pool,
+                    enc,
+                    bits.len() as u8,
+                    cond_k,
+                    &sig,
+                    &budget,
+                    leaves,
+                );
+                let (mut h, mut e, mut u, mut c) = (0u64, 0u64, 0u64, 0u64);
+                let mut halt_mass = Ex::ZERO;
+                let mut max_steps = 0u64;
+                for leaf in leaves.iter() {
+                    max_steps = max_steps.max(leaf.steps);
+                    match &leaf.fate {
+                        Fate::Halt(_) => {
+                            h += 1;
+                            halt_mass.add(leaf.mass);
+                        }
+                        Fate::Err(_) => e += 1,
+                        Fate::Unknown => u += 1,
+                        Fate::Capacity(_) => c += 1,
+                    }
+                }
+                // Classical skeleton: the program applied to one free rigid
+                // variable per signature slot (numeral first in cond mode),
+                // adjudicated oracle-free so a Diverge is spine-attributable.
+                // Only `skel=nowhnf` transfers to the quantum run: the head
+                // chain never terminates, so no primitive is ever demanded,
+                // the chains are isomorphic under the substitution, and no
+                // branch can Halt — a proven diverger. Off-spine skeleton
+                // divergence lives in argument positions where a measurement
+                // outcome could still erase it; skeleton halts say nothing
+                // (δ-rules continue where the rigid form stopped).
+                let skel = skeleton_cap.map(|cap| {
+                    use blam::bb::{normal_form_spine, LTerm, NoNf};
+                    use blam::term::{app, var};
+                    let mut sk = t.clone();
+                    if let Some(k) = cond_k {
+                        // Church numeral k̄ = λf.λx. f^k x, matching
+                        // qvm::Pool::numeral.
+                        let mut body = var(1);
+                        for _ in 0..k {
+                            body = app(var(2), body);
+                        }
+                        sk = app(sk, blam::term::lam(blam::term::lam(body)));
+                    }
+                    for i in 0..sig.len() as u32 {
+                        sk = app(sk, var(i + 1));
+                    }
+                    match normal_form_spine(cap, &LTerm::from_term(&sk)) {
+                        (Err(NoNf::Diverge), true) => "nowhnf",
+                        (Err(NoNf::Diverge), false) => "offspine-div",
+                        (Ok(_), _) => "halt",
+                        (Err(NoNf::Unknown(_)), _) => "unknown",
+                    }
+                });
+                let skel_col = skel.map(|s| format!(" skel={s}")).unwrap_or_default();
+                println!(
+                    "{bits} halt={h} err={e} unk={u} cap={c} steps={max_steps} trans={} mass={}{skel_col}",
+                    m.max_trans,
+                    halt_mass.exact_str()
+                );
+                let d = done.fetch_add(1, std::sync::atomic::Ordering::Relaxed) + 1;
+                if d.is_multiple_of(10000) {
+                    eprintln!(
+                        "progress: {d}/{} ({:.0}s)",
+                        programs.len(),
+                        t0.elapsed().as_secs_f64()
+                    );
+                }
+            },
+        );
+        eprintln!(
+            "adjudicated {} programs in {:.1}s",
+            programs.len(),
+            t0.elapsed().as_secs_f64()
+        );
+        return;
+    }
 
     let mode = match cond_k {
         None => "M_Fock".to_string(),
@@ -498,6 +625,24 @@ fn main() {
             tally.omega.re,
             tn.elapsed()
         );
+        // Sorted per size: accumulation order is task order (split- and
+        // thread-count dependent); sorted output is machine-independent.
+        if let Some(path) = &dump_unknowns {
+            use std::io::Write;
+            let mut u = tally.unknowns.clone();
+            u.sort_unstable();
+            let mut f = std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(path)
+                .expect("open dump file");
+            let mut s = String::new();
+            for (enc, len) in u {
+                s.push_str(&enc_str(enc, len));
+                s.push('\n');
+            }
+            f.write_all(s.as_bytes()).unwrap();
+        }
         total = total.merge(tally.clone());
         rows.push((n, tally));
     }

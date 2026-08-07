@@ -430,6 +430,15 @@ thread_local! {
     static HEAD_DIVERGE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
 }
 
+// The syntactic oracle preempts the history/redloop checks (it is first
+// in the short-circuit chain), which costs spine attribution: on Ω the
+// oracle fires before the history reoccurrence that would have proven
+// no-whnf. `normal_form_spine` disables it so every Diverge is
+// attributable; default true keeps the canonical engine bit-identical.
+thread_local! {
+    static ORACLE_ON: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
+}
+
 /// Read and clear the no-whnf marker for the last `normal_form` call on
 /// this thread.
 pub fn take_head_diverge() -> bool {
@@ -619,7 +628,7 @@ fn bb_nf(
             // history reoccurrence or redloop proves the head chain
             // itself cycles or self-feeds — no whnf. Short-circuit
             // order among the three checks is exactly the original.
-            if no_nf(f, &ab) {
+            if ORACLE_ON.with(|c| c.get()) && no_nf(f, &ab) {
                 return Err(NoNf::Diverge);
             }
             if seen.contains(&rn.f) || redloop(&ab) {
@@ -687,6 +696,23 @@ pub fn normal_form(cap_bits: i64, t: &LTerm) -> Result<LTerm, NoNf> {
     let out = nf0(&mut cap, t, true);
     WORK.with(|w| w.set(i64::MAX));
     out
+}
+
+/// `normal_form` with the syntactic oracle disabled, plus the no-whnf
+/// attribution: every Diverge comes from redex-history reoccurrence or
+/// redloop, so a `true` second component certifies the (App-rooted)
+/// input has no weak head normal form. This is the adjudicator for
+/// generic-argument questions — "does `p x⃗` head-cycle for rigid x⃗?" —
+/// where the oracle's cheaper no-nf verdict would destroy the
+/// attribution (it fires first on exactly the Ω-shapes the history
+/// proves on-spine). Slower per term than `normal_form`; use for
+/// targeted adjudication, never enumeration throughput.
+pub fn normal_form_spine(cap_bits: i64, t: &LTerm) -> (Result<LTerm, NoNf>, bool) {
+    ORACLE_ON.with(|c| c.set(false));
+    let out = normal_form(cap_bits, t);
+    ORACLE_ON.with(|c| c.set(true));
+    let spine = take_head_diverge();
+    (out, spine)
 }
 
 #[cfg(test)]
