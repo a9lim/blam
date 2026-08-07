@@ -5,7 +5,7 @@ measurements, proof boundaries, and ordered next work. The root `README.md`
 is the stable public map; domain documents state durable contracts; the
 monthly ledger preserves chronology.
 
-Last updated: 2026-08-05.
+Last updated: 2026-08-07.
 
 ## Classical state
 
@@ -13,7 +13,13 @@ Last updated: 2026-08-05.
 
 - `data/classical/census_table.txt` covers every closed BLC term from 4
   through 41 bits: 526,039,969 programs in about 16.5 minutes on the M5 Max.
-  The 4..40 prefix takes about 7.2 minutes.
+  The 4..40 prefix takes about 7.2 minutes. The 2026-08-07 regeneration
+  under the r7 engine (no-whnf head memo, partition-independent witness
+  tie-break, sorted unknown order) is fate-invariant at every size:
+  halt/diverge/unknown, max|nf|, and β totals bit-identical; only the
+  escalation-path distribution, witness lines, and ordering moved. Census
+  runs are now group-checkpointed and delta-runnable (`--checkpoint`,
+  `--memo-in/out`; engine facts in AGENTS.md).
 - BBλ(41) is at least 1,074,266,118 normal-form bits. The n=32 row has no
   unknowns, so BBλ(32) is fully mechanical.
 - The current certified frontier is `data/classical/unknowns.txt`: 4,235
@@ -80,8 +86,50 @@ Last updated: 2026-08-05.
   ranking is `|0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩`.
 - The first entangled successful outputs occur at exactly 41 bits. In the
   two-qubit ranking, `|00⟩ ≫ Φ⁺ > Φ⁻ > |++⟩`.
-- The 1,619,650 `Unknown` programs are a real transition frontier: increasing
-  the β budget by 16× resolves none of them.
+- The 1,619,650 Unknown leaves sit on 1,619,647 programs. Budget was never
+  the frontier: 16× β resolves none, and 16× transitions resolve none of
+  the ≤26-bit population.
+- The trusted skeleton checker (`src/skel.rs`, ladder in
+  `docs/quantum/escalation.md`) has adjudicated the full frontier:
+  **815,700 programs are proven divergers** — 712,299 by exact recurrence
+  of the hole-inert reduction chain, 103,401 by hole-free residuals the
+  classical engines kill — contributing exactly zero to Ω_success. Killed
+  mass 27,958,835/2⁴¹ is 74.45% of the unknown mass; the bracket upper
+  endpoint tightens from 860,741,351/2³⁸ ≈ 0.0031313588 to
+  6,857,971,973/2⁴¹ ≈ 0.0031186446 (3.91× narrower). Zero slow halters
+  surfaced. Residue: 184,444 hole-demanded (genuinely quantum), 619,466
+  tier-1 capouts (tier-2 sweep pending), 37 hole-free residuals undecided
+  classically (28 are verbatim classical-frontier members). The census
+  table itself is unchanged — kills are an adjudication layer above it;
+  canonical recording protocol is docket work.
+- The signature is now parametric end to end (`qcensus --sig`, exact
+  S/X/Z gates): alternate universes are runnable, lockstep-verified, and
+  deliberately labeled; canonical data stays on the frozen five.
+
+Escalation-lane docket, in order:
+
+1. Tier the skeleton caps on the 619,466 capouts, then build the
+   hole-parametric pattern-recurrence rung (design thread
+   `qblc-divergence`) for growing loops that never exactly recur.
+2. Settle the canonical recording protocol for skeleton kills: the set is
+   too large for the classical kills-tsv pattern; the working proposal is
+   exact killed-mass fraction + verdict counts + verdict-file hash + the
+   deterministic regenerating command.
+3. Rungs 3–4 for the hole-demanded residue: reference-configuration cycle
+   detection between measurements, then the E∞ universal-safety
+   certificate calculus (design ratified, `quantum/escalation.md`).
+4. If wholesale promotion of the discovery engine is wanted, repair the
+   bot_free/simplify uniformity argument (counterexample on record) or
+   supersede it with the pattern-recurrence checker.
+
+### Signature-universe exploration (planned)
+
+The engine is ready (parametric signatures, alternate-universe lockstep,
+`--sig`, checkpointed sweeps); the campaign — how the 34/45/53
+irrationality thresholds and Ω_success move across signature permutations,
+subsets, and extended gate sets, hunting configurations that minimize the
+thresholds — is queued behind the escalation lane. A re-canonicalization
+decision, if a strongly better universe appears, is a9's call.
 
 ### Irrationality and Galois structure
 
@@ -175,7 +223,9 @@ the whole-live-store operator census.
 
 ## Repository and release state
 
-- Crate and release version: v1.0.1.
+- Crate version: v1.1.0 on dev (checkpointed sweeps, parametric
+  signatures, the escalation ladder); the crates.io release is v1.0.1
+  until a9 publishes.
 - CI runs formatting, clippy with warnings denied, release tests and `uni.rs`
   parity on Ubuntu and macOS, the classical 4..32 census spot-check, all Lean
   certificates, and the `ref/AIT` additivity guard.

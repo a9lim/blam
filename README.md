@@ -115,7 +115,7 @@ while `oddminproto` remains an intentionally direct reference driver:
 | `certsearch` | divergence-certificate discovery sweep over a frontier file |
 | `certlean` | emit the certificate kills as Lean 4 modules for kernel checking |
 | `certdiag` / `tracescan` | frontier classification and probe instruments |
-| `qcensus` | the quantum operator census (`--cond-k K` for the dimension-conditioned mode) |
+| `qcensus` | the quantum operator census (`--cond-k K` dimension-conditioned mode, `--sig` alternate signature universes, `--skeleton-only` the trusted divergence sweep over census Unknowns) |
 | `qpilot` / `qselfint` / `qradical` / `qcomplement` | signature-order pilot, self-interpretation measurement, and the two-stage dyadicity campaign |
 | `oddminproto` | gated reference-DP driver for the CNOT-free √2 theorem lane |
 | `slotsearch` | exhaustive self-interpreter slot searches |
