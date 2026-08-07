@@ -29,14 +29,54 @@
 //!
 //! Acceptance is NEVER stored in a summary: the product with the
 //! mask automaton (trusted `odd::step_h/step_t/step_meas` kernels)
-//! computes it. `may_accept_latent` is the deliberately loose
-//! any-context query rooted at every port; closed-program acceptance
-//! is `closed_accepts` — signature application then NF descent, with
-//! the product run from the single composed root (§4's EvalHead /
-//! Apply / NF-descent protocol).
+//! computes it. `materialized_accept_any_root` is a DIAGNOSTIC —
+//! effect-edge reachability from the entry and every port over the
+//! effects a summary already carries. Under the collapsed ★ fan an
+//! open summary does not materialize the effects an ambient
+//! interaction could produce, so it is not an any-context upper
+//! bound. Closed-program acceptance is `closed_accepts` — signature
+//! application then NF descent, with the product run from the single
+//! composed root (§4's EvalHead / Apply / NF-descent protocol).
+//!
+//! # Do not simplify
+//!
+//! Ten shapes here look redundant and are not. Each was measured or
+//! adjudicated; the reason is repeated at its site.
+//!
+//! 1. **`Label::Eps` is a real edge.** ε-elimination by edge copying
+//!    blows flattened summaries up quadratically (measured).
+//! 2. **`Mode::Closed` is ONE specialization universe.** Staging the
+//!    five signature applications multiplies the observation fan at
+//!    every stage boundary — measured past 3M states on witness45.
+//! 3. **`ret_in_branches` emits only `HeadPat::Any`.** An eagerly
+//!    enumerated letter fan costs fan^depth on open app chains, and
+//!    the information it splits on is consumed only at USE sites,
+//!    which case-split anyway.
+//! 4. **`Spec` keys carry the continuation.** Sharing a configuration
+//!    across call sites bridges unrelated flows through common nodes
+//!    — measured as false accepts on the precision gates.
+//! 5. **`side_refs` is a MUST-BOUND forward dataflow.** The older
+//!    "referenced minus bound-anywhere" rule was unsound; the meet may
+//!    only RETAIN extra captures, never drop a required one.
+//! 6. **`deliver_bools` keeps both selector branches.** Merging the
+//!    measurement outcomes into one colorless head loses the
+//!    selection the rest of the program branches on.
+//! 7. **`quotient`'s initial partition is the root-role bitset.**
+//!    Ports are semantic (the λx.x vs λx.HD;x defect class); bisimilar
+//!    graphs with different port roles must stay distinct.
+//! 8. **An `Abort` is ⊤, never rejection.** No lower-bound claim may
+//!    read a growth-gate abort as non-acceptance.
+//! 9. **`odd`'s canonical-universe fence is a typed `Malformed`.** An
+//!    effect outside S/X/Z has no mask algebra here; it is reported,
+//!    never approximated.
+//! 10. **Environments are persistent interned snapshots** (im-rc-style
+//!     history semantics): `stale_env` mints a NEW env on the path and
+//!     deliberately does not rewrite snapshots already captured into
+//!     materialized ports — declared looseness that only adds traces.
 
 use super::odd::{step_h, step_meas, step_t};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
+use std::sync::OnceLock;
 
 pub type NodeId = u32;
 /// Index into a summary's port table.
@@ -117,6 +157,17 @@ pub enum Which {
     Meas,
     New,
     Cnot,
+}
+
+/// The strict unary primitives — the only species that reach the
+/// H/T/Meas row. Naming them separately is what lets `Cont::PrimArg`
+/// and the two rows below be total (the row used to carry `Which`
+/// and end in `unreachable!()` arms for `New`/`Cnot`).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum UnaryPrim {
+    H,
+    T,
+    Meas,
 }
 
 /// Head colors: what a value IS. `Prim`'s `held` is the cnot
@@ -260,21 +311,25 @@ impl Summary {
         let g = self.reachable();
         // Root-role color: bitset over (entry, port 0, port 1, ...).
         // Trusted code must never silently alias roles — the u64
-        // bitset caps the port table, so enforce it.
-        assert!(g.ports.len() < 64, "port table exceeds role bitset");
-        let mut color: BTreeMap<NodeId, u64> = BTreeMap::new();
-        for n in 0..g.node_count {
-            color.insert(n, 0);
-        }
+        // bitset caps the port table (see `MAX_PORTS`), so enforce it.
+        assert!(g.ports.len() <= MAX_PORTS, "port table exceeds role bitset");
+        let mut color: Vec<u64> = vec![0; g.node_count as usize];
         for (bit, r) in g.roots().into_iter().enumerate() {
-            *color.get_mut(&r).unwrap() |= 1u64 << bit;
+            color[r as usize] |= 1u64 << bit;
         }
-        let mut class: Vec<u32> = (0..g.node_count)
-            .map(|n| {
-                let cols: BTreeSet<u64> = color.values().copied().collect();
-                cols.iter().position(|&c| c == color[&n]).unwrap() as u32
-            })
+        // Distinct colors, ranked once: the initial class of a node is
+        // its color's rank. (Rebuilding the color set inside the
+        // per-node map made this O(n² log n) — 16.3% of an
+        // oddminproto-28 run.)
+        let ranks: BTreeMap<u64, u32> = color
+            .iter()
+            .copied()
+            .collect::<BTreeSet<u64>>()
+            .into_iter()
+            .enumerate()
+            .map(|(i, c)| (c, i as u32))
             .collect();
+        let mut class: Vec<u32> = color.iter().map(|c| ranks[c]).collect();
         type Sig = (u32, BTreeSet<(Label, u32)>);
         loop {
             let mut sig: Vec<Sig> = (0..g.node_count as usize)
@@ -385,6 +440,13 @@ impl MaskAutomaton {
     }
 }
 
+/// The process-wide interned automaton. It is a pure function of the
+/// trusted kernels, so building one per closed query was pure waste.
+pub fn mask_automaton() -> &'static MaskAutomaton {
+    static MA: OnceLock<MaskAutomaton> = OnceLock::new();
+    MA.get_or_init(MaskAutomaton::build)
+}
+
 /// Distinguished-lineage component of the accept product.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum DState {
@@ -393,12 +455,55 @@ enum DState {
     Retired,
 }
 
+/// Outcome of one product step.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum DStep {
+    Go(DState),
+    /// No successor: an unrealizable lineage guess or `OutOfScope`.
+    Dead,
+    /// A `MeasD` on odd-readable Z support — the accepting event.
+    Accept,
+}
+
+/// THE mask-product transition — the soundness core of this lane, so
+/// it exists exactly once and both walkers (`accept_product` over a
+/// flattened summary, `accepts_closed` over the internal graph) call
+/// it. `lab: None` is epsilon: `Label::Eps` and every interface
+/// letter, whose semantic content acts at transfer time, not accept
+/// time. `NewD` guesses the distinguished allocation (at most one),
+/// `HD`/`TD` step the mask, `MeasD` accepts iff `step_meas` fires and
+/// otherwise retires, `OutOfScope` is the stage-1a dead end.
+fn d_step(ma: &MaskAutomaton, lab: Option<Label>, d: DState) -> DStep {
+    match (lab, d) {
+        (None, d) => DStep::Go(d),
+        (Some(Label::NewD), DState::Absent) => DStep::Go(DState::Live(0)),
+        (Some(Label::HD), DState::Live(m)) => DStep::Go(DState::Live(ma.h[m as usize])),
+        (Some(Label::TD), DState::Live(m)) => DStep::Go(DState::Live(ma.t[m as usize])),
+        (Some(Label::MeasD), DState::Live(m)) => {
+            if step_meas(ma.masks[m as usize]) {
+                DStep::Accept
+            } else {
+                DStep::Go(DState::Retired)
+            }
+        }
+        // `OutOfScope`, plus absent-lineage effects: those belong to
+        // non-D qubits in richer contexts, so within one summary they
+        // are unrealizable guesses — drop them.
+        (Some(_), _) => DStep::Dead,
+    }
+}
+
+/// Product view of an edge label: interface letters and `Eps` are
+/// silent, effect letters step the lineage.
+fn product_letter(l: Label) -> Option<Label> {
+    match l {
+        Label::Eps | Label::Call { .. } | Label::RetIn { .. } | Label::RetOut { .. } => None,
+        e => Some(e),
+    }
+}
+
 /// Core of the accept product: reachability over (node, D-state)
-/// from the given roots. `NewD` guesses the distinguished allocation
-/// (at most one), `HD`/`TD` step the mask, `MeasD` accepts iff
-/// `step_meas` fires and retires, `OutOfScope` is a stage-1a dead
-/// end. Interface letters are epsilon — their semantic content acts
-/// at transfer time, not accept time.
+/// from the given roots, stepping with `d_step`.
 fn accept_product(s: &Summary, ma: &MaskAutomaton, roots: &[NodeId]) -> bool {
     let mut succ: BTreeMap<NodeId, Vec<(Label, NodeId)>> = BTreeMap::new();
     for &(a, l, b) in &s.edges {
@@ -412,28 +517,10 @@ fn accept_product(s: &Summary, ma: &MaskAutomaton, roots: &[NodeId]) -> bool {
             continue;
         }
         for &(l, b) in succ.get(&n).into_iter().flatten() {
-            let step = match (l, d) {
-                (Label::NewD, DState::Absent) => Some(DState::Live(0)),
-                (Label::HD, DState::Live(m)) => Some(DState::Live(ma.h[m as usize])),
-                (Label::TD, DState::Live(m)) => Some(DState::Live(ma.t[m as usize])),
-                (Label::MeasD, DState::Live(m)) => {
-                    if step_meas(ma.masks[m as usize]) {
-                        return true;
-                    }
-                    Some(DState::Retired)
-                }
-                // Absent-lineage effects belong to non-D qubits in
-                // richer contexts; within one summary they are
-                // unrealizable guesses — drop them.
-                (Label::NewD | Label::HD | Label::TD | Label::MeasD, _) => None,
-                (Label::OutOfScope, _) => None,
-                (
-                    Label::Eps | Label::Call { .. } | Label::RetIn { .. } | Label::RetOut { .. },
-                    d,
-                ) => Some(d),
-            };
-            if let Some(d2) = step {
-                queue.push_back((b, d2));
+            match d_step(ma, product_letter(l), d) {
+                DStep::Accept => return true,
+                DStep::Go(d2) => queue.push_back((b, d2)),
+                DStep::Dead => {}
             }
         }
     }
@@ -469,21 +556,15 @@ fn ret_in_branches() -> Vec<(HeadPat, CapRel)> {
 
 /// The head a variable returns after receiving a value matching
 /// `pat` bound to `b`: the variable IS the received value.
+///
+/// The fan is collapsed (frozen shape 3), so `ret_in_branches` hands
+/// this ★ and nothing else. Re-enabling specific patterns means
+/// restoring the per-species mapping here — it must trip loudly
+/// rather than quietly return a wrong head.
 fn received_head(pat: HeadPat, b: BindId) -> Head {
     match pat {
         HeadPat::Any => Head::Opaque { bind: b },
-        HeadPat::Lam => Head::Lam {
-            apply: PortRef::Received(b),
-        },
-        HeadPat::Prim { which, partial } => Head::Prim {
-            which,
-            held: partial.then_some(PortRef::Received(b)),
-        },
-        HeadPat::Handle { role } => Head::Handle { role },
-        // Received neutrals are bare in the closed pipeline (rigid
-        // formals force to bare neutrals; spined neutrals are built
-        // by app, never received) — latent-only looseness.
-        HeadPat::Neutral => Head::Neutral { spine: None },
+        _ => unreachable!("collapsed observation fan emits only HeadPat::Any"),
     }
 }
 
@@ -637,9 +718,10 @@ pub fn rigid_summary() -> Summary {
 // declared prototype looseness (adds traces only).
 // ---------------------------------------------------------------------------
 
-/// Composition abort: a growth gate fired inside one splice. The DP
-/// driver treats an aborted cell as ⊤ and reports it; nothing
-/// downstream may interpret an abort as a verdict.
+/// Composition abort: a growth gate fired inside one splice, or an
+/// invariant the splice could not honor. Either way the DP driver
+/// treats an aborted cell as ⊤ and reports it (frozen shape 8);
+/// nothing downstream may interpret an abort as a verdict.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Abort {
     StateCap,
@@ -647,6 +729,9 @@ pub enum Abort {
     /// Closed-mode invariant breach: a live closed path met an
     /// unresolved ambient observation.
     UnresolvedAmbient,
+    /// Flatten-time invariant breach: an exposed port had no rooted
+    /// interface state. Reported as ⊤ rather than rooted at node 0.
+    UnrootedPort,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -675,7 +760,17 @@ type ContId = u32;
 /// extension time, mirroring qeval, and never re-walked).
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum CPort {
-    Sub { side: Side, root: Root, env: EnvId },
+    Sub {
+        side: Side,
+        root: Root,
+        env: EnvId,
+    },
+    /// The behavior of a value received through a SPECIFIC observed
+    /// species. Its only minter is `opaque_val`, which the collapsed
+    /// fan (frozen shape 3) only ever calls with ★ — so nothing
+    /// constructs it today. Every consumer still handles it, so
+    /// re-enabling the fan is a one-line change there.
+    #[allow(dead_code)]
     Recv(BindId),
     Spine(Option<CPortId>, CPortId),
 }
@@ -778,7 +873,7 @@ enum Cont {
         ret_to: ContId,
     },
     PrimArg {
-        which: Which,
+        which: UnaryPrim,
         ret_to: ContId,
     },
     CnotA1 {
@@ -807,16 +902,21 @@ enum Cont {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum Mode {
     Apply,
+    /// Standalone NF descent — instruments only (`nf_descend`); the
+    /// closed pipeline descends inside its own universe.
+    #[cfg(test)]
     Descend,
     /// One-shot closed evaluation: the F side is applied to the five
     /// frozen-signature primitives in order, then NF-descended — all
-    /// in a single specialization universe (staged composition
-    /// multiplies observation fans and blows up; measured).
+    /// in a single specialization universe (frozen shape 2: staged
+    /// composition multiplies observation fans and blows up).
     Closed,
 }
 
 /// Library slot layout: selectors, the rigid formal, then the frozen
-/// signature values in application order.
+/// signature values in application order. These constants OWN the
+/// layout — `lib()` writes every slot from exactly one of them, and
+/// the const assertion below keeps the count honest.
 const LIB_BOOLS: [u8; 2] = [0, 1];
 const LIB_RIGID: u8 = 2;
 const LIB_PRIMS: [(u8, Which); 5] = [
@@ -826,6 +926,52 @@ const LIB_PRIMS: [(u8, Which); 5] = [
     (6, Which::Cnot),
     (7, Which::T),
 ];
+const LIB_SLOTS: usize = 8;
+const _: () = assert!(LIB_BOOLS.len() + 1 + LIB_PRIMS.len() == LIB_SLOTS);
+
+/// Per-node outgoing adjacency of one summary: `adj[node]` is that
+/// node's out-edges, in edge-list order.
+type Adj = Vec<Vec<(Label, NodeId)>>;
+
+/// Index a summary's edges by source node. Sized defensively — a
+/// hand-built summary may carry an endpoint past `node_count`.
+fn adjacency(s: &Summary) -> Adj {
+    let n = s
+        .edges
+        .iter()
+        .map(|&(a, _, b)| a.max(b) as usize + 1)
+        .max()
+        .unwrap_or(0)
+        .max(s.node_count as usize);
+    let mut adj: Adj = vec![Vec::new(); n];
+    for &(a, l, b) in &s.edges {
+        adj[a as usize].push((l, b));
+    }
+    adj
+}
+
+/// The library axioms and their adjacency: process constants, so they
+/// are built once instead of per `Composer::new` (one per splice).
+struct Lib {
+    sums: [Summary; LIB_SLOTS],
+    adj: [Adj; LIB_SLOTS],
+}
+
+fn lib() -> &'static Lib {
+    static LIB: OnceLock<Lib> = OnceLock::new();
+    LIB.get_or_init(|| {
+        let mut sums: [Summary; LIB_SLOTS] = std::array::from_fn(|_| rigid_summary());
+        let [sel_first, sel_second] = LIB_BOOLS;
+        sums[sel_first as usize] = lam_ref(&lam_ref(&var_ref(2))); // K  = λλ.2
+        sums[sel_second as usize] = lam_ref(&lam_ref(&var_ref(1))); // KI = λλ.1
+        sums[LIB_RIGID as usize] = rigid_summary();
+        for (slot, which) in LIB_PRIMS {
+            sums[slot as usize] = prim_summary(which);
+        }
+        let adj = std::array::from_fn(|i| adjacency(&sums[i]));
+        Lib { sums, adj }
+    })
+}
 
 /// A specialized state: exploring `node` of the subgraph behind
 /// `cport`, under `env`, with frame-relative `net`, returning to
@@ -846,7 +992,12 @@ struct Spec {
 struct Composer<'a> {
     f: &'a Summary,
     a: &'a Summary,
-    lib: [Summary; 8],
+    lib: &'static Lib,
+    // Per-side outgoing adjacency, built once: the four hot per-node
+    // scans (explore, the Cont::Match dispatch, side_pure, side_refs)
+    // all read it instead of filtering the whole edge list.
+    f_adj: Adj,
+    a_adj: Adj,
     mode: Mode,
     // Interners (id order = creation order, hence acyclic).
     cports: Vec<CPort>,
@@ -950,16 +1101,9 @@ impl<'a> Composer<'a> {
         Composer {
             f,
             a,
-            lib: [
-                lam_ref(&lam_ref(&var_ref(2))),
-                lam_ref(&lam_ref(&var_ref(1))),
-                rigid_summary(),
-                prim_summary(Which::H),
-                prim_summary(Which::Meas),
-                prim_summary(Which::New),
-                prim_summary(Which::Cnot),
-                prim_summary(Which::T),
-            ],
+            lib: lib(),
+            f_adj: adjacency(f),
+            a_adj: adjacency(a),
             mode,
             cports: Vec::new(),
             cport_ids: BTreeMap::new(),
@@ -995,8 +1139,28 @@ impl<'a> Composer<'a> {
         match side {
             Side::F => self.f,
             Side::A => self.a,
-            Side::Lib(i) => &self.lib[i as usize],
+            Side::Lib(i) => &self.lib.sums[i as usize],
         }
+    }
+
+    fn side_adj(&self, side: Side) -> &Adj {
+        match side {
+            Side::F => &self.f_adj,
+            Side::A => &self.a_adj,
+            Side::Lib(i) => &self.lib.adj[i as usize],
+        }
+    }
+
+    /// Out-degree of a side node, through the adjacency index.
+    fn out_len(&self, side: Side, node: NodeId) -> usize {
+        self.side_adj(side).get(node as usize).map_or(0, Vec::len)
+    }
+
+    /// One out-edge of a side node. Indexed rather than iterated so
+    /// the caller can mutate the composer inside the loop without
+    /// copying the row.
+    fn out_edge(&self, side: Side, node: NodeId, i: usize) -> (Label, NodeId) {
+        self.side_adj(side)[node as usize][i]
     }
 
     fn intern_cport(&mut self, p: CPort) -> CPortId {
@@ -1077,6 +1241,18 @@ impl<'a> Composer<'a> {
         self.todo.push_back(id);
         id
     }
+    /// The side a specialized frame lives on. Every `Spec` and every
+    /// `Cont::Match` anchors in a `CPort::Sub` — `enter` and
+    /// `ensure_port_spec` are the only minters of frame states and
+    /// both match on `Sub` — so a non-Sub here is a broken invariant,
+    /// not a shape to silently skip.
+    fn frame_side(&self, cport: CPortId) -> Side {
+        match &self.cports[cport as usize] {
+            CPort::Sub { side, .. } => *side,
+            _ => unreachable!("a frame's cport is always CPort::Sub"),
+        }
+    }
+
     fn fresh_extra(&mut self) -> ONode {
         let id = self.extra_nodes;
         self.extra_nodes += 1;
@@ -1085,59 +1261,42 @@ impl<'a> Composer<'a> {
 
     /// Stale every live distinguished alias in `env` if the crossed
     /// net advances or retires it: DCur+Cur → DCur+None.
+    ///
+    /// Val interning is injective, so "holds a live distinguished
+    /// handle" is exactly "holds THE id of `Val {DCur, Cur}`" — one
+    /// probe, and at most one clone on the rewriting path. (The old
+    /// shape ran the whole staling twice and threw the first result
+    /// away, at three env clones per call.)
     fn stale_env(&mut self, env: EnvId, net: Net) -> EnvId {
         if !net.stales() {
             return env;
         }
-        let mut e = self.envs[env as usize].clone();
-        let mut changed = false;
-        for set in e.vals.values_mut() {
-            let staled: BTreeSet<ValId> = set
-                .iter()
-                .map(|&vid| {
-                    let v = self.vals[vid as usize];
-                    if v.head == (CHead::Handle { role: Role::DCur }) && v.cap == Cap::Cur {
-                        changed = true;
-                        self.val_ids
-                            .get(&Val {
-                                head: v.head,
-                                cap: Cap::None,
-                            })
-                            .copied()
-                            .unwrap_or(vid)
-                    } else {
-                        vid
-                    }
-                })
-                .collect();
-            *set = staled;
-        }
-        if !changed {
+        let live = Val {
+            head: CHead::Handle { role: Role::DCur },
+            cap: Cap::Cur,
+        };
+        // Never minted ⇒ no environment can hold one.
+        let Some(&live_id) = self.val_ids.get(&live) else {
+            return env;
+        };
+        if !self.envs[env as usize]
+            .vals
+            .values()
+            .any(|s| s.contains(&live_id))
+        {
             return env;
         }
-        // Interning a staled val may be needed before lookup above
-        // misses; rebuild properly.
-        let mut e2 = Env {
-            thunks: e.thunks.clone(),
-            ..Env::default()
-        };
-        let old = self.envs[env as usize].clone();
-        for (k, set) in old.vals {
-            let mut ns = BTreeSet::new();
-            for vid in set {
-                let v = self.vals[vid as usize];
-                if v.head == (CHead::Handle { role: Role::DCur }) && v.cap == Cap::Cur {
-                    ns.insert(self.intern_val(Val {
-                        head: v.head,
-                        cap: Cap::None,
-                    }));
-                } else {
-                    ns.insert(vid);
-                }
+        let staled = self.intern_val(Val {
+            head: live.head,
+            cap: Cap::None,
+        });
+        let mut e = self.envs[env as usize].clone();
+        for set in e.vals.values_mut() {
+            if set.remove(&live_id) {
+                set.insert(staled);
             }
-            e2.vals.insert(k, ns);
         }
-        self.intern_env(e2)
+        self.intern_env(e)
     }
 
     /// Enter a subgraph configuration with a waiting continuation,
@@ -1214,29 +1373,23 @@ impl<'a> Composer<'a> {
                 env,
                 net,
             } => {
-                let side = match &self.cports[cport as usize] {
-                    CPort::Sub { side, .. } => *side,
-                    // Match continuations always anchor in a Sub.
-                    _ => return,
-                };
+                let side = self.frame_side(cport);
                 let v = self.vals[val as usize];
-                let (bpat, bcap) = boundary(v.head, v.cap);
-                let edges: Vec<(Label, NodeId)> = self
-                    .side_summary(side)
-                    .edges
-                    .iter()
-                    .filter(|(a, _, _)| *a == node)
-                    .map(|&(_, l, b)| (l, b))
-                    .collect();
-                for (l, m) in edges {
+                for i in 0..self.out_len(side, node) {
+                    let (l, m) = self.out_edge(side, node, i);
                     if let Label::RetIn { pat, bind, rel } = l {
                         // ★ branches accept every value; an opaque
-                        // value satisfies every specific pattern.
-                        let ok = pat == HeadPat::Any
-                            || bpat == HeadPat::Any
-                            || (pat == bpat
-                                && rel.cap_out == bcap
-                                && rel.action == inflight.letter());
+                        // value satisfies every specific pattern. The
+                        // boundary is only needed for a specific
+                        // pattern, which the collapsed fan never
+                        // emits — so it stays out of the hot path.
+                        let ok = pat == HeadPat::Any || {
+                            let (bpat, bcap) = boundary(v.head, v.cap);
+                            bpat == HeadPat::Any
+                                || (pat == bpat
+                                    && rel.cap_out == bcap
+                                    && rel.action == inflight.letter())
+                        };
                         if !ok {
                             continue;
                         }
@@ -1305,8 +1458,9 @@ impl<'a> Composer<'a> {
                     // apply port index on its side.
                     let p = match root {
                         Root::Port(p) => p,
-                        // A lambda apply port is always a Port root.
-                        Root::Entry => return,
+                        // Lam apply cports come only from `sub_cport`,
+                        // which always roots at a Port.
+                        Root::Entry => unreachable!("a lambda apply port is a Port root"),
                     };
                     let mut e = self.envs[env as usize].clone();
                     e.thunks.insert((side, p), arg);
@@ -1334,37 +1488,14 @@ impl<'a> Composer<'a> {
                     }
                     self.enter(Some(at), entered, ret_to, inflight);
                 }
-                CPort::Recv(b) => {
-                    // Deferred application of an ambient value: emit
-                    // the symbolic call + full observation fan.
-                    self.ensure_port_spec(arg);
-                    let mid = self.fresh_extra();
-                    self.out_edges.push((
-                        at,
-                        PreLabel::Call {
-                            target: CallTarget::Received(b),
-                            arg: Some(arg),
-                        },
-                        mid,
-                    ));
-                    for (pat, rel) in ret_in_branches() {
-                        let bout = self.mint_bind(mid, pat, rel);
-                        let s2 = self.fresh_extra();
-                        self.out_edges.push((
-                            mid,
-                            PreLabel::RetIn {
-                                pat,
-                                bind: bout,
-                                rel,
-                            },
-                            s2,
-                        ));
-                        let oval = self.opaque_val(pat, bout);
-                        let net2 = inflight.join(Net::of_action(rel.action));
-                        self.deliver(s2, oval, net2, ret_to);
-                    }
-                }
-                CPort::Spine(..) => {}
+                // A lambda whose apply port is a received value: the
+                // same deferred ambient application as the Opaque
+                // head below, and it must carry the same guard.
+                // Unreachable under the collapsed fan (no `CPort::Recv`
+                // is minted), live again the moment it is re-enabled.
+                CPort::Recv(b) => self.defer_ambient_apply(at, b, inflight, arg, ret_to),
+                // Spine cports are built only for neutral heads.
+                CPort::Spine(..) => unreachable!("a lambda apply port is never a spine"),
             },
             CHead::Prim { which, held: None } => match which {
                 Which::New => {
@@ -1388,10 +1519,9 @@ impl<'a> Composer<'a> {
                     self.deliver(at, ov, inflight, ret_to);
                     // The argument is never entered (strictness row).
                 }
-                Which::H | Which::T | Which::Meas => {
-                    let c = self.intern_cont(Cont::PrimArg { which, ret_to });
-                    self.enter_from(at, arg, c, inflight);
-                }
+                Which::H => self.enter_unary(at, UnaryPrim::H, arg, inflight, ret_to),
+                Which::T => self.enter_unary(at, UnaryPrim::T, arg, inflight, ret_to),
+                Which::Meas => self.enter_unary(at, UnaryPrim::Meas, arg, inflight, ret_to),
                 Which::Cnot => {
                     // Call-by-name partial: hold the argument.
                     let pv = self.intern_val(Val {
@@ -1414,19 +1544,7 @@ impl<'a> Composer<'a> {
             CHead::Prim { .. } => {}
             // Applying a handle: species error — Kill.
             CHead::Handle { .. } => {}
-            CHead::Neutral { spine } => {
-                // Eagerly normalize the argument (its effects fire
-                // now, as in qeval), then return the extended stuck
-                // neutral. The stored spine is structure only.
-                let sp = self.intern_cport(CPort::Spine(spine, arg));
-                let nv = self.intern_val(Val {
-                    head: CHead::Neutral { spine: Some(sp) },
-                    cap: Cap::None,
-                });
-                let seq = self.intern_cont(Cont::Seq { val: nv, ret_to });
-                let desc = self.intern_cont(Cont::Descend { ret_to: seq });
-                self.enter_from(at, arg, desc, inflight);
-            }
+            CHead::Neutral { spine } => self.extend_spine(at, spine, arg, inflight, ret_to),
             CHead::PureWiden => {
                 let pv = self.intern_val(Val {
                     head: CHead::PureWiden,
@@ -1434,46 +1552,92 @@ impl<'a> Composer<'a> {
                 });
                 self.deliver(at, pv, inflight, ret_to);
             }
-            CHead::Opaque(b) => {
-                // Applying an ambient value: symbolic deferred call +
-                // a single ★ observation. In closed mode this must
-                // never happen on a LIVE path (interface-frame
-                // exploration under the Iface sentinel is symbolic
-                // and expected).
-                if self.mode == Mode::Closed && self.cont_live(ret_to) {
-                    self.unresolved_ambient += 1;
-                }
-                self.ensure_port_spec(arg);
-                let mid = self.fresh_extra();
-                self.out_edges.push((
-                    at,
-                    PreLabel::Call {
-                        target: CallTarget::Received(b),
-                        arg: Some(arg),
-                    },
-                    mid,
-                ));
-                for (pat, rel) in ret_in_branches() {
-                    let bout = self.mint_bind(mid, pat, rel);
-                    let s2 = self.fresh_extra();
-                    self.out_edges.push((
-                        mid,
-                        PreLabel::RetIn {
-                            pat,
-                            bind: bout,
-                            rel,
-                        },
-                        s2,
-                    ));
-                    let oval = self.opaque_val(pat, bout);
-                    self.deliver(s2, oval, inflight, ret_to);
-                }
-            }
+            CHead::Opaque(b) => self.defer_ambient_apply(at, b, inflight, arg, ret_to),
         }
     }
 
+    /// Applying an unresolved ambient value: a symbolic deferred call
+    /// plus the observation fan. In closed mode this must never
+    /// happen on a LIVE path (interface-frame exploration under the
+    /// Iface sentinel is symbolic and expected), so the breach is
+    /// counted here — once, for every ambient-apply site.
+    fn defer_ambient_apply(
+        &mut self,
+        at: ONode,
+        bind: BindId,
+        inflight: Net,
+        arg: CPortId,
+        ret_to: ContId,
+    ) {
+        if self.mode == Mode::Closed && self.cont_live(ret_to) {
+            self.unresolved_ambient += 1;
+        }
+        self.ensure_port_spec(arg);
+        let mid = self.fresh_extra();
+        self.out_edges.push((
+            at,
+            PreLabel::Call {
+                target: CallTarget::Received(bind),
+                arg: Some(arg),
+            },
+            mid,
+        ));
+        for (pat, rel) in ret_in_branches() {
+            let bout = self.mint_bind(mid, pat, rel);
+            let s2 = self.fresh_extra();
+            self.out_edges.push((
+                mid,
+                PreLabel::RetIn {
+                    pat,
+                    bind: bout,
+                    rel,
+                },
+                s2,
+            ));
+            let oval = self.opaque_val(pat, bout);
+            let net2 = inflight.join(Net::of_action(rel.action));
+            self.deliver(s2, oval, net2, ret_to);
+        }
+    }
+
+    /// Enter a strict unary primitive's argument with the row that
+    /// consumes its value.
+    fn enter_unary(
+        &mut self,
+        at: ONode,
+        which: UnaryPrim,
+        arg: CPortId,
+        inflight: Net,
+        ret_to: ContId,
+    ) {
+        let c = self.intern_cont(Cont::PrimArg { which, ret_to });
+        self.enter_from(at, arg, c, inflight);
+    }
+
+    /// Extend a rigid neutral's spine by `arg`: qeval normalizes the
+    /// argument eagerly (its effects fire now), then the stuck neutral
+    /// returns with the extended spine. The stored spine is structure
+    /// only and is never re-walked.
+    fn extend_spine(
+        &mut self,
+        at: ONode,
+        spine: Option<CPortId>,
+        arg: CPortId,
+        inflight: Net,
+        ret_to: ContId,
+    ) {
+        let sp = self.intern_cport(CPort::Spine(spine, arg));
+        let nv = self.intern_val(Val {
+            head: CHead::Neutral { spine: Some(sp) },
+            cap: Cap::None,
+        });
+        let seq = self.intern_cont(Cont::Seq { val: nv, ret_to });
+        let desc = self.intern_cont(Cont::Descend { ret_to: seq });
+        self.enter_from(at, arg, desc, inflight);
+    }
+
     /// H/T/Meas strict-unary row on the forced argument value.
-    fn prim_arg(&mut self, at: ONode, val: ValId, inflight: Net, which: Which, ret_to: ContId) {
+    fn prim_arg(&mut self, at: ONode, val: ValId, inflight: Net, which: UnaryPrim, ret_to: ContId) {
         let v = self.vals[val as usize];
         match v.head {
             // Species error before the body — Kill. PureWiden is
@@ -1484,49 +1648,9 @@ impl<'a> Composer<'a> {
                     // Stale distinguished handle: no continuation.
                     return;
                 }
-                match which {
-                    Which::H | Which::T => {
-                        let s1 = self.fresh_extra();
-                        let l = if which == Which::H {
-                            Label::HD
-                        } else {
-                            Label::TD
-                        };
-                        self.out_edges.push((at, PreLabel::Eff(l), s1));
-                        let rv = self.intern_val(Val {
-                            head: CHead::Handle { role: Role::DCur },
-                            cap: Cap::Cur,
-                        });
-                        let net2 = inflight.join(Net {
-                            advanced: true,
-                            ..Net::default()
-                        });
-                        self.deliver(s1, rv, net2, ret_to);
-                    }
-                    Which::Meas => {
-                        let s1 = self.fresh_extra();
-                        self.out_edges.push((at, PreLabel::Eff(Label::MeasD), s1));
-                        let net2 = inflight.join(Net {
-                            retired: true,
-                            ..Net::default()
-                        });
-                        self.deliver_bools(s1, net2, ret_to);
-                    }
-                    _ => unreachable!(),
-                }
+                self.unary_on_dcur(at, which, inflight, ret_to);
             }
-            CHead::Handle { role: Role::Other } => match which {
-                // Non-D effects are erased; D-relative Keep.
-                Which::H | Which::T => {
-                    let rv = self.intern_val(Val {
-                        head: CHead::Handle { role: Role::Other },
-                        cap: Cap::None,
-                    });
-                    self.deliver(at, rv, inflight, ret_to);
-                }
-                Which::Meas => self.deliver_bools(at, inflight, ret_to),
-                _ => unreachable!(),
-            },
+            CHead::Handle { role: Role::Other } => self.unary_on_other(at, which, inflight, ret_to),
             // Stuck neutral application; the spine was already
             // normalized when built.
             CHead::Neutral { spine } => {
@@ -1537,47 +1661,11 @@ impl<'a> Composer<'a> {
                 self.deliver(at, nv, inflight, ret_to);
             }
             // Ambient value forced by a strict unary primitive: the
-            // use-site case split. Species mismatches are the absent
-            // branches (Kill).
+            // use-site case split over every species the value could
+            // be. Species mismatches are the absent branches (Kill).
             CHead::Opaque(_) => {
-                match which {
-                    Which::H | Which::T => {
-                        // Distinguished current handle branch.
-                        let s1 = self.fresh_extra();
-                        let l = if which == Which::H {
-                            Label::HD
-                        } else {
-                            Label::TD
-                        };
-                        self.out_edges.push((at, PreLabel::Eff(l), s1));
-                        let rv = self.intern_val(Val {
-                            head: CHead::Handle { role: Role::DCur },
-                            cap: Cap::Cur,
-                        });
-                        let net2 = inflight.join(Net {
-                            advanced: true,
-                            ..Net::default()
-                        });
-                        self.deliver(s1, rv, net2, ret_to);
-                        // Other-handle branch: erased effect.
-                        let ov = self.intern_val(Val {
-                            head: CHead::Handle { role: Role::Other },
-                            cap: Cap::None,
-                        });
-                        self.deliver(at, ov, inflight, ret_to);
-                    }
-                    Which::Meas => {
-                        let s1 = self.fresh_extra();
-                        self.out_edges.push((at, PreLabel::Eff(Label::MeasD), s1));
-                        let net2 = inflight.join(Net {
-                            retired: true,
-                            ..Net::default()
-                        });
-                        self.deliver_bools(s1, net2, ret_to);
-                        self.deliver_bools(at, inflight, ret_to);
-                    }
-                    _ => unreachable!(),
-                }
+                self.unary_on_dcur(at, which, inflight, ret_to);
+                self.unary_on_other(at, which, inflight, ret_to);
                 // Neutral branch: stuck application.
                 let nv = self.intern_val(Val {
                     head: CHead::Neutral { spine: None },
@@ -1585,6 +1673,55 @@ impl<'a> Composer<'a> {
                 });
                 self.deliver(at, nv, inflight, ret_to);
             }
+        }
+    }
+
+    /// The unary row on a LIVE distinguished handle: the projected
+    /// letter lands on the path, and the lineage advances (H/T) or
+    /// retires into the two measurement selectors.
+    fn unary_on_dcur(&mut self, at: ONode, which: UnaryPrim, inflight: Net, ret_to: ContId) {
+        let s1 = self.fresh_extra();
+        match which {
+            UnaryPrim::H | UnaryPrim::T => {
+                let l = if which == UnaryPrim::H {
+                    Label::HD
+                } else {
+                    Label::TD
+                };
+                self.out_edges.push((at, PreLabel::Eff(l), s1));
+                let rv = self.intern_val(Val {
+                    head: CHead::Handle { role: Role::DCur },
+                    cap: Cap::Cur,
+                });
+                let net2 = inflight.join(Net {
+                    advanced: true,
+                    ..Net::default()
+                });
+                self.deliver(s1, rv, net2, ret_to);
+            }
+            UnaryPrim::Meas => {
+                self.out_edges.push((at, PreLabel::Eff(Label::MeasD), s1));
+                let net2 = inflight.join(Net {
+                    retired: true,
+                    ..Net::default()
+                });
+                self.deliver_bools(s1, net2, ret_to);
+            }
+        }
+    }
+
+    /// The unary row on a non-distinguished handle: the effect is
+    /// erased (no letter, D-relative Keep).
+    fn unary_on_other(&mut self, at: ONode, which: UnaryPrim, inflight: Net, ret_to: ContId) {
+        match which {
+            UnaryPrim::H | UnaryPrim::T => {
+                let rv = self.intern_val(Val {
+                    head: CHead::Handle { role: Role::Other },
+                    cap: Cap::None,
+                });
+                self.deliver(at, rv, inflight, ret_to);
+            }
+            UnaryPrim::Meas => self.deliver_bools(at, inflight, ret_to),
         }
     }
 
@@ -1610,18 +1747,9 @@ impl<'a> Composer<'a> {
         let v = self.vals[val as usize];
         match v.head {
             CHead::Lam { .. } | CHead::Prim { .. } | CHead::PureWiden => {}
-            CHead::Neutral { spine } => {
-                // Neutral control: normalize a2, return stuck neutral,
-                // no OutOfScope.
-                let sp = self.intern_cport(CPort::Spine(spine, a2));
-                let nv = self.intern_val(Val {
-                    head: CHead::Neutral { spine: Some(sp) },
-                    cap: Cap::None,
-                });
-                let seq = self.intern_cont(Cont::Seq { val: nv, ret_to });
-                let desc = self.intern_cont(Cont::Descend { ret_to: seq });
-                self.enter_from(at, a2, desc, inflight);
-            }
+            // Neutral control: normalize a2, return stuck neutral,
+            // no OutOfScope.
+            CHead::Neutral { spine } => self.extend_spine(at, spine, a2, inflight, ret_to),
             CHead::Handle { role } => {
                 if role == Role::DCur && v.cap != Cap::Cur {
                     return; // stale — Kill
@@ -1645,14 +1773,7 @@ impl<'a> Composer<'a> {
                     let c = self.intern_cont(Cont::CnotA2 { first: hv, ret_to });
                     self.enter_from(at, a2, c, inflight);
                 }
-                let sp = self.intern_cport(CPort::Spine(None, a2));
-                let nv = self.intern_val(Val {
-                    head: CHead::Neutral { spine: Some(sp) },
-                    cap: Cap::None,
-                });
-                let seq = self.intern_cont(Cont::Seq { val: nv, ret_to });
-                let desc = self.intern_cont(Cont::Descend { ret_to: seq });
-                self.enter_from(at, a2, desc, inflight);
+                self.extend_spine(at, None, a2, inflight, ret_to);
             }
         }
     }
@@ -1703,14 +1824,17 @@ impl<'a> Composer<'a> {
     /// driver's normal-form surface.
     fn descend(&mut self, at: ONode, val: ValId, inflight: Net, self_cont: ContId, ret_to: ContId) {
         let v = self.vals[val as usize];
-        // Opaque received values pass through: their normalization
-        // belongs to the ambient resolver (every value is resolved in
-        // the closed pipeline, so this never cuts a closed trace) —
-        // and descending an opaque lambda would mint observation fans
-        // forever.
-        let opaque = |c: &Composer, p: CPortId| matches!(c.cports[p as usize], CPort::Recv(_));
+        // The two descending arms used to be guarded by "this port is
+        // not a received value" — descending an opaque lambda mints
+        // observation fans forever, and an opaque value's
+        // normalization belongs to the ambient resolver. Under the
+        // collapsed fan no `CPort::Recv` is ever minted, so both
+        // guards were constantly true. They survive as assertions; a
+        // re-enabled fan must restore them as guards.
+        let received = |c: &Composer, p: CPortId| matches!(c.cports[p as usize], CPort::Recv(_));
         match v.head {
-            CHead::Lam { apply } if !opaque(self, apply) => {
+            CHead::Lam { apply } => {
+                debug_assert!(!received(self, apply), "descent met an opaque lambda");
                 // Apply to a zero-cost rigid formal and keep
                 // descending (memoized self-continuation).
                 let empty = self.intern_env(Env::default());
@@ -1724,7 +1848,8 @@ impl<'a> Composer<'a> {
             CHead::Prim {
                 which: Which::Cnot,
                 held: Some(h1),
-            } if !opaque(self, h1) => {
+            } => {
+                debug_assert!(!received(self, h1), "descent met an opaque held argument");
                 // A surviving partial normalizes its held argument
                 // (call-by-name debt paid at the NF surface), then
                 // stays a partial.
@@ -1799,29 +1924,18 @@ impl<'a> Composer<'a> {
         b
     }
 
-    /// The opaque value observed through a symbolic RetIn.
+    /// The opaque value observed through a symbolic RetIn. Only ★
+    /// under the collapsed fan (frozen shape 3) — the specific
+    /// species are the ones that would mint `CPort::Recv`, which is
+    /// why nothing downstream sees a received port today.
     fn opaque_val(&mut self, pat: HeadPat, bout: BindId) -> ValId {
-        let head = match pat {
-            HeadPat::Any => CHead::Opaque(bout),
-            HeadPat::Lam => CHead::Lam {
-                apply: self.intern_cport(CPort::Recv(bout)),
-            },
-            HeadPat::Prim { which, partial } => CHead::Prim {
-                which,
-                held: if partial {
-                    Some(self.intern_cport(CPort::Recv(bout)))
-                } else {
-                    None
-                },
-            },
-            HeadPat::Handle { role } => CHead::Handle { role },
-            HeadPat::Neutral => CHead::Neutral { spine: None },
-        };
-        let cap = match pat {
-            HeadPat::Handle { role: Role::DCur } => Cap::Cur,
-            _ => Cap::None,
-        };
-        self.intern_val(Val { head, cap })
+        match pat {
+            HeadPat::Any => self.intern_val(Val {
+                head: CHead::Opaque(bout),
+                cap: Cap::None,
+            }),
+            _ => unreachable!("collapsed observation fan emits only HeadPat::Any"),
+        }
     }
 
     /// Explore one specialized state: process its source node's
@@ -1834,19 +1948,10 @@ impl<'a> Composer<'a> {
             net,
             ctx,
         } = self.specs[sid as usize];
-        let side = match &self.cports[cport as usize] {
-            CPort::Sub { side, .. } => *side,
-            _ => return,
-        };
+        let side = self.frame_side(cport);
         let at = ONode::S(sid);
-        let edges: Vec<(Label, NodeId)> = self
-            .side_summary(side)
-            .edges
-            .iter()
-            .filter(|(a, _, _)| *a == node)
-            .map(|&(_, l, b)| (l, b))
-            .collect();
-        for (l, m) in edges {
+        for i in 0..self.out_len(side, node) {
+            let (l, m) = self.out_edge(side, node, i);
             if self.aborted.is_some() {
                 return;
             }
@@ -1956,6 +2061,7 @@ impl<'a> Composer<'a> {
             return r;
         }
         let s = self.side_summary(side);
+        let adj = self.side_adj(side);
         let mut seen: BTreeSet<NodeId> = BTreeSet::new();
         let mut q: VecDeque<NodeId> = VecDeque::from([root]);
         let mut pure = true;
@@ -1963,10 +2069,7 @@ impl<'a> Composer<'a> {
             if !seen.insert(n) {
                 continue;
             }
-            for &(a, l, b) in &s.edges {
-                if a != n {
-                    continue;
-                }
+            for &(l, b) in adj.get(n as usize).into_iter().flatten() {
                 match l {
                     Label::NewD | Label::HD | Label::TD | Label::MeasD | Label::OutOfScope => {
                         pure = false;
@@ -2073,6 +2176,7 @@ impl<'a> Composer<'a> {
             return r.clone();
         }
         let s = self.side_summary(side);
+        let adj = self.side_adj(side);
         let mut mb: BTreeMap<NodeId, BTreeSet<BindId>> = BTreeMap::new();
         mb.insert(root, BTreeSet::new());
         let mut q: VecDeque<NodeId> = VecDeque::from([root]);
@@ -2100,10 +2204,7 @@ impl<'a> Composer<'a> {
         let mut formals: BTreeSet<PortId> = BTreeSet::new();
         while let Some(n) = q.pop_front() {
             let here = mb.get(&n).cloned().unwrap_or_default();
-            for &(a, l, b) in &s.edges {
-                if a != n {
-                    continue;
-                }
+            for &(l, b) in adj.get(n as usize).into_iter().flatten() {
                 let reference = |bb: BindId, free: &mut BTreeSet<BindId>| {
                     if !here.contains(&bb) {
                         free.insert(bb);
@@ -2196,6 +2297,11 @@ impl<'a> Composer<'a> {
     }
 
     /// Resolve a source-side RetOut head into composed values.
+    ///
+    /// `PortRef::Received` cannot occur: only `opaque_val` mints a
+    /// received port, and the collapsed fan never calls it with a
+    /// specific species. Those arms trip rather than silently
+    /// resolving to a bound value under a stale environment.
     fn resolve_head(&mut self, side: Side, env: EnvId, head: Head, rel: CapRel) -> Vec<ValId> {
         let cap = rel.cap_out;
         match head {
@@ -2207,13 +2313,7 @@ impl<'a> Composer<'a> {
                         cap: Cap::None,
                     })]
                 }
-                PortRef::Received(b) => self.envs[env as usize]
-                    .vals
-                    .get(&(side, b))
-                    .cloned()
-                    .unwrap_or_default()
-                    .into_iter()
-                    .collect(),
+                PortRef::Received(_) => unreachable!("no received apply port under the ★ fan"),
             },
             Head::Prim { which, held } => match held {
                 None => vec![self.intern_val(Val {
@@ -2230,22 +2330,18 @@ impl<'a> Composer<'a> {
                         cap: Cap::None,
                     })]
                 }
-                Some(PortRef::Received(b)) => self.envs[env as usize]
-                    .vals
-                    .get(&(side, b))
-                    .cloned()
-                    .unwrap_or_default()
-                    .into_iter()
-                    .collect(),
+                Some(PortRef::Received(_)) => {
+                    unreachable!("no received held argument under the ★ fan")
+                }
             },
             Head::Handle { role } => vec![self.intern_val(Val {
                 head: CHead::Handle { role },
                 cap: if role == Role::DCur { cap } else { Cap::None },
             })],
             Head::Neutral { spine } => {
-                let sp = spine.and_then(|s| match s {
-                    PortRef::Own(p) => Some(self.sub_cport(side, p, env)),
-                    PortRef::Received(_) => None,
+                let sp = spine.map(|s| match s {
+                    PortRef::Own(p) => self.sub_cport(side, p, env),
+                    PortRef::Received(_) => unreachable!("no received spine port under the ★ fan"),
                 });
                 vec![self.intern_val(Val {
                     head: CHead::Neutral { spine: sp },
@@ -2386,6 +2482,7 @@ impl<'a> Composer<'a> {
                 arg: acport,
                 ret_to: top,
             }),
+            #[cfg(test)]
             Mode::Descend => self.intern_cont(Cont::Descend { ret_to: top }),
             Mode::Closed => {
                 // One specialization universe: apply the five frozen
@@ -2428,17 +2525,8 @@ impl<'a> Composer<'a> {
             return Err(Abort::UnresolvedAmbient);
         }
         let empty = self.intern_env(Env::default());
-        let root = *self
-            .spec_ids
-            .get(&Spec {
-                cport: root_cport,
-                node: self.f.entry,
-                env: empty,
-                net: Net::default(),
-                ctx: first,
-            })
-            .unwrap_or(&0);
-        let ma = MaskAutomaton::build();
+        let root = self.root_spec(root_cport, first, empty);
+        let ma = mask_automaton();
         let mut succ: BTreeMap<ONode, Vec<(Option<Label>, ONode)>> = BTreeMap::new();
         for &(a, l, b) in &self.out_edges {
             let lab = match l {
@@ -2459,25 +2547,31 @@ impl<'a> Composer<'a> {
                 continue;
             }
             for &(l, b) in succ.get(&n).into_iter().flatten() {
-                let step = match (l, d) {
-                    (None, d) => Some(d),
-                    (Some(Label::NewD), DState::Absent) => Some(DState::Live(0)),
-                    (Some(Label::HD), DState::Live(m)) => Some(DState::Live(ma.h[m as usize])),
-                    (Some(Label::TD), DState::Live(m)) => Some(DState::Live(ma.t[m as usize])),
-                    (Some(Label::MeasD), DState::Live(m)) => {
-                        if step_meas(ma.masks[m as usize]) {
-                            return Ok(true);
-                        }
-                        Some(DState::Retired)
-                    }
-                    (Some(_), _) => None,
-                };
-                if let Some(d2) = step {
-                    queue.push_back((b, d2));
+                match d_step(ma, l, d) {
+                    DStep::Accept => return Ok(true),
+                    DStep::Go(d2) => queue.push_back((b, d2)),
+                    DStep::Dead => {}
                 }
             }
         }
         Ok(false)
+    }
+
+    /// The root configuration's spec id. `close()` interns it as the
+    /// very first state, and callers check `aborted` first, so a miss
+    /// is a broken invariant — never node 0 by default, which is a
+    /// perfectly plausible wrong answer (node 0 IS the root).
+    fn root_spec(&self, root_cport: CPortId, first: ContId, empty: EnvId) -> SpecId {
+        *self
+            .spec_ids
+            .get(&Spec {
+                cport: root_cport,
+                node: self.f.entry,
+                env: empty,
+                net: Net::default(),
+                ctx: first,
+            })
+            .expect("close() interns the root configuration")
     }
 
     fn run(mut self) -> Result<Summary, Abort> {
@@ -2513,16 +2607,7 @@ impl<'a> Composer<'a> {
         for &(a, l, b) in &pre {
             adj.entry(a).or_default().push((l, b));
         }
-        let entry = *self
-            .spec_ids
-            .get(&Spec {
-                cport: root_cport,
-                node: self.f.entry,
-                env: empty,
-                net: Net::default(),
-                ctx: first,
-            })
-            .unwrap_or(&0);
+        let entry = self.root_spec(root_cport, first, empty);
         // Reachability + lazy port assignment + deferred exposure of
         // symbolic subgraph returns.
         let cx = &self;
@@ -2554,23 +2639,12 @@ impl<'a> Composer<'a> {
                                 fs.edges.push((n, Label::RetIn { pat, bind, rel }, b))
                             }
                             PreLabel::Call { target, arg } => {
-                                let arg2 = arg.map(|cp| match fs.assign(cx, cp) {
-                                    PortRef::Own(p) => p,
-                                    // Call arguments are always own thunks.
-                                    PortRef::Received(_) => 0,
-                                });
+                                let arg2 = arg.map(|cp| fs.own_port(cx, cp));
                                 fs.edges.push((n, Label::Call { target, arg: arg2 }, b));
                             }
                             PreLabel::CallF { fcport, arg } => {
-                                let target = match fs.assign(cx, fcport) {
-                                    PortRef::Own(p) => CallTarget::Formal(p),
-                                    // Formal ports are always own.
-                                    PortRef::Received(_) => CallTarget::Formal(0),
-                                };
-                                let arg2 = arg.map(|cp| match fs.assign(cx, cp) {
-                                    PortRef::Own(p) => p,
-                                    PortRef::Received(_) => 0,
-                                });
+                                let target = CallTarget::Formal(fs.own_port(cx, fcport));
+                                let arg2 = arg.map(|cp| fs.own_port(cx, cp));
                                 fs.edges.push((n, Label::Call { target, arg: arg2 }, b));
                             }
                             PreLabel::RetOut { head, rel } => {
@@ -2645,7 +2719,7 @@ impl Flat {
         if let Some(&p) = self.port_of.get(&cp) {
             return PortRef::Own(p);
         }
-        if self.port_roots.len() >= 63 {
+        if self.port_roots.len() >= MAX_PORTS {
             self.abort.get_or_insert(Abort::PortCap);
             return PortRef::Own(0);
         }
@@ -2658,19 +2732,26 @@ impl Flat {
                     Root::Entry => s.entry,
                     Root::Port(q) => s.ports[q as usize],
                 };
-                cx.cont_ids
-                    .get(&Cont::Iface)
-                    .and_then(|&iface| {
-                        cx.spec_ids.get(&Spec {
-                            cport: cp,
-                            node,
-                            env,
-                            net: Net::default(),
-                            ctx: iface,
-                        })
+                let found = cx.cont_ids.get(&Cont::Iface).and_then(|&iface| {
+                    cx.spec_ids.get(&Spec {
+                        cport: cp,
+                        node,
+                        env,
+                        net: Net::default(),
+                        ctx: iface,
                     })
-                    .copied()
-                    .unwrap_or(0)
+                });
+                // `sub_cport`/`ensure_port_spec` root every port the
+                // interface can reference. A miss would silently root
+                // this port at node 0 (the composed entry) — a
+                // plausible, wrong answer — so it becomes ⊤ instead.
+                match found {
+                    Some(&sid) => sid,
+                    None => {
+                        self.abort.get_or_insert(Abort::UnrootedPort);
+                        0
+                    }
+                }
             }
             // Spine ports are structural markers: inert root.
             _ => {
@@ -2685,6 +2766,16 @@ impl Flat {
             self.work.push_back(FWork::Sym(n, head, rel, b));
         }
         PortRef::Own(p)
+    }
+
+    /// `assign` where the result must be an own port. Received ports
+    /// are never minted under the collapsed fan, so this is total;
+    /// the old fallbacks silently answered port 0.
+    fn own_port(&mut self, cx: &Composer, cp: CPortId) -> PortId {
+        match self.assign(cx, cp) {
+            PortRef::Own(p) => p,
+            PortRef::Received(_) => unreachable!("no received ports under the ★ fan"),
+        }
     }
 
     /// Translate a composed head, assigning referenced ports.
@@ -2731,6 +2822,11 @@ fn boundary(head: CHead, cap: Cap) -> (HeadPat, Cap) {
 /// Default per-splice specialized-state cap (growth gate).
 pub const COMPOSE_STATE_CAP: usize = 100_000;
 
+/// Port-table cap. `Summary::quotient` colors nodes by a u64 root-role
+/// bitset whose bits are (entry, port 0, port 1, …), so entry + ports
+/// must fit in 64: at most 63 ports. Flatten aborts on the 64th.
+pub const MAX_PORTS: usize = 63;
+
 /// Capture-chain depth beyond which a provably pure component stops
 /// unfolding and widens to `PureWiden`.
 pub const WIDEN_DEPTH: u32 = 6;
@@ -2746,7 +2842,12 @@ pub fn app_ref(f: &Summary, a: &Summary) -> Result<Summary, Abort> {
 /// the top consume rigid formals (recursively), surviving cnot
 /// partials normalize their held arguments, everything else passes
 /// through.
-pub fn nf_descend(m: &Summary) -> Result<Summary, Abort> {
+///
+/// Instruments only, hence private and test-gated: the live path
+/// descends inside `Mode::Closed`'s single specialization universe
+/// (frozen shape 2), so nothing but the stage trace stages it.
+#[cfg(test)]
+fn nf_descend(m: &Summary) -> Result<Summary, Abort> {
     let dummy = rigid_summary();
     Composer::new(m, &dummy, Mode::Descend, COMPOSE_STATE_CAP).run()
 }
@@ -2761,7 +2862,8 @@ pub fn nf_descend(m: &Summary) -> Result<Summary, Abort> {
 /// signature application + NF descent as a single continuation
 /// chain. (Staged composition multiplies the observation fans at
 /// every stage boundary — measured past 3M states on witness45.)
-pub fn closed_accepts(m: &Summary, _ma: &MaskAutomaton) -> Result<bool, Abort> {
+/// The mask automaton is the process-wide interned one.
+pub fn closed_accepts(m: &Summary) -> Result<bool, Abort> {
     let dummy = rigid_summary();
     Composer::new(m, &dummy, Mode::Closed, COMPOSE_STATE_CAP).accepts_closed()
 }
@@ -3032,13 +3134,12 @@ mod tests {
     /// 28-bit cnot witness must NOT be (out of scope, not odd).
     #[test]
     fn gate_witness45_accepts_cnot28_does_not() {
-        let ma = MaskAutomaton::build();
         let w45 = wire_term("000000000001111100111111001100111111001111010");
         let s = term_summary(&w45).expect("compose");
-        assert_eq!(closed_accepts(&s, &ma), Ok(true), "witness45 must accept");
+        assert_eq!(closed_accepts(&s), Ok(true), "witness45 must accept");
         let c28 = wire_term("0000000001011001110100111010");
         let s = term_summary(&c28).expect("compose");
-        assert_eq!(closed_accepts(&s, &ma), Ok(false), "cnot28 must not accept");
+        assert_eq!(closed_accepts(&s), Ok(false), "cnot28 must not accept");
     }
 
     /// Gate 1: λx.x and λx.(f x) have distinct apply-port structure.
@@ -3058,7 +3159,6 @@ mod tests {
     /// unused thunk is never entered.
     #[test]
     fn gate_nested_binders_select_correctly() {
-        let ma = MaskAutomaton::build();
         // Sandwich body at signature depth 5: meas(h(t(h(new t)))).
         let sandwich = || {
             app(
@@ -3071,23 +3171,19 @@ mod tests {
         // ((λλ.1) t) SANDWICH — selects the sandwich: accepts.
         let p = sig5(app(app(sel2.clone(), var(1)), sandwich()));
         let s = term_summary(&p).expect("compose");
-        assert_eq!(closed_accepts(&s, &ma), Ok(true), "inner selection broken");
+        assert_eq!(closed_accepts(&s), Ok(true), "inner selection broken");
         // ((λλ.2) t) SANDWICH — K discards the sandwich: rejects.
         let p = sig5(app(app(sel1.clone(), var(1)), sandwich()));
         let s = term_summary(&p).expect("compose");
-        assert_eq!(closed_accepts(&s, &ma), Ok(false), "outer selection broken");
+        assert_eq!(closed_accepts(&s), Ok(false), "outer selection broken");
         // ((λλ.2) SANDWICH) t — K keeps the sandwich: accepts.
         let p = sig5(app(app(sel1, sandwich()), var(1)));
         let s = term_summary(&p).expect("compose");
-        assert_eq!(
-            closed_accepts(&s, &ma),
-            Ok(true),
-            "kept-thunk selection broken"
-        );
+        assert_eq!(closed_accepts(&s), Ok(true), "kept-thunk selection broken");
         // ((λλ.1) SANDWICH) t — discards the sandwich: rejects.
         let p = sig5(app(app(sel2, sandwich()), var(1)));
         let s = term_summary(&p).expect("compose");
-        assert_eq!(closed_accepts(&s, &ma), Ok(false), "discarded-thunk leaked");
+        assert_eq!(closed_accepts(&s), Ok(false), "discarded-thunk leaked");
     }
 
     /// Gates 6 + 9: a surviving lambda's body is explored under a
@@ -3104,11 +3200,7 @@ mod tests {
             app(var(6), app(var(2), app(var(6), app(var(4), var(2))))),
         )));
         let s = term_summary(&under).expect("compose");
-        assert_eq!(
-            closed_accepts(&s, &ma),
-            Ok(true),
-            "NF descent lost the body"
-        );
+        assert_eq!(closed_accepts(&s), Ok(true), "NF descent lost the body");
         // λ⁵.λx. meas(h(t(h x))) — the sandwich needs a HANDLE for x;
         // under the rigid formal it is stuck neutral: closed reject,
         // latent accept (the deliberately loose any-context query).
@@ -3118,7 +3210,7 @@ mod tests {
         )));
         let s = term_summary(&latent).expect("compose");
         assert_eq!(
-            closed_accepts(&s, &ma),
+            closed_accepts(&s),
             Ok(false),
             "rigid formal treated as handle"
         );
@@ -3135,7 +3227,6 @@ mod tests {
     /// dies without exploring the lambda's (odd) body.
     #[test]
     fn gate_species_error_before_body() {
-        let ma = MaskAutomaton::build();
         // λ⁵. h (λx. meas(h(t(h(new t)))))
         let p = sig5(app(
             var(5),
@@ -3146,7 +3237,7 @@ mod tests {
         ));
         let s = term_summary(&p).expect("compose");
         assert_eq!(
-            closed_accepts(&s, &ma),
+            closed_accepts(&s),
             Ok(false),
             "body explored past species error"
         );
@@ -3156,7 +3247,6 @@ mod tests {
     /// sandwich inside the discarded thunk must not fire.
     #[test]
     fn gate_new_discards_argument() {
-        let ma = MaskAutomaton::build();
         // λ⁵. meas(new(SANDWICH)) — the discarded thunk is the only
         // odd source; measuring the fresh |0⟩ is even.
         let sandwich = app(
@@ -3165,11 +3255,7 @@ mod tests {
         );
         let p = sig5(app(var(4), app(var(3), sandwich)));
         let s = term_summary(&p).expect("compose");
-        assert_eq!(
-            closed_accepts(&s, &ma),
-            Ok(false),
-            "new evaluated its argument"
-        );
+        assert_eq!(closed_accepts(&s), Ok(false), "new evaluated its argument");
     }
 
     /// S1 differential on the small closed population: every program
@@ -3184,7 +3270,6 @@ mod tests {
         use crate::quantum::scalar::radical_parts;
         use crate::quantum::sig::FROZEN;
         use crate::quantum::Budget as QBudget;
-        let ma = MaskAutomaton::build();
         let budget = QBudget {
             beta: 128,
             trans: 1 << 14,
@@ -3213,7 +3298,7 @@ mod tests {
                         return;
                     }
                 };
-                match closed_accepts(&s, &ma) {
+                match closed_accepts(&s) {
                     Ok(acc) => {
                         if odd {
                             concrete_odd += 1;
@@ -3256,8 +3341,12 @@ mod tests {
     }
 }
 
+/// Hand-run instruments: growth traces, stage traces, and the abort
+/// census. All `#[ignore]`d — they print, they do not assert, and
+/// they are the only callers of `nf_descend`. Run one with
+/// `cargo test --release --all-features -- --ignored <name> --nocapture`.
 #[cfg(test)]
-mod debug_growth {
+mod instruments {
     use super::*;
     use crate::blc::Term;
 
@@ -3297,16 +3386,11 @@ mod debug_growth {
             Err(e) => eprintln!("ABORT: {e:?}"),
         }
     }
-}
-
-#[cfg(test)]
-mod debug_stages {
-    use super::*;
 
     #[test]
     #[ignore]
     fn w45_stage_trace() {
-        let ma = MaskAutomaton::build();
+        let ma = mask_automaton();
         let w45 =
             crate::blc::wire::parse_all("000000000001111100111111001100111111001111010").unwrap();
         let mut g = term_summary(&w45).unwrap();
@@ -3328,7 +3412,7 @@ mod debug_stages {
                 g.edges.len(),
                 g.ports.len(),
                 effs,
-                accept_product(&g, &ma, &[g.entry])
+                accept_product(&g, ma, &[g.entry])
             );
         }
         for i in 0..3 {
@@ -3336,21 +3420,15 @@ mod debug_stages {
             eprintln!(
                 "descend {i}: nodes {} accept {}",
                 g.node_count,
-                accept_product(&g, &ma, &[g.entry])
+                accept_product(&g, ma, &[g.entry])
             );
         }
     }
-}
-
-#[cfg(test)]
-mod debug_aborts {
-    use super::*;
 
     #[test]
     #[ignore]
     fn find_aborting_wires() {
         use crate::blc::enumerate::for_each_closed;
-        let ma = MaskAutomaton::build();
         let mut shown = 0;
         for n in 14..=22 {
             for_each_closed(n, &mut |enc, len| {
@@ -3369,7 +3447,7 @@ mod debug_aborts {
                         shown += 1;
                     }
                     Ok(s) => {
-                        if let Err(e) = closed_accepts(&s, &ma) {
+                        if let Err(e) = closed_accepts(&s) {
                             eprintln!("closed-abort {e:?} n={n} {wire}");
                             shown += 1;
                         }

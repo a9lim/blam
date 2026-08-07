@@ -11,7 +11,7 @@
 //! weight so a stop loses nothing).
 
 use crate::args::{self, Args, R};
-use blam::lab::oddmin::{app_ref, closed_accepts, lam_ref, var_ref, MaskAutomaton, Summary};
+use blam::lab::oddmin::{app_ref, closed_accepts, lam_ref, var_ref, Summary};
 use std::collections::BTreeSet;
 use std::time::Instant;
 
@@ -38,7 +38,6 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     p.at_most(1)?;
     let max_w: u32 = p.pos_num(0)?.unwrap_or(24);
-    let ma = MaskAutomaton::build();
     // cells[w][d] = canonical summaries of weight-w terms with free
     // vars ≤ d; d is capped by the enclosing-lambda budget
     // (W - w)/2 so every cell can still appear inside a closed
@@ -110,7 +109,7 @@ pub fn run(argv: &[String]) -> R<()> {
         let mut closed_top = 0u64;
         if let Some(closed) = per_d.first() {
             for s in closed {
-                match closed_accepts(s, &ma) {
+                match closed_accepts(s) {
                     Ok(true) => accepts.push(s.node_count),
                     Ok(false) => {}
                     Err(_) => closed_top += 1,
