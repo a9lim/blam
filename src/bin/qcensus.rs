@@ -671,12 +671,14 @@ fn main() {
             other => panic!("unknown arg {other}"),
         }
     }
+    // Big worker stacks: the skeleton reducer and Term drops recurse
+    // over term depth, which the size cap bounds at thousands of frames
+    // (same lesson as the census escalation pool).
+    let mut pool = rayon::ThreadPoolBuilder::new().stack_size(256 << 20);
     if let Some(k) = threads {
-        rayon::ThreadPoolBuilder::new()
-            .num_threads(k)
-            .build_global()
-            .unwrap();
+        pool = pool.num_threads(k);
     }
+    pool.build_global().unwrap();
     let nthreads = rayon::current_num_threads();
 
     // Batch re-adjudication: run every program in FILE (one bit-string per
