@@ -27,8 +27,12 @@ Last updated: 2026-08-07.
   escalation-path distribution, witness lines, and ordering moved. Census
   runs are group-checkpointed and delta-runnable (`--checkpoint`,
   `--memo-in/out`; engine facts in AGENTS.md).
-- BBλ(41) is at least 1,074,266,118 normal-form bits. The n=32 row has no
-  unknowns, so BBλ(32) is fully mechanical.
+- BBλ(41) is at least 1,074,266,118 normal-form bits. The n=32 row carries
+  exactly one unknown, and it is a certified diverger: a Ratchet kill in
+  `data/certificates/ratchet_kills.tsv`, kernel-checked as
+  `lean/Certs/Size32.lean`. So BBλ(32) is settled modulo the certificate
+  layer, not by the ladder alone, and the certified frontier below starts
+  at 33 bits.
 - The current certified frontier is `data/classical/unknowns.txt`: 4,235
   terms after removing the certificate kills.
 - The finite-range plain halting mass is
@@ -198,8 +202,8 @@ Current measurements:
 - splice-level top is zero through W=24 and first appears at W=25 (2 cells);
 - closed-slice summary counts are 96, 743, 6,271, 18,812, and 57,324 at
   W=16, 20, 24, 26, and 28; closed-acceptance top counts are 0, 3, 37, 149,
-  and 555 respectively, with splice-level top at 0, 0, 0, 2, and 2 (8 at
-  W=28); the W=24 run takes about one second and W=28 about 13 seconds
+  and 555 respectively, with splice-level top at 0, 0, 0, 2, and 8; the
+  W=24 run takes about one second and W=28 about 13 seconds
   (2026-08-07, post-optimization); and
 - measured growth is about 1.74× per weight unit, projecting the
   million-summary stop near W≈33.
@@ -280,3 +284,28 @@ the whole-live-store operator census.
 - `ref/AIT` is the a9lim/AIT fork at upstream plus one additive `uni.rs`
   commit. `contrib/ait-uni/` contains the portable source, parity harness, and
   upstream PR kit. No upstream pull request is currently open.
+
+### Release risks
+
+Known and accepted for v2, stated so nobody has to rediscover them:
+
+- **`--memo-in` is a trusted semantic cache.** Its records assign fates to
+  terms the run never adjudicates, so a forged or corrupt memo file can
+  change census output. The checkpoint header's `sha256_16` of the memo file
+  pins *which* file the records came from, not that its facts are true; only
+  a memo file this engine wrote is safe to feed back.
+- **Checkpoint flush is process-kill recovery, not power-loss durability.**
+  Records are `write_all` plus `flush`, with no `sync_all` — a SIGKILL loses
+  nothing, a power cut or kernel panic can leave the tail in the page cache.
+  Torn tails are discarded on resume, so the failure mode is lost work, not
+  wrong work.
+- **Alternate signature universes and very large budgets carry less
+  evidence.** The `--sig` S/X/Z universes are lockstep-verified but every
+  canonical measurement is on the frozen five; likewise the ladder's
+  verification history sits at the measured budgets, not at arbitrarily
+  raised caps. Both are runnable and both are thinner ice.
+- **The low-level arena APIs assume their preconditions.** `Pool`/`Node`
+  (`classical::machine`, `quantum::machine`) take arena ids the caller is
+  responsible for keeping valid, and the escalation entry points want closed,
+  ⊥-free terms. These are documented preconditions, not checked ones: a
+  violation panics at best.

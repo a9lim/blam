@@ -211,12 +211,10 @@ simplification, and oracle recursion can consume large syntactic work without
 advancing a semantic counter. It uses one shared work meter charged on every
 primitive operation, at `work_mult` units per capacity bit. Large adjudications
 use a small worker count, streamed output, and `--work-mult 2` to bound memory
-pressure. Engine configuration on the ladder path is explicit
-`EngineCfg`/`LadderCfg` data rather than ambient state: the drivers take
+pressure. Engine configuration is explicit `EngineCfg`/`LadderCfg` data
+rather than ambient state, throughout the library: the drivers take
 `--work-mult` and `--probe-fuel` and honour `BLC_WORK_MULT`/`BLC_PROBE_FUEL`
-only as fallbacks. The environment survives as one deprecated channel — the
-`normal_form` / `normal_form_spine` shims read a `OnceLock`-cached
-`EngineCfg` for the callers not yet migrated to the explicit form.
+only as fallbacks, resolving both at the CLI layer before any compute starts.
 
 The meter bounds total charged work, not live graph size. Operational
 watchdogs and explicit memory headroom remain part of large-run correctness.

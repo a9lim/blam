@@ -359,7 +359,9 @@ arbitrarily many sectors.
 
 - Classical counterpart: `../classical/architecture.md`
 - Effect-trace theorem and proof obligations: `bisimulation.md`
-- Conditional Gács construction: `galois.md`
+- Conditional Gács construction `G_k`: §1 above ("Conditional family"), with
+  its open docket in `../STATUS.md` ("Conditional family `G_k`")
+- Dyadicity theorem program and Galois algebra: `galois.md`
 - Odd-sector abstract interpreter: `oddmin.md`
 - Moving measurements and docket: `../STATUS.md`
 - Canonical quantum evidence: `../../data/quantum/`

@@ -94,8 +94,8 @@ Never turns a cap into a rejection.
    differ whether or not the run would have terminated.
 2. `classical::oracle::no_nf` — cheap sound divergence proof.
 3. KN at β 4,096 / transitions 262,144.
-4. `classical::escalation::normal_form` at cap 2,000,000 (carries the
-   self-feedback certificate).
+4. `classical::escalation::normal_form_with` at cap 2,000,000, engine config
+   passed in as data (carries the self-feedback certificate).
 5. KN at β 2²⁰ / transitions 2²².
 6. Otherwise: reported as an honest `UNKNOWN`.
 

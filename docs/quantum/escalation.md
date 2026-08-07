@@ -34,11 +34,13 @@ Discovery and trust are split, mirroring the classical certificate
 architecture (`classical::certificate::search` under the untrusted
 `blam cert search`, `classical::certificate` as the checker):
 
-- **Discovery** is `classical::escalation::normal_form_spine`: the
+- **Discovery** is `classical::escalation::normal_form_spine_with`: the
   escalation engine with the syntactic oracle disabled (the oracle's
   no-nf verdict is not spine-attributable) and a spine flag threaded so
   a Diverge is tagged when its proof landed on the root's own
-  head-reduction chain. Full strength — simplify, history, redloop —
+  head-reduction chain. Its `EngineCfg` arrives as an argument, like
+  every other engine entry point — nothing below the CLI layer reads the
+  environment. Full strength — simplify, history, redloop —
   but its fires are *candidates*, never kills. It is driven as the
   skeleton column of `blam q census --skeleton CAP`, which builds its
   skeleton from `quantum::sig` so the column and the checker cannot

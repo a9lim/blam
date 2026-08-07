@@ -20,16 +20,26 @@ charged on a shared work meter); every quantum amplitude is exact
 
 ## Install
 
+The CLI — `cargo install`, which puts the `blam` driver on `PATH`:
+
 ```bash
-cargo add blam                        # library plus the `blam` driver binary
+cargo install blam                     # the `blam` measurement CLI
+cargo install blam --features lab      # …plus the research subcommands
+```
+
+The library — `cargo add`, which adds a dependency and no binary:
+
+```bash
+cargo add blam                        # library, default features
 cargo add blam --no-default-features  # engines only — one dependency, im-rc
 ```
 
-The default `cli` feature carries the binary and owns the rayon
-dependency; the library engines themselves need nothing but `im-rc`.
-The non-default `lab` feature adds the research instruments (`lab::*`),
-the untrusted certificate-discovery surface, and the subcommands built
-on them.
+Adding blam as a dependency never installs an executable, so the two
+lines are not interchangeable. The default `cli` feature carries the
+binary and owns the rayon dependency; the library engines themselves
+need nothing but `im-rc`. The non-default `lab` feature adds the
+research instruments (`lab::*`), the untrusted certificate-discovery
+surface, and the subcommands built on them.
 
 For the full lab — canonical data tables, the Lean formalization, and
 Tromp's reference corpus for the `uni.rs` parity harness:
@@ -37,6 +47,13 @@ Tromp's reference corpus for the `uni.rs` parity harness:
 ```bash
 git clone --recurse-submodules https://github.com/a9lim/blam
 ```
+
+Several subcommands default to repository paths the crates.io package
+does not ship: `blam cert lean` reads
+`data/certificates/ratchet_kills.tsv` and writes `lean/Certs/`, and the
+protocols in `scripts/` regenerate files under `data/`. Cloning the repo
+is the supported way to run the certificate and measurement protocols;
+an installed binary still takes explicit paths for them.
 
 ## Library
 
@@ -215,10 +232,12 @@ regeneration, Ω/K regeneration, certificate re-certification).
 The measurements this engine exists for, in one breath: the complete
 census of all 526,039,969 closed terms of 4–41 bits (~16.5 min on an
 M5 Max) giving the first BBλ(41) bound (≥ 1,074,266,118 bits) and a
-fully mechanical BBλ(32); Ω restricted to ≤41 bits exactly bracketed
-in [0.124105086764, 0.124105092919]; the 170-bit self-interpreter
-certified locally optimal; and on the quantum side the first computed
-operator census of quantum-preparing programs (to our knowledge) —
+BBλ(32) settled modulo the certificate layer (its one remaining
+unknown is a kernel-checked certified diverger); Ω restricted to ≤41
+bits exactly bracketed in [0.124105086764, 0.124105092919]; the
+170-bit self-interpreter certified locally optimal; and on the quantum
+side the first computed operator census of quantum-preparing programs
+(to our knowledge) —
 Ω_success exactly, single- and two-qubit state rankings, entanglement
 entering at exactly 41 bits, irrationality invading in measured
 layers (operator entries at 34, leaf masses at 45, per-size

@@ -5,7 +5,11 @@
 # data/certificates/ratchet_kills.tsv; the subtraction identity
 # (raw = frontier + kills present, zero overlap) is reported.
 #
-# Full 4..41 is ~16.5 min on the M5 Max (4..40 alone ~7.2 min).
+# The 4..40 prefix is about six minutes wall on the M5 Max under the
+# two-phase group scheduler (two 2026-08-07 runs, 323.6 s and 397.9 s;
+# user time ~1,980 s each is the stable number — wall tracks ambient
+# load). Full 4..41 has not been re-timed since the scheduler landed,
+# so its last measured 16.5 min stands only as an upper bound.
 # n>=42 FIRST needs a --rescue raise — the max successful rescue at
 # n=41 is 9,457,564 beta against the 10^7 cap, 1.06x headroom
 # (AGENTS.md, The engines); a9 decides the new cap.
