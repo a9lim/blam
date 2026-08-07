@@ -12,6 +12,94 @@ use crate::blc::Term;
 use std::collections::HashMap;
 use std::rc::Rc;
 
+/// Budgets for one three-rung sweep. `steps` bounds both the discovery
+/// trace and the trusted checkers' INIT search; `lemma_steps` bounds each
+/// symbolic obligation; `nodes` caps every intermediate pattern term.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct CertBudgets {
+    pub steps: u32,
+    pub nodes: u64,
+    pub lemma_steps: u32,
+}
+
+impl CertBudgets {
+    /// Sweep defaults: 1000/100k is measured kill-equivalent to 2000/200k
+    /// over a full frontier sweep (byte-identical certificates) at ~4×
+    /// less wall. Raise via flags for thorough runs; the fuel controls ran
+    /// at 8000/800k.
+    pub const SWEEP: CertBudgets = CertBudgets {
+        steps: 1000,
+        nodes: 100_000,
+        lemma_steps: 4096,
+    };
+
+    /// The soundness battery's budgets — the doubled trace bound whose
+    /// kill-equivalence to `SWEEP` was measured. The battery pays it
+    /// because a missed candidate there is a missed chance to catch a
+    /// checker bug.
+    pub const THOROUGH: CertBudgets = CertBudgets {
+        steps: 2000,
+        nodes: 200_000,
+        lemma_steps: 4096,
+    };
+}
+
+impl Default for CertBudgets {
+    fn default() -> Self {
+        CertBudgets::SWEEP
+    }
+}
+
+/// Which certificate class killed a term, with the trusted checker's own
+/// report. Only a `verify*` return builds one of these.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Kill {
+    V1(Ratchet, CertReport),
+    Htr(HeadTowerRatchet, HtrReport),
+    Selector(SelectorRatchet, SelReport),
+}
+
+impl Kill {
+    /// Class tag, as the sweep and the battery name it.
+    pub fn class(&self) -> &'static str {
+        match self {
+            Kill::V1(..) => "v1",
+            Kill::Htr(..) => "htr",
+            Kill::Selector(..) => "selector",
+        }
+    }
+}
+
+/// The three-rung sweep, and the only one: streaming discovery offers each
+/// candidate triple to v1 `verify`, then the HeadTowerRatchet driver, then
+/// the SelectorRatchet driver, and the first acceptance wins. A rejection
+/// retires only that milestone family, so later families still get their
+/// shot — stopping at the first candidate would mask valid later ones.
+///
+/// Untrusted throughout: every returned `Kill` carries a report a trusted
+/// checker produced, so a bad candidate can only fail to certify.
+pub fn try_kill(t: &Term, b: &CertBudgets) -> Option<Kill> {
+    let mut found: Option<Kill> = None;
+    discover_stream(t, b.steps, b.nodes, &mut |cand: &Ratchet| {
+        if let Ok(rep) = verify(t, cand, b.lemma_steps, b.steps, b.nodes) {
+            found = Some(Kill::V1(cand.clone(), rep));
+            return true;
+        }
+        // v2: same discovered triple, HeadTowerRatchet obligations.
+        if let Some((htr, rep)) = try_htr(t, cand, b.lemma_steps, b.steps, b.nodes) {
+            found = Some(Kill::Htr(htr, rep));
+            return true;
+        }
+        // v3: same triple, SelectorRatchet obligations.
+        if let Some((sel, rep)) = try_selector(t, cand, b.lemma_steps, b.steps, b.nodes) {
+            found = Some(Kill::Selector(sel, rep));
+            return true;
+        }
+        false
+    });
+    found
+}
+
 /// Collect closed (Meta-free, variable-closed) subterms of `t` with at
 /// most `max_nodes` nodes into `out` (discovery aid, unordered).
 pub(crate) fn closed_subterms(t: &PTerm, max_nodes: u64, out: &mut Vec<PTerm>) {
@@ -149,6 +237,37 @@ pub fn discover_stream(
     None
 }
 
+/// Peel a witnessed tower argument down to the true bottom: what discovery
+/// hands back is some `Wᵏ[C0ₜᵣᵤₑ]` — v1 may use it as-is (BASE just runs
+/// longer), but the v2/v3 assembly theorems need the bottom. Untrusted:
+/// the verifiers re-derive the tower from whatever this returns.
+pub fn peel_to_bottom(w: &PTerm, c0: &PTerm) -> PTerm {
+    let mut bottom = c0.clone();
+    while let Some(inner) = match_wrapper(w, &bottom) {
+        bottom = inner;
+    }
+    bottom
+}
+
+/// `try_htr`'s eraser candidate pool: the identity first, then small
+/// closed subterms of `A` and `W`, deduplicated in discovery order. Pure
+/// heuristic — exported so the certdiag instrument replays the same pool
+/// instead of keeping a copy that can drift.
+pub fn htr_eraser_candidates(cert: &Ratchet) -> Vec<Term> {
+    let mut cands: Vec<Term> = vec![Term::Lam(Rc::new(Term::Var(1)))];
+    let mut pool = Vec::new();
+    closed_subterms(&PTerm::from_term(&cert.a), 9, &mut pool);
+    closed_subterms(&cert.w, 9, &mut pool);
+    for p in pool {
+        if let Some(ct) = p.to_term() {
+            if !cands.contains(&ct) {
+                cands.push(ct);
+            }
+        }
+    }
+    cands
+}
+
 /// Untrusted HeadTowerRatchet driver: reuse a discovered `(A, W, C0)`
 /// triple, peel the observed base to the true tower bottom (a witnessed
 /// milestone argument is `Wᵏ[C0ₜᵣᵤₑ]` — v1 may use it directly, the
@@ -162,27 +281,9 @@ pub fn try_htr(
     init_steps: u32,
     max_nodes: u64,
 ) -> Option<(HeadTowerRatchet, HtrReport)> {
-    // peel the discovered base to the tower bottom
-    let mut bottom = PTerm::from_term(&cert.c0);
-    while let Some(inner) = match_wrapper(&cert.w, &bottom) {
-        bottom = inner;
-    }
-    let c0 = bottom.to_term()?;
+    let c0 = peel_to_bottom(&cert.w, &PTerm::from_term(&cert.c0)).to_term()?;
 
-    // candidate erasers: λ.1 first, then small closed subterms of A and W
-    let mut cands: Vec<Term> = vec![Term::Lam(Rc::new(Term::Var(1)))];
-    let mut pool = Vec::new();
-    closed_subterms(&PTerm::from_term(&cert.a), 9, &mut pool);
-    closed_subterms(&cert.w, 9, &mut pool);
-    for p in pool {
-        if let Some(ct) = p.to_term() {
-            if !cands.contains(&ct) {
-                cands.push(ct);
-            }
-        }
-    }
-
-    for i in cands {
+    for i in htr_eraser_candidates(cert) {
         let htr = HeadTowerRatchet {
             a: cert.a.clone(),
             w: cert.w.clone(),
@@ -233,11 +334,7 @@ pub fn try_selector(
         _ => return None,
     };
     // Peel the discovered base to the tower bottom.
-    let mut bottom = PTerm::from_term(&cand.c0);
-    while let Some(inner) = match_wrapper(&cand.w, &bottom) {
-        bottom = inner;
-    }
-    let c0 = bottom.to_term()?;
+    let c0 = peel_to_bottom(&cand.w, &PTerm::from_term(&cand.c0)).to_term()?;
     let cert = SelectorRatchet {
         a: cand.a.clone(),
         w: cand.w.clone(),
@@ -262,6 +359,28 @@ mod tests {
     /// obligations certify it with the measured counts
     /// OPEN 1 / FAN 1 / SELECT 3 / BASE 0 — milestone gaps 4n+1.
     const SEL35: &str = "01000110100001100001011000001111010";
+
+    /// The 35-bit deep-family forcing term: v1 aborts, the HTR
+    /// obligations certify it (see `forcing_term_certifies_via_htr`).
+    const HTR35: &str = "01000110100001100001010110001011010";
+
+    #[test]
+    fn try_kill_routes_each_class_to_its_own_rung() {
+        // One exemplar per rung, each rejected by the rungs before it, so
+        // this pins the ladder ORDER as well as its verdicts.
+        let cases = [
+            (LOOP32, Some("v1")),
+            (HTR35, Some("htr")),
+            (SEL35, Some("selector")),
+            // (λx. x x) (λx. x) halts — no rung may fire.
+            ("01000110100010", None),
+        ];
+        for (bits, want) in cases {
+            let t = parse_all(bits).unwrap();
+            let got = try_kill(&t, &CertBudgets::SWEEP);
+            assert_eq!(got.as_ref().map(Kill::class), want, "on {bits}");
+        }
+    }
 
     #[test]
     fn selector_exemplar_certifies() {
@@ -353,7 +472,7 @@ mod tests {
         // position, so v1's opacity must abort. The HeadTowerRatchet
         // certifies it with obligation lengths
         // (BASE 0 because C0 = A; then 1,1,3,3,7) and I = λ.1.
-        let t = parse_all("01000110100001100001010110001011010").unwrap();
+        let t = parse_all(HTR35).unwrap();
         let cert = discover(&t, 4096, 1 << 20).expect("discovery finds the triple");
         assert!(
             verify(&t, &cert, 64, 4096, 1 << 20).is_err(),
@@ -367,12 +486,9 @@ mod tests {
 
     #[test]
     fn htr_rejects_wrong_eraser() {
-        let t = parse_all("01000110100001100001010110001011010").unwrap();
+        let t = parse_all(HTR35).unwrap();
         let cert = discover(&t, 4096, 1 << 20).unwrap();
-        let mut bottom = PTerm::from_term(&cert.c0);
-        while let Some(inner) = match_wrapper(&cert.w, &bottom) {
-            bottom = inner;
-        }
+        let bottom = peel_to_bottom(&cert.w, &PTerm::from_term(&cert.c0));
         let htr = HeadTowerRatchet {
             a: cert.a.clone(),
             w: cert.w.clone(),

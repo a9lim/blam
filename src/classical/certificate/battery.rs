@@ -16,8 +16,7 @@
 //! running under plain `cargo test` while `search` stays off the default
 //! public surface.
 
-use super::search_impl::{discover_stream, try_htr, try_selector};
-use super::{verify, Ratchet};
+use super::search_impl::{try_kill, CertBudgets};
 use crate::blc::enumerate::{run_task, split_tasks};
 use crate::blc::wire::{enc_to_string, parse_all};
 use crate::classical::machine::{Machine, Pool, SizeSink};
@@ -47,22 +46,11 @@ fn no_certificate_fires_on_any_small_halter() {
                 let bits = enc_to_string(enc, len);
                 let t = parse_all(&bits).unwrap();
                 // Stream ALL candidate families through all three trusted
-                // checkers — the exact sweep ladder (certsearch::try_kill).
-                discover_stream(&t, 2000, 200_000, &mut |cand: &Ratchet| {
-                    if verify(&t, cand, 4096, 2000, 200_000).is_ok() {
-                        certified.push(format!("v1 certified halter {bits}"));
-                        return true;
-                    }
-                    if try_htr(&t, cand, 4096, 2000, 200_000).is_some() {
-                        certified.push(format!("htr certified halter {bits}"));
-                        return true;
-                    }
-                    if try_selector(&t, cand, 4096, 2000, 200_000).is_some() {
-                        certified.push(format!("selector certified halter {bits}"));
-                        return true;
-                    }
-                    false
-                });
+                // checkers — the exact sweep ladder `cert search` runs,
+                // at the battery's doubled trace budget.
+                if let Some(kill) = try_kill(&t, &CertBudgets::THOROUGH) {
+                    certified.push(format!("{} certified halter {bits}", kill.class()));
+                }
             });
             (halters, certified)
         })

@@ -13,6 +13,7 @@
 use crate::blc::Term;
 use std::fmt;
 use std::rc::Rc;
+use std::str::FromStr;
 
 #[cfg(test)]
 mod battery;
@@ -127,6 +128,98 @@ impl fmt::Display for PTerm {
     }
 }
 
+/// Parse errors from `PTerm::from_str` — the inverse of `Display`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PTermParseError(pub String);
+
+impl fmt::Display for PTermParseError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl FromStr for PTerm {
+    type Err = PTermParseError;
+
+    /// The exact inverse of `Display` (round-trip test below), and the
+    /// reader for the wrapper column of `data/certificates/ratchet_kills.tsv`:
+    /// `\` is a lambda whose body extends to the end of its group, digits
+    /// are 1-indexed de Bruijn, `Z`/`Q`/`?i` are metavariables,
+    /// juxtaposition is left-associated application, parens group.
+    fn from_str(s: &str) -> Result<PTerm, PTermParseError> {
+        let c: Vec<char> = s.chars().collect();
+        let (t, pos) = parse_expr(&c, 0)?;
+        if pos != c.len() {
+            return Err(PTermParseError(format!(
+                "trailing `{}` in pattern `{s}`",
+                c[pos]
+            )));
+        }
+        Ok(t)
+    }
+}
+
+fn parse_expr(c: &[char], mut pos: usize) -> Result<(PTerm, usize), PTermParseError> {
+    let mut acc: Option<PTerm> = None;
+    while pos < c.len() && c[pos] != ')' {
+        if c[pos] == ' ' {
+            pos += 1;
+            continue;
+        }
+        let (atom, next) = parse_atom(c, pos)?;
+        pos = next;
+        acc = Some(match acc {
+            None => atom,
+            Some(f) => papp(f, atom),
+        });
+    }
+    match acc {
+        Some(t) => Ok((t, pos)),
+        None => Err(PTermParseError("empty pattern expression".into())),
+    }
+}
+
+fn parse_atom(c: &[char], pos: usize) -> Result<(PTerm, usize), PTermParseError> {
+    match c[pos] {
+        '(' => {
+            let (t, next) = parse_expr(c, pos + 1)?;
+            if c.get(next) != Some(&')') {
+                return Err(PTermParseError("unclosed paren".into()));
+            }
+            Ok((t, next + 1))
+        }
+        // A lambda body extends to the end of the enclosing group, exactly
+        // as `Display` emits it (parenthesized only where an application
+        // would otherwise swallow the binder).
+        '\\' => {
+            let (b, next) = parse_expr(c, pos + 1)?;
+            Ok((plam(b), next))
+        }
+        'Z' => Ok((PTerm::Meta(0), pos + 1)),
+        'Q' => Ok((PTerm::Meta(1), pos + 1)),
+        '?' => {
+            let (n, next) = parse_num(c, pos + 1)?;
+            Ok((PTerm::Meta(n), next))
+        }
+        d if d.is_ascii_digit() => {
+            let (n, next) = parse_num(c, pos)?;
+            Ok((PTerm::Var(n), next))
+        }
+        other => Err(PTermParseError(format!("unexpected `{other}` in pattern"))),
+    }
+}
+
+fn parse_num(c: &[char], mut pos: usize) -> Result<(u32, usize), PTermParseError> {
+    let start = pos;
+    while pos < c.len() && c[pos].is_ascii_digit() {
+        pos += 1;
+    }
+    let s: String = c[start..pos].iter().collect();
+    s.parse()
+        .map(|n| (n, pos))
+        .map_err(|e| PTermParseError(format!("bad index `{s}`: {e}")))
+}
+
 /// Replace every `Meta` in `w` by the pattern-closed `z` (capture-free by
 /// closedness — no shifting required).
 pub fn plug(w: &PTerm, z: &PTerm) -> PTerm {
@@ -138,7 +231,11 @@ pub fn plug(w: &PTerm, z: &PTerm) -> PTerm {
     }
 }
 
-fn shift(t: &PTerm, d: u32, cutoff: u32) -> PTerm {
+/// Shift free indices *strictly above* `cutoff` by `d`. The cutoff
+/// convention differs from `escalation`'s shift (which lifts at `>=`):
+/// indices here are 1-based with `cutoff` counting binders already
+/// crossed, so `Var(cutoff)` is bound and must not move.
+fn shift_above(t: &PTerm, d: u32, cutoff: u32) -> PTerm {
     match t {
         PTerm::Var(n) => {
             if *n > cutoff {
@@ -148,8 +245,8 @@ fn shift(t: &PTerm, d: u32, cutoff: u32) -> PTerm {
             }
         }
         PTerm::Meta(i) => PTerm::Meta(*i),
-        PTerm::Lam(b) => plam(shift(b, d, cutoff + 1)),
-        PTerm::App(f, a) => papp(shift(f, d, cutoff), shift(a, d, cutoff)),
+        PTerm::Lam(b) => plam(shift_above(b, d, cutoff + 1)),
+        PTerm::App(f, a) => papp(shift_above(f, d, cutoff), shift_above(a, d, cutoff)),
     }
 }
 
@@ -168,7 +265,7 @@ fn subst_dec(t: &PTerm, j: u32, s: &PTerm) -> PTerm {
             }
         }
         PTerm::Meta(i) => PTerm::Meta(*i),
-        PTerm::Lam(b) => plam(subst_dec(b, j + 1, &shift(s, 1, 0))),
+        PTerm::Lam(b) => plam(subst_dec(b, j + 1, &shift_above(s, 1, 0))),
         PTerm::App(f, a) => papp(subst_dec(f, j, s), subst_dec(a, j, s)),
     }
 }
@@ -408,6 +505,35 @@ pub fn tower_index(w: &PTerm, c0: &PTerm, x: &PTerm) -> Option<u32> {
     }
 }
 
+/// The shape gates all three trusted verifiers share: `A` and `C0`
+/// closed, `W` a pattern-closed wrapper whose holes are all `Meta(0)`,
+/// and the target closed. Each verifier's extra data (HTR's eraser, the
+/// selector's `P`) is gated beside its own obligations; a certificate
+/// that fails both a shared gate and an extra one now reports the shared
+/// reason, which is the only behavioural difference from checking them
+/// inline.
+fn check_common_shape(t: &Term, a: &Term, c0: &Term, w: &PTerm) -> Result<(), &'static str> {
+    if !a.is_closed() {
+        return Err("A not closed");
+    }
+    if !c0.is_closed() {
+        return Err("C0 not closed");
+    }
+    if !w.contains_meta() {
+        return Err("W has no Meta");
+    }
+    if w.max_free(0) != 0 {
+        return Err("W not pattern-closed");
+    }
+    if !wrapper_holes_are_meta0(w) {
+        return Err("W holes must all be Meta(0)");
+    }
+    if !t.is_closed() {
+        return Err("target not closed");
+    }
+    Ok(())
+}
+
 /// The trusted verifier. Establishes that `t` has no normal form
 /// (per the glue theorem in certificate specification §3) or fails.
 pub fn verify(
@@ -417,24 +543,7 @@ pub fn verify(
     init_steps: u32,
     max_nodes: u64,
 ) -> Result<CertReport, CertFail> {
-    if !cert.a.is_closed() {
-        return Err(CertFail::Shape("A not closed"));
-    }
-    if !cert.c0.is_closed() {
-        return Err(CertFail::Shape("C0 not closed"));
-    }
-    if !cert.w.contains_meta() {
-        return Err(CertFail::Shape("W has no Meta"));
-    }
-    if cert.w.max_free(0) != 0 {
-        return Err(CertFail::Shape("W not pattern-closed"));
-    }
-    if !wrapper_holes_are_meta0(&cert.w) {
-        return Err(CertFail::Shape("W holes must all be Meta(0)"));
-    }
-    if !t.is_closed() {
-        return Err(CertFail::Shape("target not closed"));
-    }
+    check_common_shape(t, &cert.a, &cert.c0, &cert.w).map_err(CertFail::Shape)?;
 
     let a = PTerm::from_term(&cert.a);
     let c0 = PTerm::from_term(&cert.c0);
@@ -472,37 +581,59 @@ pub fn verify(
     // selects ONE state, and the lifted certified execution preserves that
     // exact vector, open or closed — y⃗ is never substituted into,
     // shifted, or inspected.
-    let (init_steps, init_tower, init_trail) =
-        init_search(t, &a, &w, &c0, init_steps, max_nodes).ok_or(CertFail::Init)?;
+    let landing = init_landing(t, &a, &w, &c0, init_steps, max_nodes).ok_or(CertFail::Init)?;
     Ok(CertReport {
         open_steps,
         desc_steps,
         base_steps,
-        init_steps,
-        init_tower,
-        init_trail,
+        init_steps: landing.steps,
+        init_tower: landing.tower,
+        init_trail: landing.trail.len() as u32,
     })
+}
+
+/// Where INIT landed: the state `λᵏ.(A Wⁿ[C0] y⃗)`, decomposed. Returned
+/// whole so that consumers which need the landing itself — the Lean
+/// emitter quantifies over `k`, `n` and `y⃗` — read it off the search
+/// instead of replaying the head trace and re-deriving it.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct InitLanding {
+    /// Concrete head steps from the target to the matched milestone.
+    pub steps: u32,
+    /// Tower height `n` of the matched milestone argument.
+    pub tower: u32,
+    /// Leading binders `k` of the landing state.
+    pub binders: u32,
+    /// Trailing spine arguments `y⃗` carried past the tower (v1.2), in
+    /// spine order. Entries may be open: lifting never substitutes into,
+    /// shifts, or inspects them.
+    pub trail: Vec<PTerm>,
 }
 
 /// The shared INIT loop (v1.2 shape, soundness note above): bounded
 /// concrete head reduction from `t`, matching `λᵏ.(A Wⁿ[C0] y⃗)`.
-/// Returns `(steps, tower, trail)` on the first match.
-fn init_search(
+/// Returns the landing on the first match.
+pub fn init_landing(
     t: &Term,
     a: &PTerm,
     w: &PTerm,
     c0: &PTerm,
     init_steps: u32,
     max_nodes: u64,
-) -> Option<(u32, u32, u32)> {
+) -> Option<InitLanding> {
     let mut cur = PTerm::from_term(t);
     let mut size = cur.nodes() as i64;
     for i in 0..=init_steps {
-        let (_, body) = strip_lams(&cur);
+        let (binders, body) = strip_lams(&cur);
         if let Some((h, args)) = spine(body) {
             if **h == *a {
                 if let Some(n) = tower_index(w, c0, args[0]) {
-                    return Some((i, n, args.len() as u32 - 1));
+                    return Some(InitLanding {
+                        steps: i,
+                        tower: n,
+                        binders,
+                        trail: args[1..].iter().map(|y| (***y).clone()).collect(),
+                    });
                 }
             }
         }
@@ -591,26 +722,9 @@ pub fn verify_htr(
     init_steps: u32,
     max_nodes: u64,
 ) -> Result<HtrReport, HtrFail> {
-    if !cert.a.is_closed() {
-        return Err(HtrFail::Shape("A not closed"));
-    }
-    if !cert.c0.is_closed() {
-        return Err(HtrFail::Shape("C0 not closed"));
-    }
+    check_common_shape(t, &cert.a, &cert.c0, &cert.w).map_err(HtrFail::Shape)?;
     if !cert.i.is_closed() {
         return Err(HtrFail::Shape("I not closed"));
-    }
-    if !cert.w.contains_meta() {
-        return Err(HtrFail::Shape("W has no Meta"));
-    }
-    if cert.w.max_free(0) != 0 {
-        return Err(HtrFail::Shape("W not pattern-closed"));
-    }
-    if !wrapper_holes_are_meta0(&cert.w) {
-        return Err(HtrFail::Shape("W holes must all be Meta(0)"));
-    }
-    if !t.is_closed() {
-        return Err(HtrFail::Shape("target not closed"));
     }
 
     let a = PTerm::from_term(&cert.a);
@@ -672,13 +786,12 @@ pub fn verify_htr(
     .map_err(HtrFail::Erase)?;
 
     // INIT: identical machinery to v1.2 — same tower, same lifting.
-    let (init_steps, init_tower, init_trail) =
-        init_search(t, &a, &w, &c0, init_steps, max_nodes).ok_or(HtrFail::Init)?;
+    let landing = init_landing(t, &a, &w, &c0, init_steps, max_nodes).ok_or(HtrFail::Init)?;
     Ok(HtrReport {
         obligation_steps: [base, open, spread, peel, bounce, erase],
-        init_steps,
-        init_tower,
-        init_trail,
+        init_steps: landing.steps,
+        init_tower: landing.tower,
+        init_trail: landing.trail.len() as u32,
     })
 }
 
@@ -761,29 +874,12 @@ pub fn verify_selector(
     init_steps: u32,
     max_nodes: u64,
 ) -> Result<SelReport, SelFail> {
-    if !cert.a.is_closed() {
-        return Err(SelFail::Shape("A not closed"));
-    }
-    if !cert.c0.is_closed() {
-        return Err(SelFail::Shape("C0 not closed"));
-    }
-    if !cert.w.contains_meta() {
-        return Err(SelFail::Shape("W has no Meta"));
-    }
-    if cert.w.max_free(0) != 0 {
-        return Err(SelFail::Shape("W not pattern-closed"));
-    }
-    if !wrapper_holes_are_meta0(&cert.w) {
-        return Err(SelFail::Shape("W holes must all be Meta(0)"));
-    }
+    check_common_shape(t, &cert.a, &cert.c0, &cert.w).map_err(SelFail::Shape)?;
     if cert.p.max_free(0) != 0 {
         return Err(SelFail::Shape("P not pattern-closed"));
     }
     if !wrapper_holes_are_meta0(&cert.p) {
         return Err(SelFail::Shape("P holes must all be Meta(0)"));
-    }
-    if !t.is_closed() {
-        return Err(SelFail::Shape("target not closed"));
     }
 
     let a = PTerm::from_term(&cert.a);
@@ -829,13 +925,12 @@ pub fn verify_selector(
     .map_err(SelFail::Base)?;
 
     // INIT: identical machinery to v1.2 — same tower, same lifting.
-    let (init_steps, init_tower, init_trail) =
-        init_search(t, &a, &w, &c0, init_steps, max_nodes).ok_or(SelFail::Init)?;
+    let landing = init_landing(t, &a, &w, &c0, init_steps, max_nodes).ok_or(SelFail::Init)?;
     Ok(SelReport {
         obligation_steps: [open, fan, select, base],
-        init_steps,
-        init_tower,
-        init_trail,
+        init_steps: landing.steps,
+        init_tower: landing.tower,
+        init_trail: landing.trail.len() as u32,
     })
 }
 
@@ -948,6 +1043,39 @@ mod tests {
         // off-by-one wrapper (λy. y (y Z)) must not match the tower
         let bad = plam(papp(pvar(1), papp(pvar(1), PTerm::Meta(0))));
         assert_eq!(tower_index(&bad, &c0, &t2), None);
+    }
+
+    #[test]
+    fn pterm_display_parse_round_trips() {
+        // Every shape Display can emit: bare metas by all three spellings,
+        // multi-digit indices (juxtaposition must not glue `1 2` into 12),
+        // an abstraction in function position (parenthesized), an
+        // application in argument position, nested wrappers.
+        let cases = vec![
+            PTerm::Meta(0),
+            PTerm::Meta(1),
+            PTerm::Meta(7),
+            pvar(12),
+            plam(papp(pvar(1), PTerm::Meta(0))),
+            papp(pvar(1), pvar(2)),
+            papp(plam(pvar(1)), PTerm::Meta(0)),
+            papp(pvar(1), papp(pvar(2), pvar(3))),
+            papp(papp(pvar(1), PTerm::Meta(1)), plam(papp(pvar(11), pvar(2)))),
+            plam(plam(papp(
+                papp(pvar(2), PTerm::Meta(0)),
+                papp(pvar(1), pvar(1)),
+            ))),
+            loop32_cert().w,
+        ];
+        for p in cases {
+            let s = p.to_string();
+            assert_eq!(s.parse::<PTerm>(), Ok(p.clone()), "round trip of `{s}`");
+        }
+        // …and the errors are errors, not panics.
+        assert!("".parse::<PTerm>().is_err());
+        assert!("(\\1".parse::<PTerm>().is_err());
+        assert!("1)".parse::<PTerm>().is_err());
+        assert!("1 X".parse::<PTerm>().is_err());
     }
 
     #[test]

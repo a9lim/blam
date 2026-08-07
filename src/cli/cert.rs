@@ -62,40 +62,16 @@ mod search {
     use crate::args::{self, Args, R};
     use blam::blc::term::Term;
     use blam::blc::wire::parse_all;
-    use blam::classical::certificate::search::{discover_stream, try_htr, try_selector};
-    use blam::classical::certificate::{
-        head_step, verify, HeadTowerRatchet, PTerm, Ratchet, SelectorRatchet, Step,
-    };
+    use blam::classical::certificate::search::{try_kill, CertBudgets, Kill};
+    use blam::classical::certificate::{head_step, PTerm, Step};
     use rayon::prelude::*;
     use std::io::Write;
     use std::sync::atomic::{AtomicU64, Ordering};
 
     struct Cfg {
-        steps: u32,
-        nodes: u64,
-        lemma_steps: u32,
+        budgets: CertBudgets,
         descend_depth: u32,
         threads: usize,
-    }
-
-    /// Where a certificate bit: at the top term or inside an hnf argument,
-    /// and which certificate class fired (v1 Ratchet or v2 HeadTowerRatchet).
-    enum Kill {
-        Top(Ratchet),
-        Arg {
-            path: String,
-            cert: Ratchet,
-        },
-        Top2(HeadTowerRatchet),
-        Arg2 {
-            path: String,
-            cert: HeadTowerRatchet,
-        },
-        Top3(SelectorRatchet),
-        Arg3 {
-            path: String,
-            cert: SelectorRatchet,
-        },
     }
 
     /// Bounded head reduction to hnf. Some(hnf) if reached, None otherwise.
@@ -135,58 +111,19 @@ mod search {
         (depth, cur, args)
     }
 
-    fn try_kill(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<Kill> {
-        // Streaming discovery: each candidate triple is tried against BOTH
-        // trusted checkers; a rejection retires only that milestone family,
-        // so later families still get their shot. Stopping at the first
-        // candidate would mask later valid families.
-        let mut found: Option<Kill> = None;
-        discover_stream(t, cfg.steps, cfg.nodes, &mut |cand: &Ratchet| {
-            if verify(t, cand, cfg.lemma_steps, cfg.steps, cfg.nodes).is_ok() {
-                found = Some(if path.is_empty() {
-                    Kill::Top(cand.clone())
-                } else {
-                    Kill::Arg {
-                        path: path.to_string(),
-                        cert: cand.clone(),
-                    }
-                });
-                return true;
-            }
-            // v2: same discovered triple, HeadTowerRatchet obligations
-            if let Some((htr, _)) = try_htr(t, cand, cfg.lemma_steps, cfg.steps, cfg.nodes) {
-                found = Some(if path.is_empty() {
-                    Kill::Top2(htr)
-                } else {
-                    Kill::Arg2 {
-                        path: path.to_string(),
-                        cert: htr,
-                    }
-                });
-                return true;
-            }
-            // v3: same triple, SelectorRatchet obligations.
-            if let Some((sel, _)) = try_selector(t, cand, cfg.lemma_steps, cfg.steps, cfg.nodes) {
-                found = Some(if path.is_empty() {
-                    Kill::Top3(sel)
-                } else {
-                    Kill::Arg3 {
-                        path: path.to_string(),
-                        cert: sel,
-                    }
-                });
-                return true;
-            }
-            false
-        });
-        if found.is_some() {
-            return found;
+    /// The library sweep plus this tool's hnf descent: run the three-rung
+    /// ladder on `t`, and on failure recurse into the closed spine
+    /// arguments of its hnf. Returns the kill and the spine path it sits
+    /// at (empty = the term itself).
+    fn kill_with_descent(t: &Term, cfg: &Cfg, depth: u32, path: &str) -> Option<(String, Kill)> {
+        if let Some(kill) = try_kill(t, &cfg.budgets) {
+            return Some((path.to_string(), kill));
         }
         if depth >= cfg.descend_depth {
             return None;
         }
         // hnf descent: recurse into closed spine arguments
-        let hnf = head_normalize(&PTerm::from_term(t), cfg.steps, cfg.nodes)?;
+        let hnf = head_normalize(&PTerm::from_term(t), cfg.budgets.steps, cfg.budgets.nodes)?;
         let (_, _, args) = spine(&hnf);
         for (i, arg) in args.iter().enumerate() {
             // closed relative to nothing: v1 needs genuinely closed subterms
@@ -197,7 +134,7 @@ mod search {
                     } else {
                         format!("{path}.{i}")
                     };
-                    if let Some(kill) = try_kill(&at, cfg, depth + 1, &sub_path) {
+                    if let Some(kill) = kill_with_descent(&at, cfg, depth + 1, &sub_path) {
                         return Some(kill);
                     }
                 }
@@ -226,14 +163,10 @@ usage: blam cert search [flags]
             println!("{USAGE}");
             return Ok(());
         }
-        // Default budgets: 1000/100k is measured kill-equivalent to
-        // 2000/200k over a full frontier sweep (byte-identical
-        // certificates) at ~4× less wall. Raise via flags for thorough
-        // runs; fuel controls run at 8000/800k.
+        // Budgets default to the measured sweep values (see CertBudgets);
+        // raise via flags for thorough runs.
         let mut cfg = Cfg {
-            steps: 1000,
-            nodes: 100_000,
-            lemma_steps: 4096,
+            budgets: CertBudgets::SWEEP,
             descend_depth: 8,
             threads: 0, // 0 = rayon default (all cores)
         };
@@ -245,9 +178,9 @@ usage: blam cert search [flags]
         let mut p = Args::new("cert search", argv);
         while let Some(tok) = p.next() {
             match tok {
-                "--steps" => cfg.steps = p.num(tok)?,
-                "--nodes" => cfg.nodes = p.num(tok)?,
-                "--lemma-steps" => cfg.lemma_steps = p.num(tok)?,
+                "--steps" => cfg.budgets.steps = p.num(tok)?,
+                "--nodes" => cfg.budgets.nodes = p.num(tok)?,
+                "--lemma-steps" => cfg.budgets.lemma_steps = p.num(tok)?,
                 "--threads" => cfg.threads = p.num(tok)?,
                 "--work-mult" => work_mult = Some(p.num(tok)?),
                 "--probe-fuel" => probe_fuel = Some(p.num(tok)?),
@@ -296,64 +229,60 @@ usage: blam cert search [flags]
                     return;
                 }
             };
-            let line = match try_kill(&t, &cfg, 0, "") {
-                Some(Kill::Top(cert)) => {
-                    kills_top.fetch_add(1, Ordering::Relaxed);
-                    format!(
-                        "RATCHET\t{bits}\thead={}\tw={}\tc0={}",
-                        cert.a.to_bits(),
-                        cert.w,
-                        cert.c0.to_bits()
-                    )
-                }
-                Some(Kill::Arg { path, cert }) => {
-                    kills_arg.fetch_add(1, Ordering::Relaxed);
-                    format!(
-                        "RATCHET-ARG\t{bits}\tat={path}\thead={}\tw={}\tc0={}",
-                        cert.a.to_bits(),
-                        cert.w,
-                        cert.c0.to_bits()
-                    )
-                }
-                Some(Kill::Top2(cert)) => {
-                    kills_htr.fetch_add(1, Ordering::Relaxed);
-                    format!(
-                        "RATCHET2\t{bits}\thead={}\tw={}\tc0={}\ti={}",
-                        cert.a.to_bits(),
-                        cert.w,
-                        cert.c0.to_bits(),
-                        cert.i.to_bits()
-                    )
-                }
-                Some(Kill::Arg2 { path, cert }) => {
-                    kills_htr.fetch_add(1, Ordering::Relaxed);
-                    format!(
-                        "RATCHET2-ARG\t{bits}\tat={path}\thead={}\tw={}\tc0={}\ti={}",
-                        cert.a.to_bits(),
-                        cert.w,
-                        cert.c0.to_bits(),
-                        cert.i.to_bits()
-                    )
-                }
-                Some(Kill::Top3(cert)) => {
-                    kills_sel.fetch_add(1, Ordering::Relaxed);
-                    format!(
-                        "SELECTOR\t{bits}\thead={}\tw={}\tp={}\tc0={}",
-                        cert.a.to_bits(),
-                        cert.w,
-                        cert.p,
-                        cert.c0.to_bits()
-                    )
-                }
-                Some(Kill::Arg3 { path, cert }) => {
-                    kills_sel.fetch_add(1, Ordering::Relaxed);
-                    format!(
-                        "SELECTOR-ARG\t{bits}\tat={path}\thead={}\tw={}\tp={}\tc0={}",
-                        cert.a.to_bits(),
-                        cert.w,
-                        cert.p,
-                        cert.c0.to_bits()
-                    )
+            let line = match kill_with_descent(&t, &cfg, 0, "") {
+                Some((path, kill)) => {
+                    // One tag per class, `-ARG` when the certificate sits
+                    // on a spine argument; the counters keep the v1 top /
+                    // v1 arg split the summary line has always reported.
+                    let (tag, cols) = match &kill {
+                        Kill::V1(cert, _) => {
+                            if path.is_empty() {
+                                kills_top.fetch_add(1, Ordering::Relaxed);
+                            } else {
+                                kills_arg.fetch_add(1, Ordering::Relaxed);
+                            }
+                            (
+                                "RATCHET",
+                                format!(
+                                    "head={}\tw={}\tc0={}",
+                                    cert.a.to_bits(),
+                                    cert.w,
+                                    cert.c0.to_bits()
+                                ),
+                            )
+                        }
+                        Kill::Htr(cert, _) => {
+                            kills_htr.fetch_add(1, Ordering::Relaxed);
+                            (
+                                "RATCHET2",
+                                format!(
+                                    "head={}\tw={}\tc0={}\ti={}",
+                                    cert.a.to_bits(),
+                                    cert.w,
+                                    cert.c0.to_bits(),
+                                    cert.i.to_bits()
+                                ),
+                            )
+                        }
+                        Kill::Selector(cert, _) => {
+                            kills_sel.fetch_add(1, Ordering::Relaxed);
+                            (
+                                "SELECTOR",
+                                format!(
+                                    "head={}\tw={}\tp={}\tc0={}",
+                                    cert.a.to_bits(),
+                                    cert.w,
+                                    cert.p,
+                                    cert.c0.to_bits()
+                                ),
+                            )
+                        }
+                    };
+                    if path.is_empty() {
+                        format!("{tag}\t{bits}\t{cols}")
+                    } else {
+                        format!("{tag}-ARG\t{bits}\tat={path}\t{cols}")
+                    }
                 }
                 None => {
                     none.fetch_add(1, Ordering::Relaxed);
@@ -406,7 +335,7 @@ mod lean {
     use blam::blc::term::Term;
     use blam::blc::wire::parse_all;
     use blam::classical::certificate::{
-        head_step, spine, strip_lams, tower_index, verify, verify_htr, verify_selector,
+        head_step, init_landing, spine, strip_lams, verify, verify_htr, verify_selector,
         HeadTowerRatchet, PTerm, Ratchet, SelectorRatchet, Step,
     };
     use std::collections::BTreeMap;
@@ -416,68 +345,11 @@ mod lean {
     const INIT_STEPS: u32 = 2000;
     const MAX_NODES: u64 = 200_000;
 
-    /// Parse the kills-file wrapper syntax (PTerm's Display): `\` lambda
-    /// whose body extends to the group end, digits = 1-indexed de Bruijn,
-    /// `Z`/`Q`/`?i` metavariables, juxtaposition = left-assoc application,
-    /// parens group.
+    /// The kills file spells wrappers in `PTerm`'s `Display` syntax;
+    /// `FromStr` is its inverse (round-tripped in the certificate module).
     fn parse_pterm(s: &str) -> PTerm {
-        let chars: Vec<char> = s.chars().collect();
-        let (t, pos) = parse_expr(&chars, 0);
-        assert_eq!(pos, chars.len(), "trailing junk in wrapper `{s}`");
-        t
-    }
-
-    fn parse_expr(c: &[char], mut pos: usize) -> (PTerm, usize) {
-        let mut acc: Option<PTerm> = None;
-        while pos < c.len() && c[pos] != ')' {
-            if c[pos] == ' ' {
-                pos += 1;
-                continue;
-            }
-            let (atom, next) = parse_atom(c, pos);
-            pos = next;
-            acc = Some(match acc {
-                None => atom,
-                Some(f) => PTerm::App(f.into(), atom.into()),
-            });
-        }
-        (acc.expect("empty wrapper expression"), pos)
-    }
-
-    fn parse_atom(c: &[char], pos: usize) -> (PTerm, usize) {
-        match c[pos] {
-            '(' => {
-                let (t, next) = parse_expr(c, pos + 1);
-                assert_eq!(c[next], ')', "unclosed paren");
-                (t, next + 1)
-            }
-            '\\' => {
-                let (b, next) = parse_expr(c, pos + 1);
-                (PTerm::Lam(b.into()), next)
-            }
-            'Z' => (PTerm::Meta(0), pos + 1),
-            'Q' => (PTerm::Meta(1), pos + 1),
-            '?' => {
-                let (n, next) = parse_num(c, pos + 1);
-                (PTerm::Meta(n), next)
-            }
-            d if d.is_ascii_digit() => {
-                let (n, next) = parse_num(c, pos);
-                (PTerm::Var(n), next)
-            }
-            other => panic!("unexpected `{other}` in wrapper"),
-        }
-    }
-
-    fn parse_num(c: &[char], mut pos: usize) -> (u32, usize) {
-        let start = pos;
-        while pos < c.len() && c[pos].is_ascii_digit() {
-            pos += 1;
-        }
-        (
-            c[start..pos].iter().collect::<String>().parse().unwrap(),
-            pos,
-        )
+        s.parse()
+            .unwrap_or_else(|e| panic!("wrapper parse on `{s}`: {e}"))
     }
 
     /// Lean literal for a concrete term — 0-indexed (`Var(n)` → `.var (n-1)`).
@@ -690,21 +562,22 @@ untrusted: the Lean kernel replays every obligation.";
                 )
             };
 
-            // Replay INIT to the landing state and read off the v1.1/v1.2 data.
-            let ap = PTerm::from_term(&a);
-            let c0p = PTerm::from_term(&c0t);
-            let mut cur = PTerm::from_term(&t);
-            for i in 0..init_steps {
-                match head_step(&cur, MAX_NODES) {
-                    Step::Did(next, _) => cur = next,
-                    other => panic!("INIT replay stalled on {bits} at {i}: {other:?}"),
-                }
-            }
-            let (binders, body) = strip_lams(&cur);
-            let (h, spine_args) = spine(body).expect("landing not an application");
-            assert_eq!(**h, ap, "landing head mismatch on {bits}");
-            let n0 = tower_index(&wp, &c0p, spine_args[0]).expect("landing tower");
-            let trail: Vec<Term> = spine_args[1..]
+            // The v1.1/v1.2 data the Lean statement quantifies over is the
+            // INIT landing state; the trusted search hands it back whole,
+            // so there is no second head-trace replay to drift from it.
+            let landing = init_landing(
+                &t,
+                &PTerm::from_term(&a),
+                &wp,
+                &PTerm::from_term(&c0t),
+                INIT_STEPS,
+                MAX_NODES,
+            )
+            .unwrap_or_else(|| panic!("INIT landing lost on {bits}"));
+            debug_assert_eq!(landing.steps, init_steps);
+            let (binders, n0) = (landing.binders, landing.tower);
+            let trail: Vec<Term> = landing
+                .trail
                 .iter()
                 .map(|p| p.to_term().expect("trail must be concrete"))
                 .collect();
@@ -854,10 +727,10 @@ mod diag {
     use crate::args::{self, Args, R};
     use blam::blc::term::Term;
     use blam::blc::wire::parse_all;
-    use blam::classical::certificate::search::generalize;
+    use blam::classical::certificate::search::{generalize, htr_eraser_candidates, peel_to_bottom};
     use blam::classical::certificate::{
-        check_reduces, check_reduces_star, head_step, match_wrapper, plug, spine, strip_lams,
-        verify, verify_htr, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm, Ratchet, Step,
+        check_reduces, check_reduces_star, head_step, plug, rename_meta, spine, strip_lams, verify,
+        verify_htr, CertFail, CheckFail, HeadTowerRatchet, HtrFail, PTerm, Ratchet, Step,
     };
     use rayon::prelude::*;
     use std::collections::HashMap;
@@ -874,20 +747,6 @@ mod diag {
         verify_fail: String,
         sel: String,
         pdiag: String,
-    }
-
-    /// Rename metavariable ids: SELECT needs `W[Q]` alongside `P[Z]`.
-    fn rename_meta(t: &PTerm, from: u32, to: u32) -> PTerm {
-        match t {
-            PTerm::Meta(i) if *i == from => PTerm::Meta(to),
-            PTerm::Meta(i) => PTerm::Meta(*i),
-            PTerm::Var(n) => PTerm::Var(*n),
-            PTerm::Lam(b) => PTerm::Lam(rename_meta(b, from, to).into()),
-            PTerm::App(f, a) => PTerm::App(
-                rename_meta(f, from, to).into(),
-                rename_meta(a, from, to).into(),
-            ),
-        }
     }
 
     /// Pattern hygiene: scoped (no free vars) and only `Meta(0)` holes.
@@ -1091,44 +950,15 @@ mod diag {
         }
     }
 
-    /// Local copy of try_htr's candidate pool (closed_subterms is private
-    /// to cert.rs — this is a diagnostic, keep the trusted surface small).
-    fn closed_subterms_local(t: &PTerm, max_nodes: u64, out: &mut Vec<PTerm>) {
-        if !t.contains_meta() && t.max_free(0) == 0 && t.nodes() <= max_nodes {
-            out.push(t.clone());
-        }
-        match t {
-            PTerm::Lam(b) => closed_subterms_local(b, max_nodes, out),
-            PTerm::App(f, a) => {
-                closed_subterms_local(f, max_nodes, out);
-                closed_subterms_local(a, max_nodes, out);
-            }
-            _ => {}
-        }
-    }
-
-    /// Replay try_htr's eraser loop, recording the DEEPEST obligation any
-    /// eraser reaches before failing (Base=0 … Erase=5, Init=6) and that
-    /// failure's kind. `HTR-KILL` would be a certsearch regression.
+    /// Replay try_htr's eraser loop — same peel, same candidate pool, both
+    /// imported from the discovery layer — recording the DEEPEST obligation
+    /// any eraser reaches before failing (Base=0 … Erase=5, Init=6) and
+    /// that failure's kind. `HTR-KILL` would be a certsearch regression.
     fn htr_probe(t: &Term, cand: &Ratchet, max_nodes: u64) -> String {
-        let mut bottom = PTerm::from_term(&cand.c0);
-        while let Some(inner) = match_wrapper(&cand.w, &bottom) {
-            bottom = inner;
-        }
-        let Some(c0) = bottom.to_term() else {
+        let Some(c0) = peel_to_bottom(&cand.w, &PTerm::from_term(&cand.c0)).to_term() else {
             return "htr:no-bottom".into();
         };
-        let mut cands: Vec<Term> = vec![Term::Lam(std::rc::Rc::new(Term::Var(1)))];
-        let mut pool = Vec::new();
-        closed_subterms_local(&PTerm::from_term(&cand.a), 9, &mut pool);
-        closed_subterms_local(&cand.w, 9, &mut pool);
-        for p in pool {
-            if let Some(ct) = p.to_term() {
-                if !cands.contains(&ct) {
-                    cands.push(ct);
-                }
-            }
-        }
+        let cands = htr_eraser_candidates(cand);
         let n_erasers = cands.len();
         let mut best: (i32, String) = (-1, "htr:none".into());
         for i in cands {
