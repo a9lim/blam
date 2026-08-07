@@ -12,6 +12,11 @@
 //! `acc = acc<<1 | bit`; decode reads from bit len−1 down.
 
 /// Call `f(enc, len)` for every closed term of size exactly `n` bits.
+///
+/// # Panics
+///
+/// If `n > 63`. The whole enumeration is (bits, length) packed into a
+/// `u64`, so 63 bits is the representation's ceiling, not a tunable.
 pub fn for_each_closed(n: u32, f: &mut impl FnMut(u64, u8)) {
     assert!(n <= 63, "u64-packed enumeration caps at 63 bits");
     let mut pending: Vec<(u32, u32)> = vec![(0, n)];
@@ -49,7 +54,7 @@ fn go(pending: &mut Vec<(u32, u32)>, acc: u64, len: u8, f: &mut impl FnMut(u64, 
 /// subtree of terms under this prefix. Splitting the enumeration tree into
 /// many tasks lets generation itself run fused with (and as parallel as)
 /// whatever consumes the terms — no materialized item list.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct GenTask {
     pending: Vec<(u32, u32)>,
     acc: u64,
@@ -67,8 +72,16 @@ pub fn split_tasks(n: u32, target: usize) -> Vec<GenTask> {
 /// bit prefix. The λ⁵-idiom sweeps seed (v=5, n−10) under the ten prefix
 /// bits of five abstractions; emitted (enc, len) pairs are then complete
 /// closed programs, directly runnable by the packed-term engines.
+///
+/// # Panics
+///
+/// If `n + prefix_len > 63` — prefix bits and body bits share the one
+/// `u64`, so the seeded form's ceiling counts both.
 pub fn split_tasks_at(v: u32, n: u32, prefix: u64, prefix_len: u8, target: usize) -> Vec<GenTask> {
-    assert!(n + prefix_len as u32 <= 63);
+    assert!(
+        n + prefix_len as u32 <= 63,
+        "u64-packed enumeration caps at 63 bits: {n} body + {prefix_len} prefix"
+    );
     let mut cur = vec![GenTask {
         pending: vec![(v, n)],
         acc: prefix,

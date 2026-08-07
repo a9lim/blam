@@ -117,10 +117,12 @@ enum Step {
 
 /// Outcome of searching a subterm for the leftmost-outermost redex.
 enum Found {
-    /// Redex found and contracted (β charged by caller via flag).
-    Rewritten(QTerm, bool),
-    /// Effectful contraction already applied to the store.
-    RewrittenEffect(QTerm),
+    /// Redex found and contracted; any store effect is already applied.
+    /// One variant for both kinds because the driver charges one
+    /// contraction either way — β and primitive firings share the count
+    /// (`Budget::beta`), so a β/effect distinction here would be a
+    /// distinction nothing downstream can use.
+    Rewritten(QTerm),
     /// meas redex on (qubit, epoch): replacement terms for both outcomes.
     Fork(QTerm, QTerm, u32, u32),
     /// Err fired.
@@ -199,8 +201,7 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
     match t {
         QTerm::Var(_) | QTerm::Prim(_) | QTerm::Handle(_, _) => Found::None,
         QTerm::Lam(b) => match search(b, cx) {
-            Found::Rewritten(nb, chg) => Found::Rewritten(QTerm::Lam(Rc::new(nb)), chg),
-            Found::RewrittenEffect(nb) => Found::RewrittenEffect(QTerm::Lam(Rc::new(nb))),
+            Found::Rewritten(nb) => Found::Rewritten(QTerm::Lam(Rc::new(nb))),
             Found::Fork(b0, b1, q, e) => {
                 Found::Fork(QTerm::Lam(Rc::new(b0)), QTerm::Lam(Rc::new(b1)), q, e)
             }
@@ -209,14 +210,14 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
         QTerm::App(f, a) => {
             // Decompose the spine to find the head.
             match &**f {
-                QTerm::Lam(body) => return Found::Rewritten(beta(body, a), true),
+                QTerm::Lam(body) => return Found::Rewritten(beta(body, a)),
                 QTerm::Handle(_, _) => return Found::Fail(ErrKind::HandleApplied),
                 QTerm::Prim(Prim::New) => {
                     // new discards its argument unevaluated, species-blind.
                     return match cx.store.alloc(cx.budget.max_qubits) {
                         Ok(q) => {
                             cx.emit(|| Effect::New(q));
-                            Found::RewrittenEffect(QTerm::Handle(q, 0))
+                            Found::Rewritten(QTerm::Handle(q, 0))
                         }
                         Err(c) => Found::Full(c),
                     };
@@ -234,12 +235,7 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
             }
             // Otherwise: reduce inside f first (head position), then a.
             match search(f, cx) {
-                Found::Rewritten(nf, chg) => {
-                    Found::Rewritten(QTerm::App(Rc::new(nf), a.clone()), chg)
-                }
-                Found::RewrittenEffect(nf) => {
-                    Found::RewrittenEffect(QTerm::App(Rc::new(nf), a.clone()))
-                }
+                Found::Rewritten(nf) => Found::Rewritten(QTerm::App(Rc::new(nf), a.clone())),
                 Found::Fork(f0, f1, q, e) => Found::Fork(
                     QTerm::App(Rc::new(f0), a.clone()),
                     QTerm::App(Rc::new(f1), a.clone()),
@@ -247,12 +243,7 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
                     e,
                 ),
                 Found::None => match search(a, cx) {
-                    Found::Rewritten(na, chg) => {
-                        Found::Rewritten(QTerm::App(f.clone(), Rc::new(na)), chg)
-                    }
-                    Found::RewrittenEffect(na) => {
-                        Found::RewrittenEffect(QTerm::App(f.clone(), Rc::new(na)))
-                    }
+                    Found::Rewritten(na) => Found::Rewritten(QTerm::App(f.clone(), Rc::new(na))),
                     Found::Fork(a0, a1, q, e) => Found::Fork(
                         QTerm::App(f.clone(), Rc::new(a0)),
                         QTerm::App(f.clone(), Rc::new(a1)),
@@ -270,8 +261,7 @@ fn search(t: &QTerm, cx: &mut Ctx) -> Found {
 /// Wrap a search result of an argument back into the surrounding context.
 fn wrap_arg(res: Found, rebuild: impl Fn(QTerm) -> QTerm) -> Found {
     match res {
-        Found::Rewritten(n, chg) => Found::Rewritten(rebuild(n), chg),
-        Found::RewrittenEffect(n) => Found::RewrittenEffect(rebuild(n)),
+        Found::Rewritten(n) => Found::Rewritten(rebuild(n)),
         Found::Fork(x0, x1, q, e) => Found::Fork(rebuild(x0), rebuild(x1), q, e),
         other => other,
     }
@@ -292,7 +282,7 @@ fn unary_prim(p: Prim, f: &Rc<QTerm>, a: &Rc<QTerm>, cx: &mut Ctx) -> Found {
                 Ok(()) => match cx.store.apply_gate1(g, q) {
                     Ok(()) => {
                         cx.emit(|| gate1_effect(g, q, e));
-                        Found::RewrittenEffect(QTerm::Handle(q, e + 1))
+                        Found::Rewritten(QTerm::Handle(q, e + 1))
                     }
                     Err(c) => Found::Full(c),
                 },
@@ -361,7 +351,7 @@ fn cnot_prim(g: &Rc<QTerm>, a1: &Rc<QTerm>, a2: &Rc<QTerm>, f: &Rc<QTerm>, cx: &
     cx.store.apply_cnot(q1, q2v);
     cx.emit(|| Effect::Cnot(q1, e1, q2v, e2v));
     // Church pair of the fresh epochs: λz. z #(q1,e1+1) #(q2,e2+1).
-    Found::RewrittenEffect(QTerm::Lam(Rc::new(QTerm::App(
+    Found::Rewritten(QTerm::Lam(Rc::new(QTerm::App(
         Rc::new(QTerm::App(
             Rc::new(QTerm::Var(1)),
             Rc::new(QTerm::Handle(q1, e1 + 1)),
@@ -377,8 +367,7 @@ fn step(t: &QTerm, store: &mut Store, trace: Option<&mut Vec<Effect>>, budget: &
         trace,
     };
     match search(t, &mut cx) {
-        Found::Rewritten(nt, _beta) => Step::Reduced(nt),
-        Found::RewrittenEffect(nt) => Step::Reduced(nt),
+        Found::Rewritten(nt) => Step::Reduced(nt),
         Found::Fork(t0, t1, q, e) => {
             let mut s0 = store.clone();
             let mut s1 = store.clone();
@@ -394,6 +383,12 @@ fn step(t: &QTerm, store: &mut Store, trace: Option<&mut Vec<Effect>>, budget: &
 
 /// Run one program (already applied to its signature) to its truncated branch
 /// tree. Exact, deterministic, never samples.
+///
+/// # Panics
+///
+/// On a degenerate budget — see [`Budget::validate`], which both engines
+/// call and which spells out why zero is outside the contract rather
+/// than a tighter one.
 pub fn run(term: QTerm, budget: &Budget) -> Vec<Leaf> {
     run_impl::<false>(term, budget)
         .into_iter()
@@ -404,6 +399,10 @@ pub fn run(term: QTerm, budget: &Budget) -> Vec<Leaf> {
 /// `run`, additionally returning each leaf's effect path (root to leaf,
 /// `Meas` outcomes included). Two runs are effect-trace equivalent when the
 /// leaf sequences pair up with identical paths, fates, and masses.
+///
+/// # Panics
+///
+/// On a degenerate budget — see [`Budget::validate`].
 pub fn run_traced(term: QTerm, budget: &Budget) -> Vec<(Leaf, Vec<Effect>)> {
     run_impl::<true>(term, budget)
 }
@@ -645,10 +644,11 @@ mod tests {
                     d: 0,
                     k: 1,
                 };
-                assert_eq!(store.amps[0].reduce(), h);
-                assert_eq!(store.amps[1], Dw::ZERO);
-                assert_eq!(store.amps[2], Dw::ZERO);
-                assert_eq!(store.amps[3].reduce(), h);
+                let amps = store.amps();
+                assert_eq!(amps[0].reduce(), h);
+                assert_eq!(amps[1], Dw::ZERO);
+                assert_eq!(amps[2], Dw::ZERO);
+                assert_eq!(amps[3].reduce(), h);
                 assert_eq!(leaves[0].mass, Some(Dw::ONE));
             }
             other => panic!("unexpected fate {other:?}"),

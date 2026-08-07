@@ -409,6 +409,7 @@ impl Summary {
 /// The interned mask automaton: all masks reachable from FRESH under
 /// the trusted kernels. Computed once; the accept product consults
 /// only this and `step_meas`.
+#[derive(Debug)]
 pub struct MaskAutomaton {
     /// Reachable masks in first-visit order; index 0 is FRESH.
     pub masks: Vec<u8>,

@@ -23,12 +23,32 @@ pub mod sig;
 
 use scalar::Dw;
 
+/// The primitive alphabet: the constants a qBLC program receives as its
+/// signature arguments, and the only way a term reaches the store.
+///
+/// Three are special forms with their own reduction rules (`New` discards
+/// its argument unevaluated, `Meas` forks the branch tree, `Cnot` is the
+/// one binary primitive); the rest are unary store gates, dispatched
+/// through [`Store::apply_gate1`]. Every gate is exact in `ℤ[ω]/√2^k`, so
+/// no primitive can introduce an inexact amplitude.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Prim {
+    /// Allocate a fresh qubit in |0⟩ and return its handle. Discards its
+    /// argument *unevaluated* and species-blind (K-style).
     New,
+    /// Measure a qubit in the computational basis: forks the branch into
+    /// the two outcomes with exact weights, retires the qubit, and
+    /// reduces to the outcome's Church boolean (0 → true).
     Meas,
+    /// Controlled-NOT on (control, target). The one arity-2 primitive;
+    /// reduces to the Church pair of both fresh handles. A permutation of
+    /// amplitudes.
     Cnot,
+    /// T = diag(1, ω), the non-Clifford phase gate — the source of every
+    /// odd denominator exponent in the ring.
     T,
+    /// Hadamard. The only primitive that raises `k`: its 1/√2 is what
+    /// makes the ring's √2-denominators necessary.
     H,
     /// Phase gate S = T² = diag(1, i). Clifford; exact in `ℤ[ω]`.
     S,
@@ -89,6 +109,37 @@ impl Prim {
     }
 }
 
+/// The wire spelling, so a `Prim` formats the same everywhere `--sig`
+/// reads one back.
+impl std::fmt::Display for Prim {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.name())
+    }
+}
+
+/// A `--sig` token that names no primitive.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct UnknownPrim(pub String);
+
+impl std::fmt::Display for UnknownPrim {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "unknown primitive `{}`", self.0)
+    }
+}
+
+impl std::error::Error for UnknownPrim {}
+
+/// Inverse of [`Prim::name`], as the standard parse. `blam q run --sig`
+/// phrases its own error (with the CLI's usage hint), so this one only
+/// has to name the offending token.
+impl std::str::FromStr for Prim {
+    type Err = UnknownPrim;
+
+    fn from_str(s: &str) -> Result<Prim, UnknownPrim> {
+        Prim::by_name(s).ok_or_else(|| UnknownPrim(s.to_string()))
+    }
+}
+
 // ---------------------------------------------------------------------------
 // The quantum store: branch-local, unnormalized.
 
@@ -101,7 +152,7 @@ impl Prim {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Store {
     /// Unnormalized amplitudes, length 2^live.
-    pub amps: Vec<Dw>,
+    amps: Vec<Dw>,
     /// Per qubit id: Some(epoch) while usable, None once retired (measured).
     epochs: Vec<Option<u32>>,
     /// Live qubit ids in allocation-rank order; position = tensor bit.
@@ -121,9 +172,20 @@ impl Store {
         self.live.len()
     }
 
+    /// The branch's unnormalized amplitudes, indexed by tensor bits — bit
+    /// p of the index is the qubit at position p of [`Store::live`].
+    ///
+    /// Exactly as the ring operations left them: `Dw` compares
+    /// structurally and these are the values the frozen census was
+    /// generated from, so a caller that wants canonical form reduces its
+    /// own copy rather than expecting one here.
+    pub fn amps(&self) -> &[Dw] {
+        &self.amps
+    }
+
     /// Live qubit ids in allocation-rank order: position i is the qubit
-    /// occupying tensor bit i of `amps`. Without this the public `amps`
-    /// vector is uninterpretable.
+    /// occupying tensor bit i of [`Store::amps`]. Without this the
+    /// amplitude vector is uninterpretable.
     pub fn live(&self) -> &[u32] {
         &self.live
     }
@@ -139,10 +201,6 @@ impl Store {
 
     fn pos_of(&self, q: u32) -> Option<usize> {
         self.live.iter().position(|&x| x == q)
-    }
-
-    pub(crate) fn empty() -> Store {
-        Store::new()
     }
 
     pub(crate) fn alloc(&mut self, max_qubits: usize) -> Result<u32, Capacity> {
@@ -187,8 +245,9 @@ impl Store {
         for i in 0..self.amps.len() {
             if i & bit == 0 {
                 let (v0, v1) = (self.amps[i], self.amps[i | bit]);
-                let s = v0.add(v1).ok_or(Capacity::Amplitude)?;
-                let dnew = v0.sub(v1).ok_or(Capacity::Amplitude)?;
+                // One denominator alignment for both halves of the
+                // butterfly, instead of one per `add`/`sub`.
+                let (s, dnew) = v0.add_sub(v1).ok_or(Capacity::Amplitude)?;
                 self.amps[i] = s.div_sqrt2().ok_or(Capacity::Amplitude)?.reduce();
                 self.amps[i | bit] = dnew.div_sqrt2().ok_or(Capacity::Amplitude)?.reduce();
             }
@@ -201,26 +260,23 @@ impl Store {
         let bit = 1usize << p;
         for i in 0..self.amps.len() {
             if i & bit != 0 {
-                self.amps[i] = self.amps[i].mul(Dw::OMEGA).ok_or(Capacity::Amplitude)?;
+                // T = diag(1, ω): the ×ω coefficient rotation, which is
+                // `mul(Dw::OMEGA)` with the sixteen products it knows are
+                // 0 or 1 folded away.
+                self.amps[i] = self.amps[i].mul_omega().ok_or(Capacity::Amplitude)?;
             }
         }
         Ok(())
     }
 
     pub(crate) fn apply_s(&mut self, q: u32) -> Result<(), Capacity> {
-        // S = diag(1, i); i = ω² exactly.
-        let i_unit = Dw {
-            a: 0,
-            b: 0,
-            c: 1,
-            d: 0,
-            k: 0,
-        };
         let p = self.pos_of(q).expect("S on non-live qubit");
         let bit = 1usize << p;
         for i in 0..self.amps.len() {
             if i & bit != 0 {
-                self.amps[i] = self.amps[i].mul(i_unit).ok_or(Capacity::Amplitude)?;
+                // S = diag(1, i); i = ω² exactly, so this is the ×ω
+                // rotation applied twice.
+                self.amps[i] = self.amps[i].mul_i().ok_or(Capacity::Amplitude)?;
             }
         }
         Ok(())
@@ -243,7 +299,7 @@ impl Store {
         let bit = 1usize << p;
         for i in 0..self.amps.len() {
             if i & bit != 0 {
-                self.amps[i] = self.amps[i].neg();
+                self.amps[i] = self.amps[i].neg().ok_or(Capacity::Amplitude)?;
             }
         }
         Ok(())
@@ -307,10 +363,23 @@ pub enum ErrKind {
     SameQubit,
 }
 
+/// Which resource ran out. Every variant is a *resource* verdict —
+/// "this budget did not reach an answer", never "the answer is X" — so a
+/// Capacity leaf is excluded from the resolved aggregates rather than
+/// counted against them.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Capacity {
+    /// `new` on a branch already holding `Budget::max_qubits` live
+    /// qubits. Raising the budget squares the statevector per qubit.
     Qubits,
+    /// An exact amplitude left the ring's representable range: an i128
+    /// coefficient overflowed, or the √2-denominator exponent passed
+    /// `scalar::K_CAP`. The alternative was a wrapped number, so this is
+    /// the fate the checked arithmetic exists to produce.
     Amplitude,
+    /// The branch tree hit `Budget::max_branches`. Charged at the fork
+    /// that would have exceeded it, so BOTH children are dropped and the
+    /// pre-projection store is what the leaf's mass reads.
     Branches,
 }
 

@@ -115,6 +115,7 @@ impl std::fmt::Display for OpenProgram {
 
 impl std::error::Error for OpenProgram {}
 
+#[derive(Debug)]
 pub struct SkelCaps {
     /// Reduction steps before giving up.
     pub steps: u64,
@@ -265,7 +266,7 @@ pub fn adjudicate(p: &Term, slots: u32, caps: &SkelCaps) -> Result<SkelVerdict, 
 /// per worker (`for_each_init`): both the KN pool and the KN machine reset
 /// themselves per call, so reuse is verdict-neutral and only saves the
 /// per-program allocation the driver used to pay.
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct TransferScratch {
     pool: Pool,
     kn: Machine,
@@ -278,6 +279,7 @@ impl TransferScratch {
 }
 
 /// Budgets for the residual (rung-2) classical ladder.
+#[derive(Debug)]
 pub struct TransferCaps {
     /// KN β budget on the closed residual before escalating.
     pub kn_beta: u64,

@@ -22,13 +22,29 @@ pub const K_CAP: u32 = 128;
 /// weights at every census size the engines run.
 pub const K_CAP_ACCUM: u32 = K_CAP + 96;
 
+/// One ring element: the value (a + b·ω + c·ω² + d·ω³)/√2^k, with ω =
+/// e^{iπ/4} and ω⁴ = −1.
+///
+/// The representation is deliberately NOT canonical — `k` may sit higher
+/// than the value needs — and `PartialEq`/`Eq` are structural, so two
+/// `Dw` denoting the same number can compare unequal. [`Dw::reduce`] is
+/// the canonicaliser; every accessor that must see through the
+/// representation (`real_parts` and everything built on it, `is_dyadic`)
+/// reduces first. Amplitudes are stored as the ring operations leave
+/// them, so *adding* a reduction anywhere moves stored values and breaks
+/// bit-identity with the frozen census — the structural comparison is
+/// the contract, not an implementation detail.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Dw {
+    /// Rational coefficient — the ω⁰ term of the numerator.
     pub a: i128,
+    /// ω coefficient of the numerator.
     pub b: i128,
+    /// ω² coefficient of the numerator (ω² = i).
     pub c: i128,
+    /// ω³ coefficient of the numerator.
     pub d: i128,
-    /// √2-denominator exponent.
+    /// √2-denominator exponent: the whole numerator is over √2^k.
     pub k: u32,
 }
 
@@ -139,7 +155,28 @@ impl Dw {
         while v.k > 0 {
             // Inverse of (A,B,C,D) = (b−d, a+c, b+d, c−a):
             //   a = (B−D)/2, b = (A+C)/2, c = (B+D)/2, d = (C−A)/2.
-            let (na2, nb2, nc2, nd2) = (v.b - v.d, v.a + v.c, v.b + v.d, v.c - v.a);
+            //
+            // Checked like the rest of the ring. `reduce` has no fallible
+            // signature — it changes representation, it does not compute a
+            // result — so an overflowing inverse step stops the descent
+            // instead: the value returned is the last k this form can be
+            // *proved* down to. Less reduced, never a wrong number.
+            //
+            // `overflowing_*` rather than `checked_*`: this loop runs on
+            // every ring multiplication and every H butterfly amplitude,
+            // and the four `Option<i128>` the checked form materialises
+            // are 128 bytes of stack traffic per iteration — measured at
+            // +9% on a 4..30 operator census. The values stay in
+            // registers here and the four flags fold into one test; the
+            // wrapped values are never read, since the flag test breaks
+            // first.
+            let (na2, o1) = v.b.overflowing_sub(v.d);
+            let (nb2, o2) = v.a.overflowing_add(v.c);
+            let (nc2, o3) = v.b.overflowing_add(v.d);
+            let (nd2, o4) = v.c.overflowing_sub(v.a);
+            if o1 | o2 | o3 | o4 {
+                break;
+            }
             if na2 % 2 != 0 || nb2 % 2 != 0 || nc2 % 2 != 0 || nd2 % 2 != 0 {
                 break;
             }
@@ -168,17 +205,64 @@ impl Dw {
     }
 
     pub fn sub(self, o: Dw) -> Option<Dw> {
-        self.add(o.neg())
+        // Align once, then subtract coefficientwise. Routing through
+        // `add(o.neg())` made the difference of a legally-representable
+        // pair depend on whether the *negation* was representable, which
+        // is a strictly narrower question at the i128 edge.
+        let k = self.k.max(o.k);
+        let x = self.raise_k(k)?;
+        let y = o.raise_k(k)?;
+        Some(Dw {
+            a: x.a.checked_sub(y.a)?,
+            b: x.b.checked_sub(y.b)?,
+            c: x.c.checked_sub(y.c)?,
+            d: x.d.checked_sub(y.d)?,
+            k,
+        })
     }
 
-    pub fn neg(self) -> Dw {
-        Dw {
-            a: -self.a,
-            b: -self.b,
-            c: -self.c,
-            d: -self.d,
+    /// Sum and difference in one alignment: `(self + o, self − o)`.
+    ///
+    /// The H butterfly wants both, and [`Dw::add`]/[`Dw::sub`] each pay
+    /// their own pair of [`Dw::raise_k`] calls to reach the common
+    /// denominator. Result and `None` placement are the pair's exactly:
+    /// the two share the alignment prefix verbatim, and this returns
+    /// `None` iff either of them would — so a caller that took `add` then
+    /// `sub` in that order, failing on the first `None`, sees the same
+    /// outcome (both failures are the same fate) and the same partially
+    /// updated state.
+    pub fn add_sub(self, o: Dw) -> Option<(Dw, Dw)> {
+        let k = self.k.max(o.k);
+        let x = self.raise_k(k)?;
+        let y = o.raise_k(k)?;
+        let sum = Dw {
+            a: x.a.checked_add(y.a)?,
+            b: x.b.checked_add(y.b)?,
+            c: x.c.checked_add(y.c)?,
+            d: x.d.checked_add(y.d)?,
+            k,
+        };
+        let diff = Dw {
+            a: x.a.checked_sub(y.a)?,
+            b: x.b.checked_sub(y.b)?,
+            c: x.c.checked_sub(y.c)?,
+            d: x.d.checked_sub(y.d)?,
+            k,
+        };
+        Some((sum, diff))
+    }
+
+    /// Additive inverse. `None` on the one unnegatable coefficient
+    /// (`i128::MIN`) — checked like every other operation in the ring, so
+    /// overflow surfaces as Capacity rather than as a wrapped sign.
+    pub fn neg(self) -> Option<Dw> {
+        Some(Dw {
+            a: self.a.checked_neg()?,
+            b: self.b.checked_neg()?,
+            c: self.c.checked_neg()?,
+            d: self.d.checked_neg()?,
             k: self.k,
-        }
+        })
     }
 
     pub fn mul(self, o: Dw) -> Option<Dw> {
@@ -207,20 +291,73 @@ impl Dw {
         Some(Dw { a, b, c, d, k }.reduce())
     }
 
-    /// Complex conjugate: ω̄ = −ω³, so (a,b,c,d) ↦ (a, −d, −c, −b).
-    pub fn conj(self) -> Dw {
-        Dw {
-            a: self.a,
-            b: -self.d,
-            c: -self.c,
-            d: -self.b,
-            k: self.k,
+    /// Multiply by ω — the T gate's phase, `mul(Dw::OMEGA)` specialised.
+    ///
+    /// ω·(a + bω + cω² + dω³) = −d + aω + bω² + cω³, so the whole product
+    /// is the coefficient rotation (a,b,c,d) ↦ (−d, a, b, c).
+    ///
+    /// Bit-identical to the generic path, `None` cases included. In
+    /// [`Dw::mul`] with `o = OMEGA` every `checked_mul` is by 0 or 1 and
+    /// so never overflows; the four coefficient chains collapse to
+    /// `0 − d`, `a`, `b`, `c`, and only the first can fail — exactly when
+    /// `checked_neg` does. `OMEGA.k = 0` makes the `checked_add` of the
+    /// exponents infallible and leaves the `k > K_CAP` rejection reading
+    /// `self.k`. The trailing `reduce` is the generic path's own.
+    pub fn mul_omega(self) -> Option<Dw> {
+        let a = self.d.checked_neg()?;
+        if self.k > K_CAP {
+            return None;
         }
+        Some(
+            Dw {
+                a,
+                b: self.a,
+                c: self.b,
+                d: self.c,
+                k: self.k,
+            }
+            .reduce(),
+        )
+    }
+
+    /// Multiply by i = ω² — the S gate's phase, `mul(i_unit)` specialised.
+    ///
+    /// i·(a + bω + cω² + dω³) = −c − dω + aω² + bω³: the rotation applied
+    /// twice, (a,b,c,d) ↦ (−c, −d, a, b). Same equivalence argument as
+    /// [`Dw::mul_omega`], with two negations instead of one.
+    pub fn mul_i(self) -> Option<Dw> {
+        let a = self.c.checked_neg()?;
+        let b = self.d.checked_neg()?;
+        if self.k > K_CAP {
+            return None;
+        }
+        Some(
+            Dw {
+                a,
+                b,
+                c: self.a,
+                d: self.b,
+                k: self.k,
+            }
+            .reduce(),
+        )
+    }
+
+    /// Complex conjugate: ω̄ = −ω³, so (a,b,c,d) ↦ (a, −d, −c, −b).
+    /// `None` on an unnegatable coefficient, as [`Dw::neg`].
+    pub fn conj(self) -> Option<Dw> {
+        Some(Dw {
+            a: self.a,
+            b: self.d.checked_neg()?,
+            c: self.c.checked_neg()?,
+            d: self.b.checked_neg()?,
+            k: self.k,
+        })
     }
 
     /// |z|² = z·z̄ — always a real ring element (c = 0, b = −d form).
     pub fn norm_sq(self) -> Option<Dw> {
-        self.mul(self.conj())
+        self.mul(self.conj()?)
     }
 
     /// Divide by √2 (value): just raise the denominator exponent.
@@ -318,14 +455,33 @@ impl Dw {
     pub fn to_f64_re(&self) -> f64 {
         let s = std::f64::consts::FRAC_1_SQRT_2;
         let num = self.a as f64 + (self.b as f64 - self.d as f64) * s;
-        num / 2f64.powf(self.k as f64 / 2.0)
+        num / sqrt2_pow(self.k)
     }
 
     /// f64 imaginary part (display only).
     pub fn to_f64_im(&self) -> f64 {
         let s = std::f64::consts::FRAC_1_SQRT_2;
         let num = self.c as f64 + (self.b as f64 + self.d as f64) * s;
-        num / 2f64.powf(self.k as f64 / 2.0)
+        num / sqrt2_pow(self.k)
+    }
+}
+
+/// √2^k as f64, memoised over the exponent range the ring admits.
+///
+/// [`ExactSum::add`] takes both f64 parts of every accumulated term, so
+/// this divisor is computed twice per program per census, and `powf` is
+/// the whole cost of the conversion. The table is built BY CALLING
+/// `powf` once per `k`, so a cached divisor is bit-identical to the call
+/// it replaces and no display or checkpoint column moves. `K_CAP_ACCUM`
+/// bounds every `k` the accumulators reach; anything past it falls back
+/// to the call.
+fn sqrt2_pow(k: u32) -> f64 {
+    const N: usize = K_CAP_ACCUM as usize + 1;
+    static TABLE: std::sync::OnceLock<[f64; N]> = std::sync::OnceLock::new();
+    let t = TABLE.get_or_init(|| std::array::from_fn(|k| 2f64.powf(k as f64 / 2.0)));
+    match t.get(k as usize) {
+        Some(&v) => v,
+        None => 2f64.powf(k as f64 / 2.0),
     }
 }
 
@@ -338,7 +494,7 @@ impl Dw {
 
 /// Overflow state of an [`ExactSum`]. `Overflow` carries the last
 /// successfully accumulated partial — a diagnostic, never a total.
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 enum Sum {
     Value(Dw),
     Overflow(Dw),
@@ -355,7 +511,7 @@ enum Sum {
 /// replaces the old `Exact { v, ok }`, whose public `v` read the same
 /// whether or not `ok` held, and the private twin the operator census
 /// used to carry beside it.
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct ExactSum {
     sum: Sum,
     /// Running f64 mirror. Merge-order dependent in its low bits, so it is
@@ -698,6 +854,158 @@ mod tests {
         }
     }
 
+    /// The grid the three specialisations are proved on: every sign
+    /// pattern over small magnitudes, both i128 extremes, values one step
+    /// off each extreme (where a negation succeeds but a sum does not),
+    /// and k at 0, mid-range, and either side of `K_CAP`.
+    fn equivalence_grid() -> Vec<Dw> {
+        let coeffs = [
+            0i128,
+            1,
+            -1,
+            2,
+            -3,
+            i128::MAX,
+            i128::MIN,
+            i128::MAX - 1,
+            i128::MIN + 1,
+            1i128 << 126,
+            -(1i128 << 126),
+        ];
+        let ks = [0u32, 1, 2, 7, K_CAP - 1, K_CAP, K_CAP + 1, K_CAP_ACCUM];
+        let mut out = Vec::new();
+        // Dense small cross product first — the range amplitudes actually
+        // live in, where every sign combination of all four coefficients
+        // matters and both k parities are reachable.
+        for a in -2i128..=2 {
+            for b in -2i128..=2 {
+                for c in -2i128..=2 {
+                    for d in -2i128..=2 {
+                        for k in 0..=2u32 {
+                            out.push(Dw { a, b, c, d, k });
+                        }
+                    }
+                }
+            }
+        }
+        // One extreme at a time against small neighbours, plus the fully
+        // small cross product: the interesting failures are single
+        // saturated coefficients, and a dense sweep of all four would be
+        // 11⁴·8 cases for no extra coverage.
+        for &k in &ks {
+            for &x in &coeffs {
+                for slot in 0..4 {
+                    let mut v = Dw { k, ..Dw::ZERO };
+                    match slot {
+                        0 => v.a = x,
+                        1 => v.b = x,
+                        2 => v.c = x,
+                        _ => v.d = x,
+                    }
+                    out.push(v);
+                }
+                for &y in &coeffs[..5] {
+                    out.push(Dw {
+                        a: x,
+                        b: y,
+                        c: x,
+                        d: y,
+                        k,
+                    });
+                    out.push(Dw {
+                        a: y,
+                        b: x,
+                        c: y,
+                        d: x,
+                        k,
+                    });
+                }
+            }
+        }
+        out
+    }
+
+    #[test]
+    fn phase_specialisations_match_generic_mul() {
+        // ×ω and ×i are `mul` with a constant folded in. Bit-identity is
+        // the whole point: the census's stored amplitudes go through
+        // these, so a differing `None` placement or a differing
+        // representation would move frozen output.
+        let i_unit = Dw {
+            a: 0,
+            b: 0,
+            c: 1,
+            d: 0,
+            k: 0,
+        };
+        let mut cases = 0u64;
+        for v in equivalence_grid() {
+            assert_eq!(v.mul_omega(), v.mul(Dw::OMEGA), "mul_omega {v:?}");
+            assert_eq!(v.mul_i(), v.mul(i_unit), "mul_i {v:?}");
+            cases += 1;
+        }
+        // 5⁴·3 dense small + 8 k values × 11 coefficients × (4 slots + 5
+        // mirrored pairs ×2). Pinned so a grid that silently narrows fails
+        // loudly instead of passing on less.
+        assert_eq!(cases, 5 * 5 * 5 * 5 * 3 + 8 * 11 * (4 + 10));
+
+        // ×i is ×ω twice — the algebra behind the two rotations, checked
+        // on values small enough that `reduce` is a true canonical form.
+        // (At the i128 edge the two agree as NUMBERS but not as structs:
+        // `mul` reduces after each step, and a reduction the chained form
+        // can prove may overflow out of the single step's reach.)
+        for a in -2i128..=2 {
+            for b in -2i128..=2 {
+                for k in 0..=3u32 {
+                    let v = Dw {
+                        a,
+                        b,
+                        c: b,
+                        d: a,
+                        k,
+                    };
+                    let twice = v.mul_omega().unwrap().mul_omega().unwrap();
+                    assert_eq!(twice.reduce(), v.mul_i().unwrap().reduce(), "{v:?}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn add_sub_matches_the_separate_pair() {
+        // The fused butterfly must agree with `add`/`sub` on value AND on
+        // where it stops: `apply_h` returns the same Capacity fate either
+        // way, so the only thing that could drift is *which* amplitude
+        // index the run aborts at.
+        let grid = equivalence_grid();
+        for &x in &grid {
+            for &y in &grid {
+                // Only the k-compatible pairs are meaningful volume; a
+                // full square of the grid is 3M pairs, which is fine at
+                // release but not in a debug run.
+                let got = x.add_sub(y);
+                let want = match (x.add(y), x.sub(y)) {
+                    (Some(s), Some(d)) => Some((s, d)),
+                    _ => None,
+                };
+                assert_eq!(got, want, "add_sub {x:?} {y:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn sqrt2_pow_table_is_bit_identical_to_powf() {
+        // The cache is only legitimate if it is the same f64. Includes
+        // the fallback range past the table.
+        for k in 0..=(K_CAP_ACCUM + 8) {
+            assert_eq!(
+                sqrt2_pow(k).to_bits(),
+                2f64.powf(k as f64 / 2.0).to_bits(),
+                "k={k}"
+            );
+        }
+    }
+
     #[test]
     fn omega_eighth_root() {
         // ω⁸ = 1, ω⁴ = −1.
@@ -705,7 +1013,7 @@ mod tests {
         for _ in 0..4 {
             w = w.mul(Dw::OMEGA).unwrap();
         }
-        assert_eq!(w, Dw::ONE.neg());
+        assert_eq!(w, Dw::ONE.neg().unwrap());
         for _ in 0..4 {
             w = w.mul(Dw::OMEGA).unwrap();
         }

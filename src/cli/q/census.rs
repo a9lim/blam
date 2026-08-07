@@ -346,8 +346,9 @@ fn sweep_one(
                     let acc: &mut [ExactSum] = if live == 1 { &mut t.m1 } else { &mut t.m2 };
                     for i in 0..dim {
                         for j in 0..dim {
-                            let x = store.amps[i]
-                                .mul(store.amps[j].conj())
+                            let x = store.amps()[j]
+                                .conj()
+                                .and_then(|cj| store.amps()[i].mul(cj))
                                 .and_then(|y| y.div_pow2(n));
                             acc[i * dim + j].add(x);
                         }
@@ -404,7 +405,7 @@ fn expect(m: &[ExactSum], psi: &[Dw]) -> Option<Dw> {
     let mut acc = Dw::ZERO;
     for (i, ci) in psi.iter().enumerate() {
         for (j, cj) in psi.iter().enumerate() {
-            acc = acc.add(ci.conj().mul(m[i * dim + j].value()?)?.mul(*cj)?)?;
+            acc = acc.add(ci.conj()?.mul(m[i * dim + j].value()?)?.mul(*cj)?)?;
         }
     }
     Some(acc.reduce())
@@ -440,10 +441,11 @@ usage: blam q census [MIN] MAX [flags]        (MIN defaults to 4)
        blam q census --terms-file FILE [flags]   batch re-adjudication
 
 budgets
-  --beta B        beta-steps per branch (default 4096)
-  --trans T       transitions per branch (default 4194304)
-  --qubits Q      live qubits per branch (default 12)
-  --branches K    branches per program (default 4096)
+  --beta N        beta-steps per branch (default 4096)
+  --trans N       transitions per branch (default 67108864, the
+                  canonical value data/quantum/census_table.txt holds)
+  --qubits N      live qubits per branch (default 12)
+  --branches N    branches per program (default 4096)
 
 universe
   --sig LIST      comma-separated signature order (default the frozen five;
@@ -451,7 +453,7 @@ universe
   --cond-k K      Object B mode: run `p K-bar <sig>` (the G_K sweep)
 
 run
-  --threads J     rayon threads (0 = ambient, the default)
+  --threads N     rayon threads (0 = ambient, the default)
   --out FILE      write the report to FILE as well as stdout
   --dump-unknowns FILE   programs with an Unknown leaf
   --checkpoint FILE      kill-safe group-level resume
@@ -471,8 +473,13 @@ pub fn run(argv: &[String]) -> R<()> {
         return Ok(());
     }
     let mut cond_k: Option<u32> = None;
+    // The canonical trans budget: every row of data/quantum/census_table.txt
+    // was generated at 2^26, so the no-flag run reproduces canonical data
+    // (the same principle LadderCfg::default() follows on the classical
+    // side). Note a checkpoint written at another value refuses to resume
+    // here — the config string pins trans.
     let mut budget = QBudget {
-        trans: 1 << 22,
+        trans: 1 << 26,
         ..QBudget::default()
     };
     let mut threads = 0usize;
@@ -601,7 +608,7 @@ pub fn run(argv: &[String]) -> R<()> {
         // checks canonicality rather than packability — so a 68-bit
         // halter was silently truncated into a different (Species-error)
         // program, and a 66-bit line hit the assert mid-sweep.
-        let owned = args::read_packed_terms_file(&path)?;
+        let owned = args::read_packed_terms_file("q census", &path)?;
         let programs: Vec<(&str, QProgram)> = owned
             .iter()
             .map(|(bits, enc, len)| {
@@ -762,7 +769,7 @@ pub fn run(argv: &[String]) -> R<()> {
                     let tg0 = Instant::now();
                     let gt = run_slice(&tasks[lo..hi]);
                     let gsecs = tg0.elapsed().as_secs_f64();
-                    c.append(n, gi, gsecs, &gt);
+                    c.append(n, gi, gsecs, &gt)?;
                     acc = acc.merge(gt);
                     secs += gsecs;
                 }
@@ -928,7 +935,7 @@ pub fn run(argv: &[String]) -> R<()> {
         let _ = writeln!(
             r,
             "hermitian: {}   diagonals real: {}",
-            m01 == m10.conj().reduce(),
+            m10.conj().is_some_and(|c| m01 == c.reduce()),
             m00.is_real() && m11.is_real()
         );
         if let Some(tr) = m00.add(m11).map(|x| x.reduce()) {
@@ -982,13 +989,16 @@ pub fn run(argv: &[String]) -> R<()> {
         // Canonical single-qubit states, unnormalized; halvings = log2 |psi|^2.
         let one = Dw::ONE;
         let zero = Dw::ZERO;
+        // These basis vectors are literals; nothing here is near the
+        // coefficient edge that makes `neg` fallible.
+        let neg = |v: Dw| v.neg().expect("literal negates");
         let states: Vec<(&str, Vec<Dw>, u32)> = vec![
             ("|0>", vec![one, zero], 0),
             ("|1>", vec![zero, one], 0),
             ("|+>", vec![one, one], 1),
-            ("|->", vec![one, one.neg()], 1),
+            ("|->", vec![one, neg(one)], 1),
             ("T|+>", vec![one, Dw::OMEGA], 1),
-            ("TH-> (1,-w)", vec![one, Dw::OMEGA.neg()], 1),
+            ("TH-> (1,-w)", vec![one, neg(Dw::OMEGA)], 1),
         ];
         rank_states(&mut r, "M1", &total.m1, &states);
     }
@@ -1019,7 +1029,11 @@ pub fn run(argv: &[String]) -> R<()> {
         if total.m2.iter().all(|e| e.is_exact()) {
             let entry = |k: usize| total.m2[k].expect_exact("M^(2) entry");
             let herm = (0..4).all(|i| {
-                (0..4).all(|j| entry(i * 4 + j).reduce() == entry(j * 4 + i).conj().reduce())
+                (0..4).all(|j| {
+                    entry(j * 4 + i)
+                        .conj()
+                        .is_some_and(|c| entry(i * 4 + j).reduce() == c.reduce())
+                })
             });
             let _ = writeln!(r, "hermitian: {herm}");
             let one = Dw::ONE;
@@ -1032,7 +1046,11 @@ pub fn run(argv: &[String]) -> R<()> {
                 ("|11>", vec![zero, zero, zero, one], 0),
                 ("|++>", vec![one, one, one, one], 2),
                 ("Bell Phi+", vec![one, zero, zero, one], 1),
-                ("Bell Phi-", vec![one, zero, zero, one.neg()], 1),
+                (
+                    "Bell Phi-",
+                    vec![one, zero, zero, one.neg().expect("literal negates")],
+                    1,
+                ),
                 ("Bell Psi+", vec![zero, one, one, zero], 1),
             ];
             rank_states(&mut r, "M2", &total.m2, &states2);

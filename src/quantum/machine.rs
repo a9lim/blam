@@ -54,6 +54,7 @@ const FALSE_NODE: u32 = 5;
 /// Flat term storage. Reset per program; runtime results (handles, cnot
 /// pairs) are appended during evaluation, so the pool is append-only within
 /// a run and forked branches share it.
+#[derive(Debug)]
 pub struct Pool {
     nodes: Vec<Node>,
 }
@@ -79,15 +80,6 @@ impl Pool {
     #[inline]
     pub fn node(&self, id: u32) -> Node {
         self.nodes[id as usize]
-    }
-
-    /// Number of nodes currently in the arena.
-    pub fn len(&self) -> usize {
-        self.nodes.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.nodes.is_empty()
     }
 
     /// Empty the arena for the next program — the symmetric verb with
@@ -195,7 +187,7 @@ impl Pool {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 enum Val {
     /// Unevaluated closure: (term, env). Call-by-name, no memoization —
     /// recipes duplicate, matching the reference's substitution semantics exactly.
@@ -225,6 +217,7 @@ const NIL: u32 = u32::MAX;
 
 /// A suspended branch: everything not shared. The env arena and node pool
 /// are shared (append-only within a program run).
+#[derive(Debug)]
 struct Branch {
     t: u32,
     env: u32,
@@ -235,7 +228,7 @@ struct Branch {
 }
 
 /// The machine. Reused across programs; arenas reset per `run`.
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct Machine {
     envs: Vec<(Val, u32)>,
     stack: Vec<Frame>,
@@ -280,6 +273,12 @@ impl Machine {
 
     /// Run one root term to its truncated branch tree, appending leaves.
     /// Leaf order matches the reference evaluator exactly (outcome-0 first, depth-first).
+    ///
+    /// # Panics
+    ///
+    /// On a degenerate budget — see [`Budget::validate`], which both
+    /// engines call and which spells out why zero is outside the contract
+    /// rather than a tighter one.
     pub fn run_into(
         &mut self,
         pool: &mut Pool,
@@ -289,8 +288,8 @@ impl Machine {
     ) {
         budget.validate().expect("degenerate budget");
         // TRUE_NODE/FALSE_NODE are positional: they name the fixed slots
-        // `Pool::reset` pushes. A pool that skipped reset would silently
-        // return the wrong Church boolean at every measurement.
+        // [`Pool::clear`] pushes. A pool that skipped clearing would
+        // silently return the wrong Church boolean at every measurement.
         debug_assert!(matches!(pool.node(TRUE_NODE), Node::Lam(_)));
         debug_assert!(matches!(pool.node(FALSE_NODE), Node::Lam(_)));
         self.envs.clear();
@@ -301,7 +300,7 @@ impl Machine {
 
         let mut t = root;
         let mut env = NIL;
-        let mut store = Store::empty();
+        let mut store = Store::new();
         let mut contr = 0u64;
         let mut trans = 0u64;
         let mut reading = false;
@@ -604,6 +603,10 @@ impl Machine {
     /// `p k̄ ⟨sig⟩`; `cond = None` is the unconditioned M_Fock sweep.
     /// (Two entry points and a seven-argument list were the same function
     /// twice; the bundle is what retired the `too_many_arguments` allow.)
+    ///
+    /// # Panics
+    ///
+    /// On a degenerate budget — see [`Budget::validate`].
     pub fn run_into_with(
         &mut self,
         pool: &mut Pool,
@@ -762,6 +765,7 @@ impl<'a> QProgram<'a> {
 /// One program's run: its leaves plus the engine telemetry a single-run
 /// caller reports. (Telemetry lives on the `Machine`, which the one-call
 /// entry owns and drops, so it has to come back out here.)
+#[derive(Debug)]
 pub struct Run {
     pub leaves: Vec<Leaf>,
     /// Max transitions consumed by any branch path of this run.
@@ -773,6 +777,10 @@ pub struct Run {
 /// The single-program entry (`blam q run`, one-off adjudications, tests).
 /// Sweeps use [`Machine::run_into_with`] with a reused `Pool`/`Machine`
 /// instead: this allocates a fresh pair per call by design.
+///
+/// # Panics
+///
+/// On a degenerate budget — see [`Budget::validate`].
 pub fn run(prog: &QProgram, budget: &Budget) -> Run {
     let mut pool = Pool::new();
     let mut m = Machine::new();
@@ -874,7 +882,7 @@ mod tests {
             let leaves = run_root(&mut pool, cur);
             assert_eq!(leaves.len(), 1);
             match &leaves[0].fate {
-                Fate::Halt(store) => store.amps.clone(),
+                Fate::Halt(store) => store.amps().to_vec(),
                 other => panic!("unexpected fate {other:?}"),
             }
         };
@@ -900,7 +908,7 @@ mod tests {
         assert_eq!(x0[1].reduce(), Dw::ONE);
         let z_plus = build(&[Prim::H, Prim::Z]);
         assert_eq!(z_plus[0].reduce(), h);
-        assert_eq!(z_plus[1].reduce(), h.neg());
+        assert_eq!(z_plus[1].reduce(), h.neg().unwrap());
     }
 
     #[test]
@@ -1040,10 +1048,11 @@ mod tests {
                     d: 0,
                     k: 1,
                 };
-                assert_eq!(store.amps[0].reduce(), h);
-                assert_eq!(store.amps[1], Dw::ZERO);
-                assert_eq!(store.amps[2], Dw::ZERO);
-                assert_eq!(store.amps[3].reduce(), h);
+                let amps = store.amps();
+                assert_eq!(amps[0].reduce(), h);
+                assert_eq!(amps[1], Dw::ZERO);
+                assert_eq!(amps[2], Dw::ZERO);
+                assert_eq!(amps[3].reduce(), h);
                 assert_eq!(leaves[0].mass, Some(Dw::ONE));
             }
             other => panic!("unexpected fate {other:?}"),
