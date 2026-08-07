@@ -274,9 +274,10 @@ the whole-live-store operator census.
   bit-identical — including a 140,883-term survivor manifest, partition
   invariance across threads {1, 2, 18} × groups {1, 7, 64}, and resume after
   a SIGKILL mid-phase-B.
-- Crate version: the `Cargo.toml` version is v1.1.0 and the crates.io release
-  is v1.0.1 until a9 publishes. The v2 reshape is breaking at the library and
-  CLI surface, so the intended next release is a 2.0.0 major.
+- Crate version: the `Cargo.toml` version is v2.0.0 on dev (the reshape is
+  breaking at both the library and CLI surface); the crates.io release is
+  v1.0.1 until a9 publishes. The release pipeline arms only on a main push
+  whose CI run succeeded, at the exact CI-validated SHA; dev never arms it.
 - CI runs formatting, clippy with warnings denied, the release test suite in
   three feature shapes (`--all-features`, default, `--no-default-features`)
   on Ubuntu and macOS, `uni.rs` parity, the classical 4..32 census
