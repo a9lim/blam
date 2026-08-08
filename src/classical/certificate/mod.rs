@@ -1049,6 +1049,122 @@ pub fn verify_selector(
     })
 }
 
+/// A PassengerDiagonalRatchet certificate (certificate specification
+/// §8.1), forced by the 36-bit exemplar
+/// `010001101000010110011000110000110110`: OPEN opens to
+/// `Z (Z P[Z]) W[Z]` — an *interleaved spine argument* `Z P[Z]` that is
+/// metavariable-bearing and consumed by the tower head, controlling the
+/// descent. Folding passengers into the HeadTowerRatchet would hide a
+/// theorem union inside one record; this is its own class.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PassengerDiagonalRatchet {
+    pub a: Term,
+    pub w: PTerm,
+    pub p: PTerm,
+    pub c0: Term,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PdrReport {
+    /// Steps of OPEN/UNWRAP/DROP/SEED in that order (all ≥ 1).
+    pub obligation_steps: [u32; 4],
+    pub init_steps: u32,
+    pub init_tower: u32,
+    pub init_trail: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum PdrFail {
+    Open(CheckFail),
+    Unwrap(CheckFail),
+    Drop(CheckFail),
+    Seed(CheckFail),
+    Init,
+    Shape(&'static str),
+}
+
+impl fmt::Display for PdrFail {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PdrFail::Open(c) => write!(f, "OPEN: {c}"),
+            PdrFail::Unwrap(c) => write!(f, "UNWRAP: {c}"),
+            PdrFail::Drop(c) => write!(f, "DROP: {c}"),
+            PdrFail::Seed(c) => write!(f, "SEED: {c}"),
+            PdrFail::Init => write!(f, "INIT never matched within its budgets"),
+            PdrFail::Shape(s) => f.write_str(s),
+        }
+    }
+}
+
+impl std::error::Error for PdrFail {}
+
+/// The trusted PassengerDiagonalRatchet verifier. Establishes that `t`
+/// has no normal form per the glue theorem (certificate specification
+/// §8.1): with `Xₙ = Wⁿ[C0]`, `Pₙ = P[Xₙ]`, the rank step is UNWRAP at
+/// the top, UNWRAP and DROP lifted through the trailing `Xₘ`, then
+/// UNWRAP again (`Xₘ₊₁ (Xₘ₊₁ Pₘ₊₁) →ₕ⁺ Xₘ Xₘ`), diagonal descent is
+/// UNWRAP twice per level, and the cycle is OPEN, the rank step and
+/// descent lifted through the trailing `Xₙ₊₁`, then SEED at `Q := C0`
+/// lifted the same way (`A Xₙ →ₕ⁺ A Xₙ₊₁`). The n = 0 cycle closes
+/// directly by SEED at `Q := X₀ P₀`. Every proper source is a
+/// non-abstraction, so the whole chain lifts through trailing vectors
+/// and leading binders exactly as v1.2's; every instantiation is
+/// closed, so the symbolic commuting square applies. INIT is v1's
+/// landing, unchanged.
+pub fn verify_pdr(
+    t: &Term,
+    cert: &PassengerDiagonalRatchet,
+    b: &CertBudgets,
+) -> Result<PdrReport, PdrFail> {
+    let (lemma_steps, init_steps, max_nodes) = (b.lemma_steps, b.steps, b.nodes);
+    check_common_shape(t, &cert.a, &cert.c0, &cert.w).map_err(PdrFail::Shape)?;
+    if cert.p.max_free(0) != 0 {
+        return Err(PdrFail::Shape("P not pattern-closed"));
+    }
+    if !wrapper_holes_are_meta0(&cert.p) {
+        return Err(PdrFail::Shape("P holes must all be Meta(0)"));
+    }
+
+    let a = PTerm::from_term(&cert.a);
+    let c0 = PTerm::from_term(&cert.c0);
+    let w = cert.w.clone();
+    let p = cert.p.clone();
+    let z = || PTerm::Meta(0);
+    let q = || PTerm::Meta(1);
+
+    // OPEN(Z):      A Z    →ₕ⁺ Z (Z P[Z]) W[Z]
+    let open = check_reduces(
+        &papp(a.clone(), z()),
+        &papp(papp(z(), papp(z(), p.clone())), w.clone()),
+        lemma_steps,
+        max_nodes,
+    )
+    .map_err(PdrFail::Open)?;
+    // UNWRAP(Z,Q):  W[Z] Q →ₕ⁺ Q Z
+    let unwrap = check_reduces(
+        &papp(w.clone(), q()),
+        &papp(q(), z()),
+        lemma_steps,
+        max_nodes,
+    )
+    .map_err(PdrFail::Unwrap)?;
+    // DROP(Z,Q):    P[Z] Q →ₕ⁺ Z
+    let drop = check_reduces(&papp(p.clone(), q()), &z(), lemma_steps, max_nodes)
+        .map_err(PdrFail::Drop)?;
+    // SEED(Q):      C0 Q   →ₕ⁺ A
+    let seed = check_reduces(&papp(c0.clone(), q()), &a, lemma_steps, max_nodes)
+        .map_err(PdrFail::Seed)?;
+
+    // INIT: identical machinery to v1.2 — same tower, same lifting.
+    let landing = init_landing(t, &a, &w, &c0, init_steps, max_nodes).ok_or(PdrFail::Init)?;
+    Ok(PdrReport {
+        obligation_steps: [open, unwrap, drop, seed],
+        init_steps: landing.steps,
+        init_tower: landing.tower,
+        init_trail: landing.trail.len() as u32,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

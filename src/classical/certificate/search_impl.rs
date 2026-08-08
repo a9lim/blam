@@ -19,6 +19,7 @@ pub enum Kill {
     V1(Ratchet, CertReport),
     Htr(HeadTowerRatchet, HtrReport),
     Selector(SelectorRatchet, SelReport),
+    Pdr(PassengerDiagonalRatchet, PdrReport),
 }
 
 impl Kill {
@@ -28,13 +29,15 @@ impl Kill {
             Kill::V1(..) => "v1",
             Kill::Htr(..) => "htr",
             Kill::Selector(..) => "selector",
+            Kill::Pdr(..) => "pdr",
         }
     }
 }
 
-/// The three-rung sweep, and the only one: streaming discovery offers each
+/// The four-rung sweep, and the only one: streaming discovery offers each
 /// candidate triple to v1 `verify`, then the HeadTowerRatchet driver, then
-/// the SelectorRatchet driver, and the first acceptance wins. A rejection
+/// the SelectorRatchet driver, then the PassengerDiagonalRatchet driver,
+/// and the first acceptance wins. A rejection
 /// retires only that milestone family, so later families still get their
 /// shot — stopping at the first candidate would mask valid later ones.
 ///
@@ -55,6 +58,11 @@ pub fn try_kill(t: &Term, b: &CertBudgets) -> Option<Kill> {
         // v3: same triple, SelectorRatchet obligations.
         if let Some((sel, rep)) = try_selector(t, cand, b) {
             found = Some(Kill::Selector(sel, rep));
+            return true;
+        }
+        // v4: same triple, PassengerDiagonalRatchet obligations.
+        if let Some((pdr, rep)) = try_pdr(t, cand, b) {
+            found = Some(Kill::Pdr(pdr, rep));
             return true;
         }
         false
@@ -298,6 +306,55 @@ pub fn try_selector(
     verify_selector(t, &cert, b).ok().map(|rep| (cert, rep))
 }
 
+/// Untrusted PassengerDiagonalRatchet driver: reuse a discovered
+/// `(A, W, C0)` triple — read `P` off the OPEN trace's opaque-head
+/// endpoint (`A Z →ₕ⁺ Z (Z P[Z]) W[Z]`), peel the observed base to the
+/// tower bottom, and hand everything to the trusted verifier. Garbage
+/// in ⇒ no certificate, never a wrong one.
+pub fn try_pdr(
+    t: &Term,
+    cand: &Ratchet,
+    b: &CertBudgets,
+) -> Option<(PassengerDiagonalRatchet, PdrReport)> {
+    // OPEN trace to the first opaque-head state.
+    let mut cur = papp(PTerm::from_term(&cand.a), PTerm::Meta(0));
+    let mut fuel = b.lemma_steps;
+    loop {
+        match head_step(&cur, b.nodes) {
+            Step::Did(next, _) => {
+                cur = next;
+                if fuel == 0 {
+                    return None;
+                }
+                fuel -= 1;
+            }
+            Step::MetaHead => break,
+            _ => return None,
+        }
+    }
+    // Endpoint must be Z (Z P[Z]) W'; extract P (the verifier's OPEN
+    // re-check pins W' to the certificate's own W, so no gate here).
+    let p = match &cur {
+        PTerm::App(zp, _w2) => match &**zp {
+            PTerm::App(z1, zp2) if **z1 == PTerm::Meta(0) => match &**zp2 {
+                PTerm::App(z2, p) if **z2 == PTerm::Meta(0) => (**p).clone(),
+                _ => return None,
+            },
+            _ => return None,
+        },
+        _ => return None,
+    };
+    // Peel the discovered base to the tower bottom.
+    let c0 = peel_to_bottom(&cand.w, &PTerm::from_term(&cand.c0)).to_term()?;
+    let cert = PassengerDiagonalRatchet {
+        a: cand.a.clone(),
+        w: cand.w.clone(),
+        p,
+        c0,
+    };
+    verify_pdr(t, &cert, b).ok().map(|rep| (cert, rep))
+}
+
 #[cfg(test)]
 mod tests {
     use super::super::tests::{loop32_cert, LOOP32};
@@ -323,6 +380,14 @@ mod tests {
     /// obligations certify it (see `forcing_term_certifies_via_htr`).
     const HTR35: &str = "01000110100001100001010110001011010";
 
+    /// The 36-bit PassengerDiagonalRatchet forcing exemplar
+    /// (certificate specification §8.1): OPEN opens to `Z (Z P[Z]) W[Z]`
+    /// with W[Z] = λy. y Z and P[Z] = λ_. Z. v1 aborts at the
+    /// interleaved spine argument; HTR and selector both reject; the
+    /// passenger obligations certify with kO = kU = kD = kS = 1 —
+    /// measured core-cycle gaps 2n+4 after the exceptional base cycle.
+    const PDR36: &str = "010001101000010110011000110000110110";
+
     #[test]
     fn try_kill_routes_each_class_to_its_own_rung() {
         // One exemplar per rung, each rejected by the rungs before it, so
@@ -331,6 +396,7 @@ mod tests {
             (LOOP32, Some("v1")),
             (HTR35, Some("htr")),
             (SEL35, Some("selector")),
+            (PDR36, Some("pdr")),
             // (λx. x x) (λx. x) halts — no rung may fire.
             ("01000110100010", None),
         ];
@@ -373,6 +439,67 @@ mod tests {
         let (cert, rep) = found.expect("selector certificate expected");
         assert_eq!(rep.obligation_steps, [1, 1, 3, 0]);
         assert_eq!(cert.a, cert.c0, "the forcing family has A = C0");
+    }
+
+    #[test]
+    fn pdr_exemplar_certifies() {
+        let t = parse_all(PDR36).unwrap();
+        let b = CertBudgets {
+            steps: 1000,
+            nodes: 100_000,
+            lemma_steps: 1000,
+        };
+        let mut found = None;
+        discover_stream(&t, 1000, 100_000, &mut |cand: &Ratchet| {
+            assert!(
+                verify(&t, cand, &b).is_err(),
+                "v1 must reject the passenger exemplar"
+            );
+            assert!(
+                try_htr(&t, cand, &b).is_none(),
+                "htr must reject the passenger exemplar"
+            );
+            assert!(
+                try_selector(&t, cand, &b).is_none(),
+                "selector must reject the passenger exemplar"
+            );
+            if let Some(pair) = try_pdr(&t, cand, &b) {
+                found = Some(pair);
+                return true;
+            }
+            false
+        });
+        let (cert, rep) = found.expect("pdr certificate expected");
+        assert_eq!(rep.obligation_steps, [1, 1, 1, 1]);
+        assert_eq!(rep.init_steps, 3);
+        assert_eq!(rep.init_tower, 0);
+        assert_eq!(rep.init_trail, 3);
+        // P is read off the OPEN trace: the exemplar's passenger is the
+        // one-step dropper λ_.Z.
+        assert_eq!(cert.p, plam(PTerm::Meta(0)));
+    }
+
+    /// PDR soundness spot-check: the certificate data must not verify
+    /// against a halter (the battery covers this exhaustively; this is
+    /// the in-file canary).
+    #[test]
+    fn pdr_rejects_halter() {
+        // (λx. x x) (λx. x) — halts.
+        let t = parse_all("01000110100010").unwrap();
+        let mut fired = false;
+        discover_stream(&t, 1000, 100_000, &mut |cand: &Ratchet| {
+            let b = CertBudgets {
+                steps: 1000,
+                nodes: 100_000,
+                lemma_steps: 1000,
+            };
+            if try_pdr(&t, cand, &b).is_some() {
+                fired = true;
+                return true;
+            }
+            false
+        });
+        assert!(!fired);
     }
 
     /// Selector soundness spot-check: the certificate data must not

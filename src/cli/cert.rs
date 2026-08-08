@@ -214,7 +214,8 @@ usage: blam cert search [flags]
         // Per-term parallel; each worker builds and drops its own Rc trees.
         // Output is streamed one self-describing line at a time (unordered —
         // kills lose nothing, per the ops ledger), counters are atomic.
-        let (kills_top, kills_arg, kills_htr, kills_sel, none) = (
+        let (kills_top, kills_arg, kills_htr, kills_sel, kills_pdr, none) = (
+            AtomicU64::new(0),
             AtomicU64::new(0),
             AtomicU64::new(0),
             AtomicU64::new(0),
@@ -272,6 +273,19 @@ usage: blam cert search [flags]
                                 ),
                             )
                         }
+                        Kill::Pdr(cert, _) => {
+                            kills_pdr.fetch_add(1, Ordering::Relaxed);
+                            (
+                                "PDR",
+                                format!(
+                                    "head={}\tw={}\tp={}\tc0={}",
+                                    cert.a.to_bits(),
+                                    cert.w,
+                                    cert.p,
+                                    cert.c0.to_bits()
+                                ),
+                            )
+                        }
                     };
                     if path.is_empty() {
                         format!("{tag}\t{bits}\t{cols}")
@@ -289,16 +303,18 @@ usage: blam cert search [flags]
             writeln!(lock, "{line}").unwrap();
         });
         eprintln!(
-        "cert search: {} terms; ratchet {} top + {} arg, htr {}, selector {}; total {}; unresolved {}",
+        "cert search: {} terms; ratchet {} top + {} arg, htr {}, selector {}, pdr {}; total {}; unresolved {}",
         lines.len(),
         kills_top.load(Ordering::Relaxed),
         kills_arg.load(Ordering::Relaxed),
         kills_htr.load(Ordering::Relaxed),
         kills_sel.load(Ordering::Relaxed),
+        kills_pdr.load(Ordering::Relaxed),
         kills_top.load(Ordering::Relaxed)
             + kills_arg.load(Ordering::Relaxed)
             + kills_htr.load(Ordering::Relaxed)
-            + kills_sel.load(Ordering::Relaxed),
+            + kills_sel.load(Ordering::Relaxed)
+            + kills_pdr.load(Ordering::Relaxed),
         none.load(Ordering::Relaxed)
     );
         Ok(())
@@ -320,7 +336,9 @@ mod lean {
     //! Scope: `RATCHET` lines through the v1.2 assembly (lean/Blc/
     //! Ratchet.lean) and `RATCHET2` lines through the HeadTowerRatchet
     //! assembly (lean/Blc/HeadTower.lean) and `SELECTOR` lines through
-    //! the SelectorRatchet assembly (lean/Blc/Selector.lean). `*-ARG`
+    //! the SelectorRatchet assembly (lean/Blc/Selector.lean) and `PDR`
+    //! lines through the PassengerDiagonalRatchet assembly
+    //! (lean/Blc/Passenger.lean). `*-ARG`
     //! lines certify divergence of a spine argument through the rigid-head
     //! bridge in `lean/Blc/Rigid.lean`.
     //!
@@ -334,8 +352,9 @@ mod lean {
     use crate::args::{self, Args, R};
     use blam::blc::wire::parse_all;
     use blam::classical::certificate::{
-        head_step, init_landing, spine, strip_lams, verify, verify_htr, verify_selector,
-        CertBudgets, HeadTowerRatchet, PTerm, Ratchet, SelectorRatchet, Step,
+        head_step, init_landing, spine, strip_lams, verify, verify_htr, verify_pdr,
+        verify_selector, CertBudgets, HeadTowerRatchet, PTerm, PassengerDiagonalRatchet, Ratchet,
+        SelectorRatchet, Step,
     };
     use blam::Term;
     use std::collections::BTreeMap;
@@ -461,7 +480,7 @@ untrusted: the Lean kernel replays every obligation.";
                 Some(base) => (base, true),
                 None => (raw_tag, false),
             };
-            if tag != "RATCHET" && tag != "RATCHET2" && tag != "SELECTOR" {
+            if tag != "RATCHET" && tag != "RATCHET2" && tag != "SELECTOR" && tag != "PDR" {
                 skipped += 1;
                 continue;
             }
@@ -567,6 +586,21 @@ untrusted: the Lean kernel replays every obligation.";
                     vec![("kO", ko), ("kF", kf), ("kSel", ksel), ("kB", kb)],
                     rep.init_steps,
                 )
+            } else if tag == "PDR" {
+                let pdr = PassengerDiagonalRatchet {
+                    a: a.clone(),
+                    w: wp.clone(),
+                    p: parse_pterm(selp).map_err(&at)?,
+                    c0: c0t.clone(),
+                };
+                let rep = verify_pdr(&t, &pdr, &RECHECK)
+                    .unwrap_or_else(|e| panic!("pdr re-verify failed on {bits}: {e:?}"));
+                let [ko, ku, kd, ks] = rep.obligation_steps;
+                (
+                    "PdrCert",
+                    vec![("kO", ko), ("kU", ku), ("kD", kd), ("kS", ks)],
+                    rep.init_steps,
+                )
             } else {
                 let htr = HeadTowerRatchet {
                     a: a.clone(),
@@ -625,7 +659,7 @@ untrusted: the Lean kernel replays every obligation.";
                 blk.push_str("\n  E := ");
                 lean_term(&parse_term("i", eraser).map_err(&at)?, &mut blk);
             }
-            if kind == "SelCert" {
+            if kind == "SelCert" || kind == "PdrCert" {
                 blk.push_str("\n  P := ");
                 lean_pterm(&parse_pterm(selp).map_err(&at)?, &mut blk);
             }
@@ -709,7 +743,7 @@ untrusted: the Lean kernel replays every obligation.";
             "/-\nGenerated by `blam cert lean` — DO NOT EDIT. {} RATCHET kill(s) at n={size}.\n\
              Every obligation is replayed by the Lean kernel (`by decide`),\n\
              and each `wire_*` theorem pins the certified term to its named bits.\n-/\n\
-             import Blc.Ratchet\nimport Blc.HeadTower\nimport Blc.Selector\nimport Blc.Rigid\nimport Blc.Wire\n\nnamespace Blc.Certs\n",
+             import Blc.Ratchet\nimport Blc.HeadTower\nimport Blc.Selector\nimport Blc.Passenger\nimport Blc.Rigid\nimport Blc.Wire\n\nnamespace Blc.Certs\n",
             blocks.len()
         );
             for b in blocks {
