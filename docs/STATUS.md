@@ -33,22 +33,28 @@ Last updated: 2026-08-07.
   `lean/Certs/Size32.lean`. So BBλ(32) is settled modulo the certificate
   layer, not by the ladder alone, and the certified frontier below starts
   at 33 bits.
-- The current certified frontier is `data/classical/unknowns.txt`: 4,235
-  terms after removing the certificate kills.
+- The current certified frontier is `data/classical/unknowns.txt`: 4,227
+  terms after removing the certificate kills (the eight
+  PassengerDiagonalRatchet kills landed 2026-08-08; subtraction
+  identity 4,532 raw = 4,227 + 305 verified on regen).
 - The finite-range plain halting mass is
-  `Ω|≤41 ∈ [0.124105086764, 0.124105092919]`. Exact base fractions are
+  `Ω|≤41 ∈ [0.124105086764, 0.124105092895]`. Exact base fractions are
   in `data/classical/solomonoff.txt`; the tightened upper endpoint also
-  accounts for certified divergers removed from the raw unknown mass.
+  accounts for certified divergers removed from the raw unknown mass
+  (305 kills, 14,730,395,648 × 2⁻⁶⁴ exactly; the 2026-08-08 trim
+  removed 53/2⁴¹).
 
 ### Divergence certificates and Lean
 
-- `data/certificates/ratchet_kills.tsv` contains 297 checked kills:
-  214 Ratchet, 34 HeadTowerRatchet, 39 SelectorRatchet, and ten rigid-head
-  argument variants.
+- `data/certificates/ratchet_kills.tsv` contains 305 checked kills:
+  214 Ratchet, 34 HeadTowerRatchet, 39 SelectorRatchet, 8
+  PassengerDiagonalRatchet (2026-08-08, sizes 36/38/39/40×4/41 — all
+  one engine family, the §8.1 exemplar's 26-bit head under wraps and
+  trailing args), and ten rigid-head argument variants.
 - Every kill is replayed at four times the discovery budgets and compiled to
   an individual Lean theorem in `lean/Certs/`.
-- `lake build Certs` checks all 297 `¬HasNormalForm` theorems and their wire
-  identities in about two seconds. The development has no sorries and no
+- `lake build Certs` checks all 305 `¬HasNormalForm` theorems and their wire
+  identities in a few seconds. The development has no sorries and no
   mathlib dependency; its only reported axioms are `propext` and
   `Quot.sound`.
 - `classical::certificate` is the trusted checker layer. `blam cert search`
@@ -73,16 +79,19 @@ Last updated: 2026-08-07.
 
 ### Classical docket
 
-1. Implement PassengerDiagonalRatchet as a distinct v4 certificate class,
-   using the assembly in `classical/certificates/specification.md` §8.
-2. Derive the next selector/zfirst class from a concrete surviving trace.
+(PassengerDiagonalRatchet shipped 2026-08-08 as the v4 class — checker,
+discovery rung, Lean assembly `lean/Blc/Passenger.lean`, eight kills
+through the full recert+kernel pipeline; Codex-reviewed. Spec §8.1 is
+marked implemented.)
+
+1. Derive the next selector/zfirst class from a concrete surviving trace.
    Do not promote a `blam cert diag` bucket into a class without an exemplar
    and a finite recurrence.
-3. Leave Drift gated until an exemplar exposes a finite generator
+2. Leave Drift gated until an exemplar exposes a finite generator
    `R_(n+1) = G[R_n]`; an unconstrained family is not a certificate.
-4. Raise `census --rescue` before n=42. The largest successful n=41 rescue
+3. Raise `census --rescue` before n=42. The largest successful n=41 rescue
    used 9,457,564 of 10⁷ β-contractions, only 1.06× headroom.
-5. Formalize prefix-freeness and Kraft accounting from
+4. Formalize prefix-freeness and Kraft accounting from
    `lean/Blc/Wire.lean`, then derive machine-checked K upper bounds.
 
 ## Quantum state
@@ -132,25 +141,56 @@ Last updated: 2026-08-07.
   order itself is `quantum::sig::FROZEN` with an order-pinning test, and is
   measurement-backed through size 34 (signature-universe section below).
 
+Escalation docket items 1 and 2 closed 2026-08-08 (overnight run;
+lockstep-verified with Codex on both):
+
+- **The capout stratification is measured, on the full population** —
+  `q skeleton --capout-telemetry` streams per-program
+  reason/steps/high-water, so the docket's sample became a census for
+  free. 619,466 capouts = 487,960 steps-bound (78.8%) + 131,506
+  size-bound (21.2%); the size-bound share settles near 20–22% in the
+  upper size tail (4..15% below n≈33). Size-bound growers breach the
+  16,384-bit ceiling at median 102 steps. The steps-bound high-water
+  distribution (median 3,850 bits, p99 15,898, max at the ceiling)
+  already suggested hidden growers, and the tier-2 conversion sample
+  proved it: every 10th steps-bound capout (48,796 programs,
+  deterministic) rerun at `--steps 4096` gives **2 Loop conversions
+  (both recur under 400 steps), 39,603 size-capouts (81.2% — growers
+  that ran out of steps first), 9,191 still steps-bound**. Exact-cycle
+  density ≈ 4×10⁻⁵: **another exact-cycle tier is refuted; the aimed
+  instrument is the rung-3 hole-parametric pattern-recurrence checker,
+  and its population is effectively the whole capout residue.** The
+  two tier-2 loops are not in the canonical record (tier-1 caps pin
+  it); they fall to rung 3 or a deliberate tier-2 protocol. The
+  16×-steps sample cost 522 s wall / 8,705 s user — a full tier-2
+  sweep would run ~1.5 h wall for ~20 expected kills of negligible
+  mass, and is not scheduled.
+- **The canonical manifest is installed**:
+  `data/quantum/skeleton_manifest.txt` (built by
+  `tools/skel_manifest.py`, regeneration commands inside). Both
+  pinned digests reproduce byte-identically (`3d89539b63d1…` verdicts,
+  `1ba28e2ffaf9…` input; LC_ALL=C sort — prefix-freeness makes
+  full-line byte-lex equal bits order). The Div split is re-pinned
+  from the driver's own stream (`via=` detail): 58,373 oracle /
+  45,028 bb. Masses are leaf-mass accounted with the Unknown/Capacity
+  split explicit (killed 27,958,835/2⁴¹; remaining Unknown
+  9,594,946/2⁴¹; the census's single qubit-cap Capacity leaf 1/2⁴¹;
+  bracket upper unchanged at 6,857,971,973/2⁴¹). All 37
+  residual-Unknown provenance rows carry residual sizes (74..11,978
+  bits), SHA-256 identities, and classical-frontier source membership
+  (28/37). Killed-side exactness argument (kill ⇒ single branch ⇒
+  program mass = leaf mass) is recorded in the tool and was
+  independently confirmed.
+
 Escalation-lane docket, in order:
 
-1. Run a deterministic source-size-stratified sample of the 619,466
-   capouts and let it aim the next instrument: size-bound growers go to
-   the hole-parametric pattern-recurrence rung (design ratified,
-   `quantum/escalation.md` rung 3); step-bound bounded-size terms justify
-   another exact-cycle tier. The telemetry this needs is in place —
-   `reason`, `steps`, and `high_water_bits` on every `CapOut`, plus the
-   aggregate `capout split` line — so what is open is the sample and its
-   analysis.
-2. Build the canonical skeleton-kill manifest per the settled protocol
-   (`quantum/escalation.md`): sorted-verdict-stream digest
-   `3d89539b63d1…`, sorted-input digest `1ba28e2ffaf9…`, Div provenance
-   split, per-size verdict aggregates, exact masses and bracket
-   fractions, and the 37 residual-Unknown provenance rows.
-3. Rungs 4–5 for the hole-demanded residue: reference-configuration cycle
+1. Build the rung-3 hole-parametric pattern-recurrence checker (design
+   ratified, `quantum/escalation.md` rung 3) — now the measured next
+   instrument for the ~750k grower-dominated capout residue.
+2. Rungs 4–5 for the hole-demanded residue: reference-configuration cycle
    detection between measurements, then the E∞ universal-safety
    certificate calculus (design ratified, `quantum/escalation.md`).
-4. If wholesale promotion of the discovery engine is wanted, repair the
+3. If wholesale promotion of the discovery engine is wanted, repair the
    bot_free/simplify uniformity argument (counterexample on record) or
    supersede it with the pattern-recurrence checker.
 

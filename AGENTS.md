@@ -170,22 +170,19 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
   sample needs. `blam q skeleton` prints an additive
   `capout split: steps-bound N  size-bound M` line on stderr.
 - `classical::certificate` is the trusted checker layer for v1.2 Ratchet, v2
-  HeadTowerRatchet, and v3 SelectorRatchet. Discovery is
+  HeadTowerRatchet, v3 SelectorRatchet, and v4 PassengerDiagonalRatchet. Discovery is
   `classical::certificate::search` — untrusted rayon search including HNF
   descent into closed spine arguments for `-ARG` kills, public only under
   `lab` but compiled for tests via `cfg(any(test, feature = "lab"))`.
-  `try_kill` is the one three-rung sweep that both `blam cert search` and the
+  `try_kill` is the one four-rung sweep that both `blam cert search` and the
   soundness battery run. Sweep defaults (`CertBudgets::SWEEP`) are 1000
   steps / 100k nodes / 4096 lemma steps, measured kill-equivalent to the
-  battery's 2000/200k (`::THOROUGH`). A complete three-rung frontier sweep
-  has not been timed end to end since the v2 reshape. Estimate, not
-  measurement: a proportional 202-term sample (every 21st line of the
-  4,235-term frontier, 2026-08-07) ran 263 s wall / 702 s user at
-  `--threads 8` on the M5 Max under the subst_dec closedness skip
-  (pre-skip the same sample was 307 s / 1,400 s), so the full frontier is
-  about four core-hours — order 1 h wall, likely less since the sample
-  only filled a fraction of the 8 threads and wall is tail-bound by two
-  argument-heavy terms. Time the real thing before planning around it.
+  battery's 2000/200k (`::THOROUGH`). A complete four-rung frontier sweep
+  (v1 + HTR + selector + PDR) measured 981.3 s wall / 6,630 s user at
+  `--threads 8` on the M5 Max over the 4,235-term frontier
+  (2026-08-08, the sweep that discovered the eight PDR kills) — 1.84
+  core-hours, well under the pre-measurement four-core-hour estimate,
+  wall tail-bound as predicted.
   For a new kill, append to
   `data/certificates/ratchet_kills.tsv`, run `scripts/recert-kills.sh`,
   regenerate the frontier with `scripts/census-regen.sh`, trim Ω by exact

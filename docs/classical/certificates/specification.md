@@ -369,14 +369,18 @@ budgets.
   found must be identical (the checker result is budget-independent
   once found).
 
-## 8. v4: the next classes (specified, not yet implemented)
+## 8. v4: the next classes (PassengerDiagonal implemented, rest gated)
 
-Build order: **PassengerDiagonal first**, then a zfirst variant derived
+Build order: **PassengerDiagonal first** (landed 2026-08-08: trusted
+verifier `verify_pdr`, discovery `try_pdr` as `try_kill`'s fourth
+rung, Lean assembly `lean/Blc/Passenger.lean`; the forcing exemplar
+certifies with kO = kU = kD = kS = 1 and the battery stays
+zero-fire), then a zfirst variant derived
 from an actual survivor trace; drift
 stays gated on a finite generator. The measured candidate map behind
 these families is `frontier.md`.
 
-### 8.1 PassengerDiagonalRatchet
+### 8.1 PassengerDiagonalRatchet (implemented)
 
 Forced by the 36-bit exemplar `010001101000010110011000110000110110`
 (4 probe-accepted exemplars on the current frontier — a lower bound

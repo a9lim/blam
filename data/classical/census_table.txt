@@ -1,268 +1,310 @@
-  n       closed         halt  diverge  unknown    escal    max|nf|   beta_total    time_s    terms/s
-  4            1            1        0        0        0          4            0      0.00     110084
-    max|nf| witness: 0010
-    verify: max|nf| matches BBλ(4)
+# blam census 2.0.0
+# sizes 4..=41
+# ladder: budget1=64 budget2=4096 bb-cap=2000000 rescue=10000000 x32 trans; prescan=true oracle=true work-mult=16 probe-fuel=4096
+# memo-in: none
+# n       closed         halt  diverge  unknown    escal    max|nf|   beta_total    time_s    terms/s
+  4            1            1        0        0        0          4            0      0.00      72727
+#   prescan: 1 redex-free of 1 closed terms
+#   max|nf| witness: 0010
+#   verify: max|nf| matches BBλ(4)
   5            0            0        0        0        0          0            0      0.00          0
-  6            1            1        0        0        0          6            0      0.00    2994012
-    max|nf| witness: 000010
-  7            1            1        0        0        0          7            0      0.00    3424658
-    max|nf| witness: 0000110
-  8            2            2        0        0        0          8            0      0.00      98160
-    max|nf| witness: 00011010
+#   prescan: 0 redex-free of 0 closed terms
+  6            1            1        0        0        0          6            0      0.00    2666667
+#   prescan: 1 redex-free of 1 closed terms
+#   max|nf| witness: 000010
+  7            1            1        0        0        0          7            0      0.00    3003003
+#   prescan: 1 redex-free of 1 closed terms
+#   max|nf| witness: 0000110
+  8            2            2        0        0        0          8            0      0.00      32854
+#   prescan: 2 redex-free of 2 closed terms
+#   max|nf| witness: 00011010
   9            1            1        0        0        0          9            0      0.00    1333333
-    max|nf| witness: 000000110
- 10            6            6        0        0        0         10            2      0.00      93084
-    max|nf| witness: 0001100010
- 11            5            5        0        0        0         11            1      0.00      89888
-    max|nf| witness: 00011000110
- 12           13           13        0        0        0         12            5      0.00     110130
-    max|nf| witness: 000110011010
- 13           14           14        0        0        0         13            7      0.00     100719
-    max|nf| witness: 0001100000110
- 14           37           37        0        0        0         14           20      0.00     299292
-    max|nf| witness: 00011001100010
- 15           44           44        0        0        0         15           21      0.00     241869
-    max|nf| witness: 000110011000110
- 16          101          101        0        0        0         16           70      0.00     407669
-    max|nf| witness: 0001100110011010
- 17          134          134        0        0        0         17           96      0.00     619653
-    max|nf| witness: 00011001100000110
- 18          298          297        1        0        0         18          235      0.00    1191009
-    max|nf| witness: 000110011001100010
- 19          431          431        0        0        0         19          344      0.00    1559707
-    max|nf| witness: 0001100110011000110
- 20          883          882        1        0        0         20          825      0.00    1658995
-    max|nf| witness: 00011001100110011010
-    verify: count matches A114852
-    verify: max|nf| matches BBλ(20)
- 21         1361         1361        0        0        0         22         1286      0.00    2792035
-    max|nf| witness: 000100011010011000110
-    verify: max|nf| matches BBλ(21)
- 22         2736         2729        7        0        0         24         2834      0.00    4440362
-    max|nf| witness: 0001000110100110011010
- 23         4405         4405        0        0        0         26         4664      0.00   10078177
-    max|nf| witness: 00010001101001100000110
- 24         8574         8549       25        0       10         30         9890      0.00    4783042
-    max|nf| witness: 000100011001101001100010
-    rung2: 0 successes past 64x trans; stuck 1 beta-bound, 9 transition-bound
-    verify: count matches A114852
- 25        14334        14311       23        0       11         42        16868      0.00   10592928
-    max|nf| witness: 0001000110100001100111010
-    rung2: 0 successes past 64x trans; stuck 2 beta-bound, 9 transition-bound
- 26        27465        27400       65        0       10         52        34702      0.00   14190740
-    max|nf| witness: 01000110100000011100110110
-    rung2: 0 successes past 64x trans; stuck 0 beta-bound, 10 transition-bound
-    verify: max|nf| matches BBλ(26)
- 27        47146        47101       45        0        9         44        60969      0.00   17987221
-    max|nf| witness: 000001000110100001100111010
-    rung2: 0 successes past 64x trans; stuck 1 beta-bound, 8 transition-bound
- 28        89270        89022      248        0      101         58       122311      0.01    7416916
-    max|nf| witness: 0001000110100001100111000110
-    rung2: 0 successes past 64x trans; stuck 9 beta-bound, 92 transition-bound
-    verify: count matches A114852
- 29       156360       156080      280        0      103        223       219295      0.02    7455078
-    max|nf| witness: 00010001101000011001100111010
-    rung2: 0 successes past 64x trans; stuck 13 beta-bound, 90 transition-bound
-    verify: max|nf| matches BBλ(29)
- 30       293840       293014      826        0      341        160       433560      0.04    8389386
-    max|nf| witness: 010001100110100000011100110110
-    rung2: 0 successes past 64x trans; stuck 25 beta-bound, 316 transition-bound
- 31       522913       521730     1183        0      625        267       790058      0.07    7690981
-    max|nf| witness: 0100011010000001110011100110110
-    rung2: 0 successes past 64x trans; stuck 100 beta-bound, 525 transition-bound
- 32       978447       975507     2939        1     1334        298      1544660      0.16    6205464
-    max|nf| witness: 00010001101000011001100111000110
-    unknowns by cause: 1 capacity, 0 work-meter; max successful rescue 0 beta
-    stuck rescues: 1 beta-bound, 0 transition-bound
-    rung2: 0 successes past 64x trans; stuck 158 beta-bound, 1176 transition-bound
-    unknown: 01000110001100001011010000110110
-    verify: count matches A114852
-    verify: max|nf| matches BBλ(32)
- 33      1761907      1757787     4118        2     1691       1812      2849317      1.45    1214574
-    max|nf| witness: 000100011010000110011001100111010
-    unknowns by cause: 2 capacity, 0 work-meter; max successful rescue 0 beta
-    stuck rescues: 0 beta-bound, 2 transition-bound
-    rung2: 0 successes past 64x trans; stuck 189 beta-bound, 1502 transition-bound
-    unknown: 010001011010100000011100101101010
-    unknown: 010001101000011000000110011110110
-    verify: max|nf| matches BBλ(33)
- 34      3288605      3278660     9935       10     4738     327686      5920121      3.44     956076
-    max|nf| witness: 0100010110011010100000011100111010
-    unknowns by cause: 10 capacity, 0 work-meter; max successful rescue 192757 beta
-    rescued: 2 from capacity (max 192757 beta), 0 from work-meter (max 0 beta); max trans 1387317
-    stuck rescues: 1 beta-bound, 9 transition-bound
-    rung2: 0 successes past 64x trans; stuck 452 beta-bound, 4286 transition-bound
-    unknown: 0001000110001100001011010000110110
-    unknown: 0100010101101010100000011100110110
-    unknown: 0100010110011010100000011100110110
-    unknown: 0100010110101000000101110100111010
-    unknown: 0100010110101000000111001011010110
-    unknown: 0100010110101000000111001011011010
-    unknown: 0100010110101000000111001011101010
-    unknown: 0100011010000001011010010111010110
-    unknown: 0100011010000001100101110110011010
-    unknown: 0100011010000001110000111001111010
-    verify: max|nf| matches BBλ(34)
- 35      5977863      5961400    16440       23     8777      98421     10320756     17.62     339190
-    max|nf| witness: 01000110011010000001110011100111010
-    unknowns by cause: 22 capacity, 1 work-meter; max successful rescue 21197 beta
-    rescued: 1 from capacity (max 21197 beta), 0 from work-meter (max 0 beta); max trans 182448
-    stuck rescues: 2 beta-bound, 21 transition-bound
-    rung2: 0 successes past 64x trans; stuck 1227 beta-bound, 7550 transition-bound
-    unknown: 00010001011010100000011100101101010
-    unknown: 00010001101000011000000110011110110
-    unknown: 01000101100010100000011100101101010
-    unknown: 01000101101010000001011010000110110
-    unknown: 01000101101010000001110010110110110
-    unknown: 01000101101010000001110010111010110
-    unknown: 01000101101010000001110011001110110
-    unknown: 01000101101010000001110011100110110
-    unknown: 01000101101010000001110011100111010
-    unknown: 01000110011000000110011101000011010
-    unknown: 01000110011000000111001101000011010
-    unknown: 01000110011010000001110011001110110
-    unknown: 01000110100000010111001011010110110
-    unknown: 01000110100000011001011101100110110
-    unknown: 01000110100000011001011101100111010
-    unknown: 01000110100001011000000110011101010
-    ... and 7 more unknowns
- 36     11148652     11112178    36430       44    18729    1441774     20383062     25.96     429436
-    max|nf| witness: 010001101000010110000001110011101010
-    unknowns by cause: 37 capacity, 7 work-meter; max successful rescue 127225 beta
-    rescued: 1 from capacity (max 127225 beta), 0 from work-meter (max 0 beta); max trans 2103836
-    stuck rescues: 22 beta-bound, 22 transition-bound
-    rung2: 0 successes past 64x trans; stuck 2160 beta-bound, 16569 transition-bound
-    unknown: 000001000110001100001011010000110110
-    unknown: 000100010101101010100000011100110110
-    unknown: 000100010110011010100000011100110110
-    unknown: 000100010110101000000101110100111010
-    unknown: 000100010110101000000111001011010110
-    unknown: 000100010110101000000111001011011010
-    unknown: 000100010110101000000111001011101010
-    unknown: 000100010110110100000011100101101010
-    unknown: 000100011010000001011010010111010110
-    unknown: 000100011010000001100101110110011010
-    unknown: 000100011010000001110000111001111010
-    unknown: 010000011100011100001011010000110110
-    unknown: 010001011000110100001011010000110110
-    unknown: 010001011010100000010101101000111010
-    unknown: 010001011010100000010110110000110110
-    unknown: 010001011010100000010111010000110110
-    ... and 28 more unknowns
-    verify: count matches A114852
- 37     20414058     20352040    61924       94    32806    4290711     37433357     34.66     588959
-    max|nf| witness: 0100011001101000011000000111100111010
-    unknowns by cause: 75 capacity, 19 work-meter; max successful rescue 189229 beta
-    rescued: 1 from capacity (max 189229 beta), 0 from work-meter (max 0 beta); max trans 2625188
-    stuck rescues: 26 beta-bound, 68 transition-bound
-    rung2: 0 successes past 64x trans; stuck 4539 beta-bound, 28267 transition-bound
-    unknown: 0000010001011010100000011100101101010
-    unknown: 0000010001101000011000000110011110110
-    unknown: 0001000101100010100000011100101101010
-    unknown: 0001000101101010000001011010000110110
-    unknown: 0001000101101010000001110010110110110
-    unknown: 0001000101101010000001110010111010110
-    unknown: 0001000101101010000001110011001110110
-    unknown: 0001000101101010000001110011100110110
-    unknown: 0001000101101010000001110011100111010
-    unknown: 0001000110011000000110011101000011010
-    unknown: 0001000110011000000111001101000011010
-    unknown: 0001000110011010000001110011001110110
-    unknown: 0001000110100000010111001011010110110
-    unknown: 0001000110100000011001011101100110110
-    unknown: 0001000110100000011001011101100111010
-    unknown: 0001000110100001011000000110011101010
-    ... and 78 more unknowns
- 38     38071898     37940976   130699      223    70776  222333282     93522823     45.26     841192
-    max|nf| witness: 01000101101010000001100111001100111010
-    unknowns by cause: 192 capacity, 31 work-meter; max successful rescue 9452558 beta
-    rescued: 10 from capacity (max 9452558 beta), 0 from work-meter (max 0 beta); max trans 160434707
-    stuck rescues: 100 beta-bound, 123 transition-bound
-    rung2: 0 successes past 64x trans; stuck 9423 beta-bound, 61353 transition-bound
-    unknown: 00000001000110001100001011010000110110
-    unknown: 00000100010101101010100000011100110110
-    unknown: 00000100010110011010100000011100110110
-    unknown: 00000100010110101000000101110100111010
-    unknown: 00000100010110101000000111001011010110
-    unknown: 00000100010110101000000111001011011010
-    unknown: 00000100010110101000000111001011101010
-    unknown: 00000100010110110100000011100101101010
-    unknown: 00000100011010000001011010010111010110
-    unknown: 00000100011010000001100101110110011010
-    unknown: 00000100011010000001110000111001111010
-    unknown: 00010000011100011100001011010000110110
-    unknown: 00010001011000110100001011010000110110
-    unknown: 00010001011010100000010101101000111010
-    unknown: 00010001011010100000010110110000110110
-    unknown: 00010001011010100000010111010000110110
-    ... and 207 more unknowns
- 39     70125402     69896747   228157      498   125842   10263449    142159030    124.16     564818
-    max|nf| witness: 010001101000000111001110011100110011010
-    unknowns by cause: 407 capacity, 91 work-meter; max successful rescue 3515944 beta
-    rescued: 21 from capacity (max 953424 beta), 0 from work-meter (max 0 beta); max trans 13639048
-    stuck rescues: 180 beta-bound, 318 transition-bound
-    rung2: 0 successes past 64x trans; stuck 18009 beta-bound, 107833 transition-bound
-    unknown: 000000010001011010100000011100101101010
-    unknown: 000000010001101000011000000110011110110
-    unknown: 000001000101100010100000011100101101010
-    unknown: 000001000101101010000001011010000110110
-    unknown: 000001000101101010000001110010110110110
-    unknown: 000001000101101010000001110010111010110
-    unknown: 000001000101101010000001110011001110110
-    unknown: 000001000101101010000001110011100110110
-    unknown: 000001000101101010000001110011100111010
-    unknown: 000001000101101110100000011100101101010
-    unknown: 000001000110011000000110011101000011010
-    unknown: 000001000110011000000111001101000011010
-    unknown: 000001000110011010000001110011001110110
-    unknown: 000001000110100000010111001011010110110
-    unknown: 000001000110100000011001011101100110110
-    unknown: 000001000110100000011001011101100111010
-    ... and 482 more unknowns
- 40    130880047    130411961   466949     1137   256514  222333284    329282346    266.64     490849
-    max|nf| witness: 0001000101101010000001100111001100111010
-    unknowns by cause: 965 capacity, 172 work-meter; max successful rescue 6895676 beta
-    rescued: 95 from capacity (max 6895676 beta), 0 from work-meter (max 0 beta); max trans 58532321
-    stuck rescues: 434 beta-bound, 703 transition-bound
-    rung2: 0 successes past 64x trans; stuck 33444 beta-bound, 223070 transition-bound
-    unknown: 0000000001000110001100001011010000110110
-    unknown: 0000000100010101101010100000011100110110
-    unknown: 0000000100010110011010100000011100110110
-    unknown: 0000000100010110101000000101110100111010
-    unknown: 0000000100010110101000000111001011010110
-    unknown: 0000000100010110101000000111001011011010
-    unknown: 0000000100010110101000000111001011101010
-    unknown: 0000000100010110110100000011100101101010
-    unknown: 0000000100011010000001011010010111010110
-    unknown: 0000000100011010000001100101110110011010
-    unknown: 0000000100011010000001110000111001111010
-    unknown: 0000010000011100011100001011010000110110
-    unknown: 0000010001011000110100001011010000110110
-    unknown: 0000010001011010100000010101101000111010
-    unknown: 0000010001011010100000010110110000110110
-    unknown: 0000010001011010100000010111010000110110
-    ... and 1121 more unknowns
- 41    242222714    241372280   847934     2500   483677 1074266118    529935277    708.02     342113
-    max|nf| witness: 01000101100110101000000111001110000111010
-    unknowns by cause: 2060 capacity, 440 work-meter; max successful rescue 9457564 beta
-    rescued: 104 from capacity (max 9457564 beta), 0 from work-meter (max 0 beta); max trans 105847128
-    stuck rescues: 762 beta-bound, 1738 transition-bound
-    rung2: 0 successes past 64x trans; stuck 70327 beta-bound, 413350 transition-bound
-    unknown: 00000000010001011010100000011100101101010
-    unknown: 00000000010001101000011000000110011110110
-    unknown: 00000001000101100010100000011100101101010
-    unknown: 00000001000101101010000001011010000110110
-    unknown: 00000001000101101010000001110010110110110
-    unknown: 00000001000101101010000001110010111010110
-    unknown: 00000001000101101010000001110011001110110
-    unknown: 00000001000101101010000001110011100110110
-    unknown: 00000001000101101010000001110011100111010
-    unknown: 00000001000101101110100000011100101101010
-    unknown: 00000001000110011000000110011101000011010
-    unknown: 00000001000110011000000111001101000011010
-    unknown: 00000001000110011010000001110011001110110
-    unknown: 00000001000110100000010111001011010110110
-    unknown: 00000001000110100000011001011101100110110
-    unknown: 00000001000110100000011001011101100111010
-    ... and 2484 more unknowns
-redloop: 14696 proofs, 42898 shape-matches lost to probe fuel
+#   prescan: 1 redex-free of 1 closed terms
+#   max|nf| witness: 000000110
+ 10            6            6        0        0        0         10            2      0.00      42081
+#   prescan: 4 redex-free of 6 closed terms
+#   max|nf| witness: 0001100010
+ 11            5            5        0        0        0         11            1      0.00      72421
+#   prescan: 4 redex-free of 5 closed terms
+#   max|nf| witness: 00011000110
+ 12           13           13        0        0        0         12            5      0.00     137083
+#   prescan: 8 redex-free of 13 closed terms
+#   max|nf| witness: 000110011010
+ 13           14           14        0        0        0         13            7      0.00     284987
+#   prescan: 7 redex-free of 14 closed terms
+#   max|nf| witness: 0001100000110
+ 14           37           37        0        0        0         14           20      0.00     352801
+#   prescan: 18 redex-free of 37 closed terms
+#   max|nf| witness: 00011001100010
+ 15           44           44        0        0        0         15           21      0.00     492082
+#   prescan: 23 redex-free of 44 closed terms
+#   max|nf| witness: 000110011000110
+ 16          101          101        0        0        0         16           70      0.00     481622
+#   prescan: 42 redex-free of 101 closed terms
+#   max|nf| witness: 0001100110011010
+ 17          134          134        0        0        0         17           96      0.00     794074
+#   prescan: 50 redex-free of 134 closed terms
+#   max|nf| witness: 00011001100000110
+ 18          298          297        1        0        0         18          235      0.00     997072
+#   prescan: 105 redex-free of 298 closed terms
+#   max|nf| witness: 000110011001100010
+ 19          431          431        0        0        0         19          344      0.00    1717706
+#   prescan: 153 redex-free of 431 closed terms
+#   max|nf| witness: 0001100110011000110
+ 20          883          882        1        0        0         20          825      0.00    2213954
+#   prescan: 271 redex-free of 883 closed terms
+#   max|nf| witness: 00011001100110011010
+#   verify: count matches A114852
+#   verify: max|nf| matches BBλ(20)
+ 21         1361         1361        0        0        0         22         1286      0.00    2475486
+#   prescan: 385 redex-free of 1361 closed terms
+#   max|nf| witness: 000100011010011000110
+#   verify: max|nf| matches BBλ(21)
+ 22         2736         2729        7        0        0         24         2834      0.00   10685747
+#   prescan: 721 redex-free of 2736 closed terms
+#   max|nf| witness: 0001000110100110011010
+ 23         4405         4405        0        0        0         26         4664      0.00   14373911
+#   prescan: 1135 redex-free of 4405 closed terms
+#   max|nf| witness: 00010001101001100000110
+ 24         8574         8549       25        0       10         30         9890      0.00    7282815
+#   prescan: 1992 redex-free of 8574 closed terms
+#   max|nf| witness: 000100011001101001100010
+#   rung2 stuck: 1 beta-bound, 9 transition-bound
+#   verify: count matches A114852
+ 25        14334        14311       23        0       11         42        16868      0.00   11051308
+#   prescan: 3112 redex-free of 14334 closed terms
+#   max|nf| witness: 0001000110100001100111010
+#   rung2 stuck: 2 beta-bound, 9 transition-bound
+ 26        27465        27400       65        0       10         52        34702      0.00   19682881
+#   prescan: 5535 redex-free of 27465 closed terms
+#   max|nf| witness: 01000110100000011100110110
+#   rung2 stuck: 0 beta-bound, 10 transition-bound
+#   verify: max|nf| matches BBλ(26)
+ 27        47146        47101       45        0        9         44        60969      0.00   26530605
+#   prescan: 9105 redex-free of 47146 closed terms
+#   max|nf| witness: 000001000110100001100111010
+#   rung2 stuck: 1 beta-bound, 8 transition-bound
+ 28        89270        89022      248        0      101         58       122311      0.01   14906283
+#   prescan: 15916 redex-free of 89270 closed terms
+#   max|nf| witness: 0001000110100001100111000110
+#   rung2 stuck: 9 beta-bound, 92 transition-bound
+#   verify: count matches A114852
+ 29       156360       156080      280        0      103        223       219295      0.02    9736596
+#   prescan: 26219 redex-free of 156360 closed terms
+#   max|nf| witness: 00010001101000011001100111010
+#   rung2 stuck: 13 beta-bound, 90 transition-bound
+#   verify: max|nf| matches BBλ(29)
+ 30       293840       293014      826        0      341        160       433560      0.02   16660784
+#   prescan: 45815 redex-free of 293840 closed terms
+#   max|nf| witness: 010001100110100000011100110110
+#   rung2 stuck: 25 beta-bound, 316 transition-bound
+ 31       522913       521730     1183        0      625        267       790058      0.03   15322504
+#   prescan: 77334 redex-free of 522913 closed terms
+#   max|nf| witness: 0100011010000001110011100110110
+#   rung2 stuck: 100 beta-bound, 525 transition-bound
+ 32       978447       975507     2939        1     1334        298      1544660      0.12    7919191
+#   prescan: 135029 redex-free of 978447 closed terms
+#   max|nf| witness: 00010001101000011001100111000110
+#   unknowns by cause: 1 capacity, 0 work-meter; max successful rescue 0 beta
+#   stuck rescues: 1 beta-bound, 0 transition-bound
+#   rung2 stuck: 158 beta-bound, 1176 transition-bound
+#   unknown: 01000110001100001011010000110110
+#   verify: count matches A114852
+#   verify: max|nf| matches BBλ(32)
+ 33      1761907      1757787     4118        2     1691       1812      2849317      1.07    1640922
+#   prescan: 229189 redex-free of 1761907 closed terms
+#   max|nf| witness: 000100011010000110011001100111010
+#   unknowns by cause: 2 capacity, 0 work-meter; max successful rescue 0 beta
+#   stuck rescues: 0 beta-bound, 2 transition-bound
+#   rung2 stuck: 189 beta-bound, 1502 transition-bound
+#   unknown: 010001011010100000011100101101010
+#   unknown: 010001101000011000000110011110110
+#   verify: max|nf| matches BBλ(33)
+ 34      3288605      3278660     9935       10     4738     327686      5920121      1.12    2940501
+#   prescan: 399498 redex-free of 3288605 closed terms
+#   max|nf| witness: 0100010110011010100000011100111010
+#   unknowns by cause: 10 capacity, 0 work-meter; max successful rescue 192757 beta
+#   rescued: 2 from capacity (max 192757 beta), 0 from work-meter (max 0 beta); max trans 1387317
+#   stuck rescues: 1 beta-bound, 9 transition-bound
+#   rung2 stuck: 452 beta-bound, 4286 transition-bound
+#   unknown: 0001000110001100001011010000110110
+#   unknown: 0100010101101010100000011100110110
+#   unknown: 0100010110011010100000011100110110
+#   unknown: 0100010110101000000101110100111010
+#   unknown: 0100010110101000000111001011010110
+#   unknown: 0100010110101000000111001011011010
+#   unknown: 0100010110101000000111001011101010
+#   unknown: 0100011010000001011010010111010110
+#   unknown: 0100011010000001100101110110011010
+#   unknown: 0100011010000001110000111001111010
+#   verify: max|nf| matches BBλ(34)
+ 35      5977863      5961400    16440       23     8777      98421     10320756      2.05    2923068
+#   prescan: 685710 redex-free of 5977863 closed terms
+#   max|nf| witness: 01000110011010000001110011100111010
+#   unknowns by cause: 22 capacity, 1 work-meter; max successful rescue 21197 beta
+#   rescued: 1 from capacity (max 21197 beta), 0 from work-meter (max 0 beta); max trans 182448
+#   stuck rescues: 2 beta-bound, 21 transition-bound
+#   rung2 stuck: 1227 beta-bound, 7550 transition-bound
+#   unknown: 00010001011010100000011100101101010
+#   unknown: 00010001101000011000000110011110110
+#   unknown: 01000101100010100000011100101101010
+#   unknown: 01000101101010000001011010000110110
+#   unknown: 01000101101010000001110010110110110
+#   unknown: 01000101101010000001110010111010110
+#   unknown: 01000101101010000001110011001110110
+#   unknown: 01000101101010000001110011100110110
+#   unknown: 01000101101010000001110011100111010
+#   unknown: 01000110011000000110011101000011010
+#   unknown: 01000110011000000111001101000011010
+#   unknown: 01000110011010000001110011001110110
+#   unknown: 01000110100000010111001011010110110
+#   unknown: 01000110100000011001011101100110110
+#   unknown: 01000110100000011001011101100111010
+#   unknown: 01000110100001011000000110011101010
+#   ... and 7 more unknowns
+ 36     11148652     11112178    36430       44    18729    1441774     20383062      3.08    3624988
+#   prescan: 1198828 redex-free of 11148652 closed terms
+#   max|nf| witness: 010001101000010110000001110011101010
+#   unknowns by cause: 37 capacity, 7 work-meter; max successful rescue 127225 beta
+#   rescued: 1 from capacity (max 127225 beta), 0 from work-meter (max 0 beta); max trans 2103836
+#   stuck rescues: 22 beta-bound, 22 transition-bound
+#   rung2 stuck: 2160 beta-bound, 16569 transition-bound
+#   unknown: 000001000110001100001011010000110110
+#   unknown: 000100010101101010100000011100110110
+#   unknown: 000100010110011010100000011100110110
+#   unknown: 000100010110101000000101110100111010
+#   unknown: 000100010110101000000111001011010110
+#   unknown: 000100010110101000000111001011011010
+#   unknown: 000100010110101000000111001011101010
+#   unknown: 000100010110110100000011100101101010
+#   unknown: 000100011010000001011010010111010110
+#   unknown: 000100011010000001100101110110011010
+#   unknown: 000100011010000001110000111001111010
+#   unknown: 010000011100011100001011010000110110
+#   unknown: 010001011000110100001011010000110110
+#   unknown: 010001011010100000010101101000111010
+#   unknown: 010001011010100000010110110000110110
+#   unknown: 010001011010100000010111010000110110
+#   ... and 28 more unknowns
+#   verify: count matches A114852
+ 37     20414058     20352040    61924       94    32806    4290711     37433357      6.05    3376666
+#   prescan: 2070207 redex-free of 20414058 closed terms
+#   max|nf| witness: 0100011001101000011000000111100111010
+#   unknowns by cause: 75 capacity, 19 work-meter; max successful rescue 189229 beta
+#   rescued: 1 from capacity (max 189229 beta), 0 from work-meter (max 0 beta); max trans 2625188
+#   stuck rescues: 26 beta-bound, 68 transition-bound
+#   rung2 stuck: 4539 beta-bound, 28267 transition-bound
+#   unknown: 0000010001011010100000011100101101010
+#   unknown: 0000010001101000011000000110011110110
+#   unknown: 0001000101100010100000011100101101010
+#   unknown: 0001000101101010000001011010000110110
+#   unknown: 0001000101101010000001110010110110110
+#   unknown: 0001000101101010000001110010111010110
+#   unknown: 0001000101101010000001110011001110110
+#   unknown: 0001000101101010000001110011100110110
+#   unknown: 0001000101101010000001110011100111010
+#   unknown: 0001000110011000000110011101000011010
+#   unknown: 0001000110011000000111001101000011010
+#   unknown: 0001000110011010000001110011001110110
+#   unknown: 0001000110100000010111001011010110110
+#   unknown: 0001000110100000011001011101100110110
+#   unknown: 0001000110100000011001011101100111010
+#   unknown: 0001000110100001011000000110011101010
+#   ... and 78 more unknowns
+ 38     38071898     37940976   130699      223    70776  222333282     93522823     11.19    3402798
+#   prescan: 3619677 redex-free of 38071898 closed terms
+#   max|nf| witness: 01000101101010000001100111001100111010
+#   unknowns by cause: 192 capacity, 31 work-meter; max successful rescue 9452558 beta
+#   rescued: 10 from capacity (max 9452558 beta), 0 from work-meter (max 0 beta); max trans 160434707
+#   stuck rescues: 100 beta-bound, 123 transition-bound
+#   rung2 stuck: 9423 beta-bound, 61353 transition-bound
+#   unknown: 00000001000110001100001011010000110110
+#   unknown: 00000100010101101010100000011100110110
+#   unknown: 00000100010110011010100000011100110110
+#   unknown: 00000100010110101000000101110100111010
+#   unknown: 00000100010110101000000111001011010110
+#   unknown: 00000100010110101000000111001011011010
+#   unknown: 00000100010110101000000111001011101010
+#   unknown: 00000100010110110100000011100101101010
+#   unknown: 00000100011010000001011010010111010110
+#   unknown: 00000100011010000001100101110110011010
+#   unknown: 00000100011010000001110000111001111010
+#   unknown: 00010000011100011100001011010000110110
+#   unknown: 00010001011000110100001011010000110110
+#   unknown: 00010001011010100000010101101000111010
+#   unknown: 00010001011010100000010110110000110110
+#   unknown: 00010001011010100000010111010000110110
+#   ... and 207 more unknowns
+ 39     70125402     69896747   228157      498   125842   10263449    142159030     23.66    2963522
+#   prescan: 6286268 redex-free of 70125402 closed terms
+#   max|nf| witness: 010001101000000111001110011100110011010
+#   unknowns by cause: 407 capacity, 91 work-meter; max successful rescue 3515944 beta
+#   rescued: 21 from capacity (max 953424 beta), 0 from work-meter (max 0 beta); max trans 13639048
+#   stuck rescues: 180 beta-bound, 318 transition-bound
+#   rung2 stuck: 18009 beta-bound, 107833 transition-bound
+#   unknown: 000000010001011010100000011100101101010
+#   unknown: 000000010001101000011000000110011110110
+#   unknown: 000001000101100010100000011100101101010
+#   unknown: 000001000101101010000001011010000110110
+#   unknown: 000001000101101010000001110010110110110
+#   unknown: 000001000101101010000001110010111010110
+#   unknown: 000001000101101010000001110011001110110
+#   unknown: 000001000101101010000001110011100110110
+#   unknown: 000001000101101010000001110011100111010
+#   unknown: 000001000101101110100000011100101101010
+#   unknown: 000001000110011000000110011101000011010
+#   unknown: 000001000110011000000111001101000011010
+#   unknown: 000001000110011010000001110011001110110
+#   unknown: 000001000110100000010111001011010110110
+#   unknown: 000001000110100000011001011101100110110
+#   unknown: 000001000110100000011001011101100111010
+#   ... and 482 more unknowns
+ 40    130880047    130411961   466949     1137   256514  222333284    329282346     53.03    2468052
+#   prescan: 11024475 redex-free of 130880047 closed terms
+#   max|nf| witness: 0001000101101010000001100111001100111010
+#   unknowns by cause: 965 capacity, 172 work-meter; max successful rescue 6895676 beta
+#   rescued: 95 from capacity (max 6895676 beta), 0 from work-meter (max 0 beta); max trans 58532321
+#   stuck rescues: 434 beta-bound, 703 transition-bound
+#   rung2 stuck: 33444 beta-bound, 223070 transition-bound
+#   unknown: 0000000001000110001100001011010000110110
+#   unknown: 0000000100010101101010100000011100110110
+#   unknown: 0000000100010110011010100000011100110110
+#   unknown: 0000000100010110101000000101110100111010
+#   unknown: 0000000100010110101000000111001011010110
+#   unknown: 0000000100010110101000000111001011011010
+#   unknown: 0000000100010110101000000111001011101010
+#   unknown: 0000000100010110110100000011100101101010
+#   unknown: 0000000100011010000001011010010111010110
+#   unknown: 0000000100011010000001100101110110011010
+#   unknown: 0000000100011010000001110000111001111010
+#   unknown: 0000010000011100011100001011010000110110
+#   unknown: 0000010001011000110100001011010000110110
+#   unknown: 0000010001011010100000010101101000111010
+#   unknown: 0000010001011010100000010110110000110110
+#   unknown: 0000010001011010100000010111010000110110
+#   ... and 1121 more unknowns
+ 41    242222714    241372280   847934     2500   483677 1074266118    529935277    123.71    1957983
+#   prescan: 19241836 redex-free of 242222714 closed terms
+#   max|nf| witness: 01000101100110101000000111001110000111010
+#   unknowns by cause: 2060 capacity, 440 work-meter; max successful rescue 9457564 beta
+#   rescued: 104 from capacity (max 9457564 beta), 0 from work-meter (max 0 beta); max trans 105847128
+#   stuck rescues: 762 beta-bound, 1738 transition-bound
+#   rung2 stuck: 70327 beta-bound, 413350 transition-bound
+#   unknown: 00000000010001011010100000011100101101010
+#   unknown: 00000000010001101000011000000110011110110
+#   unknown: 00000001000101100010100000011100101101010
+#   unknown: 00000001000101101010000001011010000110110
+#   unknown: 00000001000101101010000001110010110110110
+#   unknown: 00000001000101101010000001110010111010110
+#   unknown: 00000001000101101010000001110011001110110
+#   unknown: 00000001000101101010000001110011100110110
+#   unknown: 00000001000101101010000001110011100111010
+#   unknown: 00000001000101101110100000011100101101010
+#   unknown: 00000001000110011000000110011101000011010
+#   unknown: 00000001000110011000000111001101000011010
+#   unknown: 00000001000110011010000001110011001110110
+#   unknown: 00000001000110100000010111001011010110110
+#   unknown: 00000001000110100000011001011101100110110
+#   unknown: 00000001000110100000011001011101100111010
+#   ... and 2484 more unknowns
+# redloop: 14696 proofs, 42898 shape-matches lost to probe fuel

@@ -1,3 +1,6 @@
+# blam solomonoff 2.0.0
+# sizes 4..=41
+# ladder: budget1=64 budget2=4096 bb-cap=2000000 rescue=10000000 x32 trans; prescan=true oracle=true work-mult=16 probe-fuel=4096
 == programs 4..41 bits ==
 terms 526039969 | halt 524227208 | diverge 1808229 | unknown 4532
 halt_mass     = 2289334773778219008 * 2^-64 = 0.124105086764
@@ -134,4 +137,4 @@ kraft covered = 0.124122677887 (all closed terms 4..41)
     00010110100010    14   14    790752     8.647e-5      13.50
     00010110001010    14   14    810510     8.596e-5      13.51
 
-table: 5755656 distinct nontrivial nfs total; 691 with |x|≤20 dumped to /private/tmp/claude-501/-Users-a9lim-Work-blc/26f9351d-cd0a-41a0-b6c3-2b503179dacf/scratchpad/solomonoff_table41.txt
+table: 5755656 distinct nontrivial nfs total; 691 with |x|≤20 dumped to tmp/solomonoff-regen/solomonoff_table.txt
