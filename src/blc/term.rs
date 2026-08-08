@@ -178,11 +178,21 @@ fn sentinel() -> Rc<Term> {
         .unwrap_or_else(|_| Rc::new(Term::Var(1)))
 }
 
-/// Move `t`'s solely-owned interior children onto `stack`, leaving sentinels
-/// behind. Leaf children stay put: dropping a `Var` cannot recurse.
+/// Move `t`'s interior children onto `stack`, leaving sentinels behind.
+/// UNCONDITIONALLY — sole-owned or shared. An earlier version skipped
+/// children with `strong_count > 1`, which reopened the recursion for
+/// shared DAGs: in a chain of nodes whose two fields alias one child, the
+/// child's LAST handle is dropped from inside the parent's derived glue,
+/// one stack frame per level. Taking every handle routes that last
+/// decrement through the loop below instead. Only `t` is mutated, and `t`
+/// is always exclusively owned here (`&mut self` in drop, or a
+/// `try_unwrap` winner); a shared child itself is never touched — its
+/// taken handle just gets dropped, decrementing from ≥ 2, when
+/// `try_unwrap` refuses it. Leaf children stay put: dropping a `Var`
+/// cannot recurse.
 fn detach(t: &mut Term, stack: &mut Vec<Rc<Term>>) {
     fn take(slot: &mut Rc<Term>, stack: &mut Vec<Rc<Term>>) {
-        if Rc::strong_count(slot) == 1 && !matches!(**slot, Term::Var(_)) {
+        if !matches!(**slot, Term::Var(_)) {
             stack.push(mem::replace(slot, sentinel()));
         }
     }
@@ -197,21 +207,64 @@ fn detach(t: &mut Term, stack: &mut Vec<Rc<Term>>) {
 }
 
 /// The drop glue `Rc<Term>` would otherwise generate is recursive, and a
-/// wire-legal λ-tower is deep enough to blow the stack on the way out. Unwind
-/// through an explicit stack instead.
+/// wire-legal λ-tower is deep enough to blow the stack on the way out —
+/// as is a hand-built shared DAG. Unwind through an explicit stack
+/// instead.
 ///
-/// Each detached child is replaced by a shared sentinel before its `Rc` is
-/// taken, so the shallow drop that runs re-entrantly on the unwrapped node
-/// finds nothing solely-owned to follow: recursion is one frame deep, always.
+/// Every interior child is detached (replaced by a shared sentinel)
+/// before its handle is dropped or unwrapped, so the shallow drop that
+/// runs re-entrantly on a loop-owned node finds only sentinels and
+/// leaves: recursion is one frame deep, always, tree or DAG.
 impl Drop for Term {
     fn drop(&mut self) {
         // `Vec::new` does not allocate; leaves and shallow terms pay nothing.
         let mut stack: Vec<Rc<Term>> = Vec::new();
         detach(self, &mut stack);
         while let Some(rc) = stack.pop() {
-            if let Ok(mut t) = Rc::try_unwrap(rc) {
-                detach(&mut t, &mut stack);
+            match Rc::try_unwrap(rc) {
+                // Sole owner: scavenge the children, then `t` drops
+                // shallow at the end of this arm.
+                Ok(mut t) => detach(&mut t, &mut stack),
+                // Still shared (this includes every sentinel handle):
+                // dropping the handle decrements from ≥ 2 — never the
+                // last reference, never recursive.
+                Err(rc) => drop(rc),
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn shared_dag_chain_drops_iteratively() {
+        // Ten thousand levels of App(t, t) with BOTH fields aliasing one
+        // child: 2^10000 logical leaves in 10k allocations. The
+        // strong_count guard this test buried skipped shared children at
+        // detach, so the chain's last handles were dropped from inside
+        // derived glue — one stack frame per level, a fatal overflow.
+        let mut t = Rc::new(Term::Var(1));
+        for _ in 0..10_000 {
+            t = Rc::new(Term::App(t.clone(), t));
+        }
+        drop(t);
+    }
+
+    #[test]
+    fn shared_subterm_survives_a_siblings_drop() {
+        // Detaching is unconditional, so it must only ever take the
+        // dropped term's OWN handles: a subterm shared with a live term
+        // has to come through untouched.
+        let shared = Rc::new(Term::Lam(Rc::new(Term::Var(1))));
+        let keeper = Term::App(shared.clone(), Rc::new(Term::Var(2)));
+        let dropped = Term::App(Rc::new(Term::Var(3)), shared.clone());
+        drop(dropped);
+        assert_eq!(*shared, Term::Lam(Rc::new(Term::Var(1))));
+        let Term::App(f, _) = &keeper else {
+            panic!("keeper shape")
+        };
+        assert_eq!(**f, *shared);
     }
 }

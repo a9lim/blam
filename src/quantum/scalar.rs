@@ -156,35 +156,28 @@ impl Dw {
             // Inverse of (A,B,C,D) = (b−d, a+c, b+d, c−a):
             //   a = (B−D)/2, b = (A+C)/2, c = (B+D)/2, d = (C−A)/2.
             //
-            // Checked like the rest of the ring. `reduce` has no fallible
-            // signature — it changes representation, it does not compute a
-            // result — so an overflowing inverse step stops the descent
-            // instead: the value returned is the last k this form can be
-            // *proved* down to. Less reduced, never a wrong number.
-            //
-            // `overflowing_*` rather than `checked_*`: this loop runs on
-            // every ring multiplication and every H butterfly amplitude,
-            // and the four `Option<i128>` the checked form materialises
-            // are 128 bytes of stack traffic per iteration — measured at
-            // +9% on a 4..30 operator census. The values stay in
-            // registers here and the four flags fold into one test; the
-            // wrapped values are never read, since the flag test breaks
-            // first.
-            let (na2, o1) = v.b.overflowing_sub(v.d);
-            let (nb2, o2) = v.a.overflowing_add(v.c);
-            let (nc2, o3) = v.b.overflowing_add(v.d);
-            let (nd2, o4) = v.c.overflowing_sub(v.a);
-            if o1 | o2 | o3 | o4 {
-                break;
-            }
-            if na2 % 2 != 0 || nb2 % 2 != 0 || nc2 % 2 != 0 || nd2 % 2 != 0 {
+            // The step applies exactly when all four are integral, i.e.
+            // b,d and a,c agree in parity — and then each HALF always
+            // fits in i128 even where the un-halved sum would not
+            // ((i128::MAX − i128::MIN)/2 < 2^127), so the halves are
+            // computed directly with the floor identities
+            //   (x+y)/2 = (x>>1) + (y>>1) + (x & y & 1)
+            //   (x−y)/2 = (x>>1) − (y>>1) − (!x & y & 1)
+            // (exact here: the sums are even). No overflow is possible,
+            // so `reduce` is total and the result is always the fully
+            // canonical form — which consumers like `is_dyadic` and
+            // `real_parts` rely on, since they read the reduced
+            // representation, not the number. An earlier break-on-
+            // overflow variant returned a *noncanonical* value at the
+            // i128 edge: numerically right, verdict-wrong.
+            if ((v.b ^ v.d) | (v.a ^ v.c)) & 1 != 0 {
                 break;
             }
             v = Dw {
-                a: na2 / 2,
-                b: nb2 / 2,
-                c: nc2 / 2,
-                d: nd2 / 2,
+                a: (v.b >> 1) - (v.d >> 1) - (!v.b & v.d & 1),
+                b: (v.a >> 1) + (v.c >> 1) + (v.a & v.c & 1),
+                c: (v.b >> 1) + (v.d >> 1) + (v.b & v.d & 1),
+                d: (v.c >> 1) - (v.a >> 1) - (!v.c & v.a & 1),
                 k: v.k - 1,
             };
         }
@@ -390,7 +383,10 @@ impl Dw {
     /// cannot drift apart on what "real" means.
     pub fn real_parts(&self) -> Option<(i128, i128, u32)> {
         let r = self.reduce();
-        (r.c == 0 && r.b == -r.d).then_some((r.a, r.b, r.k))
+        // b = −d, asked without negating: `-r.d` wraps (to itself) at
+        // i128::MIN, which in release turned a purely imaginary value
+        // into a "real" one.
+        (r.c == 0 && r.b.checked_add(r.d) == Some(0)).then_some((r.a, r.b, r.k))
     }
 
     /// True iff the value is real (equals its own conjugate).
@@ -719,6 +715,43 @@ mod tests {
             v.k += 1;
         }
         Some(v)
+    }
+
+    #[test]
+    fn reduce_is_canonical_at_the_i128_edge() {
+        // (2^126·ω − 2^126·ω³)/√2 = 2^126 exactly: dyadic, but the
+        // inverse step's un-halved numerator b−d = 2^127 does not fit in
+        // i128. The floor-half identities must still fully canonicalise
+        // it — a break-on-overflow reduce returned it UNREDUCED here, and
+        // is_dyadic (which reads the representation) then said false to a
+        // dyadic value.
+        let x = 1i128 << 126;
+        let v = Dw {
+            a: 0,
+            b: x,
+            c: 0,
+            d: -x,
+            k: 1,
+        };
+        let r = v.reduce();
+        assert_eq!((r.a, r.b, r.c, r.d, r.k), (x, 0, 0, 0, 0));
+        assert!(is_dyadic(v), "2^126 is dyadic");
+    }
+
+    #[test]
+    fn reality_test_survives_i128_min() {
+        // b = d = i128::MIN is purely imaginary (b ≠ −d; −d is not even
+        // representable). The old `r.b == -r.d` wrapped MIN to itself in
+        // release and called it real.
+        let v = Dw {
+            a: 0,
+            b: i128::MIN,
+            c: 0,
+            d: i128::MIN,
+            k: 0,
+        };
+        assert!(v.real_parts().is_none());
+        assert!(!v.is_real());
     }
 
     /// The pre-optimisation `reduce`: single inverse steps only, no pair

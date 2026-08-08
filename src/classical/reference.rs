@@ -3,7 +3,10 @@
 //! Textbook shift/substitute reduction (the `blc::reduction` kernel,
 //! TAPL adapted to 1-indexed de Bruijn), leftmost-outermost order, fuel
 //! counted in beta-steps. Deliberately favors obvious correctness over
-//! speed; the fast machine is tested against this.
+//! speed; the fast machine is tested against this. Recursion is part of
+//! that obviousness — this path (and the reduction kernel under it) can
+//! overflow on pathologically deep terms that the substrate itself
+//! parses, prints, and drops fine. The KN machine is the iterative path.
 //!
 //! Step-counting convention: β-steps, i.e. leftmost-outermost
 //! contractions. This is lockstep-identical to the KN machine's count

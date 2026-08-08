@@ -891,11 +891,11 @@ pub fn run(argv: &[String]) -> R<()> {
     }
 
     // Provenance, then the table — the shape `q census` already prints.
-    // This stdout stream IS a measurement (data/classical/census_table.txt
-    // is a verbatim capture of it), so it says which binary, which range,
-    // and at which budgets it was produced, and every line that is not a
-    // table row is marked `#` so a reader can strip the prose without
-    // guessing at indentation.
+    // This stdout stream IS a measurement (each canonical
+    // data/classical/census_table.txt generation is a verbatim capture of
+    // it), so it says which binary, which range, and at which budgets it
+    // was produced, and every line that is not a table row is marked `#`
+    // so a reader can strip the prose without guessing at indentation.
     println!("# blam census {}", env!("CARGO_PKG_VERSION"));
     println!("# sizes {min_n}..={max_n}");
     println!("# ladder: {}", describe(&cfg.ladder));

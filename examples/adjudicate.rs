@@ -1,4 +1,4 @@
-//! The halting ladder on two famous terms: a one-step halter and Ω.
+//! The halting ladder on two famous terms: a two-step halter and Ω.
 //!
 //! Usage: cargo run --release --example adjudicate
 

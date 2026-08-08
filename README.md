@@ -109,6 +109,7 @@ Every sweep driver in the repo adjudicates through it.
 
 ```rust
 use blam::classical::ladder::{self, LadderCfg, Verdict};
+use blam::classical::machine::{Machine, Pool, SizeSink};
 
 let mut pool = Pool::new();
 let root = pool.decode_str("010001101000011010").unwrap(); // Ω

@@ -96,7 +96,19 @@ impl Pool {
     /// Append a node, returning its index. Public so callers can splice a
     /// decoded term into a larger context (slot search closes candidates
     /// under rigid binders this way) without a second decode pass.
+    ///
+    /// # Panics
+    ///
+    /// At 2³¹ nodes (a ≥ 24 GiB arena): bit 31 of a node index is the
+    /// machine's env-cell tag, so a bigger arena would alias rigid
+    /// levels and silently normalize a different term. The old u32 index
+    /// wrapped at 2³² with no guard at all; the fence is new, the cliff
+    /// is not.
     pub fn push(&mut self, n: Node) -> u32 {
+        assert!(
+            self.nodes.len() < LVL_TAG as usize,
+            "term arena exceeded 2^31 nodes"
+        );
         self.nodes.push(n);
         (self.nodes.len() - 1) as u32
     }

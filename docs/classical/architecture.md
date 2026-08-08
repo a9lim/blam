@@ -336,7 +336,7 @@ n−1 the row is bit-identical, escalation column included. Memo files are
 therefore part of the delta protocol, not a speedup — which is exactly why
 their content is fingerprinted into the checkpoint header.
 
-One reporting caveat: the trailing `redloop:` line counts process-global
+One reporting caveat: the trailing `# redloop:` line counts process-global
 atomics, so a resumed run reports only the fires it recomputed. Table rows are
 unaffected.
 

@@ -34,7 +34,7 @@ Discovery and trust are split, mirroring the classical certificate
 architecture (`classical::certificate::search` under the untrusted
 `blam cert search`, `classical::certificate` as the checker):
 
-- **Discovery** is `classical::escalation::normal_form_spine_with`: the
+- **Discovery** is `classical::escalation::normal_form_spine`: the
   escalation engine with the syntactic oracle disabled (the oracle's
   no-nf verdict is not spine-attributable) and a spine flag threaded so
   a Diverge is tagged when its proof landed on the root's own
