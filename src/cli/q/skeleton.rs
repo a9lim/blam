@@ -208,8 +208,8 @@ pub fn run(argv: &[String]) -> R<()> {
                 // Deterministic reduction at the same caps reaches the
                 // same HoleFree, and residual-unknowns are rare (37 on
                 // the canonical frontier), so the recompute is noise.
-                let SkelVerdict::HoleFree { residual, .. } = adjudicate(&p, slots, &caps)
-                    .unwrap_or_else(|e| panic!("{bits}: {e}"))
+                let SkelVerdict::HoleFree { residual, .. } =
+                    adjudicate(&p, slots, &caps).unwrap_or_else(|e| panic!("{bits}: {e}"))
                 else {
                     panic!("{bits}: residual-unknown without a HoleFree rung-1 rerun");
                 };

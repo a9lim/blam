@@ -1152,8 +1152,8 @@ pub fn verify_pdr(
     let drop = check_reduces(&papp(p.clone(), q()), &z(), lemma_steps, max_nodes)
         .map_err(PdrFail::Drop)?;
     // SEED(Q):      C0 Q   →ₕ⁺ A
-    let seed = check_reduces(&papp(c0.clone(), q()), &a, lemma_steps, max_nodes)
-        .map_err(PdrFail::Seed)?;
+    let seed =
+        check_reduces(&papp(c0.clone(), q()), &a, lemma_steps, max_nodes).map_err(PdrFail::Seed)?;
 
     // INIT: identical machinery to v1.2 — same tower, same lifting.
     let landing = init_landing(t, &a, &w, &c0, init_steps, max_nodes).ok_or(PdrFail::Init)?;
