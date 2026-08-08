@@ -300,6 +300,19 @@ pub fn sha256_16(path: &str) -> String {
     s
 }
 
+/// Full 64-hex-digit SHA-256 of a byte string — the digest the skeleton
+/// residual provenance rows carry (`docs/quantum/escalation.md`: residual
+/// strings are not tracked, so the digest is the residual's identity).
+pub fn sha256_hex(bytes: &[u8]) -> String {
+    let d = sha256(bytes);
+    let mut s = String::with_capacity(64);
+    for b in &d {
+        use std::fmt::Write as _;
+        write!(s, "{b:02x}").unwrap();
+    }
+    s
+}
+
 /// SHA-256 (FIPS 180-4), the whole message in memory. Self-contained so
 /// the checkpoint fence costs no dependency; the standard "abc" and
 /// empty-string vectors are asserted in the tests below.

@@ -13,11 +13,14 @@
 
 use crate::args::{self, Args, R};
 use blam::quantum::certificate::{
-    adjudicate_with_transfer, CapReason, SkelCaps, Transfer, TransferCaps, TransferScratch, Via,
+    adjudicate, adjudicate_with_transfer, CapReason, SkelCaps, SkelVerdict, Transfer, TransferCaps,
+    TransferScratch, Via,
 };
 use blam::quantum::sig::FROZEN;
 use rayon::prelude::*;
+use std::io::Write as _;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Mutex;
 use std::time::Instant;
 
 const USAGE: &str = "\
@@ -34,6 +37,16 @@ usage: blam q skeleton FILE [flags]
                   BLC_WORK_MULT honored as fallback)
   --probe-fuel N  redloop probe fuel (default 4096; BLC_PROBE_FUEL
                   honored as fallback)
+  --capout-telemetry FILE   one line per capout program:
+                  `<bits> reason=<steps|size> steps=N hw=M`
+                  (rung-3 stratification input; escalation.md)
+  --residuals FILE          one line per residual-unknown:
+                  `<bits> src_bits=N residual_bits=M sha256=<hex>`
+                  (manifest provenance rows; sha over the residual's
+                  ASCII wire string)
+
+Both side files are sorted by program bits (byte-lex), independent of
+completion order. The stdout verdict stream is unchanged by either flag.
 
 Prints `<bits> skel2=<verdict>` per program: loop, halt-inert,
 holedemanded, capout, halt, div, or residual-unknown.";
@@ -101,6 +114,8 @@ pub fn run(argv: &[String]) -> R<()> {
     // slot — but `--sig` is spelled the same as everywhere else so an
     // alternate universe's frontier can be swept with its own slot count.
     let mut slots = FROZEN.len() as u32;
+    let mut capout_path: Option<String> = None;
+    let mut residuals_path: Option<String> = None;
     let mut p = Args::new("q skeleton", argv);
     while let Some(tok) = p.next() {
         match tok {
@@ -110,6 +125,8 @@ pub fn run(argv: &[String]) -> R<()> {
             "--threads" => threads = p.num(tok)?,
             "--work-mult" => work_mult = Some(p.num(tok)?),
             "--probe-fuel" => probe_fuel = Some(p.num(tok)?),
+            "--capout-telemetry" => capout_path = Some(p.value(tok)?.to_string()),
+            "--residuals" => residuals_path = Some(p.value(tok)?.to_string()),
             _ if tok.starts_with('-') => return Err(p.unknown(tok)),
             _ => p.push(tok),
         }
@@ -122,6 +139,17 @@ pub fn run(argv: &[String]) -> R<()> {
         ));
     };
     let engine = args::engine_cfg("q skeleton", work_mult, probe_fuel)?;
+    // Every declared output path, opened (and truncated) before any
+    // compute, same as `q census`: a mistyped path must fail now, not
+    // after the sweep.
+    let mut cap_file = match &capout_path {
+        Some(p) => Some(crate::out::create("q skeleton", "--capout-telemetry", p)?),
+        None => None,
+    };
+    let mut res_file = match &residuals_path {
+        Some(p) => Some(crate::out::create("q skeleton", "--residuals", p)?),
+        None => None,
+    };
     // The file is validated line by line here, sequentially, BEFORE the
     // pool exists: an open program used to reach `adjudicate_with_
     // transfer` on a worker and panic there, mid-sweep.
@@ -143,6 +171,12 @@ pub fn run(argv: &[String]) -> R<()> {
     let cap_steps = AtomicU64::new(0);
     let cap_size = AtomicU64::new(0);
     let done = AtomicU64::new(0);
+    // Side-channel collection exists only when asked for: the flag-off
+    // sweep takes no lock (the per-item Mutex lesson above), and the
+    // stdout stream — whose bits-sorted digest is the canonical one —
+    // is identical either way.
+    let cap_lines: Option<Mutex<Vec<String>>> = cap_file.as_ref().map(|_| Mutex::new(Vec::new()));
+    let res_lines: Option<Mutex<Vec<String>>> = res_file.as_ref().map(|_| Mutex::new(Vec::new()));
     programs
         .par_iter()
         .for_each_init(TransferScratch::new, |scratch, bits| {
@@ -157,6 +191,35 @@ pub fn run(argv: &[String]) -> R<()> {
                     CapReason::Size => &cap_size,
                 }
                 .fetch_add(1, Ordering::Relaxed);
+                if let Some(lines) = &cap_lines {
+                    let reason = match c.reason {
+                        CapReason::Steps => "steps",
+                        CapReason::Size => "size",
+                    };
+                    lines.lock().unwrap().push(format!(
+                        "{bits} reason={reason} steps={} hw={}",
+                        c.steps, c.high_water_bits
+                    ));
+                }
+            }
+            if let (Some(lines), Transfer::ResidualUnknown { .. }) = (&res_lines, &verdict) {
+                // Rung-1 rerun to recover the residual that
+                // `adjudicate_with_transfer` dropped (Transfer is Copy).
+                // Deterministic reduction at the same caps reaches the
+                // same HoleFree, and residual-unknowns are rare (37 on
+                // the canonical frontier), so the recompute is noise.
+                let SkelVerdict::HoleFree { residual, .. } = adjudicate(&p, slots, &caps)
+                    .unwrap_or_else(|e| panic!("{bits}: {e}"))
+                else {
+                    panic!("{bits}: residual-unknown without a HoleFree rung-1 rerun");
+                };
+                let rbits = residual.to_bits();
+                lines.lock().unwrap().push(format!(
+                    "{bits} src_bits={} residual_bits={} sha256={}",
+                    bits.len(),
+                    rbits.len(),
+                    crate::ckpt::sha256_hex(rbits.as_bytes())
+                ));
             }
             let (kind, detail) = render(&verdict);
             println!("{bits} skel2={}{detail}", KINDS[kind as usize]);
@@ -193,6 +256,26 @@ pub fn run(argv: &[String]) -> R<()> {
     );
     if cs + cz > 0 {
         eprintln!("capout split: steps-bound {cs}  size-bound {cz}");
+    }
+    // Closed-program codes are prefix-free, so byte-lex on the full line
+    // IS byte-lex on the program bits — the same order the manifest's
+    // sorted-stream digest uses.
+    for (file, lines, path) in [
+        (cap_file.as_mut(), cap_lines, &capout_path),
+        (res_file.as_mut(), res_lines, &residuals_path),
+    ] {
+        let (Some(f), Some(m), Some(path)) = (file, lines, path) else {
+            continue;
+        };
+        let mut v = m.into_inner().unwrap();
+        v.sort_unstable();
+        let mut w = std::io::BufWriter::new(f);
+        for line in &v {
+            writeln!(w, "{line}")
+                .map_err(|e| format!("blam q skeleton: cannot write {path}: {e}"))?;
+        }
+        w.flush()
+            .map_err(|e| format!("blam q skeleton: cannot write {path}: {e}"))?;
     }
     Ok(())
 }
