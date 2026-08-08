@@ -114,7 +114,7 @@ impl Pool {
     }
 
     /// Decode one BLC term off a bit stream (the one wire-grammar
-    /// decoder, [`wire::decode`], building into this arena). Returns the
+    /// decoder in [`wire`], building into this arena). Returns the
     /// root index.
     pub fn decode(&mut self, bits: &mut impl Iterator<Item = bool>) -> Option<u32> {
         // The build stack is taken out for the duration and put back
@@ -311,9 +311,13 @@ impl Sink for StringSink {
 }
 
 /// Marks an env cell as a rigid level rather than a closure. Steals bit
-/// 31 of the cell's first word, which caps arena node indices at 2^31 —
-/// far above any reachable arena (nodes per term are bounded by the
-/// term's bit count, and env cells live in their own vector).
+/// 31 of the cell's FIRST word, which carries exactly two things: a Pool
+/// node index (`push_clo`, fenced by [`Pool::push`]'s 2³¹ assert) or the
+/// binder `depth` (`push_lvl`, bounded through the transition clamp in
+/// `normalize_inner`). Env-cell indices are untagged plain u32 in the
+/// second word and in `parents`; the tag places no constraint on them —
+/// their `as u32` truncation cliff at 2³² sits exactly where it always
+/// did, behind the same transition clamp.
 const LVL_TAG: u32 = 1 << 31;
 
 #[derive(Debug, Clone, Copy)]
@@ -353,6 +357,15 @@ pub struct Machine {
 }
 
 impl Machine {
+    /// The largest honourable transition cap: one env cell can be pushed
+    /// per transition, and env-cell payloads keep `depth` and node
+    /// indices below the private `LVL_TAG` bit, so `normalize_capped` clamps
+    /// any larger request here and reports `OutOfFuel::Transitions` at
+    /// the clamp. Callers that promise a budget (the ladder's
+    /// `rescue × rescue_trans_mult`) must keep the product within this,
+    /// or the promise silently shrinks — the CLI refuses such configs.
+    pub const MAX_TRANS: u64 = LVL_TAG as u64 - 1;
+
     pub fn new() -> Self {
         Self::default()
     }
@@ -435,14 +448,15 @@ impl Machine {
         trans_limit: u64,
         sink: &mut S,
     ) -> Result<u64, OutOfFuel> {
-        // Each transition allocates at most one env cell, so clamping the
-        // cap under LVL_TAG makes "an env index never reaches the tag
-        // bit" structural rather than assumed — with no check in the hot
-        // loop. A caller asking for more transitions than the index space
-        // holds gets an honest Transitions verdict at the clamp (2^31−1
-        // is ~6.7× the canonical rescue cap, and the cells alone would
-        // cost ~25 GB before the old u32 index wrapped).
-        let trans_limit = trans_limit.min(LVL_TAG as u64 - 1);
+        // Each transition pushes at most one env cell, and `depth` only
+        // grows with a push_lvl, so clamping the cap under LVL_TAG makes
+        // "`depth` never reaches the tag bit" (and "env indices stay in
+        // u32") structural rather than assumed — with no check in the
+        // hot loop. A caller asking for more transitions than that gets
+        // an honest Transitions verdict at the clamp; the CLI refuses
+        // rescue configs whose product exceeds [`Machine::MAX_TRANS`]
+        // up front, so no driver run is silently downgraded.
+        let trans_limit = trans_limit.min(Machine::MAX_TRANS);
         self.envs.clear();
         self.parents.clear();
         self.stack.clear();

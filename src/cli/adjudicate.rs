@@ -119,6 +119,7 @@ pub fn run(argv: &[String]) -> R<()> {
             "the single-term report always prints the ladder line",
         ));
     }
+    args::check_rescue("adjudicate", cfg.rescue, cfg.rescue_trans_mult)?;
     cfg.engine = args::engine_cfg("adjudicate", work_mult, probe_fuel)?;
     if verbose {
         eprintln!("ladder: {}", describe(&cfg));

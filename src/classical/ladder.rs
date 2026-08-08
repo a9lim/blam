@@ -66,6 +66,11 @@ pub struct LadderCfg {
     /// 9.45M β via 160.4M transitions); 32 keeps a 1.88× margin and
     /// halves the cost of transition-bound stuck rescues vs the old
     /// blanket 64.
+    ///
+    /// The product is capped by `Machine::MAX_TRANS` (2³¹−1): at ×32,
+    /// `rescue` above 67,108,863 cannot get its stated multiplier, so
+    /// raise `rescue` and this together only within that budget (the
+    /// drivers refuse configs whose product exceeds it).
     pub rescue_trans_mult: u64,
     /// Run the redex-free pre-scan (rung 1 of the ladder).
     pub prescan: bool,

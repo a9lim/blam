@@ -26,6 +26,7 @@ mod search_impl;
 /// Untrusted candidate discovery. Everything under `search` is a guess;
 /// only this module's `verify*` functions accept a kill.
 #[cfg(feature = "lab")]
+#[cfg_attr(docsrs, doc(cfg(feature = "lab")))]
 pub mod search {
     pub use super::search_impl::*;
 }

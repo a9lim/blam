@@ -29,7 +29,7 @@ use scalar::Dw;
 /// Three are special forms with their own reduction rules (`New` discards
 /// its argument unevaluated, `Meas` forks the branch tree, `Cnot` is the
 /// one binary primitive); the rest are unary store gates, dispatched
-/// through [`Store::apply_gate1`]. Every gate is exact in `ℤ[ω]/√2^k`, so
+/// through [`Store`]'s single-qubit gate path. Every gate is exact in `ℤ[ω]/√2^k`, so
 /// no primitive can introduce an inexact amplitude.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Prim {

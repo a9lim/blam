@@ -121,7 +121,7 @@ impl Pool {
     }
 
     /// Decode one BLC term off a packed (bits, length) pair — the one
-    /// wire-grammar decoder ([`wire::decode`]), no string round-trip.
+    /// wire-grammar decoder in [`wire`], no string round-trip.
     pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {
         let mut bits = (0..len).rev().map(|j| (enc >> j) & 1 == 1);
         wire::decode(&mut bits, &mut Vec::new(), self)

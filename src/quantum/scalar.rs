@@ -217,7 +217,7 @@ impl Dw {
     /// Sum and difference in one alignment: `(self + o, self − o)`.
     ///
     /// The H butterfly wants both, and [`Dw::add`]/[`Dw::sub`] each pay
-    /// their own pair of [`Dw::raise_k`] calls to reach the common
+    /// their own pair of `Dw::raise_k` calls to reach the common
     /// denominator. Result and `None` placement are the pair's exactly:
     /// the two share the alignment prefix verbatim, and this returns
     /// `None` iff either of them would — so a caller that took `add` then

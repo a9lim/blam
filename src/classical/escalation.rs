@@ -567,8 +567,8 @@ impl std::fmt::Display for Why {
 }
 
 /// Redloop certificate proofs on this process (global: a resumed run
-/// counts only what it recomputed). See [`redloop`]'s doc for the
-/// theorem.
+/// counts only what it recomputed). See the private `redloop` fn's doc
+/// for the theorem.
 pub static REDLOOP_FIRES: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
 /// Shape-matches abandoned solely because a probe ran out of fuel — a
 /// zero over a full census certifies `probe_fuel` lost nothing there.

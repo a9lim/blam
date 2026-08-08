@@ -339,6 +339,27 @@ pub fn build_pool_plain(threads: usize) -> R<()> {
 /// probe at all. Neither is "a tighter budget"; both are runs that
 /// cannot mean what the flag says. Whichever channel supplied the value
 /// is named in the refusal.
+/// Refuse a rescue budget whose transition product cannot run as stated:
+/// the KN machine clamps transition caps at [`Machine::MAX_TRANS`]
+/// (2³¹−1), so a larger `rescue × rescue_trans_mult` would silently lose
+/// its multiplier — and the census provenance line would certify a
+/// config that never ran. Same principle as the floors below: a run that
+/// cannot mean what the flag says is an error, not a silent downgrade.
+pub fn check_rescue(cmd: &str, rescue: u64, mult: u64) -> R<()> {
+    use blam::classical::machine::Machine;
+    if rescue.saturating_mul(mult) > Machine::MAX_TRANS {
+        return Err(format!(
+            "blam {cmd}: --rescue {rescue} x{mult} transitions exceeds the machine's \
+             cap of {} — the largest usable --rescue at x{mult} is {}
+{}",
+            Machine::MAX_TRANS,
+            Machine::MAX_TRANS / mult.max(1),
+            hint(cmd)
+        ));
+    }
+    Ok(())
+}
+
 pub fn engine_cfg(cmd: &str, work_mult: Option<i64>, probe_fuel: Option<u64>) -> R<EngineCfg> {
     fn env<T: FromStr>(k: &str) -> Option<T> {
         std::env::var(k).ok().and_then(|s| s.parse().ok())

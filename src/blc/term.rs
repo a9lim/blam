@@ -8,6 +8,10 @@ use std::rc::Rc;
 /// Parsing, printing, sizing, and dropping are all iterative, so a term
 /// nested a million deep is safe to build and use; the derived [`PartialEq`]
 /// and [`Debug`] are the exceptions, and recurse with the term's depth.
+///
+/// The iterative teardown means `Term` implements [`Drop`], and a `Drop`
+/// type cannot be destructured by value (E0509): match by reference and
+/// clone or [`Rc::try_unwrap`] the child `Rc`s instead.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Term {
     Var(u32),

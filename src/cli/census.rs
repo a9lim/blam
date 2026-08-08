@@ -780,6 +780,7 @@ pub fn run(argv: &[String]) -> R<()> {
         }
     }
     let (min_n, max_n) = p.range_packed(4)?;
+    args::check_rescue("census", cfg.ladder.rescue, cfg.ladder.rescue_trans_mult)?;
     cfg.ladder.engine = args::engine_cfg("census", work_mult, probe_fuel)?;
     // `--groups` slices a checkpoint's task list; without one it names
     // nothing, so taking it silently would misreport what ran.
@@ -899,6 +900,12 @@ pub fn run(argv: &[String]) -> R<()> {
     println!("# blam census {}", env!("CARGO_PKG_VERSION"));
     println!("# sizes {min_n}..={max_n}");
     println!("# ladder: {}", describe(&cfg.ladder));
+    println!(
+        "# memo-in: {}",
+        memo_in_path
+            .as_deref()
+            .map_or_else(|| "none".to_string(), sha256_16)
+    );
     // `# ` occupies the width the row's own `n` column is right-aligned
     // in, so the header still sits over its columns.
     println!(

@@ -182,7 +182,7 @@ ladder
 
 run
   --table FILE           per-x m/K table (default: none)
-  --dump-max-x N         dump table rows with |x| <= N (default 20)
+  --dump-max-x N         dump table rows with |x| <= N (default 20; needs --table)
   --top N                rows per analytics section (default 40)
   --threads N            rayon threads (0 = ambient, the default)";
 
@@ -231,6 +231,17 @@ pub fn run(argv: &[String]) -> R<()> {
         }
     }
     let (min_n, max_n) = p.range_packed(4)?;
+    // The per-x dump lives inside the table file; without --table the
+    // flag would parse, validate, and do nothing — a silent lie about
+    // what the run did, same as `adjudicate --threads` on one term.
+    if table_path.is_none() && p.given("--dump-max-x") {
+        return Err(format!(
+            "blam solomonoff: --dump-max-x needs --table — the per-x dump \
+             is written into the table file\n{}",
+            args::hint("solomonoff")
+        ));
+    }
+    args::check_rescue("solomonoff", cfg.rescue, cfg.rescue_trans_mult)?;
     cfg.engine = args::engine_cfg("solomonoff", work_mult, probe_fuel)?;
     // The table is a full-run product, so its path is proved writable
     // now rather than after the sweep.
@@ -293,6 +304,11 @@ pub fn run(argv: &[String]) -> R<()> {
 
     // ---- Ω accounting (exact, units of 2^-64) ----
     let covered = acc.halt_mass + acc.diverge_mass + acc.unknown_mass;
+    // Provenance, matching census: this stdout stream is a measurement,
+    // so it names the binary, the range, and the ladder it ran.
+    println!("# blam solomonoff {}", env!("CARGO_PKG_VERSION"));
+    println!("# sizes {min_n}..={max_n}");
+    println!("# ladder: {}", crate::adjudicate::describe(&cfg));
     println!("== programs {min_n}..{max_n} bits ==");
     println!(
         "terms {} | halt {} | diverge {} | unknown {}",

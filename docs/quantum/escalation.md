@@ -36,7 +36,7 @@ architecture (`classical::certificate::search` under the untrusted
 
 - **Discovery** is `classical::escalation::normal_form_spine`: the
   escalation engine with the syntactic oracle disabled (the oracle's
-  no-nf verdict is not spine-attributable) and a spine flag threaded so
+  no-nf verdict is not spine-attributable), so
   a Diverge is tagged when its proof landed on the root's own
   head-reduction chain. Its `EngineCfg` arrives as an argument, like
   every other engine entry point — nothing below the CLI layer reads the
