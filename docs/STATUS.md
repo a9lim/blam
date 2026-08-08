@@ -129,7 +129,8 @@ Last updated: 2026-08-07.
 - The signature is parametric end to end (`blam q census --sig`, exact
   S/X/Z gates): alternate universes are runnable, lockstep-verified, and
   deliberately labeled; canonical data stays on the frozen five. The frozen
-  order itself is `quantum::sig::FROZEN` with an order-pinning test.
+  order itself is `quantum::sig::FROZEN` with an order-pinning test, and is
+  measurement-backed through size 34 (signature-universe section below).
 
 Escalation-lane docket, in order:
 
@@ -153,14 +154,62 @@ Escalation-lane docket, in order:
    bot_free/simplify uniformity argument (counterexample on record) or
    supersede it with the pattern-recurrence checker.
 
-### Signature-universe exploration (planned)
+### Signature-universe exploration
 
-The engine is ready (parametric signatures, alternate-universe lockstep,
-`--sig`, checkpointed sweeps); the campaign — how the 34/45/53
-irrationality thresholds and Ω_success move across signature permutations,
-subsets, and extended gate sets, hunting configurations that minimize the
-thresholds — is queued behind the escalation lane. A re-canonicalization
-decision, if a strongly better universe appears, is a9's call.
+Round 2 of the signature campaign ran 2026-08-07: 146 universes over sizes
+4..=32, plus the top twelve permutations re-run to 34; 9,276 core-seconds.
+Every run is `blam q census 4 32 --sig LIST --threads 1`, so the campaign is
+regenerable from the tree without a driver. Harness check: the frozen-order
+run is bit-identical to `data/quantum/census_table.txt` rows 4..32, and its
+Ω_{success,≤24} is 46757/2²⁴ — the 2026-08-02 pilot's winning value. The
+outputs are non-canonical by construction and are not carried in `data/`.
+
+- **The frozen order stands, and its tie-break is now a measurement.** `h
+  meas new cnot t` is the maximum of the 120 permutations at every depth
+  measured (≤24, 26, 28, 30, 32, 34). In the 2026-08-02 pilot it won a
+  *lexicographic* tie with its h↔t mirror `t meas new cnot h`; that tie
+  breaks by
+  measurement at N=28 and stays strict through 34, in the frozen order's
+  favour (margin 309/2³⁵ ≈ 9.0e-9 at ≤34). The top ten are identical at
+  ≤24, ≤32 and ≤34; 35 of the 120 move position in the tail, and distinct
+  Ω values go 52 → 72 as degeneracies break. No re-canonicalization is
+  indicated.
+- **The set axis has no freedom.** `{new, meas, cnot, h, t}` is the *unique*
+  minimal complete signature over the eight-gate alphabet: `new` is the only
+  handle source, `cnot` the only two-qubit gate, `meas` the only branch, and
+  among the unary gates dropping `t` leaves the finite single-qubit Clifford
+  group while dropping `h` leaves a finite monomial group. `s`, `x`, `z` are
+  λ-definable over the five (`s = λq. t (t q)`, `z = λq. s (s q)`,
+  `x = λq. h (z (h q))`), so a superset buys bits, never power.
+- **Ω_success is blind to the non-Clifford resource — it cannot rank sets,
+  only orders.** `h meas new cnot s` — Clifford only, Gottesman–Knill
+  simulable, *not* universal — scores Ω_{success,≤32} = 25810093/√2⁶⁶ with
+  190460/1964964/5404 halt/err/unk leaves: the frozen five's numbers, exact
+  tuple and every count. Total successful mass is a trace and therefore
+  phase-blind, and `t`, `s`, `z` are all diagonal, so the functional cannot
+  see which one occupies a slot; `s` and `z` are exactly interchangeable
+  everywhere measured, and `x` (a permutation, not a phase) separates from
+  them only through fate-split programs (12/2³² in one slot). `h` is the
+  only primitive Ω_success resolves. Universality is therefore a design
+  decision (`quantum/architecture.md` §7), not something this functional
+  certified or could certify — a threshold-minimizing campaign on the set
+  axis needs a different instrument.
+- **Arity dominates content, about 4× per slot.** Best Ω_{success,≤32} by
+  signature length: 4 slots 1.090e-2 (`h new cnot t`), 5 slots 3.005e-3
+  (frozen), 6 slots 8.076e-4 (`h x meas new cnot t`), 7 slots 1.031e-4,
+  8 slots 2.182e-5. The best six-gate universe loses to the *worst* of the
+  120 five-gate permutations (8.076e-4 against 1.208e-3), so promoting a
+  definable gate to a primitive never repays its signature slot. Within the
+  six-gate universes the extra gate wants to be early: slots 1–2 beat slots
+  5–6 by 1.45×, whichever gate it is. Cross-arity Ω comparisons measure the
+  argument-count cost, not the gate set.
+- No universe in the 146 has non-dyadic Ω at ≤32, so nothing here lowers the
+  irrationality thresholds below the measured 34/45/53.
+
+What remains open on this lane: the deeper permutation sweep (≤36 and
+beyond), the witness extraction below, and — if the thresholds are still the
+target — an instrument that is not Ω_success. A re-canonicalization
+decision, if a strongly better universe ever appears, is a9's call.
 
 ### Irrationality and Galois structure
 
@@ -178,6 +227,26 @@ non-five-lambda complement has exact zero `√2` coefficient at every measured
 size 42..51, with no fate-divergent program. The complement sweep is paused
 at 51; n=52 and n=53 remain. The zero coefficient is measured cancellation,
 not a theorem.
+
+A fourth, weaker threshold sits below all three and must not be confused with
+them: **27 bits, the shortest program that both creates a superposition and
+sends the two measurement outcomes to different verdict classes** — the
+dyadic-mass precursor of P53, which additionally needs *irrational* masses on
+the split. It comes from the signature campaign above, as a mass-difference
+argument rather than a witness in hand: swapping h↔t in a signature can only
+move a program's total successful mass if that program's leaves span more
+than one verdict class, since otherwise trace preservation gives the same
+total either way; leaf counts are preserved because a T-measurement still
+forks two leaves, one of mass 0. Measured, the h↔t mirror ties hold exactly
+through n=26 and first break at n=27 (six of the 60 permutation pairs; four
+more at 28, two at 29, 48 still tied at 32), while per-size halt/err/unk leaf
+counts never differ for any pair at any size. The earliest break is exactly
+2⁻²⁸ = ½·2⁻²⁷, i.e. one 27-bit program with half its mass changing class,
+outcome 1 halting where outcome 0 does not. Open: extract the witness term
+(the split may be Halt/Err or merely Halt/Unknown — 43 Unknown leaves sit at
+that size, so the counts alone do not decide it). On the frozen order the
+same break is at 28. This retires the 2026-08-02 prediction that the mirror
+ties would break at larger N.
 
 The finite-trace Galois identity T1 is proved at paper level in
 `quantum/galois.md`. The sub-53 exclusion T2, its CNOT-capable companion, and
