@@ -14,9 +14,9 @@ common denominator 2^SCALE; the emitted fractions are reduced.
 
 Usage:
   skel_manifest.py FRONTIER VERDICTS RESIDUALS \
-      --commit SHA --sig "h meas new cnot t" \
-      --steps 256 --size 16384 \
-      --omega-lower NUM/DEN --frontier-source "..." > manifest.txt
+      --commit SHA --sig "h meas new cnot t" --steps 256 --size 16384 \
+      --omega-lower NUM/DEN --census-upper NUM/DEN \
+      --capacity-mass NUM/DEN --classical-frontier unknowns.txt > manifest.txt
 """
 
 import argparse
@@ -46,8 +46,13 @@ def main():
                     help="exact Omega_success lower endpoint NUM/DEN")
     ap.add_argument("--census-upper", required=True,
                     help="exact pre-kill census upper endpoint NUM/DEN "
-                         "(lower + raw unknown LEAF mass; the bracket is "
-                         "leaf-mass accounting, not source-program mass)")
+                         "(lower + Unknown + Capacity LEAF mass; the "
+                         "bracket is leaf-mass accounting, not "
+                         "source-program mass)")
+    ap.add_argument("--capacity-mass", required=True,
+                    help="exact census Capacity leaf mass NUM/DEN (the "
+                         "bracket's unresolved term is Unknown + Capacity; "
+                         "the manifest reports the split)")
     ap.add_argument("--classical-frontier", default=None,
                     help="unknowns.txt for residual source-membership rows")
     args = ap.parse_args()
@@ -61,6 +66,18 @@ def main():
 
     if len(inputs) != len(verdicts):
         sys.exit(f"count mismatch: {len(inputs)} inputs, {len(verdicts)} verdicts")
+    # Set discipline (lockstep round: the generator enforces what the
+    # artifacts happen to satisfy): no duplicate program in either
+    # column, and the two bit sets identical.
+    in_set = set(inputs)
+    v_bits = [ln.split()[0] for ln in verdicts]
+    v_set = set(v_bits)
+    if len(in_set) != len(inputs):
+        sys.exit("duplicate program bits in the frontier input")
+    if len(v_set) != len(v_bits):
+        sys.exit("duplicate program bits in the verdict stream")
+    if in_set != v_set:
+        sys.exit("frontier and verdict bit sets differ")
 
     in_digest = sorted_digest(inputs)
     v_digest = sorted_digest(verdicts)
@@ -94,20 +111,29 @@ def main():
         else:
             sys.exit(f"unknown verdict `{verdict}` in: {ln}")
 
-    lo_num, lo_den = args.omega_lower.split("/")
-    lower = Fraction(int(lo_num), int(lo_den))
-    cu_num, cu_den = args.census_upper.split("/")
-    census_upper = Fraction(int(cu_num), int(cu_den))
+    def parse_frac(s):
+        n, d = s.split("/")
+        return Fraction(int(n), int(d))
+
+    lower = parse_frac(args.omega_lower)
+    census_upper = parse_frac(args.census_upper)
+    capacity = parse_frac(args.capacity_mass)
     # Leaf-mass accounting: killed programs are single-branch (a
-    # hole-inert infinite chain never forks), so their full 2^-|p| is
-    # unknown leaf mass and subtracting the stream's killed sum from the
-    # census unknown term is exact. Surviving programs may carry
-    # already-resolved Halt/Err mass, so their program-mass sum
-    # (`unknown_rest`) OVERSTATES the remaining unknown leaf mass; it is
-    # reported below only as a cross-check bound.
-    raw_unknown = census_upper - lower
-    remaining = raw_unknown - killed
-    upper = lower + remaining
+    # hole-inert infinite chain never forks, and a Div residual is
+    # reached by pure β before any primitive effect), so their full
+    # 2^-|p| sits on one Unknown leaf and subtracting the stream's
+    # killed sum from the census unresolved term is exact. The
+    # unresolved term is Unknown + Capacity; both are reported.
+    # Surviving programs may carry already-resolved Halt/Err mass, so
+    # their program-mass sum (`unknown_rest`) overstates the remaining
+    # leaf masses; it is reported below only as a cross-check bound
+    # (its excess is NOT attributed — that would need per-program
+    # capacity and resolved-share tracking).
+    raw_unresolved = census_upper - lower
+    raw_unknown = raw_unresolved - capacity
+    remaining_unresolved = raw_unresolved - killed
+    remaining_unknown = raw_unknown - killed
+    upper = lower + remaining_unresolved
 
     verdict_names = ["loop", "halt-inert", "holedemanded", "capout",
                      "halt", "div", "residual-unknown"]
@@ -142,16 +168,19 @@ def main():
     print(f"  div via oracle    {div_via.get('oracle', 0)}")
     print(f"  div via bb        {div_via.get('bb', 0)}")
     print()
-    print(f"killed mass        {frac(killed)}")
-    print(f"census unknown     {frac(raw_unknown)}  (leaf mass, pre-kill)")
-    print(f"remaining unknown  {frac(remaining)}  (leaf mass)")
-    print(f"survivor program-mass sum {frac(unknown_rest)}  "
-          "(cross-check upper bound on remaining; excess is survivors' "
-          "already-resolved share)")
+    print(f"killed mass                 {frac(killed)}")
+    print(f"census Unknown leaf mass    {frac(raw_unknown)}  (pre-kill)")
+    print(f"census Capacity leaf mass   {frac(capacity)}")
+    print(f"census unresolved mass      {frac(raw_unresolved)}  (Unknown + Capacity)")
+    print(f"remaining Unknown leaf mass {frac(remaining_unknown)}")
+    print(f"remaining unresolved mass   {frac(remaining_unresolved)}")
+    print(f"survivor program-mass sum   {frac(unknown_rest)}  "
+          "(cross-check upper bound only; excess over the remaining "
+          "masses is unattributed)")
     if halt_mass != 0:
-        print(f"halt mass          {frac(halt_mass)}  (slow halters!)")
-    print(f"bracket lower      {frac(lower)}")
-    print(f"bracket upper      {frac(upper)}")
+        print(f"halt mass                   {frac(halt_mass)}  (slow halters!)")
+    print(f"bracket lower               {frac(lower)}")
+    print(f"bracket upper               {frac(upper)}")
     print()
     print("per-size verdict counts (size: verdict=count ...)")
     for n in sorted(per_size):
@@ -166,11 +195,17 @@ def main():
         member = "yes" if bits in frontier_members else "no"
         print(f"  {ln} classical_frontier_source={member}")
     print()
-    print("regeneration")
+    print("regeneration (exact)")
     print("  target/release/blam q census 4 41 --dump-unknowns FRONTIER")
     print("  target/release/blam q skeleton FRONTIER \\")
     print("      --capout-telemetry CAPOUTS --residuals RESIDUALS > VERDICTS")
-    print("  tools/skel_manifest.py FRONTIER VERDICTS RESIDUALS ...")
+    print("  tools/skel_manifest.py FRONTIER VERDICTS RESIDUALS \\")
+    print(f"      --commit {args.commit} --sig '{args.sig}' \\")
+    print(f"      --steps {args.steps} --size {args.size} \\")
+    print(f"      --omega-lower {args.omega_lower} \\")
+    print(f"      --census-upper {args.census_upper} \\")
+    print(f"      --capacity-mass {args.capacity_mass} \\")
+    print(f"      --classical-frontier {args.classical_frontier}")
 
 
 if __name__ == "__main__":

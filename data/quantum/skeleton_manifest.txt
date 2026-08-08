@@ -18,12 +18,15 @@ verdict totals
   div via oracle    58373
   div via bb        45028
 
-killed mass        27958835/2199023255552
-census unknown     18776891/1099511627776  (leaf mass, pre-kill)
-remaining unknown  9594947/2199023255552  (leaf mass)
-survivor program-mass sum 9594953/2199023255552  (cross-check upper bound on remaining; excess is survivors' already-resolved share)
-bracket lower      3424188513/1099511627776
-bracket upper      6857971973/2199023255552
+killed mass                 27958835/2199023255552
+census Unknown leaf mass    37553781/2199023255552  (pre-kill)
+census Capacity leaf mass   1/2199023255552
+census unresolved mass      18776891/1099511627776  (Unknown + Capacity)
+remaining Unknown leaf mass 4797473/1099511627776
+remaining unresolved mass   9594947/2199023255552
+survivor program-mass sum   9594953/2199023255552  (cross-check upper bound only; excess over the remaining masses is unattributed)
+bracket lower               3424188513/1099511627776
+bracket upper               6857971973/2199023255552
 
 per-size verdict counts (size: verdict=count ...)
   18: loop=1
@@ -87,8 +90,14 @@ residual-unknown provenance (37 rows; sha256 over the residual's ASCII wire stri
   01000110100001100100000001111001111011010 src_bits=41 residual_bits=597 sha256=b809415adf012a64ec9ce331382944f03698b2d3952f07201e66ea2d8f6ce97c classical_frontier_source=no
   0100011010010001101000000001110011110110 src_bits=40 residual_bits=248 sha256=2b75ae346d359c9e5f45656b01e4cac91d5f6ab3a1bda10ddbaf774e2c272c0b classical_frontier_source=yes
 
-regeneration
+regeneration (exact)
   target/release/blam q census 4 41 --dump-unknowns FRONTIER
   target/release/blam q skeleton FRONTIER \
       --capout-telemetry CAPOUTS --residuals RESIDUALS > VERDICTS
-  tools/skel_manifest.py FRONTIER VERDICTS RESIDUALS ...
+  tools/skel_manifest.py FRONTIER VERDICTS RESIDUALS \
+      --commit 2c3f2a790fcbc20b764f6e4765c2596bb33bf214 --sig 'h meas new cnot t' \
+      --steps 256 --size 16384 \
+      --omega-lower 3424188513/1099511627776 \
+      --census-upper 860741351/274877906944 \
+      --capacity-mass 1/2199023255552 \
+      --classical-frontier data/classical/unknowns.txt
