@@ -96,19 +96,7 @@ impl Pool {
     /// Append a node, returning its index. Public so callers can splice a
     /// decoded term into a larger context (slot search closes candidates
     /// under rigid binders this way) without a second decode pass.
-    ///
-    /// # Panics
-    ///
-    /// At 2³¹ nodes (a ≥ 24 GiB arena): bit 31 of a node index is the
-    /// machine's env-cell tag, so a bigger arena would alias rigid
-    /// levels and silently normalize a different term. The old u32 index
-    /// wrapped at 2³² with no guard at all; the fence is new, the cliff
-    /// is not.
     pub fn push(&mut self, n: Node) -> u32 {
-        assert!(
-            self.nodes.len() < LVL_TAG as usize,
-            "term arena exceeded 2^31 nodes"
-        );
         self.nodes.push(n);
         (self.nodes.len() - 1) as u32
     }
@@ -312,7 +300,8 @@ impl Sink for StringSink {
 
 /// Marks an env cell as a rigid level rather than a closure. Steals bit
 /// 31 of the cell's FIRST word, which carries exactly two things: a Pool
-/// node index (`push_clo`, fenced by [`Pool::push`]'s 2³¹ assert) or the
+/// node index (`push_clo`, fenced by the per-run pool-size assert in
+/// `normalize_inner`) or the
 /// binder `depth` (`push_lvl`, bounded through the transition clamp in
 /// `normalize_inner`). Env-cell indices are untagged plain u32 in the
 /// second word and in `parents`; the tag places no constraint on them —
@@ -402,7 +391,15 @@ impl Machine {
     /// `normalize` with the transition cap as an explicit parameter, so a
     /// budget ladder can give a cheap rung a genuinely cheap cap (the
     /// default floor of 1<<22 otherwise makes small-β rungs cost as much
-    /// as large ones on transition-bound terms).
+    /// as large ones on transition-bound terms). Caps above
+    /// [`Machine::MAX_TRANS`] are clamped (an honest `Transitions`
+    /// verdict lands at the clamp).
+    ///
+    /// # Panics
+    ///
+    /// If `pool` holds 2³¹ nodes or more (a ≥ 24 GiB arena): bit 31 of a
+    /// node index is the machine's rigid-level tag, and the old unguarded
+    /// index wrapped at 2³² — the fence is new, the cliff is not.
     pub fn normalize_capped<S: Sink>(
         &mut self,
         pool: &Pool,
@@ -448,6 +445,15 @@ impl Machine {
         trans_limit: u64,
         sink: &mut S,
     ) -> Result<u64, OutOfFuel> {
+        // The env cell's first word stores pool node indices with bit 31
+        // as the rigid-level tag, so a pool that big would alias rigid
+        // levels and silently normalize a different term. One check per
+        // run, not per push (a per-push fence measured +4% census user
+        // time): every index the machine stores comes from this pool.
+        assert!(
+            pool.nodes.len() < LVL_TAG as usize,
+            "term arena exceeds 2^31 nodes"
+        );
         // Each transition pushes at most one env cell, and `depth` only
         // grows with a push_lvl, so clamping the cap under LVL_TAG makes
         // "`depth` never reaches the tag bit" (and "env indices stay in
