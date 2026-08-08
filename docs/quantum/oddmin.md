@@ -329,6 +329,10 @@ Splice-⊤ is cumulative over the run; the reported row is its final value.
 | 24 | 6,271 | 0 | 37 | 0 | about 1.05 s |
 | 26 | 18,812 | 2 | 149 | 0 | about 3.5 s |
 | 28 | 57,324 | 8 | 555 | 0 | about 14 s |
+| 30 | 177,713 | 45 | 2,176 | 0 | about 31 s |
+| 32 | 558,377 | 216 | 8,047 | 0 | about 116 s |
+| 33 | 984,707 | 478 | 17,173 | 0 | about 220 s |
+| 34 | — | — | — | — | stop rule at w=30, 149 s |
 
 At the run's top weight the depth ceiling is zero, so the summaries column is
 both the unique-summary count and the closed-slice count. Splice-⊤ first
@@ -341,10 +345,24 @@ from one formal acquiring different composed port identities under different
 captured environments. This is a canonicalization loss, not an effectful
 widening failure.
 
-Growth is approximately 1.74× per unit of source weight — measured 3.0× per
-two units across both 24→26 and 26→28 — projecting the million-summary stop
-rule near W≈33. Reaching 44 therefore requires canonicalization and
-search-side pruning before a certificate generation is practical.
+Top-weight growth is approximately 1.76× per unit of source weight —
+measured 3.0× per two units across 24→26 and 26→28, then 3.10×, 3.14×, and
+1.76× across 28→30, 30→32, and 32→33.
+
+**W=33 is the tallest completable run, and the binding constraint is an
+intermediate slice, not the top one.** A W=33 run finishes with 984,707
+summaries at the top; a W=34 run aborts after 149 s at *weight 30*, where the
+slice reaches 1,005,363 — 5.7× the 177,713 that the same weight shows when it
+is the top of its own run. The stop rule reads every weight, and the depth
+ceiling `dmax(w) = (max_w − w)/2` makes the mid-ladder slices of a taller run
+the largest objects in it, so projecting the ceiling from the top-weight
+series (as "near W≈33" did) reads the wrong series and only happened to land
+next to the answer. Reaching 44 therefore requires canonicalization and
+search-side pruning before a certificate generation is practical, and the
+pruning has to bite mid-ladder.
+
+The `accepts` column is the stage-1a lower bound and is still zero at W=33:
+no closed CNOT-free trace of source weight ≤33 has a Galois-odd leaf mass.
 
 ## 8. Certificate boundary and next work
 

@@ -241,12 +241,30 @@ forks two leaves, one of mass 0. Measured, the h↔t mirror ties hold exactly
 through n=26 and first break at n=27 (six of the 60 permutation pairs; four
 more at 28, two at 29, 48 still tied at 32), while per-size halt/err/unk leaf
 counts never differ for any pair at any size. The earliest break is exactly
-2⁻²⁸ = ½·2⁻²⁷, i.e. one 27-bit program with half its mass changing class,
-outcome 1 halting where outcome 0 does not. Open: extract the witness term
-(the split may be Halt/Err or merely Halt/Unknown — 43 Unknown leaves sit at
-that size, so the counts alone do not decide it). On the frozen order the
-same break is at 28. This retires the 2026-08-02 prediction that the mirror
-ties would break at larger N.
+2⁻²⁸ = ½·2⁻²⁷, i.e. one 27-bit program with half its mass changing class. On
+the frozen order the same break is at 28. This retires the 2026-08-02
+prediction that the mirror ties would break at larger N.
+
+**The witness, `P27`, is in hand and the split is Halt/Err.** Batch
+re-adjudication of all 47,146 closed 27-bit programs under `h new meas cnot
+t` and its mirror finds *exactly one* mass difference and zero leaf-count
+differences, confirming the mechanism directly rather than by aggregate:
+
+```text
+000000010110011110011101010   λa.λb.λc. c (a (b c)) c
+```
+
+Under `h new meas cnot t` it is `meas (h (new meas)) meas cnot t`: `new`
+allocates on a junk argument, `h` superposes, and the measurement's Church
+boolean selects the head of what remains — outcome 0 (true, by the inverted
+polarity) selects `meas`, which is then applied to the primitive `t` and
+raises `Err(Species)`; outcome 1 selects `cnot`, whose partial application is
+a normal form and Halts with an empty live store. So the leaves are
+`Err(Species)` and `Halt(live=0)` at ½ each, successful mass ½; under the
+mirror the diagonal `t` gives outcome 0 the whole mass and successful mass 0.
+Both readings are `blam q run`-confirmed. P27 is the minimal shape of the
+phenomenon P53 needs: P53 additionally requires the split to carry irrational
+masses, which costs the extra 26 bits.
 
 The finite-trace Galois identity T1 is proved at paper level in
 `quantum/galois.md`. The sub-53 exclusion T2, its CNOT-capable companion, and
@@ -269,24 +287,37 @@ Current measurements:
 - the remaining 19 conservative cells are all concretely non-odd and arise
   from alpha-only port identity;
 - splice-level top is zero through W=24 and first appears at W=25 (2 cells);
-- closed-slice summary counts are 96, 743, 6,271, 18,812, and 57,324 at
-  W=16, 20, 24, 26, and 28; closed-acceptance top counts are 0, 3, 37, 149,
-  and 555 respectively, with splice-level top at 0, 0, 0, 2, and 8; the
-  W=24 run takes about one second and W=28 about 13 seconds
-  (2026-08-07, post-optimization); and
-- measured growth is about 1.74× per weight unit, projecting the
-  million-summary stop near W≈33.
+- closed-slice summary counts are 96, 743, 6,271, 18,812, 57,324, 177,713,
+  558,377, and 984,707 at W=16, 20, 24, 26, 28, 30, 32, and 33;
+  closed-acceptance top counts are 0, 3, 37, 149, 555, 2,176, 8,047, and
+  17,173 respectively, with splice-level top at 0, 0, 0, 2, 8, 45, 216, and
+  478; the W=24 run takes about one second, W=28 about 14 s, W=30 about
+  31 s, W=32 about 116 s, and W=33 about 220 s (2026-08-07,
+  post-optimization; every row is its own run — the depth ceiling
+  `dmax(w) = (max_w − w)/2` makes a taller run's intermediate lines a
+  different quantity);
+- **acceptance is still zero at W=33**: no closed CNOT-free trace of source
+  weight ≤33 carries a Galois-odd leaf mass, which is the stage-1a lower
+  bound and the reason the ladder to 44 matters;
+- **W=33 is the tallest completable run, and the ceiling is set mid-ladder.**
+  W=34 aborts after 149 s at *weight 30*, whose slice reaches 1,005,363 —
+  5.7× the 177,713 the same weight shows as the top of its own run. The stop
+  rule reads every weight, and the taller depth ceiling makes mid-ladder
+  slices the largest objects in a run, so the old "million-summary stop near
+  W≈33" projected from the top-weight series and read the wrong one. Pruning
+  for the ladder to 44 has to bite mid-ladder; and
+- measured top-weight growth is about 1.76× per weight unit (3.10×, 3.14×,
+  and 1.76× across 28→30, 30→32, and 32→33).
 
 Next steps, in order:
 
 1. BindId alpha-normalization, weak-epsilon canonicalization, and canonical
    port renumbering;
-2. probe W=30 (26 and 28 are measured above);
-3. add a simulation-preorder antichain after proving constructor
+2. add a simulation-preorder antichain after proving constructor
    monotonicity;
-4. add the general component-scoped post-fixpoint with ScopeId origins and a
+3. add the general component-scoped post-fixpoint with ScopeId origins and a
    trusted checker that verifies only the post-fixpoint; and
-5. add search-side pruning for the ladder to 44.
+4. add search-side pruning for the ladder to 44.
 
 The handle-aliasing lemma is scoped to closed, pre-CNOT programs. CNOT's
 Church pair reintroduces handles inside lambda values and belongs to stage
