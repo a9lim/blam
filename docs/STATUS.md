@@ -413,37 +413,40 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.15** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.16** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-seven fresh-context rounds: the machine core has not moved since
-the v1.11 spectator-transition fix, and the last TWO rounds found
-zero machine countermodels — audits #6 and #7 together confirmed
+eight fresh-context rounds: the machine core has not moved since
+the v1.11 spectator-transition fix, and the last THREE rounds
+found zero machine countermodels — audits #6 through #8 confirmed
 the completed KD subtraction sound (exhaustive post-fire storage
 enumeration, then an extended matrix: nested slice-cargo tickets,
 tickets inside unrelated burials, ANS, frozen instance names),
 hand-recomputed `palpha` ({1/4, 3/4}) and `W` ({halt1: 1}, refire
-amplitudes exactly zero per-step), and verified the rescue's
-full-pool construction and determinism. What the rounds still
+amplitudes exactly zero per-step), verified the rescue's
+full-pool construction and determinism, traced the three-way
+canonical-None sentence return-by-return, and forced every
+regression gate individually. What the rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all eleven permanent regressions now gate mechanically (the
+day: all twelve permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
-(a certificate entry at an unreachable position fails
+at both levels (an entry at an unreachable position and a ghost
+popkey occurring in no arrival frame each fail
 `machine_coverage` instead of being silently ignored — canonical
-maps are never vacuous by construction); the canonical-None
+maps carry zero by the corrected two-case proof); the canonical-None
 sentence is exact in three disjuncts (cap/nonconvergence exit,
 empty admission, pool pass accepting nothing); output-identity
 claims are scoped to deterministic fields. Nineteen frozen dict
 certificates + dupcall's canonical None; canonical =
 deterministic validation-adjudicated greedy, neither maximal nor
-minimal; physics table passes on all twenty; all seven prior
-audit kits rerun with exactly the declared deltas; every v1.15
+minimal; physics table passes on all twenty; all prior audit
+kits rerun with exactly the declared deltas; every v1.16
 prediction held (provenance in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #8 of the v1.15 h-fragment
+1. **fresh-context independent audit #9 of the v1.16 h-fragment
    claim** (running; verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9

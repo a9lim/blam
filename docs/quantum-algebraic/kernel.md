@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.15.** The kernel is a scratch superposition evolver
+**Status: v1.16.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -16,7 +16,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #8**, whose
+The standing PASS re-claim is **gated on fresh audit #9**, whose
 verdict will be registered here.
 
 This file is the current contract and register only. The
@@ -313,20 +313,29 @@ maximal nor minimal is claimed**. Smaller clean certificates with
 identical physics exist (measured: `W` reaches `{halt1: 1}` with
 the single ∅-pop boundary `ffbbafffa`, basis 734 vs the canonical
 498; `B` likewise with `ffbbfffa` alone), and the greedy order can
-leave admissible boundaries unexplored. What IS claimed: every
-admitted boundary was validated clean at admission, the map is a
-deterministic function of the program, and the frozen values
-reproduce bit-for-bit. Minimal (and maximal) canonical
+leave admissible boundaries unexplored. What IS claimed (audit
+#8 caught the earlier at-admission phrasing overstating phase 1,
+which admits structurally): every phase-2 and rescue acceptance
+passed full validation at acceptance, NO certificate is ever
+returned without the assembled map passing full validation, the
+map is a deterministic function of the program, and the frozen
+values reproduce bit-for-bit. Minimal (and maximal) canonical
 certificates are docketed future work.
 
 **Validation** (`validate`) splits per the working-review verdict:
 the STRUCTURAL side — totality, Gram orthonormality on the
 structural reachable basis, unconditional transparency, reachable
-⊆ WF∧W7∧W8∧W9, mechanized disjointness, and NON-VACUITY (audit
-#7: a certified position with no boundary arrival is never
-consulted, so `machine_coverage` refuses any map containing one;
-canonical maps are never vacuous — `settle()` rejects any trial
-whose position leaves the arrivals) — is mandatory and
+⊆ WF∧W7∧W8∧W9, mechanized disjointness, and NON-VACUITY at both
+levels (audits #7 and #8: a certified position with no boundary
+arrival is never consulted, and a popkey occurring in no arrival
+frame at its position can never pop anything — either entry
+constrains nothing, and `machine_coverage` refuses maps
+containing one. Canonical maps are never vacuous, by the two
+paths into a frozen map: a phase-1 fixpoint map takes its
+positions and keys directly from the converged arrivals, and
+every other acceptance goes through `settle()`, which rejects
+trials whose positions leave the arrivals and recomputes popkeys
+from them) — is mandatory and
 isometry-bearing (orbit-norm preservation alone is NOT isometry:
 `T|0⟩ = T|1⟩ = |1⟩` holds norm 1 forever from `|0⟩` while
 collapsing columns). The DYNAMIC side — exact evolution of the
@@ -341,7 +350,10 @@ semantics — no such total reference exists for bare λ-terms (the
 eliminator's physical reading — wire, measurement, garbage,
 promised uncomputation — is absent from the syntax); per-program
 physics expectations live in the suite's written-first table, each
-marked hand-derived or audit-confirmed. What certification proves
+marked hand-derived (audit-confirmed where noted) or — `dupcall`
+only — machine-measured: no circuit reading exists for the untyped
+refusal row, so it pins the measurement, not an ideal. What
+certification proves
 is: **every admitted erasure has a checked reversible decoding
 from the retained coordinate and spectator state, and the
 resulting columns remain orthonormal** — not that the certificate
@@ -569,7 +581,8 @@ semantics — no total reference exists for bare λ-terms; which
 eliminations are wires is the compilation theorem's question.
 Physics agreement is claimed program-by-program in the suite's
 written-first table (hand-derived circuit readings, several
-independently confirmed by the audits). A user cannot tell from
+independently confirmed by the audits; `dupcall`'s refusal row is
+machine-measured, the one non-hand entry). A user cannot tell from
 `machine_coverage` alone whether a program's canonical placement
 reaches its circuit ideal — that adjudication lives in the
 physics table. Nor is the canonical certificate minimal or
@@ -591,7 +604,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#8; the verdict will be registered here.**
+#9; the verdict will be registered here.**
 
 ## 10. Verification state
 
@@ -632,7 +645,7 @@ canonical dicts compared bit-for-bit; `dupcall` canonically None
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
 `refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **eleven permanent regressions** (the v1.6 pair;
+zero violations; **twelve permanent regressions** (the v1.6 pair;
 extra-frame collision, W7-excluded with disjoint targets;
 doctored bundle divergence; K+frame alias; retained-Q
 disjointness — spectator-bit columns share zero targets;
@@ -643,18 +656,22 @@ popped-frame + surviving ticket — the T-riding ticket stays the
 answerable representation, no KD, targets WF-clean;
 vacuous-position — a certificate entry at an unreachable
 position must fail `machine_coverage` while the canonical map
-passes). The gating structure, stated exactly (audits #6 and #7
-each caught a computed-but-non-gating verdict): the v1.6 pair
-gates `collisions_under_wf()`; the other nine gate
+passes; ghost-key — an inert popkey occurring in no arrival
+frame at its certified position must fail `machine_coverage`,
+key-level non-vacuity). The gating structure, stated exactly
+(audits #6 and #7 each caught a computed-but-non-gating
+verdict; audit #8 forced all eleven then-regressions
+individually and confirmed each drives exit 1): the v1.6 pair
+gates `collisions_under_wf()`; the other ten gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
-pair false → exit 1; forcing a cert_sweep flag false → exit 1;
+pair false → exit 1; forcing cert_sweep flags false → exit 1;
 the emulated-old-arm probe flips `cert_sweep` to FAIL).
 Conservation:
 exhaustive ≤ size 11, 14,452 surfacings at ≤10 / 55,727 at ≤11,
 zero failures. Polarity/terminal chains/gauge: zero violations,
-orbit exact. All seven prior audits' independent reproducers
+orbit exact. All eight prior audits' independent reproducers
 rerun clean or typed (audit #1's fuzz 250/250; audit #2's kit
 clean on every lifecycle, its term-evaluator mismatches
 adjudicated as that evaluator's non-normalization; audit #3's
@@ -662,7 +679,8 @@ spectator columns share zero targets; audit #4's countermodel
 pair healed; audit #5's popped-frame countermodel healed; audit
 #6's gate probe flips as it must; audit #7's vacuity probe now
 refused, its cap counterexample matching the three-way None
-sentence). Output identity across code changes is claimed for
+sentence; audit #8's ghost-key probe now refused at the key
+level). Output identity across code changes is claimed for
 DETERMINISTIC fields only: `conservation.py` prints a wall-clock
 suffix that varies run to run (audit #7 caught "byte-identical"
 overclaiming this), and adding a declared validation field
@@ -687,10 +705,15 @@ determinism held under reversed traversal and six hash seeds;
 the subtraction re-confirmed over audit #7's extended matrix
 (recursively slice-nested tape/log tickets, tickets inside
 unrelated `K` burials, ANS carrying no instance, frozen instance
-names not traversed, `vb` None at every fire target); the
-full-pool construction verified correct (candidates captured
-before phase-2 mutation, phase-1 entries persistent, sorted
-order). Basis counts vs v1.2 reference: `negative` 103→83,
+names not traversed, `vb` None at every fire target) and a
+fourth time by audit #8's 24-combination cross of every death
+mode against every retained compartment; the full-pool
+construction verified correct (candidates captured before
+phase-2 mutation, phase-1 entries persistent, sorted order); the
+three-way None sentence traced return-by-return and CONFIRMED
+(audit #8 — the two trailing defensive re-validations are
+unreachable-failure by determinism of validate); all eleven
+then-regression gates individually forced (audit #8). Basis counts vs v1.2 reference: `negative` 103→83,
 `selector` 173→106, `pstar` 458→242 — v1.7-era, real, owned;
 marginals and supports never moved. All measurements
 seconds-scale on the M5 Max.
@@ -759,7 +782,8 @@ no bare-term ideal oracle).
 | v1.12 | the KD subtraction (Q frames + burials); W8 extended to bitfree ∩ burial; condition (e) compares the bundle actually left; register decrufted current-only; two new permanent regressions (nine total) | **fresh audit #5: FAIL** (subtraction missed T/log-surviving tickets; "maximal-certified" false on palpha; version cruft; healing + physics + regressions CONFIRMED) |
 | v1.13 | the COMPLETE subtraction (bundle names only keys with no surviving bit-carrying representation anywhere in the target — Q frames, burials, T/log tickets); phase-3 GREEDY RESCUE (a failing map is re-admitted greedily, not discarded — palpha certifies, guard-silent, marginal unchanged); "maximal" retracted to validation-adjudicated greedy; version strings unified (the register alone carries the version); tenth regression | **fresh audit #6: FAIL** (zero machine countermodels — subtraction CONFIRMED-SOUND by exhaustive storage enumeration, palpha + W hand-confirmed, 18 graphs zero diffs; regression ten non-gating; rescue claim stronger than its pool; "nothing reachable moved" false as written; version cruft) |
 | v1.14 | regression ten GATES the aggregate; rescue pool completed to phase-1 ∪ all phase-2 candidates (measured behavior-identical on the suite — the completion makes the None sentence exact); claim language restricted (moved-graphs claim scoped to the prior 18 + palpha at its certified values); stale version/audit text purged; every prediction of the round held byte-for-byte | **fresh audit #7: FAIL** (zero machine countermodels again — subtraction confirmed third time over an extended matrix, Pα + W hand-recomputed, pool construction verified; None sentence omitted cap exits; validate() vacuously satisfiable at unreachable positions; v1.6 pair non-gating; "byte-identical" false vs the conservation timing suffix; two stale register phrases) |
-| v1.15 | NON-VACUITY joins the structural side (`vacuous_positions`, machine_coverage refuses unreachable entries — canonical maps never vacuous by settle()'s guarantee); the None sentence exact in three disjuncts (cap/nonconvergence; empty admission; pool pass accepting nothing); eleventh regression (vacuous-position) gated; the module verdict is the EXIT CODE (any single regression failure exits nonzero, measured); title de-cruffed to "qALC kernel"; output-identity claims scoped to deterministic fields; every prediction held with exactly the declared deltas | **fresh audit #8: pending** |
+| v1.15 | NON-VACUITY joins the structural side (`vacuous_positions`, machine_coverage refuses unreachable entries — canonical maps never vacuous by settle()'s guarantee); the None sentence exact in three disjuncts (cap/nonconvergence; empty admission; pool pass accepting nothing); eleventh regression (vacuous-position) gated; the module verdict is the EXIT CODE (any single regression failure exits nonzero, measured); title de-cruffed to "qALC kernel"; output-identity claims scoped to deterministic fields; every prediction held with exactly the declared deltas | **fresh audit #8: FAIL** (zero machine countermodels, third straight — None sentence and all eleven gates CONFIRMED, subtraction fourth confirmation, Pα + W hand-recomputed; non-vacuity position-level only: ghost popkeys validate clean; settle() proof wrong for phase-1-only maps; four honesty findings) |
+| v1.16 | KEY-level non-vacuity (`vacuous_keys`: every popkey must occur in an arrival frame at its position; ghost popkeys refused; canonical maps carry zero by the corrected two-case proof — phase-1 maps take keys from the converged arrivals, all other acceptances via settle()); twelfth regression (ghost-key), gated; the admission claim stated honestly (phase-2/rescue validate at acceptance, phase 1 is structural, nothing returns unvalidated); physics-table preamble names the machine-measured row; inventory and contract docstrings corrected; every prediction held with exactly the declared deltas | **fresh audit #9: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
