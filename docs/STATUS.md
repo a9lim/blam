@@ -537,10 +537,35 @@ earned coherence depends on it) scoped under a named compile-time
 obligation. The h-fragment PASS is re-claimed, **gated on a
 fresh-context independent audit**.
 
+**Fresh audit #1 returned FAIL; kernel v1.8 is the correction
+round** (`kernel.md` §14.6, §15, 2026-08-09). The audit confirmed
+the Q/weave/hweave/qq physics by independent recomputation but
+landed two countermodels (a WF-but-colliding certified fire; `Pα`,
+a typed in-fragment program whose admitted certificate erased an
+α-cargo instance later re-sought — silently stuck), plus a fuzzed
+duplicate fresh call through the fire's α-decode, an injectivity
+gap, and honesty defects. v1.8 answers with one mechanism: decode
+records at certified erasure + a `refire` guard in the fresh-call
+arm make **one-fire-per-instance a runtime machine invariant**
+(the α-cargo compile-time obligation is discharged and deleted);
+`discover_total` now validates its own fixpoint and refuses
+unsound certificates (`Pα` and the fuzz program fall back to the
+conservative plain run — `Pα`'s canonical dynamics is its correct
+physics, {1/4, 3/4}); W7 fibre coherence joins the WF subtype and
+the range-disjointness theorem is mechanized; `typecheck.py`
+supplies the typed h-only fragment judgment (15/18 typable — `q`
+itself is out, the wire imbalance `qprime` fixed; `dup` and the
+fuzz program out by construction). The sixteen prior programs are
+marginal-, support-, and **basis-identical** (decode records are
+branch-consistent constants — a bijection on the post-fire
+subgraph, measured). The auditor's own reproducer reruns clean:
+fuzz 250/250 no violation. The v1.2→v1.7 basis drift overclaim is
+corrected and owned (§15.4).
+
 The open docket, in order:
 
-1. **the fresh-context independent audit of the v1.7 h-fragment
-   claim** (in flight; verdict to be registered in §14);
+1. **fresh-context independent audit #2 of the v1.8 h-fragment
+   claim** (next action; verdict to be registered in §15.5);
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem

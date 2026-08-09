@@ -1,15 +1,21 @@
 # qALC three-program kernel — v1
 
-**Status: v1.7 — §14 is the current register: the replay RECORD
-(idempotent recall, deep keyed replay, canonical order) heals the
-`Q` countermodel to its predicted physics and dissolves the
-`buried-frame` error class; the WF subtype (six invariants,
-reachable ⊆ WF over 9,314 states, per-rule preservation) closes
-the range-disjointness gap; certified-erasure cargo conditions
-measured and registered (γ-free locally enforced; α-cargo scoped
-as a compile-time obligation). Sixteen-program battery total and
-clean. The h-fragment PASS is re-claimed, gated on a fresh-context
-independent audit.** Previous register — v1.6 (§13): the
+**Status: v1.8 — §15 is the current register: fresh audit #1
+returned FAIL (§14.6 — WF-collision and Pα countermodels, an
+injectivity gap, honesty defects); v1.8 answers with one
+mechanism: decode records at certified erasure + the refire guard
+make one-fire-per-instance a runtime machine invariant (the
+α-cargo compile-time obligation is discharged and deleted),
+`discover_total` validates its own fixpoint (unsound certificates
+refused, conservative None fallback), W7 fibre coherence joins the
+WF subtype with the range-disjointness theorem mechanized, and
+`typecheck.py` supplies the typed h-only fragment judgment (15/18
+typable; `q` itself is out — the wire imbalance `qprime` fixed).
+Eighteen-program battery total and clean; the sixteen are
+marginal-, support-, and basis-identical to v1.7. The PASS
+re-claim is again gated on a fresh-context independent audit.**
+Previous registers — v1.7 (§14): the replay record healed `Q` and
+dissolved `buried-frame`; v1.6 (§13): the
 fresh-instance adversarial round (§13.6) returned FAIL for "PASS
 for the h-fragment" while CONFIRMING the mathematical core: the
 conservation theorem stands with a depth-term correction
@@ -1605,3 +1611,168 @@ literal gate application, the t-gate reservation, and the α-cargo
 compile-time obligation. This claim is **gated on a fresh-context
 independent audit** (a9's instruction for the round); the audit
 verdict will be registered here.
+
+### 14.6 The fresh audit verdict: FAIL (registered 2026-08-09)
+
+Fresh-context independent audit #1 (gpt-5.6-sol, threadless, job
+`cx-20260809-134605-79cc`, fed the full scratchpad + evidence
+pack): **FAIL** for the h-fragment PASS. The scorecard, by charge:
+
+1. **Replay record — GAP.** No wrong deep-key lookup found (Q plus
+   3,160 generated programs clean), but no injectivity theorem for
+   logged-position keys was supplied; deleting `buried-frame` was
+   validated only on explored orbits.
+2. **Q / weave / hweave / qq physics — CONFIRMED-SOUND** by
+   independent recomputation, exact amplitude agreement.
+3. **WF adequacy — REFUTED with countermodel.** W1–W6 do not make
+   certified fire injective: a reachable `lone` arrival plus one
+   extra slot-matching frame is WF, and both sources fired to
+   identical targets (columns with inner product 1). WF needed the
+   certificate's fibre relation as a domain subtype.
+4. **Scoped α-cargo condition — REFUTED with countermodel.**
+   `Pα = (C I h) 1̂`, `C = h (h (NOT (h 0̂)))` — typed, h-only,
+   in-fragment. `discover` admitted a certificate whose α-cargo
+   erasure is followed (t=131, amplitudes ±1/2) by a fresh call of
+   the erased instance; the certified run goes STUCK at t=180 while
+   the plain run computes the correct `{1/4, 3/4}`. The no-reseek
+   condition cannot remain an unchecked compile-time obligation.
+5. **Scoping honesty — REFUTED.** The §14.2 "twelve bit-identical"
+   overclaim (the v1.2 basis drift `negative` 103→83, `selector`
+   173→106, `pstar` 458→242 is real, v1.7-era, marginal-identical);
+   an "all twelve" print over sixteen programs; the evidence pack
+   omitted this file; no typing checker existed. Their fuzz also
+   surfaced a sixth defect we adjudicated into round 2: a
+   **duplicate fresh call** — a ticket consumed by the fire's
+   α-decode (bit-free spectator), the same instance later re-sought
+   with neither ticket nor frame, silently fired twice.
+
+Both countermodels and the fuzz hit were reproduced locally before
+any correction was designed. §15 is the correction round.
+
+## 15. v1.8 — decode records, the refire guard, and the typed fragment
+
+*(2026-08-09; the audit-correction round. Scratch evolver updated in
+place; suite is eighteen programs; `typecheck.py` joins the
+scaffolding. No qALC code in the tree — §9 gates still govern.)*
+
+### 15.1 One mechanism, not three patches
+
+The audit's two live countermodels and its fuzz hit are the same
+disease in three coats: **an instance's selection was erased with no
+recoverable record, and the machine then answered a later re-seek of
+that instance by silently tossing a second coin.** Pα reached it
+through certified α-cargo erasure; the fuzz duplicate through the
+fire's α-decode (the bit-free spectator that buys HH's coherence);
+the WF collision was its structural shadow (erasure that forgets the
+frame's existence cannot be injective). The v1.8 mechanism:
+
+- **Decode records.** Certified erasure now retains `('K', g, i)`
+  for every live α nested in the erased cargo and for every popped
+  frame's instance (the fire's α-decode arm already retained its
+  `('K', g, i)`). The erased tuple is a function of the retained
+  `(slot, T, log)` fibre — discovery condition (b) — so its key-set
+  is too: the records are **branch-consistent constants**, coherence
+  is untouched, and erasure becomes injective on the ticket/frame
+  dimension. Measured sharp: all sixteen prior programs keep
+  identical marginals, supports, *and basis counts* — adding a
+  branch-constant record is a bijection on the post-fire subgraph,
+  so counts cannot move, and did not.
+- **The refire guard.** The fresh-call arm now types out (`refire`)
+  any instance whose key is dead storage in `ks` — a decoded record,
+  or a ticket captured inside a retained-whole record. Arm order
+  (ticket → recall, frame → replay, else guard → call) plus the
+  fact that one `vvar` emits one ticket consumed by exactly one of
+  recall/decode/erasure means the guard can never shadow a
+  legitimate recall or replay. **One-fire-per-instance is now a
+  machine invariant enforced at runtime; the v1.7 α-cargo
+  compile-time obligation is discharged and deleted.**
+- **Validated admission.** `discover_total` now runs the full
+  `validate()` (totality, guard reachability, Gram, err mass) on
+  its fixpoint and returns None — the conservative, sound fallback —
+  when coverage fails. Pα's and the fuzz program's exploratory
+  certificates exist but are *refused* by the canonical pipeline.
+
+### 15.2 The audit witnesses, healed and framed
+
+- **`palpha`**: canonical certificate None; canonical dynamics is
+  the plain run, `{halt0: 1/4, halt1: 3/4}`, support 3 — the
+  physics (`C = H·H·X·H|0⟩ = |+⟩`; the zero branch applies I to
+  `1̂`, the one branch H). The exploratory certified graph is now
+  *total and loud*: `refire` reached, err mass 1/2,
+  `semantic_coverage` False — the old silent STUCK at t=180 (a norm
+  leak) is gone.
+- **`dupcall`** (the fuzz hit, registered): canonical certificate
+  None; the plain run rejects typed (`alien-ticket`, err 1/2 beside
+  a classical 1/4+1/4); under the v1.7-era certificate the refire
+  guard is REACHED with all-err dynamics — the suite's permanent
+  positive control. UNTYPABLE (below), so it was never inside the
+  fragment claim; the guard is defense-in-depth.
+- **The WF collision**: the extra-frame source is `W7`-excluded
+  (§15.3) *and* no longer shares targets — the popped frame leaves
+  its decode record. Both layers close it independently.
+
+### 15.3 W7 and the range-disjointness theorem
+
+**W7 (certificate fibre coherence)** joins the subtype: at a
+certified boundary, the erased `(l, RS)` must equal the
+certificate's frozen fibre value at the retained key
+`(pos, slot, T, log)`. Reachable ⊆ WF∧W7 sweeps clean over every
+certified graph (the fibre map is discovery's own object; condition
+(b) makes it single-valued).
+
+**Theorem (range disjointness on WF∧W7).** For two certified-fire
+sources at one boundary: same `(T, log)` and slot ⇒ same erased
+tuple (the fibre is a function) ⇒ the same source; same `(T, log)`,
+other slot ⇒ the identical target pair carrying the two H rows —
+orthogonal columns, which *is* the interference mechanism; different
+`(T, log)` ⇒ disjoint targets, because targets embed `T` and `log`
+verbatim. Mechanized (`cert_disjointness`): zero violations over
+every certified graph.
+
+**The GAP, dissolved rather than closed.** Deep-lookup soundness
+needs no instance-key injectivity theorem: if two dynamic copies
+ever aliased one `(g, i)`, divergent selections are typed
+(`frame-conflict` on both the recall push and the replay lookup)
+and agreeing selections make the lookup value-correct. Every
+aliasing manifestation is typed or harmless; λIAM logged-position
+uniqueness downgrades to a **completeness conjecture**, outside the
+soundness perimeter.
+
+### 15.4 The typed fragment, made real
+
+`typecheck.py` supplies the judgment the claims quantify over:
+algorithm W with the gates as the polymorphic signature
+`h, t : ∀a. (a→a→a) → (a→a→a)` instantiated fresh per occurrence
+(the precise content of "signature-abstracted"), plain HM
+elsewhere, result type free (`haltI`-sector programs are
+function-typed). Measured: **15 of the 18 are typable h-only**.
+Outside: `dup` (self-application — deliberately, the untyped copy
+regression), `dupcall` (NOT′/EP branches ununifiable), and — a
+finding — **`q` itself** (E = λz. I z vs N ununifiable: exactly the
+wire imbalance `qprime` was built to repair; `qprime` types clean).
+The three escapes (`h h` etc.) are untypable, as required.
+
+**The v1.8 coverage claim**: over programs that are (i) typable
+h-only under the signature judgment and (ii) whose canonical
+pipeline (`discover_total` + `validate`) reports
+`semantic_coverage` — the kernel is total, Gram-clean, and
+marginal-correct, with every failure mode outside (ii) typed and
+visible, never silent. The §14.2 basis-drift overclaim is
+corrected: v1.7's replay record moved `negative` 103→83, `selector`
+173→106, `pstar` 458→242 against the v1.2 reference (canonical rs
+sorting and the replay-arm restructure merge order-variant states);
+marginals and supports never moved.
+
+### 15.5 Verification state and the audit gate
+
+Suite (18): sixteen marginal/support/basis-identical to v1.7,
+guards silent; `palpha`/`dupcall` as above; refire + pop-err
+negative controls PASS. `discover_total` == frozen CERTS on all 18;
+`h(Ω)` → None. WF and W7 sweeps + disjointness: zero violations.
+Conservation ledger: zero failures (k = 1..3, 14,452 surfacings).
+Polarity, terminal chains, gauge orbit (4/256, exact): unchanged.
+The auditor's own reproducer, rerun under v1.8: WF collision
+targets disjoint; Pα scope clean, live calls none; sixteen
+histories clean; fuzz 250/250 no violation (66 conservatively
+refused). **The PASS re-claim is again gated on a fresh-context
+independent audit; verdict to be registered here.**
