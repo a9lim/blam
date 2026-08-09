@@ -382,16 +382,16 @@ substrate's obstruction and the fork reopens.
 
 | Item | Status |
 |---|---|
-| Kernel | **v1.3: transport total on the whole battery, instance-indexed frames, transparency/pop implemented and verified; the mass-1 question resolved into the time-register finding** (`kernel.md` §10) |
-| α/γ transport totality | **restored** — the `replay` rule (fresh re-seek off the instance's frame, derived from the literal visit-3 trace); the whole ten-program battery runs total |
-| Transparency criterion | **implemented as the pop rule**: certified fire boundaries strip frames matching the arrival slot in the same unitary; unsound certificates caught as typed `pop-err`; `q`-family halts garbage-free; p★'s frames stay inert (mandatory) — certificate discovery manual, verification mechanical |
-| Instance identity | **structural**: instance = the invoking occurrence's logged position, at the log head on every gate-leaf entry; tickets/frames carry it; ticket ownership discharged |
-| Time register | **new standing finding** (`kernel.md` §10.4): pattern-encoded slots are time-free, step-encoded selection skews the branch clock oddly; even-pad invariance measured; conjecture: geometric selection decoheres intrinsically; time-balance is a compiler obligation |
+| Kernel | **v1.3 reviewed: FAIL as the formalization gate, PASS for the replay repair** — every number independently reproduced; the v1.4 gate is `kernel.md` §10.6's eight items |
+| α/γ transport totality | **restored** — the `replay` rule (fresh re-seek off the instance's frame, derived from the literal visit-3 trace); the whole eleven-program battery runs total |
+| Transparency criterion | pop rule implemented and Gram-verified, but the review holds it to more: the pop is an **encoded fibre** `E_m\|b,κ⟩ = \|b,F_m(b,κ),κ⟩` (source spectator depends on `b` — the frozen clean-fibre contract needs amending or frames become a decoded coordinate); **Gram ≠ certificate soundness** (our own negative control is the countermodel — validity needs zero reachable `pop-err` + the RS-function property); certificates must be canonical stack-shape predicates of the program, not external fire-position sets |
+| Instance identity | **ratified** ("exactly the λIAM structure intended to name exponential copies"); the `dup` probe `(λx. x x)(h 0̂)` verifies copy discrimination; owed as proofs: lp-at-log-head on every valid entry, equal lps = same dynamic copy; TOP fallback removed (typed `no-instance`), buried same-instance frames typed (`buried-frame`), resolution owed |
+| Time register | **standing finding, independently confirmed** (`kernel.md` §10.4, §10.6): pattern-encoded slots time-free, step-encoded selection skews the branch clock oddly; no odd pad in a 156-variant search; composed selections stay odd (NOT∘NOT Δ=1); **port-polarity coloring** supplied as the theorem route — row-by-row proof over the extended table owed; "coherent fragment = pattern class" not yet proved |
 | L1 arrival-residue determinacy | kernel-verified at `fire`; general proof open |
-| L2 pop timing / coherence return | confirmed for NOT′ (kernel); selector measured decoherent; mechanism now understood via pattern-vs-step |
-| `call`/`recall`/`replay` structural domain disjointness | guards structural in v1.3 (instance + rs-head checks); formal table presentation still owed |
+| L2 pop timing / coherence return | confirmed for NOT′ (kernel); selector measured decoherent; mechanism understood via pattern-vs-step |
+| `call`/`recall`/`replay` structural domain disjointness | guards structural in v1.3 (instance + rs checks, buried-frame typed); formal table presentation still owed |
 | Probe-exit classification totality | open (kernel error rules are catch-alls) |
 | Readback controller | undesigned; kernel's root classifier is its 1-bit case |
 | `μ_p`/`Ω_qALC` on the token clock | pending readback design |
-| Mandatory regressions | `p★`, 3-coin, `q` (Codex's), `q′` (wire-balanced), `q2` (minimal geometric selection) — all total, Gram-clean, marginals correct; `q`-family certified runs halt frame-free with arrival telemetry 35/7/3 as the time-register record |
+| Mandatory regressions | `p★`, 3-coin, `q`, `q′`, `q2`, `dup` — all total, Gram-clean, marginals correct; `q`-family certified runs halt frame-free with arrival telemetry 35/7/3 as the time-register record |
 | Bideterminism of §2 | verified vs arXiv:2002.05649 |

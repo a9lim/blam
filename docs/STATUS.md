@@ -478,12 +478,28 @@ pattern-encoded routing class, and time-balance is a compiler
 obligation. v1.2's p★ support-8 was transport-bug-inflated
 (extra fire events measured); the correct support is 4.
 
+The v1.3 adversarial round returned (2026-08-09, registered in
+`kernel.md` §10.6): **FAIL as the formalization gate, PASS for the
+replay repair** — every number independently reproduced; no odd pad
+in a 156-variant search (composed selections stay odd: NOT∘NOT
+Δ=1); a **port-polarity coloring** supplied as the parity theorem
+route; instance-as-logged-position ratified with a new
+copy-discrimination regression (`dup`). Review corrections applied
+in-session: buried same-instance frames and missing-instance
+entries are typed errors (both unreachable in the battery — it is
+bit-identical), TOP fallback removed.
+
 The open docket, in order:
 
-1. **kernel v1.3 adversarial round**: independent re-verification of
-   the replay/pop rules and the odd-offset invariance (find an
-   odd-cost pad or prove none exists); then the parity claim as a
-   theorem candidate;
+1. **kernel v1.4 gate** (`kernel.md` §10.6): the port-polarity
+   coloring proof over the full rule table; the encoded-fibre
+   theorem `E_m|b,κ⟩ = |b,F_m(b,κ),κ⟩` or an architecture
+   amendment (the pop's source spectator depends on `b`);
+   certificate soundness beyond Gram (zero reachable `pop-err` +
+   the RS-function property) with certificates as canonical proved
+   stack-shape predicates of the program; buried-frame resolution;
+   the two logged-position invariants; exact amplitudes beyond
+   `(m,k)` monomials;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem

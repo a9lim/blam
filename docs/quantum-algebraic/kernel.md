@@ -2,7 +2,12 @@
 
 **Status: kernel v1.3 — transport total, frames instance-indexed,
 transparency/pop implemented and verified; the mass-1 question is
-answered by a new finding: the time register.** §10 is the v1.3
+answered by a new finding: the time register. Reviewed: FAIL as
+the formalization gate, PASS for the replay repair — every number
+independently reproduced, no odd pad found (156-variant search),
+a port-polarity theorem route supplied; the v1.4 gate is §10.6's
+eight items (encoded fibres, certificate soundness beyond Gram,
+canonical certificates, the coloring proof).** §10 is the v1.3
 register. Of the re-review's six gate items: totality on `q`'s
 graph ✓ (the `replay` rule, derived from the literal visit-3
 trace); correct slot-0/slot-1 outer arrivals ✓; instance-indexed
@@ -756,3 +761,90 @@ manual (verification mechanical); γ/μ marks remain kind-only
 instance-indexing them is mechanical if a countermodel appears).
 Restated from §9: general ℤ[1/√2] amplitudes in the verifier, H/T
 cross-fibres, effect-free conservativity, general readback.
+
+### 10.6 The v1.3 review verdict (registered)
+
+Adversarial round (thread `qalc-token-machine`, fresh independent
+run, 2026-08-09): **FAIL as the formalization gate; PASS for the
+replay repair.** Every v1.3 number was independently reproduced —
+all basis counts, marginals, supports, the p★ fire events
+(confirming t = 63/65 were spurious and support 8 was
+bug-inflated), the q-family arrival telemetry, and the instance
+invariant (every downward gate-leaf entry in every graph has an
+ordinary lp at the log head; the TOP fallback never fires).
+
+**Parity: no odd pad found, and a theorem route supplied.** The
+review searched 156 closed identity-context pad variants (up to
+three nested applications of `I M`, `(λx.M) I`, `0̂ M I`, `1̂ I M`,
+`λz.M z`) around q′'s branch-0 function plus a branch-local
+coherent HH pad (`λz. h (h (E′ z))`, +48): every shift even, every
+offset odd, no stuck states. Composed geometric selections stay
+odd: id∘id Δ=9, NOT∘NOT Δ=1, id∘NOT Δ=7, NOT∘id Δ=1 — odd
+selections do not cancel. The proposed proof shape is a
+**port-polarity coloring**: give ports a bipartite polarity; each
+ordinary transition crosses one interaction edge and flips
+polarity; a closed pad entering and exiting through one interface
+has equal endpoint polarity, hence even cost; a geometric boolean
+route's two computational slots end at opposite polarity (the slot
+bullet crossed a real f-node via `•3`); pattern encoding is
+exceptional because the δ classifier consumes its slot bullet
+without a machine transition, quotienting the one-step difference —
+exactly why HH/H–NOT′–H synchronize. Status: odd-offset invariance
+HOLDS empirically; the even-pad lemma is a promising theorem; "the
+coherent fragment is exactly the pattern-encoded class" is NOT YET
+PROVED — it needs the row-by-row coloring over the full extended
+table, the compressed `replay` rule checked directly rather than
+via its literal expansion.
+
+**Blocker 1 — the pop is not the frozen clean δ fibre.** At a
+certified boundary the two logical inputs are
+`|0, R_i(0)·…, κ₀⟩` and `|1, R_i(1)·…, κ₁⟩`: the source spectator
+depends on `b`, so this is not `U|q,b,κ⟩ = Σ Q[b′,b]|b′,J(κ)⟩`
+with a common κ. The correct object is an **encoded fibre**: an
+isometry `E_m|b,κ⟩ = |b, F_m(b,κ), κ⟩` with certified reachable
+range and `U·E_m|b,κ⟩ = Σ_b′ Q[b′,b]|b′, J_m(κ)⟩`. Either the
+architecture's clean-fibre contract is amended to admit encoded
+fibres, or replay frames become a formally decoded logical
+coordinate outside κ.
+
+**Blocker 2 — Gram/norm is not certificate soundness.** Our own
+negative control is the countermodel: the wrong p★ certificate
+passes the structural Gram and norm perfectly while sending mass
+1/2 to `pop-err`. Certificate validity must separately require:
+zero structurally reachable `pop-err`; the complete RS stack being
+the certified function `F_m(b,κ)`; no framed/frameless predecessor
+collision after erasure; and preservation of the intended
+non-error semantics. Certificates must also become **canonical**:
+a frozen function of the immutable program sector (a proved
+stack-shape predicate, not an externally supplied fire-position
+set) — otherwise the same program denotes different dynamics under
+different certificates and `U` is not well-defined.
+
+**Blocker 3 — buried same-instance frames (FIXED in-session).**
+The registered scope text claimed interleaved re-seeks raise a
+typed error; the code actually fell through to fresh `call` when a
+same-instance frame sat under another instance's frame — the v1.2
+double-fire class waiting to recur. Corrected immediately: a
+buried same-instance frame is now the typed error `buried-frame`,
+and the silent TOP instance fallback is removed (`no-instance`
+typed error). The full battery is bit-identical after both
+corrections (neither state is reachable in it), and the review's
+copy-discrimination probe `(λx. x x) (h 0̂)` — two dynamic
+instances of one argument occurrence, distinguished only by log
+slices — joins the battery (`dup`: 90 basis states, total,
+zero-defect, sectors halt0 1/4 / halt1 1/4 / haltI 1/2).
+
+**Ratified**: instance = logged position is "exactly the λIAM
+structure intended to name exponential copies"; owed as proofs:
+every valid gate-leaf entry has an lp at the log head, and equal
+lps name the same dynamic copy.
+
+**The v1.4 gate**: (1) formalize the port-polarity coloring and
+check every rule row; (2) the encoded-fibre theorem or architecture
+amendment; (3) certificate validity = zero reachable `pop-err` plus
+the RS-function property, not Gram alone; (4) certificates as
+proved stack-shape predicates; (5) the canonical
+program→certificate relation; (6) buried-frame handling proved or
+ruled out (typed error now, resolution owed); (7) the two
+logged-position invariants; (8) exact verification beyond
+single-monomial `(m,k)` amplitudes before general h-only claims.
