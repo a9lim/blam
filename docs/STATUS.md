@@ -489,29 +489,32 @@ in-session: buried same-instance frames and missing-instance
 entries are typed errors (both unreachable in the battery — it is
 bit-identical), TOP fallback removed.
 
+**Kernel v1.6 claims PASS for the h-fragment** (`kernel.md` §13,
+2026-08-09, pending fresh-instance adversarial review): the
+conservation conjecture is now a **theorem** — an attribution-ledger
+lemma (`t ≡ k + b + 1`: every λIAM step is the birth, death, or
+transport of exactly one tape/log individual) meets the coloring
+(`t ≡ 1 + w(l)`) to give `w ≡ exit slot` on mark-free fire-free
+readback, with each hypothesis's failure mode a named mechanism
+(interior-fire charge / VB pattern birth / mark capture). Mechanized
+at the invariant level: 41,272 closed terms ≤ size 11, 55,727
+surfacings, per-step ledger checks in lockstep conformance with the
+uninstrumented machine, zero failures; battery ancestry sweep clean
+on all twelve programs. Also discharged mechanically: terminal
+chains (in/out-degree 1 everywhere), gauge-pinned uniqueness (the
+predicted 4-element orbit is exactly the passing set of all 256
+weight assignments), the terminating conservative certificate
+analysis (`discover_total` — total on every program, `h Ω`
+conservative-reject witness, frozen-CERTS agreement), and the lp
+invariants (six guard rules swept unreachable; zero `(g,i)`
+aliasing; lp-at-log-head structural for signature-abstracted
+programs). Standing fences, typed: `buried-frame`, literal gate
+application, the t-gate reservation.
+
 The open docket, in order:
 
-1. **kernel v1.5 → PASS gate** (`kernel.md` §12): the v1.4 round
-   closed with the coloring a confirmed theorem
-   (PASS-WITH-CORRECTIONS: gauge-only uniqueness; general parity
-   law with interior-fire charges) and the amendment ratified —
-   then the review's C-collapse countermodel
-   (`λb.λx.λy. b y y` — same-slot arrivals, distinct lps) exposed
-   the v1-lineage fire's unsound which-path erasure, fixed by the
-   **v1.5 encoded fire**: conservative decode by default (retain
-   `D(l)` on the inert `ks` stack; uniform φ-flip), certified
-   erasure under the corrected fibre condition (retained
-   `(slot,T,log)` determines erased `(l,RS)`). Twelve programs
-   total/clean; HNH's coherence is now *earned* through its
-   certified boundary — the coherence bar is a certified-fibre
-   phenomenon; `Ccoll` decoheres correctly with Gram clean.
-   Conservation conjecture refined to mark-free ancestry (reviewer
-   enumeration: 10,180 closed terms ≤ size 10, 708 ordinary
-   arrivals, zero mismatches); gate mediation necessary-not-
-   sufficient. Owed: the conservation lemma; mechanical
-   terminal-chain check; terminating conservative certificate
-   analysis (BFS discovery is finite-kernel-only — no all-program
-   Ω through semantic BFS); lp invariants;
+1. **fresh-instance adversarial review of the v1.6 PASS claim**
+   (the §13 register: proof, mechanizations, scoping);
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem

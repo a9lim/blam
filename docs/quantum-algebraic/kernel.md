@@ -1,28 +1,25 @@
 # qALC three-program kernel — v1
 
-**Status: v1.4 in progress — §11 is the current register. The
-polarity coloring is now a THEOREM with a closed form (uniform
-flip, fire defect `1 − w(erased lp)`; 1,518 edges checked, zero
-violations), the branch-offset formula is verified on all
-measured offsets, Codex's even-pad search is a corollary,
-certificates are canonical (discovery fixpoint, HAND==AUTO on all
-eleven programs, validity strictly beyond Gram — the negative
-control is properly caught), amplitudes are exact `ℚ[√2]`, and
-the sharpened open object is the §11.3 weight-conservation
-conjecture: gate-free readback conserves `w ≡ slot` (geometric
-selection of classical data decoheres intrinsically), with
-gate-mediated routing as the parity-free pattern class. The
-encoded-fibre amendment is RATIFIED-WITH-EDITS and applied to
-architecture §7 (§11.7). The coloring review returned
-PASS-WITH-CORRECTIONS on the theorem and FAIL on the v1.4 table —
-the C-collapse countermodel exposed the v1-lineage fire erasing
-which-path lps unsoundly — fixed by the **v1.5 encoded fire**
-(§12): conservative decode by default, certified erasure under the
-corrected fibre condition; twelve programs total and clean; HNH's
-coherence is now an *earned*, certificate-bearing phenomenon.
-Owed: the mark-free-ancestry conservation lemma, terminal-chain
-mechanical check, terminating conservative certificate analysis,
-lp invariants.** §10 is
+**Status: v1.6 — §13 is the current register, and it claims PASS
+for the h-fragment, pending fresh-instance adversarial review.
+The §11.3 conservation conjecture is now a THEOREM (§13.1): an
+attribution-ledger lemma (`t ≡ k + b + 1`, proved by
+one-step-one-individual accounting) meets the coloring
+(`t ≡ 1 + w(l)`) to give `w(l) ≡ exit slot` on mark-free
+fire-free readback — mechanized at the invariant level over
+41,272 closed terms with zero failures, and every hypothesis's
+failure mode is a registered phenomenon (interior fires: the
+defect law; VB pattern births: the parity escape; mark capture:
+the excluded ancestry). Terminal chains, gauge-pinned uniqueness
+(4/256 = the predicted orbit), the terminating conservative
+certificate analysis (`discover_total`, `h Ω` witness), and the
+lp invariants are all discharged mechanically (§13.2–13.4).
+Fences: `buried-frame` (typed, unreached), literal gate
+application, the t-gate reservation. Earlier registers: v1.5
+encoded fire §12 (conservative decode by default, certified
+erasure — coherence is *earned*, certificate-bearing); v1.4
+coloring/certificates §11; encoded-fibre amendment
+RATIFIED-WITH-EDITS, applied to architecture §7 (§11.7).** §10 is
 the v1.3 register. Of the re-review's six gate items: totality on `q`'s
 graph ✓ (the `replay` rule, derived from the literal visit-3
 trace); correct slot-0/slot-1 outer arrivals ✓; instance-indexed
@@ -1166,3 +1163,203 @@ metadata). Still owed: the mark-free-ancestry conservation lemma;
 the mechanical terminal-chain check; the gauge-pinned uniqueness
 statement; the terminating conservative certificate analysis; the
 lp invariants; H/T cross-fibres; the readback controller.
+
+## 13. v1.6 — the conservation theorem and the PASS claim
+
+The round that discharges §12.4. Everything below is mechanically
+verified in the scratch battery (`conservation.py`, `polarity.py`,
+`certify.py`, `suite.py`); no engine code exists, per the §9 gate.
+
+### 13.1 The conservation theorem (the §11.3 conjecture, proved)
+
+The proof splits into a step-counting lemma that knows nothing
+about weights and the already-proven coloring that converts step
+parity into weight parity.
+
+**Lemma A (attribution ledger).** In a pure λIAM run from a
+k-probe start `(pos, D, L₀, •^k · base)` that surfaces at
+`(pos′, U, L₀, tape · base)` with the log restored and the base
+intact, the step count satisfies
+
+    t ≡ k + b + 1   (mod 2)
+
+where `b` is the total number of bullets on the surface tape (the
+surfacing lp may carry bullets both above and below it — see the
+inventory note). *Proof.* Every rule is the birth, death, or
+transport of exactly one tape/log **individual** — a bullet or a
+logged position: `b1`/`b4` birth a bullet, `b2`/`b3` kill one,
+`var` births an lp, `bt2` kills one, `arg`/`bt1` transport one.
+Slice capture (during `var`) and slice release (during `bt2`) cost
+nothing: cargo is suspended, not stepped. Give each individual `x`
+a ledger `count(x)` of the steps attributed to it, `B(x) = 1` iff
+step-born (0 for the k probe bullets), and a location parity
+`p(x)` (0 on the tape, 1 on the log, frozen under suspension —
+capture always takes log entries, release always restores them to
+the log, so suspension preserves `p = 1`). The invariant, by
+induction over the eight rules: `count(x) ≡ B(x) + p(x)` while
+live, and `count(x) ≡ B(x) + 1` once dead or suspended (deaths
+occur on the tape, `p = 0`, and add one step). Sum at the surface:
+`t = Σ count` ≡ (k − r)·1 [dead probe bullets] + r·0 [surviving
+probe bullets] + (b − r)·1 [live step-born bullets] + 1 [the
+surfacing lp: step-born, on tape] + 0 [its suspended cargo,
+transitively] ≡ k + b + 1, using `−r ≡ r (mod 2)`. ∎
+
+**Lemma B (coloring, §11.1).** Every rule flips φ; probe tapes
+weigh 0; the surfacing tape weighs `w(l)` (bullets weigh 0). So
+`t ≡ φ_end − φ₀ ≡ 1 + w(l)`.
+
+**Theorem (conservation).** `w(l) ≡ k + b (mod 2)`. For the
+boolean protocol (`k = 2`, arrival shapes `l·base` and `•·l·base`
+with `b = slot`): **`w(l) ≡ exit slot`**. The `haltI` sector
+(`l·•·base`, `b = 1`) gives `w(l) ≡ 1` — the identity's lp weight,
+correctly. *Proof.* Equate Lemmas A and B. ∎
+
+**Inventory note (found by the mechanization).** The naive
+endpoint claim — surface bullets above the lp step-born, below it
+probe survivors — is FALSE: lps recirculate tape → log → tape via
+`arg`/`bt1`, so the surfacing lp can return on top of step-born
+bullets. The ledger handles this because live step-born bullets
+contribute 1 *wherever they sit*; only the mod-2 identity
+`−r ≡ r` is needed. The per-step assertion caught this within the
+first 707 terms.
+
+**Corollary (kernel transfer — the mark-free-ancestry lemma).** In
+a kernel run, consider a probe segment from `(argpos, D, γ·i·L,
+•·•·μ_g·T)` to its boundary arrival, and suppose the segment is
+fire-free, VB-free, and **mark-free**: no `γ`/`α` is ever captured
+into a slice. Then no `var` step reaches past the γ at the log
+boundary (capturing it is the only way to cross), so the token
+stays inside the probed argument, the frozen suffixes `μ_g·T` and
+`γ·i·L` are untouched, and the segment is *literally* a pure λIAM
+run of the argument against `•·•·μ` — Lemma A applies, Δφ across
+the segment is `1 + w(l)` (same log, same suffixes), and
+`w(l) ≡ slot`. Each hypothesis is load-bearing and each failure
+mode is a registered phenomenon: an **interior fire** breaks
+Lemma B's uniform flip by exactly the fire defect (the §12.3
+interior-fire parity law); a **VB episode** births a whole
+`•^{b′+1}·α` pattern in one step, breaking Lemma A's
+one-step-one-individual attribution (why pattern routing is the
+parity escape); a **captured mark** breaks segment closure and is
+precisely the excluded ancestry (why `w(α) = 0` decouples weight
+from step count). Gate mediation being *necessary* for coherent
+routing is now a theorem-shaped statement: mark-free geometric
+readback has `w ≡ slot`, hence odd branch offset, hence intrinsic
+decoherence by the §11.2 offset law.
+
+**Mechanical validation, at the invariant level.** The instrumented
+pure machine checks the ledger invariant after *every step* of
+*every run*, in lockstep conformance with the uninstrumented
+stepper (same rule, same stripped state, asserted each step —
+implementation drift is a hard error). Exhaustive sweep over all
+closed pure terms: ≤ size 10, **10,180 terms** (independently
+matching the reviewer's enumeration count exactly), and ≤ size 11,
+**41,272 terms**, probed at k ∈ {1, 2, 3}: **55,727 surfacings,
+zero Lemma-A failures, zero theorem failures, zero invariant
+violations** (stuck runs validate the invariant on every step too;
+Ω-class terms time out at the cap and contribute their prefixes).
+Battery cross-check on the gated twelve: every classifier arrival
+(gate boundaries and root, both cert modes) classified by
+ancestry — **zero mark-free arrivals violate `w ≡ slot`** across
+all twelve programs; marked arrivals split both ways, as virtual
+ancestry predicts (HH/HNH's earned-coherence tickets among the
+`w ≡ slot` equalities, the countermodels among the inequalities).
+
+### 13.2 Terminal chains and gauge-pinned uniqueness (mechanical)
+
+**Terminal chains.** Across all twelve programs × both cert modes:
+every `RunDone` and `Done` state has in-degree exactly 1 and
+out-degree exactly 1 in the reachable graph — zero violations. The
+"unique predecessor" property §12.3 demanded be checked is now a
+regression, and flip-by-assignment on the linear terminal chains is
+well-defined.
+
+**Uniqueness as a swept theorem.** Parametrize the mark weights by
+`v ∈ {0,1}⁸` over `(γ, μ, A, α, ρ, R, K₃, K₂-offset)` (entry
+weights are linear in `v`, so each edge carries a profile vector
+and assignments are dot products). The full flip/defect law was
+evaluated under all 256 assignments over every Run→Run edge of all
+twelve programs, both cert modes: **exactly 4 pass**, and they are
+exactly the predicted gauge orbit `γ = μ = c`, `A = 1 + c`,
+`ρ` free, `α = R = K₃ = K₂-offset = 0`. The rule-derived
+constraints (`call`: γ+μ ≡ 0; `anshead`: γ+A ≡ 1; `vvar`: α ≡ 0;
+`recall`: R ≡ α; conservative fire flip: K ≡ content) pin
+everything except the global gauge `c` and the never-moved `ρ`.
+**The coloring is unique after pinning `w(A) = 1`, `w(ρ) = 0`.**
+
+### 13.3 The terminating conservative certificate analysis
+
+`discover_total(term, state_cap, round_cap)`: at most `round_cap`
+rounds, each one BFS over at most `state_cap` states; any cap hit
+or non-convergence returns **no certificate**, which selects the
+conservative nontransparent fire everywhere — always sound (the
+v1.5 default), possibly suboptimal, exactly as the amendment's
+computability discipline sanctions. `U` is therefore total and
+well-defined on *every* program; the canonical certificate is
+`discover_total` at frozen caps, a deterministic function of the
+program fixed at initialization as static metadata. On finite
+kernel graphs within the caps it equals the exact fixpoint.
+Verified: reproduces the frozen certificates on all twelve;
+the totality witness `h Ω` (infinite kernel graph) returns a
+conservative reject rather than diverging or raising. The §12.3
+consequence stands unchanged: all-program Ω objects cannot be
+defined through semantic-BFS certificates; the budgeted analysis
+is the sanctioned mechanism, and its rejections are the price.
+
+### 13.4 The logged-position invariants
+
+**Soundness is carried by total typed guards, not by reachability
+claims.** Every instance-consulting rule has a typed rejection
+(`no-instance`, `alien-ticket`, `buried-frame`, `recall-err`,
+`replay-err`, `pop-err`); there is no silent fallback path. On top
+of that, now mechanical: across all twelve programs × both cert
+modes, **none of the six guard rules is structurally reachable**
+(and the negative control — p★ under the wrong certificate — still
+reaches `pop-err`, so the check has teeth).
+
+**lp-at-log-head, scoped structural argument.** For
+signature-abstracted programs (gates occur only as the wrapper
+application's arguments — the entire program class the architecture
+compiles), a gate leaf sits at an `a`-position, and the only rule
+that enters an `a`-position going D is `arg`, which pushes the
+transported tape head onto the log. When that head is an ordinary
+lp it *is* the invoking occurrence's logged position — the
+instance, at log head, structurally. When it is not an lp (a
+`γ` probing a gate, an `α` in transit), the leaf's `instance()`
+finds a non-lp head and rejects typed — never treats it as an
+instance. Programs applying a gate literally (`App(Gate, …)`)
+fall outside the scope statement and meet the same typed guards.
+
+**Equal lps = same dynamic copy.** The λIAM-lineage fact the
+design imports (a logged position names a dynamic subterm copy;
+token.md §2 pins the substrate). Its operational failure mode —
+one `(g, i)` naming two different selections — is now a swept
+regression: across every reachable state of all twelve programs,
+**zero states** hold two instance-keyed entries (α tickets, R
+frames) with equal `(g, i)` and different bits. `dup` (two dynamic
+instances of one occurrence, distinct slices) remains the built
+witness that distinct copies get distinct names.
+
+### 13.5 The v1.6 scorecard and the PASS claim
+
+| §12.4 item | Status |
+|---|---|
+| mark-free-ancestry conservation lemma | **PROVED** (§13.1: ledger + coloring + transfer), invariant-level mechanization, zero failures at ≤ 11 |
+| mechanical terminal-chain check | **discharged** (in/out-degree 1, zero violations) |
+| gauge-pinned uniqueness | **discharged as a swept theorem** (4/256 = the predicted orbit) |
+| terminating conservative certificate analysis | **discharged** (`discover_total`; `h Ω` witness; frozen-CERTS agreement) |
+| lp invariants | **discharged** (typed guards + swept unreachability + scoped structural argument + aliasing zero) |
+| H/T cross-fibres | **deferred by scope**: the t-gate is structurally reserved (`NotImplementedError`, typed, never silent); cross-fibre exhibition belongs to the readback + t-gate milestone |
+| readback controller | **deferred by scope**: next docket phase, not an h-kernel obligation |
+
+**The PASS claim, stated precisely:** the three-program kernel
+gate (token.md §4) is claimed **PASS for the h-fragment** — full
+transition table with typed totality; step-indexed HH / H–NOT′–H /
+negative-witness traces verified plus nine more programs including
+both adversarial countermodels; column-Gram enumeration clean on
+every reachable basis; range disjointness via the encoded-fibre
+certificates; and the conservation theorem closing the coherent
+fragment's characterization. Standing fences, all typed and all
+registered: `buried-frame` (unreached, semantics deliberately
+unassigned), literal gate application (outside the scope
+statement), the t-gate reservation. Pending: fresh-instance
+adversarial review of this round.
