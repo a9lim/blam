@@ -1,25 +1,31 @@
 # qALC three-program kernel — v1
 
-**Status: v1.6 — §13 is the current register, and it claims PASS
-for the h-fragment, pending fresh-instance adversarial review.
-The §11.3 conservation conjecture is now a THEOREM (§13.1): an
-attribution-ledger lemma (`t ≡ k + b + 1`, proved by
-one-step-one-individual accounting) meets the coloring
-(`t ≡ 1 + w(l)`) to give `w(l) ≡ exit slot` on mark-free
-fire-free readback — mechanized at the invariant level over
-41,272 closed terms with zero failures, and every hypothesis's
-failure mode is a registered phenomenon (interior fires: the
-defect law; VB pattern births: the parity escape; mark capture:
-the excluded ancestry). Terminal chains, gauge-pinned uniqueness
-(4/256 = the predicted orbit), the terminating conservative
-certificate analysis (`discover_total`, `h Ω` witness), and the
-lp invariants are all discharged mechanically (§13.2–13.4).
-Fences: `buried-frame` (typed, unreached), literal gate
-application, the t-gate reservation. Earlier registers: v1.5
-encoded fire §12 (conservative decode by default, certified
-erasure — coherence is *earned*, certificate-bearing); v1.4
-coloring/certificates §11; encoded-fibre amendment
-RATIFIED-WITH-EDITS, applied to architecture §7 (§11.7).** §10 is
+**Status: v1.6 reviewed — §13 is the current register. The
+fresh-instance adversarial round (§13.6) returned FAIL for "PASS
+for the h-fragment" while CONFIRMING the mathematical core: the
+conservation theorem stands with a depth-term correction
+(`w(l) ≡ k + b + |pos′| − |pos|`; deployed specializations
+unaffected), Lemma A's attribution ledger verified airtight by
+independent reimplementation, the transfer corollary confirmed
+with the reviewer's own closure invariant and a 153k-argument
+search (zero mark-free escapes), the gauge orbit confirmed under
+a broadened 15-parameter solve, and `discover_total` confirmed
+with both rejection paths exercised. The claim itself was
+refuted by `Q = ((h 0̂) SEL SEL)(h 0̂)` — typed, h-only,
+signature-abstracted, reaching `buried-frame` from init with err
+mass 1 under a valid certificate and clean Gram: the interleaved
+re-seek is a MISSING SEMANTIC CASE of the h-fragment, not an
+unreachable fence. `Q` is the battery's thirteenth program;
+`validate` now carries `semantic_coverage`; the μ-kind fire
+collision is closed typed (`species-mu`, bit-identical reachable
+graphs); the well-formed-state subtype + preservation proof is a
+registered obligation. **PASS holds for the three-program
+formalization gate and the twelve registered sectors; the
+h-fragment claim is withdrawn; the v1.7 object is buried-frame
+semantics or a static characterization excluding it.** Earlier
+registers: v1.5 encoded fire §12 (coherence is *earned*,
+certificate-bearing); v1.4 coloring/certificates §11;
+encoded-fibre amendment applied to architecture §7 (§11.7). §10 is
 the v1.3 register. Of the re-review's six gate items: totality on `q`'s
 graph ✓ (the `replay` rule, derived from the literal visit-3
 trace); correct slot-0/slot-1 outer arrivals ✓; instance-indexed
@@ -1206,13 +1212,25 @@ transitively] ≡ k + b + 1, using `−r ≡ r (mod 2)`. ∎
 
 **Lemma B (coloring, §11.1).** Every rule flips φ; probe tapes
 weigh 0; the surfacing tape weighs `w(l)` (bullets weigh 0). So
-`t ≡ φ_end − φ₀ ≡ 1 + w(l)`.
+`t ≡ φ_end − φ₀ ≡ (|pos′| − |pos|) + 1 + w(l)` — the depth
+difference between launch and surfacing positions is part of φ
+and does NOT vanish in general (fresh-review correction: the
+first §13.1 draft dropped it, and `λ1` probed from its body
+position surfaces at the root in one `var` step with `w = 1`,
+refuting the depth-free combination).
 
-**Theorem (conservation).** `w(l) ≡ k + b (mod 2)`. For the
-boolean protocol (`k = 2`, arrival shapes `l·base` and `•·l·base`
-with `b = slot`): **`w(l) ≡ exit slot`**. The `haltI` sector
-(`l·•·base`, `b = 1`) gives `w(l) ≡ 1` — the identity's lp weight,
-correctly. *Proof.* Equate Lemmas A and B. ∎
+**Theorem (conservation).**
+`w(l) ≡ k + b + |pos′| − |pos| (mod 2)`. Every deployed
+specialization launches and surfaces at the same position
+(the root protocol at ε; boundary probes at the argument
+position), where the depth term vanishes: `w(l) ≡ k + b`, so for
+the boolean protocol (`k = 2`, arrival shapes `l·base` and
+`•·l·base` with `b = slot`): **`w(l) ≡ exit slot`**. The `haltI`
+sector (`l·•·base`, `b = 1`) gives `w(l) ≡ 1` — the identity's lp
+weight, correctly. *Proof.* Equate Lemmas A and B. ∎ (Lemma A
+itself is position-blind and needed no correction; the reviewer
+confirmed it independently, including nested capture to depth 7
+and genuine lp recapture.)
 
 **Inventory note (found by the mechanization).** The naive
 endpoint claim — surface bullets above the lp step-born, below it
@@ -1363,3 +1381,78 @@ registered: `buried-frame` (unreached, semantics deliberately
 unassigned), literal gate application (outside the scope
 statement), the t-gate reservation. Pending: fresh-instance
 adversarial review of this round.
+
+### 13.6 The fresh-instance review verdict (registered) — the h-fragment claim WITHDRAWN
+
+A deliberately threadless sol-tier review (2026-08-09, zero
+inherited framing, full sources + rerun capability) returned:
+**FAIL for "PASS for the h-fragment"; the mathematical core
+CONFIRMED; the three-program formalization gate and the twelve
+registered sectors stand.** Every advertised number was
+independently reproduced. The verdict, by attack surface:
+
+- **Lemma A: CONFIRMED-SOUND.** The eight-rule attribution
+  partition verified airtight by independent trace scanning —
+  nesting depth 7 and genuine lp recapture observed, suspension
+  parity preserved, no duplicated individuals.
+- **The theorem as first written: REFUTED, repaired in place.**
+  The Lemma B combination dropped the launch/surfacing depth term
+  `|pos′| − |pos|`; `λ1` probed from its body position is a
+  one-step counterexample. Corrected statement above (§13.1); all
+  deployed specializations have the term ≡ 0 and are unaffected.
+  A matching stale formula in the checker's docstring
+  (`(k−r)+m+1`, false when step-born bullets sit below the lp) is
+  fixed; the implemented `k+b+1` was already correct.
+- **Transfer corollary: CONFIRMED-SOUND**, with "literally a pure
+  run" tightened to "rule-for-rule isomorphic after stripping
+  frozen prefixes/suffixes." The reviewer supplied the closure
+  invariant in its clean form — ordinary lps above γ =
+  level(path) − level(argpos) — and searched 41,272 closed plus
+  111,508 open arguments under up to three enclosing binders:
+  zero mark-free escapes; all 79,840 boundary crossings occurred
+  after γ capture.
+- **Gauge sweep: CONFIRMED-SOUND and strengthened.** Broadened to
+  15 parameters (lp constant, six path coefficients, slice
+  coefficient, the eight mark weights): the slice coefficient is
+  forced to 1, the lp constant to 0, all path coefficients to 1;
+  rank 13, exactly the four predicted solutions. Uniqueness is
+  hereby scoped to the natural local additive family, explicitly.
+- **`discover_total`: CONFIRMED-SOUND.** Both rejection paths
+  executable (`round_cap=1` on HH → None; `h Ω` → state cap);
+  "canonical" wording fixed to "the deterministic result at
+  frozen caps."
+- **PASS scoping: REFUTED —** `Q = ((h 0̂) SEL SEL)(h 0̂)`,
+  `SEL = λb. b 1̂ 0̂`: typed, h-only, signature-abstracted, and it
+  reaches `buried-frame` from init with **err mass 1** while its
+  certificate validates and Gram is clean (basis 332, zero
+  defects, zero aliasing — reproduced exactly). Two live
+  instances interleave their re-seeks; the v1.3 fence is a
+  **missing semantic case of the h-fragment**, not an unreachable
+  corner. `Q` is registered as the battery's thirteenth program
+  (`buried`, expected guards `{buried-frame}`, expected dynamics
+  err 1) and is the program that withdraws the h-fragment claim.
+- **Range disjointness over the raw state type: GAP.** Two
+  collision pairs among unrestricted `Run` states (a `vvar`
+  source and a `replay` source sharing a target; fire sources
+  differing only in μ-kind). The μ-kind collision is closed — the
+  fire now demands the probe frame's gate match the boundary γ
+  (typed `species-mu`; bit-identity on all reachable graphs
+  verified). The `vvar`/`replay` pair is excluded by the intended
+  reachable-state invariants; making the well-formed configuration
+  subtype explicit, with a preservation proof, is now a registered
+  obligation — global range disjointness is claimed only over
+  well-formed states until then.
+- **Validation blindness: fixed.** `validate` now reports guard
+  reachability, `(g,i)` aliasing, and dynamic err mass, and its
+  `semantic_coverage` verdict is their conjunction — `Q` is the
+  regression proving a valid certificate and clean Gram can
+  coexist with total semantic failure.
+
+**Standing after the round:** PASS holds for the three-program
+formalization gate and the twelve coherent/decoherent sectors;
+the h-fragment claim is withdrawn with `Q` as the boundary
+witness. The v1.7 object is the interleaved re-seek: give
+`buried-frame` semantics (the frame stack's discipline under two
+live instances), or characterize statically the fragment that
+excludes it — and prove the well-formed-state preservation that
+restores global range disjointness.

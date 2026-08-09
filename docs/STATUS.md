@@ -489,32 +489,40 @@ in-session: buried same-instance frames and missing-instance
 entries are typed errors (both unreachable in the battery — it is
 bit-identical), TOP fallback removed.
 
-**Kernel v1.6 claims PASS for the h-fragment** (`kernel.md` §13,
-2026-08-09, pending fresh-instance adversarial review): the
-conservation conjecture is now a **theorem** — an attribution-ledger
-lemma (`t ≡ k + b + 1`: every λIAM step is the birth, death, or
-transport of exactly one tape/log individual) meets the coloring
-(`t ≡ 1 + w(l)`) to give `w ≡ exit slot` on mark-free fire-free
-readback, with each hypothesis's failure mode a named mechanism
-(interior-fire charge / VB pattern birth / mark capture). Mechanized
-at the invariant level: 41,272 closed terms ≤ size 11, 55,727
-surfacings, per-step ledger checks in lockstep conformance with the
-uninstrumented machine, zero failures; battery ancestry sweep clean
-on all twelve programs. Also discharged mechanically: terminal
-chains (in/out-degree 1 everywhere), gauge-pinned uniqueness (the
-predicted 4-element orbit is exactly the passing set of all 256
-weight assignments), the terminating conservative certificate
-analysis (`discover_total` — total on every program, `h Ω`
-conservative-reject witness, frozen-CERTS agreement), and the lp
-invariants (six guard rules swept unreachable; zero `(g,i)`
-aliasing; lp-at-log-head structural for signature-abstracted
-programs). Standing fences, typed: `buried-frame`, literal gate
-application, the t-gate reservation.
+**Kernel v1.6 is proved, reviewed, and scoped** (`kernel.md` §13,
+2026-08-09): the conservation conjecture is now a **theorem** — an
+attribution-ledger lemma (`t ≡ k + b + 1`: every λIAM step is the
+birth, death, or transport of exactly one tape/log individual)
+meets the coloring to give `w ≡ k + b + |pos′| − |pos|`, i.e.
+`w ≡ exit slot` on mark-free fire-free readback, with each
+hypothesis's failure mode a named mechanism (interior-fire charge /
+VB pattern birth / mark capture). Mechanized at the invariant
+level: 41,272 closed terms ≤ size 11, 55,727 surfacings, per-step
+ledger checks in lockstep conformance, zero failures. Also
+mechanical: terminal chains, gauge-pinned uniqueness (4/256 = the
+predicted orbit), `discover_total` (total on every program, `h Ω`
+conservative reject), guard-rule and `(g,i)`-aliasing sweeps. The
+**fresh-instance adversarial round confirmed the entire
+mathematical core** (Lemma A independently reimplemented; the
+transfer closure searched over 153k arguments with zero mark-free
+escapes; the gauge orbit re-derived under a 15-parameter solve;
+one real correction — the theorem's depth term) **and refuted the
+h-fragment PASS scope**: `Q = ((h 0̂) SEL SEL)(h 0̂)` is typed,
+h-only, signature-abstracted, and reaches `buried-frame` from init
+with err mass 1 under a valid certificate and clean Gram — the
+interleaved re-seek is a missing semantic case, not an unreachable
+fence. `Q` is the battery's thirteenth program; `validate` now
+reports `semantic_coverage`; the μ-kind fire collision is closed
+typed. **PASS stands for the three-program formalization gate and
+the twelve registered sectors; the h-fragment claim is withdrawn.**
 
 The open docket, in order:
 
-1. **fresh-instance adversarial review of the v1.6 PASS claim**
-   (the §13 register: proof, mechanizations, scoping);
+1. **kernel v1.7 — the interleaved re-seek**: give `buried-frame`
+   semantics (the frame stack's discipline under two live
+   instances), or characterize statically the fragment excluding
+   it; plus the well-formed-state subtype + preservation proof
+   restoring global range disjointness over the raw state type;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem
