@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.18.** The kernel is a scratch superposition evolver
+**Status: v1.19.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -16,7 +16,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #11**, whose
+The standing PASS re-claim is **gated on fresh audit #12**, whose
 verdict will be registered here.
 
 This file is the current contract and register only. The
@@ -389,9 +389,15 @@ the machine's unitarity claims quantify over the subtype:
   across ALL bit-carrying representations — frames, top-level and
   slice-suspended tickets on tape and log, and tickets buried in
   retained-whole `K(l)` records.
-- **W4** (first-interrogation exclusivity): a VB-active state at
-  instance `i` holds no `i`-frame and no `i`-ticket (the guard
-  chain forces this).
+- **W4** (first-interrogation exclusivity, DEEP as of v1.19): a
+  VB-active state at instance `i` holds no `i`-frame and no live
+  `i`-ticket anywhere on tape or log, deep through slice cargo.
+  The guard chain forces this on reachable states; the deep
+  clause additionally excludes the unreachable slice-suspended
+  configuration whose `vvar` step would re-emit a second live
+  same-key ticket (audit #11's subtype-preservation
+  countermodel — found reachable NOWHERE in the twenty programs,
+  1,000 generated graphs, or 250 candidates).
 - **W5** (probe pairing): deep-counted γ (through lp slices and
   retained `K(l)` records; instance KEYS are frozen names, never
   counted) = #μ(tape) + #A(tape) — every in-flight probe's γ is
@@ -615,7 +621,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#11; the verdict will be registered here.**
+#12; the verdict will be registered here.**
 
 ## 10. Verification state
 
@@ -656,7 +662,7 @@ canonical dicts compared bit-for-bit; `dupcall` canonically None
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
 `refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **twelve permanent regressions** (the v1.6 pair;
+zero violations; **thirteen permanent regressions** (the v1.6 pair;
 extra-frame collision, W7-excluded with disjoint targets;
 doctored bundle divergence; K+frame alias; retained-Q
 disjointness — spectator-bit columns share zero targets;
@@ -669,11 +675,13 @@ vacuous-position — a certificate entry at an unreachable
 position must fail `machine_coverage` while the canonical map
 passes; ghost-key — an inert popkey occurring in no arrival
 frame at its certified position must fail `machine_coverage`,
-key-level non-vacuity). The gating structure, stated exactly
+key-level non-vacuity; deep-W4 — a slice-suspended
+same-instance ticket in a VB-active state must be flagged while
+the stripped control stays clean). The gating structure, stated exactly
 (audits #6 and #7 each caught a computed-but-non-gating
 verdict; audit #8 forced all eleven then-regressions
 individually and confirmed each drives exit 1): the v1.6 pair
-gates `collisions_under_wf()`; the other ten gate
+gates `collisions_under_wf()`; the other eleven gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
@@ -684,7 +692,7 @@ exhaustive ≤ size 11, 14,452 surfacings at ≤10 / 55,727 at ≤11,
 zero failures. Polarity/terminal chains/gauge: zero violations,
 orbit exact — 4/512 with the KD weight enumerated (audit #9
 caught the 8-parameter sweep asserting KD's zero rather than
-enumerating it), every survivor fixing KD at 0. All ten prior audits' independent reproducers
+enumerating it), every survivor fixing KD at 0. All eleven prior audits' independent reproducers
 rerun clean or typed (audit #1's fuzz 250/250; audit #2's kit
 clean on every lifecycle, its term-evaluator mismatches
 adjudicated as that evaluator's non-normalization; audit #3's
@@ -698,11 +706,18 @@ pre-v1.17 §7.1 phrasing — its six witness edges are decided
 correctly by the mechanized theorem, which §7.1 now states;
 audit #10's F-parity probe stands as evidence that popped and
 total frame counts differ on 38 spectator-retaining edges —
-the recording now takes the register's popped count). The
-polarity and conservation instruments carry exit-code verdicts
-(audit #10 flagged their print-only totals; forced-false on any
-gated component measured exit 1), and the §7.2 branch-offset
-rows gate the polarity verdict. Output identity across code changes is claimed for
+the recording now takes the register's popped count; audit
+#11's deep-W4 countermodel now flagged at its source). ALL SIX
+instruments carry exit-code verdicts — wf, polarity,
+conservation (audit #10 flagged their print-only totals), and
+as of v1.19 suite, certify, and typecheck too (audit #11
+flagged those; typecheck also gained its printed fragment
+total, 17/20 typable-h-only + every escape rejected);
+forced-false on any gated component of any instrument measured
+exit 1, and the §7.2 branch-offset rows gate the polarity
+verdict. The F recording was confirmed by audit #11 on 116
+certified-fire edges (target.rs exactly Q; len difference
+exactly |P|; zero recording mismatches). Output identity across code changes is claimed for
 DETERMINISTIC fields only: `conservation.py` prints a wall-clock
 suffix that varies run to run (audit #7 caught "byte-identical"
 overclaiming this), and adding a declared validation field
@@ -807,7 +822,8 @@ no bare-term ideal oracle).
 | v1.15 | NON-VACUITY joins the structural side (`vacuous_positions`, machine_coverage refuses unreachable entries — canonical maps never vacuous by settle()'s guarantee); the None sentence exact in three disjuncts (cap/nonconvergence; empty admission; pool pass accepting nothing); eleventh regression (vacuous-position) gated; the module verdict is the EXIT CODE (any single regression failure exits nonzero, measured); title de-cruffed to "qALC kernel"; output-identity claims scoped to deterministic fields; every prediction held with exactly the declared deltas | **fresh audit #8: FAIL** (zero machine countermodels, third straight — None sentence and all eleven gates CONFIRMED, subtraction fourth confirmation, Pα + W hand-recomputed; non-vacuity position-level only: ghost popkeys validate clean; settle() proof wrong for phase-1-only maps; four honesty findings) |
 | v1.16 | KEY-level non-vacuity (`vacuous_keys`: every popkey must occur in an arrival frame at its position; ghost popkeys refused; canonical maps carry zero by the corrected two-case proof — phase-1 maps take keys from the converged arrivals, all other acceptances via settle()); twelfth regression (ghost-key), gated; the admission claim stated honestly (phase-2/rescue validate at acceptance, phase 1 is structural, nothing returns unvalidated); physics-table preamble names the machine-measured row; inventory and contract docstrings corrected; every prediction held with exactly the declared deltas | **fresh audit #9: FAIL** (zero machine countermodels, fourth straight — every mechanical charge CONFIRMED incl. all twelve gates and both non-vacuity levels; §7.1 misstated the mechanized coloring theorem: formula omitted Σw(KS), defect sentence conflated conservative fire with certified erasure, gauge sweep asserted rather than enumerated KD) |
 | v1.17 | §7.1 restated to the theorem the checker enforces (φ gains Σw(KS) with w(K₂(l)) = w(l), w(K₃) = w(KD) = 0; uniform flip INCLUDING conservative fire, certified erasure the sole exception at 1 − w(l) pinned-gauge, parametrized form named; Ccoll's separating witnesses registered); the gauge sweep enumerates KD — 4/512, orbit unchanged, KD pinned 0 by measurement; the ghost regression prints its nonzero count; phi(), w(), and every certificate untouched | **fresh audit #10: FAIL** (fifth straight clean-machine round; §7.2 + §7.3 CONFIRMED symbol-level incl. a 131k-surfacing independent conservation check; the inversion: the register was right, the checker wrong — F recorded total frames, not popped; instrument prose + print-only verdicts) |
-| v1.18 | the checker catches up to the register: collect() records F as the POPPED count ((len(src.rs) − len(tgt.rs)) mod 2 — §7.1's text stands unchanged); polarity and conservation gain exit-code verdicts (branch-offset rows gating; forced-false measured exit 1); instrument docstrings/comments/pointers corrected (the HH/HNH weight comment now states 0/0 and 1/1); pack labels version-neutral; popped-F sweep 4/512, same orbit; every prediction held with the v117-kit caveat resolved on inspection | **fresh audit #11: pending** |
+| v1.18 | the checker catches up to the register: collect() records F as the POPPED count ((len(src.rs) − len(tgt.rs)) mod 2 — §7.1's text stands unchanged); polarity and conservation gain exit-code verdicts (branch-offset rows gating; forced-false measured exit 1); instrument docstrings/comments/pointers corrected (the HH/HNH weight comment now states 0/0 and 1/1); pack labels version-neutral; popped-F sweep 4/512, same orbit; every prediction held with the v117-kit caveat resolved on inspection | **fresh audit #11: FAIL** (F correction CONFIRMED on 116 edges; machine clean; W4 under-implemented — slice-suspended ticket passes the top-level check, subtype not preserved by vvar; "all four instruments gate" overcounted; three stale doc lines) |
+| v1.19 | W4 goes DEEP (live same-instance tickets through tape/log slice cargo; the unreachable countermodel excluded from the subtype; stripped control proves no over-tightening); thirteenth gated regression; ALL SIX instruments carry exit-code verdicts (typecheck gains its printed fragment total); kernel.py cert/rs doc lines and two invalid docstring escapes fixed (one long-standing, surfaced by recompile); full decruft sweep per a9's directive; every prediction held, the v118 kit's no-op suite probe adjudicated | **fresh audit #12: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 

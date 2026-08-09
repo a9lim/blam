@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.18** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.19** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-ten fresh-context rounds: the machine core has not moved since
+eleven fresh-context rounds: the machine core has not moved since
 the v1.11 spectator-transition fix, and the last FIVE rounds
 found zero machine countermodels — audits #6 through #10 confirmed
 the completed KD subtraction sound (exhaustive post-fire storage
@@ -440,7 +440,15 @@ check) and inverted the loop's pattern once: the register was
 right and the checker wrong (the sweep recorded total frames
 where §7.1 says popped — corrected checker-side in v1.18, same
 orbit), so every theorem in the register has now been audited
-symbol-by-symbol; the instruments all carry exit-code verdicts. What the rounds still
+symbol-by-symbol. Audit #11 confirmed the F correction on 116
+edges and found the last checker gap: W4 read only top-level
+tape where the register says any same-instance ticket — v1.19
+makes it deep (the auditor's slice-suspended countermodel,
+reachable nowhere in 1,250 searched graphs, is now flagged at
+its source and frozen as the thirteenth gated regression), and
+ALL SIX instruments now carry exit-code verdicts (suite,
+certify, and typecheck joined; forced-false measured exit 1 on
+every gated component). What the rounds still
 found was claim-language and scaffolding, each fixed the same
 day: all twelve permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
@@ -455,12 +463,12 @@ claims are scoped to deterministic fields. Nineteen frozen dict
 certificates + dupcall's canonical None; canonical =
 deterministic validation-adjudicated greedy, neither maximal nor
 minimal; physics table passes on all twenty; all prior audit
-kits rerun with exactly the declared deltas; every v1.18
+kits rerun with exactly the declared deltas; every v1.19
 prediction held (provenance in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #11 of the v1.18 h-fragment
+1. **fresh-context independent audit #12 of the v1.19 h-fragment
    claim** (running; verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
