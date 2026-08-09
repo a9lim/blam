@@ -18,6 +18,16 @@ against rigid-atom reduction, not gate-free against census rows — §6); and a
 universality gap was recorded (clean coherent compilation — §6). The
 ratification gates are listed at the end of §9.
 
+Review round 2 (2026-08-09, same thread) is incorporated: the arrival-time
+nuance in §4.5 was refuted and replaced (fixed output-dependent entry
+offsets already permit unequal-time coherence); "garbage-transparent δ" was
+refactored into the clean-δ-fibre contract (§7); halt entry was typed
+(`RunDone` vs `Halt`, §4.3); effect-free lockstep was weakened to projected
+semantic lockstep (§6); clean compilation acquired its synchronized-timing
+requirement (§6); and the fast-engine contract was found broken as written
+and replaced by exact transition-system equivalence (§7). The constructive
+reference-machine sketch from that round lives in `machine.md`.
+
 ## 1. Purpose and position among the pillars
 
 qALC is the quantum-control pillar. The existing pillars occupy two corners
@@ -61,8 +71,8 @@ halted configurations:
 Halting mass is the central softening: the classical fate column
 {Halt, Diverge, Unknown} becomes a real number in [0,1] with exact monotone
 lower approximants and certificate-driven upper brackets. A single program is
-already an Ω-like object; `μ_p ∈ {0,1}` exactly on the effect-free fragment
-(§6). A divergence certificate on a sector of the superposition bounds
+already an Ω-like object; every effect-free program (§6) has
+`μ_p ∈ {0,1}` (the converse fails — HH is effectful with mass 1). A divergence certificate on a sector of the superposition bounds
 `μ_p` from above, so the classical certificate machinery generalizes from
 verdicts to intervals **[design]**.
 
@@ -212,14 +222,25 @@ the wandering subspace of `V = U|_S`: newly arriving halted amplitude
 `a = P_S U r` lies in `S ⊖ V(S)`, hence `V^m a ⊥ V^n b` whenever `m ≠ n`
 **[review round 1 formulation]**.
 
-**Normative halted dynamics [design].** Halted evolution is
-`identity_output ⊗ identity_garbage ⊗ unilateral-shift_tick`, with every
-branch entering at tick zero (common origin): `(nf, g) → (nf, g, 0)`,
-`(nf, g, k) → (nf, g, k+1)`. Invariance alone is deliberately not enough —
-a halt-sector unitary rotating `|0̂⟩` toward `|+⟩` preserves halted mass
-while wrecking the monotone reduced output of §4.6; the normative form is
-what makes §4.6 a theorem. What mass monotonicity itself needs is only
-invariance, not fixedness:
+**Normative halted dynamics [design].** Halt entry is typed with disjoint
+constructors so no unticked halted basis state exists — the final readback
+transition produces the halted form directly:
+
+```text
+RunDone(nf, g, terminal-control) → Halt(nf, g, terminal-control, 0)
+Halt(nf, g, c, k)                → Halt(nf, g, c, k+1)
+```
+
+`P_halt` contains only `Halt` states; once a history enters the halt
+sector it only ticks, so there is no "halts twice along one history"
+ambiguity. Halted evolution is
+`identity_output ⊗ identity_garbage ⊗ identity_terminal-control ⊗
+unilateral-shift_tick`, every branch entering at tick zero (common origin).
+Invariance alone is deliberately not enough — a halt-sector unitary
+rotating `|0̂⟩` toward `|+⟩` preserves halted mass while wrecking the
+monotone reduced output of §4.6; the normative form is what makes §4.6 a
+theorem. What mass monotonicity itself needs is only invariance, not
+fixedness:
 
 **Lemma (monotone halting mass) [claim].** If `U` is an isometry and
 `U(S) ⊆ S` for the halted subspace `S`, then `‖P_S U ψ‖ ≥ ‖P_S ψ‖`.
@@ -262,20 +283,32 @@ genuinely lives. The **minimal-garbage theorem** is this pillar's first
 formal work item **[open, gating]**: define the reversible machine of §4.1
 as a concrete transition table, prove its columns orthonormal on the
 reachable configuration graph, characterize the minimal residual garbage,
-and prove the invariant-sector lemma in that machine. Until it exists,
-`U`, `μ_p`, and `M` are not defined objects, and everything downstream is
-conditional.
+and prove the invariant-sector lemma in that machine. "Minimal" needs a
+comparison class (review round 2): a global minimum over arbitrary
+reversible realizations is unlikely to be canonical and may hide
+undecidable semantic equivalence; the tractable statement is *local
+minimality within a fixed machine representation* — residue must
+distinguish exactly each classical predecessor fibre not already
+orthogonalized by a quantum transition. The candidate machine shape —
+environment/closure substrate, explicit zippers, transition-local
+predecessor tags — is sketched pre-formally in `machine.md`. Until the
+machine exists, `U`, `μ_p`, and `M` are not defined objects, and
+everything downstream is conditional.
 
 **Synchronization as convention [design].** Under the common-origin tick,
 a branch's halting time is recorded in its tick offset: two branches
 reaching the same normal form at different times sit at different chain
 positions forever, so coherence between halting branches exists only at
 equal halting time with equal residual garbage. Review round 1 corrected
-this from a structural theorem to a convention: injectivity alone does not
-force it — an entry map assigning per-configuration tick offsets (realizable
-in earnest only if residual garbage happens to encode arrival time, so the
-offset can uncompute the clock) is injective yet permits unequal-time output
-coherence after the clock is traced. qALC adopts the common origin
+this from a structural theorem to a convention, and round 2 corrected the
+correction's nuance: injectivity alone does not force it, and a
+time-homogeneous entry map may choose a fixed tick offset from the terminal
+configuration alone — entering output `a` at label 0 and output `b` at
+label `d` already permits unequal-time coherence whenever the offset
+difference matches the arrival-time difference, with no timing information
+encoded anywhere (the `b` chain simply has no reachable states below `d`).
+Only *adaptively* aligning arbitrary arrivals would require the incoming
+configuration to encode relative timing. qALC adopts the common origin
 deliberately: it is Bernstein–Vazirani's synchronized-halting construction
 made a machine convention (compare also the quantum control machine
 synchronization constraint of Yuan–Villanyi–Carbin **[standard]**), it is
@@ -293,9 +326,10 @@ it earns its keep — each block is constant once formed, groups persist
 later belongs to a later group and cannot enlarge an earlier block, so
 `ρ_p(τ)` is a sum of a growing set of fixed PSD blocks — Loewner-monotone
 with limit `ρ_p` **[claim, review-confirmed under the normative form]**. Off-diagonal mass in `M` therefore comes exactly from
-equal-time, garbage-clean branch pairs: **coherence is earned by
-uncomputation**, and the off-diagonal structure of `M` is a record of which
-programs clean up after themselves. The output-convention question — what
+equal-time branch pairs with equal traced spectator state — equal residue
+and terminal control, not necessarily *empty* residue: **coherence is
+earned by uncomputation**, and the off-diagonal structure of `M` is a
+record of which programs clean up after themselves. The output-convention question — what
 beyond control, garbage, and tick is traced out, and whether any designated-
 output alternative is worth defining — is explicitly parked **[open]**,
 matching the same parked question in qBLC.
@@ -326,16 +360,23 @@ reaches the species error `h h` without ever firing a boolean δ-rule — so
 census row. The correct statement: a run of `p h t` is *effect-free* when
 no transition ever consumes a constant — no δ fires and no error transition
 involving a constant fires. Effect-free evolution proceeds on a single
-basis path and coincides step-for-step with classical leftmost reduction of
-`p X₁ X₂` with rigid atoms — the skeleton semantics qBLC's trusted checker
-already adjudicates — so conservativity is fate identity with *rigid-atom
-reduction*, not with census rows, `μ_p ∈ {0,1}` on this fragment, and the
-qBLC skeleton machinery is the natural tool for scoping it **[design,
-repaired]**.
+basis path whose *term projection* follows the same leftmost redex sequence
+as classical rigid-atom reduction of `p X₁ X₂` — possibly interleaved with
+reversible administrative transitions (lookup, zipper moves, residue
+management) that rigid-atom reduction does not have — and reaches the same
+semantic fate. That is the skeleton semantics qBLC's trusted checker
+already adjudicates, so conservativity is projected fate identity with
+*rigid-atom reduction*, not with census rows; every effect-free program has
+`μ_p ∈ {0,1}`; and the qBLC skeleton machinery is the natural tool for
+scoping the fragment **[design, repaired twice: round 1 fixed the
+comparison object, round 2 weakened step-for-step to projected lockstep]**.
 
-**h-only fragment.** Programs whose text never applies `t` (syntactically
-identifiable; a census flag, not a separate design). Amplitudes are real,
-in ℤ[1/√2]. Conjecture **[claim, definition from review round 1]**: call a
+**h-only fragment.** Defined semantically: no reachable transition fires
+`t`. ("Never applies `t` in the text" is not plainly syntactic here — the
+constants arrive at invocation and can be passed through arbitrary
+higher-order plumbing; a conservative *syntactic* subset for conventional
+two-lambda wrappers is worth naming separately for cheap census flagging.)
+Amplitudes are real, in ℤ[1/√2]. Conjecture **[claim, definition from review round 1]**: call a
 program *D-circuit-shaped for halting* when, in the unfolded history tree,
 every history first entering the halt sector has fired exactly `D`
 Hadamards; then every halting history has amplitude `±2^(−D/2)`, terminal
@@ -355,11 +396,17 @@ standard rebit encoding), with `{h, t}` giving Clifford+T natively. But the
 theorem is about *abstract clean gates*, and review round 1 named the gap:
 a λ-term computing a reversible Boolean function generically realizes
 `|x⟩ ↦ |F(x)⟩|g_x⟩` with input-dependent garbage under this machine, and
-tracing `g_x` dephases exactly the superpositions universality needs. What
-qALC requires is a **clean coherent compilation theorem [open, gating]**:
-λ-defined Toffoli-class terms whose residual garbage is input-independent —
-Bennett compute–copy–uncompute as a λ-idiom — proved against the pillar's
-reversible machine. Until it is proved, universality is a target, not a
+tracing `g_x` dephases exactly the superpositions universality needs. And
+input-independent garbage is necessary but not sufficient under the
+common-origin halt convention: input-dependent *running time* places
+outputs at different tick ages and dephases them just as surely. What qALC
+requires is a **clean coherent compilation theorem [open, gating]**: for a
+single common transition count `T`, `U^T |x, clean⟩ = |F(x), g*, c*, 0⟩`
+for every basis input `x` — same `T`, same residual garbage `g*`, same
+terminal control `c*`, the intended amplitudes. Bennett
+compute–copy–uncompute as a λ-idiom is the route, but its classical
+discipline must be realized *and synchronized* inside the λ-machine; it is
+not automatic. Until it is proved, universality is a target, not a
 property, and the H–NOT–H witness (§7) is its smallest instance. A formal
 statement of what universality means for qALC's objects — presumably a
 Gács-style domination claim for `M` within an appropriate class — is also
@@ -369,18 +416,37 @@ unwritten **[open]**.
 
 Planned module tree `blam::qalc`, drivers under a new `blam` subcommand
 group; the reference evaluator represents `ψ_τ` as an exact sparse map from
-configurations to `Dw` scalars and applies `U` transition by transition. A
-fast engine, if the reference is too slow for a census, arrives only with
-the same lockstep discipline qBLC uses: exhaustive fate/mass/support
-equality over a configured range, engines sharing the scalar layer but not
-their evaluators.
+configurations to `Dw` scalars and applies `U` transition by transition.
 
-Every qALC engine change must satisfy:
+A fast engine, if the reference is too slow for a census, faces a
+*stricter* bar than qBLC lockstep — final fate/mass/support equality is
+insufficient, because in qALC internal configurations and residue determine
+future interference: the configuration algebra is semantic state, not
+implementation detail **[review round 2]**. A fast engine must either
+produce the identical exact sparse amplitude map over canonical
+configurations at every transition, or come with an isometric intertwining
+`W U_ref = U_fast W` preserving the halt and error projections and the
+output partial trace. (Hash-consing and representation tricks are fine
+below that line; branch-dependent allocation identity is not — see
+`machine.md`.)
 
-Two clauses are normative machine contract, not just test surface:
-δ-steps are **garbage-transparent** — a δ acts as `gate ⊗ I_context ⊗
-I_garbage`, writing nothing branch-dependent — and halted dynamics has the
-§4.3 normative form. Every qALC engine change must then satisfy:
+Two clauses are normative machine contract, not just test surface. First,
+δ-steps are **clean δ fibres** (round 2's repair of the earlier
+"garbage-transparent" wording, which presupposed `I_context` a real
+machine cannot deliver): for every spectator configuration `κ`,
+
+```text
+U |h, b, κ⟩ = Σ_b' H_b'b |b', J(κ)⟩
+U |t, b, κ⟩ = ω^b     |b,  J(κ)⟩
+```
+
+with `J` one injective spectator transition, identical across input
+booleans and output branches, no residue depending on either, and fibres
+for distinct `κ` having orthogonal images — a common δ-rule tag is harmless
+(and may be needed to separate δ ranges from β ranges); what HH needs is
+equal residue across the two H columns, not literally untouched context.
+Second, halted dynamics has the §4.3 normative typed form. Every qALC
+engine change must then satisfy:
 
 1. `cargo test --release --all-features` and plain `cargo test --release`;
 2. exact norm conservation (equality battery) on every tested program;
@@ -428,11 +494,13 @@ I_garbage`, writing nothing branch-dependent — and halted dynamics has the
   not forced — they buy equal-time-only coherence and Loewner-monotone
   outputs, and the injective unequal-time alternative is recorded and
   declined.
-- **Garbage-transparent δ:** gates act as `gate ⊗ I` on configurations;
-  branch-dependent δ residue would kill even the HH witness.
+- **Clean δ fibres:** gates act as `gate ⊗ J` with one injective
+  boolean-independent spectator transition (§7); branch-dependent δ residue
+  would kill even the HH witness.
 - **Leftmost-outermost strong reduction:** the house strategy; the machine
-  is the definition, which is also what dissolves algebraic-λ confluence
-  pathologies.
+  is the definition — which *chooses one machine-relative reduction
+  sequence* rather than resolving algebraic-λ non-confluence, and
+  β/δ-convertibility is not a semantic equality here (§3).
 - **Exactness:** ring arithmetic only, conservation as equality, brackets
   for every unbounded claim.
 - **Name:** qALC, quantum algebraic lambda calculus — lineage-accurate: the
@@ -444,13 +512,14 @@ I_garbage`, writing nothing branch-dependent — and halted dynamics has the
 ## 9. Open obligations
 
 1. **The reversible machine + minimal-garbage theorem** (§4.1, §4.5) — the
-   gating work item: a concrete transition table (KN-guided, not KN),
-   orthonormal columns proved on the reachable graph, minimal residual
-   garbage characterized, invariant-sector lemma proved in that machine.
+   gating work item: a concrete transition table (environment/closure
+   substrate per `machine.md`, KN-guided, not KN), orthonormal columns
+   proved on the reachable graph, residual garbage locally minimal in the
+   predecessor-fibre sense, invariant-sector lemma proved in that machine.
    `U`, `μ_p`, and `M` are undefined until this exists.
 2. **Clean coherent compilation** (§6): λ-defined Toffoli-class terms with
-   input-independent garbage under the machine of item 1; gating for any
-   universality claim.
+   input-independent garbage, terminal control, *and transition count*
+   under the machine of item 1; gating for any universality claim.
 3. Merge-discipline canonicity: is the minimal-garbage `U` unique in any
    useful sense, and what exactly is the class of programs whose branches
    re-merge (the "coherence is earned" economy made precise)?
@@ -475,12 +544,18 @@ I_garbage`, writing nothing branch-dependent — and halted dynamics has the
 9. Signature order freeze (§3) before any canonical data.
 10. Output convention (§4.6) — parked deliberately.
 
-**Ratification gates (review round 1):** the reversible-machine transition
-table with orthonormal columns (item 1); the common-origin tick and
-normative halted dynamics stated as contract (§4.3, done in this revision);
-garbage-transparent δ stated as contract (§7, done); the H–NOT–H clean-gate
-witness in the verification contract (§7, done); the corrected effect-free
-conservativity fragment (§6, done). The open gates are items 1 and 2; the
+**Ratification gates.** Round 1 gates: normative halted dynamics (§4.3),
+clean-δ contract (§7), H–NOT–H witness (§7), corrected conservativity
+fragment (§6) — all closed. Round 2 gates: fixed-offset synchronization
+wording (§4.5), clean δ fibres replacing `gate ⊗ I_context` (§7), typed
+`RunDone`/`Halt` entry (§4.3), projected semantic lockstep for the
+effect-free fragment (§6), synchronized timing in clean compilation (§6),
+exact transition-system equivalence for any fast engine (§7), and the
+stale "dissolves" sentence (§8) — all closed in this revision. The open
+gates are items 1 and 2 above — build the machine, prove clean
+compilation; per round 2, the route ratified for exploration is the
+canonical environment/closure reference machine of `machine.md` with
+transition-local predecessor tags and no global-minimality claim. The
 scalar ring needs nothing — the unresolved object is the configuration
 algebra, not the amplitudes.
 
@@ -500,5 +575,6 @@ semantics — the gap this pillar's measurements would inform).
 
 - Classical counterpart: `../classical/architecture.md`
 - Quantum-store counterpart: `../quantum/architecture.md`
+- Reference machine sketch (pre-formal): `machine.md`
 - Moving state and docket: `../STATUS.md` (section pending ratification)
 - Canonical evidence: none yet; `data/quantum-algebraic/` reserved.
