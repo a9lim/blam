@@ -420,152 +420,42 @@ consistency) and a fresh-context feasibility review (thread
 promising-with-hard-open-problems, converging with the sketch on every
 load-bearing point; its checklist and exclusions are folded in.
 
-**Kernel v1 is drafted and machine-verified**
-(`quantum-algebraic/kernel.md`): full transition table over the λIAM
-substrate, step-indexed traces, column-Gram orthonormal on every
-tested reachable basis. HH halts with mass 1 on `0̂` by exact
-cancellation at the outer fire; H–NOT–H passes the coherence bar
-through NOT′; the negative witness's branches halt with the *same*
-output `I` and stay orthogonal in residue and time. Measured
-findings: the selector NOT decoheres by one-step desynchronization
-(the coherence economy in token steps); re-interrogation is real
-(C1 refuted) and handled by ticket-replay (`recall`) with no store.
-The conformance review (thread `qalc-architecture`) returned
-partial-conformance with one blocker — v1.0 misclassified the valid
-output `I` as an error — fixed in v1.1 along with separate
-`RunDone`/`Halt` steps, a structural (cancelled-targets-included)
-Gram, and two mandated architecture amendments (witness 7 pinned to
-the exact `NOT′` wire term; the stale strategy bullet).
-
-The adversarial review returned: **FAIL for kernel v1, route
-intact** — the reviewer's independent reimplementation reproduced
-all five results (substrate, fibres, balance all HOLD), then broke
-`recall` with `p★ = λh.λt. ((((h 0̂) h) h) 0̂)`: nested same-kind
-tickets alias after the replay erases `b′` (norm 3/2 at step 89,
-confirmed against both implementations; a 3-coin regression shows
-the same collision across time slices). Re-entry determinacy is
-refuted; verdict registered in `kernel.md` §9.
-
-The v1.2 repair (inert replay stack) fixed the p★ aliasing and is
-independently confirmed, but the re-review refuted permanent
-inertness with `q = λh.λt. h ((((h 0̂) E) N) 0̂)` — injective
-selection (H;id;H) whose branches must re-interfere — and exposed
-an α/γ transport totality failure beneath it (three stuck states on
-`q`'s 335-state graph, verified). The governing principle is now
-the **transparency criterion**: a replay frame is cleanable iff its
-bit is a function of the live core, cleaned inside the δ block with
-provenance-matched instance-indexed frames.
-
-**Kernel v1.3 is built and verified** (`kernel.md` §10, 2026-08-09):
-the `replay` rule (a consumed-ticket re-seek rederives its selection
-from the instance's frame, read nondestructively — derived from the
-literal visit-3 trace) restores transport totality on the whole
-ten-program battery; instances are the invoking occurrence's logged
-position (structurally at the log head), discharging ticket
-ownership; the transparency/pop rule strips slot-matched frames at
-certified fire boundaries, verified sound by the structural Gram
-with a negative control (an unsound certificate is caught as a
-typed error, no unitarity damage). The `q`-family halts frame-free
-— no residual replay discriminator — but mass 1 on `0̂` is blocked
-by a **new standing finding, the time register**: branch arrival
-offsets 35/7/3 (q / wire-balanced q′ / minimal q2), odd and
-invariant under every even-cost program pad measured. Pattern-
-encoded slots are time-free (HH, H–NOT′–H sync exactly);
-step-encoded (geometric) selection skews the branch clock by the
-transported bit. Conjecture to adjudicate: geometric selection
-decoheres intrinsically; the coherent fragment is the
-pattern-encoded routing class, and time-balance is a compiler
-obligation. v1.2's p★ support-8 was transport-bug-inflated
-(extra fire events measured); the correct support is 4.
-
-The v1.3 adversarial round returned (2026-08-09, registered in
-`kernel.md` §10.6): **FAIL as the formalization gate, PASS for the
-replay repair** — every number independently reproduced; no odd pad
-in a 156-variant search (composed selections stay odd: NOT∘NOT
-Δ=1); a **port-polarity coloring** supplied as the parity theorem
-route; instance-as-logged-position ratified with a new
-copy-discrimination regression (`dup`). Review corrections applied
-in-session: buried same-instance frames and missing-instance
-entries are typed errors (both unreachable in the battery — it is
-bit-identical), TOP fallback removed.
-
-**Kernel v1.6 is proved, reviewed, and scoped** (`kernel.md` §13,
-2026-08-09): the conservation conjecture is now a **theorem** — an
-attribution-ledger lemma (`t ≡ k + b + 1`: every λIAM step is the
-birth, death, or transport of exactly one tape/log individual)
-meets the coloring to give `w ≡ k + b + |pos′| − |pos|`, i.e.
-`w ≡ exit slot` on mark-free fire-free readback, with each
-hypothesis's failure mode a named mechanism (interior-fire charge /
-VB pattern birth / mark capture). Mechanized at the invariant
-level: 41,272 closed terms ≤ size 11, 55,727 surfacings, per-step
-ledger checks in lockstep conformance, zero failures. Also
-mechanical: terminal chains, gauge-pinned uniqueness (4/256 = the
-predicted orbit), `discover_total` (total on every program, `h Ω`
-conservative reject), guard-rule and `(g,i)`-aliasing sweeps. The
-**fresh-instance adversarial round confirmed the entire
-mathematical core** (Lemma A independently reimplemented; the
-transfer closure searched over 153k arguments with zero mark-free
-escapes; the gauge orbit re-derived under a 15-parameter solve;
-one real correction — the theorem's depth term) **and refuted the
-h-fragment PASS scope**: `Q = ((h 0̂) SEL SEL)(h 0̂)` is typed,
-h-only, signature-abstracted, and reaches `buried-frame` from init
-with err mass 1 under a valid certificate and clean Gram — the
-interleaved re-seek is a missing semantic case, not an unreachable
-fence. `Q` is the battery's thirteenth program; `validate` now
-reports `semantic_coverage`; the μ-kind fire collision is closed
-typed. **PASS stands for the three-program formalization gate and
-the twelve registered sectors; the h-fragment claim is withdrawn.**
-
-**Kernel v1.7 is built and verified** (`kernel.md` §14,
-2026-08-09): the replay RECORD gives the interleaved re-seek its
-semantics — `recall`'s frame push is idempotent (the record is a
-function of the instance; conflicting bits are a typed
-`frame-conflict`), `replay` is a deep keyed lookup, the record set
-is canonically sorted, and the `buried-frame` error class is
-dissolved. The review's `Q` heals to physics predicted before
-measurement ({1/2, 1/2}, support 4, certificate unchanged,
-`semantic_coverage: True`); the twelve stay bit-identical; three
-pointed stressors (`weave`, `hweave`, `qq` — three coins,
-double-crossed re-seeks, support 8) all land on predicted
-marginals. The WF subtype (six invariants; reachable ⊆ WF over
-9,314 states; per-rule preservation) closes the v1.6
-range-disjointness gap — both review collisions dead (W4 excludes
-the vvar source; `species-mu` types the μ-kind pair). Certified
-erasure got its cargo conditions: γ-free cargo enforced in
-certificate admission (zero changes), suspended-α cargo (HNH's
-earned coherence depends on it) scoped under a named compile-time
-obligation. The h-fragment PASS is re-claimed, **gated on a
-fresh-context independent audit**.
-
-**Fresh audit #1 returned FAIL; kernel v1.8 is the correction
-round** (`kernel.md` §14.6, §15, 2026-08-09). The audit confirmed
-the Q/weave/hweave/qq physics by independent recomputation but
-landed two countermodels (a WF-but-colliding certified fire; `Pα`,
-a typed in-fragment program whose admitted certificate erased an
-α-cargo instance later re-sought — silently stuck), plus a fuzzed
-duplicate fresh call through the fire's α-decode, an injectivity
-gap, and honesty defects. v1.8 answers with one mechanism: decode
-records at certified erasure + a `refire` guard in the fresh-call
-arm make **one-fire-per-instance a runtime machine invariant**
-(the α-cargo compile-time obligation is discharged and deleted);
-`discover_total` now validates its own fixpoint and refuses
-unsound certificates (`Pα` and the fuzz program fall back to the
-conservative plain run — `Pα`'s canonical dynamics is its correct
-physics, {1/4, 3/4}); W7 fibre coherence joins the WF subtype and
-the range-disjointness theorem is mechanized; `typecheck.py`
-supplies the typed h-only fragment judgment (15/18 typable — `q`
-itself is out, the wire imbalance `qprime` fixed; `dup` and the
-fuzz program out by construction). The sixteen prior programs are
-marginal-, support-, and **basis-identical** (decode records are
-branch-consistent constants — a bijection on the post-fire
-subgraph, measured). The auditor's own reproducer reruns clean:
-fuzz 250/250 no violation. The v1.2→v1.7 basis drift overclaim is
-corrected and owned (§15.4).
+**The kernel is at v1.9** (`quantum-algebraic/kernel.md` — the
+current-only register; round-by-round history in `ledger/2026-08.md`
+and the file's git history): a scratch superposition evolver for the
+typed h-only fragment — the eight λIAM rules plus instance-keyed
+gate probes firing H rows in exact ℚ[√2], recall/replay/decode
+machinery with one-fire-per-instance enforced as a runtime machine
+invariant, self-validating canonical certificates (fibre conditions
+(a)–(e) including cross-slot decode-bundle equality; unsound
+fixpoints refused with a conservative fallback), an eight-invariant
+WF subtype with the range-disjointness theorem mechanized against
+actually-constructed fire targets, a syntactically-bounded typing
+judgment (15/18 suite programs typable h-only; `q` itself is out —
+the wire imbalance `qprime` repairs), and every failure mode typed.
+The eighteen-program battery is total and Gram-clean with
+hand-verified physics (HNH's certificate is measured
+load-bearing: certified `{0̂: 1}` vs plain `{½, ½}`); conservation,
+polarity, gauge, and both prior reviewers' reproducers all run
+clean. Two fresh-context audits shaped it: audit #1 FAILed v1.7
+(Pα and WF-collision countermodels, an instance-alias gap, honesty
+defects — all reproduced before correction), and a sol-tier working
+review of the v1.8 fix caught two structural holes (per-slot bundle
+divergence; live representations shadowing bit-free dead records)
+now closed as condition (e) and the `key-alias`/W8 pair. What
+remains open is stated, not hidden: the alias-tolerant transition
+theorem (or λIAM logged-position uniqueness) is a conjecture the
+soundness claims are conditional on; the general
+marginal-correctness theorem is the compilation theorem's
+obligation. **The PASS re-claim is gated on fresh audit #2.**
 
 The open docket, in order:
 
-1. **fresh-context independent audit #2 of the v1.8 h-fragment
-   claim** (next action; verdict to be registered in §15.5);
+1. **fresh-context independent audit #2 of the v1.9 h-fragment
+   claim** (next action; verdict to be registered in `kernel.md`
+   §9); then the alias-tolerant transition theorem or λIAM
+   logged-position uniqueness (`kernel.md` §7.5 — the standing
+   conditional);
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem

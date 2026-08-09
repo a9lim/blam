@@ -1,98 +1,25 @@
-# qALC three-program kernel — v1
+# qALC three-program kernel — current register (v1.9)
 
-**Status: v1.8 — §15 is the current register: fresh audit #1
-returned FAIL (§14.6 — WF-collision and Pα countermodels, an
-injectivity gap, honesty defects); v1.8 answers with one
-mechanism: decode records at certified erasure + the refire guard
-make one-fire-per-instance a runtime machine invariant (the
-α-cargo compile-time obligation is discharged and deleted),
-`discover_total` validates its own fixpoint (unsound certificates
-refused, conservative None fallback), W7 fibre coherence joins the
-WF subtype with the range-disjointness theorem mechanized, and
-`typecheck.py` supplies the typed h-only fragment judgment (15/18
-typable; `q` itself is out — the wire imbalance `qprime` fixed).
-Eighteen-program battery total and clean; the sixteen are
-marginal-, support-, and basis-identical to v1.7. The PASS
-re-claim is again gated on a fresh-context independent audit.**
-Previous registers — v1.7 (§14): the replay record healed `Q` and
-dissolved `buried-frame`; v1.6 (§13): the
-fresh-instance adversarial round (§13.6) returned FAIL for "PASS
-for the h-fragment" while CONFIRMING the mathematical core: the
-conservation theorem stands with a depth-term correction
-(`w(l) ≡ k + b + |pos′| − |pos|`; deployed specializations
-unaffected), Lemma A's attribution ledger verified airtight by
-independent reimplementation, the transfer corollary confirmed
-with the reviewer's own closure invariant and a 153k-argument
-search (zero mark-free escapes), the gauge orbit confirmed under
-a broadened 15-parameter solve, and `discover_total` confirmed
-with both rejection paths exercised. The claim itself was
-refuted by `Q = ((h 0̂) SEL SEL)(h 0̂)` — typed, h-only,
-signature-abstracted, reaching `buried-frame` from init with err
-mass 1 under a valid certificate and clean Gram: the interleaved
-re-seek is a MISSING SEMANTIC CASE of the h-fragment, not an
-unreachable fence. `Q` is the battery's thirteenth program;
-`validate` now carries `semantic_coverage`; the μ-kind fire
-collision is closed typed (`species-mu`, bit-identical reachable
-graphs); the well-formed-state subtype + preservation proof is a
-registered obligation. **PASS holds for the three-program
-formalization gate and the twelve registered sectors; the
-h-fragment claim is withdrawn; the v1.7 object is buried-frame
-semantics or a static characterization excluding it.** Earlier
-registers: v1.5 encoded fire §12 (coherence is *earned*,
-certificate-bearing); v1.4 coloring/certificates §11;
-encoded-fibre amendment applied to architecture §7 (§11.7). §10 is
-the v1.3 register. Of the re-review's six gate items: totality on `q`'s
-graph ✓ (the `replay` rule, derived from the literal visit-3
-trace); correct slot-0/slot-1 outer arrivals ✓; instance-indexed
-frames ✓ (instance = the log-head logged position, already present
-at every gate-leaf entry); a transparency/pop rule ✓ (certified
-per-program, falsification caught as a typed error, verified by
-the Gram/norm pass, negative control included); `q`'s frames
-cleaned with **no residual replay discriminator** ✓ — but mass 1
-on `0̂` does NOT follow, because the branches arrive at the outer
-boundary at different global times, and the offset is **odd and
-invariant under every program-level padding tried** (§10.4).
-Slot routing that survives to a boundary as tape *pattern* is
-time-free (HH, H–NOT′–H sync exactly); routing *consumed* as
-transport steps skews the clock by the transported bit. The
-standing conjecture: step-encoded (geometric) selection decoheres
-intrinsically in this machine class; coherence is the
-pattern-encoded routing class; time-balancing is a compiler
-obligation, not a rule-level fixable. History: v1 was reviewed
-adversarially (thread
-`qalc-token-machine`, independent reimplementation) — the classical
-substrate, gate fibres, HH cancellation, H–NOT′–H balance, and
-negative witness all HOLD, but `recall` was CONFIRMED-BROKEN on
-`p★ = λh.λt. ((((h 0̂) h) h) 0̂)`: nested same-kind tickets aliased
-after the replay erased its `b′` discriminator (norm 3/2 at step
-89, verified against both implementations — §9). **v1.2 repairs it
-with the inert replay stack** (§9.5): `recall` moves the ticket to
-a transport-inert residue component instead of erasing it; recalled
-branches decohere mandatorily — which is the correct physics, since
-a coin whose branches both select gate occurrences has been
-consumed non-injectively — and the coherent witnesses never touch
-the mechanism. All seven programs (five witnesses + `p★` + the
-3-coin regression) now pass with norm 1 and structurally clean
-column-Gram. The conformance review's earlier fixes (output
-alphabet {`0̂`,`1̂`,`I`}, separate `RunDone`/`Halt` steps,
-structural Gram) are incorporated and stand.
+**Status: v1.9.** The kernel is a scratch superposition evolver for
+qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
+ℚ[√2]): the eight classical token rules plus gate probes that FIRE
+at boundaries with H-row amplitudes, instance-keyed
+ticket/frame/record machinery for re-interrogation, per-program
+transparency certificates with a self-validating canonical
+analysis, an eight-invariant well-formedness subtype, a typed
+h-only fragment judgment, and every failure mode typed — never
+silent. Two fresh-context independent audits and two working
+reviews have shaped it (chronicle, §12); the standing PASS
+re-claim is **gated on fresh audit #2**, whose verdict will be
+registered here.
 
-```text
-h (h 0̂)             mass 1 on 0̂, single terminal configuration
-h (NOT′ (h 0̂))      mass 1 on 0̂, single terminal configuration
-(λb. b I I) (h 0̂)   Halt(I) in BOTH branches, 1/2 + 1/2: same
-                     output normal form, orthogonal in residue AND
-                     entry time — the noninjective-output dilation,
-                     exactly as the negative witness asserts
-column-Gram          orthonormal on every structural reachable basis
-                     (amplitude-blind BFS: cancelled targets included)
-```
-
-Two probes beyond the gate, both physics-correct: the selector
-`λb. b 1̂ 0̂` interposed in H–NOT–H **decoheres** (1/2, 1/2 mixed,
-branches one step desynchronized) — the first mechanical measurement
-of the coherence-is-earned economy; and lone `h 0̂` gives 1/2, 1/2 at
-equal ticks.
+This file is the current contract and register only. The
+round-by-round history — countermodels, corrections, verdicts —
+lives in `docs/ledger/2026-08.md` and this file's git history;
+§12 is the map. The scratch implementation lives outside the tree
+(the §9-gate no-code rule of `architecture.md` governs); the
+machine designs behind it are `token.md` (active) and `machine.md`
+(read-only failures).
 
 ## 1. Scope
 
@@ -100,292 +27,446 @@ The kernel machine answers a single **root output question** about
 the invocation `p h t`: initial state
 `(root, ↓, log ε, tape •·•·ρ)`, output alphabet **{`0̂`, `1̂`, `I`}**
 with typed halting sectors for each, an absorbing error sector for
-species errors, and root arrivals outside the alphabet also entering
-the error sector — a kernel-scope limitation flagged as such: the
-architecture permits arbitrary normal-form outputs, and recognizing
-them is the readback controller's job, not smuggled in here. `I` is
-in the alphabet because the negative witness's output is a *valid
-closed normal form* — classifying it as an error would make witness
-8 vacuous (a conformance-review catch; v1.0 had exactly that bug).
-Terminal entry is the normative two-step
-`RunDone(nf, res) → Halt(nf, res, 0) → tick`, each a separate `U`
-application. The ring is `ℤ[1/√2]` — `h` only; `t` is the same table
-with `Q_t = diag(1, ω)` over `ℤ[ω]/√2^d` and its own tags,
-deliberately left unexercised. Classical substrate: the eight λIAM
-rules exactly as pinned in `token.md` §2.
+species/guard errors, and root arrivals outside the alphabet also
+entering the error sector — a kernel-scope limitation flagged as
+such: the architecture permits arbitrary normal-form outputs, and
+recognizing them is the readback controller's job, not smuggled in
+here. `I` is in the alphabet because the negative witness's output
+is a *valid closed normal form*. Terminal entry is the normative
+two-step `RunDone(nf, res) → Halt(nf, res, 0) → tick`, each a
+separate `U` application. The ring is `ℤ[1/√2]` — `h` only; `t` is
+the same table with `Q_t = diag(1, ω)` over `ℤ[ω]/√2^d` and its
+own tags, deliberately left unexercised. Classical substrate: the
+eight λIAM rules exactly as pinned in `token.md` §2.
 
 ## 2. State space
 
 ```text
-Run     ::= (pos, d, log, tape, RS)    — λIAM shape, plus VB phase
-          | (leaf, VB(g, b′, k), log, tape, RS)   k ∈ {0,1,2}
-RS      ::= [R_g(b′), …]   — transport-inert replay stack (v1.2):
-          no transport or classifier rule reads it; only `recall`
-          pushes; it joins the garbage factor at terminal entry
+Run     ::= (pos, d, log, tape, VB, RS, KS)
+VB      ::= ∅ | (g, b′, k)   k ∈ {0,1,2} — virtual-boolean phase
+RS      ::= canonically sorted set of replay RECORDS R_g(i, b′)
+          — one per (gate, instance); transport-inert; recall's
+          push is idempotent, replay reads it wherever it sits
+KS      ::= stack of decode records — inert dead storage:
+            ('K', g, i)      one decoded ticket (fire's α-decode)
+            ('KD', {keys})   certified erasure's tagged bundle
+            ('K', l)         a retained-whole which-path spectator
 RunDone ::= RunDone(nf, residue)            nf ∈ {0̂, 1̂, I, err}
-Halt    ::= Halt(nf, residue, tick) | Error(residue, tick)
-residue = the COMPLETE pre-entry state (pos, d, log, tape, VB, RS)
+Halt    ::= Halt(nf, residue, tick)
+residue = the COMPLETE pre-entry state (injectivity of terminals)
 
 tape/log entries: • | logged position l | γ_g | μ_g | A_g(b′)
-                  | α_g(b′) | ρ
+                  | α_g(i, b′) | ρ
 ```
 
 `γ_g` (gate boundary marker), `μ_g` (probe frame), `A_g(b′)` (fired
-answer token), `α_g(b′)` (answer ticket — a logged-position-like
-entry with empty slice), `ρ` (root frame). The classical transport
-rules (`arg`, `bt1`) treat `γ` and `α` exactly like logged positions;
+answer token), `α_g(i, b′)` (answer ticket, instance-tagged), `ρ`
+(root frame). **Instance** `i` = the invoking occurrence's logged
+position — always at log head when the token stands at the gate
+leaf (arg-entry is structurally forced); a logged position names a
+dynamic subterm copy (λIAM lineage). The classical transport rules
+(`arg`, `bt1`) treat `γ` and `α` exactly like logged positions;
 `bt2` never matches them (no binder). `lp-like := l | γ | α`;
-arrival classifiers accept `l | α` as the answer position, never `γ`.
+arrival classifiers accept `l | α` as the answer position, never
+`γ`.
 
 ## 3. The transition table
 
 Classical rules `•1 •2 •3 •4 var arg bt2` are unchanged from
-`token.md` §2. `bt1` is restricted to non-`γ` log heads; the `γ`-head
-case belongs to the gate boundary (arrive/retrace below). New rules —
-every `Done` entry freezes the complete source state as residue:
+`token.md` §2. `bt1` is restricted to non-`γ` log heads; the
+`γ`-head case belongs to the gate boundary (arrive/retrace below).
+Every error entry freezes the complete source state as residue.
+
+**At the gate leaf (↓, bullet head), in guard order:**
 
 ```text
-call     (g, ↓, L, •·T)                 → (g, ↑, L, γ_g·•·•·μ_g·T)
-         g's leaf position; the top • is the query's application
-         crossing. Classical transport then delivers the probe to
-         g's true argument through arbitrary dereference plumbing.
+              i := log-head lp; no lp at log head → no-instance.
+              dead := every (g, i) in KS (decoded records, KD
+              bundles, and tickets nested in retained-whole cargo).
 
-recall   (g, ↓, L, •^(b′+1)·α_g(b′)·T, RS)
-           → (g, ↑, L, •·•·•·T, R_g(b′)·RS)
-         consistent replay of a fired instance off its ticket — no
-         fire, and (v1.2) **no erasure**: the discriminator moves to
-         the inert replay stack. Routing mirrors the literal
-         boolean's bt2-replay: consume the slot-dependent re-descent
-         bullets and the ticket, emit the two virtual lambda
-         crossings plus the gate-application compensation. Recalled
-         branches carry distinct R-frames forever — mandatory
-         decoherence, matching the physics (a re-interrogated coin
-         was consumed non-injectively by its selection). Bullet/
-         ticket arity mismatch → Error. `call`'s domain excludes
-         recall's by the explicit guard "tape below the leading
-         bullet does not match •^k·α_g of this gate" — stated as a
-         side condition, structural disjointness still owed to the
-         formal table.
+(head ticket) tape = •^j · α_g(i′, b′) · T:
+   i′ ≠ i                    → alien-ticket        [foreign copy]
+   (g, i) ∈ dead             → key-alias           [live ticket must
+                                never shadow a dead record: the
+                                bit-free record has discarded the
+                                bit that would detect divergent
+                                aliasing]
+   same-key records with a different bit
+                             → frame-conflict
+   j = b′+1  → recall: consume bullets+ticket, emit •·•·•·T,
+              record R_g(i, b′) — IDEMPOTENT (the record is a
+              function of the instance; a re-seek cycle's
+              re-recording is a no-op)
+   other j                   → recall-err
 
-arrive/  (m ends 'a', ↑, γ_g·L, P_b·μ_g·T) →
-fire       Σ_b′ (Q_g)_{b′b} · (m, ↑, γ_g·L, A_g(b′)·T)
-         P_0 = l·   P_1 = •·l·   (l ∈ {logged position, α})
-         the δ block, directly on arrival states; Q_h = H.
-         Other tape shapes at a γ boundary → Error (species).
+(frame)      R_g(i, b′) anywhere in RS (deep keyed lookup — LIFO
+             position was never semantic):
+   (g, i) ∈ dead             → key-alias
+   conflicting bits          → frame-conflict
+   j ≥ 3     → replay: emit •^(b′+1) · α_g(i, b′) · tape[3:]
+   j < 3                     → replay-err
 
-retrace  (m ends 'a', ↑, γ_g·L, A_g(b′)·T) → (parent+'f', ↓,
-         L, γ_g·A_g(b′)·T)        [bt1's action on the γ head]
-         Classical rules then retrace the inward transit to the leaf.
-
-anshead  (g, ↓, L, γ_g·A_g(b′)·T) → (g, VB(g, b′, 0), L, T)
-vb2      (g, VB(g,b′,k<2), L, •·T) → (g, VB(g,b′,k+1), L, T)
-vvar     (g, VB(g,b′,2), L, T)     → (g, ↑, L, •^(b′+1)·α_g(b′)·T)
-         the balanced virtual answer: consume the outer question's
-         two bullets as the two virtual lambdas, then emit the seek.
-         One bullet pays the gate-application crossing; the rest
-         encode the slot; α carries the return ticket.
-
-root     (root, ↑, ε, P_b·ρ)   → RunDone(b̂, res)
-         (root, ↑, ε, l·•·ρ)   → RunDone(I, res)
-         one lambda consumed, head = its own binder, unapplied —
-         the I signature at depth-2 observation
-         other ρ arrivals      → RunDone(err, res)  [kernel-scope
-         limitation: outputs beyond {0̂,1̂,I} await real readback]
-halt     RunDone(nf, res)      → Halt(nf, res, 0)   [separate step]
-ticks    Halt/Error(…, k)      → (…, k+1)
-errors   VB with a non-• non-classifier tape top; ↓-stuck on μ/ρ
-         (too many head lambdas); neutral constants under μ/ρ;
-         species shapes at γ boundaries; recall arity mismatch —
-         all → Error via RunDone, complete residue.
+(fresh)      neither ticket nor frame:
+   (g, i) ∈ dead             → refire              [the selection
+                                was erased bit-free; a fresh call
+                                would fire the same copy twice —
+                                one-fire-per-instance is a MACHINE
+                                INVARIANT, enforced here]
+   else      → call: (g, ↑, L, γ_g·•·•·μ_g·T)
 ```
 
-## 4. Where the design came from (load-bearing derivations)
+**At a certified/gate boundary (`↑` at an 'a'-position, γ log
+head):**
 
-**Classical transport is the whole protocol.** `call` does not move
-the token to the argument; it flips ↑ at the leaf with `γ_g` on top,
-and the untouched classical rules carry the probe through any
-var/arg dereference plumbing to the gate's true argument — verified
-through double indirection (`((λg.g) h) 0̂` style). Dually, after
-`fire`, `retrace` is one rule and the classical rules run the inward
-transit backward to the leaf — bideterminism doing what v1's entire
-hand-built reverse machine failed to do.
+```text
+arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
+   μ's gate kind ≠ γ's       → species-mu
+   CERTIFIED boundary (pos ∈ certificate):
+       any RS frame with bit ≠ b → pop-err
+       erase (l, RS); leave ('KD', keys) — one tagged bundle
+       naming every live α nested in l and every popped frame's
+       (g, i)  [sound under fibre conditions (a)–(e), §6]
+   else, l = α_g(i, b) with bit = slot (DECODE):
+       retain ('K', g, i) — bit-free, branch-equal — UNLESS a
+       same-key frame exists (the ticket was replay-re-emitted;
+       the frame remains the answerable representation, no record:
+       W8 exclusivity by construction)
+   else (RETAIN-WHOLE): keep ('K', l) — same-slot arrivals with
+       different which-path data stay orthogonal
+   then fire: targets (pos, ↑, γ_g·L, A_g(b′)·T′), amplitudes the
+   Q_g row for input b; Q_h = H. Other shapes → species.
 
-**The gate-application compensation (+1 bullet).** A literal
-boolean's lambdas are real tree nodes: its answer exits by real `•4`
-crossings that later pay real `•3` crossings. The virtual boolean
-sits one application *deeper* (at the gate leaf, function of its own
-application node), so every virtual exit emits one extra bullet to
-pay that crossing: `vvar` emits `•^(b′+1)·α` (one for the gate app,
-`b′` for the slot skip), `recall` emits `•••` (two virtual lambdas
-plus the gate app). Both derived by replaying the literal-boolean
-ground-truth traces, not stipulated.
+retrace      (pos, ↑, γ_g·L, A_g(b′)·T) → (parent+'f', ↓, L,
+             γ_g·A_g(b′)·T)      [bt1's action on the γ head]
 
-**Balance needs no padding.** The classical `0̂`/`1̂` exits are one
-step apart (the `•4` for the deeper binder). In the virtual answer
-the slot-2 bullet is consumed by the arrival *classifier*, not by a
-step, so both branches take identical step counts from fire to the
-next boundary. The earlier design guess (a pad rule) was wrong and
-is gone.
+anshead      (g, ↓, L, γ_g·A_g(b′)·T) → (g, VB(g, b′, 0), L, T)
+vb2          (g, VB(g,b′,k<2), L, •·T) → (g, VB(g,b′,k+1), L, T)
+vvar         (g, VB(g,b′,2), L, T) → (g, ↑, L, •^(b′+1)·α_g(i,b′)·T)
+             one bullet pays the gate application, the rest encode
+             the slot; the ticket carries the instance.
 
-**Re-interrogation is real; the no-store mechanism works.**
-Conjecture C1 of `token.md` §3.5 is **false**: an output's variable
-can seek its argument by backtracking *through* the boolean
-selection, re-dereferencing to the gate leaf (the negative witness
-does this). The literal boolean answers re-entry by `bt2` on the
-selection ticket — replaying its structure, net tape-neutral.
-`recall` is the virtual mirror: it reads `b′` off the `α` ticket and
-replays without firing. The outcome of a fired gate lives only in
-the tokens the machine already carries — no store, as designed.
+root         (root, ↑, ε, P_b·ρ)  → RunDone(b̂, res)
+             (root, ↑, ε, l·•·ρ)  → RunDone(I, res)
+             other ρ arrivals     → RunDone(err, res)
+halt/ticks   RunDone → Halt(nf, res, 0) → tick → …
+errors       VB with a non-• non-classifier tape top; ↓-stuck on
+             μ/ρ; neutral constants under μ/ρ — all typed, complete
+             residue.
+```
 
-## 5. Verification results
+The guard family — `no-instance`, `alien-ticket`, `frame-conflict`,
+`recall-err`, `replay-err`, `pop-err`, `species-mu`, `refire`,
+`key-alias` — is the machine's whole answer to aliasing and misuse:
+**every detectable manifestation is a typed error, never a silent
+reinterpretation.**
 
-Mechanized runs, exact arithmetic, norm ≡ 1 asserted at every global
-step (a norm increase is a non-injectivity detector — see §6):
+## 4. Instance identity and the selection lifecycle
 
-Timing convention (pinned, conformance-reviewed): `RunDone` entry and
-`Halt(…, 0)` entry are separate `U` steps; "Halt at" below is the
-`Halt(…, 0)` step.
+One `vvar` emits one ticket per fire. The ticket is consumed by
+exactly one of: **recall** (→ replay frame, bit kept), **decode**
+(→ bit-free `K` record, dead), or **certified erasure** (→ `KD`
+bundle, dead). Replay re-emits fresh tickets off the frame; a
+re-emitted ticket that decodes leaves no record while its frame
+lives (W8). So per instance, the selection has at most one
+*answerable* representation (ticket and/or frame, bit-carrying)
+XOR *dead storage* (bit-free record) — and the leaf's guard order
+makes every cross-class encounter typed (`key-alias`) and every
+dead-key fresh call typed (`refire`).
 
-| program | sectors | support | Halt at | R-frames |
-|---|---|---|---|---|
-| `h (h 0̂)` | `0̂`: 1 | 1 | t=49 | none |
-| `h (NOT′ (h 0̂))` | `0̂`: 1 | 1 | t=64 | none |
-| `(λb. b I I)(h 0̂)` | `I`: 1 | 2 | t=58, 60 | yes |
-| `h (selNOT (h 0̂))` | `0̂`: 1/2, `1̂`: 1/2 | 4 | t=78, 79 | yes |
-| `h 0̂` | `0̂`: 1/2, `1̂`: 1/2 | 2 | t=31 | none |
-| `p★` (regression) | `0̂`: 1/2, `1̂`: 1/2 | 8 | t=99–103 | yes |
-| 3-coin (regression) | `0̂`: 1/2, `1̂`: 1/2 | 4 | t=63, 65 | yes |
+**Load-bearing derivations** (from the literal-boolean ground
+truth, not stipulated): classical transport is the whole delivery
+protocol — `call` only flips ↑ at the leaf and the untouched
+classical rules carry the probe through arbitrary dereference
+plumbing, dually for retrace (bideterminism); the +1 bullet in
+`vvar`/`recall` pays the gate-application crossing a literal
+boolean's real `•3`/`•4` pairs would pay; balance needs no padding
+(the slot-2 bullet is consumed by the arrival classifier, not a
+step); re-interrogation is real and store-free — the outcome of a
+fired gate lives only in the tokens the machine already carries.
 
-The two coherent witnesses never create an R-frame — the repair
-mechanism is invisible to coherent code, engaging exactly where
-mandatory decoherence is the correct physics. `p★` completes at
-norm 1 with the first coin decohered and the marginal (1/2, 1/2) —
-the rewriting-picture sanity check: its branches both reduce to the
-*same term* `h 0̂` post-selection, so any machine that merged them
-would violate norm; refusing is correctness, not cost.
+## 5. Certificates: the fibre conditions and the canonical pipeline
 
-Output-density report (the kernel as output-operator prototype): the
-negative witness's two branches halt with the *same* `nf = I` and
-distinct residues — `ρ_output` is `|I⟩⟨I|` with the orthogonality in
-the traced-out garbage/time, the noninjective-output dilation
-exactly. Lone `h 0̂` halts at equal ticks but with `b`-dependent
-residues (the `α` ticket survives), so `ρ_output` is exactly
-diagonal `diag(1/2, 1/2)` — the bare coin's output coherence is
-unearned, as the contract's economy demands; earning it would
-require code that uncomputes the ticket.
+A certificate is a set of fire positions where erasure of `(l, RS)`
+is proven transparent. Admission conditions, checked over the
+certified reachable graph's arrivals:
 
-HH's `1̂` amplitudes cancel *at the outer fire step* (t=33): the two
-branches arrive at the boundary as a clean fibre — equal position,
-log, tape-below-slot, and time — so everything after t=33 is a
-single classical path. H–NOT–H does the same through NOT′'s real
-selection legs (residue popped, lengths equal — the L2 obligation
-confirmed for NOT′). The negative witness's branches keep distinct
-residues and enter their `Halt(I)` chains two steps apart —
-orthogonal two ways over, as unitarity demands, and its earlier
-four-state form was the run that caught a real table bug (§6).
+- **(a)** every RS frame's bit equals its arrival slot;
+- **(b)** the retained key `(slot, T, log)` determines the entire
+  erased tuple `(l, RS)` — the fibre is a function;
+- **(c)** non-vacuous: certification erases something the
+  conservative fire would retain;
+- **(d)** erased cargo is γ-free (deleting an in-flight probe's γ
+  would break W5 — its μ survives unpaired);
+- **(e)** **cross-slot bundle equality**: whenever both slots are
+  present at one `(T, log)`, the dead-key bundles agree —
+  `Dead(l₀, RS₀) = Dead(l₁, RS₁)`. The fibre function property is
+  per-slot, so nothing else forces the two H columns of one
+  intended fibre to leave equal decode bundles; divergent bundles
+  would silently decohere the interference the certificate exists
+  to buy, invisible to Gram (disjoint columns read as orthogonal).
 
-**Column-Gram enumeration** (strengthened after conformance review):
-the basis is the **structural** reachable graph — an amplitude-blind
-BFS over column targets, so states that cancel to zero in the
-aggregated evolution (e.g. the annihilated `A_h(1)` targets at HH's
-outer fire) have their columns checked too. Ticks truncated at depth
-2 (the tick shift is manifestly isometric beyond it); the
-invocation-sector coordinate is suppressed in displayed states and
-preserved trivially (the term is read-only), so per-program
-enumeration plus sector orthogonality covers the direct sum. Every
-column unit-norm, every distinct pair orthogonal, no stuck states
-(totality):
+**The canonical pipeline.** `discover_total` iterates admission to
+a fixpoint under hard caps (any cap hit or non-convergence → None)
+and then **validates its own fixpoint**: the certified graph must
+pass totality, zero guard reachability, clean Gram, zero err mass,
+unconditional transparency at certified positions, reachable ⊆
+WF∧W7∧W8, and the mechanized disjointness check — else None. None
+selects the conservative machine: total, unitary, typed — sound as
+a machine, not ideal-preserving. U is total and well-defined on
+every program (`h Ω` → None); the certificate is frozen machine
+metadata, a deterministic function of the program.
 
-| program | structural basis | stuck | non-unit | non-orthogonal |
-|---|---|---|---|---|
-| HH | 82 | 0 | 0 | 0 |
-| H–NOT–H | 104 | 0 | 0 | 0 |
-| negative | 103 | 0 | 0 | 0 |
-| selector | 173 | 0 | 0 | 0 |
-| lone H | 53 | 0 | 0 | 0 |
-| `p★` | 458 | 0 | 0 | 0 |
-| 3-coin | 180 | 0 | 0 | 0 |
+**The certificate is semantically load-bearing** (measured): HNH
+certified computes `{halt0: 1}` — the physics, H·X·H|0⟩ = |0⟩ —
+while its plain run decoheres to `{1/2, 1/2}`. A refused
+certificate degrades coherence, never soundness; that is exactly
+why admission must refuse rather than admit an unsound one.
 
-(v1.2 numbers; the v1 table had two non-orthogonal 3-coin pairs —
-the cross-time `recall` collision — and `p★` broke the norm outright
-at step 89. Both are clean under the inert replay stack.)
+## 6. The invariant catalog (WF, the well-formed subtype)
 
-## 6. Findings register
+For Run states; reachable ⊆ WF is machine-checked per program, and
+the machine's unitarity claims quantify over the subtype:
 
-1. **The selector decoheres — the economy is measurable.** `NOT′`
-   (path-balanced) preserves coherence; `λb. b 1̂ 0̂` routes through
-   literal booleans whose step counts differ by one, and the machine
-   returns the mixed 1/2, 1/2 — mechanically deriving what the
-   rewriting drafts could only predict. "Coherence is earned" now
-   has a unit: token steps.
-2. **Error residue must be the complete state — including control
-   phase.** The first negative-witness run produced norm 3/2: two
-   branches differing only in the VB `b′` register collided in an
-   error entry whose residue dropped the register. Third recurrence
-   of this bug class (v0 E1, v1 E1, here); the lesson is now a rule
-   shape: `Done` residues freeze the whole state, no exceptions.
-3. **The norm assertion is a live non-injectivity detector.** Both
-   table bugs found during construction announced themselves as
-   norm violations in the negative witness — the witness battery
-   works as designed, and `λb. b I I` specifically earns its place.
-4. **Valid normal forms are not errors** (conformance blocker,
-   fixed in v1.1). v1.0's root classifier sent the negative
-   witness's output `I` to the error sector, which made witness 8
-   vacuous — it tested error-entry injectivity rather than the
-   architecture's same-output-never-merges assertion. The output
-   alphabet gained `I`, both branches now halt as `Halt(I, …)` with
-   orthogonal residues and times, and the general lesson is pinned:
-   only a *gate applied to* a non-boolean is a species error;
-   output classification belongs to readback.
-5. **The battery accounting, per conformance review**: items 2, 3,
-   4 (finite instance), 6, 7, and 8 are discharged at kernel scope;
-   items 1 and 9 are not applicable (no code exists — not
-   "vacuously passed"); item 5 (effect-free conservativity) is not
-   exercised by the kernel set and remains open.
+- **W1** (log discipline): `|log| = level(pos)`.
+- **W2** (record uniqueness + canonicity): at most one frame per
+  `(g, i)` in RS; RS canonically sorted (state identity is
+  order-free).
+- **W3** (bit coherence): all instance-keyed entries with one
+  `(g, i)` — frames, tickets — carry one bit.
+- **W4** (first-interrogation exclusivity): a VB-active state at
+  instance `i` holds no `i`-frame and no `i`-ticket (the guard
+  chain forces this).
+- **W5** (probe pairing): deep-counted γ (through lp slices and
+  retained `K(l)` records; instance KEYS are frozen names, never
+  counted) = #μ(tape) + #A(tape) — every in-flight probe's γ is
+  matched by its μ or its answer token.
+- **W6** (root frame): exactly one ρ, at the tape bottom.
+- **W7** (certificate fibre coherence): at a certified boundary,
+  the erased `(l, RS)` equals the certificate's frozen fibre value
+  at the retained key `(pos, slot, T, log)`. States outside the
+  fibre relation are outside the certified domain subtype; the
+  domain lemma (reachable certified arrivals are in-domain) is the
+  per-program sweep.
+- **W8** (representation exclusivity): per `(g, i)`, answerable
+  representations (live α anywhere in tape/log including suspended
+  slice cargo; RS frames) never coexist with dead storage (K/KD
+  records). Preserved by construction (§4); its boundary is the
+  typed `key-alias`.
 
-## 7. Honest scope and obligations discharged/remaining
+## 7. Theorems
 
-Discharged by the kernel: HH and H–NOT–H step-indexed traces; L2
-for `NOT′`; the negative witness (as of v1.1 — same halted `I`,
-orthogonal configurations); orthonormal columns on the structural
-reachable bases; totality on every structural state (zero stuck).
-The erasure at `fire` is, per the conformance review's framing,
-*proved injective on the enumerated kernel domains by the Gram
-check itself*; its general schema remains conditional on the
-arrival-determinacy lemma — and the input boolean `b` must never be
-conservatively charged as residue (retaining it would destroy the
-clean fibre; the design keeps `b` as the consumed quantum
-coordinate). `recall` no longer erases (v1.2, §9.5); the governing
-question became the transparency criterion of §9.6.
+### 7.1 The coloring (closed form + uniform flip)
 
-Remaining, inherited or newly exposed:
+```text
+φ(s) = depth(pos) + [d = ↑] + Σ w(tape) + Σ w(log) + Σ w(RS) + k_VB  (mod 2)
+w(•) = w(γ) = w(μ) = w(α) = w(ρ) = w(R) = 0;  w(A) = 1
+w(l) for l = (occ, slice) = (depth(occ) − depth(binder)) + Σ w(slice)
+```
 
-1. **Re-entry determinacy (new, replaces C1).** `recall` absorbs
-   `α_g(b′)`; injectivity needs `b′` recoverable from the retained
-   state. It holds on the kernel programs (the pending question
-   carries branch-distinct positions) and needs a general proof —
-   the sharpest open lemma, alongside general L1.
-2. **Source-pattern disjointness**: `call`/`recall` partition by a
-   decidable negative premise — scan the maximal leading bullet
-   block; a same-gate `α_g(b)` beneath it means replay (arity
-   `b+1`) or arity-error, anything else means fresh call — but the
-   *semantic* implication (same-gate α after the block ⇒ replay of
-   the intended dynamic instance) is unproved without
-   instance-tagged tickets; other rule pairs remain
-   priority-ordered in the scratch model.
-3. **The `•^(b′+1)·α` adjacency patterns** (recall trigger, arrival
-   shapes) are verified on the kernel programs; their totality over
-   all reachable shapes needs the general species-classification
-   proof.
-4. **Boolean-output halt only** — the readback controller
-   (`token.md` §3.8) remains the largest undesigned component; the
-   root classifier here is its 1-bit special case.
-5. **`t` unexercised** (needs `ℤ[ω]` scalars; table shape ready).
-6. Gram enumeration is per-program reachable bases, not an
-   all-programs theorem — that is exactly the orthonormal-columns
-   proof obligation of architecture §9 item 1.
+**Theorem (uniform flip).** Every Run→Run rule flips φ EXCEPT
+`fire`, whose defect is exactly `1 − w(l)` for the erased/decoded
+arrival lp. Proof is per-row algebra; the load-bearing case is
+`var`/`bt2` (the teleport's distance is absorbed by the lp carrying
+it as weight). Mechanically verified on every reachable Run→Run
+edge of the battery, zero violations; every fire edge's measured
+defect equals `1 − w(l)`. The weight assignment is **gauge-pinned**:
+of all 256 assignments over the mark alphabet, exactly the
+4-element orbit generated by two symmetries survives, and the orbit
+fixes every deployed consequence.
 
-## 8. Appendix — HH step-indexed trace
+### 7.2 The branch-offset law
+
+Two branches created at one fire, meeting at a common later
+boundary with no interior fires:
+`len₀ − len₁ ≡ w(l₀) − w(l₁) (mod 2)`. Corollary: gate-free pads
+shift branch-relative time evenly; synchrony requires *equal*
+erased weights (H–NOT′–H fires with `w = 1` on both branches).
+Interior fires shift parity by exactly the fire defect.
+
+### 7.3 The conservation theorem
+
+**Lemma A (attribution ledger).** In a pure λIAM run from a
+k-probe start `(pos, ↓, L₀, •^k·base)` surfacing at
+`(pos′, ↑, L₀, tape·base)`: `t ≡ k + b + 1 (mod 2)`, `b` = ALL
+surface-tape bullets. *Proof:* every rule is the birth, death, or
+transport of exactly one tape/log individual; slice
+capture/release is zero-cost suspension preserving location parity
+`p = 1`; the invariant `count(x) ≡ B(x) + p(x)` live,
+`≡ B(x) + 1` dead/suspended, summed at the surface with
+`−r ≡ r (mod 2)` absorbing probe-bullet survival. (Position-blind;
+lps recirculate tape→log→tape, and the ledger is indifferent.)
+
+**Lemma B (coloring).** `t ≡ (|pos′| − |pos|) + 1 + w(l)` — the
+depth term is real (`λ1` probed from its body surfaces at the root
+in one step with `w = 1`).
+
+**Theorem.** `w(l) ≡ k + b + |pos′| − |pos| (mod 2)`. Deployed
+specializations launch and surface at the same position, so
+`w(l) ≡ k + b`: the boolean protocol (k = 2) gives
+**`w(l) ≡ exit slot`**; the haltI sector gives `w ≡ 1`.
+
+**Corollary (kernel transfer).** A fire-free, VB-free, mark-free
+probe segment is literally a pure λIAM run of the argument (no
+`var` can cross the log's γ without capturing it), so `w ≡ slot`
+transfers to the kernel. Each hypothesis is load-bearing and each
+failure mode is a named mechanism: interior fires (the defect
+law), VB pattern births (one-step-one-individual breaks — why gate
+routing is the parity escape), mark capture (segment closure
+breaks — why `w(α) = 0` decouples weight from step count).
+Mark-free geometric readback of classical data therefore has odd
+branch offset — **intrinsic decoherence; coherent routing is
+exactly gate-mediated**.
+
+**Mechanization.** The ledger invariant is asserted after every
+step of every run in lockstep conformance with the uninstrumented
+stepper. Exhaustive: all closed pure terms ≤ size 11 (41,272),
+k ∈ {1,2,3} probes — 55,727 surfacings at ≤10, 14,452 at the
+current sweep tier, zero failures. Battery cross-check: zero
+mark-free arrivals violate `w ≡ slot`; marked arrivals split both
+ways as virtual ancestry predicts.
+
+### 7.4 Range disjointness (on WF∧W7, corrected statement)
+
+For two certified-fire sources at one boundary:
+
+```text
+different retained spectator (pos, log, T, incoming KS)
+    ⇒ disjoint targets (targets embed all of it verbatim);
+same spectator, same slot
+    ⇒ the SAME source (W7: the fibre is a function; state identity);
+same spectator, opposite slots
+    ⇒ identical target pair — requires equal decode bundles, which
+      is admission condition (e) — carrying the two H rows:
+      orthogonal columns (computed inner product 0). This case IS
+      the interference mechanism, not a defect.
+```
+
+Mechanized for real: the checker collects reachable sources with
+full state, constructs their fire targets via the step function,
+compares decode bundles cross-slot, and computes column inner
+products. Zero violations over every certified graph. Two audit
+countermodels are permanent regressions here: the extra-frame
+collision (W7-excluded AND target-disjoint — the popped frame
+leaves its record) and the doctored bundle-divergent fibre
+(rejected by condition (e)).
+
+### 7.5 What is NOT claimed (the alias gap)
+
+No injectivity theorem for logged-position instance keys is
+claimed or assumed. If two dynamic copies alias one `(g, i)`:
+divergent selections between bit-carrying representations are
+typed (`frame-conflict`); cross-class encounters are typed
+(`key-alias`); dead-key fresh calls are typed (`refire`). What
+remains open: an **alias-tolerant local transition theorem** —
+that agreeing-bit aliases cannot silently merge histories that
+should stay orthogonal. λIAM logged-position uniqueness (which
+would close this outright) is a **conjecture**; until one of the
+two is proven, the soundness claims are conditional on it, stated
+as such, with every *detectable* manifestation typed.
+
+## 8. The typed fragment
+
+The judgment (`typecheck.py`): programs have the shell form
+`(λh.λt. body) h t` with shell arguments syntactically exactly
+`Gate('h')` then `Gate('t')` and **no gate literal inside the
+body**; the shell binders are SIGNATURE bindings —
+`h, t : ∀a. (a→a→a) → (a→a→a)` instantiated fresh at every
+occurrence (rank-2 with respect to the shell); the body is
+inferred by first-order unification with occurrence-polymorphic
+signature constants (no lets, no generalization); the result type
+is free (haltI-sector programs are function-typed). **h-only**
+additionally requires no occurrence resolve to the `t` binder.
+
+Fragment table (18-program suite): **15 typable h-only**. Outside:
+`dup` (self-application — deliberately, the untyped copy
+regression), `q` (E = λz.Iz vs N branch types ununifiable — the
+wire imbalance `qprime` was built to repair; `qprime` types
+clean), `dupcall` (NOT′/EP ununifiable). All escapes — `h h`,
+gate literals in bodies, swapped or doubled shell arguments —
+rejected.
+
+## 9. The claim
+
+Over programs that are (i) typable h-only under the signature
+judgment and (ii) whose canonical pipeline reports
+`semantic_coverage`: **the kernel is total and Gram-clean (U an
+isometry on the reachable basis), certified erasure is transparent
+(fibre-proven, W7-coherent, disjointness mechanized), and every
+failure mode is typed and visible — never silent.**
+Marginal-correctness against ideal quantum semantics is
+established per-program against hand-computed physics for the
+eighteen (independently recomputed by audit #1 for the
+interleaving set); the *general* agreement theorem is explicitly
+the compilation theorem's obligation (STATUS docket), not claimed
+here. The claim is conditional on the alias gap (§7.5), stated as
+such.
+
+Standing fences, all typed: literal gate application (untypable),
+the `t` gate (ℤ[ω] reserved), outputs beyond {0̂, 1̂, I} (readback
+controller's job), and every guard in §3.
+
+**The PASS re-claim is gated on fresh-context independent audit
+#2; the verdict will be registered here.**
+
+## 10. Verification state
+
+Eighteen-program suite (twelve sectors + the audit witnesses
+`buried`/`palpha`/`dupcall` + stressors `weave`/`hweave`/`qq`):
+
+| program | basis | dynamics | note |
+|---|---|---|---|
+| HH | 82 | 0̂: 1 | earned coherence (inner cert + decode) |
+| HNH | 104 | 0̂: 1 | certificate load-bearing (plain: ½/½) |
+| negative | 83 | I: 1 | haltI sector; recall regression |
+| selector | 106 | ½ / ½ | |
+| lone | 53 | ½ / ½ | |
+| pstar | 242 | ½ / ½, sup 4 | replay regression |
+| 3coin | 180 | ½ / ½, sup 4 | |
+| q | 218 | ½ / ½, sup 4 | untyped (battery-only); time offset 35 |
+| qprime | 246 | ½ / ½, sup 4 | q's typed repair; offset 7 |
+| q2 | 115 | ½ / ½, sup 4 | offset 3 |
+| dup | 90 | ¼ / ¼ / I ½ | untyped copy-discrimination regression |
+| Ccoll | 143 | ½ / ½ | C-collapse class (decoheres, correctly) |
+| buried | 432 | ½ / ½, sup 4 | audit-1 witness, healed (replay record) |
+| weave | 290 | ½ / ½, sup 4 | interleaving stressor |
+| hweave | 225 | ½ / ½, sup 4 | coherence across an interleaving |
+| qq | 2,192 | ½ / ½, sup 8 | Q in Q, double-crossed re-seeks |
+| palpha | 474 | ¼ / ¾, sup 3 | audit-2 witness: cert refused, physics via fallback |
+| dupcall | 632 | typed err ½ + ¼/¼ | untyped; refire positive control |
+
+All: zero stuck / non-unit / non-orthogonal columns; guards silent
+except `dupcall` (expected). `discover_total` == frozen CERTS on
+all 18; `h(Ω)` → None. Negative controls: pstar × wrong
+certificate reaches `pop-err`; dupcall × v1.7-era certificate
+reaches `refire`, all-err. WF/W7/W8 sweeps + disjointness: zero
+violations; three permanent collision regressions. Conservation:
+zero failures. Polarity/terminal chains/gauge: zero violations,
+orbit exact. Audit #1's independent reproducer, rerun: all probes
+clean or typed; fuzz 250/250 no violation (66 conservatively
+refused). Basis counts vs v1.2 reference: `negative` 103→83,
+`selector` 173→106, `pstar` 458→242 — v1.7-era, real, owned
+(canonical RS sorting + replay-arm restructure merge order-variant
+states); marginals and supports never moved. All measurements
+seconds-scale on the M5 Max.
+
+## 11. Chronicle
+
+Full narratives: `docs/ledger/2026-08.md` (and 2026-07); complete
+superseded registers: this file's git history (through commit
+`ed85767`).
+
+| version | one line | verdict that shaped it |
+|---|---|---|
+| v1.0–v1.2 | three-program kernel; review killed store-shaped replay; inert replay stack | Codex review: transparency, not inertness |
+| v1.3 | instance-indexed tickets/frames, replay, certified pop, time register | review registered |
+| v1.4 | polarity coloring closed form, canonical certificates, conservation conjecture | C-collapse countermodel |
+| v1.5 | encoded fire: conservative decode default, certified erasure | ratified amendment |
+| v1.6 | conservation theorem proved + mechanized; gauge pinned; discover_total | fresh review: math CONFIRMED, scope FAILED (Q) |
+| v1.7 | the replay record (idempotent recall, deep keyed replay); WF subtype; cargo conditions | **fresh audit #1: FAIL** (WF collision, Pα, alias gap, honesty) |
+| v1.8 | decode records + refire guard; self-validating admission; W7; typed fragment | working review: two structural holes |
+| v1.9 | KD bundles + condition (e); key-alias guard + W8; real disjointness checker; syntactic fragment boundary; docs current-only | **fresh audit #2: pending** |
+
+## 12. Appendix — HH step-indexed trace
 
 Notation: `b` = bullet, `L(path|n)` = logged position (slice length
 n), `gh/mh` = `γ_h`/`μ_h`, `Ahb′` = `A_h(b′)`, `ahb′` = `α_h(b′)`,
@@ -451,1344 +532,3 @@ t= 49 halt     1      Halt(0̂, residue, 0)     [separate U step]
 t= 50 tick     1      Halt(0̂, residue, 1) …
       Mass 1 on 0̂, amplitude 2/√2² = 1 exactly.
 ```
-
-The H–NOT–H and negative-witness traces (63 and 59 steps) follow the
-same notation and are mechanically reproducible from the table; their
-checkpoints (fires, anshead/vvar windows, recall events in the
-negative witness, terminal entries) are as reported in §5.
-
-## 9. v1 review verdict (registered)
-
-**FAIL for kernel v1; the token-machine route is not implicated.**
-The reviewer reimplemented §3 independently (adding the scratch
-model's unstated `recall`-before-`call` priority) and reproduced all
-five §5 results exactly. What holds, independently verified: HH
-cancellation at the outer fire; H–NOT′–H step balance with no
-padding (the slot-bullet-consumed-by-classifier derivation
-confirmed); the negative witness's orthogonality; the
-gate-application `+1` bullet count through one- and two-hop identity
-plumbing.
-
-### 9.1 The countermodel
-
-`p★ = λh.λt. ((((h 0̂) h) h) 0̂)`: the first coin selects between
-two `h` occurrences; the selected gate is freshly applied to `0̂`,
-creating nested same-kind answer tickets. `recall` maps, for
-identical retained `L, T`,
-
-```text
-C₀ = (g, ↓, L, •·α_h(0)·T)      C₁ = (g, ↓, L, •·•·α_h(1)·T)
-```
-
-to the identical `(g, ↑, L, •·•·•·T)`. Both are reachable in `p★`
-at global step 89 with amplitude `1/(2√2)` each: mass 1/4 → 1/2 per
-colliding pair, norm 1 → 3/2 — reproduced against our evolver
-bit-exactly. A second mandated regression,
-`λh.λt. ((h 0̂) (h 0̂) (h 0̂))`, conserves norm on the aggregated
-run but its structural Gram exposes the same collision across time
-slices (2 non-orthogonal column pairs, reproduced). Both programs
-are now mandatory regressions for any successor table.
-
-### 9.2 The structural diagnosis
-
-Re-entry determinacy is **false**. The literal-boolean analogy
-omitted the load-bearing part: literal `0̂`/`1̂` replay through
-*distinct code positions*, and position retains the discriminator
-through the replay. The virtual construction parks both answers at
-the same gate leaf and then erases the only remaining discriminator
-— classical irreversible erasure, not token transport. Two
-secondary breaks: the `α` tag (gate kind, bit) cannot identify
-which dynamic invocation owns a ticket, so same-kind nested
-invocations alias; and `call`/`recall` source domains overlap
-(every `recall` source is a `call` source), resolved only by
-implementation priority — the formal table needs structural
-disjointness.
-
-### 9.3 Gram-methodology gaps (for the general theorem)
-
-The five-program enumeration is a regression battery, not the
-isometry theorem. A general verifier needs: structural source
-disjointness; pairwise columns across every time slice's reachable
-union; graph reachability before amplitude aggregation; arbitrary
-nested exponential contexts and same-kind instances; `h`/`t`
-cross-fibre and δ/non-δ range checks; the typed `RunDone → Halt`
-entry checked mechanically; general ring amplitudes (the scratch
-`(m, k)` representation cannot express `1 + 1/√2`); whole-term
-identity in the sector coordinate.
-
-### 9.4 Repair directions (unadjudicated)
-
-`recall` cannot consume `α_g(b′)` into a common classical target.
-Candidate shapes from the review: a dynamically instance-indexed
-replay ticket (not merely gate kind + bit); a partial-permutation
-replay retaining enough to reconstruct `b′`; structural separation
-of fresh call from replay; erasure only where independent retained
-state reconstructs the discriminator, or inside an actual unitary
-block. A dedicated replay frame `R_g(instance, b′)` restores local
-injectivity, but carrying it forever suppresses wanted interference:
-**reversible ticket cleaning is now the central design problem** —
-the same "coherence is earned" economy, now at the level of the
-machine's own bookkeeping rather than user code.
-
-### 9.5 The v1.2 repair (inert replay stack)
-
-`recall` no longer erases its discriminator: the state gains a
-transport-inert replay stack `RS` that only `recall` pushes
-(`R_g(b′)`), no transport or classifier rule reads, and terminal
-entry freezes into the garbage factor. The countermodel pairs now
-map to targets differing in `RS` — locally injective, and both
-mandated regressions pass (norm 1; structural Gram clean, `p★`
-basis 458). The design argument for *inert rather than cleaned*:
-a re-interrogated coin has been consumed non-injectively by its
-selection (in `p★` both branches reduce to the same term
-post-selection, so merging them would violate norm — mandatory
-decoherence is correctness), and no program has been found where a
-recalled instance's branches may legitimately merge later; the
-coherent witnesses never recall at all. If such a program exists,
-the frame needs reversible cleaning and the design reopens — that
-question rides to the re-review. Fork (A)'s minimality program
-applies to R-frames verbatim: each is charged conservatively, and
-any later transparency lemma that proves one recoverable removes it
-and enlarges the raw-interfering class.
-
-### 9.6 The v1.2 re-review: transparency, not inertness (registered)
-
-**Verdict: FAIL for v1.2 as the gate; the repair itself is locally
-real** (independently reproduced: push injectivity fixes the p★
-pairs; all seven rows verified). Two deliveries:
-
-**The mandatory-decoherence claim is refuted.** With `E = λz. I z`
-and `N = λz. z 1̂ 0̂`,
-
-```text
-q = λh.λt. h ((((h 0̂) E) N) 0̂)
-```
-
-selects between identity and NOT, so `(((b E) N) 0̂) = b` on the
-boolean basis — an *injective* transport of the coin through
-selection; the circuit is H;id;H and physics demands the branches
-re-interfere at the outer gate (mass 1 on 0̂). The blanket premise
-"a recalled coin has been consumed non-injectively" is false. The
-correct criterion (review-supplied, adopted): **`R_g(b)` is
-transparent at a reachable boundary iff `b` is a single-valued
-function of the non-R core there** — frames are mandatory exactly
-on predecessor fibres where the branch images overlap (p★), and
-cleanable where the live core still carries the bit (q). Cleanup
-belongs *inside the δ block* with provenance matching:
-
-```text
-|g, b, κ, R_i(b)·RS⟩ ↦ Σ_b′ Q_g[b′,b] |land, b′, J(κ), RS⟩
-```
-
-which requires dynamically instance-indexed frames — `(kind, bit)`
-cannot name its owning invocation. Inert RS stands as the sound
-conservative first point of the transparency program, not as final
-semantics; permanent freezing is selective full logging.
-
-**A more basic totality failure.** On the actual v1.2 table, `q`
-never reaches the RS question: its structural graph (335 states)
-has three stuck states — all with an `α` ticket at the log head
-inside the selected function's plumbing (the uncovered
-recall-under-deeper-γ case) — the live run leaks norm before t=82,
-and both outer arrivals misclassify as slot 0. Verified bit-exactly
-against our evolver. The α/γ transport layer does not yet carry a
-recalled coin through distinct reversible selected functions.
-
-**The next gate** (review-mandated): `q` joins the mandatory
-regressions; repair α/γ transport to totality on q's graph;
-correct same-time slot-0/slot-1 outer arrivals; instance-indexed
-replay frames; a first proved transparency/pop rule; and `q`
-finishing at mass 1 on `0̂` with no residual replay discriminator.
-Also open, restated: general `ℤ[1/√2]` amplitudes in the verifier
-(`(m,k)` cannot express `1 + 1/√2`), H/T cross-fibres, effect-free
-conservativity, general readback.
-
-## 10. v1.3 — replay, instance frames, the pop rule, and the time register
-
-Scratch artifacts: `kernel.py` (v1.3 evolver), `kernel_v12.py`
-(archived v1.2), `suite.py` (the ten-program battery), `q_diag.py`
-(the diagnosis run). All scratchpad-only per the no-code gate.
-
-### 10.1 The diagnosis: the ticket is single-use, replay is not
-
-The full 81-step trajectory to `q`'s first stuck state, read against
-the literal ground truth (`q` with the coin replaced by literal
-`0̂`/`1̂` — both literal variants run total, 93/126 basis states,
-zero stuck), gives a clean taxonomy of coin visits:
-
-- **Visit 1** — fresh selection descent (`•2 •2 var (•4)`): the
-  literal consumes the two λ-crossings and emits the selection
-  variable's logged position. Virtualized by fire + VB + `vvar`
-  (the ticket `α` *is* that logged position).
-- **Visit 2** — ticket transit (`•2 bt2 •4 •4`): the restored lp
-  re-enters and jumps through the coin. Virtualized by `recall`
-  (v1.1), which consumes the ticket.
-- **Visit 3** — a SECOND fresh selection descent, exactly the
-  visit-1 episode again: the literal machine re-derives the
-  selection from the static term. The virtual coin has no term to
-  re-derive from, and the ticket is gone. v1.2 misclassified this
-  as a fresh call, re-fired the coin (extra fire measured at t=70),
-  and the mismatched ticket jammed in the selected function's
-  plumbing — all three stuck states are downstream corpses of that
-  one wrong classification.
-
-The repair insight: after the first recall, the branch's selection
-memory is exactly the replay frame in RS. **The replay stack is not
-just an injectivity dump; it is the replay memory, read
-nondestructively.**
-
-### 10.2 The v1.3 rules
-
-**Instance identity.** The dynamic instance of a gate invocation is
-the logged position of the invoking occurrence — in λIAM lineage, a
-logged position is precisely the machine name of a dynamic subterm
-copy. At every gate-leaf entry the invoking occurrence's lp sits at
-the log head (arg-entry is structurally forced), so the identity is
-already in hand: `i := log[0]`. Tickets and frames carry it:
-`α_{g,i}(b)`, `R_{g,i}(b)`.
-
-**recall (v1.3).** Guard now requires the ticket's instance to
-equal the current log-head lp — the review's "semantic ticket
-ownership" obligation, discharged structurally. A same-gate
-foreign-instance ticket is a typed error. Pushes `R_{g,i}(b)`.
-
-**replay (new).** At a gate leaf, `↓`, with a leading bullet block
-of length ≥ 3, no same-instance ticket on the tape, and RS head
-`R_{g,i}(b′)` with `i` = the current log-head lp:
-
-```text
-(g, ↓, i·L, •³·T, R_{g,i}(b′)·RS) → (g, ↑, i·L, •^(b′+1)·α_{g,i}(b′)·T, R_{g,i}(b′)·RS)
-```
-
-Derived from the literal visit-3 episode: consume the two selection
-bullets plus one gate-application compensation, emit a fresh
-ticket; the frame is read, not popped — the fresh ticket may be
-recalled again later, pushing another frame (measured: `q`'s
-branches accumulate 2–3 same-bit frames). A leading block < 3 with
-a same-instance frame (an under-applied re-seek) is a typed error,
-out of v1.3 scope.
-
-**call.** Fires only when neither a same-instance ticket nor a
-same-instance frame is present. A different instance's frame at the
-RS head does not block a fresh call (p★'s second invocation).
-Frame reading is head-only; interleaved re-seeks of distinct
-recalled instances are out of scope (typed error).
-
-**pop (transparency cleanup).** `step` takes a per-program
-certificate: a set of fire boundaries. At a certified boundary the
-fire strips every frame whose bit equals the arrival slot, in the
-same unitary step; a leftover mismatched frame falsifies the
-certificate and becomes a typed error (`pop-err`), never a silent
-reinterpretation. Soundness on the reachable span — injectivity of
-fire-with-pop against every other source — is exactly what the
-structural Gram verifies; the certificate's discovery is manual in
-v1.3, its *verification* is the machine checker. This implements
-§9.6's provenance-matched cleanup schema with the frame's bit as
-the recovered function of the live core.
-
-### 10.3 Results
-
-The ten-program battery (`suite.py`), structural Gram
-(amplitude-blind BFS, cancelled targets included, ticks truncated
-at depth 2) plus dynamic evolution with per-step exact norm
-assertion:
-
-```text
-program    basis  stuck  defects  dynamic                    residue frames
-HH            82      0        0  halt0 mass 1               none
-H–NOT′–H     104      0        0  halt0 mass 1               none
-negative      83      0        0  Halt(I) 1/2+1/2            R(0)/R(1) inert
-selector     106      0        0  1/2, 1/2                   R(0)/R(1) inert
-lone h        53      0        0  1/2, 1/2                   none
-p★           242      0        0  1/2, 1/2, support 4        R(0)/R(1) inert
-3-coin       180      0        0  1/2, 1/2, support 4        R(0)/R(1) inert
-q  (cert)    218      0        0  1/2, 1/2, support 4        NONE — popped
-q′ (cert)    246      0        0  1/2, 1/2, support 4        NONE — popped
-q2 (cert)    115      0        0  1/2, 1/2, support 4        NONE — popped
-```
-
-- **Totality restored**: `q` runs total (0 stuck of 256 basis
-  states uncertified, 218 certified); slot-0/slot-1 outer arrivals
-  are correct per branch — the injective transport works.
-- **v1.2 basis drift explained and owned**: negative 103→83,
-  selector 173→106, p★ 458→242. The v1.2 counts included
-  wrong-semantics double-call subgraphs (visit-3 re-seeks that
-  fresh-called and re-fired). Measured directly on p★: v1.2 has
-  five dynamic fire events (t = 18, 49, 51, 63, 65), v1.3 has
-  three (18, 49, 51); v1.2's reported support 8 was
-  transport-bug-inflated — the correct support is 4 with marginals
-  unchanged. HH / H–NOT′–H / lone / 3-coin are bit-identical to
-  v1.2 (no re-seek anywhere in their graphs).
-- **The pop is sound and does real work**: certified `q`-family
-  runs halt with EMPTY replay stacks — garbage-free halting, the
-  bounded-garbage factorization the architecture requires — and
-  the Gram stays zero-defect with the pop enabled. p★'s frames
-  remain inert (mandatory, per the transparency criterion).
-- **Negative control**: certifying p★'s boundaries (unsound — its
-  frames are mandatory) yields `err` mass 1/2 via `pop-err`, with
-  zero Gram defects and no norm loss: an unsound certificate is
-  caught as a typed error, not silent unitarity damage.
-
-### 10.4 The time register (new finding)
-
-With frames cleaned, `q`'s branches still do not interfere: they
-arrive at the outer boundary at different global steps, and the
-tick register makes any offset permanent decoherence. Arrival
-telemetry (branch-0 vs branch-1):
-
-```text
-q   (Codex's, E = λz. I z)         t = 84  vs 119   offset 35
-q′  (wire-balanced, E′ = λz. z 0̂ 1̂) t = 112 vs 119   offset 7
-q2  (minimal, h ((h 0̂) 0̂ 1̂))       t = 48  vs 51    offset 3
-```
-
-Wire-balancing (E′ position-isomorphic to N = λz. z 1̂ 0̂,
-differing only at two Var leaves — the NOT′ index-swap trick lifted
-one level) removes the interior asymmetry (35 → 7); the residue is
-the slot routing itself.
-
-**Mechanism — pattern vs step.** A slot bullet that survives to the
-boundary as part of the arrival pattern (`•·l·μ` vs `l·μ`) costs no
-time — this is why HH and H–NOT′–H arrive branch-synchronous and
-cancel exactly. A slot bullet consumed by a `•3` crossing an
-f-node of the selection spine is a step. Geometric selection
-step-encodes; the transported bit itself skews the clock.
-
-**Odd-offset invariance (measured).** Every program-level padding
-tried shifts branch-relative time by an EVEN amount: I-wraps +8
-per wrap (k = 0..4 measured), NOT′-wrap +16, η-expansion +16,
-pre-decided literal-selection pads +12/+16; a pad inside the
-unselected function shifts nothing (traversal-sensitivity
-control). Reachable offsets for q′ sit in −7 + 4ℤ — never 0. Token
-round trips cost even; the odd base offset traces to the odd
-teleport savings of the `0̂` answer episode vs `1̂` (var jumps
-distance 2 in one step). Conjecture, to be adjudicated: the
-branch-relative offset of any step-encoded selection is odd —
-mass-1 interference is unreachable by program padding under this
-timing.
-
-**Consequences.** (1) A machine-level uniform retiming cannot fix
-this: how many slot bullets are consumed as steps is contextual
-(depends where the ticket surfaces), so no per-rule charge
-equalizes all programs — and the classical substrate's timing is
-pinned. (2) Time-balance is therefore a *compiler* obligation in
-this machine class, and if odd-offset invariance holds, coherent
-compilation must route data flow through pattern-encoded
-(index/wire) transport only — which the H–NOT′–H witness already
-inhabits — treating geometric selection as a decohering (classical)
-primitive. (3) Review-gate item 6 splits: "no residual replay
-discriminator" HOLDS (the pop delivers it); "mass 1 on 0̂" is
-blocked by an independent, now-measured channel that the
-transparency criterion must incorporate — the branch bit is
-single-valued on the non-R core *per time slice*, and the time
-slice itself carries the bit. The transparency theorem needs time
-in the core.
-
-### 10.5 Scope and standing obligations
-
-Head-only frame reading (interleaved multi-instance re-seeks →
-typed error, no reachable instance in the battery); under-applied
-re-seeks (leading block < 3) → typed error; certificate discovery
-manual (verification mechanical); γ/μ marks remain kind-only
-(stack-paired by nesting discipline — Gram-policed per program;
-instance-indexing them is mechanical if a countermodel appears).
-Restated from §9: general ℤ[1/√2] amplitudes in the verifier, H/T
-cross-fibres, effect-free conservativity, general readback.
-
-### 10.6 The v1.3 review verdict (registered)
-
-Adversarial round (thread `qalc-token-machine`, fresh independent
-run, 2026-08-09): **FAIL as the formalization gate; PASS for the
-replay repair.** Every v1.3 number was independently reproduced —
-all basis counts, marginals, supports, the p★ fire events
-(confirming t = 63/65 were spurious and support 8 was
-bug-inflated), the q-family arrival telemetry, and the instance
-invariant (every downward gate-leaf entry in every graph has an
-ordinary lp at the log head; the TOP fallback never fires).
-
-**Parity: no odd pad found, and a theorem route supplied.** The
-review searched 156 closed identity-context pad variants (up to
-three nested applications of `I M`, `(λx.M) I`, `0̂ M I`, `1̂ I M`,
-`λz.M z`) around q′'s branch-0 function plus a branch-local
-coherent HH pad (`λz. h (h (E′ z))`, +48): every shift even, every
-offset odd, no stuck states. Composed geometric selections stay
-odd: id∘id Δ=9, NOT∘NOT Δ=1, id∘NOT Δ=7, NOT∘id Δ=1 — odd
-selections do not cancel. The proposed proof shape is a
-**port-polarity coloring**: give ports a bipartite polarity; each
-ordinary transition crosses one interaction edge and flips
-polarity; a closed pad entering and exiting through one interface
-has equal endpoint polarity, hence even cost; a geometric boolean
-route's two computational slots end at opposite polarity (the slot
-bullet crossed a real f-node via `•3`); pattern encoding is
-exceptional because the δ classifier consumes its slot bullet
-without a machine transition, quotienting the one-step difference —
-exactly why HH/H–NOT′–H synchronize. Status: odd-offset invariance
-HOLDS empirically; the even-pad lemma is a promising theorem; "the
-coherent fragment is exactly the pattern-encoded class" is NOT YET
-PROVED — it needs the row-by-row coloring over the full extended
-table, the compressed `replay` rule checked directly rather than
-via its literal expansion.
-
-**Blocker 1 — the pop is not the frozen clean δ fibre.** At a
-certified boundary the two logical inputs are
-`|0, R_i(0)·…, κ₀⟩` and `|1, R_i(1)·…, κ₁⟩`: the source spectator
-depends on `b`, so this is not `U|q,b,κ⟩ = Σ Q[b′,b]|b′,J(κ)⟩`
-with a common κ. The correct object is an **encoded fibre**: an
-isometry `E_m|b,κ⟩ = |b, F_m(b,κ), κ⟩` with certified reachable
-range and `U·E_m|b,κ⟩ = Σ_b′ Q[b′,b]|b′, J_m(κ)⟩`. Either the
-architecture's clean-fibre contract is amended to admit encoded
-fibres, or replay frames become a formally decoded logical
-coordinate outside κ.
-
-**Blocker 2 — Gram/norm is not certificate soundness.** Our own
-negative control is the countermodel: the wrong p★ certificate
-passes the structural Gram and norm perfectly while sending mass
-1/2 to `pop-err`. Certificate validity must separately require:
-zero structurally reachable `pop-err`; the complete RS stack being
-the certified function `F_m(b,κ)`; no framed/frameless predecessor
-collision after erasure; and preservation of the intended
-non-error semantics. Certificates must also become **canonical**:
-a frozen function of the immutable program sector (a proved
-stack-shape predicate, not an externally supplied fire-position
-set) — otherwise the same program denotes different dynamics under
-different certificates and `U` is not well-defined.
-
-**Blocker 3 — buried same-instance frames (FIXED in-session).**
-The registered scope text claimed interleaved re-seeks raise a
-typed error; the code actually fell through to fresh `call` when a
-same-instance frame sat under another instance's frame — the v1.2
-double-fire class waiting to recur. Corrected immediately: a
-buried same-instance frame is now the typed error `buried-frame`,
-and the silent TOP instance fallback is removed (`no-instance`
-typed error). The full battery is bit-identical after both
-corrections (neither state is reachable in it), and the review's
-copy-discrimination probe `(λx. x x) (h 0̂)` — two dynamic
-instances of one argument occurrence, distinguished only by log
-slices — joins the battery (`dup`: 90 basis states, total,
-zero-defect, sectors halt0 1/4 / halt1 1/4 / haltI 1/2).
-
-**Ratified**: instance = logged position is "exactly the λIAM
-structure intended to name exponential copies"; owed as proofs:
-every valid gate-leaf entry has an lp at the log head, and equal
-lps name the same dynamic copy.
-
-**The v1.4 gate**: (1) formalize the port-polarity coloring and
-check every rule row; (2) the encoded-fibre theorem or architecture
-amendment; (3) certificate validity = zero reachable `pop-err` plus
-the RS-function property, not Gram alone; (4) certificates as
-proved stack-shape predicates; (5) the canonical
-program→certificate relation; (6) buried-frame handling proved or
-ruled out (typed error now, resolution owed); (7) the two
-logged-position invariants; (8) exact verification beyond
-single-monomial `(m,k)` amplitudes before general h-only claims.
-
-## 11. v1.4 — the polarity theorem, canonical certificates, and the conservation conjecture
-
-Scratch artifacts: `polarity.py` (the coloring checker), `certify.py`
-(canonical certificate discovery + validity), `kernel.py`/`suite.py`
-upgraded to exact `ℚ[√2]` amplitudes. All scratchpad-only.
-
-### 11.1 The coloring, with its closed form (gate item 1)
-
-Define, on Run states of the full v1.3 table:
-
-```text
-φ(s) = depth(pos) + [dir = ↑] + Σ w(tape) + Σ w(log) + Σ w(RS) + k_VB   (mod 2)
-
-w(•) = w(γ) = w(μ) = w(α) = w(ρ) = w(R-frame) = 0
-w(A) = 1
-w(l) for l = (occ, slice) = (depth(occ) − depth(binder)) + Σ w(slice)
-```
-
-— a logged position carries its own binder–occurrence tree distance
-plus, recursively, the weight of everything captured in its slice.
-
-**Theorem (uniform flip).** Every rule of the table with Run source
-and Run target flips φ — the eight classical rules, `call`,
-`recall`, `replay`, `anshead`, `vb2`, `vvar`, `bt1g` — EXCEPT
-`fire`, whose defect is exactly `1 − w(l)` where `l` is the
-which-path logged position erased at the boundary. Terminal entries
-chain linearly off unique predecessors (complete residues) and flip
-by assignment.
-
-*Proof* is per-row algebra, two lines each; the load-bearing case is
-`var`/`bt2`, where the teleport's distance is absorbed by the lp
-carrying that distance as weight (`Δφ = w(lp) − Σ slice − d + 1 =
-1`), and the constraint propagation fixes the remaining weights
-(`call` forces `w(γ)+w(μ) ≡ 0`; `recall`/`replay` force
-`w(R) ≡ w(α) ≡ 0`; `anshead`+`vvar` force `w(γ)+w(A) ≡ 1`).
-Mechanically verified: every Run→Run edge of all eleven reachable
-graphs — 1,518 edges — has the predicted Δφ, zero violations, and
-every fire edge's measured defect equals `1 − w(l)`.
-
-### 11.2 The branch-offset theorem (the parity result)
-
-For two branches created at one fire and meeting at a common later
-boundary with no interior fires:
-
-```text
-len₀ − len₁ ≡ w(l₀) − w(l₁)   (mod 2)
-```
-
-where `l_b` is branch b's erased arrival lp. Verified: q/q′/q2
-offsets 35/7/3, all with `w(l₀)=0, w(l₁)=1` — parity 1 ✓.
-
-**Corollary (even pads — Codex's search, now a theorem).** A
-gate-free pad adds no fires and leaves both endpoints' φ unchanged,
-so it shifts branch-relative time by an even amount. The measured
-+8/+12/+16 menu and the review's 156-variant all-even search are
-instances; an odd gate-free pad that preserves the arrival lps
-cannot exist.
-
-**Refined coherence condition.** Synchrony requires *equal* erased
-weights, not zero: H–NOT′–H's fires show `w = 1` defects on BOTH
-branches (its arrival lps are NOT′'s x/y occurrences, distances
-3 and 3 — the index swap moves occurrence depth in step with binder
-depth). The pattern class is the equal-weight class.
-
-### 11.3 The weight-conservation conjecture (what remains of "the coherent fragment")
-
-Answer-term variants that try to re-weight a literal boolean's
-readback all fail — measured: `q2` (0̂,1̂) offset 3; (λλ.I x, 1̂)
-offset 1; (0̂, λλ.I y) offset 7; both wrapped, offset 3 — every
-variant keeps `(w₀, w₁) = (0, 1)` up to swap. The mechanism is the
-slice: an `a`-step in the readback path adds `1 + w(captured lp)`
-to the surfacing weight, and in gate-free plumbing the captured
-lp's weight telescopes so that `w ≡ exit slot` is conserved.
-H–NOT′–H evades conservation because its slice captures the coin's
-*virtual ticket* (`w(α) = 0` by fiat) — gate-mediated routing is
-the parity-free transport.
-
-**Conjecture (conservation).** Along gate-free readback of a
-boolean value, the surfacing lp's weight is congruent to the exit
-slot. Hence geometric selection of *classical data* always has odd
-offset (decoheres intrinsically), and the coherent fragment is
-exactly gate-mediated (pattern) routing. The proof target is a
-telescoping lemma over the `a`-step capture algebra; the q3 variant
-table is its evidence base.
-
-### 11.4 Canonical certificates (gate items 3, 4, 5)
-
-`discover(term)`: iterate to fixpoint — BFS under the current
-certificate; admit a fire boundary iff over its reachable arrivals
-(a) every frame bit equals the arrival slot, (b) RS is
-single-valued per fire-target fibre `(path, log, slot, l, T)`, and
-(c) some arrival carries a frame. Deterministic and terminating:
-the certificate is a **frozen function of the program sector**, so
-U is well-defined per program (item 5). The implied stack-shape
-predicate — every frame bit equals the arrival slot — is checked,
-not assumed (item 4).
-
-`validate(term, cert)` — the item-3 criterion, strictly beyond
-Gram: zero structurally reachable `pop-err`, plus the RS-function
-property on the certified graph, plus Gram totality/orthogonality.
-
-Results: discovery reproduces the hand certificates on **all
-eleven programs** (q-family certified at exactly the outer
-boundary; HH/HNH/negative/selector/lone/p★/3-coin/dup refused —
-their frames, where present, never transit a later fire and stay
-inert terminal garbage). The negative control now FAILS validation
-properly: p★ under the wrong certificate reports
-`pop_err_reachable = 1` and `rs_function = False` while Gram shows
-zero defects — the criterion separates exactly where the review
-demanded.
-
-### 11.5 Probes and fences (gate items 6, 7)
-
-`h` applied to a gate (`h t`, `h h`): total, resolves as a typed
-species error — the probe meets a non-boolean. Nested coin-in-coin
-(`h ((h 0̂) ((h 0̂) 0̂ 1̂) 1̂)`): 263 states, total, Gram-clean,
-correct marginals, and correctly refused a certificate.
-`buried-frame` and `no-instance` remain **unreached in every
-program constructed to date**; both corners are typed errors, not
-silent behavior. The general proofs (lp-at-log-head; equal lps =
-same copy; buried frames unreachable or handled) remain owed.
-
-### 11.6 Exact amplitudes (gate item 8)
-
-The evolver now carries amplitudes as exact pairs
-`(p, q) ∈ ℚ[√2]`, `p + q√2` — no monomial restriction; `1 + 1/√2`
-is representable. Norm assertions compare against `(1, 0)` exactly.
-The whole battery, the polarity check, and certificate discovery
-are bit-identical under the new ring.
-
-### 11.7 The encoded-fibre statement (gate item 2 — RATIFIED-WITH-EDITS, applied)
-
-Proposed amendment to the architecture's clean-δ-fibre guardrail:
-
-> A δ event may be realized on an **encoded domain**. Let
-> `E_m|b,κ⟩ = |b, G_m(b,κ), F_m(b,κ), κ⟩` adjoin the which-path
-> arrival position `l = G_m(b,κ)` and the replay frames
-> `RS = F_m(b,κ)`, where G and F are proved single-valued functions
-> of `(b, κ)` on the reachable span at boundary m — the certificate
-> conditions. Then the machine's fire-with-pop satisfies
-> `U·E_m|b,κ⟩ = Σ_b′ Q[b′,b] |b′, J_m(κ)⟩`: the clean-fibre law
-> holds after decoding, with landings and cross-fibre orthogonality
-> unchanged. `E_m` is an isometry because its adjoined coordinates
-> are functions of its arguments; certification is canonical by
-> §11.4.
-
-Note this covers not only the v1.3 frames but the arrival lp
-erasure the fire has performed since v1 — the original design was
-already an encoded fibre in this sense.
-
-**Ratified with edits** (thread `qalc-architecture`, 2026-08-09) and
-applied to architecture §7 in the reviewer's strengthened language.
-The edits beyond the draft: subsume the arrival-lp erasure (v1 is
-the `F_a`-trivial case) rather than split the law; a seven-item
-per-boundary exhibition obligation (canonical `(b,G,F,κ)`
-decomposition, coverage, unique decoding, single-valued `G`/`F` on
-the certified reachable *basis domain* extended linearly, the
-complete boolean pairing with the counterfactual column, `J_a`
-injectivity, the full range matrix); source-fibre disjointness
-`E_a†E_a′ = 0` in addition to landing orthogonality; "coherent
-decoding, not deletion" — the inverse reconstructs the coordinates
-through `E_a` after `Q_q†`, no copy reaches garbage, and the clause
-is explicitly not a license to erase deterministic histories around
-non-injective maps; and a computability discipline — certification
-must be total, terminating, sound over a proved over-approximation
-of arrivals (exact reachability is not decidable in general), free
-to reject valid certificates, with rejection selecting the
-conservative nontransparent transition so `U` is never undefined,
-and the certificate static metadata fixed at initialization. The
-scratch `discover`/`validate` satisfy the discipline on finite
-kernel graphs (BFS is exact there, a valid over-approximation);
-the strengthened validation checklist — `G`-function property,
-encoded-range coverage, unique decoder, boolean pairing, source
-disjointness, landing/non-δ disjointness — is registered as the
-checker's growth path.
-
-### 11.8 The v1.4 scorecard
-
-| Gate item | Status |
-|---|---|
-| 1 coloring | **discharged** (closed form + per-row proof + 1,518-edge mechanical check) — adversarial review owed |
-| 2 encoded fibre | **discharged** — ratified-with-edits and applied to architecture §7; strengthened validation checklist registered |
-| 3 cert validity beyond Gram | **discharged** (`validate`: pop-err reachability + RS-function; negative control now caught) |
-| 4 stack-shape predicate | **discharged** (checked predicate: frame bit = arrival slot) |
-| 5 canonical program→cert | **discharged** (`discover` fixpoint; HAND==AUTO ×11) |
-| 6 buried frames | typed fence + probes (unreached); general resolution owed |
-| 7 lp invariants | probes + battery evidence; general proofs owed |
-| 8 exact amplitudes | **discharged** (`ℚ[√2]` pairs; battery bit-identical) |
-
-New standing object: the **conservation conjecture** (§11.3) — the
-sharpened form of "the coherent fragment is the pattern class."
-
-## 12. The v1.4 review verdict and the v1.5 encoded fire (registered)
-
-The coloring review (thread `qalc-token-machine`, independent rerun,
-2026-08-09) returned **FAIL for the v1.4 transition table** with a
-fatal countermodel, while grading the coloring theorem itself
-PASS-WITH-CORRECTIONS (all 1,518 edges independently verified,
-including the compressed `replay` row directly).
-
-### 12.1 The C-collapse countermodel
-
-`C ≡ λb.λx.λy. b y y` maps both booleans to `1̂` non-injectively.
-On `p ≡ h (C (h 0̂))`, two reachable outer arrivals share slot 1
-with **different** which-path lps (`w = 1` and `0`); the v1-lineage
-fire erased the lp, mapping orthogonal sources onto identical
-columns — a reachable column collision (105-state graph, 1
-non-orthogonal pair; the dynamic run hid it only because the
-arrivals are one step apart). This was a defect of the fire since
-v1, outside the battery until the encoded-fibre lens found it.
-
-### 12.2 The v1.5 fire: conservative decode by default, certified erasure
-
-The fire now implements the ratified encoded-fibre amendment
-directly:
-
-- **Conservative (default)**: retain the decoded spectator `D(l)`
-  on a new inert spectator stack `ks`: a ticket whose bit matches
-  the slot decodes to `(gate, instance)` — the bit is redundant —
-  so HH's branches land at equal spectators and interfere free of
-  any certificate; anything else (real lp, mismatched ticket) is
-  retained whole, so same-slot arrivals with distinct which-path
-  data stay orthogonal. `w(D(l)) = w(l)` for retained lps, 0 for
-  decoded tickets — the conservative fire **flips φ uniformly**;
-  the parity defect now lives only at certified erasure.
-- **Certified**: erase `(l, RS)` entirely — sound iff the corrected
-  fibre condition holds: within the boundary, the RETAINED key
-  `(slot, T, log)` determines the ENTIRE erased tuple `(l, RS)`
-  (the review's correction: the old condition keyed by `l`, which
-  the fire erases — not a sound local theorem).
-
-Results (twelve programs — `Ccoll` joins the battery): all total,
-zero Gram defects, zero polarity violations, canonical certificates
-reproduce 12/12.
-
-```text
-HH        82   mass 1      free coherence (ticket pattern; no cert needed)
-HNH      104   mass 1      EARNED coherence: its outer boundary is
-                           certified (slot determines its real lps,
-                           w = 1 both) — the coherence bar is a
-                           certified-fibre phenomenon
-Ccoll    143   1/2, 1/2    the countermodel: certification refused at
-                           the collision boundary (same slot, distinct
-                           l); conservative fire keeps the sources
-                           orthogonal — Gram CLEAN, correct physics
-q-family                   unchanged (certified; time-decohered by the
-                           odd offset)
-p★, 3coin, negative, selector, lone, dup   unchanged
-```
-
-The theoretical upshot sharpens the coherence economy again:
-**pattern-ticket coherence is free; coherence through real plumbing
-is earned by exhibiting the encoded fibre** — the certificate is
-not an optimization, it is what makes HNH's interference lawful.
-
-### 12.3 Corrections to §11 claims (review-mandated)
-
-- **Weight uniqueness is gauge-only.** `w_c(γ_g)=w_c(μ_g)=c`,
-  `w_c(A_g)=1+c` passes all edges for either `c` (mechanically
-  confirmed by the reviewer); `ρ` is unconstrained by Run→Run rows.
-  The coloring is unique after pinning conventions
-  (`w(A)=1, w(ρ)=0`).
-- **General parity law with interior fires**:
-  `n₀ − n₁ ≡ w(l₀) − w(l₁) + Σ_{F∈branch₀} w(l_F) − Σ_{F∈branch₁}
-  w(l_F)` — interior gates supply parity corrections, so the
-  even-pad corollary is limited to fire-free plumbing, and gate
-  mediation is confirmed as the parity-escape route.
-- **Conservation conjecture refined**: the literal gate-free form is
-  FALSE (the countermodel's surfacing lp has `(slot, w) = (1, 0)` —
-  its slice contains an α). Viable statement: *along a closed,
-  fire-free readback whose surfacing lp has entirely ordinary,
-  mark-free ancestry, its weight equals its canonical boolean exit
-  slot.* Reviewer's exhaustive enumeration: all 10,180 closed pure
-  λ-terms of syntax size ≤ 10; 708 ordinary mark-free arrivals;
-  **zero** weight/slot mismatches. Proof target: the telescoping
-  enter/return pairing, with the selected variable of the final
-  Church boolean as the only unpaired segment (distance 2 vs 1).
-  And the classification claim weakens to necessity: coherent
-  routing ⊆ routing with virtual ancestry or interior-fire charge —
-  gate mediation is necessary, not sufficient (`Ccoll` is
-  gate-mediated and must stay orthogonal).
-- **Terminal chains**: to be checked mechanically (2-coloring the
-  terminal edges), not asserted from unique predecessors.
-- **`discover` totality**: the BFS implementation is not the final
-  canonical mechanism — raw reachability may diverge on untyped
-  programs, the cap raises instead of returning conservatively, and
-  the fixpoint bound is unproved. The final mechanism is a
-  terminating conservative static analysis defaulting to no-pop
-  (the amendment's computability discipline); the BFS version is
-  exact and valid on finite kernel graphs only. Consequence,
-  registered: all-program Ω objects for qALC cannot be defined
-  through semantic-BFS certificates.
-
-### 12.4 The standing gate (v1.5 → PASS)
-
-Fixed this round: the encoded fire (conservative + certified), the
-corrected fibre condition, `Ccoll` as a mandatory regression,
-canonical certificates refrozen (the discovery output is machine
-metadata). Still owed: the mark-free-ancestry conservation lemma;
-the mechanical terminal-chain check; the gauge-pinned uniqueness
-statement; the terminating conservative certificate analysis; the
-lp invariants; H/T cross-fibres; the readback controller.
-
-## 13. v1.6 — the conservation theorem and the PASS claim
-
-The round that discharges §12.4. Everything below is mechanically
-verified in the scratch battery (`conservation.py`, `polarity.py`,
-`certify.py`, `suite.py`); no engine code exists, per the §9 gate.
-
-### 13.1 The conservation theorem (the §11.3 conjecture, proved)
-
-The proof splits into a step-counting lemma that knows nothing
-about weights and the already-proven coloring that converts step
-parity into weight parity.
-
-**Lemma A (attribution ledger).** In a pure λIAM run from a
-k-probe start `(pos, D, L₀, •^k · base)` that surfaces at
-`(pos′, U, L₀, tape · base)` with the log restored and the base
-intact, the step count satisfies
-
-    t ≡ k + b + 1   (mod 2)
-
-where `b` is the total number of bullets on the surface tape (the
-surfacing lp may carry bullets both above and below it — see the
-inventory note). *Proof.* Every rule is the birth, death, or
-transport of exactly one tape/log **individual** — a bullet or a
-logged position: `b1`/`b4` birth a bullet, `b2`/`b3` kill one,
-`var` births an lp, `bt2` kills one, `arg`/`bt1` transport one.
-Slice capture (during `var`) and slice release (during `bt2`) cost
-nothing: cargo is suspended, not stepped. Give each individual `x`
-a ledger `count(x)` of the steps attributed to it, `B(x) = 1` iff
-step-born (0 for the k probe bullets), and a location parity
-`p(x)` (0 on the tape, 1 on the log, frozen under suspension —
-capture always takes log entries, release always restores them to
-the log, so suspension preserves `p = 1`). The invariant, by
-induction over the eight rules: `count(x) ≡ B(x) + p(x)` while
-live, and `count(x) ≡ B(x) + 1` once dead or suspended (deaths
-occur on the tape, `p = 0`, and add one step). Sum at the surface:
-`t = Σ count` ≡ (k − r)·1 [dead probe bullets] + r·0 [surviving
-probe bullets] + (b − r)·1 [live step-born bullets] + 1 [the
-surfacing lp: step-born, on tape] + 0 [its suspended cargo,
-transitively] ≡ k + b + 1, using `−r ≡ r (mod 2)`. ∎
-
-**Lemma B (coloring, §11.1).** Every rule flips φ; probe tapes
-weigh 0; the surfacing tape weighs `w(l)` (bullets weigh 0). So
-`t ≡ φ_end − φ₀ ≡ (|pos′| − |pos|) + 1 + w(l)` — the depth
-difference between launch and surfacing positions is part of φ
-and does NOT vanish in general (fresh-review correction: the
-first §13.1 draft dropped it, and `λ1` probed from its body
-position surfaces at the root in one `var` step with `w = 1`,
-refuting the depth-free combination).
-
-**Theorem (conservation).**
-`w(l) ≡ k + b + |pos′| − |pos| (mod 2)`. Every deployed
-specialization launches and surfaces at the same position
-(the root protocol at ε; boundary probes at the argument
-position), where the depth term vanishes: `w(l) ≡ k + b`, so for
-the boolean protocol (`k = 2`, arrival shapes `l·base` and
-`•·l·base` with `b = slot`): **`w(l) ≡ exit slot`**. The `haltI`
-sector (`l·•·base`, `b = 1`) gives `w(l) ≡ 1` — the identity's lp
-weight, correctly. *Proof.* Equate Lemmas A and B. ∎ (Lemma A
-itself is position-blind and needed no correction; the reviewer
-confirmed it independently, including nested capture to depth 7
-and genuine lp recapture.)
-
-**Inventory note (found by the mechanization).** The naive
-endpoint claim — surface bullets above the lp step-born, below it
-probe survivors — is FALSE: lps recirculate tape → log → tape via
-`arg`/`bt1`, so the surfacing lp can return on top of step-born
-bullets. The ledger handles this because live step-born bullets
-contribute 1 *wherever they sit*; only the mod-2 identity
-`−r ≡ r` is needed. The per-step assertion caught this within the
-first 707 terms.
-
-**Corollary (kernel transfer — the mark-free-ancestry lemma).** In
-a kernel run, consider a probe segment from `(argpos, D, γ·i·L,
-•·•·μ_g·T)` to its boundary arrival, and suppose the segment is
-fire-free, VB-free, and **mark-free**: no `γ`/`α` is ever captured
-into a slice. Then no `var` step reaches past the γ at the log
-boundary (capturing it is the only way to cross), so the token
-stays inside the probed argument, the frozen suffixes `μ_g·T` and
-`γ·i·L` are untouched, and the segment is *literally* a pure λIAM
-run of the argument against `•·•·μ` — Lemma A applies, Δφ across
-the segment is `1 + w(l)` (same log, same suffixes), and
-`w(l) ≡ slot`. Each hypothesis is load-bearing and each failure
-mode is a registered phenomenon: an **interior fire** breaks
-Lemma B's uniform flip by exactly the fire defect (the §12.3
-interior-fire parity law); a **VB episode** births a whole
-`•^{b′+1}·α` pattern in one step, breaking Lemma A's
-one-step-one-individual attribution (why pattern routing is the
-parity escape); a **captured mark** breaks segment closure and is
-precisely the excluded ancestry (why `w(α) = 0` decouples weight
-from step count). Gate mediation being *necessary* for coherent
-routing is now a theorem-shaped statement: mark-free geometric
-readback has `w ≡ slot`, hence odd branch offset, hence intrinsic
-decoherence by the §11.2 offset law.
-
-**Mechanical validation, at the invariant level.** The instrumented
-pure machine checks the ledger invariant after *every step* of
-*every run*, in lockstep conformance with the uninstrumented
-stepper (same rule, same stripped state, asserted each step —
-implementation drift is a hard error). Exhaustive sweep over all
-closed pure terms: ≤ size 10, **10,180 terms** (independently
-matching the reviewer's enumeration count exactly), and ≤ size 11,
-**41,272 terms**, probed at k ∈ {1, 2, 3}: **55,727 surfacings,
-zero Lemma-A failures, zero theorem failures, zero invariant
-violations** (stuck runs validate the invariant on every step too;
-Ω-class terms time out at the cap and contribute their prefixes).
-Battery cross-check on the gated twelve: every classifier arrival
-(gate boundaries and root, both cert modes) classified by
-ancestry — **zero mark-free arrivals violate `w ≡ slot`** across
-all twelve programs; marked arrivals split both ways, as virtual
-ancestry predicts (HH/HNH's earned-coherence tickets among the
-`w ≡ slot` equalities, the countermodels among the inequalities).
-
-### 13.2 Terminal chains and gauge-pinned uniqueness (mechanical)
-
-**Terminal chains.** Across all twelve programs × both cert modes:
-every `RunDone` and `Done` state has in-degree exactly 1 and
-out-degree exactly 1 in the reachable graph — zero violations. The
-"unique predecessor" property §12.3 demanded be checked is now a
-regression, and flip-by-assignment on the linear terminal chains is
-well-defined.
-
-**Uniqueness as a swept theorem.** Parametrize the mark weights by
-`v ∈ {0,1}⁸` over `(γ, μ, A, α, ρ, R, K₃, K₂-offset)` (entry
-weights are linear in `v`, so each edge carries a profile vector
-and assignments are dot products). The full flip/defect law was
-evaluated under all 256 assignments over every Run→Run edge of all
-twelve programs, both cert modes: **exactly 4 pass**, and they are
-exactly the predicted gauge orbit `γ = μ = c`, `A = 1 + c`,
-`ρ` free, `α = R = K₃ = K₂-offset = 0`. The rule-derived
-constraints (`call`: γ+μ ≡ 0; `anshead`: γ+A ≡ 1; `vvar`: α ≡ 0;
-`recall`: R ≡ α; conservative fire flip: K ≡ content) pin
-everything except the global gauge `c` and the never-moved `ρ`.
-**The coloring is unique after pinning `w(A) = 1`, `w(ρ) = 0`.**
-
-### 13.3 The terminating conservative certificate analysis
-
-`discover_total(term, state_cap, round_cap)`: at most `round_cap`
-rounds, each one BFS over at most `state_cap` states; any cap hit
-or non-convergence returns **no certificate**, which selects the
-conservative nontransparent fire everywhere — always sound (the
-v1.5 default), possibly suboptimal, exactly as the amendment's
-computability discipline sanctions. `U` is therefore total and
-well-defined on *every* program; the canonical certificate is
-`discover_total` at frozen caps, a deterministic function of the
-program fixed at initialization as static metadata. On finite
-kernel graphs within the caps it equals the exact fixpoint.
-Verified: reproduces the frozen certificates on all twelve;
-the totality witness `h Ω` (infinite kernel graph) returns a
-conservative reject rather than diverging or raising. The §12.3
-consequence stands unchanged: all-program Ω objects cannot be
-defined through semantic-BFS certificates; the budgeted analysis
-is the sanctioned mechanism, and its rejections are the price.
-
-### 13.4 The logged-position invariants
-
-**Soundness is carried by total typed guards, not by reachability
-claims.** Every instance-consulting rule has a typed rejection
-(`no-instance`, `alien-ticket`, `buried-frame`, `recall-err`,
-`replay-err`, `pop-err`); there is no silent fallback path. On top
-of that, now mechanical: across all twelve programs × both cert
-modes, **none of the six guard rules is structurally reachable**
-(and the negative control — p★ under the wrong certificate — still
-reaches `pop-err`, so the check has teeth).
-
-**lp-at-log-head, scoped structural argument.** For
-signature-abstracted programs (gates occur only as the wrapper
-application's arguments — the entire program class the architecture
-compiles), a gate leaf sits at an `a`-position, and the only rule
-that enters an `a`-position going D is `arg`, which pushes the
-transported tape head onto the log. When that head is an ordinary
-lp it *is* the invoking occurrence's logged position — the
-instance, at log head, structurally. When it is not an lp (a
-`γ` probing a gate, an `α` in transit), the leaf's `instance()`
-finds a non-lp head and rejects typed — never treats it as an
-instance. Programs applying a gate literally (`App(Gate, …)`)
-fall outside the scope statement and meet the same typed guards.
-
-**Equal lps = same dynamic copy.** The λIAM-lineage fact the
-design imports (a logged position names a dynamic subterm copy;
-token.md §2 pins the substrate). Its operational failure mode —
-one `(g, i)` naming two different selections — is now a swept
-regression: across every reachable state of all twelve programs,
-**zero states** hold two instance-keyed entries (α tickets, R
-frames) with equal `(g, i)` and different bits. `dup` (two dynamic
-instances of one occurrence, distinct slices) remains the built
-witness that distinct copies get distinct names.
-
-### 13.5 The v1.6 scorecard and the PASS claim
-
-| §12.4 item | Status |
-|---|---|
-| mark-free-ancestry conservation lemma | **PROVED** (§13.1: ledger + coloring + transfer), invariant-level mechanization, zero failures at ≤ 11 |
-| mechanical terminal-chain check | **discharged** (in/out-degree 1, zero violations) |
-| gauge-pinned uniqueness | **discharged as a swept theorem** (4/256 = the predicted orbit) |
-| terminating conservative certificate analysis | **discharged** (`discover_total`; `h Ω` witness; frozen-CERTS agreement) |
-| lp invariants | **discharged** (typed guards + swept unreachability + scoped structural argument + aliasing zero) |
-| H/T cross-fibres | **deferred by scope**: the t-gate is structurally reserved (`NotImplementedError`, typed, never silent); cross-fibre exhibition belongs to the readback + t-gate milestone |
-| readback controller | **deferred by scope**: next docket phase, not an h-kernel obligation |
-
-**The PASS claim, stated precisely:** the three-program kernel
-gate (token.md §4) is claimed **PASS for the h-fragment** — full
-transition table with typed totality; step-indexed HH / H–NOT′–H /
-negative-witness traces verified plus nine more programs including
-both adversarial countermodels; column-Gram enumeration clean on
-every reachable basis; range disjointness via the encoded-fibre
-certificates; and the conservation theorem closing the coherent
-fragment's characterization. Standing fences, all typed and all
-registered: `buried-frame` (unreached, semantics deliberately
-unassigned), literal gate application (outside the scope
-statement), the t-gate reservation. Pending: fresh-instance
-adversarial review of this round.
-
-### 13.6 The fresh-instance review verdict (registered) — the h-fragment claim WITHDRAWN
-
-A deliberately threadless sol-tier review (2026-08-09, zero
-inherited framing, full sources + rerun capability) returned:
-**FAIL for "PASS for the h-fragment"; the mathematical core
-CONFIRMED; the three-program formalization gate and the twelve
-registered sectors stand.** Every advertised number was
-independently reproduced. The verdict, by attack surface:
-
-- **Lemma A: CONFIRMED-SOUND.** The eight-rule attribution
-  partition verified airtight by independent trace scanning —
-  nesting depth 7 and genuine lp recapture observed, suspension
-  parity preserved, no duplicated individuals.
-- **The theorem as first written: REFUTED, repaired in place.**
-  The Lemma B combination dropped the launch/surfacing depth term
-  `|pos′| − |pos|`; `λ1` probed from its body position is a
-  one-step counterexample. Corrected statement above (§13.1); all
-  deployed specializations have the term ≡ 0 and are unaffected.
-  A matching stale formula in the checker's docstring
-  (`(k−r)+m+1`, false when step-born bullets sit below the lp) is
-  fixed; the implemented `k+b+1` was already correct.
-- **Transfer corollary: CONFIRMED-SOUND**, with "literally a pure
-  run" tightened to "rule-for-rule isomorphic after stripping
-  frozen prefixes/suffixes." The reviewer supplied the closure
-  invariant in its clean form — ordinary lps above γ =
-  level(path) − level(argpos) — and searched 41,272 closed plus
-  111,508 open arguments under up to three enclosing binders:
-  zero mark-free escapes; all 79,840 boundary crossings occurred
-  after γ capture.
-- **Gauge sweep: CONFIRMED-SOUND and strengthened.** Broadened to
-  15 parameters (lp constant, six path coefficients, slice
-  coefficient, the eight mark weights): the slice coefficient is
-  forced to 1, the lp constant to 0, all path coefficients to 1;
-  rank 13, exactly the four predicted solutions. Uniqueness is
-  hereby scoped to the natural local additive family, explicitly.
-- **`discover_total`: CONFIRMED-SOUND.** Both rejection paths
-  executable (`round_cap=1` on HH → None; `h Ω` → state cap);
-  "canonical" wording fixed to "the deterministic result at
-  frozen caps."
-- **PASS scoping: REFUTED —** `Q = ((h 0̂) SEL SEL)(h 0̂)`,
-  `SEL = λb. b 1̂ 0̂`: typed, h-only, signature-abstracted, and it
-  reaches `buried-frame` from init with **err mass 1** while its
-  certificate validates and Gram is clean (basis 332, zero
-  defects, zero aliasing — reproduced exactly). Two live
-  instances interleave their re-seeks; the v1.3 fence is a
-  **missing semantic case of the h-fragment**, not an unreachable
-  corner. `Q` is registered as the battery's thirteenth program
-  (`buried`, expected guards `{buried-frame}`, expected dynamics
-  err 1) and is the program that withdraws the h-fragment claim.
-- **Range disjointness over the raw state type: GAP.** Two
-  collision pairs among unrestricted `Run` states (a `vvar`
-  source and a `replay` source sharing a target; fire sources
-  differing only in μ-kind). The μ-kind collision is closed — the
-  fire now demands the probe frame's gate match the boundary γ
-  (typed `species-mu`; bit-identity on all reachable graphs
-  verified). The `vvar`/`replay` pair is excluded by the intended
-  reachable-state invariants; making the well-formed configuration
-  subtype explicit, with a preservation proof, is now a registered
-  obligation — global range disjointness is claimed only over
-  well-formed states until then.
-- **Validation blindness: fixed.** `validate` now reports guard
-  reachability, `(g,i)` aliasing, and dynamic err mass, and its
-  `semantic_coverage` verdict is their conjunction — `Q` is the
-  regression proving a valid certificate and clean Gram can
-  coexist with total semantic failure.
-
-**Standing after the round:** PASS holds for the three-program
-formalization gate and the twelve coherent/decoherent sectors;
-the h-fragment claim is withdrawn with `Q` as the boundary
-witness. The v1.7 object is the interleaved re-seek: give
-`buried-frame` semantics (the frame stack's discipline under two
-live instances), or characterize statically the fragment that
-excludes it — and prove the well-formed-state preservation that
-restores global range disjointness.
-
-## 14. v1.7 — the replay record, the WF subtype, and the healed h-fragment
-
-The interleaved re-seek round. Everything below is mechanically
-verified in the scratch battery (`kernel.py`, `suite.py`, `wf.py`,
-`certify.py`, `conservation.py`, `polarity.py`); no engine code
-exists, per the §9 gate. The h-fragment PASS is RE-CLAIMED at the
-end, gated on a fresh-context independent audit.
-
-### 14.1 The Q trace, and what it overturned
-
-Tracing `Q` to its `buried-frame` states gave the design its
-ground truth — and refuted the natural first hypothesis. The
-buried configurations hold **the same instance's frame twice**
-(coin1's record duplicated, buried under coin2's): v1.3's re-seek
-cycle *accumulates* — each `replay` re-emits a ticket, and each
-ticket's later `recall` pushes another identical frame. The frame
-was never a stack entry; it is a **record of the instance's
-selection**, a function of the instance. The v1.7 rules make the
-data structure match the semantics:
-
-- **`recall` (amended):** the frame push is **idempotent** — if a
-  same-`(g,i)` record exists, re-recording is a no-op; if it
-  exists with a *different bit*, that is the copy-identity failure
-  and a new typed error `frame-conflict`. The record set `rs` is
-  kept canonically sorted: state identity must not depend on the
-  order interleaved re-seeks happened to record in.
-- **`replay` (amended):** deep keyed lookup — the unique
-  same-`(g,i)` record *wherever it sits*. LIFO position was never
-  semantic; the v1.3 head-only guard was conservatism awaiting a
-  literal trace, which `Q` supplied. **The `buried-frame` error
-  class no longer exists.**
-
-### 14.2 Results
-
-The **twelve are bit-identical** — every basis count, marginal,
-support, and halt time unchanged (interleaving never occurs
-there, so idempotency, deep lookup, and canonical order are all
-invisible). `Q` (battery name `buried`) heals to exactly the
-physics predicted before measurement: **basis 432, Gram clean,
-`{halt0: 1/2, halt1: 1/2}`, support 4, t = 141** — coin1 consumed
-non-injectively (two SEL occurrences), each branch running
-geometric selection on coin2: four decohered terminals at 1/4.
-Its certificate is UNCHANGED (`ffbbfffa` reproduces) and it now
-validates with `semantic_coverage: True`. The stress set, each
-predicted then measured: `weave` (interleaving through
-wire-identities: 1/2 + 1/2, support 4), `hweave` (an outer gate
-interrogating a woven core — the C-collapse class holds across an
-interleaving: 1/2 + 1/2, support 4), `qq` (Q nested in Q's
-argument: three coins, double-crossed re-seeks, **support 8**,
-1/2 + 1/2, basis 2,192). All sixteen: zero stuck / non-unit /
-non-orthogonal, zero guard rules reached, zero `(g,i)` aliasing;
-the coloring, terminal chains, gauge orbit, `discover_total`
-agreement, and the conservation battery all re-verified over the
-sixteen; the negative control still catches `pop-err`.
-
-### 14.3 The well-formed configuration subtype
-
-`WF(term, s)`, six invariants — the domain the unitarity claims
-quantify over:
-
-- **W1** log discipline: `|log| = level(path)` — every log entry
-  corresponds to one `a`-step.
-- **W2** record uniqueness + canonicity: at most one frame per
-  `(g, i)`; `rs` canonically sorted.
-- **W3** bit coherence: all instance-keyed entries with one
-  `(g, i)` carry one bit.
-- **W4** first-interrogation exclusivity: a vb-active state at
-  instance `i` holds no `i`-frame and no `i`-ticket — forced by
-  the guard chain (ticket → `recall`, frame → `replay`, neither
-  reaches `call` → fire → `anshead` → vb).
-- **W5** probe pairing: deep-counted γ (through slices and the
-  fire's retained `K(l)` records) = μ(tape) + answer
-  tokens(tape). A γ captured into a slice is **suspended cargo**
-  — the conservation ledger's concept — still in flight; its
-  probe cannot fire until `bt2` releases it. Ticket/frame
-  instance *keys* are frozen names, never counted (the live
-  original is accounted where it lives; keys would ghost-count
-  stale slices). The first, shallow draft of W5 produced 460
-  false violations, all the same shape — the sweep taught the
-  invariant its own suspension structure.
-- **W6** exactly one ρ, at the tape bottom.
-
-**Reachable ⊆ WF**: verified exhaustively — 9,314 Run-state
-checks across all sixteen programs, both certificate modes, zero
-violations; init is WF, so the sweep validates preservation on
-every reachable edge. Per-rule preservation is by inspection:
-classical rules move log/level in lockstep (W1) and
-suspend/release γs in matched pairs (W5); `call` adds γ + μ
-together; the fire consumes μ and mints the answer token
-(retaining `l`'s cargo in `ks` — deep count preserved);
-`recall`/`replay` touch only the record set under W2–W4's
-discipline.
-
-**Collision closure.** The v1.6 review's two raw-state column
-collisions are both dead: the `vvar`/`replay` pair because its
-`vvar` source **violates W4** (holding its own instance's frame),
-and the WF-repaired source's target then differs from the replay
-target in `rs` content; the μ-kind pair because `species-mu`
-types the mismatched fire away (no shared targets). Global range
-disjointness is claimed over WF states, with reachable ⊆ WF
-mechanical and the preservation argument registered.
-
-### 14.4 Certified erasure and suspended cargo (two conditions)
-
-The W5 lens exposed a soundness question v1.5 never posed: a
-certified erasure deletes the arrival lp *with its slice cargo*.
-Measured across all sixteen certified boundaries: **zero γ-cargo
-erasures** — and the admission condition (d), *erased cargo must
-be γ-free*, is now part of `transparent()` (a certified erasure
-of an in-flight probe's γ would break W5: its μ survives,
-unpaired). Zero certificate changes. **Suspended α cargo is
-deliberately permitted**: HNH's earned coherence *depends* on
-erasing captured ticket copies (two of its three certified
-arrivals carry α cargo, measured). Its soundness condition is
-scoped and named: **no post-erasure re-seek of the erased
-ticket's instance** — a re-seek would find neither ticket nor
-frame and fresh-`call` into a second fire (the v1.2 double-fire
-class). In HNH the α-cargo erasures are terminal interrogations,
-so the condition holds; in general it is a reachability property,
-not a local stack shape, and is registered as a **compile-time
-obligation for the compilation theorem** (the compiler certifies
-only boundaries whose erased-ticket instances are never
-re-interrogated). The fresh audit adjudicates whether this
-scoping is adequate.
-
-### 14.5 The v1.7 claim
-
-**PASS for the h-fragment, re-claimed**: the `Q` countermodel is
-healed with the physics predicted in advance; the sixteen-program
-battery (twelve sectors + the review witness + three pointed
-interleaving stressors) is total, Gram-clean, and
-marginal-correct; the WF subtype closes the review's range
-disjointness gap with reachable ⊆ WF mechanical; and the
-certified-erasure cargo conditions are measured, one closed
-locally and one scoped and registered. Standing fences, typed:
-literal gate application, the t-gate reservation, and the α-cargo
-compile-time obligation. This claim is **gated on a fresh-context
-independent audit** (a9's instruction for the round); the audit
-verdict will be registered here.
-
-### 14.6 The fresh audit verdict: FAIL (registered 2026-08-09)
-
-Fresh-context independent audit #1 (gpt-5.6-sol, threadless, job
-`cx-20260809-134605-79cc`, fed the full scratchpad + evidence
-pack): **FAIL** for the h-fragment PASS. The scorecard, by charge:
-
-1. **Replay record — GAP.** No wrong deep-key lookup found (Q plus
-   3,160 generated programs clean), but no injectivity theorem for
-   logged-position keys was supplied; deleting `buried-frame` was
-   validated only on explored orbits.
-2. **Q / weave / hweave / qq physics — CONFIRMED-SOUND** by
-   independent recomputation, exact amplitude agreement.
-3. **WF adequacy — REFUTED with countermodel.** W1–W6 do not make
-   certified fire injective: a reachable `lone` arrival plus one
-   extra slot-matching frame is WF, and both sources fired to
-   identical targets (columns with inner product 1). WF needed the
-   certificate's fibre relation as a domain subtype.
-4. **Scoped α-cargo condition — REFUTED with countermodel.**
-   `Pα = (C I h) 1̂`, `C = h (h (NOT (h 0̂)))` — typed, h-only,
-   in-fragment. `discover` admitted a certificate whose α-cargo
-   erasure is followed (t=131, amplitudes ±1/2) by a fresh call of
-   the erased instance; the certified run goes STUCK at t=180 while
-   the plain run computes the correct `{1/4, 3/4}`. The no-reseek
-   condition cannot remain an unchecked compile-time obligation.
-5. **Scoping honesty — REFUTED.** The §14.2 "twelve bit-identical"
-   overclaim (the v1.2 basis drift `negative` 103→83, `selector`
-   173→106, `pstar` 458→242 is real, v1.7-era, marginal-identical);
-   an "all twelve" print over sixteen programs; the evidence pack
-   omitted this file; no typing checker existed. Their fuzz also
-   surfaced a sixth defect we adjudicated into round 2: a
-   **duplicate fresh call** — a ticket consumed by the fire's
-   α-decode (bit-free spectator), the same instance later re-sought
-   with neither ticket nor frame, silently fired twice.
-
-Both countermodels and the fuzz hit were reproduced locally before
-any correction was designed. §15 is the correction round.
-
-## 15. v1.8 — decode records, the refire guard, and the typed fragment
-
-*(2026-08-09; the audit-correction round. Scratch evolver updated in
-place; suite is eighteen programs; `typecheck.py` joins the
-scaffolding. No qALC code in the tree — §9 gates still govern.)*
-
-### 15.1 One mechanism, not three patches
-
-The audit's two live countermodels and its fuzz hit are the same
-disease in three coats: **an instance's selection was erased with no
-recoverable record, and the machine then answered a later re-seek of
-that instance by silently tossing a second coin.** Pα reached it
-through certified α-cargo erasure; the fuzz duplicate through the
-fire's α-decode (the bit-free spectator that buys HH's coherence);
-the WF collision was its structural shadow (erasure that forgets the
-frame's existence cannot be injective). The v1.8 mechanism:
-
-- **Decode records.** Certified erasure now retains `('K', g, i)`
-  for every live α nested in the erased cargo and for every popped
-  frame's instance (the fire's α-decode arm already retained its
-  `('K', g, i)`). The erased tuple is a function of the retained
-  `(slot, T, log)` fibre — discovery condition (b) — so its key-set
-  is too: the records are **branch-consistent constants**, coherence
-  is untouched, and erasure becomes injective on the ticket/frame
-  dimension. Measured sharp: all sixteen prior programs keep
-  identical marginals, supports, *and basis counts* — adding a
-  branch-constant record is a bijection on the post-fire subgraph,
-  so counts cannot move, and did not.
-- **The refire guard.** The fresh-call arm now types out (`refire`)
-  any instance whose key is dead storage in `ks` — a decoded record,
-  or a ticket captured inside a retained-whole record. Arm order
-  (ticket → recall, frame → replay, else guard → call) plus the
-  fact that one `vvar` emits one ticket consumed by exactly one of
-  recall/decode/erasure means the guard can never shadow a
-  legitimate recall or replay. **One-fire-per-instance is now a
-  machine invariant enforced at runtime; the v1.7 α-cargo
-  compile-time obligation is discharged and deleted.**
-- **Validated admission.** `discover_total` now runs the full
-  `validate()` (totality, guard reachability, Gram, err mass) on
-  its fixpoint and returns None — the conservative, sound fallback —
-  when coverage fails. Pα's and the fuzz program's exploratory
-  certificates exist but are *refused* by the canonical pipeline.
-
-### 15.2 The audit witnesses, healed and framed
-
-- **`palpha`**: canonical certificate None; canonical dynamics is
-  the plain run, `{halt0: 1/4, halt1: 3/4}`, support 3 — the
-  physics (`C = H·H·X·H|0⟩ = |+⟩`; the zero branch applies I to
-  `1̂`, the one branch H). The exploratory certified graph is now
-  *total and loud*: `refire` reached, err mass 1/2,
-  `semantic_coverage` False — the old silent STUCK at t=180 (a norm
-  leak) is gone.
-- **`dupcall`** (the fuzz hit, registered): canonical certificate
-  None; the plain run rejects typed (`alien-ticket`, err 1/2 beside
-  a classical 1/4+1/4); under the v1.7-era certificate the refire
-  guard is REACHED with all-err dynamics — the suite's permanent
-  positive control. UNTYPABLE (below), so it was never inside the
-  fragment claim; the guard is defense-in-depth.
-- **The WF collision**: the extra-frame source is `W7`-excluded
-  (§15.3) *and* no longer shares targets — the popped frame leaves
-  its decode record. Both layers close it independently.
-
-### 15.3 W7 and the range-disjointness theorem
-
-**W7 (certificate fibre coherence)** joins the subtype: at a
-certified boundary, the erased `(l, RS)` must equal the
-certificate's frozen fibre value at the retained key
-`(pos, slot, T, log)`. Reachable ⊆ WF∧W7 sweeps clean over every
-certified graph (the fibre map is discovery's own object; condition
-(b) makes it single-valued).
-
-**Theorem (range disjointness on WF∧W7).** For two certified-fire
-sources at one boundary: same `(T, log)` and slot ⇒ same erased
-tuple (the fibre is a function) ⇒ the same source; same `(T, log)`,
-other slot ⇒ the identical target pair carrying the two H rows —
-orthogonal columns, which *is* the interference mechanism; different
-`(T, log)` ⇒ disjoint targets, because targets embed `T` and `log`
-verbatim. Mechanized (`cert_disjointness`): zero violations over
-every certified graph.
-
-**The GAP, dissolved rather than closed.** Deep-lookup soundness
-needs no instance-key injectivity theorem: if two dynamic copies
-ever aliased one `(g, i)`, divergent selections are typed
-(`frame-conflict` on both the recall push and the replay lookup)
-and agreeing selections make the lookup value-correct. Every
-aliasing manifestation is typed or harmless; λIAM logged-position
-uniqueness downgrades to a **completeness conjecture**, outside the
-soundness perimeter.
-
-### 15.4 The typed fragment, made real
-
-`typecheck.py` supplies the judgment the claims quantify over:
-algorithm W with the gates as the polymorphic signature
-`h, t : ∀a. (a→a→a) → (a→a→a)` instantiated fresh per occurrence
-(the precise content of "signature-abstracted"), plain HM
-elsewhere, result type free (`haltI`-sector programs are
-function-typed). Measured: **15 of the 18 are typable h-only**.
-Outside: `dup` (self-application — deliberately, the untyped copy
-regression), `dupcall` (NOT′/EP branches ununifiable), and — a
-finding — **`q` itself** (E = λz. I z vs N ununifiable: exactly the
-wire imbalance `qprime` was built to repair; `qprime` types clean).
-The three escapes (`h h` etc.) are untypable, as required.
-
-**The v1.8 coverage claim, stated exactly.** Over programs that
-are (i) typable h-only under the signature judgment and (ii) whose
-canonical pipeline (`discover_total` + `validate`) reports
-`semantic_coverage`: the kernel is **total and Gram-clean** (U an
-isometry on the reachable basis), certified erasure is
-**transparent** (fibre-proven, W7-coherent, disjointness
-mechanized), and **every failure mode is typed and visible, never
-silent**. Marginal-correctness against the ideal quantum
-semantics is established **per-program against hand-computed
-physics** for the eighteen (and was independently recomputed by
-audit #1 for the interleaving set); the *general*
-agreement-with-compilation-semantics theorem is explicitly the
-compilation theorem's obligation (docket item 3), not claimed
-here. One measured fact makes the distinction sharp: **the
-certificate is semantically load-bearing for HNH** — certified
-`{halt0: 1}` (the physics, H·X·H|0⟩ = |0⟩) versus plain
-`{1/2, 1/2}` (the retained records decohere the earned
-coherence). The conservative fallback is therefore sound *as a
-machine* (total, unitary, typed) but not ideal-preserving; a
-refused certificate degrades coherence, never soundness — which
-is exactly why `discover_total` must refuse rather than admit an
-unsound one. The §14.2 basis-drift overclaim is
-corrected: v1.7's replay record moved `negative` 103→83, `selector`
-173→106, `pstar` 458→242 against the v1.2 reference (canonical rs
-sorting and the replay-arm restructure merge order-variant states);
-marginals and supports never moved.
-
-### 15.5 Verification state and the audit gate
-
-Suite (18): sixteen marginal/support/basis-identical to v1.7,
-guards silent; `palpha`/`dupcall` as above; refire + pop-err
-negative controls PASS. `discover_total` == frozen CERTS on all 18;
-`h(Ω)` → None. WF and W7 sweeps + disjointness: zero violations.
-Conservation ledger: zero failures (k = 1..3, 14,452 surfacings).
-Polarity, terminal chains, gauge orbit (4/256, exact): unchanged.
-The auditor's own reproducer, rerun under v1.8: WF collision
-targets disjoint; Pα scope clean, live calls none; sixteen
-histories clean; fuzz 250/250 no violation (66 conservatively
-refused). **The PASS re-claim is again gated on a fresh-context
-independent audit; verdict to be registered here.**
