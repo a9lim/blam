@@ -1,15 +1,26 @@
 # qALC three-program kernel — v1
 
-**Status: kernel v1.2 — re-reviewed: the p★ repair is confirmed
-locally real, but the gate remains OPEN.** The re-review (§9.6)
-refuted the mandatory-decoherence premise with the injective
-selection program `q` (H;id;H through selected functions — physics
-demands re-interference), supplied the governing **transparency
-criterion** in its place, and found a deeper α/γ transport totality
-failure (`q` reaches three stuck states before the replay question
-even arises). The v1.3 gate is §9.6's list: transport totality on
-`q`'s graph, instance-indexed frames, a proved transparency/pop
-rule, and `q` at mass 1 on `0̂`. History: v1 was reviewed
+**Status: kernel v1.3 — transport total, frames instance-indexed,
+transparency/pop implemented and verified; the mass-1 question is
+answered by a new finding: the time register.** §10 is the v1.3
+register. Of the re-review's six gate items: totality on `q`'s
+graph ✓ (the `replay` rule, derived from the literal visit-3
+trace); correct slot-0/slot-1 outer arrivals ✓; instance-indexed
+frames ✓ (instance = the log-head logged position, already present
+at every gate-leaf entry); a transparency/pop rule ✓ (certified
+per-program, falsification caught as a typed error, verified by
+the Gram/norm pass, negative control included); `q`'s frames
+cleaned with **no residual replay discriminator** ✓ — but mass 1
+on `0̂` does NOT follow, because the branches arrive at the outer
+boundary at different global times, and the offset is **odd and
+invariant under every program-level padding tried** (§10.4).
+Slot routing that survives to a boundary as tape *pattern* is
+time-free (HH, H–NOT′–H sync exactly); routing *consumed* as
+transport steps skews the clock by the transported bit. The
+standing conjecture: step-encoded (geometric) selection decoheres
+intrinsically in this machine class; coherence is the
+pattern-encoded routing class; time-balancing is a compiler
+obligation, not a rule-level fixable. History: v1 was reviewed
 adversarially (thread
 `qalc-token-machine`, independent reimplementation) — the classical
 substrate, gate fibres, HH cancellation, H–NOT′–H balance, and
@@ -553,3 +564,195 @@ finishing at mass 1 on `0̂` with no residual replay discriminator.
 Also open, restated: general `ℤ[1/√2]` amplitudes in the verifier
 (`(m,k)` cannot express `1 + 1/√2`), H/T cross-fibres, effect-free
 conservativity, general readback.
+
+## 10. v1.3 — replay, instance frames, the pop rule, and the time register
+
+Scratch artifacts: `kernel.py` (v1.3 evolver), `kernel_v12.py`
+(archived v1.2), `suite.py` (the ten-program battery), `q_diag.py`
+(the diagnosis run). All scratchpad-only per the no-code gate.
+
+### 10.1 The diagnosis: the ticket is single-use, replay is not
+
+The full 81-step trajectory to `q`'s first stuck state, read against
+the literal ground truth (`q` with the coin replaced by literal
+`0̂`/`1̂` — both literal variants run total, 93/126 basis states,
+zero stuck), gives a clean taxonomy of coin visits:
+
+- **Visit 1** — fresh selection descent (`•2 •2 var (•4)`): the
+  literal consumes the two λ-crossings and emits the selection
+  variable's logged position. Virtualized by fire + VB + `vvar`
+  (the ticket `α` *is* that logged position).
+- **Visit 2** — ticket transit (`•2 bt2 •4 •4`): the restored lp
+  re-enters and jumps through the coin. Virtualized by `recall`
+  (v1.1), which consumes the ticket.
+- **Visit 3** — a SECOND fresh selection descent, exactly the
+  visit-1 episode again: the literal machine re-derives the
+  selection from the static term. The virtual coin has no term to
+  re-derive from, and the ticket is gone. v1.2 misclassified this
+  as a fresh call, re-fired the coin (extra fire measured at t=70),
+  and the mismatched ticket jammed in the selected function's
+  plumbing — all three stuck states are downstream corpses of that
+  one wrong classification.
+
+The repair insight: after the first recall, the branch's selection
+memory is exactly the replay frame in RS. **The replay stack is not
+just an injectivity dump; it is the replay memory, read
+nondestructively.**
+
+### 10.2 The v1.3 rules
+
+**Instance identity.** The dynamic instance of a gate invocation is
+the logged position of the invoking occurrence — in λIAM lineage, a
+logged position is precisely the machine name of a dynamic subterm
+copy. At every gate-leaf entry the invoking occurrence's lp sits at
+the log head (arg-entry is structurally forced), so the identity is
+already in hand: `i := log[0]`. Tickets and frames carry it:
+`α_{g,i}(b)`, `R_{g,i}(b)`.
+
+**recall (v1.3).** Guard now requires the ticket's instance to
+equal the current log-head lp — the review's "semantic ticket
+ownership" obligation, discharged structurally. A same-gate
+foreign-instance ticket is a typed error. Pushes `R_{g,i}(b)`.
+
+**replay (new).** At a gate leaf, `↓`, with a leading bullet block
+of length ≥ 3, no same-instance ticket on the tape, and RS head
+`R_{g,i}(b′)` with `i` = the current log-head lp:
+
+```text
+(g, ↓, i·L, •³·T, R_{g,i}(b′)·RS) → (g, ↑, i·L, •^(b′+1)·α_{g,i}(b′)·T, R_{g,i}(b′)·RS)
+```
+
+Derived from the literal visit-3 episode: consume the two selection
+bullets plus one gate-application compensation, emit a fresh
+ticket; the frame is read, not popped — the fresh ticket may be
+recalled again later, pushing another frame (measured: `q`'s
+branches accumulate 2–3 same-bit frames). A leading block < 3 with
+a same-instance frame (an under-applied re-seek) is a typed error,
+out of v1.3 scope.
+
+**call.** Fires only when neither a same-instance ticket nor a
+same-instance frame is present. A different instance's frame at the
+RS head does not block a fresh call (p★'s second invocation).
+Frame reading is head-only; interleaved re-seeks of distinct
+recalled instances are out of scope (typed error).
+
+**pop (transparency cleanup).** `step` takes a per-program
+certificate: a set of fire boundaries. At a certified boundary the
+fire strips every frame whose bit equals the arrival slot, in the
+same unitary step; a leftover mismatched frame falsifies the
+certificate and becomes a typed error (`pop-err`), never a silent
+reinterpretation. Soundness on the reachable span — injectivity of
+fire-with-pop against every other source — is exactly what the
+structural Gram verifies; the certificate's discovery is manual in
+v1.3, its *verification* is the machine checker. This implements
+§9.6's provenance-matched cleanup schema with the frame's bit as
+the recovered function of the live core.
+
+### 10.3 Results
+
+The ten-program battery (`suite.py`), structural Gram
+(amplitude-blind BFS, cancelled targets included, ticks truncated
+at depth 2) plus dynamic evolution with per-step exact norm
+assertion:
+
+```text
+program    basis  stuck  defects  dynamic                    residue frames
+HH            82      0        0  halt0 mass 1               none
+H–NOT′–H     104      0        0  halt0 mass 1               none
+negative      83      0        0  Halt(I) 1/2+1/2            R(0)/R(1) inert
+selector     106      0        0  1/2, 1/2                   R(0)/R(1) inert
+lone h        53      0        0  1/2, 1/2                   none
+p★           242      0        0  1/2, 1/2, support 4        R(0)/R(1) inert
+3-coin       180      0        0  1/2, 1/2, support 4        R(0)/R(1) inert
+q  (cert)    218      0        0  1/2, 1/2, support 4        NONE — popped
+q′ (cert)    246      0        0  1/2, 1/2, support 4        NONE — popped
+q2 (cert)    115      0        0  1/2, 1/2, support 4        NONE — popped
+```
+
+- **Totality restored**: `q` runs total (0 stuck of 256 basis
+  states uncertified, 218 certified); slot-0/slot-1 outer arrivals
+  are correct per branch — the injective transport works.
+- **v1.2 basis drift explained and owned**: negative 103→83,
+  selector 173→106, p★ 458→242. The v1.2 counts included
+  wrong-semantics double-call subgraphs (visit-3 re-seeks that
+  fresh-called and re-fired). Measured directly on p★: v1.2 has
+  five dynamic fire events (t = 18, 49, 51, 63, 65), v1.3 has
+  three (18, 49, 51); v1.2's reported support 8 was
+  transport-bug-inflated — the correct support is 4 with marginals
+  unchanged. HH / H–NOT′–H / lone / 3-coin are bit-identical to
+  v1.2 (no re-seek anywhere in their graphs).
+- **The pop is sound and does real work**: certified `q`-family
+  runs halt with EMPTY replay stacks — garbage-free halting, the
+  bounded-garbage factorization the architecture requires — and
+  the Gram stays zero-defect with the pop enabled. p★'s frames
+  remain inert (mandatory, per the transparency criterion).
+- **Negative control**: certifying p★'s boundaries (unsound — its
+  frames are mandatory) yields `err` mass 1/2 via `pop-err`, with
+  zero Gram defects and no norm loss: an unsound certificate is
+  caught as a typed error, not silent unitarity damage.
+
+### 10.4 The time register (new finding)
+
+With frames cleaned, `q`'s branches still do not interfere: they
+arrive at the outer boundary at different global steps, and the
+tick register makes any offset permanent decoherence. Arrival
+telemetry (branch-0 vs branch-1):
+
+```text
+q   (Codex's, E = λz. I z)         t = 84  vs 119   offset 35
+q′  (wire-balanced, E′ = λz. z 0̂ 1̂) t = 112 vs 119   offset 7
+q2  (minimal, h ((h 0̂) 0̂ 1̂))       t = 48  vs 51    offset 3
+```
+
+Wire-balancing (E′ position-isomorphic to N = λz. z 1̂ 0̂,
+differing only at two Var leaves — the NOT′ index-swap trick lifted
+one level) removes the interior asymmetry (35 → 7); the residue is
+the slot routing itself.
+
+**Mechanism — pattern vs step.** A slot bullet that survives to the
+boundary as part of the arrival pattern (`•·l·μ` vs `l·μ`) costs no
+time — this is why HH and H–NOT′–H arrive branch-synchronous and
+cancel exactly. A slot bullet consumed by a `•3` crossing an
+f-node of the selection spine is a step. Geometric selection
+step-encodes; the transported bit itself skews the clock.
+
+**Odd-offset invariance (measured).** Every program-level padding
+tried shifts branch-relative time by an EVEN amount: I-wraps +8
+per wrap (k = 0..4 measured), NOT′-wrap +16, η-expansion +16,
+pre-decided literal-selection pads +12/+16; a pad inside the
+unselected function shifts nothing (traversal-sensitivity
+control). Reachable offsets for q′ sit in −7 + 4ℤ — never 0. Token
+round trips cost even; the odd base offset traces to the odd
+teleport savings of the `0̂` answer episode vs `1̂` (var jumps
+distance 2 in one step). Conjecture, to be adjudicated: the
+branch-relative offset of any step-encoded selection is odd —
+mass-1 interference is unreachable by program padding under this
+timing.
+
+**Consequences.** (1) A machine-level uniform retiming cannot fix
+this: how many slot bullets are consumed as steps is contextual
+(depends where the ticket surfaces), so no per-rule charge
+equalizes all programs — and the classical substrate's timing is
+pinned. (2) Time-balance is therefore a *compiler* obligation in
+this machine class, and if odd-offset invariance holds, coherent
+compilation must route data flow through pattern-encoded
+(index/wire) transport only — which the H–NOT′–H witness already
+inhabits — treating geometric selection as a decohering (classical)
+primitive. (3) Review-gate item 6 splits: "no residual replay
+discriminator" HOLDS (the pop delivers it); "mass 1 on 0̂" is
+blocked by an independent, now-measured channel that the
+transparency criterion must incorporate — the branch bit is
+single-valued on the non-R core *per time slice*, and the time
+slice itself carries the bit. The transparency theorem needs time
+in the core.
+
+### 10.5 Scope and standing obligations
+
+Head-only frame reading (interleaved multi-instance re-seeks →
+typed error, no reachable instance in the battery); under-applied
+re-seeks (leading block < 3) → typed error; certificate discovery
+manual (verification mechanical); γ/μ marks remain kind-only
+(stack-paired by nesting discipline — Gram-policed per program;
+instance-indexing them is mechanical if a countermodel appears).
+Restated from §9: general ℤ[1/√2] amplitudes in the verifier, H/T
+cross-fibres, effect-free conservativity, general readback.

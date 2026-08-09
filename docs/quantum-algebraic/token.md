@@ -287,10 +287,15 @@ negative witness does it). The literal boolean answers re-entry by
 `bt2`-replay on its selection ticket; the machine mirrors this with
 a `recall` rule that reads `b′` off the `α` ticket and replays
 without firing — consistency with no store, as this section hoped,
-but through a rule, not a reachability argument. The residual
-obligation is **re-entry determinacy**: `recall` erases `b′`, so
-injectivity needs `b′` recoverable from the retained state
-(kernel-verified; general proof open).
+but through a rule, not a reachability argument. Re-entry
+determinacy was then settled in two steps: v1.2's replay stack keeps
+`b′` in a retained frame (no erasure), and v1.3 instance-indexes
+tickets and frames by the invoking occurrence's logged position —
+the λIAM name of a dynamic subterm copy, structurally present at the
+log head on every gate-leaf entry — which also discharges ticket
+ownership: a same-gate foreign-instance ticket is a typed error, and
+a re-seek after the ticket is consumed replays off the instance's
+own frame (`kernel.md` §10.2).
 
 ### 3.6 The negative witness, mechanically
 
@@ -320,6 +325,15 @@ steps**, derived from machine structure rather than stipulated. There
 is no computable uniform padding for arbitrary untyped code, so the
 coherent fragment is a discipline, not a default — which is the
 "coherence is earned" economy, now with a concrete currency.
+
+v1.3 measured the currency's structure (`kernel.md` §10.4): slot
+routing that survives to a boundary as tape *pattern* is time-free
+(HH, H–NOT′–H sync exactly); routing *consumed* as transport steps
+skews the branch clock by the transported bit, and the measured
+offset of geometric selection is odd and invariant under every
+even-cost program pad tried — the standing conjecture is that
+step-encoded selection decoheres intrinsically, making the coherent
+fragment exactly the pattern-encoded (index/wire) routing class.
 
 ### 3.8 Not yet designed
 
@@ -368,14 +382,16 @@ substrate's obstruction and the fork reopens.
 
 | Item | Status |
 |---|---|
-| Kernel | **v1.2: p★ repair (inert replay stack) confirmed locally real; gate still open on the `q` countermodel** (`kernel.md` §9.5–9.6) |
-| α/γ transport totality | **broken on `q`** (three stuck states: α at log head inside selected-function plumbing) — v1.3's first job |
-| Transparency criterion (replaces both C1 and mandatory-decoherence) | adopted: `R_g(b)` cleanable iff `b` is a function of the live core; cleanup inside the δ block with provenance-matched instance-indexed frames — the transparency/pop rule is the central design object |
+| Kernel | **v1.3: transport total on the whole battery, instance-indexed frames, transparency/pop implemented and verified; the mass-1 question resolved into the time-register finding** (`kernel.md` §10) |
+| α/γ transport totality | **restored** — the `replay` rule (fresh re-seek off the instance's frame, derived from the literal visit-3 trace); the whole ten-program battery runs total |
+| Transparency criterion | **implemented as the pop rule**: certified fire boundaries strip frames matching the arrival slot in the same unitary; unsound certificates caught as typed `pop-err`; `q`-family halts garbage-free; p★'s frames stay inert (mandatory) — certificate discovery manual, verification mechanical |
+| Instance identity | **structural**: instance = the invoking occurrence's logged position, at the log head on every gate-leaf entry; tickets/frames carry it; ticket ownership discharged |
+| Time register | **new standing finding** (`kernel.md` §10.4): pattern-encoded slots are time-free, step-encoded selection skews the branch clock oddly; even-pad invariance measured; conjecture: geometric selection decoheres intrinsically; time-balance is a compiler obligation |
 | L1 arrival-residue determinacy | kernel-verified at `fire`; general proof open |
-| L2 pop timing / coherence return | confirmed for NOT′ (kernel); selector measured decoherent |
-| `call`/`recall` structural domain disjointness | open (priority-resolved in scratch; formal table needs structure) |
+| L2 pop timing / coherence return | confirmed for NOT′ (kernel); selector measured decoherent; mechanism now understood via pattern-vs-step |
+| `call`/`recall`/`replay` structural domain disjointness | guards structural in v1.3 (instance + rs-head checks); formal table presentation still owed |
 | Probe-exit classification totality | open (kernel error rules are catch-alls) |
 | Readback controller | undesigned; kernel's root classifier is its 1-bit case |
 | `μ_p`/`Ω_qALC` on the token clock | pending readback design |
-| Mandatory regressions | `p★`, the 3-coin program, and `q = λh.λt. h ((((h 0̂) E) N) 0̂)` — the last must reach mass 1 on `0̂` with no residual discriminator (`kernel.md` §9.1, §9.6) |
+| Mandatory regressions | `p★`, 3-coin, `q` (Codex's), `q′` (wire-balanced), `q2` (minimal geometric selection) — all total, Gram-clean, marginals correct; `q`-family certified runs halt frame-free with arrival telemetry 35/7/3 as the time-register record |
 | Bideterminism of §2 | verified vs arXiv:2002.05649 |

@@ -456,18 +456,42 @@ the **transparency criterion**: a replay frame is cleanable iff its
 bit is a function of the live core, cleaned inside the δ block with
 provenance-matched instance-indexed frames.
 
+**Kernel v1.3 is built and verified** (`kernel.md` §10, 2026-08-09):
+the `replay` rule (a consumed-ticket re-seek rederives its selection
+from the instance's frame, read nondestructively — derived from the
+literal visit-3 trace) restores transport totality on the whole
+ten-program battery; instances are the invoking occurrence's logged
+position (structurally at the log head), discharging ticket
+ownership; the transparency/pop rule strips slot-matched frames at
+certified fire boundaries, verified sound by the structural Gram
+with a negative control (an unsound certificate is caught as a
+typed error, no unitarity damage). The `q`-family halts frame-free
+— no residual replay discriminator — but mass 1 on `0̂` is blocked
+by a **new standing finding, the time register**: branch arrival
+offsets 35/7/3 (q / wire-balanced q′ / minimal q2), odd and
+invariant under every even-cost program pad measured. Pattern-
+encoded slots are time-free (HH, H–NOT′–H sync exactly);
+step-encoded (geometric) selection skews the branch clock by the
+transported bit. Conjecture to adjudicate: geometric selection
+decoheres intrinsically; the coherent fragment is the
+pattern-encoded routing class, and time-balance is a compiler
+obligation. v1.2's p★ support-8 was transport-bug-inflated
+(extra fire events measured); the correct support is 4.
+
 The open docket, in order:
 
-1. **kernel v1.3**: α/γ transport totality on `q`'s graph; correct
-   same-time slot arrivals; instance-indexed replay frames; the
-   first proved transparency/pop rule; `q` at mass 1 on `0̂` with
-   no residual discriminator (`p★`, 3-coin, `q` all mandatory
-   regressions);
+1. **kernel v1.3 adversarial round**: independent re-verification of
+   the replay/pop rules and the odd-offset invariance (find an
+   odd-cost pad or prove none exists); then the parity claim as a
+   theorem candidate;
 2. the readback controller (full-NF halt sectors; the kernel's root
-   classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars;
+   classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
+   with time-in-the-core added to the transparency theorem
+   statement;
 3. the clean coherent compilation theorem
-   (`quantum-algebraic/architecture.md` §6) — gates any universality
-   claim;
+   (`quantum-algebraic/architecture.md` §6) — now including the
+   time-balancing pass over the pattern-encoded fragment — gates any
+   universality claim;
 4. then `src/qalc/`: reference evaluator first, census later.
 
 ## Repository and release state
