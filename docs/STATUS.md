@@ -420,55 +420,38 @@ consistency) and a fresh-context feasibility review (thread
 promising-with-hard-open-problems, converging with the sketch on every
 load-bearing point; its checklist and exclusions are folded in.
 
-**The kernel is at v1.13** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.14** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
-and git). The last two audit rounds resolved the `W` saga: audit
-#3 found the v1.10 fire arm computed the instance-directed `P`/`Q`
-spectator split and discarded it — so v1.10's registered "W
-placement limitation" (staged uncomputation inexpressible) had
-measured that defect, not the certificate language — and v1.11
-wired the split through literally, healing audit #2's fatal
-witness at its hand ideal `{halt1: 1}` (the retraction is
-registered; the wrongly-ledgered consult prediction is corrected
-in provenance). Audit #4 then CONFIRMED the healing (refire
-amplitudes verified zero per-step; four independent physics
-recomputations; 46 generated programs identical across arms) while
-countermodeling the KD bundle's bookkeeping: bit-free death was
-recorded for keys whose bit-carrying representation survived the
-fire (a retained-Q frame; a retained-whole burial) — both W8
-hazards in the target. v1.12 subtracts: the bundle names only
-representation-free keys, the decode arm's record-skip lifts to
-burials, W8 extends to bitfree ∩ burial, condition (e) compares
-the bundle actually left. Audit #4 also refuted the v1.11
-parsimony language — the canonical certificate is the
-deterministic MAXIMAL-certified fixpoint, not minimal (measured:
-single-boundary ∅-pop certificates reach B and W's physics);
-minimal canonical certificates are docketed. Nothing reachable
-moved: all frozen certificates, marginals, and basis counts are
-bit-identical under the fix; the register is decrufted
-current-only. Audit #5 then confirmed the healing and all physics
-again while completing the picture twice over: the subtraction
-also had to spare live tickets riding in the surviving tape
-tail/log (a popped frame's replay-re-emitted ticket stays the
-answerable representation — v1.13's completed rule names only
-keys with no surviving bit-carrying representation anywhere in
-the target), and "maximal-certified" was measurably false —
-`discover_total(palpha)` discarded a whole map for one bad
-boundary while clean sub-certificates existed. v1.13's phase-3
-GREEDY RESCUE re-admits a failing map's boundaries under the
-validated-greedy discipline instead of discarding: `palpha` now
-certifies (three boundaries, its one poppable key excluded to
-spectator, guard-silent, basis 474→275, marginal unchanged), the
-claim language is "deterministic validation-adjudicated greedy —
-neither maximal nor minimal", and the version now lives in the
-register alone. Ten permanent regressions; nineteen frozen dicts
-+ dupcall's canonical None; physics table passes on all twenty
-with `W = {halt1: 1}`; all five prior audit kits rerun clean.
+and the register's §11 chronicle). The audit loop's state after
+six fresh-context rounds: the machine core has not moved since the
+v1.11 spectator-transition fix; audit #2's fatal witness `W` is
+healed at its hand ideal `{halt1: 1}` and has been independently
+re-confirmed three times (refire amplitudes verified zero
+per-step); the KD subtraction is COMPLETE — the bundle names only
+keys with no surviving bit-carrying representation anywhere in the
+target (Q frames, burials, T/log-riding tickets) — and audit #6
+CONFIRMED it sound by exhaustively enumerating post-fire
+bit-carrying storage, with `palpha`'s certificate and marginal
+verified against the hand calculation. Audit #6's FAIL was the
+first with zero machine countermodels: regression ten was computed
+but not gating (runnable countermodel — fixed, all ten now gate
+the sweep aggregate, measured to flip under an emulated old arm),
+the rescue's "None only when nothing admits" outran its position
+pool (fixed — the pool now spans phase-1 positions plus every
+phase-2 candidate, measured behavior-identical on the whole suite,
+so the sentence is exact), a moved-graphs claim was scoped too
+wide, and version cruft lingered (purged; the register alone
+carries the version). Nineteen frozen dict certificates +
+dupcall's canonical None; canonical = deterministic
+validation-adjudicated greedy, neither maximal nor minimal;
+physics table passes on all twenty; all six prior audit kits rerun
+byte-identical or correctly flipped; every v1.14 prediction held
+byte-for-byte (provenance in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #6 of the v1.13 h-fragment
-   claim** (next action; verdict to be registered in `kernel.md`
+1. **fresh-context independent audit #7 of the v1.14 h-fragment
+   claim** (running; verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
    is its newly checkable ticket-dimension face), and

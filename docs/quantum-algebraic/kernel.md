@@ -1,6 +1,6 @@
 # qALC three-program kernel — current register
 
-**Status: v1.13.** The kernel is a scratch superposition evolver
+**Status: v1.14.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -16,7 +16,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #6**, whose
+The standing PASS re-claim is **gated on fresh audit #7**, whose
 verdict will be registered here.
 
 This file is the current contract and register only. The
@@ -134,7 +134,7 @@ arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
                              → key-alias  [deep bit coherence at
                                 the boundary: a fire must never
                                 erase or bury a disagreement]
-   CERTIFIED boundary (pos ∈ certificate, v1.10 INSTANCE-DIRECTED):
+   CERTIFIED boundary (pos ∈ certificate, INSTANCE-DIRECTED):
        the certificate names popkeys(pos); frames split into
        P = RS ∩ popkeys (erased) and Q = RS \ popkeys (retained
        SPECTATORS — which-path data of unrelated instances, e.g.
@@ -282,13 +282,20 @@ machine is an isometry"):
    validation to stay clean. Deterministic and bounded.
 3. **Final validation with GREEDY RESCUE**: the assembled map is
    validated; on failure it is NOT discarded whole — the
-   validated-greedy discipline re-runs from scratch over its
-   positions (joint-first with per-key exclusion refinement, then
-   sorted singles), so one bad phase-1 boundary cannot veto the
-   clean rest (`palpha`'s certificate exists exactly this way:
-   its one poppable key is excluded to spectator and all three
-   boundaries certify cargo-only). None only when nothing admits
-   — the conservative, sound fallback. A None result IS the
+   validated-greedy discipline re-runs from scratch over the FULL
+   candidate pool (phase-1 fixpoint positions plus every phase-2
+   candidate, including candidates rejected against a dirty
+   phase-1 base), joint-first with per-key exclusion refinement,
+   then sorted singles, so one bad phase-1 boundary cannot veto
+   the clean rest (`palpha`'s certificate exists exactly this
+   way: its one poppable key is excluded to spectator and all
+   three boundaries certify cargo-only). None exactly when this
+   validated-greedy pass over the pool accepts nothing — greedy,
+   NOT complete over subsets of the pool — the conservative,
+   sound fallback. (Measured: on all twenty programs the pool
+   equals the final domain — no phase-2 candidate is ever
+   rejected — so the pool completion is behavior-identical on the
+   suite; it exists to make this sentence exact.) A None result IS the
    fallback (the plain reading); its coverage verdict is
    `validate(term, None)`, which runs the same reachable-WF sweep
    with an empty certified domain (W7 and disjointness vacuous,
@@ -535,7 +542,7 @@ shell arguments — rejected.
 
 ## 9. The claim and the alias gap
 
-**The v1.12 coverage claim.** Over programs that are (i) typable
+**The coverage claim.** Over programs that are (i) typable
 h-only under the signature judgment (with the syntactic boundary:
 shell args exactly `Gate(h)` then `Gate(t)`, no gate literals in
 bodies, closed bodies) and (ii) whose canonical pipeline reports
@@ -574,7 +581,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#5; the verdict will be registered here.**
+#7; the verdict will be registered here.**
 
 ## 10. Verification state
 
@@ -623,25 +630,36 @@ duplicate-ticket W9; retained-Q KD — a cargo key with a retained
 frame leaves an EMPTY bundle, targets WF-clean; bitfree-burial —
 a buried key stays the sole bit-carrying record, no KD beside it;
 popped-frame + surviving ticket — the T-riding ticket stays the
-answerable representation, no KD, targets WF-clean). Conservation:
+answerable representation, no KD, targets WF-clean). All ten GATE
+the sweep's aggregate verdict — audit #6 caught the tenth
+computed but non-gating (the emulated-old-arm probe now flips
+`cert_sweep` to FAIL, measured). Conservation:
 exhaustive ≤ size 11, 14,452 surfacings at ≤10 / 55,727 at ≤11,
 zero failures. Polarity/terminal chains/gauge: zero violations,
-orbit exact. All five prior audits' independent reproducers rerun
+orbit exact. All six prior audits' independent reproducers rerun
 clean or typed (audit #1's fuzz 250/250; audit #2's kit clean on
 every lifecycle, its term-evaluator mismatches adjudicated as
 that evaluator's non-normalization; audit #3's spectator columns
 share zero targets; audit #4's countermodel pair healed; audit
-#5's popped-frame countermodel healed). Standing audit-confirmed
-lemmas carried forward: refire amplitudes of `B`/`W` verified
-zero per-step; 46 generated programs identical across the
-v1.11/v1.12 arms and zero transition differences over 54
-reachable certified arrivals; 1,146-program W9 fuzz clean;
-burials never consumed (incoming ks an exact suffix of the
-target's across 13,693 suite edges); within a retained group,
-divergent subtraction results are impossible (condition (b) plus
-the group key fix every subtraction input); the two v1.12
-regressions fail under an emulated v1.11 arm (genuine, not
-vacuous). Basis counts vs v1.2 reference: `negative` 103→83,
+#5's popped-frame countermodel healed; audit #6's gate probe
+flips as it must). Standing audit-confirmed lemmas carried
+forward: refire amplitudes of `B`/`W` verified zero per-step; 46
+generated programs identical across the v1.11/v1.12 arms and
+zero transition differences over 54 reachable certified
+arrivals; 1,146-program W9 fuzz clean; burials never consumed
+(incoming ks an exact suffix of the target's across 13,693 suite
+edges); within a retained group, divergent subtraction results
+are impossible (condition (b) plus the group key fix every
+subtraction input); the two v1.12 regressions fail under an
+emulated v1.11 arm (genuine, not vacuous); the completed
+subtraction CONFIRMED-SOUND by exhaustive enumeration of
+post-fire bit-carrying storage (audit #6: retained Q frames,
+tape/log tickets incl. LP slice cargo, burials — P and l erased,
+vb None, ANS not instance-keyed, K/KD bit-free); `palpha`
+CONFIRMED against the hand calculation; the 18 pre-v1.13 graphs
+have zero transition diffs vs the emulated v1.12 arm; rescue
+determinism held under reversed traversal and six hash seeds.
+Basis counts vs v1.2 reference: `negative` 103→83,
 `selector` 173→106, `pstar` 458→242 — v1.7-era, real, owned;
 marginals and supports never moved. All measurements
 seconds-scale on the M5 Max.
@@ -672,10 +690,18 @@ certified" refuted on shipped `palpha` (phase 3 discarded a whole
 map containing one bad boundary while clean sub-certificates
 existed); version-string cruft; W-healing, physics, regressions
 (verified genuine against the old arm), burial-suffix lemma, and
-subtracted-bundle safety all CONFIRMED. Working reviews: v1.8
-design (two structural holes), v1.10 design fork (the hybrid
-verdict: amplitudes decide success, never isometry; no bare-term
-ideal oracle).
+subtracted-bundle safety all CONFIRMED. Audit #6 (v1.13): FAIL —
+the first round with ZERO machine countermodels: the completed
+subtraction CONFIRMED-SOUND by exhaustive storage enumeration,
+`palpha` and `W` confirmed by hand calculation; the failure was
+scaffolding and language — regression ten computed but
+non-gating (runnable countermodel), the rescue's "None only when
+nothing admits" stronger than its position pool, "nothing
+reachable moved" false as written (`palpha` deliberately moved),
+residual version cruft. Working reviews: v1.8 design (two
+structural holes), v1.10 design fork (the hybrid verdict:
+amplitudes decide success, never isometry; no bare-term ideal
+oracle).
 
 | version | one line | verdict that shaped it |
 |---|---|---|
@@ -690,7 +716,8 @@ ideal oracle).
 | v1.10 | the hybrid pipeline (structural isometry mandatory; dynamic cleanliness decides success); instance-directed erasure with validation-adjudicated spectator admission; deep W3 + the key-state algebra; machine_coverage rename + the physics table; `B` healed, `W` registered placement-open | **fresh audit #3: FAIL** (the fire arm computed P/Q and discarded it — retained spectators erased bit-free; retained-Q isometry countermodel; W's "limitation" was this defect and heals under the literal rule; validate(None) gap; duplicate-ticket W8 row; six honesty defects) |
 | v1.11 | the P/Q spectator transition implemented literally (KD from P, rs′ = Q); certificates re-discovered and frozen as exact dicts; `W` HEALED at {halt1: 1}, the staged-uncomputation retraction; W9 + the algebra's duplicate-ticket row; validate(None) runs the real sweep; two new permanent regressions; honesty corrections | **fresh audit #4: FAIL** (KD bundle bit-free-records keys with surviving bit-carrying representations — retained-Q frame + burial countermodels; parsimony refuted; W healing + physics CONFIRMED) |
 | v1.12 | the KD subtraction (Q frames + burials); W8 extended to bitfree ∩ burial; condition (e) compares the bundle actually left; register decrufted current-only; two new permanent regressions (nine total) | **fresh audit #5: FAIL** (subtraction missed T/log-surviving tickets; "maximal-certified" false on palpha; version cruft; healing + physics + regressions CONFIRMED) |
-| v1.13 | the COMPLETE subtraction (bundle names only keys with no surviving bit-carrying representation anywhere in the target — Q frames, burials, T/log tickets); phase-3 GREEDY RESCUE (a failing map is re-admitted greedily, not discarded — palpha certifies, guard-silent, marginal unchanged); "maximal" retracted to validation-adjudicated greedy; version strings unified (the register alone carries the version); tenth regression | **fresh audit #6: pending** |
+| v1.13 | the COMPLETE subtraction (bundle names only keys with no surviving bit-carrying representation anywhere in the target — Q frames, burials, T/log tickets); phase-3 GREEDY RESCUE (a failing map is re-admitted greedily, not discarded — palpha certifies, guard-silent, marginal unchanged); "maximal" retracted to validation-adjudicated greedy; version strings unified (the register alone carries the version); tenth regression | **fresh audit #6: FAIL** (zero machine countermodels — subtraction CONFIRMED-SOUND by exhaustive storage enumeration, palpha + W hand-confirmed, 18 graphs zero diffs; regression ten non-gating; rescue claim stronger than its pool; "nothing reachable moved" false as written; version cruft) |
+| v1.14 | regression ten GATES the aggregate; rescue pool completed to phase-1 ∪ all phase-2 candidates (measured behavior-identical on the suite — the completion makes the None sentence exact); claim language restricted (moved-graphs claim scoped to the prior 18 + palpha at its certified values); stale version/audit text purged; every prediction of the round held byte-for-byte | **fresh audit #7: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
