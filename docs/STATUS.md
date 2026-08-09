@@ -491,22 +491,27 @@ bit-identical), TOP fallback removed.
 
 The open docket, in order:
 
-1. **kernel v1.4 close-out** (`kernel.md` §11): five of eight gate
-   items discharged same-day — the polarity coloring is a THEOREM
-   (closed-form φ; uniform flip; fire defect `1 − w(erased lp)`;
-   1,518 edges verified, zero violations; branch-offset formula
-   matches all measured offsets; the review's even-pad search is
-   now a corollary), certificates are canonical (discovery
-   fixpoint, HAND==AUTO on all eleven programs, validity strictly
-   beyond Gram — the negative control properly caught), and
-   amplitudes are exact `ℚ[√2]`. Owed: adversarial review of the
-   coloring; encoded-fibre ratification (§11.7 draft, covers the
-   original arrival-lp erasure too); the §11.3
-   **weight-conservation lemma** (gate-free readback conserves
-   `w ≡ slot` — geometric selection of classical data decoheres
-   intrinsically; gate-mediated routing is the parity-free pattern
-   class); buried-frame resolution and the two lp invariants
-   (typed fences + probes in place);
+1. **kernel v1.5 → PASS gate** (`kernel.md` §12): the v1.4 round
+   closed with the coloring a confirmed theorem
+   (PASS-WITH-CORRECTIONS: gauge-only uniqueness; general parity
+   law with interior-fire charges) and the amendment ratified —
+   then the review's C-collapse countermodel
+   (`λb.λx.λy. b y y` — same-slot arrivals, distinct lps) exposed
+   the v1-lineage fire's unsound which-path erasure, fixed by the
+   **v1.5 encoded fire**: conservative decode by default (retain
+   `D(l)` on the inert `ks` stack; uniform φ-flip), certified
+   erasure under the corrected fibre condition (retained
+   `(slot,T,log)` determines erased `(l,RS)`). Twelve programs
+   total/clean; HNH's coherence is now *earned* through its
+   certified boundary — the coherence bar is a certified-fibre
+   phenomenon; `Ccoll` decoheres correctly with Gram clean.
+   Conservation conjecture refined to mark-free ancestry (reviewer
+   enumeration: 10,180 closed terms ≤ size 10, 708 ordinary
+   arrivals, zero mismatches); gate mediation necessary-not-
+   sufficient. Owed: the conservation lemma; mechanical
+   terminal-chain check; terminating conservative certificate
+   analysis (BFS discovery is finite-kernel-only — no all-program
+   Ω through semantic BFS); lp invariants;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem

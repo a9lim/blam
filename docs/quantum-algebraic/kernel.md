@@ -13,9 +13,16 @@ conjecture: gate-free readback conserves `w ≡ slot` (geometric
 selection of classical data decoheres intrinsically), with
 gate-mediated routing as the parity-free pattern class. The
 encoded-fibre amendment is RATIFIED-WITH-EDITS and applied to
-architecture §7 (§11.7). Owed: adversarial review of the coloring
-(in flight), the conservation lemma, general lp invariants, the
-strengthened validation checklist.** §10 is
+architecture §7 (§11.7). The coloring review returned
+PASS-WITH-CORRECTIONS on the theorem and FAIL on the v1.4 table —
+the C-collapse countermodel exposed the v1-lineage fire erasing
+which-path lps unsoundly — fixed by the **v1.5 encoded fire**
+(§12): conservative decode by default, certified erasure under the
+corrected fibre condition; twelve programs total and clean; HNH's
+coherence is now an *earned*, certificate-bearing phenomenon.
+Owed: the mark-free-ancestry conservation lemma, terminal-chain
+mechanical check, terminating conservative certificate analysis,
+lp invariants.** §10 is
 the v1.3 register. Of the re-review's six gate items: totality on `q`'s
 graph ✓ (the `replay` rule, derived from the literal visit-3
 trace); correct slot-0/slot-1 outer arrivals ✓; instance-indexed
@@ -1048,3 +1055,114 @@ checker's growth path.
 
 New standing object: the **conservation conjecture** (§11.3) — the
 sharpened form of "the coherent fragment is the pattern class."
+
+## 12. The v1.4 review verdict and the v1.5 encoded fire (registered)
+
+The coloring review (thread `qalc-token-machine`, independent rerun,
+2026-08-09) returned **FAIL for the v1.4 transition table** with a
+fatal countermodel, while grading the coloring theorem itself
+PASS-WITH-CORRECTIONS (all 1,518 edges independently verified,
+including the compressed `replay` row directly).
+
+### 12.1 The C-collapse countermodel
+
+`C ≡ λb.λx.λy. b y y` maps both booleans to `1̂` non-injectively.
+On `p ≡ h (C (h 0̂))`, two reachable outer arrivals share slot 1
+with **different** which-path lps (`w = 1` and `0`); the v1-lineage
+fire erased the lp, mapping orthogonal sources onto identical
+columns — a reachable column collision (105-state graph, 1
+non-orthogonal pair; the dynamic run hid it only because the
+arrivals are one step apart). This was a defect of the fire since
+v1, outside the battery until the encoded-fibre lens found it.
+
+### 12.2 The v1.5 fire: conservative decode by default, certified erasure
+
+The fire now implements the ratified encoded-fibre amendment
+directly:
+
+- **Conservative (default)**: retain the decoded spectator `D(l)`
+  on a new inert spectator stack `ks`: a ticket whose bit matches
+  the slot decodes to `(gate, instance)` — the bit is redundant —
+  so HH's branches land at equal spectators and interfere free of
+  any certificate; anything else (real lp, mismatched ticket) is
+  retained whole, so same-slot arrivals with distinct which-path
+  data stay orthogonal. `w(D(l)) = w(l)` for retained lps, 0 for
+  decoded tickets — the conservative fire **flips φ uniformly**;
+  the parity defect now lives only at certified erasure.
+- **Certified**: erase `(l, RS)` entirely — sound iff the corrected
+  fibre condition holds: within the boundary, the RETAINED key
+  `(slot, T, log)` determines the ENTIRE erased tuple `(l, RS)`
+  (the review's correction: the old condition keyed by `l`, which
+  the fire erases — not a sound local theorem).
+
+Results (twelve programs — `Ccoll` joins the battery): all total,
+zero Gram defects, zero polarity violations, canonical certificates
+reproduce 12/12.
+
+```text
+HH        82   mass 1      free coherence (ticket pattern; no cert needed)
+HNH      104   mass 1      EARNED coherence: its outer boundary is
+                           certified (slot determines its real lps,
+                           w = 1 both) — the coherence bar is a
+                           certified-fibre phenomenon
+Ccoll    143   1/2, 1/2    the countermodel: certification refused at
+                           the collision boundary (same slot, distinct
+                           l); conservative fire keeps the sources
+                           orthogonal — Gram CLEAN, correct physics
+q-family                   unchanged (certified; time-decohered by the
+                           odd offset)
+p★, 3coin, negative, selector, lone, dup   unchanged
+```
+
+The theoretical upshot sharpens the coherence economy again:
+**pattern-ticket coherence is free; coherence through real plumbing
+is earned by exhibiting the encoded fibre** — the certificate is
+not an optimization, it is what makes HNH's interference lawful.
+
+### 12.3 Corrections to §11 claims (review-mandated)
+
+- **Weight uniqueness is gauge-only.** `w_c(γ_g)=w_c(μ_g)=c`,
+  `w_c(A_g)=1+c` passes all edges for either `c` (mechanically
+  confirmed by the reviewer); `ρ` is unconstrained by Run→Run rows.
+  The coloring is unique after pinning conventions
+  (`w(A)=1, w(ρ)=0`).
+- **General parity law with interior fires**:
+  `n₀ − n₁ ≡ w(l₀) − w(l₁) + Σ_{F∈branch₀} w(l_F) − Σ_{F∈branch₁}
+  w(l_F)` — interior gates supply parity corrections, so the
+  even-pad corollary is limited to fire-free plumbing, and gate
+  mediation is confirmed as the parity-escape route.
+- **Conservation conjecture refined**: the literal gate-free form is
+  FALSE (the countermodel's surfacing lp has `(slot, w) = (1, 0)` —
+  its slice contains an α). Viable statement: *along a closed,
+  fire-free readback whose surfacing lp has entirely ordinary,
+  mark-free ancestry, its weight equals its canonical boolean exit
+  slot.* Reviewer's exhaustive enumeration: all 10,180 closed pure
+  λ-terms of syntax size ≤ 10; 708 ordinary mark-free arrivals;
+  **zero** weight/slot mismatches. Proof target: the telescoping
+  enter/return pairing, with the selected variable of the final
+  Church boolean as the only unpaired segment (distance 2 vs 1).
+  And the classification claim weakens to necessity: coherent
+  routing ⊆ routing with virtual ancestry or interior-fire charge —
+  gate mediation is necessary, not sufficient (`Ccoll` is
+  gate-mediated and must stay orthogonal).
+- **Terminal chains**: to be checked mechanically (2-coloring the
+  terminal edges), not asserted from unique predecessors.
+- **`discover` totality**: the BFS implementation is not the final
+  canonical mechanism — raw reachability may diverge on untyped
+  programs, the cap raises instead of returning conservatively, and
+  the fixpoint bound is unproved. The final mechanism is a
+  terminating conservative static analysis defaulting to no-pop
+  (the amendment's computability discipline); the BFS version is
+  exact and valid on finite kernel graphs only. Consequence,
+  registered: all-program Ω objects for qALC cannot be defined
+  through semantic-BFS certificates.
+
+### 12.4 The standing gate (v1.5 → PASS)
+
+Fixed this round: the encoded fire (conservative + certified), the
+corrected fibre condition, `Ccoll` as a mandatory regression,
+canonical certificates refrozen (the discovery output is machine
+metadata). Still owed: the mark-free-ancestry conservation lemma;
+the mechanical terminal-chain check; the gauge-pinned uniqueness
+statement; the terminating conservative certificate analysis; the
+lp invariants; H/T cross-fibres; the readback controller.
