@@ -420,13 +420,25 @@ consistency) and a fresh-context feasibility review (thread
 promising-with-hard-open-problems, converging with the sketch on every
 load-bearing point; its checklist and exclusions are folded in.
 
+**Kernel v1 is drafted and machine-verified**
+(`quantum-algebraic/kernel.md`): full transition table over the λIAM
+substrate, step-indexed traces, column-Gram orthonormal on every
+tested reachable basis. HH halts with mass 1 on `0̂` by exact
+cancellation at the outer fire; H–NOT–H passes the coherence bar
+through NOT′; the negative witness's branches stay orthogonal in
+residue and time. Measured findings: the selector NOT decoheres by
+one-step desynchronization (the coherence economy in token steps);
+re-interrogation is real (C1 refuted) and handled by ticket-replay
+(`recall`) with no store.
+
 The open docket, in order:
 
-1. **the three-program formal kernel** (`token.md` §4 — the v2 gate):
-   full table, range-disjointness, step-indexed traces of HH /
-   H–NOT–H / the negative witness, column-Gram enumeration; L1/L2 and
-   the readback controller are the hard parts;
-2. kernel through the review loop (both threads);
+1. kernel v1 through the review loop (adversarial verification in
+   `qalc-token-machine`, contract conformance in `qalc-architecture`
+   — both dispatched 2026-08-09); the sharpest open lemma is
+   re-entry determinacy (`recall` erases `b′`);
+2. the readback controller (full-NF halt sectors; the kernel's root
+   classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars;
 3. the clean coherent compilation theorem
    (`quantum-algebraic/architecture.md` §6) — gates any universality
    claim;

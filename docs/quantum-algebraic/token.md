@@ -279,12 +279,18 @@ encodes the original slot — routing reads the outcome off the token
 itself. No global store of fired outcomes exists; the outcome lives
 exactly as long as the token's routing history needs it.
 
-**Conjecture C1 (no fresh re-query).** No reachable run interrogates
-the same gate instance (same exponential context) through a second
-independent first-query. Distinct occurrences are distinct instances
-(guardrail 12); within one instance, the classical λIAM never
-re-launches a completed query. If C1 fails, a consistency mechanism
-is needed and the design weakens materially.
+**C1 (no fresh re-query) is REFUTED — and the design survived it.**
+The kernel (`kernel.md`) found that an output's variable can seek its
+argument by backtracking *through* the boolean selection,
+re-dereferencing to the gate leaf as a fresh-looking query (the
+negative witness does it). The literal boolean answers re-entry by
+`bt2`-replay on its selection ticket; the machine mirrors this with
+a `recall` rule that reads `b′` off the `α` ticket and replays
+without firing — consistency with no store, as this section hoped,
+but through a rule, not a reachability argument. The residual
+obligation is **re-entry determinacy**: `recall` erases `b′`, so
+injectivity needs `b′` recoverable from the retained state
+(kernel-verified; general proof open).
 
 ### 3.6 The negative witness, mechanically
 
@@ -362,13 +368,13 @@ substrate's obstruction and the fork reopens.
 
 | Item | Status |
 |---|---|
-| L1 arrival-residue determinacy | stated; unproved — load-bearing |
-| L2 pop timing / coherence return | stated; unproved |
-| C1 no fresh re-query | conjectured |
-| Probe-exit classification totality | obligation |
-| Totalization (norm-one successors everywhere) | obligation |
-| Three-program kernel (table + traces + Gram) | the gate; unstarted |
-| Readback controller | undesigned — hardest open |
+| Three-program kernel (table + traces + Gram) | **v1 drafted and machine-verified — `kernel.md`; in review** |
+| L1 arrival-residue determinacy | kernel-verified; general proof open |
+| L2 pop timing / coherence return | confirmed for NOT′ (kernel); selector measured decoherent |
+| Re-entry determinacy (replaces refuted C1) | kernel-verified; general proof open — sharpest lemma |
+| Probe-exit classification totality | open (kernel error rules are catch-alls) |
+| Totalization (norm-one successors everywhere) | verified on kernel bases; general proof open |
+| Readback controller | undesigned — hardest open; kernel's root classifier is its 1-bit case |
 | `μ_p`/`Ω_qALC` on the token clock | pending readback design |
-| Nonlinear reuse of a fired result | undesigned |
+| Nonlinear reuse of a fired result | partially exercised (negative witness); general story open |
 | Bideterminism of §2 | verified vs arXiv:2002.05649 |
