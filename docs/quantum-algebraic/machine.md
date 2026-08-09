@@ -1,418 +1,347 @@
-# qALC reference machine — formal draft v0
+# qALC reference machine — formal draft v1
 
-**Status: formal draft v0 — reviewed, verdict DO NOT BUILD ON v0.**
-This document supersedes the pre-formal sketch (git history; provenance
-in `../ledger/2026-08.md`) and is the working object for
-`architecture.md` §9 item 1. The v0 review (thread `qalc-architecture`)
-confirmed the invariant-sector construction and the H–NOT–H decoherence
-trace, **refuted the universal forcing theorem and the linearity
-conjecture** (corrected statements in §5), and found five table defects
-(register in §7). v1 must rebuild the table around an explicit
-rule-coloured forward/reverse control discipline; the v1 design fork is
-stated in §7.3. The architecture contract wins wherever they disagree.
+**Status: formal draft v1, submitted for adversarial review.** Working
+object for `architecture.md` §9 item 1. v0's review verdict, refuted
+claims, and defect register are in `../ledger/2026-08.md`; every v0
+defect has a v1 resolution (§8.1). Fork (A) of the v0 register —
+minimal-information residue with *earned* coherence — is ratified and
+built in. The architecture contract wins wherever they disagree.
 
-## 1. Syntax
+v1 is organized around three design commitments that answer the v0
+review:
 
-### Terms and normal forms
+1. **A no-erasure forward machine** (§1): nothing is discarded in
+   forward mode — no closure trimming, no environment drops. Erasure
+   exists only as explicit, reversible discard-to-residue, and most of
+   v0's injectivity defects dissolve because the information they lost
+   is simply never lost.
+2. **Rule-coloured configurations with join charging** (§2): every
+   running configuration carries the colour (rule id) of its producer;
+   every step charges a `Join` tag recording its predecessor's colour.
+   Ranges are pairwise disjoint by colour, backward determinism is
+   structural, and the local-minimality theorem becomes a monotone
+   research program (§2.3) rather than a single fragile claim.
+3. **The Try-boundary protocol** (§5): coherent gate application is
+   implemented by forward–copy–reverse execution across δ-argument
+   boundaries, with the reverse pass running *through* earlier δs as
+   their adjoint columns. Coherence is earned exactly by uncomputation,
+   interference requires path-length synchronization — reproducing the
+   architecture's common-`T` clean-compilation requirement from machine
+   structure — and witness 7 passes for the path-symmetric `NOT′`.
+
+## 1. Syntax and state
 
 ```text
-T  ::= Var(i) | Lam(T) | App(T, T) | h | t        (i ≥ 1, 1-indexed)
+T  ::= Var(i) | Lam(T) | App(T, T) | h | t          (i ≥ 1, 1-indexed)
 NF ::= Lam(NF) | Neu
 Neu ::= Var(i) | h | t | App(Neu, NF)
+
+Bind ::= Clo(T, Env) | Level(l)
+Env  ::= [Bind, …]        — full lists; NEVER trimmed; index-stable
+Clo  ::= (T, Env)         — structural identity, no allocation identity
 ```
 
-Source programs contain no `h`/`t`; the constants enter only through
-`init(p) = App(App(p, h), t)`. Canonical booleans: `0̂ = Lam(Lam(Var 2))`,
-`1̂ = Lam(Lam(Var 1))`.
-
-### Closures, environments, levels
-
-```text
-Bind ::= Clo(T, Env) | Level(l)                   (l ≥ 1, binder depth)
-Env  ::= [Bind, …]                                 (index 1 = innermost)
-```
-
-**Canonical-closure discipline**: closures are structural values —
-no allocation identity — and every constructed closure is trimmed to the
-free-variable support of its term (a closed term's closure is
-`Clo(T, ∅)`; in particular constants and canonical booleans always carry
-the empty environment). Trimming at construction is not an erasure step:
-the discarded entries were never part of the closure's identity.
-
-### Frames, residue, configurations
+Canonical booleans `0̂ = Lam(Lam(Var 2))`, `1̂ = Lam(Lam(Var 1))`.
+Closures are untrimmed: a closure's environment is whatever was in
+scope at capture, verbatim. Dead environment entries are a *coherence
+cost*, not a correctness cost — they are removed only by reverse
+execution (§5), never by a forward rule. (v0's trimming-at-construction
+broke A2 injectivity on vacuous binders and is abandoned.)
 
 ```text
-Frame ::= Arg(Clo)            — pending call-by-name argument
-        | LamK                — readback re-entry for one binder
-        | AppK(Neu)           — spine head held while an argument normalizes
-        | Try_h | Try_t       — δ-argument normalization in flight
+Frame ::= Arg(Clo)
+        | LamK
+        | AppK(Neu)
+        | Try_g(Clo)              — δ boundary; RETAINS the argument closure
+        | Try_g(Clo, b̂)          — after result copy (protocol, §5)
 
-Res   ::= Look(i, Env∖i)      — lookup tag: index and origin env with hole
-        | Jh | Jt | Jn_h | Jn_t   — δ landing tags (rule-indexed, content-free)
-        | …                   — further tags only as §4 forces them
+Res   ::= Join(colour)            — predecessor colour, charged every step
+        | Look(i, Env∖i)          — lookup content (A4/A5 only)
+        | Drop(Clo)               — explicit discard (δ-fire only, §5)
+
+Colour ::= Init | A1 | A2 | A3 | A4 | A5 | A6 | A6b | A7
+         | R1 | R2 | R3 | D1 | D2 | D3 | CP | RV(c)
 
 Config ::=
-    Run(mode, S: [Frame], m: depth, R: [Res])
-      where mode ::= Eval(Clo) | Ret(NF)
-  | RunDone(nf: NF, R, c: TermCtl)
-  | Halt(nf, R, c, k)
-  | Error(kind, R, k)
+    Run(dir: Fwd | Rev, via: Colour, mode: Eval(Clo) | Ret(NF),
+        S: [Frame], m: depth, R: [Res])
+  | RunDone(nf, R, c⊥)
+  | Halt(nf, R, c⊥, k)
+  | Error(kind, ctl: (S, m, NF, gate), R, k)
 ```
 
-`(p, τ)` are evaluator indices, not basis components (architecture §4.2,
-machine choice ratified in review). `TermCtl` is the terminal control
-value — for this table the constant `⊥` (the empty stack at depth 0),
-retained explicitly per the architecture's halted factorization.
+`(p, τ)` remain evaluator indices (frozen contract). `Error` retains
+the complete discarded control `(S, m, offending NF, gate)` — v0's E1
+defect.
 
-## 2. The transition table
+## 2. The colour discipline
 
-Deterministic rows are basis-to-basis; the two δ rows carry the clean
-gate fibres. `top(S) ∉ Arg` abbreviates "S is empty or its head is not an
-`Arg` frame".
+### 2.1 Structure
+
+Every forward row `r` fires from a source pattern (which does not
+constrain `via` — any producer is acceptable), sets the target's
+`via := r`, and pushes `Join(source.via)`. Reverse rows (§5) are the
+formal inverses: they read their own colour, pop the `Join`, and
+restore the predecessor.
+
+**Theorem shape (injectivity).** For forward rows: given a target
+`(Fwd, via = r, core′, R·Join(v))`, rule `r` is identified by `via`,
+its core inverse (§3, rowwise) reconstructs the source core from
+`core′` plus `r`'s content tags, and the source colour is `v`. Two
+distinct sources cannot share a target: same `via` forces the same
+rule, same `Join` forces the same predecessor colour, and rowwise core
+injectivity forces the same core. Range disjointness across rules is
+immediate from `via`. δ fibres: the two outcomes of one `D1` firing
+share `via`, `Join`, and spectators, differing only in the outcome
+boolean — the fibre is `Q_q ⊗ J_q` with `J_q` realized by
+(`via := Dq`, push `Join`), identical across input and output booleans,
+and fibres from distinct sources are orthogonal because spectators or
+`Join` content differ. Cross-gate orthogonality `J_h†J_t = 0` is the
+colour disjointness `D1 ≠ D2`. This realizes the architecture's clean
+δ fibre clause exactly.
+
+### 2.2 What conservative charging costs, honestly
+
+`Join` tags record the control path. Two branches of one program
+re-merge in raw forward execution **iff they executed the identical
+rule sequence with equal content tags** — control-path-identical
+branches (HH's two δ outcomes) interfere freely; control-divergent
+branches decohere until cleaned. Under fork (A) this is the honest
+physics: raw forward execution never erases, so control divergence is
+recorded, and interference across divergent control is *earned* through
+the reverse machinery of §5. This is not the probabilistic
+degeneration of the architecture's §4.5: content is not logged, and
+same-control interference (HH) survives raw.
+
+### 2.3 The minimality program
+
+A row is *via-transparent* if its source colour is derivable from the
+rule plus target core on reachable configurations — then its `Join`
+push can be soundly omitted. v1 charges every row (conservative,
+sound). Each via-transparency lemma proved later removes a tag class
+and **monotonically enlarges the class of raw-interfering programs**;
+the true minimal-garbage machine is the maximal safe transparency set.
+This replaces v0's single minimality claim with a program whose every
+step is independently checkable — and every step *changes the measured
+coherence economy*, so transparency lemmas must be ratified and pinned
+like the machine itself before canonical data exists.
+
+## 3. The forward table
+
+Every row implicitly: `via := <row id>`, push `Join(source.via)`; all
+rows are `dir = Fwd` except where stated. Content residue beyond
+`Join` is noted per row.
 
 ### Descent and binding
 
 ```text
-A1  Eval⟨(App f a, e)⟩ | S            → Eval⟨(f, e)⟩ | Arg(Clo(a,e))::S
-A2  Eval⟨(Lam b, e)⟩ | Arg(c)::S      → Eval⟨(b, c::e)⟩ | S
-A3  Eval⟨(Lam b, e)⟩ | S, top∉Arg     → Eval⟨(b, Level(m+1)::e)⟩ | LamK::S   [m → m+1]
+A1  Eval⟨(App f a, e)⟩ | S           → Eval⟨(f, e)⟩ | Arg(Clo(a,e))::S
+A2  Eval⟨(Lam b, e)⟩ | Arg(c)::S     → Eval⟨(b, c::e)⟩ | S
+A3  Eval⟨(Lam b, e)⟩ | S, top∉Arg∪Try → Eval⟨(b, Level(m+1)::e)⟩ | LamK::S   [m+1]
 ```
 
-### Lookup (the charged rows)
+A2 is injective with no residue: the environment head is never trimmed
+away, so A2⁻¹ pops it back into an `Arg` frame. Vacuous binders carry
+their dead entry as live state (coherence cost, §5 removes it).
+
+### Lookup (content-charged)
 
 ```text
-A4  Eval⟨(Var i, e)⟩ | S, e[i]=Clo c    → Eval⟨c⟩ | S      [R → R·Look(i, e∖i)]
-A5  Eval⟨(Var i, e)⟩ | S, e[i]=Level l  → Ret⟨Var(m−l+1)⟩ | S
-                                                            [R → R·Look(i, e∖i)]
+A4  Eval⟨(Var i, e)⟩ | S, e[i] = Clo c   → Eval⟨c⟩ | S       [+ Look(i, e∖i)]
+A5  Eval⟨(Var i, e)⟩ | S, e[i] = Level l → Ret⟨Var(m−l+1)⟩ | S  [+ Look(i, e∖i)]
 ```
 
-### Constants
+### Constants and the δ boundary
 
 ```text
-A6  Eval⟨(g, ∅)⟩ | Arg(c)::S, g∈{h,t}  → Eval⟨c⟩ | Try_g::S
-A7  Eval⟨(g, ∅)⟩ | S, top∉Arg          → Ret⟨g⟩ | S
+A6   Eval⟨(g, e)⟩ | Arg(c)::S, g∈{h,t}   → Eval⟨c⟩ | Try_g(c)::S
+A6b  Eval⟨(b̂, e)⟩ | Try_g(c)::S          → Ret⟨b̂⟩ | Try_g(c)::S
+A7   Eval⟨(g, e)⟩ | S, top∉Arg           → Ret⟨g⟩ | S
 ```
+
+`Try_g(c)` retains the argument closure — the δ boundary is also the
+protocol boundary of §5. A6b is the boolean short-circuit; its v0
+collisions with A3 and R1 are resolved by colour (`via = A6b`) and by
+A3's explicit `Try` exclusion. A6's source keeps `e` in the closure
+`c`'s captured environment; nothing is dropped.
 
 ### Readback
 
 ```text
-R1  Ret⟨n⟩ | LamK::S                   → Ret⟨Lam n⟩ | S    [m → m−1]
-R2  Ret⟨n⟩ | Arg(c)::S, n neutral      → Eval⟨c⟩ | AppK(n)::S
-R3  Ret⟨n'⟩ | AppK(n)::S               → Ret⟨App n n'⟩ | S
+R1  Ret⟨n⟩ | LamK::S                  → Ret⟨Lam n⟩ | S        [m−1]
+R2  Ret⟨n⟩ | Arg(c)::S, n neutral     → Eval⟨c⟩ | AppK(n)::S
+R3  Ret⟨n′⟩ | AppK(n)::S              → Ret⟨App n n′⟩ | S
 ```
 
-### δ fibres and species errors
+### δ rows (protocol-mediated; see §5 for the full firing sequence)
 
 ```text
-D1  Ret⟨0̂⟩ | Try_h::S  → (1/√2)·( Eval⟨(0̂,∅)⟩|S  +  Eval⟨(1̂,∅)⟩|S )   [R·Jh]
-    Ret⟨1̂⟩ | Try_h::S  → (1/√2)·( Eval⟨(0̂,∅)⟩|S  −  Eval⟨(1̂,∅)⟩|S )   [R·Jh]
-D2  Ret⟨0̂⟩ | Try_t::S  →      Eval⟨(0̂,∅)⟩ | S                          [R·Jt]
-    Ret⟨1̂⟩ | Try_t::S  → ω ·  Eval⟨(1̂,∅)⟩ | S                          [R·Jt]
-D3  Ret⟨n⟩ | Try_g::S, n neutral       → Ret⟨App g n⟩ | S               [R·Jn_g]
-E1  Ret⟨n⟩ | Try_g::S, n closed NF, n∉{0̂,1̂}
-                                        → Error(Species(g), R·⟨g,n⟩, 0)
+CP  Ret⟨b̂⟩ | Try_g(c)::S             → Run(Rev, …) | Try_g(c, b̂)::S
+D1  fire on result register b̂ in Try_h(c, b̂), post-protocol:
+      b̂=0̂ → (1/√2)(⟨0̂-continue⟩ + ⟨1̂-continue⟩)      [+ Drop(c)]
+      b̂=1̂ → (1/√2)(⟨0̂-continue⟩ − ⟨1̂-continue⟩)      [+ Drop(c)]
+D2  likewise with Q_t = diag(1, ω)                          [+ Drop(c)]
+D3  Ret⟨n⟩ | Try_g(c)::S, n neutral   → Ret⟨App g n⟩ | S     [+ Drop(c)]
+E1  Ret⟨n⟩ | Try_g(c)::S, n closed NF ∉ {0̂,1̂}
+                                       → Error(Species(g), (S, m, n, g), R, 0)
 ```
 
-`Jh`, `Jt`, `Jn_h`, `Jn_t` are rule-indexed and content-free: the two
-outcomes of one `D1` firing receive the *same* tag, which is the clean
-δ-fibre requirement — the landing `J_q` is one injective spectator
-transition per gate, independent of input and output boolean, and the
-distinct tags realize `J_q† J_r = δ_qr I` and orthogonality against the
-neutral row.
+`⟨b̂′-continue⟩` abbreviates `Eval⟨(b̂′, ∅)⟩ | S` — the boolean
+literal is closed, so the empty environment is its verbatim capture,
+not a trim. `Drop(c)` is the machine's only discard: the retained
+`Try` closure is branch-independent by construction (captured before
+the δ fired), so this tag never decoheres branches of one firing.
 
 ### Terminal sectors
 
 ```text
-F1  Ret⟨n⟩ | ∅, m = 0                  → RunDone(n, R, ⊥)
-F2  RunDone(n, R, c)                   → Halt(n, R, c, 0)
-F3  Halt(n, R, c, k)                   → Halt(n, R, c, k+1)
-F4  Error(kind, R, k)                  → Error(kind, R, k+1)
+F1  Ret⟨n⟩ | ∅, m = 0                 → RunDone(n, R, ⊥)
+F2  RunDone(n, R, c)                  → Halt(n, R, c, 0)
+F3  Halt(n, R, c, k)                  → Halt(n, R, c, k+1)
+F4  Error(kind, ctl, R, k)            → Error(kind, ctl, R, k+1)
 ```
 
-## 3. Reachability invariants
+## 4. Reachability invariants
 
-The range-disjointness proofs of §4 are relative to the reachable set,
-and these invariants carry them:
+- **I1**: `Ret⟨Lam n⟩` never meets an `Arg` frame.
+- **I2**: `Level(l)` occurs in reachable environments only with
+  `l ≤ m`, ordered by capture.
+- **I3**: `Try_g(c)` frames appear only above a δ-argument evaluation;
+  at most one `Ret` in flight per branch.
+- **I4**: depth `m` equals the number of `LamK` frames in `S`.
+- **I5** (new): in `Fwd` mode the residue is a faithful LIFO record —
+  the top tag was pushed by the producing step.
 
-- **I1**: `Ret⟨Lam n⟩` never meets an `Arg` frame (a Lam over a pending
-  argument would have fired A2 earlier under this strategy).
-- **I2**: `Level(l)` occurs in a reachable environment only with
-  `l ≤ m`, and the entries of any environment's Level-set are exactly
-  the currently open binders above the closure's capture point.
-- **I3**: constants and canonical booleans always appear as `Clo(·, ∅)`
-  (canonical-closure discipline).
-- **I4**: `Try_g` frames appear only above the evaluation of a δ
-  argument; at most one `Ret` is in flight.
-- **I5**: depth `m` equals the number of `LamK` frames in `S`.
+**[open]** Induction proofs over the v1 table, after review.
 
-**[open]** I1–I5 need induction proofs over the table once the residue
-discipline of §4 is fixed; none is expected to be delicate.
+## 5. The Try-boundary protocol
 
-## 4. The reversibility framework
+The δ boundary is where coherence is earned. The full sequence for a
+δ-argument (entered at A6, `Try_g(c)` retaining the argument closure):
 
-**Definition (backward determinism).** A function
-`φ : Reach → Rule ∪ {init}` assigning to every reachable configuration
-the unique rule that produced it. `U` is an isometry on the reachable
-span iff (a) each rule is injective on its domain, (b) rule ranges are
-pairwise disjoint on `Reach` (`φ` well-defined), and (c) the δ fibres are
-internally orthonormal and orthogonal to every other range. The
-orthonormal-columns battery is the finite-range check of exactly this.
+1. **Forward**: the argument evaluates under the `Try` frame,
+   accumulating `Join`/`Look` tags; earlier δs inside the argument fire
+   normally (branching the configuration).
+2. **Copy (CP)**: on `Ret⟨b̂⟩ | Try_g(c)`, the machine basis-copies the
+   result boolean into the frame — `Try_g(c, b̂)` — and flips to
+   `dir = Rev`. Per basis configuration this is a CNOT into a fresh
+   register: injective, branch-local, legal.
+3. **Reverse**: `Rev` rows are the formal inverses of the forward rows,
+   popping tags in LIFO order and restoring predecessor configurations.
+   Crucially, reverse runs *through* interior δ firings as their
+   adjoint columns (`Q_q†` acting on the configuration superposition) —
+   reverse is always available because the machine is an isometry, and
+   no code-supplied inverse function is needed. The reverse pass ends,
+   by construction, at the unique `Try`-entry configuration whose
+   colour is `A6` — the frame itself is the entry marker.
+4. **Fire**: the state is now the branch-independent entry
+   configuration tensored with the result register carrying the
+   argument's value superposition. The δ row (D1/D2) fires on the
+   result register, `Drop(c)` charges the retained closure, and
+   evaluation continues with the outcome literal.
 
-Per-rule inverses (giving (a)) are immediate from the table:
+**What this buys.** Across the whole protocol the argument evaluation
+acts as one coherent linear map from the entry configuration to the
+result register — Bennett compute–copy–uncompute with the input
+retained by the frame, so injectivity of the *computed function* is
+never needed (retaining the input makes `c ↦ (c, f(c))` injective for
+every `f`). The tags written by divergent branch control are unwound
+symmetrically, so post-protocol branches differ **only in the result
+register and in global timing**.
 
-- A1⁻¹ re-forms `App` from focus and the `Arg` frame (their shared
-  environment is part of A1's range condition);
-- A2⁻¹ pops the environment head back into an `Arg` frame;
-- A3⁻¹ / R1⁻¹ are inverse to each other's shape by I5;
-- A4⁻¹/A5⁻¹ plug the focus (resp. the emitted variable) back into the
-  hole of the `Look` tag — this is why the tag carries `(i, e∖i)`;
-- R2⁻¹/R3⁻¹ re-form the spine state; D-rows and E1 are injective by the
-  tags; F-rows by the typed constructors.
+**What it honestly does not buy.** Branches whose forward evaluation
+took different numbers of transitions finish the protocol at different
+global times and never interfere — the synchronization convention,
+resurfacing as the machine-level residue of control divergence. A
+δ-argument interferes coherently iff its branch paths are
+transition-count-equal. This *derives* the architecture §6
+clean-compilation requirement (single common `T`) from machine
+structure instead of stipulating it, and defines the clean fragment
+operationally: **code whose branch paths are length-balanced**.
 
-**(b) is the substantive obligation.** The clean pairs are separated by
-mode, top frame, and the invariants (examples: A2-range has `Clo` at the
-environment head where A3-range has `Level(m)` — disjoint by I2; R1/R3
-ranges are separated by the returned NF's outer constructor plus I1).
-The hard family is everything whose range lands in an unconstrained
-`Eval` configuration: **A4 against A1/A2/A6/D1/D2** — a dereferenced
-closure can look like anything. The `Look` tag does not by itself
-separate these ranges (an A1 source whose stale residue happens to end
-in a `Look` collides with a fresh A4 target), so the discipline is:
+**Witness 7.** `NOT′ = λb.λx.λy. b y x` is path-symmetric: both
+booleans drive rule-for-rule identical control (`A3·A3`, the `b`
+lookup, two `A2`s, one selection lookup, readback) with equal
+transition counts, differing only in `Look` content that the reverse
+pass pops. Hand trace (§6.2): the protocol returns the entry
+configuration with result register `(1/√2)(|1̂⟩ ± |0̂⟩)` per branch
+sign, the outer D1 fires, and the `1̂` amplitudes cancel — mass 1 on
+`0̂`. The witness-pinning amendment (architecture witness 7 names
+`NOT′` and the protocol) travels with this draft's review.
 
-> **Residue-freshness invariant [open]**: the table is arranged so that
-> for reachable configurations, whether the residue head was written by
-> the producing step is determined by the configuration shape. The
-> candidate mechanism is a one-bit `fresh` flag on `Run` set by charged
-> rows (A4, A5, D·, E1) and cleared by the first uncharged row after —
-> with the flag's own overwrite made lawful by the *pop schedule* below.
+**[open — protocol determinism obligations]** (i) CP fires whenever a
+basis boolean returns under `Try` — forward-deterministic; A6b's
+short-circuit must be ordered before CP for already-literal booleans
+(else HH's outcomes would pay a full protocol pass; ordering is a
+determinism choice to pin, and either choice is sound — the
+short-circuit is an optimization with identical amplitudes since a
+literal's protocol is empty). (ii) `Rev` rows need their own
+backward-determinism check: `dir`+colour makes their ranges disjoint
+from forward rows, and each `Rev` row's injectivity is its forward
+row's. (iii) The direction flip at CP and the flip back at fire are
+paired; neither "clears" anything — the v0 freshness defect does not
+recur.
 
-**[open]** This is the crux of item 1 and the first thing the review
-should attack; §5 shows the pop schedule is forced independently, so the
-freshness mechanism and the pop schedule must be designed together.
+## 6. Witnesses by hand
 
-**Local minimality** is then the statement: `Look(i, e∖i)` is exactly
-the predecessor-fibre content for A4/A5 (the round-1 KN witness shows
-`i` and the origin environment are genuinely lost without it), the
-δ tags are exactly the fibre separators, and no uncharged row retains
-anything — each of its predecessor fibres is a singleton by (b).
+### 6.1 HH — raw, no protocol
 
-## 5. The witness-forcing analysis
+`h (h 0̂)`: shared prefix A1·A6(outer)·A1·A6(inner)·A3·A3·A5·R1·R1
+(one `Look`, common), inner CP/trivial-protocol, D1 branches with
+shared colour and `Join`; each outcome short-circuits via A6b to the
+outer `Try`, outer protocol is empty (literal), outer D1 fires per
+branch, residues equal throughout, `1̂` cancels: mass 1 on `0̂`.
+Control paths are rule-identical across branches — HH interferes raw,
+as §2.2 promises.
 
-### 5.1 HH passes on this table
+### 6.2 H–NOT–H — protocol-mediated
 
-Hand computation of `h (h 0̂)` (= `App(h, App(h, 0̂))` after invocation
-plumbing; the outer `t`-abstraction is administrative and shared):
+`h (NOT′ (h 0̂))`: shared prefix through the inner D1; branches carry
+`b̂ = 0̂/1̂` with equal residue; forward evaluation of `NOT′ b̂` runs
+length-equal, rule-identical control with branch-divergent `Look`
+content (`Look(2, [Clo(x̄), _])` vs `Look(1, [_, Clo(ȳ)])`); CP copies
+`1̂`/`0̂`; reverse pops the `Look`s and `Join`s symmetrically and runs
+back through the inner D1 adjoint; the entry configuration
+re-materializes branch-independently with result register
+`H·X`-transformed; outer D1 fires; `1̂` amplitudes cancel: **mass 1 on
+`0̂`**. With the selector `NOT = λb. b 1̂ 0̂` the forward paths are
+also length-equal in this table — the selector's decoherence in v0 came
+from permanent tags, which the protocol now pops — so v1 predicts the
+selector *also* passes; the pinned witness stays `NOT′` because its
+symmetry is robust to table refinements, and the selector's fate is a
+measurable, not a gate. **[open: both traces to be verified
+step-indexed in review]**
 
-all steps through the inner δ are common to both branches — A1, A6
-(outer `h`), A1, A6 (inner `h`), A3·A3·A5·R1·R1 normalizing the literal
-`0̂` (one `Look` tag, *common*), then `D1` branches with the shared `Jh`
-tag. Each branch's boolean lands as `Ret`-adjacent `Eval⟨(b̂,∅)⟩` under
-the outer `Try_h`; it is already a normal form, and its renormalization
-(A3·A3·A5·R1·R1) writes `Look` tags whose content is
-*branch-independent* — `0̂` and `1̂` share the index-to-hole shape only
-when… **it is not branch-independent**: `0̂` looks up `Var 2`, `1̂` looks
-up `Var 1`, so the second `Look` tags differ, and naively HH decoheres
-too. The repair is already in the table: `D1`'s outcomes re-enter as
-`Eval⟨(b̂,∅)⟩` — and a returned δ *value is already an NF*, so the table
-must (and here does) route it back to the waiting `Try` frame without
-renormalization when the outer frame is `Try_g`:
+## 7. Invariant sectors
 
-```text
-A6′ Eval⟨(b̂,∅)⟩ | Try_g::S             → Ret⟨b̂⟩ | Try_g::S      [no tags]
-```
+Unchanged from v0 (review-confirmed): `RunDone`/`Halt`/`Error` are
+typed constructors, F2/F3/F4 realize the normative halted dynamics and
+its error twin, newly halting amplitude lies in the wandering subspace,
+and the monotone-mass lemma instantiates verbatim.
 
-**[open]** A6′ as stated is a recognition rule (boolean-valued focus
-short-circuits to `Ret`); its range/injectivity interplay with A3 needs
-the §4 treatment, and its generalization (any NF-valued closure
-short-circuits) is a design choice with real consequences — as stated
-it is deliberately minimal: booleans under `Try` only. With A6′, both
-HH branches write no post-branch `Look` tags, residues stay equal, the
-outer `D1` fires per branch with the common `Jh`, and the `1̂`
-amplitudes cancel: final state `|0̂⟩` at mass 1. The amplitude
-computation is review-confirmed; "HH passes" is conditional on the A6′
-repair of §7.1 (distinct `ReadyBool` landing with branch-independent
-provenance), since A6′ as displayed overlaps A3 and collides with
-genuine readback.
+## 8. Bookkeeping
 
-### 5.2 Selector H–NOT–H decoheres under this table's permanent tags
+### 8.1 v0 defect resolution map
 
-Take `NOT := λb. b 1̂ 0̂` (the selector) and run `h (NOT (h 0̂))`. After
-the inner δ, the branches carry `b̂ = 0̂` / `1̂` and equal residue `R₀`.
-The `b`-lookup tag is equal across branches (the hole excludes the
-differing entry); the selection then fires:
-
-```text
-branch 0̂:  A4 on Var 2 → tag Look(2, [Clo(0̂,∅), _])
-branch 1̂:  A4 on Var 1 → tag Look(1, [_, Clo(1̂,∅)])
-```
-
-The tags differ, the branches reach the outer `D1` with unequal
-residue, the `1̂` amplitudes fail to cancel, and the halting state is
-the (1/2, 1/2) mixture. **Correct theorem (review-verified): permanent
-`Look(i, e∖i)` residue in this table makes selector H–NOT–H decohere
-unless a code-aware cleanup transition removes it.**
-
-Two stronger claims made by v0 are **retracted**:
-
-- *"No local pop is legal"* — false. The selector's tag *is* determined
-  by its result once the decoder is known (`1̂ ↦ Look(2, [0̂,_])`,
-  `0̂ ↦ Look(1, [_,1̂])`): the unselected literal is the complement of
-  the selected one, fixed by the code. What is missing is live
-  *provenance* — a marker that this decoder applies — which makes it a
-  scheduling problem, not an information-theoretic impossibility.
-- *"Any machine with permanent lookup residue fails"* — false.
-  Counterdesign `LookFull(e, r)` with `r` the occurrence ordinal of the
-  selected entry among equal entries of `e`: injective (recover `i` as
-  the `r`-th occurrence of the returned closure in `e`), permanent, and
-  *branch-independent* whenever the whole environment is — for the
-  selector both branches write the identical `LookFull([0̂,1̂], 1)`. It
-  violates the local-minimality economy by design, but it refutes the
-  universal claim and marks a genuine machine-design axis (§7.3).
-
-### 5.3 Coherence is operational injectivity, not syntactic linearity
-
-v0 conjectured that terms linear in the consumed boolean are
-coherence-transparent under a generic pop-at-Ret rule. **Both halves
-are false** (review countermodels, verified):
-
-- *Generic pop-at-Ret is unsound.* `N = λb.λx.λy. b y x` applied to
-  `1̂` and `I' = λb.λx.λy. b x y` applied to `0̂` both return `0̂` at
-  the same frame shape and depth, with *different* selection tags
-  (`Look(1, [_,Clo(ȳ)])` vs `Look(2, [Clo(ȳ),_])`). A pop keyed only
-  on the returned NF and frame would merge distinct configurations —
-  non-injective — and since `p` is not a basis coordinate, the inverse
-  cannot consult program identity. The NF ↔ tag bijection exists only
-  relative to a retained code/call-site decoder.
-- *Linearity is not sufficient.* `λb. b I I` uses `b` exactly once and
-  maps both booleans to `I`: the computed function is non-injective, so
-  by injectivity of `U` the consumed bit *must* persist somewhere, and
-  no cleanup can produce equal residue. Conversely, syntactic
-  duplication can be coherent — basis-copying `b ↦ (b, b)` is
-  injective.
-
-The correct notion: **coherence-transparency requires operational
-injectivity of the computed map on the branch support, plus a
-synchronized, code-aware cleanup schedule.** Erasure = non-injectivity
-of the computed function, and *that* is what costs coherence — the
-Landauer reading survives, attached to semantics rather than syntax.
-
-### 5.4 The sound scheduling shape: explicit reversible uncomputation
-
-The plausible construction (review round, unproved here) is Bennett
-compute–copy–uncompute specialized to the machine:
-
-1. push a branch-independent `CleanK(code, call-site)` frame;
-2. evaluate forward, accumulating reversible tags;
-3. copy the returned basis NF into a protected result zipper;
-4. enter a distinct **reverse mode** and invert the forward transitions
-   in LIFO order;
-5. use the protected result to reconstruct and clear the input when the
-   compiled map is injective;
-6. return with a fixed direction state and branch-independent residual
-   control.
-
-The direction flag is safe only because reverse execution restores it —
-it is never "cleared" by a forward row. Proving this schedule sound for
-one pinned NOT term is **the smallest clean-compilation lemma**, and it
-is the actual content behind witness 7.
-
-### 5.5 Contract implication (review-ratified direction)
-
-Witness 7 stands as a machine gate, in the satisfiable world: pin an
-exact NOT wire term (`NOT′ = λb.λx.λy. b y x` is a reasonable choice —
-easier for this machine, though the selector NOT is *not* intrinsically
-incoherent: Boolean NOT is bijective and its alternatives are fixed
-code, so a sufficiently code-aware reversible compilation can clean it
-too); state that passing the witness requires a proved code-aware
-reversible cleanup schedule; and treat the whole thing as the first
-concrete lemma of clean coherent compilation rather than a theorem
-about binder counts. The witness-pinning amendment goes back through
-the review thread with v1.
-
-## 6. Invariant sectors
-
-`RunDone`, `Halt`, `Error` are basis constructors; F1–F4 are rows of the
-same table. F2/F3 realize the architecture's normative halted dynamics
-(`id_output ⊗ id_garbage ⊗ id_terminal-control ⊗ shift_tick`, entry at
-tick 0); F4 is its error-sector twin. The monotone-halting-mass lemma
-(architecture §4.3) instantiates directly: the halt sector is spanned by
-`Halt(·)` configurations, F2 maps into it, F3 maps it into itself
-injectively, no row maps out of it, and newly arriving amplitude lies in
-the wandering subspace `S ⊖ V(S)` by the typed entry. The same argument
-covers `Error` verbatim.
-
-## 7. v0 defect register and the v1 direction
-
-### 7.1 Confirmed table defects (review countermodels)
-
-1. **A2 is not injective under canonical trimming.** For a vacuous
-   binder, `Eval⟨(Lam I, ∅)⟩ | Arg(X)` and `| Arg(Y)` both land at
-   `Eval⟨(I, ∅)⟩` once the constructed closure trims the unused entry.
-   The discarded argument is genuine erased content: v1 must either
-   route it to residue (the sketch's binding-erasure row, lost in v0)
-   or abandon trimming-at-construction for bound entries. Separately,
-   trimming must be suffix-only or `Env` must become a sparse indexed
-   map — deleting interior entries shifts de Bruijn indices.
-2. **A1 and A2 ranges collide** on unconstrained `Eval` targets:
-   `((λx.x) X) Y` and `(λx. x Y) X` both reach
-   `Eval⟨(Var 1, [X])⟩ | Arg(Y)::S`. The v0 "clean pairs" claim checked
-   only marked-target rules; deterministic rows need producer marking
-   too.
-3. **A6′** overlaps A3's domain (needs explicit exclusion) and its
-   target collides with genuine R1 readback of a non-literal
-   normalizing to a boolean; it needs a distinct landing mode
-   (`ReadyBool` with branch-independent provenance), which HH tolerates.
-4. **E1 is not injective**: it drops `S` and `m` (`h I` vs `(h I) A`
-   reach the same error with different discarded continuations). Error
-   garbage must retain the complete discarded control: `(S, m, n, g)`.
-   Error-sector coherence is irrelevant; norm preservation is not.
-5. **D3/R3 collide** through stale `Jn_g` residue, and the one-bit
-   freshness proposal is itself non-reversible — clearing a flag merges
-   its prior values. Producer marking must be **rule-coloured landing
-   modes removed only through explicit inverse/uncompute paths**, not
-   flags cleared by forward rows.
-
-### 7.2 What stands after review
-
-The invariant-sector construction and wandering-subspace argument (§6);
-the H–NOT–H decoherence trace and its corrected narrow theorem (§5.2);
-the operational-injectivity reformulation (§5.3); the Bennett scheduling
-shape (§5.4); I1/I5 provisionally, with induction proofs deferred until
-the coloured-mode table exists.
-
-### 7.3 The v1 design fork (machine-defining, to be settled before v1)
-
-The canonical machine — and therefore the canonical `Ω_qALC` — depends
-on a genuine choice surfaced by the `LookFull` counterdesign:
-
-- **(A) Minimal tags + code-aware reversible cleanup**: residue is
-  locally minimal (`Look(i, e∖i)` style), coherence is *earned* through
-  explicit compute–copy–uncompute (§5.4), and the coherence economy is
-  a rich measured object — programs that clean up interfere, programs
-  that don't decohere.
-- **(B) Symmetric redundant tags (`LookFull`-style)**: residue retains
-  branch-independent context wherever possible, more coherence comes
-  for free, the witness passes with less machinery — and the measured
-  economy flattens, since redundancy substitutes for uncomputation.
-
-These define *different canonical objects*, in the same way the frozen
-signature order defines qBLC's: the choice must be made deliberately,
-recorded, and then pinned. v0's working recommendation is (A), for
-alignment with the architecture's local-minimality theorem and because
-(B) hides exactly the erasure structure the pillar exists to measure —
-but the fork is open until ratified.
-
-### 7.4 Formalization checklist (live status)
-
-| Item (architecture §9 / machine §6) | Status |
+| v0 defect | v1 resolution |
 |---|---|
-| Transition table, total on reachable `Config` | v0 drafted; **rebuild for v1** with coloured landing modes (§7.1) |
-| Per-rule injectivity | v0 claims partially refuted (A2, E1); redo in v1 |
-| Range disjointness | v0 claim false (A1/A2); needs producer marking throughout |
-| Local predecessor-fibre minimality | blocked on the §7.3 fork |
-| Invariant-sector lemma in-machine | **done** (§6, review-confirmed) |
-| HH witness by hand | amplitude computation confirmed; conditional on A6′ repair |
-| H–NOT–H witness by hand | decoherence trace confirmed; coherent path = smallest clean-compilation lemma (§5.4) |
-| Witness-7 pinning amendment (NOT′) | drafted direction (§5.5); thread ratification with v1 |
-| Effect-free projection lemma | open |
-| Clean compilation (architecture item 2) | §5.4 is its smallest instance; substrate = operationally injective maps |
+| A2 non-injective under trimming | no-erasure forward machine: trimming abolished (§1) |
+| A1/A2 range collision | colour discipline: ranges disjoint by `via` (§2.1) |
+| A6′ domain/range collisions | A6b colour + A3 `Try` exclusion (§3) |
+| E1 drops `(S, m)` | `Error` retains full control (§1, §3) |
+| D3/R3 stale-tag collision | colour discipline (§2.1) |
+| freshness flag non-reversible | no flags; paired CP/fire direction flips (§5) |
+
+### 8.2 Formalization checklist (live)
+
+| Item | Status |
+|---|---|
+| Transition table, total on reachable `Config` | v1 drafted (§3, §5); Rev rows schematic |
+| Injectivity / range disjointness | theorem shape §2.1; rowwise inverses stated; full proof after review |
+| Local minimality | reframed as the transparency program (§2.3) |
+| Invariant-sector lemma | done (review-confirmed) |
+| HH by hand | done raw (§6.1) |
+| H–NOT–H by hand | done via protocol (§6.2); step-indexed verification open |
+| Witness-7 pinning (NOT′ + protocol) | drafted; travels with this review |
+| Effect-free projection lemma | open; expect: term projection = rigid-atom sequence, administrative rows are A6b/CP-free on effect-free runs |
+| Clean compilation | operationally derived: length-balanced code + protocol (§5); formal statement open |
