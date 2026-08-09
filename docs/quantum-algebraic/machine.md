@@ -15,10 +15,10 @@ review:
    exists only as explicit, reversible discard-to-residue, and most of
    v0's injectivity defects dissolve because the information they lost
    is simply never lost.
-2. **Rule-coloured configurations with join charging** (§2): every
-   running configuration carries the colour (rule id) of its producer;
-   every step charges a `Join` tag recording its predecessor's colour.
-   Ranges are pairwise disjoint by colour, backward determinism is
+2. **Rule-colored configurations with join charging** (§2): every
+   running configuration carries the color (rule id) of its producer;
+   every step charges a `Join` tag recording its predecessor's color.
+   Ranges are pairwise disjoint by color, backward determinism is
    structural, and the local-minimality theorem becomes a monotone
    research program (§2.3) rather than a single fragile claim.
 3. **The Try-boundary protocol** (§5): coherent gate application is
@@ -55,15 +55,15 @@ Frame ::= Arg(Clo)
         | Try_g(Clo)              — δ boundary; RETAINS the argument closure
         | Try_g(Clo, b̂)          — after result copy (protocol, §5)
 
-Res   ::= Join(colour)            — predecessor colour, charged every step
+Res   ::= Join(color)            — predecessor color, charged every step
         | Look(i, Env∖i)          — lookup content (A4/A5 only)
         | Drop(Clo)               — explicit discard (δ-fire only, §5)
 
-Colour ::= Init | A1 | A2 | A3 | A4 | A5 | A6 | A6b | A7
+Color ::= Init | A1 | A2 | A3 | A4 | A5 | A6 | A6b | A7
          | R1 | R2 | R3 | D1 | D2 | D3 | CP | RV(c)
 
 Config ::=
-    Run(dir: Fwd | Rev, via: Colour, mode: Eval(Clo) | Ret(NF),
+    Run(dir: Fwd | Rev, via: Color, mode: Eval(Clo) | Ret(NF),
         S: [Frame], m: depth, R: [Res])
   | RunDone(nf, R, c⊥)
   | Halt(nf, R, c⊥, k)
@@ -74,22 +74,22 @@ Config ::=
 the complete discarded control `(S, m, offending NF, gate)` — v0's E1
 defect.
 
-## 2. The colour discipline
+## 2. The color discipline
 
 ### 2.1 Structure
 
 Every forward row `r` fires from a source pattern (which does not
 constrain `via` — any producer is acceptable), sets the target's
 `via := r`, and pushes `Join(source.via)`. Reverse rows (§5) are the
-formal inverses: they read their own colour, pop the `Join`, and
+formal inverses: they read their own color, pop the `Join`, and
 restore the predecessor.
 
 **Theorem shape (injectivity).** For forward rows: given a target
 `(Fwd, via = r, core′, R·Join(v))`, rule `r` is identified by `via`,
 its core inverse (§3, rowwise) reconstructs the source core from
-`core′` plus `r`'s content tags, and the source colour is `v`. Two
+`core′` plus `r`'s content tags, and the source color is `v`. Two
 distinct sources cannot share a target: same `via` forces the same
-rule, same `Join` forces the same predecessor colour, and rowwise core
+rule, same `Join` forces the same predecessor color, and rowwise core
 injectivity forces the same core. Range disjointness across rules is
 immediate from `via`. δ fibres: the two outcomes of one `D1` firing
 share `via`, `Join`, and spectators, differing only in the outcome
@@ -97,7 +97,7 @@ boolean — the fibre is `Q_q ⊗ J_q` with `J_q` realized by
 (`via := Dq`, push `Join`), identical across input and output booleans,
 and fibres from distinct sources are orthogonal because spectators or
 `Join` content differ. Cross-gate orthogonality `J_h†J_t = 0` is the
-colour disjointness `D1 ≠ D2`. This realizes the architecture's clean
+color disjointness `D1 ≠ D2`. This realizes the architecture's clean
 δ fibre clause exactly.
 
 ### 2.2 What conservative charging costs, honestly
@@ -115,7 +115,7 @@ same-control interference (HH) survives raw.
 
 ### 2.3 The minimality program
 
-A row is *via-transparent* if its source colour is derivable from the
+A row is *via-transparent* if its source color is derivable from the
 rule plus target core on reachable configurations — then its `Join`
 push can be soundly omitted. v1 charges every row (conservative,
 sound). Each via-transparency lemma proved later removes a tag class
@@ -161,7 +161,7 @@ A7   Eval⟨(g, e)⟩ | S, top∉Arg           → Ret⟨g⟩ | S
 
 `Try_g(c)` retains the argument closure — the δ boundary is also the
 protocol boundary of §5. A6b is the boolean short-circuit; its v0
-collisions with A3 and R1 are resolved by colour (`via = A6b`) and by
+collisions with A3 and R1 are resolved by color (`via = A6b`) and by
 A3's explicit `Try` exclusion. A6's source keeps `e` in the closure
 `c`'s captured environment; nothing is dropped.
 
@@ -233,7 +233,7 @@ The δ boundary is where coherence is earned. The full sequence for a
    reverse is always available because the machine is an isometry, and
    no code-supplied inverse function is needed. The reverse pass ends,
    by construction, at the unique `Try`-entry configuration whose
-   colour is `A6` — the frame itself is the entry marker.
+   color is `A6` — the frame itself is the entry marker.
 4. **Fire**: the state is now the branch-independent entry
    configuration tensored with the result register carrying the
    argument's value superposition. The δ row (D1/D2) fires on the
@@ -276,7 +276,7 @@ short-circuit must be ordered before CP for already-literal booleans
 determinism choice to pin, and either choice is sound — the
 short-circuit is an optimization with identical amplitudes since a
 literal's protocol is empty). (ii) `Rev` rows need their own
-backward-determinism check: `dir`+colour makes their ranges disjoint
+backward-determinism check: `dir`+color makes their ranges disjoint
 from forward rows, and each `Rev` row's injectivity is its forward
 row's. (iii) The direction flip at CP and the flip back at fire are
 paired; neither "clears" anything — the v0 freshness defect does not
@@ -288,7 +288,7 @@ recur.
 
 `h (h 0̂)`: shared prefix A1·A6(outer)·A1·A6(inner)·A3·A3·A5·R1·R1
 (one `Look`, common), inner CP/trivial-protocol, D1 branches with
-shared colour and `Join`; each outcome short-circuits via A6b to the
+shared color and `Join`; each outcome short-circuits via A6b to the
 outer `Try`, outer protocol is empty (literal), outer D1 fires per
 branch, residues equal throughout, `1̂` cancels: mass 1 on `0̂`.
 Control paths are rule-identical across branches — HH interferes raw,
@@ -326,10 +326,10 @@ and the monotone-mass lemma instantiates verbatim.
 | v0 defect | v1 resolution |
 |---|---|
 | A2 non-injective under trimming | no-erasure forward machine: trimming abolished (§1) |
-| A1/A2 range collision | colour discipline: ranges disjoint by `via` (§2.1) |
-| A6′ domain/range collisions | A6b colour + A3 `Try` exclusion (§3) |
+| A1/A2 range collision | color discipline: ranges disjoint by `via` (§2.1) |
+| A6′ domain/range collisions | A6b color + A3 `Try` exclusion (§3) |
 | E1 drops `(S, m)` | `Error` retains full control (§1, §3) |
-| D3/R3 stale-tag collision | colour discipline (§2.1) |
+| D3/R3 stale-tag collision | color discipline (§2.1) |
 | freshness flag non-reversible | no flags; paired CP/fire direction flips (§5) |
 
 ### 8.2 Formalization checklist (live)
