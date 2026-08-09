@@ -6,11 +6,11 @@ quantum architectures so the three systems can be compared layer by layer.
 
 **The pillar is a design contract without an engine**: nothing in `src/`
 or `data/` is qALC-relative yet, and the two gates that stand between this
-document and implementation are stated in §9. The contract has been through
-two rounds of adversarial review (gaslamp thread `qalc-architecture`); the
-development history, including what the review broke and how the design
-moved, lives in `../ledger/2026-08.md`. A final sign-off pass gates
-formalization.
+document and implementation are stated in §9. The contract has undergone
+adversarial review and ratification in gaslamp thread `qalc-architecture`,
+including the ratified token-machine amendment (§8); the development
+history, subsequent amendments, and the failed rewriting-machine
+formalizations are recorded in `../ledger/2026-08.md`.
 
 ## 1. Purpose and position among the pillars
 
@@ -41,9 +41,12 @@ bit-identical classical and qBLC rows after any qALC work.
 ## 2. Target objects
 
 For a program `p` (a closed BLC term, unchanged wire code), the machine
-prepares the basis configuration for `p h t` — the program applied to the
-two opaque constants — with amplitude 1, and applies the global step
-isometry `U` (§4) once per transition. With `P_halt` the projection onto
+prepares `|init(p)⟩` — the root query token over the immutable invocation
+term `p h t`, with initial direction, empty context stacks, and initial
+readback control — with amplitude 1, and applies the global step isometry
+`U` (§4) once per transition. Positions are structural and
+program-relative (no allocation identity), so the global state space is
+an explicit orthogonal direct sum over invocation sectors. With `P_halt` the projection onto
 halted configurations:
 
 ```text
@@ -107,8 +110,10 @@ nothing looser.
 
 ### δ-rules
 
-The constants are rigid atoms. A δ-redex is a constant applied to an
-argument that is *syntactically* one of the canonical booleans:
+The constants are rigid atoms. The δ-rules specify *amplitudes*, not
+rewrites — in the machine they are realized as unitary scattering on
+gate fibres (§7) after the machine's internal delimited interrogation
+of the applied constant's argument establishes its value:
 
 ```text
 h 0̂  →  (0̂ + 1̂)/√2         t 0̂  →  0̂
@@ -116,87 +121,103 @@ h 1̂  →  (0̂ − 1̂)/√2         t 1̂  →  ω·1̂,      ω = exp(iπ/4)
 ```
 
 `h` (with Toffoli-class λ-terms, §6) and `t` restore the Clifford+T
-amplitude ring. A constant applied to a closed normal form that is not a
-canonical boolean is an error transition into the absorbing error sector
-(§4.4), not a stuck normal form. A constant applied to a non-normal
-argument is not a redex; reduction continues inside the argument. A
-constant applied to a rigid open variable remains neutral. An unapplied or
-partially applied constant in normal position is an ordinary normal form
-and may appear in outputs.
+amplitude ring. Recognition of the canonical booleans is owned by the
+interrogation/readback layer, not by pattern-matching a rewritten term.
+An argument whose interrogation returns a closed normal form that is
+not a canonical boolean drives an error transition into the absorbing
+error sector (§4.4), not a stuck normal form. An argument still under
+interrogation is an ordinary running configuration, and a divergent
+interrogation stays in the running sector. A constant applied to a
+rigid open variable remains neutral. An unapplied or partially applied
+constant in normal position is an ordinary normal form and may appear
+in outputs.
 
 ### No sums in syntax
 
 Formal superpositions never appear in program or term syntax. A runtime
 "superposition" is a weighted set of ordinary basis configurations; the
-calculus never rewrites a sum. `h`'s δ-rule is the only branching
-transition and `t`'s the only scalar transition; everything else is the
-classical machine step extended linearly. The Lineal call-by-base question
+calculus never rewrites a sum. `h`'s δ-fibre is the only
+amplitude-branching column of `U` and `t`'s the only scalar column;
+every non-δ column is basis-to-basis. The Lineal call-by-base question
 dissolves: there is never a superposed *subterm* to substitute (§4.2).
 
 ### Strategy
 
-Reduction is leftmost-outermost strong normalization — the KN strategy —
-with δ-redexes and error transitions ranked among β-redexes by position.
-The strategy is part of the machine's definition and therefore part of the
-physics: a different strategy is a different `U` and different canonical
-objects. Machine-relativity does not resolve the algebraic-λ
-non-confluence pathologies; it chooses one side of them. AIT objects are
-defined relative to a fixed universal machine, this contract fixes one,
-and the price is stated plainly: β/δ-convertibility is **not** a semantic
-equality in qALC, and alternative reduction sequences are not equal — only
-the machine's own sequence defines the objects. One consequence stated
-rather than hidden: under normal order, `(λx. f x x)(h 0̂)` duplicates the
-*unfired* gate application and yields two independent Hadamard instances.
-Duplication always copies syntax, never amplitude, so this is generator
-duplication, not cloning; branch-level fan-out of an already-fired outcome
-is written explicitly (e.g. `h b̂ A B` fires the gate at head position and
-selects per branch). Both idioms are expressible; the strategy decides
-only their default reading.
+The machine does not rewrite: the invocation term is immutable and
+evaluation is token transport. The classical strategy commitment survives
+as two clauses. First, **observational conservativity**: if rigid-atom
+leftmost-outermost normalization of `p X₁ X₂` reaches normal form `n`,
+the machine's internal full-readback process halts with output `n`; if it
+has no normal form, the machine never enters `Halt` (§6). No per-step
+simulation of leftmost reduction is required — token transitions do not
+project step-for-step onto redex steps, and demanding that they do would
+rule out the adopted dynamics. Second, **machine-relativity transfers to
+the token clock**: the token/query/readback schedule and its step count
+are part of the machine's definition and therefore part of the physics —
+a different schedule is a different `U` and different canonical objects,
+δ event order is whatever the schedule makes it, and β/δ-convertibility
+is **not** a semantic equality in qALC. Machine-relativity does not
+resolve the algebraic-λ non-confluence pathologies; it chooses one side
+of them. Duplication is generator semantics stated as a constraint rather
+than as syntax-copying: contraction revisits the same immutable subterm
+under distinct exponential contexts, each visit to an unfired δ
+occurrence is a distinct gate event (`(λx. f x x)(h 0̂)` yields two
+independent Hadamard events), and no machine rule copies an
+already-superposed runtime value. Branch-level fan-out of a fired outcome
+is still written explicitly in code (`h b̂ A B` fires the gate, then
+selects per branch).
 
 ## 4. State space and dynamics
 
 ### 4.1 Configurations
 
-The basis of the state space is **machine configurations** — term plus
-control state plus residual garbage — not bare terms. Bare terms are too
-coarse: for a rigid context, the sources `λf. f (h 0̂) 0̂` and
-`λf. f 0̂ (h 0̂)` are orthogonal, but their images under a bare-term step
-overlap in the term `λf. f 0̂ 0̂`, so no bare-term linear extension is an
-isometry.
+The basis of the state space is **canonical token configurations over
+the immutable invocation term**: the invocation identity together with
+token position, direction, context stacks (multiplicative and
+exponential), and internal query/readback control. Positions are
+structural — a rooted zipper into the invocation term — with no
+allocation identity.
 
-The machine supplying these configurations is **not** the existing KN
-machine: ordinary KN control is irreversible. Its variable transition
-dereferences a closure and discards which variable/environment path
-selected it — `focus Var(1), env [A]` and `focus Var(2), env [B, A]` step
-to the identical configuration, and both are reachable, from `(λx.x) A`
-and `(λy.(λx.y) B) A`. Nor can a frame that distinguishes two
-configurations during δ firing later unwind to a common configuration
-without losing orthogonality: an isometry preserves inner products under
-every iterate, not just the first. The configuration basis therefore
-belongs to a **new reversible abstract machine**, whose transition table
-must have orthonormal columns as a checkable property; the KN machine is
-its guide, not its substrate, and garbage is needed for environment
-lookup, control unwinding, and readback collisions — not merely for β
-substitution content. The candidate machine shape is sketched in
-`machine.md`.
+Two abandoned substrates motivate this choice and are recorded with the
+v0/v1 drafts in `machine.md`. Bare terms are too coarse: for a rigid
+context, the sources `λf. f (h 0̂) 0̂` and `λf. f 0̂ (h 0̂)` are
+orthogonal, but their images under a bare-term step overlap in
+`λf. f 0̂ 0̂`, so no bare-term linear extension is an isometry. And
+ordinary KN control is irreversible: its variable transition discards
+which variable/environment path selected the closure, and no frame
+discipline that distinguishes configurations during δ firing can later
+unwind to a common configuration without losing orthogonality — an
+isometry preserves inner products under every iterate. The adopted
+substrate is IAM-lineage token transport (Danos–Regnier), whose
+classical transition table is bideterministic — injective per row, with
+pairwise-disjoint ranges classified by position kind and tape top — as
+prior structure. That is the design guide, not the proof: the complete
+qALC table, including δ scattering, full-normal-form readback, error
+entry, and halted entry, still owes the orthonormal-columns proof on the
+reachable graph. The active machine design is `token.md`; `machine.md`
+is the historical record of the failed rewriting formalizations.
 
 ### 4.2 The step isometry
 
 `U` is the linear extension of the deterministic machine step: each basis
-configuration steps by its unique leftmost redex (β, δ, or error
-transition), with `h` producing a two-branch superposition and `t` a
-phase. `U` is required to be an isometry on the closed span of
-configurations reachable from any `init(p)`; no extension to a unitary on
-all of ℓ² is demanded, since every target object depends only on norms,
-sector projections, and partial traces of reachable states. A same-space
-unitary extension would be needed only for a stronger physical-
-realizability claim, which this pillar does not make.
+configuration steps by its unique token transition — except at a δ fibre,
+where the unitary block produces `h`'s two-branch superposition or `t`'s
+phase, and at error entry. `U` is required to be an isometry on the
+closed span of configurations reachable from any `init(p)`; no extension
+to a unitary on all of ℓ² is demanded, since every target object depends
+only on norms, sector projections, and partial traces of reachable
+states. A same-space unitary extension would be needed only for a
+stronger physical-realizability claim, which this pillar does not make.
+Every basis column has finite support with exact ring coefficients, and
+one step applied to a finitely-supported state is effectively computable
+— the sparse reference evaluator (§7) depends on this.
 
 No-cloning is structural rather than enforced: amplitudes attach to whole
-configurations, never to subterms, so any duplication a β-step performs is
-syntax-copying within one branch — basis fan-out, the physically permitted
-copy. qBLC's entire handle/epoch apparatus has no qALC counterpart because
-the store it protected does not exist.
+configurations, never to subterms or token payloads, and the machine
+contains no copy operation anywhere — contraction is revisitation of an
+immutable subterm under distinct exponential contexts (§3). qBLC's
+entire handle/epoch apparatus has no qALC counterpart because the store
+it protected does not exist.
 
 ### 4.3 Halting: typed invariant sectors, not fixed points
 
@@ -220,7 +241,19 @@ Halt(nf, g, c, k)                → Halt(nf, g, c, k+1)
 sector it only ticks, so no history halts twice. Halted evolution is
 `identity_output ⊗ identity_garbage ⊗ identity_terminal-control ⊗
 unilateral-shift_tick`, every branch entering at tick zero (common
-origin). Invariance alone is deliberately not enough — a halt-sector
+origin). For the token machine this factorization is itself normative:
+halted states must factor **isometrically** as
+`ℓ²(NF) ⊗ garbage ⊗ terminal-control ⊗ tick` — either an internal
+reversible readback controller constructs a canonical normal-form
+register, or the halted token transcript decomposes bijectively into
+`(nf, garbage)`. A many-to-one classical decoder from terminal traces to
+normal forms is not acceptable: it would silently choose which traces
+merge coherently. Query scheduling and readback are internal to the
+single time-homogeneous `U` — an external driver relaunching token
+queries would make `τ`, halting age, monotonicity, and interference
+driver-relative rather than machine-relative. Full normal forms are
+essential: a term with a weak-head normal form but no normal form must
+remain non-halting under the strong-normalization target. Invariance alone is deliberately not enough — a halt-sector
 unitary rotating `|0̂⟩` toward `|+⟩` preserves halted mass while wrecking
 the monotone reduced output of §4.6; the normative form is what makes
 §4.6 a theorem. What mass monotonicity itself needs is only invariance,
@@ -242,7 +275,10 @@ lower semicomputable.
 Species errors (a constant applied to a non-boolean canonical form) and
 any other semantic error enter their own absorbing sectors with the same
 typed invariance-plus-tick treatment, retaining the error kind and
-offending closure as error garbage. Norm is conserved globally: halted
+enough argument-interrogation transcript and control to make error entry
+injective — coherence being irrelevant in the error sector does not
+permit information loss (the v1 lesson), and error columns participate
+in the full pairwise range matrix. Norm is conserved globally: halted
 mass, error mass, and still-running mass sum to exactly 1 at every finite
 τ. `Unknown` and `Capacity` remain resource outcomes of a finite *run* —
 the driver stopping — not machine states, matching the house taxonomy.
@@ -259,15 +295,19 @@ observationally irrelevant, and qALC collapses into a probabilistic
 λ-calculus with √2-shaped coins — quantum in name only. The entire
 quantum content of the design lives in the merge discipline.
 
-Whatever residue restores injectivity is true garbage, and per §4.1 it is
-needed at environment lookup, control unwinding, and readback collisions,
-not merely at β substitution. An environment-machine formulation relocates
-much of it to binding-discard steps — erasure, where the irreversibility
-genuinely lives. The **minimal-garbage theorem** is this pillar's first
-formal work item: define the reversible machine of §4.1 as a concrete
-transition table, prove its columns orthonormal on the reachable
-configuration graph, characterize the minimal residual garbage, and prove
-the invariant-sector lemma in that machine. "Minimal" here is *local
+The vocabulary needs care in a token machine: live multiplicative and
+exponential stacks are *control*, not automatically garbage;
+predecessor-fibre residue means any information a configuration must
+carry beyond the canonical live token state; terminal garbage is
+whatever non-output token/readback state survives at `RunDone`.
+Classical bideterminism makes ordinary token steps singleton-predecessor
+by construction, but it neither proves the chosen stack representation
+minimal nor covers the δ, readback, and terminal boundaries. The
+**minimal-garbage theorem** is this pillar's first formal work item:
+define the machine of §4.1 as a concrete transition table, prove its
+columns orthonormal on the reachable configuration graph, characterize
+the minimal residual garbage, and prove the invariant-sector lemma in
+that machine. "Minimal" here is *local
 minimality within the fixed machine representation* — residue must
 distinguish exactly each classical predecessor fibre not already
 orthogonalized by a quantum transition. A global minimum over arbitrary
@@ -338,14 +378,13 @@ transition ever consumes a constant — no δ fires and no error transition
 involving a constant fires. ("Never fires a δ" alone is not enough:
 `λh.λt. h h` is a classical normal form whose invocation reaches the
 species error `h h` without firing any boolean δ-rule.) Effect-free
-evolution proceeds on a single basis path whose *term projection* follows
-the same leftmost redex sequence as classical rigid-atom reduction of
-`p X₁ X₂` — possibly interleaved with reversible administrative
-transitions (lookup, zipper moves, residue management) that rigid-atom
-reduction does not have — and reaches the same semantic fate. That is the
-skeleton semantics qBLC's trusted checker already adjudicates, so
-conservativity is projected fate identity with *rigid-atom reduction*,
-not with bare-program census rows; every effect-free program has
+evolution proceeds on a single basis path — no δ fires, so no branching
+— and its observable outcome matches classical rigid-atom reduction of
+`p X₁ X₂`: the same normal form through the machine's internal readback
+and the same fate, with no evolving term projection and no step-for-step
+correspondence claimed (§3). That is the skeleton semantics qBLC's
+trusted checker already adjudicates, so conservativity is outcome
+identity with *rigid-atom reduction*, not with bare-program census rows; every effect-free program has
 `μ_p ∈ {0,1}`; and the qBLC skeleton machinery is the natural tool for
 scoping the fragment.
 
@@ -393,9 +432,13 @@ tick ages and dephases them just as surely. What qALC requires is a
 **clean coherent compilation theorem**: for a single common transition
 count `T`, `U^T |x, clean⟩ = |F(x), g*, c*, 0⟩` for every basis input
 `x` — same `T`, same residual garbage `g*`, same terminal control `c*`,
-the intended amplitudes. Bennett compute–copy–uncompute as a λ-idiom is
-the route, but its classical discipline must be realized *and
-synchronized* inside the λ-machine; it is not automatic. Until it is
+the intended amplitudes, with `|x, clean⟩` and the result read through
+canonical token initialization and halted-output states. Clean
+compilation must be realized by synchronized reversible token transport
+and uncomputation; no construction may basis-copy an unknown quantum
+result (the v1 countermodel), and the classical Bennett discipline
+applies only where the copied register is genuinely classical.
+Synchronization is not automatic. Until it is
 proved, universality is a target, not a property, and the H–NOT–H witness
 (§7) is its smallest instance. A formal statement of what universality
 means for qALC's objects — presumably a Gács-style domination claim for
@@ -443,7 +486,14 @@ orthogonal to the range of every non-δ transition column. A single
 landing `J` shared by both gates is not sound: `U|h,0,κ⟩` and
 `U|t,0,κ⟩` would overlap at `1/√2` despite orthogonal sources. What HH
 needs is equal residue across the two H columns, not literally untouched
-context. Second, halted dynamics has the §4.3 normative typed form.
+context. The fibre must be exhibited, not metaphorical: the design must
+identify the canonical pairing of the two boolean input states and the
+two output states sharing one spectator fibre with exactly equal
+spectators. Boolean values encoded by token *position* are acceptable
+precisely when that pairing is exhibited; quantum control must reside in
+superposed token configurations — a classically-positioned token driving
+a hidden quantum payload register is the classical-control corner, not
+this pillar. Second, halted dynamics has the §4.3 normative typed form.
 Every qALC engine change must then satisfy:
 
 1. `cargo test --release --all-features` and plain `cargo test --release`;
@@ -464,8 +514,16 @@ Every qALC engine change must then satisfy:
    local δ coherence, and an engine could pass it while β garbage from
    any interposed λ-term destroys every nontrivial coherent computation;
    this witness is the smallest test that λ-computation between gates is
-   coherence-transparent; and
-8. bit-identical classical *and* qBLC rows: qALC must remain isolated
+   coherence-transparent;
+8. **the negative witness**: for `λb. b I I` (a non-injective boolean
+   map) applied to a fired `h` outcome, the synchronized images of basis
+   inputs `0̂` and `1̂` remain orthogonal full configurations and never
+   merge into the same halted basis state. The assertion is
+   inner-product preservation, not a reduced-output statement — both
+   branches may output `I`, and tracing orthogonal garbage yields
+   `|I⟩⟨I|` either way; unitarity forbids the merge, and an engine that
+   merges them has a non-injective column; and
+9. bit-identical classical *and* qBLC rows: qALC must remain isolated
    from both existing engines.
 
 ## 8. Design decisions
@@ -479,13 +537,29 @@ Every qALC engine change must then satisfy:
 - **Classical syntax only:** programs are prefix-free bits; superposition
   is runtime-only. Anything else is a different (BvDL-flavored) research
   program with a broken size identity.
-- **β-dynamics on a new reversible machine:** bare terms fail isometry,
-  and ordinary KN control fails reversibility (§4.1) — the configuration
-  algebra is a machine to be built, with the KN design as guide. The
-  token-machine (quantum GoI) alternative is parked, not rejected: its
-  natively reversible dynamics is attractive, but it merges branches
-  differently and therefore defines *different objects* — if pursued, it
-  is a separate pillar, never a drop-in engine for this one.
+- **Token-transport dynamics on a reversible interaction machine:**
+  qALC's defining machine is IAM-lineage. The invocation term is
+  immutable and read-only; a basis configuration canonically identifies
+  that invocation together with token position, direction, context
+  stacks, and internal query/readback control. Gate arguments reach δ
+  nodes by reversible transport, never by basis-copying an unknown
+  superposition. Classical IAM bideterminism is the design guide, not
+  the proof: the complete qALC transition table — including δ
+  scattering, full-normal-form readback, error entry, and halted entry —
+  must still satisfy the orthonormal-columns contract. This supersedes
+  the previous decision (ratified, then amended through the same thread)
+  to build β-dynamics on a reversible rewriting machine and to park
+  token dynamics as defining "different objects." The pivot is forced by
+  the v1 no-cloning countermodel (`machine.md` §9.1): copying a
+  superposed δ-argument result before uncomputation produces
+  `CNOT(|+⟩|0⟩) = |Φ⁺⟩`, preventing the adjoint pass from restoring a
+  clean entry state. The "different objects" observation remains true
+  and is resolved by adoption rather than refutation: because `U`,
+  `μ_p`, and `M` were never defined and no qALC data exists, the token
+  machine's clock and merge discipline now become their definition. A
+  rewriting machine is the parked alternative and would define different
+  objects; no equivalence, refinement, or preservation of the rewriting
+  proposal is claimed.
 - **Typed invariant-sector halting, common origin:** fixed points are
   incompatible with injectivity; invariance suffices for monotone mass;
   the common-origin tick and the normative halted form (§4.3) are chosen,
@@ -512,9 +586,10 @@ Every qALC engine change must then satisfy:
 ## 9. Boundaries and open obligations
 
 1. **The reversible machine + minimal-garbage theorem** (§4.1, §4.5) —
-   the gating work item: a concrete transition table (environment/closure
-   substrate per `machine.md`, KN-guided, not KN), orthonormal columns
-   proved on the reachable graph, residual garbage locally minimal in the
+   the gating work item: a canonical token transition table (IAM-lineage
+   per `token.md`) including δ scattering, full-normal-form readback,
+   and the error/halting adapters, orthonormal columns proved on the
+   reachable graph, residual garbage locally minimal in the
    predecessor-fibre sense, invariant-sector lemma proved in that
    machine. `U`, `μ_p`, and `M` are undefined until this exists.
 2. **Clean coherent compilation** (§6): λ-defined Toffoli-class terms
@@ -538,28 +613,32 @@ Every qALC engine change must then satisfy:
 10. Output convention (§4.6) — deliberately open, mirroring qBLC.
 
 Items 1 and 2 gate implementation: no `src/qalc/` code before the machine
-is formal and its witnesses computed by hand (`machine.md` §6). The
-scalar ring needs nothing — the unresolved object is the configuration
-algebra, not the amplitudes.
+is formal and its witnesses computed by hand in the formal token-machine
+document. The scalar ring needs nothing — the unresolved object is the
+configuration algebra, not the amplitudes.
 
 ## 10. Lineage and related documents
 
-Standard references this design leans on: Arrighi–Dowek (Lineal; linear
-extension, gates as constants), Vaux and Ehrhard–Regnier (algebraic
-λ-calculus; Taylor expansion as the canonical source of term sums), van
-Tonder (history-tracked unitary λ-reduction), Bernstein–Vazirani (QTM
+Standard references this design leans on: Danos–Regnier (the Interaction
+Abstract Machine — the principal machine lineage) and
+Accattoli–Dal Lago–Vanoni (the λIAM, its λ-calculus presentation, and
+the bideterminism analysis), Arrighi–Dowek (Lineal; linear extension,
+gates as constants), Vaux and Ehrhard–Regnier (algebraic λ-calculus;
+Taylor expansion as the canonical source of term sums), van Tonder
+(history-tracked unitary λ-reduction), Bernstein–Vazirani (QTM
 well-formedness and synchronized halting), Shi and Aharonov
 (Toffoli+Hadamard universality), Bennett (reversible computation and
 uncomputation), Yuan–Villanyi–Carbin (synchronization limits of quantum
 control flow), Selinger–Valiron (the design point qBLC occupies),
 Hasuo–Hoshino and Dal Lago–Faggian–Valiron–Yoshimizu (quantum GoI and
-multitoken machines, for the parked alternative), Bădescu–Panangaden
-(why quantum control plus recursion has no settled semantics — the gap
-this pillar's measurements would inform).
+multitoken machines), Bădescu–Panangaden (why quantum control plus
+recursion has no settled semantics — the gap this pillar's measurements
+would inform).
 
 - Classical counterpart: `../classical/architecture.md`
 - Quantum-store counterpart: `../quantum/architecture.md`
-- Reference machine sketch (pre-formal): `machine.md`
+- Active machine design: `token.md`
+- Historical failed rewriting drafts (v0/v1): `machine.md`
 - Development history and review record: `../ledger/2026-08.md`
 - Moving state and docket: `../STATUS.md`
 - Canonical evidence: none yet; `data/quantum-algebraic/` reserved.

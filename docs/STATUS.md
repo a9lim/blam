@@ -401,25 +401,32 @@ A third pillar exists as a design contract only:
 `quantum-algebraic/architecture.md` (quantum control, storeless — runtime
 states in ℓ² over machine configurations, `h`/`t` constants at invocation,
 fate softened to a real halting mass `μ_p` with `Ω_qALC = Σ 2^(−|p|) μ_p`),
-with the pre-formal reversible-machine sketch in
+with the active machine design in `quantum-algebraic/token.md` and the
+failed rewriting drafts (v0/v1) preserved in
 `quantum-algebraic/machine.md`. No engine, no data;
-`data/quantum-algebraic/` is reserved. **The contract is frozen**: four
-rounds of adversarial review on gaslamp thread `qalc-architecture`
-concluded in a sign-off at `27f2c4b` (history in `ledger/2026-08.md`).
+`data/quantum-algebraic/` is reserved. **The contract is frozen and
+amended**: four review rounds concluded in a sign-off at `27f2c4b`, and
+the token-machine amendment — route (b) after v1's no-cloning killshot
+— was ratified through thread `qalc-architecture` and applied
+(2026-08-09; history in `ledger/2026-08.md`). The machine is now
+IAM-lineage token transport: term read-only, bideterministic substrate
+(exact λIAM table pinned in `token.md` §6), values transported to δs
+by routing, never copied.
 
-Machine formalization is two failed-productively drafts deep
-(`quantum-algebraic/machine.md`; v0 broke on producer marking, v1's
-Try-boundary protocol broke on no-cloning — verdicts registered in §9
-and the ledger). The surviving scaffold: no-erasure forward table,
-color discipline, typed terminal sectors, witness battery. Route (b) —
-token-transport dynamics — is the chosen v2 direction.
+The v2 design sketch is drafted (`token.md` §7: probe protocol,
+δ blocks on arrival states, balanced virtual answers, no-store
+consistency) and a fresh-context feasibility review (thread
+`qalc-token-machine`) independently graded the route
+promising-with-hard-open-problems, converging with the sketch on every
+load-bearing point; its checklist and exclusions are folded in.
 
 The open docket, in order:
 
-1. ratify the architecture §8 amendment route (b) requires
-   (`quantum-algebraic/token.md` §4, thread `qalc-architecture`);
-2. v2 token-transport machine design against the inherited constraints
-   (`quantum-algebraic/token.md` §§2–3), through the review loop;
+1. **the three-program formal kernel** (`token.md` §8 — the v2 gate):
+   full table, range-disjointness, step-indexed traces of HH /
+   H–NOT–H / the negative witness, column-Gram enumeration; L1/L2 and
+   the readback controller are the hard parts;
+2. kernel through the review loop (both threads);
 3. the clean coherent compilation theorem
    (`quantum-algebraic/architecture.md` §6) — gates any universality
    claim;
