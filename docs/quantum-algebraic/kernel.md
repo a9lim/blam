@@ -1,24 +1,24 @@
 # qALC three-program kernel — v1
 
-**Status: kernel v1.1 — reviewed; `recall` CONFIRMED-BROKEN, the
-rest of the machine holds.** The adversarial review (thread
-`qalc-token-machine`) independently reimplemented §3 from this
-document alone and reproduced all five results exactly — the
-classical substrate, gate fibres, HH cancellation, H–NOT′–H balance
-(no padding), and the negative witness all HOLD — then broke the
-virtual-boolean replay protocol with a reachable countermodel: in
-`p★ = λh.λt. ((((h 0̂) h) h) 0̂)` (a coin selecting between two gate
-occurrences, then a fresh application of the selected gate), two
-valid nested re-entry states with identical position, log, and
-pending differ only in the `b′` that `recall` erases — both map to
-one target, norm 1 → 3/2 at global step 89, verified against both
-implementations (§9). **The three-program gate is therefore not
-passed**: the traces stand as finite results, but the replay
-protocol is the kernel's unresolved central mechanism. Do not build
-on §3's `recall` rule; the repair is the docket head. The
-conformance review's earlier fixes (output alphabet {`0̂`,`1̂`,`I`},
-separate `RunDone`/`Halt` steps, structural Gram) are incorporated
-and stand.
+**Status: kernel v1.2 — the replay repair is applied and passes the
+full battery including both mandated regressions; re-review in
+flight.** History: v1 was reviewed adversarially (thread
+`qalc-token-machine`, independent reimplementation) — the classical
+substrate, gate fibres, HH cancellation, H–NOT′–H balance, and
+negative witness all HOLD, but `recall` was CONFIRMED-BROKEN on
+`p★ = λh.λt. ((((h 0̂) h) h) 0̂)`: nested same-kind tickets aliased
+after the replay erased its `b′` discriminator (norm 3/2 at step
+89, verified against both implementations — §9). **v1.2 repairs it
+with the inert replay stack** (§9.5): `recall` moves the ticket to
+a transport-inert residue component instead of erasing it; recalled
+branches decohere mandatorily — which is the correct physics, since
+a coin whose branches both select gate occurrences has been
+consumed non-injectively — and the coherent witnesses never touch
+the mechanism. All seven programs (five witnesses + `p★` + the
+3-coin regression) now pass with norm 1 and structurally clean
+column-Gram. The conformance review's earlier fixes (output
+alphabet {`0̂`,`1̂`,`I`}, separate `RunDone`/`Halt` steps,
+structural Gram) are incorporated and stand.
 
 ```text
 h (h 0̂)             mass 1 on 0̂, single terminal configuration
@@ -60,11 +60,14 @@ rules exactly as pinned in `token.md` §2.
 ## 2. State space
 
 ```text
-Run     ::= (pos, d, log, tape)        — λIAM shape, plus VB phase
-          | (leaf, VB(g, b′, k), log, tape)   k ∈ {0,1,2}
+Run     ::= (pos, d, log, tape, RS)    — λIAM shape, plus VB phase
+          | (leaf, VB(g, b′, k), log, tape, RS)   k ∈ {0,1,2}
+RS      ::= [R_g(b′), …]   — transport-inert replay stack (v1.2):
+          no transport or classifier rule reads it; only `recall`
+          pushes; it joins the garbage factor at terminal entry
 RunDone ::= RunDone(nf, residue)            nf ∈ {0̂, 1̂, I, err}
 Halt    ::= Halt(nf, residue, tick) | Error(residue, tick)
-residue = the COMPLETE pre-entry state (pos, d, log, tape, VB phase)
+residue = the COMPLETE pre-entry state (pos, d, log, tape, VB, RS)
 
 tape/log entries: • | logged position l | γ_g | μ_g | A_g(b′)
                   | α_g(b′) | ρ
@@ -90,12 +93,22 @@ call     (g, ↓, L, •·T)                 → (g, ↑, L, γ_g·•·•·μ_
          crossing. Classical transport then delivers the probe to
          g's true argument through arbitrary dereference plumbing.
 
-recall   (g, ↓, L, •^(b′+1)·α_g(b′)·T) → (g, ↑, L, •·•·•·T)
+recall   (g, ↓, L, •^(b′+1)·α_g(b′)·T, RS)
+           → (g, ↑, L, •·•·•·T, R_g(b′)·RS)
          consistent replay of a fired instance off its ticket — no
-         fire. Mirrors the literal boolean's bt2-replay: consume the
-         slot-dependent re-descent bullets and the ticket, emit the
-         two virtual lambda crossings plus the gate-application
-         compensation. Bullet/ticket arity mismatch → Error.
+         fire, and (v1.2) **no erasure**: the discriminator moves to
+         the inert replay stack. Routing mirrors the literal
+         boolean's bt2-replay: consume the slot-dependent re-descent
+         bullets and the ticket, emit the two virtual lambda
+         crossings plus the gate-application compensation. Recalled
+         branches carry distinct R-frames forever — mandatory
+         decoherence, matching the physics (a re-interrogated coin
+         was consumed non-injectively by its selection). Bullet/
+         ticket arity mismatch → Error. `call`'s domain excludes
+         recall's by the explicit guard "tape below the leading
+         bullet does not match •^k·α_g of this gate" — stated as a
+         side condition, structural disjointness still owed to the
+         formal table.
 
 arrive/  (m ends 'a', ↑, γ_g·L, P_b·μ_g·T) →
 fire       Σ_b′ (Q_g)_{b′b} · (m, ↑, γ_g·L, A_g(b′)·T)
@@ -176,13 +189,23 @@ Timing convention (pinned, conformance-reviewed): `RunDone` entry and
 `Halt(…, 0)` entry are separate `U` steps; "Halt at" below is the
 `Halt(…, 0)` step.
 
-| program | sectors | support | Halt at | tick-aligned |
+| program | sectors | support | Halt at | R-frames |
 |---|---|---|---|---|
-| `h (h 0̂)` | `0̂`: 1 | 1 | t=49 | yes |
-| `h (NOT′ (h 0̂))` | `0̂`: 1 | 1 | t=64 | yes |
-| `(λb. b I I)(h 0̂)` | `I`: 1 | 2 | t=58, 60 | no (Δ=2) |
-| `h (selNOT (h 0̂))` | `0̂`: 1/2, `1̂`: 1/2 | 4 | t=78, 79 | no (Δ=1) |
-| `h 0̂` | `0̂`: 1/2, `1̂`: 1/2 | 2 | t=31 | yes |
+| `h (h 0̂)` | `0̂`: 1 | 1 | t=49 | none |
+| `h (NOT′ (h 0̂))` | `0̂`: 1 | 1 | t=64 | none |
+| `(λb. b I I)(h 0̂)` | `I`: 1 | 2 | t=58, 60 | yes |
+| `h (selNOT (h 0̂))` | `0̂`: 1/2, `1̂`: 1/2 | 4 | t=78, 79 | yes |
+| `h 0̂` | `0̂`: 1/2, `1̂`: 1/2 | 2 | t=31 | none |
+| `p★` (regression) | `0̂`: 1/2, `1̂`: 1/2 | 8 | t=99–103 | yes |
+| 3-coin (regression) | `0̂`: 1/2, `1̂`: 1/2 | 4 | t=63, 65 | yes |
+
+The two coherent witnesses never create an R-frame — the repair
+mechanism is invisible to coherent code, engaging exactly where
+mandatory decoherence is the correct physics. `p★` completes at
+norm 1 with the first coin decohered and the marginal (1/2, 1/2) —
+the rewriting-picture sanity check: its branches both reduce to the
+*same term* `h 0̂` post-selection, so any machine that merged them
+would violate norm; refusing is correctness, not cost.
 
 Output-density report (the kernel as output-operator prototype): the
 negative witness's two branches halt with the *same* `nf = I` and
@@ -221,8 +244,14 @@ column unit-norm, every distinct pair orthogonal, no stuck states
 | HH | 82 | 0 | 0 | 0 |
 | H–NOT–H | 104 | 0 | 0 | 0 |
 | negative | 103 | 0 | 0 | 0 |
-| selector | 135 | 0 | 0 | 0 |
+| selector | 173 | 0 | 0 | 0 |
 | lone H | 53 | 0 | 0 | 0 |
+| `p★` | 458 | 0 | 0 | 0 |
+| 3-coin | 180 | 0 | 0 | 0 |
+
+(v1.2 numbers; the v1 table had two non-orthogonal 3-coin pairs —
+the cross-time `recall` collision — and `p★` broke the norm outright
+at step 89. Both are clean under the inert replay stack.)
 
 ## 6. Findings register
 
@@ -437,3 +466,24 @@ injectivity, but carrying it forever suppresses wanted interference:
 **reversible ticket cleaning is now the central design problem** —
 the same "coherence is earned" economy, now at the level of the
 machine's own bookkeeping rather than user code.
+
+### 9.5 The v1.2 repair (inert replay stack)
+
+`recall` no longer erases its discriminator: the state gains a
+transport-inert replay stack `RS` that only `recall` pushes
+(`R_g(b′)`), no transport or classifier rule reads, and terminal
+entry freezes into the garbage factor. The countermodel pairs now
+map to targets differing in `RS` — locally injective, and both
+mandated regressions pass (norm 1; structural Gram clean, `p★`
+basis 458). The design argument for *inert rather than cleaned*:
+a re-interrogated coin has been consumed non-injectively by its
+selection (in `p★` both branches reduce to the same term
+post-selection, so merging them would violate norm — mandatory
+decoherence is correctness), and no program has been found where a
+recalled instance's branches may legitimately merge later; the
+coherent witnesses never recall at all. If such a program exists,
+the frame needs reversible cleaning and the design reopens — that
+question rides to the re-review. Fork (A)'s minimality program
+applies to R-frames verbatim: each is charged conservatively, and
+any later transparency lemma that proves one recoverable removes it
+and enlarges the raw-interfering class.
