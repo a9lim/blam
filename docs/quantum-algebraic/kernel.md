@@ -1,6 +1,6 @@
 # qALC three-program kernel — current register (v1.11)
 
-**Status: v1.11.** The kernel is a scratch superposition evolver
+**Status: v1.12.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -12,15 +12,11 @@ run success ("amplitudes decide whether a run succeeds, never
 whether the machine is an isometry") — a nine-invariant
 well-formedness subtype, a typed h-only fragment judgment with a
 syntactic language boundary, a written-first per-program physics
-table, and every failure mode typed — never silent. Four
-fresh-context audits and three working reviews have shaped it
-(chronicle, §11). The audit-#2 fatal witness `W` — and `B`, its
-decomposition — are both **healed**: audit #3 found that v1.10's
-fire arm computed the retained-spectator split and then discarded
-it, so W's registered "placement limitation" measured an
-implementation defect, not the certificate language; under the
-register's own transition W is fully certified at {halt1: 1} (§9).
-The standing PASS re-claim is **gated on fresh audit #4**, whose
+table, and every failure mode typed — never silent. Five
+fresh-context audits and three working reviews have shaped it;
+the round-by-round history, including the healing of audit #2's
+fatal witness `W`, lives in the chronicle (§11) and the ledger.
+The standing PASS re-claim is **gated on fresh audit #5**, whose
 verdict will be registered here.
 
 This file is the current contract and register only. The
@@ -145,13 +141,22 @@ arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
        an outer coin's frame around an inner interference)
        any P frame with bit ≠ b → pop-err
        erase (l, P); rs' = Q; leave ('KD', keys) — one tagged
-       bundle naming every live α nested in l and every popped
-       frame's (g, i)  [sound under fibre conditions (a)–(f), §5]
+       bundle naming every key that died with NO surviving
+       bit-carrying representation:
+         keys = (α-keys(l) ∪ keys(P)) \ keys(Q) \ burial-keys(ks)
+       a cargo ticket whose frame is retained in Q stays answerable
+       through the frame (the decode arm's frame-skip, lifted);
+       a key buried in a retained-whole K(l′) record keeps the
+       burial as its bit-carrying dead record (refire consults
+       burials via the dead-key set). An empty bundle is omitted.
+       [sound under fibre conditions (a)–(f), §5]
    else, l = α_g(i, b) with bit = slot (DECODE):
        retain ('K', g, i) — bit-free, branch-equal — UNLESS a
        same-key frame exists (the ticket was replay-re-emitted;
-       the frame remains the answerable representation, no record:
-       W8 exclusivity by construction)
+       the frame remains the answerable representation) or a
+       same-key burial exists (the buried ticket remains the
+       bit-carrying dead record); either way no record is
+       created: W8 exclusivity by construction
    else (RETAIN-WHOLE): keep ('K', l) — same-slot arrivals with
        different which-path data stay orthogonal
    then fire: targets (pos, ↑, γ_g·L, A_g(b′)·T′), amplitudes the
@@ -197,19 +202,26 @@ algebra (audit-#2/working-review completion):
     answerable + bit-carrying burial  → allowed iff bits agree
                                         (deep W3; conflict typed)
     two bit-carrying burials          → allowed iff bits agree
-    bit-free + bit-carrying same key  → typed at the boundary
+    bit-free + bit-carrying same key  → NEVER CREATED (fire and
+                                        decode subtract keys with a
+                                        surviving bit-carrying
+                                        representation; the burial
+                                        or frame stays the sole
+                                        record); leaf encounters
+                                        with pre-existing bit-free
+                                        storage remain typed
     fresh call of ANY dead key        → typed (refire)
     two live tickets, one key         → alias state, excluded
                                         statically (W9)
 
-The last row is audit #3's addition: two agreeing live tickets for
-one key pass deep W3 (one bit) and W8 (no dead record), yet
-decoding one leaves the other answerable beside the fresh bit-free
-record — so the algebra is complete only over W9-clean states, and
-W9 makes that hypothesis checkable rather than assumed. The
-duplicate-ticket source is the registered agreeing-alias gap's
-ticket-dimension face; it was never reached in any sweep or fuzz
-run, consistent with lp-uniqueness (§9).
+Two agreeing live tickets for one key pass deep W3 (one bit) and
+W8 (no dead record), yet decoding one would leave the other
+answerable beside the fresh bit-free record — the algebra is
+therefore complete over W9-clean states, and W9 makes that
+hypothesis checkable rather than assumed. The duplicate-ticket
+configuration is the agreeing-alias gap's ticket-dimension face;
+it has never been reached in any sweep or fuzz run, consistent
+with lp-uniqueness (§9).
 
 A bit-carrying burial blocking a fresh call is sound but
 conservatively incomplete — in principle an explicit decoder could
@@ -249,8 +261,7 @@ Q = the spectators):
   agree per key (a conflicted arrival is never admitted; the
   kernel also types it).
 
-**The canonical pipeline** (`discover_total`, the v1.10 hybrid, its
-spectator transition implemented literally as of v1.11 —
+**The canonical pipeline** (`discover_total`, the hybrid —
 "amplitudes decide whether a run succeeds, never whether the
 machine is an isometry"):
 
@@ -268,10 +279,19 @@ machine is an isometry"):
 3. **Final validation** of the frozen certificate; None unless
    `machine_coverage` holds — the conservative, sound fallback.
    A None result IS the fallback (the plain reading); its coverage
-   verdict is `validate(term, None)`, which as of v1.11 runs the
-   same reachable-WF sweep with an empty certified domain (audit
-   #3's contract gap: the no-certificate path previously reported
-   the sweeps as zero without running them).
+   verdict is `validate(term, None)`, which runs the same
+   reachable-WF sweep with an empty certified domain (W7 and
+   disjointness vacuous, the WF check itself never skipped).
+
+The canonical certificate is deterministic (measured seed- and
+order-independent) and **maximal-certified, not minimal**: the
+greedy admission certifies every boundary that stays clean, so
+smaller clean certificates with identical physics exist (measured:
+`W` reaches `{halt1: 1}` with the single ∅-pop boundary
+`ffbbafffa`, basis 734 vs the canonical 498; `B` likewise with
+`ffbbfffa` alone). No parsimony or necessity is claimed for the
+frozen maps beyond determinism and validated cleanliness; minimal
+canonical certificates are docketed future work.
 
 **Validation** (`validate`) splits per the working-review verdict:
 the STRUCTURAL side — totality, Gram orthonormality on the
@@ -301,17 +321,16 @@ found the maximally coherent placement (§9).
 semantically load-bearing for HNH (certified `{halt0: 1}` = the
 physics vs plain `{1/2, 1/2}`); `B` and `W`'s coherence-restoring
 certificates are admitted by the hybrid (structural `refire` at
-amplitude exactly zero, dynamic mass zero — canonical `{halt1: 1}`
-for both); all twenty canonical certificates are frozen as exact
-dicts and reproduced exactly by `discover_total`. The frozen shape
-is parsimonious: most certified boundaries pop nothing (cargo-only
-certification, every frame retained); only the q family, `B`, and
-`W` pop keys — in each case exactly the inner-coin instance(s)
-whose interference needs the frame erased. The v1.10 claim that
-the legacy pop-everything reading was "measured identical" to the
-canonical dicts is RETRACTED: that identity was an artifact of the
-spectator-transition defect (dict certificates also erased all of
-RS), not a theorem, and no such identity is claimed now.
+amplitude exactly zero — verified per-step, all refire sources at
+exact amplitude 0 — canonical `{halt1: 1}` for both). Eighteen of
+the twenty programs freeze exact canonical dicts reproduced
+bit-for-bit by `discover_total`; `palpha` and `dupcall` canonically
+return None (validation rejects their exploratory fixpoints — the
+refusal working as designed) and run the plain reading. In the
+frozen maps most certified boundaries pop nothing (cargo-only
+certification, every frame retained); the q family, `B`, and `W`
+pop inner-coin instances. No identity between the legacy
+pop-everything reading and the canonical dicts is claimed.
 
 ## 6. The invariant catalog (WF, the well-formed subtype)
 
@@ -322,7 +341,7 @@ the machine's unitarity claims quantify over the subtype:
 - **W2** (record uniqueness + canonicity): at most one frame per
   `(g, i)` in RS; RS canonically sorted (state identity is
   order-free).
-- **W3** (bit coherence, DEEP as of v1.10): one bit per `(g, i)`
+- **W3** (bit coherence, deep): one bit per `(g, i)`
   across ALL bit-carrying representations — frames, top-level and
   slice-suspended tickets on tape and log, and tickets buried in
   retained-whole `K(l)` records.
@@ -341,24 +360,26 @@ the machine's unitarity claims quantify over the subtype:
   frames. States outside the fibre relation are outside the
   certified domain subtype; the domain lemma (reachable certified
   arrivals are in-domain) is the per-program sweep.
-- **W8** (representation exclusivity, v1.10 restatement): per
-  `(g, i)`, answerable representations (live α anywhere in
-  tape/log including suspended slice cargo; RS frames) never
-  coexist with **bit-free** dead storage (K/KD records) — the
-  shadowing hazard is bit loss. Bit-carrying burials coexist under
-  deep W3's adjudication (the key-state algebra, §4). Preserved on
-  W9-clean sources; its boundary is the typed `key-alias`.
-  Preservation is NOT unconditional (audit #3): a duplicate-ticket
-  alias source decodes into a W8 violation, which is exactly what
-  W9 excludes statically.
-- **W9** (live-ticket key uniqueness, v1.11): at most one live α
-  ticket per `(g, i)` across tape and log, deep through slice
-  cargo. Two agreeing live tickets pass W3 and W8 yet are an alias
-  state — the agreeing-alias gap's ticket-dimension face, made
-  checkable. Zero violations on every reachable state of the
-  twenty-program battery and all fuzz sweeps (empirical
-  lp-uniqueness); ticket+frame (replay re-emission) and
-  ticket+burial remain legitimate, adjudicated by W2/W3/W8.
+- **W8** (representation exclusivity): per `(g, i)`, bit-free dead
+  storage (K/KD records) coexists with NEITHER answerable
+  representations (live α anywhere in tape/log including suspended
+  slice cargo; RS frames) NOR bit-carrying burials — in both cases
+  the bit-free record has discarded exactly the bit that would
+  adjudicate aliasing. Answerable + burial coexistence is
+  legitimate under deep W3. The fire and decode arms preserve W8
+  by construction on W9-clean sources (the KD subtraction and
+  record-skips of §3); a duplicate-ticket alias source would
+  decode into a W8 violation, which is exactly what W9 excludes
+  statically. Leaf encounters with bit-free storage are typed
+  (`key-alias`).
+- **W9** (live-ticket key uniqueness): at most one live α ticket
+  per `(g, i)` across tape and log, deep through slice cargo. Two
+  agreeing live tickets pass W3 and W8 yet are an alias state —
+  the agreeing-alias gap's ticket-dimension face, made checkable.
+  Zero violations on every reachable state of the twenty-program
+  battery and all fuzz sweeps (empirical lp-uniqueness);
+  ticket+frame (replay re-emission) and ticket+burial remain
+  legitimate, adjudicated by W2/W3/W8.
 
 ## 7. Theorems
 
@@ -428,8 +449,7 @@ exactly gate-mediated**.
 step of every run in lockstep conformance with the uninstrumented
 stepper. Exhaustive: all closed pure terms ≤ size 11 (41,272),
 k ∈ {1,2,3} probes — 14,452 surfacings at ≤10 (10,180 terms),
-55,727 at ≤11, zero failures (the v1.10 register transposed these
-two counts; audit #3 caught it). Battery cross-check: zero
+55,727 at ≤11, zero failures. Battery cross-check: zero
 mark-free arrivals violate `w ≡ slot`; marked arrivals split both
 ways as virtual ancestry predicts.
 
@@ -451,17 +471,17 @@ same spectator, opposite slots
 
 Mechanized for real: the checker collects reachable sources with
 full state, constructs their fire targets via the step function,
-compares decode bundles cross-slot, and computes column inner
-products. Zero violations over every certified graph. Three audit
-countermodels are permanent regressions here: the extra-frame
-collision (W7-excluded AND target-disjoint; since v1.11 the
-exclusion clause is W7-domain — the added frame is a
-retained-spectator coordinate that leaves the certified fibre
-domain), the doctored bundle-divergent fibre (rejected by
-condition (e)), and audit #3's retained-Q collision (two WF,
-transparent, same-slot sources differing only in a retained
-frame's bit — zero shared targets, true Gram entry 0; the v1.10
-fire arm collapsed these columns to inner product 1).
+compares decode bundles cross-slot (bundles computed with the §3
+subtraction — the bundle actually left), and computes column inner
+products. Zero violations over every certified graph. The audit
+countermodels guarding this theorem are permanent regressions
+(§10): the extra-frame collision (W7-excluded at the domain
+clause — an added frame is a retained-spectator coordinate that
+leaves the certified fibre domain — with disjoint targets), the
+doctored bundle-divergent fibre (rejected by condition (e)), and
+the retained-Q collision (two WF, transparent, same-slot sources
+differing only in a retained frame's bit — zero shared targets,
+true Gram entry 0).
 
 ### 7.5 What is NOT claimed (the alias gap)
 
@@ -496,12 +516,11 @@ deliberately, the untyped copy regression), `q` (E = λz.Iz vs N
 branch types ununifiable — the wire imbalance `qprime` was built
 to repair; `qprime` types clean), `dupcall` (NOT′/EP ununifiable).
 All escapes — `h h`, gate literals in bodies, swapped or doubled
-shell arguments — rejected. (The v1.10 register said "18-program /
-15 typable", a stale pre-`B`/`W` count; audit #3 caught it.)
+shell arguments — rejected.
 
-## 9. The claim, the healed witness, and the alias gap
+## 9. The claim and the alias gap
 
-**The v1.11 coverage claim.** Over programs that are (i) typable
+**The v1.12 coverage claim.** Over programs that are (i) typable
 h-only under the signature judgment (with the syntactic boundary:
 shell args exactly `Gate(h)` then `Gate(t)`, no gate literals in
 bodies, closed bodies) and (ii) whose canonical pipeline reports
@@ -518,50 +537,28 @@ semantics — no total reference exists for bare λ-terms; which
 eliminations are wires is the compilation theorem's question.
 Physics agreement is claimed program-by-program in the suite's
 written-first table (hand-derived circuit readings, several
-independently confirmed by the audits).
+independently confirmed by the audits). A user cannot tell from
+`machine_coverage` alone whether a program's canonical placement
+reaches its circuit ideal — that adjudication lives in the
+physics table. Nor is the canonical certificate minimal (§5): it
+is the deterministic maximal-certified fixpoint, nothing more.
 
-**The healed witness (`W`) and the retracted limitation.** Audit
-#2's fatal witness `W = (H 0̂) E E B` wraps its decomposition `B`
-in a branch-equal selector; hand ideal `{halt1: 1}`. v1.10
-registered `W` as a "placement limitation" — its exhaustive
-subset/exclusion sweep found every inner-boundary certificate
-rejected via `refire` — and claimed staged uncomputation was
-inexpressible in the certificate language. **Audit #3 refuted the
-registration's causal story**: the v1.10 fire arm computed the
-`P`/`Q` split and then discarded it (`KD` from ALL of RS,
-`rs′ = ()`), so every "retained" spectator was erased bit-free and
-every trial destroyed the outer-coin frames whose retention the
-inner coherence needed. Under the register's own literal
-transition — implemented in v1.11 — the canonical pipeline
-discovers `W`'s four-boundary certificate (the inner boundary pops
-the inner coin's two branch-dependent instances; the outer frames
-ride through as retained spectators), validation is clean with
-structural `refire` at amplitude exactly zero, and the canonical
-dynamics is **`{halt1: 1}` = the hand ideal**. The
-staged-uncomputation limitation is RETRACTED — the certificate
-language expressed it all along. What remains true and registered:
-a user cannot tell from `machine_coverage` alone whether a
-program's canonical placement reaches its circuit ideal — that
-adjudication lives in the written-first physics table, and the
-general question ("which eliminations are wires") remains the
-compilation theorem's.
-
-**The instance-alias gap (unchanged in kind, narrowed in
-surface).** No injectivity theorem for logged-position keys is
-claimed. Every detectable manifestation is typed
-(`frame-conflict`, `alien-ticket`, `key-alias`, `refire`; deep W3
-adjudicates bit-carrying coexistence). Open: an alias-tolerant
-local transition theorem — that agreeing-bit aliases cannot
-silently merge histories that should stay orthogonal — or λIAM
-logged-position uniqueness. The soundness claims are conditional
-on it.
+**The instance-alias gap.** No injectivity theorem for
+logged-position keys is claimed. Every detectable manifestation
+is typed (`frame-conflict`, `alien-ticket`, `key-alias`,
+`refire`; deep W3 adjudicates bit-carrying coexistence; W9
+excludes duplicate live tickets statically). Open: an
+alias-tolerant local transition theorem — that agreeing-bit
+aliases cannot silently merge histories that should stay
+orthogonal — or λIAM logged-position uniqueness. The soundness
+claims are conditional on it.
 
 Standing fences, all typed: literal gate application and open
 bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#4; the verdict will be registered here.**
+#5; the verdict will be registered here.**
 
 ## 10. Verification state
 
@@ -589,53 +586,64 @@ Twenty-program suite (twelve sectors + the audit witnesses
 | qq | 2,192 | ½ / ½, sup 8 | Q in Q, double-crossed re-seeks |
 | palpha | 474 | ¼ / ¾, sup 3 | audit-2 witness: cert refused, physics via fallback |
 | dupcall | 632 | typed err ½ + ¼/¼ | untyped; refire positive control |
-| B | 186 | 1̂: 1 | audit-2 decomposition witness, HEALED v1.10 (hybrid admits the cert; structural refire at amplitude 0); audit-3 confirmed |
-| W | 498 | 1̂: 1 | audit-2 FATAL witness, HEALED v1.11 (four-boundary instance-directed cert; inner boundary pops the inner coin's two instances, outer frames ride as spectators; structural refire at amplitude 0); audit-3 measured this healing before the fix landed |
+| B | 186 | 1̂: 1 | audit-2 decomposition witness, healed (structural refire at amplitude 0) |
+| W | 498 | 1̂: 1 | audit-2 fatal witness, healed (inner boundary pops the inner coin's two instances; outer frames retained spectators; structural refire at amplitude 0, verified per-step) |
 
 All twenty: zero stuck / non-unit / non-orthogonal columns; guards
 silent except `dupcall` (expected: `alien-ticket`) and `B`/`W`
 (expected: structural `refire` at amplitude exactly zero — the
 hybrid's core case). The written-first physics table passes on all
-twenty. `discover_total` == frozen CERTS on all 20 — every
-certificate frozen as its exact canonical dict, compared exactly;
+twenty. `discover_total` == frozen CERTS on all 20: eighteen exact
+canonical dicts compared bit-for-bit; `palpha`/`dupcall`
+canonically None (validation rejects, plain-reading fallback);
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
-`refire`, all-err. WF/W7/W8/W9 sweeps + disjointness: zero
-violations; **seven permanent regressions** (extra-frame collision
-— now excluded at W7-domain, the retained-spectator coordinate,
-rather than W7-fibre; doctored bundle divergence; K+frame alias;
-the v1.6 pair; audit-3's retained-Q disjointness — two sources
-differing only in a spectator bit must share zero targets; audit-
-3's duplicate-ticket W9). Conservation: zero failures.
-Polarity/terminal chains/gauge: zero violations, orbit exact. All
-three prior audits' independent reproducers rerun clean or typed
-(audit #1's fuzz 250/250 no violation; audit #2's kit clean on
-every lifecycle, its own term-evaluator mismatches adjudicated as
-that evaluator's non-normalization; audit #3's kit: spectator
-columns now share zero targets, W under the literal rule ==
-current behavior). Basis counts vs v1.2 reference: `negative`
-103→83, `selector` 173→106, `pstar` 458→242 — v1.7-era, real,
-owned (canonical RS sorting + replay-arm restructure merge
-order-variant states); marginals and supports never moved. All
+`refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
+zero violations; **nine permanent regressions** (the v1.6 pair;
+extra-frame collision, W7-excluded with disjoint targets;
+doctored bundle divergence; K+frame alias; retained-Q
+disjointness — spectator-bit columns share zero targets;
+duplicate-ticket W9; retained-Q KD — a cargo key with a retained
+frame leaves an EMPTY bundle, targets WF-clean; bitfree-burial —
+a buried key stays the sole bit-carrying record, no KD beside
+it). Conservation: exhaustive ≤ size 11, 14,452 surfacings at
+≤10 / 55,727 at ≤11, zero failures. Polarity/terminal
+chains/gauge: zero violations, orbit exact. All four prior
+audits' independent reproducers rerun clean or typed (audit #1's
+fuzz 250/250; audit #2's kit clean on every lifecycle, its
+term-evaluator mismatches adjudicated as that evaluator's
+non-normalization; audit #3's spectator columns share zero
+targets; audit #4's countermodel pair healed per the predictions,
+its W-healing verification — per-step zero refire amplitude, 46
+generated programs identical across old/new arms, 1,146-program
+W9 fuzz clean — carried forward). Basis counts vs v1.2 reference:
+`negative` 103→83, `selector` 173→106, `pstar` 458→242 —
+v1.7-era, real, owned; marginals and supports never moved. All
 measurements seconds-scale on the M5 Max.
 
 ## 11. Chronicle
 
 Full narratives: `docs/ledger/2026-08.md` (and 2026-07); complete
-superseded registers: this file's git history (v1.10's last full
-text at `1c81b64`, v1.9's at `0193b65`, the layered pre-v1.9
-registers through `ed85767`). Audit verdicts in one line each:
-audit #1 (v1.7): FAIL — Pα + WF-collision countermodels, alias
-gap, honesty defects. Audit #2 (v1.9): FAIL — the `W` fatal
-witness (validated certificate, wrong physics), W8 preservation,
-(e) over-rejection. Audit #3 (v1.10): FAIL — the fire arm
-discarded the P/Q split it computed (spectators erased bit-free;
-isometry countermodel), which also refuted the W registration's
-causal story (W heals under the literal rule); plus the
-validate(None) contract gap, the duplicate-ticket W8 row, and six
-honesty defects. Working reviews: v1.8 design (two structural
-holes), v1.10 design fork (the hybrid verdict: amplitudes decide
-success, never isometry; no bare-term ideal oracle).
+superseded registers: this file's git history (v1.11's last full
+text at `b995df7`, v1.10's at `1c81b64`, v1.9's at `0193b65`, the
+layered pre-v1.9 registers through `ed85767`). Audit verdicts in
+one line each: audit #1 (v1.7): FAIL — Pα + WF-collision
+countermodels, alias gap, honesty defects. Audit #2 (v1.9): FAIL
+— the `W` fatal witness (validated certificate, wrong physics),
+W8 preservation, (e) over-rejection. Audit #3 (v1.10): FAIL — the
+fire arm discarded the P/Q split it computed (spectators erased
+bit-free; isometry countermodel), which also refuted the W
+registration's causal story (W heals under the literal rule);
+plus the validate(None) contract gap, the duplicate-ticket W8
+row, and six honesty defects. Audit #4 (v1.11): FAIL — the KD
+bundle recorded bit-free death for keys with surviving
+bit-carrying representations (retained-Q frame and burial
+countermodels, both W8 hazards); the parsimony claim refuted
+(single-boundary ∅-pop W certificate reaches the physics);
+W-healing and all physics CONFIRMED. Working reviews: v1.8 design
+(two structural holes), v1.10 design fork (the hybrid verdict:
+amplitudes decide success, never isometry; no bare-term ideal
+oracle).
 
 | version | one line | verdict that shaped it |
 |---|---|---|
@@ -648,7 +656,8 @@ success, never isometry; no bare-term ideal oracle).
 | v1.8 | decode records + refire guard; self-validating admission; W7; typed fragment | working review: two structural holes |
 | v1.9 | KD bundles + condition (e); key-alias guard + W8; real disjointness checker; syntactic fragment boundary; docs current-only | **fresh audit #2: FAIL** (the `W` fatal witness — clean validation, wrong physics via a zero-amplitude structural veto on `B`-class certificates; W8 preservation refuted; (e) over-rejection; checker totality) |
 | v1.10 | the hybrid pipeline (structural isometry mandatory; dynamic cleanliness decides success); instance-directed erasure with validation-adjudicated spectator admission; deep W3 + the key-state algebra; machine_coverage rename + the physics table; `B` healed, `W` registered placement-open | **fresh audit #3: FAIL** (the fire arm computed P/Q and discarded it — retained spectators erased bit-free; retained-Q isometry countermodel; W's "limitation" was this defect and heals under the literal rule; validate(None) gap; duplicate-ticket W8 row; six honesty defects) |
-| v1.11 | the P/Q spectator transition implemented literally (KD from P, rs′ = Q); all twenty certificates re-discovered and frozen as exact dicts (most boundaries pop nothing; q family/B/W pop exactly the interfering inner-coin instances); `W` HEALED at {halt1: 1}, the staged-uncomputation retraction; W9 + the algebra's duplicate-ticket row; validate(None) runs the real sweep; two new permanent regressions; honesty corrections (B/W attribution, 20/17 fragment, conservation counts, identity-sweep retraction) | **fresh audit #4: pending** |
+| v1.11 | the P/Q spectator transition implemented literally (KD from P, rs′ = Q); certificates re-discovered and frozen as exact dicts; `W` HEALED at {halt1: 1}, the staged-uncomputation retraction; W9 + the algebra's duplicate-ticket row; validate(None) runs the real sweep; two new permanent regressions; honesty corrections | **fresh audit #4: FAIL** (KD bundle bit-free-records keys with surviving bit-carrying representations — retained-Q frame + burial countermodels; parsimony refuted; W healing + physics CONFIRMED) |
+| v1.12 | the KD subtraction (bundle names only representation-free keys; decode's record-skip lifted to burials); W8 extended to bitfree ∩ burial; condition (e) compares the bundle actually left; canonical = maximal-certified, minimality docketed; register decrufted current-only; two new permanent regressions (nine total) | **fresh audit #5: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
