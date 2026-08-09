@@ -66,19 +66,21 @@ The library is three layers — `blc` substrate, symmetric `classical` and
 `quantum` pillars, `lab` behind its own feature — and one binary, `blam`,
 whose subcommands live in `src/cli/`. Lab-gated subcommands are recognised
 without the feature and say how to get themselves; do not "fix" that by
-deleting the arm. A fourth pillar, `quantum-algebraic` (qALC: quantum
+deleting the arm. A third pillar, `quantum-algebraic` (qALC: quantum
 *control*, storeless, runtime states in ℓ² over token configurations),
-exists as a ratified contract plus an active machine design, no code —
-`docs/quantum-algebraic/architecture.md` is the contract (IAM-lineage
-token transport: the invocation term is read-only and values reach the
-`h`/`t` gates by token routing, never by copying), `token.md` beside it
-the active design (exact λIAM substrate, δ-gadget sketch, obligations
-register), and `machine.md` the record of the two failed
+exists as design documents plus an out-of-tree scratch kernel, no code
+in the tree — `docs/quantum-algebraic/architecture.md` is the contract
+(IAM-lineage token transport: the invocation term is read-only and
+values reach the `h`/`t` gates by token routing, never by copying),
+`token.md` beside it the active design (exact λIAM substrate, kernel
+gate, obligations register), `kernel.md` the current-only register of
+the scratch kernel that implements the gate (the register alone
+carries the version; its state is machine-verified and held in a
+fresh-context adversarial audit loop — round history in the ledger and
+its §11 chronicle), and `machine.md` the record of the two failed
 rewriting-machine drafts — read-only history, do not build on it.
 **No qALC code may land** until the contract's §9 gates pass; the
-concrete first gate is `token.md` §4's three-program kernel (full
-transition table, range disjointness, step-indexed HH / H–NOT–H /
-negative-witness traces, column-Gram enumeration). qALC work must
+scratch kernel stays outside the tree until then, and qALC work must
 leave classical and qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
@@ -192,7 +194,7 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
   steps / 100k nodes / 4096 lemma steps, measured kill-equivalent to the
   battery's 2000/200k (`::THOROUGH`). A complete four-rung frontier sweep
   (v1 + HTR + selector + PDR) measured 981.3 s wall / 6,630 s user at
-  `--threads 8` on the M5 Max over the 4,235-term frontier
+  `--threads 8` on the M5 Max over the then-4,235-term frontier
   (2026-08-08, the sweep that discovered the eight PDR kills) — 1.84
   core-hours, well under the pre-measurement four-core-hour estimate,
   wall tail-bound as predicted.
@@ -240,4 +242,6 @@ bisimulation), `qblc-omega-witnesses` (dyadicity hunt and phase-2 design),
 `qalc-architecture` (qALC design contract adversarial review,
 ratification, and amendments), and `qalc-token-machine` (qALC token
 machine feasibility and kernel review).
+The kernel audit rounds deliberately run threadless — a fresh context
+per round is the point — labeled `qalc-vNNN-fresh-audit`.
 Send raw evidence—encodings, diffs, measured bits—not summaries.

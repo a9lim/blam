@@ -161,7 +161,8 @@ accounting so repeated checks stay O(1) without changing meter charges.
 
 `src/classical/certificate/` is the trusted checker layer. `mod.rs` holds the
 pattern-term representation and the trusted checkers `verify`, `verify_htr`,
-and `verify_selector` for Ratchet, HeadTowerRatchet, and SelectorRatchet.
+`verify_selector`, and `verify_pdr` for Ratchet, HeadTowerRatchet,
+SelectorRatchet, and PassengerDiagonalRatchet.
 `search_impl.rs` is untrusted discovery — public as
 `classical::certificate::search` only under the `lab` feature, compiled for
 tests otherwise — and `battery.rs` is the in-crate soundness battery, which
@@ -361,7 +362,7 @@ all closed terms through 18 bits plus targeted deep vectors, and the two-phase
 scheduler is pinned against an unsplit one-pass sweep, size by size, through
 28 bits. The certificate soundness battery passes 196,848 provable halters
 through the exact discovery ladder and requires zero certificate fires. All
-297 canonical kills are additionally kernel-checked in Lean with wire-identity
+305 canonical kills are additionally kernel-checked in Lean with wire-identity
 theorems.
 
 Independent Python tools remain deliberately separate where shared

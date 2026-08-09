@@ -99,7 +99,7 @@ assert_eq!((nf.0.as_str(), steps), ("0010", 2));
 Around the core: `classical::oracle` (Tromp's syntactic divergence
 prefilter), `classical::escalation` (redex-history loop detection plus a
 semantic self-feedback divergence certificate), `classical::certificate`
-(trusted checkers for three machine-checkable divergence-certificate
+(trusted checkers for four machine-checkable divergence-certificate
 classes), and `blc::enumerate` (parallel closed-term enumeration,
 `u64`-packed). `classical::ladder` is the one cheapest-verdict-first
 halting pipeline over all of them — pre-scan, oracle, two machine rungs,
@@ -225,7 +225,7 @@ regeneration, Ω/K regeneration, certificate re-certification).
   `uni.rs` parity harness in `contrib/ait-uni/`.
 - The certificate soundness battery is a crate unit test rather than an
   integration test, so plain `cargo test` streams every provable halter
-  ≤28 bits through all three trusted checkers and asserts nothing fires.
+  ≤28 bits through all four trusted checkers and asserts nothing fires.
 - Halt counts are invariant under every engine change in the repo's
   history — CI diffs a census spot-check against the canonical table
   on every push.
@@ -234,7 +234,7 @@ regeneration, Ω/K regeneration, certificate re-certification).
   `--all-features`, default features, and `--no-default-features` — so
   the lab targets, the no-lab dispatcher arms, and the im-rc-only
   library are each exercised.
-- Every one of the 297 certificate kills is an individually
+- Every one of the 305 certificate kills is an individually
   kernel-checked `¬HasNormalForm` theorem in Lean 4 (zero sorries, no
   mathlib), pinned to its wire bits by a kernel-checked encoding.
 
@@ -245,7 +245,7 @@ census of all 526,039,969 closed terms of 4–41 bits (~16.5 min on an
 M5 Max) giving the first BBλ(41) bound (≥ 1,074,266,118 bits) and a
 BBλ(32) settled modulo the certificate layer (its one remaining
 unknown is a kernel-checked certified diverger); Ω restricted to ≤41
-bits exactly bracketed in [0.124105086764, 0.124105092919]; the
+bits exactly bracketed in [0.124105086764, 0.124105092895]; the
 170-bit self-interpreter certified locally optimal; and on the quantum
 side the first computed operator census of quantum-preparing programs
 (to our knowledge) —
@@ -264,6 +264,11 @@ architecture is split into
 and
 [quantum](https://github.com/a9lim/blam/blob/main/docs/quantum/architecture.md)
 pillars; proof plans and research notes are grouped beneath those domains.
+A third pillar, **qALC** (quantum *control*: storeless, runtime states in
+ℓ² over token configurations), exists as a
+[ratified design contract](https://github.com/a9lim/blam/blob/main/docs/quantum-algebraic/architecture.md)
+with a machine-verified kernel register — design documents only; no qALC
+code lands until the contract's gates pass.
 Canonical evidence lives in
 [data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
 in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological

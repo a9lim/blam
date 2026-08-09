@@ -397,28 +397,21 @@ the whole-live-store operator census.
 
 ## Quantum-algebraic state (qALC)
 
-A third pillar exists as a design contract only:
-`quantum-algebraic/architecture.md` (quantum control, storeless — runtime
-states in ℓ² over machine configurations, `h`/`t` constants at invocation,
-fate softened to a real halting mass `μ_p` with `Ω_qALC = Σ 2^(−|p|) μ_p`),
-with the active machine design in `quantum-algebraic/token.md` and the
-failed rewriting drafts (v0/v1) preserved in
-`quantum-algebraic/machine.md`. No engine, no data;
-`data/quantum-algebraic/` is reserved. **The contract is frozen and
-amended**: four review rounds concluded in a sign-off at `27f2c4b`, and
-the token-machine amendment — route (b) after v1's no-cloning killshot
-— was ratified through thread `qalc-architecture` and applied
-(2026-08-09; history in `ledger/2026-08.md`). The machine is now
-IAM-lineage token transport: term read-only, bideterministic substrate
-(exact λIAM table pinned in `token.md` §2), values transported to δs
-by routing, never copied.
-
-The v2 design sketch is drafted (`token.md` §3: probe protocol,
-δ blocks on arrival states, balanced virtual answers, no-store
-consistency) and a fresh-context feasibility review (thread
-`qalc-token-machine`) independently graded the route
-promising-with-hard-open-problems, converging with the sketch on every
-load-bearing point; its checklist and exclusions are folded in.
+The third pillar: a ratified design contract plus a machine-verified
+scratch kernel, no code in the tree.
+`quantum-algebraic/architecture.md` is the contract (quantum control,
+storeless — runtime states in ℓ² over machine configurations, `h`/`t`
+constants at invocation, fate softened to a real halting mass `μ_p`
+with `Ω_qALC = Σ 2^(−|p|) μ_p`), frozen and amended: four review
+rounds concluded in a sign-off at `27f2c4b`, and the token-machine
+amendment — route (b) after v1's no-cloning killshot — was ratified
+through thread `qalc-architecture` and applied (2026-08-09). The
+machine is IAM-lineage token transport: term read-only,
+bideterministic substrate (exact λIAM table pinned in `token.md` §2),
+values transported to δs by routing, never copied. The active design
+and obligations register are `quantum-algebraic/token.md`; the failed
+rewriting drafts (v0/v1) are preserved read-only in
+`quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
 **The kernel is at v1.15** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`

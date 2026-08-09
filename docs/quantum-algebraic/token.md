@@ -1,7 +1,10 @@
 # qALC machine — token-transport design
 
-**Status: active design, pre-kernel; the sketch (§3) is hand-derived
-and unverified.** The qALC machine is IAM-lineage token transport
+**Status: active design; the §4 kernel gate is implemented as an
+out-of-tree scratch kernel, registered current-only in `kernel.md`
+and held in a fresh-context adversarial audit loop. No qALC code
+lands until architecture §9's gates pass.** The qALC machine is
+IAM-lineage token transport
 (architecture §8): the invocation term is immutable and read-only, the
 runtime basis is token configurations, and gate arguments reach δs by
 routing, never by copying. The rationale: the Interaction Abstract
@@ -382,24 +385,30 @@ h (NOT′ (h 0̂))     — the coherence bar
 
 and a column-Gram enumeration over the small reachable graph, showing
 `NOT′` returns a boolean-independent spectator while the non-injective
-map does not. If the kernel works, the route is genuinely promising;
-if HH needs special-case stack erasure or H–NOT–H leaves distinct
-log/tape states, the route has only relocated the rewriting
-substrate's obstruction and the fork reopens.
+map does not. The bar was: if HH needs special-case stack erasure or
+H–NOT–H leaves distinct log/tape states, the route has only relocated
+the rewriting substrate's obstruction and the fork reopens. **The bar
+is met and exceeded** — the scratch kernel earns HH's mass-1
+cancellation through certified erasure and decode (no special cases),
+runs H–NOT–H to its coherence ideal, keeps the negative witness
+unmerged, and extends the Gram enumeration to a twenty-program suite
+with a written-first physics table; the fork stays closed. The
+verified state, claims, and audit history live in `kernel.md` (the
+register alone carries the version).
 
 | Item | Status |
 |---|---|
 | Kernel | **v1.15** (`kernel.md`, current-only): the hybrid pipeline — structural admission/isometry mandatory, exact-amplitude dynamic cleanliness deciding run success — with INSTANCE-DIRECTED certificates; the KD bundle names only keys with no surviving bit-carrying representation ANYWHERE in the target (Q frames, burials, T/log-riding tickets — CONFIRMED-SOUND by audits #6 and #7, exhaustive storage enumeration then an extended matrix). `W` healed at {1̂: 1} (audits 3–7 confirmed, refire amplitudes verified zero per-step); phase-3 greedy rescue over the full candidate pool certifies `palpha` (guard-silent, marginal hand-confirmed); non-vacuous coverage (unreachable certificate entries refused); nineteen exact dict certificates + dupcall's canonical None; canonical = deterministic validation-adjudicated greedy, neither maximal nor minimal; nine-invariant WF; eleven permanent regressions, all gating the module exit code. **PASS re-claim gated on fresh audit #8** |
 
 | α/γ transport totality | **restored** — the `replay` rule (fresh re-seek off the instance's frame, derived from the literal visit-3 trace); the whole eleven-program battery runs total |
-| Transparency criterion | **discharged through the ratified encoded-fibre amendment** (architecture §7; `kernel.md` §11.7, §12.2, §13.3): the v1.5 fire decodes conservatively by default and erases only at certified boundaries under the corrected fibre condition (retained `(slot, T, log)` determines erased `(l, RS)`); validity is pop-err reachability + the RS-function property, strictly beyond Gram (negative control caught); certificates are canonical machine metadata via `discover_total` — terminating, conservative, total on every program (`h Ω` witness), and as of v1.8 **self-validating**: the fixpoint is admitted only if its certified graph passes full semantic coverage, else None |
-| Instance identity | **ratified and discharged, interleaving included** (`kernel.md` §13.4, §14): lp-at-log-head structural for signature-abstracted programs; equal-lps-same-copy backed by the `(g,i)`-aliasing regression, the `dup` witness, and now the `frame-conflict` typed guard; the interleaved re-seek has semantics via the replay record — `Q`, `weave`, `hweave`, and `qq` all total, clean, and physical; v1.8 dissolves the audit's injectivity gap (aliasing manifestations are typed or value-correct — `frame-conflict`, `alien-ticket`, `refire`; lp uniqueness downgrades to a completeness conjecture) |
-| Time register | **the coloring AND the conservation law are theorems** (`kernel.md` §11.1–11.2, §13.1): closed-form φ, uniform flip, certified-erasure defect `1 − w(erased lp)`; branch-offset formula verified; mark-free fire-free readback conserves `w ≡ slot` (proved: attribution ledger + coloring), so geometric selection of classical data decoheres intrinsically and every escape route is a named mechanism (interior-fire charge, VB pattern birth, mark capture) |
+| Transparency criterion | **discharged through the ratified encoded-fibre amendment** (architecture §7; `kernel.md` §5): the fire decodes conservatively by default and erases only at certified boundaries under the corrected fibre condition (retained `(slot, T, log)` determines erased `(l, RS)`); validity is the hybrid validation — structural admission/isometry plus exact-amplitude dynamic cleanliness plus non-vacuity, strictly beyond Gram (negative controls caught); certificates are canonical machine metadata via `discover_total` — terminating, conservative, total on every program (`h Ω` witness), and **self-validating**: every admitted map passes full semantic coverage, else None |
+| Instance identity | **ratified and discharged, interleaving included** (`kernel.md` §4, §9): lp-at-log-head structural for signature-abstracted programs; equal-lps-same-copy backed by the `(g,i)`-aliasing regression, the `dup` witness, and the `frame-conflict` typed guard; the interleaved re-seek has semantics via the replay record — `Q`, `weave`, `hweave`, and `qq` all total, clean, and physical; the injectivity gap is dissolved into the registered alias-gap conditional (aliasing manifestations are typed or value-correct — `frame-conflict`, `alien-ticket`, `key-alias`, `refire`; W9 bounds live tickets; lp uniqueness stands as a completeness conjecture) |
+| Time register | **the coloring AND the conservation law are theorems** (`kernel.md` §7.1–7.3): closed-form φ, uniform flip, certified-erasure defect `1 − w(erased lp)`; branch-offset formula verified; mark-free fire-free readback conserves `w ≡ slot` (proved: attribution ledger + coloring), so geometric selection of classical data decoheres intrinsically and every escape route is a named mechanism (interior-fire charge, VB pattern birth, mark capture) |
 | L1 arrival-residue determinacy | kernel-verified at `fire`; general proof open |
 | L2 pop timing / coherence return | confirmed for NOT′ (kernel); selector measured decoherent; mechanism understood via pattern-vs-step |
 | `call`/`recall`/`replay` structural domain disjointness | guards structural in v1.3 (instance + rs checks, buried-frame typed); formal table presentation still owed |
 | Probe-exit classification totality | open (kernel error rules are catch-alls) |
 | Readback controller | undesigned; kernel's root classifier is its 1-bit case |
 | `μ_p`/`Ω_qALC` on the token clock | pending readback design |
-| Mandatory regressions | `p★`, 3-coin, `q`, `q′`, `q2`, `dup` — all total, Gram-clean, marginals correct; `q`-family certified runs halt frame-free with arrival telemetry 35/7/3 as the time-register record |
+| Mandatory regressions | the twenty-program suite (twelve sectors, the audit witnesses, the interleaving stressors) — all total, Gram-clean, physics table passing; eleven permanent regressions gate the sweep's exit code; `q`-family certified runs halt frame-free with arrival telemetry 35/7/3 as the time-register record |
 | Bideterminism of §2 | verified vs arXiv:2002.05649 |
