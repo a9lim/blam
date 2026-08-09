@@ -1,11 +1,17 @@
 # qALC reference machine — formal draft v1
 
-**Status: formal draft v1, submitted for adversarial review.** Working
-object for `architecture.md` §9 item 1. v0's review verdict, refuted
-claims, and defect register are in `../ledger/2026-08.md`; every v0
-defect has a v1 resolution (§8.1). Fork (A) of the v0 register —
-minimal-information residue with *earned* coherence — is ratified and
-built in. The architecture contract wins wherever they disagree.
+**Status: formal draft v1 — reviewed; Try-boundary protocol
+CONFIRMED-BROKEN, scaffold survives.** Working object for
+`architecture.md` §9 item 1. The v1 review verdict is registered in §9:
+the no-erasure forward machine and the color discipline hold (with
+three residual within-row defects), but the §5 protocol fails on a
+no-cloning countermodel — basis-copying a superposed result entangles
+the copy with the computation history, so the reverse pass cannot
+restore the entry configuration — taking §6's witness traces down with
+it. Sections 5 and 6 are retained as the record of a productive failed
+construction; do not build on them. v2 routes are in §9.4. Review
+history: `../ledger/2026-08.md`. Fork (A) remains ratified. The
+architecture contract wins wherever they disagree.
 
 v1 is organized around three design commitments that answer the v0
 review:
@@ -345,3 +351,79 @@ and the monotone-mass lemma instantiates verbatim.
 | Witness-7 pinning (NOT′ + protocol) | drafted; travels with this review |
 | Effect-free projection lemma | open; expect: term projection = rigid-atom sequence, administrative rows are A6b/CP-free on effect-free runs |
 | Clean compilation | operationally derived: length-balanced code + protocol (§5); formal statement open |
+
+## 9. v1 review verdict (registered)
+
+### 9.1 The fatal countermodel (no-cloning)
+
+Model an inner δ-argument as work register `V = H` on `|0⟩` with a
+fresh result register. Forward: `H|0⟩ = |+⟩`. CP basis-copies:
+`CNOT(|+⟩|0⟩) = (|00⟩+|11⟩)/√2 = |Φ⁺⟩`. Reversing the work register:
+
+```text
+(H ⊗ I)|Φ⁺⟩ = ½[ |0⟩(|0⟩+|1⟩) + |1⟩(|0⟩−|1⟩) ]  ≠  |0⟩|+⟩
+(H ⊗ H)|Φ⁺⟩ = |Φ⁺⟩
+```
+
+The copy is entangled with the source; uncomputation cannot restore a
+branch-independent entry configuration, and tracing the work register
+leaves the maximally mixed result. Basis-copying an unknown
+superposition is the standard obstruction, and the v1 CP step commits
+it. Consequently broken: §6.1 (HH — the outer argument `h 0̂` is not a
+literal, so its protocol is nontrivial), §6.2, the H–NOT–H claim, and
+the selector prediction. The input-retained Bennett argument fails as
+applied: `Try_g(c)` retains *syntax*, not the quantum branch input as
+an independent register, and `f(c)` as a superposition makes CP produce
+entanglement, not a `(c, f(c))` tensor product. Equal transition count
+is necessary for interference but not sufficient.
+
+### 9.2 What holds
+
+No-erasure repairs A2 (env-head pop is a true inverse; dead entries
+change configuration identity, not the projected reduction sequence).
+`Drop(c)` is branch-independent within one δ fibre. Color + `Join`
+eliminates the v0 cross-rule collisions (A1/A2, D3/R3), conditional on
+rowwise core injectivity. Clean δ fibres are compatible with colors
+(D1's outcomes share color, `Join`, spectators; `J_h†J_t = 0` is
+`D1 ≠ D2`). Reverse-through-δ is locally definable as an isometric
+tagged-fibre adjoint — but "reverse is always available because the
+machine is an isometry" is too strong globally: each reverse row's
+domain and range must be explicit, and a lone outcome maps under `H†`
+into counterfactual predecessor components.
+
+### 9.3 Residual table defects (v1-local, repairable)
+
+1. A3's blanket `Try` exclusion strands non-boolean lambdas under
+   `Try_g` (`h (λx.x)` never reaches E1): A3 must fire under `Try` for
+   non-canonical lambdas, A6b taking priority only on `0̂`/`1̂`.
+2. A6b erases the selected closure's captured environment (its source
+   has `Eval⟨(b̂, e)⟩`, its target only `b̂` and `c`): retain or charge
+   `e`.
+3. E1 still drops `c` from the retained control.
+4. I2 must be scoped to live environments — residue-held environments
+   can retain `Level(l)` past readback.
+5. Residue push order (content tag vs `Join`) must be normative.
+6. CP/Rev boundary rows were never actual table rows with a
+   deterministic stopping schedule.
+
+### 9.4 Contract drift and v2 routes
+
+**Drift**: conservative `Join` charging is a sound proof scaffold but
+is not the architecture's predecessor-fibre-minimal machine; either the
+maximal transparency set is finished and ratified before canonical
+objects, or the architecture is amended to accept the conservative
+colored machine as the semantic definition.
+
+**v2 routes** (review-suggested, unadjudicated): (a) restrict Bennett
+cleanup to genuinely classical reversible subcomputations with retained
+data registers, making coherent gate composition a *code-orchestrated*
+discipline (compute; uncompute the input from the output where the
+computed map is injective — the smallest clean-compilation lemma,
+correctly posed at last) with witness 7 amended to a compiled gadget;
+(b) a reversible interaction/token construction in which the output is
+*transported* to the δ without basis-copying an unknown superposition —
+the parked qGoI dynamics resurfacing as an internal mechanism rather
+than a separate pillar; (c) accept the raw colored machine as the
+canonical semantics and move all coherence engineering into compiled
+code. The witness-7 amendment does not name any machine mechanism in
+any route.
