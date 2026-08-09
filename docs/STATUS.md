@@ -425,18 +425,23 @@ load-bearing point; its checklist and exclusions are folded in.
 substrate, step-indexed traces, column-Gram orthonormal on every
 tested reachable basis. HH halts with mass 1 on `0̂` by exact
 cancellation at the outer fire; H–NOT–H passes the coherence bar
-through NOT′; the negative witness's branches stay orthogonal in
-residue and time. Measured findings: the selector NOT decoheres by
-one-step desynchronization (the coherence economy in token steps);
-re-interrogation is real (C1 refuted) and handled by ticket-replay
-(`recall`) with no store.
+through NOT′; the negative witness's branches halt with the *same*
+output `I` and stay orthogonal in residue and time. Measured
+findings: the selector NOT decoheres by one-step desynchronization
+(the coherence economy in token steps); re-interrogation is real
+(C1 refuted) and handled by ticket-replay (`recall`) with no store.
+The conformance review (thread `qalc-architecture`) returned
+partial-conformance with one blocker — v1.0 misclassified the valid
+output `I` as an error — fixed in v1.1 along with separate
+`RunDone`/`Halt` steps, a structural (cancelled-targets-included)
+Gram, and two mandated architecture amendments (witness 7 pinned to
+the exact `NOT′` wire term; the stale strategy bullet).
 
 The open docket, in order:
 
-1. kernel v1 through the review loop (adversarial verification in
-   `qalc-token-machine`, contract conformance in `qalc-architecture`
-   — both dispatched 2026-08-09); the sharpest open lemma is
-   re-entry determinacy (`recall` erases `b′`);
+1. the adversarial machine review (`qalc-token-machine`, independent
+   reimplementation requested — in flight); the sharpest open lemma
+   is re-entry determinacy (`recall` erases `b′`);
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars;
 3. the clean coherent compilation theorem

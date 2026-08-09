@@ -1,10 +1,12 @@
 # qALC three-program kernel — v1
 
-**Status: kernel v1, machine-verified, pre-review.** This is the
-formalization gate demanded by `token.md` §4: the complete transition
-table for a boolean-output qALC machine, step-indexed traces of the
-three witness programs, and a column-Gram enumeration over the
-reachable bases. All obligations pass. Verification was mechanized in
+**Status: kernel v1.1 — machine-verified; conformance-reviewed
+(thread `qalc-architecture`), blocker fixed; adversarial machine
+review in flight.** This is the formalization gate demanded by
+`token.md` §4: the complete transition table for a small-output qALC
+machine, step-indexed traces of the three witness programs, and a
+column-Gram enumeration over the structural reachable bases. All
+enumerated kernel-scope checks pass. Verification was mechanized in
 a scratch superposition evolver (exact `ℤ[1/√2]` arithmetic, norm
 asserted equal to 1 at every global step; the evolver stays out of the
 tree per the no-code gate — reviewers should reproduce independently,
@@ -14,9 +16,12 @@ which is stronger verification than sharing it). Scope limits are in
 ```text
 h (h 0̂)             mass 1 on 0̂, single terminal configuration
 h (NOT′ (h 0̂))      mass 1 on 0̂, single terminal configuration
-(λb. b I I) (h 0̂)   two error configurations, 1/2 + 1/2, orthogonal
-                     in residue AND in entry time — never merge
-column-Gram          orthonormal on every reachable basis tested
+(λb. b I I) (h 0̂)   Halt(I) in BOTH branches, 1/2 + 1/2: same
+                     output normal form, orthogonal in residue AND
+                     entry time — the noninjective-output dilation,
+                     exactly as the negative witness asserts
+column-Gram          orthonormal on every structural reachable basis
+                     (amplitude-blind BFS: cancelled targets included)
 ```
 
 Two probes beyond the gate, both physics-correct: the selector
@@ -27,24 +32,31 @@ equal ticks.
 
 ## 1. Scope
 
-The kernel machine answers a single **root boolean question** about
+The kernel machine answers a single **root output question** about
 the invocation `p h t`: initial state
-`(root, ↓, log ε, tape •·•·ρ)`, halting sectors `Halt(0̂)`/`Halt(1̂)`
-for boolean outputs and an absorbing error sector for everything
-else (non-boolean normal forms land there — legitimate for the
-kernel, whose three programs need only this; full normal-form
-readback is the next design stage, not smuggled in here). The ring
-is `ℤ[1/√2]` — `h` only; `t` is the same table with
-`Q_t = diag(1, ω)` over `ℤ[ω]/√2^d` and its own tags, deliberately
-left unexercised. Classical substrate: the eight λIAM rules exactly
-as pinned in `token.md` §2.
+`(root, ↓, log ε, tape •·•·ρ)`, output alphabet **{`0̂`, `1̂`, `I`}**
+with typed halting sectors for each, an absorbing error sector for
+species errors, and root arrivals outside the alphabet also entering
+the error sector — a kernel-scope limitation flagged as such: the
+architecture permits arbitrary normal-form outputs, and recognizing
+them is the readback controller's job, not smuggled in here. `I` is
+in the alphabet because the negative witness's output is a *valid
+closed normal form* — classifying it as an error would make witness
+8 vacuous (a conformance-review catch; v1.0 had exactly that bug).
+Terminal entry is the normative two-step
+`RunDone(nf, res) → Halt(nf, res, 0) → tick`, each a separate `U`
+application. The ring is `ℤ[1/√2]` — `h` only; `t` is the same table
+with `Q_t = diag(1, ω)` over `ℤ[ω]/√2^d` and its own tags,
+deliberately left unexercised. Classical substrate: the eight λIAM
+rules exactly as pinned in `token.md` §2.
 
 ## 2. State space
 
 ```text
-Run   ::= (pos, d, log, tape)          — λIAM shape, plus VB phase
-        | (leaf, VB(g, b′, k), log, tape)   k ∈ {0,1,2}
-Done  ::= RunDone/Halt(b, residue, tick) | Error(residue, tick)
+Run     ::= (pos, d, log, tape)        — λIAM shape, plus VB phase
+          | (leaf, VB(g, b′, k), log, tape)   k ∈ {0,1,2}
+RunDone ::= RunDone(nf, residue)            nf ∈ {0̂, 1̂, I, err}
+Halt    ::= Halt(nf, residue, tick) | Error(residue, tick)
 residue = the COMPLETE pre-entry state (pos, d, log, tape, VB phase)
 
 tape/log entries: • | logged position l | γ_g | μ_g | A_g(b′)
@@ -96,12 +108,18 @@ vvar     (g, VB(g,b′,2), L, T)     → (g, ↑, L, •^(b′+1)·α_g(b′)·T
          One bullet pays the gate-application crossing; the rest
          encode the slot; α carries the return ticket.
 
-root     (root, ↑, ε, P_b·ρ)  → RunDone(b̂) → Halt(b̂, res, 0) → tick
-         other ρ arrivals     → Error (non-boolean output)
+root     (root, ↑, ε, P_b·ρ)   → RunDone(b̂, res)
+         (root, ↑, ε, l·•·ρ)   → RunDone(I, res)
+         one lambda consumed, head = its own binder, unapplied —
+         the I signature at depth-2 observation
+         other ρ arrivals      → RunDone(err, res)  [kernel-scope
+         limitation: outputs beyond {0̂,1̂,I} await real readback]
+halt     RunDone(nf, res)      → Halt(nf, res, 0)   [separate step]
+ticks    Halt/Error(…, k)      → (…, k+1)
 errors   VB with a non-• non-classifier tape top; ↓-stuck on μ/ρ
          (too many head lambdas); neutral constants under μ/ρ;
-         recall arity mismatch — all → Error, complete residue.
-ticks    Halt/Error(…, k) → (…, k+1)
+         species shapes at γ boundaries; recall arity mismatch —
+         all → Error via RunDone, complete residue.
 ```
 
 ## 4. Where the design came from (load-bearing derivations)
@@ -147,13 +165,27 @@ the tokens the machine already carries — no store, as designed.
 Mechanized runs, exact arithmetic, norm ≡ 1 asserted at every global
 step (a norm increase is a non-injectivity detector — see §6):
 
-| program | sectors | support | terminal at | tick-aligned |
+Timing convention (pinned, conformance-reviewed): `RunDone` entry and
+`Halt(…, 0)` entry are separate `U` steps; "Halt at" below is the
+`Halt(…, 0)` step.
+
+| program | sectors | support | Halt at | tick-aligned |
 |---|---|---|---|---|
-| `h (h 0̂)` | `0̂`: 1 | 1 | t=48 | yes |
-| `h (NOT′ (h 0̂))` | `0̂`: 1 | 1 | t=63 | yes |
-| `(λb. b I I)(h 0̂)` | err: 1 | 2 | t=59 | no (Δ=2) |
-| `h (selNOT (h 0̂))` | `0̂`: 1/2, `1̂`: 1/2 | 4 | t=78 | no (Δ=1) |
-| `h 0̂` | `0̂`: 1/2, `1̂`: 1/2 | 2 | t=30 | yes |
+| `h (h 0̂)` | `0̂`: 1 | 1 | t=49 | yes |
+| `h (NOT′ (h 0̂))` | `0̂`: 1 | 1 | t=64 | yes |
+| `(λb. b I I)(h 0̂)` | `I`: 1 | 2 | t=58, 60 | no (Δ=2) |
+| `h (selNOT (h 0̂))` | `0̂`: 1/2, `1̂`: 1/2 | 4 | t=78, 79 | no (Δ=1) |
+| `h 0̂` | `0̂`: 1/2, `1̂`: 1/2 | 2 | t=31 | yes |
+
+Output-density report (the kernel as output-operator prototype): the
+negative witness's two branches halt with the *same* `nf = I` and
+distinct residues — `ρ_output` is `|I⟩⟨I|` with the orthogonality in
+the traced-out garbage/time, the noninjective-output dilation
+exactly. Lone `h 0̂` halts at equal ticks but with `b`-dependent
+residues (the `α` ticket survives), so `ρ_output` is exactly
+diagonal `diag(1/2, 1/2)` — the bare coin's output coherence is
+unearned, as the contract's economy demands; earning it would
+require code that uncomputes the ticket.
 
 HH's `1̂` amplitudes cancel *at the outer fire step* (t=33): the two
 branches arrive at the boundary as a clean fibre — equal position,
@@ -165,18 +197,25 @@ residues and enter the error sector two steps apart — orthogonal two
 ways over, as unitarity demands, and its four-state predecessor was
 the run that caught a real table bug (§6).
 
-**Column-Gram enumeration**: for each program, the union of all
-basis states reachable during evolution (ticks truncated at depth 2;
-the tick shift is manifestly isometric beyond it), every column
-checked unit-norm and every distinct pair orthogonal:
+**Column-Gram enumeration** (strengthened after conformance review):
+the basis is the **structural** reachable graph — an amplitude-blind
+BFS over column targets, so states that cancel to zero in the
+aggregated evolution (e.g. the annihilated `A_h(1)` targets at HH's
+outer fire) have their columns checked too. Ticks truncated at depth
+2 (the tick shift is manifestly isometric beyond it); the
+invocation-sector coordinate is suppressed in displayed states and
+preserved trivially (the term is read-only), so per-program
+enumeration plus sector orthogonality covers the direct sum. Every
+column unit-norm, every distinct pair orthogonal, no stuck states
+(totality):
 
-| program | reachable basis | non-unit | non-orthogonal |
-|---|---|---|---|
-| HH | 61 | 0 | 0 |
-| H–NOT–H | 83 | 0 | 0 |
-| negative | 99 | 0 | 0 |
-| selector | 131 | 0 | 0 |
-| lone H | 49 | 0 | 0 |
+| program | structural basis | stuck | non-unit | non-orthogonal |
+|---|---|---|---|---|
+| HH | 82 | 0 | 0 | 0 |
+| H–NOT–H | 104 | 0 | 0 | 0 |
+| negative | 103 | 0 | 0 | 0 |
+| selector | 135 | 0 | 0 | 0 |
+| lone H | 53 | 0 | 0 | 0 |
 
 ## 6. Findings register
 
@@ -196,13 +235,34 @@ checked unit-norm and every distinct pair orthogonal:
    table bugs found during construction announced themselves as
    norm violations in the negative witness — the witness battery
    works as designed, and `λb. b I I` specifically earns its place.
+4. **Valid normal forms are not errors** (conformance blocker,
+   fixed in v1.1). v1.0's root classifier sent the negative
+   witness's output `I` to the error sector, which made witness 8
+   vacuous — it tested error-entry injectivity rather than the
+   architecture's same-output-never-merges assertion. The output
+   alphabet gained `I`, both branches now halt as `Halt(I, …)` with
+   orthogonal residues and times, and the general lesson is pinned:
+   only a *gate applied to* a non-boolean is a species error;
+   output classification belongs to readback.
+5. **The battery accounting, per conformance review**: items 2, 3,
+   4 (finite instance), 6, 7, and 8 are discharged at kernel scope;
+   items 1 and 9 are not applicable (no code exists — not
+   "vacuously passed"); item 5 (effect-free conservativity) is not
+   exercised by the kernel set and remains open.
 
 ## 7. Honest scope and obligations discharged/remaining
 
 Discharged by the kernel: HH and H–NOT–H step-indexed traces; L2
-for `NOT′`; the negative witness; orthonormal columns on the tested
-reachable bases; totality on every reachable state (the evolver
-faults on stuck states; none occurred).
+for `NOT′`; the negative witness (as of v1.1 — same halted `I`,
+orthogonal configurations); orthonormal columns on the structural
+reachable bases; totality on every structural state (zero stuck).
+The erasures at `fire` and `recall` are, per the conformance
+review's framing, *proved injective on the enumerated kernel
+domains by the Gram check itself*; their general schemas remain
+conditional on the re-entry and arrival-determinacy lemmas — and
+the input boolean `b` must never be conservatively charged as
+residue while those are open (retaining it would destroy the clean
+fibre; the design keeps `b` as the consumed quantum coordinate).
 
 Remaining, inherited or newly exposed:
 
@@ -287,7 +347,9 @@ t= 44 b4      1       ffb    U  log[]  tape[b ah0 R]
 t= 45 b4      1       ff     U  log[]  tape[b b ah0 R]
 t= 46 b3      1       f      U  log[]  tape[b ah0 R]
 t= 47 b3      1       root   U  log[]  tape[ah0 R]
-t= 48 rootdone → RunDone(0̂) → Halt(0̂, residue (ah0·R), 0) → ticks.
+t= 48 rootdone 1      RunDone(0̂, residue (ah0·R))
+t= 49 halt     1      Halt(0̂, residue, 0)     [separate U step]
+t= 50 tick     1      Halt(0̂, residue, 1) …
       Mass 1 on 0̂, amplitude 2/√2² = 1 exactly.
 ```
 

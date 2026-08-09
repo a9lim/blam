@@ -509,12 +509,18 @@ Every qALC engine change must then satisfy:
    on `0̂` and mass 0 on `1̂` — destructive cancellation, separating
    quantum semantics from the probabilistic degeneration (which yields
    the same mass but a mixed output at (1/2, 1/2));
-7. **the H–NOT–H witness**: `h (NOT (h 0̂))` with `NOT` a pure λ-term
-   halts with mass 1 on `0̂` (HXH = Z on `|0⟩`) — HH alone certifies only
-   local δ coherence, and an engine could pass it while β garbage from
-   any interposed λ-term destroys every nontrivial coherent computation;
-   this witness is the smallest test that λ-computation between gates is
-   coherence-transparent;
+7. **the H–NOT′–H witness**: `h (NOT′ (h 0̂))` with the exact wire
+   term `NOT′ := λb.λx.λy. b y x` halts with mass 1 on `0̂`
+   (HXH = Z on `|0⟩`) — HH alone certifies only local δ coherence,
+   and an engine could pass it while garbage from any interposed
+   λ-term destroys every nontrivial coherent computation; this
+   witness is the smallest test that λ-computation between gates is
+   coherence-transparent. The term is pinned because extensionally
+   equivalent implementations of negation need not share a
+   coherence class — the selector `λb. b 1̂ 0̂` is a measured
+   member of a different one (it decoheres by one-step
+   desynchronization; `kernel.md`), which is the economy working,
+   not a failed witness;
 8. **the negative witness**: for `λb. b I I` (a non-injective boolean
    map) applied to a fired `h` outcome, the synchronized images of basis
    inputs `0̂` and `1̂` remain orthogonal full configurations and never
@@ -567,10 +573,14 @@ Every qALC engine change must then satisfy:
   kinds and against every non-δ range (§7); branch-dependent δ residue
   would kill even the HH witness, and a landing shared across gate kinds
   would break isometry outright.
-- **Leftmost-outermost strong reduction:** the house strategy; the
-  machine is the definition — which chooses one machine-relative
-  reduction sequence rather than resolving algebraic-λ non-confluence,
-  and β/δ-convertibility is not a semantic equality here (§3).
+- **Token schedule with observational leftmost-outermost
+  conservativity:** the token/query/readback cadence defines the
+  semantic clock; effect-free outcomes equal rigid-atom
+  leftmost-outermost normalization without stepwise redex simulation
+  (§3, §6). The machine is the definition — which chooses one
+  machine-relative semantics rather than resolving algebraic-λ
+  non-confluence, and β/δ-convertibility is not a semantic equality
+  here (§3).
 - **Exactness:** ring arithmetic only, conservation as equality, brackets
   for every unbounded claim.
 - **Name:** qALC, quantum algebraic lambda calculus — lineage-accurate:
