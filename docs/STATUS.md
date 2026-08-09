@@ -407,17 +407,23 @@ with the pre-formal reversible-machine sketch in
 rounds of adversarial review on gaslamp thread `qalc-architecture`
 concluded in a sign-off at `27f2c4b` (history in `ledger/2026-08.md`).
 
+Machine formalization is two failed-productively drafts deep
+(`quantum-algebraic/machine.md`; v0 broke on producer marking, v1's
+Try-boundary protocol broke on no-cloning — verdicts registered in §9
+and the ledger). The surviving scaffold: no-erasure forward table,
+color discipline, typed terminal sectors, witness battery. Route (b) —
+token-transport dynamics — is the chosen v2 direction.
+
 The open docket, in order:
 
-1. the reversible machine: formal transition table on the
-   environment/closure substrate, orthonormal-columns proof (full
-   pairwise matrix), local predecessor-fibre garbage minimality,
-   invariant-sector lemma, and the HH / H–NOT–H witnesses computed by
-   hand (`quantum-algebraic/machine.md` §6) — gates all implementation;
-2. the clean coherent compilation theorem
+1. ratify the architecture §8 amendment route (b) requires
+   (`quantum-algebraic/token.md` §4, thread `qalc-architecture`);
+2. v2 token-transport machine design against the inherited constraints
+   (`quantum-algebraic/token.md` §§2–3), through the review loop;
+3. the clean coherent compilation theorem
    (`quantum-algebraic/architecture.md` §6) — gates any universality
    claim;
-3. then `src/qalc/`: reference evaluator first, census later.
+4. then `src/qalc/`: reference evaluator first, census later.
 
 ## Repository and release state
 

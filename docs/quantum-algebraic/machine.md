@@ -426,4 +426,6 @@ the parked qGoI dynamics resurfacing as an internal mechanism rather
 than a separate pillar; (c) accept the raw colored machine as the
 canonical semantics and move all coherence engineering into compiled
 code. The witness-7 amendment does not name any machine mechanism in
-any route.
+any route. **Route (b) chosen by a9, 2026-08-09** — exploration brief
+and inherited constraints in `token.md`; the architecture amendment it
+requires is `token.md` §4.
