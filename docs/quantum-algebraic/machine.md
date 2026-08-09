@@ -1,18 +1,15 @@
 # qALC reference machine — formal draft v0
 
-**Status: formal draft, under adversarial review.** This document
-supersedes the pre-formal sketch (git history; provenance in
-`../ledger/2026-08.md`) and is the working object for
-`architecture.md` §9 item 1. Sections marked **[open]** are stated
-obligations, not results. The architecture contract wins wherever they
-disagree.
-
-Two findings made during this formalization stand out and are flagged
-inline: the **witness-forcing analysis** (§5 — permanent lookup residue
-makes the contract's H–NOT–H witness fail, so coherent popping is
-load-bearing, not optional) and the **linearity observation** (§5.3 — the
-coherent NOT is the linear λ-term; discarding selectors decohere by
-exactly their erased content).
+**Status: formal draft v0 — reviewed, verdict DO NOT BUILD ON v0.**
+This document supersedes the pre-formal sketch (git history; provenance
+in `../ledger/2026-08.md`) and is the working object for
+`architecture.md` §9 item 1. The v0 review (thread `qalc-architecture`)
+confirmed the invariant-sector construction and the H–NOT–H decoherence
+trace, **refuted the universal forcing theorem and the linearity
+conjecture** (corrected statements in §5), and found five table defects
+(register in §7). v1 must rebuild the table around an explicit
+rule-coloured forward/reverse control discipline; the v1 design fork is
+stated in §7.3. The architecture contract wins wherever they disagree.
 
 ## 1. Syntax
 
@@ -231,88 +228,106 @@ short-circuits) is a design choice with real consequences — as stated
 it is deliberately minimal: booleans under `Try` only. With A6′, both
 HH branches write no post-branch `Look` tags, residues stay equal, the
 outer `D1` fires per branch with the common `Jh`, and the `1̂`
-amplitudes cancel: final state `|0̂⟩` at mass 1. **HH passes, and the
-δ tags' content-freeness plus A6′ are exactly what it needed.**
+amplitudes cancel: final state `|0̂⟩` at mass 1. The amplitude
+computation is review-confirmed; "HH passes" is conditional on the A6′
+repair of §7.1 (distinct `ReadyBool` landing with branch-independent
+provenance), since A6′ as displayed overlaps A3 and collides with
+genuine readback.
 
-### 5.2 Permanent lookup residue fails H–NOT–H — the forcing theorem
+### 5.2 Selector H–NOT–H decoheres under this table's permanent tags
 
-Take `NOT := λb. b 1̂ 0̂` (the selector) and run
-`h (NOT (h 0̂))`. After the inner δ, the branches carry `b̂ = 0̂` / `1̂`
-and equal residue `R₀`. Evaluating `NOT b̂`: A1·A1·A2 bind `b`, then A4
-looks up `b` — tag `Look(1, [_])`, *equal* across branches (the hole
-excludes the differing entry). The boolean then consumes the two
-argument closures — A2·A2 with environment `[Clo(0̂,∅), Clo(1̂,∅)]`
-equal across branches by I3 — and then the selection fires:
+Take `NOT := λb. b 1̂ 0̂` (the selector) and run `h (NOT (h 0̂))`. After
+the inner δ, the branches carry `b̂ = 0̂` / `1̂` and equal residue `R₀`.
+The `b`-lookup tag is equal across branches (the hole excludes the
+differing entry); the selection then fires:
 
 ```text
 branch 0̂:  A4 on Var 2 → tag Look(2, [Clo(0̂,∅), _])
 branch 1̂:  A4 on Var 1 → tag Look(1, [_, Clo(1̂,∅)])
 ```
 
-The tags differ in both hole position and retained content, and the
-retained content is the **unselected alternative**. No local pop can
-erase them: the pop-legality condition (the post-pop configuration
-determines the tag) fails, because after selection the configuration
-holds only the selected value — the unselected closure is information
-the branch no longer carries anywhere else. The branches therefore
-reach the outer `D1` with unequal residue, the `1̂` amplitudes fail to
-cancel, and the halting state is the (1/2, 1/2) mixture: **witness 7 of
-the architecture's verification contract fails on any machine whose
-lookup residue is permanent.** Coherent popping is not an optimization —
-the frozen contract makes it a correctness requirement.
+The tags differ, the branches reach the outer `D1` with unequal
+residue, the `1̂` amplitudes fail to cancel, and the halting state is
+the (1/2, 1/2) mixture. **Correct theorem (review-verified): permanent
+`Look(i, e∖i)` residue in this table makes selector H–NOT–H decohere
+unless a code-aware cleanup transition removes it.**
 
-### 5.3 The linearity observation and the pop-at-Ret candidate
+Two stronger claims made by v0 are **retracted**:
 
-Run the same computation with the **linear** NOT,
-`NOT′ := λb.λx.λy. b y x` — no duplication, no discard. The δ-argument
-`NOT′ b̂` normalizes under two binders (A3·A3, branch-independent), the
-lookup of `b` writes an equal tag as before, and the selection consumes
-*level variables*, not literals:
+- *"No local pop is legal"* — false. The selector's tag *is* determined
+  by its result once the decoder is known (`1̂ ↦ Look(2, [0̂,_])`,
+  `0̂ ↦ Look(1, [_,1̂])`): the unselected literal is the complement of
+  the selected one, fixed by the code. What is missing is live
+  *provenance* — a marker that this decoder applies — which makes it a
+  scheduling problem, not an information-theoretic impossibility.
+- *"Any machine with permanent lookup residue fails"* — false.
+  Counterdesign `LookFull(e, r)` with `r` the occurrence ordinal of the
+  selected entry among equal entries of `e`: injective (recover `i` as
+  the `r`-th occurrence of the returned closure in `e`), permanent, and
+  *branch-independent* whenever the whole environment is — for the
+  selector both branches write the identical `LookFull([0̂,1̂], 1)`. It
+  violates the local-minimality economy by design, but it refutes the
+  universal claim and marks a genuine machine-design axis (§7.3).
 
-```text
-branch 0̂:  Look(2, [Clo(x̄), _])        result NF: 1̂
-branch 1̂:  Look(1, [_, Clo(ȳ)])        result NF: 0̂
-```
+### 5.3 Coherence is operational injectivity, not syntactic linearity
 
-The tags still differ — the one selection bit must live somewhere — but
-now the correspondence `result NF ↔ tag` is a *bijection in the
-enclosing frame*: `1̂` says "the second binder was selected", which is
-exactly `i = 2` and exactly which level closure the hole retains. A
-**pop-at-Ret** rule that, when a `Try`/readback boundary returns an NF,
-pops every residue tag whose content is determined by the returned NF
-and the frame it returns into, is (i) locally legal (the tag is
-re-derivable, so the pop is injective) and (ii) exactly what H–NOT–H
-needs: both branches pop their selection tags at `Ret`, residues
-equalize, and the outer `D1` cancels the `1̂` amplitudes. With the
-*selector* NOT of §5.2 the bijection fails — the unselected literal is
-not recoverable from the result — and the branches stay decohered.
+v0 conjectured that terms linear in the consumed boolean are
+coherence-transparent under a generic pop-at-Ret rule. **Both halves
+are false** (review countermodels, verified):
 
-Conjecture (the **linearity conjecture**): λ-terms that are linear in
-the consumed boolean (every binder used exactly once — no discard, no
-duplication) admit tag-balanced execution under pop-at-Ret and are
-coherence-transparent; terms that *discard* decohere by exactly the
-erased content. Erasure costs coherence — Landauer's principle
-surfacing as decoherence structure, and precisely the Lineal intuition
-that the linear fragment is the unitary one.
+- *Generic pop-at-Ret is unsound.* `N = λb.λx.λy. b y x` applied to
+  `1̂` and `I' = λb.λx.λy. b x y` applied to `0̂` both return `0̂` at
+  the same frame shape and depth, with *different* selection tags
+  (`Look(1, [_,Clo(ȳ)])` vs `Look(2, [Clo(ȳ),_])`). A pop keyed only
+  on the returned NF and frame would merge distinct configurations —
+  non-injective — and since `p` is not a basis coordinate, the inverse
+  cannot consult program identity. The NF ↔ tag bijection exists only
+  relative to a retained code/call-site decoder.
+- *Linearity is not sufficient.* `λb. b I I` uses `b` exactly once and
+  maps both booleans to `I`: the computed function is non-injective, so
+  by injectivity of `U` the consumed bit *must* persist somewhere, and
+  no cleanup can produce equal residue. Conversely, syntactic
+  duplication can be coherent — basis-copying `b ↦ (b, b)` is
+  injective.
 
-**[open — the crux]** Pop-at-Ret needs a deterministic schedule
-(which tags, in which order, fused into which `Ret` rows) and must
-preserve backward determinism (§4): a popped configuration's producing
-rule must remain recognizable. This is the same mechanism as the
-residue-freshness invariant and they must be solved together. Failure
-mode to check: whether pop-at-Ret can be made forward-deterministic
-without a phase counter that is itself unerasable garbage.
+The correct notion: **coherence-transparency requires operational
+injectivity of the computed map on the branch support, plus a
+synchronized, code-aware cleanup schedule.** Erasure = non-injectivity
+of the computed function, and *that* is what costs coherence — the
+Landauer reading survives, attached to semantics rather than syntax.
 
-### 5.4 Contract implication
+### 5.4 The sound scheduling shape: explicit reversible uncomputation
 
-If pop-at-Ret (or an equivalent) works, witness 7 stands as frozen and
-the machine earns H–NOT–H for the linear NOT — and the witness should
-then *specify* `NOT′` (the linear term), since §5.2 shows the selector
-NOT fails for reasons that are physically honest (it reads and
-discards). If no sound pop schedule exists, witness 7 is unsatisfiable
-as frozen and the contract needs an amendment tying it to the
-clean-compilation theorem (architecture §6). Either way the resolution
-must go back through the review thread before implementation.
+The plausible construction (review round, unproved here) is Bennett
+compute–copy–uncompute specialized to the machine:
+
+1. push a branch-independent `CleanK(code, call-site)` frame;
+2. evaluate forward, accumulating reversible tags;
+3. copy the returned basis NF into a protected result zipper;
+4. enter a distinct **reverse mode** and invert the forward transitions
+   in LIFO order;
+5. use the protected result to reconstruct and clear the input when the
+   compiled map is injective;
+6. return with a fixed direction state and branch-independent residual
+   control.
+
+The direction flag is safe only because reverse execution restores it —
+it is never "cleared" by a forward row. Proving this schedule sound for
+one pinned NOT term is **the smallest clean-compilation lemma**, and it
+is the actual content behind witness 7.
+
+### 5.5 Contract implication (review-ratified direction)
+
+Witness 7 stands as a machine gate, in the satisfiable world: pin an
+exact NOT wire term (`NOT′ = λb.λx.λy. b y x` is a reasonable choice —
+easier for this machine, though the selector NOT is *not* intrinsically
+incoherent: Boolean NOT is bijective and its alternatives are fixed
+code, so a sufficiently code-aware reversible compilation can clean it
+too); state that passing the witness requires a proved code-aware
+reversible cleanup schedule; and treat the whole thing as the first
+concrete lemma of clean coherent compilation rather than a theorem
+about binder counts. The witness-pinning amendment goes back through
+the review thread with v1.
 
 ## 6. Invariant sectors
 
@@ -326,17 +341,78 @@ injectively, no row maps out of it, and newly arriving amplitude lies in
 the wandering subspace `S ⊖ V(S)` by the typed entry. The same argument
 covers `Error` verbatim.
 
-## 7. Formalization checklist (live status)
+## 7. v0 defect register and the v1 direction
+
+### 7.1 Confirmed table defects (review countermodels)
+
+1. **A2 is not injective under canonical trimming.** For a vacuous
+   binder, `Eval⟨(Lam I, ∅)⟩ | Arg(X)` and `| Arg(Y)` both land at
+   `Eval⟨(I, ∅)⟩` once the constructed closure trims the unused entry.
+   The discarded argument is genuine erased content: v1 must either
+   route it to residue (the sketch's binding-erasure row, lost in v0)
+   or abandon trimming-at-construction for bound entries. Separately,
+   trimming must be suffix-only or `Env` must become a sparse indexed
+   map — deleting interior entries shifts de Bruijn indices.
+2. **A1 and A2 ranges collide** on unconstrained `Eval` targets:
+   `((λx.x) X) Y` and `(λx. x Y) X` both reach
+   `Eval⟨(Var 1, [X])⟩ | Arg(Y)::S`. The v0 "clean pairs" claim checked
+   only marked-target rules; deterministic rows need producer marking
+   too.
+3. **A6′** overlaps A3's domain (needs explicit exclusion) and its
+   target collides with genuine R1 readback of a non-literal
+   normalizing to a boolean; it needs a distinct landing mode
+   (`ReadyBool` with branch-independent provenance), which HH tolerates.
+4. **E1 is not injective**: it drops `S` and `m` (`h I` vs `(h I) A`
+   reach the same error with different discarded continuations). Error
+   garbage must retain the complete discarded control: `(S, m, n, g)`.
+   Error-sector coherence is irrelevant; norm preservation is not.
+5. **D3/R3 collide** through stale `Jn_g` residue, and the one-bit
+   freshness proposal is itself non-reversible — clearing a flag merges
+   its prior values. Producer marking must be **rule-coloured landing
+   modes removed only through explicit inverse/uncompute paths**, not
+   flags cleared by forward rows.
+
+### 7.2 What stands after review
+
+The invariant-sector construction and wandering-subspace argument (§6);
+the H–NOT–H decoherence trace and its corrected narrow theorem (§5.2);
+the operational-injectivity reformulation (§5.3); the Bennett scheduling
+shape (§5.4); I1/I5 provisionally, with induction proofs deferred until
+the coloured-mode table exists.
+
+### 7.3 The v1 design fork (machine-defining, to be settled before v1)
+
+The canonical machine — and therefore the canonical `Ω_qALC` — depends
+on a genuine choice surfaced by the `LookFull` counterdesign:
+
+- **(A) Minimal tags + code-aware reversible cleanup**: residue is
+  locally minimal (`Look(i, e∖i)` style), coherence is *earned* through
+  explicit compute–copy–uncompute (§5.4), and the coherence economy is
+  a rich measured object — programs that clean up interfere, programs
+  that don't decohere.
+- **(B) Symmetric redundant tags (`LookFull`-style)**: residue retains
+  branch-independent context wherever possible, more coherence comes
+  for free, the witness passes with less machinery — and the measured
+  economy flattens, since redundancy substitutes for uncomputation.
+
+These define *different canonical objects*, in the same way the frozen
+signature order defines qBLC's: the choice must be made deliberately,
+recorded, and then pinned. v0's working recommendation is (A), for
+alignment with the architecture's local-minimality theorem and because
+(B) hides exactly the erasure structure the pillar exists to measure —
+but the fork is open until ratified.
+
+### 7.4 Formalization checklist (live status)
 
 | Item (architecture §9 / machine §6) | Status |
 |---|---|
-| Transition table, total on reachable `Config` | drafted (§2), A6′ and pop rows pending |
-| Per-rule injectivity | proved rowwise (§4) |
-| Range disjointness — clean pairs | proved via I1–I5 (§4) |
-| Range disjointness — lookup family, freshness, pops | **open crux** (§4, §5.3) |
-| Local predecessor-fibre minimality | stated; follows the crux |
-| Invariant-sector lemma in-machine | done (§6) |
-| HH witness by hand | done — passes given A6′ (§5.1) |
-| H–NOT–H witness by hand | done both ways — forcing theorem (§5.2–5.3) |
-| Effect-free projection lemma | **[open]**, expected routine |
-| Clean compilation (architecture item 2) | untouched; §5.3 suggests the linear fragment as its substrate |
+| Transition table, total on reachable `Config` | v0 drafted; **rebuild for v1** with coloured landing modes (§7.1) |
+| Per-rule injectivity | v0 claims partially refuted (A2, E1); redo in v1 |
+| Range disjointness | v0 claim false (A1/A2); needs producer marking throughout |
+| Local predecessor-fibre minimality | blocked on the §7.3 fork |
+| Invariant-sector lemma in-machine | **done** (§6, review-confirmed) |
+| HH witness by hand | amplitude computation confirmed; conditional on A6′ repair |
+| H–NOT–H witness by hand | decoherence trace confirmed; coherent path = smallest clean-compilation lemma (§5.4) |
+| Witness-7 pinning amendment (NOT′) | drafted direction (§5.5); thread ratification with v1 |
+| Effect-free projection lemma | open |
+| Clean compilation (architecture item 2) | §5.4 is its smallest instance; substrate = operationally injective maps |
