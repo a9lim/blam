@@ -5,12 +5,11 @@ quantum-algebraic pillar. It uses the same structure as the classical and
 quantum architectures so the three systems can be compared layer by layer.
 
 **The pillar is a design contract without an engine**: nothing in `src/`
-or `data/` is qALC-relative yet, and the two gates that stand between this
-document and implementation are stated in §9. The contract has undergone
-adversarial review and ratification in gaslamp thread `qalc-architecture`,
-including the ratified token-machine amendment (§8); the development
-history, subsequent amendments, and the failed rewriting-machine
-formalizations are recorded in `../ledger/2026-08.md`.
+or `data/` is qALC-relative yet, and the two gates that stand between
+this document and implementation are stated in §9. The contract is
+ratified through gaslamp thread `qalc-architecture`; the development
+history and the superseded rewriting-machine formalizations live in
+`../ledger/2026-08.md` and `machine.md`.
 
 ## 1. Purpose and position among the pillars
 
@@ -178,8 +177,8 @@ exponential), and internal query/readback control. Positions are
 structural — a rooted zipper into the invocation term — with no
 allocation identity.
 
-Two abandoned substrates motivate this choice and are recorded with the
-v0/v1 drafts in `machine.md`. Bare terms are too coarse: for a rigid
+Two rejected substrates motivate this choice (record: `machine.md` and
+the ledger). Bare terms are too coarse: for a rigid
 context, the sources `λf. f (h 0̂) 0̂` and `λf. f 0̂ (h 0̂)` are
 orthogonal, but their images under a bare-term step overlap in
 `λf. f 0̂ 0̂`, so no bare-term linear extension is an isometry. And
@@ -277,8 +276,8 @@ any other semantic error enter their own absorbing sectors with the same
 typed invariance-plus-tick treatment, retaining the error kind and
 enough argument-interrogation transcript and control to make error entry
 injective — coherence being irrelevant in the error sector does not
-permit information loss (the v1 lesson), and error columns participate
-in the full pairwise range matrix. Norm is conserved globally: halted
+permit information loss — and error columns participate in the full
+pairwise range matrix. Norm is conserved globally: halted
 mass, error mass, and still-running mass sum to exactly 1 at every finite
 τ. `Unknown` and `Capacity` remain resource outcomes of a finite *run* —
 the driver stopping — not machine states, matching the house taxonomy.
@@ -436,7 +435,7 @@ the intended amplitudes, with `|x, clean⟩` and the result read through
 canonical token initialization and halted-output states. Clean
 compilation must be realized by synchronized reversible token transport
 and uncomputation; no construction may basis-copy an unknown quantum
-result (the v1 countermodel), and the classical Bennett discipline
+result (`machine.md` §9.1), and the classical Bennett discipline
 applies only where the copied register is genuinely classical.
 Synchronization is not automatic. Until it is
 proved, universality is a target, not a property, and the H–NOT–H witness
@@ -468,7 +467,8 @@ different semantic cadence needs a clocked dilation
 preserving halt ages and output traces — a stronger theorem than this
 contract grants, since timing is physical here (§4.5). Hash-consing and
 representation tricks are fine below that line; branch-dependent
-allocation identity is not (see `machine.md`).
+allocation identity is not (`token.md` §1, canonical position
+identity).
 
 Two clauses are normative machine contract, not just test surface. First,
 δ-steps are **clean δ fibres, gate-indexed**: for every spectator
@@ -546,20 +546,16 @@ Every qALC engine change must then satisfy:
   superposition. Classical IAM bideterminism is the design guide, not
   the proof: the complete qALC transition table — including δ
   scattering, full-normal-form readback, error entry, and halted entry —
-  must still satisfy the orthonormal-columns contract. This supersedes
-  the previous decision (ratified, then amended through the same thread)
-  to build β-dynamics on a reversible rewriting machine and to park
-  token dynamics as defining "different objects." The pivot is forced by
-  the v1 no-cloning countermodel (`machine.md` §9.1): copying a
-  superposed δ-argument result before uncomputation produces
-  `CNOT(|+⟩|0⟩) = |Φ⁺⟩`, preventing the adjoint pass from restoring a
-  clean entry state. The "different objects" observation remains true
-  and is resolved by adoption rather than refutation: because `U`,
-  `μ_p`, and `M` were never defined and no qALC data exists, the token
-  machine's clock and merge discipline now become their definition. A
-  rewriting machine is the parked alternative and would define different
-  objects; no equivalence, refinement, or preservation of the rewriting
-  proposal is claimed.
+  must still satisfy the orthonormal-columns contract. The route was
+  chosen over β-dynamics on a reversible rewriting machine after the
+  latter's coherence protocol fell to a no-cloning countermodel
+  (`machine.md` §9.1: copying a superposed δ-argument result before
+  uncomputation produces `CNOT(|+⟩|0⟩) = |Φ⁺⟩`, and the adjoint pass
+  cannot restore a clean entry state). The token machine's clock and
+  merge discipline define `U`, `μ_p`, and `M`; a rewriting machine is
+  the parked alternative and would define *different objects* — no
+  equivalence, refinement, or preservation of the rewriting proposal is
+  claimed.
 - **Typed invariant-sector halting, common origin:** fixed points are
   incompatible with injectivity; invariance suffices for monotone mass;
   the common-origin tick and the normative halted form (§4.3) are chosen,

@@ -1,8 +1,10 @@
-# qALC reference machine — formal draft v1
+# qALC rewriting machine — historical record (v0/v1, superseded)
 
-**Status: formal draft v1 — reviewed; Try-boundary protocol
-CONFIRMED-BROKEN, scaffold survives.** Working object for
-`architecture.md` §9 item 1. The v1 review verdict is registered in §9:
+**Status: historical record — do not build on this document.** The
+rewriting-machine route was superseded by token transport
+(`token.md`, the active design; architecture §8). This file preserves
+formal draft v1 and its verdicts. The v1 review verdict is registered
+in §9:
 the no-erasure forward machine and the color discipline hold (with
 three residual within-row defects), but the §5 protocol fails on a
 no-cloning countermodel — basis-copying a superposed result entangles
@@ -426,6 +428,6 @@ the parked qGoI dynamics resurfacing as an internal mechanism rather
 than a separate pillar; (c) accept the raw colored machine as the
 canonical semantics and move all coherence engineering into compiled
 code. The witness-7 amendment does not name any machine mechanism in
-any route. **Route (b) chosen by a9, 2026-08-09** — exploration brief
-and inherited constraints in `token.md`; the architecture amendment it
-requires is `token.md` §4.
+any route. **Route (b) chosen by a9, 2026-08-09**; the
+architecture amendment it required was ratified and applied the same
+day, and `token.md` is now the active machine design.

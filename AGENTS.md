@@ -67,13 +67,19 @@ The library is three layers — `blc` substrate, symmetric `classical` and
 whose subcommands live in `src/cli/`. Lab-gated subcommands are recognised
 without the feature and say how to get themselves; do not "fix" that by
 deleting the arm. A fourth pillar, `quantum-algebraic` (qALC: quantum
-*control*, storeless, runtime states in ℓ² over machine configurations),
-exists as a design contract only — `docs/quantum-algebraic/architecture.md`
-is the contract, `machine.md` beside it the pre-formal reversible-machine
-sketch, and **no qALC code may land** until the contract's §9 gates pass
-(formal reversible transition table with orthonormal columns, clean
-coherent compilation, hand-computed HH and H–NOT–H witnesses). qALC work
-must leave classical and qBLC rows bit-identical.
+*control*, storeless, runtime states in ℓ² over token configurations),
+exists as a ratified contract plus an active machine design, no code —
+`docs/quantum-algebraic/architecture.md` is the contract (IAM-lineage
+token transport: the invocation term is read-only and values reach the
+`h`/`t` gates by token routing, never by copying), `token.md` beside it
+the active design (exact λIAM substrate, δ-gadget sketch, obligations
+register), and `machine.md` the record of the two failed
+rewriting-machine drafts — read-only history, do not build on it.
+**No qALC code may land** until the contract's §9 gates pass; the
+concrete first gate is `token.md` §4's three-program kernel (full
+transition table, range disjointness, step-indexed HH / H–NOT–H /
+negative-witness traces, column-Gram enumeration). qALC work must
+leave classical and qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →
@@ -230,7 +236,8 @@ Existing threads: `blc-conformance` (certificate exchange),
 `blc-interpreter` (design theory), `blc-interp-search` (slot-search spec),
 `blc-qblc` (qBLC design ratification), `qblc-selfint` (self-interpretation and
 bisimulation), `qblc-omega-witnesses` (dyadicity hunt and phase-2 design),
-`blam-reshape` (v2 refactor design ratification and reviews), and
-`qalc-architecture` (qALC design contract adversarial review and
-ratification).
+`blam-reshape` (v2 refactor design ratification and reviews),
+`qalc-architecture` (qALC design contract adversarial review,
+ratification, and amendments), and `qalc-token-machine` (qALC token
+machine feasibility and kernel review).
 Send raw evidence—encodings, diffs, measured bits—not summaries.

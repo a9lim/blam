@@ -410,10 +410,10 @@ the token-machine amendment — route (b) after v1's no-cloning killshot
 — was ratified through thread `qalc-architecture` and applied
 (2026-08-09; history in `ledger/2026-08.md`). The machine is now
 IAM-lineage token transport: term read-only, bideterministic substrate
-(exact λIAM table pinned in `token.md` §6), values transported to δs
+(exact λIAM table pinned in `token.md` §2), values transported to δs
 by routing, never copied.
 
-The v2 design sketch is drafted (`token.md` §7: probe protocol,
+The v2 design sketch is drafted (`token.md` §3: probe protocol,
 δ blocks on arrival states, balanced virtual answers, no-store
 consistency) and a fresh-context feasibility review (thread
 `qalc-token-machine`) independently graded the route
@@ -422,7 +422,7 @@ load-bearing point; its checklist and exclusions are folded in.
 
 The open docket, in order:
 
-1. **the three-program formal kernel** (`token.md` §8 — the v2 gate):
+1. **the three-program formal kernel** (`token.md` §4 — the v2 gate):
    full table, range-disjointness, step-indexed traces of HH /
    H–NOT–H / the negative witness, column-Gram enumeration; L1/L2 and
    the readback controller are the hard parts;
