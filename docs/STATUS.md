@@ -420,42 +420,46 @@ consistency) and a fresh-context feasibility review (thread
 promising-with-hard-open-problems, converging with the sketch on every
 load-bearing point; its checklist and exclusions are folded in.
 
-**The kernel is at v1.9** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.10** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
-and the file's git history): a scratch superposition evolver for the
-typed h-only fragment — the eight λIAM rules plus instance-keyed
-gate probes firing H rows in exact ℚ[√2], recall/replay/decode
-machinery with one-fire-per-instance enforced as a runtime machine
-invariant, self-validating canonical certificates (fibre conditions
-(a)–(e) including cross-slot decode-bundle equality; unsound
-fixpoints refused with a conservative fallback), an eight-invariant
-WF subtype with the range-disjointness theorem mechanized against
-actually-constructed fire targets, a syntactically-bounded typing
-judgment (15/18 suite programs typable h-only; `q` itself is out —
-the wire imbalance `qprime` repairs), and every failure mode typed.
-The eighteen-program battery is total and Gram-clean with
-hand-verified physics (HNH's certificate is measured
-load-bearing: certified `{0̂: 1}` vs plain `{½, ½}`); conservation,
-polarity, gauge, and both prior reviewers' reproducers all run
-clean. Two fresh-context audits shaped it: audit #1 FAILed v1.7
-(Pα and WF-collision countermodels, an instance-alias gap, honesty
-defects — all reproduced before correction), and a sol-tier working
-review of the v1.8 fix caught two structural holes (per-slot bundle
-divergence; live representations shadowing bit-free dead records)
-now closed as condition (e) and the `key-alias`/W8 pair. What
-remains open is stated, not hidden: the alias-tolerant transition
-theorem (or λIAM logged-position uniqueness) is a conjecture the
-soundness claims are conditional on; the general
-marginal-correctness theorem is the compilation theorem's
-obligation. **The PASS re-claim is gated on fresh audit #2.**
+and git). Fresh audit #2 FAILed v1.9 with a fatal witness: `W`, a
+typed program whose nonempty certificate validated clean while
+computing decohered marginals — the root cause being a
+zero-amplitude structural `refire` vetoing the coherence-restoring
+certificate of its core `B`. The round's design fork (is there an
+ideal reference semantics to validate against?) was adjudicated on
+the working thread: the auditor's own term-level ideal evaluator is
+provably broken (non-normalized masses — Church elimination
+discards controls and spuriously interferes), no total bare-term
+reference exists, and the sound hybrid is "amplitudes decide
+whether a run succeeds, never whether the machine is an isometry."
+v1.10 implements it: structural admission and structural isometry
+mandatory; the frozen certificate's exact run must carry zero
+guard/err amplitude at every step; certificates became
+INSTANCE-DIRECTED (per-boundary popkeys with retained spectators —
+the blocker for compositional certification) with joint-first,
+per-key-refined, validation-adjudicated spectator admission;
+`semantic_coverage` renamed `machine_coverage` with physics
+agreement moved to a written-first per-program table; deep W3 and
+the completed key-state algebra fix the audit's W8-preservation
+refutation; condition (e) groups by the full retained spectator;
+the checker is total. Outcomes: `B` HEALS to its physics
+({halt1: 1}); `W` is measured inexpressible in the certificate
+language (every subset/exclusion trial re-seeks an erased instance
+— loud) and is registered as the standing COHERENCE-PLACEMENT
+limitation, machine-covered, docketed for the compilation theorem
+(staged uncomputation). Twenty-program battery green; the sixteen
+remain bit-identical; both prior auditors' reproducers rerun clean
+under v1.10.
 
 The open docket, in order:
 
-1. **fresh-context independent audit #2 of the v1.9 h-fragment
+1. **fresh-context independent audit #3 of the v1.10 h-fragment
    claim** (next action; verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
-   logged-position uniqueness (`kernel.md` §7.5 — the standing
-   conditional);
+   logged-position uniqueness (the standing conditional), and the
+   staged-uncomputation certificate extension for the `W`
+   placement class (feeds the compilation theorem);
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem
