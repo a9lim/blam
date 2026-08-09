@@ -11,9 +11,11 @@ control is properly caught), amplitudes are exact `ℚ[√2]`, and
 the sharpened open object is the §11.3 weight-conservation
 conjecture: gate-free readback conserves `w ≡ slot` (geometric
 selection of classical data decoheres intrinsically), with
-gate-mediated routing as the parity-free pattern class. Owed:
-adversarial review of the coloring, encoded-fibre ratification
-(§11.7), the conservation lemma, general lp invariants.** §10 is
+gate-mediated routing as the parity-free pattern class. The
+encoded-fibre amendment is RATIFIED-WITH-EDITS and applied to
+architecture §7 (§11.7). Owed: adversarial review of the coloring
+(in flight), the conservation lemma, general lp invariants, the
+strengthened validation checklist.** §10 is
 the v1.3 register. Of the re-review's six gate items: totality on `q`'s
 graph ✓ (the `replay` rule, derived from the literal visit-3
 trace); correct slot-0/slot-1 outer arrivals ✓; instance-indexed
@@ -985,7 +987,7 @@ is representable. Norm assertions compare against `(1, 0)` exactly.
 The whole battery, the polarity check, and certificate discovery
 are bit-identical under the new ring.
 
-### 11.7 The encoded-fibre statement (gate item 2 — draft, ratification owed)
+### 11.7 The encoded-fibre statement (gate item 2 — RATIFIED-WITH-EDITS, applied)
 
 Proposed amendment to the architecture's clean-δ-fibre guardrail:
 
@@ -1003,15 +1005,40 @@ Proposed amendment to the architecture's clean-δ-fibre guardrail:
 
 Note this covers not only the v1.3 frames but the arrival lp
 erasure the fire has performed since v1 — the original design was
-already an encoded fibre in this sense. Ratification through
-`qalc-architecture` before the contract text moves.
+already an encoded fibre in this sense.
+
+**Ratified with edits** (thread `qalc-architecture`, 2026-08-09) and
+applied to architecture §7 in the reviewer's strengthened language.
+The edits beyond the draft: subsume the arrival-lp erasure (v1 is
+the `F_a`-trivial case) rather than split the law; a seven-item
+per-boundary exhibition obligation (canonical `(b,G,F,κ)`
+decomposition, coverage, unique decoding, single-valued `G`/`F` on
+the certified reachable *basis domain* extended linearly, the
+complete boolean pairing with the counterfactual column, `J_a`
+injectivity, the full range matrix); source-fibre disjointness
+`E_a†E_a′ = 0` in addition to landing orthogonality; "coherent
+decoding, not deletion" — the inverse reconstructs the coordinates
+through `E_a` after `Q_q†`, no copy reaches garbage, and the clause
+is explicitly not a license to erase deterministic histories around
+non-injective maps; and a computability discipline — certification
+must be total, terminating, sound over a proved over-approximation
+of arrivals (exact reachability is not decidable in general), free
+to reject valid certificates, with rejection selecting the
+conservative nontransparent transition so `U` is never undefined,
+and the certificate static metadata fixed at initialization. The
+scratch `discover`/`validate` satisfy the discipline on finite
+kernel graphs (BFS is exact there, a valid over-approximation);
+the strengthened validation checklist — `G`-function property,
+encoded-range coverage, unique decoder, boolean pairing, source
+disjointness, landing/non-δ disjointness — is registered as the
+checker's growth path.
 
 ### 11.8 The v1.4 scorecard
 
 | Gate item | Status |
 |---|---|
 | 1 coloring | **discharged** (closed form + per-row proof + 1,518-edge mechanical check) — adversarial review owed |
-| 2 encoded fibre | statement drafted (§11.7); architecture ratification owed |
+| 2 encoded fibre | **discharged** — ratified-with-edits and applied to architecture §7; strengthened validation checklist registered |
 | 3 cert validity beyond Gram | **discharged** (`validate`: pop-err reachability + RS-function; negative control now caught) |
 | 4 stack-shape predicate | **discharged** (checked predicate: frame bit = arrival slot) |
 | 5 canonical program→cert | **discharged** (`discover` fixpoint; HAND==AUTO ×11) |

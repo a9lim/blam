@@ -49,6 +49,13 @@ Any design is dead on arrival unless it respects:
    Boolean-as-position is acceptable precisely when that pairing is
    exhibited; a classically-positioned token driving a hidden quantum
    payload register is the classical-control corner, not this pillar.
+   Amended (ratified 2026-08-09): a δ event may act through a
+   certified **encoded fibre** `E_a|b,κ⟩ = |b, G_a(b,κ), F_a(b,κ), κ⟩`
+   — coherent decoding of bit-correlated arrival/replay coordinates
+   before `Q_q`, with per-boundary exhibition, source and landing
+   disjointness, and an effectively computable certification whose
+   rejection falls back to the conservative nontransparent transition;
+   the original law is `E_a = identity`. Full text in architecture §7.
 6. **Full-NF effect-free conservativity** (observational): if
    rigid-atom leftmost-outermost normalization of `p X₁ X₂` reaches
    normal form `n`, the machine's internal readback halts with output

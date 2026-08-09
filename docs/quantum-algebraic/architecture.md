@@ -493,7 +493,73 @@ spectators. Boolean values encoded by token *position* are acceptable
 precisely when that pairing is exhibited; quantum control must reside in
 superposed token configurations — a classically-positioned token driving
 a hidden quantum payload register is the classical-control corner, not
-this pillar. Second, halted dynamics has the §4.3 normative typed form.
+this pillar.
+
+**Encoded clean δ fibres** (amendment, ratified-with-edits through
+`qalc-architecture` 2026-08-09; the original law is the special case
+`E_a = identity`). A δ event may act on a certified encoded arrival
+subspace. For each program sector `p` and δ-boundary identifier
+`a = (p, m, q)`, the machine must exhibit a logical spectator set `K_a`
+and an isometric encoding
+
+```text
+E_a : ℂ²_boolean ⊗ ℓ²(K_a) → H_run
+E_a|b,κ⟩ = |b, G_a(b,κ), F_a(b,κ), κ⟩
+```
+
+where `κ` is a canonical decomposition of all spectator state excluding
+the explicitly encoded coordinates; `G_a` includes every bit-correlated
+arrival-position component removed by the event, and `F_a` every
+bit-correlated replay/control frame removed by it. The certified
+arrival subspace is exactly `Ran(E_a)`, with `E_a†` its decoder, and
+
+```text
+U E_a |b,κ⟩ = Σ_b′ (Q_q)_{b′b} |b′, J_a(κ)⟩
+```
+
+with `J_a` an isometry independent of `b` and `b′`: the event
+**coherently decodes** redundant which-path coordinates and then
+applies `Q_q` — it does not irreversibly erase them; on `Ran(E_a)` the
+encoded coordinates carry no independent degree of freedom, and the
+event's inverse reconstructs them through `E_a` after `Q_q†`. No copy
+moves to terminal garbage; halt factorization is unaffected; this is
+aligned with minimal-information residue. This clause is **not** a
+license to erase deterministic histories around a non-injective λ-map
+(the negative witness's branches keep their distinct residues).
+
+The exhibition obligation is per certified boundary: identify `K_a`,
+`E_a`, `G_a`, `F_a`, the certified arrival range, and `J_a`; establish
+a canonical decomposition into `(b, G, F, κ)`; coverage of every
+arrival on which the encoded rule fires; uniqueness of `(b,κ)` from
+the physical arrival; single-valued `G_a(b,κ)` and `F_a(b,κ)` on the
+certified reachable *basis domain*, extended linearly; the complete
+boolean pairing including the counterfactual column exhibiting the
+`Q_q` block; injectivity of `J_a`; and the full pairwise range matrix.
+For distinct canonical fibres `a ≠ a′`, both `E_a† E_a′ = 0` (source
+disjointness — overlapping encoded ranges are forbidden unless the
+alleged fibres are definitionally one canonical fibre) and orthogonal
+landing ranges, themselves orthogonal to every non-δ transition range.
+
+Certificate selection is a total, deterministic, **effectively
+computable** function of the immutable program sector: `discover(p)`
+terminates on every finite `p`, operates over a finite syntactic or
+abstract domain, and is sound for a proved over-approximation of
+runtime arrivals; rejection is allowed even when a certificate exists,
+and selects a specified conservative nontransparent δ transition
+retaining enough spectator control to remain isometric — `U` is never
+undefined. Certification may not depend on runtime amplitudes or an
+undecidable reachability oracle, and is static machine metadata fixed
+at canonical initialization, never a branch-dependent runtime
+register. Validation must prove encoded-range coverage, unique
+decoding, the `G`- and `F`-function properties, absence of reachable
+pop-error, and all source/range orthogonality obligations — Gram
+enumeration alone is not certificate soundness.
+
+The v1-era arrival-position erasure is subsumed: it is the encoded
+fibre with `F_a` trivial and `G_a` the certified arrival-position
+function.
+
+Second, halted dynamics has the §4.3 normative typed form.
 Every qALC engine change must then satisfy:
 
 1. `cargo test --release --all-features` and plain `cargo test --release`;
