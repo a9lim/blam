@@ -1752,12 +1752,28 @@ finding — **`q` itself** (E = λz. I z vs N ununifiable: exactly the
 wire imbalance `qprime` was built to repair; `qprime` types clean).
 The three escapes (`h h` etc.) are untypable, as required.
 
-**The v1.8 coverage claim**: over programs that are (i) typable
-h-only under the signature judgment and (ii) whose canonical
-pipeline (`discover_total` + `validate`) reports
-`semantic_coverage` — the kernel is total, Gram-clean, and
-marginal-correct, with every failure mode outside (ii) typed and
-visible, never silent. The §14.2 basis-drift overclaim is
+**The v1.8 coverage claim, stated exactly.** Over programs that
+are (i) typable h-only under the signature judgment and (ii) whose
+canonical pipeline (`discover_total` + `validate`) reports
+`semantic_coverage`: the kernel is **total and Gram-clean** (U an
+isometry on the reachable basis), certified erasure is
+**transparent** (fibre-proven, W7-coherent, disjointness
+mechanized), and **every failure mode is typed and visible, never
+silent**. Marginal-correctness against the ideal quantum
+semantics is established **per-program against hand-computed
+physics** for the eighteen (and was independently recomputed by
+audit #1 for the interleaving set); the *general*
+agreement-with-compilation-semantics theorem is explicitly the
+compilation theorem's obligation (docket item 3), not claimed
+here. One measured fact makes the distinction sharp: **the
+certificate is semantically load-bearing for HNH** — certified
+`{halt0: 1}` (the physics, H·X·H|0⟩ = |0⟩) versus plain
+`{1/2, 1/2}` (the retained records decohere the earned
+coherence). The conservative fallback is therefore sound *as a
+machine* (total, unitary, typed) but not ideal-preserving; a
+refused certificate degrades coherence, never soundness — which
+is exactly why `discover_total` must refuse rather than admit an
+unsound one. The §14.2 basis-drift overclaim is
 corrected: v1.7's replay record moved `negative` 103→83, `selector`
 173→106, `pstar` 458→242 against the v1.2 reference (canonical rs
 sorting and the replay-arm restructure merge order-variant states);
