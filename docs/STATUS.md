@@ -413,12 +413,12 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.16** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.17** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-eight fresh-context rounds: the machine core has not moved since
-the v1.11 spectator-transition fix, and the last THREE rounds
-found zero machine countermodels — audits #6 through #8 confirmed
+nine fresh-context rounds: the machine core has not moved since
+the v1.11 spectator-transition fix, and the last FOUR rounds
+found zero machine countermodels — audits #6 through #9 confirmed
 the completed KD subtraction sound (exhaustive post-fire storage
 enumeration, then an extended matrix: nested slice-cargo tickets,
 tickets inside unrelated burials, ANS, frozen instance names),
@@ -426,7 +426,14 @@ hand-recomputed `palpha` ({1/4, 3/4}) and `W` ({halt1: 1}, refire
 amplitudes exactly zero per-step), verified the rescue's
 full-pool construction and determinism, traced the three-way
 canonical-None sentence return-by-return, and forced every
-regression gate individually. What the rounds still
+regression gate individually. Audit #9's sole finding was the
+register's OLDEST prose: §7.1 misstated the mechanized coloring
+theorem (the formula omitted the KS weight term its checker
+carries; the flip theorem conflated conservative fire with
+certified erasure; the gauge sweep asserted rather than
+enumerated the KD weight) — restated in v1.17 to exactly the
+theorem polarity.py enforces, with the sweep extended to 4/512
+and KD pinned zero by measurement rather than assertion. What the rounds still
 found was claim-language and scaffolding, each fixed the same
 day: all twelve permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
@@ -441,12 +448,12 @@ claims are scoped to deterministic fields. Nineteen frozen dict
 certificates + dupcall's canonical None; canonical =
 deterministic validation-adjudicated greedy, neither maximal nor
 minimal; physics table passes on all twenty; all prior audit
-kits rerun with exactly the declared deltas; every v1.16
+kits rerun with exactly the declared deltas; every v1.17
 prediction held (provenance in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #9 of the v1.16 h-fragment
+1. **fresh-context independent audit #10 of the v1.17 h-fragment
    claim** (running; verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
