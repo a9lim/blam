@@ -1,14 +1,20 @@
 # qALC three-program kernel — v1
 
-**Status: kernel v1.3 — transport total, frames instance-indexed,
-transparency/pop implemented and verified; the mass-1 question is
-answered by a new finding: the time register. Reviewed: FAIL as
-the formalization gate, PASS for the replay repair — every number
-independently reproduced, no odd pad found (156-variant search),
-a port-polarity theorem route supplied; the v1.4 gate is §10.6's
-eight items (encoded fibres, certificate soundness beyond Gram,
-canonical certificates, the coloring proof).** §10 is the v1.3
-register. Of the re-review's six gate items: totality on `q`'s
+**Status: v1.4 in progress — §11 is the current register. The
+polarity coloring is now a THEOREM with a closed form (uniform
+flip, fire defect `1 − w(erased lp)`; 1,518 edges checked, zero
+violations), the branch-offset formula is verified on all
+measured offsets, Codex's even-pad search is a corollary,
+certificates are canonical (discovery fixpoint, HAND==AUTO on all
+eleven programs, validity strictly beyond Gram — the negative
+control is properly caught), amplitudes are exact `ℚ[√2]`, and
+the sharpened open object is the §11.3 weight-conservation
+conjecture: gate-free readback conserves `w ≡ slot` (geometric
+selection of classical data decoheres intrinsically), with
+gate-mediated routing as the parity-free pattern class. Owed:
+adversarial review of the coloring, encoded-fibre ratification
+(§11.7), the conservation lemma, general lp invariants.** §10 is
+the v1.3 register. Of the re-review's six gate items: totality on `q`'s
 graph ✓ (the `replay` rule, derived from the literal visit-3
 trace); correct slot-0/slot-1 outer arrivals ✓; instance-indexed
 frames ✓ (instance = the log-head logged position, already present
@@ -848,3 +854,170 @@ program→certificate relation; (6) buried-frame handling proved or
 ruled out (typed error now, resolution owed); (7) the two
 logged-position invariants; (8) exact verification beyond
 single-monomial `(m,k)` amplitudes before general h-only claims.
+
+## 11. v1.4 — the polarity theorem, canonical certificates, and the conservation conjecture
+
+Scratch artifacts: `polarity.py` (the coloring checker), `certify.py`
+(canonical certificate discovery + validity), `kernel.py`/`suite.py`
+upgraded to exact `ℚ[√2]` amplitudes. All scratchpad-only.
+
+### 11.1 The coloring, with its closed form (gate item 1)
+
+Define, on Run states of the full v1.3 table:
+
+```text
+φ(s) = depth(pos) + [dir = ↑] + Σ w(tape) + Σ w(log) + Σ w(RS) + k_VB   (mod 2)
+
+w(•) = w(γ) = w(μ) = w(α) = w(ρ) = w(R-frame) = 0
+w(A) = 1
+w(l) for l = (occ, slice) = (depth(occ) − depth(binder)) + Σ w(slice)
+```
+
+— a logged position carries its own binder–occurrence tree distance
+plus, recursively, the weight of everything captured in its slice.
+
+**Theorem (uniform flip).** Every rule of the table with Run source
+and Run target flips φ — the eight classical rules, `call`,
+`recall`, `replay`, `anshead`, `vb2`, `vvar`, `bt1g` — EXCEPT
+`fire`, whose defect is exactly `1 − w(l)` where `l` is the
+which-path logged position erased at the boundary. Terminal entries
+chain linearly off unique predecessors (complete residues) and flip
+by assignment.
+
+*Proof* is per-row algebra, two lines each; the load-bearing case is
+`var`/`bt2`, where the teleport's distance is absorbed by the lp
+carrying that distance as weight (`Δφ = w(lp) − Σ slice − d + 1 =
+1`), and the constraint propagation fixes the remaining weights
+(`call` forces `w(γ)+w(μ) ≡ 0`; `recall`/`replay` force
+`w(R) ≡ w(α) ≡ 0`; `anshead`+`vvar` force `w(γ)+w(A) ≡ 1`).
+Mechanically verified: every Run→Run edge of all eleven reachable
+graphs — 1,518 edges — has the predicted Δφ, zero violations, and
+every fire edge's measured defect equals `1 − w(l)`.
+
+### 11.2 The branch-offset theorem (the parity result)
+
+For two branches created at one fire and meeting at a common later
+boundary with no interior fires:
+
+```text
+len₀ − len₁ ≡ w(l₀) − w(l₁)   (mod 2)
+```
+
+where `l_b` is branch b's erased arrival lp. Verified: q/q′/q2
+offsets 35/7/3, all with `w(l₀)=0, w(l₁)=1` — parity 1 ✓.
+
+**Corollary (even pads — Codex's search, now a theorem).** A
+gate-free pad adds no fires and leaves both endpoints' φ unchanged,
+so it shifts branch-relative time by an even amount. The measured
++8/+12/+16 menu and the review's 156-variant all-even search are
+instances; an odd gate-free pad that preserves the arrival lps
+cannot exist.
+
+**Refined coherence condition.** Synchrony requires *equal* erased
+weights, not zero: H–NOT′–H's fires show `w = 1` defects on BOTH
+branches (its arrival lps are NOT′'s x/y occurrences, distances
+3 and 3 — the index swap moves occurrence depth in step with binder
+depth). The pattern class is the equal-weight class.
+
+### 11.3 The weight-conservation conjecture (what remains of "the coherent fragment")
+
+Answer-term variants that try to re-weight a literal boolean's
+readback all fail — measured: `q2` (0̂,1̂) offset 3; (λλ.I x, 1̂)
+offset 1; (0̂, λλ.I y) offset 7; both wrapped, offset 3 — every
+variant keeps `(w₀, w₁) = (0, 1)` up to swap. The mechanism is the
+slice: an `a`-step in the readback path adds `1 + w(captured lp)`
+to the surfacing weight, and in gate-free plumbing the captured
+lp's weight telescopes so that `w ≡ exit slot` is conserved.
+H–NOT′–H evades conservation because its slice captures the coin's
+*virtual ticket* (`w(α) = 0` by fiat) — gate-mediated routing is
+the parity-free transport.
+
+**Conjecture (conservation).** Along gate-free readback of a
+boolean value, the surfacing lp's weight is congruent to the exit
+slot. Hence geometric selection of *classical data* always has odd
+offset (decoheres intrinsically), and the coherent fragment is
+exactly gate-mediated (pattern) routing. The proof target is a
+telescoping lemma over the `a`-step capture algebra; the q3 variant
+table is its evidence base.
+
+### 11.4 Canonical certificates (gate items 3, 4, 5)
+
+`discover(term)`: iterate to fixpoint — BFS under the current
+certificate; admit a fire boundary iff over its reachable arrivals
+(a) every frame bit equals the arrival slot, (b) RS is
+single-valued per fire-target fibre `(path, log, slot, l, T)`, and
+(c) some arrival carries a frame. Deterministic and terminating:
+the certificate is a **frozen function of the program sector**, so
+U is well-defined per program (item 5). The implied stack-shape
+predicate — every frame bit equals the arrival slot — is checked,
+not assumed (item 4).
+
+`validate(term, cert)` — the item-3 criterion, strictly beyond
+Gram: zero structurally reachable `pop-err`, plus the RS-function
+property on the certified graph, plus Gram totality/orthogonality.
+
+Results: discovery reproduces the hand certificates on **all
+eleven programs** (q-family certified at exactly the outer
+boundary; HH/HNH/negative/selector/lone/p★/3-coin/dup refused —
+their frames, where present, never transit a later fire and stay
+inert terminal garbage). The negative control now FAILS validation
+properly: p★ under the wrong certificate reports
+`pop_err_reachable = 1` and `rs_function = False` while Gram shows
+zero defects — the criterion separates exactly where the review
+demanded.
+
+### 11.5 Probes and fences (gate items 6, 7)
+
+`h` applied to a gate (`h t`, `h h`): total, resolves as a typed
+species error — the probe meets a non-boolean. Nested coin-in-coin
+(`h ((h 0̂) ((h 0̂) 0̂ 1̂) 1̂)`): 263 states, total, Gram-clean,
+correct marginals, and correctly refused a certificate.
+`buried-frame` and `no-instance` remain **unreached in every
+program constructed to date**; both corners are typed errors, not
+silent behavior. The general proofs (lp-at-log-head; equal lps =
+same copy; buried frames unreachable or handled) remain owed.
+
+### 11.6 Exact amplitudes (gate item 8)
+
+The evolver now carries amplitudes as exact pairs
+`(p, q) ∈ ℚ[√2]`, `p + q√2` — no monomial restriction; `1 + 1/√2`
+is representable. Norm assertions compare against `(1, 0)` exactly.
+The whole battery, the polarity check, and certificate discovery
+are bit-identical under the new ring.
+
+### 11.7 The encoded-fibre statement (gate item 2 — draft, ratification owed)
+
+Proposed amendment to the architecture's clean-δ-fibre guardrail:
+
+> A δ event may be realized on an **encoded domain**. Let
+> `E_m|b,κ⟩ = |b, G_m(b,κ), F_m(b,κ), κ⟩` adjoin the which-path
+> arrival position `l = G_m(b,κ)` and the replay frames
+> `RS = F_m(b,κ)`, where G and F are proved single-valued functions
+> of `(b, κ)` on the reachable span at boundary m — the certificate
+> conditions. Then the machine's fire-with-pop satisfies
+> `U·E_m|b,κ⟩ = Σ_b′ Q[b′,b] |b′, J_m(κ)⟩`: the clean-fibre law
+> holds after decoding, with landings and cross-fibre orthogonality
+> unchanged. `E_m` is an isometry because its adjoined coordinates
+> are functions of its arguments; certification is canonical by
+> §11.4.
+
+Note this covers not only the v1.3 frames but the arrival lp
+erasure the fire has performed since v1 — the original design was
+already an encoded fibre in this sense. Ratification through
+`qalc-architecture` before the contract text moves.
+
+### 11.8 The v1.4 scorecard
+
+| Gate item | Status |
+|---|---|
+| 1 coloring | **discharged** (closed form + per-row proof + 1,518-edge mechanical check) — adversarial review owed |
+| 2 encoded fibre | statement drafted (§11.7); architecture ratification owed |
+| 3 cert validity beyond Gram | **discharged** (`validate`: pop-err reachability + RS-function; negative control now caught) |
+| 4 stack-shape predicate | **discharged** (checked predicate: frame bit = arrival slot) |
+| 5 canonical program→cert | **discharged** (`discover` fixpoint; HAND==AUTO ×11) |
+| 6 buried frames | typed fence + probes (unreached); general resolution owed |
+| 7 lp invariants | probes + battery evidence; general proofs owed |
+| 8 exact amplitudes | **discharged** (`ℚ[√2]` pairs; battery bit-identical) |
+
+New standing object: the **conservation conjecture** (§11.3) — the
+sharpened form of "the coherent fragment is the pattern class."

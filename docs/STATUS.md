@@ -491,15 +491,22 @@ bit-identical), TOP fallback removed.
 
 The open docket, in order:
 
-1. **kernel v1.4 gate** (`kernel.md` §10.6): the port-polarity
-   coloring proof over the full rule table; the encoded-fibre
-   theorem `E_m|b,κ⟩ = |b,F_m(b,κ),κ⟩` or an architecture
-   amendment (the pop's source spectator depends on `b`);
-   certificate soundness beyond Gram (zero reachable `pop-err` +
-   the RS-function property) with certificates as canonical proved
-   stack-shape predicates of the program; buried-frame resolution;
-   the two logged-position invariants; exact amplitudes beyond
-   `(m,k)` monomials;
+1. **kernel v1.4 close-out** (`kernel.md` §11): five of eight gate
+   items discharged same-day — the polarity coloring is a THEOREM
+   (closed-form φ; uniform flip; fire defect `1 − w(erased lp)`;
+   1,518 edges verified, zero violations; branch-offset formula
+   matches all measured offsets; the review's even-pad search is
+   now a corollary), certificates are canonical (discovery
+   fixpoint, HAND==AUTO on all eleven programs, validity strictly
+   beyond Gram — the negative control properly caught), and
+   amplitudes are exact `ℚ[√2]`. Owed: adversarial review of the
+   coloring; encoded-fibre ratification (§11.7 draft, covers the
+   original arrival-lp erasure too); the §11.3
+   **weight-conservation lemma** (gate-free readback conserves
+   `w ≡ slot` — geometric selection of classical data decoheres
+   intrinsically; gate-mediated routing is the parity-free pattern
+   class); buried-frame resolution and the two lp invariants
+   (typed fences + probes in place);
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem
