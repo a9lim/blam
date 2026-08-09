@@ -420,37 +420,37 @@ consistency) and a fresh-context feasibility review (thread
 promising-with-hard-open-problems, converging with the sketch on every
 load-bearing point; its checklist and exclusions are folded in.
 
-**The kernel is at v1.14** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.15** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-six fresh-context rounds: the machine core has not moved since the
-v1.11 spectator-transition fix; audit #2's fatal witness `W` is
-healed at its hand ideal `{halt1: 1}` and has been independently
-re-confirmed three times (refire amplitudes verified zero
-per-step); the KD subtraction is COMPLETE — the bundle names only
-keys with no surviving bit-carrying representation anywhere in the
-target (Q frames, burials, T/log-riding tickets) — and audit #6
-CONFIRMED it sound by exhaustively enumerating post-fire
-bit-carrying storage, with `palpha`'s certificate and marginal
-verified against the hand calculation. Audit #6's FAIL was the
-first with zero machine countermodels: regression ten was computed
-but not gating (runnable countermodel — fixed, all ten now gate
-the sweep aggregate, measured to flip under an emulated old arm),
-the rescue's "None only when nothing admits" outran its position
-pool (fixed — the pool now spans phase-1 positions plus every
-phase-2 candidate, measured behavior-identical on the whole suite,
-so the sentence is exact), a moved-graphs claim was scoped too
-wide, and version cruft lingered (purged; the register alone
-carries the version). Nineteen frozen dict certificates +
-dupcall's canonical None; canonical = deterministic
-validation-adjudicated greedy, neither maximal nor minimal;
-physics table passes on all twenty; all six prior audit kits rerun
-byte-identical or correctly flipped; every v1.14 prediction held
-byte-for-byte (provenance in the scratchpad prediction files).
+seven fresh-context rounds: the machine core has not moved since
+the v1.11 spectator-transition fix, and the last TWO rounds found
+zero machine countermodels — audits #6 and #7 together confirmed
+the completed KD subtraction sound (exhaustive post-fire storage
+enumeration, then an extended matrix: nested slice-cargo tickets,
+tickets inside unrelated burials, ANS, frozen instance names),
+hand-recomputed `palpha` ({1/4, 3/4}) and `W` ({halt1: 1}, refire
+amplitudes exactly zero per-step), and verified the rescue's
+full-pool construction and determinism. What the rounds still
+found was claim-language and scaffolding, each fixed the same
+day: all eleven permanent regressions now gate mechanically (the
+module verdict is the exit code — forcing any single regression
+false exits nonzero, measured); `validate()` gained NON-VACUITY
+(a certificate entry at an unreachable position fails
+`machine_coverage` instead of being silently ignored — canonical
+maps are never vacuous by construction); the canonical-None
+sentence is exact in three disjuncts (cap/nonconvergence exit,
+empty admission, pool pass accepting nothing); output-identity
+claims are scoped to deterministic fields. Nineteen frozen dict
+certificates + dupcall's canonical None; canonical =
+deterministic validation-adjudicated greedy, neither maximal nor
+minimal; physics table passes on all twenty; all seven prior
+audit kits rerun with exactly the declared deltas; every v1.15
+prediction held (provenance in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #7 of the v1.14 h-fragment
+1. **fresh-context independent audit #8 of the v1.15 h-fragment
    claim** (running; verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
