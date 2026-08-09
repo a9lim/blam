@@ -27,9 +27,10 @@ is a vector in ℓ² over machine configurations; superposition of *control*
 — of the reduction itself — is the object of study. qBLC's architecture
 (`../quantum/architecture.md` §7) chose classical control to obtain
 monotone positive operator approximants and to avoid an unresolved
-quantum-halting semantics. Both benefits are recoverable inside quantum
-control (§4: typed invariant-sector halting), so that choice is a
-convenience rather than a necessity, and the objects it excludes —
+quantum-halting semantics. The construction here is designed to recover
+both inside quantum control (§4: typed invariant-sector halting;
+conditional on the machine of §9 item 1), which would make that choice a
+convenience rather than a necessity. And the objects it excludes —
 interference between reduction paths, real-valued halting mass, coherent
 output operators — are exactly the ones this pillar exists to measure.
 
@@ -357,12 +358,23 @@ flagging.) Amplitudes are real, in ℤ[1/√2]. Conjecture: call a program
 *D-circuit-shaped for halting* when, in the unfolded history tree, every
 history first entering the halt sector has fired exactly `D` Hadamards;
 then every halting history has amplitude `±2^(−D/2)`, terminal amplitudes
-are `n_c/2^(D/2)`, and the halting mass `Σ n_c²/2^D` is dyadic. The
-witness reading is correspondingly narrow: a √2-irrational halting mass
-witnesses **coherent merging of histories with opposite Hadamard-count
-parity** — not mere desynchronization (unequal depths ending in
+are `n_c/2^(D/2)`, and the halting mass `Σ n_c²/2^D` is dyadic.
+
+The witness reading is a **finite-approximant statement**: if `μ_p(τ)`
+has a nonzero `√2` coefficient at finite τ, then some basis configuration
+at time τ coherently merges histories with opposite Hadamard-count parity
+— a configuration receiving only one parity has amplitude either dyadic
+or `√2 ×` dyadic, so its squared norm is dyadic, and a finite sum of
+dyadics stays dyadic. It deliberately does **not** lift to the limit: an
+irrational limit mass needs no merging at all — a program can halt on
+dyadic branch masses `2^(−n)` gated by the computable binary digits of
+`1/√2`, giving `μ_p = 1/√2` with every history orthogonal. That is the
+same countably-many-dyadic-branches phenomenon qBLC's exactness contract
+already records; a limit-level witness requires an additional
+finite-support or uniform-`D` hypothesis. Nor does mere
+desynchronization produce √2 terms at finite τ: unequal depths ending in
 orthogonal garbage stay dyadic, depths differing by an even number merge
-without √2 terms, and irrational contributions can cancel in aggregate).
+without √2 terms, and irrational contributions can cancel in aggregate.
 This fragment is the dyadicity campaign's natural sequel instrument: in
 full qALC, ω already carries non-dyadicity, so the witness reading is
 fragment-relative.
@@ -409,17 +421,20 @@ below that line; branch-dependent allocation identity is not (see
 `machine.md`).
 
 Two clauses are normative machine contract, not just test surface. First,
-δ-steps are **clean δ fibres**: for every spectator configuration `κ`,
+δ-steps are **clean δ fibres, gate-indexed**: for every spectator
+configuration `κ` and gate `q ∈ {h, t}`,
 
 ```text
-U |h, b, κ⟩ = Σ_b' H_b'b |b', J(κ)⟩
-U |t, b, κ⟩ = ω^b     |b,  J(κ)⟩
+U |q, b, κ⟩ = Σ_b' (Q_q)_b'b |b', J_q(κ)⟩,     Q_h = H,  Q_t = diag(1, ω)
 ```
 
-with `J` one injective spectator transition, identical across input
-booleans and output branches, no residue depending on either, and fibres
-for distinct `κ` having orthogonal images. A common δ-rule tag is
-harmless, and may be needed to separate δ ranges from β ranges; what HH
+with each `J_q` one injective spectator transition, identical across
+input booleans and output branches *within its gate fibre*, no residue
+depending on either, landings jointly orthogonal across gate kinds —
+`J_q† J_r = δ_qr I`, realizable as a gate-kind landing tag — and
+orthogonal to the range of every non-δ transition column. A single
+landing `J` shared by both gates is not sound: `U|h,0,κ⟩` and
+`U|t,0,κ⟩` would overlap at `1/√2` despite orthogonal sources. What HH
 needs is equal residue across the two H columns, not literally untouched
 context. Second, halted dynamics has the §4.3 normative typed form.
 Every qALC engine change must then satisfy:
@@ -470,9 +485,11 @@ Every qALC engine change must then satisfy:
   not forced — they buy equal-time-only coherence and Loewner-monotone
   outputs, and the injective unequal-time alternative (fixed
   output-dependent entry offsets) is recorded and declined.
-- **Clean δ fibres:** gates act as `gate ⊗ J` with one injective
-  boolean-independent spectator transition (§7); branch-dependent δ
-  residue would kill even the HH witness.
+- **Clean δ fibres:** gates act as `gate ⊗ J_q` with gate-indexed
+  injective boolean-independent landings, jointly orthogonal across gate
+  kinds and against every non-δ range (§7); branch-dependent δ residue
+  would kill even the HH witness, and a landing shared across gate kinds
+  would break isometry outright.
 - **Leftmost-outermost strong reduction:** the house strategy; the
   machine is the definition — which chooses one machine-relative
   reduction sequence rather than resolving algebraic-λ non-confluence,

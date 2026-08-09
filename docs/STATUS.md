@@ -5,7 +5,7 @@ measurements, proof boundaries, and ordered next work. The root `README.md`
 is the stable public map; domain documents state durable contracts; the
 monthly ledger preserves chronology.
 
-Last updated: 2026-08-07.
+Last updated: 2026-08-09.
 
 ## Classical state
 
@@ -413,10 +413,11 @@ The open docket, in order:
 2. the reversible machine: formal transition table on the
    environment/closure substrate, orthonormal-columns proof, local
    predecessor-fibre garbage minimality, invariant-sector lemma, and the
-   HH / H–NOT–H witnesses computed by hand (`machine.md` §6) — gates all
-   implementation;
-3. the clean coherent compilation theorem (architecture §6) — gates any
-   universality claim;
+   HH / H–NOT–H witnesses computed by hand
+   (`quantum-algebraic/machine.md` §6) — gates all implementation;
+3. the clean coherent compilation theorem
+   (`quantum-algebraic/architecture.md` §6) — gates any universality
+   claim;
 4. then `src/qalc/`: reference evaluator first, census later.
 
 ## Repository and release state

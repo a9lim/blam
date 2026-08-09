@@ -31,27 +31,35 @@ genuinely different dynamics and stays parked per the architecture.)
 
 ## 2. Reference configuration
 
+The semantic basis is a typed union closed under its own transitions —
+`RunDone`, `Halt`, and the error chain are basis constructors, not modes,
+so the architecture's §4.3/§4.4 transitions (`RunDone → Halt(…, 0)` and
+the tick chains) are rows of the same table the running modes populate:
+
 ```text
-Cfg {
-    program_sector,   // fixed p; common to every branch of one run
-    absolute_clock,   // common τ, shifted every transition
-    mode,             // Eval | Lookup | Quote | Return | Done
-    focus: Closure,
-    env_zipper,
-    continuation,
-    output_zipper,
-    residue,
-}
+Config =
+    Run(mode, focus: Closure, env_zipper, continuation,
+        output_zipper, residue)        // mode: Eval | Lookup | Quote | Return
+  | RunDone(nf, g, terminal_control)
+  | Halt(nf, g, terminal_control, k)
+  | Error(kind, residue, k)
 ```
 
-The inert `(p, τ)` spectator labels are cheap and useful: retaining `p`
-separates collisions between different programs (harmless — `M` already
-sums programs incoherently), and the explicit `τ` separates configurations
-reached at different global stages without distinguishing branches present
-at the same stage. Both are common to every branch of one `ψ_τ`, so
-neither destroys intended same-time interference — and neither repairs
-collisions between branches of one program at one time; the transition
-table itself must do that.
+The program `p` and the global step count `τ` are **evaluator indices,
+not basis components**. Both are uniform over the support of every
+reachable `ψ_τ` — every branch of one run carries the same program and
+the same global time — so in the basis they would distinguish nothing
+within a run while timestamping every predecessor fibre. Keeping them out
+keeps the local-minimality statement timeless and leaves the
+architecture's halted factorization exactly
+`id_output ⊗ id_garbage ⊗ id_terminal-control ⊗ shift_tick`, with no
+absolute-clock factor. The alternative — `(p, τ)` in-basis as
+superselection coordinates, suppressed in the displayed `ρ_p` formulas —
+is observationally equivalent for every target object and is declined for
+basis minimality; cross-program collisions need no in-basis `p`, since
+`M` already sums programs incoherently. Neither choice repairs collisions
+between branches of one program at one time; the transition table itself
+must do that.
 
 ## 3. The central residue rule
 
@@ -88,9 +96,9 @@ semantic equivalence.
 | Neutral spine / readback | Convert argument frames to normalization jobs; build output through a zipper | Preserve constructor/order in the zipper; never stream destructively into an external sink. |
 | Binding erasure | Drop an unused closure/environment cell | The erased closure enters residue unless already reconstructible; quantum-dependent erased data cannot be cleanly forgotten. |
 | Contraction / duplication | Reuse an immutable closure from multiple occurrence continuations | Environment sharing preferred — it preserves call-by-name re-evaluation without materializing substituted copies. Do **not** memoize: memoization changes generator-duplication semantics. |
-| H / T δ | Clean δ fibre `gate ⊗ J` (architecture §7) | `J` may add a common rule tag; nothing may depend on the input or output boolean. |
-| Species error | Enter the typed error chain | Retain error kind and offending closure as error garbage; output coherence is irrelevant there. |
-| Terminalization | Unique `RunDone(…) → Halt(…, 0)` | Entry injective; all traced spectator state frozen thereafter. |
+| H / T δ | Clean δ fibre `gate ⊗ J_q`, gate-indexed landings (architecture §7) | `J_q` may add a gate-kind landing tag; `J_h† J_t = 0`; nothing may depend on the input or output boolean. |
+| Species error | Enter the typed error chain `Error(kind, residue, k)` | Retain error kind and offending closure as error garbage; output coherence is irrelevant there. |
+| Terminalization | Unique `RunDone(…) → Halt(…, 0)` | Entry injective; output, garbage, and terminal control frozen thereafter — only the tick advances (architecture §4.3). |
 
 ## 5. Two load-bearing cautions
 
@@ -107,10 +115,13 @@ semantic equivalence.
 
 In order, per the architecture's gates:
 
-1. the full transition table over `Cfg`, total on reachable
-   configurations;
-2. the orthonormal-columns proof (injectivity plus the clean-δ fibre
-   orthogonality) on the reachable graph;
+1. the full transition table over `Config`, total on reachable
+   configurations — including the `RunDone`/`Halt`/`Error` rows;
+2. the orthonormal-columns proof as a *full pairwise matrix* on the
+   reachable graph: deterministic against deterministic, same-gate δ
+   columns, H against T, δ against deterministic, and the sector-entry
+   and tick columns — not merely injectivity plus within-fibre δ
+   orthogonality;
 3. the local-minimality statement for `residue` in the predecessor-fibre
    sense, with the pop conditions made precise;
 4. the invariant-sector lemma instantiated in this machine
