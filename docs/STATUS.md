@@ -395,6 +395,30 @@ The output choice is genuinely object-defining. A designated output restores
 compositional discarding but must be specified and measured separately from
 the whole-live-store operator census.
 
+## Quantum-algebraic state (qALC)
+
+A third pillar exists as a design contract only:
+`quantum-algebraic/architecture.md` (quantum control, storeless — runtime
+states in ℓ² over machine configurations, `h`/`t` constants at invocation,
+fate softened to a real halting mass `μ_p` with `Ω_qALC = Σ 2^(−|p|) μ_p`),
+with the pre-formal reversible-machine sketch in
+`quantum-algebraic/machine.md`. No engine, no data;
+`data/quantum-algebraic/` is reserved. The contract has passed two rounds
+of adversarial review on gaslamp thread `qalc-architecture` (history in
+`ledger/2026-08.md`); a third full-sign-off pass gates formalization.
+
+The open docket, in order:
+
+1. sign-off review of the harmonized contract (thread `qalc-architecture`);
+2. the reversible machine: formal transition table on the
+   environment/closure substrate, orthonormal-columns proof, local
+   predecessor-fibre garbage minimality, invariant-sector lemma, and the
+   HH / H–NOT–H witnesses computed by hand (`machine.md` §6) — gates all
+   implementation;
+3. the clean coherent compilation theorem (architecture §6) — gates any
+   universality claim;
+4. then `src/qalc/`: reference evaluator first, census later.
+
 ## Repository and release state
 
 - The v2 shape is on `dev`: one `blam` binary in place of the thirteen

@@ -2,11 +2,10 @@
 
 **Status: pre-formal.** This document captures the constructive shape of
 the reversible abstract machine that `architecture.md` §4.1 requires and
-§9 item 1 gates on. Its origin is adversarial review round 2 (gaslamp
-thread `qalc-architecture`, 2026-08-09), which both broke the hope that
-the existing KN machine could serve and supplied this candidate route. It
-is a design sketch to be formalized and then attacked — nothing here is a
-contract yet, and the architecture document wins wherever they disagree.
+§9 item 1 gates on. It is a design sketch to be formalized and then
+attacked — nothing here is a contract yet, and the architecture document
+wins wherever they disagree. Provenance and review history live in
+`../ledger/2026-08.md`.
 
 ## 1. Substrate: environments, not substitution
 

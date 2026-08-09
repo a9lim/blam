@@ -66,7 +66,14 @@ The library is three layers — `blc` substrate, symmetric `classical` and
 `quantum` pillars, `lab` behind its own feature — and one binary, `blam`,
 whose subcommands live in `src/cli/`. Lab-gated subcommands are recognised
 without the feature and say how to get themselves; do not "fix" that by
-deleting the arm.
+deleting the arm. A fourth pillar, `quantum-algebraic` (qALC: quantum
+*control*, storeless, runtime states in ℓ² over machine configurations),
+exists as a design contract only — `docs/quantum-algebraic/architecture.md`
+is the contract, `machine.md` beside it the pre-formal reversible-machine
+sketch, and **no qALC code may land** until the contract's §9 gates pass
+(formal reversible transition table with orthonormal columns, clean
+coherent compilation, hand-computed HH and H–NOT–H witnesses). qALC work
+must leave classical and qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →
@@ -222,6 +229,8 @@ Claude and Codex are co-equal here; handoffs run over the `gaslamp` CLI.
 Existing threads: `blc-conformance` (certificate exchange),
 `blc-interpreter` (design theory), `blc-interp-search` (slot-search spec),
 `blc-qblc` (qBLC design ratification), `qblc-selfint` (self-interpretation and
-bisimulation), `qblc-omega-witnesses` (dyadicity hunt and phase-2 design), and
-`blam-reshape` (v2 refactor design ratification and reviews).
+bisimulation), `qblc-omega-witnesses` (dyadicity hunt and phase-2 design),
+`blam-reshape` (v2 refactor design ratification and reviews), and
+`qalc-architecture` (qALC design contract adversarial review and
+ratification).
 Send raw evidence—encodings, diffs, measured bits—not summaries.
