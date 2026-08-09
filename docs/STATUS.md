@@ -516,13 +516,31 @@ reports `semantic_coverage`; the μ-kind fire collision is closed
 typed. **PASS stands for the three-program formalization gate and
 the twelve registered sectors; the h-fragment claim is withdrawn.**
 
+**Kernel v1.7 is built and verified** (`kernel.md` §14,
+2026-08-09): the replay RECORD gives the interleaved re-seek its
+semantics — `recall`'s frame push is idempotent (the record is a
+function of the instance; conflicting bits are a typed
+`frame-conflict`), `replay` is a deep keyed lookup, the record set
+is canonically sorted, and the `buried-frame` error class is
+dissolved. The review's `Q` heals to physics predicted before
+measurement ({1/2, 1/2}, support 4, certificate unchanged,
+`semantic_coverage: True`); the twelve stay bit-identical; three
+pointed stressors (`weave`, `hweave`, `qq` — three coins,
+double-crossed re-seeks, support 8) all land on predicted
+marginals. The WF subtype (six invariants; reachable ⊆ WF over
+9,314 states; per-rule preservation) closes the v1.6
+range-disjointness gap — both review collisions dead (W4 excludes
+the vvar source; `species-mu` types the μ-kind pair). Certified
+erasure got its cargo conditions: γ-free cargo enforced in
+certificate admission (zero changes), suspended-α cargo (HNH's
+earned coherence depends on it) scoped under a named compile-time
+obligation. The h-fragment PASS is re-claimed, **gated on a
+fresh-context independent audit**.
+
 The open docket, in order:
 
-1. **kernel v1.7 — the interleaved re-seek**: give `buried-frame`
-   semantics (the frame stack's discipline under two live
-   instances), or characterize statically the fragment excluding
-   it; plus the well-formed-state subtype + preservation proof
-   restoring global range disjointness over the raw state type;
+1. **the fresh-context independent audit of the v1.7 h-fragment
+   claim** (in flight; verdict to be registered in §14);
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem

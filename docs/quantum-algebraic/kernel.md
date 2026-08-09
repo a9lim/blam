@@ -1,6 +1,15 @@
 # qALC three-program kernel — v1
 
-**Status: v1.6 reviewed — §13 is the current register. The
+**Status: v1.7 — §14 is the current register: the replay RECORD
+(idempotent recall, deep keyed replay, canonical order) heals the
+`Q` countermodel to its predicted physics and dissolves the
+`buried-frame` error class; the WF subtype (six invariants,
+reachable ⊆ WF over 9,314 states, per-rule preservation) closes
+the range-disjointness gap; certified-erasure cargo conditions
+measured and registered (γ-free locally enforced; α-cargo scoped
+as a compile-time obligation). Sixteen-program battery total and
+clean. The h-fragment PASS is re-claimed, gated on a fresh-context
+independent audit.** Previous register — v1.6 (§13): the
 fresh-instance adversarial round (§13.6) returned FAIL for "PASS
 for the h-fragment" while CONFIRMING the mathematical core: the
 conservation theorem stands with a depth-term correction
@@ -1456,3 +1465,143 @@ witness. The v1.7 object is the interleaved re-seek: give
 live instances), or characterize statically the fragment that
 excludes it — and prove the well-formed-state preservation that
 restores global range disjointness.
+
+## 14. v1.7 — the replay record, the WF subtype, and the healed h-fragment
+
+The interleaved re-seek round. Everything below is mechanically
+verified in the scratch battery (`kernel.py`, `suite.py`, `wf.py`,
+`certify.py`, `conservation.py`, `polarity.py`); no engine code
+exists, per the §9 gate. The h-fragment PASS is RE-CLAIMED at the
+end, gated on a fresh-context independent audit.
+
+### 14.1 The Q trace, and what it overturned
+
+Tracing `Q` to its `buried-frame` states gave the design its
+ground truth — and refuted the natural first hypothesis. The
+buried configurations hold **the same instance's frame twice**
+(coin1's record duplicated, buried under coin2's): v1.3's re-seek
+cycle *accumulates* — each `replay` re-emits a ticket, and each
+ticket's later `recall` pushes another identical frame. The frame
+was never a stack entry; it is a **record of the instance's
+selection**, a function of the instance. The v1.7 rules make the
+data structure match the semantics:
+
+- **`recall` (amended):** the frame push is **idempotent** — if a
+  same-`(g,i)` record exists, re-recording is a no-op; if it
+  exists with a *different bit*, that is the copy-identity failure
+  and a new typed error `frame-conflict`. The record set `rs` is
+  kept canonically sorted: state identity must not depend on the
+  order interleaved re-seeks happened to record in.
+- **`replay` (amended):** deep keyed lookup — the unique
+  same-`(g,i)` record *wherever it sits*. LIFO position was never
+  semantic; the v1.3 head-only guard was conservatism awaiting a
+  literal trace, which `Q` supplied. **The `buried-frame` error
+  class no longer exists.**
+
+### 14.2 Results
+
+The **twelve are bit-identical** — every basis count, marginal,
+support, and halt time unchanged (interleaving never occurs
+there, so idempotency, deep lookup, and canonical order are all
+invisible). `Q` (battery name `buried`) heals to exactly the
+physics predicted before measurement: **basis 432, Gram clean,
+`{halt0: 1/2, halt1: 1/2}`, support 4, t = 141** — coin1 consumed
+non-injectively (two SEL occurrences), each branch running
+geometric selection on coin2: four decohered terminals at 1/4.
+Its certificate is UNCHANGED (`ffbbfffa` reproduces) and it now
+validates with `semantic_coverage: True`. The stress set, each
+predicted then measured: `weave` (interleaving through
+wire-identities: 1/2 + 1/2, support 4), `hweave` (an outer gate
+interrogating a woven core — the C-collapse class holds across an
+interleaving: 1/2 + 1/2, support 4), `qq` (Q nested in Q's
+argument: three coins, double-crossed re-seeks, **support 8**,
+1/2 + 1/2, basis 2,192). All sixteen: zero stuck / non-unit /
+non-orthogonal, zero guard rules reached, zero `(g,i)` aliasing;
+the coloring, terminal chains, gauge orbit, `discover_total`
+agreement, and the conservation battery all re-verified over the
+sixteen; the negative control still catches `pop-err`.
+
+### 14.3 The well-formed configuration subtype
+
+`WF(term, s)`, six invariants — the domain the unitarity claims
+quantify over:
+
+- **W1** log discipline: `|log| = level(path)` — every log entry
+  corresponds to one `a`-step.
+- **W2** record uniqueness + canonicity: at most one frame per
+  `(g, i)`; `rs` canonically sorted.
+- **W3** bit coherence: all instance-keyed entries with one
+  `(g, i)` carry one bit.
+- **W4** first-interrogation exclusivity: a vb-active state at
+  instance `i` holds no `i`-frame and no `i`-ticket — forced by
+  the guard chain (ticket → `recall`, frame → `replay`, neither
+  reaches `call` → fire → `anshead` → vb).
+- **W5** probe pairing: deep-counted γ (through slices and the
+  fire's retained `K(l)` records) = μ(tape) + answer
+  tokens(tape). A γ captured into a slice is **suspended cargo**
+  — the conservation ledger's concept — still in flight; its
+  probe cannot fire until `bt2` releases it. Ticket/frame
+  instance *keys* are frozen names, never counted (the live
+  original is accounted where it lives; keys would ghost-count
+  stale slices). The first, shallow draft of W5 produced 460
+  false violations, all the same shape — the sweep taught the
+  invariant its own suspension structure.
+- **W6** exactly one ρ, at the tape bottom.
+
+**Reachable ⊆ WF**: verified exhaustively — 9,314 Run-state
+checks across all sixteen programs, both certificate modes, zero
+violations; init is WF, so the sweep validates preservation on
+every reachable edge. Per-rule preservation is by inspection:
+classical rules move log/level in lockstep (W1) and
+suspend/release γs in matched pairs (W5); `call` adds γ + μ
+together; the fire consumes μ and mints the answer token
+(retaining `l`'s cargo in `ks` — deep count preserved);
+`recall`/`replay` touch only the record set under W2–W4's
+discipline.
+
+**Collision closure.** The v1.6 review's two raw-state column
+collisions are both dead: the `vvar`/`replay` pair because its
+`vvar` source **violates W4** (holding its own instance's frame),
+and the WF-repaired source's target then differs from the replay
+target in `rs` content; the μ-kind pair because `species-mu`
+types the mismatched fire away (no shared targets). Global range
+disjointness is claimed over WF states, with reachable ⊆ WF
+mechanical and the preservation argument registered.
+
+### 14.4 Certified erasure and suspended cargo (two conditions)
+
+The W5 lens exposed a soundness question v1.5 never posed: a
+certified erasure deletes the arrival lp *with its slice cargo*.
+Measured across all sixteen certified boundaries: **zero γ-cargo
+erasures** — and the admission condition (d), *erased cargo must
+be γ-free*, is now part of `transparent()` (a certified erasure
+of an in-flight probe's γ would break W5: its μ survives,
+unpaired). Zero certificate changes. **Suspended α cargo is
+deliberately permitted**: HNH's earned coherence *depends* on
+erasing captured ticket copies (two of its three certified
+arrivals carry α cargo, measured). Its soundness condition is
+scoped and named: **no post-erasure re-seek of the erased
+ticket's instance** — a re-seek would find neither ticket nor
+frame and fresh-`call` into a second fire (the v1.2 double-fire
+class). In HNH the α-cargo erasures are terminal interrogations,
+so the condition holds; in general it is a reachability property,
+not a local stack shape, and is registered as a **compile-time
+obligation for the compilation theorem** (the compiler certifies
+only boundaries whose erased-ticket instances are never
+re-interrogated). The fresh audit adjudicates whether this
+scoping is adequate.
+
+### 14.5 The v1.7 claim
+
+**PASS for the h-fragment, re-claimed**: the `Q` countermodel is
+healed with the physics predicted in advance; the sixteen-program
+battery (twelve sectors + the review witness + three pointed
+interleaving stressors) is total, Gram-clean, and
+marginal-correct; the WF subtype closes the review's range
+disjointness gap with reachable ⊆ WF mechanical; and the
+certified-erasure cargo conditions are measured, one closed
+locally and one scoped and registered. Standing fences, typed:
+literal gate application, the t-gate reservation, and the α-cargo
+compile-time obligation. This claim is **gated on a fresh-context
+independent audit** (a9's instruction for the round); the audit
+verdict will be registered here.
