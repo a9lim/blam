@@ -437,11 +437,22 @@ output `I` as an error — fixed in v1.1 along with separate
 Gram, and two mandated architecture amendments (witness 7 pinned to
 the exact `NOT′` wire term; the stale strategy bullet).
 
+The adversarial review returned: **FAIL for kernel v1, route
+intact** — the reviewer's independent reimplementation reproduced
+all five results (substrate, fibres, balance all HOLD), then broke
+`recall` with `p★ = λh.λt. ((((h 0̂) h) h) 0̂)`: nested same-kind
+tickets alias after the replay erases `b′` (norm 3/2 at step 89,
+confirmed against both implementations; a 3-coin regression shows
+the same collision across time slices). Re-entry determinacy is
+refuted; verdict registered in `kernel.md` §9.
+
 The open docket, in order:
 
-1. the adversarial machine review (`qalc-token-machine`, independent
-   reimplementation requested — in flight); the sharpest open lemma
-   is re-entry determinacy (`recall` erases `b′`);
+1. **repair the replay protocol** — reversible ticket cleaning:
+   the erased discriminator must persist (instance-indexed ticket /
+   partial-permutation replay / structural call-replay separation)
+   yet not decohere wanted interference; `p★` and the 3-coin
+   program are mandatory regressions;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars;
 3. the clean coherent compilation theorem

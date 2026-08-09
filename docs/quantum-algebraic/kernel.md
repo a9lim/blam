@@ -1,17 +1,24 @@
 # qALC three-program kernel — v1
 
-**Status: kernel v1.1 — machine-verified; conformance-reviewed
-(thread `qalc-architecture`), blocker fixed; adversarial machine
-review in flight.** This is the formalization gate demanded by
-`token.md` §4: the complete transition table for a small-output qALC
-machine, step-indexed traces of the three witness programs, and a
-column-Gram enumeration over the structural reachable bases. All
-enumerated kernel-scope checks pass. Verification was mechanized in
-a scratch superposition evolver (exact `ℤ[1/√2]` arithmetic, norm
-asserted equal to 1 at every global step; the evolver stays out of the
-tree per the no-code gate — reviewers should reproduce independently,
-which is stronger verification than sharing it). Scope limits are in
-§7; nothing here claims more than the kernel.
+**Status: kernel v1.1 — reviewed; `recall` CONFIRMED-BROKEN, the
+rest of the machine holds.** The adversarial review (thread
+`qalc-token-machine`) independently reimplemented §3 from this
+document alone and reproduced all five results exactly — the
+classical substrate, gate fibres, HH cancellation, H–NOT′–H balance
+(no padding), and the negative witness all HOLD — then broke the
+virtual-boolean replay protocol with a reachable countermodel: in
+`p★ = λh.λt. ((((h 0̂) h) h) 0̂)` (a coin selecting between two gate
+occurrences, then a fresh application of the selected gate), two
+valid nested re-entry states with identical position, log, and
+pending differ only in the `b′` that `recall` erases — both map to
+one target, norm 1 → 3/2 at global step 89, verified against both
+implementations (§9). **The three-program gate is therefore not
+passed**: the traces stand as finite results, but the replay
+protocol is the kernel's unresolved central mechanism. Do not build
+on §3's `recall` rule; the repair is the docket head. The
+conformance review's earlier fixes (output alphabet {`0̂`,`1̂`,`I`},
+separate `RunDone`/`Halt` steps, structural Gram) are incorporated
+and stand.
 
 ```text
 h (h 0̂)             mass 1 on 0̂, single terminal configuration
@@ -357,3 +364,76 @@ The H–NOT–H and negative-witness traces (63 and 59 steps) follow the
 same notation and are mechanically reproducible from the table; their
 checkpoints (fires, anshead/vvar windows, recall events in the
 negative witness, terminal entries) are as reported in §5.
+
+## 9. v1 review verdict (registered)
+
+**FAIL for kernel v1; the token-machine route is not implicated.**
+The reviewer reimplemented §3 independently (adding the scratch
+model's unstated `recall`-before-`call` priority) and reproduced all
+five §5 results exactly. What holds, independently verified: HH
+cancellation at the outer fire; H–NOT′–H step balance with no
+padding (the slot-bullet-consumed-by-classifier derivation
+confirmed); the negative witness's orthogonality; the
+gate-application `+1` bullet count through one- and two-hop identity
+plumbing.
+
+### 9.1 The countermodel
+
+`p★ = λh.λt. ((((h 0̂) h) h) 0̂)`: the first coin selects between
+two `h` occurrences; the selected gate is freshly applied to `0̂`,
+creating nested same-kind answer tickets. `recall` maps, for
+identical retained `L, T`,
+
+```text
+C₀ = (g, ↓, L, •·α_h(0)·T)      C₁ = (g, ↓, L, •·•·α_h(1)·T)
+```
+
+to the identical `(g, ↑, L, •·•·•·T)`. Both are reachable in `p★`
+at global step 89 with amplitude `1/(2√2)` each: mass 1/4 → 1/2 per
+colliding pair, norm 1 → 3/2 — reproduced against our evolver
+bit-exactly. A second mandated regression,
+`λh.λt. ((h 0̂) (h 0̂) (h 0̂))`, conserves norm on the aggregated
+run but its structural Gram exposes the same collision across time
+slices (2 non-orthogonal column pairs, reproduced). Both programs
+are now mandatory regressions for any successor table.
+
+### 9.2 The structural diagnosis
+
+Re-entry determinacy is **false**. The literal-boolean analogy
+omitted the load-bearing part: literal `0̂`/`1̂` replay through
+*distinct code positions*, and position retains the discriminator
+through the replay. The virtual construction parks both answers at
+the same gate leaf and then erases the only remaining discriminator
+— classical irreversible erasure, not token transport. Two
+secondary breaks: the `α` tag (gate kind, bit) cannot identify
+which dynamic invocation owns a ticket, so same-kind nested
+invocations alias; and `call`/`recall` source domains overlap
+(every `recall` source is a `call` source), resolved only by
+implementation priority — the formal table needs structural
+disjointness.
+
+### 9.3 Gram-methodology gaps (for the general theorem)
+
+The five-program enumeration is a regression battery, not the
+isometry theorem. A general verifier needs: structural source
+disjointness; pairwise columns across every time slice's reachable
+union; graph reachability before amplitude aggregation; arbitrary
+nested exponential contexts and same-kind instances; `h`/`t`
+cross-fibre and δ/non-δ range checks; the typed `RunDone → Halt`
+entry checked mechanically; general ring amplitudes (the scratch
+`(m, k)` representation cannot express `1 + 1/√2`); whole-term
+identity in the sector coordinate.
+
+### 9.4 Repair directions (unadjudicated)
+
+`recall` cannot consume `α_g(b′)` into a common classical target.
+Candidate shapes from the review: a dynamically instance-indexed
+replay ticket (not merely gate kind + bit); a partial-permutation
+replay retaining enough to reconstruct `b′`; structural separation
+of fresh call from replay; erasure only where independent retained
+state reconstructs the discriminator, or inside an actual unitary
+block. A dedicated replay frame `R_g(instance, b′)` restores local
+injectivity, but carrying it forever suppresses wanted interference:
+**reversible ticket cleaning is now the central design problem** —
+the same "coherence is earned" economy, now at the level of the
+machine's own bookkeeping rather than user code.

@@ -368,13 +368,14 @@ substrate's obstruction and the fork reopens.
 
 | Item | Status |
 |---|---|
-| Three-program kernel (table + traces + Gram) | **v1 drafted and machine-verified — `kernel.md`; in review** |
-| L1 arrival-residue determinacy | kernel-verified; general proof open |
+| Three-program kernel | **v1.1 reviewed: traces + Gram hold (independently reproduced); `recall` CONFIRMED-BROKEN on `p★` — gate NOT passed** (`kernel.md` §9) |
+| Replay protocol repair (reversible ticket cleaning) | **the docket head** — instance-indexed tickets vs partial-permutation replay vs structural call/replay separation (`kernel.md` §9.4) |
+| Re-entry determinacy | **refuted** (`p★`: identical position/log/pending, differing `b′`) — the erased discriminator must live somewhere until a δ block consumes it |
+| L1 arrival-residue determinacy | kernel-verified at `fire`; general proof open |
 | L2 pop timing / coherence return | confirmed for NOT′ (kernel); selector measured decoherent |
-| Re-entry determinacy (replaces refuted C1) | kernel-verified; general proof open — sharpest lemma |
+| `call`/`recall` structural domain disjointness | open (priority-resolved in scratch; formal table needs structure) |
 | Probe-exit classification totality | open (kernel error rules are catch-alls) |
-| Totalization (norm-one successors everywhere) | verified on kernel bases; general proof open |
-| Readback controller | undesigned — hardest open; kernel's root classifier is its 1-bit case |
+| Readback controller | undesigned; kernel's root classifier is its 1-bit case |
 | `μ_p`/`Ω_qALC` on the token clock | pending readback design |
-| Nonlinear reuse of a fired result | partially exercised (negative witness); general story open |
+| Mandatory regressions | `p★` and the 3-coin program (`kernel.md` §9.1) for any successor table |
 | Bideterminism of §2 | verified vs arXiv:2002.05649 |
