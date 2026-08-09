@@ -55,9 +55,13 @@ architecture's halted factorization exactly
 `id_output ⊗ id_garbage ⊗ id_terminal-control ⊗ shift_tick`, with no
 absolute-clock factor. The alternative — `(p, τ)` in-basis as
 superselection coordinates, suppressed in the displayed `ρ_p` formulas —
-is observationally equivalent for every target object and is declined for
-basis minimality; cross-program collisions need no in-basis `p`, since
-`M` already sums programs incoherently. Neither choice repairs collisions
+is declined for basis minimality. Only the *passive* superselection lift
+(`U′ = shift_τ ⊗ U`, same table, same residue) is observationally
+equivalent for every target object; a separately re-minimized in-basis
+machine is not claimed equivalent, since `(p, τ)` would separate
+predecessor fibres and less residue can change later interference.
+Cross-program collisions need no in-basis `p`, since `M` already sums
+programs incoherently. Neither choice repairs collisions
 between branches of one program at one time; the transition table itself
 must do that.
 

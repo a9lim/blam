@@ -403,22 +403,21 @@ states in ℓ² over machine configurations, `h`/`t` constants at invocation,
 fate softened to a real halting mass `μ_p` with `Ω_qALC = Σ 2^(−|p|) μ_p`),
 with the pre-formal reversible-machine sketch in
 `quantum-algebraic/machine.md`. No engine, no data;
-`data/quantum-algebraic/` is reserved. The contract has passed two rounds
-of adversarial review on gaslamp thread `qalc-architecture` (history in
-`ledger/2026-08.md`); a third full-sign-off pass gates formalization.
+`data/quantum-algebraic/` is reserved. **The contract is frozen**: four
+rounds of adversarial review on gaslamp thread `qalc-architecture`
+concluded in a sign-off at `27f2c4b` (history in `ledger/2026-08.md`).
 
 The open docket, in order:
 
-1. sign-off review of the harmonized contract (thread `qalc-architecture`);
-2. the reversible machine: formal transition table on the
-   environment/closure substrate, orthonormal-columns proof, local
-   predecessor-fibre garbage minimality, invariant-sector lemma, and the
-   HH / H–NOT–H witnesses computed by hand
-   (`quantum-algebraic/machine.md` §6) — gates all implementation;
-3. the clean coherent compilation theorem
+1. the reversible machine: formal transition table on the
+   environment/closure substrate, orthonormal-columns proof (full
+   pairwise matrix), local predecessor-fibre garbage minimality,
+   invariant-sector lemma, and the HH / H–NOT–H witnesses computed by
+   hand (`quantum-algebraic/machine.md` §6) — gates all implementation;
+2. the clean coherent compilation theorem
    (`quantum-algebraic/architecture.md` §6) — gates any universality
    claim;
-4. then `src/qalc/`: reference evaluator first, census later.
+3. then `src/qalc/`: reference evaluator first, census later.
 
 ## Repository and release state
 

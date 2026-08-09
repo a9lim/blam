@@ -416,9 +416,16 @@ state, not implementation detail. A fast engine must either produce the
 identical exact sparse amplitude map over canonical configurations at
 every transition, or come with an isometric intertwining
 `W U_ref = U_fast W` preserving the halt and error projections and the
-output partial trace. Hash-consing and representation tricks are fine
-below that line; branch-dependent allocation identity is not (see
-`machine.md`).
+output partial trace. "Transition" throughout means one reference
+semantic `U`-step: implementation microsteps are unobservable and
+unconstrained, and the displayed intertwiner is time-preserving — it
+does not license a different semantic clock. An engine with a genuinely
+different semantic cadence needs a clocked dilation
+(`W U_ref = U_fast^r W`) or a synchronized simulation relation
+preserving halt ages and output traces — a stronger theorem than this
+contract grants, since timing is physical here (§4.5). Hash-consing and
+representation tricks are fine below that line; branch-dependent
+allocation identity is not (see `machine.md`).
 
 Two clauses are normative machine contract, not just test surface. First,
 δ-steps are **clean δ fibres, gate-indexed**: for every spectator
