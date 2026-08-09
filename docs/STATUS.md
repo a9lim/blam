@@ -446,13 +446,23 @@ confirmed against both implementations; a 3-coin regression shows
 the same collision across time slices). Re-entry determinacy is
 refuted; verdict registered in `kernel.md` §9.
 
+The v1.2 repair (inert replay stack) fixed the p★ aliasing and is
+independently confirmed, but the re-review refuted permanent
+inertness with `q = λh.λt. h ((((h 0̂) E) N) 0̂)` — injective
+selection (H;id;H) whose branches must re-interfere — and exposed
+an α/γ transport totality failure beneath it (three stuck states on
+`q`'s 335-state graph, verified). The governing principle is now
+the **transparency criterion**: a replay frame is cleanable iff its
+bit is a function of the live core, cleaned inside the δ block with
+provenance-matched instance-indexed frames.
+
 The open docket, in order:
 
-1. **repair the replay protocol** — reversible ticket cleaning:
-   the erased discriminator must persist (instance-indexed ticket /
-   partial-permutation replay / structural call-replay separation)
-   yet not decohere wanted interference; `p★` and the 3-coin
-   program are mandatory regressions;
+1. **kernel v1.3**: α/γ transport totality on `q`'s graph; correct
+   same-time slot arrivals; instance-indexed replay frames; the
+   first proved transparency/pop rule; `q` at mass 1 on `0̂` with
+   no residual discriminator (`p★`, 3-coin, `q` all mandatory
+   regressions);
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars;
 3. the clean coherent compilation theorem

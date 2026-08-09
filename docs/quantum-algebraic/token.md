@@ -368,14 +368,14 @@ substrate's obstruction and the fork reopens.
 
 | Item | Status |
 |---|---|
-| Three-program kernel | **v1.1 reviewed: traces + Gram hold (independently reproduced); `recall` CONFIRMED-BROKEN on `p★` — gate NOT passed** (`kernel.md` §9) |
-| Replay protocol repair (reversible ticket cleaning) | **the docket head** — instance-indexed tickets vs partial-permutation replay vs structural call/replay separation (`kernel.md` §9.4) |
-| Re-entry determinacy | **refuted** (`p★`: identical position/log/pending, differing `b′`) — the erased discriminator must live somewhere until a δ block consumes it |
+| Kernel | **v1.2: p★ repair (inert replay stack) confirmed locally real; gate still open on the `q` countermodel** (`kernel.md` §9.5–9.6) |
+| α/γ transport totality | **broken on `q`** (three stuck states: α at log head inside selected-function plumbing) — v1.3's first job |
+| Transparency criterion (replaces both C1 and mandatory-decoherence) | adopted: `R_g(b)` cleanable iff `b` is a function of the live core; cleanup inside the δ block with provenance-matched instance-indexed frames — the transparency/pop rule is the central design object |
 | L1 arrival-residue determinacy | kernel-verified at `fire`; general proof open |
 | L2 pop timing / coherence return | confirmed for NOT′ (kernel); selector measured decoherent |
 | `call`/`recall` structural domain disjointness | open (priority-resolved in scratch; formal table needs structure) |
 | Probe-exit classification totality | open (kernel error rules are catch-alls) |
 | Readback controller | undesigned; kernel's root classifier is its 1-bit case |
 | `μ_p`/`Ω_qALC` on the token clock | pending readback design |
-| Mandatory regressions | `p★` and the 3-coin program (`kernel.md` §9.1) for any successor table |
+| Mandatory regressions | `p★`, the 3-coin program, and `q = λh.λt. h ((((h 0̂) E) N) 0̂)` — the last must reach mass 1 on `0̂` with no residual discriminator (`kernel.md` §9.1, §9.6) |
 | Bideterminism of §2 | verified vs arXiv:2002.05649 |

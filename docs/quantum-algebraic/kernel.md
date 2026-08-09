@@ -1,8 +1,16 @@
 # qALC three-program kernel — v1
 
-**Status: kernel v1.2 — the replay repair is applied and passes the
-full battery including both mandated regressions; re-review in
-flight.** History: v1 was reviewed adversarially (thread
+**Status: kernel v1.2 — re-reviewed: the p★ repair is confirmed
+locally real, but the gate remains OPEN.** The re-review (§9.6)
+refuted the mandatory-decoherence premise with the injective
+selection program `q` (H;id;H through selected functions — physics
+demands re-interference), supplied the governing **transparency
+criterion** in its place, and found a deeper α/γ transport totality
+failure (`q` reaches three stuck states before the replay question
+even arises). The v1.3 gate is §9.6's list: transport totality on
+`q`'s graph, instance-indexed frames, a proved transparency/pop
+rule, and `q` at mass 1 on `0̂`. History: v1 was reviewed
+adversarially (thread
 `qalc-token-machine`, independent reimplementation) — the classical
 substrate, gate fibres, HH cancellation, H–NOT′–H balance, and
 negative witness all HOLD, but `recall` was CONFIRMED-BROKEN on
@@ -223,9 +231,9 @@ log, tape-below-slot, and time — so everything after t=33 is a
 single classical path. H–NOT–H does the same through NOT′'s real
 selection legs (residue popped, lengths equal — the L2 obligation
 confirmed for NOT′). The negative witness's branches keep distinct
-residues and enter the error sector two steps apart — orthogonal two
-ways over, as unitarity demands, and its four-state predecessor was
-the run that caught a real table bug (§6).
+residues and enter their `Halt(I)` chains two steps apart —
+orthogonal two ways over, as unitarity demands, and its earlier
+four-state form was the run that caught a real table bug (§6).
 
 **Column-Gram enumeration** (strengthened after conformance review):
 the basis is the **structural** reachable graph — an amplitude-blind
@@ -292,13 +300,14 @@ Discharged by the kernel: HH and H–NOT–H step-indexed traces; L2
 for `NOT′`; the negative witness (as of v1.1 — same halted `I`,
 orthogonal configurations); orthonormal columns on the structural
 reachable bases; totality on every structural state (zero stuck).
-The erasures at `fire` and `recall` are, per the conformance
-review's framing, *proved injective on the enumerated kernel
-domains by the Gram check itself*; their general schemas remain
-conditional on the re-entry and arrival-determinacy lemmas — and
-the input boolean `b` must never be conservatively charged as
-residue while those are open (retaining it would destroy the clean
-fibre; the design keeps `b` as the consumed quantum coordinate).
+The erasure at `fire` is, per the conformance review's framing,
+*proved injective on the enumerated kernel domains by the Gram
+check itself*; its general schema remains conditional on the
+arrival-determinacy lemma — and the input boolean `b` must never be
+conservatively charged as residue (retaining it would destroy the
+clean fibre; the design keeps `b` as the consumed quantum
+coordinate). `recall` no longer erases (v1.2, §9.5); the governing
+question became the transparency criterion of §9.6.
 
 Remaining, inherited or newly exposed:
 
@@ -307,9 +316,14 @@ Remaining, inherited or newly exposed:
    state. It holds on the kernel programs (the pending question
    carries branch-distinct positions) and needs a general proof —
    the sharpest open lemma, alongside general L1.
-2. **Source-pattern disjointness is by rule priority in the scratch
-   model**; the formal table must make it structural (the Gram check
-   covers targets, not source overlap).
+2. **Source-pattern disjointness**: `call`/`recall` partition by a
+   decidable negative premise — scan the maximal leading bullet
+   block; a same-gate `α_g(b)` beneath it means replay (arity
+   `b+1`) or arity-error, anything else means fresh call — but the
+   *semantic* implication (same-gate α after the block ⇒ replay of
+   the intended dynamic instance) is unproved without
+   instance-tagged tickets; other rule pairs remain
+   priority-ordered in the scratch model.
 3. **The `•^(b′+1)·α` adjacency patterns** (recall trigger, arrival
    shapes) are verified on the kernel programs; their totality over
    all reachable shapes needs the general species-classification
@@ -487,3 +501,55 @@ question rides to the re-review. Fork (A)'s minimality program
 applies to R-frames verbatim: each is charged conservatively, and
 any later transparency lemma that proves one recoverable removes it
 and enlarges the raw-interfering class.
+
+### 9.6 The v1.2 re-review: transparency, not inertness (registered)
+
+**Verdict: FAIL for v1.2 as the gate; the repair itself is locally
+real** (independently reproduced: push injectivity fixes the p★
+pairs; all seven rows verified). Two deliveries:
+
+**The mandatory-decoherence claim is refuted.** With `E = λz. I z`
+and `N = λz. z 1̂ 0̂`,
+
+```text
+q = λh.λt. h ((((h 0̂) E) N) 0̂)
+```
+
+selects between identity and NOT, so `(((b E) N) 0̂) = b` on the
+boolean basis — an *injective* transport of the coin through
+selection; the circuit is H;id;H and physics demands the branches
+re-interfere at the outer gate (mass 1 on 0̂). The blanket premise
+"a recalled coin has been consumed non-injectively" is false. The
+correct criterion (review-supplied, adopted): **`R_g(b)` is
+transparent at a reachable boundary iff `b` is a single-valued
+function of the non-R core there** — frames are mandatory exactly
+on predecessor fibres where the branch images overlap (p★), and
+cleanable where the live core still carries the bit (q). Cleanup
+belongs *inside the δ block* with provenance matching:
+
+```text
+|g, b, κ, R_i(b)·RS⟩ ↦ Σ_b′ Q_g[b′,b] |land, b′, J(κ), RS⟩
+```
+
+which requires dynamically instance-indexed frames — `(kind, bit)`
+cannot name its owning invocation. Inert RS stands as the sound
+conservative first point of the transparency program, not as final
+semantics; permanent freezing is selective full logging.
+
+**A more basic totality failure.** On the actual v1.2 table, `q`
+never reaches the RS question: its structural graph (335 states)
+has three stuck states — all with an `α` ticket at the log head
+inside the selected function's plumbing (the uncovered
+recall-under-deeper-γ case) — the live run leaks norm before t=82,
+and both outer arrivals misclassify as slot 0. Verified bit-exactly
+against our evolver. The α/γ transport layer does not yet carry a
+recalled coin through distinct reversible selected functions.
+
+**The next gate** (review-mandated): `q` joins the mandatory
+regressions; repair α/γ transport to totality on q's graph;
+correct same-time slot-0/slot-1 outer arrivals; instance-indexed
+replay frames; a first proved transparency/pop rule; and `q`
+finishing at mass 1 on `0̂` with no residual replay discriminator.
+Also open, restated: general `ℤ[1/√2]` amplitudes in the verifier
+(`(m,k)` cannot express `1 + 1/√2`), H/T cross-fibres, effect-free
+conservativity, general readback.
