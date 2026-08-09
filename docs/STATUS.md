@@ -420,46 +420,46 @@ consistency) and a fresh-context feasibility review (thread
 promising-with-hard-open-problems, converging with the sketch on every
 load-bearing point; its checklist and exclusions are folded in.
 
-**The kernel is at v1.10** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.11** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
-and git). Fresh audit #2 FAILed v1.9 with a fatal witness: `W`, a
-typed program whose nonempty certificate validated clean while
-computing decohered marginals — the root cause being a
-zero-amplitude structural `refire` vetoing the coherence-restoring
-certificate of its core `B`. The round's design fork (is there an
-ideal reference semantics to validate against?) was adjudicated on
-the working thread: the auditor's own term-level ideal evaluator is
-provably broken (non-normalized masses — Church elimination
-discards controls and spuriously interferes), no total bare-term
-reference exists, and the sound hybrid is "amplitudes decide
-whether a run succeeds, never whether the machine is an isometry."
-v1.10 implements it: structural admission and structural isometry
-mandatory; the frozen certificate's exact run must carry zero
-guard/err amplitude at every step; certificates became
-INSTANCE-DIRECTED (per-boundary popkeys with retained spectators —
-the blocker for compositional certification) with joint-first,
-per-key-refined, validation-adjudicated spectator admission;
-`semantic_coverage` renamed `machine_coverage` with physics
-agreement moved to a written-first per-program table; deep W3 and
-the completed key-state algebra fix the audit's W8-preservation
-refutation; condition (e) groups by the full retained spectator;
-the checker is total. Outcomes: `B` HEALS to its physics
-({halt1: 1}); `W` is measured inexpressible in the certificate
-language (every subset/exclusion trial re-seeks an erased instance
-— loud) and is registered as the standing COHERENCE-PLACEMENT
-limitation, machine-covered, docketed for the compilation theorem
-(staged uncomputation). Twenty-program battery green; the sixteen
-remain bit-identical; both prior auditors' reproducers rerun clean
-under v1.10.
+and git). Fresh audit #3 FAILed v1.10 with a finding that inverted
+the previous round's headline: the fire arm computed the
+instance-directed `P`/`Q` spectator split and then discarded it
+(`KD` from all of RS, `rs′ = ()`), so every retained spectator was
+erased bit-free — a real isometry countermodel (two sources
+differing only in a retained frame's bit collapsed to identical
+columns) AND the explanation of `W`: v1.10's registered
+"placement limitation" (staged uncomputation inexpressible) had
+measured the defect, not the certificate language. Under the
+register's own literal transition, `W` is fully certified —
+four boundaries, the inner popping exactly the inner coin's two
+branch-dependent instances while the outer coin's frames ride
+through as retained spectators — computing its hand ideal
+`{halt1: 1}`; the audit measured the healing before the fix
+landed, and the consult-round prediction it vindicates is
+corrected in the provenance record. v1.11 wires the split through
+literally, re-discovers and freezes all twenty canonical
+certificates as exact dicts (parsimonious: most boundaries pop
+nothing; only the q family, `B`, `W` pop keys), retracts the
+staged-uncomputation limitation and the legacy-identity claim
+(an artifact of the defect), adds W9 (live-ticket key uniqueness
+— the duplicate-ticket alias row audit #3 found in the key-state
+algebra, now statically excluded), closes the `validate(None)`
+contract gap, adds two permanent regressions (retained-Q
+disjointness; duplicate-ticket W9), and fixes six register
+honesty defects (B/W witness attribution, fragment counts 20/17,
+transposed conservation counts, stale `semantic_coverage` doc,
+audit-count consistency, the identity-sweep claim). Physics table
+passes on all twenty with `W = {halt1: 1}`; the sixteen originals'
+marginals never moved; all three prior audit kits rerun clean.
 
 The open docket, in order:
 
-1. **fresh-context independent audit #3 of the v1.10 h-fragment
+1. **fresh-context independent audit #4 of the v1.11 h-fragment
    claim** (next action; verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
-   logged-position uniqueness (the standing conditional), and the
-   staged-uncomputation certificate extension for the `W`
-   placement class (feeds the compilation theorem);
+   logged-position uniqueness (the standing conditional — W9
+   is its newly checkable ticket-dimension face);
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem
