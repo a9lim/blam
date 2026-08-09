@@ -420,7 +420,7 @@ consistency) and a fresh-context feasibility review (thread
 promising-with-hard-open-problems, converging with the sketch on every
 load-bearing point; its checklist and exclusions are folded in.
 
-**The kernel is at v1.12** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.13** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and git). The last two audit rounds resolved the `W` saga: audit
 #3 found the v1.10 fire arm computed the instance-directed `P`/`Q`
@@ -445,19 +445,34 @@ deterministic MAXIMAL-certified fixpoint, not minimal (measured:
 single-boundary ∅-pop certificates reach B and W's physics);
 minimal canonical certificates are docketed. Nothing reachable
 moved: all frozen certificates, marginals, and basis counts are
-bit-identical under the fix; nine permanent regressions; the
-register is decrufted current-only again. Physics table passes on
-all twenty with `W = {halt1: 1}`; all four prior audit kits rerun
-clean.
+bit-identical under the fix; the register is decrufted
+current-only. Audit #5 then confirmed the healing and all physics
+again while completing the picture twice over: the subtraction
+also had to spare live tickets riding in the surviving tape
+tail/log (a popped frame's replay-re-emitted ticket stays the
+answerable representation — v1.13's completed rule names only
+keys with no surviving bit-carrying representation anywhere in
+the target), and "maximal-certified" was measurably false —
+`discover_total(palpha)` discarded a whole map for one bad
+boundary while clean sub-certificates existed. v1.13's phase-3
+GREEDY RESCUE re-admits a failing map's boundaries under the
+validated-greedy discipline instead of discarding: `palpha` now
+certifies (three boundaries, its one poppable key excluded to
+spectator, guard-silent, basis 474→275, marginal unchanged), the
+claim language is "deterministic validation-adjudicated greedy —
+neither maximal nor minimal", and the version now lives in the
+register alone. Ten permanent regressions; nineteen frozen dicts
++ dupcall's canonical None; physics table passes on all twenty
+with `W = {halt1: 1}`; all five prior audit kits rerun clean.
 
 The open docket, in order:
 
-1. **fresh-context independent audit #5 of the v1.12 h-fragment
+1. **fresh-context independent audit #6 of the v1.13 h-fragment
    claim** (next action; verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
-   is its newly checkable ticket-dimension face), and minimal
-   canonical certificates;
+   is its newly checkable ticket-dimension face), and
+   minimal/maximal canonical certificates;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem
