@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.24.** The kernel is a scratch superposition evolver
+**Status: v1.25.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,7 +17,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #17**, whose
+The standing PASS re-claim is **gated on fresh audit #18**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -25,30 +25,31 @@ since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
 so this register now names arms exactly and only per version:
-v1.24 changes ONE arm relative to v1.23: the suppressed-decode
-fire appends an inert arm-typed history head `('KA', g, i)`
-instead of appending NOTHING — audit #16 showed the zero-append
-let a suppressed decode (incoming KS already `[K(l)]`)
-impersonate a retain-whole fire (incoming `[]`, prepending
-`K(l)`) on identical targets at norm 2, through both the
-same-key-frame and the agreeing-burial suppression variants.
-Every fire arm now appends EXACTLY ONE arm-typed storage head
-(§7.4). The head carries its key because two different tickets
-both suppressing over a shared two-frame RS also collided (the
-author sibling, measured at norm 2 pre-fix; a contentless marker
-would have left it alive). KA is HISTORY, not a dead record: the
-suppressed key's answerable representation survives in the
-frame/burial, so `ks_dead_keys` and `ks_bitfree_keys` exclude it
-by design — refire, key-alias, W8, and W4-storage stay blind,
-and a replay-re-emitted ticket still recalls and re-fires.
-Suite, certify, typecheck, and polarity outputs measured
-BYTE-IDENTICAL across the change — this round not by an
-interference argument but because the suppressed arm is
-REACHABLY DEAD CODE on the whole canonical suite (arm census,
-measured first: 58 certified / 69 retain-whole / 10
-decode-recorded / 0 suppressed reachable fires). For anything
-older, read §11's rows; do not trust a summary, including this
-file's former ones.
+v1.25 adds ONE machine guard relative to v1.24, and no arm's
+storage behavior moves: the fire boundary types foreign-gate
+cargo tickets (`alien-gate` — audit #17 showed `α_t` at an `h`
+boundary with a matching bit was WF-clean and silently DECODED
+into a `('K','t',i)` record under an H row: the register's
+decode row always said `l = α_g(i, b)` and the implementation
+had dropped the subscript). Around the machine, two
+verification-layer corrections from the same audit: `wf()` is
+now TOTAL by the W0 GATE (exact-pure malformed tuples were
+W0-flagged and then crashed the W1-W9 deep scans; W1-W9 are
+adjudicated only over the language's carrier), and the KA mark
+joined the gauge sweep (ten parameters, 1024 assignments — a
+reachably-dead mark cannot be constrained by reachable edges,
+so one disclosed raw suppressed-decode edge is the constraining
+instrument: 8/1024 reachable-only with KA free, 4/1024 with the
+edge, every survivor pinning w(KA) = 0). Audit #17 CONFIRMED
+the v1.24 KA repair itself outright — no remaining
+storage-history collision, state-space inner products
+re-derived, the guard-exclusion lifecycle verified coherent,
+and the arm census extended to the 218,546-state corpus
+(367/465/222/0). Suite, certify, and typecheck measured
+BYTE-IDENTICAL across v1.25; polarity's output changed in
+exactly the declared gauge-sweep lines. For anything older,
+read §11's rows; do not trust a summary, including this file's
+former ones.
 
 This file is the current contract and register only. The
 round-by-round history — countermodels, corrections, verdicts —
@@ -204,6 +205,17 @@ head):**
 ```text
 arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
    μ's gate kind ≠ γ's       → species-mu
+   cargo is a ticket of a FOREIGN gate (α with kind ≠ γ's, either
+   bit polarity)             → alien-gate  [v1.25, audit #17: the
+                                decode row's subscript is
+                                load-bearing — α_t at an h
+                                boundary with a matching bit was
+                                silently decoded into ('K','t',i)
+                                under an H row; reachably
+                                unmintable (α_t's only mint site
+                                is behind the t-fire fence) but
+                                detectable, so typed; retain-whole
+                                never sees a foreign-gate ticket]
    any (g, i) with two bits among cargo-nested α and RS frames
                              → key-alias  [deep bit coherence at
                                 the boundary: a fire must never
@@ -300,10 +312,10 @@ errors       VB with a non-• non-classifier tape top; ↓-stuck on
              species-transport — all typed, complete residue.
 ```
 
-The guard family — `no-instance`, `alien-ticket`, `frame-conflict`,
-`recall-err`, `replay-err`, `pop-err`, `species-mu`, `species-ans`,
-`species-binder`, `species-leaf`, `species-transport`,
-`t-unimplemented`, `refire`,
+The guard family — `no-instance`, `alien-ticket`, `alien-gate`,
+`frame-conflict`, `recall-err`, `replay-err`, `pop-err`,
+`species-mu`, `species-ans`, `species-binder`, `species-leaf`,
+`species-transport`, `t-unimplemented`, `refire`,
 `key-alias` — is the machine's whole answer to aliasing
 and misuse: **every detectable manifestation is a typed error,
 never a silent reinterpretation.**
@@ -525,7 +537,15 @@ the machine's unitarity claims quantify over the subtype:
   only produce `halt0`/`halt1` — as exact ints) and closes audit
   #14's stall/crash class: off-language coordinates and
   semantically invalid lps are outside WF, so no WF state stalls
-  silently or crashes in `subterm`/`binder_path`. Zero reachable
+  silently or crashes in `subterm`/`binder_path`. W0 is also a
+  GATE (v1.25, audit #17): when it flags, `wf()` returns
+  `['W0']` immediately — exact-pure malformed tuples (a bare
+  `('AL',)`, an empty `()` frame) were correctly W0-flagged and
+  then crashed the W1-W9 deep scans, so W1-W9 are adjudicated
+  only over the language's carrier, the same argument that
+  justifies the purity early-return; after a clean W0 every
+  token has exact shape and the scans index safely, making
+  `wf()` TOTAL. Zero reachable
   fires on the twenty programs and the 218,546-state generated
   corpus.
 - **W1** (log discipline): `|log| = level(pos)`.
@@ -602,7 +622,8 @@ the machine's unitarity claims quantify over the subtype:
 w(•) = w(γ) = w(μ) = w(α) = w(ρ) = w(R) = 0;  w(A) = 1
 w(l) for l = (occ, slice) = (depth(occ) − depth(binder)) + Σ w(slice)
 w(K₂(l)) = w(l)  — a retained-whole spectator record carries its
-                   lp's weight;  w(K₃) = w(KD) = 0
+                   lp's weight;  w(K₃) = w(KD) = w(KA) = 0
+                   (KA joined the alphabet at v1.25, audit #17)
 ```
 
 **Theorem (uniform flip).** Every Run→Run rule flips φ —
@@ -619,10 +640,20 @@ phrasing got wrong (audit #9): `Ccoll`'s two reachable
 conservative fires have `w(l) = 1` and delta 1 — an ordinary
 flip, not a `1 − w(l)` defect — and the Σ w(KS) term decides six
 reachable edges (two in `Ccoll`, four in `dupcall`). The weight
-assignment is **gauge-pinned**: of all 512 assignments over the
-mark alphabet INCLUDING the KD weight, exactly the 4-element
+assignment is **gauge-pinned**: of all 1024 assignments over the
+mark alphabet INCLUDING the KD and KA weights (ten swept
+parameters as of v1.25 — audit #17 caught the nine-parameter
+sweep omitting the new mark entirely), exactly the 4-element
 orbit generated by two symmetries survives — every survivor
-fixes KD at 0 — and the orbit fixes every deployed consequence.
+fixes KD and KA at 0 — and the orbit fixes every deployed
+consequence. The KA pinning requires a DISCLOSED instrument: KA
+never occurs on a reachable edge (the suppressed arm is
+reachably dead code), so the reachable sweep alone leaves it
+free (8/1024, measured and printed); one raw suppressed-decode
+fire (wf.py regression twenty's frame-skip fixture — WF,
+uncertified, reachably unmintable) joins the edge set and pins
+it (4/1024). Both readings print, and the verdict gates on
+both.
 
 ### 7.2 The branch-offset law
 
@@ -811,9 +842,9 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#17; the verdict will be registered here.** (Audit #16 caught
-this very sentence still naming audit #15 — the §1 gate and this
-one are now updated together.)
+#18; the verdict will be registered here.** (Audit #16 caught
+this very sentence still naming a stale round — the §1 gate and
+this one are now updated together, every round.)
 
 ## 10. Verification state
 
@@ -854,7 +885,7 @@ canonical dicts compared bit-for-bit; `dupcall` canonically None
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
 `refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **twenty-one permanent regressions** (the v1.6 pair;
+zero violations; **twenty-three permanent regressions** (the v1.6 pair;
 extra-frame collision, W7-excluded with disjoint targets;
 doctored bundle divergence; K+frame alias; retained-Q
 disjointness — spectator-bit columns share zero targets;
@@ -904,7 +935,13 @@ suppressed target, the decode-recorded arm an intact control;
 W0 totality II — the `Var(0)` state and the list-tape state are
 W0-flagged at source, a hostile-hash tuple-subclass is
 W0-flagged WITHOUT crashing the checker, and the
-tuple-everything control stays WF). The
+tuple-everything control stays WF; checker totality III — the
+bare-`('AL',)`, bare-`('L',)`, and empty-frame states return
+exactly `['W0']` with no exception, and an in-language
+multi-violation control still lists its W1-W9 flags (the gate
+must not over-collapse); alien-gate — foreign-gate tickets at
+the fire boundary are WF and typed `alien-gate` at both bit
+polarities, the same-gate decode control fires unchanged). The
 gating structure, stated exactly
 (audits #6 and #7 each caught a computed-but-non-gating
 verdict; audit #8 forced all eleven then-regressions
@@ -915,13 +952,15 @@ audit #13 confirmed the fifteen-gate structure 15/15; audit
 #14 confirmed sixteen-for-sixteen with independent forcings
 including ok_gr; audit #15 confirmed seventeen-for-seventeen;
 audit #16 confirmed nineteen-for-nineteen plus fourteen
-instrument components, every mutation exit 1): the v1.6 pair
-gates `collisions_under_wf()`; the other nineteen gate
+instrument components, every mutation exit 1; audit #17
+confirmed twenty-one-for-twenty-one plus the fourteen
+components likewise): the v1.6 pair
+gates `collisions_under_wf()`; the other twenty-one gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
 pair false → exit 1; forcing cert_sweep flags false → exit 1,
-including the v1.20 through v1.24 flags; the
+including the v1.20 through v1.25 flags; the
 emulated-old-arm probe flips `cert_sweep` to FAIL). Three
 v1.12/v1.13-era regression mechanizations were updated in v1.23
 to the always-emit discipline (their targets now carry the
@@ -940,9 +979,12 @@ EMISSION, not its computation).
 Conservation:
 exhaustive ≤ size 11, 14,452 surfacings at ≤10 / 55,727 at ≤11,
 zero failures. Polarity/terminal chains/gauge: zero violations,
-orbit exact — 4/512 with the KD weight enumerated (audit #9
-caught the 8-parameter sweep asserting KD's zero rather than
-enumerating it), every survivor fixing KD at 0. All prior audits' independent reproducers
+orbit exact — 4/1024 with the KD and KA weights enumerated
+(audit #9 caught the 8-parameter sweep asserting KD's zero
+rather than enumerating it; audit #17 caught the 9-parameter
+sweep omitting KA entirely), every survivor fixing KD and KA at
+0, the KA pinning via the disclosed raw suppressed edge with
+the reachable-only 8/1024 reading printed beside it. All prior audits' independent reproducers
 rerun clean or typed (audit #1's fuzz 250/250; audit #2's kit
 clean on every lifecycle, its term-evaluator mismatches
 adjudicated as that evaluator's non-normalization; audit #3's
@@ -1084,7 +1126,34 @@ relabels; every semantic column — surviving/bitfree/overlap,
 marginals, W results — unchanged); the v118/v119 kits'
 changed-source line counts grow with the diff (their
 capture-identity verdicts unchanged); the v121 kit's crash
-byte-identical; all other kits byte-identical. Basis counts vs v1.2 reference: `negative` 103→83,
+byte-identical; all other kits byte-identical. Audit #17
+confirmed the KA repair OUTRIGHT (no remaining storage-history
+collision: the four KS-writing arms enumerated from source,
+non-fire Run→Run paths verified KS-preserving, the three healed
+pairs re-derived at state-space inner product 0 with clean
+evolutions, KA's guard exclusions verified coherent through the
+replay/recall/refire/key-alias lifecycle), extended the arm
+census to the corpus (367 certified / 465 retain-whole / 222
+decode-recorded / 0 suppressed over 218,546 states), confirmed
+C1 at the AST level (exactly one executable kernel change), and
+independently validated the registered wrong prediction, the
+KA display adjudication, and the positional-inner-product
+caveat — its three countermodel classes (checker
+non-totality on exact-pure malformed states, the cross-gate
+silent decode, the KA-less gauge sweep) are healed and gated as
+regressions twenty-two and twenty-three plus the ten-mark
+sweep. The v1.25 kit deltas, adjudicated: kits displaying
+multi-flag W0 lists on out-of-language fixtures collapse to
+`['W0']` under the W0 gate (v113's emulation columns, v119's
+W4_STORAGE fixture rows — those fixtures were already the
+out-of-language helper-lp class, and the in-language W4
+demonstrations live in wf.py's own regression fourteen, still
+flagging; v122's bt2-target row); the v117/v118 kits' orbit
+displays recompute with the current ten-mark profiler and print
+the 8-entry KA-free reachable orbit — independent confirmation
+of the unconstrained-mark fact — with `orbits_equal` still
+True; the v118/v119 line counts as always; the v121 crash and
+the v123 kit byte-identical. Basis counts vs v1.2 reference: `negative` 103→83,
 `selector` 173→106, `pstar` 458→242 — v1.7-era, real, owned;
 marginals and supports never moved. All measurements
 seconds-scale on the M5 Max.
@@ -1162,7 +1231,8 @@ no bare-term ideal oracle).
 | v1.21 | W0 joins the subtype (state/token grammar: bits {0,1}, gates {h,t}, exact arities, deep through slice/burial cargo, VB phase in domain — position-appropriateness stays the other invariants' job); anshead hardens to arity + domain (species-ans, never ValueError, never halt2); the untyped-stall class closes with three typed guards (species-binder, species-leaf, species-transport; foreign-lp and empty-tape finals stay classical finals by design); regression sixteen gated; kernel-arm provenance restated exactly (two waves since v1.11: v1.12/v1.13 KD subtraction, v1.20/v1.21 leaf guards — each measured no-op/bit-identical on covered outputs); counts go count-neutral in the standing prose; the v114 kit's placeholder-key probe adjudicated (out-of-language tokens, W0 working as specified); zero W0 hits on the 218,546-state corpus; every prediction held | **fresh audit #14: FAIL** (C5 CONFIRMED 16/16 with independent forcings; §8, §12's trace anchors, gram/run_dyn, the classical-final exemptions, and the v114 adjudication all CONFIRMED. The findings: W0's bit check used Python equality — 1.0/True/0.0/False are ==-equal to bits, so ANS('h',1.0) was WF and rootval string-formatted it into the out-of-alphabet terminal KINDS halt1.0/haltTrue; W0 never checked K(l) cargo shape, ticket/frame/storage instance fields recursively, or the state coordinates at all — d='X' and alien paths were WF and silently stalled, off-tree paths and non-Var lp occurrences were WF and crashed in subterm/binder_path; the "position-appropriateness is the other invariants' job" sentence was refuted (no other invariant does d/path/lp validity); C2 missed the diag capture's own label delta; and the corrected two-wave provenance summary was STILL incomplete — v1.12 also changed the ordinary decode arm, and "leaf-guard wave" mislabeled the binder/transport arms) |
 | v1.22 | W0 becomes the FULL state language: exact-int bits (bool refused — the terminal-kind minting), recursive lp productions with occurrences resolving to Vars of the term, arrival-lp K(l) cargo, coordinates d/path in language, VB phase exact-int; anshead's bit check exact-int (the one arm change, bit-identical on covered outputs); regression seventeen (state-language: ten countermodels + exact-int and kit-exact foreign-lp controls) gated; provenance summaries abolished — the register names arms per version only and defers history to these rows; the wf.py v1.12 fixture's App-naming carrier lp corrected (countermodel essence untouched); six kits' helper-lp wf-columns and the v121 kit's crash-by-construction adjudicated; stale W1-W9 phrases updated; zero W0 hits on the corpus; every prediction held in substance with the kit-delta count wrong and registered | **fresh audit #15: FAIL** (C1/C2/C4/C5 CONFIRMED — the v1.21→v1.22 diff exactly the exact-int condition, the delta set exact with the crash scoped, all seventeen forcings, the exact-bit repair itself sound against Fraction/int-subclass/-0.0 probes. The findings: THE FIRST RAW-SUBTYPE UNITARITY BREAK SINCE AUDIT #3 — §7.4's incoming-KS disjointness is false because the certified fire omitted empty KD bundles: a fresh decode and a carried-in record produced IDENTICAL targets, inner product 1, norm 2; W0 admitted BULLET in the log (bt1 transported it into a b1 collision, norm 2 again), never checked the lambda-IAM slice equation (a bad slice stepped to a W1-invalid target), and accepted open terms whose current position crashes binder_path; the t boundary raised NotImplementedError from WF states; "full state language" and the placement sentence refuted with them) |
 | v1.23 | The certified fire emits its bundle UNCONDITIONALLY — ('KD', ()) when empty — restoring storage-history prefix-freeness (§7.4 restated to the strip-the-head injectivity); the t boundary becomes the typed scope fence t-unimplemented; W0 gains the log SORT (lp-like entries only), the lambda-IAM slice equation with a bound-finding binder walk, and the closed-term conjunct; regressions eighteen (log-sort/slice-equation) and nineteen (KS prefix-freeness + t fence) gated; three v1.12/v1.13-era regression mechanizations updated to the always-emit form and two fixture lps corrected to the slice equation (theorems and countermodel essences unchanged, all disclosed); THE HINGE PREDICTION, written first, HELD: suite, certify, typecheck, and polarity byte-identical — no reachable interference crosses fire histories, so the machine change is invisible on every covered output; ten kits' ks-display deltas and the matrix-coverage shrink adjudicated; zero W0 hits on the corpus | **fresh audit #16: FAIL** (C1 CONFIRMED independently — the two-arm diff exact, four instruments byte-identical against the re-executed v1.22 sources, the hinge reason verified by a 5,760-state fire-history search plus 300 generated bodies with zero mixed-count merges, and the stronger v1.23 form derived: append-only KS makes different-fire-count merges impossible; C2 CONFIRMED narrowly for certified fires — nested bundles cannot defeat tuple-head injectivity; C4/C5 CONFIRMED — nineteen forcings + fourteen instrument components all exit 1, zero reachable W0 fires, the corpus rerun independently; the binder equation confirmed on 100,763 reachable lp occurrences with zero binder_path mismatches. The findings: THE AUDIT-#15 SIBLING — the suppressed-decode arm appends ZERO storage heads, so a suppressed decode with incoming [K(l)] and a retain-whole fire with incoming [] produce IDENTICAL targets, norm 2, through BOTH the same-key-frame and agreeing-burial variants — legal lifecycle configurations, not the alias gap; W0 accepted Var(0) (`i <= depth` under the 1-INDEXED convention — binder_path IndexError one step inside WF) and never sorted the CONTAINERS (a list tape passed WF, the fire TypeError'd); three stale register/docstring lines, including the §9 gate sentence still naming audit #15) |
-| v1.24 | The suppressed-decode fire appends the inert arm-typed history head ('KA', g, i) — EVERY fire arm now appends exactly one head, §7.4 restated to the all-arms one-head discipline; the head carries its key because the author two-key double-suppression sibling (both tickets suppressing over a shared two-frame RS) also collided at norm 2 pre-fix, and a contentless marker would have left it alive; KA excluded from ks_dead_keys/ks_bitfree_keys by design (refire/key-alias/W8/W4-storage blind; replays off the surviving frame stay legal); W0 gains exact-type PURITY (registers exact tuples of exact tuples/str/int, checked without hashing before any scan — hostile __hash__/__eq__ can neither crash nor poison the checker; list containers refused) and the 1-indexed closedness (Var(0) refused); regressions twenty (fire prefix-freeness, three pairs + recorded-arm control) and twenty-one (W0 totality II incl. the hostile-hash probe) gated; the three stale lines fixed; THE HINGE, cheaper this round: suite/certify/typecheck/polarity byte-identical because the suppressed arm is REACHABLY DEAD CODE on the whole canonical suite (arm census measured first: 58 certified / 69 retain-whole / 10 decode-recorded / 0 suppressed); v113/v114 kit ks-displays gain the KA head (relabels, semantic columns unchanged — a kit-delta class my predictions MISSED and registered as the round's wrong call); zero W0/W4 hits on the corpus | **fresh audit #17: pending** |
+| v1.24 | The suppressed-decode fire appends the inert arm-typed history head ('KA', g, i) — EVERY fire arm now appends exactly one head, §7.4 restated to the all-arms one-head discipline; the head carries its key because the author two-key double-suppression sibling (both tickets suppressing over a shared two-frame RS) also collided at norm 2 pre-fix, and a contentless marker would have left it alive; KA excluded from ks_dead_keys/ks_bitfree_keys by design (refire/key-alias/W8/W4-storage blind; replays off the surviving frame stay legal); W0 gains exact-type PURITY (registers exact tuples of exact tuples/str/int, checked without hashing before any scan — hostile __hash__/__eq__ can neither crash nor poison the checker; list containers refused) and the 1-indexed closedness (Var(0) refused); regressions twenty (fire prefix-freeness, three pairs + recorded-arm control) and twenty-one (W0 totality II incl. the hostile-hash probe) gated; the three stale lines fixed; THE HINGE, cheaper this round: suite/certify/typecheck/polarity byte-identical because the suppressed arm is REACHABLY DEAD CODE on the whole canonical suite (arm census measured first: 58 certified / 69 retain-whole / 10 decode-recorded / 0 suppressed); v113/v114 kit ks-displays gain the KA head (relabels, semantic columns unchanged — a kit-delta class my predictions MISSED and registered as the round's wrong call); zero W0/W4 hits on the corpus | **fresh audit #17: FAIL** (the KA repair itself CONFIRMED-SOUND — no remaining storage-history collision; the four KS-writing arms enumerated from source, non-fire paths KS-preserving, the three healed pairs re-derived at state-space inner product 0, the guard-exclusion lifecycle verified coherent — and the reachability hinge confirmed with an independent census matching 58/69/10/0 and EXTENDED to the corpus, 367/465/222/0; C1 confirmed at the AST level; C4/C5 confirmed, 21 forcings + 14 components all exit 1. The findings: wf() NOT TOTAL over exact-pure malformed states — bare ('AL',)/('L',) tape tokens and an empty () frame pass purity, get W0-flagged, then IndexError the W1-W9 deep scans; a WF-clean FOREIGN-GATE ticket silently decoded — α_t at an h boundary with matching bit fires and records ('K','t',i) under an H row, the register's decode subscript dropped by the implementation; the gauge sweep OMITS KA — nine parameters, KA implicitly weight 0 and unconstrainable by reachable edges (the auditor's own repaired sweep: 8/1024 reachable-only KA-free, 4/1024 with a raw suppressed edge, KA pinned 0); plus the stale "inert dead storage" docstring phrase) |
+| v1.25 | ONE machine guard added, no arm's storage behavior moves: alien-gate types foreign-gate cargo tickets at the fire boundary at both bit polarities (the decode row's subscript restored to the implementation; reachably unmintable — α_t's only mint site is behind the t-fire fence — so suite/certify/typecheck byte-identical, measured); wf() made TOTAL by the W0 GATE (out-of-language states early-return ['W0']; W1-W9 adjudicated only over the language's carrier; the in-language multi-flag control proves no over-collapse); the gauge sweep goes TEN-mark — 8/1024 reachable-only with KA free (printed), 4/1024 with the disclosed raw suppressed-decode edge, every survivor pinning w(KA)=0, verdict gating on both readings; §7.1 restated; regressions twenty-two (checker totality III) and twenty-three (alien-gate) gated, twenty-three-for-twenty-three under forcing; the "inert dead storage" phrase corrected; my pre-fix hand-derivation of the fire-edge parity DISAGREED with the auditor's sweep numbers and the measurement adjudicated for the auditor (registered — the mechanized sweep is the theorem, not my head-model); kit deltas: the W0-gate display collapses on out-of-language fixtures and the ten-mark orbit displays (independent confirmation of the unconstrained-mark fact), v121 crash and v123 kit byte-identical | **fresh audit #18: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 

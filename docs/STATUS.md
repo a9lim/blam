@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.24** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.25** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-sixteen fresh-context rounds. Kernel-arm provenance summaries
+seventeen fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -518,10 +518,25 @@ checker) plus 1-indexed closedness. The hinge was cheaper this
 round: the four instruments byte-identical because the
 suppressed arm is REACHABLY DEAD CODE on the whole canonical
 suite (arm census measured first: 58 certified / 69
-retain-whole / 10 decode-recorded / 0 suppressed). What the
+retain-whole / 10 decode-recorded / 0 suppressed). Audit #17
+then CONFIRMED the KA repair outright — no remaining
+storage-history collision, the census independently matched
+and extended to the corpus (367/465/222/0), C1 at the AST
+level — and found three verification-layer defects: wf() was
+not total (exact-pure malformed tuples W0-flagged, then
+IndexError in the W1-W9 scans), a WF-clean foreign-gate ticket
+was silently decoded (the register's decode-row subscript,
+dropped by the implementation), and the gauge sweep omitted
+the KA mark (unconstrainable by reachable edges). v1.25
+answered: the alien-gate guard (fifteenth in the family), the
+W0 gate making wf() total (W1-W9 adjudicated only over the
+language's carrier), and the ten-mark gauge sweep — 8/1024
+reachable-only with KA free, 4/1024 with one disclosed raw
+suppressed-decode edge, every survivor pinning w(KA)=0 — with
+suite/certify/typecheck byte-identical again. What the
 rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all twenty-one permanent regressions now gate mechanically (the
+day: all twenty-three permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -535,16 +550,17 @@ certificates + dupcall's canonical None; canonical =
 deterministic validation-adjudicated greedy, neither maximal nor
 minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
-under always-emit and now under the KA head; matrix-coverage
-shrink under the tightened language; the healed-countermodel
-crash); every v1.24 prediction held including the hinge, with
-one registered wrong call — the kit-delta clause missed that
-two kits build raw suppressed-decode fires (provenance in the
+under always-emit and the KA head; the W0-gate display
+collapses; matrix-coverage shrink under the tightened language;
+the healed-countermodel crash); every v1.25 prediction held,
+with the round's registered wrong call being my own pre-fix
+hand-derivation of the fire-edge parity — the mechanized sweep
+adjudicated for the auditor's numbers (provenance in the
 scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #17 of the v1.24 h-fragment
+1. **fresh-context independent audit #18 of the v1.25 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
