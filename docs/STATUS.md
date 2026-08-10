@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.23** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.24** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-fifteen fresh-context rounds. Kernel-arm provenance summaries
+sixteen fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -495,10 +495,33 @@ equation, closed terms) — and the round's written-first HINGE
 prediction held: suite, certify, typecheck, and polarity
 byte-identical, because no reachable interference crosses fire
 histories; the machine change is invisible on every covered
-output while closing the raw-subtype collision. What the
+output while closing the raw-subtype collision. Audit #16
+confirmed that hinge INDEPENDENTLY (re-executed the v1.22
+sources; searched 5,760 states plus 300 generated bodies for
+mixed fire-count merges, found zero, and derived the stronger
+form — append-only KS makes them impossible) and then forged
+the SAME collision through the arms v1.23 didn't cover: the
+suppressed-decode fire appends zero storage heads, so a
+suppressed decode with incoming [K(l)] impersonates a
+retain-whole fire with incoming [] — identical targets, norm 2,
+both suppression variants; it also caught W0 accepting Var(0)
+(the 1-indexed de Bruijn convention AGENTS.md warns about,
+violated in our own checker) and list-typed containers. v1.24
+answered with the one-head-per-fire discipline — every fire arm
+appends exactly one arm-typed storage head; the suppressed
+arm's ('KA', g, i) carries its key because a two-key
+double-suppression sibling (author-found during fix design,
+measured norm 2 pre-fix) would survive a contentless marker —
+and W0's exact-type purity (registers checked without hashing,
+so hostile __hash__/__eq__ can neither crash nor poison the
+checker) plus 1-indexed closedness. The hinge was cheaper this
+round: the four instruments byte-identical because the
+suppressed arm is REACHABLY DEAD CODE on the whole canonical
+suite (arm census measured first: 58 certified / 69
+retain-whole / 10 decode-recorded / 0 suppressed). What the
 rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all nineteen permanent regressions now gate mechanically (the
+day: all twenty-one permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -512,14 +535,16 @@ certificates + dupcall's canonical None; canonical =
 deterministic validation-adjudicated greedy, neither maximal nor
 minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
-under always-emit; matrix-coverage shrink under the tightened
-language; the healed-countermodel crash); every v1.23
-prediction held including the hinge (provenance in the
+under always-emit and now under the KA head; matrix-coverage
+shrink under the tightened language; the healed-countermodel
+crash); every v1.24 prediction held including the hinge, with
+one registered wrong call — the kit-delta clause missed that
+two kits build raw suppressed-decode fires (provenance in the
 scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #16 of the v1.23 h-fragment
+1. **fresh-context independent audit #17 of the v1.24 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9

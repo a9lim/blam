@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.23.** The kernel is a scratch superposition evolver
+**Status: v1.24.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,7 +17,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #16**, whose
+The standing PASS re-claim is **gated on fresh audit #17**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -25,19 +25,30 @@ since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
 so this register now names arms exactly and only per version:
-v1.23 changes TWO arms relative to v1.22: the certified fire
-emits its KD bundle UNCONDITIONALLY (an empty bundle is
-`('KD', ())` — audit #15 showed the omission made storage
-histories non-prefix-free, colliding a fresh decode with a
-carried-in record on identical targets at norm 2), and the `t`
-boundary is a typed scope fence (`t-unimplemented`) instead of a
-raise. Suite, certify, typecheck, and polarity outputs measured
-BYTE-IDENTICAL across the change — every basis count, marginal,
-support, physics row, and frozen certificate — because the
-empty bundle feeds no guard and no reachable interference
-crosses fire histories (the round's written-first hinge
-prediction, which held). For anything older, read §11's rows; do
-not trust a summary, including this file's former ones.
+v1.24 changes ONE arm relative to v1.23: the suppressed-decode
+fire appends an inert arm-typed history head `('KA', g, i)`
+instead of appending NOTHING — audit #16 showed the zero-append
+let a suppressed decode (incoming KS already `[K(l)]`)
+impersonate a retain-whole fire (incoming `[]`, prepending
+`K(l)`) on identical targets at norm 2, through both the
+same-key-frame and the agreeing-burial suppression variants.
+Every fire arm now appends EXACTLY ONE arm-typed storage head
+(§7.4). The head carries its key because two different tickets
+both suppressing over a shared two-frame RS also collided (the
+author sibling, measured at norm 2 pre-fix; a contentless marker
+would have left it alive). KA is HISTORY, not a dead record: the
+suppressed key's answerable representation survives in the
+frame/burial, so `ks_dead_keys` and `ks_bitfree_keys` exclude it
+by design — refire, key-alias, W8, and W4-storage stay blind,
+and a replay-re-emitted ticket still recalls and re-fires.
+Suite, certify, typecheck, and polarity outputs measured
+BYTE-IDENTICAL across the change — this round not by an
+interference argument but because the suppressed arm is
+REACHABLY DEAD CODE on the whole canonical suite (arm census,
+measured first: 58 certified / 69 retain-whole / 10
+decode-recorded / 0 suppressed reachable fires). For anything
+older, read §11's rows; do not trust a summary, including this
+file's former ones.
 
 This file is the current contract and register only. The
 round-by-round history — countermodels, corrections, verdicts —
@@ -73,13 +84,22 @@ VB      ::= ∅ | (g, b′, k)   k ∈ {0,1,2} — virtual-boolean phase
 RS      ::= canonically sorted set of replay RECORDS R_g(i, b′)
           — one per (gate, instance); transport-inert; recall's
           push is idempotent, replay reads it wherever it sits
-KS      ::= stack of decode records — inert dead storage:
+KS      ::= stack of storage heads — inert history; EVERY fire
+            appends EXACTLY ONE (v1.24: prefix-freeness across
+            all arms — incoming KS is the tail after stripping
+            one head):
             ('K', g, i)      one decoded ticket (fire's α-decode)
             ('KD', {keys})   certified erasure's tagged bundle —
                              emitted on EVERY certified fire,
-                             empty if no key died bare (v1.23:
-                             prefix-freeness of storage histories)
+                             empty if no key died bare (v1.23)
             ('K', l)         a retained-whole which-path spectator
+            ('KA', g, i)     suppressed decode's history head —
+                             NOT a dead record: the key's
+                             answerable representation survives
+                             in the frame/burial, so it is
+                             excluded from ks_dead_keys and
+                             ks_bitfree_keys (refire, key-alias,
+                             W8, W4-storage stay blind)
 RunDone ::= RunDone(nf, residue)            nf ∈ {0̂, 1̂, I, err}
 Halt    ::= Halt(nf, residue, tick)
 residue = the COMPLETE pre-entry state (injectivity of terminals)
@@ -90,23 +110,37 @@ tape/log entries: • | logged position l | γ_g | μ_g | A_g(b′)
 
 `γ_g` (gate boundary marker), `μ_g` (probe frame), `A_g(b′)` (fired
 answer token), `α_g(i, b′)` (answer ticket, instance-tagged), `ρ`
-(root frame). **The state language (v1.21/v1.22, audits
-#13/#14 — enforced by W0)**: every bit is an EXACT int in
-`{0, 1}` (bool is a Python subclass of int and is refused —
-`rootval` string-formats the bit, so `1.0`/`True` would mint
-out-of-alphabet terminal kinds `halt1.0`/`haltTrue`); every gate
-kind in `{h, t}`; exact tuple arities; lp productions recursive
-wherever they appear (slices, ticket/frame instances, K/KD
-keys), with path components in `{f, a, b}` and every occurrence
-resolving to a `Var` of the term (the machine only mints lps at
-Var positions); retained-whole `K(l)` cargo is an ARRIVAL lp
-(`L` or `AL`); the state coordinates in language (`d ∈ {↓, ↑}`,
-`pos` resolving in the term); the VB phase exact-int with
-`k ∈ {0, 1, 2}`. Machine-PHASE placement of well-formed tokens
-is the other invariants' job — W0 is the language, not the
-protocol. Before v1.21, `A_h(2)` was WF and flowed to
-`halt2`; before v1.22, `A_h(True)` still was, and off-language
-coordinates stalled silently or crashed inside WF.
+(root frame). **The state language (v1.21–v1.24, audits
+#13–#16 — enforced by W0)**: exact-type PURITY first — the five
+registers are exact tuples of exact tuples/str/int, checked
+WITHOUT HASHING before any scan (a list-valued tape passed WF
+and TypeError'd in the fire; a nested tuple-subclass with a
+hostile `__hash__` would crash the checker's own caches, and a
+hostile `__eq__` could poison them — impure states early-return
+W0 and W1-W9 are not adjudicated over them); every bit an EXACT
+int in `{0, 1}` (bool is a Python subclass of int and is
+refused — `rootval` string-formats the bit, so `1.0`/`True`
+would mint out-of-alphabet terminal kinds `halt1.0`/`haltTrue`);
+every gate kind in `{h, t}`; exact tuple arities; lp productions
+recursive wherever they appear (slices, ticket/frame instances,
+K/KD/KA keys), with path components in `{f, a, b}` and every
+occurrence resolving to a BOUND `Var` of the CLOSED term —
+1-INDEXED, so `Var(0)` is no variable (audit #16: `i <= depth`
+alone accepted it and `binder_path` IndexError'd one step
+later — the exact convention the repo's own conventions doc
+warns about) — satisfying the λIAM logged-position equation
+`len(slice) = level(occ) − level(binder)`; the log a separate
+SORT (lp-like entries only); retained-whole `K(l)` cargo an
+ARRIVAL lp (`L` or `AL`); the state coordinates in language
+(`d ∈ {↓, ↑}`, `pos` resolving in the term); the VB phase
+exact-int with `k ∈ {0, 1, 2}`. Machine-PHASE placement of
+well-formed tokens is the other invariants' job — W0 is the
+language, not the protocol. Before v1.21, `A_h(2)` was WF and
+flowed to `halt2`; before v1.22, `A_h(True)` still was, and
+off-language coordinates stalled silently or crashed inside WF;
+before v1.23, BULLET rode the log into a b1 collision; before
+v1.24, `Var(0)` and list containers passed WF and crashed one
+step later.
 **Instance** `i` = the invoking occurrence's logged
 position — always at log head when the token stands at the gate
 leaf (arg-entry is structurally forced); a logged position names a
@@ -205,8 +239,17 @@ arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
        same-key frame exists (the ticket was replay-re-emitted;
        the frame remains the answerable representation) or a
        same-key burial exists (the buried ticket remains the
-       bit-carrying dead record); either way no record is
-       created: W8 exclusivity by construction
+       bit-carrying dead record); in the suppressed case no DEAD
+       RECORD is created (W8 exclusivity by construction) but
+       the arm still appends its one history head ('KA', g, i) —
+       v1.24, audit #16: appending nothing let a suppressed
+       decode impersonate a retain-whole fire on identical
+       targets (norm 2, both suppression variants), and the head
+       carries the KEY because two different tickets suppressing
+       over a shared two-frame RS collided too (the author
+       sibling). KA feeds no guard: ks_dead_keys and
+       ks_bitfree_keys exclude it, so a replay off the surviving
+       frame stays legal
    else (RETAIN-WHOLE): keep ('K', l) — same-slot arrivals with
        different which-path data stay orthogonal
    then fire: targets (pos, ↑, γ_g·L, A_g(b′)·T′), amplitudes the
@@ -457,14 +500,20 @@ For Run states; reachable ⊆ WF is machine-checked per program, and
 the machine's unitarity claims quantify over the subtype:
 
 - **W0** (state grammar — v1.21 tokens, v1.22 the token
-  language, v1.23 the SORTED language after audit #15's
-  countermodels): the state language of §2, mechanized —
-  exact-int bits (bool refused), gates in `{h,t}`, exact
-  arities, lp productions recursive with every occurrence
-  resolving to a Var of the CLOSED term AND satisfying the λIAM
-  logged-position equation `len(slice) = level(occ) −
-  level(binder)` via a bound-finding binder walk, arrival-lp
-  `K(l)` cargo, coordinates `d`/`pos` in language, VB phase
+  language, v1.23 the SORTED language, v1.24 exact-type purity
+  after audits #14–#16's countermodels): the state language of
+  §2, mechanized — exact-type PURITY first (the five registers
+  are exact tuples of exact tuples/str/int, verified WITHOUT
+  HASHING before any scan; impure states early-return W0, so a
+  hostile `__hash__`/`__eq__` can neither crash nor poison the
+  checker's caches, and list containers no longer pass); exact-
+  int bits (bool refused), gates in `{h,t}`, exact arities, lp
+  productions recursive with every occurrence resolving to a
+  BOUND Var of the CLOSED term — 1-INDEXED: `Var(0)` refused —
+  AND satisfying the λIAM logged-position equation `len(slice) =
+  level(occ) − level(binder)` via a bound-finding binder walk,
+  arrival-lp `K(l)` cargo, the `('KA', g, i)` history-head
+  production, coordinates `d`/`pos` in language, VB phase
   exact-int in domain — and SORTED: the log's alphabet is
   lp-like productions only (lp/γ/α — `arg` pushes lp-like heads
   and `bt2` pushes slices; nothing else ever enters; a BULLET in
@@ -628,6 +677,27 @@ ways as virtual ancestry predicts.
 
 ### 7.4 Range disjointness (on WF∧W7, corrected statement)
 
+**Storage-history discipline (v1.24, all arms):** every fire arm
+appends EXACTLY ONE storage head, and the head species names the
+arm — `('KD', keys)` certified, `('K', g, i)` decode-recorded,
+`('KA', g, i)` decode-suppressed, `('K', l)` retain-whole — so
+incoming KS is always the tail after stripping one head, and the
+head species can never be forged across arms: KD is confined to
+certified positions (certification is a program-level property
+of the position), the other three have pairwise-distinct
+tags/arities, and suppressed-vs-recorded at one target is doubly
+impossible (distinct tags, and the suppression condition is a
+function of the target's RS and KS-tail). Within one arm the
+head content plus the slot recovers the cargo key (certified:
+the fibre condition; decode/suppressed: the head's key;
+retain-whole: the head's lp). Audit #16's countermodels — a
+suppressed decode impersonating a retain-whole fire through
+either suppression variant, at norm 2 — and the author's two-key
+double-suppression sibling are exactly what the
+one-head-per-fire discipline forecloses; audit #15's
+empty-bundle collision was the certified arm's instance of the
+same defect.
+
 For two certified-fire sources at one boundary:
 
 ```text
@@ -741,7 +811,9 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#15; the verdict will be registered here.**
+#17; the verdict will be registered here.** (Audit #16 caught
+this very sentence still naming audit #15 — the §1 gate and this
+one are now updated together.)
 
 ## 10. Verification state
 
@@ -782,15 +854,17 @@ canonical dicts compared bit-for-bit; `dupcall` canonically None
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
 `refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **nineteen permanent regressions** (the v1.6 pair;
+zero violations; **twenty-one permanent regressions** (the v1.6 pair;
 extra-frame collision, W7-excluded with disjoint targets;
 doctored bundle divergence; K+frame alias; retained-Q
 disjointness — spectator-bit columns share zero targets;
 duplicate-ticket W9; retained-Q KD — a cargo key with a retained
 frame leaves an EMPTY bundle, targets WF-clean; bitfree-burial —
-a buried key stays the sole bit-carrying record, no KD beside it;
-popped-frame + surviving ticket — the T-riding ticket stays the
-answerable representation, no KD, targets WF-clean;
+a buried key stays the sole bit-carrying record, the key OUT of
+the (explicitly present, v1.23) bundle beside it; popped-frame +
+surviving ticket — the T-riding ticket stays the answerable
+representation, the key out of the explicit bundle, targets
+WF-clean;
 vacuous-position — a certificate entry at an unreachable
 position must fail `machine_coverage` while the canonical map
 passes; ghost-key — an inert popkey occurring in no arrival
@@ -822,7 +896,15 @@ entries W0-flagged, the slice-length violation and the
 open-term state W0-flagged, an lp log entry intact; KS
 prefix-freeness — audit #15's fresh-decode/carried-in pair
 produces DISJOINT targets with the empty bundle explicit, and
-the t boundary is typed with the h-fire control intact). The
+the t boundary is typed with the h-fire control intact; fire
+prefix-freeness — audit #16's frame-skip and burial-skip pairs
+AND the author two-key double-suppression pair each produce
+disjoint targets with the `('KA', g, i)` head explicit in every
+suppressed target, the decode-recorded arm an intact control;
+W0 totality II — the `Var(0)` state and the list-tape state are
+W0-flagged at source, a hostile-hash tuple-subclass is
+W0-flagged WITHOUT crashing the checker, and the
+tuple-everything control stays WF). The
 gating structure, stated exactly
 (audits #6 and #7 each caught a computed-but-non-gating
 verdict; audit #8 forced all eleven then-regressions
@@ -831,14 +913,15 @@ independently forced all thirteen then-flags plus every
 instrument component — fourteen forcings — each to exit 1;
 audit #13 confirmed the fifteen-gate structure 15/15; audit
 #14 confirmed sixteen-for-sixteen with independent forcings
-including ok_gr; audit #15 confirmed seventeen-for-seventeen):
-the v1.6 pair
-gates `collisions_under_wf()`; the other seventeen gate
+including ok_gr; audit #15 confirmed seventeen-for-seventeen;
+audit #16 confirmed nineteen-for-nineteen plus fourteen
+instrument components, every mutation exit 1): the v1.6 pair
+gates `collisions_under_wf()`; the other nineteen gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
 pair false → exit 1; forcing cert_sweep flags false → exit 1,
-including the v1.20 through v1.23 flags; the
+including the v1.20 through v1.24 flags; the
 emulated-old-arm probe flips `cert_sweep` to FAIL). Three
 v1.12/v1.13-era regression mechanizations were updated in v1.23
 to the always-emit discipline (their targets now carry the
@@ -976,7 +1059,32 @@ seventeen then-forcings — and its two countermodel classes
 (prefix-freeness, language sorting) are healed and gated as
 regressions eighteen and nineteen, with the fresh-decode/
 carried-in pair measured disjoint and the 39 reachable
-empty-bundle fires (of 58 certified) now emitting explicitly. Basis counts vs v1.2 reference: `negative` 103→83,
+empty-bundle fires (of 58 certified) now emitting explicitly;
+audit #16 confirmed the v1.23 hinge INDEPENDENTLY (re-executed
+the extracted v1.22 sources: four instruments byte-identical;
+tracked certified-fire counts over 5,760 states of all 19
+certified graphs plus 300 generated bodies — zero mixed-count
+merges — and derived the stronger v1.23 form: KS is
+append-only and each certified fire adds exactly one entry, so
+different-fire-count histories cannot merge), the certified-arm
+prefix-freeness narrowly sound (tuple-head/tail injectivity
+undefeatable by nested bundles or keys), the binder equation
+against `lam_iam.binder_path` on every reachable lp (14,136
+states, 100,763 occurrences, 166 program/lp pairs, zero
+mismatches), the blast radius independently reproduced (39
+empty of 58), and the disclosed v1.23 mechanization/fixture
+updates theorem-preserving — and its two countermodel classes
+(cross-arm fire-history forgery, W0 totality holes) are healed
+and gated as regressions twenty and twenty-one, with the
+suppressed arm's reachable-dead-code status measured by the
+arm census (0 suppressed fires among 137 reachable). The v1.24
+kit deltas, adjudicated: the v113/v114 kits' raw
+suppressed-decode fire displays gain the KA head (ks-display
+relabels; every semantic column — surviving/bitfree/overlap,
+marginals, W results — unchanged); the v118/v119 kits'
+changed-source line counts grow with the diff (their
+capture-identity verdicts unchanged); the v121 kit's crash
+byte-identical; all other kits byte-identical. Basis counts vs v1.2 reference: `negative` 103→83,
 `selector` 173→106, `pstar` 458→242 — v1.7-era, real, owned;
 marginals and supports never moved. All measurements
 seconds-scale on the M5 Max.
@@ -1053,13 +1161,17 @@ no bare-term ideal oracle).
 | v1.20 | W4 CLOSED by enumeration (`W4-storage` + `W4-burial` join frame/ticket; the four classes exhaust what the vvar-emitted ticket can collide with; agreeing burial admissible, its target measured WF; entry-vs-region closure stated honestly); `species-ans` types the anshead species check — leaf = γ = A — the ONE kernel-arm change since v1.11, bit-identical on every covered output; regressions fourteen (five-case storage/burial table) and fifteen (four-case species incl. the retrace chain) gated; §3 gains the species-ans, rootval, and verr rows; GUARD_RULES, guard docstrings, Run.ks docstring corrected; pack WF label count-neutral; zero storage/burial hits on the audit's own 300-program corpus; every prediction held (one wrong detail registered: wf prints no count line) | **fresh audit #13: FAIL** (the W4 closure CONFIRMED-SOUND by the auditor's own nine-row enumeration, agreeing-burial verified non-leaking, gating 15/15, cert/polarity/conservation excavations clean; the findings: the answer-bit DOMAIN was nowhere stated or enforced — ANS('h',2) was WF and flowed through anshead to an out-of-alphabet halt2, malformed tuples satisfied is_ans and crashed untyped, a γ/A pair meeting a binder stalled silently; and the honesty catch that "one kernel-arm change since v1.11" was FALSE — v1.12/v1.13 changed the fire arm's KD subtraction, as this chronicle's own rows document; plus two stale counts and C2's "seven kits" for eight) |
 | v1.21 | W0 joins the subtype (state/token grammar: bits {0,1}, gates {h,t}, exact arities, deep through slice/burial cargo, VB phase in domain — position-appropriateness stays the other invariants' job); anshead hardens to arity + domain (species-ans, never ValueError, never halt2); the untyped-stall class closes with three typed guards (species-binder, species-leaf, species-transport; foreign-lp and empty-tape finals stay classical finals by design); regression sixteen gated; kernel-arm provenance restated exactly (two waves since v1.11: v1.12/v1.13 KD subtraction, v1.20/v1.21 leaf guards — each measured no-op/bit-identical on covered outputs); counts go count-neutral in the standing prose; the v114 kit's placeholder-key probe adjudicated (out-of-language tokens, W0 working as specified); zero W0 hits on the 218,546-state corpus; every prediction held | **fresh audit #14: FAIL** (C5 CONFIRMED 16/16 with independent forcings; §8, §12's trace anchors, gram/run_dyn, the classical-final exemptions, and the v114 adjudication all CONFIRMED. The findings: W0's bit check used Python equality — 1.0/True/0.0/False are ==-equal to bits, so ANS('h',1.0) was WF and rootval string-formatted it into the out-of-alphabet terminal KINDS halt1.0/haltTrue; W0 never checked K(l) cargo shape, ticket/frame/storage instance fields recursively, or the state coordinates at all — d='X' and alien paths were WF and silently stalled, off-tree paths and non-Var lp occurrences were WF and crashed in subterm/binder_path; the "position-appropriateness is the other invariants' job" sentence was refuted (no other invariant does d/path/lp validity); C2 missed the diag capture's own label delta; and the corrected two-wave provenance summary was STILL incomplete — v1.12 also changed the ordinary decode arm, and "leaf-guard wave" mislabeled the binder/transport arms) |
 | v1.22 | W0 becomes the FULL state language: exact-int bits (bool refused — the terminal-kind minting), recursive lp productions with occurrences resolving to Vars of the term, arrival-lp K(l) cargo, coordinates d/path in language, VB phase exact-int; anshead's bit check exact-int (the one arm change, bit-identical on covered outputs); regression seventeen (state-language: ten countermodels + exact-int and kit-exact foreign-lp controls) gated; provenance summaries abolished — the register names arms per version only and defers history to these rows; the wf.py v1.12 fixture's App-naming carrier lp corrected (countermodel essence untouched); six kits' helper-lp wf-columns and the v121 kit's crash-by-construction adjudicated; stale W1-W9 phrases updated; zero W0 hits on the corpus; every prediction held in substance with the kit-delta count wrong and registered | **fresh audit #15: FAIL** (C1/C2/C4/C5 CONFIRMED — the v1.21→v1.22 diff exactly the exact-int condition, the delta set exact with the crash scoped, all seventeen forcings, the exact-bit repair itself sound against Fraction/int-subclass/-0.0 probes. The findings: THE FIRST RAW-SUBTYPE UNITARITY BREAK SINCE AUDIT #3 — §7.4's incoming-KS disjointness is false because the certified fire omitted empty KD bundles: a fresh decode and a carried-in record produced IDENTICAL targets, inner product 1, norm 2; W0 admitted BULLET in the log (bt1 transported it into a b1 collision, norm 2 again), never checked the lambda-IAM slice equation (a bad slice stepped to a W1-invalid target), and accepted open terms whose current position crashes binder_path; the t boundary raised NotImplementedError from WF states; "full state language" and the placement sentence refuted with them) |
-| v1.23 | The certified fire emits its bundle UNCONDITIONALLY — ('KD', ()) when empty — restoring storage-history prefix-freeness (§7.4 restated to the strip-the-head injectivity); the t boundary becomes the typed scope fence t-unimplemented; W0 gains the log SORT (lp-like entries only), the lambda-IAM slice equation with a bound-finding binder walk, and the closed-term conjunct; regressions eighteen (log-sort/slice-equation) and nineteen (KS prefix-freeness + t fence) gated; three v1.12/v1.13-era regression mechanizations updated to the always-emit form and two fixture lps corrected to the slice equation (theorems and countermodel essences unchanged, all disclosed); THE HINGE PREDICTION, written first, HELD: suite, certify, typecheck, and polarity byte-identical — no reachable interference crosses fire histories, so the machine change is invisible on every covered output; ten kits' ks-display deltas and the matrix-coverage shrink adjudicated; zero W0 hits on the corpus | **fresh audit #16: pending** |
+| v1.23 | The certified fire emits its bundle UNCONDITIONALLY — ('KD', ()) when empty — restoring storage-history prefix-freeness (§7.4 restated to the strip-the-head injectivity); the t boundary becomes the typed scope fence t-unimplemented; W0 gains the log SORT (lp-like entries only), the lambda-IAM slice equation with a bound-finding binder walk, and the closed-term conjunct; regressions eighteen (log-sort/slice-equation) and nineteen (KS prefix-freeness + t fence) gated; three v1.12/v1.13-era regression mechanizations updated to the always-emit form and two fixture lps corrected to the slice equation (theorems and countermodel essences unchanged, all disclosed); THE HINGE PREDICTION, written first, HELD: suite, certify, typecheck, and polarity byte-identical — no reachable interference crosses fire histories, so the machine change is invisible on every covered output; ten kits' ks-display deltas and the matrix-coverage shrink adjudicated; zero W0 hits on the corpus | **fresh audit #16: FAIL** (C1 CONFIRMED independently — the two-arm diff exact, four instruments byte-identical against the re-executed v1.22 sources, the hinge reason verified by a 5,760-state fire-history search plus 300 generated bodies with zero mixed-count merges, and the stronger v1.23 form derived: append-only KS makes different-fire-count merges impossible; C2 CONFIRMED narrowly for certified fires — nested bundles cannot defeat tuple-head injectivity; C4/C5 CONFIRMED — nineteen forcings + fourteen instrument components all exit 1, zero reachable W0 fires, the corpus rerun independently; the binder equation confirmed on 100,763 reachable lp occurrences with zero binder_path mismatches. The findings: THE AUDIT-#15 SIBLING — the suppressed-decode arm appends ZERO storage heads, so a suppressed decode with incoming [K(l)] and a retain-whole fire with incoming [] produce IDENTICAL targets, norm 2, through BOTH the same-key-frame and agreeing-burial variants — legal lifecycle configurations, not the alias gap; W0 accepted Var(0) (`i <= depth` under the 1-INDEXED convention — binder_path IndexError one step inside WF) and never sorted the CONTAINERS (a list tape passed WF, the fire TypeError'd); three stale register/docstring lines, including the §9 gate sentence still naming audit #15) |
+| v1.24 | The suppressed-decode fire appends the inert arm-typed history head ('KA', g, i) — EVERY fire arm now appends exactly one head, §7.4 restated to the all-arms one-head discipline; the head carries its key because the author two-key double-suppression sibling (both tickets suppressing over a shared two-frame RS) also collided at norm 2 pre-fix, and a contentless marker would have left it alive; KA excluded from ks_dead_keys/ks_bitfree_keys by design (refire/key-alias/W8/W4-storage blind; replays off the surviving frame stay legal); W0 gains exact-type PURITY (registers exact tuples of exact tuples/str/int, checked without hashing before any scan — hostile __hash__/__eq__ can neither crash nor poison the checker; list containers refused) and the 1-indexed closedness (Var(0) refused); regressions twenty (fire prefix-freeness, three pairs + recorded-arm control) and twenty-one (W0 totality II incl. the hostile-hash probe) gated; the three stale lines fixed; THE HINGE, cheaper this round: suite/certify/typecheck/polarity byte-identical because the suppressed arm is REACHABLY DEAD CODE on the whole canonical suite (arm census measured first: 58 certified / 69 retain-whole / 10 decode-recorded / 0 suppressed); v113/v114 kit ks-displays gain the KA head (relabels, semantic columns unchanged — a kit-delta class my predictions MISSED and registered as the round's wrong call); zero W0/W4 hits on the corpus | **fresh audit #17: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
 (As of v1.23, every post-fire state additionally carries the
 explicit `('KD', ())` bundle in KS — not displayed in these rows;
-rules, tape shapes, and timings are unchanged.)
+rules, tape shapes, and timings are unchanged. The v1.24 KA head
+appears in NO row of this trace or any reachable state of the
+canonical suite — the suppressed-decode arm is reachably dead
+code there; only raw-state fixtures and kit probes mint it.)
 
 Notation: `b` = bullet, `L(path|n)` = logged position (slice length
 n), `gh/mh` = `γ_h`/`μ_h`, `Ahb′` = `A_h(b′)`, `ahb′` = `α_h(b′)`,
