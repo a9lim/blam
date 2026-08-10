@@ -420,9 +420,15 @@ machine/checker countermodel, gate failure, or surviving claim
 overreach." The loop closed at thirty-five audits over nineteen
 correction rounds — thirty-four FAIL, one PASS — with kernel.py
 untouched since v1.25 (eighteen consecutive machine-clean
-audits preceding the verdict). The PASS is explicitly
-conditional on the instance-alias gap (kernel.md §9), which now
-heads the docket. Round-by-round history lives in
+audits preceding the verdict). The PASS was explicitly
+conditional on the instance-alias gap (kernel.md §9). The first
+proof pass has now split that gap precisely: the fixed invocation
+shell makes `(g,i)` injective as a complete gate-copy address, so
+distinct copies cannot alias; however idempotent `recall` is
+noninjective on raw WF, and its injectivity on the inductively
+reachable lifecycle remains open
+(`quantum-algebraic/instance-identity.md`). Round-by-round history
+lives in
 `ledger/2026-08.md` (and 2026-07) and the register's §11
 chronicle — the register itself is current-only per its own
 charter.
@@ -457,12 +463,14 @@ when qALC code lands in the tree.
 
 The open docket, in order:
 
-1. **the alias-tolerant transition theorem or λIAM
-   logged-position uniqueness** (the standing conditional the
-   audit-#35 PASS is explicitly conditioned on — W9 is its
-   newly checkable ticket-dimension face; a Codex math consult
-   is the planned opening move), and minimal/maximal canonical
-   certificates;
+1. **reachable-recall injectivity**: no frame-absent first-return
+   source and frame-present replay-return source may agree in every
+   other coordinate. The raw-WF version is false by an exact
+   `negative`-program collision; the reachable version survived the
+   exhaustive and provenance attacks but is not proved. The former
+   instance-alias fork is otherwise closed: `(g,i)` reconstructs the
+   full fixed-shell gate-copy address. Minimal/maximal canonical
+   certificates remain beside this lifecycle lemma;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem

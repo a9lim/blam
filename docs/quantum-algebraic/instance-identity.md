@@ -1,0 +1,220 @@
+# qALC gate-instance identity
+
+**Status: partial theorem proved; Step 1 remains open (2026-08-10).** The
+fixed qALC invocation makes `(gate, instance)` injective as a **gate-copy
+address**. This closes the distinct-copy half of the instance-alias question.
+It does **not** identify a whole `Run` configuration or a transition
+occurrence, and it does not make idempotent `recall` injective. The exact
+remaining reachable-lifecycle lemma and the raw counterexample are recorded
+below.
+
+## 1. Definitions and scope
+
+For a closed BLC program `p`, the immutable qALC invocation is
+
+```text
+P := (p h) t = App(App(p, Gate(h)), Gate(t)).
+```
+
+Program syntax contains no gate constants. Hence `P` has exactly two gate
+leaves:
+
+```text
+q_h = fa,       q_t = a.
+```
+
+Here paths are rooted and `f`/`a` select an application's function/argument.
+The λIAM level of a path is its number of `a` edges, so
+
+```text
+level(q_h) = level(q_t) = 1.
+```
+
+A λIAM **copy address** is `(q,L)`: the immutable code position `q` together
+with its complete log `L`. This is the term presentation of the proof-net
+address: the log is the boxes stack, whose recursively nested logged
+positions correspond to exponential signatures and therefore record the
+contraction-tree choices selecting a dynamic copy. This is the copy ontology
+of the adopted IAM-lineage machine, not an additional operational history.
+
+On the reachable state space the λIAM balance invariant is
+
+```text
+|L| = level(q).
+```
+
+This is an exact rule invariant, not an empirical premise. The four bullet
+rules preserve path level and log length; `var` moves to the binder and drops
+exactly `level(occ)-level(binder)` log entries; `bt2` restores that slice;
+`arg` changes `f→a` while pushing one entry; and `bt1` changes `a→f` while
+popping one. The qALC boundary rules preserve path and log, except `bt1g`,
+which is the same `a→f`/pop balance move. The initial state has level and log
+length zero.
+
+At an instance-defined gate-leaf visit the kernel's `instance(s)` is the real logged
+position `i` at the head of `L`; a non-logged-position head is instead the
+typed `no-instance` sector. The runtime key is
+
+```text
+key(s) := (g, i),       g ∈ {h,t}.
+```
+
+## 2. The theorem
+
+**Theorem (gate-copy address reconstruction).** On reachable,
+instance-defined qALC gate visits in the invocation `P = (p h) t`, two runtime
+keys `(g,i)` are equal if and only if their complete gate-copy addresses
+`(q,L)` are equal.
+
+**Proof.** Let `s` be an instance-defined visit to gate kind `g`.
+
+1. Invocation syntax fixes the leaf position: `q = q_g`, where `q_h = fa`
+   and `q_t = a`.
+2. Both positions have level one. By the balance invariant the complete log
+   at the leaf has length one.
+3. An instance-defined visit has real logged-position head
+   `i = instance(s)`.
+   Therefore its complete log is exactly `L = (i)`.
+4. Consequently the key reconstructs the full copy address:
+
+   ```text
+   (g,i) ↦ (q_g,(i)).
+   ```
+
+5. If two gate visits have equal keys, their gate kinds, fixed leaf
+   positions, and singleton logs are equal. Their complete copy addresses
+   are therefore equal. The converse is immediate. ∎
+
+The proof is independent of typing, certificates, `h` versus `t` dynamics,
+and the program's internal reduction behavior. It uses only the invocation
+syntax, the λIAM balance invariant, and successful gate entry. In particular
+it covers arbitrary closed `p`, not only the currently typed h-only kernel
+fragment.
+
+**Corollary (distinct-copy ownership).** Within one program sector, a current
+gate visit and any ticket, frame, burial, or dead record carrying the same
+`(g,i)` name one gate-copy address. A different copy address cannot silently
+alias that key. Across program sectors the program itself is an additional
+orthogonal coordinate, so the global address is `(p,g,i)`.
+
+The key need not determine the rest of a branch-local `Run`, and the same
+copy address may be revisited by `recall` and `replay`. General
+logged-position uniqueness is neither needed nor true.
+
+## 3. Why the tempting stronger statements are false
+
+### 3.1 Arbitrary logged positions are not unique copy addresses
+
+For the ordinary λIAM run of
+
+```text
+(λx. x x) (λy. y)
+```
+
+the local logged position for `y` is constructed twice with the same value
+`L[ab|0]`; at one reachable state one copy occurs inside another logged
+position's slice and the other is on the tape. The two `y` binder copies are
+distinguished by the outer dynamic context, which a logged position relative
+to that copied level-zero-local binder deliberately omits.
+
+That does not affect the theorem. The qALC gate leaves are unique invocation
+leaves, not arbitrary local variables, and their **complete** log is the
+singleton containing the instance key. No outer suffix is omitted.
+
+### 3.2 No alias-tolerant theorem holds on the raw `WF` domain
+
+The weaker proposed route also fails. In canonical `negative`, take a
+reachable first-recall source `s₀` with head ticket `α_h(i,0)` and no replay
+frame, and construct `s₁` by adding the agreeing frame `R_h(i,0)`. Both pass
+`WF` and `W7`; both take `recall`; their targets are identical:
+
+```text
+RS = Q                 ↦ Q ∪ {R_h(i,0)}
+RS = Q ∪ {R_h(i,0)}    ↦ Q ∪ {R_h(i,0)}.
+```
+
+Thus the two transition columns have inner product one. The collision follows
+from idempotent frame insertion and proves that no rule-by-rule theorem over
+all agreeing-key raw `WF∧W7∧W8∧W9` states can close the alias question.
+
+The augmented source `s₁` is not in the canonical reachable graph. This pair
+is a boundary witness for Gate 1: the complete machine proof must quantify
+over the inductively reachable lifecycle subtype (or an equivalent
+simulation), not over raw `WF` alone. It is not a distinct-copy alias: by the
+theorem, the shared key denotes one copy address.
+
+The exact surviving statement is **reachable-recall injectivity (RRI)**. Fix
+a covered term, certificate, and key `k=(g,i)`. Among reachable sources taking
+`recall`, delete only the matching `R_g(i,b)` frame, if present, and retain
+every other coordinate. No frame-absent and frame-present recall sources may
+then have the same projection. Equivalently, `recall` must be injective on the
+reachable basis even though it is not injective on raw `WF`.
+
+A useful ghost invariant is proved per trace: `vvar` is the only fresh-ticket
+mint and its recall source has no matching frame; `replay` is the only
+replay-ticket mint and its recall source retains the matching frame; ordinary
+transport preserves both provenance and `RS`. This classifies every reachable
+recall source, but it does not prove that the two provenance classes have
+disjoint **visible** non-`RS` controls. `recall` erases precisely that
+distinction. A global phase-separation/acyclicity theorem is still needed.
+
+## 4. Executable falsification surface
+
+The out-of-tree instrument
+`~/Work/qalc-scratch/instance_identity.py` checks the structural conclusion
+and freezes the raw-recall boundary. Its current output is
+`out_instance_identity.txt`:
+
+```text
+canonical: programs=20 states=6392 gate_states=1196 keyed=1196 keys=55
+closed<=11: programs=41272 states=1409843 completed=41262 truncated=10 calls=46220 keys=46220 recall=151 replay=4 max_visits=5 guard_hits=0 nonorthogonal_columns=0
+raw-recall-boundary: wf_pair=yes same_column=yes clone_reachable=no path=fa
+INSTANCE IDENTITY: PASS
+```
+
+The closed-program sweep uses every closed pure `p` through size 11 and the
+literal invocation `(p h) t`. The ten capped prefixes crossed 30,000 states
+without reaching a gate call. Exact one-step column Gram matrices were clean
+on all 41,262 completed graphs. Additional targeted provenance attacks
+covered 87,941 reachable states and 1,983 recalls: 571 `vvar`-born recalls
+were frame-free, 1,412 replay-born recalls were framed, and no reduced-control
+pair or duplicate reachable recall target appeared. A separate random attack
+traversed 5,000,500 capped states and again found none. These are strong
+falsification results, not a proof of RRI.
+
+## 5. Dependencies and remaining boundary
+
+The theorem depends on:
+
+1. gate constants occurring only at the two invocation leaves;
+2. rooted path/level conventions remaining fixed;
+3. the λIAM balance invariant on reachable states; and
+4. `instance(s)` accepting only a real logged-position head.
+
+Changing the syntax to permit gate literals inside `p`, or changing instance
+identity to a proper slice rather than the complete level-one log, would
+reopen the theorem.
+
+What this result does **not** discharge is Step 1 as currently docketed, nor
+the architecture's Gate 1. Step 1 has split into a proved distinct-copy
+address theorem and the still-open RRI lemma. Full-normal-form readback, the
+`t` table, error/halting adapters, the rest of the reachable pairwise range
+proof, invariant sectors, and the local minimal-garbage theorem also remain
+open.
+
+An unconditional machine repair is available if RRI resists a global proof:
+refine a replay frame to `R(g,i,b,n)` with an unbounded recall epoch. Fresh
+recall writes `n=1`, repeated recall increments `n`, and replay preserves it.
+The target then determines the unique source epoch. A finite phase bit cannot
+encode arbitrarily many repeat recalls injectively. This would change the
+machine, certificates, invariants, and frozen evidence, so it is a design
+alternative, not part of the theorem above.
+
+## 6. Source pin
+
+The λIAM definitions, balance invariant, reversibility theorem, and the
+correspondence between logs and proof-net exponential signatures are in
+Accattoli, Dal Lago, and Vanoni, *The Abstract Machinery of Interaction*
+([arXiv:2002.05649](https://arxiv.org/abs/2002.05649)), §§3–4 and §11. The
+exact qALC table and conventions used above are pinned in `token.md` §2 and
+`kernel.md` §§2–4,6.

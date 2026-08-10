@@ -21,8 +21,11 @@ The claim **PASSED fresh-context independent audit #35**
 (cx-20260810-105238-1baf, 2026-08-10): "PASS for v1.42 as stated
 in C1–C6. I found no required correction, machine/checker
 countermodel, gate failure, or surviving claim overreach." All
-six claims CONFIRMED; the instance-alias gap remains the
-registered conditional, exactly as stated. Thirty-five audits —
+six claims CONFIRMED; the instance-alias gap was the registered
+conditional exactly as stated in that pack. A post-audit proof pass
+now closes its distinct-copy component and narrows the surviving
+conditional to reachable-recall injectivity (`instance-identity.md`);
+no machine or checker changed. Thirty-five audits —
 thirty-four FAIL, one PASS; §11 carries every verdict. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -829,19 +832,28 @@ the retained-Q collision (two WF, transparent, same-slot sources
 differing only in a retained frame's bit — zero shared targets,
 true Gram entry 0).
 
-### 7.5 What is NOT claimed (the alias gap)
+### 7.5 Gate-copy identity and the reachable lifecycle gap
 
-No injectivity theorem for logged-position instance keys is
-claimed or assumed. If two dynamic copies alias one `(g, i)`:
-divergent selections between bit-carrying representations are
-typed (`frame-conflict`); cross-class encounters are typed
-(`key-alias`); dead-key fresh calls are typed (`refire`). What
-remains open: an **alias-tolerant local transition theorem** —
-that agreeing-bit aliases cannot silently merge histories that
-should stay orthogonal. λIAM logged-position uniqueness (which
-would close this outright) is a **conjecture**; until one of the
-two is proven, the soundness claims are conditional on it, stated
-as such, with every *detectable* manifestation typed.
+The fixed invocation shell gives the needed localized theorem: at
+either gate leaf, W1 forces the complete log to be `(i)`, and the
+gate kind selects the unique leaf path. Thus `(g,i)` reconstructs
+the complete gate-copy address `(q_g,(i))`; two distinct copy
+addresses cannot alias one key. General logged-position uniqueness
+is false and is not claimed. The proof and its exact scope are in
+`instance-identity.md`.
+
+The alternative blanket local theorem is also false. In canonical
+`negative`, a reachable frame-free `recall` source and its raw-WF
+clone with the agreeing frame both pass WF/W7 and map to the same
+target because frame insertion is idempotent. The clone is not
+reachable. The remaining conditional is therefore
+**reachable-recall injectivity**: no reachable first-return and
+replay-return sources may agree in every coordinate after deleting
+only the matching frame. Exhaustive and provenance attacks found no
+reachable pair, but no global phase-separation proof is known.
+Until that lemma is proved (or recall retains an epoch), the
+universal soundness claim remains conditional on it. Every
+detectable divergent manifestation remains typed.
 
 ## 8. The typed fragment
 
@@ -864,7 +876,7 @@ to repair; `qprime` types clean), `dupcall` (NOT′/EP ununifiable).
 All escapes — `h h`, gate literals in bodies, swapped or doubled
 shell arguments — rejected.
 
-## 9. The claim and the alias gap
+## 9. The claim and the reachable lifecycle gap
 
 **The coverage claim.** Over programs that are (i) typable
 h-only under the signature judgment (with the syntactic boundary:
@@ -876,7 +888,7 @@ erasure is reversibly decodable from its retained fibre
 coordinate, the frozen certificate's exact run carries zero
 guard/err amplitude at every step, and every failure mode is
 typed and visible — never silent.** The claim is conditional on
-the instance-alias gap below, stated as such.
+the reachable-recall lemma below, stated as such.
 
 `machine_coverage` does NOT claim agreement with an ideal quantum
 semantics — no total reference exists for bare λ-terms; which
@@ -891,15 +903,17 @@ physics table. Nor is the canonical certificate minimal or
 maximal (§5): it is the deterministic validation-adjudicated
 greedy fixpoint, nothing more.
 
-**The instance-alias gap.** No injectivity theorem for
-logged-position keys is claimed. Every detectable manifestation
-is typed (`frame-conflict`, `alien-ticket`, `key-alias`,
-`refire`; deep W3 adjudicates bit-carrying coexistence; W9
-excludes duplicate live tickets statically). Open: an
-alias-tolerant local transition theorem — that agreeing-bit
-aliases cannot silently merge histories that should stay
-orthogonal — or λIAM logged-position uniqueness. The soundness
-claims are conditional on it.
+**The post-audit identity result and surviving gap.** The
+fixed-shell gate-copy theorem proves `(g,i) ↦ (q_g,(i))`, closing
+distinct-copy key aliasing. Every detectable misuse remains typed
+(`frame-conflict`, `alien-ticket`, `key-alias`, `refire`; deep W3
+adjudicates bit-carrying coexistence; W9 excludes duplicate live
+tickets statically). The raw alias-tolerant transition theorem is
+false because two agreeing `recall` sources differing only by the
+matching frame have the same target. One source of the exact
+`negative` witness is unreachable, so the surviving obligation is
+the reachable-recall injectivity lemma stated in §7.5. The
+universal soundness claim is conditional on that narrower lemma.
 
 Standing fences, all typed: literal gate application and open
 bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
@@ -917,6 +931,11 @@ this sentence stale; audit #19 caught it stale AGAIN despite the
 parenthetical promising otherwise — the promise is now an
 ASSERTION: the pack assembly script verifies §1 and §9 name the
 same audit number and refuses to build the pack otherwise.)
+
+The gate-copy theorem and raw-recall counterexample postdate that
+pack. They change neither its audit verdict nor the v1.42 machine;
+they replace its broad registered conditional with the precise
+reachable-recall lemma above.
 
 ## 10. Verification state
 

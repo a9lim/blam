@@ -77,8 +77,10 @@ gate, obligations register), `kernel.md` the current-only register of
 the scratch kernel that implements the gate (the register alone
 carries the version; its state is machine-verified — v1.42 PASSED
 fresh-context adversarial audit #35 on 2026-08-10, closing a
-thirty-five-audit loop, with the instance-alias gap as the registered
-conditional; round history in the ledger and its §11 chronicle), and
+thirty-five-audit loop; the post-audit Step 1 pass proves fixed-shell
+gate-copy address injectivity, refutes the raw-WF alias theorem, and
+narrows the registered conditional to reachable-recall injectivity;
+round history in the ledger and its §11 chronicle), and
 `machine.md` the record of the two failed rewriting-machine drafts —
 read-only history, do not build on it. The scratch kernel, its 25
 rerunnable audit kits, and the full provenance chain live durably at
