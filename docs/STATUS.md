@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.33** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.34** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-twenty-five fresh-context rounds. Kernel-arm provenance summaries
+twenty-six fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -620,10 +620,16 @@ round after its correction. v1.33 (checker-only, seventh
 consecutive): the lam-count clamp (no index above the Lam
 count is ever bound — an upward DAG path cannot revisit;
 454 → 66 ms), slice-cargo timed at last, both misses marked.
-What
+Audit #26 (tenth machine-clean round; the clamp lemma
+confirmed over 60,000 graphs) found layer TWELVE: exact
+instances made hollow by object.__delattr__ — exact in type,
+missing a field, crashing on first touch. v1.34 (checker-only,
+eighth consecutive): field-presence guards, with the
+defaulted-field fallback distinction discovered in-round and
+pinned. What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all thirty-one permanent regressions now gate mechanically (the
+day: all thirty-two permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -639,15 +645,15 @@ minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
 under always-emit and the KA head; the W0-gate display
 collapses; matrix-coverage shrink under the tightened language;
-the healed-countermodel crash); v1.33's predictions held in
-substance with one figure missed and MARKED IMMEDIATELY (the
-predicted "under 50 ms" measured 66 ms — the band held), and
-v1.32's repeated four-vs-three coverage miss is marked in its
-own outcomes (provenance in the scratchpad prediction files).
+the healed-countermodel crash); v1.34's predictions held with
+one in-round discovery declared — the defaulted-field
+class-fallback distinction, caught by the regression's own
+failing first draft (provenance in the scratchpad prediction
+files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #26 of the v1.33 h-fragment
+1. **fresh-context independent audit #27 of the v1.34 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
