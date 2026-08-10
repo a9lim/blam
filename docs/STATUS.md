@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.27** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.28** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-nineteen fresh-context rounds. Kernel-arm provenance summaries
+twenty fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -562,10 +562,21 @@ traversals, wf7 guards, and the boundary restated to the
 host's structural-operation limits — hash, equality, and
 canonical-order repr, exactly the operations the machine's own
 state discipline performs. The twice-broken §9 gate-line
-promise is now an assemble-script assertion. What
+promise is now an assemble-script assertion. Audit #20
+confirmed the machine a FOURTH straight round (kernel.py
+byte-identical; the boundary survived its dedicated charge —
+at depth 6,000 all three host operations cross together) and
+found layer SIX: hostile TERM subclasses, the never-validated
+Gate production (Gate('x') passed the checker and broke
+W0-preservation one step later; Gate([]) crashed the machine),
+wf7's remaining raw surface, and a Θ(n²) term memo. v1.28
+(checker-only again): the linear MAX-FREE term validator with
+exact-type node dispatch and the Gate production, run as an
+early gate; wf7 gated by the total wf() itself;
+"representation-linear" made true rather than weakened. What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all twenty-five permanent regressions now gate mechanically (the
+day: all twenty-six permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -581,16 +592,16 @@ minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
 under always-emit and the KA head; the W0-gate display
 collapses; matrix-coverage shrink under the tightened language;
-the healed-countermodel crash); every v1.27 prediction held,
-with the round's second caught-in-implementation equivalence
-hazard registered pre-measurement — closed()'s memo order
-against App-cycles, beside v1.26's AL-instance catch and
-v1.25's wrong-algebra call (provenance in the scratchpad
-prediction files).
+the healed-countermodel crash); every v1.28 prediction held in
+substance with two wrong calls registered — the layer6 kit
+crashes by construction rather than "flipping to healed" (the
+v121 lesson re-learned), and the certified-fibre control was
+first mis-specified against an empty synthetic fibre map
+(provenance in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #20 of the v1.27 h-fragment
+1. **fresh-context independent audit #21 of the v1.28 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
