@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.26** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.27** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-eighteen fresh-context rounds. Kernel-arm provenance summaries
+nineteen fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -547,10 +547,25 @@ totality claim scoped to where it lives — total rejection on
 the raw-object layer, with the W1-W9 scans and the machine's
 superposition layer sharing the HOST-IDENTITY BOUNDARY (a
 state the host cannot hash can never enter a superposition).
-Suite/certify/typecheck/polarity byte-identical once more. What
+Suite/certify/typecheck/polarity byte-identical once more.
+Audit #19 confirmed the machine a THIRD straight round —
+including differential-testing the closure sweep against the
+old recursive grammar over 100,000 random soups, zero drift —
+and found totality layer FIVE: garbage terms silently accepted,
+a cyclic term graph hanging the walk, a hostile Run subclass
+running code inside wf, exponential shared-DAG purity, a wf7
+crash, and the discovery that hash/repr/equality break at
+DIFFERENT depths, refuting the boundary as I had worded it.
+v1.27 (checker-only): exact-type dispatch, a full term
+validator with cycle detection, representation-linear
+traversals, wf7 guards, and the boundary restated to the
+host's structural-operation limits — hash, equality, and
+canonical-order repr, exactly the operations the machine's own
+state discipline performs. The twice-broken §9 gate-line
+promise is now an assemble-script assertion. What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all twenty-four permanent regressions now gate mechanically (the
+day: all twenty-five permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -566,16 +581,16 @@ minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
 under always-emit and the KA head; the W0-gate display
 collapses; matrix-coverage shrink under the tightened language;
-the healed-countermodel crash); every v1.26 prediction held,
-with one equivalence bug caught during implementation before
-any measurement — the closure sweep's first draft would have
-weakened the AL-instance kind requirement, restored and
-registered beside v1.25's wrong-algebra call (provenance in
-the scratchpad prediction files).
+the healed-countermodel crash); every v1.27 prediction held,
+with the round's second caught-in-implementation equivalence
+hazard registered pre-measurement — closed()'s memo order
+against App-cycles, beside v1.26's AL-instance catch and
+v1.25's wrong-algebra call (provenance in the scratchpad
+prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #19 of the v1.26 h-fragment
+1. **fresh-context independent audit #20 of the v1.27 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
