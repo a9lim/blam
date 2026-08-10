@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.28** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.29** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-twenty fresh-context rounds. Kernel-arm provenance summaries
+twenty-one fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -573,10 +573,23 @@ wf7's remaining raw surface, and a Θ(n²) term memo. v1.28
 (checker-only again): the linear MAX-FREE term validator with
 exact-type node dispatch and the Gate production, run as an
 early gate; wf7 gated by the total wf() itself;
-"representation-linear" made true rather than weakened. What
+"representation-linear" made true rather than weakened. Audit
+#21 (fifth machine-clean round; the max-free validator itself
+survived 50,000 graphs against an independent reference) found
+layer SEVEN: the register ROOTS never type-checked (an int is
+a valid pure leaf, so scalar roots crashed iteration), d
+omitted from purity, a quadratic binder walk on valid deep
+lps, and audit #20's "cross together at 6,000" boundary
+reading failing to replicate (hash clean through 32,000;
+equality/repr fail at 6,000 — a probe-family coincidence I had
+registered as a law). v1.29 (checker-only, third consecutive):
+roots and d join the purity gate, the binder walk goes
+index-based and linear, the boundary narrative is reconciled
+to the one-way statement, and the instrument-input scope is
+explicit. What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all twenty-six permanent regressions now gate mechanically (the
+day: all twenty-seven permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -592,16 +605,15 @@ minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
 under always-emit and the KA head; the W0-gate display
 collapses; matrix-coverage shrink under the tightened language;
-the healed-countermodel crash); every v1.28 prediction held in
-substance with two wrong calls registered — the layer6 kit
-crashes by construction rather than "flipping to healed" (the
-v121 lesson re-learned), and the certified-fibre control was
-first mis-specified against an empty synthetic fibre map
-(provenance in the scratchpad prediction files).
+the healed-countermodel crash); every v1.29 prediction held,
+with one declared drift (a 16× predicted timing band vs the
+implemented 24× — measured 7.8×) recorded beside the earlier
+rounds' registered wrong calls (provenance in the scratchpad
+prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #21 of the v1.28 h-fragment
+1. **fresh-context independent audit #22 of the v1.29 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
