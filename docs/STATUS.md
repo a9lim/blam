@@ -413,7 +413,7 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.36** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.37** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
 twenty-seven fresh-context rounds. Kernel-arm provenance summaries
@@ -646,7 +646,15 @@ bundle, and the W8 comment overstating certified pop. v1.36
 the shells runtime-built and genuinely sharing one occurrence
 object, distinctness GATED as a flag conjunct (forced alone →
 exit 1), the genuine family ['W0'] and linear, every wording
-corrected, §6's stable-runtime scope restated locally. What
+corrected, §6's stable-runtime scope restated locally. Audit
+#29 (thirteenth machine-clean round; the rebuild verified
+genuine at the bytecode level, the sibling sweep clean) caught
+v1.36's own correction off by one — the fixture builds n−1
+shells while the fresh C4/§10/comment sentences said n — plus
+a docstring omitting retained Q from the spectator tuple its
+implementation carries. v1.37 (documentation only): both claim
+sites now say n−1 with the reason, the docstring completed,
+the fresh miss marked. What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
 day: all thirty-two permanent regressions now gate mechanically (the
@@ -672,7 +680,7 @@ prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #29 of the v1.36 h-fragment
+1. **fresh-context independent audit #30 of the v1.37 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
