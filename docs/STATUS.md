@@ -413,21 +413,27 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.21** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.22** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-thirteen fresh-context rounds. Kernel-arm provenance, stated
-exactly (audit #13 refuted the loop's "unmoved since v1.11"
-slogan by literal diff): two audit-driven waves since v1.11 —
-the v1.12/v1.13 fire-arm KD-subtraction completion (audits
-#4/#5, measured no-op on the then-covered graphs) and the
-v1.20/v1.21 leaf-guard wave (audit #12 found the anshead
-species check was an untyped ASSERT that never consulted the
-leaf; audit #13 found the answer-bit domain nowhere enforced —
-ANS('h',2) flowed to an out-of-alphabet halt2 — plus untyped
-crash/stall surfaces; v1.21 adds the W0 token-grammar invariant,
-hardens anshead to arity + domain, and types the three stall
-surfaces, all measured bit-identical on covered outputs). Audits
+fourteen fresh-context rounds. Kernel-arm provenance summaries
+have been refuted by literal diff twice (audit #13 killed
+"unmoved since v1.11"; audit #14 showed the corrected summary
+still incomplete), so the register now names arms per version
+only and defers history to the chronicle rows. The recent arc:
+audit #12 found the anshead species check was an untyped ASSERT
+that never consulted the leaf; audit #13 found the answer-bit
+domain nowhere enforced (ANS('h',2) flowed to an
+out-of-alphabet halt2) plus untyped crash/stall surfaces; audit
+#14 found W0's equality-based bit check admitted 1.0/True
+(minting halt1.0/haltTrue terminal kinds), unchecked instance
+productions, and unchecked state coordinates (silent stalls and
+AttributeErrors inside WF). v1.20 through v1.22 answered: typed
+species guards at the leaf, binder, and transport arms; W0
+grown into the FULL state language (exact-int bits, recursive
+lp productions with occurrences resolving to Vars, arrival-lp
+K(l) cargo, coordinates in language, VB phase in domain); every
+change measured bit-identical on covered outputs. Audits
 #6 through #10 confirmed
 the completed KD subtraction sound (exhaustive post-fire storage
 enumeration, then an extended matrix: nested slice-cargo tickets,
@@ -458,31 +464,32 @@ reachable nowhere in 1,250 searched graphs, is now flagged at
 its source and frozen as the thirteenth gated regression), and
 ALL SIX instruments now carry exit-code verdicts (suite,
 certify, and typecheck joined; forced-false measured exit 1 on
-every gated component). Audit #12 delivered the anshead finding
-plus the last two W4 leak classes — same-key bit-free storage
-and conflicting-bit burials, both vvar-unreachable but
-subtype-breaking — while CONFIRMING the gating independently
-(fourteen forced components, all thirteen then-flags), the
-machine diff-clean against the v1.18 snapshot, `token.md` §2
-against the classical substrate row-for-row (2,622 terms,
-47,420 lockstep steps, zero mismatches), and deep-W4's zero
-over-tightening on 218,546 generated states. v1.20 closed W4
-BY ENUMERATION — the four representation classes exhaust what
-the vvar-emitted ticket can collide with — and audit #13
-CONFIRMED that closure SOUND with its own nine-row enumeration
+every gated component). Audit #12 also delivered the last two
+W4 leak classes while CONFIRMING the gating independently, the
+machine diff-clean against the v1.18 snapshot, and `token.md`
+§2 against the classical substrate row-for-row (2,622 terms,
+47,420 lockstep steps, zero mismatches). v1.20 closed W4 BY
+ENUMERATION — the four representation classes exhaust what the
+vvar-emitted ticket can collide with — and audit #13 CONFIRMED
+that closure SOUND with its own nine-row enumeration
 (agreeing-burial admission verified non-leaking through
 recall/replay/decode and full injected cones) while confirming
 gating 15/15 and the certificate/polarity/conservation
-excavations clean at symbol level. v1.21 answers audit #13's
-findings: the W0 grammar invariant (bits {0,1}, gates {h,t},
-exact arities, deep through cargo; VB phase in domain) grounds
-§1's output alphabet, anshead types malformed and out-of-range
-answers instead of crashing, the untyped-stall class closes
-with three typed guards, and regression sixteen gates it all
-(zero W0 hits on the same 218,546-state corpus). What the
+excavations clean at symbol level. Audit #14 then confirmed
+gating 16/16, §8 against typecheck sentence-by-sentence, §12's
+trace anchors by fresh replay, and the classical-final
+exemptions against lam_iam — while breaking W0's edges as
+above. v1.22 grew W0 to the full language, went exact-int at
+the one kernel arm that reads a bit (anshead), and gated it as
+regression seventeen (ten countermodels + intact controls;
+zero W0 hits on the same 218,546-state corpus; the six kits
+whose hand-built helper lps name non-Var positions adjudicated
+as out-of-language fixtures, failure counters all still zero;
+the audit-#14 kit crashes by construction on the healed
+machine, which is itself the healing evidence). What the
 rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all sixteen permanent regressions now gate mechanically (the
+day: all seventeen permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -495,14 +502,14 @@ claims are scoped to deterministic fields. Nineteen frozen dict
 certificates + dupcall's canonical None; canonical =
 deterministic validation-adjudicated greedy, neither maximal nor
 minimal; physics table passes on all twenty; all prior audit
-kits rerun with exactly the declared deltas (one adjudicated:
-the v114 kit's placeholder-key probe is outside the token
-language, W0 working as specified); every v1.21 prediction held
-(provenance in the scratchpad prediction files).
+kits rerun with every delta adjudicated (out-of-language
+fixture lps; the healed-countermodel crash); every v1.22
+prediction held in substance with the kit-delta count wrong and
+registered (provenance in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #14 of the v1.21 h-fragment
+1. **fresh-context independent audit #15 of the v1.22 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9

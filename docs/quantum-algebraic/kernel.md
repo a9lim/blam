@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.21.** The kernel is a scratch superposition evolver
+**Status: v1.22.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,18 +17,20 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #14**, whose
-verdict will be registered here. Kernel-arm provenance, stated
-exactly (audit #13 refuted the earlier "one arm since v1.11"
-slogan by literal diff — the truth is two audit-driven waves):
-the v1.12/v1.13 fire-arm KD-subtraction completion (audits
-#4/#5; measured no-op on the then-covered graphs), and the
-v1.20/v1.21 leaf-guard wave (audits #12/#13: the anshead species
-ASSERT became the typed `species-ans` with exact arities and the
-answer bit in {0,1}, and the three untyped-stall surfaces became
-`species-binder`/`species-leaf`/`species-transport`). Every
-covered graph, certificate, marginal, and physics row measured
-bit-identical across the v1.20/v1.21 wave.
+The standing PASS re-claim is **gated on fresh audit #15**, whose
+verdict will be registered here. Kernel-arm provenance is the
+chronicle's per-row "what changed" column — summaries of it have
+been refuted twice by literal diff (audit #13 killed "unmoved
+since v1.11"; audit #14 showed the corrected two-wave summary
+still omitted v1.12's ordinary-decode burial-suppression change
+and mislabeled v1.21's binder/transport arms as "leaf" guards) —
+so this register now names arms exactly and only per version:
+v1.22 changes ONE arm relative to v1.21 (anshead's answer-bit
+check goes exact-int: `type(b) is int`, refusing bool/float
+aliases that Python equality admitted), and every covered graph,
+certificate, marginal, and physics row measured bit-identical
+across it. For anything older, read §11's rows; do not trust a
+summary, including this file's former ones.
 
 This file is the current contract and register only. The
 round-by-round history — countermodels, corrections, verdicts —
@@ -78,13 +80,24 @@ tape/log entries: • | logged position l | γ_g | μ_g | A_g(b′)
 
 `γ_g` (gate boundary marker), `μ_g` (probe frame), `A_g(b′)` (fired
 answer token), `α_g(i, b′)` (answer ticket, instance-tagged), `ρ`
-(root frame). **Token domains (v1.21, audit #13's finding —
-enforced by W0)**: every bit `b′ ∈ {0, 1}`, every gate kind
-`g ∈ {h, t}`, exact tuple arities, instance keys lp-shaped, the
-VB phase `k ∈ {0, 1, 2}` — deep through slice and burial cargo.
-Out-of-domain tokens are outside the state language entirely
-(before v1.21, `A_h(2)` was WF and flowed to an out-of-alphabet
-`halt2`). **Instance** `i` = the invoking occurrence's logged
+(root frame). **The state language (v1.21/v1.22, audits
+#13/#14 — enforced by W0)**: every bit is an EXACT int in
+`{0, 1}` (bool is a Python subclass of int and is refused —
+`rootval` string-formats the bit, so `1.0`/`True` would mint
+out-of-alphabet terminal kinds `halt1.0`/`haltTrue`); every gate
+kind in `{h, t}`; exact tuple arities; lp productions recursive
+wherever they appear (slices, ticket/frame instances, K/KD
+keys), with path components in `{f, a, b}` and every occurrence
+resolving to a `Var` of the term (the machine only mints lps at
+Var positions); retained-whole `K(l)` cargo is an ARRIVAL lp
+(`L` or `AL`); the state coordinates in language (`d ∈ {↓, ↑}`,
+`pos` resolving in the term); the VB phase exact-int with
+`k ∈ {0, 1, 2}`. Machine-PHASE placement of well-formed tokens
+is the other invariants' job — W0 is the language, not the
+protocol. Before v1.21, `A_h(2)` was WF and flowed to
+`halt2`; before v1.22, `A_h(True)` still was, and off-language
+coordinates stalled silently or crashed inside WF.
+**Instance** `i` = the invoking occurrence's logged
 position — always at log head when the token stands at the gate
 leaf (arg-entry is structurally forced); a logged position names a
 dynamic subterm copy (λIAM lineage). The classical transport rules
@@ -422,16 +435,21 @@ legacy pop-everything reading and the canonical dicts is claimed.
 For Run states; reachable ⊆ WF is machine-checked per program, and
 the machine's unitarity claims quantify over the subtype:
 
-- **W0** (state/token grammar, v1.21 — audit #13): every token is
-  a well-formed instance of some production with in-domain fields
-  (bits `{0,1}`, gates `{h,t}`, exact arities), deep through
-  slice and burial cargo; frames, storage records, and the VB
-  phase likewise. Position-appropriateness is the other
-  invariants' job — W0 never asks where a token sits, only
-  whether it is a token. Grounds §1's output alphabet: `rootval`
-  from a WF VB state can only produce `halt0`/`halt1`. Zero
-  reachable fires on the twenty programs and the 218,546-state
-  generated corpus.
+- **W0** (state grammar — v1.21 tokens, v1.22 the FULL language
+  after audit #14's countermodels): the state language of §2,
+  mechanized — exact-int bits (bool refused), gates in `{h,t}`,
+  exact arities, lp productions recursive with every occurrence
+  resolving to a Var of the term, arrival-lp `K(l)` cargo,
+  coordinates `d`/`pos` in language, VB phase exact-int in
+  domain. Machine-phase PLACEMENT of well-formed tokens is the
+  other invariants' job — W0 is the language, not the protocol.
+  Grounds §1's output alphabet (`rootval` from a WF VB state can
+  only produce `halt0`/`halt1` — as exact ints) and closes audit
+  #14's stall/crash class: off-language coordinates and
+  semantically invalid lps are outside WF, so no WF state stalls
+  silently or crashes in `subterm`/`binder_path`. Zero reachable
+  fires on the twenty programs and the 218,546-state generated
+  corpus.
 - **W1** (log discipline): `|log| = level(pos)`.
 - **W2** (record uniqueness + canonicity): at most one frame per
   `(g, i)` in RS; RS canonically sorted (state identity is
@@ -686,7 +704,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#14; the verdict will be registered here.**
+#15; the verdict will be registered here.**
 
 ## 10. Verification state
 
@@ -727,7 +745,7 @@ canonical dicts compared bit-for-bit; `dupcall` canonically None
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
 `refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **sixteen permanent regressions** (the v1.6 pair;
+zero violations; **seventeen permanent regressions** (the v1.6 pair;
 extra-frame collision, W7-excluded with disjoint targets;
 doctored bundle divergence; K+frame alias; retained-Q
 disjointness — spectator-bit columns share zero targets;
@@ -755,23 +773,31 @@ grammar/stall — W0 flags and species-ans types all five bad
 answers (bits 2/-1/7 and both malformed arities), the VB-domain
 violation is W0-flagged, the three stall arms fire exactly on
 their cases, and the classical final plus the deeper-pair chain
-stay untouched). The
+stay untouched; state-language — the numeric/bool aliases are
+W0-flagged AND species-ans-typed (no halt1.0/haltTrue from any
+WF state), the malformed productions (bullet/answer K(l) cargo,
+shallow ticket instances, non-lp frame/K/KD instances) and the
+coordinate violations (alien d, alien path component, off-tree
+path, non-Var lp occurrence) all W0-flagged, with the exact-int
+bits and the kit-exact foreign-lp classical final as intact
+controls). The
 gating structure, stated exactly
 (audits #6 and #7 each caught a computed-but-non-gating
 verdict; audit #8 forced all eleven then-regressions
 individually and confirmed each drives exit 1; audit #12
 independently forced all thirteen then-flags plus every
 instrument component — fourteen forcings — each to exit 1;
-audit #13 confirmed the fifteen-gate structure 15/15 with fully
-independent re-derived forcings):
+audit #13 confirmed the fifteen-gate structure 15/15; audit
+#14 confirmed sixteen-for-sixteen with independent forcings
+including ok_gr):
 the v1.6 pair
-gates `collisions_under_wf()`; the other fourteen gate
+gates `collisions_under_wf()`; the other fifteen gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
 pair false → exit 1; forcing cert_sweep flags false → exit 1,
-including the v1.20 and v1.21 flags; the emulated-old-arm probe
-flips `cert_sweep` to FAIL).
+including the v1.20, v1.21, and v1.22 flags; the
+emulated-old-arm probe flips `cert_sweep` to FAIL).
 Conservation:
 exhaustive ≤ size 11, 14,452 surfacings at ≤10 / 55,727 at ≤11,
 zero failures. Polarity/terminal chains/gauge: zero violations,
@@ -802,7 +828,21 @@ stall states typed by the three new guards; the v114 kit's
 that probe's placeholder storage keys ("x", "y") are outside
 the machine's gate/instance language, its subtraction columns
 unchanged — the same evidence class as the v116 kit's frozen
-formula). ALL SIX
+formula; audit #14's ten countermodels all W0-flagged and, for
+the numeric aliases, species-ans-typed. Two v1.22 kit-delta
+classes ADJUDICATED: (a) hand-built matrix states in six kits
+(v113/v114/v116/v117/v118/v119) carry helper lps whose
+occurrences name non-Var positions — outside the lp language
+the machine actually mints, audit #14's own binder_path-crash
+class — so their wf-display columns move while every failure
+counter stays 0, every gate field True, all exits 0; the one
+such fixture in wf.py's OWN v1.12 regression was corrected to
+a Var-naming carrier, countermodel essence untouched; (b) the
+v121 kit CRASHES by construction under v1.22 — its numeric
+probe dereferences the Run fields of a countermodel target
+that is now a species-ans RunDone; its completed first section
+shows all six production countermodels W0-flagged, and
+regression seventeen carries the gated form). ALL SIX
 instruments carry exit-code verdicts — wf, polarity,
 conservation (audit #10 flagged their print-only totals), and
 as of v1.19 suite, certify, and typecheck too (audit #11
@@ -865,7 +905,15 @@ disclosed; audit #13's excavations of the certificate rescue
 (reversed traversal), polarity (13,520 states, 116 fires,
 gauge 4/512), and conservation (131,335 intermediate-start
 surfacings) all clean at symbol level; reachable anshead edges
-verified species-exact across 13,504 states / 242 edges. Basis counts vs v1.2 reference: `negative` 103→83,
+verified species-exact across 13,504 states / 242 edges;
+audit #14 confirmed §8 against typecheck.py sentence by
+sentence (17/20, exactly q/dup/dupcall rejected, every escape),
+§12's HH trace at every load-bearing anchor by fresh replay,
+gram()/run_dyn() as exactly what §10's numbers claim
+(amplitude-blind canonical BFS; exact-amplitude evolution with
+zero-amplitude pruning), the classical-final exemptions REAL
+against lam_iam.step_classical, and the v114 placeholder-key
+adjudication in both directions. Basis counts vs v1.2 reference: `negative` 103→83,
 `selector` 173→106, `pstar` 458→242 — v1.7-era, real, owned;
 marginals and supports never moved. All measurements
 seconds-scale on the M5 Max.
@@ -940,7 +988,8 @@ no bare-term ideal oracle).
 | v1.18 | the checker catches up to the register: collect() records F as the POPPED count ((len(src.rs) − len(tgt.rs)) mod 2 — §7.1's text stands unchanged); polarity and conservation gain exit-code verdicts (branch-offset rows gating; forced-false measured exit 1); instrument docstrings/comments/pointers corrected (the HH/HNH weight comment now states 0/0 and 1/1); pack labels version-neutral; popped-F sweep 4/512, same orbit; every prediction held with the v117-kit caveat resolved on inspection | **fresh audit #11: FAIL** (F correction CONFIRMED on 116 edges; machine clean; W4 under-implemented — slice-suspended ticket passes the top-level check, subtype not preserved by vvar; "all four instruments gate" overcounted; three stale doc lines) |
 | v1.19 | W4 goes DEEP (live same-instance tickets through tape/log slice cargo; the unreachable countermodel excluded from the subtype; stripped control proves no over-tightening); thirteenth gated regression; ALL SIX instruments carry exit-code verdicts (typecheck gains its printed fragment total); kernel.py cert/rs doc lines and two invalid docstring escapes fixed (one long-standing, surfaced by recompile); full decruft sweep per a9's directive; every prediction held, the v118 kit's no-op suite probe adjudicated | **fresh audit #12: FAIL** (first audit-found kernel-arm defect since audit #5's fire-arm countermodel — the anshead species check was an untyped ASSERT and never consulted the leaf, silently accepting matched foreign markers; W4 still leaked on same-key bit-free storage (→W8 target) and conflicting burials (→W3 target); reachable rootval rows and answer-species behavior absent from §3's table; C2's "exactly" missed the SyntaxWarning removal; stale "twelve regressions" pack label; Run.ks docstring incomplete. CONFIRMED: C4 by fully independent forcing of fourteen components, all thirteen gates, machine diff-clean vs the v1.18 snapshot, token.md §2 lockstep 2,622 terms/47,420 steps zero mismatches, deep-W4 zero over-tightening on 218,546 generated states, F on 116 edges) |
 | v1.20 | W4 CLOSED by enumeration (`W4-storage` + `W4-burial` join frame/ticket; the four classes exhaust what the vvar-emitted ticket can collide with; agreeing burial admissible, its target measured WF; entry-vs-region closure stated honestly); `species-ans` types the anshead species check — leaf = γ = A — the ONE kernel-arm change since v1.11, bit-identical on every covered output; regressions fourteen (five-case storage/burial table) and fifteen (four-case species incl. the retrace chain) gated; §3 gains the species-ans, rootval, and verr rows; GUARD_RULES, guard docstrings, Run.ks docstring corrected; pack WF label count-neutral; zero storage/burial hits on the audit's own 300-program corpus; every prediction held (one wrong detail registered: wf prints no count line) | **fresh audit #13: FAIL** (the W4 closure CONFIRMED-SOUND by the auditor's own nine-row enumeration, agreeing-burial verified non-leaking, gating 15/15, cert/polarity/conservation excavations clean; the findings: the answer-bit DOMAIN was nowhere stated or enforced — ANS('h',2) was WF and flowed through anshead to an out-of-alphabet halt2, malformed tuples satisfied is_ans and crashed untyped, a γ/A pair meeting a binder stalled silently; and the honesty catch that "one kernel-arm change since v1.11" was FALSE — v1.12/v1.13 changed the fire arm's KD subtraction, as this chronicle's own rows document; plus two stale counts and C2's "seven kits" for eight) |
-| v1.21 | W0 joins the subtype (state/token grammar: bits {0,1}, gates {h,t}, exact arities, deep through slice/burial cargo, VB phase in domain — position-appropriateness stays the other invariants' job); anshead hardens to arity + domain (species-ans, never ValueError, never halt2); the untyped-stall class closes with three typed guards (species-binder, species-leaf, species-transport; foreign-lp and empty-tape finals stay classical finals by design); regression sixteen gated; kernel-arm provenance restated exactly (two waves since v1.11: v1.12/v1.13 KD subtraction, v1.20/v1.21 leaf guards — each measured no-op/bit-identical on covered outputs); counts go count-neutral in the standing prose; the v114 kit's placeholder-key probe adjudicated (out-of-language tokens, W0 working as specified); zero W0 hits on the 218,546-state corpus; every prediction held | **fresh audit #14: pending** |
+| v1.21 | W0 joins the subtype (state/token grammar: bits {0,1}, gates {h,t}, exact arities, deep through slice/burial cargo, VB phase in domain — position-appropriateness stays the other invariants' job); anshead hardens to arity + domain (species-ans, never ValueError, never halt2); the untyped-stall class closes with three typed guards (species-binder, species-leaf, species-transport; foreign-lp and empty-tape finals stay classical finals by design); regression sixteen gated; kernel-arm provenance restated exactly (two waves since v1.11: v1.12/v1.13 KD subtraction, v1.20/v1.21 leaf guards — each measured no-op/bit-identical on covered outputs); counts go count-neutral in the standing prose; the v114 kit's placeholder-key probe adjudicated (out-of-language tokens, W0 working as specified); zero W0 hits on the 218,546-state corpus; every prediction held | **fresh audit #14: FAIL** (C5 CONFIRMED 16/16 with independent forcings; §8, §12's trace anchors, gram/run_dyn, the classical-final exemptions, and the v114 adjudication all CONFIRMED. The findings: W0's bit check used Python equality — 1.0/True/0.0/False are ==-equal to bits, so ANS('h',1.0) was WF and rootval string-formatted it into the out-of-alphabet terminal KINDS halt1.0/haltTrue; W0 never checked K(l) cargo shape, ticket/frame/storage instance fields recursively, or the state coordinates at all — d='X' and alien paths were WF and silently stalled, off-tree paths and non-Var lp occurrences were WF and crashed in subterm/binder_path; the "position-appropriateness is the other invariants' job" sentence was refuted (no other invariant does d/path/lp validity); C2 missed the diag capture's own label delta; and the corrected two-wave provenance summary was STILL incomplete — v1.12 also changed the ordinary decode arm, and "leaf-guard wave" mislabeled the binder/transport arms) |
+| v1.22 | W0 becomes the FULL state language: exact-int bits (bool refused — the terminal-kind minting), recursive lp productions with occurrences resolving to Vars of the term, arrival-lp K(l) cargo, coordinates d/path in language, VB phase exact-int; anshead's bit check exact-int (the one arm change, bit-identical on covered outputs); regression seventeen (state-language: ten countermodels + exact-int and kit-exact foreign-lp controls) gated; provenance summaries abolished — the register names arms per version only and defers history to these rows; the wf.py v1.12 fixture's App-naming carrier lp corrected (countermodel essence untouched); six kits' helper-lp wf-columns and the v121 kit's crash-by-construction adjudicated; stale W1-W9 phrases updated; zero W0 hits on the corpus; every prediction held in substance with the kit-delta count wrong and registered | **fresh audit #15: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
