@@ -413,7 +413,7 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.35** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.36** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
 twenty-seven fresh-context rounds. Kernel-arm provenance summaries
@@ -632,7 +632,21 @@ semantic repair indicated" — with raw-object totality CONFIRMED
 IN SCOPE (runtime-mutation attacks judged out of scope, the
 boundary the charge asked for) and the fallback confirmed by
 110,232 comparisons. v1.35 is comments and kit notes only; all
-six instruments measured byte-identical. What
+six instruments measured byte-identical. Audit #28 (twelfth
+machine-clean round; C1–C5 confirmed in full, the v1.35
+corrections verified correct) found the C6 gap: regression
+31's "n distinct shells" were ONE constant-folded object —
+CPython compiles a constant tuple display to a single
+LOAD_CONST — so the permanent gate covered the wrong sharing
+shape, with v1.33's outcomes having graded that coverage HELD
+(the third unmarked provenance miss, now marked); plus two
+"no KD" comments above assertions requiring an empty KD
+bundle, and the W8 comment overstating certified pop. v1.36
+(checker fixture and comments only, ninth consecutive):
+the shells runtime-built and genuinely sharing one occurrence
+object, distinctness GATED as a flag conjunct (forced alone →
+exit 1), the genuine family ['W0'] and linear, every wording
+corrected, §6's stable-runtime scope restated locally. What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
 day: all thirty-two permanent regressions now gate mechanically (the
@@ -658,7 +672,7 @@ prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #28 of the v1.35 h-fragment
+1. **fresh-context independent audit #29 of the v1.36 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9

@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.35.** The kernel is a scratch superposition evolver
+**Status: v1.36.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,7 +17,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #28**, whose
+The standing PASS re-claim is **gated on fresh audit #29**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -25,7 +25,37 @@ since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
 so this register now names arms exactly and only per version:
-v1.35 changes NO executable source AT ALL — the round is
+v1.36 changes NO kernel source and NO checker semantics — the
+ninth consecutive checker-only round, one regression fixture
+plus comments: audit #28 (machine clean a TWELFTH round; C1-C5
+confirmed in full — instruments reproducing stored bytes, fresh
+AST-derived forcing 32/32 + 14/14 + 3/3, corpus zero-hit, gauge
+8/1024 and 4/1024; the v1.35 corrections verified correct, the
+layer-ten locator confirmed truthful against extracted v1.31
+source; the C3 boundary sentence ruled consistent under the
+registered stable-runtime scope) found the C6 gap: REGRESSION
+31 NEVER BUILT ITS CLAIMED FAMILY — its shell display was a
+constant expression, folded by CPython to ONE LOAD_CONST, so
+the "n distinct shells" were one shared object at every size,
+and v1.33's outcomes had graded that coverage HELD (the third
+unmarked provenance miss, now marked). v1.36: the shells are
+runtime-built (the display references a named occurrence local;
+a name cannot be a code-object constant), genuinely sharing ONE
+occurrence object, and DISTINCTNESS IS GATED — the fixture
+returns len({id}) == n−1 as a conjunct of its flag, printed;
+the genuine family measures ['W0'] and linear (0.103 → 0.680 ms
+at 8×, ~2× per doubling, matching the auditor's
+reconstruction). The wording sweep: the two "no KD" comments
+corrected to "empty KD bundle" (their own assertions require
+('KD', ())); the W8 comment's "removes exactly the frames it
+records" corrected to subtraction of surviving representations
+(pop removes the popped frames but records only keys left with
+no surviving representation — the riding-ticket control pops
+into an empty bundle); §6 restates the stable-runtime scope
+locally (the auditor's non-required suggestion, adopted); and
+v1.35's own predictions file is marked for its
+self-contradictory falsifier and five-vs-six instrument count.
+Before that, v1.35 changed NO executable source AT ALL — the round is
 comments and kit notes only, because audit #27's verdict was
 the narrowest of the loop: "FAIL — documentation/display only;
 no kernel or checker semantic repair indicated." C1-C6 SURVIVED
@@ -704,7 +734,12 @@ the machine's unitarity claims quantify over the subtype:
   token grammar a closure sweep with an id-keyed per-call
   memo), so `wf()` accepts or W0-rejects ANY finite object
   graph — malformed, cyclic, hostile-typed, or shared — without
-  crashing or hanging, and `wf7()` is exact-type dispatched and
+  crashing or hanging (SCOPE, restated locally per audit #28's
+  adopted suggestion: a finite STABLE graph under an unmodified
+  runtime — sys.settrace TOCTOU hooks and class-descriptor
+  injection mutate the trusted class/runtime mid-call and are
+  runtime mutation, not input; the status adjudication, audits
+  #27/#28), and `wf7()` is exact-type dispatched and
   gated by the total `wf()` itself: "declines out-of-language
   sources" is enforced, not promised. Past the gate, the W1-W9 scans and the machine share
   the HOST'S STRUCTURAL-OPERATION BOUNDARY: hash, equality, AND
@@ -1033,7 +1068,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#28; the verdict will be registered here.** (Audit #16 caught
+#29; the verdict will be registered here.** (Audit #16 caught
 this sentence stale; audit #19 caught it stale AGAIN despite the
 parenthetical promising otherwise — the promise is now an
 ASSERTION: the pack assembly script verifies §1 and §9 name the
@@ -1161,7 +1196,11 @@ isolation control; shared-substructure — the shared-slice
 rs/K-storage families and the shared-KD-keys family W0 inside
 the linear band on the auditor's exact term shape; big-index/
 slice-cargo — the Var(1<<n) family and the carrier slice-cargo
-family W0 inside the linear band, the bound-big-index control
+family W0 inside the linear band (n runtime-built DISTINCT
+shells sharing ONE occurrence object; v1.36, after audit #28
+proved the first fixture's shells constant-folded to one
+object, with distinctness gated as a conjunct of the flag and
+forced-falsifiable alone), the bound-big-index control
 WF; fieldless — the four undefaulted hollow Runs W0 without
 raising, the defaulted trio pinned to its class-default
 fallback, hollow Lam/Var terms W0, wf7 declining, constructor
@@ -1207,7 +1246,11 @@ the KD memo mechanically — audit #26 confirmed thirty-one-for-thirty-one and t
 lemma by 60,000-graph differential; audit #27 confirmed
 thirty-two-for-thirty-two plus the fourteen components plus
 the three polarity readings, raw-object totality in scope, and
-the defaulted-field fallback by 110,232 comparisons: the v1.6 pair
+the defaulted-field fallback by 110,232 comparisons — audit
+#28 re-confirmed thirty-two-for-thirty-two plus the components
+and readings by fresh AST-derived forcing, noting the
+slice-cargo subcomponent then gated a misconstructed shape
+(repaired and identity-gated in v1.36): the v1.6 pair
 gates `collisions_under_wf()`; the other thirty gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
@@ -1553,7 +1596,8 @@ no bare-term ideal oracle).
 | v1.32 | CHECKER-ONLY, sixth consecutive: EXTEND-ONCE-PER-SLICE (a per-call seen_slices id-set in the closure sweep — the call that first extends a slice either drains it fully or fails with w0bad already set, the doctrine audit #24 just confirmed statically; the auditor's family drops 206 → 2.3 ms at n=1,600); the KD-KEYS SIBLING PREEMPTED before any auditor found it (n KD entries sharing one keys tuple — kdmemo, both verdicts stored so shared-bad tuples still flag); regression thirty times the shared-slice rs/K-storage and shared-KD-keys families on the auditor's exact term shape, thirty-for-thirty under forcing; the regression-29 coverage wording corrected and the overstatement registered; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #25: FAIL** (the machine clean a NINTH consecutive round; EXTEND-ONCE-PER-SLICE CONFIRMED across three interleavings with fresh-call rechecks; the KD memo confirmed mechanically — 63 false-memo hits each executing the w0bad path; the post-gate W2 quadratic ruled honestly covered by value-semantics; 30/30 + 14/14 + 3/3 forcings. The findings, layer ELEVEN: BIG-INTEGER ARITHMETIC in max-free — Var(1<<n) under n lambdas, Θ(n) representation with an n-bit leaf, n subtractions on n-bit integers, Θ(n²), 454 ms at n=128,000 with the correct ['W0'] verdict; and the provenance defect REPEATED — regression 30's comment claimed four families incl. slice-cargo, the loop had three, and v1.32's outcome graded the four-family prediction HELD, the same unmarked-miss class one round after its correction) |
 | v1.33 | CHECKER-ONLY, seventh consecutive: THE CLAMP — closed() counts distinct Lams (id-visited pre-pass), clamps every Var contribution at lam_total+1 (an upward DAG path cannot revisit nodes, so no index above the Lam count is ever bound; min preserves ==0 exactly; propagated values word-sized; the big index never bit-traversed — 454 → 66 ms at n=128,000); regression thirty-one (big-index band + slice-cargo timed at last + the bound-big-index no-over-rejection control) gated, thirty-one-for-thirty-one under forcing; the repeated provenance miss MARKED in v1.32's outcomes and regression 30's comment corrected; one figure miss in this round's OWN outcomes marked immediately (the predicted "under 50 ms" measured 66 ms — the band held, the figure did not); suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #26: FAIL** (the machine clean a TENTH consecutive round; THE CLAMP LEMMA CONFIRMED — 60,000 randomized shared DAGs incl. 1,418 shared-Lam roots and 96 boundary cases against an unclamped reference, zero mismatches; fresh bigint timings linear; the mixed-memo composition family linear at ~2× doublings; all provenance repairs verified literal, both marked misses counted. The findings, layer TWELVE: DELETED FIELDS ON EXACT INSTANCES — object.__delattr__ yields exact-but-hollow Runs/Lams/Vars that pass exact-type dispatch and AttributeError on field access, in scope under the register's own "ANY finite object graph — malformed" sentence; the layer11 kit's hard-coded line number reads 0 reflags after the clamp shifted wf.py — the auditor re-traced the real 63; and the pack note misattributed two rows to the wrong kit) |
 | v1.34 | CHECKER-ONLY, eighth consecutive: FIELD-PRESENCE GUARDS — hasattr for the seven Run fields after exact-type dispatch, getattr sentinels for term-node fields in both validator passes; the DEFAULTED-FIELD DISTINCTION discovered in-round by the regression's own failing first draft and pinned (deleting vb/rs/ks exposes the class-level default — the state is extensionally the default Run, adjudicating [] with no crash; deleting path/d/log/tape is W0); regression thirty-two gated, thirty-two-for-thirty-two under forcing; the kit-note misattribution corrected and the stale line-number tracer adjudicated; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #27: FAIL — documentation/display only; no kernel or checker semantic repair indicated** (C1-C6 SURVIVE MECHANICALLY; raw-object totality CONFIRMED IN SCOPE — all seven fields deleted or __dict__-replaced, hostile values and a hostile dict subclass with zero callback execution, hollow term nodes, weakref/GC pressure all defeated; the TOCTOU sys.settrace and class-descriptor attacks judged out of scope as runtime mutation, exactly the boundary the charge asked to be adjudicated; the defaulted-field fallback CONFIRMED — 110,232 comparisons over 6,124 reachable states across wf/wf7/step/eq/hash/repr, zero mismatches, with the vars() intensionality refinement; 32/32 + 14/14 + 3/3 forcings; the two corrections both TEXT: regression 32's comment still said "all seven → W0" against its own code, and the layer-ten kit's line-302 locator lacked its historical label) |
-| v1.35 | COMMENTS AND KIT NOTES ONLY — zero executable changes, all six instruments byte-identical (measured): regression 32's comment rewritten to the four-undefaulted/three-defaulted distinction its code and print line already carried; the guard comment scoped to undefaulted fields with the fallback named; the layer-ten locator adjudicated as historical (v1.31 line numbering) beside the layer-eleven tracer; the auditor's vars() refinement adopted into the fallback sentence | **fresh audit #28: pending** |
+| v1.35 | COMMENTS AND KIT NOTES ONLY — zero executable changes, all six instruments byte-identical (measured): regression 32's comment rewritten to the four-undefaulted/three-defaulted distinction its code and print line already carried; the guard comment scoped to undefaulted fields with the fallback named; the layer-ten locator adjudicated as historical (v1.31 line numbering) beside the layer-eleven tracer; the auditor's vars() refinement adopted into the fallback sentence | **fresh audit #28: FAIL — permanent-regression coverage and documentation/provenance defects; no kernel or checker semantic countermodel** (the machine clean a TWELFTH consecutive round; C1-C5 confirmed — 33 embedded sources byte-checked with only wf.py's comment delta, all six instruments reproducing stored bytes, fresh AST-derived forcing 32/32 + 14/14 + 3/3, fresh corpus 300/206/363/218,546 zero-hit with arm census 465/367/222/0, gauge 8/1024 + 4/1024, conservation size 11 reproduced; the v1.35 corrections verified correct, the layer-ten locator confirmed truthful at extracted-v1.31 line 302; C3's boundary sentence ruled consistent under the registered stable-runtime scope. The findings: REGRESSION 31's distinct-shell family was ONE constant-folded object — CPython compiles the constant tuple display to a single LOAD_CONST, the gated states held one distinct shell at both sizes, the dead inner31 local confirmed by bytecode capture, and the reconstructed genuine family stayed ['W0'] and linear, so the gate covered the wrong shape without hiding a slowdown; v1.33's outcomes had graded that coverage HELD — a third unmarked provenance miss; two current comments said "no KD" above assertions requiring ('KD', ()); the W8 comment overstated certified pop against the loop's own riding-ticket control; and v1.35's predictions file contradicted its own timing-suffix exception and miscounted five instruments for six) |
+| v1.36 | CHECKER FIXTURE AND COMMENTS ONLY, ninth consecutive checker-only round, zero semantic changes: regression 31's slice-cargo family REBUILT FOR REAL — the shells runtime-built from a display referencing a named occurrence local (a name cannot be a code-object constant), genuinely sharing ONE occurrence object, the dead inner31 local deleted, and DISTINCTNESS GATED (len({id}) == n−1 a conjunct of the flag, printed; forced alone → exit 1); the genuine family ['W0'] and linear, 0.103 → 0.680 ms at 8× (~2× per doubling, matching the auditor's reconstruction); the two "no KD" comments → "empty KD bundle"; the W8 comment → subtraction of surviving representations; §6 restates the stable-runtime scope locally; the v1.33 miss MARKED in its outcomes and v1.35's falsifier contradiction plus five-vs-six count marked in its file; suite/certify/typecheck/polarity byte-identical, conservation byte-identical this run, wf exactly the one predicted line; 31/31 direct forcings plus the v1.6 pair via the v125 kit's byte-identical forcing snapshot; one capture error caught in-round by the diff and redone per the header protocol (the v125/v126 kits first rerun without their documented flags) | **fresh audit #29: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
