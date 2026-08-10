@@ -707,7 +707,14 @@ verdict is actually [], and a delta description written
 before its own round's second edit. v1.42 (two sentences, no
 executable change at all): the rationale restricted to the
 three RS duplicate families; the stale-claim class named in
-the chronicle.
+the chronicle. **Audit #35 then PASSED v1.42 as stated — zero
+required corrections, C1–C6 confirmed, fresh attacks (a
+100,000-case hostile graph soup, a new maximally-shared DAG
+family, an independent edge sweep) finding nothing — with the
+instance-alias gap as the registered conditional. The loop
+closed at thirty-five audits: thirty-four FAIL, one PASS. The
+kernel remains scratch and out-of-tree: the architecture.md §9
+contract gates, not this audit, decide when qALC code lands.**
 What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
@@ -734,12 +741,12 @@ prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #35 of the v1.42 h-fragment
-   claim** (verdict to be registered in `kernel.md`
-   §9); then the alias-tolerant transition theorem or λIAM
-   logged-position uniqueness (the standing conditional — W9
-   is its newly checkable ticket-dimension face), and
-   minimal/maximal canonical certificates;
+1. **the alias-tolerant transition theorem or λIAM
+   logged-position uniqueness** (the standing conditional the
+   audit-#35 PASS is explicitly conditioned on — W9 is its
+   newly checkable ticket-dimension face; a Codex math consult
+   is the planned opening move), and minimal/maximal canonical
+   certificates;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem
