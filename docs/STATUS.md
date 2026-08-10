@@ -413,12 +413,12 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.40** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.41** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle, which as of v1.40 is the SOLE
 history — the register's preamble delta stack is deleted per its
 own charter). The audit loop's state after
-twenty-eight fresh-context rounds. Kernel-arm provenance summaries
+twenty-nine fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -688,7 +688,18 @@ shrinks to what the gates prove — §10's sensitivity-scope
 statement, with the auditor's mutant registered as the
 standing boundary witness and their kit joining the roster —
 and the blanket LIFO sentence and "locally valid" terminology
-are corrected everywhere current.
+are corrected everywhere current. Audit #33 (seventeenth
+machine-clean round) then refuted the scope statement itself,
+in the overclaim direction: "extensional verdicts" was one
+word too strong — the genuine gates check predicates, and
+deleting the sole W2-dup append flips the checker from
+rejecting to accepting a genuine fixture with every gate
+green. v1.41 (claim language only, wf.py AST-identical): the
+scope statement enumerates the gated predicates
+clause-by-clause, and the W2-dup countermodel joins the
+fixture-aware mutant as the second registered boundary
+witness — the claim is now bounded by exhibited countermodels
+on both sides of what it asserts.
 What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
@@ -715,7 +726,7 @@ prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #33 of the v1.40 h-fragment
+1. **fresh-context independent audit #34 of the v1.41 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
