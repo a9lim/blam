@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.41.** The kernel is a scratch superposition evolver
+**Status: v1.42.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,7 +17,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #34**, whose
+The standing PASS re-claim is **gated on fresh audit #35**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -26,42 +26,30 @@ still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
 so this register states arms exactly: §11's rows for every
 version, and here the CURRENT delta only:
-v1.41 changes CLAIM LANGUAGE AND ONE SCRATCHPAD SCRIPT — the
-fixtures, gates, and machine untouched, the wf.py delta again
-comment-only (AST-identical to v1.39/v1.40): audit #33
-(machine clean a SEVENTEENTH round; charge 2 CONFIRMED-SOUND —
-seven sources byte-identical, wf.py AST- and
-non-comment-token-identical at exactly the four disclosed
-hunks, the register diff exactly the disclosed deletion and
-insertions, audit-#31 mutants and carrier removal exit 1, both
-fixture-aware reconstructions exit 0; charge 4's independent
-forcing 31/31 + 18/18 + aggregate all exit 1; C5 confirmed;
-all 23 kits at adjudicated exits) REFUTED the scope
-statement's own "extensional verdicts" phrase: the genuine
-gates check PREDICATES — sens28 is `'W0' not in sg28`, and the
-genuine comp28 family's actual verdict is ['W2-dup']x11 — so
-deleting the sole W2-dup append flips the shipped checker from
-rejecting to ACCEPTING a fixed genuine fixture with every
-public gate green, no fixture awareness needed. One round
-after shrinking the claim, it still overclaimed by one word.
-v1.41: §10's scope statement now ENUMERATES the gated
-predicates per family (verified clause-by-clause against the
-source) and registers audit #33's W2-dup countermodel as
-boundary witness #2 — the predicate-vs-verdict gap — beside
-audit #32's fixture-aware mutant (witness #1: implementation
-strategy); both witnesses' kits are on the roster with rows
-reading exit 0 BY CONSTRUCTION. The three wf.py comment
-phrases "pins ... verdicts" become "gates the stated
-predicates"; the v1.39/v1.40 chronicle rows' verdict-language
-is corrected in place with attribution; and audit #33's
-ancillary hazard is closed the STRONGER way — the round's own
-idempotence check proved the decruft script generation-pinned
-beyond the two flagged files (a rerun swept 36
-current-generation artifacts into attic/; all restored, both
-directions in the MANIFEST), so the script is RETIRED behind
-a mechanical historical guard that refuses to run, and the
-KEEP_EXACT-suffices prediction is marked as a miss in the
-round's own file.
+v1.42 changes TWO SENTENCES AND THE ROUND BOOKKEEPING — no
+wf.py change at all, no gate, no fixture, no script: audit #34
+(machine clean an EIGHTEENTH round; THE ENUMERATION ITSELF
+CONFIRMED SOURCE-EXACT — "no clause is stronger or weaker than
+wf.py" by fresh AST extraction and live capture; independent
+forcing 31/31 + 18/18 + aggregate; C5 clean; all 24 kits at
+adjudicated exits; the decruft guard exit 1 with no moves;
+every marking complete and true) found two CLAIM-LANGUAGE
+defects, the loop's narrowest verdict: §10's rationale
+sentence generalized the W2-dup explanation to all 'W0'-free
+genuine gates when it holds only for the three RS duplicate
+families (sg28/sg29f/sg30f measure ['W2-dup']x11 live;
+shells30-ks's genuine verdict is [] — its 'W0'-free gate is
+merely weaker than the live verdict); and the v1.41 pack's C1
+went stale IN-ROUND — it named only the KEEP_EXACT addition
+after the shipped script had also gained the retirement guard,
+the round's own outcome recording the stronger edit the claim
+never absorbed. v1.42: the rationale sentence is restricted to
+the three RS families with shells30-ks stated as it is; the
+stale-C1 class is named in the chronicle; the auditor's
+independent kit (audit_v141_independent.py — live predicate
+capture with the w2_reason_counterexample field, forcing,
+machine surface, 50,000-graph raw-totality fuzz) joins the
+roster as kit 25.
 
 This file is the current contract and register only. The
 round-by-round history — countermodels, corrections, verdicts —
@@ -913,7 +901,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#34; the verdict will be registered here.** (Audit #16 caught
+#35; the verdict will be registered here.** (Audit #16 caught
 this sentence stale; audit #19 caught it stale AGAIN despite the
 parenthetical promising otherwise — the promise is now an
 ASSERTION: the pack assembly script verifies §1 and §9 name the
@@ -1087,10 +1075,16 @@ exactly ['W0']; shells30 rs genuine 'W0'-free, ks genuine
 'W0'-free, KD genuine exactly [], all three corrupts exactly
 ['W0']; cargo31 both sizes exactly [] with both distinctness
 conjuncts, corrupt exactly ['W0'], inside the timing band.
-The 'W0'-free (rather than empty) genuine gates exist
-because those families' genuine verdicts deliberately carry
-W2-dup flags — n value-identical frames are the timing
-construction itself. TWO registered boundary witnesses now
+The 'W0'-free (rather than empty) genuine gates have a
+W2-dup rationale for the THREE RS DUPLICATE FAMILIES ONLY —
+comp28, occ29-rs, and shells30-rs each measure ['W2-dup']x11
+live at the pair size, because n value-identical frames are
+the timing construction itself. shells30-ks's genuine
+verdict is [] and its 'W0'-free gate is simply WEAKER than
+its current live verdict (audit #34 caught the previous
+sentence generalizing the W2 rationale to it); the ks/KD
+exact-empty clauses are as enumerated. No clause claims more
+than its enumerated predicate. TWO registered boundary witnesses now
 bound the claim. (1) Implementation strategy: audit #32's
 fixture-aware mutant (canning every long all-'b' occurrence
 except the exact length-13 corrupt; skipping every long
@@ -1506,7 +1500,8 @@ no bare-term ideal oracle).
 | v1.38 | REGRESSION FIXTURES ONLY — zero wf()/wf7()/kernel/instrument-semantic changes: SENSITIVITY BECOMES THE GATE. cargo31 in-language per the auditor's prescription (d='D'; WF-clean [] gated at both sizes; distinctness and the 24× band kept; measured 0.192 → 1.165 ms) with the corrupted-last-shell control gated to exactly ['W0'] — the carrier-removal countermodel now exits 1 with visibly different output; the scoping measurement (counter-instrumented copy) established the rs/ks loops run UNCONDITIONALLY, so comp28/occ29/shells30 genuinely exercise their machinery under 'X' (load-bearing: the early return isolates pre-gate cost from the value-semantics-quadratic W2 duplicate scan) and each gains small-n in-language sensitivity pairs — SIX pairs (this row's original text said five; audit #31's C1 refutation), genuine 'W0'-free / corrupted-element exactly ['W0'], all folded into their flags; conjunct-level and whole-flag forcings all exit 1; fixture comments state the conjunction-structure facts; the v1.37 miss marked; suite/certify/typecheck/polarity byte-identical, conservation byte-identical including its suffix (third consecutive coincidence), wf exactly the four predicted lines | **fresh audit #31: FAIL — the sensitivity-design charge won exactly as posed; no kernel or shipped-checker semantic repair indicated** (the machine clean a FIFTEENTH consecutive round; the literal wiring CONFIRMED — independent first/middle/last corruption battery all detected by the shipped checker, carrier removal exit 1, all 12 sensitivity clauses + six cargo31 conjuncts + 30 flags + allbad + v1.6 pair individually forced, independent traversal tracing matching the registered counts; the 'X' load-bearing claim CONFIRMED by live measurement — 0.182→1.252 ms pre-gate vs 1.729→95.766 ms post-gate at 8×; C5 zero-hit; the v1.37 marking verified complete. THE FINDINGS: the closure walker is LIFO — extend then pop from the END — so the "corrupted-last-shell" was visited FIRST, dying at one w0lp_shape call, and the register's "only a sweep reaching the deepest shell can flip it" was false as written; an in-memory checker mutant skipping slices of length ≥ 10 while special-casing the ('BAD',)-at-[-1] sentinel PASSED the full wf.py at exit 0 with every sensitivity gate True; a second mutant canning occ_required for long all-'b' occurrences passed the comp28/occ29 pairs — the pairs pinned shallow shape rejection, not the machinery; and "five pairs" was SIX, unmarked) |
 | v1.39 | FIXTURES ONLY again, zero semantic changes: CORRUPTIONS BECOME DEEP AND TRAVERSAL-LAST. comp28/occ29's corrupt value is a tuple-well-shaped UNBOUND all-'b' lp (this row said "locally valid" until audit #32 caught the phrase contradicting w0lp_shape's own local predicate; corrected in v1.40) — one 'b' beyond the binders, well-shaped, rejected only by the occurrence walk (kills the canned-count mutant); shells30-rs/ks and cargo31's corrupt element moves to slice position 0 — popped LAST under the LIFO order, requiring a full drain, measured at the full traversal count — and is tuple-well-shaped with an unbound occurrence (same v1.40 correction), 'f' stepped at a Var (kills the slice-skipping mutant); the KD kind's last key carries the same deep lp. BOTH reproduced mutants now EXIT 1 (the round's decisive measurement, predicted before the fix); carrier removal still exits 1; conjunct-level (sc28/sc29f/sc30k/rc_x) and whole-flag forcings all exit 1; the false deepest-shell sentence and five-vs-six corrected in the register and marked in the v1.38 file; ALL SIX instruments byte-identical INCLUDING wf (only fixture construction moved; conservation's suffix coincided a fourth consecutive time) | **fresh audit #32: FAIL — C4's coverage wording refuted; no machine or checker-semantic countermodel** (the machine clean a SIXTEENTH consecutive round; charge 1 CONFIRMED-SOUND — both audit-#31 mutants independently rebuilt exit 1, carrier removal exit 1, cargo31's full drain traced 12/12 with the unbound lp popped last; charge 3 GAP with strong negative evidence — 137 fire sources / 274 successors one-head exact, 12,617 non-fire Run edges KS-preserving, arm census 58/69/10/0, fifteen guards, clamp differential 60,000 graphs zero mismatches, hollow-object 110,232 comparisons zero mismatches; C1 CONFIRMED including a full fresh recapture; C5 CONFIRMED 300/206/363/218,546 zero-hit; the v1.38 marking verified complete. THE FINDINGS: a FIXTURE-AWARE mutant — canned long all-'b' occurrences except the exact length-13 corrupt, skipped long slices except a position-0 peek for the exact deep value — passes the complete suite at exit 0, establishing that the pairs pin the gated per-family predicates and kill the exhibited coarse mutant class, not implementation strategy, and that NO finite fixed fixture can (this row said "extensional verdicts" — audit #32's own phrase — until audit #33 proved the genuine gates check predicates, not verdicts; corrected in v1.41); the blanket LIFO-last sentence was true only for the slice cases — comp28/occ29 are last in LEFT-TO-RIGHT rs/ks loops, KD the last all() key; and 'locally valid lp' contradicted w0lp_shape's own local predicate, which includes the occurrence walk) |
 | v1.40 | COMMENTS, CLAIM SCOPE, AND THE REGISTER ONLY — fixtures untouched, zero executable changes, wf.py AST-IDENTICAL to v1.39 (four comment sites: "locally valid" becomes "tuple-well-shaped, sole W0 defect an unbound occurrence"; the traversal comments name the true enclosing scans and the shipped-checker scope): the SENSITIVITY-SCOPE STATEMENT joins §10 — the auditor's required correction verbatim, what the pairs prove vs what no fixed fixture can, audit #32's fixture-aware mutant registered as the standing boundary witness (its kit row exit 0 BY CONSTRUCTION; the kit audit_v139_fresh.py joins the roster as kit 23); the preamble's per-version history stack DELETED per the file's own charter (253 lines; §11's rows and the ledger carry every round); the v1.39 row's two "locally valid" phrases corrected in place with attribution; ALL SIX instruments byte-identical (conservation's timing suffix moved 1.4s→1.5s, ending the four-round coincidence; the eight other captures byte-identical); both audit-#31 mutants and carrier removal still exit 1 against the edited source; scratchpad decrufted by reference-scan (unreferenced packs, capture generations, headers, assemble scripts, and launch logs to attic/; every kit-read artifact kept — and the post-move battery CAUGHT the scan incomplete: audit_v117_fresh reads assemble_v117.sh, a filename class the scan never grep'd, so a comprehensive re-scan restored it plus assemble_v127.sh and a third full battery pass ran clean; the miss marked in v1.40's own predictions file) | **fresh audit #33: FAIL — the scope statement itself refuted in the overclaim direction; no machine or checker-semantic countermodel** (the machine clean a SEVENTEENTH consecutive round; charge 2 CONFIRMED-SOUND — seven sources byte-identical, wf.py AST- and non-comment-token-identical at exactly four hunks / +10 lines, the register diff exactly the disclosed 253-line deletion + insertions, five captures byte-identical + conservation suffix, audit-#31 mutants and carrier exit 1, both fixture-aware reconstructions exit 0; charge 3 GAP with the full fresh evidence set — fire census 58/69/10/0, 12,617 KS-preserving edges, fifteen guards, gauge 8/1024 + 4/1024, clamp 60,000 and hollow 110,232 zero-mismatch, all 23 kits at adjudicated exits; charge 4 independent forcing 31/31 + 18/18 + aggregate; C5 confirmed 300/206/363/218,546 zero-hit; charge 5 narrowly confirmed. THE FINDING: "the SHIPPED checker's extensional verdicts" is false — sens28 checks only 'W0'-absence while genuine comp28's verdict is ['W2-dup']x11, and a family-oblivious mutant deleting the sole W2-dup append flips the checker from rejecting to ACCEPTING that fixed genuine fixture at full-suite exit 0; the scope must enumerate the actual predicates. Ancillary: decruft_v140.py would re-break audit_v117_fresh on rerun — the restored assemble scripts were still classified keep=False) |
-| v1.41 | CLAIM LANGUAGE AND ONE SCRATCHPAD SCRIPT ONLY — fixtures, gates, machine untouched, wf.py AST-identical again (three comment phrases "pins ... verdicts" become "gates the stated predicates"): §10's scope statement now ENUMERATES the gated predicates per family, verified clause-by-clause against the source — comp28 genuine 'W0'-free / corrupt exactly ['W0']; occ29 rs genuine 'W0'-free, ks genuine exactly [], corrupts ['W0']; shells30 rs/ks genuine 'W0'-free, KD genuine exactly [], corrupts ['W0']; cargo31 both sizes exactly [] + distinctness + corrupt ['W0'] + band — with the reason the by-design-dup families gate W0-freeness only (their genuine verdicts carry deliberate W2-dup flags); audit #33's W2-dup countermodel registered as BOUNDARY WITNESS #2 (the predicate-vs-verdict gap) beside audit #32's fixture-aware mutant (witness #1), their kit audit_v140_scope_countermodel.py joining the roster as kit 24, both witness rows exit 0 BY CONSTRUCTION; the v1.39/v1.40 rows' verdict-language corrected in place with attribution; decruft_v140.py RETIRED behind a mechanical historical guard after the round's idempotence check proved it generation-pinned — a rerun swept 36 current-generation artifacts, all restored, the KEEP_EXACT-suffices prediction marked as a miss; ALL SIX instruments byte-identical (conservation suffix aside); the kit battery at adjudicated readings | **fresh audit #34: pending** |
+| v1.41 | CLAIM LANGUAGE AND ONE SCRATCHPAD SCRIPT ONLY — fixtures, gates, machine untouched, wf.py AST-identical again (three comment phrases "pins ... verdicts" become "gates the stated predicates"): §10's scope statement now ENUMERATES the gated predicates per family, verified clause-by-clause against the source — comp28 genuine 'W0'-free / corrupt exactly ['W0']; occ29 rs genuine 'W0'-free, ks genuine exactly [], corrupts ['W0']; shells30 rs/ks genuine 'W0'-free, KD genuine exactly [], corrupts ['W0']; cargo31 both sizes exactly [] + distinctness + corrupt ['W0'] + band — with a rationale sentence that OVERGENERALIZED the W2-dup explanation to all 'W0'-free genuine gates (true only for the three RS duplicate families; shells30-ks's genuine verdict is [] — audit #34's finding, corrected in v1.42); audit #33's W2-dup countermodel registered as BOUNDARY WITNESS #2 (the predicate-vs-verdict gap) beside audit #32's fixture-aware mutant (witness #1), their kit audit_v140_scope_countermodel.py joining the roster as kit 24, both witness rows exit 0 BY CONSTRUCTION; the v1.39/v1.40 rows' verdict-language corrected in place with attribution; decruft_v140.py RETIRED behind a mechanical historical guard after the round's idempotence check proved it generation-pinned — a rerun swept 36 current-generation artifacts, all restored, the KEEP_EXACT-suffices prediction marked as a miss; ALL SIX instruments byte-identical (conservation suffix aside); the kit battery at adjudicated readings | **fresh audit #34: FAIL — two claim-language defects; the enumeration itself confirmed source-exact; no machine or checker countermodel** (the machine clean an EIGHTEENTH consecutive round; charge 1: all ten enumerated clauses verified by fresh AST extraction + live capture — "no clause is stronger or weaker than wf.py" — but the W2-dup rationale sentence is FALSE for shells30-ks, whose genuine verdict is [] not ['W2-dup']x11; charge 2: the delta exactly as disclosed EXCEPT C1 named only the KEEP_EXACT addition when the shipped script also carries the retirement guard — the claim went stale against the round's own second edit; charge 3 GAP — fire census 58/69/10/0, 12,617 KS-preserving edges, fifteen guards, 50,000-graph raw fuzz zero exceptions, gauge 8/1024 + 4/1024; charge 4 CONFIRMED — independent forcing 31/31 + 18/18 + aggregate, C4 "mechanically correct despite the false explanatory sentence"; C5 confirmed; charge 5: every marking complete and true, C6 refuted only through the same two sentences) |
+| v1.42 | TWO SENTENCES AND THE ROUND BOOKKEEPING — no wf.py change at all (zero instrument deltas; the wf.py sha does not move), no gate, no fixture, no script: §10's W2-dup rationale RESTRICTED to the three RS duplicate families (comp28/occ29-rs/shells30-rs, each measured ['W2-dup']x11 live at the pair size) with shells30-ks stated as it is — genuine verdict [], its 'W0'-free gate merely weaker than the live verdict, no clause claiming more than its enumerated predicate; the stale-C1 class named: a delta description must be written from the final diff, not from the round's first fix — v1.41's C1 predated its own retirement-guard edit; audit #34's independent kit joins the roster as kit 25 (audit_v141_independent.py: live predicates with w2_reason_counterexample, forcing, machine surface, 50,000-graph raw-totality fuzz) | **fresh audit #35: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 

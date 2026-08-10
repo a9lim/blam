@@ -413,12 +413,12 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.41** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.42** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle, which as of v1.40 is the SOLE
 history — the register's preamble delta stack is deleted per its
 own charter). The audit loop's state after
-twenty-nine fresh-context rounds. Kernel-arm provenance summaries
+thirty fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -699,7 +699,15 @@ scope statement enumerates the gated predicates
 clause-by-clause, and the W2-dup countermodel joins the
 fixture-aware mutant as the second registered boundary
 witness — the claim is now bounded by exhibited countermodels
-on both sides of what it asserts.
+on both sides of what it asserts. Audit #34 (eighteenth
+machine-clean round, the loop's narrowest verdict) confirmed
+the enumeration source-exact and caught two sentences: the
+W2-dup rationale generalized to a family whose genuine
+verdict is actually [], and a delta description written
+before its own round's second edit. v1.42 (two sentences, no
+executable change at all): the rationale restricted to the
+three RS duplicate families; the stale-claim class named in
+the chronicle.
 What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
@@ -726,7 +734,7 @@ prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #34 of the v1.41 h-fragment
+1. **fresh-context independent audit #35 of the v1.42 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
