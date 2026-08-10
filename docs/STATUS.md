@@ -413,7 +413,7 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.38** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.39** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
 twenty-seven fresh-context rounds. Kernel-arm provenance summaries
@@ -661,10 +661,20 @@ before the tape, so the carrier was never traversed — removing
 it left the whole output byte-identical. v1.38 (fixtures
 only): sensitivity becomes the gate — cargo31 in-language with
 a corrupted-last-shell control that must flip to ['W0'] (the
-removal countermodel now exits 1), and five sensitivity pairs
+removal countermodel now exits 1), and six sensitivity pairs
 gate the rs/ks families whose 'X' timing methodology is
 load-bearing (measured: their machinery runs through the
 unconditional loops; the early return isolates pre-gate cost).
+Audit #31 (fifteenth machine-clean round) then won the
+sensitivity-design charge: the walker is LIFO, so the
+"last-shell" corrupt was visited first, and two checker
+mutants — one skipping long slices while special-casing the
+shallow sentinel, one canning the occurrence count — passed
+every v1.38 gate at exit 0; "five pairs" was also six. v1.39
+(fixtures only): corruptions become deep and traversal-last —
+locally valid unbound lps at the position popped last — and
+BOTH reproduced mutants now exit 1, with all six instruments
+byte-identical including wf.
 What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
@@ -691,7 +701,7 @@ prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #31 of the v1.38 h-fragment
+1. **fresh-context independent audit #32 of the v1.39 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
