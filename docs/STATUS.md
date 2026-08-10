@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.34** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.35** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-twenty-six fresh-context rounds. Kernel-arm provenance summaries
+twenty-seven fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -626,7 +626,13 @@ instances made hollow by object.__delattr__ — exact in type,
 missing a field, crashing on first touch. v1.34 (checker-only,
 eighth consecutive): field-presence guards, with the
 defaulted-field fallback distinction discovered in-round and
-pinned. What
+pinned. Audit #27's verdict was the narrowest of the loop —
+"FAIL: documentation/display only; no kernel or checker
+semantic repair indicated" — with raw-object totality CONFIRMED
+IN SCOPE (runtime-mutation attacks judged out of scope, the
+boundary the charge asked for) and the fallback confirmed by
+110,232 comparisons. v1.35 is comments and kit notes only; all
+six instruments measured byte-identical. What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
 day: all thirty-two permanent regressions now gate mechanically (the
@@ -645,15 +651,14 @@ minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
 under always-emit and the KA head; the W0-gate display
 collapses; matrix-coverage shrink under the tightened language;
-the healed-countermodel crash); v1.34's predictions held with
-one in-round discovery declared — the defaulted-field
-class-fallback distinction, caught by the regression's own
-failing first draft (provenance in the scratchpad prediction
-files).
+the healed-countermodel crash); v1.35's predictions held
+exactly — the round touched no executable path and every
+instrument stayed byte-identical (provenance in the scratchpad
+prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #27 of the v1.34 h-fragment
+1. **fresh-context independent audit #28 of the v1.35 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9

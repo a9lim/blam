@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.34.** The kernel is a scratch superposition evolver
+**Status: v1.35.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,7 +17,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #27**, whose
+The standing PASS re-claim is **gated on fresh audit #28**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -25,7 +25,28 @@ since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
 so this register now names arms exactly and only per version:
-v1.34 changes NO kernel source — the eighth consecutive
+v1.35 changes NO executable source AT ALL — the round is
+comments and kit notes only, because audit #27's verdict was
+the narrowest of the loop: "FAIL — documentation/display only;
+no kernel or checker semantic repair indicated." C1-C6 SURVIVED
+MECHANICALLY: raw-object totality CONFIRMED IN SCOPE (its
+layer-13 harness deleted or __dict__-replaced all seven fields,
+installed hostile values and a hostile dict subclass, hollowed
+term nodes, and applied weakref/GC pressure — zero callback
+executions; the sys.settrace TOCTOU and class-descriptor
+attacks were judged OUT OF SCOPE, mutating the trusted runtime
+rather than a finite stable input graph), and the
+defaulted-field fallback CONFIRMED by 110,232 comparisons over
+6,124 reachable states with zero mismatches. The two required
+corrections: regression 32's COMMENT still carried the first
+draft's "all seven → W0" while the code distinguished (fixed;
+the guard comment likewise scoped), and the layer-ten kit's
+line-302 locator needed its historical label (adjudicated in
+the pack header). The auditor's refinement is adopted:
+"extensionally the default Run" is exact FOR THE MACHINE'S AND
+CHECKER'S OBSERVATIONS (wf/wf7/step/eq/hash/repr) — not for
+intensional observers like vars(). Before that, v1.34 changed
+NO kernel source — the eighth consecutive
 checker-only round: audit #26 (machine clean a TENTH round; THE
 CLAMP LEMMA CONFIRMED over 60,000 randomized shared DAGs
 against an unclamped reference, zero mismatches, the auditor
@@ -1012,7 +1033,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#27; the verdict will be registered here.** (Audit #16 caught
+#28; the verdict will be registered here.** (Audit #16 caught
 this sentence stale; audit #19 caught it stale AGAIN despite the
 parenthetical promising otherwise — the promise is now an
 ASSERTION: the pack assembly script verifies §1 and §9 name the
@@ -1182,15 +1203,17 @@ before a quiet return) covered by the UNSPECIFIED wording — audit #24 confirme
 fourteen components plus the three polarity readings, and
 CONFIRMED the memo doctrine by static enumeration — audit #25 confirmed thirty-for-thirty plus the fourteen
 components plus the three polarity readings, extend-once and
-the KD memo mechanically — audit #26 confirmed thirty-one-for-thirty-one plus the
-fourteen components plus the three polarity readings, and the
-clamp lemma by 60,000-graph differential: the v1.6 pair
+the KD memo mechanically — audit #26 confirmed thirty-one-for-thirty-one and the clamp
+lemma by 60,000-graph differential; audit #27 confirmed
+thirty-two-for-thirty-two plus the fourteen components plus
+the three polarity readings, raw-object totality in scope, and
+the defaulted-field fallback by 110,232 comparisons: the v1.6 pair
 gates `collisions_under_wf()`; the other thirty gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
 pair false → exit 1; forcing cert_sweep flags false → exit 1,
-including the v1.20 through v1.34 flags; the
+including the v1.20 through v1.35 flags; the
 emulated-old-arm probe flips `cert_sweep` to FAIL). Three
 v1.12/v1.13-era regression mechanizations were updated in v1.23
 to the always-emit discipline (their targets now carry the
@@ -1529,7 +1552,8 @@ no bare-term ideal oracle).
 | v1.31 | CHECKER-ONLY, fifth consecutive: the OCCURRENCE MEMO (occ_required — walk + binder scan + 'a'-count once per occurrence OBJECT; total pre-gate work Σ O(local) over distinct objects; the auditor's three families drop to ~2× doublings, rs 389 → 2.2 ms at n=2,000); the MEMO DOCTRINE stated honestly (per-entry truth is NOT the invariant — aggregate monotonicity is: a stale-True exists only because an earlier check in the same call already OR'd w0bad True; memos per-call, nothing crosses calls); regression twenty-nine (the auditor's families in the linear band + the stale-interleaving verdict + the fresh-call isolation control) gated, twenty-nine-for-twenty-nine under forcing; one fixture bug caught IN-ROUND by the band failing (the first draft built a fresh occurrence per shell — a genuinely quadratic REPRESENTATION whose quadratic time is correct; the auditor's family shares one object; the wrong draft documented in the regression comment); suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #24: FAIL** (the machine unbroken an EIGHTH consecutive round; AGGREGATE MONOTONICITY CONFIRMED BY STATIC ENUMERATION — all memo call sites inside wf, function-local, every first failure flowing into monotone w0bad, no public escape; 29/29 + 14/14 + 3/3 forcings; fresh corpus zero-hit; the fixture-bug disclosure and 24× band verified honest. The findings, layer TEN: SHARED-SLICE TRAVERSAL unmemoized — n distinct shells sharing one n-entry slice re-push its elements per shell, Θ(n²) on a Θ(n) graph, 3.9× per doubling; and the regression-29 coverage OVERSTATED — rs timed, K-storage verdict-only, slice-cargo absent, against "exactly the auditor's three families" in the register) |
 | v1.32 | CHECKER-ONLY, sixth consecutive: EXTEND-ONCE-PER-SLICE (a per-call seen_slices id-set in the closure sweep — the call that first extends a slice either drains it fully or fails with w0bad already set, the doctrine audit #24 just confirmed statically; the auditor's family drops 206 → 2.3 ms at n=1,600); the KD-KEYS SIBLING PREEMPTED before any auditor found it (n KD entries sharing one keys tuple — kdmemo, both verdicts stored so shared-bad tuples still flag); regression thirty times the shared-slice rs/K-storage and shared-KD-keys families on the auditor's exact term shape, thirty-for-thirty under forcing; the regression-29 coverage wording corrected and the overstatement registered; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #25: FAIL** (the machine clean a NINTH consecutive round; EXTEND-ONCE-PER-SLICE CONFIRMED across three interleavings with fresh-call rechecks; the KD memo confirmed mechanically — 63 false-memo hits each executing the w0bad path; the post-gate W2 quadratic ruled honestly covered by value-semantics; 30/30 + 14/14 + 3/3 forcings. The findings, layer ELEVEN: BIG-INTEGER ARITHMETIC in max-free — Var(1<<n) under n lambdas, Θ(n) representation with an n-bit leaf, n subtractions on n-bit integers, Θ(n²), 454 ms at n=128,000 with the correct ['W0'] verdict; and the provenance defect REPEATED — regression 30's comment claimed four families incl. slice-cargo, the loop had three, and v1.32's outcome graded the four-family prediction HELD, the same unmarked-miss class one round after its correction) |
 | v1.33 | CHECKER-ONLY, seventh consecutive: THE CLAMP — closed() counts distinct Lams (id-visited pre-pass), clamps every Var contribution at lam_total+1 (an upward DAG path cannot revisit nodes, so no index above the Lam count is ever bound; min preserves ==0 exactly; propagated values word-sized; the big index never bit-traversed — 454 → 66 ms at n=128,000); regression thirty-one (big-index band + slice-cargo timed at last + the bound-big-index no-over-rejection control) gated, thirty-one-for-thirty-one under forcing; the repeated provenance miss MARKED in v1.32's outcomes and regression 30's comment corrected; one figure miss in this round's OWN outcomes marked immediately (the predicted "under 50 ms" measured 66 ms — the band held, the figure did not); suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #26: FAIL** (the machine clean a TENTH consecutive round; THE CLAMP LEMMA CONFIRMED — 60,000 randomized shared DAGs incl. 1,418 shared-Lam roots and 96 boundary cases against an unclamped reference, zero mismatches; fresh bigint timings linear; the mixed-memo composition family linear at ~2× doublings; all provenance repairs verified literal, both marked misses counted. The findings, layer TWELVE: DELETED FIELDS ON EXACT INSTANCES — object.__delattr__ yields exact-but-hollow Runs/Lams/Vars that pass exact-type dispatch and AttributeError on field access, in scope under the register's own "ANY finite object graph — malformed" sentence; the layer11 kit's hard-coded line number reads 0 reflags after the clamp shifted wf.py — the auditor re-traced the real 63; and the pack note misattributed two rows to the wrong kit) |
-| v1.34 | CHECKER-ONLY, eighth consecutive: FIELD-PRESENCE GUARDS — hasattr for the seven Run fields after exact-type dispatch, getattr sentinels for term-node fields in both validator passes; the DEFAULTED-FIELD DISTINCTION discovered in-round by the regression's own failing first draft and pinned (deleting vb/rs/ks exposes the class-level default — the state is extensionally the default Run, adjudicating [] with no crash; deleting path/d/log/tape is W0); regression thirty-two gated, thirty-two-for-thirty-two under forcing; the kit-note misattribution corrected and the stale line-number tracer adjudicated; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #27: pending** |
+| v1.34 | CHECKER-ONLY, eighth consecutive: FIELD-PRESENCE GUARDS — hasattr for the seven Run fields after exact-type dispatch, getattr sentinels for term-node fields in both validator passes; the DEFAULTED-FIELD DISTINCTION discovered in-round by the regression's own failing first draft and pinned (deleting vb/rs/ks exposes the class-level default — the state is extensionally the default Run, adjudicating [] with no crash; deleting path/d/log/tape is W0); regression thirty-two gated, thirty-two-for-thirty-two under forcing; the kit-note misattribution corrected and the stale line-number tracer adjudicated; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #27: FAIL — documentation/display only; no kernel or checker semantic repair indicated** (C1-C6 SURVIVE MECHANICALLY; raw-object totality CONFIRMED IN SCOPE — all seven fields deleted or __dict__-replaced, hostile values and a hostile dict subclass with zero callback execution, hollow term nodes, weakref/GC pressure all defeated; the TOCTOU sys.settrace and class-descriptor attacks judged out of scope as runtime mutation, exactly the boundary the charge asked to be adjudicated; the defaulted-field fallback CONFIRMED — 110,232 comparisons over 6,124 reachable states across wf/wf7/step/eq/hash/repr, zero mismatches, with the vars() intensionality refinement; 32/32 + 14/14 + 3/3 forcings; the two corrections both TEXT: regression 32's comment still said "all seven → W0" against its own code, and the layer-ten kit's line-302 locator lacked its historical label) |
+| v1.35 | COMMENTS AND KIT NOTES ONLY — zero executable changes, all six instruments byte-identical (measured): regression 32's comment rewritten to the four-undefaulted/three-defaulted distinction its code and print line already carried; the guard comment scoped to undefaulted fields with the fallback named; the layer-ten locator adjudicated as historical (v1.31 line numbering) beside the layer-eleven tracer; the auditor's vars() refinement adopted into the fallback sentence | **fresh audit #28: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
