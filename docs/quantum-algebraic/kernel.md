@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.19.** The kernel is a scratch superposition evolver
+**Status: v1.20.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -16,8 +16,13 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #12**, whose
-verdict will be registered here.
+The standing PASS re-claim is **gated on fresh audit #13**, whose
+verdict will be registered here. One kernel arm has moved since
+v1.11: audit #12 found the anshead species check was an ASSERT
+(untyped crash) that never consulted the leaf; v1.20 types it
+(`species-ans`, leaf = γ = A). Every covered graph, certificate,
+marginal, and physics row measured bit-identical across the
+change.
 
 This file is the current contract and register only. The
 round-by-round history — countermodels, corrections, verdicts —
@@ -169,8 +174,20 @@ arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
 retrace      (pos, ↑, γ_g·L, A_g(b′)·T) → (parent+'f', ↓, L,
              γ_g·A_g(b′)·T)      [bt1's action on the γ head]
 
-anshead      (g, ↓, L, γ_g·A_g(b′)·T) → (g, VB(g, b′, 0), L, T)
+anshead      (g, ↓, L, γ·A·T): leaf, γ, and A gate kinds must all
+             agree — the answer arriving at a leaf is that leaf's
+             own gate's answer — else → species-ans  [v1.20,
+             audit #12: this was an ASSERT (untyped crash on γ/A
+             disagreement) that never consulted the LEAF — matched
+             foreign markers γ_t·A_t at an h leaf were silently
+             accepted into VB(t,…)]
+             (g, ↓, L, γ_g·A_g(b′)·T) → (g, VB(g, b′, 0), L, T)
 vb2          (g, VB(g,b′,k<2), L, •·T) → (g, VB(g,b′,k+1), L, T)
+rootval      (g, VB(g,b′,k<2), L, ρ·T) → RunDone(b̂′, res)
+             [the partially-applied answer boolean IS the output;
+             REACHABLE — dup reaches two such states]
+verr         (g, VB(g,b′,k<2), L, μ·T) → RunDone(err, res)
+             [a probed bare boolean value — typed]
 vvar         (g, VB(g,b′,2), L, T) → (g, ↑, L, •^(b′+1)·α_g(i,b′)·T)
              one bullet pays the gate application, the rest encode
              the slot; the ticket carries the instance.
@@ -185,10 +202,10 @@ errors       VB with a non-• non-classifier tape top; ↓-stuck on
 ```
 
 The guard family — `no-instance`, `alien-ticket`, `frame-conflict`,
-`recall-err`, `replay-err`, `pop-err`, `species-mu`, `refire`,
-`key-alias` — is the machine's whole answer to aliasing and misuse:
-**every detectable manifestation is a typed error, never a silent
-reinterpretation.**
+`recall-err`, `replay-err`, `pop-err`, `species-mu`, `species-ans`,
+`refire`, `key-alias` — is the machine's whole answer to aliasing
+and misuse: **every detectable manifestation is a typed error,
+never a silent reinterpretation.**
 
 ## 4. Instance identity and the selection lifecycle
 
@@ -389,15 +406,29 @@ the machine's unitarity claims quantify over the subtype:
   across ALL bit-carrying representations — frames, top-level and
   slice-suspended tickets on tape and log, and tickets buried in
   retained-whole `K(l)` records.
-- **W4** (first-interrogation exclusivity, DEEP as of v1.19): a
-  VB-active state at instance `i` holds no `i`-frame and no live
-  `i`-ticket anywhere on tape or log, deep through slice cargo.
-  The guard chain forces this on reachable states; the deep
-  clause additionally excludes the unreachable slice-suspended
-  configuration whose `vvar` step would re-emit a second live
-  same-key ticket (audit #11's subtype-preservation
-  countermodel — found reachable NOWHERE in the twenty programs,
-  1,000 generated graphs, or 250 candidates).
+- **W4** (first-interrogation exclusivity, CLOSED as of v1.20): a
+  VB-active state at instance `i` holds NO other representation
+  of its key in ANY of the four classes — no `i`-frame in RS
+  (`W4-frame`), no live `i`-ticket anywhere on tape or log deep
+  through slice cargo (`W4-ticket`, audit #11's countermodel),
+  no same-key bit-free storage (`W4-storage`, audit #12), and no
+  same-key burial with a CONFLICTING bit (`W4-burial`, audit
+  #12); an AGREEING burial is admissible — its `vvar` target is
+  WF. The four exclusions close `vvar` preservation **by
+  enumeration**: the emitted ticket `α_g(i,b′)` can only violate
+  W3, W8, or W9 in the target, and each violating partner class
+  is excluded at the source (frame or conflicting ticket/burial
+  → W3; bit-free record → W8; second live ticket → W9); `vb2`
+  preserves the region trivially (KS untouched). ENTRY into the
+  VB region (`anshead`) is guarded on reachable states by the
+  lifecycle — no representation of a key exists before its first
+  `vvar`, and re-interrogation of a dead key is refire-typed —
+  and raw-entry closure is deliberately NOT claimed: W4 encodes
+  a reachability fact (first interrogation), strictly stronger
+  than raw-state closure at the region's entry. Zero states of
+  the twenty programs excluded; zero W4-storage/W4-burial hits
+  over 218,546 states of 300 generated programs (the audit-#12
+  corpus).
 - **W5** (probe pairing): deep-counted γ (through lp slices and
   retained `K(l)` records; instance KEYS are frozen names, never
   counted) = #μ(tape) + #A(tape) — every in-flight probe's γ is
@@ -621,7 +652,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#12; the verdict will be registered here.**
+#13; the verdict will be registered here.**
 
 ## 10. Verification state
 
@@ -662,7 +693,7 @@ canonical dicts compared bit-for-bit; `dupcall` canonically None
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
 `refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **thirteen permanent regressions** (the v1.6 pair;
+zero violations; **fifteen permanent regressions** (the v1.6 pair;
 extra-frame collision, W7-excluded with disjoint targets;
 doctored bundle divergence; K+frame alias; retained-Q
 disjointness — spectator-bit columns share zero targets;
@@ -677,16 +708,29 @@ passes; ghost-key — an inert popkey occurring in no arrival
 frame at its certified position must fail `machine_coverage`,
 key-level non-vacuity; deep-W4 — a slice-suspended
 same-instance ticket in a VB-active state must be flagged while
-the stripped control stays clean). The gating structure, stated exactly
+the stripped control stays clean; W4 storage/burial — same-key
+bit-free K/KD storage and a conflicting-bit burial in a
+VB-active state must be flagged (`W4-storage`/`W4-burial`)
+while the clean and AGREEING-burial sources stay WF and the
+agreeing burial's vvar target measures WF, the built-in
+no-over-tightening control; answer-species — mismatched and
+matched-foreign γ/A markers at a leaf must be typed
+`species-ans`, the matched-own anshead intact, and the retrace
+chain typed one step after `bt1g` with no crash anywhere). The
+gating structure, stated exactly
 (audits #6 and #7 each caught a computed-but-non-gating
 verdict; audit #8 forced all eleven then-regressions
-individually and confirmed each drives exit 1): the v1.6 pair
-gates `collisions_under_wf()`; the other eleven gate
+individually and confirmed each drives exit 1; audit #12
+independently forced all thirteen then-flags plus every
+instrument component — fourteen forcings — each to exit 1):
+the v1.6 pair
+gates `collisions_under_wf()`; the other thirteen gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
-pair false → exit 1; forcing cert_sweep flags false → exit 1;
-the emulated-old-arm probe flips `cert_sweep` to FAIL).
+pair false → exit 1; forcing cert_sweep flags false → exit 1,
+including both v1.20 flags; the emulated-old-arm probe flips
+`cert_sweep` to FAIL).
 Conservation:
 exhaustive ≤ size 11, 14,452 surfacings at ≤10 / 55,727 at ≤11,
 zero failures. Polarity/terminal chains/gauge: zero violations,
@@ -707,7 +751,10 @@ correctly by the mechanized theorem, which §7.1 now states;
 audit #10's F-parity probe stands as evidence that popped and
 total frame counts differ on 38 spectator-retaining edges —
 the recording now takes the register's popped count; audit
-#11's deep-W4 countermodel now flagged at its source). ALL SIX
+#11's deep-W4 countermodel now flagged at its source; audit
+#12's storage/burial sources now flagged `W4-storage`/
+`W4-burial` and its answer-species cases typed `species-ans`
+with no exception anywhere on its kit rerun). ALL SIX
 instruments carry exit-code verdicts — wf, polarity,
 conservation (audit #10 flagged their print-only totals), and
 as of v1.19 suite, certify, and typecheck too (audit #11
@@ -750,7 +797,17 @@ phase-2 mutation, phase-1 entries persistent, sorted order); the
 three-way None sentence traced return-by-return and CONFIRMED
 (audit #8 — the two trailing defensive re-validations are
 unreachable-failure by determinism of validate); all eleven
-then-regression gates individually forced (audit #8). Basis counts vs v1.2 reference: `negative` 103→83,
+then-regression gates individually forced (audit #8); the
+F recording re-confirmed by audit #12 on the same 116
+certified-fire edges with zero split or collect() mismatches;
+`token.md` §2 vs the classical substrate confirmed row-for-row
+by audit #12's independent lockstep — 2,622 closed terms, 7,866
+runs, 47,420 steps, all eight rules exercised, zero mismatches;
+the deep-W4 clause confirmed with zero reachable
+over-tightening on audit #12's 300-generated-program corpus
+(206 typable h-only, 363 graphs, 218,546 states), the same
+corpus that measures zero `W4-storage`/`W4-burial` hits under
+v1.20. Basis counts vs v1.2 reference: `negative` 103→83,
 `selector` 173→106, `pstar` 458→242 — v1.7-era, real, owned;
 marginals and supports never moved. All measurements
 seconds-scale on the M5 Max.
@@ -823,7 +880,8 @@ no bare-term ideal oracle).
 | v1.16 | KEY-level non-vacuity (`vacuous_keys`: every popkey must occur in an arrival frame at its position; ghost popkeys refused; canonical maps carry zero by the corrected two-case proof — phase-1 maps take keys from the converged arrivals, all other acceptances via settle()); twelfth regression (ghost-key), gated; the admission claim stated honestly (phase-2/rescue validate at acceptance, phase 1 is structural, nothing returns unvalidated); physics-table preamble names the machine-measured row; inventory and contract docstrings corrected; every prediction held with exactly the declared deltas | **fresh audit #9: FAIL** (zero machine countermodels, fourth straight — every mechanical charge CONFIRMED incl. all twelve gates and both non-vacuity levels; §7.1 misstated the mechanized coloring theorem: formula omitted Σw(KS), defect sentence conflated conservative fire with certified erasure, gauge sweep asserted rather than enumerated KD) |
 | v1.17 | §7.1 restated to the theorem the checker enforces (φ gains Σw(KS) with w(K₂(l)) = w(l), w(K₃) = w(KD) = 0; uniform flip INCLUDING conservative fire, certified erasure the sole exception at 1 − w(l) pinned-gauge, parametrized form named; Ccoll's separating witnesses registered); the gauge sweep enumerates KD — 4/512, orbit unchanged, KD pinned 0 by measurement; the ghost regression prints its nonzero count; phi(), w(), and every certificate untouched | **fresh audit #10: FAIL** (fifth straight clean-machine round; §7.2 + §7.3 CONFIRMED symbol-level incl. a 131k-surfacing independent conservation check; the inversion: the register was right, the checker wrong — F recorded total frames, not popped; instrument prose + print-only verdicts) |
 | v1.18 | the checker catches up to the register: collect() records F as the POPPED count ((len(src.rs) − len(tgt.rs)) mod 2 — §7.1's text stands unchanged); polarity and conservation gain exit-code verdicts (branch-offset rows gating; forced-false measured exit 1); instrument docstrings/comments/pointers corrected (the HH/HNH weight comment now states 0/0 and 1/1); pack labels version-neutral; popped-F sweep 4/512, same orbit; every prediction held with the v117-kit caveat resolved on inspection | **fresh audit #11: FAIL** (F correction CONFIRMED on 116 edges; machine clean; W4 under-implemented — slice-suspended ticket passes the top-level check, subtype not preserved by vvar; "all four instruments gate" overcounted; three stale doc lines) |
-| v1.19 | W4 goes DEEP (live same-instance tickets through tape/log slice cargo; the unreachable countermodel excluded from the subtype; stripped control proves no over-tightening); thirteenth gated regression; ALL SIX instruments carry exit-code verdicts (typecheck gains its printed fragment total); kernel.py cert/rs doc lines and two invalid docstring escapes fixed (one long-standing, surfaced by recompile); full decruft sweep per a9's directive; every prediction held, the v118 kit's no-op suite probe adjudicated | **fresh audit #12: pending** |
+| v1.19 | W4 goes DEEP (live same-instance tickets through tape/log slice cargo; the unreachable countermodel excluded from the subtype; stripped control proves no over-tightening); thirteenth gated regression; ALL SIX instruments carry exit-code verdicts (typecheck gains its printed fragment total); kernel.py cert/rs doc lines and two invalid docstring escapes fixed (one long-standing, surfaced by recompile); full decruft sweep per a9's directive; every prediction held, the v118 kit's no-op suite probe adjudicated | **fresh audit #12: FAIL** (first kernel-arm finding since v1.11 — the anshead species check was an untyped ASSERT and never consulted the leaf, silently accepting matched foreign markers; W4 still leaked on same-key bit-free storage (→W8 target) and conflicting burials (→W3 target); reachable rootval rows and answer-species behavior absent from §3's table; C2's "exactly" missed the SyntaxWarning removal; stale "twelve regressions" pack label; Run.ks docstring incomplete. CONFIRMED: C4 by fully independent forcing of fourteen components, all thirteen gates, machine diff-clean vs the v1.18 snapshot, token.md §2 lockstep 2,622 terms/47,420 steps zero mismatches, deep-W4 zero over-tightening on 218,546 generated states, F on 116 edges) |
+| v1.20 | W4 CLOSED by enumeration (`W4-storage` + `W4-burial` join frame/ticket; the four classes exhaust what the vvar-emitted ticket can collide with; agreeing burial admissible, its target measured WF; entry-vs-region closure stated honestly); `species-ans` types the anshead species check — leaf = γ = A — the ONE kernel-arm change since v1.11, bit-identical on every covered output; regressions fourteen (five-case storage/burial table) and fifteen (four-case species incl. the retrace chain) gated; §3 gains the species-ans, rootval, and verr rows; GUARD_RULES, guard docstrings, Run.ks docstring corrected; pack WF label count-neutral; zero storage/burial hits on the audit's own 300-program corpus; every prediction held (one wrong detail registered: wf prints no count line) | **fresh audit #13: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 

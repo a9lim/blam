@@ -413,12 +413,16 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.19** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.20** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-eleven fresh-context rounds: the machine core has not moved since
-the v1.11 spectator-transition fix, and the last FIVE rounds
-found zero machine countermodels — audits #6 through #10 confirmed
+twelve fresh-context rounds: ONE kernel arm has moved since the
+v1.11 spectator-transition fix — audit #12 found the anshead
+species check was an untyped ASSERT that never consulted the
+leaf (matched foreign markers were silently accepted), and v1.20
+types it (`species-ans`, leaf = γ = A agreement) with every
+covered output measured bit-identical across the change. Audits
+#6 through #10 confirmed
 the completed KD subtraction sound (exhaustive post-fire storage
 enumeration, then an extended matrix: nested slice-cargo tickets,
 tickets inside unrelated burials, ANS, frozen instance names),
@@ -448,9 +452,23 @@ reachable nowhere in 1,250 searched graphs, is now flagged at
 its source and frozen as the thirteenth gated regression), and
 ALL SIX instruments now carry exit-code verdicts (suite,
 certify, and typecheck joined; forced-false measured exit 1 on
-every gated component). What the rounds still
+every gated component). Audit #12 then delivered the loop's
+first kernel-arm finding since v1.11 (the anshead assert above)
+plus the last two W4 leak classes — same-key bit-free storage
+and conflicting-bit burials, both vvar-unreachable but
+subtype-breaking — while CONFIRMING the gating independently
+(fourteen forced components, all thirteen then-flags), the
+machine diff-clean against the v1.18 snapshot, `token.md` §2
+against the classical substrate row-for-row (2,622 terms,
+47,420 lockstep steps, zero mismatches), and deep-W4's zero
+over-tightening on 218,546 generated states. v1.20 closes W4
+BY ENUMERATION — the four representation classes exhaust what
+the vvar-emitted ticket can collide with — freezes both new
+countermodels as regressions fourteen and fifteen (gated,
+forced-false measured exit 1), and adds the missing §3 rows
+(species-ans, rootval, verr). What the rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all twelve permanent regressions now gate mechanically (the
+day: all fifteen permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -463,13 +481,14 @@ claims are scoped to deterministic fields. Nineteen frozen dict
 certificates + dupcall's canonical None; canonical =
 deterministic validation-adjudicated greedy, neither maximal nor
 minimal; physics table passes on all twenty; all prior audit
-kits rerun with exactly the declared deltas; every v1.19
-prediction held (provenance in the scratchpad prediction files).
+kits rerun with exactly the declared deltas; every v1.20
+prediction held (one wrong detail registered; provenance in the
+scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #12 of the v1.19 h-fragment
-   claim** (running; verdict to be registered in `kernel.md`
+1. **fresh-context independent audit #13 of the v1.20 h-fragment
+   claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
    is its newly checkable ticket-dimension face), and
