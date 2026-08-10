@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.22** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.23** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-fourteen fresh-context rounds. Kernel-arm provenance summaries
+fifteen fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -479,17 +479,26 @@ excavations clean at symbol level. Audit #14 then confirmed
 gating 16/16, §8 against typecheck sentence-by-sentence, §12's
 trace anchors by fresh replay, and the classical-final
 exemptions against lam_iam — while breaking W0's edges as
-above. v1.22 grew W0 to the full language, went exact-int at
-the one kernel arm that reads a bit (anshead), and gated it as
-regression seventeen (ten countermodels + intact controls;
-zero W0 hits on the same 218,546-state corpus; the six kits
-whose hand-built helper lps name non-Var positions adjudicated
-as out-of-language fixtures, failure counters all still zero;
-the audit-#14 kit crashes by construction on the healed
-machine, which is itself the healing evidence). What the
+above; v1.22 grew W0 to the full language and went exact-int at
+the one kernel arm that reads a bit. Audit #15 then delivered
+the loop's first raw-subtype UNITARITY break since audit #3:
+the certified fire omitted empty KD bundles, so storage
+histories were not prefix-free — a fresh decode and a
+carried-in record collided on identical targets at norm 2 —
+and W0 still admitted a BULLET in the log (another norm-2
+collision via bt1), left the lambda-IAM slice equation
+unchecked, and accepted open terms; the t boundary crashed
+from WF states. v1.23 answered with the always-emit bundle
+discipline (§7.4 restated to strip-the-head injectivity), the
+typed t fence, and the sorted language (log alphabet, slice
+equation, closed terms) — and the round's written-first HINGE
+prediction held: suite, certify, typecheck, and polarity
+byte-identical, because no reachable interference crosses fire
+histories; the machine change is invisible on every covered
+output while closing the raw-subtype collision. What the
 rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all seventeen permanent regressions now gate mechanically (the
+day: all nineteen permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -502,14 +511,15 @@ claims are scoped to deterministic fields. Nineteen frozen dict
 certificates + dupcall's canonical None; canonical =
 deterministic validation-adjudicated greedy, neither maximal nor
 minimal; physics table passes on all twenty; all prior audit
-kits rerun with every delta adjudicated (out-of-language
-fixture lps; the healed-countermodel crash); every v1.22
-prediction held in substance with the kit-delta count wrong and
-registered (provenance in the scratchpad prediction files).
+kits rerun with every delta adjudicated (ks-display relabels
+under always-emit; matrix-coverage shrink under the tightened
+language; the healed-countermodel crash); every v1.23
+prediction held including the hinge (provenance in the
+scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #15 of the v1.22 h-fragment
+1. **fresh-context independent audit #16 of the v1.23 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
