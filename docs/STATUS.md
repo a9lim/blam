@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.32** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.33** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-twenty-four fresh-context rounds. Kernel-arm provenance summaries
+twenty-five fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -611,11 +611,19 @@ traversal re-pushed per reference, plus a regression-coverage
 overstatement. v1.32 (checker-only, sixth consecutive):
 extend-once-per-slice riding the confirmed doctrine
 (206 → 2.3 ms), the KD-keys sibling preempted self-derived,
-all shared-substructure families timed, the coverage wording
-corrected. What
+the shared-substructure families timed, the coverage wording
+corrected. Audit #25 (ninth machine-clean round; extend-once
+and the KD memo both confirmed) found layer ELEVEN: an n-bit
+integer masquerading as one leaf — max-free's subtractions
+paid its bits n times — and the provenance defect repeated one
+round after its correction. v1.33 (checker-only, seventh
+consecutive): the lam-count clamp (no index above the Lam
+count is ever bound — an upward DAG path cannot revisit;
+454 → 66 ms), slice-cargo timed at last, both misses marked.
+What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all thirty permanent regressions now gate mechanically (the
+day: all thirty-one permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -631,15 +639,15 @@ minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
 under always-emit and the KA head; the W0-gate display
 collapses; matrix-coverage shrink under the tightened language;
-the healed-countermodel crash); every v1.32 prediction held,
-with the round's honesty item being the corrected
-regression-coverage wording — regression 29's real coverage
-stated exactly and superseded by regression 30's timed
-families (provenance in the scratchpad prediction files).
+the healed-countermodel crash); v1.33's predictions held in
+substance with one figure missed and MARKED IMMEDIATELY (the
+predicted "under 50 ms" measured 66 ms — the band held), and
+v1.32's repeated four-vs-three coverage miss is marked in its
+own outcomes (provenance in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #25 of the v1.32 h-fragment
+1. **fresh-context independent audit #26 of the v1.33 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
