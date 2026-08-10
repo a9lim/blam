@@ -413,331 +413,47 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.42** (`quantum-algebraic/kernel.md` — the
-current-only register; round-by-round history in `ledger/2026-08.md`
-and the register's §11 chronicle, which as of v1.40 is the SOLE
-history — the register's preamble delta stack is deleted per its
-own charter). The audit loop's state after
-thirty fresh-context rounds. Kernel-arm provenance summaries
-have been refuted by literal diff twice (audit #13 killed
-"unmoved since v1.11"; audit #14 showed the corrected summary
-still incomplete), so the register now names arms per version
-only and defers history to the chronicle rows. The recent arc:
-audit #12 found the anshead species check was an untyped ASSERT
-that never consulted the leaf; audit #13 found the answer-bit
-domain nowhere enforced (ANS('h',2) flowed to an
-out-of-alphabet halt2) plus untyped crash/stall surfaces; audit
-#14 found W0's equality-based bit check admitted 1.0/True
-(minting halt1.0/haltTrue terminal kinds), unchecked instance
-productions, and unchecked state coordinates (silent stalls and
-AttributeErrors inside WF). v1.20 through v1.22 answered: typed
-species guards at the leaf, binder, and transport arms; W0
-grown into the FULL state language (exact-int bits, recursive
-lp productions with occurrences resolving to Vars, arrival-lp
-K(l) cargo, coordinates in language, VB phase in domain); every
-change measured bit-identical on covered outputs. Audits
-#6 through #10 confirmed
-the completed KD subtraction sound (exhaustive post-fire storage
-enumeration, then an extended matrix: nested slice-cargo tickets,
-tickets inside unrelated burials, ANS, frozen instance names),
-hand-recomputed `palpha` ({1/4, 3/4}) and `W` ({halt1: 1}, refire
-amplitudes exactly zero per-step), verified the rescue's
-full-pool construction and determinism, traced the three-way
-canonical-None sentence return-by-return, and forced every
-regression gate individually. Audit #9's sole finding was the
-register's OLDEST prose: §7.1 misstated the mechanized coloring
-theorem (the formula omitted the KS weight term its checker
-carries; the flip theorem conflated conservative fire with
-certified erasure; the gauge sweep asserted rather than
-enumerated the KD weight) — restated in v1.17 to exactly the
-theorem polarity.py enforces, with the sweep extended to 4/512
-and KD pinned zero by measurement rather than assertion. Audit
-#10 then confirmed §7.2 and §7.3 at symbol level (conservation
-additionally surviving an independent 131k-surfacing mid-run
-check) and inverted the loop's pattern once: the register was
-right and the checker wrong (the sweep recorded total frames
-where §7.1 says popped — corrected checker-side in v1.18, same
-orbit), so every theorem in the register has now been audited
-symbol-by-symbol. Audit #11 confirmed the F correction on 116
-edges and found the last checker gap: W4 read only top-level
-tape where the register says any same-instance ticket — v1.19
-makes it deep (the auditor's slice-suspended countermodel,
-reachable nowhere in 1,250 searched graphs, is now flagged at
-its source and frozen as the thirteenth gated regression), and
-ALL SIX instruments now carry exit-code verdicts (suite,
-certify, and typecheck joined; forced-false measured exit 1 on
-every gated component). Audit #12 also delivered the last two
-W4 leak classes while CONFIRMING the gating independently, the
-machine diff-clean against the v1.18 snapshot, and `token.md`
-§2 against the classical substrate row-for-row (2,622 terms,
-47,420 lockstep steps, zero mismatches). v1.20 closed W4 BY
-ENUMERATION — the four representation classes exhaust what the
-vvar-emitted ticket can collide with — and audit #13 CONFIRMED
-that closure SOUND with its own nine-row enumeration
-(agreeing-burial admission verified non-leaking through
-recall/replay/decode and full injected cones) while confirming
-gating 15/15 and the certificate/polarity/conservation
-excavations clean at symbol level. Audit #14 then confirmed
-gating 16/16, §8 against typecheck sentence-by-sentence, §12's
-trace anchors by fresh replay, and the classical-final
-exemptions against lam_iam — while breaking W0's edges as
-above; v1.22 grew W0 to the full language and went exact-int at
-the one kernel arm that reads a bit. Audit #15 then delivered
-the loop's first raw-subtype UNITARITY break since audit #3:
-the certified fire omitted empty KD bundles, so storage
-histories were not prefix-free — a fresh decode and a
-carried-in record collided on identical targets at norm 2 —
-and W0 still admitted a BULLET in the log (another norm-2
-collision via bt1), left the lambda-IAM slice equation
-unchecked, and accepted open terms; the t boundary crashed
-from WF states. v1.23 answered with the always-emit bundle
-discipline (§7.4 restated to strip-the-head injectivity), the
-typed t fence, and the sorted language (log alphabet, slice
-equation, closed terms) — and the round's written-first HINGE
-prediction held: suite, certify, typecheck, and polarity
-byte-identical, because no reachable interference crosses fire
-histories; the machine change is invisible on every covered
-output while closing the raw-subtype collision. Audit #16
-confirmed that hinge INDEPENDENTLY (re-executed the v1.22
-sources; searched 5,760 states plus 300 generated bodies for
-mixed fire-count merges, found zero, and derived the stronger
-form — append-only KS makes them impossible) and then forged
-the SAME collision through the arms v1.23 didn't cover: the
-suppressed-decode fire appends zero storage heads, so a
-suppressed decode with incoming [K(l)] impersonates a
-retain-whole fire with incoming [] — identical targets, norm 2,
-both suppression variants; it also caught W0 accepting Var(0)
-(the 1-indexed de Bruijn convention AGENTS.md warns about,
-violated in our own checker) and list-typed containers. v1.24
-answered with the one-head-per-fire discipline — every fire arm
-appends exactly one arm-typed storage head; the suppressed
-arm's ('KA', g, i) carries its key because a two-key
-double-suppression sibling (author-found during fix design,
-measured norm 2 pre-fix) would survive a contentless marker —
-and W0's exact-type purity (registers checked without hashing,
-so hostile __hash__/__eq__ can neither crash nor poison the
-checker) plus 1-indexed closedness. The hinge was cheaper this
-round: the four instruments byte-identical because the
-suppressed arm is REACHABLY DEAD CODE on the whole canonical
-suite (arm census measured first: 58 certified / 69
-retain-whole / 10 decode-recorded / 0 suppressed). Audit #17
-then CONFIRMED the KA repair outright — no remaining
-storage-history collision, the census independently matched
-and extended to the corpus (367/465/222/0), C1 at the AST
-level — and found three verification-layer defects: wf() was
-not total (exact-pure malformed tuples W0-flagged, then
-IndexError in the W1-W9 scans), a WF-clean foreign-gate ticket
-was silently decoded (the register's decode-row subscript,
-dropped by the implementation), and the gauge sweep omitted
-the KA mark (unconstrainable by reachable edges). v1.25
-answered: the alien-gate guard (fifteenth in the family), the
-W0 gate making wf() total (W1-W9 adjudicated only over the
-language's carrier), and the ten-mark gauge sweep — 8/1024
-reachable-only with KA free, 4/1024 with one disclosed raw
-suppressed-decode edge, every survivor pinning w(KA)=0 — with
-suite/certify/typecheck byte-identical again. Audit #18
-confirmed all of that (alien-gate on its full surface; the
-gauge pinning proved arm-intrinsic by an independent GF(2)
-solver) and broke checker totality at layer FOUR: an exact-pure
-empty tuple in the log crashed wf() upstream of the W0 gate
-through a bare-indexing token predicate, and 1,500-deep
-recursion blew pure() and closed(). v1.26 is the helper-level
-totality round — no arm, no guard: emptiness conjuncts on the
-four predicates, every wf traversal iterative and pre-gate
-hash-free (the token grammar as a closure sweep), and the
-totality claim scoped to where it lives — total rejection on
-the raw-object layer, with the W1-W9 scans and the machine's
-superposition layer sharing the HOST-IDENTITY BOUNDARY (a
-state the host cannot hash can never enter a superposition).
-Suite/certify/typecheck/polarity byte-identical once more.
-Audit #19 confirmed the machine a THIRD straight round —
-including differential-testing the closure sweep against the
-old recursive grammar over 100,000 random soups, zero drift —
-and found totality layer FIVE: garbage terms silently accepted,
-a cyclic term graph hanging the walk, a hostile Run subclass
-running code inside wf, exponential shared-DAG purity, a wf7
-crash, and the discovery that hash/repr/equality break at
-DIFFERENT depths, refuting the boundary as I had worded it.
-v1.27 (checker-only): exact-type dispatch, a full term
-validator with cycle detection, representation-linear
-traversals, wf7 guards, and the boundary restated to the
-host's structural-operation limits — hash, equality, and
-canonical-order repr, exactly the operations the machine's own
-state discipline performs. The twice-broken §9 gate-line
-promise is now an assemble-script assertion. Audit #20
-confirmed the machine a FOURTH straight round (kernel.py
-byte-identical; the boundary survived its dedicated charge —
-at depth 6,000 all three host operations cross together) and
-found layer SIX: hostile TERM subclasses, the never-validated
-Gate production (Gate('x') passed the checker and broke
-W0-preservation one step later; Gate([]) crashed the machine),
-wf7's remaining raw surface, and a Θ(n²) term memo. v1.28
-(checker-only again): the linear MAX-FREE term validator with
-exact-type node dispatch and the Gate production, run as an
-early gate; wf7 gated by the total wf() itself;
-"representation-linear" made true rather than weakened. Audit
-#21 (fifth machine-clean round; the max-free validator itself
-survived 50,000 graphs against an independent reference) found
-layer SEVEN: the register ROOTS never type-checked (an int is
-a valid pure leaf, so scalar roots crashed iteration), d
-omitted from purity, a quadratic binder walk on valid deep
-lps, and audit #20's "cross together at 6,000" boundary
-reading failing to replicate (hash clean through 32,000;
-equality/repr fail at 6,000 — a probe-family coincidence I had
-registered as a law). v1.29 (checker-only, third consecutive):
-roots and d join the purity gate, the binder walk goes
-index-based and linear, the boundary narrative is reconciled
-to the one-way statement, and the instrument-input scope is
-explicit. Audit #22 (sixth machine-clean round; the reconciled
-boundary CONFIRMED on an independent family) found layer
-EIGHT, the narrowest yet: four individually-linear parts
-composing quadratically (n frames sharing one lp — the memo
-sat one call too deep), an over-categorical "crashes" that
-should have said "unspecified", and one generously-graded
-prediction. v1.30 (checker-only, fourth consecutive): the
-full-lp memo (191 ms → 1.4 ms on the auditor's family), the
-reworded scope, and the miss marked in v1.29's own outcomes
-appendix. Audit #23 (seventh machine-clean round) built
-value-sharing WITHOUT object-sharing — n distinct shells around
-one occurrence tuple — and the id-memos missed every shell:
-quadratic again, because I memoized the wrapper instead of the
-work; it also caught the memo comment's "no optimistic leak" as
-literally false (the verdict stays safe — w0bad is monotone —
-but the flattering per-entry claim was not the invariant).
-v1.31 (checker-only, fifth consecutive): the occurrence memo —
-the work memoized where the sharing is (389 → 2.2 ms) — and
-the memo doctrine stated honestly as aggregate monotonicity.
-Audit #24 then CONFIRMED that doctrine by static enumeration
-(no public escape exists) and found layer TEN: shared-slice
-traversal re-pushed per reference, plus a regression-coverage
-overstatement. v1.32 (checker-only, sixth consecutive):
-extend-once-per-slice riding the confirmed doctrine
-(206 → 2.3 ms), the KD-keys sibling preempted self-derived,
-the shared-substructure families timed, the coverage wording
-corrected. Audit #25 (ninth machine-clean round; extend-once
-and the KD memo both confirmed) found layer ELEVEN: an n-bit
-integer masquerading as one leaf — max-free's subtractions
-paid its bits n times — and the provenance defect repeated one
-round after its correction. v1.33 (checker-only, seventh
-consecutive): the lam-count clamp (no index above the Lam
-count is ever bound — an upward DAG path cannot revisit;
-454 → 66 ms), slice-cargo timed at last, both misses marked.
-Audit #26 (tenth machine-clean round; the clamp lemma
-confirmed over 60,000 graphs) found layer TWELVE: exact
-instances made hollow by object.__delattr__ — exact in type,
-missing a field, crashing on first touch. v1.34 (checker-only,
-eighth consecutive): field-presence guards, with the
-defaulted-field fallback distinction discovered in-round and
-pinned. Audit #27's verdict was the narrowest of the loop —
-"FAIL: documentation/display only; no kernel or checker
-semantic repair indicated" — with raw-object totality CONFIRMED
-IN SCOPE (runtime-mutation attacks judged out of scope, the
-boundary the charge asked for) and the fallback confirmed by
-110,232 comparisons. v1.35 is comments and kit notes only; all
-six instruments measured byte-identical. Audit #28 (twelfth
-machine-clean round; C1–C5 confirmed in full, the v1.35
-corrections verified correct) found the C6 gap: regression
-31's "n distinct shells" were ONE constant-folded object —
-CPython compiles a constant tuple display to a single
-LOAD_CONST — so the permanent gate covered the wrong sharing
-shape, with v1.33's outcomes having graded that coverage HELD
-(the third unmarked provenance miss, now marked); plus two
-"no KD" comments above assertions requiring an empty KD
-bundle, and the W8 comment overstating certified pop. v1.36
-(checker fixture and comments only, ninth consecutive):
-the shells runtime-built and genuinely sharing one occurrence
-object, distinctness GATED as a flag conjunct (forced alone →
-exit 1), the genuine family ['W0'] and linear, every wording
-corrected, §6's stable-runtime scope restated locally. Audit
-#29 (thirteenth machine-clean round; the rebuild verified
-genuine at the bytecode level, the sibling sweep clean) caught
-v1.36's own correction off by one — the fixture builds n−1
-shells while the fresh C4/§10/comment sentences said n — plus
-a docstring omitting retained Q from the spectator tuple its
-implementation carries. v1.37 (documentation only): both claim
-sites now say n−1 with the reason, the docstring completed,
-the fresh miss marked. Audit #30 (fourteenth machine-clean
-round) then found the first executable defect in three rounds:
-regression 31's d='X' state short-circuits W0's conjunction
-before the tape, so the carrier was never traversed — removing
-it left the whole output byte-identical. v1.38 (fixtures
-only): sensitivity becomes the gate — cargo31 in-language with
-a corrupted-last-shell control that must flip to ['W0'] (the
-removal countermodel now exits 1), and six sensitivity pairs
-gate the rs/ks families whose 'X' timing methodology is
-load-bearing (measured: their machinery runs through the
-unconditional loops; the early return isolates pre-gate cost).
-Audit #31 (fifteenth machine-clean round) then won the
-sensitivity-design charge: the walker is LIFO, so the
-"last-shell" corrupt was visited first, and two checker
-mutants — one skipping long slices while special-casing the
-shallow sentinel, one canning the occurrence count — passed
-every v1.38 gate at exit 0; "five pairs" was also six. v1.39
-(fixtures only): corruptions become deep — tuple-well-shaped
-lps whose sole defect is an unbound occurrence, at the
-position their enclosing scan reaches last — and BOTH
-reproduced mutants now exit 1, with all six instruments
-byte-identical including wf. Audit #32 (sixteenth
-machine-clean round) then answered the epistemology charge
-exactly as posed: a FIXTURE-AWARE mutant — special-casing the
-exact corrupt length and peeking the exact deep value —
-passes every gate at exit 0, and no finite fixed fixture can
-pin a fixture-aware implementation. v1.40 (comments, claim
-scope, and the register only; wf.py AST-identical): the claim
-shrinks to what the gates prove — §10's sensitivity-scope
-statement, with the auditor's mutant registered as the
-standing boundary witness and their kit joining the roster —
-and the blanket LIFO sentence and "locally valid" terminology
-are corrected everywhere current. Audit #33 (seventeenth
-machine-clean round) then refuted the scope statement itself,
-in the overclaim direction: "extensional verdicts" was one
-word too strong — the genuine gates check predicates, and
-deleting the sole W2-dup append flips the checker from
-rejecting to accepting a genuine fixture with every gate
-green. v1.41 (claim language only, wf.py AST-identical): the
-scope statement enumerates the gated predicates
-clause-by-clause, and the W2-dup countermodel joins the
-fixture-aware mutant as the second registered boundary
-witness — the claim is now bounded by exhibited countermodels
-on both sides of what it asserts. Audit #34 (eighteenth
-machine-clean round, the loop's narrowest verdict) confirmed
-the enumeration source-exact and caught two sentences: the
-W2-dup rationale generalized to a family whose genuine
-verdict is actually [], and a delta description written
-before its own round's second edit. v1.42 (two sentences, no
-executable change at all): the rationale restricted to the
-three RS duplicate families; the stale-claim class named in
-the chronicle. **Audit #35 then PASSED v1.42 as stated — zero
-required corrections, C1–C6 confirmed, fresh attacks (a
-100,000-case hostile graph soup, a new maximally-shared DAG
-family, an independent edge sweep) finding nothing — with the
-instance-alias gap as the registered conditional. The loop
-closed at thirty-five audits: thirty-four FAIL, one PASS. The
-kernel remains scratch and out-of-tree: the architecture.md §9
-contract gates, not this audit, decide when qALC code lands.**
-What
-the rounds still
-found was claim-language and scaffolding, each fixed the same
-day: all thirty-two permanent regressions now gate mechanically (the
-module verdict is the exit code — forcing any single regression
-false exits nonzero, measured); `validate()` gained NON-VACUITY
-at both levels (an entry at an unreachable position and a ghost
-popkey occurring in no arrival frame each fail
-`machine_coverage` instead of being silently ignored — canonical
-maps carry zero by the corrected two-case proof); the canonical-None
-sentence is exact in three disjuncts (cap/nonconvergence exit,
-empty admission, pool pass accepting nothing); output-identity
-claims are scoped to deterministic fields. Nineteen frozen dict
-certificates + dupcall's canonical None; canonical =
-deterministic validation-adjudicated greedy, neither maximal nor
-minimal; physics table passes on all twenty; all prior audit
-kits rerun with every delta adjudicated (ks-display relabels
-under always-emit and the KA head; the W0-gate display
-collapses; matrix-coverage shrink under the tightened language;
-the healed-countermodel crash); v1.35's predictions held
-exactly — the round touched no executable path and every
-instrument stayed byte-identical (provenance in the scratchpad
-prediction files).
+**The kernel is at v1.42 and PASSED fresh-context independent
+audit #35** (cx-20260810-105238-1baf, 2026-08-10): "PASS for
+v1.42 as stated in C1–C6. I found no required correction,
+machine/checker countermodel, gate failure, or surviving claim
+overreach." The loop closed at thirty-five audits over nineteen
+correction rounds — thirty-four FAIL, one PASS — with kernel.py
+untouched since v1.25 (eighteen consecutive machine-clean
+audits preceding the verdict). The PASS is explicitly
+conditional on the instance-alias gap (kernel.md §9), which now
+heads the docket. Round-by-round history lives in
+`ledger/2026-08.md` (and 2026-07) and the register's §11
+chronicle — the register itself is current-only per its own
+charter.
+
+The verified surface, as it stands: a ten-invariant
+well-formedness subtype (the W0 sorted state language plus
+W1–W9) with `wf()` total on the raw-object layer at
+representation-linear pre-gate cost; fifteen typed guards; the
+all-arms one-head-per-fire storage discipline (§7.4); the
+ten-mark gauge sweep pinning w(KA)=0 (8/1024 reachable, 4/1024
+with the disclosed raw edge); arm census 58/69/10/0 on the
+suite and 367/465/222/0 on the corpus; nineteen frozen dict
+certificates plus dupcall's canonical None (canonical =
+deterministic validation-adjudicated greedy, neither maximal
+nor minimal); the written-first physics table passing on all
+twenty programs; corpus sweeps zero-hit at 300/206/363/218,546.
+All six instruments carry exit-code verdicts and thirty-two
+permanent regressions gate mechanically (forcing any single one
+false exits nonzero, measured). Coverage is stated at its true
+scope: §10's sensitivity-scope statement enumerates the gated
+predicates clause-by-clause and is bounded by TWO registered
+boundary witnesses — audit #32's fixture-aware mutant (no
+finite fixed fixture pins implementation strategy) and audit
+#33's W2-dup deletion (non-gated verdict flags are invisible to
+predicate gates) — both permanently exit 0 by construction.
+Twenty-five rerunnable audit kits and the full provenance chain
+(predictions files with every wrong call kept and marked, packs,
+verdicts, the attic manifest) are preserved out-of-tree at
+`~/Work/qalc-scratch/` alongside the scratch kernel itself; the
+architecture.md §9 contract gates, not the audit verdict, decide
+when qALC code lands in the tree.
 
 The open docket, in order:
 

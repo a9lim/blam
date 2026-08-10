@@ -75,13 +75,18 @@ values reach the `h`/`t` gates by token routing, never by copying),
 `token.md` beside it the active design (exact λIAM substrate, kernel
 gate, obligations register), `kernel.md` the current-only register of
 the scratch kernel that implements the gate (the register alone
-carries the version; its state is machine-verified and held in a
-fresh-context adversarial audit loop — round history in the ledger and
-its §11 chronicle), and `machine.md` the record of the two failed
-rewriting-machine drafts — read-only history, do not build on it.
-**No qALC code may land** until the contract's §9 gates pass; the
-scratch kernel stays outside the tree until then, and qALC work must
-leave classical and qBLC rows bit-identical.
+carries the version; its state is machine-verified — v1.42 PASSED
+fresh-context adversarial audit #35 on 2026-08-10, closing a
+thirty-five-audit loop, with the instance-alias gap as the registered
+conditional; round history in the ledger and its §11 chronicle), and
+`machine.md` the record of the two failed rewriting-machine drafts —
+read-only history, do not build on it. The scratch kernel, its 25
+rerunnable audit kits, and the full provenance chain live durably at
+`~/Work/qalc-scratch/` (out-of-tree by design; `attic/MANIFEST.txt`
+maps the historical artifacts). **No qALC code may land** until the
+contract's §9 gates pass — the kernel audit PASS is a milestone, not
+those gates — the scratch kernel stays outside the tree until then,
+and qALC work must leave classical and qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →
@@ -242,6 +247,8 @@ bisimulation), `qblc-omega-witnesses` (dyadicity hunt and phase-2 design),
 `qalc-architecture` (qALC design contract adversarial review,
 ratification, and amendments), and `qalc-token-machine` (qALC token
 machine feasibility and kernel review).
-The kernel audit rounds deliberately run threadless — a fresh context
-per round is the point — labeled `qalc-vNNN-fresh-audit`.
+The kernel audit rounds (closed 2026-08-10 at audit #35's PASS)
+deliberately ran threadless — a fresh context per round was the point —
+labeled `qalc-vNNN-fresh-audit`; reuse that convention for any future
+fresh-context verification.
 Send raw evidence—encodings, diffs, measured bits—not summaries.
