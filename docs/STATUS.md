@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.29** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.30** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-twenty-one fresh-context rounds. Kernel-arm provenance summaries
+twenty-two fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -586,10 +586,19 @@ registered as a law). v1.29 (checker-only, third consecutive):
 roots and d join the purity gate, the binder walk goes
 index-based and linear, the boundary narrative is reconciled
 to the one-way statement, and the instrument-input scope is
-explicit. What
+explicit. Audit #22 (sixth machine-clean round; the reconciled
+boundary CONFIRMED on an independent family) found layer
+EIGHT, the narrowest yet: four individually-linear parts
+composing quadratically (n frames sharing one lp — the memo
+sat one call too deep), an over-categorical "crashes" that
+should have said "unspecified", and one generously-graded
+prediction. v1.30 (checker-only, fourth consecutive): the
+full-lp memo (191 ms → 1.4 ms on the auditor's family), the
+reworded scope, and the miss marked in v1.29's own outcomes
+appendix. What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all twenty-seven permanent regressions now gate mechanically (the
+day: all twenty-eight permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -605,15 +614,14 @@ minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
 under always-emit and the KA head; the W0-gate display
 collapses; matrix-coverage shrink under the tightened language;
-the healed-countermodel crash); every v1.29 prediction held,
-with one declared drift (a 16× predicted timing band vs the
-implemented 24× — measured 7.8×) recorded beside the earlier
-rounds' registered wrong calls (provenance in the scratchpad
-prediction files).
+the healed-countermodel crash); every v1.30 prediction held
+with the conservation expectation finally worded correctly,
+and v1.29's generous HELD is marked as the miss it was
+(provenance in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #22 of the v1.29 h-fragment
+1. **fresh-context independent audit #23 of the v1.30 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9

@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.29.** The kernel is a scratch superposition evolver
+**Status: v1.30.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,7 +17,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #22**, whose
+The standing PASS re-claim is **gated on fresh audit #23**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -25,7 +25,21 @@ since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
 so this register now names arms exactly and only per version:
-v1.29 changes NO kernel source — the third consecutive
+v1.30 changes NO kernel source — the fourth consecutive
+checker-only round, and the smallest: audit #22 (machine
+unbroken a SIXTH round; the reconciled boundary CONFIRMED by an
+independent family; all four v1.29 repairs individually linear)
+found the COMPOSITION quadratic — n frames sharing one deep lp
+cost Θ(n²) because w0lp_shape rescanned the occurrence before
+the memo — plus one over-categorical scope word and one
+generously-graded prediction. v1.30: the FULL-LP id-memo
+(shape+closure once per lp object; the auditor's family drops
+from 191 ms to 1.4 ms at n=2,000, linear), the scope sentence
+reworded to UNSPECIFIED (garbage configuration may crash, hang,
+or quietly return meaningless values — measured examples
+registered), and the v1.29 conservation-suffix prediction
+MARKED AS A MISS in its own outcomes appendix. Before that,
+v1.29 changed NO kernel source — the third consecutive
 checker-only round: the five register ROOTS join the purity
 gate as exact tuples (pure(0) was True — an int is a valid pure
 leaf — so scalar roots crashed the container iteration on all
@@ -618,8 +632,12 @@ the machine's unitarity claims quantify over the subtype:
   STATE surface; the instrument helpers (`cert_fibres`,
   `cert_disjointness`, `cert_domain_sweep`) take
   INSTRUMENT-side inputs — term and certificate — on trust, as
-  every instrument does its own configuration: a garbage term
-  crashes them, and no raw-totality claim covers them. Zero reachable
+  every instrument does its own configuration: their behavior
+  on garbage configuration is UNSPECIFIED — they may crash,
+  hang, or quietly return meaningless values (measured:
+  cert_fibres(object(), {}) returns {}; cert_disjointness
+  ([], 0); cert_domain_sweep 1) — and no raw-totality claim
+  covers them. Zero reachable
   fires on the twenty programs and the 218,546-state generated
   corpus.
 - **W1** (log discipline): `|log| = level(pos)`.
@@ -916,7 +934,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#22; the verdict will be registered here.** (Audit #16 caught
+#23; the verdict will be registered here.** (Audit #16 caught
 this sentence stale; audit #19 caught it stale AGAIN despite the
 parenthetical promising otherwise — the promise is now an
 ASSERTION: the pack assembly script verifies §1 and §9 name the
@@ -961,7 +979,7 @@ canonical dicts compared bit-for-bit; `dupcall` canonically None
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
 `refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **twenty-seven permanent regressions** (the v1.6 pair;
+zero violations; **twenty-eight permanent regressions** (the v1.6 pair;
 extra-frame collision, W7-excluded with disjoint targets;
 doctored bundle divergence; K+frame alias; retained-Q
 disjointness — spectator-bit columns share zero targets;
@@ -1035,7 +1053,9 @@ WF-source-reaches-fibre plus 800-node-chain controls intact;
 totality VII — the five scalar-root states and the
 hostile-`__eq__`-in-d state W0-rejected with nothing executing,
 wf7 declining, and the n=8,000 valid deep-lp walk inside the
-linear band).
+linear band; composition linearity — the n-frames-one-lp family
+W0 at both sizes inside the linear band, with a distinct-lps
+no-aliasing control).
 The
 gating structure, stated exactly
 (audits #6 and #7 each caught a computed-but-non-gating
@@ -1061,13 +1081,17 @@ twenty-six-for-twenty-six likewise, plus conservation at size
 11 and the max-free validator against an independent reference
 over 50,000 randomized graphs incl. 5,349 cycle mutations with
 zero mismatches, plus wf7 old-vs-new over 5,508 reachable
-states with zero verdict differences): the v1.6 pair
-gates `collisions_under_wf()`; the other twenty-five gate
+states with zero verdict differences; audit #22 confirmed
+twenty-seven-for-twenty-seven plus the fourteen components plus
+the three polarity-reading controls, the reconciled boundary on
+an independent family, and all four v1.29 repairs individually
+linear): the v1.6 pair
+gates `collisions_under_wf()`; the other twenty-six gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
 pair false → exit 1; forcing cert_sweep flags false → exit 1,
-including the v1.20 through v1.29 flags; the
+including the v1.20 through v1.30 flags; the
 emulated-old-arm probe flips `cert_sweep` to FAIL). Three
 v1.12/v1.13-era regression mechanizations were updated in v1.23
 to the always-emit discipline (their targets now carry the
@@ -1401,7 +1425,8 @@ no bare-term ideal oracle).
 | v1.26 | NO arm, NO guard — the helper-level totality round: the four bare-indexing token predicates (is_gam/is_mu/is_ans/is_alpha) gain the emptiness conjunct is_lp always had; every wf traversal before and during W0 becomes ITERATIVE and pre-gate HASH-FREE (explicit-stack pure/closed; the token grammar as a CLOSURE SWEEP — valid iff every closure node satisfies its local predicate — with an id-keyed per-call memo; iterative deep scans; kernel's alpha_keys_live/alpha_bits_deep iterative too, serving the fire arm's deep-W3 guard identically); the totality claim SCOPED to where it lives — total rejection on the raw-object layer, and past the gate the HOST-IDENTITY BOUNDARY shared with the machine's own superposition layer (§6); regression twenty-four (empty tuple in each register → exactly ['W0']; 1,500-deep tuple → ['W0']; 1,500-lambda term passes in full) gated, twenty-four-for-twenty-four under forcing; one equivalence bug caught DURING implementation before any measurement (the sweep's first draft would have accepted an AL with a non-lp instance — the kind requirement restored, registered in the predictions file); pack captions made count-neutral per their own standing convention; suite/certify/typecheck/polarity byte-identical, conservation timing-suffix only, wf exactly one new line; the auditor's harness joins the kit set and reruns healed | **fresh audit #19: FAIL** (the machine confirmed a THIRD consecutive round — C1 exact at the definition level, C2 with the kernel helpers differential-tested against recursive references over 92,961 entries zero mismatches, C4 in full with warnings-as-errors, C5 on an independently regenerated corpus; the CLOSURE SWEEP verified exactly equivalent to v1.25's recursive grammar over 100,000 randomized soups, 1,181 acceptances each, zero mismatches, the optimistic-memo argument verified. The findings, totality LAYER FIVE, all in wf()'s raw surface: garbage terms SILENTLY ACCEPTED — closed() had no rejecting branch for unknown node kinds; a cyclic term graph HUNG the tree walk; a hostile Run SUBCLASS ran __getattribute__ code from inside wf before purity; a 25-node shared-tuple DAG cost 2^24 purity visits, doubling per node; wf7 IndexError'd on an empty frame; and the host-identity boundary AS STATED was false — hash, repr, and equality have different structural limits: an 8,000-deep in-language state hashes and dict-round-trips, then dies in the W2 canonical-order repr sort, while a 2,000-deep control adjudicates fully; honesty: §9's gate line stale AGAIN, the very line whose parenthetical promised joint updates) |
 | v1.27 | CHECKER-ONLY — zero kernel changes: exact-type state dispatch (a Run subclass is not a state of the machine; hostile attribute access never runs); pure() id-visited (representation-linear on shared DAGs); closed() a full TERM VALIDATOR (unknown node kinds rejected — garbage terms now W0, consistent with the v1.23 open-term decision; on-path cycle detection rejects cyclic graphs promptly; an (id,depth) memo makes shared term DAGs polynomial); wf7 declines out-of-language rs and non-tuple paths; §6's boundary RESTATED to the host's structural-operation limits — hash, equality, AND canonical-order repr, exactly the operations the machine's own state discipline performs — with the auditor's 8,000/2,000 measurements as its empirical face; §9's stale-gate promise replaced by an ASSEMBLE-SCRIPT ASSERTION (§1/§9 must name the same audit or the pack refuses to build); regression twenty-five gated, twenty-five-for-twenty-five under forcing; a second caught-in-implementation equivalence hazard registered pre-measurement (closed()'s memo order vs App-cycles, which re-enter at the SAME depth); suite/certify/typecheck/polarity byte-identical, wf exactly one new line; the layer-five harness joins the kit set | **fresh audit #20: FAIL** (the machine clean a FOURTH consecutive round — kernel.py verified BYTE-IDENTICAL, C2/C4/C5 in full with three polarity-reading mutations, and the structural-operation boundary SURVIVED its dedicated charge: equal-state probes at depths 1,000/2,000/4,000 clean, at 6,000 hash/equality/repr cross their host limits TOGETHER, no in-boundary state crashes a post-gate scan; the assemble assertion verified against a simulated mismatch; both implementation catches validated. The findings, totality LAYER SIX: hostile TERM subclasses still ran code inside wf — exact-type dispatch protected only the state; the GATE production was never validated — Gate('x') passed wf and broke W0-preservation one step later, Gate([]) crashed the machine on an unhashable name, isolated surgically by a 20,000-graph term differential with zero non-Gate mismatches; wf7 still raised on a hostile subclass, a list inside the path tuple, and a list in the arrival tail — "declines out-of-language sources" was false as written; and the (id, depth) term memo was Θ(n²) on App/Lam chains — 800 objects, 640,800 validator states — where the register said representation-linear) |
 | v1.28 | CHECKER-ONLY again — zero kernel changes: closed() REPLACED by the linear MAX-FREE validator (exact-type node dispatch — the type check precedes every field access, so hostile term subclasses never execute; Gate names validated in {'h','t'} — the production the language always required; Var indices exact-int ≥ 1; closedness = max_free(root) == 0 by iterative post-order with ONE memo entry per node id — measured n=3,000 chains in 2 ms vs 300 ms at n=800 under the old memo, "representation-linear" now TRUE as originally worded rather than weakened; on-path cycle rejection kept), run as an EARLY GATE before any token processing (under v1.27 the rs/ks loops ran even after term failure, so a hostile term could still execute during token checks); wf7 exact-type dispatched and gated by the total wf() itself; regression twenty-six gated, twenty-six-for-twenty-six under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line; two wrong calls registered — the layer6 kit does not "flip to healed" but CRASHES BY CONSTRUCTION (it asserts the broken Gate behavior; the v121 lesson re-learned), and the certified-fibre control was first mis-specified (the synthetic cert's fibre map is empty, so W7-domain is the correct preserved verdict — the control now proves a WF source REACHES the fibre logic through the gate) | **fresh audit #21: FAIL** (the machine clean a FIFTH consecutive round — kernel.py SHA-verified byte-identical, C2/C4/C5 in full; the max-free validator itself SURVIVED: 50,000 randomized graphs incl. 5,349 cycle mutations against an independent reference, zero mismatches; hostile terms/Gate payloads/string subclasses/Var(True) all W0-rejected; chains, ladders, and complete-sharing DAGs measured linear; wf7 old-vs-new over 5,508 reachable states, zero verdict differences. The findings, totality LAYER SEVEN: the five register ROOTS never type-checked — pure(0) True since an int is a valid pure LEAF, so scalar roots crashed the container iteration; d omitted from purity — a hostile __eq__ executed at the membership check; wf7 inheriting both; the binder walk's p[:-1] copying Θ(n²) on a fully VALID deep-lp state; and the register CONTRADICTING ITSELF about the boundary — §10/status's "cross together at 6,000" did not replicate: hash clean through depth 32,000 on the nested-lp family while equality/repr fail at 6,000, siding with §6's "the limits differ"; plus the instrument-helper scope needing explicit statement) |
-| v1.29 | CHECKER-ONLY, third consecutive: the five register ROOTS join the purity gate as exact tuples and d as an exact str (scalar roots and hostile-__eq__ d objects → ['W0'] before any iteration or comparison); the binder walk goes INDEX-BASED (no copies; the slice requirement = count of 'a'-components past the binder; measured linear — n=8,000 in 2.9 ms at 7.8× the n=1,000 time, was 21 ms at ~27×); the boundary narrative RECONCILED (the "cross together" coincidence retracted in §6/§10; the limits differ family-dependently, the boundary is their per-family minimum, the twice-confirmed claim is the one-way statement); §6 gains the INSTRUMENT-INPUT SCOPE sentence (wf/wf7 are the raw-total state surface; cert_* helpers trust their term/cert arguments); regression twenty-seven gated, twenty-seven-for-twenty-seven under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line; one declared drift registered (the predictions sketched a 16× timing band, the code uses 24× — both far under quadratic's ~64×, measured 7.8×) | **fresh audit #22: pending** |
+| v1.29 | CHECKER-ONLY, third consecutive: the five register ROOTS join the purity gate as exact tuples and d as an exact str (scalar roots and hostile-__eq__ d objects → ['W0'] before any iteration or comparison); the binder walk goes INDEX-BASED (no copies; the slice requirement = count of 'a'-components past the binder; measured linear — n=8,000 in 2.9 ms at 7.8× the n=1,000 time, was 21 ms at ~27×); the boundary narrative RECONCILED (the "cross together" coincidence retracted in §6/§10; the limits differ family-dependently, the boundary is their per-family minimum, the twice-confirmed claim is the one-way statement); §6 gains the INSTRUMENT-INPUT SCOPE sentence (wf/wf7 are the raw-total state surface; cert_* helpers trust their term/cert arguments); regression twenty-seven gated, twenty-seven-for-twenty-seven under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line; one declared drift registered (the predictions sketched a 16× timing band, the code uses 24× — both far under quadratic's ~64×, measured 7.8×) | **fresh audit #22: FAIL** (the machine unbroken a SIXTH consecutive round; the RECONCILED BOUNDARY CONFIRMED — an independent slice-nested family reproduces the §6 table, status/§6/§10 verified to agree, residual "cross together" text verified historical-only; the instrument scope verified structurally correct; all four v1.29 repairs individually LINEAR. The findings, layer EIGHT: the COMPOSITION is Θ(n²) — n frames sharing one valid deep lp, 4× per doubling, because w0lp_shape rescans the occurrence before w0tok consults the memo, so "the lpmemo makes it once per lp" was false for standalone rs/ks checks; §6's "a garbage term crashes them" too categorical — the cert_* helpers on object() QUIETLY RETURN meaningless values; and one generously-graded prediction — v129's outcome 1 marked "byte-identical conservation" HELD while the captures differ in the timing suffix: the caveat explains the bytes, it does not make the literal prediction true) |
+| v1.30 | CHECKER-ONLY, fourth consecutive, the smallest round: the FULL-LP id-memo in w0lp (shape+closure verified once per lp object, stored only after both conjuncts complete — no optimistic leak; the auditor's family drops 191 ms → 1.4 ms at n=2,000, linear, ~135×; regression twenty-eight measures exactly that family plus a distinct-lps no-aliasing control); §6's scope sentence reworded to UNSPECIFIED with the quiet-return examples registered; the v1.29 conservation-suffix prediction MARKED AS A MISS in its own outcomes appendix (grading it HELD was generous — the predictions discipline exists precisely so the author cannot grade their own homework); twenty-eight-for-twenty-eight under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #23: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
