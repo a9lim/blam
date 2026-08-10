@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.25.** The kernel is a scratch superposition evolver
+**Status: v1.26.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,7 +17,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #18**, whose
+The standing PASS re-claim is **gated on fresh audit #19**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -25,31 +25,34 @@ since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
 so this register now names arms exactly and only per version:
-v1.25 adds ONE machine guard relative to v1.24, and no arm's
-storage behavior moves: the fire boundary types foreign-gate
-cargo tickets (`alien-gate` — audit #17 showed `α_t` at an `h`
-boundary with a matching bit was WF-clean and silently DECODED
-into a `('K','t',i)` record under an H row: the register's
-decode row always said `l = α_g(i, b)` and the implementation
-had dropped the subscript). Around the machine, two
-verification-layer corrections from the same audit: `wf()` is
-now TOTAL by the W0 GATE (exact-pure malformed tuples were
-W0-flagged and then crashed the W1-W9 deep scans; W1-W9 are
-adjudicated only over the language's carrier), and the KA mark
-joined the gauge sweep (ten parameters, 1024 assignments — a
-reachably-dead mark cannot be constrained by reachable edges,
-so one disclosed raw suppressed-decode edge is the constraining
-instrument: 8/1024 reachable-only with KA free, 4/1024 with the
-edge, every survivor pinning w(KA) = 0). Audit #17 CONFIRMED
-the v1.24 KA repair itself outright — no remaining
-storage-history collision, state-space inner products
-re-derived, the guard-exclusion lifecycle verified coherent,
-and the arm census extended to the 218,546-state corpus
-(367/465/222/0). Suite, certify, and typecheck measured
-BYTE-IDENTICAL across v1.25; polarity's output changed in
-exactly the declared gauge-sweep lines. For anything older,
-read §11's rows; do not trust a summary, including this file's
-former ones.
+v1.26 changes NO arm and NO guard — it is a helper-level
+totality round. Audit #18 confirmed everything else (C1 by
+source reconstruction; the alien-gate repair including nested
+foreign tickets, foreign frames, and foreign burials — all
+carried explicitly tagged, none reinterpreted; the gauge claim
+UPGRADED: an independent GF(2) solver showed every possible
+suppressed-decode edge satisfies w(M)+w(A)+w(AL)+w(KA) ≡ 1, so
+the reachable orbit forces w(KA) = 0 universally — the pinning
+is a property of the arm, not of the chosen instrument edge)
+and broke checker totality at LAYER FOUR: an exact-pure EMPTY
+TUPLE in the log crashed `wf()` upstream of the W0 gate
+(`is_gam` indexed `e[0]` bare), and 1,500-deep recursion blew
+`pure()` and `closed()`. v1.26: the four bare-indexing token
+predicates gain the emptiness conjunct (identical on every
+non-empty tuple); every traversal `wf()` performs before and
+during W0 — purity, closedness, the token grammar (now a
+closure sweep with an id-keyed per-call memo), and the deep
+scans, plus the kernel's `alpha_keys_live`/`alpha_bits_deep`
+that also serve the fire arm's deep-W3 guard — is ITERATIVE
+and, pre-gate, HASH-FREE. The totality claim is scoped to
+where it actually lives (§6): total rejection on the
+raw-object layer; past the gate, the W1-W9 scans and the
+machine's superposition layer share the HOST-IDENTITY
+BOUNDARY — a state whose components the host cannot hash can
+never enter a superposition at all. Suite, certify, typecheck,
+and polarity measured BYTE-IDENTICAL across v1.26. For
+anything older, read §11's rows; do not trust a summary,
+including this file's former ones.
 
 This file is the current contract and register only. The
 round-by-round history — countermodels, corrections, verdicts —
@@ -544,8 +547,26 @@ the machine's unitarity claims quantify over the subtype:
   then crashed the W1-W9 deep scans, so W1-W9 are adjudicated
   only over the language's carrier, the same argument that
   justifies the purity early-return; after a clean W0 every
-  token has exact shape and the scans index safely, making
-  `wf()` TOTAL. Zero reachable
+  token has exact shape and the scans index safely. TOTALITY,
+  scoped where it lives (v1.26, audit #18 — which found an
+  empty tuple in the LOG crashing upstream of the gate through
+  a bare-indexing token predicate, and 1,500-deep recursion
+  blowing `pure()`/`closed()`): every traversal `wf()` performs
+  before and during W0 is ITERATIVE and HASH-FREE (explicit
+  stacks; the token grammar a closure sweep — a token is valid
+  iff every node of its closure satisfies its local predicate,
+  which is the recursive definition, iteratively — with an
+  id-keyed per-call memo), so `wf()` rejects ANY finite object
+  graph without crashing and returns exactly `['W0']` for
+  everything out of language. Past the gate, the W1-W9 scans
+  key their dicts by in-language components, and the machine's
+  own superposition layer keys STATES by hash: both share the
+  HOST-IDENTITY BOUNDARY — a state whose components exceed the
+  host's structural hashing limits cannot enter any
+  superposition (evolve's dicts require the hash before wf ever
+  sees the state), so neither layer claims states past it; the
+  boundary is state identity, not an arbitrary depth cap. Zero
+  reachable
   fires on the twenty programs and the 218,546-state generated
   corpus.
 - **W1** (log discipline): `|log| = level(pos)`.
@@ -885,7 +906,7 @@ canonical dicts compared bit-for-bit; `dupcall` canonically None
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
 `refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **twenty-three permanent regressions** (the v1.6 pair;
+zero violations; **twenty-four permanent regressions** (the v1.6 pair;
 extra-frame collision, W7-excluded with disjoint targets;
 doctored bundle divergence; K+frame alias; retained-Q
 disjointness — spectator-bit columns share zero targets;
@@ -941,7 +962,12 @@ exactly `['W0']` with no exception, and an in-language
 multi-violation control still lists its W1-W9 flags (the gate
 must not over-collapse); alien-gate — foreign-gate tickets at
 the fire boundary are WF and typed `alien-gate` at both bit
-polarities, the same-gate decode control fires unchanged). The
+polarities, the same-gate decode control fires unchanged;
+totality IV — an exact-pure empty tuple in EACH of the four
+registers returns exactly `['W0']` with no exception, a
+1,500-deep exact tuple returns `['W0']`, and a 1,500-lambda
+closed term's root state passes wf in full — the deep-term
+no-over-rejection control). The
 gating structure, stated exactly
 (audits #6 and #7 each caught a computed-but-non-gating
 verdict; audit #8 forced all eleven then-regressions
@@ -954,13 +980,16 @@ including ok_gr; audit #15 confirmed seventeen-for-seventeen;
 audit #16 confirmed nineteen-for-nineteen plus fourteen
 instrument components, every mutation exit 1; audit #17
 confirmed twenty-one-for-twenty-one plus the fourteen
-components likewise): the v1.6 pair
-gates `collisions_under_wf()`; the other twenty-one gate
+components likewise; audit #18 confirmed
+twenty-three-for-twenty-three plus the fourteen components,
+the two polarity readings forced separately, and the raw gauge
+instrument REMOVED → exit 1): the v1.6 pair
+gates `collisions_under_wf()`; the other twenty-two gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
 pair false → exit 1; forcing cert_sweep flags false → exit 1,
-including the v1.20 through v1.25 flags; the
+including the v1.20 through v1.26 flags; the
 emulated-old-arm probe flips `cert_sweep` to FAIL). Three
 v1.12/v1.13-era regression mechanizations were updated in v1.23
 to the always-emit discipline (their targets now carry the
@@ -1153,7 +1182,26 @@ displays recompute with the current ten-mark profiler and print
 the 8-entry KA-free reachable orbit — independent confirmation
 of the unconstrained-mark fact — with `orbits_equal` still
 True; the v118/v119 line counts as always; the v121 crash and
-the v123 kit byte-identical. Basis counts vs v1.2 reference: `negative` 103→83,
+the v123 kit byte-identical. Audit #18 confirmed the alien-gate
+repair on its full semantic surface (top-level foreign tickets
+typed at both polarities, plain and certified; nested foreign
+tickets, foreign frames, and foreign burials verified CARRIED —
+explicitly tagged in lp cargo, KD keys, spectator frames, and
+burial history, never reinterpreted — a strictly stronger
+adjacent-representation check than the round claimed), upgraded
+the gauge confirmation to the universal equation (every
+suppressed-decode edge, frame or burial, either slot, forces
+w(KA) = 0 given the reachable orbit — via an independent
+profiler and GF(2) solver), and independently verified the two
+polarity readings and the raw instrument's own gating; its
+totality countermodels (the empty log tuple, the two
+RecursionError classes) are healed and gated as regression
+twenty-four, with every wf traversal now iterative and the
+host-identity boundary registered in §6. Its harness
+(audit_v125_fresh.py) joins the kit rerun set — its TOTALITY
+rows now report the healed values, its ALIEN_GATE and GAUGE
+tables reproduce, and its forcing inventory (its own 23-flag
+snapshot) reports all exit 1. Basis counts vs v1.2 reference: `negative` 103→83,
 `selector` 173→106, `pstar` 458→242 — v1.7-era, real, owned;
 marginals and supports never moved. All measurements
 seconds-scale on the M5 Max.
@@ -1232,7 +1280,8 @@ no bare-term ideal oracle).
 | v1.22 | W0 becomes the FULL state language: exact-int bits (bool refused — the terminal-kind minting), recursive lp productions with occurrences resolving to Vars of the term, arrival-lp K(l) cargo, coordinates d/path in language, VB phase exact-int; anshead's bit check exact-int (the one arm change, bit-identical on covered outputs); regression seventeen (state-language: ten countermodels + exact-int and kit-exact foreign-lp controls) gated; provenance summaries abolished — the register names arms per version only and defers history to these rows; the wf.py v1.12 fixture's App-naming carrier lp corrected (countermodel essence untouched); six kits' helper-lp wf-columns and the v121 kit's crash-by-construction adjudicated; stale W1-W9 phrases updated; zero W0 hits on the corpus; every prediction held in substance with the kit-delta count wrong and registered | **fresh audit #15: FAIL** (C1/C2/C4/C5 CONFIRMED — the v1.21→v1.22 diff exactly the exact-int condition, the delta set exact with the crash scoped, all seventeen forcings, the exact-bit repair itself sound against Fraction/int-subclass/-0.0 probes. The findings: THE FIRST RAW-SUBTYPE UNITARITY BREAK SINCE AUDIT #3 — §7.4's incoming-KS disjointness is false because the certified fire omitted empty KD bundles: a fresh decode and a carried-in record produced IDENTICAL targets, inner product 1, norm 2; W0 admitted BULLET in the log (bt1 transported it into a b1 collision, norm 2 again), never checked the lambda-IAM slice equation (a bad slice stepped to a W1-invalid target), and accepted open terms whose current position crashes binder_path; the t boundary raised NotImplementedError from WF states; "full state language" and the placement sentence refuted with them) |
 | v1.23 | The certified fire emits its bundle UNCONDITIONALLY — ('KD', ()) when empty — restoring storage-history prefix-freeness (§7.4 restated to the strip-the-head injectivity); the t boundary becomes the typed scope fence t-unimplemented; W0 gains the log SORT (lp-like entries only), the lambda-IAM slice equation with a bound-finding binder walk, and the closed-term conjunct; regressions eighteen (log-sort/slice-equation) and nineteen (KS prefix-freeness + t fence) gated; three v1.12/v1.13-era regression mechanizations updated to the always-emit form and two fixture lps corrected to the slice equation (theorems and countermodel essences unchanged, all disclosed); THE HINGE PREDICTION, written first, HELD: suite, certify, typecheck, and polarity byte-identical — no reachable interference crosses fire histories, so the machine change is invisible on every covered output; ten kits' ks-display deltas and the matrix-coverage shrink adjudicated; zero W0 hits on the corpus | **fresh audit #16: FAIL** (C1 CONFIRMED independently — the two-arm diff exact, four instruments byte-identical against the re-executed v1.22 sources, the hinge reason verified by a 5,760-state fire-history search plus 300 generated bodies with zero mixed-count merges, and the stronger v1.23 form derived: append-only KS makes different-fire-count merges impossible; C2 CONFIRMED narrowly for certified fires — nested bundles cannot defeat tuple-head injectivity; C4/C5 CONFIRMED — nineteen forcings + fourteen instrument components all exit 1, zero reachable W0 fires, the corpus rerun independently; the binder equation confirmed on 100,763 reachable lp occurrences with zero binder_path mismatches. The findings: THE AUDIT-#15 SIBLING — the suppressed-decode arm appends ZERO storage heads, so a suppressed decode with incoming [K(l)] and a retain-whole fire with incoming [] produce IDENTICAL targets, norm 2, through BOTH the same-key-frame and agreeing-burial variants — legal lifecycle configurations, not the alias gap; W0 accepted Var(0) (`i <= depth` under the 1-INDEXED convention — binder_path IndexError one step inside WF) and never sorted the CONTAINERS (a list tape passed WF, the fire TypeError'd); three stale register/docstring lines, including the §9 gate sentence still naming audit #15) |
 | v1.24 | The suppressed-decode fire appends the inert arm-typed history head ('KA', g, i) — EVERY fire arm now appends exactly one head, §7.4 restated to the all-arms one-head discipline; the head carries its key because the author two-key double-suppression sibling (both tickets suppressing over a shared two-frame RS) also collided at norm 2 pre-fix, and a contentless marker would have left it alive; KA excluded from ks_dead_keys/ks_bitfree_keys by design (refire/key-alias/W8/W4-storage blind; replays off the surviving frame stay legal); W0 gains exact-type PURITY (registers exact tuples of exact tuples/str/int, checked without hashing before any scan — hostile __hash__/__eq__ can neither crash nor poison the checker; list containers refused) and the 1-indexed closedness (Var(0) refused); regressions twenty (fire prefix-freeness, three pairs + recorded-arm control) and twenty-one (W0 totality II incl. the hostile-hash probe) gated; the three stale lines fixed; THE HINGE, cheaper this round: suite/certify/typecheck/polarity byte-identical because the suppressed arm is REACHABLY DEAD CODE on the whole canonical suite (arm census measured first: 58 certified / 69 retain-whole / 10 decode-recorded / 0 suppressed); v113/v114 kit ks-displays gain the KA head (relabels, semantic columns unchanged — a kit-delta class my predictions MISSED and registered as the round's wrong call); zero W0/W4 hits on the corpus | **fresh audit #17: FAIL** (the KA repair itself CONFIRMED-SOUND — no remaining storage-history collision; the four KS-writing arms enumerated from source, non-fire paths KS-preserving, the three healed pairs re-derived at state-space inner product 0, the guard-exclusion lifecycle verified coherent — and the reachability hinge confirmed with an independent census matching 58/69/10/0 and EXTENDED to the corpus, 367/465/222/0; C1 confirmed at the AST level; C4/C5 confirmed, 21 forcings + 14 components all exit 1. The findings: wf() NOT TOTAL over exact-pure malformed states — bare ('AL',)/('L',) tape tokens and an empty () frame pass purity, get W0-flagged, then IndexError the W1-W9 deep scans; a WF-clean FOREIGN-GATE ticket silently decoded — α_t at an h boundary with matching bit fires and records ('K','t',i) under an H row, the register's decode subscript dropped by the implementation; the gauge sweep OMITS KA — nine parameters, KA implicitly weight 0 and unconstrainable by reachable edges (the auditor's own repaired sweep: 8/1024 reachable-only KA-free, 4/1024 with a raw suppressed edge, KA pinned 0); plus the stale "inert dead storage" docstring phrase) |
-| v1.25 | ONE machine guard added, no arm's storage behavior moves: alien-gate types foreign-gate cargo tickets at the fire boundary at both bit polarities (the decode row's subscript restored to the implementation; reachably unmintable — α_t's only mint site is behind the t-fire fence — so suite/certify/typecheck byte-identical, measured); wf() made TOTAL by the W0 GATE (out-of-language states early-return ['W0']; W1-W9 adjudicated only over the language's carrier; the in-language multi-flag control proves no over-collapse); the gauge sweep goes TEN-mark — 8/1024 reachable-only with KA free (printed), 4/1024 with the disclosed raw suppressed-decode edge, every survivor pinning w(KA)=0, verdict gating on both readings; §7.1 restated; regressions twenty-two (checker totality III) and twenty-three (alien-gate) gated, twenty-three-for-twenty-three under forcing; the "inert dead storage" phrase corrected; my pre-fix hand-derivation of the fire-edge parity DISAGREED with the auditor's sweep numbers and the measurement adjudicated for the auditor (registered — the mechanized sweep is the theorem, not my head-model); kit deltas: the W0-gate display collapses on out-of-language fixtures and the ten-mark orbit displays (independent confirmation of the unconstrained-mark fact), v121 crash and v123 kit byte-identical | **fresh audit #18: pending** |
+| v1.25 | ONE machine guard added, no arm's storage behavior moves: alien-gate types foreign-gate cargo tickets at the fire boundary at both bit polarities (the decode row's subscript restored to the implementation; reachably unmintable — α_t's only mint site is behind the t-fire fence — so suite/certify/typecheck byte-identical, measured); wf() made TOTAL by the W0 GATE (out-of-language states early-return ['W0']; W1-W9 adjudicated only over the language's carrier; the in-language multi-flag control proves no over-collapse); the gauge sweep goes TEN-mark — 8/1024 reachable-only with KA free (printed), 4/1024 with the disclosed raw suppressed-decode edge, every survivor pinning w(KA)=0, verdict gating on both readings; §7.1 restated; regressions twenty-two (checker totality III) and twenty-three (alien-gate) gated, twenty-three-for-twenty-three under forcing; the "inert dead storage" phrase corrected; my pre-fix hand-derivation of the fire-edge parity DISAGREED with the auditor's sweep numbers and the measurement adjudicated for the auditor (registered — the mechanized sweep is the theorem, not my head-model); kit deltas: the W0-gate display collapses on out-of-language fixtures and the ten-mark orbit displays (independent confirmation of the unconstrained-mark fact), v121 crash and v123 kit byte-identical | **fresh audit #18: FAIL** (C1/C2/C4/C5 CONFIRMED — the delta exact by source reconstruction, 23 forcings + 14 components + both polarity readings + the raw instrument removed all exit 1, zero W0/alien-gate fires on an independently regenerated corpus; the alien-gate repair CONFIRMED on its full surface including nested/frame/burial foreign representations, all carried, never reinterpreted; the gauge claim UPGRADED — an independent GF(2) solver proved every possible suppressed-decode edge forces w(KA)=0 given the reachable orbit: the pinning is arm-intrinsic, not edge-dependent. The finding: C3's totality broken at LAYER FOUR — an exact-pure EMPTY TUPLE in the log crashes wf() UPSTREAM of the W0 gate (w0log → is_gam → bare e[0] IndexError; the gate only protected states whose W0 clauses already computed safely), plus two RecursionError classes (1,500-deep exact tuple in recursive pure(); 1,500-lambda term in recursive closed()); honesty: "wf() is total" false as written, the pack caption's stale regression count violating its own count-neutral convention, "one raw edge" vs one raw fire with two H successor edges) |
+| v1.26 | NO arm, NO guard — the helper-level totality round: the four bare-indexing token predicates (is_gam/is_mu/is_ans/is_alpha) gain the emptiness conjunct is_lp always had; every wf traversal before and during W0 becomes ITERATIVE and pre-gate HASH-FREE (explicit-stack pure/closed; the token grammar as a CLOSURE SWEEP — valid iff every closure node satisfies its local predicate — with an id-keyed per-call memo; iterative deep scans; kernel's alpha_keys_live/alpha_bits_deep iterative too, serving the fire arm's deep-W3 guard identically); the totality claim SCOPED to where it lives — total rejection on the raw-object layer, and past the gate the HOST-IDENTITY BOUNDARY shared with the machine's own superposition layer (§6); regression twenty-four (empty tuple in each register → exactly ['W0']; 1,500-deep tuple → ['W0']; 1,500-lambda term passes in full) gated, twenty-four-for-twenty-four under forcing; one equivalence bug caught DURING implementation before any measurement (the sweep's first draft would have accepted an AL with a non-lp instance — the kind requirement restored, registered in the predictions file); pack captions made count-neutral per their own standing convention; suite/certify/typecheck/polarity byte-identical, conservation timing-suffix only, wf exactly one new line; the auditor's harness joins the kit set and reruns healed | **fresh audit #19: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
