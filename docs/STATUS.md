@@ -413,7 +413,7 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.37** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.38** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
 twenty-seven fresh-context rounds. Kernel-arm provenance summaries
@@ -654,7 +654,18 @@ shells while the fresh C4/§10/comment sentences said n — plus
 a docstring omitting retained Q from the spectator tuple its
 implementation carries. v1.37 (documentation only): both claim
 sites now say n−1 with the reason, the docstring completed,
-the fresh miss marked. What
+the fresh miss marked. Audit #30 (fourteenth machine-clean
+round) then found the first executable defect in three rounds:
+regression 31's d='X' state short-circuits W0's conjunction
+before the tape, so the carrier was never traversed — removing
+it left the whole output byte-identical. v1.38 (fixtures
+only): sensitivity becomes the gate — cargo31 in-language with
+a corrupted-last-shell control that must flip to ['W0'] (the
+removal countermodel now exits 1), and five sensitivity pairs
+gate the rs/ks families whose 'X' timing methodology is
+load-bearing (measured: their machinery runs through the
+unconditional loops; the early return isolates pre-gate cost).
+What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
 day: all thirty-two permanent regressions now gate mechanically (the
@@ -680,7 +691,7 @@ prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #30 of the v1.37 h-fragment
+1. **fresh-context independent audit #31 of the v1.38 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9

@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.37.** The kernel is a scratch superposition evolver
+**Status: v1.38.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,7 +17,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #30**, whose
+The standing PASS re-claim is **gated on fresh audit #31**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -25,7 +25,41 @@ since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
 so this register now names arms exactly and only per version:
-v1.37 changes NOTHING executable — documentation only, the
+v1.38 changes REGRESSION FIXTURES ONLY — zero
+wf()/wf7()/kernel/instrument-semantic changes: audit #30
+(machine clean a FOURTEENTH round; the v1.37 count and
+docstring repairs verified exact, every fibre of all 19
+certified programs independently rebuilt) found the first
+executable defect in three rounds, a genuine
+regression-coverage countermodel: regression 31's state used
+d='X', and W0's conjunction short-circuits on the direction
+check BEFORE the tape — the carrier was never traversed (0
+w0tok/w0lp_shape/occ_required calls), and REMOVING IT left the
+complete instrument output byte-identical; the linear timings
+were purity traversal. Reproduction with a counter-instrumented
+copy scoped the class: the rs/ks loops run UNCONDITIONALLY
+after the conjunction, so the frame/storage/KD timing families
+(comp28/occ29/shells30) genuinely exercise their machinery
+under 'X' — the 'X' is load-bearing there, early-returning
+before the value-semantics-quadratic post-gate W2 duplicate
+scan — but their traversal was equally UNGATED (the removal
+countermodel kills them identically), and a same-verdict
+measurement showed direction alone cannot gate traversal
+(carrier-free 'D' states also return []). v1.38: SENSITIVITY
+IS THE GATE — cargo31 moves in-language per the auditor's
+prescription (d='D', WF-clean [] gated at both sizes,
+distinctness and band kept) with a corrupted-last-shell
+control that must return exactly ['W0'] (only a sweep reaching
+the deepest shell can flip it — carrier removal now exits 1
+with visibly different output); comp28, occ29 (both variants),
+and shells30 (all three kinds) keep their 'X' timing
+methodology and gain small-n in-language sensitivity pairs
+(genuine 'W0'-free, corrupted-last-element exactly ['W0'] —
+five pairs, all gated in their flags); the fixture comments
+state the conjunction-structure facts; the v1.37 coverage miss
+is marked in its file (the second member of audit #28's
+fixture-coverage class).
+Before that, v1.37 changed NOTHING executable — documentation only, the
 loop's second such round: audit #29 (machine clean a
 THIRTEENTH round; the regression-31 rebuild verified GENUINE at
 the bytecode level — LOAD_DEREF + BUILD_TUPLE against v1.35's
@@ -1092,7 +1126,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#30; the verdict will be registered here.** (Audit #16 caught
+#31; the verdict will be registered here.** (Audit #16 caught
 this sentence stale; audit #19 caught it stale AGAIN despite the
 parenthetical promising otherwise — the promise is now an
 ASSERTION: the pack assembly script verifies §1 and §9 name the
@@ -1213,14 +1247,22 @@ hostile-`__eq__`-in-d state W0-rejected with nothing executing,
 wf7 declining, and the n=8,000 valid deep-lp walk inside the
 linear band; composition linearity — the n-frames-one-lp family
 W0 at both sizes inside the linear band, with a distinct-lps
-no-aliasing control; occurrence-memo — the distinct-shells/
+no-aliasing control and a traversal-sensitivity pair (v1.38:
+in-language genuine 'W0'-free, corrupted-last-frame exactly
+['W0']); occurrence-memo — the distinct-shells/
 shared-occurrence families inside the linear band, the
-stale-interleaving verdict pinned ['W0'], and the fresh-call
-isolation control; shared-substructure — the shared-slice
+stale-interleaving verdict pinned ['W0'], the fresh-call
+isolation control, and sensitivity pairs for both storage
+variants; shared-substructure — the shared-slice
 rs/K-storage families and the shared-KD-keys family W0 inside
-the linear band on the auditor's exact term shape; big-index/
-slice-cargo — the Var(1<<n) family and the carrier slice-cargo
-family W0 inside the linear band (n−1 runtime-built DISTINCT
+the linear band on the auditor's exact term shape, with
+sensitivity pairs for all three kinds; big-index/
+slice-cargo — the Var(1<<n) family W0 and the carrier
+slice-cargo family WF-CLEAN inside the linear band —
+in-language as of v1.38, with the corrupted-last-shell control
+(exactly ['W0']) as the positive traversal gate, so audit
+#30's carrier-removal countermodel now exits 1
+(n−1 runtime-built DISTINCT
 shells — one per 'a' of the carrier occurrence, which is what
 the slice equation requires; the count corrected in v1.37
 after audit #29 caught v1.36's own "n" off by one — sharing
@@ -1625,7 +1667,8 @@ no bare-term ideal oracle).
 | v1.34 | CHECKER-ONLY, eighth consecutive: FIELD-PRESENCE GUARDS — hasattr for the seven Run fields after exact-type dispatch, getattr sentinels for term-node fields in both validator passes; the DEFAULTED-FIELD DISTINCTION discovered in-round by the regression's own failing first draft and pinned (deleting vb/rs/ks exposes the class-level default — the state is extensionally the default Run, adjudicating [] with no crash; deleting path/d/log/tape is W0); regression thirty-two gated, thirty-two-for-thirty-two under forcing; the kit-note misattribution corrected and the stale line-number tracer adjudicated; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #27: FAIL — documentation/display only; no kernel or checker semantic repair indicated** (C1-C6 SURVIVE MECHANICALLY; raw-object totality CONFIRMED IN SCOPE — all seven fields deleted or __dict__-replaced, hostile values and a hostile dict subclass with zero callback execution, hollow term nodes, weakref/GC pressure all defeated; the TOCTOU sys.settrace and class-descriptor attacks judged out of scope as runtime mutation, exactly the boundary the charge asked to be adjudicated; the defaulted-field fallback CONFIRMED — 110,232 comparisons over 6,124 reachable states across wf/wf7/step/eq/hash/repr, zero mismatches, with the vars() intensionality refinement; 32/32 + 14/14 + 3/3 forcings; the two corrections both TEXT: regression 32's comment still said "all seven → W0" against its own code, and the layer-ten kit's line-302 locator lacked its historical label) |
 | v1.35 | COMMENTS AND KIT NOTES ONLY — zero executable changes, all six instruments byte-identical (measured): regression 32's comment rewritten to the four-undefaulted/three-defaulted distinction its code and print line already carried; the guard comment scoped to undefaulted fields with the fallback named; the layer-ten locator adjudicated as historical (v1.31 line numbering) beside the layer-eleven tracer; the auditor's vars() refinement adopted into the fallback sentence | **fresh audit #28: FAIL — permanent-regression coverage and documentation/provenance defects; no kernel or checker semantic countermodel** (the machine clean a TWELFTH consecutive round; C1-C5 confirmed — 33 embedded sources byte-checked with only wf.py's comment delta, all six instruments reproducing stored bytes, fresh AST-derived forcing 32/32 + 14/14 + 3/3, fresh corpus 300/206/363/218,546 zero-hit with arm census 465/367/222/0, gauge 8/1024 + 4/1024, conservation size 11 reproduced; the v1.35 corrections verified correct, the layer-ten locator confirmed truthful at extracted-v1.31 line 302; C3's boundary sentence ruled consistent under the registered stable-runtime scope. The findings: REGRESSION 31's distinct-shell family was ONE constant-folded object — CPython compiles the constant tuple display to a single LOAD_CONST, the gated states held one distinct shell at both sizes, the dead inner31 local confirmed by bytecode capture, and the reconstructed genuine family stayed ['W0'] and linear, so the gate covered the wrong shape without hiding a slowdown; v1.33's outcomes had graded that coverage HELD — a third unmarked provenance miss; two current comments said "no KD" above assertions requiring ('KD', ()); the W8 comment overstated certified pop against the loop's own riding-ticket control; and v1.35's predictions file contradicted its own timing-suffix exception and miscounted five instruments for six) |
 | v1.36 | CHECKER FIXTURE AND COMMENTS ONLY, ninth consecutive checker-only round, zero semantic changes: regression 31's slice-cargo family REBUILT FOR REAL — the shells runtime-built from a display referencing a named occurrence local (a name cannot be a code-object constant), genuinely sharing ONE occurrence object, the dead inner31 local deleted, and DISTINCTNESS GATED (len({id}) == n−1 a conjunct of the flag, printed; forced alone → exit 1); the genuine family ['W0'] and linear, 0.103 → 0.680 ms at 8× (~2× per doubling, matching the auditor's reconstruction); the two "no KD" comments → "empty KD bundle"; the W8 comment → subtraction of surviving representations; §6 restates the stable-runtime scope locally; the v1.33 miss MARKED in its outcomes and v1.35's falsifier contradiction plus five-vs-six count marked in its file; suite/certify/typecheck/polarity byte-identical, conservation byte-identical this run, wf exactly the one predicted line; 31/31 direct forcings plus the v1.6 pair via the v125 kit's byte-identical forcing snapshot; one capture error caught in-round by the diff and redone per the header protocol (the v125/v126 kits first rerun without their documented flags) | **fresh audit #29: FAIL — C4/C6 false as written plus one docstring; no kernel-arm or checker-semantic repair indicated** (the machine clean a THIRTEENTH consecutive round; the rebuild verified GENUINE — v1.35 bytecode one LOAD_CONST vs v1.36 LOAD_DEREF + BUILD_TUPLE, gated states independently captured at 99/799 shell identities with ONE occurrence identity and every shell using occ_in31, inner31 confirmed gone, distinct31 force-verified; the SIBLING SWEEP clean — comp28/occ29/shells30 all build exactly their claimed object graphs; the three comment corrections verified accurate with the riding-ticket measurement; fresh gauge 8/1024 + 4/1024 with KA pinned 0; a NEW mixed tape/RS/KS sharing family linear at 1.90/1.93/2.00 doublings; conservation size 11 reproduced; forcing 30/30 + v1.6 pair + W7-aggregate + distinct31 + 14/14 + 3/3; C5 battery and corpus zero-hit. The findings, all documentation: cargo31 builds N−1 shells — range(n−1), the gate proves it, the measurements say 99/799 — while C4, §10, and the regression comment said "n distinct shells", all three sentences fresh from v1.36's own correction; the cert_disjointness docstring omits retained Q from its spectator tuple against its own implementation and §7.4; and the fresh overclaim was unmarked in v1.36's provenance) |
-| v1.37 | DOCUMENTATION ONLY, zero executable changes — the loop's second such round: both current n-shell claim sites corrected to n−1 with the reason stated (one shell per 'a' of the carrier occurrence — occ_required returns the 'a'-count past the binder, verified against the code before registering; the historical quotations and regression 30's genuine n-shell family untouched); the cert_disjointness docstring's retained-spectator tuple gains retained Q (matching spec() and §7.4); the v1.36 overclaim and omission MARKED in its predictions file; all six instruments byte-identical INCLUDING conservation's suffix (second consecutive coincidence), all three diagnostics byte-identical, all 22 kits at adjudicated readings with v125/v126 captured under their documented flags on the first attempt; ok_big/ok_fld spot-forced → exit 1 | **fresh audit #30: pending** |
+| v1.37 | DOCUMENTATION ONLY, zero executable changes — the loop's second such round: both current n-shell claim sites corrected to n−1 with the reason stated (one shell per 'a' of the carrier occurrence — occ_required returns the 'a'-count past the binder, verified against the code before registering; the historical quotations and regression 30's genuine n-shell family untouched); the cert_disjointness docstring's retained-spectator tuple gains retained Q (matching spec() and §7.4); the v1.36 overclaim and omission MARKED in its predictions file; all six instruments byte-identical INCLUDING conservation's suffix (second consecutive coincidence), all three diagnostics byte-identical, all 22 kits at adjudicated readings with v125/v126 captured under their documented flags on the first attempt; ok_big/ok_fld spot-forced → exit 1 | **fresh audit #30: FAIL — a genuine, runnable regression-coverage countermodel; no kernel-arm or checker-semantic repair indicated** (the machine clean a FOURTEENTH consecutive round; the count correction verified EXACT — 99/799 distinct shells, one occurrence, occ_required returning exactly the post-binder 'a'-count, distinct31 forced alone → exit 1, regression 30 and the historical quotations verified right to leave; the docstring repair verified with every fibre key/value of all 19 certified programs independently rebuilt, 26 same-boundary pairs zero violations; every other docstring swept clean; C1 confirmed — only wf.py changed, docstring-stripped AST identical; forcing 30/30 + W7 aggregate + v1.6 pair + 14/14; C5 fresh corpus zero-hit; one-head held on 137 sources/274 successors; gauge 8/1024 + 4/1024. THE FINDING: regression 31's state used d='X' and W0's conjunction short-circuits on the direction check before the tape — the carrier was NEVER TRAVERSED, 0 w0tok/w0lp_shape/occ_required calls, and the decisive forcing REMOVED THE CARRIER ENTIRELY leaving the complete instrument output byte-identical with the regression printed as passing; the linear timings were purity traversal, not the slice machinery; the v1.37 disclosure was accordingly too generous — a fresh unmarked coverage miss of audit #28's general class) |
+| v1.38 | REGRESSION FIXTURES ONLY — zero wf()/wf7()/kernel/instrument-semantic changes: SENSITIVITY BECOMES THE GATE. cargo31 in-language per the auditor's prescription (d='D'; WF-clean [] gated at both sizes; distinctness and the 24× band kept; measured 0.192 → 1.165 ms) with the corrupted-last-shell control gated to exactly ['W0'] — the carrier-removal countermodel now exits 1 with visibly different output; the scoping measurement (counter-instrumented copy) established the rs/ks loops run UNCONDITIONALLY, so comp28/occ29/shells30 genuinely exercise their machinery under 'X' (load-bearing: the early return isolates pre-gate cost from the value-semantics-quadratic W2 duplicate scan) and each gains small-n in-language sensitivity pairs — five pairs, genuine 'W0'-free / corrupted-last-element exactly ['W0'], all folded into their flags; conjunct-level and whole-flag forcings all exit 1; fixture comments state the conjunction-structure facts; the v1.37 miss marked; suite/certify/typecheck/polarity byte-identical, conservation byte-identical including its suffix (third consecutive coincidence), wf exactly the four predicted lines | **fresh audit #31: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
