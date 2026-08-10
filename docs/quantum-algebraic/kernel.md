@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.39.** The kernel is a scratch superposition evolver
+**Status: v1.40.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,297 +17,49 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #32**, whose
+The standing PASS re-claim is **gated on fresh audit #33**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
 since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
-so this register now names arms exactly and only per version:
-v1.39 changes REGRESSION FIXTURES ONLY again — zero semantic
-changes: audit #31 (machine clean a FIFTEENTH round; the
-literal v1.38 wiring confirmed — its own first/middle/last
-corruption battery detected by the shipped checker, carrier
-removal exit 1, every clause and flag forced; the 'X'
-load-bearing claim CONFIRMED by live measurement, 0.182→1.252
-ms pre-gate vs 1.729→95.766 ms post-gate at 8×) won the
-sensitivity-design charge exactly as posed: the closure walker
-is LIFO — extend, then pop from the END — so v1.38's
-"corrupted-last-shell" was visited FIRST (one w0lp_shape
-call), and an in-memory checker mutant skipping long-slice
-traversal while special-casing the ('BAD',) sentinel PASSED
-every gate at exit 0, with a second mutant canning the count
-for long all-'b' occurrences passing the comp28/occ29 pairs —
-the v1.38 pairs pinned shallow shape rejection, not the
-machinery; and "five pairs" was SIX, a count error one round
-after the off-by-one. v1.39: corruptions become DEEP and
-TRAVERSAL-LAST — comp28/occ29's corrupt value is a locally
-valid UNBOUND all-'b' lp (one 'b' beyond the binders; only
-the occurrence walk can reject it — kills the canned-count
-mutant), shells30-rs/ks and cargo31's corrupt element moves to
-slice position 0 (popped LAST, a full drain required —
-measured at the full traversal count) and is locally valid
-with an unbound occurrence (kills the slice-skipping mutant),
-the KD kind's last key carries the same deep lp. Both
-reproduced mutants now EXIT 1, carrier removal still exits 1,
-all conjunct and flag forcings hold, and ALL SIX instruments
-are byte-identical INCLUDING wf — only fixture construction
-moved. The false deepest-shell sentence and the five-vs-six
-count are corrected below and marked in the v1.38 file.
-Before that, v1.38 changed REGRESSION FIXTURES ONLY — zero
-wf()/wf7()/kernel/instrument-semantic changes: audit #30
-(machine clean a FOURTEENTH round; the v1.37 count and
-docstring repairs verified exact, every fibre of all 19
-certified programs independently rebuilt) found the first
-executable defect in three rounds, a genuine
-regression-coverage countermodel: regression 31's state used
-d='X', and W0's conjunction short-circuits on the direction
-check BEFORE the tape — the carrier was never traversed (0
-w0tok/w0lp_shape/occ_required calls), and REMOVING IT left the
-complete instrument output byte-identical; the linear timings
-were purity traversal. Reproduction with a counter-instrumented
-copy scoped the class: the rs/ks loops run UNCONDITIONALLY
-after the conjunction, so the frame/storage/KD timing families
-(comp28/occ29/shells30) genuinely exercise their machinery
-under 'X' — the 'X' is load-bearing there, early-returning
-before the value-semantics-quadratic post-gate W2 duplicate
-scan — but their traversal was equally UNGATED (the removal
-countermodel kills them identically), and a same-verdict
-measurement showed direction alone cannot gate traversal
-(carrier-free 'D' states also return []). v1.38: SENSITIVITY
-IS THE GATE — cargo31 moves in-language per the auditor's
-prescription (d='D', WF-clean [] gated at both sizes,
-distinctness and band kept) with a corrupt-shell
-control that must return exactly ['W0'] (carrier removal now
-exits 1 with visibly different output; the round's own
-"deepest shell" description was FALSE — the walker is LIFO
-and visited that position first, audit #31's finding,
-corrected in v1.39); comp28, occ29 (both variants),
-and shells30 (all three kinds) keep their 'X' timing
-methodology and gain small-n in-language sensitivity pairs
-(genuine 'W0'-free, corrupted-element exactly ['W0'] — SIX
-pairs; the v1.38 text said five, audit #31's C1 refutation —
-all gated in their flags); the fixture comments
-state the conjunction-structure facts; the v1.37 coverage miss
-is marked in its file (the second member of audit #28's
-fixture-coverage class).
-Before that, v1.37 changed NOTHING executable — documentation only, the
-loop's second such round: audit #29 (machine clean a
-THIRTEENTH round; the regression-31 rebuild verified GENUINE at
-the bytecode level — LOAD_DEREF + BUILD_TUPLE against v1.35's
-single LOAD_CONST, 99/799 shell identities and ONE occurrence
-identity captured independently — with the SIBLING SWEEP clean:
-every other fixture builds exactly the object graph its comment
-claims; the three v1.36 comment corrections verified accurate;
-fresh gauge, a new mixed sharing family linear, conservation
-reproduced, forcing in full including distinct31 alone) found
-the round's OWN correction off by one: cargo31 builds n−1
-shells — range(n−1), the gate proves len == n−1, the
-measurements say 99/799 — while C4, §10, and the regression
-comment, all three sentences written in v1.36 to fix the
-previous multiplicity claim, said "n distinct shells"; plus
-the cert_disjointness docstring omitting retained Q from its
-spectator tuple (the implementation and §7.4 both carry it;
-the docstring predates the v1.11 retention wiring), and the
-fresh overclaim unmarked in v1.36's provenance. v1.37: both
-current-claim sites now say n−1 with the reason (one shell per
-'a' of the carrier occurrence — occ_required returns the
-'a'-count past the binder, verified against the code before
-registering); the docstring's spectator tuple gains retained
-Q; the v1.36 misses marked in its file.
-Before that, v1.36 changed NO kernel source and NO checker semantics — the
-ninth consecutive checker-only round, one regression fixture
-plus comments: audit #28 (machine clean a TWELFTH round; C1-C5
-confirmed in full — instruments reproducing stored bytes, fresh
-AST-derived forcing 32/32 + 14/14 + 3/3, corpus zero-hit, gauge
-8/1024 and 4/1024; the v1.35 corrections verified correct, the
-layer-ten locator confirmed truthful against extracted v1.31
-source; the C3 boundary sentence ruled consistent under the
-registered stable-runtime scope) found the C6 gap: REGRESSION
-31 NEVER BUILT ITS CLAIMED FAMILY — its shell display was a
-constant expression, folded by CPython to ONE LOAD_CONST, so
-the "n distinct shells" were one shared object at every size,
-and v1.33's outcomes had graded that coverage HELD (the third
-unmarked provenance miss, now marked). v1.36: the shells are
-runtime-built (the display references a named occurrence local;
-a name cannot be a code-object constant), genuinely sharing ONE
-occurrence object, and DISTINCTNESS IS GATED — the fixture
-returns len({id}) == n−1 as a conjunct of its flag, printed;
-the genuine family measures ['W0'] and linear (0.103 → 0.680 ms
-at 8×, ~2× per doubling, matching the auditor's
-reconstruction). The wording sweep: the two "no KD" comments
-corrected to "empty KD bundle" (their own assertions require
-('KD', ())); the W8 comment's "removes exactly the frames it
-records" corrected to subtraction of surviving representations
-(pop removes the popped frames but records only keys left with
-no surviving representation — the riding-ticket control pops
-into an empty bundle); §6 restates the stable-runtime scope
-locally (the auditor's non-required suggestion, adopted); and
-v1.35's own predictions file is marked for its
-self-contradictory falsifier and five-vs-six instrument count.
-Before that, v1.35 changed NO executable source AT ALL — the round is
-comments and kit notes only, because audit #27's verdict was
-the narrowest of the loop: "FAIL — documentation/display only;
-no kernel or checker semantic repair indicated." C1-C6 SURVIVED
-MECHANICALLY: raw-object totality CONFIRMED IN SCOPE (its
-layer-13 harness deleted or __dict__-replaced all seven fields,
-installed hostile values and a hostile dict subclass, hollowed
-term nodes, and applied weakref/GC pressure — zero callback
-executions; the sys.settrace TOCTOU and class-descriptor
-attacks were judged OUT OF SCOPE, mutating the trusted runtime
-rather than a finite stable input graph), and the
-defaulted-field fallback CONFIRMED by 110,232 comparisons over
-6,124 reachable states with zero mismatches. The two required
-corrections: regression 32's COMMENT still carried the first
-draft's "all seven → W0" while the code distinguished (fixed;
-the guard comment likewise scoped), and the layer-ten kit's
-line-302 locator needed its historical label (adjudicated in
-the pack header). The auditor's refinement is adopted:
-"extensionally the default Run" is exact FOR THE MACHINE'S AND
-CHECKER'S OBSERVATIONS (wf/wf7/step/eq/hash/repr) — not for
-intensional observers like vars(). Before that, v1.34 changed
-NO kernel source — the eighth consecutive
-checker-only round: audit #26 (machine clean a TENTH round; THE
-CLAMP LEMMA CONFIRMED over 60,000 randomized shared DAGs
-against an unclamped reference, zero mismatches, the auditor
-restating the proof; the mixed-memo composition family linear;
-all provenance repairs verified literal) found layer TWELVE:
-DELETED FIELDS ON EXACT INSTANCES — object.__delattr__ on the
-frozen dataclass yields an exact Run missing `path` (or a Lam
-missing `body`, a Var missing `i`) that passes exact-type
-dispatch and crashes on first field access. v1.34: FIELD-
-PRESENCE GUARDS — hasattr for the seven Run fields right after
-the exact-type dispatch (exact instances run no user code
-under hasattr), getattr sentinels for term-node fields in the
-validator's two passes; a discovered-in-round distinction
-pinned: deleting a DEFAULTED field (vb/rs/ks) exposes the
-dataclass's class-level default, so the state is extensionally
-the default Run and adjudicates [] — documented fallback, not
-a hole. Two kit-display items adjudicated: the layer11 kit
-hard-codes a shifted line number (its reflag counter reads 0;
-the auditor re-traced 63 real reflags — doctrine sound, display
-stale), and the prior pack note misattributed two output rows
-to the wrong kit (corrected). Before that, v1.33 changed NO
-kernel source — the seventh consecutive
-checker-only round: audit #25 (machine clean a NINTH round;
-extend-once-per-slice CONFIRMED across tape→RS, RS→K, and
-log→KA interleavings; the KD memo confirmed mechanically; the
-post-gate W2 quadratic on shared deep instances ruled honestly
-covered by the value-semantics doctrine) found layer ELEVEN:
-BIG-INTEGER ARITHMETIC — Var(1<<n) under n lambdas is Θ(n)
-representation with an n-BIT leaf, and max-free's n
-subtractions on n-bit integers were Θ(n²) — and the provenance
-defect REPEATED one round after its correction (regression 30's
-comment said four families, the loop had three, the outcome
-graded HELD). v1.33: THE CLAMP — count the term's distinct Lams
-first, clamp every Var contribution at lam_total+1 (sound: an
-upward DAG path cannot revisit nodes, so a bound Var needs
-i ≤ lam_total; min preserves the ==0 verdict exactly; all
-propagated values word-sized; 454 → 66 ms at n=128,000) — with
-regression thirty-one (big-index band, the slice-cargo family
-timed at last, and a bound-big-index no-over-rejection
-control), the repeated miss MARKED in v1.32's outcomes, and
-regression 30's comment corrected to its three actual families.
-Before that, v1.32 changed NO kernel source — the sixth consecutive
-checker-only round: audit #24 (machine unbroken an EIGHTH round;
-AGGREGATE MONOTONICITY CONFIRMED BY STATIC ENUMERATION — every
-w0lp/w0tok call site inside wf, all memos function-local, every
-first failure flowing into monotone w0bad, "no public
-False→True escape exists") found layer TEN: SHARED-SLICE
-TRAVERSAL — n distinct shells sharing one n-entry slice tuple
-re-push its elements per shell (each an O(1) memo hit, n pushes
-× n shells = Θ(n²), 206 ms at n=1,600) — and a regression-
-coverage OVERSTATEMENT (regression 29 timed only the rs family
-while the register said "exactly the auditor's three
-families"). v1.32: EXTEND-ONCE-PER-SLICE (a per-call id-set;
-soundness rides the statically-confirmed monotonicity
-doctrine), the KD-KEYS SIBLING PREEMPTED self-derived (n KD
-entries sharing one keys tuple — id-memoized, both verdicts
-stored), regression thirty timing all the shared-substructure
-families on the auditor's exact term shape, and the coverage
-wording corrected with the overstatement registered. Before
-that, v1.31 changed NO kernel source — the fifth consecutive
-checker-only round: audit #23 (machine unbroken a SEVENTH
-round) built VALUE-SHARING WITHOUT OBJECT-SHARING — n distinct
-lp shells around one shared occurrence tuple, Θ(n) graph,
-quadratic time, because the per-lp id-memos see objects and the
-expensive work is per-OCCURRENCE — and caught the full-lp
-memo's "no optimistic leak" comment as literally false (a
-tape→rs interleaving stores a stale True; the PUBLIC verdict
-stays ['W0'] because w0bad is monotone — the auditor verified
-no public false acceptance). v1.31: the OCCURRENCE MEMO — the
-walk, binder scan, and 'a'-count computed once per occurrence
-object, so total pre-gate work is Σ O(local size) over
-distinct objects (the auditor's families drop 389 → 2.2 ms at
-n=2,000, ~2× doublings) — and the MEMO DOCTRINE stated
-honestly: per-entry truth is not the invariant; AGGREGATE
-MONOTONICITY is (a stale-True entry exists only because an
-earlier check in the same call already OR'd w0bad to True; the
-memos are per-call so nothing crosses calls). Before that,
-v1.30 changed NO kernel source — the fourth consecutive
-checker-only round, and the smallest: audit #22 (machine
-unbroken a SIXTH round; the reconciled boundary CONFIRMED by an
-independent family; all four v1.29 repairs individually linear)
-found the COMPOSITION quadratic — n frames sharing one deep lp
-cost Θ(n²) because w0lp_shape rescanned the occurrence before
-the memo — plus one over-categorical scope word and one
-generously-graded prediction. v1.30: the FULL-LP id-memo
-(shape+closure once per lp object; the auditor's family drops
-from 191 ms to 1.4 ms at n=2,000, linear), the scope sentence
-reworded to UNSPECIFIED (garbage configuration may crash, hang,
-or quietly return meaningless values — measured examples
-registered), and the v1.29 conservation-suffix prediction
-MARKED AS A MISS in its own outcomes appendix. Before that,
-v1.29 changed NO kernel source — the third consecutive
-checker-only round: the five register ROOTS join the purity
-gate as exact tuples (pure(0) was True — an int is a valid pure
-leaf — so scalar roots crashed the container iteration on all
-five fields), `d` joins as an exact str (a hostile `__eq__`
-object in d executed at the membership check), and the binder
-walk goes index-based (the `p[:-1]` copying was Θ(n²) on long
-occurrences — a fully VALID deep-lp state measured the
-quadratic curve; now measured linear, n=8,000 in 2.9 ms at 7.8×
-the n=1,000 time). Audit #21 also caught the register
-CONTRADICTING ITSELF about the boundary: §10/status said the
-three host operations "cross together at depth 6,000" while §6
-said the limits differ — and live measurement sided with §6
-(hash clean through depth 32,000 on the nested-lp family;
-equality and repr fail at 6,000): audit #20's probe family
-crossing together was a coincidence I registered as a law. The
-narrative is reconciled below. Before that,
-v1.28 changed NO kernel source either — the second consecutive
-checker-only round. Audit #20 confirmed the machine for the
-FOURTH consecutive audit (kernel.py BYTE-IDENTICAL verified;
-C2/C4/C5 in full; the structural-operation boundary SURVIVED
-its dedicated charge — equal-state probes at depths
-1,000/2,000/4,000 all fine, and no in-boundary state
-crashes a post-gate scan; its additional "cross together at
-6,000" reading was audit #20's probe-family coincidence,
-falsified by audit #21 and reconciled per the v1.29 paragraph
-above) and found totality LAYER SIX: hostile
-TERM subclasses still ran code inside `wf()` (exact-type
-dispatch protected only the state), the GATE production was
-never validated (`Gate('x')` passed wf and broke
-W0-preservation one step later; `Gate([])` crashed the machine
-on an unhashable name), `wf7()` still raised on hostile and
-unhashable raw sources, and the (id, depth) term memo was
-Θ(n²) on App/Lam chains where the register said linear. v1.28:
-`closed()` is the linear MAX-FREE validator — exact-type node
-dispatch (a term-node subclass is not a term node; the type
-check precedes every field access), Gate names validated in
-{'h','t'}, Var indices exact-int ≥ 1, closedness = max_free
-(root) == 0 by iterative post-order with one memo entry per
-node id (measured: n=3,000 chains in 2 ms where the old
-algorithm took 300 ms at n=800), on-path cycle rejection kept —
-and it runs as an EARLY GATE before any token processing, so no
-downstream walk ever sees an unvalidated term; `wf7()` is
-exact-type dispatched and gated by the total `wf()` itself
-("declines out-of-language sources" is now enforced, not
-promised). Suite, certify, typecheck, and polarity measured
-BYTE-IDENTICAL across v1.28. For
-anything older, read §11's rows; do not trust a summary,
-including this file's former ones.
+so this register states arms exactly: §11's rows for every
+version, and here the CURRENT delta only:
+v1.40 changes COMMENTS, CLAIM SCOPE, AND THIS REGISTER — the
+fixtures untouched, zero executable changes, the wf.py delta
+comment-only (AST-identical to v1.39): audit #32 (machine
+clean a SIXTEENTH round; charge 1 CONFIRMED-SOUND — both
+audit-#31 mutants independently rebuilt exit 1, carrier
+removal exit 1, cargo31's full drain traced 12/12 with the
+unbound lp popped last; C1 confirmed including a full fresh
+recapture; C5 fresh corpus zero-hit; the v1.38 marking
+verified complete and both corrected sentences verified true
+as rewritten) REFUTED C4's coverage wording with a
+FIXTURE-AWARE mutant: canning every long all-'b' occurrence
+EXCEPT the exact length-13 corrupt, and skipping every long
+slice EXCEPT a position-0 peek for the exact deep value,
+passes the complete suite at exit 0 with neither deep
+mechanism running on the fixture families. The finding is a
+BOUNDARY, not a defect to out-fixture: no finite fixed public
+fixture pins a fixture-aware implementation (a mutant can
+agree on any finite tested set and diverge elsewhere), so the
+claim now says exactly what the gates prove — §10's
+sensitivity-scope statement — and the mutant is registered as
+the standing boundary witness (the auditor's kit joins the
+roster; its mutant row exits 0 BY CONSTRUCTION). Two wording
+defects corrected everywhere current: the blanket "placed
+where the LIFO walker arrives LAST" was true only for
+shells30-rs/ks and cargo31 — comp28 and both occ29 corrupts
+are last in ordinary LEFT-TO-RIGHT rs/ks loops, and the KD
+corrupt is the last key of a left-to-right all(); and
+"locally valid lp" contradicted w0lp_shape's own docstring,
+whose LOCAL predicate includes the occurrence walk (the
+corrupt values FAIL it) — the accurate phrase is
+"tuple-well-shaped lp whose sole W0 defect is an unbound
+occurrence." This round also returns this file to its
+charter: the preamble's per-version history stack is deleted
+— §11's rows and the ledger carry every round.
 
 This file is the current contract and register only. The
 round-by-round history — countermodels, corrections, verdicts —
@@ -1159,7 +911,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#32; the verdict will be registered here.** (Audit #16 caught
+#33; the verdict will be registered here.** (Audit #16 caught
 this sentence stale; audit #19 caught it stale AGAIN despite the
 parenthetical promising otherwise — the promise is now an
 ASSERTION: the pack assembly script verifies §1 and §9 name the
@@ -1283,8 +1035,10 @@ W0 at both sizes inside the linear band, with a distinct-lps
 no-aliasing control and a traversal-sensitivity pair (v1.38:
 in-language genuine 'W0'-free; the corrupt frame — v1.39,
 after audit #31's canned-count mutant defeated the shallow
-sentinel — is a locally valid UNBOUND all-'b' lp that only
-the occurrence walk can reject, exactly ['W0']); occurrence-memo — the distinct-shells/
+sentinel — is the LAST entry of the left-to-right rs loop, a
+tuple-well-shaped all-'b' lp whose sole W0 defect is its
+unbound occurrence, which the shipped checker rejects via
+the occurrence walk, exactly ['W0']); occurrence-memo — the distinct-shells/
 shared-occurrence families inside the linear band, the
 stale-interleaving verdict pinned ['W0'], the fresh-call
 isolation control, and sensitivity pairs for both storage
@@ -1297,8 +1051,9 @@ slice-cargo family WF-CLEAN inside the linear band —
 in-language as of v1.38, with the corrupt-shell control
 (exactly ['W0']; v1.39 — the corrupt element at slice position
 0, popped LAST under the LIFO walker so a full drain is
-required, and locally valid with an unbound occurrence so the
-deep walk is required too) as the positive traversal gate, so
+required, a tuple-well-shaped lp whose sole W0 defect is an
+unbound occurrence that the shipped checker rejects via the
+deep walk) as the positive traversal gate, so
 audit #30's carrier-removal countermodel and both of audit
 #31's checker mutants now exit 1
 (n−1 runtime-built DISTINCT
@@ -1313,6 +1068,30 @@ WF; fieldless — the four undefaulted hollow Runs W0 without
 raising, the defaulted trio pinned to its class-default
 fallback, hollow Lam/Var terms W0, wf7 declining, constructor
 controls intact).
+
+**Sensitivity scope (v1.40 — audit #32's boundary).** The
+corruptions are last in their relevant enclosing scans:
+comp28/occ29 in sequential rs/ks traversal; shells30-rs/ks and
+cargo31 at LIFO-last slice position 0; KD at the last
+left-to-right key. The fixed pairs force these verdicts and
+defeat the exhibited mutants, but do not characterize every
+fixture-aware checker implementation. What the pairs prove:
+the SHIPPED checker's extensional verdicts on the six fixed
+families and the slice-cargo control, and the death of audit
+#31's family-oblivious mutant class (slice-skipping,
+canned-count — both exit 1). What no finite fixed public
+fixture can prove: that an arbitrary PASSING implementation
+runs the machinery — audit #32's fixture-aware mutant (canning
+every long all-'b' occurrence except the exact length-13
+corrupt; skipping every long slice except a position-0 peek
+for the exact deep value) passes the complete suite at exit 0,
+and is registered as the standing boundary witness: its row in
+the auditor's kit reads exit 0 BY CONSTRUCTION, permanently.
+Machinery coverage past the extensional gates would need
+instrumentation, generated hidden variants, or differential
+testing — deliberately out of scope for a fixed public suite;
+the sentinel arms race terminates in this statement.
+
 The
 gating structure, stated exactly
 (audits #6 and #7 each caught a computed-but-non-gating
@@ -1708,7 +1487,8 @@ no bare-term ideal oracle).
 | v1.36 | CHECKER FIXTURE AND COMMENTS ONLY, ninth consecutive checker-only round, zero semantic changes: regression 31's slice-cargo family REBUILT FOR REAL — the shells runtime-built from a display referencing a named occurrence local (a name cannot be a code-object constant), genuinely sharing ONE occurrence object, the dead inner31 local deleted, and DISTINCTNESS GATED (len({id}) == n−1 a conjunct of the flag, printed; forced alone → exit 1); the genuine family ['W0'] and linear, 0.103 → 0.680 ms at 8× (~2× per doubling, matching the auditor's reconstruction); the two "no KD" comments → "empty KD bundle"; the W8 comment → subtraction of surviving representations; §6 restates the stable-runtime scope locally; the v1.33 miss MARKED in its outcomes and v1.35's falsifier contradiction plus five-vs-six count marked in its file; suite/certify/typecheck/polarity byte-identical, conservation byte-identical this run, wf exactly the one predicted line; 31/31 direct forcings plus the v1.6 pair via the v125 kit's byte-identical forcing snapshot; one capture error caught in-round by the diff and redone per the header protocol (the v125/v126 kits first rerun without their documented flags) | **fresh audit #29: FAIL — C4/C6 false as written plus one docstring; no kernel-arm or checker-semantic repair indicated** (the machine clean a THIRTEENTH consecutive round; the rebuild verified GENUINE — v1.35 bytecode one LOAD_CONST vs v1.36 LOAD_DEREF + BUILD_TUPLE, gated states independently captured at 99/799 shell identities with ONE occurrence identity and every shell using occ_in31, inner31 confirmed gone, distinct31 force-verified; the SIBLING SWEEP clean — comp28/occ29/shells30 all build exactly their claimed object graphs; the three comment corrections verified accurate with the riding-ticket measurement; fresh gauge 8/1024 + 4/1024 with KA pinned 0; a NEW mixed tape/RS/KS sharing family linear at 1.90/1.93/2.00 doublings; conservation size 11 reproduced; forcing 30/30 + v1.6 pair + W7-aggregate + distinct31 + 14/14 + 3/3; C5 battery and corpus zero-hit. The findings, all documentation: cargo31 builds N−1 shells — range(n−1), the gate proves it, the measurements say 99/799 — while C4, §10, and the regression comment said "n distinct shells", all three sentences fresh from v1.36's own correction; the cert_disjointness docstring omits retained Q from its spectator tuple against its own implementation and §7.4; and the fresh overclaim was unmarked in v1.36's provenance) |
 | v1.37 | DOCUMENTATION ONLY, zero executable changes — the loop's second such round: both current n-shell claim sites corrected to n−1 with the reason stated (one shell per 'a' of the carrier occurrence — occ_required returns the 'a'-count past the binder, verified against the code before registering; the historical quotations and regression 30's genuine n-shell family untouched); the cert_disjointness docstring's retained-spectator tuple gains retained Q (matching spec() and §7.4); the v1.36 overclaim and omission MARKED in its predictions file; all six instruments byte-identical INCLUDING conservation's suffix (second consecutive coincidence), all three diagnostics byte-identical, all 22 kits at adjudicated readings with v125/v126 captured under their documented flags on the first attempt; ok_big/ok_fld spot-forced → exit 1 | **fresh audit #30: FAIL — a genuine, runnable regression-coverage countermodel; no kernel-arm or checker-semantic repair indicated** (the machine clean a FOURTEENTH consecutive round; the count correction verified EXACT — 99/799 distinct shells, one occurrence, occ_required returning exactly the post-binder 'a'-count, distinct31 forced alone → exit 1, regression 30 and the historical quotations verified right to leave; the docstring repair verified with every fibre key/value of all 19 certified programs independently rebuilt, 26 same-boundary pairs zero violations; every other docstring swept clean; C1 confirmed — only wf.py changed, docstring-stripped AST identical; forcing 30/30 + W7 aggregate + v1.6 pair + 14/14; C5 fresh corpus zero-hit; one-head held on 137 sources/274 successors; gauge 8/1024 + 4/1024. THE FINDING: regression 31's state used d='X' and W0's conjunction short-circuits on the direction check before the tape — the carrier was NEVER TRAVERSED, 0 w0tok/w0lp_shape/occ_required calls, and the decisive forcing REMOVED THE CARRIER ENTIRELY leaving the complete instrument output byte-identical with the regression printed as passing; the linear timings were purity traversal, not the slice machinery; the v1.37 disclosure was accordingly too generous — a fresh unmarked coverage miss of audit #28's general class) |
 | v1.38 | REGRESSION FIXTURES ONLY — zero wf()/wf7()/kernel/instrument-semantic changes: SENSITIVITY BECOMES THE GATE. cargo31 in-language per the auditor's prescription (d='D'; WF-clean [] gated at both sizes; distinctness and the 24× band kept; measured 0.192 → 1.165 ms) with the corrupted-last-shell control gated to exactly ['W0'] — the carrier-removal countermodel now exits 1 with visibly different output; the scoping measurement (counter-instrumented copy) established the rs/ks loops run UNCONDITIONALLY, so comp28/occ29/shells30 genuinely exercise their machinery under 'X' (load-bearing: the early return isolates pre-gate cost from the value-semantics-quadratic W2 duplicate scan) and each gains small-n in-language sensitivity pairs — SIX pairs (this row's original text said five; audit #31's C1 refutation), genuine 'W0'-free / corrupted-element exactly ['W0'], all folded into their flags; conjunct-level and whole-flag forcings all exit 1; fixture comments state the conjunction-structure facts; the v1.37 miss marked; suite/certify/typecheck/polarity byte-identical, conservation byte-identical including its suffix (third consecutive coincidence), wf exactly the four predicted lines | **fresh audit #31: FAIL — the sensitivity-design charge won exactly as posed; no kernel or shipped-checker semantic repair indicated** (the machine clean a FIFTEENTH consecutive round; the literal wiring CONFIRMED — independent first/middle/last corruption battery all detected by the shipped checker, carrier removal exit 1, all 12 sensitivity clauses + six cargo31 conjuncts + 30 flags + allbad + v1.6 pair individually forced, independent traversal tracing matching the registered counts; the 'X' load-bearing claim CONFIRMED by live measurement — 0.182→1.252 ms pre-gate vs 1.729→95.766 ms post-gate at 8×; C5 zero-hit; the v1.37 marking verified complete. THE FINDINGS: the closure walker is LIFO — extend then pop from the END — so the "corrupted-last-shell" was visited FIRST, dying at one w0lp_shape call, and the register's "only a sweep reaching the deepest shell can flip it" was false as written; an in-memory checker mutant skipping slices of length ≥ 10 while special-casing the ('BAD',)-at-[-1] sentinel PASSED the full wf.py at exit 0 with every sensitivity gate True; a second mutant canning occ_required for long all-'b' occurrences passed the comp28/occ29 pairs — the pairs pinned shallow shape rejection, not the machinery; and "five pairs" was SIX, unmarked) |
-| v1.39 | FIXTURES ONLY again, zero semantic changes: CORRUPTIONS BECOME DEEP AND TRAVERSAL-LAST. comp28/occ29's corrupt value is a locally valid UNBOUND all-'b' lp — one 'b' beyond the binders, well-shaped, rejected only by the occurrence walk (kills the canned-count mutant); shells30-rs/ks and cargo31's corrupt element moves to slice position 0 — popped LAST under the LIFO order, requiring a full drain, measured at the full traversal count — and is locally valid with an unbound occurrence, 'f' stepped at a Var (kills the slice-skipping mutant); the KD kind's last key carries the same deep lp. BOTH reproduced mutants now EXIT 1 (the round's decisive measurement, predicted before the fix); carrier removal still exits 1; conjunct-level (sc28/sc29f/sc30k/rc_x) and whole-flag forcings all exit 1; the false deepest-shell sentence and five-vs-six corrected in the register and marked in the v1.38 file; ALL SIX instruments byte-identical INCLUDING wf (only fixture construction moved; conservation's suffix coincided a fourth consecutive time) | **fresh audit #32: pending** |
+| v1.39 | FIXTURES ONLY again, zero semantic changes: CORRUPTIONS BECOME DEEP AND TRAVERSAL-LAST. comp28/occ29's corrupt value is a tuple-well-shaped UNBOUND all-'b' lp (this row said "locally valid" until audit #32 caught the phrase contradicting w0lp_shape's own local predicate; corrected in v1.40) — one 'b' beyond the binders, well-shaped, rejected only by the occurrence walk (kills the canned-count mutant); shells30-rs/ks and cargo31's corrupt element moves to slice position 0 — popped LAST under the LIFO order, requiring a full drain, measured at the full traversal count — and is tuple-well-shaped with an unbound occurrence (same v1.40 correction), 'f' stepped at a Var (kills the slice-skipping mutant); the KD kind's last key carries the same deep lp. BOTH reproduced mutants now EXIT 1 (the round's decisive measurement, predicted before the fix); carrier removal still exits 1; conjunct-level (sc28/sc29f/sc30k/rc_x) and whole-flag forcings all exit 1; the false deepest-shell sentence and five-vs-six corrected in the register and marked in the v1.38 file; ALL SIX instruments byte-identical INCLUDING wf (only fixture construction moved; conservation's suffix coincided a fourth consecutive time) | **fresh audit #32: FAIL — C4's coverage wording refuted; no machine or checker-semantic countermodel** (the machine clean a SIXTEENTH consecutive round; charge 1 CONFIRMED-SOUND — both audit-#31 mutants independently rebuilt exit 1, carrier removal exit 1, cargo31's full drain traced 12/12 with the unbound lp popped last; charge 3 GAP with strong negative evidence — 137 fire sources / 274 successors one-head exact, 12,617 non-fire Run edges KS-preserving, arm census 58/69/10/0, fifteen guards, clamp differential 60,000 graphs zero mismatches, hollow-object 110,232 comparisons zero mismatches; C1 CONFIRMED including a full fresh recapture; C5 CONFIRMED 300/206/363/218,546 zero-hit; the v1.38 marking verified complete. THE FINDINGS: a FIXTURE-AWARE mutant — canned long all-'b' occurrences except the exact length-13 corrupt, skipped long slices except a position-0 peek for the exact deep value — passes the complete suite at exit 0, establishing that the pairs pin extensional verdicts and the exhibited coarse mutant class, not implementation strategy, and that NO finite fixed fixture can; the blanket LIFO-last sentence was true only for the slice cases — comp28/occ29 are last in LEFT-TO-RIGHT rs/ks loops, KD the last all() key; and 'locally valid lp' contradicted w0lp_shape's own local predicate, which includes the occurrence walk) |
+| v1.40 | COMMENTS, CLAIM SCOPE, AND THE REGISTER ONLY — fixtures untouched, zero executable changes, wf.py AST-IDENTICAL to v1.39 (four comment sites: "locally valid" becomes "tuple-well-shaped, sole W0 defect an unbound occurrence"; the traversal comments name the true enclosing scans and the shipped-checker scope): the SENSITIVITY-SCOPE STATEMENT joins §10 — the auditor's required correction verbatim, what the pairs prove vs what no fixed fixture can, audit #32's fixture-aware mutant registered as the standing boundary witness (its kit row exit 0 BY CONSTRUCTION; the kit audit_v139_fresh.py joins the roster as kit 23); the preamble's per-version history stack DELETED per the file's own charter (253 lines; §11's rows and the ledger carry every round); the v1.39 row's two "locally valid" phrases corrected in place with attribution; ALL SIX instruments byte-identical (conservation's timing suffix moved 1.4s→1.5s, ending the four-round coincidence; the eight other captures byte-identical); both audit-#31 mutants and carrier removal still exit 1 against the edited source; scratchpad decrufted by reference-scan (unreferenced packs, capture generations, headers, assemble scripts, and launch logs to attic/; every kit-read artifact kept — and the post-move battery CAUGHT the scan incomplete: audit_v117_fresh reads assemble_v117.sh, a filename class the scan never grep'd, so a comprehensive re-scan restored it plus assemble_v127.sh and a third full battery pass ran clean; the miss marked in v1.40's own predictions file) | **fresh audit #33: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
