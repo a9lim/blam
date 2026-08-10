@@ -413,10 +413,10 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.30** (`quantum-algebraic/kernel.md` — the
+**The kernel is at v1.31** (`quantum-algebraic/kernel.md` — the
 current-only register; round-by-round history in `ledger/2026-08.md`
 and the register's §11 chronicle). The audit loop's state after
-twenty-two fresh-context rounds. Kernel-arm provenance summaries
+twenty-three fresh-context rounds. Kernel-arm provenance summaries
 have been refuted by literal diff twice (audit #13 killed
 "unmoved since v1.11"; audit #14 showed the corrected summary
 still incomplete), so the register now names arms per version
@@ -595,10 +595,20 @@ should have said "unspecified", and one generously-graded
 prediction. v1.30 (checker-only, fourth consecutive): the
 full-lp memo (191 ms → 1.4 ms on the auditor's family), the
 reworded scope, and the miss marked in v1.29's own outcomes
-appendix. What
+appendix. Audit #23 (seventh machine-clean round) built
+value-sharing WITHOUT object-sharing — n distinct shells around
+one occurrence tuple — and the id-memos missed every shell:
+quadratic again, because I memoized the wrapper instead of the
+work; it also caught the memo comment's "no optimistic leak" as
+literally false (the verdict stays safe — w0bad is monotone —
+but the flattering per-entry claim was not the invariant).
+v1.31 (checker-only, fifth consecutive): the occurrence memo —
+the work memoized where the sharing is (389 → 2.2 ms) — and
+the memo doctrine stated honestly as aggregate monotonicity.
+What
 the rounds still
 found was claim-language and scaffolding, each fixed the same
-day: all twenty-eight permanent regressions now gate mechanically (the
+day: all twenty-nine permanent regressions now gate mechanically (the
 module verdict is the exit code — forcing any single regression
 false exits nonzero, measured); `validate()` gained NON-VACUITY
 at both levels (an entry at an unreachable position and a ghost
@@ -614,14 +624,16 @@ minimal; physics table passes on all twenty; all prior audit
 kits rerun with every delta adjudicated (ks-display relabels
 under always-emit and the KA head; the W0-gate display
 collapses; matrix-coverage shrink under the tightened language;
-the healed-countermodel crash); every v1.30 prediction held
-with the conservation expectation finally worded correctly,
-and v1.29's generous HELD is marked as the miss it was
-(provenance in the scratchpad prediction files).
+the healed-countermodel crash); every v1.31 prediction held,
+with one fixture bug caught in-round by its own failing band —
+the first draft measured a genuinely-quadratic representation
+and called it the memo's fault; the corrected fixture shares
+the occurrence object as the auditor's family does (provenance
+in the scratchpad prediction files).
 
 The open docket, in order:
 
-1. **fresh-context independent audit #23 of the v1.30 h-fragment
+1. **fresh-context independent audit #24 of the v1.31 h-fragment
    claim** (verdict to be registered in `kernel.md`
    §9); then the alias-tolerant transition theorem or λIAM
    logged-position uniqueness (the standing conditional — W9
