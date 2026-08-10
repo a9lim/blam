@@ -1,6 +1,6 @@
 # qALC kernel — current register
 
-**Status: v1.31.** The kernel is a scratch superposition evolver
+**Status: v1.32.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
@@ -17,7 +17,7 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The standing PASS re-claim is **gated on fresh audit #24**, whose
+The standing PASS re-claim is **gated on fresh audit #25**, whose
 verdict will be registered here. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
@@ -25,7 +25,25 @@ since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
 so this register now names arms exactly and only per version:
-v1.31 changes NO kernel source — the fifth consecutive
+v1.32 changes NO kernel source — the sixth consecutive
+checker-only round: audit #24 (machine unbroken an EIGHTH round;
+AGGREGATE MONOTONICITY CONFIRMED BY STATIC ENUMERATION — every
+w0lp/w0tok call site inside wf, all memos function-local, every
+first failure flowing into monotone w0bad, "no public
+False→True escape exists") found layer TEN: SHARED-SLICE
+TRAVERSAL — n distinct shells sharing one n-entry slice tuple
+re-push its elements per shell (each an O(1) memo hit, n pushes
+× n shells = Θ(n²), 206 ms at n=1,600) — and a regression-
+coverage OVERSTATEMENT (regression 29 timed only the rs family
+while the register said "exactly the auditor's three
+families"). v1.32: EXTEND-ONCE-PER-SLICE (a per-call id-set;
+soundness rides the statically-confirmed monotonicity
+doctrine), the KD-KEYS SIBLING PREEMPTED self-derived (n KD
+entries sharing one keys tuple — id-memoized, both verdicts
+stored), regression thirty timing all the shared-substructure
+families on the auditor's exact term shape, and the coverage
+wording corrected with the overstatement registered. Before
+that, v1.31 changed NO kernel source — the fifth consecutive
 checker-only round: audit #23 (machine unbroken a SEVENTH
 round) built VALUE-SHARING WITHOUT OBJECT-SHARING — n distinct
 lp shells around one shared occurrence tuple, Θ(n) graph,
@@ -952,7 +970,7 @@ bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
 **The PASS re-claim is gated on fresh-context independent audit
-#24; the verdict will be registered here.** (Audit #16 caught
+#25; the verdict will be registered here.** (Audit #16 caught
 this sentence stale; audit #19 caught it stale AGAIN despite the
 parenthetical promising otherwise — the promise is now an
 ASSERTION: the pack assembly script verifies §1 and §9 name the
@@ -997,7 +1015,7 @@ canonical dicts compared bit-for-bit; `dupcall` canonically None
 `h(Ω)` → None. Negative controls: pstar × wrong certificate
 reaches `pop-err`; dupcall × v1.7-era certificate reaches
 `refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **twenty-nine permanent regressions** (the v1.6 pair;
+zero violations; **thirty permanent regressions** (the v1.6 pair;
 extra-frame collision, W7-excluded with disjoint targets;
 doctored bundle divergence; K+frame alias; retained-Q
 disjointness — spectator-bit columns share zero targets;
@@ -1076,7 +1094,9 @@ W0 at both sizes inside the linear band, with a distinct-lps
 no-aliasing control; occurrence-memo — the distinct-shells/
 shared-occurrence families inside the linear band, the
 stale-interleaving verdict pinned ['W0'], and the fresh-call
-isolation control).
+isolation control; shared-substructure — the shared-slice
+rs/K-storage families and the shared-KD-keys family W0 inside
+the linear band on the auditor's exact term shape).
 The
 gating structure, stated exactly
 (audits #6 and #7 each caught a computed-but-non-gating
@@ -1110,13 +1130,15 @@ linear) — audit #23 confirmed twenty-eight-for-twenty-eight plus the
 fourteen components plus the three polarity readings, and the
 v1.30 honesty repairs including a FOURTH observed cert_*
 behavior class (a certificate subclass's __contains__ executing
-before a quiet return) covered by the UNSPECIFIED wording: the v1.6 pair
-gates `collisions_under_wf()`; the other twenty-seven gate
+before a quiet return) covered by the UNSPECIFIED wording — audit #24 confirmed twenty-nine-for-twenty-nine plus the
+fourteen components plus the three polarity readings, and
+CONFIRMED the memo doctrine by static enumeration: the v1.6 pair
+gates `collisions_under_wf()`; the other twenty-eight gate
 `cert_sweep()`'s return; the module `__main__` conjoins all
 three sweeps in its printed total AND ITS EXIT CODE, so any
 single regression failure exits nonzero (measured: forcing the
 pair false → exit 1; forcing cert_sweep flags false → exit 1,
-including the v1.20 through v1.31 flags; the
+including the v1.20 through v1.32 flags; the
 emulated-old-arm probe flips `cert_sweep` to FAIL). Three
 v1.12/v1.13-era regression mechanizations were updated in v1.23
 to the always-emit discipline (their targets now carry the
@@ -1452,7 +1474,8 @@ no bare-term ideal oracle).
 | v1.28 | CHECKER-ONLY again — zero kernel changes: closed() REPLACED by the linear MAX-FREE validator (exact-type node dispatch — the type check precedes every field access, so hostile term subclasses never execute; Gate names validated in {'h','t'} — the production the language always required; Var indices exact-int ≥ 1; closedness = max_free(root) == 0 by iterative post-order with ONE memo entry per node id — measured n=3,000 chains in 2 ms vs 300 ms at n=800 under the old memo, "representation-linear" now TRUE as originally worded rather than weakened; on-path cycle rejection kept), run as an EARLY GATE before any token processing (under v1.27 the rs/ks loops ran even after term failure, so a hostile term could still execute during token checks); wf7 exact-type dispatched and gated by the total wf() itself; regression twenty-six gated, twenty-six-for-twenty-six under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line; two wrong calls registered — the layer6 kit does not "flip to healed" but CRASHES BY CONSTRUCTION (it asserts the broken Gate behavior; the v121 lesson re-learned), and the certified-fibre control was first mis-specified (the synthetic cert's fibre map is empty, so W7-domain is the correct preserved verdict — the control now proves a WF source REACHES the fibre logic through the gate) | **fresh audit #21: FAIL** (the machine clean a FIFTH consecutive round — kernel.py SHA-verified byte-identical, C2/C4/C5 in full; the max-free validator itself SURVIVED: 50,000 randomized graphs incl. 5,349 cycle mutations against an independent reference, zero mismatches; hostile terms/Gate payloads/string subclasses/Var(True) all W0-rejected; chains, ladders, and complete-sharing DAGs measured linear; wf7 old-vs-new over 5,508 reachable states, zero verdict differences. The findings, totality LAYER SEVEN: the five register ROOTS never type-checked — pure(0) True since an int is a valid pure LEAF, so scalar roots crashed the container iteration; d omitted from purity — a hostile __eq__ executed at the membership check; wf7 inheriting both; the binder walk's p[:-1] copying Θ(n²) on a fully VALID deep-lp state; and the register CONTRADICTING ITSELF about the boundary — §10/status's "cross together at 6,000" did not replicate: hash clean through depth 32,000 on the nested-lp family while equality/repr fail at 6,000, siding with §6's "the limits differ"; plus the instrument-helper scope needing explicit statement) |
 | v1.29 | CHECKER-ONLY, third consecutive: the five register ROOTS join the purity gate as exact tuples and d as an exact str (scalar roots and hostile-__eq__ d objects → ['W0'] before any iteration or comparison); the binder walk goes INDEX-BASED (no copies; the slice requirement = count of 'a'-components past the binder; measured linear — n=8,000 in 2.9 ms at 7.8× the n=1,000 time, was 21 ms at ~27×); the boundary narrative RECONCILED (the "cross together" coincidence retracted in §6/§10; the limits differ family-dependently, the boundary is their per-family minimum, the twice-confirmed claim is the one-way statement); §6 gains the INSTRUMENT-INPUT SCOPE sentence (wf/wf7 are the raw-total state surface; cert_* helpers trust their term/cert arguments); regression twenty-seven gated, twenty-seven-for-twenty-seven under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line; one declared drift registered (the predictions sketched a 16× timing band, the code uses 24× — both far under quadratic's ~64×, measured 7.8×) | **fresh audit #22: FAIL** (the machine unbroken a SIXTH consecutive round; the RECONCILED BOUNDARY CONFIRMED — an independent slice-nested family reproduces the §6 table, status/§6/§10 verified to agree, residual "cross together" text verified historical-only; the instrument scope verified structurally correct; all four v1.29 repairs individually LINEAR. The findings, layer EIGHT: the COMPOSITION is Θ(n²) — n frames sharing one valid deep lp, 4× per doubling, because w0lp_shape rescans the occurrence before w0tok consults the memo, so "the lpmemo makes it once per lp" was false for standalone rs/ks checks; §6's "a garbage term crashes them" too categorical — the cert_* helpers on object() QUIETLY RETURN meaningless values; and one generously-graded prediction — v129's outcome 1 marked "byte-identical conservation" HELD while the captures differ in the timing suffix: the caveat explains the bytes, it does not make the literal prediction true) |
 | v1.30 | CHECKER-ONLY, fourth consecutive, the smallest round: the FULL-LP id-memo in w0lp (shape+closure verified once per lp object, stored only after both conjuncts complete — no optimistic leak; the auditor's family drops 191 ms → 1.4 ms at n=2,000, linear, ~135×; regression twenty-eight measures exactly that family plus a distinct-lps no-aliasing control); §6's scope sentence reworded to UNSPECIFIED with the quiet-return examples registered; the v1.29 conservation-suffix prediction MARKED AS A MISS in its own outcomes appendix (grading it HELD was generous — the predictions discipline exists precisely so the author cannot grade their own homework); twenty-eight-for-twenty-eight under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #23: FAIL** (the machine unbroken a SEVENTH consecutive round; the v1.30 honesty repairs CONFIRMED incl. a fourth cert_* behavior class covered by UNSPECIFIED; 28/28 + 14/14 + 3/3 forcings; fresh corpus zero-hit. The findings, layer NINE: VALUE-SHARING WITHOUT OBJECT-SHARING — n distinct lp shells around one shared occurrence tuple, Θ(n) graph, 4× per doubling on rs/K-storage/slice-cargo variants, because the id-memos see objects and the expensive work is per-occurrence; and the full-lp memo's "no optimistic leak" comment LITERALLY FALSE — a tape→rs interleaving stores a stale True in lpfull, with the public verdict verified safe via w0bad's monotonicity) |
-| v1.31 | CHECKER-ONLY, fifth consecutive: the OCCURRENCE MEMO (occ_required — walk + binder scan + 'a'-count once per occurrence OBJECT; total pre-gate work Σ O(local) over distinct objects; the auditor's three families drop to ~2× doublings, rs 389 → 2.2 ms at n=2,000); the MEMO DOCTRINE stated honestly (per-entry truth is NOT the invariant — aggregate monotonicity is: a stale-True exists only because an earlier check in the same call already OR'd w0bad True; memos per-call, nothing crosses calls); regression twenty-nine (the auditor's families in the linear band + the stale-interleaving verdict + the fresh-call isolation control) gated, twenty-nine-for-twenty-nine under forcing; one fixture bug caught IN-ROUND by the band failing (the first draft built a fresh occurrence per shell — a genuinely quadratic REPRESENTATION whose quadratic time is correct; the auditor's family shares one object; the wrong draft documented in the regression comment); suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #24: pending** |
+| v1.31 | CHECKER-ONLY, fifth consecutive: the OCCURRENCE MEMO (occ_required — walk + binder scan + 'a'-count once per occurrence OBJECT; total pre-gate work Σ O(local) over distinct objects; the auditor's three families drop to ~2× doublings, rs 389 → 2.2 ms at n=2,000); the MEMO DOCTRINE stated honestly (per-entry truth is NOT the invariant — aggregate monotonicity is: a stale-True exists only because an earlier check in the same call already OR'd w0bad True; memos per-call, nothing crosses calls); regression twenty-nine (the auditor's families in the linear band + the stale-interleaving verdict + the fresh-call isolation control) gated, twenty-nine-for-twenty-nine under forcing; one fixture bug caught IN-ROUND by the band failing (the first draft built a fresh occurrence per shell — a genuinely quadratic REPRESENTATION whose quadratic time is correct; the auditor's family shares one object; the wrong draft documented in the regression comment); suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #24: FAIL** (the machine unbroken an EIGHTH consecutive round; AGGREGATE MONOTONICITY CONFIRMED BY STATIC ENUMERATION — all memo call sites inside wf, function-local, every first failure flowing into monotone w0bad, no public escape; 29/29 + 14/14 + 3/3 forcings; fresh corpus zero-hit; the fixture-bug disclosure and 24× band verified honest. The findings, layer TEN: SHARED-SLICE TRAVERSAL unmemoized — n distinct shells sharing one n-entry slice re-push its elements per shell, Θ(n²) on a Θ(n) graph, 3.9× per doubling; and the regression-29 coverage OVERSTATED — rs timed, K-storage verdict-only, slice-cargo absent, against "exactly the auditor's three families" in the register) |
+| v1.32 | CHECKER-ONLY, sixth consecutive: EXTEND-ONCE-PER-SLICE (a per-call seen_slices id-set in the closure sweep — the call that first extends a slice either drains it fully or fails with w0bad already set, the doctrine audit #24 just confirmed statically; the auditor's family drops 206 → 2.3 ms at n=1,600); the KD-KEYS SIBLING PREEMPTED before any auditor found it (n KD entries sharing one keys tuple — kdmemo, both verdicts stored so shared-bad tuples still flag); regression thirty times the shared-slice rs/K-storage and shared-KD-keys families on the auditor's exact term shape, thirty-for-thirty under forcing; the regression-29 coverage wording corrected and the overstatement registered; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #25: pending** |
 
 ## 12. Appendix — HH step-indexed trace
 
