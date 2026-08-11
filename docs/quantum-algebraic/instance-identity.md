@@ -187,6 +187,21 @@ stronger lifecycle-dominator fact that the colliding frame-free source is an
 ancestor of the framed source; that fact is itself open across certified
 fibres.
 
+The live/dead child subcase now has a sharper exact boundary. Suppose two
+histories have already entered one common retained H fibre and carry the two
+opposite answers of one direct child `r`. A fixed certificate either retains
+both frames, selects both pop-safe frames, or treats certified cargo uniformly.
+For uncertified cargo, `r` dies exactly when `rbit = arrivalSlot`. Any injective
+Boolean routing sends the two child bits to opposite slots, so this equality
+predicate is constant across both histories. Thus a live/dead asymmetry in one
+fibre forces an earlier **non-injective child-to-slot routing**. This Boolean H
+case split is Lean-checked in
+`~/Work/qalc-scratch/RRIParentReturnInterface.lean`, including the
+constant-slot counterexample showing injectivity is load-bearing. The remaining
+uniform obligation is global: the first such non-injective routing merge must
+be converted into a concrete earlier reachable separator/RFS witness. The
+local theorem does not assume or prove that extraction.
+
 ## 4. Direct finite certificate
 
 v1.43 resolves the actual finite acceptance claim without assuming NR, AT, or

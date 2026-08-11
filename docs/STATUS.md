@@ -479,10 +479,15 @@ The open docket, in order:
 1. **certificate structure beyond finite RRI**: minimal/maximal canonical
    certificates remain open. The stronger uniform lifecycle theorem is an
    optional research lane, open at phase-sensitive certified-fibre
-   reconvergence; it is no longer a premise of per-program
-   `machine_coverage`. The closed canonical Lean replay and reusable exporter
-   live at `~/Work/qalc-scratch/QalcConcrete*`; the executable gate and its
-   adversarial surface remain at `RRIDirectCertificate*` and
+   reconvergence. Its local live/dead H calculation is now Lean-closed: within
+   one retained fibre, opposite child answers have equal live/dead status
+   whenever their routing to the two arrival slots is injective. The remaining
+   global step is to turn the first non-injective child-to-slot routing merge
+   into an earlier reachable separator/RFS witness. This lane is no longer a
+   premise of per-program `machine_coverage`. The closed canonical Lean replay
+   and reusable exporter live at `~/Work/qalc-scratch/QalcConcrete*`; the
+   local interface theorem is `RRIParentReturnInterface.lean`; the executable
+   gate and its adversarial surface remain at `RRIDirectCertificate*` and
    `rri_direct.py`;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —

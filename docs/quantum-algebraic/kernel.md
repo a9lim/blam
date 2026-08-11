@@ -864,8 +864,13 @@ reachable no-rider lemma, unique alpha ancestry, and a cross-phase
 separation lemma stable under Hadamard/certified-fibre reconvergence.
 Simple typing and strong normalization do not supply the last lemma.
 Registered exhaustive attacks found no reachable pair, but no uniform
-lifecycle proof is known. v1.43 instead makes a complete direct check of this
-predicate mandatory on every finite carrier admitted by `machine_coverage`.
+lifecycle proof is known. The local live/dead H case is now reduced exactly:
+inside one retained fibre, an opposite-answer child pair can change liveness
+asymmetrically only if its earlier routing to the Boolean arrival slot is
+non-injective (`RRIParentReturnInterface.lean`). Converting the first such
+routing merge into an earlier reachable separator/RFS remains the global gap.
+v1.43 instead makes a complete direct check of this predicate mandatory on
+every finite carrier admitted by `machine_coverage`.
 The local theorem remains useful if an unbounded semantic acceptance theorem
 is later wanted; it is no longer an assumption of the current finite-sector
 coverage claim. Every detectable divergent manifestation remains typed.
