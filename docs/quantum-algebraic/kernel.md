@@ -849,11 +849,20 @@ target because frame insertion is idempotent. The clone is not
 reachable. The remaining conditional is therefore
 **reachable-recall injectivity**: no reachable first-return and
 replay-return sources may agree in every coordinate after deleting
-only the matching frame. Exhaustive and provenance attacks found no
-reachable pair, but no global phase-separation proof is known.
-Until that lemma is proved (or recall retains an epoch), the
-universal soundness claim remains conditional on it. Every
-detectable divergent manifestation remains typed.
+only the matching frame. The direct proof attempt found that the
+previous two-class provenance slogan is not locally invariant:
+certified fire may pop the matching frame while its replay-emitted
+ticket survives in the tape tail or log, exactly the WF-clean
+`popped-frame/riding-ticket` regression. Even assuming frame survival,
+W0--W9 admit a raw `vvar`/`replay` pair with the same frame-erased
+landing control. The remaining proof therefore factors through a
+reachable no-rider lemma, unique alpha ancestry, and a cross-phase
+separation lemma stable under Hadamard/certified-fibre reconvergence.
+Simple typing and strong normalization do not supply the last lemma.
+Registered exhaustive attacks found no reachable pair, but no global
+proof is known. Until that lemma is proved (or recall retains an
+epoch), the universal soundness claim remains conditional on it.
+Every detectable divergent manifestation remains typed.
 
 ## 8. The typed fragment
 

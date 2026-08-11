@@ -150,13 +150,41 @@ every other coordinate. No frame-absent and frame-present recall sources may
 then have the same projection. Equivalently, `recall` must be injective on the
 reachable basis even though it is not injective on raw `WF`.
 
-A useful ghost invariant is proved per trace: `vvar` is the only fresh-ticket
-mint and its recall source has no matching frame; `replay` is the only
-replay-ticket mint and its recall source retains the matching frame; ordinary
-transport preserves both provenance and `RS`. This classifies every reachable
-recall source, but it does not prove that the two provenance classes have
-disjoint **visible** non-`RS` controls. `recall` erases precisely that
-distinction. A global phase-separation/acyclicity theorem is still needed.
+The tempting two-class ghost argument is **not** a rule invariant of v1.42.
+`vvar` is the only fresh-ticket mint and `replay` is the only replay-ticket
+mint, but a certified `fire` may pop `R_k` while a replay-emitted `alpha_k`
+survives in the tape tail or log. The kernel deliberately omits `k` from the
+dead bundle in that case, and `wf.py`'s permanent
+`popped-frame/riding-ticket` regression requires the target to be WF-clean.
+Thus frame absence at recall does not locally prove `vvar` ancestry.
+
+A second local obstruction survives even if frame survival is assumed. From
+canonical `negative`'s reachable `vvar` source, a raw WF replay source can be
+formed at the same gate/log/storage control with the matching frame and the
+three-bullet replay prefix. The `vvar` and `replay` steps then land at controls
+which differ only by that frame. This source is not known reachable, but it
+shows that W0--W9 do not themselves separate the lifecycle phases.
+
+The honest proof decomposition is now:
+
+1. **NR (no rider):** at every reachable certified fire, no popped frame key
+   occurs in an `alpha` surviving in the tape tail or log;
+2. **AT (alpha ancestry):** every reachable recall ticket has a unique last
+   mint, and under NR a `vvar` mint reaches recall frame-free while a `replay`
+   mint retains its matching frame; and
+3. **CPS (cross-phase separation):** reachable `vvar`-born and
+   `replay`-born recall sources cannot have equal non-frame controls after
+   deleting the matching frame.
+
+NR + AT + CPS implies RRI immediately. NR and CPS are global reachability
+claims, not consequences currently proved by W0--W9 or certificate conditions
+(a)--(f). Simple typing and strong normalization do not supply CPS: a finite
+acyclic branching graph can merge two terminating histories at the same
+projected control, and the Hadamard/certified-fire boundaries intentionally do
+exactly that kind of quotienting. A cycle argument would first need the
+stronger lifecycle-dominator fact that the colliding frame-free source is an
+ancestor of the framed source; that fact is itself open across certified
+fibres.
 
 ## 4. Executable falsification surface
 
@@ -175,12 +203,48 @@ INSTANCE IDENTITY: PASS
 The closed-program sweep uses every closed pure `p` through size 11 and the
 literal invocation `(p h) t`. The ten capped prefixes crossed 30,000 states
 without reaching a gate call. Exact one-step column Gram matrices were clean
-on all 41,262 completed graphs. Additional targeted provenance attacks
-covered 87,941 reachable states and 1,983 recalls: 571 `vvar`-born recalls
-were frame-free, 1,412 replay-born recalls were framed, and no reduced-control
-pair or duplicate reachable recall target appeared. A separate random attack
-traversed 5,000,500 capped states and again found none. These are strong
-falsification results, not a proof of RRI.
+on all 41,262 completed graphs. This is the complete evidence emitted by the
+named current instrument. Earlier prose also quoted two larger transient
+attacks, but no current script or output reproduces those counts, so they are
+not part of the registered evidence.
+
+For any *fixed* term and certificate whose structural BFS exhausts and whose
+validator returns `machine_coverage=True`, RRI follows extensionally from the
+Gram gate: two colliding recall sources would contribute identical singleton
+columns with inner product one. That is a complete finite validation fact. It
+is not the uniform reachable-machine theorem required by Step 1, and using it
+as that theorem would be circular with the gate it is meant to justify.
+
+The separate out-of-tree `rri.py` instrument makes the new no-rider,
+ancestry, and projected-collision attacks rerunnable. Like every finite sweep,
+its clean results are falsification evidence only; they do not prove NR, CPS,
+or RRI.
+
+Its registered `out_rri.txt` run reports:
+
+```text
+canonical: programs=20 states=6392 fires=67 surviving_ticket_fires=4 rider_fires=0 projected_collisions=0 complete=true
+typed<=12: programs=21990 states=427033 fires=652 rider_fires=0 truncated=0 complete=true
+overapprox<=12: programs=21990 states=452947 fire_boundaries=826 rider_sources=0 max_bit_compatible_frame_keys=0 truncated=0 complete=true
+closed<=12: programs=173442 states=6850547 recall_absent=682 recall_present=16 present_unique_absent_ancestor=16 projected_collisions=0 truncated=71 truncated_with_recall=0 complete=false
+```
+
+The overapproximation tries the default fire and every locally bit-compatible
+frame-pop subset at each boundary; at this bound no compatible frame was live
+there at all. The all-closed attack is explicitly incomplete because 71
+programs crossed the 30,000-state cap, although none of those explored
+prefixes had reached a recall. All sixteen observed framed recalls had exactly
+one same-key/bit frame-free ancestor. That supports the dominator route but
+does not establish it across the unexamined graph or certified fibre merges.
+
+`~/Work/qalc-scratch/RRI.lean` formalizes the proof boundary. With no axioms,
+`sorry`, or `admit`, it checks the abstract recall-level
+AT + NR + CPS => RRI implication, the raw idempotent-recall collision, the
+certified-pop rider counterexample, and a finite ranked acyclic reconvergence
+whose projected recalls collide. It also proves that acyclicity *would* rule
+out a collision given the stronger target-back-ancestry/dominator hypothesis.
+CPS and that dominator fact remain explicit kernel-specific premises, not
+proved qALC theorems.
 
 ## 5. Dependencies and remaining boundary
 

@@ -467,10 +467,16 @@ The open docket, in order:
    source and frame-present replay-return source may agree in every
    other coordinate. The raw-WF version is false by an exact
    `negative`-program collision; the reachable version survived the
-   exhaustive and provenance attacks but is not proved. The former
-   instance-alias fork is otherwise closed: `(g,i)` reconstructs the
-   full fixed-shell gate-copy address. Minimal/maximal canonical
-   certificates remain beside this lifecycle lemma;
+   registered exhaustive attacks but is not proved. The attempted
+   provenance induction exposed two exact missing global lemmas:
+   no certified fire pops `R_k` while a replay-emitted `alpha_k`
+   survives toward recall (NR), and first-return/replay-return controls
+   remain separated after Hadamard/certified-fibre reconvergence (CPS).
+   Alpha ancestry plus NR plus CPS implies RRI; simple typing and
+   normalization do not imply CPS. The former instance-alias fork is
+   otherwise closed: `(g,i)` reconstructs the full fixed-shell
+   gate-copy address. Minimal/maximal canonical certificates remain
+   beside this lifecycle lemma;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem
