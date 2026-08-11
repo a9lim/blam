@@ -272,8 +272,10 @@ with a machine-verified
 — validation-only v1.43 retains the v1.42 transition/WF surface that passed a
 thirty-five-round fresh-context adversarial audit loop (audit #35,
 2026-08-10) and adds a mandatory Gram-independent complete-carrier
-reachable-recall certificate; concrete Lean replay remains open — design
-documents only; no qALC code lands until the contract's gates pass.
+reachable-recall certificate; an ordinary-kernel Lean replay proves RRI on all
+17 canonical typed finite sectors, including certified-H reconvergence, while
+the stronger uniform lifecycle theorem remains open — design documents only;
+no qALC code lands until the contract's gates pass.
 Canonical evidence lives in
 [data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
 in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological

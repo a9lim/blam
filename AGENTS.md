@@ -80,8 +80,9 @@ transition/WF surface that PASSED fresh-context adversarial audit #35
 on 2026-08-10, closing a thirty-five-audit loop; the post-audit Step 1
 pass proves fixed-shell gate-copy address injectivity, refutes the raw-WF
 alias theorem, and makes a Gram-independent complete-carrier RRI certificate
-mandatory for finite admitted sectors; concrete Lean replay and the stronger
-uniform lifecycle theorem remain open;
+mandatory for finite admitted sectors; the concrete Lean mirror replays all
+17 canonical typed sectors, including certified-H reconvergence, while the
+stronger uniform lifecycle theorem remains open;
 round history in the ledger and its §11 chronicle), and
 `machine.md` the record of the two failed rewriting-machine drafts —
 read-only history, do not build on it. The scratch kernel, its 25

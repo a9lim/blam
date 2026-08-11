@@ -5,7 +5,8 @@
 a **gate-copy address**. Raw idempotent `recall` remains noninjective, but v1.43
 now checks reachable-recall injectivity directly on every complete finite
 carrier before granting `machine_coverage`. The stronger uniform lifecycle
-derivation remains open, as does concrete Lean replay of the Python carrier.
+derivation remains open. The concrete Lean mirror now replays all 17 canonical
+typed finite sectors, including certified-H reconvergence.
 
 ## 1. Definitions and scope
 
@@ -198,26 +199,51 @@ matching-frame multiplicity, and checks both `(key, erased projection)` and
 drift is noncoverage. The predicate imports only `kernel`; it does not consult
 Gram or candidate discovery.
 
-`RRIDirectCertificate.lean` proves the carrier and terminal lifting theorems,
-the recall-target corollaries, and a mirror of the injective `Done.tick` map,
-with no `sorry`, `admit`, or axioms. The concrete qALC state/step evaluator and
-generated carrier are still trusted Python rather than replayed inside Lean.
+`RRIDirectCertificate.lean` proves the generic carrier and terminal lifting
+theorems and the recall-target corollaries. The concrete replay is now separate
+and stronger:
+
+- `QalcConcreteKernel.lean` is an executable Lean mirror of the v1.42 state
+  grammar and transition surface, including all eight IAM rows, virtual
+  boolean dispatch, `vvar`/`recall`/`replay`, certified and uncertified H,
+  both Hadamard arms, KD survivor subtraction, the `t` fence, and terminal
+  ticks;
+- `QalcConcreteCertificate.lean` proves complete- and terminal-carrier lifting,
+  source-projection RRI, actual-target RRI, and the terminal-forward theorem;
+- `QalcConcreteExport.py` is an untrusted exporter. Its generated theorems
+  compare every Python successor row with the Lean transition relation, prove
+  closure, then discharge the two RRI predicates by ordinary kernel `decide`.
+  A wrong row, omitted successor, or incomplete carrier rejects. Fingerprint
+  collisions only add full-equality comparisons and cannot create a false
+  acceptance; and
+- `QalcConcreteCertificateAudit.lean` pins the raw absent/present rejection,
+  incomplete-prefix rejection, both certified-H arms, and qprime's distinct
+  certified-H sources with one exact target.
+
+No proof uses `sorry`, `admit`, `native_decide`, or a declared axiom. Lean's
+axiom report contains only the standard `propext` and `Quot.sound` dependencies.
 Accordingly the current claim is:
 
 ```text
 Executable complete-carrier RRI is mandatory for every finite sector admitted
-by machine_coverage; no uniform derivation from typing or W0--W9 is claimed.
+by machine_coverage. Concrete Lean RRI is proved for every canonical typed
+sector; no uniform derivation from typing or W0--W9 is claimed.
 ```
 
-Fresh readings are 17/17 canonical typed sectors and 73/73 deterministic
-Boolean-100 typed sectors, including the six rejected by the older aggregate
-coverage predicate. The adversarial driver injects the registered raw
+The canonical replay covers all 17/17 typed sectors: 5,220 nonterminal `Run`
+states, 5,279 outgoing transition rows, 142 recall sources, 59 H-fire sources
+of which 53 are certified, and 18 exact H-reconvergent targets. The full
+four-job rebuild takes about 156 seconds on the M5 Max. Separately, the
+executable Python gate reads 73/73 on deterministic Boolean-100 typed sectors,
+including the six rejected by the older aggregate coverage predicate; those
+extra sectors have not been exported as durable Lean certificates. The
+adversarial driver injects the registered raw
 absent/present pair into one enumerated carrier and gets one RRI witness; it
 also rejects frame multiplicity, broken target factorization, hidden/mixed
-recall, non-singleton initialization, and a state cap. The sole non-enumerated
-premise is the literal first `kernel.step` clause
-`Done(kind,residue,tick) -> Done(kind,residue,tick+1)`; a mutant violating that
-premise is intentionally outside the certificate theorem and remains pinned.
+recall, non-singleton initialization, and a state cap. The Python checker names
+the literal first `kernel.step` terminal clause as a source premise and pins an
+escape mutant; the concrete Lean mirror proves that terminal-forward theorem
+directly.
 
 ## 5. Executable falsification surface
 
@@ -290,12 +316,14 @@ Changing the syntax to permit gate literals inside `p`, or changing instance
 identity to a proper slice rather than the complete level-one log, would
 reopen the theorem.
 
-What this result does **not** discharge is end-to-end formal Step 1 or the
-architecture's whole Gate 1. Executable RRI is closed for admitted finite
-sectors; concrete Lean replay and the stronger uniform lifecycle theorem are
-open. Full-normal-form readback, the `t` table, error/halting adapters, the rest
-of the reachable pairwise range proof, invariant sectors, and the local
-minimal-garbage theorem also remain open.
+What this result does **not** discharge is the architecture's whole Gate 1.
+Executable RRI is closed for every admitted finite sector, and concrete Lean
+RRI is closed for the 17 canonical typed sectors; a future finite sector still
+needs its generated certificate replayed if a durable Lean theorem is wanted.
+The stronger uniform lifecycle theorem remains open. Full-normal-form
+readback, the `t` table, error/halting adapters, the rest of the reachable
+pairwise range proof, invariant sectors, and the local minimal-garbage theorem
+also remain open.
 
 An unconditional machine repair is available if RRI resists a global proof:
 refine a replay frame to `R(g,i,b,n)` with an unbounded recall epoch. Fresh

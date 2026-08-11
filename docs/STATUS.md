@@ -422,9 +422,14 @@ overreach." v1.43 is a validation-only proof-gate change: complete finite
 nonterminal carrier closure plus a direct reachable-recall matrix is now an
 unconditional `machine_coverage` conjunct, independent of Gram; caps and
 malformed recall surfaces reject. It changes no transition, certificate, or
-accepted canonical program. The generic carrier/terminal lifting and recall
-target corollary are Lean-checked; the concrete qALC graph/evaluator remains a
-trusted Python instantiation rather than an end-to-end Lean replay. The loop
+accepted canonical program. The concrete qALC state grammar and v1.42 step
+surface now have an executable Lean mirror. Generated certificates recheck
+every exported Python row against that relation, prove carrier closure and
+both source-projection and actual-target RRI, and replay all 17 canonical
+typed sectors: 5,220 nonterminal `Run` states, 5,279 outgoing rows, 142 recall
+sources, 53 certified-H sources, and 18 exact H-reconvergent targets. The
+exporter is untrusted; a wrong row or incomplete carrier makes Lean reject.
+The loop
 closed at thirty-five audits over nineteen
 correction rounds — thirty-four FAIL, one PASS — with kernel.py
 untouched since v1.25 (eighteen consecutive machine-clean
@@ -471,18 +476,14 @@ when qALC code lands in the tree.
 
 The open docket, in order:
 
-1. **concrete formal replay of the direct RRI certificate**: v1.43's
-   executable gate proves RRI for every finite sector it admits, without
-   Gram, but the concrete qALC state grammar/step table and generated carrier
-   are not yet replayed inside Lean. The generic Lean theorem, terminal tick
-   mirror, exact Python checker, collision/multiplicity/factorization/cap
-   mutants, 17-program canonical pass, and unconditional Boolean-100 pass
-   (73/73, including six old-coverage rejects) live at
-   `~/Work/qalc-scratch/RRIDirectCertificate*` and `rri_direct.py`. The
-   stronger uniform lifecycle theorem remains an optional research lane,
-   open at phase-sensitive certified-fibre reconvergence; it is no longer a
-   premise of per-program `machine_coverage`. Minimal/maximal canonical
-   certificates remain beside this formal-replay item;
+1. **certificate structure beyond finite RRI**: minimal/maximal canonical
+   certificates remain open. The stronger uniform lifecycle theorem is an
+   optional research lane, open at phase-sensitive certified-fibre
+   reconvergence; it is no longer a premise of per-program
+   `machine_coverage`. The closed canonical Lean replay and reusable exporter
+   live at `~/Work/qalc-scratch/QalcConcrete*`; the executable gate and its
+   adversarial surface remain at `RRIDirectCertificate*` and
+   `rri_direct.py`;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem
