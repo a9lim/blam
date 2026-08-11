@@ -1,13 +1,13 @@
 # qALC kernel — current register
 
-**Status: v1.42.** The kernel is a scratch superposition evolver
+**Status: v1.43.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
 at boundaries with H-row amplitudes, instance-keyed
 ticket/frame/record machinery for re-interrogation,
 **instance-directed** per-program transparency certificates with a
-hybrid canonical pipeline — structural admission and structural
-isometry mandatory, exact-amplitude dynamic cleanliness deciding
+hybrid canonical pipeline — structural admission, direct reachable-recall
+certification, and structural isometry mandatory, exact-amplitude dynamic cleanliness deciding
 run success ("amplitudes decide whether a run succeeds, never
 whether the machine is an isometry") — a ten-invariant
 well-formedness subtype (the W0 token grammar plus W1-W9), a
@@ -17,47 +17,44 @@ table, and every failure mode typed — never silent. Shaped by a
 fresh-context adversarial audit loop and three working reviews;
 the round-by-round history, including the healing of audit #2's
 fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The claim **PASSED fresh-context independent audit #35**
+The v1.42 transition/WF claim **PASSED fresh-context independent audit #35**
 (cx-20260810-105238-1baf, 2026-08-10): "PASS for v1.42 as stated
 in C1–C6. I found no required correction, machine/checker
 countermodel, gate failure, or surviving claim overreach." All
-six claims CONFIRMED; the instance-alias gap was the registered
-conditional exactly as stated in that pack. A post-audit proof pass
-now closes its distinct-copy component and narrows the surviving
-conditional to reachable-recall injectivity (`instance-identity.md`);
-no machine or checker changed. Thirty-five audits —
+six claims CONFIRMED; the instance-alias gap was the registered conditional
+exactly as stated in that pack. v1.43 is a validation-only post-audit proof
+gate: it changes no transition, WF predicate, frozen certificate, physics row,
+or accepted canonical program. `rri_direct.py` now enumerates a complete
+finite nonterminal carrier, checks closure and the full reachable-recall
+projection/target matrix independently of Gram, and rejects caps or malformed
+recall surfaces; `certify.validate` requires its positive result for
+`machine_coverage`. The generic carrier/terminal lift, terminal tick mirror,
+and recall-target corollary are Lean-checked; concrete qALC carrier replay in
+Lean remains open (`instance-identity.md`). Thirty-five fresh audits —
 thirty-four FAIL, one PASS; §11 carries every verdict. Kernel-arm provenance is the
 chronicle's per-row "what changed" column — summaries of it have
 been refuted twice by literal diff (audit #13 killed "unmoved
 since v1.11"; audit #14 showed the corrected two-wave summary
 still omitted v1.12's ordinary-decode burial-suppression change
 and mislabeled v1.21's binder/transport arms as "leaf" guards) —
-so this register states arms exactly: §11's rows for every
-version, and here the CURRENT delta only:
-v1.42 changes TWO SENTENCES AND THE ROUND BOOKKEEPING — no
-wf.py change at all, no gate, no fixture, no script: audit #34
-(machine clean an EIGHTEENTH round; THE ENUMERATION ITSELF
-CONFIRMED SOURCE-EXACT — "no clause is stronger or weaker than
-wf.py" by fresh AST extraction and live capture; independent
-forcing 31/31 + 18/18 + aggregate; C5 clean; all 24 kits at
-adjudicated exits; the decruft guard exit 1 with no moves;
-every marking complete and true) found two CLAIM-LANGUAGE
-defects, the loop's narrowest verdict: §10's rationale
-sentence generalized the W2-dup explanation to all 'W0'-free
-genuine gates when it holds only for the three RS duplicate
-families (sg28/sg29f/sg30f measure ['W2-dup']x11 live;
-shells30-ks's genuine verdict is [] — its 'W0'-free gate is
-merely weaker than the live verdict); and the v1.41 pack's C1
-went stale IN-ROUND — it named only the KEEP_EXACT addition
-after the shipped script had also gained the retirement guard,
-the round's own outcome recording the stronger edit the claim
-never absorbed. v1.42: the rationale sentence is restricted to
-the three RS families with shells30-ks stated as it is; the
-stale-C1 class is named in the chronicle; the auditor's
-independent kit (audit_v141_independent.py — live predicate
-capture with the w2_reason_counterexample field, forcing,
-machine surface, 50,000-graph raw-totality fuzz) joins the
-roster as kit 25.
+so this register states arms exactly: §11's rows for every version, and here
+the CURRENT delta only. v1.43 adds neutral `rri_direct.py`; makes its result an
+unconditional `machine_coverage` conjunct in `certify.py`; adds exact
+projection and actual-target bucket checks, singleton initialization,
+singleton recall dispatch, exact-one-frame deletion/multiplicity rejection,
+closure replay, cap rejection, and the explicit universal `Done.tick` terminal
+premise; and adds `RRIDirectCertificate.{py,lean,md}` plus the adversarial
+audit. Canonical discovery remains exactly equal to all twenty frozen
+certificates. The direct gate passes all 17 typed canonical sectors and all 73
+deterministic Boolean-100 typed sectors (including six rejected by the older
+aggregate coverage predicate). A synthetic carrier containing the registered
+raw absent/present pair is rejected with one RRI witness; the audit also kills
+frame-multiplicity, target-factorization, hidden-recall, non-singleton-init,
+and cap mutants. A mutant that changes `Done(3)` to leave the terminal sector
+is accepted only because it violates the explicitly named source-level
+terminal premise; it remains pinned to prevent that premise being mistaken
+for a finite check. This targeted multiagent audit is not a new fresh-context
+audit of v1.43, and no such verdict is claimed.
 
 This file is the current contract and register only. The
 round-by-round history — countermodels, corrections, verdicts —
@@ -846,10 +843,10 @@ The alternative blanket local theorem is also false. In canonical
 `negative`, a reachable frame-free `recall` source and its raw-WF
 clone with the agreeing frame both pass WF/W7 and map to the same
 target because frame insertion is idempotent. The clone is not
-reachable. The remaining conditional is therefore
+reachable. The exact reachable statement is therefore
 **reachable-recall injectivity**: no reachable first-return and
 replay-return sources may agree in every coordinate after deleting
-only the matching frame. The direct proof attempt found that the
+only the matching frame. The uniform proof attempt found that the
 previous two-class provenance slogan is not locally invariant:
 certified fire may pop the matching frame while its replay-emitted
 ticket survives in the tape tail or log, exactly the WF-clean
@@ -859,10 +856,12 @@ landing control. The remaining proof therefore factors through a
 reachable no-rider lemma, unique alpha ancestry, and a cross-phase
 separation lemma stable under Hadamard/certified-fibre reconvergence.
 Simple typing and strong normalization do not supply the last lemma.
-Registered exhaustive attacks found no reachable pair, but no global
-proof is known. Until that lemma is proved (or recall retains an
-epoch), the universal soundness claim remains conditional on it.
-Every detectable divergent manifestation remains typed.
+Registered exhaustive attacks found no reachable pair, but no uniform
+lifecycle proof is known. v1.43 instead makes a complete direct check of this
+predicate mandatory on every finite carrier admitted by `machine_coverage`.
+The local theorem remains useful if an unbounded semantic acceptance theorem
+is later wanted; it is no longer an assumption of the current finite-sector
+coverage claim. Every detectable divergent manifestation remains typed.
 
 ## 8. The typed fragment
 
@@ -896,8 +895,8 @@ structural reachable basis (U an isometry there), every admitted
 erasure is reversibly decodable from its retained fibre
 coordinate, the frozen certificate's exact run carries zero
 guard/err amplitude at every step, and every failure mode is
-typed and visible — never silent.** The claim is conditional on
-the reachable-recall lemma below, stated as such.
+typed and visible — never silent.** Reachable-recall injectivity is an
+independent direct acceptance conjunct, not inferred from the Gram result.
 
 `machine_coverage` does NOT claim agreement with an ideal quantum
 semantics — no total reference exists for bare λ-terms; which
@@ -912,7 +911,7 @@ physics table. Nor is the canonical certificate minimal or
 maximal (§5): it is the deterministic validation-adjudicated
 greedy fixpoint, nothing more.
 
-**The post-audit identity result and surviving gap.** The
+**The post-audit identity result and direct finite gate.** The
 fixed-shell gate-copy theorem proves `(g,i) ↦ (q_g,(i))`, closing
 distinct-copy key aliasing. Every detectable misuse remains typed
 (`frame-conflict`, `alien-ticket`, `key-alias`, `refire`; deep W3
@@ -920,15 +919,17 @@ adjudicates bit-carrying coexistence; W9 excludes duplicate live
 tickets statically). The raw alias-tolerant transition theorem is
 false because two agreeing `recall` sources differing only by the
 matching frame have the same target. One source of the exact
-`negative` witness is unreachable, so the surviving obligation is
-the reachable-recall injectivity lemma stated in §7.5. The
-universal soundness claim is conditional on that narrower lemma.
+`negative` witness is unreachable. v1.43 checks the reachable-recall predicate
+directly over a complete nonterminal carrier and rejects the registered pair
+when synthetically made reachable. The uniform lifecycle derivation and
+concrete Lean replay remain open, but neither is used as a premise of current
+finite-sector `machine_coverage`.
 
 Standing fences, all typed: literal gate application and open
 bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
 {0̂, 1̂, I} (readback controller), and every §3 guard.
 
-**The claim PASSED fresh-context independent audit #35
+**The v1.42 claim PASSED fresh-context independent audit #35
 (cx-20260810-105238-1baf, 2026-08-10) with zero required
 corrections — C1–C6 confirmed, the alias gap the registered
 conditional.** The loop's gate discipline is retired with the
@@ -941,10 +942,11 @@ parenthetical promising otherwise — the promise is now an
 ASSERTION: the pack assembly script verifies §1 and §9 name the
 same audit number and refuses to build the pack otherwise.)
 
-The gate-copy theorem and raw-recall counterexample postdate that
-pack. They change neither its audit verdict nor the v1.42 machine;
-they replace its broad registered conditional with the precise
-reachable-recall lemma above.
+The gate-copy theorem, raw-recall counterexample, and v1.43 direct proof gate
+postdate that pack. They change neither its audit verdict nor the v1.42
+transition/WF machine. No fresh-context v1.43 verdict is claimed; the targeted
+multiagent audit and exact regression surface are recorded in §1 and
+`RRIDirectCertificateAudit.md`.
 
 ## 10. Verification state
 
@@ -1541,6 +1543,7 @@ no bare-term ideal oracle).
 | v1.40 | COMMENTS, CLAIM SCOPE, AND THE REGISTER ONLY — fixtures untouched, zero executable changes, wf.py AST-IDENTICAL to v1.39 (four comment sites: "locally valid" becomes "tuple-well-shaped, sole W0 defect an unbound occurrence"; the traversal comments name the true enclosing scans and the shipped-checker scope): the SENSITIVITY-SCOPE STATEMENT joins §10 — the auditor's required correction verbatim, what the pairs prove vs what no fixed fixture can, audit #32's fixture-aware mutant registered as the standing boundary witness (its kit row exit 0 BY CONSTRUCTION; the kit audit_v139_fresh.py joins the roster as kit 23); the preamble's per-version history stack DELETED per the file's own charter (253 lines; §11's rows and the ledger carry every round); the v1.39 row's two "locally valid" phrases corrected in place with attribution; ALL SIX instruments byte-identical (conservation's timing suffix moved 1.4s→1.5s, ending the four-round coincidence; the eight other captures byte-identical); both audit-#31 mutants and carrier removal still exit 1 against the edited source; scratchpad decrufted by reference-scan (unreferenced packs, capture generations, headers, assemble scripts, and launch logs to attic/; every kit-read artifact kept — and the post-move battery CAUGHT the scan incomplete: audit_v117_fresh reads assemble_v117.sh, a filename class the scan never grep'd, so a comprehensive re-scan restored it plus assemble_v127.sh and a third full battery pass ran clean; the miss marked in v1.40's own predictions file) | **fresh audit #33: FAIL — the scope statement itself refuted in the overclaim direction; no machine or checker-semantic countermodel** (the machine clean a SEVENTEENTH consecutive round; charge 2 CONFIRMED-SOUND — seven sources byte-identical, wf.py AST- and non-comment-token-identical at exactly four hunks / +10 lines, the register diff exactly the disclosed 253-line deletion + insertions, five captures byte-identical + conservation suffix, audit-#31 mutants and carrier exit 1, both fixture-aware reconstructions exit 0; charge 3 GAP with the full fresh evidence set — fire census 58/69/10/0, 12,617 KS-preserving edges, fifteen guards, gauge 8/1024 + 4/1024, clamp 60,000 and hollow 110,232 zero-mismatch, all 23 kits at adjudicated exits; charge 4 independent forcing 31/31 + 18/18 + aggregate; C5 confirmed 300/206/363/218,546 zero-hit; charge 5 narrowly confirmed. THE FINDING: "the SHIPPED checker's extensional verdicts" is false — sens28 checks only 'W0'-absence while genuine comp28's verdict is ['W2-dup']x11, and a family-oblivious mutant deleting the sole W2-dup append flips the checker from rejecting to ACCEPTING that fixed genuine fixture at full-suite exit 0; the scope must enumerate the actual predicates. Ancillary: decruft_v140.py would re-break audit_v117_fresh on rerun — the restored assemble scripts were still classified keep=False) |
 | v1.41 | CLAIM LANGUAGE AND ONE SCRATCHPAD SCRIPT ONLY — fixtures, gates, machine untouched, wf.py AST-identical again (three comment phrases "pins ... verdicts" become "gates the stated predicates"): §10's scope statement now ENUMERATES the gated predicates per family, verified clause-by-clause against the source — comp28 genuine 'W0'-free / corrupt exactly ['W0']; occ29 rs genuine 'W0'-free, ks genuine exactly [], corrupts ['W0']; shells30 rs/ks genuine 'W0'-free, KD genuine exactly [], corrupts ['W0']; cargo31 both sizes exactly [] + distinctness + corrupt ['W0'] + band — with a rationale sentence that OVERGENERALIZED the W2-dup explanation to all 'W0'-free genuine gates (true only for the three RS duplicate families; shells30-ks's genuine verdict is [] — audit #34's finding, corrected in v1.42); audit #33's W2-dup countermodel registered as BOUNDARY WITNESS #2 (the predicate-vs-verdict gap) beside audit #32's fixture-aware mutant (witness #1), their kit audit_v140_scope_countermodel.py joining the roster as kit 24, both witness rows exit 0 BY CONSTRUCTION; the v1.39/v1.40 rows' verdict-language corrected in place with attribution; decruft_v140.py RETIRED behind a mechanical historical guard after the round's idempotence check proved it generation-pinned — a rerun swept 36 current-generation artifacts, all restored, the KEEP_EXACT-suffices prediction marked as a miss; ALL SIX instruments byte-identical (conservation suffix aside); the kit battery at adjudicated readings | **fresh audit #34: FAIL — two claim-language defects; the enumeration itself confirmed source-exact; no machine or checker countermodel** (the machine clean an EIGHTEENTH consecutive round; charge 1: all ten enumerated clauses verified by fresh AST extraction + live capture — "no clause is stronger or weaker than wf.py" — but the W2-dup rationale sentence is FALSE for shells30-ks, whose genuine verdict is [] not ['W2-dup']x11; charge 2: the delta exactly as disclosed EXCEPT C1 named only the KEEP_EXACT addition when the shipped script also carries the retirement guard — the claim went stale against the round's own second edit; charge 3 GAP — fire census 58/69/10/0, 12,617 KS-preserving edges, fifteen guards, 50,000-graph raw fuzz zero exceptions, gauge 8/1024 + 4/1024; charge 4 CONFIRMED — independent forcing 31/31 + 18/18 + aggregate, C4 "mechanically correct despite the false explanatory sentence"; C5 confirmed; charge 5: every marking complete and true, C6 refuted only through the same two sentences) |
 | v1.42 | TWO SENTENCES AND THE ROUND BOOKKEEPING — no wf.py change at all (zero instrument deltas; the wf.py sha does not move), no gate, no fixture, no script: §10's W2-dup rationale RESTRICTED to the three RS duplicate families (comp28/occ29-rs/shells30-rs, each measured ['W2-dup']x11 live at the pair size) with shells30-ks stated as it is — genuine verdict [], its 'W0'-free gate merely weaker than the live verdict, no clause claiming more than its enumerated predicate; the stale-C1 class named: a delta description must be written from the final diff, not from the round's first fix — v1.41's C1 predated its own retirement-guard edit; audit #34's independent kit joins the roster as kit 25 (audit_v141_independent.py: live predicates with w2_reason_counterexample, forcing, machine surface, 50,000-graph raw-totality fuzz) | **fresh audit #35: PASS — zero required corrections; C1–C6 confirmed** ("no required correction, machine/checker countermodel, gate failure, or surviving claim overreach"; the corrected rationale verified against live predicates — sg28/sg29f/sg30f ['W2-dup']x11, sg29k/sg30d/sg30k [], every corrupt ['W0']; the literal git delta 10eaff0..f2c5c34 named completely; wf.py sha c6b8a4f2… byte-identical across packs and live; all nine captures byte-identical, fresh instrument runs exit 0; the full 25-kit battery at adjudicated exits with exactly the five timing/hash kits differing; both boundary witnesses exit 0, the three audit-#31 mutants exit 1, the retired guard exit 1; FRESH ATTACKS found nothing — 100,000-case hostile raw-graph soup zero exceptions, a NEW maximally-shared term-DAG family with exponential unfolding linear at 0.911→19.655 ms over 2k→32k nodes, independent edge sweep 137/274 one-head exact with 12,617 KS-preserving edges; independent AST-derived forcing 31/31 + 18/18 + collision aggregate, every mutation printing its intended failure line; C5 fresh 300/206/363/218,546 zero-hit; fifteen guards; gauge 8/1024 + 4/1024; every honesty item verified including the pack-size incident arithmetic, 999,112 + 393 + 529 = 1,000,034; charge 3 GAP only in the already-registered sense — finite attacks do not prove logged-position injectivity, and the register conditions its soundness claim on exactly that) |
+| v1.43 | VALIDATION-ONLY DIRECT RRI PROOF GATE — kernel.py/wf.py/certificates/physics unchanged; neutral `rri_direct.py` enumerates a complete finite nonterminal carrier and checks closure, singleton init/recall dispatch, exact-one-frame erased projections, actual recall-target buckets, and both factorization directions; caps/multiplicity/malformed rows reject; `certify.validate` requires `rri_direct_certified` independently of Gram; `RRIDirectCertificate.lean` checks generic closed/terminal carrier lifting, target injectivity, and the `Done.tick` mirror; direct/audit docs and driver added | **targeted multiagent audit: executable gate ACCEPTED; end-to-end Lean Step 1 NOT CLAIMED** (17/17 typed canonical and 73/73 Boolean-100 direct passes; frozen `discover_total` agreement 20/20; raw collision carrier, multiplicity, factorization, hidden-recall, cap, and non-singleton mutants rejected; universal Python `Done` row remains an explicit source theorem, concrete qALC carrier replay in Lean open; no fresh-context v1.43 audit) |
 
 ## 12. Appendix — HH step-indexed trace
 

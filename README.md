@@ -269,10 +269,11 @@ A third pillar, **qALC** (quantum *control*: storeless, runtime states in
 [ratified design contract](https://github.com/a9lim/blam/blob/main/docs/quantum-algebraic/architecture.md)
 with a machine-verified
 [kernel register](https://github.com/a9lim/blam/blob/main/docs/quantum-algebraic/kernel.md)
-— the scratch kernel passed a thirty-five-round fresh-context
-adversarial audit loop (v1.42, audit #35, 2026-08-10; the
-instance-alias conditional stated in the register) — design documents
-only; no qALC code lands until the contract's gates pass.
+— validation-only v1.43 retains the v1.42 transition/WF surface that passed a
+thirty-five-round fresh-context adversarial audit loop (audit #35,
+2026-08-10) and adds a mandatory Gram-independent complete-carrier
+reachable-recall certificate; concrete Lean replay remains open — design
+documents only; no qALC code lands until the contract's gates pass.
 Canonical evidence lives in
 [data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
 in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological

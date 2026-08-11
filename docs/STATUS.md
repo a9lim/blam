@@ -5,7 +5,7 @@ measurements, proof boundaries, and ordered next work. The root `README.md`
 is the stable public map; domain documents state durable contracts; the
 monthly ledger preserves chronology.
 
-Last updated: 2026-08-09.
+Last updated: 2026-08-11.
 
 ## Classical state
 
@@ -413,20 +413,28 @@ and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
 
-**The kernel is at v1.42 and PASSED fresh-context independent
-audit #35** (cx-20260810-105238-1baf, 2026-08-10): "PASS for
+**The scratch pipeline is at v1.43; its transition/WF surface remains the
+v1.42 machine that PASSED fresh-context independent audit #35**
+(cx-20260810-105238-1baf, 2026-08-10): "PASS for
 v1.42 as stated in C1–C6. I found no required correction,
 machine/checker countermodel, gate failure, or surviving claim
-overreach." The loop closed at thirty-five audits over nineteen
+overreach." v1.43 is a validation-only proof-gate change: complete finite
+nonterminal carrier closure plus a direct reachable-recall matrix is now an
+unconditional `machine_coverage` conjunct, independent of Gram; caps and
+malformed recall surfaces reject. It changes no transition, certificate, or
+accepted canonical program. The generic carrier/terminal lifting and recall
+target corollary are Lean-checked; the concrete qALC graph/evaluator remains a
+trusted Python instantiation rather than an end-to-end Lean replay. The loop
+closed at thirty-five audits over nineteen
 correction rounds — thirty-four FAIL, one PASS — with kernel.py
 untouched since v1.25 (eighteen consecutive machine-clean
 audits preceding the verdict). The PASS was explicitly
-conditional on the instance-alias gap (kernel.md §9). The first
-proof pass has now split that gap precisely: the fixed invocation
-shell makes `(g,i)` injective as a complete gate-copy address, so
-distinct copies cannot alias; however idempotent `recall` is
-noninjective on raw WF, and its injectivity on the inductively
-reachable lifecycle remains open
+conditional on the instance-alias gap (kernel.md §9). The proof pass first
+split that gap precisely: the fixed invocation shell makes `(g,i)` injective
+as a complete gate-copy address, while idempotent `recall` remains
+noninjective on raw WF. v1.43 discharges the reachable version extensionally
+for each admitted finite sector by its direct closed-carrier gate; the
+stronger uniform derivation from typing/W0–W9 remains open
 (`quantum-algebraic/instance-identity.md`). Round-by-round history
 lives in
 `ledger/2026-08.md` (and 2026-07) and the register's §11
@@ -463,20 +471,18 @@ when qALC code lands in the tree.
 
 The open docket, in order:
 
-1. **reachable-recall injectivity**: no frame-absent first-return
-   source and frame-present replay-return source may agree in every
-   other coordinate. The raw-WF version is false by an exact
-   `negative`-program collision; the reachable version survived the
-   registered exhaustive attacks but is not proved. The attempted
-   provenance induction exposed two exact missing global lemmas:
-   no certified fire pops `R_k` while a replay-emitted `alpha_k`
-   survives toward recall (NR), and first-return/replay-return controls
-   remain separated after Hadamard/certified-fibre reconvergence (CPS).
-   Alpha ancestry plus NR plus CPS implies RRI; simple typing and
-   normalization do not imply CPS. The former instance-alias fork is
-   otherwise closed: `(g,i)` reconstructs the full fixed-shell
-   gate-copy address. Minimal/maximal canonical certificates remain
-   beside this lifecycle lemma;
+1. **concrete formal replay of the direct RRI certificate**: v1.43's
+   executable gate proves RRI for every finite sector it admits, without
+   Gram, but the concrete qALC state grammar/step table and generated carrier
+   are not yet replayed inside Lean. The generic Lean theorem, terminal tick
+   mirror, exact Python checker, collision/multiplicity/factorization/cap
+   mutants, 17-program canonical pass, and unconditional Boolean-100 pass
+   (73/73, including six old-coverage rejects) live at
+   `~/Work/qalc-scratch/RRIDirectCertificate*` and `rri_direct.py`. The
+   stronger uniform lifecycle theorem remains an optional research lane,
+   open at phase-sensitive certified-fibre reconvergence; it is no longer a
+   premise of per-program `machine_coverage`. Minimal/maximal canonical
+   certificates remain beside this formal-replay item;
 2. the readback controller (full-NF halt sectors; the kernel's root
    classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
    with time-in-the-core added to the transparency theorem

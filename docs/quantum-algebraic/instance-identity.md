@@ -1,12 +1,11 @@
 # qALC gate-instance identity
 
-**Status: partial theorem proved; Step 1 remains open (2026-08-10).** The
-fixed qALC invocation makes `(gate, instance)` injective as a **gate-copy
-address**. This closes the distinct-copy half of the instance-alias question.
-It does **not** identify a whole `Run` configuration or a transition
-occurrence, and it does not make idempotent `recall` injective. The exact
-remaining reachable-lifecycle lemma and the raw counterexample are recorded
-below.
+**Status: gate-copy theorem proved; executable per-sector RRI gate added
+(2026-08-11).** The fixed qALC invocation makes `(gate, instance)` injective as
+a **gate-copy address**. Raw idempotent `recall` remains noninjective, but v1.43
+now checks reachable-recall injectivity directly on every complete finite
+carrier before granting `machine_coverage`. The stronger uniform lifecycle
+derivation remains open, as does concrete Lean replay of the Python carrier.
 
 ## 1. Definitions and scope
 
@@ -150,7 +149,8 @@ every other coordinate. No frame-absent and frame-present recall sources may
 then have the same projection. Equivalently, `recall` must be injective on the
 reachable basis even though it is not injective on raw `WF`.
 
-The tempting two-class ghost argument is **not** a rule invariant of v1.42.
+The tempting two-class ghost argument is **not** a rule invariant of the
+unchanged v1.42/v1.43 transition surface.
 `vvar` is the only fresh-ticket mint and `replay` is the only replay-ticket
 mint, but a certified `fire` may pop `R_k` while a replay-emitted `alpha_k`
 survives in the tape tail or log. The kernel deliberately omits `k` from the
@@ -186,7 +186,40 @@ stronger lifecycle-dominator fact that the colliding frame-free source is an
 ancestor of the framed source; that fact is itself open across certified
 fibres.
 
-## 4. Executable falsification surface
+## 4. Direct finite certificate
+
+v1.43 resolves the actual finite acceptance claim without assuming NR, AT, or
+CPS. For a fixed term and frozen certificate, `rri_direct.py` enumerates the
+complete nonterminal structural carrier, rejects on caps, rechecks every
+outgoing row for closure, and places `Done` in the universal forward-invariant
+tick sector. It scans every actual recall row, rejects a mixed dispatch or
+matching-frame multiplicity, and checks both `(key, erased projection)` and
+`(key, actual recall target)` buckets. A phase collision or row-factorization
+drift is noncoverage. The predicate imports only `kernel`; it does not consult
+Gram or candidate discovery.
+
+`RRIDirectCertificate.lean` proves the carrier and terminal lifting theorems,
+the recall-target corollaries, and a mirror of the injective `Done.tick` map,
+with no `sorry`, `admit`, or axioms. The concrete qALC state/step evaluator and
+generated carrier are still trusted Python rather than replayed inside Lean.
+Accordingly the current claim is:
+
+```text
+Executable complete-carrier RRI is mandatory for every finite sector admitted
+by machine_coverage; no uniform derivation from typing or W0--W9 is claimed.
+```
+
+Fresh readings are 17/17 canonical typed sectors and 73/73 deterministic
+Boolean-100 typed sectors, including the six rejected by the older aggregate
+coverage predicate. The adversarial driver injects the registered raw
+absent/present pair into one enumerated carrier and gets one RRI witness; it
+also rejects frame multiplicity, broken target factorization, hidden/mixed
+recall, non-singleton initialization, and a state cap. The sole non-enumerated
+premise is the literal first `kernel.step` clause
+`Done(kind,residue,tick) -> Done(kind,residue,tick+1)`; a mutant violating that
+premise is intentionally outside the certificate theorem and remains pinned.
+
+## 5. Executable falsification surface
 
 The out-of-tree instrument
 `~/Work/qalc-scratch/instance_identity.py` checks the structural conclusion
@@ -208,12 +241,10 @@ named current instrument. Earlier prose also quoted two larger transient
 attacks, but no current script or output reproduces those counts, so they are
 not part of the registered evidence.
 
-For any *fixed* term and certificate whose structural BFS exhausts and whose
-validator returns `machine_coverage=True`, RRI follows extensionally from the
-Gram gate: two colliding recall sources would contribute identical singleton
-columns with inner product one. That is a complete finite validation fact. It
-is not the uniform reachable-machine theorem required by Step 1, and using it
-as that theorem would be circular with the gate it is meant to justify.
+For any fixed finite term/certificate sector accepted by v1.43, RRI now follows
+from the direct carrier predicate above, independently of the Gram gate. The
+older observation that a collision would also violate exact column Gram is no
+longer load-bearing and is not used to justify the Gram check.
 
 The separate out-of-tree `rri.py` instrument makes the new no-rider,
 ancestry, and projected-collision attacks rerunnable. Like every finite sweep,
@@ -246,7 +277,7 @@ out a collision given the stronger target-back-ancestry/dominator hypothesis.
 CPS and that dominator fact remain explicit kernel-specific premises, not
 proved qALC theorems.
 
-## 5. Dependencies and remaining boundary
+## 6. Dependencies and remaining boundary
 
 The theorem depends on:
 
@@ -259,12 +290,12 @@ Changing the syntax to permit gate literals inside `p`, or changing instance
 identity to a proper slice rather than the complete level-one log, would
 reopen the theorem.
 
-What this result does **not** discharge is Step 1 as currently docketed, nor
-the architecture's Gate 1. Step 1 has split into a proved distinct-copy
-address theorem and the still-open RRI lemma. Full-normal-form readback, the
-`t` table, error/halting adapters, the rest of the reachable pairwise range
-proof, invariant sectors, and the local minimal-garbage theorem also remain
-open.
+What this result does **not** discharge is end-to-end formal Step 1 or the
+architecture's whole Gate 1. Executable RRI is closed for admitted finite
+sectors; concrete Lean replay and the stronger uniform lifecycle theorem are
+open. Full-normal-form readback, the `t` table, error/halting adapters, the rest
+of the reachable pairwise range proof, invariant sectors, and the local
+minimal-garbage theorem also remain open.
 
 An unconditional machine repair is available if RRI resists a global proof:
 refine a replay frame to `R(g,i,b,n)` with an unbounded recall epoch. Fresh
@@ -274,7 +305,7 @@ encode arbitrarily many repeat recalls injectively. This would change the
 machine, certificates, invariants, and frozen evidence, so it is a design
 alternative, not part of the theorem above.
 
-## 6. Source pin
+## 7. Source pin
 
 The λIAM definitions, balance invariant, reversibility theorem, and the
 correspondence between logs and proof-net exponential signatures are in
