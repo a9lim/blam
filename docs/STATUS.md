@@ -461,12 +461,15 @@ admit every compiler image from syntax alone. The authoritative boundary is
 passes unchanged.
 
 The exact physical edge-coefficient map and weighted multi-step evolution over
-Lean `NFState` are now defined. The next formal package is the circuit-indexed
-boundary invariant: its per-gate lemma must derive the actual 29/47/55-row
-CNOT/H/T intervals from `composedStep`; preparation and full-NF output are the
-two enclosing inductions. Until that theorem exists, the handwritten physical
-row schedule remains a checked finite oracle rather than a proved abstraction
-of the machine.
+Lean `NFState` are now defined. The first enclosing induction is closed:
+`compiled_preparation_physical` derives every actual preparation row, the
+structurally certified H splits, arbitrary incoming amplitudes, and the width
+induction, reaching the exact unmerged `2^n` word column at `47n+4`. The next
+formal package is the circuit-indexed boundary invariant: its per-gate lemma
+must derive the actual 29/47/55-row CNOT/H/T intervals from `composedStep`,
+followed by the full-NF output induction. Until those theorems exist, the
+handwritten gate/output schedule remains a checked finite oracle rather than a
+proved abstraction of the machine.
 
 The kernel transition/WF surface is v1.42, which passed fresh-context audit
 #35. Validation-only v1.43 adds a mandatory Gram-independent complete-carrier
