@@ -459,35 +459,28 @@ proved, universality is a target, not a property, and the H–NOT–H witness
 means for qALC's objects — presumably a Gács-style domination claim for
 `M` within an appropriate class — is also unwritten.
 
-**Gate-2 construction audit (2026-08-12).** The accepted machine has a clean
-reusable single-wire fragment: H–NOT′–H, compiler-certified repeated NOT′ with
-a spectator, and native `X = H T^4 H`. It has no exhibited entangling
-boundary. Ordinary Church/tuple CNOT either revisits a control as a distinct
-dynamic gate instance or retains bit-dependent route residue. Complete
-geometric CNOT and Toffoli selectors compute the right classical permutations
-but halt in different garbage/tick blocks, with zero reduced-output
-off-diagonals. A dual-rail-plus-zero-sentinel construction proved a useful
-constant-weight readback synchronization law, but its exponential selector
-was rejected as a ROM: its proposed input cut came only after the path had
-selected the hardwired output leaf, and output-indexed terminal compression
-did not expose a clean boundary on which a subsequent H could act. The live
-machine was restored unchanged after that experiment; the evidence and proof
-boundary are `~/Work/qalc-scratch/GATE2.md`.
+**Gate-2 construction audit (2026-08-12).** Lambda/tuple and geometric
+selector entanglers are rejected: they resample repeated controls or retain
+route-dependent terminal residue, and the synchronized dual-rail route was an
+exponential compile-time ROM whose alleged input cut came after leaf
+selection. The isolated successor instead adds one invocation-supplied native
+CNOT to the composed machine. It now has an executable reversible two-port
+schedule, persistent reusable outputs, a passing raw coloring, a linear SSA
+compiler, structural certificate construction, and fail-closed finite
+admission. Bell uncompute, the derived 33-gate Toffoli, and nonlinear target-
+as-later-control reuse pass exact complete-carrier checks in one sector with
+common cuts, times, macro skeletons, and literal terminal residue.
 
-Gate 2 therefore additionally requires a nonlinear reuse witness and a
-contextual later-H witness (for example H–CNOT–CNOT–H), not merely terminal
-truth tables. A final pure-lambda candidate used linear CPS/SSA and η-variable
-delivery for exactly that Bell-uncompute circuit; it returned the right zero
-normal form but four distinct terminal garbage/tick blocks (`4,2,2,0`), and
-the final H boundary exposed no further transparent encoded fibre. The selected
-next experiment is therefore one invocation-supplied native
-CNOT permutation with a joint two-bit encoded fibre and a linear CPS/SSA
-compiler. Its abstract four-column delta and H/T/CNOT Toffoli synthesis are
-checked, but no executable single-token schedule yet queries two inputs and
-delivers two reusable outputs. It is therefore an experiment, not a ratified
-primitive. Its first acceptance test is the full coloring/predecessor audit of
-that schedule; failure reopens the fork to a genuinely multiwire machine.
-Either outcome changes the proved surface and must reclose Gate 1 before Gate 2.
+These witnesses select the machine design but do not close this gate. The
+arbitrary circuit theorem in the scratch proof surface is an ideal schedule
+theorem, not a refinement of the actual composed transition relation. Closure
+still requires a compiler-list induction deriving preparation, H/T/CNOT macro
+action and cost, certificate transparency, compiler-indexed WF preservation,
+full-NF output, common terminal residue, and no early halt from physical rows.
+Until then structural admission remains bounded by complete finite-carrier
+validation, accepted v1.43 is unchanged, and the Rust tripwire remains. The
+proof record is `~/Work/qalc-scratch/GATE2.md`; the candidate detail is
+`~/Work/qalc-scratch/GATE2_CNOT.md`.
 
 ## 7. Planned engine stack and verification contract
 
@@ -721,9 +714,9 @@ Every qALC engine change must then satisfy:
    compilation (with Toffoli derived exactly from that gate set) at a common
    pre-computation word boundary, input-independent garbage/control/time,
    nonlinear reuse, and a later-H uncompute witness. The current single-token
-   machine has no exhibited
-   entangling boundary; the 2026-08-12 constant-weight ROM route was rejected,
-   and the native-CNOT successor has only abstract circuit/delta proofs so far.
+   isolated native-CNOT successor has executable rows, a compiler, complete
+   finite Bell/Toffoli/nonlinear carriers, and an ideal circuit theorem. The
+   physical-to-ideal refinement for arbitrary compiler lists remains open.
    This gates every universality claim and all Rust implementation.
 3. Merge-discipline canonicity: is the minimal-garbage `U` unique in any
    useful sense, and what exactly is the class of programs whose branches
