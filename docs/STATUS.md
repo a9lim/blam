@@ -427,29 +427,46 @@ The proof record and runnable command are `~/Work/qalc-scratch/GATE1.md` and
 `python ~/Work/qalc-scratch/gate1_check.py`.
 
 **Architecture Gate 2 remains open after the 2026-08-12 native-CNOT build and
-fresh closure audit.** The isolated shadow machine now has a real executable
+physical-Lean advance.** The isolated shadow machine now has a real executable
 two-port `c M N K` schedule, persistent CNOT output frames, literal inverses,
 a passing pinned coloring, a linear SSA compiler, a cap-free structural
 recognizer/certificate constructor, and a fail-closed complete-carrier
 admission path. All 43 width-two circuits of length at most two pass exact
 Gram, global range separation, common macro timing/skeleton, common first-halt
-time, and literal terminal cleanliness. Complete physical carriers also pass
-for Bell uncompute (741 states), the 33-gate H/T/CNOT Toffoli synthesis (7,865
-states), and nonlinear target-as-later-control reuse (16,569 states). Removing
-the Bell compiler certificate restores four terminal garbage blocks, so the
-admission path is load-bearing.
+time, and literal terminal cleanliness. Under the buffered compiler, complete
+physical carriers also pass for Bell uncompute (1,013 states), the 33-gate
+H/T/CNOT Toffoli synthesis (14,809 states), and nonlinear target-as-later-
+control reuse (30,393 states). Removing the Bell compiler certificate restores
+four terminal garbage blocks, so the admission path is load-bearing.
 
-This finite construction does **not** close Gate 2. The arbitrary-width/list
-Lean theorem currently proves an ideal countdown schedule whose scatter and
-cost functions are defined at the circuit level. No theorem yet refines the
-actual composed `NFRun`/native-CNOT transition relation to that ideal schedule
-by compiler-list induction. Consequently the live structural selector still
+The complete composed machine now has an independently defined executable
+Lean twin, and the recursive Lean source compiler has an unbounded closedness
+theorem plus a structural certificate generator. Eight fail-closed
+`native_decide` shards compare every coefficient, row, token/zipper field,
+terminal field, and tick against Python on all 917 states of a mixed H/T/CNOT
+complete carrier. Empty/H/T/CNOT/mixed compiled source terms and certificates
+are pinned across the two implementations.
+
+This construction does **not** close Gate 2. The arbitrary-width/list Lean
+theorem still proves an ideal schedule whose scatter and cost functions are
+defined at the circuit level; executable-machine fidelity on a complete
+finite carrier does not supply the missing quantifier. No theorem yet refines
+actual `QalcComposedMachine.composedStep` boundaries to that ideal schedule by
+compiler-list induction. Consequently the live structural selector still
 performs bounded complete-carrier validation before admission; it cannot yet
 admit every compiler image from syntax alone. The authoritative boundary is
 `~/Work/qalc-scratch/GATE2.md`; the physical design is
 `~/Work/qalc-scratch/GATE2_CNOT.md`. The rejected ROM remains in
 `~/Work/qalc-scratch/attic/gate2-rom-no-go/`. The full accepted Gate-1 battery
 passes unchanged.
+
+The exact physical edge-coefficient map and weighted multi-step evolution over
+Lean `NFState` are now defined. The next formal package is the circuit-indexed
+boundary invariant: its per-gate lemma must derive the actual 29/47/55-row
+CNOT/H/T intervals from `composedStep`; preparation and full-NF output are the
+two enclosing inductions. Until that theorem exists, the handwritten physical
+row schedule remains a checked finite oracle rather than a proved abstraction
+of the machine.
 
 The kernel transition/WF surface is v1.42, which passed fresh-context audit
 #35. Validation-only v1.43 adds a mandatory Gram-independent complete-carrier
@@ -469,13 +486,14 @@ The open docket, in order:
    compiler, with Toffoli derived exactly, at one fixed-sector
    pre-computation input cut, input-independent garbage/control/time,
    nonlinear sequential reuse, and a later-H uncompute witness. The isolated
-   native-CNOT candidate now supplies the executable schedule, compiler,
-   finite witnesses, coloring, predecessors, complete carriers, and ideal
-   arbitrary-circuit theorem. The remaining gate is the universal physical
-   refinement: prove that actual composed rows implement the ideal schedule,
-   preserve compiler-indexed WF and certificate transparency, and reach the
-   common terminal block for arbitrary circuit lists. This gates every
-   universality claim and all `src/qalc/` code.
+   native-CNOT candidate now supplies the executable Python and Lean machines,
+   recursive closed source compiler, structural certificate, finite witnesses,
+   coloring, predecessors, complete carriers, 917-state cross-language
+   differential, and ideal arbitrary-circuit theorem. The remaining gate is
+   the universal physical refinement: prove that actual composed rows
+   implement the ideal schedule, preserve the exact compiler boundary/WF and
+   certificate transparency, and reach the common terminal block for arbitrary
+   circuit lists. This gates every universality claim and all `src/qalc/` code.
 2. Once Gate 2 closes, land the authoritative reference evaluator first and
    census machinery later; preserve bit-identical classical and qBLC rows.
 3. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,

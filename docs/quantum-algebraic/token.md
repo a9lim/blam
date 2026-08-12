@@ -19,10 +19,12 @@ rewriting substrate. Quantum prior art: Hasuo–Hoshino (quantum GoI),
 Dal Lago–Faggian–Valiron–Yoshimizu (multitoken machines) —
 typed/linear settings. The untyped Gate-1 machine is now concrete; compiling a
 useful clean coherent fragment is the remaining architecture gate. The
-2026-08-12 Gate-2 construction audit found clean reusable single-wire
-transport but no entangling boundary: geometric word selection retains
-which-path residue, while the constant-weight ROM route reaches its alleged
-input cut only after selecting a hardwired leaf.
+2026-08-12 Gate-2 construction audit rejected geometric selection and the
+constant-weight ROM, then isolated a native two-port CNOT with persistent
+reusable outputs. Its buffered SSA compiler passes clean Bell, derived
+Toffoli, and nonlinear-reuse carriers; Python and executable Lean agree on a
+917-state mixed complete carrier. The remaining gap is the universal physical
+compiler-list refinement, not the existence of an entangling boundary.
 This document is current-only: guardrails (§1), the exact classical
 substrate (§2), the design sketch (§3), and the kernel gate with the
 obligations register (§4). History — the route choice, the ratified
@@ -373,15 +375,15 @@ defined for every finite closed program. The proof and audit boundary is
 What remains is Gate 2: characterize and compile the clean coherent program
 fragment, including nonlinear sequential reuse, input-independent terminal
 garbage/control, equal token transition count, one fixed-sector
-pre-computation input cut, and a later-H uncompute witness. The current
-single-token table has no exhibited multiwire word fibre; the active fork is
-now tested first by one invocation-supplied native CNOT, a joint two-bit fibre,
-and a linear CPS compiler. The final pure-lambda CPS candidate already failed
-the exact Bell-uncompute test with four terminal garbage/tick blocks. Only the
-native candidate's abstract delta/circuit algebra is checked;
-an executable two-port schedule and its coloring/predecessor proof remain the
-ratification gate, after which failure would force an amended multiwire
-machine. The stronger uniform
+pre-computation input cut, and a later-H uncompute witness. The isolated native
+CNOT now supplies that multiwire fibre, executable two-port schedule, pinned
+coloring, literal predecessors, and a buffered SSA compiler. Complete physical
+Bell/Toffoli/nonlinear carriers are clean, and the entire composed dispatcher
+has an executable Lean twin pinned to Python on a mixed carrier. The remaining
+ratification gate is an arbitrary-circuit Lean refinement from actual
+`composedStep` rows to the ideal schedule, including boundary/WF preservation,
+certificate transparency, full-NF output, common terminal residue, and no
+early halt. The stronger uniform
 all-program RRI/minimal-carrier lifecycle theorem is an optional research
 lane, not a premise of a finite Gate-1 admission.
 
@@ -403,5 +405,5 @@ belongs only in `docs/ledger/2026-08.md` and the preserved scratch audit kits.
 | Readback and scalars | **Closed.** The internal zipper reads complete normal forms; bare and variable-headed `h`/`t` applications remain neutral; `t` uses exact `diag(1,omega)` arithmetic over `Z[omega]/sqrt(2)^k`. |
 | Terminal and semantic objects | **Closed.** Typed error/halt entry and unilateral ticks are forward invariant. Static sector selection defines exact `U`, `mu_p`, `rho_p`, finite `M`, and `Omega_qALC` approximants for every finite closed program. |
 | Time register | **Kernel theorem.** The coloring, branch-offset law, and mark-free fire-free conservation theorem explain why step-encoded classical selection decoheres and identify the permitted escape mechanisms. |
-| Architecture Gate 2 | **Open and code-blocking.** Single-wire composition is clean; every tested entangling λ route, including linear CPS/SSA CNOT, either resamples/rekeys a reused value or retains geometric which-path residue. The next experiment is a native CNOT plus linear CPS compiler; its circuit algebra passes, but its two-port token schedule does not yet exist. |
+| Architecture Gate 2 | **Open and code-blocking.** The native CNOT and buffered SSA compiler now provide clean finite Bell, Toffoli, and nonlinear-reuse carriers, executable Python/Lean machines, structural certificates, and a closed recursive Lean compiler. The universal physical compiler-list refinement to one common terminal block remains unproved. |
 | Optional stronger structure | The ambient uniform lifecycle/minimal-carrier theorem, general probe-exit classification, and broader arrival/pop determinacy remain research lanes; none is a Gate-1 premise. |

@@ -473,13 +473,22 @@ common cuts, times, macro skeletons, and literal terminal residue.
 
 These witnesses select the machine design but do not close this gate. The
 arbitrary circuit theorem in the scratch proof surface is an ideal schedule
-theorem, not a refinement of the actual composed transition relation. Closure
-still requires a compiler-list induction deriving preparation, H/T/CNOT macro
-action and cost, certificate transparency, compiler-indexed WF preservation,
-full-NF output, common terminal residue, and no early halt from physical rows.
-Until then structural admission remains bounded by complete finite-carrier
-validation, accepted v1.43 is unchanged, and the Rust tripwire remains. The
-proof record is `~/Work/qalc-scratch/GATE2.md`; the candidate detail is
+theorem, not a refinement of the actual composed transition relation. The raw
+kernel, full-NF readback, and native-CNOT dispatcher now have an independently
+defined executable Lean twin; a recursive Lean source compiler is proved
+closed for arbitrary circuits and constructs its certificate structurally.
+Eight fail-closed shards differentially pin every edge and state field to
+Python on all 917 states of a mixed H/T/CNOT complete carrier. The exact
+edge-coefficient map and weighted multi-step evolution are also defined in
+Lean, so the physical `U^T` equation is directly stateable there. Finite
+fidelity does not discharge its universal quantifier. Closure still requires a
+compiler-list induction deriving preparation, H/T/CNOT macro action and cost,
+certificate
+transparency, compiler-indexed WF preservation, full-NF output, common
+terminal residue, and no early halt from `composedStep`. Until then structural
+admission remains bounded by complete finite-carrier validation, accepted
+v1.43 is unchanged, and the Rust tripwire remains. The proof record is
+`~/Work/qalc-scratch/GATE2.md`; the candidate detail is
 `~/Work/qalc-scratch/GATE2_CNOT.md`.
 
 ## 7. Planned engine stack and verification contract
@@ -714,9 +723,11 @@ Every qALC engine change must then satisfy:
    compilation (with Toffoli derived exactly from that gate set) at a common
    pre-computation word boundary, input-independent garbage/control/time,
    nonlinear reuse, and a later-H uncompute witness. The current single-token
-   isolated native-CNOT successor has executable rows, a compiler, complete
-   finite Bell/Toffoli/nonlinear carriers, and an ideal circuit theorem. The
-   physical-to-ideal refinement for arbitrary compiler lists remains open.
+   isolated native-CNOT successor has executable Python and Lean rows, a
+   recursive closed compiler, structural certificates, complete finite
+   Bell/Toffoli/nonlinear carriers, a 917-state cross-language differential,
+   and an ideal circuit theorem. The physical-to-ideal refinement for
+   arbitrary compiler lists remains open.
    This gates every universality claim and all Rust implementation.
 3. Merge-discipline canonicity: is the minimal-garbage `U` unique in any
    useful sense, and what exactly is the class of programs whose branches

@@ -275,15 +275,15 @@ and static validated-carrier/conservative-history selection define `U`,
 `μ_p`, `ρ_p`, `M`, and `Ω_qALC`. Thirty finite operational cores pass the
 composed Lean assembly checks and fresh-context audit #6. Gate 2's clean
 coherent compilation theorem remains open, so qALC is still design/proof only
-and no code lands yet. The live Gate-2 audit has a clean single-wire fragment
-but no reusable entangling boundary: ordinary Church/tuple CNOT routes retain
-which-path garbage, and the constant-weight truth-table construction was
-rejected because its alleged input cut had already selected a hardwired leaf.
-The next falsifiable experiment is one invocation-supplied native CNOT with a
-linear CPS compiler; only its abstract delta and H/T/CNOT circuit algebra are
-proved, not its required two-port token schedule. A final pure-lambda retry in
-linear CPS form was measured first and still ended in four distinct terminal
-garbage/tick blocks.
+and no code lands yet. The live Gate-2 candidate now has an invocation-supplied
+native CNOT, reusable persistent wire ports, a buffered linear-SSA compiler,
+clean Bell/Toffoli/nonlinear complete carriers, and independently executable
+Python and Lean composed machines. The recursive Lean compiler is closed for
+arbitrary circuit lists, and all 917 states of a mixed H/T/CNOT carrier agree
+cross-language field-for-field. The remaining theorem is load-bearing: no
+compiler-list induction yet proves that the actual composed rows implement the
+ideal circuit matrix with one common terminal block for every circuit. Finite
+fidelity does not authorize the Rust pillar.
 Canonical evidence lives in
 [data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
 in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological
