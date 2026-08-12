@@ -66,38 +66,24 @@ The library is three layers — `blc` substrate, symmetric `classical` and
 `quantum` pillars, `lab` behind its own feature — and one binary, `blam`,
 whose subcommands live in `src/cli/`. Lab-gated subcommands are recognised
 without the feature and say how to get themselves; do not "fix" that by
-deleting the arm. A third pillar, `quantum-algebraic` (qALC: quantum
-*control*, storeless, runtime states in ℓ² over token configurations),
-exists as design documents plus an out-of-tree scratch kernel, no code
-in the tree — `docs/quantum-algebraic/architecture.md` is the contract
-(IAM-lineage token transport: the invocation term is read-only and
-values reach the `h`/`t` gates by token routing, never by copying),
-`token.md` beside it the active design (exact λIAM substrate, kernel
-gate, obligations register), `kernel.md` the current-only register of
-the scratch kernel that implements the gate (the register alone
-carries the version; its validation-only v1.43 keeps the v1.42
-transition/WF surface that PASSED fresh-context adversarial audit #35
-on 2026-08-10, closing a thirty-five-audit loop; the post-audit Step 1
-pass proves fixed-shell gate-copy address injectivity, refutes the raw-WF
-alias theorem, and makes a Gram-independent complete-carrier RRI certificate
-mandatory for finite admitted sectors; the concrete Lean mirror replays all
-17 canonical typed sectors, including certified-H reconvergence, while the
-stronger uniform lifecycle theorem remains open; the completed Gate-1
-composed layer adds full-NF readback, live `t`, typed error/halt sectors,
-exact predecessor fibres, a total validated-carrier/conservative-history
-selector defining `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`, and 30 exact finite
-operational-core proofs; its authoritative battery and fresh-context audit #6
-PASS are recorded in `~/Work/qalc-scratch/GATE1.md`;
-round history in the ledger and its §11 chronicle), and
-`machine.md` the record of the two failed rewriting-machine drafts —
-read-only history, do not build on it. The scratch kernel, its 25
-rerunnable audit kits, and the full provenance chain live durably at
-`~/Work/qalc-scratch/` (out-of-tree by design; `attic/MANIFEST.txt`
-maps the historical artifacts). **No qALC code may land** until both
-contract §9 gates pass — Gate 1 is closed, but Gate 2's clean coherent
-compilation theorem remains open — the scratch machine stays outside the
-tree until then,
-and qALC work must leave classical and qBLC rows bit-identical.
+deleting the arm. A third pillar, `quantum-algebraic` (qALC: quantum *control*,
+storeless, runtime states in ℓ² over token configurations), remains design and
+proof only. `docs/quantum-algebraic/architecture.md` is the contract;
+`token.md` is the active IAM-lineage token design; `kernel.md` is the
+current-only v1.43 register; `machine.md` is read-only history. Architecture
+Gate 1 is closed: the out-of-tree composed machine supplies exact H/T
+scattering, full-NF readback, typed halt/error sectors, exact predecessor
+fibres, validated finite admission with conservative-history fallback, and
+`U`/`μ_p`/`ρ_p`/`M`/`Ω_qALC`. Its 30 finite cores and concrete Lean
+checks pass the authoritative battery and fresh-context audit #6. The stronger
+ambient lifecycle theorem is optional; raw-WF recall is known noninjective.
+
+The live implementation, battery, and proof record are
+`~/Work/qalc-scratch/{gate1_check.py,GATE1.md}`. Historical audit kits and
+provenance stay in that scratch tree and its attic; chronological narrative
+belongs in `docs/ledger/`. **No qALC code may land** until contract §9 Gate 2's
+clean coherent compilation theorem also passes. qALC work must leave classical
+and qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →

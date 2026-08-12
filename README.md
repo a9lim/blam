@@ -268,19 +268,14 @@ A third pillar, **qALC** (quantum *control*: storeless, runtime states in
 ℓ² over token configurations), exists as a
 [ratified design contract](https://github.com/a9lim/blam/blob/main/docs/quantum-algebraic/architecture.md)
 with a machine-verified
-[kernel register](https://github.com/a9lim/blam/blob/main/docs/quantum-algebraic/kernel.md)
-— validation-only v1.43 retains the v1.42 transition/WF surface that passed a
-thirty-five-round fresh-context adversarial audit loop (audit #35,
-2026-08-10) and adds a mandatory Gram-independent complete-carrier
-reachable-recall certificate. Architecture Gate 1 is closed: the out-of-tree
-composed machine adds exact H/T scattering, internal full-normal-form
-readback, typed error/halt sectors, exact predecessor fibres, a static
-validated-carrier/conservative-history selector, and definitions of `U`,
-`μ_p`, `ρ_p`, `M`, and `Ω_qALC`; 30 finite operational cores pass exact Lean
-Gram/range checks and fresh-context audit #6 returned PASS. The stronger
-uniform lifecycle theorem remains optional and open. Gate 2's clean coherent
-compilation theorem remains open, so qALC is still design/proof only and no
-code lands yet.
+[kernel register](https://github.com/a9lim/blam/blob/main/docs/quantum-algebraic/kernel.md).
+Architecture Gate 1 is closed: exact H/T scattering, internal
+full-normal-form readback, typed terminal sectors, exact predecessor fibres,
+and static validated-carrier/conservative-history selection define `U`,
+`μ_p`, `ρ_p`, `M`, and `Ω_qALC`. Thirty finite operational cores pass the
+composed Lean assembly checks and fresh-context audit #6. Gate 2's clean
+coherent compilation theorem remains open, so qALC is still design/proof only
+and no code lands yet.
 Canonical evidence lives in
 [data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
 in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological

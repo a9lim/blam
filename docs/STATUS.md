@@ -397,121 +397,61 @@ the whole-live-store operator census.
 
 ## Quantum-algebraic state (qALC)
 
-The third pillar: a ratified design contract plus a complete Gate-1 machine
-and proof surface in out-of-tree scratch, no code in the tree.
-`quantum-algebraic/architecture.md` is the contract (quantum control,
-storeless — runtime states in ℓ² over machine configurations, `h`/`t`
-constants at invocation, fate softened to a real halting mass `μ_p`
-with `Ω_qALC = Σ 2^(−|p|) μ_p`), frozen and amended: four review
-rounds concluded in a sign-off at `27f2c4b`, and the token-machine
-amendment — route (b) after v1's no-cloning killshot — was ratified
-through thread `qalc-architecture` and applied (2026-08-09). The
-machine is IAM-lineage token transport: term read-only,
-bideterministic substrate (exact λIAM table pinned in `token.md` §2),
-values transported to δs by routing, never copied. The active design
-and obligations register are `quantum-algebraic/token.md`; the failed
-rewriting drafts (v0/v1) are preserved read-only in
-`quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
+qALC is the third pillar: quantum control on a storeless IAM-lineage token
+machine whose runtime basis is in ℓ² over configurations. The invocation
+term is immutable; values reach `h` and `t` by routing, never copying.
+`quantum-algebraic/architecture.md` is the ratified contract,
+`quantum-algebraic/token.md` the active design, and
+`quantum-algebraic/kernel.md` the current machine register. The two rejected
+rewriting-machine drafts remain read-only in `quantum-algebraic/machine.md`.
+There is no qALC code in the Rust tree.
 
-**Architecture Gate 1 is CLOSED** (2026-08-11). The accepted IAM-lineage
-machine combines the audited v1.43 kernel surface with internal full-normal-
-form zipper readback, live `t : diag(1,ω)`, typed source-retaining exceptions,
-error entry, and common-origin halted ticks. Residual coordinates are exact
-physical predecessor fibres; halt and error are forward-invariant sectors. A
-static selector uses a validated finite carrier when one closes and the proved
-source-history fallback otherwise, defining exact `U`, `μ_p`, `ρ_p`, finite
-`M`, and `Ω_qALC` approximants for every finite closed-program sector. The
-authoritative out-of-tree battery passes 30 admitted operational cores: 7,507
-states, 7,417 exact one-step columns, zero Gram/range/WF/W7 defects; 41,258
-pure normalizers through size 11; and an ordinary-kernel RRI replay over all
-17 canonical typed sectors. Fresh-context adversarial audit #6
-(`cl-20260811-232859-104f`) returned **PASS with no required correction**
-after five FAIL-and-repair rounds. `~/Work/qalc-scratch/GATE1.md` is the proof
-record. Python carrier closure and the generated large `native_decide`
-evaluations are disclosed trust boundaries; an ambient uniform lifecycle or
-global-minimal-carrier theorem is not claimed.
+**Architecture Gate 1 is closed** (2026-08-11). The accepted out-of-tree
+machine combines the v1.43 kernel with exact H/T scattering, internal
+full-normal-form zipper readback, typed source-retaining errors, common-origin
+halt/tick sectors, and exact predecessor fibres. A static selector admits a
+validated finite carrier when one closes and otherwise uses the proved
+source-history representation. This defines exact `U`, `μ_p`, `ρ_p`,
+finite `M`, and `Ω_qALC` approximants for every finite closed-program
+sector.
 
-**The scratch pipeline is at v1.43; its transition/WF surface remains the
-v1.42 machine that PASSED fresh-context independent audit #35**
-(cx-20260810-105238-1baf, 2026-08-10): "PASS for
-v1.42 as stated in C1–C6. I found no required correction,
-machine/checker countermodel, gate failure, or surviving claim
-overreach." v1.43 is a validation-only proof-gate change: complete finite
-nonterminal carrier closure plus a direct reachable-recall matrix is now an
-unconditional `machine_coverage` conjunct, independent of Gram; caps and
-malformed recall surfaces reject. It changes no transition, certificate, or
-accepted canonical program. The concrete qALC state grammar and v1.42 step
-surface now have an executable Lean mirror. Generated certificates recheck
-every exported Python row against that relation, prove carrier closure and
-both source-projection and actual-target RRI, and replay all 17 canonical
-typed sectors: 5,220 nonterminal `Run` states, 5,279 outgoing rows, 142 recall
-sources, 53 certified-H sources, and 18 exact H-reconvergent targets. The
-exporter is untrusted; a wrong row or incomplete carrier makes Lean reject.
-The loop
-closed at thirty-five audits over nineteen
-correction rounds — thirty-four FAIL, one PASS — with kernel.py
-untouched since v1.25 (eighteen consecutive machine-clean
-audits preceding the verdict). The PASS was explicitly
-conditional on the instance-alias gap (kernel.md §9). The proof pass first
-split that gap precisely: the fixed invocation shell makes `(g,i)` injective
-as a complete gate-copy address, while idempotent `recall` remains
-noninjective on raw WF. v1.43 discharges the reachable version extensionally
-for each admitted finite sector by its direct closed-carrier gate; the
-stronger uniform derivation from typing/W0–W9 remains open
-(`quantum-algebraic/instance-identity.md`). Round-by-round history
-lives in
-`ledger/2026-08.md` (and 2026-07) and the register's §11
-chronicle — the register itself is current-only per its own
-charter.
+The authoritative Gate-1 battery covers 30 admitted operational cores: 7,507
+states and 7,417 exact columns, with zero Gram, literal-range, WF, or W7
+defects. It also checks 41,258 pure normalizers through size 11, the complete
+application/controller invariant over 1,187,953 reached states, and ordinary
+kernel RRI on all 17 canonical typed sectors. Each generated Lean file now
+constructs the assembly certificate joining shape, predecessor, literal-range,
+and exact-Gram checks. Immediate regeneration is byte-checked and content
+hashed. Fresh-context audit #6 returned **PASS with no required correction**.
+The proof record and runnable command are `~/Work/qalc-scratch/GATE1.md` and
+`python ~/Work/qalc-scratch/gate1_check.py`.
 
-The verified surface, as it stands: a ten-invariant
-well-formedness subtype (the W0 sorted state language plus
-W1–W9) with `wf()` total on the raw-object layer at
-representation-linear pre-gate cost; fifteen typed guards; the
-all-arms one-head-per-fire storage discipline (§7.4); the
-ten-mark gauge sweep pinning w(KA)=0 (8/1024 reachable, 4/1024
-with the disclosed raw edge); arm census 58/69/10/0 on the
-suite and 367/465/222/0 on the corpus; nineteen frozen dict
-certificates plus dupcall's canonical None (canonical =
-deterministic validation-adjudicated greedy, neither maximal
-nor minimal); the written-first physics table passing on all
-twenty programs; corpus sweeps zero-hit at 300/206/363/218,546.
-All six instruments carry exit-code verdicts and thirty-two
-permanent regressions gate mechanically (forcing any single one
-false exits nonzero, measured). Coverage is stated at its true
-scope: §10's sensitivity-scope statement enumerates the gated
-predicates clause-by-clause and is bounded by TWO registered
-boundary witnesses — audit #32's fixture-aware mutant (no
-finite fixed fixture pins implementation strategy) and audit
-#33's W2-dup deletion (non-gated verdict flags are invisible to
-predicate gates) — both permanently exit 0 by construction.
-Twenty-five rerunnable audit kits and the full provenance chain
-(predictions files with every wrong call kept and marked, packs,
-verdicts, the attic manifest) are preserved out-of-tree at
-`~/Work/qalc-scratch/` alongside the scratch kernel itself; the
-architecture.md §9 contract gates, not the kernel audit verdict, decide when
-qALC code lands in the tree. Gate 1 is now closed; Gate 2 remains open, so the
-no-code boundary remains in force.
+The kernel transition/WF surface is v1.42, which passed fresh-context audit
+#35. Validation-only v1.43 adds a mandatory Gram-independent complete-carrier
+reachable-recall check without changing transitions, frozen certificates, or
+accepted canonical programs. The concrete Lean mirror rechecks every exported
+row and proves both RRI formulations on the 17 typed sectors, including
+certified-H reconvergence. Raw-WF recall is noninjective; the stronger ambient
+lifecycle/minimal-carrier theorem remains optional and open. Python carrier
+closure and large generated `native_decide` evaluations are explicit trust
+boundaries. Audit chronology lives only in `ledger/2026-08.md`, the scratch
+audit kits, and git history.
 
 The open docket, in order:
 
 1. **Architecture Gate 2 — clean coherent compilation**
    (`quantum-algebraic/architecture.md` §6): characterize a useful λ-defined
    Toffoli-class fragment whose branches finish with input-independent
-   garbage, terminal control, and token transition count; build and prove the
-   time-balancing compiler for the pattern-encoded fragment. This gates any
+   garbage, terminal control, and token-transition count; build and prove the
+   time-balancing compiler for the pattern-encoded fragment. This gates every
    universality claim and all `src/qalc/` code.
 2. Once Gate 2 closes, land the authoritative reference evaluator first and
    census machinery later; preserve bit-identical classical and qBLC rows.
-3. **Optional stronger structure beyond finite admission:** minimal/maximal
-   canonical certificates and the ambient uniform lifecycle theorem remain
-   open at phase-sensitive certified-fibre reconvergence. The local live/dead
-   H interface is Lean-closed; the global first-noninjective-routing separator
-   lemma remains open. This lane is not a premise of Gate 1 or per-program
-   `machine_coverage`.
+3. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
+   general probe-exit classification, and broader arrival/pop determinacy.
 4. Downstream research: D-circuit dyadicity, universality/domination for `M`,
-   self-interpretation up to timing dilation, and relations among the three Ω
-   objects.
+   self-interpretation up to timing dilation, and relations among the three
+   Ω objects.
 
 ## Repository and release state
 

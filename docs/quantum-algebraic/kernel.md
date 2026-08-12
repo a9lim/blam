@@ -1,85 +1,32 @@
 # qALC kernel — current register
 
-**Architecture status:** Gate 1 closed on 2026-08-11. The v1.43 kernel below
-is unchanged; the accepted out-of-tree composed layer adds full-normal-form
-readback, exact `t`, typed host/error and halt adapters, exact predecessor
-fibres, finite operational-core Gram/range proofs, the conservative-history
-fallback, and `U`/`μ_p`/`ρ_p`/`M`/`Ω_qALC`. Its authoritative record is
-`~/Work/qalc-scratch/GATE1.md`; fresh-context audit #6 returned PASS with no
-required correction. Gate 2 remains open, so the no-code rule still governs.
+**Architecture status:** Gate 1 closed on 2026-08-11; Gate 2 remains open, so
+qALC code stays out of the Rust tree. The complete composed proof record is
+`~/Work/qalc-scratch/GATE1.md`.
 
-**Status: v1.43.** The kernel is a scratch superposition evolver
-for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
-ℚ[√2]): the eight classical token rules plus gate probes that FIRE
-at boundaries with H-row amplitudes, instance-keyed
-ticket/frame/record machinery for re-interrogation,
-**instance-directed** per-program transparency certificates with a
-hybrid canonical pipeline — structural admission, direct reachable-recall
-certification, and structural isometry mandatory, exact-amplitude dynamic cleanliness deciding
-run success ("amplitudes decide whether a run succeeds, never
-whether the machine is an isometry") — a ten-invariant
-well-formedness subtype (the W0 token grammar plus W1-W9), a
-typed h-only fragment judgment with a
-syntactic language boundary, a written-first per-program physics
-table, and every failure mode typed — never silent. Shaped by a
-fresh-context adversarial audit loop and three working reviews;
-the round-by-round history, including the healing of audit #2's
-fatal witness `W`, lives in the chronicle (§11) and the ledger.
-The v1.42 transition/WF claim **PASSED fresh-context independent audit #35**
-(cx-20260810-105238-1baf, 2026-08-10): "PASS for v1.42 as stated
-in C1–C6. I found no required correction, machine/checker
-countermodel, gate failure, or surviving claim overreach." All
-six claims CONFIRMED; the instance-alias gap was the registered conditional
-exactly as stated in that pack. v1.43 is a validation-only post-audit proof
-gate: it changes no transition, WF predicate, frozen certificate, physics row,
-or accepted canonical program. `rri_direct.py` now enumerates a complete
-finite nonterminal carrier, checks closure and the full reachable-recall
-projection/target matrix independently of Gram, and rejects caps or malformed
-recall surfaces; `certify.validate` requires its positive result for
-`machine_coverage`. The generic carrier/terminal lift, terminal tick mirror,
-and recall-target corollary are Lean-checked. The executable concrete Lean
-mirror now rechecks every exported Python row and proves both RRI formulations
-on all 17 canonical typed sectors, including certified-H reconvergence
-(`instance-identity.md`). Thirty-five fresh audits —
-thirty-four FAIL, one PASS; §11 carries every verdict. Kernel-arm provenance is the
-chronicle's per-row "what changed" column — summaries of it have
-been refuted twice by literal diff (audit #13 killed "unmoved
-since v1.11"; audit #14 showed the corrected two-wave summary
-still omitted v1.12's ordinary-decode burial-suppression change
-and mislabeled v1.21's binder/transport arms as "leaf" guards) —
-so this register states arms exactly: §11's rows for every version, and here
-the CURRENT delta only. v1.43 adds neutral `rri_direct.py`; makes its result an
-unconditional `machine_coverage` conjunct in `certify.py`; adds exact
-projection and actual-target bucket checks, singleton initialization,
-singleton recall dispatch, exact-one-frame deletion/multiplicity rejection,
-closure replay, cap rejection, and the explicit universal `Done.tick` terminal
-premise; and adds `RRIDirectCertificate.{py,lean,md}` plus the adversarial
-audit. Canonical discovery remains exactly equal to all twenty frozen
-certificates. The direct gate passes all 17 typed canonical sectors and all 73
-deterministic Boolean-100 typed sectors (including six rejected by the older
-aggregate coverage predicate). A synthetic carrier containing the registered
-raw absent/present pair is rejected with one RRI witness; the audit also kills
-frame-multiplicity, target-factorization, hidden-recall, non-singleton-init,
-and cap mutants. A mutant that changes `Done(3)` to leave the terminal sector
-is accepted only because it violates the explicitly named source-level
-terminal premise; it remains pinned to prevent that premise being mistaken
-for a finite check. `QalcConcreteKernel.lean` subsequently mirrors that
-terminal rule and the entire transition surface; generated ordinary-kernel
-certificates cover 5,220 nonterminal `Run` states, 5,279 rows, 142 recall
-sources, 53 certified-H sources, and 18 exact H-reconvergent targets. The
-exporter is untrusted: Lean checks row equality, closure, and the final RRI
-predicates. This targeted proof pass is not a fresh-context audit of v1.43 in
-isolation, and no such verdict is claimed. The later Gate-1 audit covers the
-composed accepted machine and its explicit reliance on this v1.43 surface; it
-does not retroactively rename the kernel-only audit history.
+**Kernel status: v1.43.** The transition and W0--W9 well-formedness surface is
+v1.42, which passed fresh-context independent audit #35 with no required
+correction. v1.43 is validation-only: it adds complete finite nonterminal
+carrier closure and a Gram-independent reachable-recall certificate as an
+unconditional admission check. It changes no transition, WF predicate, frozen
+certificate, physics row, or accepted canonical program. The concrete Lean
+mirror rechecks every exported row and proves source-projection and
+actual-target RRI on all 17 canonical typed sectors, including certified-H
+reconvergence. Raw-WF recall remains noninjective; no ambient uniform lifecycle
+theorem is claimed.
 
-This file is the current contract and register only. The
-round-by-round history — countermodels, corrections, verdicts —
-lives in `docs/ledger/2026-08.md` and this file's git history;
-§12 is the map. The scratch implementation lives outside the tree
-(the §9-gate no-code rule of `architecture.md` governs); the
-machine designs behind it are `token.md` (active) and `machine.md`
-(read-only failures).
+The kernel is an exact `h`-only lambda-IAM superposition evolver with
+instance-keyed replay records, certificate-controlled erasure, typed guards,
+and exact amplitudes in `ℤ[1/√2]`. The accepted Gate-1 layer composes it
+with live `t`, full-normal-form zipper readback, exact predecessor fibres,
+typed halt/error sectors, a conservative source-history fallback, and the
+semantic objects `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`.
+
+This file states the current machine and verification boundary. Audit rounds,
+failed claims, and repairs live in `docs/ledger/2026-08.md`, the scratch audit
+kits, and git history. The scratch implementation remains at
+`~/Work/qalc-scratch/`; `token.md` is the active design and `machine.md` is
+read-only history.
 
 ## 1. Scope
 
@@ -527,7 +474,7 @@ boundaries pop nothing (cargo-only certification, every frame
 retained); the q family, `B`, and `W` pop inner-coin instances;
 `palpha` certifies via the greedy rescue, guard-silent, basis
 474 → 275 with its marginal unchanged. No identity between the
-legacy pop-everything reading and the canonical dicts is claimed.
+unrestricted pop-everything reading and the canonical dicts is claimed.
 
 ## 6. The invariant catalog (WF, the well-formed subtype)
 
@@ -974,602 +921,33 @@ multiagent audit and exact regression surface are recorded in §1 and
 
 ## 10. Verification state
 
-Twenty-program suite (twelve sectors + the audit witnesses
-`buried`/`palpha`/`dupcall`/`B`/`W` + stressors
-`weave`/`hweave`/`qq`):
+The current kernel battery has one authoritative interpretation:
 
-| program | basis | dynamics | note |
-|---|---|---|---|
-| HH | 82 | 0̂: 1 | earned coherence (inner cert + decode) |
-| HNH | 104 | 0̂: 1 | certificate load-bearing (plain: ½/½) |
-| negative | 83 | I: 1 | haltI sector; recall regression |
-| selector | 106 | ½ / ½ | |
-| lone | 53 | ½ / ½ | |
-| pstar | 242 | ½ / ½, sup 4 | replay regression |
-| 3coin | 180 | ½ / ½, sup 4 | |
-| q | 218 | ½ / ½, sup 4 | untyped (battery-only); time offset 35 |
-| qprime | 246 | ½ / ½, sup 4 | q's typed repair; offset 7 |
-| q2 | 115 | ½ / ½, sup 4 | offset 3 |
-| dup | 90 | ¼ / ¼ / I ½ | untyped copy-discrimination regression |
-| Ccoll | 143 | ½ / ½ | C-collapse class (decoheres, correctly) |
-| buried | 432 | ½ / ½, sup 4 | audit-1 witness, healed (replay record) |
-| weave | 290 | ½ / ½, sup 4 | interleaving stressor |
-| hweave | 225 | ½ / ½, sup 4 | coherence across an interleaving |
-| qq | 2,192 | ½ / ½, sup 8 | Q in Q, double-crossed re-seeks |
-| palpha | 275 | ¼ / ¾, sup 3 | audit-2 witness; certified via the greedy rescue (one poppable key excluded to spectator), guard-silent, marginal unchanged from plain (474-state) reading |
-| dupcall | 632 | typed err ½ + ¼/¼ | untyped; refire positive control |
-| B | 186 | 1̂: 1 | audit-2 decomposition witness, healed (structural refire at amplitude 0) |
-| W | 498 | 1̂: 1 | audit-2 fatal witness, healed (inner boundary pops the inner coin's two instances; outer frames retained spectators; structural refire at amplitude 0, verified per-step) |
+- all twenty frozen kernel programs are total, exact-Gram clean, and match the
+  written-first physics table;
+- canonical discovery returns nineteen exact certificate dictionaries and the
+  validated no-erasure result for `dupcall`; `h Omega` rejects admission;
+- W0--W9, range separation, guard typing, certificate nonvacuity, conservation,
+  and the all-arms one-storage-head discipline are executable gates;
+- thirty-two permanent regression predicates and both declared coverage-boundary
+  witnesses remain in the battery. These fixtures pin the stated predicates and
+  known coarse mutant classes, not arbitrary implementation strategy;
+- the complete-carrier RRI gate passes all 17 canonical typed sectors and all 73
+  deterministic Boolean-100 sectors. Collision, multiplicity, factorization,
+  dispatch, cap, initialization, certified-H, and incomplete-carrier controls
+  reject as intended;
+- the generated concrete Lean replay covers 5,220 nonterminal `Run` states,
+  5,279 rows, 142 recall sources, 53 certified-H sources, and 18 exact
+  H-reconvergent targets. The exporter is untrusted; Lean rechecks row equality,
+  closure, and both RRI formulations.
 
-All twenty: zero stuck / non-unit / non-orthogonal columns; guards
-silent except `dupcall` (expected: `alien-ticket`) and `B`/`W`
-(expected: structural `refire` at amplitude exactly zero — the
-hybrid's core case). The written-first physics table passes on all
-twenty. `discover_total` == frozen CERTS on all 20: nineteen exact
-canonical dicts compared bit-for-bit; `dupcall` canonically None
-(plain run carries typed err mass; plain-reading fallback);
-`h(Ω)` → None. Negative controls: pstar × wrong certificate
-reaches `pop-err`; dupcall × v1.7-era certificate reaches
-`refire`, all-err. WF/W7/W8/W9 sweeps + mechanized disjointness:
-zero violations; **thirty-two permanent regressions** (the v1.6 pair;
-extra-frame collision, W7-excluded with disjoint targets;
-doctored bundle divergence; K+frame alias; retained-Q
-disjointness — spectator-bit columns share zero targets;
-duplicate-ticket W9; retained-Q KD — a cargo key with a retained
-frame leaves an EMPTY bundle, targets WF-clean; bitfree-burial —
-a buried key stays the sole bit-carrying record, the key OUT of
-the (explicitly present, v1.23) bundle beside it; popped-frame +
-surviving ticket — the T-riding ticket stays the answerable
-representation, the key out of the explicit bundle, targets
-WF-clean;
-vacuous-position — a certificate entry at an unreachable
-position must fail `machine_coverage` while the canonical map
-passes; ghost-key — an inert popkey occurring in no arrival
-frame at its certified position must fail `machine_coverage`,
-key-level non-vacuity; deep-W4 — a slice-suspended
-same-instance ticket in a VB-active state must be flagged while
-the stripped control stays clean; W4 storage/burial — same-key
-bit-free K/KD storage and a conflicting-bit burial in a
-VB-active state must be flagged (`W4-storage`/`W4-burial`)
-while the clean and AGREEING-burial sources stay WF and the
-agreeing burial's vvar target measures WF, the built-in
-no-over-tightening control; answer-species — mismatched and
-matched-foreign γ/A markers at a leaf must be typed
-`species-ans`, the matched-own anshead intact, and the retrace
-chain typed one step after `bt1g` with no crash anywhere;
-grammar/stall — W0 flags and species-ans types all five bad
-answers (bits 2/-1/7 and both malformed arities), the VB-domain
-violation is W0-flagged, the three stall arms fire exactly on
-their cases, and the classical final plus the deeper-pair chain
-stay untouched; state-language — the numeric/bool aliases are
-W0-flagged AND species-ans-typed (no halt1.0/haltTrue from any
-WF state), the malformed productions (bullet/answer K(l) cargo,
-shallow ticket instances, non-lp frame/K/KD instances) and the
-coordinate violations (alien d, alien path component, off-tree
-path, non-Var lp occurrence) all W0-flagged, with the exact-int
-bits and the kit-exact foreign-lp classical final as intact
-controls; log-sort/slice-equation — bullet/answer/mu/rho log
-entries W0-flagged, the slice-length violation and the
-open-term state W0-flagged, an lp log entry intact; KS
-prefix-freeness — audit #15's fresh-decode/carried-in pair
-produces DISJOINT targets with the empty bundle explicit, and
-the t boundary is typed with the h-fire control intact; fire
-prefix-freeness — audit #16's frame-skip and burial-skip pairs
-AND the author two-key double-suppression pair each produce
-disjoint targets with the `('KA', g, i)` head explicit in every
-suppressed target, the decode-recorded arm an intact control;
-W0 totality II — the `Var(0)` state and the list-tape state are
-W0-flagged at source, a hostile-hash tuple-subclass is
-W0-flagged WITHOUT crashing the checker, and the
-tuple-everything control stays WF; checker totality III — the
-bare-`('AL',)`, bare-`('L',)`, and empty-frame states return
-exactly `['W0']` with no exception, and an in-language
-multi-violation control still lists its W1-W9 flags (the gate
-must not over-collapse); alien-gate — foreign-gate tickets at
-the fire boundary are WF and typed `alien-gate` at both bit
-polarities, the same-gate decode control fires unchanged;
-totality IV — an exact-pure empty tuple in EACH of the four
-registers returns exactly `['W0']` with no exception, a
-1,500-deep exact tuple returns `['W0']`, and a 1,500-lambda
-closed term's root state passes wf in full — the deep-term
-no-over-rejection control; totality V — junk-string and
-`object()` terms W0-rejected, the cyclic Lam graph W0-rejected
-promptly, the hostile Run subclass declined without raising,
-the 2^24 shared-DAG state W0-rejected promptly, wf7 declines
-the malformed-frame source, with the deep-term and genuine-Run
-adjudications as controls; totality VI — the hostile TERM
-subclass W0-rejected with no hostile code executed, the three
-invalid-Gate terms W0-rejected, wf7's hostile-subclass and
-unhashable sources declined without raising, and the
-WF-source-reaches-fibre plus 800-node-chain controls intact;
-totality VII — the five scalar-root states and the
-hostile-`__eq__`-in-d state W0-rejected with nothing executing,
-wf7 declining, and the n=8,000 valid deep-lp walk inside the
-linear band; composition linearity — the n-frames-one-lp family
-W0 at both sizes inside the linear band, with a distinct-lps
-no-aliasing control and a traversal-sensitivity pair (v1.38:
-in-language genuine 'W0'-free; the corrupt frame — v1.39,
-after audit #31's canned-count mutant defeated the shallow
-sentinel — is the LAST entry of the left-to-right rs loop, a
-tuple-well-shaped all-'b' lp whose sole W0 defect is its
-unbound occurrence, which the shipped checker rejects via
-the occurrence walk, exactly ['W0']); occurrence-memo — the distinct-shells/
-shared-occurrence families inside the linear band, the
-stale-interleaving verdict pinned ['W0'], the fresh-call
-isolation control, and sensitivity pairs for both storage
-variants; shared-substructure — the shared-slice
-rs/K-storage families and the shared-KD-keys family W0 inside
-the linear band on the auditor's exact term shape, with
-sensitivity pairs for all three kinds; big-index/
-slice-cargo — the Var(1<<n) family W0 and the carrier
-slice-cargo family WF-CLEAN inside the linear band —
-in-language as of v1.38, with the corrupt-shell control
-(exactly ['W0']; v1.39 — the corrupt element at slice position
-0, popped LAST under the LIFO walker so a full drain is
-required, a tuple-well-shaped lp whose sole W0 defect is an
-unbound occurrence that the shipped checker rejects via the
-deep walk) as the positive traversal gate, so
-audit #30's carrier-removal countermodel and both of audit
-#31's checker mutants now exit 1
-(n−1 runtime-built DISTINCT
-shells — one per 'a' of the carrier occurrence, which is what
-the slice equation requires; the count corrected in v1.37
-after audit #29 caught v1.36's own "n" off by one — sharing
-ONE occurrence object; v1.36, after audit #28 proved the first
-fixture's shells constant-folded to one object, with
-distinctness gated as a conjunct of the flag and
-forced-falsifiable alone), the bound-big-index control
-WF; fieldless — the four undefaulted hollow Runs W0 without
-raising, the defaulted trio pinned to its class-default
-fallback, hollow Lam/Var terms W0, wf7 declining, constructor
-controls intact).
+The v1.42 audit verdict applies to the transition/WF claim. The later composed
+Gate-1 audit applies to the accepted full machine. Neither result proves the
+optional ambient lifecycle theorem. The 25 rerunnable historical audit kits
+and their adjudicated exceptional exits are provenance, not current interface;
+the ledger records them without duplicating them here.
 
-**Sensitivity scope (v1.40, restated exactly in v1.41 —
-audits #32/#33's boundary).** The corruptions are last in
-their relevant enclosing scans: comp28/occ29 in sequential
-rs/ks traversal; shells30-rs/ks and cargo31 at LIFO-last
-slice position 0; KD at the last left-to-right key. The fixed
-pairs force these verdicts and defeat the exhibited mutants,
-but do not characterize every fixture-aware checker
-implementation. What the gates check, enumerated exactly
-(audit #33 refuted v1.40's "extensional verdicts" phrasing —
-the genuine sides gate PREDICATES, not full verdicts):
-comp28 genuine 'W0'-free and corrupt exactly ['W0']; occ29
-rs genuine 'W0'-free, ks genuine exactly [], both corrupts
-exactly ['W0']; shells30 rs genuine 'W0'-free, ks genuine
-'W0'-free, KD genuine exactly [], all three corrupts exactly
-['W0']; cargo31 both sizes exactly [] with both distinctness
-conjuncts, corrupt exactly ['W0'], inside the timing band.
-The 'W0'-free (rather than empty) genuine gates have a
-W2-dup rationale for the THREE RS DUPLICATE FAMILIES ONLY —
-comp28, occ29-rs, and shells30-rs each measure ['W2-dup']x11
-live at the pair size, because n value-identical frames are
-the timing construction itself. shells30-ks's genuine
-verdict is [] and its 'W0'-free gate is simply WEAKER than
-its current live verdict (audit #34 caught the previous
-sentence generalizing the W2 rationale to it); the ks/KD
-exact-empty clauses are as enumerated. No clause claims more
-than its enumerated predicate. TWO registered boundary witnesses now
-bound the claim. (1) Implementation strategy: audit #32's
-fixture-aware mutant (canning every long all-'b' occurrence
-except the exact length-13 corrupt; skipping every long
-slice except a position-0 peek for the exact deep value)
-passes the complete suite at exit 0 — no finite fixed public
-fixture pins how a passing implementation computes. (2) The
-predicate-vs-verdict gap: audit #33's family-oblivious
-mutant deleting the sole W2-dup append flips the shipped
-checker from rejecting to ACCEPTING the genuine comp28
-fixture (['W2-dup']x11 → []) with every public gate green —
-a checker-semantic change confined to non-gated flags is
-invisible to these gates. Both witnesses' kit rows read exit
-0 BY CONSTRUCTION, permanently. Machinery or full-verdict
-coverage past the enumerated gates would need
-instrumentation, generated hidden variants, or differential
-testing — deliberately out of scope for a fixed public
-suite; the sentinel arms race terminates in this statement.
-
-The
-gating structure, stated exactly
-(audits #6 and #7 each caught a computed-but-non-gating
-verdict; audit #8 forced all eleven then-regressions
-individually and confirmed each drives exit 1; audit #12
-independently forced all thirteen then-flags plus every
-instrument component — fourteen forcings — each to exit 1;
-audit #13 confirmed the fifteen-gate structure 15/15; audit
-#14 confirmed sixteen-for-sixteen with independent forcings
-including ok_gr; audit #15 confirmed seventeen-for-seventeen;
-audit #16 confirmed nineteen-for-nineteen plus fourteen
-instrument components, every mutation exit 1; audit #17
-confirmed twenty-one-for-twenty-one plus the fourteen
-components likewise; audit #18 confirmed
-twenty-three-for-twenty-three plus the fourteen components,
-the two polarity readings forced separately, and the raw gauge
-instrument REMOVED → exit 1; audit #19 confirmed
-twenty-four-for-twenty-four plus the fourteen components with
-warnings promoted to errors; audit #20 confirmed
-twenty-five-for-twenty-five plus the fourteen components plus
-the three polarity-reading mutations; audit #21 confirmed
-twenty-six-for-twenty-six likewise, plus conservation at size
-11 and the max-free validator against an independent reference
-over 50,000 randomized graphs incl. 5,349 cycle mutations with
-zero mismatches, plus wf7 old-vs-new over 5,508 reachable
-states with zero verdict differences; audit #22 confirmed
-twenty-seven-for-twenty-seven plus the fourteen components plus
-the three polarity-reading controls, the reconciled boundary on
-an independent family, and all four v1.29 repairs individually
-linear) — audit #23 confirmed twenty-eight-for-twenty-eight plus the
-fourteen components plus the three polarity readings, and the
-v1.30 honesty repairs including a FOURTH observed cert_*
-behavior class (a certificate subclass's __contains__ executing
-before a quiet return) covered by the UNSPECIFIED wording — audit #24 confirmed twenty-nine-for-twenty-nine plus the
-fourteen components plus the three polarity readings, and
-CONFIRMED the memo doctrine by static enumeration — audit #25 confirmed thirty-for-thirty plus the fourteen
-components plus the three polarity readings, extend-once and
-the KD memo mechanically — audit #26 confirmed thirty-one-for-thirty-one and the clamp
-lemma by 60,000-graph differential; audit #27 confirmed
-thirty-two-for-thirty-two plus the fourteen components plus
-the three polarity readings, raw-object totality in scope, and
-the defaulted-field fallback by 110,232 comparisons — audit
-#28 re-confirmed thirty-two-for-thirty-two plus the components
-and readings by fresh AST-derived forcing, noting the
-slice-cargo subcomponent then gated a misconstructed shape
-(repaired and identity-gated in v1.36): the v1.6 pair
-gates `collisions_under_wf()`; the other thirty gate
-`cert_sweep()`'s return; the module `__main__` conjoins all
-three sweeps in its printed total AND ITS EXIT CODE, so any
-single regression failure exits nonzero (measured: forcing the
-pair false → exit 1; forcing cert_sweep flags false → exit 1,
-including the v1.20 through v1.35 flags; the
-emulated-old-arm probe flips `cert_sweep` to FAIL). Three
-v1.12/v1.13-era regression mechanizations were updated in v1.23
-to the always-emit discipline (their targets now carry the
-explicit empty bundle; the theorems they guard — no key with a
-surviving representation enters the bundle — are unchanged and
-still measured True), and two hand-built fixture lps (the v1.11
-tcargo pair and the deep-W4 stripped control) were corrected to
-satisfy the lambda-IAM slice equation, countermodel essence
-untouched in every case. Old kits' hand-built subtraction
-MATRICES now exercise fewer cases under the tightened language
-(the v116/v117 kits: 33 originally, 6 surviving) — their
-historical confirmations stand as records of then-language
-runs, and the subtraction code they verified is diff-identical
-since v1.13 (the v1.23 arm change touches only the bundle's
-EMISSION, not its computation).
-Conservation:
-exhaustive ≤ size 11, 14,452 surfacings at ≤10 / 55,727 at ≤11,
-zero failures. Polarity/terminal chains/gauge: zero violations,
-orbit exact — 4/1024 with the KD and KA weights enumerated
-(audit #9 caught the 8-parameter sweep asserting KD's zero
-rather than enumerating it; audit #17 caught the 9-parameter
-sweep omitting KA entirely), every survivor fixing KD and KA at
-0, the KA pinning via the disclosed raw suppressed edge with
-the reachable-only 8/1024 reading printed beside it. All prior audits' independent reproducers
-rerun clean or typed (audit #1's fuzz 250/250; audit #2's kit
-clean on every lifecycle, its term-evaluator mismatches
-adjudicated as that evaluator's non-normalization; audit #3's
-spectator columns share zero targets; audit #4's countermodel
-pair healed; audit #5's popped-frame countermodel healed; audit
-#6's gate probe flips as it must; audit #7's vacuity probe now
-refused, its cap counterexample matching the three-way None
-sentence; audit #8's ghost-key probe now refused at the key
-level; audit #9's COLORING probe stands as evidence of the
-pre-v1.17 §7.1 phrasing — its six witness edges are decided
-correctly by the mechanized theorem, which §7.1 now states;
-audit #10's F-parity probe stands as evidence that popped and
-total frame counts differ on 38 spectator-retaining edges —
-the recording now takes the register's popped count; audit
-#11's deep-W4 countermodel now flagged at its source; audit
-#12's storage/burial sources now flagged `W4-storage`/
-`W4-burial` and its answer-species cases typed `species-ans`
-with no exception anywhere on its kit rerun; audit #13's
-grammar countermodels W0-flagged and species-ans-typed, its
-stall states typed by the three new guards; the v114 kit's
-`nested-ticket-in-other-K` probe now W0-flags — ADJUDICATED:
-that probe's placeholder storage keys ("x", "y") are outside
-the machine's gate/instance language, its subtraction columns
-unchanged — the same evidence class as the v116 kit's frozen
-formula; audit #14's ten countermodels all W0-flagged and, for
-the numeric aliases, species-ans-typed. Two v1.22 kit-delta
-classes ADJUDICATED: (a) hand-built matrix states in six kits
-(v113/v114/v116/v117/v118/v119) carry helper lps whose
-occurrences name non-Var positions — outside the lp language
-the machine actually mints, audit #14's own binder_path-crash
-class — so their wf-display columns move while every failure
-counter stays 0, every gate field True, all exits 0; the one
-such fixture in wf.py's OWN v1.12 regression was corrected to
-a Var-naming carrier, countermodel essence untouched; (b) the
-v121 kit CRASHES by construction under v1.22 — its numeric
-probe dereferences the Run fields of a countermodel target
-that is now a species-ans RunDone; its completed first section
-shows all six production countermodels W0-flagged, and
-regression seventeen carries the gated form). ALL SIX
-instruments carry exit-code verdicts — wf, polarity,
-conservation (audit #10 flagged their print-only totals), and
-as of v1.19 suite, certify, and typecheck too (audit #11
-flagged those; typecheck also gained its printed fragment
-total, 17/20 typable-h-only + every escape rejected);
-forced-false on any gated component of any instrument measured
-exit 1, and the §7.2 branch-offset rows gate the polarity
-verdict. The F recording was confirmed by audit #11 on 116
-certified-fire edges (target.rs exactly Q; len difference
-exactly |P|; zero recording mismatches). Output identity across code changes is claimed for
-DETERMINISTIC fields only: `conservation.py` prints a wall-clock
-suffix that varies run to run (audit #7 caught "byte-identical"
-overclaiming this), and adding a declared validation field
-changes every printed validation dict by exactly that field.
-Standing audit-confirmed lemmas carried
-forward: refire amplitudes of `B`/`W` verified zero per-step; 46
-generated programs identical across the v1.11/v1.12 arms and
-zero transition differences over 54 reachable certified
-arrivals; 1,146-program W9 fuzz clean; burials never consumed
-(incoming ks an exact suffix of the target's across 13,693 suite
-edges); within a retained group, divergent subtraction results
-are impossible (condition (b) plus the group key fix every
-subtraction input); the two v1.12 regressions fail under an
-emulated v1.11 arm (genuine, not vacuous); the completed
-subtraction CONFIRMED-SOUND by exhaustive enumeration of
-post-fire bit-carrying storage (audit #6: retained Q frames,
-tape/log tickets incl. LP slice cargo, burials — P and l erased,
-vb None, ANS not instance-keyed, K/KD bit-free); `palpha`
-CONFIRMED against the hand calculation; the 18 pre-v1.13 graphs
-have zero transition diffs vs the emulated v1.12 arm; rescue
-determinism held under reversed traversal and six hash seeds;
-the subtraction re-confirmed over audit #7's extended matrix
-(recursively slice-nested tape/log tickets, tickets inside
-unrelated `K` burials, ANS carrying no instance, frozen instance
-names not traversed, `vb` None at every fire target) and a
-fourth time by audit #8's 24-combination cross of every death
-mode against every retained compartment; the full-pool
-construction verified correct (candidates captured before
-phase-2 mutation, phase-1 entries persistent, sorted order); the
-three-way None sentence traced return-by-return and CONFIRMED
-(audit #8 — the two trailing defensive re-validations are
-unreachable-failure by determinism of validate); all eleven
-then-regression gates individually forced (audit #8); the
-F recording re-confirmed by audit #12 on the same 116
-certified-fire edges with zero split or collect() mismatches;
-`token.md` §2 vs the classical substrate confirmed row-for-row
-by audit #12's independent lockstep — 2,622 closed terms, 7,866
-runs, 47,420 steps, all eight rules exercised, zero mismatches;
-the deep-W4 clause confirmed with zero reachable
-over-tightening on audit #12's 300-generated-program corpus
-(206 typable h-only, 363 graphs, 218,546 states), the same
-corpus that measures zero `W4-storage`/`W4-burial` hits under
-v1.20 and zero W0 hits under v1.21; the v1.20 W4 closure
-CONFIRMED-SOUND by audit #13's own nine-row source/target
-enumeration, with the agreeing-burial admission verified
-non-leaking through direct recall/replay/decode probes and
-full injected cones (43/43/13/13 states, zero violations, zero
-guards) and the raw-entry caveat verified as honestly
-disclosed; audit #13's excavations of the certificate rescue
-(reversed traversal), polarity (13,520 states, 116 fires,
-gauge 4/512), and conservation (131,335 intermediate-start
-surfacings) all clean at symbol level; reachable anshead edges
-verified species-exact across 13,504 states / 242 edges;
-audit #14 confirmed §8 against typecheck.py sentence by
-sentence (17/20, exactly q/dup/dupcall rejected, every escape),
-§12's HH trace at every load-bearing anchor by fresh replay,
-gram()/run_dyn() as exactly what §10's numbers claim
-(amplitude-blind canonical BFS; exact-amplitude evolution with
-zero-amplitude pruning), the classical-final exemptions REAL
-against lam_iam.step_classical, and the v114 placeholder-key
-adjudication in both directions; audit #15 confirmed the
-exact-int repair sound against Fraction(1), int-subclass, and
--0.0 probes, the v1.21→v1.22 one-condition diff, and all
-seventeen then-forcings — and its two countermodel classes
-(prefix-freeness, language sorting) are healed and gated as
-regressions eighteen and nineteen, with the fresh-decode/
-carried-in pair measured disjoint and the 39 reachable
-empty-bundle fires (of 58 certified) now emitting explicitly;
-audit #16 confirmed the v1.23 hinge INDEPENDENTLY (re-executed
-the extracted v1.22 sources: four instruments byte-identical;
-tracked certified-fire counts over 5,760 states of all 19
-certified graphs plus 300 generated bodies — zero mixed-count
-merges — and derived the stronger v1.23 form: KS is
-append-only and each certified fire adds exactly one entry, so
-different-fire-count histories cannot merge), the certified-arm
-prefix-freeness narrowly sound (tuple-head/tail injectivity
-undefeatable by nested bundles or keys), the binder equation
-against `lam_iam.binder_path` on every reachable lp (14,136
-states, 100,763 occurrences, 166 program/lp pairs, zero
-mismatches), the blast radius independently reproduced (39
-empty of 58), and the disclosed v1.23 mechanization/fixture
-updates theorem-preserving — and its two countermodel classes
-(cross-arm fire-history forgery, W0 totality holes) are healed
-and gated as regressions twenty and twenty-one, with the
-suppressed arm's reachable-dead-code status measured by the
-arm census (0 suppressed fires among 137 reachable). The v1.24
-kit deltas, adjudicated: the v113/v114 kits' raw
-suppressed-decode fire displays gain the KA head (ks-display
-relabels; every semantic column — surviving/bitfree/overlap,
-marginals, W results — unchanged); the v118/v119 kits'
-changed-source line counts grow with the diff (their
-capture-identity verdicts unchanged); the v121 kit's crash
-byte-identical; all other kits byte-identical. Audit #17
-confirmed the KA repair OUTRIGHT (no remaining storage-history
-collision: the four KS-writing arms enumerated from source,
-non-fire Run→Run paths verified KS-preserving, the three healed
-pairs re-derived at state-space inner product 0 with clean
-evolutions, KA's guard exclusions verified coherent through the
-replay/recall/refire/key-alias lifecycle), extended the arm
-census to the corpus (367 certified / 465 retain-whole / 222
-decode-recorded / 0 suppressed over 218,546 states), confirmed
-C1 at the AST level (exactly one executable kernel change), and
-independently validated the registered wrong prediction, the
-KA display adjudication, and the positional-inner-product
-caveat — its three countermodel classes (checker
-non-totality on exact-pure malformed states, the cross-gate
-silent decode, the KA-less gauge sweep) are healed and gated as
-regressions twenty-two and twenty-three plus the ten-mark
-sweep. The v1.25 kit deltas, adjudicated: kits displaying
-multi-flag W0 lists on out-of-language fixtures collapse to
-`['W0']` under the W0 gate (v113's emulation columns, v119's
-W4_STORAGE fixture rows — those fixtures were already the
-out-of-language helper-lp class, and the in-language W4
-demonstrations live in wf.py's own regression fourteen, still
-flagging; v122's bt2-target row); the v117/v118 kits' orbit
-displays recompute with the current ten-mark profiler and print
-the 8-entry KA-free reachable orbit — independent confirmation
-of the unconstrained-mark fact — with `orbits_equal` still
-True; the v118/v119 line counts as always; the v121 crash and
-the v123 kit byte-identical. Audit #18 confirmed the alien-gate
-repair on its full semantic surface (top-level foreign tickets
-typed at both polarities, plain and certified; nested foreign
-tickets, foreign frames, and foreign burials verified CARRIED —
-explicitly tagged in lp cargo, KD keys, spectator frames, and
-burial history, never reinterpreted — a strictly stronger
-adjacent-representation check than the round claimed), upgraded
-the gauge confirmation to the universal equation (every
-suppressed-decode edge, frame or burial, either slot, forces
-w(KA) = 0 given the reachable orbit — via an independent
-profiler and GF(2) solver), and independently verified the two
-polarity readings and the raw instrument's own gating; its
-totality countermodels (the empty log tuple, the two
-RecursionError classes) are healed and gated as regression
-twenty-four, with every wf traversal now iterative and the
-host-identity boundary registered in §6. Its harness
-(audit_v125_fresh.py) joins the kit rerun set — its TOTALITY
-rows now report the healed values, its ALIEN_GATE and GAUGE
-tables reproduce, and its forcing inventory (its own 23-flag
-snapshot) reports all exit 1. Audit #19 verified the closure
-sweep EQUIVALENT to v1.25's recursive grammar by differential
-testing (100,000 randomized soups, 1,181 acceptances each,
-zero mismatches; the optimistic-memo aggregate argument
-verified; the AL-instance kind requirement confirmed
-lp-shaped), the iterative kernel helpers equivalent to
-recursive references (92,961 entries, zero mismatches), C1's
-delta exact at the definition level, and C4/C5 in full — its
-layer-five countermodels are healed and gated as regression
-twenty-five, its harness (audit_v126_layer5.py) joins the kit
-set (rerun at its full 100,000 samples, exit 0, healed
-readings), and the 8,000-deep repr measurement stands as the
-structural-operation boundary's empirical face (§6). Two
-caught-in-implementation equivalence hazards this round,
-both registered in the predictions file before any
-measurement: the v1.26 closure sweep's AL-instance kind
-requirement, and v1.27's closed() memo order (an App-cycle
-re-enters at the SAME depth, so the memo must be consulted
-only after the on-path cycle check). Audit #20 verified
-kernel.py BYTE-IDENTICAL, the boundary's one-way statement by
-dedicated equal-state probes (depths 1,000–4,000 clean; no
-in-boundary state crashes a post-gate scan), the assemble
-assertion genuinely refusing a simulated mismatch, and the term
-differential surgically isolating the Gate defect (20,000
-graphs; zero mismatches once the reference leaves Gate
-payloads unconstrained) — its additional "cross together at
-6,000" reading did NOT replicate: audit #21 measured hash clean
-through depth 32,000 on the nested-lp family while equality and
-repr fail at 6,000, so the three operation limits DIFFER
-(family-dependently), the boundary is their per-family MINIMUM,
-and the claimed fact is the one-way statement alone —
-twice-confirmed: no state inside the intersection of all three
-limits crashes any post-gate scan. Its layer-six countermodels are
-healed and gated as regression twenty-six, its harness
-(audit_v127_layer6.py) joins the kit set CRASHING BY
-CONSTRUCTION on the healed build (it asserts the broken Gate
-behavior as a precondition; the 576-byte capture is the
-healing evidence, the v121 pattern), and the max-free
-rewrite's linearity is measured (n=3,000 chains in 2 ms
-versus 300 ms at n=800 under the old memo). Basis counts vs v1.2 reference: `negative` 103→83,
-`selector` 173→106, `pstar` 458→242 — v1.7-era, real, owned;
-marginals and supports never moved. All measurements
-seconds-scale on the M5 Max.
-
-## 11. Chronicle
-
-Full narratives: `docs/ledger/2026-08.md` (and 2026-07); complete
-superseded registers: this file's git history (v1.11's last full
-text at `b995df7`, v1.10's at `1c81b64`, v1.9's at `0193b65`, the
-layered pre-v1.9 registers through `ed85767`). Audit verdicts in
-one line each: audit #1 (v1.7): FAIL — Pα + WF-collision
-countermodels, alias gap, honesty defects. Audit #2 (v1.9): FAIL
-— the `W` fatal witness (validated certificate, wrong physics),
-W8 preservation, (e) over-rejection. Audit #3 (v1.10): FAIL — the
-fire arm discarded the P/Q split it computed (spectators erased
-bit-free; isometry countermodel), which also refuted the W
-registration's causal story (W heals under the literal rule);
-plus the validate(None) contract gap, the duplicate-ticket W8
-row, and six honesty defects. Audit #4 (v1.11): FAIL — the KD
-bundle recorded bit-free death for keys with surviving
-bit-carrying representations (retained-Q frame and burial
-countermodels, both W8 hazards); the parsimony claim refuted
-(single-boundary ∅-pop W certificate reaches the physics);
-W-healing and all physics CONFIRMED. Audit #5 (v1.12): FAIL — the
-subtraction missed live tickets surviving in the tape tail/log
-(popped-frame + riding-ticket W8 countermodel); "maximal-
-certified" refuted on shipped `palpha` (phase 3 discarded a whole
-map containing one bad boundary while clean sub-certificates
-existed); version-string cruft; W-healing, physics, regressions
-(verified genuine against the old arm), burial-suffix lemma, and
-subtracted-bundle safety all CONFIRMED. Audit #6 (v1.13): FAIL —
-the first round with ZERO machine countermodels: the completed
-subtraction CONFIRMED-SOUND by exhaustive storage enumeration,
-`palpha` and `W` confirmed by hand calculation; the failure was
-scaffolding and language — regression ten computed but
-non-gating (runnable countermodel), the rescue's "None only when
-nothing admits" stronger than its position pool, "nothing
-reachable moved" false as written (`palpha` deliberately moved),
-residual version cruft. Audit #7 (v1.14): FAIL — zero machine
-countermodels again (the subtraction CONFIRMED a third time over
-an extended storage matrix; Pα and W hand-recomputed; the
-full-pool construction verified correct): the None sentence
-omitted cap exits (`state_cap=20` returns None from phase 1);
-`validate()` accepted certificate entries at unreachable
-positions (vacuously); only eight of ten regressions gated
-`cert_sweep` (the v1.6 pair bound nothing mechanical);
-"byte-identical" was false against `conservation.py`'s timing
-suffix; two register phrases stale (the pool-equals-domain
-parenthetical vs `dupcall`; the "three-program" title). Working
-reviews: v1.8 design (two structural holes), v1.10 design fork
-(the hybrid verdict: amplitudes decide success, never isometry;
-no bare-term ideal oracle).
-
-| version | one line | verdict that shaped it |
-|---|---|---|
-| v1.0–v1.2 | three-program kernel; review killed store-shaped replay; inert replay stack | Codex review: transparency, not inertness |
-| v1.3 | instance-indexed tickets/frames, replay, certified pop, time register | review registered |
-| v1.4 | polarity coloring closed form, canonical certificates, conservation conjecture | C-collapse countermodel |
-| v1.5 | encoded fire: conservative decode default, certified erasure | ratified amendment |
-| v1.6 | conservation theorem proved + mechanized; gauge pinned; discover_total | fresh review: math CONFIRMED, scope FAILED (Q) |
-| v1.7 | the replay record (idempotent recall, deep keyed replay); WF subtype; cargo conditions | **fresh audit #1: FAIL** (WF collision, Pα, alias gap, honesty) |
-| v1.8 | decode records + refire guard; self-validating admission; W7; typed fragment | working review: two structural holes |
-| v1.9 | KD bundles + condition (e); key-alias guard + W8; real disjointness checker; syntactic fragment boundary; docs current-only | **fresh audit #2: FAIL** (the `W` fatal witness — clean validation, wrong physics via a zero-amplitude structural veto on `B`-class certificates; W8 preservation refuted; (e) over-rejection; checker totality) |
-| v1.10 | the hybrid pipeline (structural isometry mandatory; dynamic cleanliness decides success); instance-directed erasure with validation-adjudicated spectator admission; deep W3 + the key-state algebra; machine_coverage rename + the physics table; `B` healed, `W` registered placement-open | **fresh audit #3: FAIL** (the fire arm computed P/Q and discarded it — retained spectators erased bit-free; retained-Q isometry countermodel; W's "limitation" was this defect and heals under the literal rule; validate(None) gap; duplicate-ticket W8 row; six honesty defects) |
-| v1.11 | the P/Q spectator transition implemented literally (KD from P, rs′ = Q); certificates re-discovered and frozen as exact dicts; `W` HEALED at {halt1: 1}, the staged-uncomputation retraction; W9 + the algebra's duplicate-ticket row; validate(None) runs the real sweep; two new permanent regressions; honesty corrections | **fresh audit #4: FAIL** (KD bundle bit-free-records keys with surviving bit-carrying representations — retained-Q frame + burial countermodels; parsimony refuted; W healing + physics CONFIRMED) |
-| v1.12 | the KD subtraction (Q frames + burials); W8 extended to bitfree ∩ burial; condition (e) compares the bundle actually left; register decrufted current-only; two new permanent regressions (nine total) | **fresh audit #5: FAIL** (subtraction missed T/log-surviving tickets; "maximal-certified" false on palpha; version cruft; healing + physics + regressions CONFIRMED) |
-| v1.13 | the COMPLETE subtraction (bundle names only keys with no surviving bit-carrying representation anywhere in the target — Q frames, burials, T/log tickets); phase-3 GREEDY RESCUE (a failing map is re-admitted greedily, not discarded — palpha certifies, guard-silent, marginal unchanged); "maximal" retracted to validation-adjudicated greedy; version strings unified (the register alone carries the version); tenth regression | **fresh audit #6: FAIL** (zero machine countermodels — subtraction CONFIRMED-SOUND by exhaustive storage enumeration, palpha + W hand-confirmed, 18 graphs zero diffs; regression ten non-gating; rescue claim stronger than its pool; "nothing reachable moved" false as written; version cruft) |
-| v1.14 | regression ten GATES the aggregate; rescue pool completed to phase-1 ∪ all phase-2 candidates (measured behavior-identical on the suite — the completion makes the None sentence exact); claim language restricted (moved-graphs claim scoped to the prior 18 + palpha at its certified values); stale version/audit text purged; every prediction of the round held byte-for-byte | **fresh audit #7: FAIL** (zero machine countermodels again — subtraction confirmed third time over an extended matrix, Pα + W hand-recomputed, pool construction verified; None sentence omitted cap exits; validate() vacuously satisfiable at unreachable positions; v1.6 pair non-gating; "byte-identical" false vs the conservation timing suffix; two stale register phrases) |
-| v1.15 | NON-VACUITY joins the structural side (`vacuous_positions`, machine_coverage refuses unreachable entries — canonical maps never vacuous by settle()'s guarantee); the None sentence exact in three disjuncts (cap/nonconvergence; empty admission; pool pass accepting nothing); eleventh regression (vacuous-position) gated; the module verdict is the EXIT CODE (any single regression failure exits nonzero, measured); title de-cruffed to "qALC kernel"; output-identity claims scoped to deterministic fields; every prediction held with exactly the declared deltas | **fresh audit #8: FAIL** (zero machine countermodels, third straight — None sentence and all eleven gates CONFIRMED, subtraction fourth confirmation, Pα + W hand-recomputed; non-vacuity position-level only: ghost popkeys validate clean; settle() proof wrong for phase-1-only maps; four honesty findings) |
-| v1.16 | KEY-level non-vacuity (`vacuous_keys`: every popkey must occur in an arrival frame at its position; ghost popkeys refused; canonical maps carry zero by the corrected two-case proof — phase-1 maps take keys from the converged arrivals, all other acceptances via settle()); twelfth regression (ghost-key), gated; the admission claim stated honestly (phase-2/rescue validate at acceptance, phase 1 is structural, nothing returns unvalidated); physics-table preamble names the machine-measured row; inventory and contract docstrings corrected; every prediction held with exactly the declared deltas | **fresh audit #9: FAIL** (zero machine countermodels, fourth straight — every mechanical charge CONFIRMED incl. all twelve gates and both non-vacuity levels; §7.1 misstated the mechanized coloring theorem: formula omitted Σw(KS), defect sentence conflated conservative fire with certified erasure, gauge sweep asserted rather than enumerated KD) |
-| v1.17 | §7.1 restated to the theorem the checker enforces (φ gains Σw(KS) with w(K₂(l)) = w(l), w(K₃) = w(KD) = 0; uniform flip INCLUDING conservative fire, certified erasure the sole exception at 1 − w(l) pinned-gauge, parametrized form named; Ccoll's separating witnesses registered); the gauge sweep enumerates KD — 4/512, orbit unchanged, KD pinned 0 by measurement; the ghost regression prints its nonzero count; phi(), w(), and every certificate untouched | **fresh audit #10: FAIL** (fifth straight clean-machine round; §7.2 + §7.3 CONFIRMED symbol-level incl. a 131k-surfacing independent conservation check; the inversion: the register was right, the checker wrong — F recorded total frames, not popped; instrument prose + print-only verdicts) |
-| v1.18 | the checker catches up to the register: collect() records F as the POPPED count ((len(src.rs) − len(tgt.rs)) mod 2 — §7.1's text stands unchanged); polarity and conservation gain exit-code verdicts (branch-offset rows gating; forced-false measured exit 1); instrument docstrings/comments/pointers corrected (the HH/HNH weight comment now states 0/0 and 1/1); pack labels version-neutral; popped-F sweep 4/512, same orbit; every prediction held with the v117-kit caveat resolved on inspection | **fresh audit #11: FAIL** (F correction CONFIRMED on 116 edges; machine clean; W4 under-implemented — slice-suspended ticket passes the top-level check, subtype not preserved by vvar; "all four instruments gate" overcounted; three stale doc lines) |
-| v1.19 | W4 goes DEEP (live same-instance tickets through tape/log slice cargo; the unreachable countermodel excluded from the subtype; stripped control proves no over-tightening); thirteenth gated regression; ALL SIX instruments carry exit-code verdicts (typecheck gains its printed fragment total); kernel.py cert/rs doc lines and two invalid docstring escapes fixed (one long-standing, surfaced by recompile); full decruft sweep per a9's directive; every prediction held, the v118 kit's no-op suite probe adjudicated | **fresh audit #12: FAIL** (first audit-found kernel-arm defect since audit #5's fire-arm countermodel — the anshead species check was an untyped ASSERT and never consulted the leaf, silently accepting matched foreign markers; W4 still leaked on same-key bit-free storage (→W8 target) and conflicting burials (→W3 target); reachable rootval rows and answer-species behavior absent from §3's table; C2's "exactly" missed the SyntaxWarning removal; stale "twelve regressions" pack label; Run.ks docstring incomplete. CONFIRMED: C4 by fully independent forcing of fourteen components, all thirteen gates, machine diff-clean vs the v1.18 snapshot, token.md §2 lockstep 2,622 terms/47,420 steps zero mismatches, deep-W4 zero over-tightening on 218,546 generated states, F on 116 edges) |
-| v1.20 | W4 CLOSED by enumeration (`W4-storage` + `W4-burial` join frame/ticket; the four classes exhaust what the vvar-emitted ticket can collide with; agreeing burial admissible, its target measured WF; entry-vs-region closure stated honestly); `species-ans` types the anshead species check — leaf = γ = A — the ONE kernel-arm change since v1.11, bit-identical on every covered output; regressions fourteen (five-case storage/burial table) and fifteen (four-case species incl. the retrace chain) gated; §3 gains the species-ans, rootval, and verr rows; GUARD_RULES, guard docstrings, Run.ks docstring corrected; pack WF label count-neutral; zero storage/burial hits on the audit's own 300-program corpus; every prediction held (one wrong detail registered: wf prints no count line) | **fresh audit #13: FAIL** (the W4 closure CONFIRMED-SOUND by the auditor's own nine-row enumeration, agreeing-burial verified non-leaking, gating 15/15, cert/polarity/conservation excavations clean; the findings: the answer-bit DOMAIN was nowhere stated or enforced — ANS('h',2) was WF and flowed through anshead to an out-of-alphabet halt2, malformed tuples satisfied is_ans and crashed untyped, a γ/A pair meeting a binder stalled silently; and the honesty catch that "one kernel-arm change since v1.11" was FALSE — v1.12/v1.13 changed the fire arm's KD subtraction, as this chronicle's own rows document; plus two stale counts and C2's "seven kits" for eight) |
-| v1.21 | W0 joins the subtype (state/token grammar: bits {0,1}, gates {h,t}, exact arities, deep through slice/burial cargo, VB phase in domain — position-appropriateness stays the other invariants' job); anshead hardens to arity + domain (species-ans, never ValueError, never halt2); the untyped-stall class closes with three typed guards (species-binder, species-leaf, species-transport; foreign-lp and empty-tape finals stay classical finals by design); regression sixteen gated; kernel-arm provenance restated exactly (two waves since v1.11: v1.12/v1.13 KD subtraction, v1.20/v1.21 leaf guards — each measured no-op/bit-identical on covered outputs); counts go count-neutral in the standing prose; the v114 kit's placeholder-key probe adjudicated (out-of-language tokens, W0 working as specified); zero W0 hits on the 218,546-state corpus; every prediction held | **fresh audit #14: FAIL** (C5 CONFIRMED 16/16 with independent forcings; §8, §12's trace anchors, gram/run_dyn, the classical-final exemptions, and the v114 adjudication all CONFIRMED. The findings: W0's bit check used Python equality — 1.0/True/0.0/False are ==-equal to bits, so ANS('h',1.0) was WF and rootval string-formatted it into the out-of-alphabet terminal KINDS halt1.0/haltTrue; W0 never checked K(l) cargo shape, ticket/frame/storage instance fields recursively, or the state coordinates at all — d='X' and alien paths were WF and silently stalled, off-tree paths and non-Var lp occurrences were WF and crashed in subterm/binder_path; the "position-appropriateness is the other invariants' job" sentence was refuted (no other invariant does d/path/lp validity); C2 missed the diag capture's own label delta; and the corrected two-wave provenance summary was STILL incomplete — v1.12 also changed the ordinary decode arm, and "leaf-guard wave" mislabeled the binder/transport arms) |
-| v1.22 | W0 becomes the FULL state language: exact-int bits (bool refused — the terminal-kind minting), recursive lp productions with occurrences resolving to Vars of the term, arrival-lp K(l) cargo, coordinates d/path in language, VB phase exact-int; anshead's bit check exact-int (the one arm change, bit-identical on covered outputs); regression seventeen (state-language: ten countermodels + exact-int and kit-exact foreign-lp controls) gated; provenance summaries abolished — the register names arms per version only and defers history to these rows; the wf.py v1.12 fixture's App-naming carrier lp corrected (countermodel essence untouched); six kits' helper-lp wf-columns and the v121 kit's crash-by-construction adjudicated; stale W1-W9 phrases updated; zero W0 hits on the corpus; every prediction held in substance with the kit-delta count wrong and registered | **fresh audit #15: FAIL** (C1/C2/C4/C5 CONFIRMED — the v1.21→v1.22 diff exactly the exact-int condition, the delta set exact with the crash scoped, all seventeen forcings, the exact-bit repair itself sound against Fraction/int-subclass/-0.0 probes. The findings: THE FIRST RAW-SUBTYPE UNITARITY BREAK SINCE AUDIT #3 — §7.4's incoming-KS disjointness is false because the certified fire omitted empty KD bundles: a fresh decode and a carried-in record produced IDENTICAL targets, inner product 1, norm 2; W0 admitted BULLET in the log (bt1 transported it into a b1 collision, norm 2 again), never checked the lambda-IAM slice equation (a bad slice stepped to a W1-invalid target), and accepted open terms whose current position crashes binder_path; the t boundary raised NotImplementedError from WF states; "full state language" and the placement sentence refuted with them) |
-| v1.23 | The certified fire emits its bundle UNCONDITIONALLY — ('KD', ()) when empty — restoring storage-history prefix-freeness (§7.4 restated to the strip-the-head injectivity); the t boundary becomes the typed scope fence t-unimplemented; W0 gains the log SORT (lp-like entries only), the lambda-IAM slice equation with a bound-finding binder walk, and the closed-term conjunct; regressions eighteen (log-sort/slice-equation) and nineteen (KS prefix-freeness + t fence) gated; three v1.12/v1.13-era regression mechanizations updated to the always-emit form and two fixture lps corrected to the slice equation (theorems and countermodel essences unchanged, all disclosed); THE HINGE PREDICTION, written first, HELD: suite, certify, typecheck, and polarity byte-identical — no reachable interference crosses fire histories, so the machine change is invisible on every covered output; ten kits' ks-display deltas and the matrix-coverage shrink adjudicated; zero W0 hits on the corpus | **fresh audit #16: FAIL** (C1 CONFIRMED independently — the two-arm diff exact, four instruments byte-identical against the re-executed v1.22 sources, the hinge reason verified by a 5,760-state fire-history search plus 300 generated bodies with zero mixed-count merges, and the stronger v1.23 form derived: append-only KS makes different-fire-count merges impossible; C2 CONFIRMED narrowly for certified fires — nested bundles cannot defeat tuple-head injectivity; C4/C5 CONFIRMED — nineteen forcings + fourteen instrument components all exit 1, zero reachable W0 fires, the corpus rerun independently; the binder equation confirmed on 100,763 reachable lp occurrences with zero binder_path mismatches. The findings: THE AUDIT-#15 SIBLING — the suppressed-decode arm appends ZERO storage heads, so a suppressed decode with incoming [K(l)] and a retain-whole fire with incoming [] produce IDENTICAL targets, norm 2, through BOTH the same-key-frame and agreeing-burial variants — legal lifecycle configurations, not the alias gap; W0 accepted Var(0) (`i <= depth` under the 1-INDEXED convention — binder_path IndexError one step inside WF) and never sorted the CONTAINERS (a list tape passed WF, the fire TypeError'd); three stale register/docstring lines, including the §9 gate sentence still naming audit #15) |
-| v1.24 | The suppressed-decode fire appends the inert arm-typed history head ('KA', g, i) — EVERY fire arm now appends exactly one head, §7.4 restated to the all-arms one-head discipline; the head carries its key because the author two-key double-suppression sibling (both tickets suppressing over a shared two-frame RS) also collided at norm 2 pre-fix, and a contentless marker would have left it alive; KA excluded from ks_dead_keys/ks_bitfree_keys by design (refire/key-alias/W8/W4-storage blind; replays off the surviving frame stay legal); W0 gains exact-type PURITY (registers exact tuples of exact tuples/str/int, checked without hashing before any scan — hostile __hash__/__eq__ can neither crash nor poison the checker; list containers refused) and the 1-indexed closedness (Var(0) refused); regressions twenty (fire prefix-freeness, three pairs + recorded-arm control) and twenty-one (W0 totality II incl. the hostile-hash probe) gated; the three stale lines fixed; THE HINGE, cheaper this round: suite/certify/typecheck/polarity byte-identical because the suppressed arm is REACHABLY DEAD CODE on the whole canonical suite (arm census measured first: 58 certified / 69 retain-whole / 10 decode-recorded / 0 suppressed); v113/v114 kit ks-displays gain the KA head (relabels, semantic columns unchanged — a kit-delta class my predictions MISSED and registered as the round's wrong call); zero W0/W4 hits on the corpus | **fresh audit #17: FAIL** (the KA repair itself CONFIRMED-SOUND — no remaining storage-history collision; the four KS-writing arms enumerated from source, non-fire paths KS-preserving, the three healed pairs re-derived at state-space inner product 0, the guard-exclusion lifecycle verified coherent — and the reachability hinge confirmed with an independent census matching 58/69/10/0 and EXTENDED to the corpus, 367/465/222/0; C1 confirmed at the AST level; C4/C5 confirmed, 21 forcings + 14 components all exit 1. The findings: wf() NOT TOTAL over exact-pure malformed states — bare ('AL',)/('L',) tape tokens and an empty () frame pass purity, get W0-flagged, then IndexError the W1-W9 deep scans; a WF-clean FOREIGN-GATE ticket silently decoded — α_t at an h boundary with matching bit fires and records ('K','t',i) under an H row, the register's decode subscript dropped by the implementation; the gauge sweep OMITS KA — nine parameters, KA implicitly weight 0 and unconstrainable by reachable edges (the auditor's own repaired sweep: 8/1024 reachable-only KA-free, 4/1024 with a raw suppressed edge, KA pinned 0); plus the stale "inert dead storage" docstring phrase) |
-| v1.25 | ONE machine guard added, no arm's storage behavior moves: alien-gate types foreign-gate cargo tickets at the fire boundary at both bit polarities (the decode row's subscript restored to the implementation; reachably unmintable — α_t's only mint site is behind the t-fire fence — so suite/certify/typecheck byte-identical, measured); wf() made TOTAL by the W0 GATE (out-of-language states early-return ['W0']; W1-W9 adjudicated only over the language's carrier; the in-language multi-flag control proves no over-collapse); the gauge sweep goes TEN-mark — 8/1024 reachable-only with KA free (printed), 4/1024 with the disclosed raw suppressed-decode edge, every survivor pinning w(KA)=0, verdict gating on both readings; §7.1 restated; regressions twenty-two (checker totality III) and twenty-three (alien-gate) gated, twenty-three-for-twenty-three under forcing; the "inert dead storage" phrase corrected; my pre-fix hand-derivation of the fire-edge parity DISAGREED with the auditor's sweep numbers and the measurement adjudicated for the auditor (registered — the mechanized sweep is the theorem, not my head-model); kit deltas: the W0-gate display collapses on out-of-language fixtures and the ten-mark orbit displays (independent confirmation of the unconstrained-mark fact), v121 crash and v123 kit byte-identical | **fresh audit #18: FAIL** (C1/C2/C4/C5 CONFIRMED — the delta exact by source reconstruction, 23 forcings + 14 components + both polarity readings + the raw instrument removed all exit 1, zero W0/alien-gate fires on an independently regenerated corpus; the alien-gate repair CONFIRMED on its full surface including nested/frame/burial foreign representations, all carried, never reinterpreted; the gauge claim UPGRADED — an independent GF(2) solver proved every possible suppressed-decode edge forces w(KA)=0 given the reachable orbit: the pinning is arm-intrinsic, not edge-dependent. The finding: C3's totality broken at LAYER FOUR — an exact-pure EMPTY TUPLE in the log crashes wf() UPSTREAM of the W0 gate (w0log → is_gam → bare e[0] IndexError; the gate only protected states whose W0 clauses already computed safely), plus two RecursionError classes (1,500-deep exact tuple in recursive pure(); 1,500-lambda term in recursive closed()); honesty: "wf() is total" false as written, the pack caption's stale regression count violating its own count-neutral convention, "one raw edge" vs one raw fire with two H successor edges) |
-| v1.26 | NO arm, NO guard — the helper-level totality round: the four bare-indexing token predicates (is_gam/is_mu/is_ans/is_alpha) gain the emptiness conjunct is_lp always had; every wf traversal before and during W0 becomes ITERATIVE and pre-gate HASH-FREE (explicit-stack pure/closed; the token grammar as a CLOSURE SWEEP — valid iff every closure node satisfies its local predicate — with an id-keyed per-call memo; iterative deep scans; kernel's alpha_keys_live/alpha_bits_deep iterative too, serving the fire arm's deep-W3 guard identically); the totality claim SCOPED to where it lives — total rejection on the raw-object layer, and past the gate the HOST-IDENTITY BOUNDARY shared with the machine's own superposition layer (§6); regression twenty-four (empty tuple in each register → exactly ['W0']; 1,500-deep tuple → ['W0']; 1,500-lambda term passes in full) gated, twenty-four-for-twenty-four under forcing; one equivalence bug caught DURING implementation before any measurement (the sweep's first draft would have accepted an AL with a non-lp instance — the kind requirement restored, registered in the predictions file); pack captions made count-neutral per their own standing convention; suite/certify/typecheck/polarity byte-identical, conservation timing-suffix only, wf exactly one new line; the auditor's harness joins the kit set and reruns healed | **fresh audit #19: FAIL** (the machine confirmed a THIRD consecutive round — C1 exact at the definition level, C2 with the kernel helpers differential-tested against recursive references over 92,961 entries zero mismatches, C4 in full with warnings-as-errors, C5 on an independently regenerated corpus; the CLOSURE SWEEP verified exactly equivalent to v1.25's recursive grammar over 100,000 randomized soups, 1,181 acceptances each, zero mismatches, the optimistic-memo argument verified. The findings, totality LAYER FIVE, all in wf()'s raw surface: garbage terms SILENTLY ACCEPTED — closed() had no rejecting branch for unknown node kinds; a cyclic term graph HUNG the tree walk; a hostile Run SUBCLASS ran __getattribute__ code from inside wf before purity; a 25-node shared-tuple DAG cost 2^24 purity visits, doubling per node; wf7 IndexError'd on an empty frame; and the host-identity boundary AS STATED was false — hash, repr, and equality have different structural limits: an 8,000-deep in-language state hashes and dict-round-trips, then dies in the W2 canonical-order repr sort, while a 2,000-deep control adjudicates fully; honesty: §9's gate line stale AGAIN, the very line whose parenthetical promised joint updates) |
-| v1.27 | CHECKER-ONLY — zero kernel changes: exact-type state dispatch (a Run subclass is not a state of the machine; hostile attribute access never runs); pure() id-visited (representation-linear on shared DAGs); closed() a full TERM VALIDATOR (unknown node kinds rejected — garbage terms now W0, consistent with the v1.23 open-term decision; on-path cycle detection rejects cyclic graphs promptly; an (id,depth) memo makes shared term DAGs polynomial); wf7 declines out-of-language rs and non-tuple paths; §6's boundary RESTATED to the host's structural-operation limits — hash, equality, AND canonical-order repr, exactly the operations the machine's own state discipline performs — with the auditor's 8,000/2,000 measurements as its empirical face; §9's stale-gate promise replaced by an ASSEMBLE-SCRIPT ASSERTION (§1/§9 must name the same audit or the pack refuses to build); regression twenty-five gated, twenty-five-for-twenty-five under forcing; a second caught-in-implementation equivalence hazard registered pre-measurement (closed()'s memo order vs App-cycles, which re-enter at the SAME depth); suite/certify/typecheck/polarity byte-identical, wf exactly one new line; the layer-five harness joins the kit set | **fresh audit #20: FAIL** (the machine clean a FOURTH consecutive round — kernel.py verified BYTE-IDENTICAL, C2/C4/C5 in full with three polarity-reading mutations, and the structural-operation boundary SURVIVED its dedicated charge: equal-state probes at depths 1,000/2,000/4,000 clean, at 6,000 hash/equality/repr cross their host limits TOGETHER, no in-boundary state crashes a post-gate scan; the assemble assertion verified against a simulated mismatch; both implementation catches validated. The findings, totality LAYER SIX: hostile TERM subclasses still ran code inside wf — exact-type dispatch protected only the state; the GATE production was never validated — Gate('x') passed wf and broke W0-preservation one step later, Gate([]) crashed the machine on an unhashable name, isolated surgically by a 20,000-graph term differential with zero non-Gate mismatches; wf7 still raised on a hostile subclass, a list inside the path tuple, and a list in the arrival tail — "declines out-of-language sources" was false as written; and the (id, depth) term memo was Θ(n²) on App/Lam chains — 800 objects, 640,800 validator states — where the register said representation-linear) |
-| v1.28 | CHECKER-ONLY again — zero kernel changes: closed() REPLACED by the linear MAX-FREE validator (exact-type node dispatch — the type check precedes every field access, so hostile term subclasses never execute; Gate names validated in {'h','t'} — the production the language always required; Var indices exact-int ≥ 1; closedness = max_free(root) == 0 by iterative post-order with ONE memo entry per node id — measured n=3,000 chains in 2 ms vs 300 ms at n=800 under the old memo, "representation-linear" now TRUE as originally worded rather than weakened; on-path cycle rejection kept), run as an EARLY GATE before any token processing (under v1.27 the rs/ks loops ran even after term failure, so a hostile term could still execute during token checks); wf7 exact-type dispatched and gated by the total wf() itself; regression twenty-six gated, twenty-six-for-twenty-six under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line; two wrong calls registered — the layer6 kit does not "flip to healed" but CRASHES BY CONSTRUCTION (it asserts the broken Gate behavior; the v121 lesson re-learned), and the certified-fibre control was first mis-specified (the synthetic cert's fibre map is empty, so W7-domain is the correct preserved verdict — the control now proves a WF source REACHES the fibre logic through the gate) | **fresh audit #21: FAIL** (the machine clean a FIFTH consecutive round — kernel.py SHA-verified byte-identical, C2/C4/C5 in full; the max-free validator itself SURVIVED: 50,000 randomized graphs incl. 5,349 cycle mutations against an independent reference, zero mismatches; hostile terms/Gate payloads/string subclasses/Var(True) all W0-rejected; chains, ladders, and complete-sharing DAGs measured linear; wf7 old-vs-new over 5,508 reachable states, zero verdict differences. The findings, totality LAYER SEVEN: the five register ROOTS never type-checked — pure(0) True since an int is a valid pure LEAF, so scalar roots crashed the container iteration; d omitted from purity — a hostile __eq__ executed at the membership check; wf7 inheriting both; the binder walk's p[:-1] copying Θ(n²) on a fully VALID deep-lp state; and the register CONTRADICTING ITSELF about the boundary — §10/status's "cross together at 6,000" did not replicate: hash clean through depth 32,000 on the nested-lp family while equality/repr fail at 6,000, siding with §6's "the limits differ"; plus the instrument-helper scope needing explicit statement) |
-| v1.29 | CHECKER-ONLY, third consecutive: the five register ROOTS join the purity gate as exact tuples and d as an exact str (scalar roots and hostile-__eq__ d objects → ['W0'] before any iteration or comparison); the binder walk goes INDEX-BASED (no copies; the slice requirement = count of 'a'-components past the binder; measured linear — n=8,000 in 2.9 ms at 7.8× the n=1,000 time, was 21 ms at ~27×); the boundary narrative RECONCILED (the "cross together" coincidence retracted in §6/§10; the limits differ family-dependently, the boundary is their per-family minimum, the twice-confirmed claim is the one-way statement); §6 gains the INSTRUMENT-INPUT SCOPE sentence (wf/wf7 are the raw-total state surface; cert_* helpers trust their term/cert arguments); regression twenty-seven gated, twenty-seven-for-twenty-seven under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line; one declared drift registered (the predictions sketched a 16× timing band, the code uses 24× — both far under quadratic's ~64×, measured 7.8×) | **fresh audit #22: FAIL** (the machine unbroken a SIXTH consecutive round; the RECONCILED BOUNDARY CONFIRMED — an independent slice-nested family reproduces the §6 table, status/§6/§10 verified to agree, residual "cross together" text verified historical-only; the instrument scope verified structurally correct; all four v1.29 repairs individually LINEAR. The findings, layer EIGHT: the COMPOSITION is Θ(n²) — n frames sharing one valid deep lp, 4× per doubling, because w0lp_shape rescans the occurrence before w0tok consults the memo, so "the lpmemo makes it once per lp" was false for standalone rs/ks checks; §6's "a garbage term crashes them" too categorical — the cert_* helpers on object() QUIETLY RETURN meaningless values; and one generously-graded prediction — v129's outcome 1 marked "byte-identical conservation" HELD while the captures differ in the timing suffix: the caveat explains the bytes, it does not make the literal prediction true) |
-| v1.30 | CHECKER-ONLY, fourth consecutive, the smallest round: the FULL-LP id-memo in w0lp (shape+closure verified once per lp object, stored only after both conjuncts complete — no optimistic leak; the auditor's family drops 191 ms → 1.4 ms at n=2,000, linear, ~135×; regression twenty-eight measures exactly that family plus a distinct-lps no-aliasing control); §6's scope sentence reworded to UNSPECIFIED with the quiet-return examples registered; the v1.29 conservation-suffix prediction MARKED AS A MISS in its own outcomes appendix (grading it HELD was generous — the predictions discipline exists precisely so the author cannot grade their own homework); twenty-eight-for-twenty-eight under forcing; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #23: FAIL** (the machine unbroken a SEVENTH consecutive round; the v1.30 honesty repairs CONFIRMED incl. a fourth cert_* behavior class covered by UNSPECIFIED; 28/28 + 14/14 + 3/3 forcings; fresh corpus zero-hit. The findings, layer NINE: VALUE-SHARING WITHOUT OBJECT-SHARING — n distinct lp shells around one shared occurrence tuple, Θ(n) graph, 4× per doubling on rs/K-storage/slice-cargo variants, because the id-memos see objects and the expensive work is per-occurrence; and the full-lp memo's "no optimistic leak" comment LITERALLY FALSE — a tape→rs interleaving stores a stale True in lpfull, with the public verdict verified safe via w0bad's monotonicity) |
-| v1.31 | CHECKER-ONLY, fifth consecutive: the OCCURRENCE MEMO (occ_required — walk + binder scan + 'a'-count once per occurrence OBJECT; total pre-gate work Σ O(local) over distinct objects; the auditor's three families drop to ~2× doublings, rs 389 → 2.2 ms at n=2,000); the MEMO DOCTRINE stated honestly (per-entry truth is NOT the invariant — aggregate monotonicity is: a stale-True exists only because an earlier check in the same call already OR'd w0bad True; memos per-call, nothing crosses calls); regression twenty-nine (the auditor's families in the linear band + the stale-interleaving verdict + the fresh-call isolation control) gated, twenty-nine-for-twenty-nine under forcing; one fixture bug caught IN-ROUND by the band failing (the first draft built a fresh occurrence per shell — a genuinely quadratic REPRESENTATION whose quadratic time is correct; the auditor's family shares one object; the wrong draft documented in the regression comment); suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #24: FAIL** (the machine unbroken an EIGHTH consecutive round; AGGREGATE MONOTONICITY CONFIRMED BY STATIC ENUMERATION — all memo call sites inside wf, function-local, every first failure flowing into monotone w0bad, no public escape; 29/29 + 14/14 + 3/3 forcings; fresh corpus zero-hit; the fixture-bug disclosure and 24× band verified honest. The findings, layer TEN: SHARED-SLICE TRAVERSAL unmemoized — n distinct shells sharing one n-entry slice re-push its elements per shell, Θ(n²) on a Θ(n) graph, 3.9× per doubling; and the regression-29 coverage OVERSTATED — rs timed, K-storage verdict-only, slice-cargo absent, against "exactly the auditor's three families" in the register) |
-| v1.32 | CHECKER-ONLY, sixth consecutive: EXTEND-ONCE-PER-SLICE (a per-call seen_slices id-set in the closure sweep — the call that first extends a slice either drains it fully or fails with w0bad already set, the doctrine audit #24 just confirmed statically; the auditor's family drops 206 → 2.3 ms at n=1,600); the KD-KEYS SIBLING PREEMPTED before any auditor found it (n KD entries sharing one keys tuple — kdmemo, both verdicts stored so shared-bad tuples still flag); regression thirty times the shared-slice rs/K-storage and shared-KD-keys families on the auditor's exact term shape, thirty-for-thirty under forcing; the regression-29 coverage wording corrected and the overstatement registered; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #25: FAIL** (the machine clean a NINTH consecutive round; EXTEND-ONCE-PER-SLICE CONFIRMED across three interleavings with fresh-call rechecks; the KD memo confirmed mechanically — 63 false-memo hits each executing the w0bad path; the post-gate W2 quadratic ruled honestly covered by value-semantics; 30/30 + 14/14 + 3/3 forcings. The findings, layer ELEVEN: BIG-INTEGER ARITHMETIC in max-free — Var(1<<n) under n lambdas, Θ(n) representation with an n-bit leaf, n subtractions on n-bit integers, Θ(n²), 454 ms at n=128,000 with the correct ['W0'] verdict; and the provenance defect REPEATED — regression 30's comment claimed four families incl. slice-cargo, the loop had three, and v1.32's outcome graded the four-family prediction HELD, the same unmarked-miss class one round after its correction) |
-| v1.33 | CHECKER-ONLY, seventh consecutive: THE CLAMP — closed() counts distinct Lams (id-visited pre-pass), clamps every Var contribution at lam_total+1 (an upward DAG path cannot revisit nodes, so no index above the Lam count is ever bound; min preserves ==0 exactly; propagated values word-sized; the big index never bit-traversed — 454 → 66 ms at n=128,000); regression thirty-one (big-index band + slice-cargo timed at last + the bound-big-index no-over-rejection control) gated, thirty-one-for-thirty-one under forcing; the repeated provenance miss MARKED in v1.32's outcomes and regression 30's comment corrected; one figure miss in this round's OWN outcomes marked immediately (the predicted "under 50 ms" measured 66 ms — the band held, the figure did not); suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #26: FAIL** (the machine clean a TENTH consecutive round; THE CLAMP LEMMA CONFIRMED — 60,000 randomized shared DAGs incl. 1,418 shared-Lam roots and 96 boundary cases against an unclamped reference, zero mismatches; fresh bigint timings linear; the mixed-memo composition family linear at ~2× doublings; all provenance repairs verified literal, both marked misses counted. The findings, layer TWELVE: DELETED FIELDS ON EXACT INSTANCES — object.__delattr__ yields exact-but-hollow Runs/Lams/Vars that pass exact-type dispatch and AttributeError on field access, in scope under the register's own "ANY finite object graph — malformed" sentence; the layer11 kit's hard-coded line number reads 0 reflags after the clamp shifted wf.py — the auditor re-traced the real 63; and the pack note misattributed two rows to the wrong kit) |
-| v1.34 | CHECKER-ONLY, eighth consecutive: FIELD-PRESENCE GUARDS — hasattr for the seven Run fields after exact-type dispatch, getattr sentinels for term-node fields in both validator passes; the DEFAULTED-FIELD DISTINCTION discovered in-round by the regression's own failing first draft and pinned (deleting vb/rs/ks exposes the class-level default — the state is extensionally the default Run, adjudicating [] with no crash; deleting path/d/log/tape is W0); regression thirty-two gated, thirty-two-for-thirty-two under forcing; the kit-note misattribution corrected and the stale line-number tracer adjudicated; suite/certify/typecheck/polarity byte-identical, wf exactly one new line | **fresh audit #27: FAIL — documentation/display only; no kernel or checker semantic repair indicated** (C1-C6 SURVIVE MECHANICALLY; raw-object totality CONFIRMED IN SCOPE — all seven fields deleted or __dict__-replaced, hostile values and a hostile dict subclass with zero callback execution, hollow term nodes, weakref/GC pressure all defeated; the TOCTOU sys.settrace and class-descriptor attacks judged out of scope as runtime mutation, exactly the boundary the charge asked to be adjudicated; the defaulted-field fallback CONFIRMED — 110,232 comparisons over 6,124 reachable states across wf/wf7/step/eq/hash/repr, zero mismatches, with the vars() intensionality refinement; 32/32 + 14/14 + 3/3 forcings; the two corrections both TEXT: regression 32's comment still said "all seven → W0" against its own code, and the layer-ten kit's line-302 locator lacked its historical label) |
-| v1.35 | COMMENTS AND KIT NOTES ONLY — zero executable changes, all six instruments byte-identical (measured): regression 32's comment rewritten to the four-undefaulted/three-defaulted distinction its code and print line already carried; the guard comment scoped to undefaulted fields with the fallback named; the layer-ten locator adjudicated as historical (v1.31 line numbering) beside the layer-eleven tracer; the auditor's vars() refinement adopted into the fallback sentence | **fresh audit #28: FAIL — permanent-regression coverage and documentation/provenance defects; no kernel or checker semantic countermodel** (the machine clean a TWELFTH consecutive round; C1-C5 confirmed — 33 embedded sources byte-checked with only wf.py's comment delta, all six instruments reproducing stored bytes, fresh AST-derived forcing 32/32 + 14/14 + 3/3, fresh corpus 300/206/363/218,546 zero-hit with arm census 465/367/222/0, gauge 8/1024 + 4/1024, conservation size 11 reproduced; the v1.35 corrections verified correct, the layer-ten locator confirmed truthful at extracted-v1.31 line 302; C3's boundary sentence ruled consistent under the registered stable-runtime scope. The findings: REGRESSION 31's distinct-shell family was ONE constant-folded object — CPython compiles the constant tuple display to a single LOAD_CONST, the gated states held one distinct shell at both sizes, the dead inner31 local confirmed by bytecode capture, and the reconstructed genuine family stayed ['W0'] and linear, so the gate covered the wrong shape without hiding a slowdown; v1.33's outcomes had graded that coverage HELD — a third unmarked provenance miss; two current comments said "no KD" above assertions requiring ('KD', ()); the W8 comment overstated certified pop against the loop's own riding-ticket control; and v1.35's predictions file contradicted its own timing-suffix exception and miscounted five instruments for six) |
-| v1.36 | CHECKER FIXTURE AND COMMENTS ONLY, ninth consecutive checker-only round, zero semantic changes: regression 31's slice-cargo family REBUILT FOR REAL — the shells runtime-built from a display referencing a named occurrence local (a name cannot be a code-object constant), genuinely sharing ONE occurrence object, the dead inner31 local deleted, and DISTINCTNESS GATED (len({id}) == n−1 a conjunct of the flag, printed; forced alone → exit 1); the genuine family ['W0'] and linear, 0.103 → 0.680 ms at 8× (~2× per doubling, matching the auditor's reconstruction); the two "no KD" comments → "empty KD bundle"; the W8 comment → subtraction of surviving representations; §6 restates the stable-runtime scope locally; the v1.33 miss MARKED in its outcomes and v1.35's falsifier contradiction plus five-vs-six count marked in its file; suite/certify/typecheck/polarity byte-identical, conservation byte-identical this run, wf exactly the one predicted line; 31/31 direct forcings plus the v1.6 pair via the v125 kit's byte-identical forcing snapshot; one capture error caught in-round by the diff and redone per the header protocol (the v125/v126 kits first rerun without their documented flags) | **fresh audit #29: FAIL — C4/C6 false as written plus one docstring; no kernel-arm or checker-semantic repair indicated** (the machine clean a THIRTEENTH consecutive round; the rebuild verified GENUINE — v1.35 bytecode one LOAD_CONST vs v1.36 LOAD_DEREF + BUILD_TUPLE, gated states independently captured at 99/799 shell identities with ONE occurrence identity and every shell using occ_in31, inner31 confirmed gone, distinct31 force-verified; the SIBLING SWEEP clean — comp28/occ29/shells30 all build exactly their claimed object graphs; the three comment corrections verified accurate with the riding-ticket measurement; fresh gauge 8/1024 + 4/1024 with KA pinned 0; a NEW mixed tape/RS/KS sharing family linear at 1.90/1.93/2.00 doublings; conservation size 11 reproduced; forcing 30/30 + v1.6 pair + W7-aggregate + distinct31 + 14/14 + 3/3; C5 battery and corpus zero-hit. The findings, all documentation: cargo31 builds N−1 shells — range(n−1), the gate proves it, the measurements say 99/799 — while C4, §10, and the regression comment said "n distinct shells", all three sentences fresh from v1.36's own correction; the cert_disjointness docstring omits retained Q from its spectator tuple against its own implementation and §7.4; and the fresh overclaim was unmarked in v1.36's provenance) |
-| v1.37 | DOCUMENTATION ONLY, zero executable changes — the loop's second such round: both current n-shell claim sites corrected to n−1 with the reason stated (one shell per 'a' of the carrier occurrence — occ_required returns the 'a'-count past the binder, verified against the code before registering; the historical quotations and regression 30's genuine n-shell family untouched); the cert_disjointness docstring's retained-spectator tuple gains retained Q (matching spec() and §7.4); the v1.36 overclaim and omission MARKED in its predictions file; all six instruments byte-identical INCLUDING conservation's suffix (second consecutive coincidence), all three diagnostics byte-identical, all 22 kits at adjudicated readings with v125/v126 captured under their documented flags on the first attempt; ok_big/ok_fld spot-forced → exit 1 | **fresh audit #30: FAIL — a genuine, runnable regression-coverage countermodel; no kernel-arm or checker-semantic repair indicated** (the machine clean a FOURTEENTH consecutive round; the count correction verified EXACT — 99/799 distinct shells, one occurrence, occ_required returning exactly the post-binder 'a'-count, distinct31 forced alone → exit 1, regression 30 and the historical quotations verified right to leave; the docstring repair verified with every fibre key/value of all 19 certified programs independently rebuilt, 26 same-boundary pairs zero violations; every other docstring swept clean; C1 confirmed — only wf.py changed, docstring-stripped AST identical; forcing 30/30 + W7 aggregate + v1.6 pair + 14/14; C5 fresh corpus zero-hit; one-head held on 137 sources/274 successors; gauge 8/1024 + 4/1024. THE FINDING: regression 31's state used d='X' and W0's conjunction short-circuits on the direction check before the tape — the carrier was NEVER TRAVERSED, 0 w0tok/w0lp_shape/occ_required calls, and the decisive forcing REMOVED THE CARRIER ENTIRELY leaving the complete instrument output byte-identical with the regression printed as passing; the linear timings were purity traversal, not the slice machinery; the v1.37 disclosure was accordingly too generous — a fresh unmarked coverage miss of audit #28's general class) |
-| v1.38 | REGRESSION FIXTURES ONLY — zero wf()/wf7()/kernel/instrument-semantic changes: SENSITIVITY BECOMES THE GATE. cargo31 in-language per the auditor's prescription (d='D'; WF-clean [] gated at both sizes; distinctness and the 24× band kept; measured 0.192 → 1.165 ms) with the corrupted-last-shell control gated to exactly ['W0'] — the carrier-removal countermodel now exits 1 with visibly different output; the scoping measurement (counter-instrumented copy) established the rs/ks loops run UNCONDITIONALLY, so comp28/occ29/shells30 genuinely exercise their machinery under 'X' (load-bearing: the early return isolates pre-gate cost from the value-semantics-quadratic W2 duplicate scan) and each gains small-n in-language sensitivity pairs — SIX pairs (this row's original text said five; audit #31's C1 refutation), genuine 'W0'-free / corrupted-element exactly ['W0'], all folded into their flags; conjunct-level and whole-flag forcings all exit 1; fixture comments state the conjunction-structure facts; the v1.37 miss marked; suite/certify/typecheck/polarity byte-identical, conservation byte-identical including its suffix (third consecutive coincidence), wf exactly the four predicted lines | **fresh audit #31: FAIL — the sensitivity-design charge won exactly as posed; no kernel or shipped-checker semantic repair indicated** (the machine clean a FIFTEENTH consecutive round; the literal wiring CONFIRMED — independent first/middle/last corruption battery all detected by the shipped checker, carrier removal exit 1, all 12 sensitivity clauses + six cargo31 conjuncts + 30 flags + allbad + v1.6 pair individually forced, independent traversal tracing matching the registered counts; the 'X' load-bearing claim CONFIRMED by live measurement — 0.182→1.252 ms pre-gate vs 1.729→95.766 ms post-gate at 8×; C5 zero-hit; the v1.37 marking verified complete. THE FINDINGS: the closure walker is LIFO — extend then pop from the END — so the "corrupted-last-shell" was visited FIRST, dying at one w0lp_shape call, and the register's "only a sweep reaching the deepest shell can flip it" was false as written; an in-memory checker mutant skipping slices of length ≥ 10 while special-casing the ('BAD',)-at-[-1] sentinel PASSED the full wf.py at exit 0 with every sensitivity gate True; a second mutant canning occ_required for long all-'b' occurrences passed the comp28/occ29 pairs — the pairs pinned shallow shape rejection, not the machinery; and "five pairs" was SIX, unmarked) |
-| v1.39 | FIXTURES ONLY again, zero semantic changes: CORRUPTIONS BECOME DEEP AND TRAVERSAL-LAST. comp28/occ29's corrupt value is a tuple-well-shaped UNBOUND all-'b' lp (this row said "locally valid" until audit #32 caught the phrase contradicting w0lp_shape's own local predicate; corrected in v1.40) — one 'b' beyond the binders, well-shaped, rejected only by the occurrence walk (kills the canned-count mutant); shells30-rs/ks and cargo31's corrupt element moves to slice position 0 — popped LAST under the LIFO order, requiring a full drain, measured at the full traversal count — and is tuple-well-shaped with an unbound occurrence (same v1.40 correction), 'f' stepped at a Var (kills the slice-skipping mutant); the KD kind's last key carries the same deep lp. BOTH reproduced mutants now EXIT 1 (the round's decisive measurement, predicted before the fix); carrier removal still exits 1; conjunct-level (sc28/sc29f/sc30k/rc_x) and whole-flag forcings all exit 1; the false deepest-shell sentence and five-vs-six corrected in the register and marked in the v1.38 file; ALL SIX instruments byte-identical INCLUDING wf (only fixture construction moved; conservation's suffix coincided a fourth consecutive time) | **fresh audit #32: FAIL — C4's coverage wording refuted; no machine or checker-semantic countermodel** (the machine clean a SIXTEENTH consecutive round; charge 1 CONFIRMED-SOUND — both audit-#31 mutants independently rebuilt exit 1, carrier removal exit 1, cargo31's full drain traced 12/12 with the unbound lp popped last; charge 3 GAP with strong negative evidence — 137 fire sources / 274 successors one-head exact, 12,617 non-fire Run edges KS-preserving, arm census 58/69/10/0, fifteen guards, clamp differential 60,000 graphs zero mismatches, hollow-object 110,232 comparisons zero mismatches; C1 CONFIRMED including a full fresh recapture; C5 CONFIRMED 300/206/363/218,546 zero-hit; the v1.38 marking verified complete. THE FINDINGS: a FIXTURE-AWARE mutant — canned long all-'b' occurrences except the exact length-13 corrupt, skipped long slices except a position-0 peek for the exact deep value — passes the complete suite at exit 0, establishing that the pairs pin the gated per-family predicates and kill the exhibited coarse mutant class, not implementation strategy, and that NO finite fixed fixture can (this row said "extensional verdicts" — audit #32's own phrase — until audit #33 proved the genuine gates check predicates, not verdicts; corrected in v1.41); the blanket LIFO-last sentence was true only for the slice cases — comp28/occ29 are last in LEFT-TO-RIGHT rs/ks loops, KD the last all() key; and 'locally valid lp' contradicted w0lp_shape's own local predicate, which includes the occurrence walk) |
-| v1.40 | COMMENTS, CLAIM SCOPE, AND THE REGISTER ONLY — fixtures untouched, zero executable changes, wf.py AST-IDENTICAL to v1.39 (four comment sites: "locally valid" becomes "tuple-well-shaped, sole W0 defect an unbound occurrence"; the traversal comments name the true enclosing scans and the shipped-checker scope): the SENSITIVITY-SCOPE STATEMENT joins §10 — the auditor's required correction verbatim, what the pairs prove vs what no fixed fixture can, audit #32's fixture-aware mutant registered as the standing boundary witness (its kit row exit 0 BY CONSTRUCTION; the kit audit_v139_fresh.py joins the roster as kit 23); the preamble's per-version history stack DELETED per the file's own charter (253 lines; §11's rows and the ledger carry every round); the v1.39 row's two "locally valid" phrases corrected in place with attribution; ALL SIX instruments byte-identical (conservation's timing suffix moved 1.4s→1.5s, ending the four-round coincidence; the eight other captures byte-identical); both audit-#31 mutants and carrier removal still exit 1 against the edited source; scratchpad decrufted by reference-scan (unreferenced packs, capture generations, headers, assemble scripts, and launch logs to attic/; every kit-read artifact kept — and the post-move battery CAUGHT the scan incomplete: audit_v117_fresh reads assemble_v117.sh, a filename class the scan never grep'd, so a comprehensive re-scan restored it plus assemble_v127.sh and a third full battery pass ran clean; the miss marked in v1.40's own predictions file) | **fresh audit #33: FAIL — the scope statement itself refuted in the overclaim direction; no machine or checker-semantic countermodel** (the machine clean a SEVENTEENTH consecutive round; charge 2 CONFIRMED-SOUND — seven sources byte-identical, wf.py AST- and non-comment-token-identical at exactly four hunks / +10 lines, the register diff exactly the disclosed 253-line deletion + insertions, five captures byte-identical + conservation suffix, audit-#31 mutants and carrier exit 1, both fixture-aware reconstructions exit 0; charge 3 GAP with the full fresh evidence set — fire census 58/69/10/0, 12,617 KS-preserving edges, fifteen guards, gauge 8/1024 + 4/1024, clamp 60,000 and hollow 110,232 zero-mismatch, all 23 kits at adjudicated exits; charge 4 independent forcing 31/31 + 18/18 + aggregate; C5 confirmed 300/206/363/218,546 zero-hit; charge 5 narrowly confirmed. THE FINDING: "the SHIPPED checker's extensional verdicts" is false — sens28 checks only 'W0'-absence while genuine comp28's verdict is ['W2-dup']x11, and a family-oblivious mutant deleting the sole W2-dup append flips the checker from rejecting to ACCEPTING that fixed genuine fixture at full-suite exit 0; the scope must enumerate the actual predicates. Ancillary: decruft_v140.py would re-break audit_v117_fresh on rerun — the restored assemble scripts were still classified keep=False) |
-| v1.41 | CLAIM LANGUAGE AND ONE SCRATCHPAD SCRIPT ONLY — fixtures, gates, machine untouched, wf.py AST-identical again (three comment phrases "pins ... verdicts" become "gates the stated predicates"): §10's scope statement now ENUMERATES the gated predicates per family, verified clause-by-clause against the source — comp28 genuine 'W0'-free / corrupt exactly ['W0']; occ29 rs genuine 'W0'-free, ks genuine exactly [], corrupts ['W0']; shells30 rs/ks genuine 'W0'-free, KD genuine exactly [], corrupts ['W0']; cargo31 both sizes exactly [] + distinctness + corrupt ['W0'] + band — with a rationale sentence that OVERGENERALIZED the W2-dup explanation to all 'W0'-free genuine gates (true only for the three RS duplicate families; shells30-ks's genuine verdict is [] — audit #34's finding, corrected in v1.42); audit #33's W2-dup countermodel registered as BOUNDARY WITNESS #2 (the predicate-vs-verdict gap) beside audit #32's fixture-aware mutant (witness #1), their kit audit_v140_scope_countermodel.py joining the roster as kit 24, both witness rows exit 0 BY CONSTRUCTION; the v1.39/v1.40 rows' verdict-language corrected in place with attribution; decruft_v140.py RETIRED behind a mechanical historical guard after the round's idempotence check proved it generation-pinned — a rerun swept 36 current-generation artifacts, all restored, the KEEP_EXACT-suffices prediction marked as a miss; ALL SIX instruments byte-identical (conservation suffix aside); the kit battery at adjudicated readings | **fresh audit #34: FAIL — two claim-language defects; the enumeration itself confirmed source-exact; no machine or checker countermodel** (the machine clean an EIGHTEENTH consecutive round; charge 1: all ten enumerated clauses verified by fresh AST extraction + live capture — "no clause is stronger or weaker than wf.py" — but the W2-dup rationale sentence is FALSE for shells30-ks, whose genuine verdict is [] not ['W2-dup']x11; charge 2: the delta exactly as disclosed EXCEPT C1 named only the KEEP_EXACT addition when the shipped script also carries the retirement guard — the claim went stale against the round's own second edit; charge 3 GAP — fire census 58/69/10/0, 12,617 KS-preserving edges, fifteen guards, 50,000-graph raw fuzz zero exceptions, gauge 8/1024 + 4/1024; charge 4 CONFIRMED — independent forcing 31/31 + 18/18 + aggregate, C4 "mechanically correct despite the false explanatory sentence"; C5 confirmed; charge 5: every marking complete and true, C6 refuted only through the same two sentences) |
-| v1.42 | TWO SENTENCES AND THE ROUND BOOKKEEPING — no wf.py change at all (zero instrument deltas; the wf.py sha does not move), no gate, no fixture, no script: §10's W2-dup rationale RESTRICTED to the three RS duplicate families (comp28/occ29-rs/shells30-rs, each measured ['W2-dup']x11 live at the pair size) with shells30-ks stated as it is — genuine verdict [], its 'W0'-free gate merely weaker than the live verdict, no clause claiming more than its enumerated predicate; the stale-C1 class named: a delta description must be written from the final diff, not from the round's first fix — v1.41's C1 predated its own retirement-guard edit; audit #34's independent kit joins the roster as kit 25 (audit_v141_independent.py: live predicates with w2_reason_counterexample, forcing, machine surface, 50,000-graph raw-totality fuzz) | **fresh audit #35: PASS — zero required corrections; C1–C6 confirmed** ("no required correction, machine/checker countermodel, gate failure, or surviving claim overreach"; the corrected rationale verified against live predicates — sg28/sg29f/sg30f ['W2-dup']x11, sg29k/sg30d/sg30k [], every corrupt ['W0']; the literal git delta 10eaff0..f2c5c34 named completely; wf.py sha c6b8a4f2… byte-identical across packs and live; all nine captures byte-identical, fresh instrument runs exit 0; the full 25-kit battery at adjudicated exits with exactly the five timing/hash kits differing; both boundary witnesses exit 0, the three audit-#31 mutants exit 1, the retired guard exit 1; FRESH ATTACKS found nothing — 100,000-case hostile raw-graph soup zero exceptions, a NEW maximally-shared term-DAG family with exponential unfolding linear at 0.911→19.655 ms over 2k→32k nodes, independent edge sweep 137/274 one-head exact with 12,617 KS-preserving edges; independent AST-derived forcing 31/31 + 18/18 + collision aggregate, every mutation printing its intended failure line; C5 fresh 300/206/363/218,546 zero-hit; fifteen guards; gauge 8/1024 + 4/1024; every honesty item verified including the pack-size incident arithmetic, 999,112 + 393 + 529 = 1,000,034; charge 3 GAP only in the already-registered sense — finite attacks do not prove logged-position injectivity, and the register conditions its soundness claim on exactly that) |
-| v1.43 | VALIDATION-ONLY DIRECT RRI PROOF GATE — kernel.py/wf.py/certificates/physics unchanged; neutral `rri_direct.py` enumerates a complete finite nonterminal carrier and checks closure, singleton init/recall dispatch, exact-one-frame erased projections, actual recall-target buckets, and both factorization directions; caps/multiplicity/malformed rows reject; `certify.validate` requires `rri_direct_certified` independently of Gram; `RRIDirectCertificate.lean` checks generic lifting; `QalcConcreteKernel.lean` and `QalcConcreteCertificate.lean` give the executable concrete transition mirror and reusable finite-carrier theorem; generated canonical certificates and direct/audit drivers added | **targeted multiagent proof pass: executable gate ACCEPTED; canonical concrete Lean RRI CLOSED; uniform lifecycle theorem OPEN** (17/17 typed canonical sectors replayed in ordinary kernel Lean: 5,220 nonterminal Run states, 5,279 rows, 142 recalls, 53 certified-H sources, 18 exact H rejoin targets; 73/73 Boolean-100 executable direct passes; frozen `discover_total` agreement 20/20; raw collision carrier, multiplicity, factorization, hidden-recall, cap, non-singleton, certified-arm, exact-rejoin, and incomplete-prefix controls pinned; no `sorry`/`admit`/`native_decide`/declared axiom; no fresh-context v1.43 audit) |
-
-## 12. Appendix — HH step-indexed trace
+## 11. Appendix — HH step-indexed trace
 
 (As of v1.23, every post-fire state additionally carries the
 explicit `('KD', ())` bundle in KS — not displayed in these rows;

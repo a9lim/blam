@@ -17,8 +17,8 @@ construction, no environment erasure; and the exponential context does
 reversibly what content tags did irreversibly in the rejected
 rewriting substrate. Quantum prior art: Hasuo–Hoshino (quantum GoI),
 Dal Lago–Faggian–Valiron–Yoshimizu (multitoken machines) —
-typed/linear settings; the untyped port is the open engineering, with
-a standing feasibility grade of promising-with-hard-open-problems.
+typed/linear settings. The untyped Gate-1 machine is now concrete; compiling a
+useful clean coherent fragment is the remaining architecture gate.
 This document is current-only: guardrails (§1), the exact classical
 substrate (§2), the design sketch (§3), and the kernel gate with the
 obligations register (§4). History — the route choice, the ratified
@@ -338,7 +338,7 @@ is no computable uniform padding for arbitrary untyped code, so the
 coherent fragment is a discipline, not a default — which is the
 "coherence is earned" economy, now with a concrete currency.
 
-v1.3 measured the currency's structure (`kernel.md` §10.4): slot
+The kernel battery measures the currency's structure (`kernel.md` §7.2–7.3): slot
 routing that survives to a boundary as tape *pattern* is time-free
 (HH, H–NOT′–H sync exactly); routing *consumed* as transport steps
 skews the branch clock by the transported bit, and the measured
@@ -352,7 +352,8 @@ fragment exactly the pattern-encoded (index/wire) routing class.
 The controller is now concrete. A depth-first output zipper performs internal
 full-normal-form readback; RB/RBL delimiters and the pending output schedule
 route the single token into arguments and back without copying values. Bare
-and applied `h`/`t` remain neutral normal-form atoms. The `t` table applies
+and variable-headed `h`/`t` applications remain neutral normal forms; a closed
+non-Boolean argument is a typed species error. The `t` table applies
 the exact `ω` phase on `1̂` with its own landing range. Typed error entry and
 common-origin halt/error tick chains are injective and forward invariant.
 
@@ -371,50 +372,23 @@ garbage/control, and equal token transition count. The stronger uniform
 all-program RRI/minimal-carrier lifecycle theorem is an optional research
 lane, not a premise of a finite Gate-1 admission.
 
-## 4. The kernel gate, and the obligations register
+## 4. Current obligations register
 
-The original formalization target was a **three-program formal kernel**,
-deliberately smaller than a full machine document: the eight λIAM
-rules; tagged gate-interrogation, answer, return, error, readback,
-and tick rules; a proof that every rule range is disjoint from every
-unrelated rule range; step-indexed traces, with
-`(position, direction, log, tape, answer label)` reported at every
-step, of
+The original three-program kernel target has been exceeded: the current
+out-of-tree machine covers the exact lambda-IAM substrate, H/T gate transport,
+full-normal-form readback, typed terminal sectors, and static total semantics.
+Detailed machine definitions and proof boundaries live in `kernel.md`; the
+completed composed proof is `~/Work/qalc-scratch/GATE1.md`. Audit chronology
+belongs only in `docs/ledger/2026-08.md` and the preserved scratch audit kits.
 
-```text
-h (h 0̂)            — HH: mass 1 on 0̂ by cancellation
-h (NOT′ (h 0̂))     — the coherence bar
-(λb. b I I) (h 0̂)  — the negative witness: no merge
-```
-
-and a column-Gram enumeration over the small reachable graph, showing
-`NOT′` returns a boolean-independent spectator while the non-injective
-map does not. The bar was: if HH needs special-case stack erasure or
-H–NOT–H leaves distinct log/tape states, the route has only relocated
-the rewriting substrate's obstruction and the fork reopens. **The bar
-is met and exceeded** — the scratch kernel earns HH's mass-1
-cancellation through certified erasure and decode (no special cases),
-runs H–NOT–H to its coherence ideal, keeps the negative witness
-unmerged, and extends the Gram enumeration to a twenty-program suite
-with a written-first physics table; the fork stays closed. The
-verified state, claims, and audit history live in `kernel.md` (the
-register alone carries the version).
-
-| Item | Status |
+| Item | Current status |
 |---|---|
-| Architecture Gate 1 | **CLOSED — fresh audit #6 PASS** (`~/Work/qalc-scratch/GATE1.md`, 2026-08-11): complete IAM-lineage H/T + full-NF controller table; typed exception, error, and synchronized halt adapters; exact predecessor fibres; halt/error forward invariance; static finite-admission/conservative-history selector defining `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`; 30 admitted finite operational cores, 7,507 states / 7,417 columns, exact Lean Gram and literal range checks; ordinary-kernel RRI replay on 17 canonical typed sectors. Python closure and generated `native_decide` evaluation are explicit trust boundaries; the ambient lifecycle theorem is not claimed. Gate 2 remains open, so no code lands. |
-| Kernel | **v1.43** (`kernel.md`, current-only): the hybrid pipeline — structural admission/direct-RRI/structural-isometry mandatory, exact-amplitude dynamic cleanliness deciding run success — with INSTANCE-DIRECTED certificates; the KD bundle names only keys with no surviving bit-carrying representation ANYWHERE in the target (Q frames, burials, T/log-riding tickets — CONFIRMED-SOUND by audits #6–#9: exhaustive storage enumeration, extended matrices, 24- and 33-combination crosses). `W` healed at {1̂: 1} (audits 3–11 confirmed, refire amplitudes verified zero per-step); phase-3 greedy rescue over the full candidate pool certifies `palpha` (guard-silent, marginal hand-confirmed); non-vacuous coverage at position and key level (unreachable entries and ghost popkeys refused); nineteen exact dict certificates + dupcall's canonical None; canonical = deterministic validation-adjudicated greedy, neither maximal nor minimal; ten-invariant WF (W0 = the SORTED state language with exact-type PURITY as of v1.24 — registers exact tuples of exact tuples/str/int checked without hashing, exact-int bits, recursive lp productions satisfying the lambda-IAM slice equation with occurrences resolving to bound Vars (1-indexed; Var(0) refused) of the closed term, the log's lp-like alphabet, arrival-lp K(l) cargo, the KA production, coordinates in language — plus W1-W9, with W4 closed by enumeration and §7.4's storage prefix-freeness now the ALL-ARMS one-head-per-fire discipline: audit #15's empty-bundle collision and audit #16's suppressed-decode/retain-whole forgery were the certified and uncertified instances of the same defect — every fire arm appends exactly one arm-typed head (KD / K3 / KA / K2), each healed with every covered output byte-identical); wf() total on the raw-object layer via the W0 gate with exact-type dispatch for states AND term nodes, exact-tuple register roots and exact-str d, the linear max-free term validator (Gate production validated; cycle detection; garbage terms rejected; one memo entry per node), and every traversal iterative, pre-gate hash-free, and representation-linear incl. the index-based binder walk (v1.29 — W1-W9 adjudicated only over the language's carrier; wf7 gated by wf itself; past the gate the host's structural-operation boundary — hash, equality, canonical-order repr, whose limits DIFFER family-dependently with the one-way no-crash statement twice confirmed; cert_* helpers scoped as instrument-input surface); the species guards, the alien-gate foreign-ticket guard, and the t scope fence typed (fifteen guards); the ten-mark gauge sweep pins w(KA)=0 via the disclosed raw suppressed edge (4/1024, with the 8/1024 reachable-only reading printed beside it — audit #18 proved the pinning arm-intrinsic); thirty-two permanent regressions, all gating (incl. composition linearity via the full-lp, occurrence, slice, and KD-keys memos, whose honest invariant — aggregate monotonicity — audit #24 confirmed by static enumeration); all six instruments carry exit-code verdicts; kernel-arm history lives in the register's §11 rows; permanent-regression coverage is itself machine-checked where identity matters (the slice-cargo family's shell distinctness is a gated conjunct as of v1.36, after audit #28 proved the first fixture's shells constant-folded to one object; its count stated exactly as of v1.37, after audit #29 caught the correction itself off by one; its TRAVERSAL gated as of v1.38, after audit #30 proved the d='X' state never sent the carrier through the grammar; the corruptions DEEP as of v1.39, after audit #31's checker mutants defeated the shallow sentinels — six sensitivity pairs plus the slice-cargo control, each a tuple-well-shaped lp whose sole W0 defect is an unbound occurrence, at the position its enclosing scan reaches last (LIFO slice position 0 for the rs/ks kinds and the cargo control; the last left-to-right frame/key for comp28/occ29/KD), both mutants exit 1; and the coverage claim SCOPED as of v1.40 and ENUMERATED as of v1.41, after audit #32's fixture-aware mutant (special-casing the exact corrupt length and peeking the exact deep value) and audit #33's W2-dup deletion (flipping the checker from rejecting to accepting genuine comp28 with every gate green) each passed the full suite at exit 0: the pairs gate the stated per-family predicates — enumerated clause-by-clause in §10 — and kill the exhibited coarse mutant class; NO finite fixed fixture pins a fixture-aware implementation or non-gated verdict flags — §10's sensitivity-scope statement, bounded by BOTH registered boundary witnesses with their kits on the roster; the W2-dup rationale restricted as of v1.42 to the three RS duplicate families after audit #34 caught it generalizing to shells30-ks, whose genuine verdict is []). v1.43 adds the Gram-independent complete-carrier RRI gate (17/17 canonical typed, 73/73 Boolean-100; collision/multiplicity/factorization/dispatch/cap/init mutants pinned) without changing the v1.42 transition/WF surface. **v1.42 PASSED fresh-context independent audit #35** (2026-08-10, zero required corrections, C1–C6 confirmed; thirty-five audits, thirty-four FAIL, one PASS); v1.43 has a targeted multiagent audit, not a new fresh-context verdict |
-
-| α/γ transport totality | **restored** — the `replay` rule (fresh re-seek off the instance's frame, derived from the literal visit-3 trace); the whole eleven-program battery runs total |
-| Transparency criterion | **discharged through the ratified encoded-fibre amendment** (architecture §7; `kernel.md` §5): the fire decodes conservatively by default and erases only at certified boundaries under the corrected fibre condition (retained `(slot, T, log)` determines erased `(l, RS)`); validity is the hybrid validation — structural admission/isometry plus exact-amplitude dynamic cleanliness plus non-vacuity, strictly beyond Gram (negative controls caught); certificates are canonical machine metadata via `discover_total` — terminating, conservative, total on every program (`h Ω` witness), and **self-validating**: every admitted map passes full semantic coverage, else None |
-| Instance identity | **gate-copy address proved; finite-sector RRI mandatory and concretely Lean-replayed; uniform lifecycle theorem open** (`instance-identity.md`; `kernel.md` §7.5, §9): for the fixed shell, W1 makes each gate log the singleton `(i)` and `g` selects the unique leaf, so `(g,i)` reconstructs the complete gate-copy address and distinct copies cannot alias. General lp uniqueness is false. The raw-WF transition theorem is false: idempotent `recall` maps an agreeing frame-absent/frame-present pair to one target. v1.43 checks a complete reachable carrier directly and rejects any such projected/actual-target phase collision before `machine_coverage`, independently of Gram. The executable Lean mirror rechecks every exported row and proves both RRI formulations on all 17 canonical typed sectors, including certified-H reconvergence; the stronger no-rider/ancestry/cross-phase lifecycle derivation remains open |
-| Time register | **the coloring AND the conservation law are theorems** (`kernel.md` §7.1–7.3; §7.1 restated at v1.17 to the exact mechanized form — Σw(KS) in the formula, conservative fire flips ordinarily, gauge orbit 4/512 with KD enumerated; §7.2/§7.3 audit-confirmed symbol-level, conservation incl. a 131k mid-run surfacing check): closed-form φ, uniform flip, certified-erasure defect `1 − w(erased lp)`; branch-offset formula verified; mark-free fire-free readback conserves `w ≡ slot` (proved: attribution ledger + coloring), so geometric selection of classical data decoheres intrinsically and every escape route is a named mechanism (interior-fire charge, VB pattern birth, mark capture) |
-| L1 arrival-residue determinacy | kernel-verified at `fire`; general proof open |
-| L2 pop timing / coherence return | confirmed for NOT′ (kernel); selector measured decoherent; mechanism understood via pattern-vs-step |
-| `call`/`recall`/`replay` structural domain disjointness | guards structural in v1.3 (instance + rs checks, buried-frame typed); included in the accepted concrete table and finite range/Gram proofs |
-| Probe-exit classification totality | open (kernel error rules are catch-alls) |
-| Readback controller | **Gate-1 closed**: internal full-NF zipper with exact ENTER/RETURN/neutral/root fibres; 41,258 pure normalizers through size 11 and mixed/stress sectors pass |
-| `t` and exact scalar layer | **Gate-1 closed**: `diag(1,ω)` over `Z[ω]/√2^k`, live in dynamic amplitude and exported Lean sectors |
-| `U`, `μ_p`, `ρ_p`, `M`, `Ω_qALC` | **defined** on the static validated-carrier/conservative-history sector selector; exact finite approximants and trace identity pass |
-| Mandatory regressions | the twenty-program suite (twelve sectors, the audit witnesses, the interleaving stressors) — all total, Gram-clean, physics table passing; twelve permanent regressions gate the sweep's exit code; `q`-family certified runs halt frame-free with arrival telemetry 35/7/3 as the time-register record |
-| Bideterminism of §2 | verified vs arXiv:2002.05649 |
+| Architecture Gate 1 | **Closed.** Thirty admitted finite operational cores cover 7,507 states and 7,417 exact columns; generated Lean checks literal ranges, predecessor inversion, and exact Gram identity. Fresh-context Gate-1 audit #6 passed with no required correction. |
+| Kernel | **v1.43.** The v1.42 transition/WF surface passed fresh audit #35. v1.43 adds the mandatory Gram-independent reachable-recall certificate without changing transitions, frozen certificates, or accepted canonical programs. |
+| Transport and transparency | **Closed for admitted finite sectors.** Gate values move by token routing, encoded-fibre erasure is certificate-controlled, and rejection selects the conservative source-history representation. |
+| Instance identity | **Closed at the required boundary.** `(g,i)` identifies fixed-shell gate copies; complete-carrier RRI is checked before admission and replayed in Lean on all 17 canonical typed sectors. Raw-WF recall is noninjective, so no stronger raw theorem is claimed. |
+| Readback and scalars | **Closed.** The internal zipper reads complete normal forms; bare and variable-headed `h`/`t` applications remain neutral; `t` uses exact `diag(1,omega)` arithmetic over `Z[omega]/sqrt(2)^k`. |
+| Terminal and semantic objects | **Closed.** Typed error/halt entry and unilateral ticks are forward invariant. Static sector selection defines exact `U`, `mu_p`, `rho_p`, finite `M`, and `Omega_qALC` approximants for every finite closed program. |
+| Time register | **Kernel theorem.** The coloring, branch-offset law, and mark-free fire-free conservation theorem explain why step-encoded classical selection decoheres and identify the permitted escape mechanisms. |
+| Architecture Gate 2 | **Open and code-blocking.** Characterize and compile a useful clean coherent Toffoli-class fragment with input-independent terminal garbage/control and equal token-transition count. |
+| Optional stronger structure | The ambient uniform lifecycle/minimal-carrier theorem, general probe-exit classification, and broader arrival/pop determinacy remain research lanes; none is a Gate-1 premise. |
