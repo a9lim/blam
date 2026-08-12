@@ -426,6 +426,38 @@ hashed. Fresh-context audit #6 returned **PASS with no required correction**.
 The proof record and runnable command are `~/Work/qalc-scratch/GATE1.md` and
 `python ~/Work/qalc-scratch/gate1_check.py`.
 
+**Architecture Gate 2 remains open after the 2026-08-12 construction audit.**
+The live machine has a reusable clean single-wire fragment (H-NOT'-H,
+compiler-certified repeated one-wire NOT with a spectator, and native
+`X = H T^4 H`), but no clean entangling boundary. Separate closed input terms
+are orthogonal invocation sectors; ordinary tuple/Church CNOT resamples a
+reused control or retains route-dependent garbage; flat CNOT/Toffoli selectors
+have correct classical outputs but zero output off-diagonals. A dual-rail
+constant-weight selector did synchronize readback exactly, but was rejected as
+an exponential ROM whose post-last-H cut had already selected its hardwired
+leaf and whose terminal compression did not expose a boundary for a later H.
+The rejected implementation is removed from the live machine and preserved in
+`~/Work/qalc-scratch/attic/gate2-rom-no-go/`; the current proof record is
+`~/Work/qalc-scratch/GATE2.md`. The full Gate-1 battery passes after the revert.
+
+Before accepting that cost, a final current-machine candidate compiled
+`cnot = λu.λv.λk. u (k u v) (k u (NOT' v))` in linear CPS/SSA form. Its
+canonical 1,468-state sector produced the correct zero output for
+`H;CNOT;CNOT;H`, but in four distinct garbage blocks with ticks `4,2,2,0`;
+the final H boundary had no further transparent fibre. Linear source use did
+not make its repeated variables one dynamic token handle.
+
+The architecture adjudication therefore leaves one invocation-supplied native
+CNOT as the next experiment, with a linear CPS/SSA compiler so a wire version
+is never duplicated at the compiler IR boundary. Exact Python and Lean checks
+prove the abstract four-column delta, Bell/uncompute circuit, a 33-gate
+H/T/CNOT Toffoli synthesis, and nonlinear target-as-later-control reuse. This
+is not yet a machine amendment: `c M N K` still lacks an executable
+path/log/tape schedule that queries both inputs and delivers two persistent
+outputs to `K`. That row surface must pass the coloring ledger before it is
+ratified. The plan and proof boundary are
+`~/Work/qalc-scratch/GATE2_CNOT.md`.
+
 The kernel transition/WF surface is v1.42, which passed fresh-context audit
 #35. Validation-only v1.43 adds a mandatory Gram-independent complete-carrier
 reachable-recall check without changing transitions, frozen certificates, or
@@ -440,11 +472,17 @@ audit kits, and git history.
 The open docket, in order:
 
 1. **Architecture Gate 2 — clean coherent compilation**
-   (`quantum-algebraic/architecture.md` §6): characterize a useful λ-defined
-   Toffoli-class fragment whose branches finish with input-independent
-   garbage, terminal control, and token-transition count; build and prove the
-   time-balancing compiler for the pattern-encoded fragment. This gates every
-   universality claim and all `src/qalc/` code.
+   (`quantum-algebraic/architecture.md` §6): build a clean H/T/CNOT circuit
+   compiler, with Toffoli derived exactly, at one fixed-sector
+   pre-computation input cut, input-independent garbage/control/time,
+   nonlinear sequential reuse, and a later-H uncompute witness. The immediate
+   experiment is an
+   invocation-supplied native CNOT with a joint two-bit fibre and linear CPS
+   compiler; the pure-lambda CPS candidate already failed the exact
+   Bell-uncompute cleanliness check. Its first gate is an executable two-port
+   schedule plus a passing coloring/predecessor audit; failure returns the
+   design to a genuinely multiwire machine. This gates every universality
+   claim and all `src/qalc/` code.
 2. Once Gate 2 closes, land the authoritative reference evaluator first and
    census machinery later; preserve bit-identical classical and qBLC rows.
 3. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,

@@ -433,10 +433,22 @@ garbage is necessary but not sufficient under the common-origin halt
 convention: input-dependent *running time* places outputs at different
 tick ages and dephases them just as surely. What qALC requires is a
 **clean coherent compilation theorem**: for a single common transition
-count `T`, `U^T |x, clean⟩ = |F(x), g*, c*, 0⟩` for every basis input
-`x` — same `T`, same residual garbage `g*`, same terminal control `c*`,
-the intended amplitudes, with `|x, clean⟩` and the result read through
-canonical token initialization and halted-output states. Clean
+count `T`,
+
+```text
+U^T |x, clean⟩ = Σ_y C[y,x] |y, g*, c*, 0⟩
+```
+
+for every basis input `x`, where `C` is the ideal circuit matrix (the
+reversible-classical special case has one output `F(x)`) — same `T`, same
+residual garbage `g*`, same terminal control `c*`, the intended amplitudes,
+with `|x, clean⟩` and the result read through
+one immutable compiled invocation sector and halted-output states. The input
+map must be an injective, fixed, decodable **pre-computation** boundary in that
+sector, with all basis states at one reachable global cut. Compiling a
+different closed invocation for each `x` proves only pointwise classical
+behavior across orthogonal sectors; choosing terminal predecessors as inputs
+is equally vacuous. Clean
 compilation must be realized by synchronized reversible token transport
 and uncomputation; no construction may basis-copy an unknown quantum
 result (`machine.md` §9.1), and the classical Bennett discipline
@@ -446,6 +458,36 @@ proved, universality is a target, not a property, and the H–NOT–H witness
 (§7) is its smallest instance. A formal statement of what universality
 means for qALC's objects — presumably a Gács-style domination claim for
 `M` within an appropriate class — is also unwritten.
+
+**Gate-2 construction audit (2026-08-12).** The accepted machine has a clean
+reusable single-wire fragment: H–NOT′–H, compiler-certified repeated NOT′ with
+a spectator, and native `X = H T^4 H`. It has no exhibited entangling
+boundary. Ordinary Church/tuple CNOT either revisits a control as a distinct
+dynamic gate instance or retains bit-dependent route residue. Complete
+geometric CNOT and Toffoli selectors compute the right classical permutations
+but halt in different garbage/tick blocks, with zero reduced-output
+off-diagonals. A dual-rail-plus-zero-sentinel construction proved a useful
+constant-weight readback synchronization law, but its exponential selector
+was rejected as a ROM: its proposed input cut came only after the path had
+selected the hardwired output leaf, and output-indexed terminal compression
+did not expose a clean boundary on which a subsequent H could act. The live
+machine was restored unchanged after that experiment; the evidence and proof
+boundary are `~/Work/qalc-scratch/GATE2.md`.
+
+Gate 2 therefore additionally requires a nonlinear reuse witness and a
+contextual later-H witness (for example H–CNOT–CNOT–H), not merely terminal
+truth tables. A final pure-lambda candidate used linear CPS/SSA and η-variable
+delivery for exactly that Bell-uncompute circuit; it returned the right zero
+normal form but four distinct terminal garbage/tick blocks (`4,2,2,0`), and
+the final H boundary exposed no further transparent encoded fibre. The selected
+next experiment is therefore one invocation-supplied native
+CNOT permutation with a joint two-bit encoded fibre and a linear CPS/SSA
+compiler. Its abstract four-column delta and H/T/CNOT Toffoli synthesis are
+checked, but no executable single-token schedule yet queries two inputs and
+delivers two reusable outputs. It is therefore an experiment, not a ratified
+primitive. Its first acceptance test is the full coloring/predecessor audit of
+that schedule; failure reopens the fork to a genuinely multiwire machine.
+Either outcome changes the proved surface and must reclose Gate 1 before Gate 2.
 
 ## 7. Planned engine stack and verification contract
 
@@ -675,9 +717,14 @@ Every qALC engine change must then satisfy:
    PASS with no required correction. Python closure and the generated large
    `native_decide` evaluations are explicit trust boundaries. This is not a
    universal minimal-carrier or ambient lifecycle theorem.
-2. **Clean coherent compilation** (§6): λ-defined Toffoli-class terms
-   with input-independent garbage, terminal control, *and transition
-   count* under the machine of item 1; gating for any universality claim.
+2. **OPEN — clean coherent compilation** (§6): one-sector H/T/CNOT circuit
+   compilation (with Toffoli derived exactly from that gate set) at a common
+   pre-computation word boundary, input-independent garbage/control/time,
+   nonlinear reuse, and a later-H uncompute witness. The current single-token
+   machine has no exhibited
+   entangling boundary; the 2026-08-12 constant-weight ROM route was rejected,
+   and the native-CNOT successor has only abstract circuit/delta proofs so far.
+   This gates every universality claim and all Rust implementation.
 3. Merge-discipline canonicity: is the minimal-garbage `U` unique in any
    useful sense, and what exactly is the class of programs whose branches
    re-merge (the "coherence is earned" economy made precise)?
@@ -698,8 +745,9 @@ Every qALC engine change must then satisfy:
 Items 1 and 2 gate implementation. Item 1 is closed; no `src/qalc/` code lands
 until item 2's clean coherent compilation theorem is also closed. The scalar
 ring and configuration algebra now have the Gate-1 proof surface; the open
-object is the program discipline that returns equal terminal garbage,
-control, and transition count across coherent branches.
+object is a reusable multiwire boundary whose token dynamics—not a terminal
+decoder—returns equal garbage, control, and transition count across coherent
+branches and remains clean when a later H interrogates one wire.
 
 ## 10. Lineage and related documents
 

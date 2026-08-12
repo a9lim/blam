@@ -78,8 +78,14 @@ fibres, validated finite admission with conservative-history fallback, and
 checks pass the authoritative battery and fresh-context audit #6. The stronger
 ambient lifecycle theorem is optional; raw-WF recall is known noninjective.
 
-The live implementation, battery, and proof record are
-`~/Work/qalc-scratch/{gate1_check.py,GATE1.md}`. Historical audit kits and
+The live implementation, batteries, and proof records are
+`~/Work/qalc-scratch/{gate1_check.py,GATE1.md,GATE2.md,GATE2_CNOT.md}`. Gate
+2's current record pins the fixed-sector/common-cut theorem, the positive
+single-wire boundary, and the rejected selector/ROM routes. The native-CNOT
+record is the selected next experiment, not a ratified extension: its abstract
+delta and circuit algebra pass, but no executable two-port token schedule yet
+exists. The last current-machine alternative, linear-CPS λ-CNOT, is rejected
+by an exact four-garbage-block Bell-uncompute trace. Historical audit kits and
 provenance stay in that scratch tree and its attic; chronological narrative
 belongs in `docs/ledger/`. **No qALC code may land** until contract §9 Gate 2's
 clean coherent compilation theorem also passes. qALC work must leave classical
