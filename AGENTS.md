@@ -82,15 +82,21 @@ pass proves fixed-shell gate-copy address injectivity, refutes the raw-WF
 alias theorem, and makes a Gram-independent complete-carrier RRI certificate
 mandatory for finite admitted sectors; the concrete Lean mirror replays all
 17 canonical typed sectors, including certified-H reconvergence, while the
-stronger uniform lifecycle theorem remains open;
+stronger uniform lifecycle theorem remains open; the completed Gate-1
+composed layer adds full-NF readback, live `t`, typed error/halt sectors,
+exact predecessor fibres, a total validated-carrier/conservative-history
+selector defining `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`, and 30 exact finite
+operational-core proofs; its authoritative battery and fresh-context audit #6
+PASS are recorded in `~/Work/qalc-scratch/GATE1.md`;
 round history in the ledger and its §11 chronicle), and
 `machine.md` the record of the two failed rewriting-machine drafts —
 read-only history, do not build on it. The scratch kernel, its 25
 rerunnable audit kits, and the full provenance chain live durably at
 `~/Work/qalc-scratch/` (out-of-tree by design; `attic/MANIFEST.txt`
-maps the historical artifacts). **No qALC code may land** until the
-contract's §9 gates pass — the kernel audit PASS is a milestone, not
-those gates — the scratch kernel stays outside the tree until then,
+maps the historical artifacts). **No qALC code may land** until both
+contract §9 gates pass — Gate 1 is closed, but Gate 2's clean coherent
+compilation theorem remains open — the scratch machine stays outside the
+tree until then,
 and qALC work must leave classical and qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver

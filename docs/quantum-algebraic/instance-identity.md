@@ -1,8 +1,9 @@
 # qALC gate-instance identity
 
-**Status: gate-copy theorem proved; executable per-sector RRI gate added
-(2026-08-11).** The fixed qALC invocation makes `(gate, instance)` injective as
-a **gate-copy address**. Raw idempotent `recall` remains noninjective, but v1.43
+**Status: Gate 1 closed; gate-copy theorem proved and executable per-sector
+RRI mandatory (2026-08-11).** The fixed qALC invocation makes
+`(gate, instance)` injective as a **gate-copy address**. Raw idempotent
+`recall` remains noninjective, but v1.43
 now checks reachable-recall injectivity directly on every complete finite
 carrier before granting `machine_coverage`. The stronger uniform lifecycle
 derivation remains open. The concrete Lean mirror now replays all 17 canonical
@@ -331,14 +332,19 @@ Changing the syntax to permit gate literals inside `p`, or changing instance
 identity to a proper slice rather than the complete level-one log, would
 reopen the theorem.
 
-What this result does **not** discharge is the architecture's whole Gate 1.
-Executable RRI is closed for every admitted finite sector, and concrete Lean
-RRI is closed for the 17 canonical typed sectors; a future finite sector still
-needs its generated certificate replayed if a durable Lean theorem is wanted.
-The stronger uniform lifecycle theorem remains open. Full-normal-form
-readback, the `t` table, error/halting adapters, the rest of the reachable
-pairwise range proof, invariant sectors, and the local minimal-garbage theorem
-also remain open.
+Architecture Gate 1 is now closed by the composed machine at
+`~/Work/qalc-scratch/GATE1.md`. Executable RRI remains mandatory for every
+admitted finite sector, and concrete ordinary-kernel Lean RRI is closed for
+the 17 canonical typed sectors; a future finite sector still needs its
+generated replay for a durable per-sector Lean theorem. The Gate-1 assembly
+adds full-normal-form readback, the `t` table, typed error/halting adapters,
+the complete finite pairwise range/Gram proof, invariant sectors, and exact
+local predecessor fibres. Fresh-context audit #6 accepted that complete
+boundary with no required correction.
+
+The stronger uniform lifecycle theorem remains open as an optional structural
+lane. It is not a premise of the static validated-carrier/conservative-history
+selector and therefore no longer blocks Gate 1.
 
 An unconditional machine repair is available if RRI resists a global proof:
 refine a replay frame to `R(g,i,b,n)` with an unbounded recall epoch. Fresh

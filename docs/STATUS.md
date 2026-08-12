@@ -397,8 +397,8 @@ the whole-live-store operator census.
 
 ## Quantum-algebraic state (qALC)
 
-The third pillar: a ratified design contract plus a machine-verified
-scratch kernel, no code in the tree.
+The third pillar: a ratified design contract plus a complete Gate-1 machine
+and proof surface in out-of-tree scratch, no code in the tree.
 `quantum-algebraic/architecture.md` is the contract (quantum control,
 storeless — runtime states in ℓ² over machine configurations, `h`/`t`
 constants at invocation, fate softened to a real halting mass `μ_p`
@@ -412,6 +412,24 @@ values transported to δs by routing, never copied. The active design
 and obligations register are `quantum-algebraic/token.md`; the failed
 rewriting drafts (v0/v1) are preserved read-only in
 `quantum-algebraic/machine.md`. `data/quantum-algebraic/` is reserved.
+
+**Architecture Gate 1 is CLOSED** (2026-08-11). The accepted IAM-lineage
+machine combines the audited v1.43 kernel surface with internal full-normal-
+form zipper readback, live `t : diag(1,ω)`, typed source-retaining exceptions,
+error entry, and common-origin halted ticks. Residual coordinates are exact
+physical predecessor fibres; halt and error are forward-invariant sectors. A
+static selector uses a validated finite carrier when one closes and the proved
+source-history fallback otherwise, defining exact `U`, `μ_p`, `ρ_p`, finite
+`M`, and `Ω_qALC` approximants for every finite closed-program sector. The
+authoritative out-of-tree battery passes 30 admitted operational cores: 7,507
+states, 7,417 exact one-step columns, zero Gram/range/WF/W7 defects; 41,258
+pure normalizers through size 11; and an ordinary-kernel RRI replay over all
+17 canonical typed sectors. Fresh-context adversarial audit #6
+(`cl-20260811-232859-104f`) returned **PASS with no required correction**
+after five FAIL-and-repair rounds. `~/Work/qalc-scratch/GATE1.md` is the proof
+record. Python carrier closure and the generated large `native_decide`
+evaluations are disclosed trust boundaries; an ambient uniform lifecycle or
+global-minimal-carrier theorem is not claimed.
 
 **The scratch pipeline is at v1.43; its transition/WF surface remains the
 v1.42 machine that PASSED fresh-context independent audit #35**
@@ -471,33 +489,29 @@ Twenty-five rerunnable audit kits and the full provenance chain
 (predictions files with every wrong call kept and marked, packs,
 verdicts, the attic manifest) are preserved out-of-tree at
 `~/Work/qalc-scratch/` alongside the scratch kernel itself; the
-architecture.md §9 contract gates, not the audit verdict, decide
-when qALC code lands in the tree.
+architecture.md §9 contract gates, not the kernel audit verdict, decide when
+qALC code lands in the tree. Gate 1 is now closed; Gate 2 remains open, so the
+no-code boundary remains in force.
 
 The open docket, in order:
 
-1. **certificate structure beyond finite RRI**: minimal/maximal canonical
-   certificates remain open. The stronger uniform lifecycle theorem is an
-   optional research lane, open at phase-sensitive certified-fibre
-   reconvergence. Its local live/dead H calculation is now Lean-closed: within
-   one retained fibre, opposite child answers have equal live/dead status
-   whenever their routing to the two arrival slots is injective. The remaining
-   global step is to turn the first non-injective child-to-slot routing merge
-   into an earlier reachable separator/RFS witness. This lane is no longer a
-   premise of per-program `machine_coverage`. The closed canonical Lean replay
-   and reusable exporter live at `~/Work/qalc-scratch/QalcConcrete*`; the
-   local interface theorem is `RRIParentReturnInterface.lean`; the executable
-   gate and its adversarial surface remain at `RRIDirectCertificate*` and
-   `rri_direct.py`;
-2. the readback controller (full-NF halt sectors; the kernel's root
-   classifier is its 1-bit case) and the `t` gate's `ℤ[ω]` scalars —
-   with time-in-the-core added to the transparency theorem
-   statement;
-3. the clean coherent compilation theorem
-   (`quantum-algebraic/architecture.md` §6) — now including the
-   time-balancing pass over the pattern-encoded fragment — gates any
-   universality claim;
-4. then `src/qalc/`: reference evaluator first, census later.
+1. **Architecture Gate 2 — clean coherent compilation**
+   (`quantum-algebraic/architecture.md` §6): characterize a useful λ-defined
+   Toffoli-class fragment whose branches finish with input-independent
+   garbage, terminal control, and token transition count; build and prove the
+   time-balancing compiler for the pattern-encoded fragment. This gates any
+   universality claim and all `src/qalc/` code.
+2. Once Gate 2 closes, land the authoritative reference evaluator first and
+   census machinery later; preserve bit-identical classical and qBLC rows.
+3. **Optional stronger structure beyond finite admission:** minimal/maximal
+   canonical certificates and the ambient uniform lifecycle theorem remain
+   open at phase-sensitive certified-fibre reconvergence. The local live/dead
+   H interface is Lean-closed; the global first-noninjective-routing separator
+   lemma remains open. This lane is not a premise of Gate 1 or per-program
+   `machine_coverage`.
+4. Downstream research: D-circuit dyadicity, universality/domination for `M`,
+   self-interpretation up to timing dilation, and relations among the three Ω
+   objects.
 
 ## Repository and release state
 

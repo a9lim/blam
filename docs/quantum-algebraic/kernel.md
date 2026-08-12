@@ -1,5 +1,13 @@
 # qALC kernel — current register
 
+**Architecture status:** Gate 1 closed on 2026-08-11. The v1.43 kernel below
+is unchanged; the accepted out-of-tree composed layer adds full-normal-form
+readback, exact `t`, typed host/error and halt adapters, exact predecessor
+fibres, finite operational-core Gram/range proofs, the conservative-history
+fallback, and `U`/`μ_p`/`ρ_p`/`M`/`Ω_qALC`. Its authoritative record is
+`~/Work/qalc-scratch/GATE1.md`; fresh-context audit #6 returned PASS with no
+required correction. Gate 2 remains open, so the no-code rule still governs.
+
 **Status: v1.43.** The kernel is a scratch superposition evolver
 for qALC's quantum-control fragment (λIAM lineage, `h`-only, exact
 ℚ[√2]): the eight classical token rules plus gate probes that FIRE
@@ -60,8 +68,10 @@ terminal rule and the entire transition surface; generated ordinary-kernel
 certificates cover 5,220 nonterminal `Run` states, 5,279 rows, 142 recall
 sources, 53 certified-H sources, and 18 exact H-reconvergent targets. The
 exporter is untrusted: Lean checks row equality, closure, and the final RRI
-predicates. This targeted proof pass is not a new fresh-context audit of
-v1.43, and no such verdict is claimed.
+predicates. This targeted proof pass is not a fresh-context audit of v1.43 in
+isolation, and no such verdict is claimed. The later Gate-1 audit covers the
+composed accepted machine and its explicit reliance on this v1.43 surface; it
+does not retroactively rename the kernel-only audit history.
 
 This file is the current contract and register only. The
 round-by-round history — countermodels, corrections, verdicts —
@@ -84,10 +94,11 @@ recognizing them is the readback controller's job, not smuggled in
 here. `I` is in the alphabet because the negative witness's output
 is a *valid closed normal form*. Terminal entry is the normative
 two-step `RunDone(nf, res) → Halt(nf, res, 0) → tick`, each a
-separate `U` application. The ring is `ℤ[1/√2]` — `h` only; `t` is
-the same table with `Q_t = diag(1, ω)` over `ℤ[ω]/√2^d` and its
-own tags, deliberately left unexercised. Classical substrate: the
-eight λIAM rules exactly as pinned in `token.md` §2.
+separate `U` application. The ring in this kernel is `ℤ[1/√2]` — `h`
+only. The Gate-1 composed machine exercises `t` as the same table with
+`Q_t = diag(1, ω)` over `ℤ[ω]/√2^d` and its own tags; that extension lives in
+the Gate-1 proof surface rather than versioning this kernel. Classical
+substrate: the eight λIAM rules exactly as pinned in `token.md` §2.
 
 ## 2. State space
 

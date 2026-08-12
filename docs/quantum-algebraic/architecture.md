@@ -4,11 +4,13 @@ This document is the durable architecture contract for blam's
 quantum-algebraic pillar. It uses the same structure as the classical and
 quantum architectures so the three systems can be compared layer by layer.
 
-**The pillar is a design contract without an engine**: nothing in `src/`
-or `data/` is qALC-relative yet, and the two gates that stand between
-this document and implementation are stated in §9. The contract is
-ratified through gaslamp thread `qalc-architecture`; the development
-history and the superseded rewriting-machine formalizations live in
+**The pillar remains out of tree**: nothing in `src/` or `data/` is
+qALC-relative yet. Gate 1 of the two §9 implementation gates is closed; Gate
+2 remains open and continues to prohibit landing an engine. The accepted
+Gate-1 machine, proofs, batteries, and six-audit provenance chain live at
+`~/Work/qalc-scratch/`; `GATE1.md` is its proof record. The contract was
+ratified through gaslamp thread `qalc-architecture`; development history and
+the superseded rewriting-machine formalizations live in
 `../ledger/2026-08.md` and `machine.md`.
 
 ## 1. Purpose and position among the pillars
@@ -28,7 +30,7 @@ is a vector in ℓ² over machine configurations; superposition of *control*
 monotone positive operator approximants and to avoid an unresolved
 quantum-halting semantics. The construction here is designed to recover
 both inside quantum control (§4: typed invariant-sector halting;
-conditional on the machine of §9 item 1), which would make that choice a
+now realized by the machine of §9 item 1), which makes that choice a
 convenience rather than a necessity. And the objects it excludes —
 interference between reduction paths, real-valued halting mass, coherent
 output operators — are exactly the ones this pillar exists to measure.
@@ -302,18 +304,20 @@ whatever non-output token/readback state survives at `RunDone`.
 Classical bideterminism makes ordinary token steps singleton-predecessor
 by construction, but it neither proves the chosen stack representation
 minimal nor covers the δ, readback, and terminal boundaries. The
-**minimal-garbage theorem** is this pillar's first formal work item:
-define the machine of §4.1 as a concrete transition table, prove its
-columns orthonormal on the reachable configuration graph, characterize
-the minimal residual garbage, and prove the invariant-sector lemma in
-that machine. "Minimal" here is *local
+**minimal-garbage theorem** is closed at the exact Gate-1 boundary: the
+concrete transition table proves orthonormal columns on every admitted closed
+finite operational core, characterizes each residual coordinate by an exact
+equivalence with its physical predecessor fibre, and proves the halt and
+error invariant-sector lemma. "Minimal" here is *local
 minimality within the fixed machine representation* — residue must
 distinguish exactly each classical predecessor fibre not already
 orthogonalized by a quantum transition. A global minimum over arbitrary
 reversible realizations is not claimed: that comparison class is unlikely
-to be canonical and may hide undecidable semantic equivalence. Until the
-machine exists, `U`, `μ_p`, and `M` are not defined objects, and
-everything downstream is conditional.
+to be canonical and may hide undecidable semantic equivalence. The accepted
+static selector uses a validated finite carrier when one closes and an exact
+history fallback otherwise; therefore `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`
+are now defined. The stronger ambient all-program lifecycle theorem remains
+open but is not a premise of a finite admission.
 
 **Synchronization as convention.** Under the common-origin tick, a
 branch's halting time is recorded in its tick offset: two branches
@@ -657,13 +661,20 @@ Every qALC engine change must then satisfy:
 
 ## 9. Boundaries and open obligations
 
-1. **The reversible machine + minimal-garbage theorem** (§4.1, §4.5) —
-   the gating work item: a canonical token transition table (IAM-lineage
-   per `token.md`) including δ scattering, full-normal-form readback,
-   and the error/halting adapters, orthonormal columns proved on the
-   reachable graph, residual garbage locally minimal in the
-   predecessor-fibre sense, invariant-sector lemma proved in that
-   machine. `U`, `μ_p`, and `M` are undefined until this exists.
+1. **CLOSED — reversible machine + local minimal-garbage theorem** (§4.1,
+   §4.5; 2026-08-11). The accepted IAM-lineage table includes H/T scattering,
+   internal full-normal-form readback, typed error entry, and synchronized
+   halted ticks. Thirty admitted closed operational cores (7,507 states,
+   7,417 one-step columns) have exact `Z[ω]/√2^k` Gram, global deterministic
+   predecessor, and literal H/deterministic range separation in Lean; the
+   universal tick tail is proved separately. Local residue is equivalent to
+   the actual predecessor fibre, halt/error sectors are forward invariant,
+   and a static validated-carrier/conservative-history selector defines `U`,
+   `μ_p`, `ρ_p`, `M`, and `Ω_qALC`. The authoritative battery and ordinary-
+   kernel seventeen-sector RRI replay pass; fresh-context audit #6 returned
+   PASS with no required correction. Python closure and the generated large
+   `native_decide` evaluations are explicit trust boundaries. This is not a
+   universal minimal-carrier or ambient lifecycle theorem.
 2. **Clean coherent compilation** (§6): λ-defined Toffoli-class terms
    with input-independent garbage, terminal control, *and transition
    count* under the machine of item 1; gating for any universality claim.
@@ -684,10 +695,11 @@ Every qALC engine change must then satisfy:
 9. Signature order freeze (§3) before any canonical data.
 10. Output convention (§4.6) — deliberately open, mirroring qBLC.
 
-Items 1 and 2 gate implementation: no `src/qalc/` code before the machine
-is formal and its witnesses computed by hand in the formal token-machine
-document. The scalar ring needs nothing — the unresolved object is the
-configuration algebra, not the amplitudes.
+Items 1 and 2 gate implementation. Item 1 is closed; no `src/qalc/` code lands
+until item 2's clean coherent compilation theorem is also closed. The scalar
+ring and configuration algebra now have the Gate-1 proof surface; the open
+object is the program discipline that returns equal terminal garbage,
+control, and transition count across coherent branches.
 
 ## 10. Lineage and related documents
 
