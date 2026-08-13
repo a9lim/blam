@@ -481,13 +481,17 @@ Eight fail-closed shards differentially pin every edge and state field to
 Python on all 917 states of a mixed H/T/CNOT complete carrier. The exact
 edge-coefficient map and weighted multi-step evolution are also defined in
 Lean, so the physical `U^T` equation is directly stateable there. The first
-universal refinement component is now proved: actual compiled preparation
+universal refinement components are now proved: actual compiled preparation
 reaches its exact unmerged `2^n` word column at the common `47n+4` cut, with
-structural certificate lookup and arbitrary incoming amplitudes. Finite
-fidelity does not discharge the remaining universal quantifier. Closure still
-requires a compiler-list induction deriving H/T/CNOT macro action and cost,
-the remaining certificate transparency, compiler-indexed WF preservation,
-full-NF output, common terminal residue, and no early halt from
+structural certificate lookup and arbitrary incoming amplitudes; from that cut,
+the first compiled H, T, or CNOT reaches its literal boundary in exactly 47,
+55, or 29 actual rows for arbitrary width, wires, word, amplitude, and circuit
+tail, with arbitrary-finite-superposition corollaries in that same sector.
+Finite fidelity and first-boundary theorems do not discharge the remaining
+universal quantifier. Closure still requires arbitrary-boundary lifting and
+compiler-list induction, the remaining certificate transparency,
+compiler-indexed WF preservation, full-NF output, common terminal residue, and
+no early halt from
 `composedStep`. Until then structural admission remains bounded by complete
 finite-carrier validation, accepted
 v1.43 is unchanged, and the Rust tripwire remains. The single current proof
@@ -728,9 +732,9 @@ Every qALC engine change must then satisfy:
    isolated native-CNOT successor has executable Python and Lean rows, a
    recursive closed compiler, structural certificates, complete finite
    Bell/Toffoli/nonlinear carriers, a 917-state cross-language differential,
-   and an ideal circuit theorem. Its arbitrary-width physical preparation
-   refinement is proved at the exact common cut; per-gate and full-NF output
-   refinement for arbitrary compiler lists remains open.
+   and an ideal circuit theorem. Its arbitrary-width physical preparation and
+   exact first-boundary H/T/CNOT refinements are proved; arbitrary-boundary
+   gate transport and full-NF output for arbitrary compiler lists remain open.
    This gates every universality claim and all Rust implementation.
 3. Merge-discipline canonicity: is the minimal-garbage `U` unique in any
    useful sense, and what exactly is the class of programs whose branches

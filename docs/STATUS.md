@@ -433,13 +433,19 @@ uncompute (1,013 states), derived Toffoli (14,809), and nonlinear target reuse
 (30,393). Eight differential shards match all 917 states of a mixed carrier
 field-for-field across Python and Lean.
 
-The first universal physical refinement is proved:
+The first universal physical layers are proved:
 `compiled_preparation_physical` reaches the exact unmerged `2^n` word column
-at the common `47n+4` cut for arbitrary positive width and circuit. Gate 2
-still requires compiler-list induction for the actual 29/47/55-row CNOT/H/T
-boundaries, certificate/WF preservation, and full-NF output to one terminal
-block with no earlier halt. Until then structural admission remains bounded by
-complete-carrier validation. The single current record is
+at the common `47n+4` cut for arbitrary positive width and circuit, and
+`first_h_physical`, `first_t_physical`, and `first_cx_physical` take an
+arbitrary-width prepared basis branch through the first compiled gate to its
+literal boundary in exactly 47, 55, and 29 actual rows respectively. Their
+superposition corollaries extend each result to arbitrary finite amplitude
+columns in the same immutable compiler sector. Gate 2 still requires lifting
+all three transports to arbitrary reachable boundaries, compiler-list
+induction, certificate/WF preservation, and full-NF output to one terminal
+block with no earlier halt.
+Until then structural admission remains bounded by complete-carrier
+validation. The single current record is
 `~/Work/qalc-scratch/GATE2.md`; the full Gate-1 battery passes unchanged.
 
 The kernel transition/WF surface is v1.42, which passed fresh-context audit
@@ -463,11 +469,12 @@ The open docket, in order:
    native-CNOT candidate now supplies the executable Python and Lean machines,
    recursive closed source compiler, structural certificate, finite witnesses,
    coloring, predecessors, complete carriers, 917-state cross-language
-   differential, and ideal arbitrary-circuit theorem. The remaining gate is
-   the universal physical refinement: prove that actual composed rows
-   implement the ideal schedule, preserve the exact compiler boundary/WF and
-   certificate transparency, and reach the common terminal block for arbitrary
-   circuit lists. This gates every universality claim and all `src/qalc/` code.
+   differential, ideal arbitrary-circuit theorem, universal preparation, and
+   exact first-boundary H/T/CNOT physical theorems. The remaining gate is the
+   rest of the universal physical refinement: lift all gate transports across
+   reachable compiler boundaries, preserve boundary/WF and certificate
+   transparency, and reach the common terminal block for arbitrary circuit
+   lists. This gates every universality claim and all `src/qalc/` code.
 2. Once Gate 2 closes, land the authoritative reference evaluator first and
    census machinery later; preserve bit-identical classical and qBLC rows.
 3. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,

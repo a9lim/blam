@@ -82,9 +82,10 @@ The live implementation, batteries, and proof records are
 `~/Work/qalc-scratch/{gate1_check.py,GATE1.md,gate2_check.py,GATE2.md}`. Gate 2
 now has an executable native CNOT, a linear SSA compiler, structural
 certificates, clean finite Bell/Toffoli/nonlinear carriers, and matching Python
-and Lean composed machines. The arbitrary-width physical preparation theorem
-is proved; per-gate boundary preservation and full-NF terminal refinement for
-arbitrary compiler lists remain open. Historical alternatives, audits, and
+and Lean composed machines. Arbitrary-width physical preparation and exact
+first-boundary H/T/CNOT theorems are proved; lifting all gates to arbitrary
+reachable boundaries, compiler-list induction, and full-NF terminal refinement
+remain open. Historical alternatives, audits, and
 provenance stay in that scratch tree's attic; chronological narrative belongs
 in `docs/ledger/`. **No qALC code may land** until contract §9 Gate 2's clean
 coherent compilation theorem also passes. qALC work must leave classical and

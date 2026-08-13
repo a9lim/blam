@@ -277,10 +277,12 @@ composed Lean assembly checks and fresh-context audit #6. Gate 2's clean
 coherent compilation theorem remains open, so qALC is still design/proof only
 and no code lands yet. The live Gate-2 construction has a native CNOT, linear
 SSA compiler, clean finite Bell/Toffoli/nonlinear carriers, matching Python and
-Lean machines, and a universal physical preparation theorem. The remaining
-load-bearing induction must carry actual H/T/CNOT boundaries through arbitrary
-circuit lists and one common full-NF terminal block. Finite fidelity does not
-authorize the Rust pillar.
+Lean machines, a universal physical preparation theorem, and exact
+arbitrary-width first-boundary theorems for compiled H, T, and CNOT. The
+remaining load-bearing induction must lift those transports to arbitrary
+reachable boundaries and reach one common full-NF terminal block with no
+earlier halt. Finite fidelity and first-boundary theorems do not authorize the
+Rust pillar.
 Canonical evidence lives in
 [data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
 in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological
