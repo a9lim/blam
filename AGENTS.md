@@ -79,17 +79,16 @@ checks pass the authoritative battery and fresh-context audit #6. The stronger
 ambient lifecycle theorem is optional; raw-WF recall is known noninjective.
 
 The live implementation, batteries, and proof records are
-`~/Work/qalc-scratch/{gate1_check.py,GATE1.md,GATE2.md,GATE2_CNOT.md}`. Gate
-2's current record pins the fixed-sector/common-cut theorem, the positive
-single-wire boundary, and the rejected selector/ROM routes. The native-CNOT
-record is the selected next experiment, not a ratified extension: its abstract
-delta and circuit algebra pass, but no executable two-port token schedule yet
-exists. The last current-machine alternative, linear-CPS λ-CNOT, is rejected
-by an exact four-garbage-block Bell-uncompute trace. Historical audit kits and
-provenance stay in that scratch tree and its attic; chronological narrative
-belongs in `docs/ledger/`. **No qALC code may land** until contract §9 Gate 2's
-clean coherent compilation theorem also passes. qALC work must leave classical
-and qBLC rows bit-identical.
+`~/Work/qalc-scratch/{gate1_check.py,GATE1.md,gate2_check.py,GATE2.md}`. Gate 2
+now has an executable native CNOT, a linear SSA compiler, structural
+certificates, clean finite Bell/Toffoli/nonlinear carriers, and matching Python
+and Lean composed machines. The arbitrary-width physical preparation theorem
+is proved; per-gate boundary preservation and full-NF terminal refinement for
+arbitrary compiler lists remain open. Historical alternatives, audits, and
+provenance stay in that scratch tree's attic; chronological narrative belongs
+in `docs/ledger/`. **No qALC code may land** until contract §9 Gate 2's clean
+coherent compilation theorem also passes. qALC work must leave classical and
+qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →

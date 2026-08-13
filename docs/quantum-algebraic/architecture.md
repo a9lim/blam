@@ -488,11 +488,10 @@ fidelity does not discharge the remaining universal quantifier. Closure still
 requires a compiler-list induction deriving H/T/CNOT macro action and cost,
 the remaining certificate transparency, compiler-indexed WF preservation,
 full-NF output, common terminal residue, and no early halt from
-`composedStep`. Until then structural
-admission remains bounded by complete finite-carrier validation, accepted
-v1.43 is unchanged, and the Rust tripwire remains. The proof record is
-`~/Work/qalc-scratch/GATE2.md`; the candidate detail is
-`~/Work/qalc-scratch/GATE2_CNOT.md`.
+`composedStep`. Until then structural admission remains bounded by complete
+finite-carrier validation, accepted
+v1.43 is unchanged, and the Rust tripwire remains. The single current proof
+and construction record is `~/Work/qalc-scratch/GATE2.md`.
 
 ## 7. Planned engine stack and verification contract
 

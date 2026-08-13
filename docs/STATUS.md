@@ -5,7 +5,7 @@ measurements, proof boundaries, and ordered next work. The root `README.md`
 is the stable public map; domain documents state durable contracts; the
 monthly ledger preserves chronology.
 
-Last updated: 2026-08-11.
+Last updated: 2026-08-12.
 
 ## Classical state
 
@@ -416,60 +416,31 @@ finite `M`, and `Ω_qALC` approximants for every finite closed-program
 sector.
 
 The authoritative Gate-1 battery covers 30 admitted operational cores: 7,507
-states and 7,417 exact columns, with zero Gram, literal-range, WF, or W7
-defects. It also checks 41,258 pure normalizers through size 11, the complete
-application/controller invariant over 1,187,953 reached states, and ordinary
-kernel RRI on all 17 canonical typed sectors. Each generated Lean file now
-constructs the assembly certificate joining shape, predecessor, literal-range,
-and exact-Gram checks. Immediate regeneration is byte-checked and content
-hashed. Fresh-context audit #6 returned **PASS with no required correction**.
-The proof record and runnable command are `~/Work/qalc-scratch/GATE1.md` and
-`python ~/Work/qalc-scratch/gate1_check.py`.
+states and 7,417 exact columns, plus 41,258 pure normalizers, the complete
+application/controller invariant over 1,187,953 reached states, and RRI on all
+17 canonical typed sectors. Generated Lean assembles shape, predecessor,
+literal-range, and exact-Gram checks; regeneration is byte-checked.
+Fresh-context audit #6 passed without correction. The record and command are
+`~/Work/qalc-scratch/GATE1.md` and `python
+~/Work/qalc-scratch/gate1_check.py`.
 
-**Architecture Gate 2 remains open after the 2026-08-12 native-CNOT build and
-physical-Lean advance.** The isolated shadow machine now has a real executable
-two-port `c M N K` schedule, persistent CNOT output frames, literal inverses,
-a passing pinned coloring, a linear SSA compiler, a cap-free structural
-recognizer/certificate constructor, and a fail-closed complete-carrier
-admission path. All 43 width-two circuits of length at most two pass exact
-Gram, global range separation, common macro timing/skeleton, common first-halt
-time, and literal terminal cleanliness. Under the buffered compiler, complete
-physical carriers also pass for Bell uncompute (1,013 states), the 33-gate
-H/T/CNOT Toffoli synthesis (14,809 states), and nonlinear target-as-later-
-control reuse (30,393 states). Removing the Bell compiler certificate restores
-four terminal garbage blocks, so the admission path is load-bearing.
+**Architecture Gate 2 remains open.** The isolated construction now has an
+executable two-port native CNOT, linear SSA compiler, cap-free structural
+certificate construction, fail-closed finite admission, and independently
+executable Python and Lean composed machines. All 43 width-two circuits of
+length at most two are physically clean; complete carriers also pass for Bell
+uncompute (1,013 states), derived Toffoli (14,809), and nonlinear target reuse
+(30,393). Eight differential shards match all 917 states of a mixed carrier
+field-for-field across Python and Lean.
 
-The complete composed machine now has an independently defined executable
-Lean twin, and the recursive Lean source compiler has an unbounded closedness
-theorem plus a structural certificate generator. Eight fail-closed
-`native_decide` shards compare every coefficient, row, token/zipper field,
-terminal field, and tick against Python on all 917 states of a mixed H/T/CNOT
-complete carrier. Empty/H/T/CNOT/mixed compiled source terms and certificates
-are pinned across the two implementations.
-
-This construction does **not** close Gate 2. The arbitrary-width/list Lean
-theorem still proves an ideal schedule whose scatter and cost functions are
-defined at the circuit level; executable-machine fidelity on a complete
-finite carrier does not supply the missing quantifier. No theorem yet refines
-actual `QalcComposedMachine.composedStep` boundaries to that ideal schedule by
-compiler-list induction. Consequently the live structural selector still
-performs bounded complete-carrier validation before admission; it cannot yet
-admit every compiler image from syntax alone. The authoritative boundary is
-`~/Work/qalc-scratch/GATE2.md`; the physical design is
-`~/Work/qalc-scratch/GATE2_CNOT.md`. The rejected ROM remains in
-`~/Work/qalc-scratch/attic/gate2-rom-no-go/`. The full accepted Gate-1 battery
-passes unchanged.
-
-The exact physical edge-coefficient map and weighted multi-step evolution over
-Lean `NFState` are now defined. The first enclosing induction is closed:
-`compiled_preparation_physical` derives every actual preparation row, the
-structurally certified H splits, arbitrary incoming amplitudes, and the width
-induction, reaching the exact unmerged `2^n` word column at `47n+4`. The next
-formal package is the circuit-indexed boundary invariant: its per-gate lemma
-must derive the actual 29/47/55-row CNOT/H/T intervals from `composedStep`,
-followed by the full-NF output induction. Until those theorems exist, the
-handwritten gate/output schedule remains a checked finite oracle rather than a
-proved abstraction of the machine.
+The first universal physical refinement is proved:
+`compiled_preparation_physical` reaches the exact unmerged `2^n` word column
+at the common `47n+4` cut for arbitrary positive width and circuit. Gate 2
+still requires compiler-list induction for the actual 29/47/55-row CNOT/H/T
+boundaries, certificate/WF preservation, and full-NF output to one terminal
+block with no earlier halt. Until then structural admission remains bounded by
+complete-carrier validation. The single current record is
+`~/Work/qalc-scratch/GATE2.md`; the full Gate-1 battery passes unchanged.
 
 The kernel transition/WF surface is v1.42, which passed fresh-context audit
 #35. Validation-only v1.43 adds a mandatory Gram-independent complete-carrier
