@@ -281,7 +281,9 @@ amplitudes, full-NF output, literal common terminal garbage, tick zero, and no
 earlier halt. The cap-free structural compiler selector and clean Bell,
 Toffoli, nonlinear-reuse, and Python/Lean differential checks complete the
 proof boundary. The Rust qALC reference pillar is the next implementation
-step.
+step. Its accepted executable reference, batteries, generated finite evidence,
+and Lean clean-compilation theorem are versioned in
+[qalc/](https://github.com/a9lim/blam/tree/main/qalc).
 Canonical evidence lives in
 [data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
 in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological
@@ -309,6 +311,8 @@ record in the
   superseded generations live in git history).
 - `scripts/` — the standing protocols, runnable.
 - `lean/` — the Lean 4 formalization (own README).
+- `qalc/` — the accepted Python reference machine, Gate-1/2 batteries,
+  generated finite evidence, and standalone Lean compilation theorem.
 - `tools/` — reusable low-level utilities and analyzers; prose and canonical
   outputs do not live here.
 - `contrib/ait-uni/` — the portable upstream `uni.rs` PR kit and parity

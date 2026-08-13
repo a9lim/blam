@@ -404,9 +404,10 @@ term is immutable; values reach `h` and `t` by routing, never copying.
 `quantum-algebraic/token.md` the active design, and
 `quantum-algebraic/kernel.md` the current machine register. The two rejected
 rewriting-machine drafts remain read-only in `quantum-algebraic/machine.md`.
-There is no qALC code in the Rust tree.
+The accepted Python/Lean reference and proof surface lives in `../qalc/`;
+there is no qALC Rust module yet.
 
-**Architecture Gate 1 is closed** (2026-08-11). The accepted out-of-tree
+**Architecture Gate 1 is closed** (2026-08-11). The accepted version-controlled
 machine combines the v1.43 kernel with exact H/T scattering, internal
 full-normal-form zipper readback, typed source-retaining errors, common-origin
 halt/tick sectors, and exact predecessor fibres. A static selector admits a
@@ -421,8 +422,7 @@ application/controller invariant over 1,187,953 reached states, and RRI on all
 17 canonical typed sectors. Generated Lean assembles shape, predecessor,
 literal-range, and exact-Gram checks; regeneration is byte-checked.
 Fresh-context audit #6 passed without correction. The record and command are
-`~/Work/qalc-scratch/GATE1.md` and `python
-~/Work/qalc-scratch/gate1_check.py`.
+`../qalc/GATE1.md` and `python qalc/gate1_check.py` from the repository root.
 
 **Architecture Gate 2 is closed** (2026-08-13). For every positive width and
 finite typed H/T/CNOT circuit, `physicalCleanCompile` now refines the actual
@@ -443,11 +443,10 @@ remain physically clean. Complete carriers pass for Bell uncompute (1,013
 states), derived Toffoli (14,809), and nonlinear target reuse (30,393), and
 eight differential shards match all 917 mixed-carrier states field-for-field
 across Python and Lean. The authoritative record and battery are
-`~/Work/qalc-scratch/GATE2.md` and `python
-~/Work/qalc-scratch/gate2_check.py`; Gate 1 re-closes unchanged. The Rust qALC
-reference pillar is now the next implementation step. The scratch root is a
-current-only working surface; superseded audits, countermodels, and rejected
-routes are retained under its `attic/`.
+`../qalc/GATE2.md` and `python qalc/gate2_check.py`; Gate 1 re-closes
+unchanged. The Rust qALC reference pillar is now the next implementation step.
+Superseded audits, countermodels, and rejected routes live only in the ledger,
+git history, and external audit records.
 
 The kernel transition/WF surface is v1.42, which passed fresh-context audit
 #35. Validation-only v1.43 adds a mandatory Gram-independent complete-carrier
@@ -457,8 +456,8 @@ row and proves both RRI formulations on the 17 typed sectors, including
 certified-H reconvergence. Raw-WF recall is noninjective; the stronger ambient
 lifecycle/minimal-carrier theorem remains optional and open. Python carrier
 closure and large generated `native_decide` evaluations are explicit trust
-boundaries. Audit chronology lives only in `ledger/2026-08.md`, the scratch
-audit kits, and git history.
+boundaries. Audit chronology lives only in `ledger/2026-08.md`, the commit
+graph, and external audit records.
 
 The open docket, in order:
 

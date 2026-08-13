@@ -1,0 +1,36 @@
+name: qALC
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - "qalc/**"
+      - ".github/workflows/qalc.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "qalc/**"
+      - ".github/workflows/qalc.yml"
+
+concurrency:
+  group: qalc-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  reference-and-proofs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install pinned Lean toolchain
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Gate 1 and Gate 2
+        run: python qalc/gate2_check.py

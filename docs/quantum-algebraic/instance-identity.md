@@ -82,8 +82,7 @@ targets across all 17 typed sectors. Its proofs use ordinary kernel
 `native_decide`, and are rebuilt by:
 
 ```bash
-cd ~/Work/qalc-scratch
-python QalcConcreteBuild.py --jobs 4
+python qalc/QalcConcreteBuild.py --jobs 4
 ```
 
 ## 3. Current claim and optional strengthening
@@ -98,7 +97,7 @@ graph. A uniform lifecycle/minimal-carrier derivation would be useful
 structure, but it is optional: neither Gate 1, Gate 2, nor the Rust reference
 implementation depends on it. Historical no-rider, ancestry, dominator, and
 phase-separation proof attempts and their countermodels are preserved only in
-the scratch attic and the August ledger.
+the August ledger and git history.
 
 The executable `instance_identity.py` freezes the gate-copy reconstruction
 and raw-recall counterexample; `rri.py` remains a finite falsification

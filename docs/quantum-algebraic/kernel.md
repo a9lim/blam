@@ -1,8 +1,8 @@
 # qALC kernel — current register
 
 **Architecture status:** Gate 1 closed on 2026-08-11 and Gate 2 closed on
-2026-08-13. The proof records are `~/Work/qalc-scratch/GATE1.md` and
-`~/Work/qalc-scratch/GATE2.md`; the Rust reference pillar is now authorized.
+2026-08-13. The proof records are `../../qalc/GATE1.md` and
+`../../qalc/GATE2.md`; the Rust reference pillar is now authorized.
 The native-CNOT rows extend this v1.43 base in the proved Gate-2 compiler
 sector rather than changing the accepted Gate-1 kernel.
 
@@ -25,10 +25,10 @@ typed halt/error sectors, a conservative source-history fallback, and the
 semantic objects `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`.
 
 This file states the current machine and verification boundary. Audit rounds,
-failed claims, and repairs live in `docs/ledger/2026-08.md`, the scratch audit
-kits, and git history. The scratch implementation remains at
-`~/Work/qalc-scratch/`; `token.md` is the active design and `machine.md` is
-read-only history.
+failed claims, and repairs live in `../ledger/2026-08.md`, git history, and
+external audit records. The accepted executable reference and proofs live in
+`../../qalc/`; `token.md` is the active design and `machine.md` is read-only
+history.
 
 ## 1. Scope
 
@@ -866,7 +866,7 @@ outside this h-only kernel scope.
 The v1.42 transition/WF surface passed fresh-context audit #35 without
 correction. Validation-only v1.43 and the later composed Gate-1/2 proofs are
 covered by their own executable batteries and records; audit chronology and
-superseded proof routes live in the ledger and scratch attic.
+superseded proof routes live in the ledger and git history.
 
 ## 10. Verification state
 

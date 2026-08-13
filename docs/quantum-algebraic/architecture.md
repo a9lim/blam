@@ -4,13 +4,12 @@ This document is the durable architecture contract for blam's
 quantum-algebraic pillar. It uses the same structure as the classical and
 quantum architectures so the three systems can be compared layer by layer.
 
-**The pillar remains out of tree**: nothing in `src/` or `data/` is
-qALC-relative yet, but both §9 architecture gates are closed and the Rust
-reference implementation is now authorized. The accepted machine, compiler,
-proofs, and batteries live at `~/Work/qalc-scratch/`; `GATE1.md` and
-`GATE2.md` are the proof records. Development history and the superseded
-rewriting-machine formalizations live in `../ledger/2026-08.md` and
-`machine.md`.
+**The Rust pillar is not yet implemented**: nothing in `src/` or `data/` is
+qALC-relative yet, but both §9 architecture gates are closed. The accepted
+machine, compiler, proofs, batteries, and generated evidence are versioned in
+`../../qalc/`; `GATE1.md` and `GATE2.md` are the proof records. Development
+history and the superseded rewriting-machine formalizations live in
+`../ledger/2026-08.md`, git history, and `machine.md`.
 
 ## 1. Purpose and position among the pillars
 
@@ -456,8 +455,8 @@ carrier validation is an independent audit oracle rather than a premise of
 the unbounded theorem. The 43 width-two circuits through length two, the
 1,013/14,809/30,393-state named carriers, and the 917-state Python/Lean
 differential remain executable checks. Rejected selector, ROM, and linear-CPS
-routes are historical evidence in the ledger and scratch attic. The
-authoritative theorem record is `~/Work/qalc-scratch/GATE2.md`.
+routes are historical evidence in the ledger and git history. The
+authoritative theorem record is `../../qalc/GATE2.md`.
 
 This establishes a universal circuit gate set inside the compiled fragment.
 A separate domination or universality theorem for the semimeasure/operator

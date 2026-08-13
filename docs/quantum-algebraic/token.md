@@ -1,8 +1,8 @@
 # qALC machine — token-transport design
 
 **Status: Gates 1 and 2 closed.** The §4 kernel is registered current-only in
-`kernel.md`; the complete proof records and executable reference live out of
-tree at `~/Work/qalc-scratch/`. Fresh-context Gate-1 audit #6 returned PASS,
+`kernel.md`; the complete proof records and executable reference live in
+`../../qalc/`. Fresh-context Gate-1 audit #6 returned PASS,
 and the universal Gate-2 clean-compilation theorem closed on 2026-08-13. The
 Rust reference pillar is the next implementation step. The qALC machine is
 IAM-lineage token transport
@@ -249,17 +249,17 @@ The load-bearing Lean endpoint is
 checks cover all 43 width-two circuits through length two, Bell uncompute,
 derived Toffoli, nonlinear target reuse, mutation controls, and a 917-state
 Python/Lean differential. The authoritative records are
-`~/Work/qalc-scratch/GATE1.md` and `~/Work/qalc-scratch/GATE2.md`; rejected
-routes and design chronology live only in the ledger and scratch attic.
+`../../qalc/GATE1.md` and `../../qalc/GATE2.md`; rejected routes and design
+chronology live only in the ledger and git history.
 
 ## 4. Current state register
 
 The original three-program kernel target has been exceeded: the current
-out-of-tree machine covers the exact lambda-IAM substrate, H/T gate transport,
+reference machine covers the exact lambda-IAM substrate, H/T gate transport,
 full-normal-form readback, typed terminal sectors, and static total semantics.
 Detailed machine definitions and proof boundaries live in `kernel.md`; the
-completed composed proof is `~/Work/qalc-scratch/GATE1.md`. Audit chronology
-belongs only in `docs/ledger/2026-08.md` and the preserved scratch audit kits.
+completed composed proof is `../../qalc/GATE1.md`. Audit chronology belongs
+only in `../ledger/2026-08.md`, git history, and external audit records.
 
 | Item | Current status |
 |---|---|

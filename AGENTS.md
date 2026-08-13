@@ -67,29 +67,29 @@ The library is three layers — `blc` substrate, symmetric `classical` and
 whose subcommands live in `src/cli/`. Lab-gated subcommands are recognised
 without the feature and say how to get themselves; do not "fix" that by
 deleting the arm. A third pillar, `quantum-algebraic` (qALC: quantum *control*,
-storeless, runtime states in ℓ² over token configurations), remains design and
-proof only. `docs/quantum-algebraic/architecture.md` is the contract;
+storeless, runtime states in ℓ² over token configurations), has an accepted
+Python/Lean reference and proof surface in `qalc/`; its Rust engine is not yet
+implemented. `docs/quantum-algebraic/architecture.md` is the contract;
 `token.md` is the active IAM-lineage token design; `kernel.md` is the
 current-only v1.43 register; `machine.md` is read-only history. Architecture
-Gate 1 is closed: the out-of-tree composed machine supplies exact H/T
+Gate 1 is closed: the reference composed machine supplies exact H/T
 scattering, full-NF readback, typed halt/error sectors, exact predecessor
 fibres, validated finite admission with conservative-history fallback, and
 `U`/`μ_p`/`ρ_p`/`M`/`Ω_qALC`. Its 30 finite cores and concrete Lean
 checks pass the authoritative battery and fresh-context audit #6. The stronger
 ambient lifecycle theorem is optional; raw-WF recall is known noninjective.
 
-The live implementation, batteries, and proof records are
-`~/Work/qalc-scratch/{gate1_check.py,GATE1.md,gate2_check.py,GATE2.md}`. Gate 2
+The live implementation, batteries, generated evidence, and proof records are
+`qalc/{gate1_check.py,GATE1.md,gate2_check.py,GATE2.md}`. Gate 2
 closed on 2026-08-13: the actual composed machine now has an unbounded
 arbitrary-circuit H/T/CNOT refinement from one common reachable encoded-input
 cut to exact ideal columns, full-NF output, one literal terminal block, no
 earlier halt, arbitrary finite amplitudes, and cap-free structural compiler
 admission. Clean finite Bell/Toffoli/nonlinear carriers and the 917-state
 Python/Lean differential remain independent evidence. Historical alternatives,
-audits, and provenance stay in the scratch attic; chronology belongs in
-`docs/ledger/`. The Rust qALC reference pillar is now authorized and should
-implement this proved surface first. qALC work must leave classical and qBLC
-rows bit-identical.
+audits, and superseded proof routes live only in `docs/ledger/`, git history,
+and external audit records. The Rust qALC pillar should implement this proved
+surface first. qALC work must leave classical and qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →
