@@ -445,7 +445,9 @@ eight differential shards match all 917 mixed-carrier states field-for-field
 across Python and Lean. The authoritative record and battery are
 `~/Work/qalc-scratch/GATE2.md` and `python
 ~/Work/qalc-scratch/gate2_check.py`; Gate 1 re-closes unchanged. The Rust qALC
-reference pillar is now the next implementation step.
+reference pillar is now the next implementation step. The scratch root is a
+current-only working surface; superseded audits, countermodels, and rejected
+routes are retained under its `attic/`.
 
 The kernel transition/WF surface is v1.42, which passed fresh-context audit
 #35. Validation-only v1.43 adds a mandatory Gram-independent complete-carrier

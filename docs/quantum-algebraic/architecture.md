@@ -5,13 +5,12 @@ quantum-algebraic pillar. It uses the same structure as the classical and
 quantum architectures so the three systems can be compared layer by layer.
 
 **The pillar remains out of tree**: nothing in `src/` or `data/` is
-qALC-relative yet. Gate 1 of the two §9 implementation gates is closed; Gate
-2 remains open and continues to prohibit landing an engine. The accepted
-Gate-1 machine, proofs, batteries, and six-audit provenance chain live at
-`~/Work/qalc-scratch/`; `GATE1.md` is its proof record. The contract was
-ratified through gaslamp thread `qalc-architecture`; development history and
-the superseded rewriting-machine formalizations live in
-`../ledger/2026-08.md` and `machine.md`.
+qALC-relative yet, but both §9 architecture gates are closed and the Rust
+reference implementation is now authorized. The accepted machine, compiler,
+proofs, and batteries live at `~/Work/qalc-scratch/`; `GATE1.md` and
+`GATE2.md` are the proof records. Development history and the superseded
+rewriting-machine formalizations live in `../ledger/2026-08.md` and
+`machine.md`.
 
 ## 1. Purpose and position among the pillars
 
@@ -421,83 +420,50 @@ This fragment is the dyadicity campaign's natural sequel instrument: in
 full qALC, ω already carries non-dyadicity, so the witness reading is
 fragment-relative.
 
-**Universality.** Toffoli-class reversible operations are expressible as
-pure λ-terms on Church-encoded data, and Shi–Aharonov make
-Toffoli+Hadamard a universal gate set (real amplitudes; complex via the
-standard rebit encoding), with `{h, t}` giving Clifford+T natively. But
-the theorem is about *abstract clean gates*: a λ-term computing a
-reversible Boolean function generically realizes `|x⟩ ↦ |F(x)⟩|g_x⟩`
-with input-dependent garbage under this machine, and tracing `g_x`
-dephases exactly the superpositions universality needs. Input-independent
-garbage is necessary but not sufficient under the common-origin halt
-convention: input-dependent *running time* places outputs at different
-tick ages and dephases them just as surely. What qALC requires is a
-**clean coherent compilation theorem**: for a single common transition
-count `T`,
+**Clean coherent compilation.** A λ-term computing a reversible Boolean
+function does not automatically act as the corresponding coherent gate:
+input-dependent routes, garbage, or halt ages retain which-input information.
+Gate 2 therefore requires one immutable compiled invocation and a common
+reachable pre-computation cut satisfying
 
 ```text
 U^T |x, clean⟩ = Σ_y C[y,x] |y, g*, c*, 0⟩
 ```
 
-for every basis input `x`, where `C` is the ideal circuit matrix (the
-reversible-classical special case has one output `F(x)`) — same `T`, same
-residual garbage `g*`, same terminal control `c*`, the intended amplitudes,
-with `|x, clean⟩` and the result read through
-one immutable compiled invocation sector and halted-output states. The input
-map must be an injective, fixed, decodable **pre-computation** boundary in that
-sector, with all basis states at one reachable global cut. Compiling a
-different closed invocation for each `x` proves only pointwise classical
-behavior across orthogonal sectors; choosing terminal predecessors as inputs
-is equally vacuous. Clean
-compilation must be realized by synchronized reversible token transport
-and uncomputation; no construction may basis-copy an unknown quantum
-result (`machine.md` §9.1), and the classical Bennett discipline
-applies only where the copied register is genuinely classical.
-Synchronization is not automatic. Until it is
-proved, universality is a target, not a property, and the H–NOT–H witness
-(§7) is its smallest instance. A formal statement of what universality
-means for qALC's objects — presumably a Gács-style domination claim for
-`M` within an appropriate class — is also unwritten.
+for every basis input `x`, with the ideal circuit matrix `C`, one time `T`,
+and literal branch-independent terminal garbage and control at tick zero.
+Compiling a separate closed term per input would prove only pointwise behavior
+across orthogonal sectors and is excluded.
 
-**Gate-2 construction audit (2026-08-12).** Lambda/tuple and geometric
-selector entanglers are rejected: they resample repeated controls or retain
-route-dependent terminal residue, and the synchronized dual-rail route was an
-exponential compile-time ROM whose alleged input cut came after leaf
-selection. The isolated successor instead adds one invocation-supplied native
-CNOT to the composed machine. It now has an executable reversible two-port
-schedule, persistent reusable outputs, a passing raw coloring, a linear SSA
-compiler, structural certificate construction, and fail-closed finite
-admission. Bell uncompute, the derived 33-gate Toffoli, and nonlinear target-
-as-later-control reuse pass exact complete-carrier checks in one sector with
-common cuts, times, macro skeletons, and literal terminal residue.
+Gate 2 closes this contract for every positive width and finite typed
+H/T/CNOT circuit. The linear SSA compiler produces one closed term and a
+syntax-directed certificate. All basis words occur at the common reachable
+cut `47n+4`; from there the actual composed machine reaches the ideal `Dw`
+column after
 
-These witnesses select the machine design but do not close this gate. The
-arbitrary circuit theorem in the scratch proof surface is an ideal schedule
-theorem, not a refinement of the actual composed transition relation. The raw
-kernel, full-NF readback, and native-CNOT dispatcher now have an independently
-defined executable Lean twin; a recursive Lean source compiler is proved
-closed for arbitrary circuits and constructs its certificate structurally.
-Eight fail-closed shards differentially pin every edge and state field to
-Python on all 917 states of a mixed H/T/CNOT complete carrier. The exact
-edge-coefficient map and weighted multi-step evolution are also defined in
-Lean, so the physical `U^T` equation is directly stateable there. The first
-universal refinement components are now proved: actual compiled preparation
-reaches its exact unmerged `2^n` word column at the common `47n+4` cut, with
-structural certificate lookup and arbitrary incoming amplitudes; from that cut,
-the first compiled H, T, or CNOT reaches its literal boundary in exactly 47,
-55, or 29 actual rows for arbitrary width, wires, word, amplitude, and circuit
-tail, with arbitrary-finite-superposition corollaries in that same sector.
-Finite fidelity and first-boundary theorems do not discharge the remaining
-universal quantifier. Closure still requires arbitrary-boundary lifting and
-compiler-list induction, the remaining certificate transparency,
-compiler-indexed WF preservation, full-NF output, common terminal residue, and
-no early halt from
-`composedStep`. Until then structural admission remains bounded by complete
-finite-carrier validation, accepted
-v1.43 is unchanged, and the Rust tripwire remains. The single current proof
-and construction record is `~/Work/qalc-scratch/GATE2.md`.
+```text
+T(C,n) = 13n + 15 + 50 #H + 58 #T + 32 #CNOT.
+```
 
-## 7. Planned engine stack and verification contract
+The Lean refinement covers arbitrary circuit boundaries, compiler-indexed WF
+and storage, full-normal-form tuple readback, history unwind, exact literal
+terminal garbage, arbitrary finite amplitudes, and no earlier halt. Toffoli
+is derived exactly from H/T/CNOT. Bell uncompute and nonlinear reuse of a
+Toffoli target as a later CNOT control are explicit clean witnesses.
+
+Recognized compiler images take a cap-free structural admission path; finite
+carrier validation is an independent audit oracle rather than a premise of
+the unbounded theorem. The 43 width-two circuits through length two, the
+1,013/14,809/30,393-state named carriers, and the 917-state Python/Lean
+differential remain executable checks. Rejected selector, ROM, and linear-CPS
+routes are historical evidence in the ledger and scratch attic. The
+authoritative theorem record is `~/Work/qalc-scratch/GATE2.md`.
+
+This establishes a universal circuit gate set inside the compiled fragment.
+A separate domination or universality theorem for the semimeasure/operator
+object `M` remains downstream work.
+
+## 7. Rust engine stack and verification contract
 
 Planned module tree `blam::qalc`, drivers under a new `blam` subcommand
 group; the reference evaluator represents `ψ_τ` as an exact sparse map
@@ -753,12 +719,11 @@ Every qALC engine change must then satisfy:
 9. Signature order freeze (§3) before any canonical data.
 10. Output convention (§4.6) — deliberately open, mirroring qBLC.
 
-Items 1 and 2 gate implementation. Item 1 is closed; no `src/qalc/` code lands
-until item 2's clean coherent compilation theorem is also closed. The scalar
-ring and configuration algebra now have the Gate-1 proof surface; the open
-object is a reusable multiwire boundary whose token dynamics—not a terminal
-decoder—returns equal garbage, control, and transition count across coherent
-branches and remains clean when a later H interrogates one wire.
+Items 1 and 2 gated implementation and are now closed. The Rust reference
+pillar should implement their proved state, compiler, certificate, and
+transition surfaces first; census optimization comes only after exact
+Python/Lean/Rust differential agreement. Items 3–10 remain research or
+product-shape questions, not prerequisites for the reference evaluator.
 
 ## 10. Lineage and related documents
 

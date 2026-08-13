@@ -83,37 +83,16 @@ tape/log entries: • | logged position l | γ_g | μ_g | A_g(b′)
 
 `γ_g` (gate boundary marker), `μ_g` (probe frame), `A_g(b′)` (fired
 answer token), `α_g(i, b′)` (answer ticket, instance-tagged), `ρ`
-(root frame). **The state language (v1.21–v1.24, audits
-#13–#16 — enforced by W0)**: exact-type PURITY first — the five
-registers are exact tuples of exact tuples/str/int, checked
-WITHOUT HASHING before any scan (a list-valued tape passed WF
-and TypeError'd in the fire; a nested tuple-subclass with a
-hostile `__hash__` would crash the checker's own caches, and a
-hostile `__eq__` could poison them — impure states early-return
-W0 and W1-W9 are not adjudicated over them); every bit an EXACT
-int in `{0, 1}` (bool is a Python subclass of int and is
-refused — `rootval` string-formats the bit, so `1.0`/`True`
-would mint out-of-alphabet terminal kinds `halt1.0`/`haltTrue`);
-every gate kind in `{h, t}`; exact tuple arities; lp productions
-recursive wherever they appear (slices, ticket/frame instances,
-K/KD/KA keys), with path components in `{f, a, b}` and every
-occurrence resolving to a BOUND `Var` of the CLOSED term —
-1-INDEXED, so `Var(0)` is no variable (audit #16: `i <= depth`
-alone accepted it and `binder_path` IndexError'd one step
-later — the exact convention the repo's own conventions doc
-warns about) — satisfying the λIAM logged-position equation
-`len(slice) = level(occ) − level(binder)`; the log a separate
-SORT (lp-like entries only); retained-whole `K(l)` cargo an
-ARRIVAL lp (`L` or `AL`); the state coordinates in language
-(`d ∈ {↓, ↑}`, `pos` resolving in the term); the VB phase
-exact-int with `k ∈ {0, 1, 2}`. Machine-PHASE placement of
-well-formed tokens is the other invariants' job — W0 is the
-language, not the protocol. Before v1.21, `A_h(2)` was WF and
-flowed to `halt2`; before v1.22, `A_h(True)` still was, and
-off-language coordinates stalled silently or crashed inside WF;
-before v1.23, BULLET rode the log into a b1 collision; before
-v1.24, `Var(0)` and list containers passed WF and crashed one
-step later.
+**State language (enforced by W0).** Validation checks exact host types before
+hashing or structural scans: the five registers contain only exact tuples,
+strings, and integers; bits are exact integers in `{0,1}`; gate kinds and
+tuple arities are fixed. Logged positions are recursive wherever they occur,
+use paths over `{f,a,b}`, resolve to bound variables of the closed 1-indexed
+term, and satisfy the lambda-IAM slice equation
+`len(slice) = level(occurrence) - level(binder)`. The log is a separate
+lp-like sort; retained `K(l)` cargo must be an arrival logged position.
+Direction, path, and virtual-boolean phase are also validated. W0 defines the
+host-safe state grammar; W1-W9 enforce machine-phase placement and coherence.
 **Instance** `i` = the invoking occurrence's logged
 position — always at log head when the token stands at the gate
 leaf (arg-entry is structurally forced); a logged position names a
@@ -856,70 +835,38 @@ to repair; `qprime` types clean), `dupcall` (NOT′/EP ununifiable).
 All escapes — `h h`, gate literals in bodies, swapped or doubled
 shell arguments — rejected.
 
-## 9. The claim and the reachable lifecycle gap
+## 9. Accepted claim and optional stronger theorem
 
-**The coverage claim.** Over programs that are (i) typable
-h-only under the signature judgment (with the syntactic boundary:
-shell args exactly `Gate(h)` then `Gate(t)`, no gate literals in
-bodies, closed bodies) and (ii) whose canonical pipeline reports
-`machine_coverage`: **the kernel is total and Gram-clean on the
-structural reachable basis (U an isometry there), every admitted
-erasure is reversibly decodable from its retained fibre
-coordinate, the frozen certificate's exact run carries zero
-guard/err amplitude at every step, and every failure mode is
-typed and visible — never silent.** Reachable-recall injectivity is an
-independent direct acceptance conjunct, not inferred from the Gram result.
+For programs that are typable h-only under the fixed-shell signature judgment
+and whose canonical pipeline reports `machine_coverage`, the kernel is total
+and Gram-clean on the complete structural reachable basis. Every admitted
+erasure is reversibly decodable from its retained fibre coordinate; the frozen
+run carries zero guard/error amplitude; every rejected or malformed case is
+typed and visible. Reachable-recall injectivity is an independent admission
+condition, not a consequence of Gram cleanliness.
 
-`machine_coverage` does NOT claim agreement with an ideal quantum
-semantics — no total reference exists for bare λ-terms; which
-eliminations are wires is the compilation theorem's question.
-Physics agreement is claimed program-by-program in the suite's
-written-first table (hand-derived circuit readings, several
-independently confirmed by the audits; `dupcall`'s refusal row is
-machine-measured, the one non-hand entry). A user cannot tell from
-`machine_coverage` alone whether a program's canonical placement
-reaches its circuit ideal — that adjudication lives in the
-physics table. Nor is the canonical certificate minimal or
-maximal (§5): it is the deterministic validation-adjudicated
-greedy fixpoint, nothing more.
+`machine_coverage` is a machine theorem, not automatic agreement with an
+ideal circuit reading for an arbitrary lambda term. Physics claims are pinned
+program by program. Gate 2 supplies the separate clean-compilation theorem for
+the typed H/T/CNOT compiler image.
 
-**The post-audit identity result and direct finite gate.** The
-fixed-shell gate-copy theorem proves `(g,i) ↦ (q_g,(i))`, closing
-distinct-copy key aliasing. Every detectable misuse remains typed
-(`frame-conflict`, `alien-ticket`, `key-alias`, `refire`; deep W3
-adjudicates bit-carrying coexistence; W9 excludes duplicate live
-tickets statically). The raw alias-tolerant transition theorem is
-false because two agreeing `recall` sources differing only by the
-matching frame have the same target. One source of the exact
-`negative` witness is unreachable. v1.43 checks the reachable-recall predicate
-directly over a complete nonterminal carrier and rejects the registered pair
-when synthetically made reachable. The uniform lifecycle derivation and
-its phase-sensitive H-history coherence remain open, but neither is used as a
-premise of current finite-sector `machine_coverage`. Concrete Lean replay is
-closed for all 17 canonical typed sectors.
+The fixed-shell gate-copy theorem proves that `(gate, instance)` identifies a
+complete dynamic gate-copy address. Raw agreeing-frame recall remains
+noninjective over arbitrary WF states, so v1.43 checks RRI directly over each
+complete finite carrier. Concrete Lean replay closes both source-projection
+and actual-target RRI for all 17 canonical typed sectors. A uniform derivation
+from typing or W0-W9 remains optional and is not a premise of either
+architecture gate.
 
-Standing fences, all typed: literal gate application and open
-bodies (untypable), the `t` gate (ℤ[ω] reserved), outputs beyond
-{0̂, 1̂, I} (readback controller), and every §3 guard.
+Standing typed fences are literal gate application, open bodies, unsupported
+kernel outputs, and every transition-table guard. The composed Gate-1 machine
+adds live T, arbitrary full-normal-form output, and exact terminal adapters
+outside this h-only kernel scope.
 
-**The v1.42 claim PASSED fresh-context independent audit #35
-(cx-20260810-105238-1baf, 2026-08-10) with zero required
-corrections — C1–C6 confirmed, the alias gap the registered
-conditional.** The loop's gate discipline is retired with the
-loop: thirty-four FAILs taught that the gate sentence and §1
-must name the same audit number (audits #16 and #19 caught it
-stale; v1.27 made it a build assertion), and the final pack
-asserted both that and the consult size bound. (Audit #16 caught
-this sentence stale; audit #19 caught it stale AGAIN despite the
-parenthetical promising otherwise — the promise is now an
-ASSERTION: the pack assembly script verifies §1 and §9 name the
-same audit number and refuses to build the pack otherwise.)
-
-The gate-copy theorem, raw-recall counterexample, and v1.43 direct proof gate
-postdate that pack. They change neither its audit verdict nor the v1.42
-transition/WF machine. No fresh-context v1.43 verdict is claimed; the targeted
-multiagent audit and exact regression surface are recorded in §1 and
-`RRIDirectCertificateAudit.md`.
+The v1.42 transition/WF surface passed fresh-context audit #35 without
+correction. Validation-only v1.43 and the later composed Gate-1/2 proofs are
+covered by their own executable batteries and records; audit chronology and
+superseded proof routes live in the ledger and scratch attic.
 
 ## 10. Verification state
 
@@ -949,14 +896,11 @@ optional ambient lifecycle theorem. The 25 rerunnable historical audit kits
 and their adjudicated exceptional exits are provenance, not current interface;
 the ledger records them without duplicating them here.
 
-## 11. Appendix — HH step-indexed trace
+## 11. Reference HH step-indexed trace
 
-(As of v1.23, every post-fire state additionally carries the
-explicit `('KD', ())` bundle in KS — not displayed in these rows;
-rules, tape shapes, and timings are unchanged. The v1.24 KA head
-appears in NO row of this trace or any reachable state of the
-canonical suite — the suppressed-decode arm is reachably dead
-code there; only raw-state fixtures and kit probes mint it.)
+Every post-fire state also carries the explicit empty `KD` bundle in KS; it is
+omitted below because it does not change the tape shapes or timing. The
+suppressed-decode `KA` head is absent from this canonical trace.
 
 Notation: `b` = bullet, `L(path|n)` = logged position (slice length
 n), `gh/mh` = `γ_h`/`μ_h`, `Ahb′` = `A_h(b′)`, `ahb′` = `α_h(b′)`,

@@ -25,8 +25,8 @@ arbitrary superpositions, and no earlier halt. Clean Bell, derived Toffoli,
 nonlinear-reuse carriers, and a 917-state Python/Lean differential remain the
 independent executable evidence.
 This document is current-only: guardrails (§1), the exact classical
-substrate (§2), the design sketch (§3), and the kernel gate with the
-obligations register (§4). History — the route choice, the ratified
+substrate (§2), the accepted quantum-control extensions (§3), and the
+current state register (§4). History — the route choice, the ratified
 amendment, the review record, the failed rewriting drafts — lives in
 `../ledger/2026-08.md` and `machine.md`.
 
@@ -175,214 +175,84 @@ own — every transition at a constant leaf belongs to the δ gadget
 by any classical rule (the standard machine stops at the head), so
 gate interrogation is necessarily new machinery.
 
-## 3. The δ-gadget design sketch — unverified
+## 3. Accepted quantum-control extensions
 
-Everything in this section is hand-derived against §2 and **has not
-been step-indexed against a full table**; it records the design
-position for the kernel (§4), not established results.
+The current machine extends the immutable-term λIAM substrate at four explicit
+surfaces. Their complete executable definitions live in the scratch reference;
+this document records the design shape rather than duplicating the row table.
 
-### 3.1 Value as routing: the probe
+### 3.1 H/T interrogation and replay
 
-A boolean's value, in interaction terms, is *which argument it
-selects*. The gadget learns its argument's value the way the calculus
-uses it: when the first query in `↓` reaches the `h` leaf (tape top
-`•` — `h` is applied), the gadget consumes that `•` and launches a
-**probe**: enter the argument `M` in `↓` with two probe bullets and a
-gate-tagged probe frame on the tape — tape `•·•·μ_h·T`. The probe run
-is an ordinary λIAM sub-run: it needs no new machinery, may hit inner
-δs (branching mid-probe — this is how HH composes), may escape into
-the outer term (open-head `M`), or may never return (divergent `M`;
-that amplitude honestly never halts).
-
-Exit shapes at the gadget's virtual application context, hand-derived:
+A gate application launches a two-slot boolean probe. Ordinary λIAM transport
+evaluates the argument; the returned slot selects the H or T matrix column.
+The gate row scatters exact amplitudes over balanced virtual answers:
 
 ```text
-M = 0̂ = λa.λb.a :  •2 •2 var       — exits ↑, tape l_a·μ_h·T
-M = 1̂ = λa.λb.b :  •2 •2 var •4    — exits ↑, tape •·l_b·μ_h·T
+H = 1/sqrt(2) [[1,  1], [1, -1]]
+T =             [[1,  0], [0,  omega]]
 ```
 
-The standard `↑` routing against the two virtual applications then
-seeks virtual slot 1 (tape top `l`) or virtual slot 2 (tape top `•`
-then `l`) — i.e. **the boolean arrives as the token's exit slot: pure
-position, no payload, nothing copied**. The two literal-boolean paths
-are one step apart and leave different binder positions in the tape —
-which is exactly why fired outcomes must never be routed through
-literal-boolean shapes (§3.3). Non-boolean normal arguments classify
-by other exit shapes (`λa.a` exits `l_a·•·μ_h·T`; a three-lambda
-prefix strands `↓` on `μ_h`; …) and enter the species error sector,
-retaining the transcript (guardrail 13). Totality of this
-classification over all exit shapes is a proof obligation.
+Tickets, instance-keyed replay frames, and storage records retain the exact
+predecessor fibre. Re-interrogating the same dynamic gate copy recalls or
+replays its recorded answer; it never resamples. Every malformed species,
+foreign ticket, conflicting bit, dead-key refire, and bad routing shape enters
+a typed source-retaining error sector.
 
-### 3.2 The δ block fires on arrival states
+The runtime key `(gate, instance)` reconstructs the complete fixed-shell gate
+copy address. Raw agreeing-frame recall is not injective on arbitrary WF
+states, so admission separately checks reachable-recall injectivity on the
+complete finite carrier. The concrete Lean replay proves that predicate for
+all 17 canonical typed sectors.
 
-Let `arr_b` be the arrival state at virtual slot `b+1` for a given
-spectator `κ` (tape rest `T`, log, gadget instance position). The δ
-column is the unitary block **directly on arrivals** — no copy, no
-uncompute step, so the no-cloning shape cannot arise:
+### 3.2 Full-normal-form readback and terminal sectors
 
-```text
-U |arr_b, κ⟩ = Σ_b′ (Q_q)_{b′b} |ans_b′, J_q(κ)⟩      Q_h = H, Q_t = diag(1, ω)
-```
+A single depth-first zipper reads the complete normal form without copying
+values. RB/RBL delimiters and binder/residue records make ENTER, RETURN, and
+terminal rows reversible. Bare or variable-headed gate applications remain
+neutral normal forms; closed non-Boolean gate arguments enter typed errors.
 
-with `ans_b′` gate-tagged answer-routing states (the `J_q` landing
-tags give cross-gate orthogonality). "Partial injection + unitary
-blocks" is *not* automatically an isometry; the proof shape is:
-`U†U = I` exactly when (1) the ordinary step is injective on ordinary
-sources; (2) each reachable source matches exactly one rule; (3) each
-`Q_q` is unitary; (4) `κ ↦ landing(q, b′, κ)` is injective;
-(5) landing subspaces for distinct gate kinds are orthogonal;
-(6) every δ landing is orthogonal to every ordinary successor;
-(7) reachable finals have norm-one successors (ticks/errors —
-totalization); (8) landings are valid reachable-basis states and the
-reachable span is forward-invariant. One-step column orthonormality
-then propagates to every iterate.
+Halt and error entry preserve the complete terminal predecessor fibre. Their
+common-origin unilateral tick tails are forward invariant, so equal-time
+interference is explicit and halt mass is monotone. Exact amplitudes use
+`Z[omega]/sqrt(2)^k`; the semantic layer defines `U`, `mu_p`, `rho_p`,
+finite `M`, and `Omega_qALC` for every finite closed sector. Rejected
+admission selects the exact conservative source-history representation.
 
-The global-injectivity risk is concentrated in one place: the block
-absorbs the arrival's `b`-dependent tape prefix (`l_a·μ` vs
-`•·l_b·μ`), so two *different* reachable arrivals at the same slot
-with the same spectator would collide. Hence:
+### 3.3 Native CNOT and linear SSA compilation
 
-**Lemma obligation L1 (arrival-residue determinacy).** For every
-reachable (gate instance, slot, spectator) triple, exactly one arrival
-residue is reachable. Per classical branch this holds because the
-probe run from a fixed entry is deterministic; across δ-branches it is
-*arranged* by §3.3. This is the design's load-bearing lemma.
+Gate 2 adds one invocation-supplied two-port CNOT. It queries its control and
+target once, parks the first result in reversible controller records, and
+delivers persistent linear output handles to the continuation. Explicit
+query, park, history, dead-port, and stage coordinates give every successful
+row a literal inverse and satisfy the pinned coloring.
 
-### 3.3 Balanced virtual answers
+The compiler emits one closed `p h t c` term. Preparation creates all words
+at the common reachable `47n+4` cut. Each H, T, or CNOT consumes current wire
+versions and binds fresh versions, so a computed nonlinear target can later be
+used as a control without duplicating or resampling a quantum value. Toffoli is
+the standard exact H/T/CNOT decomposition.
 
-After firing, the gadget must behave as `b̂′` toward the outstanding
-outer question. Real booleans route *asymmetrically* (the exit shapes
-of §3.1 differ in depth and leave different logged positions) —
-routing a fired outcome through real-boolean shapes would attach
-`b′`-dependent residue and rebuild decoherence-by-history. The virtual
-answers are machine primitives, and we define them **balanced**:
-`ans_b′` consumes the outer question's bullets and routes to the
-selected continuation in a number of transitions independent of `b′`,
-leaving no `b′`-dependent tape or log content. The answer bit lives
-only in the token's exit position — which is precisely what the *next*
-δ block reads. This is design freedom the classical IAM never needed
-and the quantum machine cannot live without.
+Recognized compiler images take a cap-free syntax-directed certificate path.
+All other terms continue through Gate 1's validated finite admission or
+conservative fallback.
 
-### 3.4 HH, informally
+### 3.4 Closed compilation contract
 
-`h (h 0̂)` (through the wrapper plumbing, which is branch-independent
-since it precedes the inner fire): the outer gadget probes `h 0̂`; the
-probe reaches the inner gadget, which probes `0̂` — deterministic,
-single branch — and fires `H` on its arrivals; the two branches route
-through balanced virtual answers to the outer gadget's virtual slots,
-arriving with **equal spectators at equal time**; the outer block
-gives `(|a₀⟩+|a₁⟩)/√2` from slot 1 and `(|a₀⟩−|a₁⟩)/√2` from slot 2 —
-sum `|a₀⟩`, mass 1 on `0̂`. The cancellation happens exactly because
-post-fire paths run through machine-primitive balanced routing rather
-than real-term routing. **Unverified**: needs the step-indexed trace
-against the full table. If the return produces `κ₀ ≠ κ₁`, the `|1̂⟩`
-amplitudes do not cancel and the `1̂` mass is 1/2 — the probabilistic
-degeneration, exactly.
+For every positive width and typed finite H/T/CNOT circuit, the actual
+composed machine refines the ideal exact circuit column from the common input
+cut to one full-NF terminal block. The theorem is uniform in circuit length,
+word, and arbitrary finite input amplitudes; it proves exact symbolic time,
+literal branch-independent garbage/control, tick zero, and no earlier halt.
 
-A soundness spot-check that falls out: `h ((h 0̂) 0̂ 0̂)` — the inner
-coin selects *different `0̂` occurrences*, whose selection paths carry
-distinct live return addresses; the branches reach the outer gadget
-with distinct spectators, do not merge, and the output mass on `0̂`
-is 1/2 — the correct physics (H on a dephased bit), where a naive
-merging machine would violate norm conservation. The machine's
-refusal to merge distinct-history branches is not a bug; it is the
-mechanism that makes the coherent cases meaningful.
+The load-bearing Lean endpoint is
+`Gate2CleanCompilation.lean::physicalCleanCompile`. Independent executable
+checks cover all 43 width-two circuits through length two, Bell uncompute,
+derived Toffoli, nonlinear target reuse, mutation controls, and a 917-state
+Python/Lean differential. The authoritative records are
+`~/Work/qalc-scratch/GATE1.md` and `~/Work/qalc-scratch/GATE2.md`; rejected
+routes and design chronology live only in the ledger and scratch attic.
 
-### 3.5 Consistency without a store
-
-A fired instance is re-interrogated only through backtracking, and a
-backtracking re-entry carries the return-address logged position that
-encodes the original slot — routing reads the outcome off the token
-itself. No global store of fired outcomes exists; the outcome lives
-exactly as long as the token's routing history needs it.
-
-**C1 (no fresh re-query) is REFUTED — and the design survived it.**
-The kernel (`kernel.md`) found that an output's variable can seek its
-argument by backtracking *through* the boolean selection,
-re-dereferencing to the gate leaf as a fresh-looking query (the
-negative witness does it). The literal boolean answers re-entry by
-`bt2`-replay on its selection ticket; the machine mirrors this with
-a `recall` rule that reads `b′` off the `α` ticket and replays
-without firing — consistency with no store, as this section hoped,
-but through a rule, not a reachability argument. Re-entry
-determinacy was then settled in two steps: v1.2's replay stack keeps
-`b′` in a retained frame (no erasure), and v1.3 instance-indexes
-tickets and frames by the invoking occurrence's logged position —
-the λIAM name of a dynamic subterm copy, structurally present at the
-log head on every gate-leaf entry — which also discharges ticket
-ownership: a same-gate foreign-instance ticket is a typed error, and
-a re-seek after the ticket is consumed replays off the instance's
-own frame (`kernel.md` §10.2).
-
-### 3.6 The negative witness, mechanically
-
-`λb. b I I` on a fired outcome: the branches select different `I`
-occurrences; their live return addresses differ while the identity
-behaviors run and survive into the halted transcript as distinct
-garbage — the synchronized images stay orthogonal full
-configurations, as guardrail 7 requires, *automatically*. The
-decoherence direction (distinct residue ⇒ orthogonal forever) is
-structural. The coherence direction — balanced injective code ends
-with *equal* residue at the next fire — is exactly the H–NOT–H
-obligation:
-
-**Lemma obligation L2 (pop timing).** Characterize when selection
-residue leaves the token before the next gate event. NOT′ =
-`λb.λx.λy. b y x` should pop symmetrically; the selector
-`λb. b 1̂ 0̂` routes through real boolean literals whose shapes are
-unbalanced — the selector's coherence is a measurable, not a given.
-
-### 3.7 Timing
-
-Interference requires equal token time (guardrail 4). Virtual answers
-are step-balanced by definition (§3.3); interposed real code must be
-step-balanced on its own — the clean-compilation common-`T`
-requirement reappears as **path-length balance measured in token
-steps**, derived from machine structure rather than stipulated. There
-is no computable uniform padding for arbitrary untyped code, so the
-coherent fragment is a discipline, not a default — which is the
-"coherence is earned" economy, now with a concrete currency.
-
-The kernel battery measures the currency's structure (`kernel.md` §7.2–7.3): slot
-routing that survives to a boundary as tape *pattern* is time-free
-(HH, H–NOT′–H sync exactly); routing *consumed* as transport steps
-skews the branch clock by the transported bit, and the measured
-offset of geometric selection is odd and invariant under every
-even-cost program pad tried — the standing conjecture is that
-step-encoded selection decoheres intrinsically, making the coherent
-fragment exactly the pattern-encoded (index/wire) routing class.
-
-### 3.8 Gate 1 closure
-
-The controller is now concrete. A depth-first output zipper performs internal
-full-normal-form readback; RB/RBL delimiters and the pending output schedule
-route the single token into arguments and back without copying values. Bare
-and variable-headed `h`/`t` applications remain neutral normal forms; a closed
-non-Boolean argument is a typed species error. The `t` table applies
-the exact `ω` phase on `1̂` with its own landing range. Typed error entry and
-common-origin halt/error tick chains are injective and forward invariant.
-
-Local residual coordinates are exact physical predecessor fibres. Thirty
-admitted closed operational cores combine the controller with the audited
-kernel, including mixed H/T fire plus ENTER/RETURN sectors and nested/beta/
-multiple-gate stress sectors. Their 7,417 exact one-step columns are
-orthonormal in Lean. A static selector falls back to a source-history machine
-when finite admission rejects, keeping `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`
-defined for every finite closed program. The proof and audit boundary is
-`~/Work/qalc-scratch/GATE1.md`.
-
-Gate 2 is now closed. The native CNOT supplies the multiwire fibre, executable
-two-port schedule, pinned coloring, literal predecessors, and buffered SSA
-compiler. The arbitrary-circuit Lean refinement from actual `composedStep`
-rows proves boundary/WF preservation, certificate transparency, full-NF
-output, common terminal residue, exact time, no early halt, and linear action
-on the common encoded input subspace. Complete Bell/Toffoli/nonlinear carriers
-and the mixed Python/Lean differential remain independent checks. The stronger
-uniform
-all-program RRI/minimal-carrier lifecycle theorem is an optional research
-lane, not a premise of a finite Gate-1 admission.
-
-## 4. Current obligations register
+## 4. Current state register
 
 The original three-program kernel target has been exceeded: the current
 out-of-tree machine covers the exact lambda-IAM substrate, H/T gate transport,
