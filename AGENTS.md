@@ -80,16 +80,16 @@ ambient lifecycle theorem is optional; raw-WF recall is known noninjective.
 
 The live implementation, batteries, and proof records are
 `~/Work/qalc-scratch/{gate1_check.py,GATE1.md,gate2_check.py,GATE2.md}`. Gate 2
-now has an executable native CNOT, a linear SSA compiler, structural
-certificates, clean finite Bell/Toffoli/nonlinear carriers, and matching Python
-and Lean composed machines. Arbitrary-width physical preparation and exact
-first-boundary H/T/CNOT theorems are proved; lifting all gates to arbitrary
-reachable boundaries, compiler-list induction, and full-NF terminal refinement
-remain open. Historical alternatives, audits, and
-provenance stay in that scratch tree's attic; chronological narrative belongs
-in `docs/ledger/`. **No qALC code may land** until contract §9 Gate 2's clean
-coherent compilation theorem also passes. qALC work must leave classical and
-qBLC rows bit-identical.
+closed on 2026-08-13: the actual composed machine now has an unbounded
+arbitrary-circuit H/T/CNOT refinement from one common reachable encoded-input
+cut to exact ideal columns, full-NF output, one literal terminal block, no
+earlier halt, arbitrary finite amplitudes, and cap-free structural compiler
+admission. Clean finite Bell/Toffoli/nonlinear carriers and the 917-state
+Python/Lean differential remain independent evidence. Historical alternatives,
+audits, and provenance stay in the scratch attic; chronology belongs in
+`docs/ledger/`. The Rust qALC reference pillar is now authorized and should
+implement this proved surface first. qALC work must leave classical and qBLC
+rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →

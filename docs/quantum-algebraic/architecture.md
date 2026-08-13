@@ -725,17 +725,17 @@ Every qALC engine change must then satisfy:
    PASS with no required correction. Python closure and the generated large
    `native_decide` evaluations are explicit trust boundaries. This is not a
    universal minimal-carrier or ambient lifecycle theorem.
-2. **OPEN — clean coherent compilation** (§6): one-sector H/T/CNOT circuit
-   compilation (with Toffoli derived exactly from that gate set) at a common
-   pre-computation word boundary, input-independent garbage/control/time,
-   nonlinear reuse, and a later-H uncompute witness. The current single-token
-   isolated native-CNOT successor has executable Python and Lean rows, a
-   recursive closed compiler, structural certificates, complete finite
-   Bell/Toffoli/nonlinear carriers, a 917-state cross-language differential,
-   and an ideal circuit theorem. Its arbitrary-width physical preparation and
-   exact first-boundary H/T/CNOT refinements are proved; arbitrary-boundary
-   gate transport and full-NF output for arbitrary compiler lists remain open.
-   This gates every universality claim and all Rust implementation.
+2. **CLOSED — clean coherent compilation** (§6; 2026-08-13): one-sector typed
+   H/T/CNOT circuit compilation (with Toffoli derived exactly) at the common
+   reachable `47n+4` word boundary. The actual composed-machine theorem proves
+   arbitrary-boundary gate transport, compiler/WF/certificate preservation,
+   exact ideal columns for basis and arbitrary finite amplitudes, full-NF
+   output and history unwind, one literal terminal garbage/control block at
+   tick zero, and no earlier halt. Every encoded word occurs at the same cut
+   of one closed invocation. Bell uncompute and nonlinear target-as-later-
+   control reuse are exact witnesses. Structural compiler admission is
+   cap-free; finite carriers and the 917-state Python/Lean differential remain
+   independent checks. The Rust reference implementation is now authorized.
 3. Merge-discipline canonicity: is the minimal-garbage `U` unique in any
    useful sense, and what exactly is the class of programs whose branches
    re-merge (the "coherence is earned" economy made precise)?

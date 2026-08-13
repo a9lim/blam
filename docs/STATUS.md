@@ -424,29 +424,28 @@ Fresh-context audit #6 passed without correction. The record and command are
 `~/Work/qalc-scratch/GATE1.md` and `python
 ~/Work/qalc-scratch/gate1_check.py`.
 
-**Architecture Gate 2 remains open.** The isolated construction now has an
-executable two-port native CNOT, linear SSA compiler, cap-free structural
-certificate construction, fail-closed finite admission, and independently
-executable Python and Lean composed machines. All 43 width-two circuits of
-length at most two are physically clean; complete carriers also pass for Bell
-uncompute (1,013 states), derived Toffoli (14,809), and nonlinear target reuse
-(30,393). Eight differential shards match all 917 states of a mixed carrier
-field-for-field across Python and Lean.
+**Architecture Gate 2 is closed** (2026-08-13). For every positive width and
+finite typed H/T/CNOT circuit, `physicalCleanCompile` now refines the actual
+composed token machine from one common reachable `47n+4` input cut to the
+exact ideal `Dw` circuit column at one symbolic time. The proof inducts over
+arbitrary compiler boundaries, preserves the compiler-indexed WF/storage and
+syntax-directed certificate invariants, performs full-NF tuple readback and
+the entire preparation/gate-history unwind, and ends every branch at tick zero
+with one literal ordered terminal-garbage object. A tick-propagation argument
+rules out every earlier terminal branch. Every encoded word is proved to occur
+at the same cut of one closed invocation, and arbitrary finite input
+amplitudes extend linearly in that sector.
 
-The first universal physical layers are proved:
-`compiled_preparation_physical` reaches the exact unmerged `2^n` word column
-at the common `47n+4` cut for arbitrary positive width and circuit, and
-`first_h_physical`, `first_t_physical`, and `first_cx_physical` take an
-arbitrary-width prepared basis branch through the first compiled gate to its
-literal boundary in exactly 47, 55, and 29 actual rows respectively. Their
-superposition corollaries extend each result to arbitrary finite amplitude
-columns in the same immutable compiler sector. Gate 2 still requires lifting
-all three transports to arbitrary reachable boundaries, compiler-list
-induction, certificate/WF preservation, and full-NF output to one terminal
-block with no earlier halt.
-Until then structural admission remains bounded by complete-carrier
-validation. The single current record is
-`~/Work/qalc-scratch/GATE2.md`; the full Gate-1 battery passes unchanged.
+The live selector therefore admits recognized compiler images by a cap-free
+syntax walk and compiler certificate; finite carrier validation remains only
+an independent audit oracle. All 43 width-two circuits of length at most two
+remain physically clean. Complete carriers pass for Bell uncompute (1,013
+states), derived Toffoli (14,809), and nonlinear target reuse (30,393), and
+eight differential shards match all 917 mixed-carrier states field-for-field
+across Python and Lean. The authoritative record and battery are
+`~/Work/qalc-scratch/GATE2.md` and `python
+~/Work/qalc-scratch/gate2_check.py`; Gate 1 re-closes unchanged. The Rust qALC
+reference pillar is now the next implementation step.
 
 The kernel transition/WF surface is v1.42, which passed fresh-context audit
 #35. Validation-only v1.43 adds a mandatory Gram-independent complete-carrier
@@ -461,25 +460,13 @@ audit kits, and git history.
 
 The open docket, in order:
 
-1. **Architecture Gate 2 — clean coherent compilation**
-   (`quantum-algebraic/architecture.md` §6): build a clean H/T/CNOT circuit
-   compiler, with Toffoli derived exactly, at one fixed-sector
-   pre-computation input cut, input-independent garbage/control/time,
-   nonlinear sequential reuse, and a later-H uncompute witness. The isolated
-   native-CNOT candidate now supplies the executable Python and Lean machines,
-   recursive closed source compiler, structural certificate, finite witnesses,
-   coloring, predecessors, complete carriers, 917-state cross-language
-   differential, ideal arbitrary-circuit theorem, universal preparation, and
-   exact first-boundary H/T/CNOT physical theorems. The remaining gate is the
-   rest of the universal physical refinement: lift all gate transports across
-   reachable compiler boundaries, preserve boundary/WF and certificate
-   transparency, and reach the common terminal block for arbitrary circuit
-   lists. This gates every universality claim and all `src/qalc/` code.
-2. Once Gate 2 closes, land the authoritative reference evaluator first and
-   census machinery later; preserve bit-identical classical and qBLC rows.
-3. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
+1. **Rust qALC reference pillar:** implement the closed Gate-2 compiler and
+   composed semantics first, with compiler-term/certificate pins,
+   Python/Lean/Rust differential fixtures, and bit-identical classical and
+   qBLC rows. Census machinery comes later.
+2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and broader arrival/pop determinacy.
-4. Downstream research: D-circuit dyadicity, universality/domination for `M`,
+3. Downstream research: D-circuit dyadicity, universality/domination for `M`,
    self-interpretation up to timing dilation, and relations among the three
    Ω objects.
 

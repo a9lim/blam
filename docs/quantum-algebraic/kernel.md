@@ -1,11 +1,10 @@
 # qALC kernel — current register
 
-**Architecture status:** Gate 1 closed on 2026-08-11; Gate 2 remains open, so
-qALC code stays out of the Rust tree. The accepted composed proof record is
-`~/Work/qalc-scratch/GATE1.md`; `~/Work/qalc-scratch/GATE2.md` is the single
-current record for the isolated native-CNOT compiler and its still-open
-universal physical refinement. Gate-2 rows are not part of this accepted
-kernel.
+**Architecture status:** Gate 1 closed on 2026-08-11 and Gate 2 closed on
+2026-08-13. The proof records are `~/Work/qalc-scratch/GATE1.md` and
+`~/Work/qalc-scratch/GATE2.md`; the Rust reference pillar is now authorized.
+The native-CNOT rows extend this v1.43 base in the proved Gate-2 compiler
+sector rather than changing the accepted Gate-1 kernel.
 
 **Kernel status: v1.43.** The transition and W0--W9 well-formedness surface is
 v1.42, which passed fresh-context independent audit #35 with no required

@@ -1,11 +1,10 @@
 # qALC machine — token-transport design
 
-**Status: Gate 1 closed; Gate 2 open.** The §4 kernel is registered
-current-only in `kernel.md`; the complete Gate-1 controller, H/T table,
-terminal adapters, exact fibres, semantics, and proof record live out of tree
-at `~/Work/qalc-scratch/`. Fresh-context Gate-1 audit #6 returned PASS with no
-required correction. No qALC code lands until architecture §9 Gate 2 also
-passes. The qALC machine is
+**Status: Gates 1 and 2 closed.** The §4 kernel is registered current-only in
+`kernel.md`; the complete proof records and executable reference live out of
+tree at `~/Work/qalc-scratch/`. Fresh-context Gate-1 audit #6 returned PASS,
+and the universal Gate-2 clean-compilation theorem closed on 2026-08-13. The
+Rust reference pillar is the next implementation step. The qALC machine is
 IAM-lineage token transport
 (architecture §8): the invocation term is immutable and read-only, the
 runtime basis is token configurations, and gate arguments reach δs by
@@ -17,14 +16,14 @@ construction, no environment erasure; and the exponential context does
 reversibly what content tags did irreversibly in the rejected
 rewriting substrate. Quantum prior art: Hasuo–Hoshino (quantum GoI),
 Dal Lago–Faggian–Valiron–Yoshimizu (multitoken machines) —
-typed/linear settings. The untyped Gate-1 machine is now concrete; compiling a
-useful clean coherent fragment is the remaining architecture gate. The
-2026-08-12 Gate-2 construction audit rejected geometric selection and the
-constant-weight ROM, then isolated a native two-port CNOT with persistent
-reusable outputs. Its buffered SSA compiler passes clean Bell, derived
-Toffoli, and nonlinear-reuse carriers; Python and executable Lean agree on a
-917-state mixed complete carrier. The remaining gap is the universal physical
-compiler-list refinement, not the existence of an entangling boundary.
+typed/linear settings. The 2026-08-12 Gate-2 construction audit rejected
+geometric selection and the constant-weight ROM, then isolated a native
+two-port CNOT with persistent reusable outputs. Its buffered SSA compiler has
+an unbounded actual-machine refinement to the ideal H/T/CNOT circuit column,
+including common reachable inputs, literal terminal garbage, full-NF output,
+arbitrary superpositions, and no earlier halt. Clean Bell, derived Toffoli,
+nonlinear-reuse carriers, and a 917-state Python/Lean differential remain the
+independent executable evidence.
 This document is current-only: guardrails (§1), the exact classical
 substrate (§2), the design sketch (§3), and the kernel gate with the
 obligations register (§4). History — the route choice, the ratified
@@ -372,18 +371,14 @@ when finite admission rejects, keeping `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`
 defined for every finite closed program. The proof and audit boundary is
 `~/Work/qalc-scratch/GATE1.md`.
 
-What remains is Gate 2: characterize and compile the clean coherent program
-fragment, including nonlinear sequential reuse, input-independent terminal
-garbage/control, equal token transition count, one fixed-sector
-pre-computation input cut, and a later-H uncompute witness. The isolated native
-CNOT now supplies that multiwire fibre, executable two-port schedule, pinned
-coloring, literal predecessors, and a buffered SSA compiler. Complete physical
-Bell/Toffoli/nonlinear carriers are clean, and the entire composed dispatcher
-has an executable Lean twin pinned to Python on a mixed carrier. The remaining
-ratification gate is an arbitrary-circuit Lean refinement from actual
-`composedStep` rows to the ideal schedule, including boundary/WF preservation,
-certificate transparency, full-NF output, common terminal residue, and no
-early halt. The stronger uniform
+Gate 2 is now closed. The native CNOT supplies the multiwire fibre, executable
+two-port schedule, pinned coloring, literal predecessors, and buffered SSA
+compiler. The arbitrary-circuit Lean refinement from actual `composedStep`
+rows proves boundary/WF preservation, certificate transparency, full-NF
+output, common terminal residue, exact time, no early halt, and linear action
+on the common encoded input subspace. Complete Bell/Toffoli/nonlinear carriers
+and the mixed Python/Lean differential remain independent checks. The stronger
+uniform
 all-program RRI/minimal-carrier lifecycle theorem is an optional research
 lane, not a premise of a finite Gate-1 admission.
 
@@ -405,5 +400,5 @@ belongs only in `docs/ledger/2026-08.md` and the preserved scratch audit kits.
 | Readback and scalars | **Closed.** The internal zipper reads complete normal forms; bare and variable-headed `h`/`t` applications remain neutral; `t` uses exact `diag(1,omega)` arithmetic over `Z[omega]/sqrt(2)^k`. |
 | Terminal and semantic objects | **Closed.** Typed error/halt entry and unilateral ticks are forward invariant. Static sector selection defines exact `U`, `mu_p`, `rho_p`, finite `M`, and `Omega_qALC` approximants for every finite closed program. |
 | Time register | **Kernel theorem.** The coloring, branch-offset law, and mark-free fire-free conservation theorem explain why step-encoded classical selection decoheres and identify the permitted escape mechanisms. |
-| Architecture Gate 2 | **Open and code-blocking.** The native CNOT and buffered SSA compiler now provide clean finite Bell, Toffoli, and nonlinear-reuse carriers, executable Python/Lean machines, structural certificates, and a closed recursive Lean compiler. The universal physical compiler-list refinement to one common terminal block remains unproved. |
+| Architecture Gate 2 | **Closed (2026-08-13).** The native CNOT and buffered SSA compiler have an unbounded actual-machine refinement for arbitrary typed H/T/CNOT lists, a common reachable encoded-input cut, exact ideal columns, arbitrary finite amplitudes, full-NF output, one literal terminal block, no earlier halt, and cap-free structural admission. |
 | Optional stronger structure | The ambient uniform lifecycle/minimal-carrier theorem, general probe-exit classification, and broader arrival/pop determinacy remain research lanes; none is a Gate-1 premise. |
