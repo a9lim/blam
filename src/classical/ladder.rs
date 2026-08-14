@@ -176,6 +176,14 @@ pub struct Telemetry {
     /// ran). On a `Rung::Rescue` outcome this is the rescue's cost —
     /// the datum that sets `rescue_trans_mult`.
     pub last_trans: u64,
+    /// `(β-steps, transitions)` counted by rung 2's KN run at the moment
+    /// its fuel died, when it did. A β death counts the contraction it
+    /// could not fund, so a later halt satisfies `t ≥ steps` in each
+    /// coordinate — the certified t-floor the speed-prior brackets need
+    /// (`docs/classical/speed.md` §3).
+    pub kn2_died: Option<(u64, u64)>,
+    /// Same for the rescue run, when a rescue ran and failed.
+    pub rescue_died: Option<(u64, u64)>,
     /// The Diverge proof landed on the root's own head-reduction chain:
     /// the term has no WEAK head normal form, a fact that transfers
     /// through application heads. Only ever true alongside
@@ -321,7 +329,10 @@ pub fn adjudicate_slow<S: Sink + Default>(
                 tel,
             );
         }
-        Err(e) => tel.kn2_stuck = Some(e),
+        Err(e) => {
+            tel.kn2_stuck = Some(e);
+            tel.kn2_died = Some((vm.last_steps, vm.last_trans));
+        }
     }
 
     // Escalation: full BB.lhs semantics.
@@ -346,6 +357,7 @@ pub fn adjudicate_slow<S: Sink + Default>(
             }
             Err(e) => {
                 tel.rescue_stuck = Some(e);
+                tel.rescue_died = Some((vm.last_steps, vm.last_trans));
                 None
             }
         }

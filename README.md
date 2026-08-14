@@ -171,7 +171,7 @@ says how to get them rather than pretending they do not exist.
 | `census` | adjudicate every closed term in a size range (halt / diverge / unknown) through a ladder of engines |
 | `adjudicate` | the same ladder on one term or a file of them, verbosely |
 | `normalize` | normalize a closed term on the KN machine |
-| `solomonoff` | Solomonoff prior m(x), prefix complexity K(x), two-sided Ω bounds — exact 2⁻⁶⁴-unit arithmetic |
+| `solomonoff` | Solomonoff prior m(x), prefix complexity K(x), two-sided Ω bounds — exact 2⁻⁶⁴-unit arithmetic — plus the speed-prior (Levin) surface: S(x), Kt(x), depth⁰(x), certified Ω_speed brackets, and time spectra in exact 2⁻¹²⁸ units |
 | `cert search` *(lab)* | divergence-certificate discovery sweep over a frontier file |
 | `cert lean` | emit the certificate kills as Lean 4 modules for kernel checking |
 | `cert diag` *(lab)* | where the discovery pipeline drops a term, stage by stage |
@@ -195,7 +195,8 @@ target/release/blam census 4 40 --verify
 target/release/blam adjudicate 010001101000011010
 
 # Ω / K sweep;  quantum census
-target/release/blam solomonoff 4 41 --table data/classical/solomonoff_table.txt
+target/release/blam solomonoff 4 41 --table data/classical/solomonoff_table.txt \
+    --unknown-floors data/classical/speed_floors.txt
 target/release/blam q census 4 41 --out data/quantum/census_table.txt
 
 # certificate sweep, then kernel-check the kills in Lean

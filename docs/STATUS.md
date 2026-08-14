@@ -43,6 +43,33 @@ Last updated: 2026-08-12.
   accounts for certified divergers removed from the raw unknown mass
   (305 kills, 14,730,395,648 × 2⁻⁶⁴ exactly; the 2026-08-08 trim
   removed 53/2⁴¹).
+- The speed-prior (Levin) surface is canonical as of 2026-08-13:
+  `docs/classical/speed.md` is the contract, the `solomonoff` driver
+  computes it in the same sweep, and the certified record is the exact
+  2⁻¹²⁸ unit lines in `data/classical/solomonoff.txt`. Three time
+  gauges (β, transitions, honest = t_β + |x|); unknowns are charged on
+  the upper side only, at machine-recorded fuel-death floors
+  (`data/classical/speed_floors.txt`, 4,532 rows, the input to the
+  certificate trim). Measured at 4..41 with zero unclocked halters, so
+  every canonical Kt and depth⁰ is exact:
+  `Ω_speed(β)|≤41 ∈ [0.122396680340, 0.122396680346]`,
+  `Ω_speed(trans)|≤41` prints as a point at twelve decimals (width
+  ≤ 6.9e-17), `Ω_speed(honest)|≤41 ∈ [0.023402971976, 0.023402971981]`.
+  The 2026-08-13 certificate trim (the 305 kills' exact floor
+  contributions: 35,842,695,890,642,787,413,245 β /
+  5,954,305,136,037,143,901,865 trans /
+  35,842,664,687,044,860,650,404 honest, × 2⁻¹²⁸) tightens the open
+  mass to ≤ 5.926e-12 (β), ≤ 5.113e-17 (trans), ≤ 5.576e-12 (honest):
+  charging 1/t beats Ω's post-trim unknown mass (6.1e-9) by ~10³ under
+  β and ~10⁸ under transitions, with no new certificates.
+- Speed analytics at 4..41 (`data/classical/solomonoff_table.txt`
+  carries the per-x Kt/depth⁰/speed-mass columns): the deepest
+  computation is the rescue champion, t_β = 9,457,564 from a 41-bit
+  program to an 89,494,760-bit normal form; the largest
+  speed-compression gain is |x| − Kt = 31 (a 61-bit nf with Kt = 30);
+  the largest time penalty is Kt − K = 10 (a 62-bit nf, K = 40,
+  Kt = 50, depth⁰ = 844); the BBλ(41) champion output arrives at
+  t_β = 676,047 — deep output, shallow time.
 
 ### Divergence certificates and Lean
 

@@ -140,6 +140,14 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
 - `blc::enumerate`: tasks are bit-reversal-interleaved on purpose.
   Expensive terms cluster by enumeration prefix and rayon splits by index
   range; do not simplify the order back.
+- The `solomonoff` driver also owns the speed-prior (Levin) surface
+  (`docs/classical/speed.md` is the contract). Two unit grids coexist in its
+  outputs: m/Ω masses are 2⁻⁶⁴ units, speed masses are 2⁻¹²⁸ units with
+  directed rounding — do not mix them when post-processing. Unknowns are
+  charged on the upper side only, at t-floors read from the machine's
+  fuel-death counters (`Machine::last_steps`; on a β death the counter
+  includes the contraction it could not fund). `data/classical/speed_floors.txt`
+  is part of the certificate-trim protocol, not a diagnostic.
 - The census memos live in the census driver, deliberately outside the ladder:
   they reuse one term's fate for a *different* term, which is a fact about an
   enumeration rather than about a term. Keeping them out is what lets

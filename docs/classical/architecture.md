@@ -12,6 +12,8 @@ machine for algorithmic information theory. Its principal outputs are:
 - the exhaustive halt/diverge/unknown census of closed BLC terms by wire size;
 - BBλ lower bounds from the largest computed normal forms;
 - exact finite-range Solomonoff mass, prefix complexity, and Ω brackets;
+- the speed-prior (Levin) surface: S(x), Kt(x), depth⁰(x), certified
+  Ω_speed brackets, and per-gauge time spectra (`speed.md`);
 - a mechanically checked frontier of unresolved programs; and
 - reusable divergence certificates whose accepted instances are replayed in
   Lean.
@@ -431,6 +433,7 @@ classes, not larger instances of the same bounded reducer.
 The durable engine contract ends here. Moving measurements and work ordering
 belong in `../STATUS.md`.
 
+- Speed-prior (Levin) surface contract: `speed.md`
 - Certificate classes and their proof obligations:
   `certificates/specification.md`
 - Frontier classification evidence: `certificates/frontier.md`
