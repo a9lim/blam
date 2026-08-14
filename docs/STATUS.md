@@ -120,6 +120,16 @@ marked implemented.)
    used 9,457,564 of 10⁷ β-contractions, only 1.06× headroom.
 4. Formalize prefix-freeness and Kraft accounting from
    `lean/Blc/Wire.lean`, then derive machine-checked K upper bounds.
+5. Parked lane — discrete Solomonoff/speed-prior induction. Decode
+   normal forms as Church bit-lists (I/O polarity is inverted), measure
+   the decode hit-rate over a full `--table` dump, then build the
+   prefix-tree conditional-prediction surface under m and S with
+   certified brackets: the open mass caps every conditional at 6.9e-9
+   under m but 5.9e-12 under post-trim S_β, so speed-prior induction
+   gives ~10³ tighter certified prediction intervals. Discrete-output
+   induction only — programs computing infinite streams are census
+   divergers; the monotone-machine lane (`ref/AIT` uni) is the true-M
+   object and a separate build.
 
 ## Quantum state
 
