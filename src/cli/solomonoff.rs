@@ -274,7 +274,7 @@ struct Entry {
     // (`docs/classical/speed.md` §4). Zero everywhere through 41.
     open_progs: u64,
     k_open: bool, // an unclocked producer sits at |p| = k
-    slo: u128,   // β-gauge nontrivial Levin mass, 2^-128 units, directed
+    slo: u128,    // β-gauge nontrivial Levin mass, 2^-128 units, directed
     shi: u128,
     hlo: u128, // honest-gauge (t_β + |x|) Levin mass bracket
     hhi: u128,
@@ -725,7 +725,10 @@ pub fn run(argv: &[String]) -> R<()> {
         );
     }
     println!("\n== speed prior (Levin): Ω_speed brackets ==");
-    println!("unclocked halters (proven halt, no canonical count): {}", acc.unclocked);
+    println!(
+        "unclocked halters (proven halt, no canonical count): {}",
+        acc.unclocked
+    );
     println!("(decimals are nearest-f64 previews; the 2^-128 unit lines are the certified record)");
     for (name, g) in gauges {
         println!(
@@ -913,11 +916,7 @@ pub fn run(argv: &[String]) -> R<()> {
         .filter_map(|(key, e)| kt_eff(e, key.1, min_n, max_n).map(|kt| (*key, *e, kt)))
         .collect();
     movers.sort_by_key(|((xenc, xlen), e, kt)| {
-        (
-            std::cmp::Reverse(*kt as i64 - e.k as i64),
-            *xlen,
-            *xenc,
-        )
+        (std::cmp::Reverse(*kt as i64 - e.k as i64), *xlen, *xenc)
     });
     println!("\n== deepest compressions: Kt − K among K-compressible x ==");
     println!(
@@ -982,7 +981,10 @@ pub fn run(argv: &[String]) -> R<()> {
     // the time axis, oversized normal forms included.
     acc.deep.sort_unstable_by_key(deep_key);
     println!("\n== deepest computations (largest t_β) ==");
-    println!("{:>10} {:>4} {:>12} {:>5}  program", "t", "|p|", "|x|", "⌈lg⌉");
+    println!(
+        "{:>10} {:>4} {:>12} {:>5}  program",
+        "t", "|p|", "|x|", "⌈lg⌉"
+    );
     for r in acc.deep.iter().take(top) {
         println!(
             "{:>10} {:>4} {:>12} {:>5}  {}",
@@ -1096,9 +1098,7 @@ mod tests {
                 let root = pool.decode_u64(enc, len).expect("valid term");
                 let o = ladder::adjudicate(cfg, &pool, &mut vm, root, &mut sink);
                 match o.verdict {
-                    Verdict::Halt { steps, .. } => {
-                        acc.record_halt(enc, len, &sink, steps, &o.tel)
-                    }
+                    Verdict::Halt { steps, .. } => acc.record_halt(enc, len, &sink, steps, &o.tel),
                     Verdict::Diverge => {
                         acc.diverge += 1;
                         acc.diverge_mass += mass_of(len);

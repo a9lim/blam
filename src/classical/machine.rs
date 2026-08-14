@@ -675,13 +675,19 @@ mod tests {
         let deep = pool
             .decode_str("01000110100001100110011001100010")
             .expect("closed");
-        let t = vm.normalize(&pool, deep, 1 << 22, &mut sink).expect("halts");
+        let t = vm
+            .normalize(&pool, deep, 1 << 22, &mut sink)
+            .expect("halts");
         assert_eq!(t, 427);
         assert_eq!(
             vm.normalize_capped(&pool, deep, 1 << 22, 50, &mut sink),
             Err(OutOfFuel::Transitions)
         );
-        assert!(vm.last_steps <= t, "floor {} > true count {t}", vm.last_steps);
+        assert!(
+            vm.last_steps <= t,
+            "floor {} > true count {t}",
+            vm.last_steps
+        );
     }
 
     /// Several terms in one arena — the slot-search shape. The cache
