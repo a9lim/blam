@@ -145,8 +145,9 @@ additive on the existing outputs:
   never through 41). `kt_program`, like `min_program`, is the best
   *nontrivial clocked* witness — `-` when none exists.
 - `data/classical/speed_floors.txt` (`--unknown-floors`): one line per
-  unknown — wire bits, size, β and transition floors, and each gauge's
-  upper-endpoint contribution in 2^(−128) units. This is the evidence file
+  open program — unknowns and unclocked halters, distinguished by the
+  leading kind column — with wire bits, size, β and transition floors,
+  and each gauge's upper-endpoint contribution in 2^(−128) units. This is the evidence file
   for the frontier-suppression claim and the input to the certificate trim.
 
 ## 5. Verification contract
