@@ -1,13 +1,27 @@
-//! Kernel-stratum machine states, typed.
+//! Kernel-stratum and composed-stratum machine states, typed.
 //!
-//! Mirrors `qalc/kernel.py`'s `Run`/`RunDone`/`Done` exactly: the five
-//! registers, the virtual-boolean phase, and the two residue shapes
-//! (gate/leaf errors freeze the complete seven-register pre-entry state;
-//! root arrivals freeze the four-register form). Residues are semantic —
-//! terminal injectivity rides on them — so they are typed, not
-//! stringified.
+//! The kernel half mirrors `qalc/kernel.py`'s `Run`/`RunDone`/`Done`
+//! exactly: the five registers, the virtual-boolean phase, and the two
+//! residue shapes (gate/leaf errors freeze the complete seven-register
+//! pre-entry state; root arrivals freeze the four-register form).
+//! Residues are semantic — terminal injectivity rides on them — so they
+//! are typed, not stringified.
+//!
+//! The composed half mirrors `qalc/readback.py`'s state grammar: NF
+//! output trees with armed holes, the output zipper with binder marks
+//! and moved scope residues, terminal garbage, and the composed
+//! `NFRun`/`NFRunDone`/`NFDone` strata. The composed token reuses
+//! [`RunCore`] over the BA tape alphabet. Python's untyped `(kind,
+//! output, garbage)` triples become sums: halt landings carry
+//! [`TerminalGarbage`], error landings carry their own typed
+//! [`ErrorGarbage`] family (never `TerminalGarbage`), and the
+//! machine-exception class name is normalized to a stable
+//! cross-language fault category — the raw CPython class name is
+//! fixture metadata, not state identity.
 
-use super::mark::{Frame, KsHead, LogEntry, TapeEntry};
+use std::sync::Arc;
+
+use super::mark::{Epoch, Frame, KsHead, LogEntry, Lp, TapeEntry};
 use super::term::{GateName, Path};
 
 /// Token direction: descending into the term or ascending out of it.
@@ -87,4 +101,175 @@ pub enum KState {
         residue: Residue,
         tick: u64,
     },
+}
+
+// ---------------------------------------------------------------------------
+// Composed (readback) stratum.
+
+/// A full-NF output tree under construction: `readback.py`'s
+/// `Hole`/`NFVar`/`NFLam`/`NFApp`/`NFGate`. Children are `Arc`-shared
+/// so a zipper `replace` clones only the rewritten spine, as the
+/// reference shares subtrees; equality and hashing stay structural.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum Nf {
+    /// An open output position. `HEAD` arms argument holes; only armed
+    /// holes may override b3 with `ENTER`.
+    Hole {
+        armed: bool,
+    },
+    /// A de Bruijn output variable (1-indexed).
+    Var(u64),
+    Lam(Arc<Nf>),
+    App(Arc<Nf>, Arc<Nf>),
+    Gate(GateName),
+}
+
+/// A binder mark's dynamic identity: `("source", path, log)` for an
+/// emitted source lambda, `("virtual", g, i, phase, code)` for one half
+/// of a virtual Church boolean.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum BinderIdentity {
+    Source {
+        path: Path,
+        log: Vec<LogEntry>,
+    },
+    Virtual {
+        gate: GateName,
+        instance: Lp,
+        phase: u8,
+        code: Path,
+    },
+}
+
+/// Reversible controller metadata for one emitted output binder — not
+/// part of the observable NF.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct BinderMark {
+    pub output: Path,
+    pub identity: BinderIdentity,
+}
+
+/// A scope residue moved to controller garbage by a child `RETURN` (or
+/// retained by a neutral probe): the four `readback.py` residue
+/// dataclasses.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum ScopeResidue {
+    Exact {
+        output: Path,
+        prefix: Vec<TapeEntry>,
+    },
+    Virtual {
+        output: Path,
+        gate: GateName,
+        instance: Lp,
+        epoch: Epoch,
+    },
+    /// Exact path coordinate discarded by a pure child `RETURN`.
+    Pure { output: Path },
+    NeutralProbe {
+        binder_path: Path,
+        binder_log: Vec<LogEntry>,
+        logged_argument: Lp,
+    },
+}
+
+/// A terminal garbage carrier: the root compression's retained answer
+/// or ticket position. Only the exact and virtual shapes can reach the
+/// root (`terminal_predecessor` rejects the others), so the pure and
+/// neutral-probe residues are excluded by construction.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum TerminalCarrier {
+    Exact {
+        output: Path,
+        prefix: Vec<TapeEntry>,
+    },
+    Virtual {
+        output: Path,
+        gate: GateName,
+        instance: Lp,
+        epoch: Epoch,
+    },
+}
+
+/// Exact terminal controller/token residue frozen by `rootdone`.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct TerminalGarbage {
+    pub carrier: Option<TerminalCarrier>,
+    pub frames: Vec<Frame>,
+    pub storage: Vec<KsHead>,
+    pub binders: Vec<BinderMark>,
+    pub residues: Vec<ScopeResidue>,
+}
+
+/// The output zipper: the only live state beyond the token.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct Zipper {
+    pub tree: Nf,
+    pub cursor: Option<Path>,
+    pub binders: Vec<BinderMark>,
+    pub residues: Vec<ScopeResidue>,
+}
+
+/// A running composed state: kernel token (BA tape alphabet) plus the
+/// output zipper.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct NfRun {
+    pub token: RunCore,
+    pub zipper: Zipper,
+}
+
+/// A composed error kind. `Typed` is `("error", k)` — a kernel kind or
+/// composed rule (`stuck`, `no-instance`, `alien-ticket`, …). `Fault`
+/// is `("error", "machine-exception", class)` with the class normalized
+/// to a stable cross-language fault category.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum ErrorKind {
+    Typed(String),
+    Fault(String),
+}
+
+/// Typed error garbage — the exact offending source, per landing
+/// family. Distinct failing sources land distinctly because the
+/// complete source is retained.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum ErrorGarbage {
+    /// `_error` without residue: the `(token, zipper)` pair.
+    Composed { token: RunCore, zipper: Zipper },
+    /// A kernel `RunDone` wrap: the `(token, zipper, residue)` triple.
+    Kernel {
+        token: RunCore,
+        zipper: Zipper,
+        residue: Residue,
+    },
+    /// A kernel `Done` target reached the composed adapter.
+    InvalidKernelTarget {
+        token: RunCore,
+        zipper: Zipper,
+        target: Box<KState>,
+    },
+    /// Totalized host fault: `("raised-source", state)`.
+    Fault { source: Box<NfState> },
+}
+
+/// A composed terminal payload: halt with its closed NF output and
+/// `TerminalGarbage`, or a typed error with its own garbage family.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum NfTerminal {
+    Halt {
+        output: Nf,
+        garbage: TerminalGarbage,
+    },
+    Error {
+        kind: ErrorKind,
+        garbage: ErrorGarbage,
+    },
+}
+
+/// One composed basis state. Terminal entry mirrors the kernel's
+/// normative two-step: `NFRunDone → NFDone(tick 0) → tick`.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum NfState {
+    Run(NfRun),
+    RunDone(NfTerminal),
+    Done { terminal: NfTerminal, tick: u64 },
 }

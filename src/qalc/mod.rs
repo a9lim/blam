@@ -28,6 +28,7 @@
 pub mod amp;
 pub mod kernel;
 pub mod mark;
+pub mod readback;
 pub mod state;
 pub mod term;
 pub mod wire;

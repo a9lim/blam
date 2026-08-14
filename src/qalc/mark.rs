@@ -38,12 +38,38 @@ pub struct Lp {
     pub slice: Vec<LogEntry>,
 }
 
-/// Log-alphabet entry: `lp | γ_g | α` — what `arg`/`bt1` transport.
+/// Log-alphabet entry: `lp | γ_g | α | RBL` — what `arg`/`bt1`
+/// transport. `Rbl` is the composed stratum's synthetic return address
+/// (`readback.py`), a log member because the composed rules prepend it
+/// to the log and ordinary kernel transport then captures it into lp
+/// slices, RS-frame instances, and KS (measured on all 30 Gate-1
+/// cores). Bare `RB` is never prepended to the log, so there is no
+/// `Rb` variant here by construction.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum LogEntry {
     Lp(Lp),
     Gam(GateName),
     Alpha(Alpha),
+    Rbl(Rbl),
+}
+
+/// Synthetic logged return address `('RBL', parent_function, output,
+/// code)` carried by the composed token (`readback.RBL`).
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct Rbl {
+    pub parent: Path,
+    pub output: Path,
+    pub code: Path,
+}
+
+/// Readback delimiter `('RB', depth, output, code, pending)` with its
+/// output-hole schedule (`readback.RB`) — a top-level tape entry only.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct Rb {
+    pub depth: u64,
+    pub output: Path,
+    pub code: Path,
+    pub pending: Vec<Path>,
 }
 
 /// Replay-epoch tree (`RecallEpoch.lean`): `('F',)` fresh,
@@ -101,6 +127,8 @@ pub enum TapeEntry {
     Mu(GateName),
     Ans(GateName, u8),
     Alpha(Alpha),
+    Rb(Rb),
+    Rbl(Rbl),
 }
 
 /// One inert storage head; every fire appends exactly one
@@ -194,6 +222,15 @@ fn render(out: &mut String, root: Tok<'_>) {
                 LogEntry::Gam(g) => {
                     out.push_str("('G', ");
                     push_str_repr(out, &g.ch().to_string());
+                    out.push(')');
+                }
+                LogEntry::Rbl(r) => {
+                    out.push_str("('RBL', ");
+                    push_path(out, &r.parent);
+                    out.push_str(", ");
+                    push_path(out, &r.output);
+                    out.push_str(", ");
+                    push_path(out, &r.code);
                     out.push(')');
                 }
                 LogEntry::Alpha(a) => {
@@ -297,6 +334,71 @@ mod tests {
             },
         };
         assert_eq!(kd_key_repr(&k), "('t', ('L', ('b',), (('G', 'h'),)))");
+        // A composed-stratum frame whose instance captured an RBL:
+        // repr(('R', 'h', ('L', ('a',), (('RBL', ('f',), (), ('b',)),)),
+        //       0, ('F',))) — verified against the Python reference.
+        let f = Frame {
+            gate: GateName::H,
+            instance: Lp {
+                occ: vec![Dir::A],
+                slice: vec![LogEntry::Rbl(Rbl {
+                    parent: vec![Dir::F],
+                    output: vec![],
+                    code: vec![Dir::B],
+                })],
+            },
+            bit: 0,
+            epoch: Epoch::Fresh,
+        };
+        assert_eq!(
+            frame_repr(&f),
+            "('R', 'h', ('L', ('a',), (('RBL', ('f',), (), ('b',)),)), 0, ('F',))"
+        );
+        // RBL nested through an alpha instance, all three path fields
+        // distinct (field-order swaps would misrender), singleton slice
+        // commas at both nesting levels — verified against Python.
+        let inner = Lp {
+            occ: vec![],
+            slice: vec![LogEntry::Rbl(Rbl {
+                parent: vec![],
+                output: vec![Dir::B],
+                code: vec![Dir::F, Dir::A],
+            })],
+        };
+        let f = Frame {
+            gate: GateName::T,
+            instance: Lp {
+                occ: vec![Dir::F],
+                slice: vec![LogEntry::Alpha(Alpha {
+                    gate: GateName::T,
+                    instance: inner,
+                    bit: 1,
+                    epoch: Epoch::Fresh,
+                })],
+            },
+            bit: 1,
+            epoch: Epoch::Fresh,
+        };
+        assert_eq!(
+            frame_repr(&f),
+            "('R', 't', ('L', ('f',), (('AL', 't', ('L', (), (('RBL', (), \
+             ('b',), ('f', 'a')),)), 1, ('F',)),)), 1, ('F',))"
+        );
+        let k = KdKey {
+            gate: GateName::H,
+            instance: Lp {
+                occ: vec![Dir::A, Dir::B],
+                slice: vec![LogEntry::Rbl(Rbl {
+                    parent: vec![Dir::A],
+                    output: vec![Dir::B, Dir::F],
+                    code: vec![],
+                })],
+            },
+        };
+        assert_eq!(
+            kd_key_repr(&k),
+            "('h', ('L', ('a', 'b'), (('RBL', ('a',), ('b', 'f'), ()),)))"
+        );
     }
 
     #[test]

@@ -113,6 +113,7 @@ fn fixtures_regenerate_byte_identically() {
         let out = serialize_fixtures(&Fixtures {
             corpus: vec![],
             programs: vec![regenerate(&p)],
+            composed: vec![],
         });
         if out != text {
             for (at, (got, want)) in out.lines().zip(text.lines()).enumerate() {
@@ -279,6 +280,7 @@ fn r_log_entry(e: &LogEntry) -> String {
         LogEntry::Lp(lp) => format!("L({}|{})", r_path(&lp.occ), lp.slice.len()),
         LogEntry::Gam(g) => format!("g{}", g.ch()),
         LogEntry::Alpha(a) => format!("a{}{}", a.gate.ch(), a.bit),
+        LogEntry::Rbl(r) => format!("rbl({})", r_path(&r.output)),
     }
 }
 
@@ -292,6 +294,8 @@ fn r_tape_entry(e: &TapeEntry) -> String {
         TapeEntry::Mu(g) => format!("m{}", g.ch()),
         TapeEntry::Ans(g, b) => format!("A{}{}", g.ch(), b),
         TapeEntry::Alpha(a) => format!("a{}{}", a.gate.ch(), a.bit),
+        TapeEntry::Rb(r) => format!("RB({})", r.depth),
+        TapeEntry::Rbl(r) => format!("rbl({})", r_path(&r.output)),
     }
 }
 

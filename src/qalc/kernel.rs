@@ -188,7 +188,7 @@ fn add_keys_log<'a>(e: &'a LogEntry, out: &mut HashSet<Key<'a>>) {
             out.insert((a.gate, &a.instance));
         }
         LogEntry::Lp(lp) => add_keys_lp(lp, out),
-        LogEntry::Gam(_) => {}
+        LogEntry::Gam(_) | LogEntry::Rbl(_) => {}
     }
 }
 
@@ -201,7 +201,7 @@ fn add_keys_lp<'a>(lp: &'a Lp, out: &mut HashSet<Key<'a>>) {
                     out.insert((a.gate, &a.instance));
                 }
                 LogEntry::Lp(inner) => stack.push(inner),
-                LogEntry::Gam(_) => {}
+                LogEntry::Gam(_) | LogEntry::Rbl(_) => {}
             }
         }
     }
@@ -275,7 +275,7 @@ fn add_bits_log<'a>(e: &'a LogEntry, bits: &mut HashMap<Key<'a>, u8>, conflict: 
         match x {
             LogEntry::Alpha(a) => note_bit((a.gate, &a.instance), a.bit, bits, conflict),
             LogEntry::Lp(lp) => stack.extend(&lp.slice),
-            LogEntry::Gam(_) => {}
+            LogEntry::Gam(_) | LogEntry::Rbl(_) => {}
         }
     }
 }
@@ -348,8 +348,9 @@ fn classify_root(tape: &[TapeEntry]) -> Option<u8> {
 /// The invoking occurrence's logged position — the dynamic instance
 /// identity of a gate visit. `None` if the log head is not an lp
 /// (callers return the typed `no-instance` error; a silent TOP fallback
-/// would alias instances).
-fn instance(c: &RunCore) -> Option<&Lp> {
+/// would alias instances). Shared with the composed dispatcher's vvar
+/// arm.
+pub(super) fn instance(c: &RunCore) -> Option<&Lp> {
     match c.log.first() {
         Some(LogEntry::Lp(lp)) => Some(lp),
         _ => None,
@@ -998,9 +999,12 @@ fn classical_up(c: &RunCore) -> Vec<Row> {
             ),
         ),
         Dir::A => match c.log.first() {
-            // ordinary bt1 (real lp or alpha head; gam handled above)
+            // ordinary bt1: the reference transports ANY non-gam log
+            // head (`not is_gam(s.log[0])`), so a captured RBL rides
+            // bt1 exactly as lp and alpha heads do
             Some(LogEntry::Lp(lp)) => bt1_row(c, parent, TapeEntry::Lp(lp.clone())),
             Some(LogEntry::Alpha(a)) => bt1_row(c, parent, TapeEntry::Alpha(a.clone())),
+            Some(LogEntry::Rbl(r)) => bt1_row(c, parent, TapeEntry::Rbl(r.clone())),
             Some(LogEntry::Gam(_)) | None => vec![],
         },
     }

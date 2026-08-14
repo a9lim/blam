@@ -21,8 +21,13 @@
 //! therefore the single normative statement of the encoding.
 
 use super::amp::Amp;
-use super::mark::{Alpha, Epoch, Frame, KdKey, KsHead, LogEntry, Lp, RetainCargo, TapeEntry};
-use super::state::{KState, Kind, Residue, RunCore, Vb, Vert};
+use super::mark::{
+    Alpha, Epoch, Frame, KdKey, KsHead, LogEntry, Lp, Rb, Rbl, RetainCargo, TapeEntry,
+};
+use super::state::{
+    BinderIdentity, BinderMark, ErrorGarbage, ErrorKind, KState, Kind, Nf, NfRun, NfState,
+    NfTerminal, Residue, RunCore, ScopeResidue, TerminalCarrier, TerminalGarbage, Vb, Vert, Zipper,
+};
 use std::sync::Arc;
 
 use super::term::{Dir, GateName, Path, Term};
@@ -231,8 +236,42 @@ fn p_log_entry(t: &mut Toks) -> R<LogEntry> {
             Ok(LogEntry::Gam(g))
         }
         "al" => Ok(LogEntry::Alpha(p_alpha_body(t)?)),
+        "rbl" => Ok(LogEntry::Rbl(p_rbl_body(t)?)),
         x => Err(format!("bad log entry tag '{x}'")),
     }
+}
+
+fn p_rbl_body(t: &mut Toks) -> R<Rbl> {
+    // Caller consumed "( rbl"; parse "<path> <path> <path> )".
+    let parent = p_path(t)?;
+    let output = p_path(t)?;
+    let code = p_path(t)?;
+    t.close()?;
+    Ok(Rbl {
+        parent,
+        output,
+        code,
+    })
+}
+
+fn p_rb_body(t: &mut Toks) -> R<Rb> {
+    // Caller consumed "( rb"; parse "i:<depth> <path> <path> ( <path>* ) )".
+    let depth = t.uint("rb depth")?;
+    let output = p_path(t)?;
+    let code = p_path(t)?;
+    t.open()?;
+    let mut pending = Vec::new();
+    while !t.at_close() {
+        pending.push(p_path(t)?);
+    }
+    t.close()?;
+    t.close()?;
+    Ok(Rb {
+        depth,
+        output,
+        code,
+        pending,
+    })
 }
 
 fn p_tape_entry(t: &mut Toks) -> R<TapeEntry> {
@@ -271,6 +310,8 @@ fn p_tape_entry(t: &mut Toks) -> R<TapeEntry> {
             Ok(TapeEntry::Ans(g, b))
         }
         "al" => Ok(TapeEntry::Alpha(p_alpha_body(t)?)),
+        "rb" => Ok(TapeEntry::Rb(p_rb_body(t)?)),
+        "rbl" => Ok(TapeEntry::Rbl(p_rbl_body(t)?)),
         x => Err(format!("bad tape entry tag '{x}'")),
     }
 }
@@ -454,6 +495,315 @@ fn p_state(t: &mut Toks) -> R<KState> {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Composed-stratum records (`readback.py`'s state grammar).
+
+fn p_nf(t: &mut Toks) -> R<Nf> {
+    match t.peek() {
+        Some("hu") => {
+            t.next()?;
+            return Ok(Nf::Hole { armed: false });
+        }
+        Some("ha") => {
+            t.next()?;
+            return Ok(Nf::Hole { armed: true });
+        }
+        _ => {}
+    }
+    t.open()?;
+    let out = match t.next()? {
+        "nv" => {
+            let i: u64 = t.uint("nf var index")?;
+            if i == 0 {
+                return Err("NFVar(0) refused (1-indexed)".into());
+            }
+            Nf::Var(i)
+        }
+        "nl" => Nf::Lam(Arc::new(p_nf(t)?)),
+        "na" => {
+            let f = p_nf(t)?;
+            let a = p_nf(t)?;
+            Nf::App(Arc::new(f), Arc::new(a))
+        }
+        "ng" => Nf::Gate(p_gate(t)?),
+        x => return Err(format!("bad nf tag '{x}'")),
+    };
+    t.close()?;
+    Ok(out)
+}
+
+fn p_binder_identity(t: &mut Toks) -> R<BinderIdentity> {
+    t.open()?;
+    let out = match t.next()? {
+        "src" => {
+            let path = p_path(t)?;
+            let log = p_seq(t, p_log_entry)?;
+            BinderIdentity::Source { path, log }
+        }
+        "vrt" => {
+            let gate = p_gate(t)?;
+            let instance = p_lp(t)?;
+            let phase = t.bit()?;
+            let code = p_path(t)?;
+            BinderIdentity::Virtual {
+                gate,
+                instance,
+                phase,
+                code,
+            }
+        }
+        x => return Err(format!("bad binder identity tag '{x}'")),
+    };
+    t.close()?;
+    Ok(out)
+}
+
+fn p_binder_mark(t: &mut Toks) -> R<BinderMark> {
+    t.open()?;
+    match t.next()? {
+        "bm" => {
+            let output = p_path(t)?;
+            let identity = p_binder_identity(t)?;
+            t.close()?;
+            Ok(BinderMark { output, identity })
+        }
+        x => Err(format!("expected bm found '{x}'")),
+    }
+}
+
+fn p_scope_residue(t: &mut Toks) -> R<ScopeResidue> {
+    t.open()?;
+    let out = match t.next()? {
+        "rex" => {
+            let output = p_path(t)?;
+            let prefix = p_seq(t, p_tape_entry)?;
+            ScopeResidue::Exact { output, prefix }
+        }
+        "rvr" => {
+            let output = p_path(t)?;
+            let gate = p_gate(t)?;
+            let instance = p_lp(t)?;
+            let epoch = p_epoch(t)?;
+            ScopeResidue::Virtual {
+                output,
+                gate,
+                instance,
+                epoch,
+            }
+        }
+        "rpu" => ScopeResidue::Pure { output: p_path(t)? },
+        "rnp" => {
+            let binder_path = p_path(t)?;
+            let binder_log = p_seq(t, p_log_entry)?;
+            let logged_argument = p_lp(t)?;
+            ScopeResidue::NeutralProbe {
+                binder_path,
+                binder_log,
+                logged_argument,
+            }
+        }
+        x => return Err(format!("bad scope residue tag '{x}'")),
+    };
+    t.close()?;
+    Ok(out)
+}
+
+fn p_terminal_carrier(t: &mut Toks) -> R<Option<TerminalCarrier>> {
+    if t.peek() == Some("none") {
+        t.next()?;
+        return Ok(None);
+    }
+    t.open()?;
+    let out = match t.next()? {
+        "cex" => {
+            let output = p_path(t)?;
+            let prefix = p_seq(t, p_tape_entry)?;
+            TerminalCarrier::Exact { output, prefix }
+        }
+        "cvr" => {
+            let output = p_path(t)?;
+            let gate = p_gate(t)?;
+            let instance = p_lp(t)?;
+            let epoch = p_epoch(t)?;
+            TerminalCarrier::Virtual {
+                output,
+                gate,
+                instance,
+                epoch,
+            }
+        }
+        x => return Err(format!("bad terminal carrier tag '{x}'")),
+    };
+    t.close()?;
+    Ok(Some(out))
+}
+
+fn p_terminal_garbage(t: &mut Toks) -> R<TerminalGarbage> {
+    t.open()?;
+    match t.next()? {
+        "tg" => {
+            let carrier = p_terminal_carrier(t)?;
+            let frames = p_seq(t, p_frame)?;
+            let storage = p_seq(t, p_ks_head)?;
+            let binders = p_seq(t, p_binder_mark)?;
+            let residues = p_seq(t, p_scope_residue)?;
+            t.close()?;
+            Ok(TerminalGarbage {
+                carrier,
+                frames,
+                storage,
+                binders,
+                residues,
+            })
+        }
+        x => Err(format!("expected tg found '{x}'")),
+    }
+}
+
+fn p_zipper(t: &mut Toks) -> R<Zipper> {
+    t.open()?;
+    match t.next()? {
+        "zp" => {
+            let tree = p_nf(t)?;
+            let cursor = if t.peek() == Some("none") {
+                t.next()?;
+                None
+            } else {
+                Some(p_path(t)?)
+            };
+            let binders = p_seq(t, p_binder_mark)?;
+            let residues = p_seq(t, p_scope_residue)?;
+            t.close()?;
+            Ok(Zipper {
+                tree,
+                cursor,
+                binders,
+                residues,
+            })
+        }
+        x => Err(format!("expected zp found '{x}'")),
+    }
+}
+
+/// A bare word token: composed error kinds and fault categories. The
+/// vocabulary is closed lowercase-kebab, so the reserved structural
+/// tokens can never collide with it — refused on decode anyway.
+fn p_word(t: &mut Toks, what: &str) -> R<String> {
+    let w = t.next()?;
+    if w == "(" || w == ")" || w == "none" {
+        return Err(format!("bad {what} token '{w}'"));
+    }
+    Ok(w.to_string())
+}
+
+fn p_error_kind(t: &mut Toks) -> R<ErrorKind> {
+    t.open()?;
+    let out = match t.next()? {
+        "ek" => ErrorKind::Typed(p_word(t, "error kind")?),
+        "ef" => ErrorKind::Fault(p_word(t, "fault category")?),
+        x => return Err(format!("bad error kind tag '{x}'")),
+    };
+    t.close()?;
+    Ok(out)
+}
+
+fn p_error_garbage(t: &mut Toks) -> R<ErrorGarbage> {
+    t.open()?;
+    let out = match t.next()? {
+        "egc" => {
+            t.open()?;
+            match t.next()? {
+                "run" => {}
+                x => return Err(format!("expected run found '{x}'")),
+            }
+            let token = p_run_body(t)?;
+            let zipper = p_zipper(t)?;
+            ErrorGarbage::Composed { token, zipper }
+        }
+        "egk" => {
+            t.open()?;
+            match t.next()? {
+                "run" => {}
+                x => return Err(format!("expected run found '{x}'")),
+            }
+            let token = p_run_body(t)?;
+            let zipper = p_zipper(t)?;
+            let residue = p_residue(t)?;
+            ErrorGarbage::Kernel {
+                token,
+                zipper,
+                residue,
+            }
+        }
+        "egi" => {
+            t.open()?;
+            match t.next()? {
+                "run" => {}
+                x => return Err(format!("expected run found '{x}'")),
+            }
+            let token = p_run_body(t)?;
+            let zipper = p_zipper(t)?;
+            let target = Box::new(p_state(t)?);
+            ErrorGarbage::InvalidKernelTarget {
+                token,
+                zipper,
+                target,
+            }
+        }
+        "egf" => ErrorGarbage::Fault {
+            source: Box::new(p_nf_state(t)?),
+        },
+        x => return Err(format!("bad error garbage tag '{x}'")),
+    };
+    t.close()?;
+    Ok(out)
+}
+
+fn p_nf_terminal(t: &mut Toks) -> R<NfTerminal> {
+    t.open()?;
+    let out = match t.next()? {
+        "th" => {
+            let output = p_nf(t)?;
+            let garbage = p_terminal_garbage(t)?;
+            NfTerminal::Halt { output, garbage }
+        }
+        "te" => {
+            let kind = p_error_kind(t)?;
+            let garbage = p_error_garbage(t)?;
+            NfTerminal::Error { kind, garbage }
+        }
+        x => return Err(format!("bad nf terminal tag '{x}'")),
+    };
+    t.close()?;
+    Ok(out)
+}
+
+/// Parse one composed state s-expression.
+fn p_nf_state(t: &mut Toks) -> R<NfState> {
+    t.open()?;
+    let out = match t.next()? {
+        "nr" => {
+            t.open()?;
+            match t.next()? {
+                "run" => {}
+                x => return Err(format!("expected run found '{x}'")),
+            }
+            let token = p_run_body(t)?;
+            let zipper = p_zipper(t)?;
+            NfState::Run(NfRun { token, zipper })
+        }
+        "nrd" => NfState::RunDone(p_nf_terminal(t)?),
+        "nd" => {
+            let terminal = p_nf_terminal(t)?;
+            let tick: u64 = t.uint("nf tick")?;
+            NfState::Done { terminal, tick }
+        }
+        x => return Err(format!("bad nf state tag '{x}'")),
+    };
+    t.close()?;
+    Ok(out)
+}
+
 fn p_term(t: &mut Toks) -> R<Term> {
     t.open()?;
     let out = match t.next()? {
@@ -570,7 +920,31 @@ fn w_log_entry(out: &mut String, e: &LogEntry) {
             out.push_str(" )");
         }
         LogEntry::Alpha(a) => w_alpha(out, a),
+        LogEntry::Rbl(r) => w_rbl(out, r),
     }
+}
+
+fn w_rbl(out: &mut String, r: &Rbl) {
+    out.push_str("( rbl ");
+    w_path(out, &r.parent);
+    out.push(' ');
+    w_path(out, &r.output);
+    out.push(' ');
+    w_path(out, &r.code);
+    out.push_str(" )");
+}
+
+fn w_rb(out: &mut String, r: &Rb) {
+    out.push_str(&format!("( rb i:{} ", r.depth));
+    w_path(out, &r.output);
+    out.push(' ');
+    w_path(out, &r.code);
+    out.push_str(" ( ");
+    for p in &r.pending {
+        w_path(out, p);
+        out.push(' ');
+    }
+    out.push_str(") )");
 }
 
 fn w_tape_entry(out: &mut String, e: &TapeEntry) {
@@ -595,6 +969,8 @@ fn w_tape_entry(out: &mut String, e: &TapeEntry) {
             out.push_str(&format!(" i:{b} )"));
         }
         TapeEntry::Alpha(a) => w_alpha(out, a),
+        TapeEntry::Rb(r) => w_rb(out, r),
+        TapeEntry::Rbl(r) => w_rbl(out, r),
     }
 }
 
@@ -739,6 +1115,266 @@ pub fn w_state(out: &mut String, s: &KState) {
     }
 }
 
+fn w_token(out: &mut String, r: &RunCore) {
+    out.push_str("( run ");
+    w_run_body(out, r);
+}
+
+fn w_nf(out: &mut String, n: &Nf) {
+    match n {
+        Nf::Hole { armed: false } => out.push_str("hu"),
+        Nf::Hole { armed: true } => out.push_str("ha"),
+        Nf::Var(i) => out.push_str(&format!("( nv i:{i} )")),
+        Nf::Lam(b) => {
+            out.push_str("( nl ");
+            w_nf(out, b);
+            out.push_str(" )");
+        }
+        Nf::App(f, a) => {
+            out.push_str("( na ");
+            w_nf(out, f);
+            out.push(' ');
+            w_nf(out, a);
+            out.push_str(" )");
+        }
+        Nf::Gate(g) => {
+            out.push_str("( ng ");
+            w_gate(out, *g);
+            out.push_str(" )");
+        }
+    }
+}
+
+fn w_binder_identity(out: &mut String, i: &BinderIdentity) {
+    match i {
+        BinderIdentity::Source { path, log } => {
+            out.push_str("( src ");
+            w_path(out, path);
+            out.push(' ');
+            w_seq(out, log, w_log_entry);
+            out.push_str(" )");
+        }
+        BinderIdentity::Virtual {
+            gate,
+            instance,
+            phase,
+            code,
+        } => {
+            out.push_str("( vrt ");
+            w_gate(out, *gate);
+            out.push(' ');
+            w_lp(out, instance);
+            out.push_str(&format!(" i:{phase} "));
+            w_path(out, code);
+            out.push_str(" )");
+        }
+    }
+}
+
+fn w_binder_mark(out: &mut String, b: &BinderMark) {
+    out.push_str("( bm ");
+    w_path(out, &b.output);
+    out.push(' ');
+    w_binder_identity(out, &b.identity);
+    out.push_str(" )");
+}
+
+fn w_scope_residue(out: &mut String, r: &ScopeResidue) {
+    match r {
+        ScopeResidue::Exact { output, prefix } => {
+            out.push_str("( rex ");
+            w_path(out, output);
+            out.push(' ');
+            w_seq(out, prefix, w_tape_entry);
+            out.push_str(" )");
+        }
+        ScopeResidue::Virtual {
+            output,
+            gate,
+            instance,
+            epoch,
+        } => {
+            out.push_str("( rvr ");
+            w_path(out, output);
+            out.push(' ');
+            w_gate(out, *gate);
+            out.push(' ');
+            w_lp(out, instance);
+            out.push(' ');
+            w_epoch(out, epoch);
+            out.push_str(" )");
+        }
+        ScopeResidue::Pure { output } => {
+            out.push_str("( rpu ");
+            w_path(out, output);
+            out.push_str(" )");
+        }
+        ScopeResidue::NeutralProbe {
+            binder_path,
+            binder_log,
+            logged_argument,
+        } => {
+            out.push_str("( rnp ");
+            w_path(out, binder_path);
+            out.push(' ');
+            w_seq(out, binder_log, w_log_entry);
+            out.push(' ');
+            w_lp(out, logged_argument);
+            out.push_str(" )");
+        }
+    }
+}
+
+fn w_terminal_carrier(out: &mut String, c: &Option<TerminalCarrier>) {
+    match c {
+        None => out.push_str("none"),
+        Some(TerminalCarrier::Exact { output, prefix }) => {
+            out.push_str("( cex ");
+            w_path(out, output);
+            out.push(' ');
+            w_seq(out, prefix, w_tape_entry);
+            out.push_str(" )");
+        }
+        Some(TerminalCarrier::Virtual {
+            output,
+            gate,
+            instance,
+            epoch,
+        }) => {
+            out.push_str("( cvr ");
+            w_path(out, output);
+            out.push(' ');
+            w_gate(out, *gate);
+            out.push(' ');
+            w_lp(out, instance);
+            out.push(' ');
+            w_epoch(out, epoch);
+            out.push_str(" )");
+        }
+    }
+}
+
+fn w_terminal_garbage(out: &mut String, g: &TerminalGarbage) {
+    out.push_str("( tg ");
+    w_terminal_carrier(out, &g.carrier);
+    out.push(' ');
+    w_seq(out, &g.frames, w_frame);
+    out.push(' ');
+    w_seq(out, &g.storage, w_ks_head);
+    out.push(' ');
+    w_seq(out, &g.binders, w_binder_mark);
+    out.push(' ');
+    w_seq(out, &g.residues, w_scope_residue);
+    out.push_str(" )");
+}
+
+fn w_zipper(out: &mut String, z: &Zipper) {
+    out.push_str("( zp ");
+    w_nf(out, &z.tree);
+    out.push(' ');
+    match &z.cursor {
+        None => out.push_str("none"),
+        Some(p) => w_path(out, p),
+    }
+    out.push(' ');
+    w_seq(out, &z.binders, w_binder_mark);
+    out.push(' ');
+    w_seq(out, &z.residues, w_scope_residue);
+    out.push_str(" )");
+}
+
+fn w_error_kind(out: &mut String, k: &ErrorKind) {
+    match k {
+        ErrorKind::Typed(s) => out.push_str(&format!("( ek {s} )")),
+        ErrorKind::Fault(s) => out.push_str(&format!("( ef {s} )")),
+    }
+}
+
+fn w_error_garbage(out: &mut String, g: &ErrorGarbage) {
+    match g {
+        ErrorGarbage::Composed { token, zipper } => {
+            out.push_str("( egc ");
+            w_token(out, token);
+            out.push(' ');
+            w_zipper(out, zipper);
+            out.push_str(" )");
+        }
+        ErrorGarbage::Kernel {
+            token,
+            zipper,
+            residue,
+        } => {
+            out.push_str("( egk ");
+            w_token(out, token);
+            out.push(' ');
+            w_zipper(out, zipper);
+            out.push(' ');
+            w_residue(out, residue);
+            out.push_str(" )");
+        }
+        ErrorGarbage::InvalidKernelTarget {
+            token,
+            zipper,
+            target,
+        } => {
+            out.push_str("( egi ");
+            w_token(out, token);
+            out.push(' ');
+            w_zipper(out, zipper);
+            out.push(' ');
+            w_state(out, target);
+            out.push_str(" )");
+        }
+        ErrorGarbage::Fault { source } => {
+            out.push_str("( egf ");
+            w_nf_state(out, source);
+            out.push_str(" )");
+        }
+    }
+}
+
+fn w_nf_terminal(out: &mut String, t: &NfTerminal) {
+    match t {
+        NfTerminal::Halt { output, garbage } => {
+            out.push_str("( th ");
+            w_nf(out, output);
+            out.push(' ');
+            w_terminal_garbage(out, garbage);
+            out.push_str(" )");
+        }
+        NfTerminal::Error { kind, garbage } => {
+            out.push_str("( te ");
+            w_error_kind(out, kind);
+            out.push(' ');
+            w_error_garbage(out, garbage);
+            out.push_str(" )");
+        }
+    }
+}
+
+/// Serialize one composed state s-expression (the normative encoding).
+pub fn w_nf_state(out: &mut String, s: &NfState) {
+    match s {
+        NfState::Run(r) => {
+            out.push_str("( nr ");
+            w_token(out, &r.token);
+            out.push(' ');
+            w_zipper(out, &r.zipper);
+            out.push_str(" )");
+        }
+        NfState::RunDone(t) => {
+            out.push_str("( nrd ");
+            w_nf_terminal(out, t);
+            out.push_str(" )");
+        }
+        NfState::Done { terminal, tick } => {
+            out.push_str("( nd ");
+            w_nf_terminal(out, terminal);
+            out.push_str(&format!(" i:{tick} )"));
+        }
+    }
+}
+
 fn w_term(out: &mut String, t: &Term) {
     match t {
         Term::Var(i) => out.push_str(&format!("( v i:{i} )")),
@@ -812,10 +1448,32 @@ pub struct ProgramFixture {
     pub finals: Vec<(KState, Amp)>,
 }
 
+/// One probe row: exact coefficient, rule, and full target state
+/// (probe targets may be off-carrier, so no id indirection).
+pub type ProbeRow = (Amp, String, NfState);
+
+/// One composed core's phase-2 pins: the same shape as
+/// [`ProgramFixture`] over composed states, plus totalization/inverse
+/// probes — off-carrier sources with their exact expected rows.
+#[derive(Debug, Clone)]
+pub struct ComposedFixture {
+    pub name: String,
+    pub term: Term,
+    pub tick_depth: u64,
+    pub cert: Option<CertEntries>,
+    pub carrier: Vec<NfState>,
+    pub columns: Vec<Column>,
+    pub commitment: String,
+    pub trace: Vec<(u64, u64, String)>,
+    pub finals: Vec<(NfState, Amp)>,
+    pub probes: Vec<(NfState, Vec<ProbeRow>)>,
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct Fixtures {
     pub corpus: Vec<CorpusPair>,
     pub programs: Vec<ProgramFixture>,
+    pub composed: Vec<ComposedFixture>,
 }
 
 fn hex64(s: &str) -> R<String> {
@@ -887,6 +1545,12 @@ pub fn parse_fixtures(text: &str) -> Result<Fixtures, WireError> {
                     let p = parse_program(name, &mut lines).map_err(|(pn, e)| fail(pn, e))?;
                     fx.programs.push(p);
                 }
+                "cprogram" => {
+                    let name = t.next().map_err(|e| fail(n, e))?.to_string();
+                    t.done().map_err(|e| fail(n, e))?;
+                    let p = parse_cprogram(name, &mut lines).map_err(|(pn, e)| fail(pn, e))?;
+                    fx.composed.push(p);
+                }
                 x => return Err(fail(n, format!("bad section '{x}'"))),
             },
             x => return Err(fail(n, format!("bad record '{x}'"))),
@@ -897,22 +1561,76 @@ pub fn parse_fixtures(text: &str) -> Result<Fixtures, WireError> {
 
 type Lines<'a> = std::iter::Enumerate<std::str::Lines<'a>>;
 
+/// One parsed probe over states of type `S`.
+type Probe<S> = (S, Vec<(Amp, String, S)>);
+
+/// The section fields shared by kernel and composed program blocks,
+/// generic over the state parser so the two grammars cannot drift.
+struct ProgramBody<S> {
+    term: Term,
+    tick_depth: u64,
+    cert: Option<CertEntries>,
+    carrier: Vec<S>,
+    columns: Vec<Column>,
+    commitment: String,
+    trace: Vec<(u64, u64, String)>,
+    finals: Vec<(S, Amp)>,
+    probes: Vec<Probe<S>>,
+}
+
 fn parse_program(name: String, lines: &mut Lines) -> Result<ProgramFixture, (usize, String)> {
+    let b = parse_program_body(&name, lines, "end program", false, p_state)?;
+    Ok(ProgramFixture {
+        name,
+        term: b.term,
+        tick_depth: b.tick_depth,
+        cert: b.cert,
+        carrier: b.carrier,
+        columns: b.columns,
+        commitment: b.commitment,
+        trace: b.trace,
+        finals: b.finals,
+    })
+}
+
+fn parse_cprogram(name: String, lines: &mut Lines) -> Result<ComposedFixture, (usize, String)> {
+    let b = parse_program_body(&name, lines, "end cprogram", true, p_nf_state)?;
+    Ok(ComposedFixture {
+        name,
+        term: b.term,
+        tick_depth: b.tick_depth,
+        cert: b.cert,
+        carrier: b.carrier,
+        columns: b.columns,
+        commitment: b.commitment,
+        trace: b.trace,
+        finals: b.finals,
+        probes: b.probes,
+    })
+}
+
+fn parse_program_body<S>(
+    name: &str,
+    lines: &mut Lines,
+    end: &str,
+    probes_allowed: bool,
+    p_st: impl Fn(&mut Toks) -> R<S>,
+) -> Result<ProgramBody<S>, (usize, String)> {
     let mut term = None;
     let mut tick_depth = None;
     let mut cert: Option<Option<CertEntries>> = None;
-    let mut carrier: Vec<KState> = Vec::new();
+    let mut carrier: Vec<S> = Vec::new();
     let mut columns = Vec::new();
     let mut commitment = None;
     let mut trace = Vec::new();
     let mut finals = Vec::new();
+    let mut probes: Vec<Probe<S>> = Vec::new();
 
     while let Some((n, line)) = lines.next() {
         let e = |msg: String| (n, msg);
-        if line == "end program" {
+        if line == end {
             let term = term.ok_or_else(|| e("program without term".into()))?;
-            return Ok(ProgramFixture {
-                name,
+            return Ok(ProgramBody {
                 term,
                 tick_depth: tick_depth.ok_or_else(|| e("program without tickdepth".into()))?,
                 cert: cert.ok_or_else(|| e("program without cert".into()))?,
@@ -921,6 +1639,7 @@ fn parse_program(name: String, lines: &mut Lines) -> Result<ProgramFixture, (usi
                 commitment: commitment.ok_or_else(|| e("program without commitment".into()))?,
                 trace,
                 finals,
+                probes,
             });
         }
         let mut t = Toks::new(line);
@@ -990,7 +1709,7 @@ fn parse_program(name: String, lines: &mut Lines) -> Result<ProgramFixture, (usi
                                             carrier.len()
                                         ));
                                     }
-                                    carrier.push(p_state(&mut t)?);
+                                    carrier.push(p_st(&mut t)?);
                                     t.done()
                                 }
                                 x => Err(format!("expected st found '{x}'")),
@@ -1068,10 +1787,10 @@ fn parse_program(name: String, lines: &mut Lines) -> Result<ProgramFixture, (usi
                             break;
                         }
                         let mut t = Toks::new(line);
-                        let row = (|| -> R<(KState, Amp)> {
+                        let row = (|| -> R<(S, Amp)> {
                             match t.next()? {
                                 "fs" => {
-                                    let s = p_state(&mut t)?;
+                                    let s = p_st(&mut t)?;
                                     let a = p_amp(&mut t)?;
                                     t.done()?;
                                     Ok((s, a))
@@ -1081,6 +1800,37 @@ fn parse_program(name: String, lines: &mut Lines) -> Result<ProgramFixture, (usi
                         })()
                         .map_err(|m| (n, m))?;
                         finals.push(row);
+                    }
+                }
+                "probes" if probes_allowed => {
+                    t.done().map_err(e)?;
+                    for (n, line) in lines.by_ref() {
+                        if line == "end probes" {
+                            break;
+                        }
+                        let mut t = Toks::new(line);
+                        (|| -> R<()> {
+                            match t.next()? {
+                                "psrc" => {
+                                    probes.push((p_st(&mut t)?, Vec::new()));
+                                    t.done()
+                                }
+                                "prow" => {
+                                    let a = p_amp(&mut t)?;
+                                    let rule = p_rule(&mut t)?;
+                                    let s = p_st(&mut t)?;
+                                    t.done()?;
+                                    probes
+                                        .last_mut()
+                                        .ok_or_else(|| "prow before any psrc".to_string())?
+                                        .1
+                                        .push((a, rule, s));
+                                    Ok(())
+                                }
+                                x => Err(format!("expected psrc/prow found '{x}'")),
+                            }
+                        })()
+                        .map_err(|m| (n, m))?;
                     }
                 }
                 x => return Err(e(format!("bad program section '{x}'"))),
@@ -1173,6 +1923,74 @@ pub fn serialize_fixtures(fx: &Fixtures) -> String {
         out.push_str("end final\n");
         out.push_str("end program\n");
     }
+    for p in &fx.composed {
+        out.push_str(&format!("begin cprogram {}\n", p.name));
+        out.push_str("term ");
+        w_term(&mut out, &p.term);
+        out.push('\n');
+        out.push_str(&format!("tickdepth i:{}\n", p.tick_depth));
+        match &p.cert {
+            None => out.push_str("cert none\n"),
+            Some(entries) => {
+                out.push_str("begin cert\n");
+                for (pos, keys) in entries {
+                    out.push_str("centry ");
+                    w_path(&mut out, pos);
+                    out.push(' ');
+                    w_seq(&mut out, keys, w_kd_key);
+                    out.push('\n');
+                }
+                out.push_str("end cert\n");
+            }
+        }
+        out.push_str(&format!("begin carrier i:{}\n", p.carrier.len()));
+        for (i, s) in p.carrier.iter().enumerate() {
+            out.push_str(&format!("st i:{i} "));
+            w_nf_state(&mut out, s);
+            out.push('\n');
+        }
+        out.push_str("end carrier\n");
+        out.push_str("begin columns\n");
+        for (src, rows) in &p.columns {
+            out.push_str(&col_line(*src, rows));
+            out.push('\n');
+        }
+        out.push_str("end columns\n");
+        out.push_str(&format!("commitment {}\n", p.commitment));
+        out.push_str(&format!("begin trace i:{}\n", p.trace.len()));
+        for (step, support, h) in &p.trace {
+            out.push_str(&format!("tr i:{step} i:{support} {h}\n"));
+        }
+        out.push_str("end trace\n");
+        out.push_str("begin final\n");
+        for (s, a) in &p.finals {
+            out.push_str("fs ");
+            w_nf_state(&mut out, s);
+            out.push(' ');
+            w_amp(&mut out, a);
+            out.push('\n');
+        }
+        out.push_str("end final\n");
+        if !p.probes.is_empty() {
+            out.push_str("begin probes\n");
+            for (src, rows) in &p.probes {
+                out.push_str("psrc ");
+                w_nf_state(&mut out, src);
+                out.push('\n');
+                for (a, rule, s) in rows {
+                    out.push_str("prow ");
+                    w_amp(&mut out, a);
+                    out.push(' ');
+                    out.push_str(rule);
+                    out.push(' ');
+                    w_nf_state(&mut out, s);
+                    out.push('\n');
+                }
+            }
+            out.push_str("end probes\n");
+        }
+        out.push_str("end cprogram\n");
+    }
     out
 }
 
@@ -1207,6 +2025,14 @@ pub fn column_commitment(columns: &[Column]) -> String {
 pub fn state_bytes(s: &KState) -> String {
     let mut out = String::new();
     w_state(&mut out, s);
+    out
+}
+
+/// One composed state's wire bytes — the canonical identity the
+/// composed carrier ordering, digests, and finals use.
+pub fn nf_state_bytes(s: &NfState) -> String {
+    let mut out = String::new();
+    w_nf_state(&mut out, s);
     out
 }
 
