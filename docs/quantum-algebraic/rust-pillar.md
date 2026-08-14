@@ -10,9 +10,14 @@ table and exact-Dw evolvers; every fixture file, now 20 suite programs
 plus the three Dw-only `T0`/`T1`/`HTH0` probes promised in §6,
 regenerates byte-identically from the Rust engine; zero native Gram
 defects; kernel.md §11 row for row, correcting that table's t=31 path
-typo against the reference machine. Residual: guard arms structurally
-unreachable in the 23 fixture programs are pinned by review only until
-phase 2's Gate-1 differential). Phases 2–4 are open. `architecture.md`
+typo against the reference machine. The phase-1 Codex drift review
+found no transition-table drift; its findings — iterative
+traversals/renderer per the reference's v1.26 discipline, `Arc`-shared
+epoch children, `rs_insert` as the verbatim stable sort, duplicate cert
+positions rejected at decode — are folded, same day. Residual: the
+step table's error/guard arms, structurally unreachable in the 23
+fixture programs, are pinned by review only until phase 2's Gate-1
+differential). Phases 2–4 are open. `architecture.md`
 §7 remains the contract this sketch instantiates.
 
 ## 1. Scope and bar

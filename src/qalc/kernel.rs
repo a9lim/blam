@@ -26,6 +26,7 @@
 //! the phase-4 admission surface.
 
 use std::collections::{HashMap, HashSet};
+use std::sync::Arc;
 
 use super::amp::Amp;
 use super::mark::{
@@ -176,8 +177,10 @@ fn cons_ks(head: KsHead, tail: &[KsHead]) -> Vec<KsHead> {
 //
 // Traversal covers lp slices only; instance keys are frozen names and
 // are never traversed (the W5 ghost-count lesson), and epochs carry no
-// keys. Recursion depth is bounded by the wire parser's `DEPTH_CAP` on
-// every decodable state, as in `mark`'s renderer.
+// keys. Traversals are iterative (explicit work stack) — the
+// reference's v1.26 discipline after audit #18's RecursionError class.
+// The wire `DEPTH_CAP` bounds decoded input only; `var` builds lps
+// nested past any decoded depth, so no depth is safe to recurse on.
 
 fn add_keys_log<'a>(e: &'a LogEntry, out: &mut HashSet<Key<'a>>) {
     match e {
@@ -190,8 +193,17 @@ fn add_keys_log<'a>(e: &'a LogEntry, out: &mut HashSet<Key<'a>>) {
 }
 
 fn add_keys_lp<'a>(lp: &'a Lp, out: &mut HashSet<Key<'a>>) {
-    for e in &lp.slice {
-        add_keys_log(e, out);
+    let mut stack = vec![lp];
+    while let Some(lp) = stack.pop() {
+        for e in &lp.slice {
+            match e {
+                LogEntry::Alpha(a) => {
+                    out.insert((a.gate, &a.instance));
+                }
+                LogEntry::Lp(inner) => stack.push(inner),
+                LogEntry::Gam(_) => {}
+            }
+        }
     }
 }
 
@@ -258,14 +270,13 @@ fn note_bit<'a>(key: Key<'a>, bit: u8, bits: &mut HashMap<Key<'a>, u8>, conflict
 }
 
 fn add_bits_log<'a>(e: &'a LogEntry, bits: &mut HashMap<Key<'a>, u8>, conflict: &mut bool) {
-    match e {
-        LogEntry::Alpha(a) => note_bit((a.gate, &a.instance), a.bit, bits, conflict),
-        LogEntry::Lp(lp) => {
-            for x in &lp.slice {
-                add_bits_log(x, bits, conflict);
-            }
+    let mut stack = vec![e];
+    while let Some(x) = stack.pop() {
+        match x {
+            LogEntry::Alpha(a) => note_bit((a.gate, &a.instance), a.bit, bits, conflict),
+            LogEntry::Lp(lp) => stack.extend(&lp.slice),
+            LogEntry::Gam(_) => {}
         }
-        LogEntry::Gam(_) => {}
     }
 }
 
@@ -345,15 +356,15 @@ fn instance(c: &RunCore) -> Option<&Lp> {
     }
 }
 
-/// v1.7: RS is an instance-keyed set in canonical repr order. The new
-/// frame lands where a stable sort of `rs + (fr,)` would put it —
-/// after any equal key, though equal reprs are impossible for distinct
-/// frames on this injectively-rendered domain.
+/// v1.7: RS is an instance-keyed set in canonical repr order. The
+/// reference stably sorts all of `rs + (fr,)` — implemented verbatim
+/// (`sort_by_cached_key` is stable) rather than as a sorted-input
+/// insertion, so a non-canonical RS is normalized exactly as Python
+/// would, never silently mis-placed.
 fn rs_insert(rs: Vec<Frame>, fr: Frame) -> Vec<Frame> {
-    let key = frame_repr(&fr);
-    let at = rs.partition_point(|f| frame_repr(f) <= key);
     let mut out = rs;
-    out.insert(at, fr);
+    out.push(fr);
+    out.sort_by_cached_key(frame_repr);
     out
 }
 
@@ -361,8 +372,8 @@ fn rs_insert(rs: Vec<Frame>, fr: Frame) -> Vec<Frame> {
 /// (`RecallEpoch.lean`'s recursive tree).
 fn recall_epoch(ticket_epoch: &Epoch, old_frame_epoch: Option<&Epoch>) -> Epoch {
     match old_frame_epoch {
-        None => Epoch::Recall(Box::new(ticket_epoch.clone())),
-        Some(old) => Epoch::RecallOver(Box::new(ticket_epoch.clone()), Box::new(old.clone())),
+        None => Epoch::Recall(Arc::new(ticket_epoch.clone())),
+        Some(old) => Epoch::RecallOver(Arc::new(ticket_epoch.clone()), Arc::new(old.clone())),
     }
 }
 

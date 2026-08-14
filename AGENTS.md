@@ -78,8 +78,9 @@ Dw-only T-phase probes — are regenerated only by
 `qalc/export_rust_fixtures.py` (the qALC workflow byte-checks them),
 and `tests/qalc_kernel.rs` regenerates every one byte-identically from
 the Rust engine alone. The composed machine (readback) is not yet
-ported; guard arms structurally unreachable in the 23 fixture programs
-are pinned by review only until phase 2's Gate-1 differential. `docs/quantum-algebraic/architecture.md` is the contract;
+ported; the step table's error/guard arms, structurally unreachable in
+the 23 fixture programs, are pinned by review only (a passed Codex
+drift review, findings folded) until phase 2's Gate-1 differential. `docs/quantum-algebraic/architecture.md` is the contract;
 `token.md` is the active IAM-lineage token design; `kernel.md` is the
 current-only v1.43 register; `machine.md` is read-only history. Architecture
 Gate 1 is closed: the reference composed machine supplies exact H/T

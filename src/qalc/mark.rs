@@ -18,10 +18,14 @@
 //! is stable; callers preserving fixture order rely on comparison only,
 //! never on re-sorting equal keys.
 //!
-//! Renderer recursion is bounded by construction: every rendered value
-//! was built by the wire parser, which enforces [`crate::qalc::wire::DEPTH_CAP`]
-//! — so no input can drive the renderer (or a sort comparator built on
-//! it) to stack overflow. No error path exists: the domain is typed.
+//! The renderer is iterative (an explicit work stack), matching the
+//! reference's v1.26 discipline: the wire parser's
+//! [`crate::qalc::wire::DEPTH_CAP`] bounds decoded *input* only —
+//! stepping builds deeper values (`var` nests lps, recall grows epoch
+//! trees), so no depth is safe to recurse on. No error path exists:
+//! the domain is typed.
+
+use std::sync::Arc;
 
 use super::term::{Dir, GateName, Path};
 
@@ -44,13 +48,16 @@ pub enum LogEntry {
 
 /// Replay-epoch tree (`RecallEpoch.lean`): `('F',)` fresh,
 /// `('EA', e)` recall with no old frame, `('EP', e, e′)` recall over an
-/// existing frame's epoch. Unbounded in principle, depth-capped at the
-/// wire boundary.
+/// existing frame's epoch. Unbounded in principle; the wire boundary
+/// caps decoded depth, runtime recalls grow it. Children are
+/// `Arc`-shared so a recall clones pointers, as the reference shares
+/// tuples — `RecallOver` nesting makes deep-copy cost exponential.
+/// Equality and hashing stay structural.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Epoch {
     Fresh,
-    Recall(Box<Epoch>),
-    RecallOver(Box<Epoch>, Box<Epoch>),
+    Recall(Arc<Epoch>),
+    RecallOver(Arc<Epoch>, Arc<Epoch>),
 }
 
 /// An answer ticket `('AL', g, i, b′, epoch)` — instance-tagged.
@@ -149,64 +156,75 @@ fn push_path(out: &mut String, p: &[Dir]) {
     out.push(')');
 }
 
-fn push_epoch(out: &mut String, e: &Epoch) {
-    match e {
-        Epoch::Fresh => out.push_str("('F',)"),
-        Epoch::Recall(t) => {
-            out.push_str("('EA', ");
-            push_epoch(out, t);
-            out.push(')');
-        }
-        Epoch::RecallOver(t, o) => {
-            out.push_str("('EP', ");
-            push_epoch(out, t);
-            out.push_str(", ");
-            push_epoch(out, o);
-            out.push(')');
-        }
-    }
+/// One pending unit of rendering work. Nested values go back on the
+/// stack (pushed in reverse of output order) instead of down the call
+/// stack: stepping builds lp/epoch nesting past any decoded depth, so
+/// the renderer must be depth-independent (reference v1.26).
+enum Tok<'a> {
+    Lit(&'static str),
+    Bit(u8),
+    Epoch(&'a Epoch),
+    Log(&'a LogEntry),
+    Lp(&'a Lp),
 }
 
-fn push_log_entry(out: &mut String, e: &LogEntry) {
-    match e {
-        LogEntry::Lp(lp) => push_lp(out, lp),
-        LogEntry::Gam(g) => {
-            out.push_str("('G', ");
-            push_str_repr(out, &g.ch().to_string());
-            out.push(')');
+fn render(out: &mut String, root: Tok<'_>) {
+    let mut stack = vec![root];
+    while let Some(t) = stack.pop() {
+        match t {
+            Tok::Lit(s) => out.push_str(s),
+            Tok::Bit(b) => out.push_str(&b.to_string()),
+            Tok::Epoch(e) => match e {
+                Epoch::Fresh => out.push_str("('F',)"),
+                Epoch::Recall(t) => {
+                    out.push_str("('EA', ");
+                    stack.push(Tok::Lit(")"));
+                    stack.push(Tok::Epoch(t));
+                }
+                Epoch::RecallOver(t, o) => {
+                    out.push_str("('EP', ");
+                    stack.push(Tok::Lit(")"));
+                    stack.push(Tok::Epoch(o));
+                    stack.push(Tok::Lit(", "));
+                    stack.push(Tok::Epoch(t));
+                }
+            },
+            Tok::Log(e) => match e {
+                LogEntry::Lp(lp) => stack.push(Tok::Lp(lp)),
+                LogEntry::Gam(g) => {
+                    out.push_str("('G', ");
+                    push_str_repr(out, &g.ch().to_string());
+                    out.push(')');
+                }
+                LogEntry::Alpha(a) => {
+                    out.push_str("('AL', ");
+                    push_str_repr(out, &a.gate.ch().to_string());
+                    out.push_str(", ");
+                    stack.push(Tok::Lit(")"));
+                    stack.push(Tok::Epoch(&a.epoch));
+                    stack.push(Tok::Lit(", "));
+                    stack.push(Tok::Bit(a.bit));
+                    stack.push(Tok::Lit(", "));
+                    stack.push(Tok::Lp(&a.instance));
+                }
+            },
+            Tok::Lp(lp) => {
+                out.push_str("('L', ");
+                push_path(out, &lp.occ);
+                out.push_str(", (");
+                stack.push(Tok::Lit("))"));
+                if lp.slice.len() == 1 {
+                    stack.push(Tok::Lit(","));
+                }
+                for (i, e) in lp.slice.iter().enumerate().rev() {
+                    stack.push(Tok::Log(e));
+                    if i > 0 {
+                        stack.push(Tok::Lit(", "));
+                    }
+                }
+            }
         }
-        LogEntry::Alpha(a) => push_alpha(out, a),
     }
-}
-
-fn push_lp(out: &mut String, lp: &Lp) {
-    out.push_str("('L', ");
-    push_path(out, &lp.occ);
-    out.push_str(", ");
-    // The slice tuple.
-    out.push('(');
-    for (i, e) in lp.slice.iter().enumerate() {
-        if i > 0 {
-            out.push_str(", ");
-        }
-        push_log_entry(out, e);
-    }
-    if lp.slice.len() == 1 {
-        out.push(',');
-    }
-    out.push_str("))");
-}
-
-fn push_alpha(out: &mut String, a: &Alpha) {
-    out.push_str("('AL', ");
-    push_str_repr(out, &a.gate.ch().to_string());
-    out.push_str(", ");
-    push_lp(out, &a.instance);
-    out.push_str(", ");
-    out.push_str(&a.bit.to_string());
-    out.push_str(", ");
-    push_epoch(out, &a.epoch);
-    out.push(')');
 }
 
 /// Python `repr` of a replay frame tuple — the RS canonical sort key.
@@ -215,11 +233,11 @@ pub fn frame_repr(f: &Frame) -> String {
     out.push_str("('R', ");
     push_str_repr(&mut out, &f.gate.ch().to_string());
     out.push_str(", ");
-    push_lp(&mut out, &f.instance);
+    render(&mut out, Tok::Lp(&f.instance));
     out.push_str(", ");
     out.push_str(&f.bit.to_string());
     out.push_str(", ");
-    push_epoch(&mut out, &f.epoch);
+    render(&mut out, Tok::Epoch(&f.epoch));
     out.push(')');
     out
 }
@@ -231,7 +249,7 @@ pub fn kd_key_repr(k: &KdKey) -> String {
     out.push('(');
     push_str_repr(&mut out, &k.gate.ch().to_string());
     out.push_str(", ");
-    push_lp(&mut out, &k.instance);
+    render(&mut out, Tok::Lp(&k.instance));
     out.push(')');
     out
 }
@@ -264,7 +282,7 @@ mod tests {
                 slice: vec![],
             },
             bit: 0,
-            epoch: Epoch::Recall(Box::new(Epoch::Fresh)),
+            epoch: Epoch::Recall(Arc::new(Epoch::Fresh)),
         };
         assert_eq!(
             frame_repr(&f),
@@ -279,5 +297,51 @@ mod tests {
             },
         };
         assert_eq!(kd_key_repr(&k), "('t', ('L', ('b',), (('G', 'h'),)))");
+    }
+
+    #[test]
+    fn renderer_is_depth_independent() {
+        // Stepping grows lp/epoch nesting past any decoded depth, so
+        // the renderer must survive depths far beyond stack recursion
+        // (reference v1.26). Teardown is iterative for the same reason:
+        // derived Drop recurses.
+        const DEPTH: usize = 1 << 20;
+        let mut epoch = Epoch::Fresh;
+        for _ in 0..DEPTH {
+            epoch = Epoch::Recall(Arc::new(epoch));
+        }
+        let mut lp = Lp {
+            occ: vec![],
+            slice: vec![],
+        };
+        for _ in 0..DEPTH {
+            lp = Lp {
+                occ: vec![],
+                slice: vec![LogEntry::Lp(lp)],
+            };
+        }
+        let f = Frame {
+            gate: GateName::H,
+            instance: lp,
+            bit: 0,
+            epoch,
+        };
+        let s = frame_repr(&f);
+        assert!(s.starts_with("('R', 'h', ('L', (), (('L', (), ("));
+        // Head 11 + lp (14/level + 13 innermost) + ", 0, " + epoch
+        // (8/level + 6 innermost) + final paren.
+        assert_eq!(s.len(), 22 * DEPTH + 36);
+        assert!(s.contains("('EA', ('F',))"));
+        let Frame {
+            instance: mut lp,
+            mut epoch,
+            ..
+        } = f;
+        while let Epoch::Recall(inner) = epoch {
+            epoch = Arc::try_unwrap(inner).expect("unshared chain");
+        }
+        while let Some(LogEntry::Lp(inner)) = lp.slice.pop() {
+            lp = inner;
+        }
     }
 }

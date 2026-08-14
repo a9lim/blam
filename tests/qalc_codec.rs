@@ -77,6 +77,29 @@ fn pyrepr_matches_the_exporter_corpus() {
 }
 
 #[test]
+fn duplicate_cert_positions_are_rejected() {
+    // The reference certificate is a dict — one entry per fire
+    // position. A wire cert with a repeated position corresponds to no
+    // Python certificate and must fail to parse, not fall back to
+    // first-match lookup.
+    let (name, text) = fixture_files()
+        .into_iter()
+        .find(|(_, t)| t.contains("centry"))
+        .expect("no fixture carries a cert");
+    let dup_line = text
+        .lines()
+        .find(|l| l.starts_with("centry"))
+        .unwrap()
+        .to_string();
+    let broken = text.replace(&dup_line, &format!("{dup_line}\n{dup_line}"));
+    let err = parse_fixtures(&broken).expect_err(&format!("{name}: duplicate cert parsed"));
+    assert!(
+        err.to_string().contains("duplicate cert position"),
+        "{name}: wrong error: {err}"
+    );
+}
+
+#[test]
 fn column_commitments_recompute() {
     for (name, fx) in parsed() {
         for p in &fx.programs {

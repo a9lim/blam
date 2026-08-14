@@ -552,10 +552,16 @@ The open docket, in order:
    `qalc-rust-pillar`); **phases 0 and 1 of 4 are landed** (both
    2026-08-14: schema/codec/`Amp`/fixtures, then the kernel step table —
    all 23 fixture files regenerate byte-identically from the Rust
-   engine; ledger entries same day). Guard arms structurally unreachable
-   in the 23 fixture programs are pinned by review only until phase 2's
-   Gate-1 30-core differential. Next: phase 2, the composed machine
-   (readback, BA adapters, typed totalization).
+   engine; ledger entries same day). The phase-1 Codex drift review
+   (2026-08-14, same thread) found no transition-table drift; its four
+   findings — iterative traversals/renderer, shared epoch children,
+   verbatim `rs_insert`, cert duplicate rejection — are folded. 24 of
+   the step table's rule labels are fixture-pinned; the error/guard arm
+   family (`recall-err`, `replay-err`, `frame-conflict`, `pop-err`,
+   `key-alias`, `no-instance`, `shape-err`, `verr`, `stuck-vb`,
+   `rooterr`, `rootneutral`, `species-*`) stays pinned by review only
+   until phase 2's Gate-1 30-core differential. Next: phase 2, the
+   composed machine (readback, BA adapters, typed totalization).
 2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and broader arrival/pop determinacy.
 3. Downstream research: D-circuit dyadicity, universality/domination for `M`,

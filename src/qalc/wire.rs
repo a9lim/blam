@@ -23,12 +23,16 @@
 use super::amp::Amp;
 use super::mark::{Alpha, Epoch, Frame, KdKey, KsHead, LogEntry, Lp, RetainCargo, TapeEntry};
 use super::state::{KState, Kind, Residue, RunCore, Vb, Vert};
+use std::sync::Arc;
+
 use super::term::{Dir, GateName, Path, Term};
 
-/// Maximum paren depth the parser admits. Bounds every later traversal
-/// (renderer included) by construction; compiled-circuit terms nest
-/// linearly in gate count, so the cap sits far above real data while
-/// keeping worst-case parser stack use in the hundreds of kilobytes.
+/// Maximum paren depth the parser admits. Bounds the parser's own
+/// recursion only — stepping builds values deeper than any decoded
+/// input, so downstream traversals are iterative rather than
+/// cap-trusting. Compiled-circuit terms nest linearly in gate count, so
+/// the cap sits far above real data while keeping worst-case parser
+/// stack use in the hundreds of kilobytes.
 pub const DEPTH_CAP: usize = 4096;
 
 /// The header line every fixture file must open with.
@@ -170,11 +174,11 @@ fn p_epoch(t: &mut Toks) -> R<Epoch> {
     }
     t.open()?;
     let e = match t.next()? {
-        "ea" => Epoch::Recall(Box::new(p_epoch(t)?)),
+        "ea" => Epoch::Recall(Arc::new(p_epoch(t)?)),
         "ep" => {
             let a = p_epoch(t)?;
             let b = p_epoch(t)?;
-            Epoch::RecallOver(Box::new(a), Box::new(b))
+            Epoch::RecallOver(Arc::new(a), Arc::new(b))
         }
         x => return Err(format!("bad epoch tag '{x}'")),
     };
@@ -957,6 +961,13 @@ fn parse_program(name: String, lines: &mut Lines) -> Result<ProgramFixture, (usi
                             }
                         })()
                         .map_err(|m| (n, m))?;
+                        // The reference certificate is a dict: one entry
+                        // per fire position. First-match lookup over a
+                        // Vec only equals dict lookup if the decoder
+                        // refuses duplicates.
+                        if entries.iter().any(|(p, _)| *p == entry.0) {
+                            return Err((n, "duplicate cert position".into()));
+                        }
                         entries.push(entry);
                     }
                     cert = Some(Some(entries));
