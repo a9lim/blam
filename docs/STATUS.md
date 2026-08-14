@@ -540,7 +540,9 @@ The open docket, in order:
 1. **Rust qALC reference pillar:** implement the closed Gate-2 compiler and
    composed semantics first, with compiler-term/certificate pins,
    Python/Lean/Rust differential fixtures, and bit-identical classical and
-   qBLC rows. Census machinery comes later.
+   qBLC rows. Census machinery comes later. The spar-complete
+   implementation sketch is `quantum-algebraic/rust-pillar.md`
+   (Codex-reviewed on thread `qalc-rust-pillar`, 2026-08-14).
 2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and broader arrival/pop determinacy.
 3. Downstream research: D-circuit dyadicity, universality/domination for `M`,

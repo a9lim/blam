@@ -256,8 +256,9 @@ Existing threads: `blc-conformance` (certificate exchange),
 bisimulation), `qblc-omega-witnesses` (dyadicity hunt and phase-2 design),
 `blam-reshape` (v2 refactor design ratification and reviews),
 `qalc-architecture` (qALC design contract adversarial review,
-ratification, and amendments), and `qalc-token-machine` (qALC token
-machine feasibility and kernel review).
+ratification, and amendments), `qalc-token-machine` (qALC token
+machine feasibility and kernel review), and `qalc-rust-pillar` (Rust
+reference pillar implementation-sketch review).
 The kernel audit rounds (closed 2026-08-10 at audit #35's PASS)
 deliberately ran threadless — a fresh context per round was the point —
 labeled `qalc-vNNN-fresh-audit`; reuse that convention for any future
