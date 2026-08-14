@@ -269,6 +269,11 @@ differential, not "looks done".
   outside the renderer's grammar surfaces as a **returned typed error
   or is impossible by construction of the domain type** — never a
   panic inside `Ord`/`sort_by`, where unwinding is not an option.
+  Phase-3 note, verified against the source: `gate2_cnot_shadow.py`
+  imports `rs_insert`, so the shadow table inserts its c-port records
+  (`CP`/`CH` shapes) into RS under the same repr-keyed order — the
+  renderer's domain grows by exactly those shapes when the shadow
+  table lands, and the Gate-2 exporter must extend the corpus to match.
 - **wf.py's host-boundary clauses** (hash/eq/repr depth limits, hostile
   `__hash__`, exact-type dispatch) are Python-host-specific. The Rust
   W0 needs an explicit scope statement mapping each clause: typed enums
