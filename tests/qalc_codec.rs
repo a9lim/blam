@@ -15,12 +15,21 @@ use blam::qalc::wire::{
 };
 
 fn fixture_files() -> Vec<(String, String)> {
+    // Both fixture trees: the kernel exporter's flat files and the
+    // composed exporter's `composed/` subdirectory (whose corpus grows
+    // the PyReprKey pins with RBL-carrying frames and bundle keys).
     let dir = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/qalc");
-    let mut names: Vec<_> = std::fs::read_dir(dir)
+    let mut names: Vec<String> = std::fs::read_dir(dir)
         .expect("tests/qalc exists — regenerate with python qalc/export_rust_fixtures.py")
         .map(|e| e.unwrap().file_name().into_string().unwrap())
         .filter(|n| n.ends_with(".qfx"))
         .collect();
+    names.extend(
+        std::fs::read_dir(format!("{dir}/composed"))
+            .expect("tests/qalc/composed exists — regenerate with python qalc/export_composed_fixtures.py")
+            .map(|e| format!("composed/{}", e.unwrap().file_name().into_string().unwrap()))
+            .filter(|n| n.ends_with(".qfx")),
+    );
     names.sort();
     assert!(!names.is_empty(), "no fixtures found");
     names
@@ -102,17 +111,25 @@ fn duplicate_cert_positions_are_rejected() {
 #[test]
 fn column_commitments_recompute() {
     for (name, fx) in parsed() {
-        for p in &fx.programs {
+        let all: Vec<(&str, &_, &str)> = fx
+            .programs
+            .iter()
+            .map(|p| (p.name.as_str(), &p.columns, p.commitment.as_str()))
+            .chain(
+                fx.composed
+                    .iter()
+                    .map(|p| (p.name.as_str(), &p.columns, p.commitment.as_str())),
+            )
+            .collect();
+        for (pname, columns, commitment) in all {
             assert_eq!(
-                column_commitment(&p.columns),
-                p.commitment,
-                "{}/{}: column commitment mismatch",
-                name,
-                p.name
+                column_commitment(columns),
+                commitment,
+                "{name}/{pname}: column commitment mismatch"
             );
-            assert!(!p.columns.is_empty(), "{}: no columns", p.name);
-            for (_, rows) in &p.columns {
-                assert!(!rows.is_empty(), "{}: empty column", p.name);
+            assert!(!columns.is_empty(), "{pname}: no columns");
+            for (_, rows) in columns.iter() {
+                assert!(!rows.is_empty(), "{pname}: empty column");
             }
         }
     }

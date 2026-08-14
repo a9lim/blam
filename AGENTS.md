@@ -69,18 +69,24 @@ without the feature and say how to get themselves; do not "fix" that by
 deleting the arm. A third pillar, `quantum-algebraic` (qALC: quantum *control*,
 storeless, runtime states in ℓ² over token configurations), has an accepted
 Python/Lean reference and proof surface in `qalc/`; its Rust engine
-(`src/qalc/`) is at phase 1 of the ratified sketch
+(`src/qalc/`) is at phase 2 of the ratified sketch
 (`docs/quantum-algebraic/rust-pillar.md`): typed schema, the
-PyReprKey/wire codec split, the canonical-invariant `Amp`, and the
-kernel step table with its exact-Dw evolvers (`src/qalc/kernel.rs`).
-The fixtures under `tests/qalc/` — twenty suite programs plus three
-Dw-only T-phase probes — are regenerated only by
-`qalc/export_rust_fixtures.py` (the qALC workflow byte-checks them),
-and `tests/qalc_kernel.rs` regenerates every one byte-identically from
-the Rust engine alone. The composed machine (readback) is not yet
-ported; the step table's error/guard arms, structurally unreachable in
-the 23 fixture programs, are pinned by review only (a passed Codex
-drift review, findings folded) until phase 2's Gate-1 differential. `docs/quantum-algebraic/architecture.md` is the contract;
+PyReprKey/wire codec split, the canonical-invariant `Amp`, the kernel
+step table with its exact-Dw evolvers (`src/qalc/kernel.rs`), and the
+composed full-NF machine (`src/qalc/readback.rs` — dispatcher, BA
+adapters, typed totalization, predecessor inverses, composed
+evolvers). Fixtures live in two trees with two exporters: the kernel
+files under `tests/qalc/` — twenty suite programs plus three Dw-only
+T-phase probes, regenerated only by `qalc/export_rust_fixtures.py`
+(the qALC workflow byte-checks them) — and the 30 composed Gate-1
+cores plus RBL corpus under `tests/qalc/composed/`, regenerated only
+by `qalc/export_composed_fixtures.py`. `tests/qalc_kernel.rs` and
+`tests/qalc_composed.rs` regenerate every one byte-identically from
+the Rust engine alone — the Gate-1 30-core differential (7,507 states
+/ 7,417 columns, per-edge predecessor inverses, totalization probes)
+is closed. Kernel error/guard arms unreached by any carrier or probe,
+and the composed `egi`/`invalid-kernel-target` arm, are pinned by
+review only (a passed Codex drift review, findings folded). `docs/quantum-algebraic/architecture.md` is the contract;
 `token.md` is the active IAM-lineage token design; `kernel.md` is the
 current-only v1.43 register; `machine.md` is read-only history. Architecture
 Gate 1 is closed: the reference composed machine supplies exact H/T

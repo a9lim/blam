@@ -14,10 +14,27 @@ typo against the reference machine. The phase-1 Codex drift review
 found no transition-table drift; its findings — iterative
 traversals/renderer per the reference's v1.26 discipline, `Arc`-shared
 epoch children, `rs_insert` as the verbatim stable sort, duplicate cert
-positions rejected at decode — are folded, same day. Residual: the
-step table's error/guard arms, structurally unreachable in the 23
-fixture programs, are pinned by review only until phase 2's Gate-1
-differential). Phases 2–4 are open. `architecture.md`
+positions rejected at decode — are folded, same day.) **Phase 2 is
+landed** (same day: `readback.rs` — the composed dispatcher with BA
+adapters and typed totalization, the RB/RBL grammar, the four
+predecessor inverses checked per compressing edge inside the carrier
+walk, and the composed evolvers. The Gate-1 30-core differential is
+closed at the byte level: every fixture under `tests/qalc/composed/`
+(`qalc/export_composed_fixtures.py`; carrier order, exact unmerged
+columns, commitments, `qalc-ctrace v1` digest chains, absorption
+finals, totalization/fallback probes) regenerates byte-identically from
+the Rust engine — 7,507 states / 7,417 columns / 90 tick-cut leaves,
+the 28-rule inventory, zero Gram defects. The probes pin the
+off-carrier behavior the reachable graph never exercises: the
+noncanonical-rootdone fallback with its terminal inverse, kernel-stuck
+(`egc`), a rejected root arrival (`egk`/`rooterr`), and the host-fault
+totalization landing (`ef`/`egf`), whose CPython class name is
+normalized to the one cross-language category — identity rides on the
+retained source. `egi`/`invalid-kernel-target` is structurally
+unreachable from any probe and stays a review-only arm. The composed
+corpus grows the PyReprKey pins with RBL-carrying frames and bundle
+keys; fixtures are byte-stable under two `PYTHONHASHSEED` values.)
+Phases 3–4 are open. `architecture.md`
 §7 remains the contract this sketch instantiates.
 
 ## 1. Scope and bar

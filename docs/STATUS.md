@@ -481,14 +481,17 @@ term is immutable; values reach `h` and `t` by routing, never copying.
 `quantum-algebraic/kernel.md` the current machine register. The two rejected
 rewriting-machine drafts remain read-only in `quantum-algebraic/machine.md`.
 The accepted Python/Lean reference and proof surface lives in `../qalc/`.
-The Rust pillar (`blam::qalc`) is at phase 1 of the ratified sketch: the
-kernel step table and exact-Dw evolvers are ported (`src/qalc/kernel.rs`)
-and every fixture file — the twenty suite programs plus the three Dw-only
-T-phase probes — regenerates byte-identically from the Rust engine alone
-(carrier, exact unmerged columns, commitments, trace digest chains,
-finals), with zero native Gram defects and the kernel.md §11 HH trace
-reproduced row for row. The composed machine (readback) is not yet
-ported.
+The Rust pillar (`blam::qalc`) is at phase 2 of the ratified sketch: the
+kernel step table, exact-Dw evolvers (`src/qalc/kernel.rs`), and the
+composed full-NF machine (`src/qalc/readback.rs` — dispatcher, BA
+adapters, typed totalization, predecessor inverses, composed evolvers)
+are ported, and every fixture file — the 23 kernel files plus the 30
+composed Gate-1 cores under `tests/qalc/composed/` — regenerates
+byte-identically from the Rust engine alone (carrier, exact unmerged
+columns, commitments, trace digest chains, finals, probes), with zero
+native Gram defects, the kernel.md §11 HH trace row for row, and the
+Gate-1 aggregate manifest (7,507 states / 7,417 columns / 90 tick-cut
+leaves, 28 rules) pinned from both engines.
 
 **Architecture Gate 1 is closed** (2026-08-11). The accepted version-controlled
 machine combines the v1.43 kernel with exact H/T scattering, internal
@@ -549,19 +552,25 @@ The open docket, in order:
    Python/Lean/Rust differential fixtures, and bit-identical classical and
    qBLC rows. Census machinery comes later. The ratified implementation
    sketch is `quantum-algebraic/rust-pillar.md` (Codex-reviewed on thread
-   `qalc-rust-pillar`); **phases 0 and 1 of 4 are landed** (both
-   2026-08-14: schema/codec/`Amp`/fixtures, then the kernel step table —
-   all 23 fixture files regenerate byte-identically from the Rust
-   engine; ledger entries same day). The phase-1 Codex drift review
-   (2026-08-14, same thread) found no transition-table drift; its four
-   findings — iterative traversals/renderer, shared epoch children,
-   verbatim `rs_insert`, cert duplicate rejection — are folded. 24 of
-   the step table's rule labels are fixture-pinned; the error/guard arm
-   family (`recall-err`, `replay-err`, `frame-conflict`, `pop-err`,
+   `qalc-rust-pillar`); **phases 0–2 of 4 are landed** (all
+   2026-08-14: schema/codec/`Amp`/fixtures, the kernel step table, then
+   the composed machine — all 53 fixture files, kernel and composed,
+   regenerate byte-identically from the Rust engine; ledger entries
+   same day). The phase-1 Codex drift review (2026-08-14, same thread)
+   found no transition-table drift; its four findings — iterative
+   traversals/renderer, shared epoch children, verbatim `rs_insert`,
+   cert duplicate rejection — are folded. The phase-2 Gate-1 30-core
+   differential closed same day at the byte level (7,507 states /
+   7,417 columns / 90 tick-cut leaves, 28 rules, per-edge predecessor
+   inverses, zero Gram defects), with off-carrier probes pinning the
+   stuck/rooterr/host-fault totalization landings and the
+   noncanonical-rootdone fallback plus its terminal inverse. Kernel
+   error/guard arms not exercised by any carrier or probe
+   (`recall-err`, `replay-err`, `frame-conflict`, `pop-err`,
    `key-alias`, `no-instance`, `shape-err`, `verr`, `stuck-vb`,
-   `rooterr`, `rootneutral`, `species-*`) stays pinned by review only
-   until phase 2's Gate-1 30-core differential. Next: phase 2, the
-   composed machine (readback, BA adapters, typed totalization).
+   `rootneutral`, `species-*`) and the composed
+   `egi`/`invalid-kernel-target` arm stay pinned by review only. Next:
+   phase 3, Gate-2 (compiler, shadow step table, battery surface).
 2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and broader arrival/pop determinacy.
 3. Downstream research: D-circuit dyadicity, universality/domination for `M`,

@@ -1,22 +1,31 @@
-//! qALC phase-2 composed-machine battery — the count/Gram/inverse half
-//! of the Gate-1 30-core differential. The byte-level column and trace
-//! pins ride on the composed fixture files under `tests/qalc/composed/`
-//! (exporter-generated); this suite proves the structural frame those
-//! fixtures assume: every core's carrier closes at the reference's
-//! exact state and tick-cut counts, every compressing edge's
-//! predecessor inverse rebuilds its source (checked per edge inside the
-//! carrier walk), the native Gram has zero defects, and evolution
-//! reaches absorption.
+//! qALC phase-2 composed-machine battery — the Gate-1 30-core
+//! differential. Two halves:
+//!
+//! - the structural frame: every core's carrier closes at the
+//!   reference's exact state and tick-cut counts, every compressing
+//!   edge's predecessor inverse rebuilds its source (checked per edge
+//!   inside the carrier walk), the native Gram has zero defects, and
+//!   evolution reaches absorption;
+//! - the byte-level pins: every composed fixture under
+//!   `tests/qalc/composed/` (written by
+//!   `qalc/export_composed_fixtures.py`) regenerates *in full* from the
+//!   engine — carrier order, exact unmerged columns, commitment,
+//!   `qalc-ctrace v1` digest chain, absorption finals, and the
+//!   totalization/fallback probe rows — and byte-compares with the file.
 //!
 //! The per-core expectations were measured from the frozen Python
 //! reference (`readback_certify.composed_carrier` at `tick_depth=2`)
 //! on 2026-08-14; the aggregate is Gate 1's 7,507 states / 7,417
 //! columns over 30 cores, with 90 tick-cut leaves.
 
-use blam::qalc::readback::{evolve_nf_trace, nf_carrier_and_columns, nf_gram};
-use blam::qalc::state::NfState;
+use blam::hash::sha256_hex;
+use blam::qalc::readback::{evolve_nf_trace, nf_carrier_and_columns, nf_gram, nf_step, NfPsi};
+use blam::qalc::state::{NfState, NfTerminal};
 use blam::qalc::term::{GateName, Term};
-use blam::qalc::wire::{parse_fixtures, CertEntries};
+use blam::qalc::wire::{
+    amp_bytes, column_commitment, nf_state_bytes, parse_fixtures, serialize_fixtures, CertEntries,
+    ComposedFixture, Fixtures,
+};
 
 fn lam(t: Term) -> Term {
     Term::Lam(Box::new(t))
@@ -67,10 +76,7 @@ fn extra_cores() -> Vec<(&'static str, Term)> {
         ("stress-nested-H", under_inputs(app(x(), app(h(), h0())))),
         (
             "stress-beta-H",
-            under_inputs(app(
-                x(),
-                app(lam(app(Term::Var(1), Term::Var(1))), h0()),
-            )),
+            under_inputs(app(x(), app(lam(app(Term::Var(1), Term::Var(1))), h0()))),
         ),
         (
             "stress-nested-scope",
@@ -266,4 +272,164 @@ fn composed_evolution_reaches_absorption() {
             "{name}: final support not absorbed"
         );
     }
+}
+
+// ---------------------------------------------------------------------------
+// The byte-level half: full fixture regeneration from the engine.
+
+/// Every composed fixture file `(name, raw bytes)` — the corpus file is
+/// pinned by the phase-0 codec battery's widened enumeration instead.
+fn composed_files() -> Vec<(String, String)> {
+    let dir = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/qalc/composed");
+    let mut names: Vec<_> = std::fs::read_dir(dir)
+        .expect(
+            "tests/qalc/composed exists — regenerate with python qalc/export_composed_fixtures.py",
+        )
+        .map(|e| e.unwrap().file_name().into_string().unwrap())
+        .filter(|n| n.ends_with(".qfx") && n != "corpus.qfx")
+        .collect();
+    names.sort();
+    assert_eq!(names.len(), 30, "expected the 30 composed fixtures");
+    names
+        .into_iter()
+        .map(|n| {
+            let text = std::fs::read_to_string(format!("{dir}/{n}")).unwrap();
+            (n, text)
+        })
+        .collect()
+}
+
+fn composed_fixtures() -> Vec<(String, String, ComposedFixture)> {
+    composed_files()
+        .into_iter()
+        .map(|(n, text)| {
+            let fx = parse_fixtures(&text).unwrap_or_else(|e| panic!("{n}: {e}"));
+            assert_eq!(fx.composed.len(), 1, "{n}: expected one cprogram");
+            assert!(
+                fx.programs.is_empty() && fx.corpus.is_empty(),
+                "{n}: unexpected kernel sections"
+            );
+            let p = fx.composed.into_iter().next().unwrap();
+            (n, text, p)
+        })
+        .collect()
+}
+
+/// The composed exporter's `trace_digest`, byte for byte: a distinct
+/// payload name from the kernel chain, entries sorted by
+/// `(state wire bytes, amp wire bytes)`.
+fn ctrace_digest(name: &str, t: u64, prev: &str, psi: &NfPsi) -> String {
+    let mut entries: Vec<(String, String)> = psi
+        .iter()
+        .map(|(s, a)| (nf_state_bytes(s), amp_bytes(a)))
+        .collect();
+    entries.sort();
+    let mut payload = format!("qalc-ctrace v1\n{name}\n{t}\n{prev}\n");
+    for (s, a) in entries {
+        payload.push_str(&s);
+        payload.push(' ');
+        payload.push_str(&a);
+        payload.push('\n');
+    }
+    sha256_hex(payload.as_bytes())
+}
+
+/// Rebuild a complete composed fixture from the engine, given only the
+/// program identity and the probe sources parsed from the file.
+fn regenerate(p: &ComposedFixture) -> ComposedFixture {
+    let cert = p.cert.as_ref();
+    let carrier = nf_carrier_and_columns(&p.term, cert, p.tick_depth, 300_000)
+        .unwrap_or_else(|e| panic!("{}: carrier {:?}", p.name, e));
+    let commitment = column_commitment(&carrier.columns);
+    let maps = evolve_nf_trace(&p.term, cert, 100_000)
+        .unwrap_or_else(|e| panic!("{}: evolve {:?}", p.name, e));
+    let mut trace = Vec::with_capacity(maps.len());
+    let mut prev = "0".repeat(64);
+    for (at, psi) in maps.iter().enumerate() {
+        prev = ctrace_digest(&p.name, at as u64 + 1, &prev, psi);
+        trace.push((at as u64 + 1, psi.len() as u64, prev.clone()));
+    }
+    let mut finals = maps.last().expect("nonempty trace").clone();
+    finals.sort_by_key(|(s, a)| (nf_state_bytes(s), amp_bytes(a)));
+    let probes = p
+        .probes
+        .iter()
+        .map(|(src, _)| {
+            let rows = nf_step(&p.term, src, cert)
+                .into_iter()
+                .map(|r| {
+                    let a = blam::qalc::kernel::edge_coefficient(r.sign, r.dk, &r.rule)
+                        .unwrap_or_else(|| panic!("{}: probe coefficient", p.name));
+                    (a, r.rule, r.state)
+                })
+                .collect();
+            (src.clone(), rows)
+        })
+        .collect();
+    ComposedFixture {
+        name: p.name.clone(),
+        term: p.term.clone(),
+        tick_depth: p.tick_depth,
+        cert: p.cert.clone(),
+        carrier: carrier.order,
+        columns: carrier.columns,
+        commitment,
+        trace,
+        finals,
+        probes,
+    }
+}
+
+#[test]
+fn composed_fixtures_regenerate_byte_identically() {
+    for (name, text, p) in composed_fixtures() {
+        let out = serialize_fixtures(&Fixtures {
+            corpus: vec![],
+            programs: vec![],
+            composed: vec![regenerate(&p)],
+        });
+        if out != text {
+            for (at, (got, want)) in out.lines().zip(text.lines()).enumerate() {
+                assert_eq!(
+                    got,
+                    want,
+                    "{name}: first divergence at line {}",
+                    at + 2 // 1-based, counting the header line
+                );
+            }
+            panic!(
+                "{name}: regenerated {} lines, fixture has {}",
+                out.lines().count(),
+                text.lines().count()
+            );
+        }
+    }
+}
+
+#[test]
+fn probe_rootdone_landings_invert() {
+    // The noncanonical-rootdone fallback probe's landing must rebuild
+    // its (off-carrier) source through the exact terminal inverse —
+    // `readback_checks.terminal_battery`'s closing assertion, natively.
+    let mut checked = 0;
+    for (name, _, p) in composed_fixtures() {
+        for (src, rows) in &p.probes {
+            for (_, rule, target) in rows {
+                if rule != "rootdone" {
+                    continue;
+                }
+                let NfState::RunDone(NfTerminal::Halt { output, garbage }) = target else {
+                    panic!("{name}: rootdone probe landing is not a halt");
+                };
+                let rebuilt = blam::qalc::readback::terminal_predecessor(output, garbage)
+                    .unwrap_or_else(|e| panic!("{name}: probe inverse {e:?}"));
+                assert!(
+                    matches!(src, NfState::Run(s) if *s == rebuilt),
+                    "{name}: probe inverse did not rebuild the source"
+                );
+                checked += 1;
+            }
+        }
+    }
+    assert!(checked >= 1, "no rootdone probe found");
 }

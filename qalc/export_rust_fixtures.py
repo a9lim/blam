@@ -127,6 +127,28 @@ def w_alpha(a):
             + w_epoch(epoch) + " )")
 
 
+def is_rbl(e):
+    return isinstance(e, tuple) and len(e) == 4 and e[0] == "RBL"
+
+
+def is_rb(e):
+    return isinstance(e, tuple) and len(e) == 5 and e[0] == "RB"
+
+
+def w_rbl(e):
+    if not is_rbl(e):
+        die("rbl", e)
+    return ("( rbl " + w_path(e[1]) + " " + w_path(e[2]) + " "
+            + w_path(e[3]) + " )")
+
+
+def w_rb(e):
+    if not is_rb(e):
+        die("rb", e)
+    return ("( rb i:%d " % e[1] + w_path(e[2]) + " " + w_path(e[3])
+            + " ( " + "".join(w_path(p) + " " for p in e[4]) + ") )")
+
+
 def w_log_entry(e):
     if is_lp(e):
         return w_lp(e)
@@ -134,6 +156,8 @@ def w_log_entry(e):
         return "( gm " + w_gate(e[1]) + " )"
     if is_alpha(e):
         return w_alpha(e)
+    if is_rbl(e):
+        return w_rbl(e)
     die("log entry", e)
 
 
@@ -156,6 +180,10 @@ def w_tape_entry(e):
         return "( an " + w_gate(e[1]) + " i:%d )" % e[2]
     if is_alpha(e):
         return w_alpha(e)
+    if is_rb(e):
+        return w_rb(e)
+    if is_rbl(e):
+        return w_rbl(e)
     die("tape entry", e)
 
 
@@ -549,7 +577,11 @@ def main():
     if generate() != files:
         die("generation is not deterministic")
     os.makedirs(OUT_DIR, exist_ok=True)
-    stale = set(os.listdir(OUT_DIR)) - set(files) if os.path.isdir(OUT_DIR) else set()
+    # Subdirectories (tests/qalc/composed/, the phase-2 exporter's) are
+    # other exporters' territory, not stale kernel fixtures.
+    stale = ({n for n in os.listdir(OUT_DIR)
+              if os.path.isfile(os.path.join(OUT_DIR, n))} - set(files)
+             if os.path.isdir(OUT_DIR) else set())
     drift = []
     for fname, text in sorted(files.items()):
         path = os.path.join(OUT_DIR, fname)
