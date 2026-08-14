@@ -69,7 +69,15 @@ Last updated: 2026-08-12.
   speed-compression gain is |x| − Kt = 31 (a 61-bit nf with Kt = 30);
   the largest time penalty is Kt − K = 10 (a 62-bit nf, K = 40,
   Kt = 50, depth⁰ = 844); the BBλ(41) champion output arrives at
-  t_β = 676,047 — deep output, shallow time.
+  t_β = 676,047 — deep output, shallow time. The empirical
+  coding-theorem constants are tiny (2026-08-13 full-dump measurement
+  over all 5,755,656 table nfs, sweep verified output-identical to
+  canonical): max K + lg m = 4.05 bits, max Kt + lg S_β = 3.55 bits,
+  means 0.44 and 0.43, no negative residuals — the witness bound holds
+  everywhere and multiplicity never exceeds ~16 effective minimal
+  programs. Table keys carry |x| ≤ 63 (KeySink); overflow nfs have
+  single-digit producer counts, bounding their residuals below the
+  measured maxima.
 
 ### Divergence certificates and Lean
 
@@ -230,6 +238,37 @@ Escalation-lane docket, in order:
 3. If wholesale promotion of the discovery engine is wanted, repair the
    bot_free/simplify uniformity argument (counterexample on record) or
    supersede it with the pattern-recurrence checker.
+4. Parked lane — quantum speed prior (design sparred with Codex
+   2026-08-13, thread `qblc-speed-prior`; classical counterpart is
+   `docs/classical/speed.md`). Accepted shape: the canonical object is
+   the time-resolved PSD operator
+   `M_speed = Σ_p 2^−|p| Σ_leaf v_ℓ v_ℓ†/T(ℓ)` — a branch-harmonic
+   speed semidensity charging every measurement branch its own
+   root-to-leaf clock (the unnormalized leaf vector already carries
+   P(ℓ); do not double-count). `Ω_speed = Tr M_speed`; state surface
+   forks into `S_test(ψ) = ⟨ψ|M_speed|ψ⟩` (continues the named
+   rankings, fidelity-weighted) and `S_exact` (needs state
+   canonicalization up to global phase). Three distinct complexity
+   objects — Gács-style `H_speed = −lg⟨ψ|M|ψ⟩`, leaf witness
+   `Kt_leaf = min |p| + ⌈lg(T/P)⌉` (joint ceiling), and restart
+   `Kt_restart` — with NO O(1)-coincidence claim (multiplicity
+   counterexample on the thread; only −lg S ≤ Kt_leaf + O(1) holds).
+   The prior is intensional: over adaptive measured qBLC executions,
+   dependent on when a program measures — deferred measurement changes
+   the program and the clock, and that is honest. Implementation gate
+   before canonical: branch-local contraction/transition counters
+   (`Leaf` currently has no transition count; the machine keeps only a
+   program-global max), an effect-resource vector (new/meas/H/T/CNOT,
+   depth) since bare gate count makes classical control free, PSD-safe
+   directed rounding (round the scalar 1/T, never matrix entries),
+   Unknown *and* Capacity both open in brackets with branch-local
+   floors, small-range lockstep, and the regression-witness set listed
+   on the thread. Aggregate Ω_speed inherits the t/s/z trace blindness;
+   the state-resolved operator is the instrument that can separate
+   them — measure, never assume genericity. No direct literature
+   precedent found for the leaf transform Σ P/T (nearest: BvDL quantum
+   K, Gács semidensity, Luby–Sinclair–Zuckerman restarts,
+   Filan–Leike–Hutter stochastic speed prior).
 
 ### Signature-universe exploration
 
