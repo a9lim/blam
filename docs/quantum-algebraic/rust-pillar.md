@@ -1,12 +1,12 @@
 # Rust qALC pillar — implementation sketch
 
-**Status: v3, spar-complete on thread `qalc-rust-pillar`, awaiting a9's
-read before implementation.** Codex round 1 (2026-08-14): nine ranked
-findings, all folded in v2. Round 2: "sound after three small
-specification fixes; no architectural blocker" — v3 applies the three
-(tick-carrier phrasing, column-commitment/trace-digest split, typed-error
-discipline in ordering). Nothing in `src/` implements it yet.
-`architecture.md` §7 remains the contract this sketch instantiates.
+**Status: RATIFIED 2026-08-14 (a9), spar-complete on thread
+`qalc-rust-pillar`.** Codex round 1: nine ranked findings, all folded.
+Round 2: "sound after three small specification fixes; no architectural
+blocker" — applied. **Phase 0 is landed** (`blam::qalc::{term, mark,
+state, amp, wire}`, the exporter, the fixture battery — ledger
+2026-08-14); phases 1–4 are open. `architecture.md` §7 remains the
+contract this sketch instantiates.
 
 ## 1. Scope and bar
 

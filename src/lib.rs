@@ -26,6 +26,8 @@
 
 pub mod blc;
 pub mod classical;
+pub mod hash;
+pub mod qalc;
 pub mod quantum;
 
 #[cfg(feature = "lab")]

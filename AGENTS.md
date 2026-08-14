@@ -68,8 +68,13 @@ whose subcommands live in `src/cli/`. Lab-gated subcommands are recognised
 without the feature and say how to get themselves; do not "fix" that by
 deleting the arm. A third pillar, `quantum-algebraic` (qALC: quantum *control*,
 storeless, runtime states in ℓ² over token configurations), has an accepted
-Python/Lean reference and proof surface in `qalc/`; its Rust engine is not yet
-implemented. `docs/quantum-algebraic/architecture.md` is the contract;
+Python/Lean reference and proof surface in `qalc/`; its Rust engine
+(`src/qalc/`) is at phase 0 of the ratified sketch
+(`docs/quantum-algebraic/rust-pillar.md`): typed schema, the
+PyReprKey/wire codec split, the canonical-invariant `Amp`, and the
+twenty-program fixtures under `tests/qalc/` (regenerated only by
+`qalc/export_rust_fixtures.py`; the qALC workflow byte-checks them). No
+step table yet — nothing in `src/qalc/` executes machine semantics. `docs/quantum-algebraic/architecture.md` is the contract;
 `token.md` is the active IAM-lineage token design; `kernel.md` is the
 current-only v1.43 register; `machine.md` is read-only history. Architecture
 Gate 1 is closed: the reference composed machine supplies exact H/T

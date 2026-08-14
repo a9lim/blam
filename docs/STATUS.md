@@ -480,8 +480,10 @@ term is immutable; values reach `h` and `t` by routing, never copying.
 `quantum-algebraic/token.md` the active design, and
 `quantum-algebraic/kernel.md` the current machine register. The two rejected
 rewriting-machine drafts remain read-only in `quantum-algebraic/machine.md`.
-The accepted Python/Lean reference and proof surface lives in `../qalc/`;
-there is no qALC Rust module yet.
+The accepted Python/Lean reference and proof surface lives in `../qalc/`.
+The Rust pillar (`blam::qalc`) is at phase 0 of the ratified sketch:
+schema, codec, `Amp`, and the twenty-program differential fixtures are
+landed and battery-checked; the kernel step table is not yet ported.
 
 **Architecture Gate 1 is closed** (2026-08-11). The accepted version-controlled
 machine combines the v1.43 kernel with exact H/T scattering, internal
@@ -540,9 +542,12 @@ The open docket, in order:
 1. **Rust qALC reference pillar:** implement the closed Gate-2 compiler and
    composed semantics first, with compiler-term/certificate pins,
    Python/Lean/Rust differential fixtures, and bit-identical classical and
-   qBLC rows. Census machinery comes later. The spar-complete
-   implementation sketch is `quantum-algebraic/rust-pillar.md`
-   (Codex-reviewed on thread `qalc-rust-pillar`, 2026-08-14).
+   qBLC rows. Census machinery comes later. The ratified implementation
+   sketch is `quantum-algebraic/rust-pillar.md` (Codex-reviewed on thread
+   `qalc-rust-pillar`); **phase 0 of 4 is landed** (2026-08-14: schema,
+   PyReprKey/wire codec split, `Amp`, exporter, fixture battery — ledger
+   entry same day). Next: phase 1, the kernel step table against the
+   complete-carrier column fixtures.
 2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and broader arrival/pop determinacy.
 3. Downstream research: D-circuit dyadicity, universality/domination for `M`,

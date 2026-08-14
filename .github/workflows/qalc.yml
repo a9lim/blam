@@ -5,11 +5,13 @@ on:
     branches: [main, dev]
     paths:
       - "qalc/**"
+      - "tests/qalc/**"
       - ".github/workflows/qalc.yml"
   pull_request:
     branches: [main]
     paths:
       - "qalc/**"
+      - "tests/qalc/**"
       - ".github/workflows/qalc.yml"
 
 concurrency:
@@ -34,3 +36,5 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
       - name: Gate 1 and Gate 2
         run: python qalc/gate2_check.py
+      - name: Rust differential fixtures are current
+        run: python qalc/export_rust_fixtures.py --check

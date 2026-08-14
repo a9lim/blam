@@ -1,0 +1,229 @@
+qalc-fixtures v1
+begin program HH
+term ( ap ( ap ( l ( l ( ap ( v i:2 ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a ) ( )
+end cert
+begin carrier i:82
+st i:0 ( run ( ) d ( ) ( bu bu rho ) n ( ) ( ) )
+st i:1 ( run ( f ) d ( ) ( bu bu bu rho ) n ( ) ( ) )
+st i:2 ( run ( f f ) d ( ) ( bu bu bu bu rho ) n ( ) ( ) )
+st i:3 ( run ( f f b ) d ( ) ( bu bu bu rho ) n ( ) ( ) )
+st i:4 ( run ( f f b b ) d ( ) ( bu bu rho ) n ( ) ( ) )
+st i:5 ( run ( f f b b f ) d ( ) ( bu bu bu rho ) n ( ) ( ) )
+st i:6 ( run ( f f ) u ( ) ( ( lp ( f f b b f ) ( ) ) bu bu bu rho ) n ( ) ( ) )
+st i:7 ( run ( f a ) d ( ( lp ( f f b b f ) ( ) ) ) ( bu bu bu rho ) n ( ) ( ) )
+st i:8 ( run ( f a ) u ( ( lp ( f f b b f ) ( ) ) ) ( ( gm h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:9 ( run ( f f ) d ( ) ( ( lp ( f f b b f ) ( ) ) ( gm h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:10 ( run ( f f b b f ) u ( ) ( ( gm h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:11 ( run ( f f b b a ) d ( ( gm h ) ) ( bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:12 ( run ( f f b b a f ) d ( ( gm h ) ) ( bu bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:13 ( run ( f f ) u ( ) ( ( lp ( f f b b a f ) ( ( gm h ) ) ) bu bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:14 ( run ( f a ) d ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( bu bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:15 ( run ( f a ) u ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( ( gm h ) bu bu ( mu h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:16 ( run ( f f ) d ( ) ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ( gm h ) bu bu ( mu h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:17 ( run ( f f b b a f ) u ( ( gm h ) ) ( ( gm h ) bu bu ( mu h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:18 ( run ( f f b b a a ) d ( ( gm h ) ( gm h ) ) ( bu bu ( mu h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:19 ( run ( f f b b a a b ) d ( ( gm h ) ( gm h ) ) ( bu ( mu h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:20 ( run ( f f b b a a b b ) d ( ( gm h ) ( gm h ) ) ( ( mu h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:21 ( run ( f f b b a a ) u ( ( gm h ) ( gm h ) ) ( ( lp ( f f b b a a b b ) ( ) ) ( mu h ) bu bu ( mu h ) bu bu rho ) n ( ) ( ) )
+st i:22 ( run ( f f b b a a ) u ( ( gm h ) ( gm h ) ) ( ( an h i:0 ) bu bu ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:23 ( run ( f f b b a a ) u ( ( gm h ) ( gm h ) ) ( ( an h i:1 ) bu bu ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:24 ( run ( f f b b a f ) d ( ( gm h ) ) ( ( gm h ) ( an h i:0 ) bu bu ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:25 ( run ( f f b b a f ) d ( ( gm h ) ) ( ( gm h ) ( an h i:1 ) bu bu ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:26 ( run ( f f ) u ( ) ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ( gm h ) ( an h i:0 ) bu bu ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:27 ( run ( f f ) u ( ) ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ( gm h ) ( an h i:1 ) bu bu ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:28 ( run ( f a ) d ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( ( gm h ) ( an h i:0 ) bu bu ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:29 ( run ( f a ) d ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( ( gm h ) ( an h i:1 ) bu bu ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:30 ( run ( f a ) d ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( bu bu ( mu h ) bu bu rho ) ( vb h i:0 i:0 ) ( ) ( ( kd ( ) ) ) )
+st i:31 ( run ( f a ) d ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( bu bu ( mu h ) bu bu rho ) ( vb h i:1 i:0 ) ( ) ( ( kd ( ) ) ) )
+st i:32 ( run ( f a ) d ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( bu ( mu h ) bu bu rho ) ( vb h i:0 i:1 ) ( ) ( ( kd ( ) ) ) )
+st i:33 ( run ( f a ) d ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( bu ( mu h ) bu bu rho ) ( vb h i:1 i:1 ) ( ) ( ( kd ( ) ) ) )
+st i:34 ( run ( f a ) d ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( ( mu h ) bu bu rho ) ( vb h i:0 i:2 ) ( ) ( ( kd ( ) ) ) )
+st i:35 ( run ( f a ) d ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( ( mu h ) bu bu rho ) ( vb h i:1 i:2 ) ( ) ( ( kd ( ) ) ) )
+st i:36 ( run ( f a ) u ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( bu ( al h ( lp ( f f b b a f ) ( ( gm h ) ) ) i:0 ef ) ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:37 ( run ( f a ) u ( ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( bu bu ( al h ( lp ( f f b b a f ) ( ( gm h ) ) ) i:1 ef ) ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:38 ( run ( f f ) d ( ) ( ( lp ( f f b b a f ) ( ( gm h ) ) ) bu ( al h ( lp ( f f b b a f ) ( ( gm h ) ) ) i:0 ef ) ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:39 ( run ( f f ) d ( ) ( ( lp ( f f b b a f ) ( ( gm h ) ) ) bu bu ( al h ( lp ( f f b b a f ) ( ( gm h ) ) ) i:1 ef ) ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:40 ( run ( f f b b a f ) u ( ( gm h ) ) ( bu ( al h ( lp ( f f b b a f ) ( ( gm h ) ) ) i:0 ef ) ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:41 ( run ( f f b b a f ) u ( ( gm h ) ) ( bu bu ( al h ( lp ( f f b b a f ) ( ( gm h ) ) ) i:1 ef ) ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:42 ( run ( f f b b a ) u ( ( gm h ) ) ( ( al h ( lp ( f f b b a f ) ( ( gm h ) ) ) i:0 ef ) ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:43 ( run ( f f b b a ) u ( ( gm h ) ) ( bu ( al h ( lp ( f f b b a f ) ( ( gm h ) ) ) i:1 ef ) ( mu h ) bu bu rho ) n ( ) ( ( kd ( ) ) ) )
+st i:44 ( run ( f f b b a ) u ( ( gm h ) ) ( ( an h i:0 ) bu bu rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:45 ( run ( f f b b a ) u ( ( gm h ) ) ( ( an h i:1 ) bu bu rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:46 ( run ( f f b b f ) d ( ) ( ( gm h ) ( an h i:0 ) bu bu rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:47 ( run ( f f b b f ) d ( ) ( ( gm h ) ( an h i:1 ) bu bu rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:48 ( run ( f f ) u ( ) ( ( lp ( f f b b f ) ( ) ) ( gm h ) ( an h i:0 ) bu bu rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:49 ( run ( f f ) u ( ) ( ( lp ( f f b b f ) ( ) ) ( gm h ) ( an h i:1 ) bu bu rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:50 ( run ( f a ) d ( ( lp ( f f b b f ) ( ) ) ) ( ( gm h ) ( an h i:0 ) bu bu rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:51 ( run ( f a ) d ( ( lp ( f f b b f ) ( ) ) ) ( ( gm h ) ( an h i:1 ) bu bu rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:52 ( run ( f a ) d ( ( lp ( f f b b f ) ( ) ) ) ( bu bu rho ) ( vb h i:0 i:0 ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:53 ( run ( f a ) d ( ( lp ( f f b b f ) ( ) ) ) ( bu bu rho ) ( vb h i:1 i:0 ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:54 ( run ( f a ) d ( ( lp ( f f b b f ) ( ) ) ) ( bu rho ) ( vb h i:0 i:1 ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:55 ( run ( f a ) d ( ( lp ( f f b b f ) ( ) ) ) ( bu rho ) ( vb h i:1 i:1 ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:56 ( run ( f a ) d ( ( lp ( f f b b f ) ( ) ) ) ( rho ) ( vb h i:0 i:2 ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:57 ( run ( f a ) d ( ( lp ( f f b b f ) ( ) ) ) ( rho ) ( vb h i:1 i:2 ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:58 ( run ( f a ) u ( ( lp ( f f b b f ) ( ) ) ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:59 ( run ( f a ) u ( ( lp ( f f b b f ) ( ) ) ) ( bu bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:60 ( run ( f f ) d ( ) ( ( lp ( f f b b f ) ( ) ) bu ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:61 ( run ( f f ) d ( ) ( ( lp ( f f b b f ) ( ) ) bu bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:62 ( run ( f f b b f ) u ( ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:63 ( run ( f f b b f ) u ( ) ( bu bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:64 ( run ( f f b b ) u ( ) ( ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:65 ( run ( f f b b ) u ( ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:66 ( run ( f f b ) u ( ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:67 ( run ( f f b ) u ( ) ( bu bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:68 ( run ( f f ) u ( ) ( bu bu ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:69 ( run ( f f ) u ( ) ( bu bu bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:70 ( run ( f ) u ( ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:71 ( run ( f ) u ( ) ( bu bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:72 ( run ( ) u ( ) ( ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:73 ( run ( ) u ( ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) n ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) )
+st i:74 ( rd halt0 ( r4 ( ) ( ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) ) )
+st i:75 ( rd halt1 ( r4 ( ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) ) )
+st i:76 ( dn halt0 ( r4 ( ) ( ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) ) i:0 )
+st i:77 ( dn halt1 ( r4 ( ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) ) i:0 )
+st i:78 ( dn halt0 ( r4 ( ) ( ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) ) i:1 )
+st i:79 ( dn halt1 ( r4 ( ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) ) i:1 )
+st i:80 ( dn halt0 ( r4 ( ) ( ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) ) i:2 )
+st i:81 ( dn halt1 ( r4 ( ) ( bu ( al h ( lp ( f f b b f ) ( ) ) i:1 ef ) rho ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) ) i:2 )
+end carrier
+begin columns
+col i:0 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b1 i:1 ) )
+col i:1 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b1 i:2 ) )
+col i:2 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b2 i:3 ) )
+col i:3 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b2 i:4 ) )
+col i:4 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b1 i:5 ) )
+col i:5 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) var i:6 ) )
+col i:6 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) arg i:7 ) )
+col i:7 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) call i:8 ) )
+col i:8 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1 i:9 ) )
+col i:9 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt2 i:10 ) )
+col i:10 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) arg i:11 ) )
+col i:11 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b1 i:12 ) )
+col i:12 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) var i:13 ) )
+col i:13 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) arg i:14 ) )
+col i:14 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) call i:15 ) )
+col i:15 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1 i:16 ) )
+col i:16 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt2 i:17 ) )
+col i:17 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) arg i:18 ) )
+col i:18 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b2 i:19 ) )
+col i:19 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b2 i:20 ) )
+col i:20 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) var i:21 ) )
+col i:21 ( ( ( dw i:1 i:0 i:0 i:0 i:1 ) fire-h i:22 ) ( ( dw i:1 i:0 i:0 i:0 i:1 ) fire-h i:23 ) )
+col i:22 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1g i:24 ) )
+col i:23 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1g i:25 ) )
+col i:24 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) var i:26 ) )
+col i:25 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) var i:27 ) )
+col i:26 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) arg i:28 ) )
+col i:27 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) arg i:29 ) )
+col i:28 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) anshead i:30 ) )
+col i:29 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) anshead i:31 ) )
+col i:30 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vb2 i:32 ) )
+col i:31 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vb2 i:33 ) )
+col i:32 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vb2 i:34 ) )
+col i:33 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vb2 i:35 ) )
+col i:34 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vvar i:36 ) )
+col i:35 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vvar i:37 ) )
+col i:36 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1 i:38 ) )
+col i:37 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1 i:39 ) )
+col i:38 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt2 i:40 ) )
+col i:39 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt2 i:41 ) )
+col i:40 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b3 i:42 ) )
+col i:41 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b3 i:43 ) )
+col i:42 ( ( ( dw i:1 i:0 i:0 i:0 i:1 ) fire-h i:44 ) ( ( dw i:1 i:0 i:0 i:0 i:1 ) fire-h i:45 ) )
+col i:43 ( ( ( dw i:1 i:0 i:0 i:0 i:1 ) fire-h i:44 ) ( ( dw i:-1 i:0 i:0 i:0 i:1 ) fire-h i:45 ) )
+col i:44 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1g i:46 ) )
+col i:45 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1g i:47 ) )
+col i:46 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) var i:48 ) )
+col i:47 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) var i:49 ) )
+col i:48 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) arg i:50 ) )
+col i:49 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) arg i:51 ) )
+col i:50 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) anshead i:52 ) )
+col i:51 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) anshead i:53 ) )
+col i:52 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vb2 i:54 ) )
+col i:53 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vb2 i:55 ) )
+col i:54 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vb2 i:56 ) )
+col i:55 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vb2 i:57 ) )
+col i:56 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vvar i:58 ) )
+col i:57 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) vvar i:59 ) )
+col i:58 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1 i:60 ) )
+col i:59 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt1 i:61 ) )
+col i:60 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt2 i:62 ) )
+col i:61 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) bt2 i:63 ) )
+col i:62 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b3 i:64 ) )
+col i:63 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b3 i:65 ) )
+col i:64 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b4 i:66 ) )
+col i:65 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b4 i:67 ) )
+col i:66 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b4 i:68 ) )
+col i:67 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b4 i:69 ) )
+col i:68 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b3 i:70 ) )
+col i:69 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b3 i:71 ) )
+col i:70 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b3 i:72 ) )
+col i:71 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) b3 i:73 ) )
+col i:72 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) rootdone i:74 ) )
+col i:73 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) rootdone i:75 ) )
+col i:74 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) halt i:76 ) )
+col i:75 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) halt i:77 ) )
+col i:76 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) tick i:78 ) )
+col i:77 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) tick i:79 ) )
+col i:78 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) tick i:80 ) )
+col i:79 ( ( ( dw i:1 i:0 i:0 i:0 i:0 ) tick i:81 ) )
+end columns
+commitment fa07c72f1ad78a27b72ecce072a9a0ae89bd5421d854ea6133a7c56f61f7c4dd
+begin trace i:49
+tr i:1 i:1 6f6a1073d20bbcbd01197d8c90cc97f8a2e6e16023e71f7da64ebe56e1308ca9
+tr i:2 i:1 35e865d355f798f37ed7c2fe1d80002207096c1282835ccf29e8706c76ebf958
+tr i:3 i:1 d3648abb212b4e94417720fc60c555022cceecff6aab1f6d3b7976239d984993
+tr i:4 i:1 34a90a30c57264582a3636e4004a0a56883e26a71ff18d42a10d3251372d5dfb
+tr i:5 i:1 d43654cb153c84b0e1fa6c3d9624248f066b8f34c124bf55b19709d07ee9b3bf
+tr i:6 i:1 fa8aaec6e3cf959b4dba027548cf4f4a286a63851c1e319128030c0699a5f737
+tr i:7 i:1 9f8064ff36208951b48f0001ed07625b05b29a80515f32226ac8f6b0dfdfa66b
+tr i:8 i:1 686ebb569a2d388a47db89a45c63bd375edc33b11b920141fd20d1a00fba5d2f
+tr i:9 i:1 d6944cf8df80b7a4cf8ffdda2baed27a50292d2e287576896a8e4c7df9672fa1
+tr i:10 i:1 7d3115422b40436621227c42bab2ab0e227a6f0f785563a8058877497fd53cbb
+tr i:11 i:1 2db958e27f7b12bd2fd60e4237896509291404b6b1381354c17fde128027d095
+tr i:12 i:1 7452683925645fc1473b928ae64d6e508e7251c928ca25ae657800723f63e9dd
+tr i:13 i:1 25cb0ad50df894a8021e7920701913098cec9561293eb5f5f5451430b45139de
+tr i:14 i:1 cd06a33da1234d608a5c2fa9c0d2e48dbf0e4d94ffa4c4b503f30073a80e19a5
+tr i:15 i:1 a523c2a19e656f84c97cd41f325c6838327776375b787a8be2ecaa07eebb5718
+tr i:16 i:1 b8f9634684273441ac23b0baeb2cd69fc2ad21fee0dbf848904e6c915842ff7d
+tr i:17 i:1 788006510845deea4a746e1b57ba7770273e304a86e9dd5cc8a72068d205a53e
+tr i:18 i:1 783451bb895282cf0750b8153eb6b3fe084fe832e135bc578855b536e09556e5
+tr i:19 i:1 4bc26fa2cee63d6d356e7e76304e0ef03db56351676def0ca5489686aef11c1e
+tr i:20 i:1 df1581a465e629efac88b6dc4481296cca8f9e3f7b38bb595b3721cb72f95395
+tr i:21 i:1 5c0b047ec94d7a8f2b24bbd0418047ab294dc2ae6493b5597c57a883edef26a3
+tr i:22 i:2 9ea013820808634d7c316a5b15d660b887b1adb6dfd6f48b6127d5ce5c39b215
+tr i:23 i:2 0fe7347a2b8d47325884f07d5f48e13b2d89310e24bd58a86d180d0e17800ab7
+tr i:24 i:2 f6bf6cd3d85ac3bcd76a60865dbf7331d899b8d689cce1f8de4e89fd20f98713
+tr i:25 i:2 65ddb6cbf124cf7c626f397e0e077df6da7fca13f7aee13ce1114fa6db303cb3
+tr i:26 i:2 c89ae43dddf547ee1cff7137e9bf3dbb60c08738d02df2724c2ea9061a0a9269
+tr i:27 i:2 9cbd2d92d4ec4d6a56bcd940945e5687b0adcdb185bfb0566c05c0166eb545be
+tr i:28 i:2 95ffb76b39c805d671c20c06060d7b80300f6a6e4db20b409912cde1bbbfa7d8
+tr i:29 i:2 250e78c4f37634fa394102411e0b27a2bb7c3c10702d8d0983c85ad8a364a537
+tr i:30 i:2 4ecc83d14b6dfd645430b00418903e9ff174b13294ba4d3909ed82e4229885ab
+tr i:31 i:2 131914a08074f0ee9cd2f9c1bd7fe0f2d6be5d261d0176e38b5e7d4286775c93
+tr i:32 i:2 1dca3a4ffb0ef0127f6059179cd494052aad85d775efefd66b28e0c70a178ad1
+tr i:33 i:1 3bbc3f869d4c20e0e30eb9fe8cb842592a332a49868862c74592b6dbd7af6a42
+tr i:34 i:1 bcc4b0ae253461abe4a6267becb6a4527b6d2f76ee4d2534a6d9669c48df030c
+tr i:35 i:1 2cac88032ad2ad456e660203025c96e4dcb98946f4c2137b67bff485261a0085
+tr i:36 i:1 77c2a9df231f170f759d2c05c8ac5a1e179c48398474b505d43f68b095c61b78
+tr i:37 i:1 cacbbe716fd75f346914cb04354cdf6c59a29beca8a15eb0bc3434f68e4d4285
+tr i:38 i:1 1683804097ea23f2be0e218ab3862dbd503c86e48b0d65f101c3e3433c93e1de
+tr i:39 i:1 4bfefa0741486d8036fa2f320cdec65432126f004fa3e7392be7f4a8d9ba9c82
+tr i:40 i:1 9ea547b81b60096db3b0c1d724a214bf4f224e98615193be8ab392737cb97ff1
+tr i:41 i:1 50fd1f77e7f8a2fe5b31b88bc735e439da3be50e61ef40a2de066325abe9339d
+tr i:42 i:1 34038bf7ca34a8560073d2090cb31340e08dcb75e9de8514cb81e02e7c28a14d
+tr i:43 i:1 39d160d463278aa052c8834db09f75a766d3868c3b74b2926147c0587dd8c07d
+tr i:44 i:1 de36e01fed8de5b2d1d8ef1b18531d231745e13396080dbaabe313e3dd6a5b81
+tr i:45 i:1 94df6d72a94227c8f5d63a887201c9db54c29198936e1e379fa30d6fb19b9eb3
+tr i:46 i:1 cd06633ead5c49a5f012d827fc13f5f135c17c9a3cc6394cba5a53c34958ed27
+tr i:47 i:1 a19a68354765a180886be74bb020c8957f87a0eecb1bdfecb5260b4c396b688a
+tr i:48 i:1 37243c8d91df8e889a0825d04fa70e0a34a8439b9b1d1a45f9dc06ea2196eb9c
+tr i:49 i:1 cad13dca7d0784d9e339f17c90adef700b6a8cb0c24a30c1069a0d16afb9033a
+end trace
+begin final
+fs ( dn halt0 ( r4 ( ) ( ( al h ( lp ( f f b b f ) ( ) ) i:0 ef ) rho ) ( ) ( ( kr h ( lp ( f f b b a f ) ( ( gm h ) ) ) ) ( kd ( ) ) ) ) i:0 ) ( dw i:1 i:0 i:0 i:0 i:0 )
+end final
+end program
