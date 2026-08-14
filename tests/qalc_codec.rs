@@ -202,5 +202,6 @@ fn structural_pins_hold() {
         }
         let _ = name;
     }
-    assert_eq!(programs, 20, "expected the twenty-program suite");
+    // The twenty-program suite plus the three Dw-only T-phase probes.
+    assert_eq!(programs, 23, "expected the 20 + 3 program families");
 }

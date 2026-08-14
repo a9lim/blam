@@ -30,12 +30,35 @@ from fractions import Fraction
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from dw import Dw, ONE, ZERO as DZERO
+from dw import Dw, OMEGA, ONE, ZERO as DZERO
 from dw_machine import step_dw
 from kernel import (ALPHA, BULLET, FRAME, RHO, Done, Run, RunDone, astep,
                     init, step, ZEROA)
 from lam_iam import App, Gate, Lam, Var
 from suite import CERTS, PROGRAMS
+
+# The T-phase probes (rust-pillar.md §6 phase 0): fire-t1's ω is outside
+# Q[√2], so these three run Dw-only — no Fraction cross-oracle — and are
+# pinned instead against the reference's exact hand-computed finals
+# (dw_machine.py's own assertions).
+_B0 = Lam(Lam(Var(2)))
+_B1 = Lam(Lam(Var(1)))
+
+
+def _invoke(body):
+    return App(App(Lam(Lam(body)), Gate("h")), Gate("t"))
+
+
+T_PROGRAMS = {
+    "T0": _invoke(App(Var(1), _B0)),
+    "T1": _invoke(App(Var(1), _B1)),
+    "HTH0": _invoke(App(Var(2), App(Var(1), App(Var(2), _B0)))),
+}
+T_FINALS = {
+    "T0": {"halt0": ONE},
+    "T1": {"halt1": OMEGA},
+    "HTH0": {"halt0": Dw(1, 1, 0, 0, 2), "halt1": Dw(1, -1, 0, 0, 2)},
+}
 
 TICK_DEPTH = 2
 OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -321,6 +344,35 @@ def cross_oracle_trace(name, term, cert):
     die(name, "no absorption inside the step cap")
 
 
+def dw_trace(name, term, cert):
+    """Dw-only evolution maps for the T-phase programs.
+
+    Same absorption loop as the cross-oracle, minus the Fraction side
+    (which cannot represent ω); the compensating pin is the exact-final
+    assertion against ``T_FINALS`` in ``export_program``.
+    """
+    state = {next(iter(init(term))): ONE}
+    maps = []
+    for t in range(1, 100_000):
+        out = {}
+        for s, amp in state.items():
+            succs = step_dw(term, s, cert)
+            if not succs:
+                die(name, "stuck state", s)
+            for coeff, _rule, s2 in succs:
+                out[s2] = out.get(s2, DZERO) + amp * coeff
+        state = {s: a for s, a in out.items() if a != DZERO}
+        norm = DZERO
+        for a in state.values():
+            norm = norm + a.norm_sq()
+        if norm != ONE:
+            die(name, t, "norm", norm)
+        maps.append(state)
+        if all(isinstance(s, Done) for s in state):
+            return maps
+    die(name, "no absorption inside the step cap")
+
+
 def carrier_and_columns(term, cert):
     """BFS the complete carrier (tick cut) with exact unmerged columns."""
     start = next(iter(init(term)))
@@ -407,7 +459,13 @@ def synthetic_sort_domain():
 
 
 def export_program(name, term, cert):
-    maps = cross_oracle_trace(name, term, cert)
+    if name in T_PROGRAMS:
+        maps = dw_trace(name, term, cert)
+        finals = {s.kind: a for s, a in maps[-1].items()}
+        if finals != T_FINALS[name]:
+            die(name, "T-final pin", finals)
+    else:
+        maps = cross_oracle_trace(name, term, cert)
     order, columns = carrier_and_columns(term, cert)
 
     lines = [HEADER, "begin program " + name,
@@ -474,6 +532,10 @@ def generate():
     for name, term in PROGRAMS.items():
         cert = CERTS.get(name)
         text, order = export_program(name, term, cert)
+        files[name + ".qfx"] = text
+        all_states.extend(order)
+    for name, term in T_PROGRAMS.items():
+        text, order = export_program(name, term, None)
         files[name + ".qfx"] = text
         all_states.extend(order)
     files["corpus.qfx"] = export_corpus(all_states)

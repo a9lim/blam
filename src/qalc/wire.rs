@@ -1199,6 +1199,14 @@ pub fn state_bytes(s: &KState) -> String {
     out
 }
 
+/// One amplitude's wire bytes — the token the trace-digest payloads
+/// and `fs` lines carry.
+pub fn amp_bytes(a: &Amp) -> String {
+    let mut out = String::new();
+    w_amp(&mut out, a);
+    out
+}
+
 /// A bundle key's wire bytes — the *certificate-specific* canonical
 /// order for popkey lists (distinct from `mark`'s PyReprKey, which
 /// orders the state-identity sorts).

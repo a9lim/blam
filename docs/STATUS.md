@@ -481,9 +481,14 @@ term is immutable; values reach `h` and `t` by routing, never copying.
 `quantum-algebraic/kernel.md` the current machine register. The two rejected
 rewriting-machine drafts remain read-only in `quantum-algebraic/machine.md`.
 The accepted Python/Lean reference and proof surface lives in `../qalc/`.
-The Rust pillar (`blam::qalc`) is at phase 0 of the ratified sketch:
-schema, codec, `Amp`, and the twenty-program differential fixtures are
-landed and battery-checked; the kernel step table is not yet ported.
+The Rust pillar (`blam::qalc`) is at phase 1 of the ratified sketch: the
+kernel step table and exact-Dw evolvers are ported (`src/qalc/kernel.rs`)
+and every fixture file — the twenty suite programs plus the three Dw-only
+T-phase probes — regenerates byte-identically from the Rust engine alone
+(carrier, exact unmerged columns, commitments, trace digest chains,
+finals), with zero native Gram defects and the kernel.md §11 HH trace
+reproduced row for row. The composed machine (readback) is not yet
+ported.
 
 **Architecture Gate 1 is closed** (2026-08-11). The accepted version-controlled
 machine combines the v1.43 kernel with exact H/T scattering, internal
@@ -544,10 +549,13 @@ The open docket, in order:
    Python/Lean/Rust differential fixtures, and bit-identical classical and
    qBLC rows. Census machinery comes later. The ratified implementation
    sketch is `quantum-algebraic/rust-pillar.md` (Codex-reviewed on thread
-   `qalc-rust-pillar`); **phase 0 of 4 is landed** (2026-08-14: schema,
-   PyReprKey/wire codec split, `Amp`, exporter, fixture battery — ledger
-   entry same day). Next: phase 1, the kernel step table against the
-   complete-carrier column fixtures.
+   `qalc-rust-pillar`); **phases 0 and 1 of 4 are landed** (both
+   2026-08-14: schema/codec/`Amp`/fixtures, then the kernel step table —
+   all 23 fixture files regenerate byte-identically from the Rust
+   engine; ledger entries same day). Guard arms structurally unreachable
+   in the 23 fixture programs are pinned by review only until phase 2's
+   Gate-1 30-core differential. Next: phase 2, the composed machine
+   (readback, BA adapters, typed totalization).
 2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and broader arrival/pop determinacy.
 3. Downstream research: D-circuit dyadicity, universality/domination for `M`,

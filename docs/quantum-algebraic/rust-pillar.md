@@ -5,8 +5,15 @@
 Round 2: "sound after three small specification fixes; no architectural
 blocker" — applied. **Phase 0 is landed** (`blam::qalc::{term, mark,
 state, amp, wire}`, the exporter, the fixture battery — ledger
-2026-08-14); phases 1–4 are open. `architecture.md` §7 remains the
-contract this sketch instantiates.
+2026-08-14). **Phase 1 is landed** (same day: `kernel.rs` — the step
+table and exact-Dw evolvers; every fixture file, now 20 suite programs
+plus the three Dw-only `T0`/`T1`/`HTH0` probes promised in §6,
+regenerates byte-identically from the Rust engine; zero native Gram
+defects; kernel.md §11 row for row, correcting that table's t=31 path
+typo against the reference machine. Residual: guard arms structurally
+unreachable in the 23 fixture programs are pinned by review only until
+phase 2's Gate-1 differential). Phases 2–4 are open. `architecture.md`
+§7 remains the contract this sketch instantiates.
 
 ## 1. Scope and bar
 
