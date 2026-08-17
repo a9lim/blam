@@ -23,16 +23,20 @@
 //! (the fixture format). Phase 1 adds [`kernel`] — the step table and
 //! exact-Dw evolvers, pinned by complete-carrier column fixtures. Phase 2
 //! adds the [`readback`] full-NF machine. Phase 3 adds the [`compiler`],
-//! native-CNOT [`shadow`], and finite [`gate2check`] audit. Total combined
-//! admission and the public semantic objects remain Phase 4.
+//! native-CNOT [`shadow`], and finite [`gate2check`] audit. Phase 4 adds
+//! validated Gate-1 [`admission`], the typed [`wf`] subset, and the public
+//! total [`semantics`] objects.
 
+pub mod admission;
 pub mod amp;
 pub mod compiler;
 pub mod gate2check;
 pub mod kernel;
 pub mod mark;
 pub mod readback;
+pub mod semantics;
 pub mod shadow;
 pub mod state;
 pub mod term;
+pub mod wf;
 pub mod wire;

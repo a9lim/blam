@@ -67,6 +67,13 @@ impl Amp {
         (self.0.a, self.0.b, self.0.c, self.0.d, self.0.k)
     }
 
+    /// Cross the runtime/aggregate boundary inside the qALC pillar.  Public
+    /// callers never receive the raw `Dw`; the production call site in
+    /// `semantics::finite_m` immediately Kraft-weights it into `ExactSum`.
+    pub(crate) fn into_dw(self) -> Dw {
+        self.0
+    }
+
     pub fn is_zero(self) -> bool {
         self.0.is_zero()
     }

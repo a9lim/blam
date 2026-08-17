@@ -4,13 +4,13 @@ This document is the durable architecture contract for blam's
 quantum-algebraic pillar. It uses the same structure as the classical and
 quantum architectures so the three systems can be compared layer by layer.
 
-**The Rust reference pillar has completed phases 0–3 of 4**: typed schema and
-codec, the kernel, composed Gate-1 readback, and the Gate-2 compiler/shadow
-surface are implemented under `src/qalc/`. The accepted Python/Lean machine,
+**The Rust reference pillar completed phases 0–4 on 2026-08-17**: typed schema
+and codec, the kernel, composed Gate-1 readback, Gate-2 compiler/shadow,
+validated admission, total selection, and the exact semantic objects are
+implemented under `src/qalc/`. The accepted Python/Lean machine,
 compiler, proofs, and batteries remain authoritative in `../../qalc/`;
 checked-in qfx fixtures close the Python/Rust boundary byte-for-byte without
-running Python during `cargo test`. Phase 4 — total Gate-1/Gate-2 admission
-and public semantic objects — remains open. `GATE1.md` and `GATE2.md` are the
+running Python during `cargo test`. `GATE1.md` and `GATE2.md` are the
 proof records; development history and superseded rewriting-machine
 formalizations live in `../ledger/2026-08.md`, git history, and `machine.md`.
 
@@ -721,9 +721,9 @@ Every qALC engine change must then satisfy:
 9. Signature order freeze (§3) before any canonical data.
 10. Output convention (§4.6) — deliberately open, mirroring qBLC.
 
-Items 1 and 2 gated implementation and are now closed. The Rust reference
-pillar should implement their proved state, compiler, certificate, and
-transition surfaces first; census optimization comes only after exact
+Items 1 and 2 gated implementation and are now closed; the Rust reference
+pillar implements their proved state, compiler, certificate, admission, and
+semantic surfaces. CLI/census optimization follows only after this exact
 Python/Lean/Rust differential agreement. Items 3–10 remain research or
 product-shape questions, not prerequisites for the reference evaluator.
 

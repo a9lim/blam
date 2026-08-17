@@ -4,7 +4,11 @@
 
 use std::collections::{HashMap, HashSet};
 
-use super::compiler::{compiler_certificate, recognized_metadata, Circuit, CompileError, Compiled};
+#[cfg(test)]
+use super::compiler::compiler_certificate;
+use super::compiler::{
+    recognized_certificate, recognized_metadata, Circuit, CompileError, Compiled,
+};
 use super::mark::{
     rs_is_canonical, Alpha, CDescriptor, CGam, Frame, FrameDescriptor, KdKey, KsHead, LogEntry, Lp,
     RetainCargo, TapeEntry,
@@ -17,17 +21,13 @@ use super::wire::CertEntries;
 /// A compiler image admitted without carrier discovery or a state cap.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StructuralAdmission {
-    compiled: Compiled,
+    circuit: Circuit,
     certificate: CertEntries,
 }
 
 impl StructuralAdmission {
-    pub fn compiled(&self) -> &Compiled {
-        &self.compiled
-    }
-
     pub fn circuit(&self) -> &Circuit {
-        &self.compiled.circuit
+        &self.circuit
     }
 
     pub fn certificate(&self) -> &CertEntries {
@@ -36,14 +36,14 @@ impl StructuralAdmission {
 }
 
 /// Recognize and admit only the compiler grammar.  `Ok(None)` is an ordinary
-/// non-image; Gate-1 fallback and the total public selector remain Phase 4.
+/// non-image; Phase 4's total public selector then tries Gate-1 admission and
+/// finally the conservative fallback.
 pub fn structural_admission(term: &Term) -> Result<Option<StructuralAdmission>, CompileError> {
-    let Some(compiled) = recognized_metadata(term) else {
+    let Some((circuit, certificate)) = recognized_certificate(term)? else {
         return Ok(None);
     };
-    let certificate = compiler_certificate(&compiled)?;
     Ok(Some(StructuralAdmission {
-        compiled,
+        circuit,
         certificate,
     }))
 }

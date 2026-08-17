@@ -5,7 +5,7 @@ measurements, proof boundaries, and ordered next work. The root `README.md`
 is the stable public map; domain documents state durable contracts; the
 monthly ledger preserves chronology.
 
-Last updated: 2026-08-12.
+Last updated: 2026-08-17.
 
 ## Classical state
 
@@ -481,17 +481,16 @@ term is immutable; values reach `h` and `t` by routing, never copying.
 `quantum-algebraic/kernel.md` the current machine register. The two rejected
 rewriting-machine drafts remain read-only in `quantum-algebraic/machine.md`.
 The accepted Python/Lean reference and proof surface lives in `../qalc/`.
-The Rust pillar (`blam::qalc`) is at phase 2 of the ratified sketch: the
-kernel step table, exact-Dw evolvers (`src/qalc/kernel.rs`), and the
-composed full-NF machine (`src/qalc/readback.rs` — dispatcher, BA
-adapters, typed totalization, predecessor inverses, composed evolvers)
-are ported, and every fixture file — the 23 kernel files plus the 30
-composed Gate-1 cores under `tests/qalc/composed/` — regenerates
-byte-identically from the Rust engine alone (carrier, exact unmerged
-columns, commitments, trace digest chains, finals, probes), with zero
-native Gram defects, the kernel.md §11 HH trace row for row, and the
-Gate-1 aggregate manifest (7,507 states / 7,417 columns / 90 tick-cut
-leaves, 28 rules) pinned from both engines.
+The Rust pillar (`blam::qalc`) has completed phases 0–4 of the ratified
+reference sketch. Alongside the typed schema/codec, kernel, composed
+readback, and Gate-2 compiler/shadow, `admission.rs` and `wf.rs` now
+revalidate the frozen Gate-1 candidates through complete carrier closure,
+the typed W0–W9 subset, certificate transparency/nonvacuity, exact Gram and
+range checks, closed-output/pure-normalizer comparison, and the independent
+v1.43 direct RRI gate. `semantics.rs` exposes total compiler-first selection
+with checked Gate-1/no-erasure retry and conservative-history fallback, plus
+exact `U`, `μ_p`, `ρ_p`, finite `M`, and `Ω_qALC` approximants. Runtime `Amp`
+remains separate from Kraft-weighted `ExactSum` aggregation.
 
 **Architecture Gate 1 is closed** (2026-08-11). The accepted version-controlled
 machine combines the v1.43 kernel with exact H/T scattering, internal
@@ -530,9 +529,23 @@ states), derived Toffoli (14,809), and nonlinear target reuse (30,393), and
 eight differential shards match all 917 mixed-carrier states field-for-field
 across Python and Lean. The authoritative record and battery are
 `../qalc/GATE2.md` and `python qalc/gate2_check.py`; Gate 1 re-closes
-unchanged. Rust phases 0–3 now differentially reproduce the typed kernel,
-composed Gate-1 machine, and this Gate-2 compiler/shadow surface; total
-admission and public semantic objects remain Phase 4.
+unchanged. Rust phases 0–3 differentially reproduce the proved kernel,
+composed Gate-1, and Gate-2 compiler/shadow. Phase 4 independently ports and
+battery-checks admission, fallback, and the semantic objects against those
+already-differential transition layers; it does not claim a new Phase-4
+Python/Rust output differential. The 20 embedded certificate candidates
+revalidate and are not preempted by the independently checked no-erasure
+retry; arbitrary non-compiler gated terms outside that frozen set currently
+have only the no-erasure attempt. Norm and
+monotone halt mass hold through the suite's 2,361 transitions; HH,
+H–NOT′–H, the negative witness, reduced-density checks, a public compiled
+H/T/CNOT sector, 201 pure closed terms through size 7, and the 105
+effect-free `p h t` invocations among them all pass.
+The embedded selector pin is generated only from the authoritative kernel
+fixtures, cross-checked against those source fixtures by Rust, and byte-checked
+under two hash seeds. The structural recognizer/selector is iterative and has
+an explicit >256-depth compiler-image regression; Gate-1 validation instead
+rejects source depth above 256 before any recursive pure normalizer runs.
 Superseded audits, countermodels, and rejected routes live only in the ledger,
 git history, and external audit records.
 
@@ -549,42 +562,10 @@ graph, and external audit records.
 
 The open docket, in order:
 
-1. **Rust qALC reference pillar:** complete Phase 4 — total combined
-   Gate-1/Gate-2 admission, then public semantic objects — on the now-landed
-   compiler/shadow differential. Preserve bit-identical classical and qBLC
-   rows; census machinery comes later. The ratified implementation
-   sketch is `quantum-algebraic/rust-pillar.md` (Codex-reviewed on thread
-   `qalc-rust-pillar`); **phases 0–3 of 4 are landed** (phases 0–2 on
-   2026-08-14: schema/codec/`Amp`/fixtures, the kernel step table, then
-   the composed machine — all 55 fixture files, kernel and composed,
-   regenerate byte-identically from the Rust engine; ledger entries
-   same day). The phase-1 Codex drift review (2026-08-14, same thread)
-   found no transition-table drift; its four findings — iterative
-   traversals/renderer, shared epoch children, verbatim `rs_insert`,
-   cert duplicate rejection — are folded. The phase-2 Gate-1 30-core
-   differential closed same day at the byte level (7,507 states /
-   7,417 columns / 90 tick-cut leaves, 28 rules, per-edge predecessor
-   inverses, zero Gram defects), with off-carrier probes pinning the
-   stuck/rooterr/host-fault totalization landings and the
-   noncanonical-rootdone fallback plus its terminal inverse. Kernel
-   error/guard arms not exercised by any carrier or probe
-   (`recall-err`, `replay-err`, `frame-conflict`, `pop-err`,
-   `key-alias`, `no-instance`, `shape-err`, `verr`, `stuck-vb`,
-   `rootneutral`, `species-*`) and the composed
-   `egi`/`invalid-kernel-target` arm stay pinned by review only. The same
-   boundary is explicit for Gate-2 shadow error arms and refused custom
-   predecessors outside the clean compiler carriers; the final Opus drift
-   review found and closed the shortened-`var`/VB priority defect, while the
-   residual unreachable arms remain review pins rather than differential
-   evidence. Phase 3
-   landed 2026-08-17: the typed linear-SSA compiler/recognizer/certificate,
-   native-CNOT shadow and exact inverses, compiler-indexed WF and finite audit,
-   all 43 short circuits, the Bell/Toffoli/nonlinear witnesses, and the full
-   917-state / 913-column mixed differential. The tree now has 57 qfx files
-   plus the Python-generated five-case compiler-pin manifest under the Gate-2
-   tree. Next: phase 4,
-   total admission plus public `U`, `μ_p`, `ρ_p`, finite `M`, and `Ω_qALC`
-   approximants; census remains later.
+1. Add the promised `blam qalc` driver group (`run`, `gram`, `compile`,
+   `fixtures`) over the now-public reference API, then design census machinery
+   as a separate measured layer. Neither is part of the closed Phase-4
+   semantics claim.
 2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and broader arrival/pop determinacy.
 3. Downstream research: D-circuit dyadicity, universality/domination for `M`,

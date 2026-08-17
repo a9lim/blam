@@ -5,8 +5,8 @@
 //!
 //! The composed carrier has one lambda-IAM transport marker (`BA`,
 //! [`TapeEntry::BulletBa`]). The audited kernel is written with the
-//! plain bullet, so [`kernel_token`] translates BA to plain on entry
-//! and [`composed_token`] plain back to BA on every running exit —
+//! plain bullet, so `kernel_token` translates BA to plain on entry
+//! and `composed_token` plain back to BA on every running exit —
 //! top-level tape entries only, nonrecursive, total at any depth.
 //!
 //! Totalization: the reference wraps `_nf_step_partial` in a

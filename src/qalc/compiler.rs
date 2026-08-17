@@ -4,8 +4,8 @@
 //! The compiler emits one immutable `p h t c` invocation. Preparation and
 //! every logical gate terminate at a persistent native-CNOT port boundary;
 //! the structural certificate is recovered by a finite syntax walk, never by
-//! carrier discovery. Phase 3 may expose this structural admission, but the
-//! total Gate-1/Gate-2 selector and public semantic `U` remain Phase 4.
+//! carrier discovery. Phase 3 exposed the structural admission; Phase 4
+//! composes it with Gate-1 admission and the public semantic `U`.
 
 use std::collections::HashMap;
 
@@ -355,73 +355,133 @@ fn metadata(circuit: Circuit, term: Term) -> Result<Compiled, CompileError> {
 // Structural recognizer. Absolute binder ids make source alpha-equivalence
 // explicit before the exact linear SSA grammar is parsed.
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-enum Open {
+type OpenId = usize;
+
+#[derive(Clone, Debug)]
+enum OpenNode {
     Ref(u64),
-    Lam { binder: u64, body: Box<Open> },
-    App(Box<Open>, Box<Open>),
+    Lam { binder: u64, body: OpenId },
+    App(OpenId, OpenId),
     Gate(GateName),
 }
 
-fn open_term(t: &Term, env: &mut Vec<u64>, next: &mut u64) -> Option<Open> {
-    Some(match t {
-        Term::Var(i) => {
-            if *i == 0 || *i as usize > env.len() {
-                return None;
-            }
-            Open::Ref(env[env.len() - *i as usize])
-        }
-        Term::Lam(body) => {
-            let binder = *next;
-            *next += 1;
-            env.push(binder);
-            let body = open_term(body, env, next)?;
-            env.pop();
-            Open::Lam {
-                binder,
-                body: Box::new(body),
-            }
-        }
-        Term::App(f, a) => Open::App(
-            Box::new(open_term(f, env, next)?),
-            Box::new(open_term(a, env, next)?),
-        ),
-        Term::Gate(g) => Open::Gate(*g),
-    })
+#[derive(Default)]
+struct OpenArena(Vec<OpenNode>);
+
+impl OpenArena {
+    fn push(&mut self, node: OpenNode) -> OpenId {
+        let id = self.0.len();
+        self.0.push(node);
+        id
+    }
+
+    fn get(&self, id: OpenId) -> &OpenNode {
+        &self.0[id]
+    }
 }
 
-fn unapps(mut node: &Open) -> (&Open, Vec<&Open>) {
+enum OpenAction<'a> {
+    Visit(&'a Term),
+    FinishLam(u64),
+    FinishApp,
+}
+
+/// Convert de Bruijn indices to absolute binder ids without host recursion.
+/// The arena representation also makes clone, equality, and destruction
+/// depth-independent, which is load-bearing for cap-free structural admission.
+fn open_term(term: &Term) -> Option<(OpenArena, OpenId)> {
+    let mut arena = OpenArena::default();
+    let mut env = Vec::new();
+    let mut next = 0u64;
+    let mut actions = vec![OpenAction::Visit(term)];
+    let mut values = Vec::new();
+    while let Some(action) = actions.pop() {
+        match action {
+            OpenAction::Visit(Term::Var(i)) => {
+                if *i == 0 || *i as usize > env.len() {
+                    return None;
+                }
+                values.push(arena.push(OpenNode::Ref(env[env.len() - *i as usize])));
+            }
+            OpenAction::Visit(Term::Gate(gate)) => {
+                values.push(arena.push(OpenNode::Gate(*gate)));
+            }
+            OpenAction::Visit(Term::Lam(body)) => {
+                let binder = next;
+                next = next.checked_add(1)?;
+                env.push(binder);
+                actions.push(OpenAction::FinishLam(binder));
+                actions.push(OpenAction::Visit(body));
+            }
+            OpenAction::Visit(Term::App(function, argument)) => {
+                actions.push(OpenAction::FinishApp);
+                actions.push(OpenAction::Visit(argument));
+                actions.push(OpenAction::Visit(function));
+            }
+            OpenAction::FinishLam(binder) => {
+                let body = values.pop()?;
+                if env.pop() != Some(binder) {
+                    return None;
+                }
+                values.push(arena.push(OpenNode::Lam { binder, body }));
+            }
+            OpenAction::FinishApp => {
+                let argument = values.pop()?;
+                let function = values.pop()?;
+                values.push(arena.push(OpenNode::App(function, argument)));
+            }
+        }
+    }
+    let root = values.pop()?;
+    (values.is_empty() && env.is_empty()).then_some((arena, root))
+}
+
+fn is_ref(arena: &OpenArena, node: OpenId, binder: u64) -> bool {
+    matches!(arena.get(node), OpenNode::Ref(found) if *found == binder)
+}
+
+fn is_gate(arena: &OpenArena, node: OpenId, gate: GateName) -> bool {
+    matches!(arena.get(node), OpenNode::Gate(found) if *found == gate)
+}
+
+fn unapps(arena: &OpenArena, mut node: OpenId) -> (OpenId, Vec<OpenId>) {
     let mut args = Vec::new();
-    while let Open::App(f, a) = node {
-        args.push(a.as_ref());
-        node = f;
+    while let OpenNode::App(function, argument) = arena.get(node) {
+        args.push(*argument);
+        node = *function;
     }
     args.reverse();
     (node, args)
 }
 
-fn boolean_zero(node: &Open) -> bool {
-    let Open::Lam { binder, body } = node else {
+fn boolean_zero(arena: &OpenArena, node: OpenId) -> bool {
+    let OpenNode::Lam { binder, body } = arena.get(node) else {
         return false;
     };
-    let Open::Lam { body, .. } = body.as_ref() else {
+    let OpenNode::Lam { body, .. } = arena.get(*body) else {
         return false;
     };
-    body.as_ref() == &Open::Ref(*binder)
+    is_ref(arena, *body, *binder)
 }
 
-fn wire_expression(node: &Open, wires: &[Open], h: u64, t: u64) -> Option<(usize, Vec<Kind>)> {
+fn wire_expression(
+    arena: &OpenArena,
+    node: OpenId,
+    wires: &[u64],
+    h: u64,
+    t: u64,
+) -> Option<(usize, Vec<Kind>)> {
     let mut outer = Vec::new();
     let mut cursor = node;
     loop {
-        let (head, args) = unapps(cursor);
+        let (head, args) = unapps(arena, cursor);
         if args.len() == 1 {
-            if head == &Open::Ref(h) {
+            if is_ref(arena, head, h) {
                 outer.push(Kind::H);
                 cursor = args[0];
                 continue;
             }
-            if head == &Open::Ref(t) {
+            if is_ref(arena, head, t) {
                 outer.push(Kind::T);
                 cursor = args[0];
                 continue;
@@ -432,7 +492,7 @@ fn wire_expression(node: &Open, wires: &[Open], h: u64, t: u64) -> Option<(usize
     let matches: Vec<usize> = wires
         .iter()
         .enumerate()
-        .filter_map(|(i, wire)| (wire == cursor).then_some(i))
+        .filter_map(|(i, wire)| is_ref(arena, cursor, *wire).then_some(i))
         .collect();
     if matches.len() != 1 {
         return None;
@@ -442,68 +502,66 @@ fn wire_expression(node: &Open, wires: &[Open], h: u64, t: u64) -> Option<(usize
 }
 
 pub fn recognize_compiled(term: &Term) -> Option<Circuit> {
-    let opened = open_term(term, &mut Vec::new(), &mut 0)?;
-    let (head, invocation) = unapps(&opened);
-    if invocation
-        != [
-            &Open::Gate(GateName::H),
-            &Open::Gate(GateName::T),
-            &Open::Gate(GateName::C),
-        ]
+    let (arena, opened) = open_term(term)?;
+    let (head, invocation) = unapps(&arena, opened);
+    if invocation.len() != 3
+        || !is_gate(&arena, invocation[0], GateName::H)
+        || !is_gate(&arena, invocation[1], GateName::T)
+        || !is_gate(&arena, invocation[2], GateName::C)
     {
         return None;
     }
-    let Open::Lam {
+    let OpenNode::Lam {
         binder: h,
         body: h_body,
-    } = head
+    } = arena.get(head)
     else {
         return None;
     };
-    let Open::Lam {
+    let OpenNode::Lam {
         binder: t,
         body: t_body,
-    } = h_body.as_ref()
+    } = arena.get(*h_body)
     else {
         return None;
     };
-    let Open::Lam {
+    let OpenNode::Lam {
         binder: c,
         body: c_body,
-    } = t_body.as_ref()
+    } = arena.get(*t_body)
     else {
         return None;
     };
     if (*h, *t, *c) != (0, 1, 2) {
         return None;
     }
-    let mut node = c_body.as_ref().clone();
-    let mut wires: Vec<Open> = Vec::new();
+    let mut node = *c_body;
+    let mut wires: Vec<u64> = Vec::new();
 
     loop {
-        let (gate, args) = unapps(&node);
-        if gate != &Open::Ref(*c) || args.len() != 3 || !boolean_zero(args[0]) {
+        let (gate, args) = unapps(&arena, node);
+        if !is_ref(&arena, gate, *c) || args.len() != 3 || !boolean_zero(&arena, args[0]) {
             break;
         }
-        let (h_head, h_args) = unapps(args[1]);
-        if h_head != &Open::Ref(*h) || h_args.len() != 1 || !boolean_zero(h_args[0]) {
+        let (h_head, h_args) = unapps(&arena, args[1]);
+        if !is_ref(&arena, h_head, *h) || h_args.len() != 1 || !boolean_zero(&arena, h_args[0]) {
             break;
         }
-        let Open::Lam {
+        let OpenNode::Lam {
             body: inner_lam, ..
-        } = args[2]
+        } = arena.get(args[2])
         else {
             return None;
         };
-        let Open::Lam {
+        let OpenNode::Lam {
             binder: inner,
             body,
-        } = inner_lam.as_ref()
+        } = arena.get(*inner_lam)
         else {
             return None;
         };
-        wires.push(Open::Ref(*inner));
-        node = body.as_ref().clone();
+        wires.push(*inner);
+        node = *body;
     }
     if wires.is_empty() {
         return None;
@@ -511,60 +569,62 @@ pub fn recognize_compiled(term: &Term) -> Option<Circuit> {
 
     let mut gates = Vec::new();
     loop {
-        let (gate, args) = unapps(&node);
-        if gate == &Open::Ref(*c) && args.len() == 3 {
-            let Open::Lam {
+        let (gate, args) = unapps(&arena, node);
+        if is_ref(&arena, gate, *c) && args.len() == 3 {
+            let OpenNode::Lam {
                 binder: outer,
                 body: inner_lam,
-            } = args[2]
+            } = arena.get(args[2])
             else {
                 return None;
             };
-            let Open::Lam {
+            let OpenNode::Lam {
                 binder: inner,
                 body,
-            } = inner_lam.as_ref()
+            } = arena.get(*inner_lam)
             else {
                 return None;
             };
-            if boolean_zero(args[0]) {
-                let (unary, unary_args) = unapps(args[1]);
-                if unary_args.len() != 1 || (unary != &Open::Ref(*h) && unary != &Open::Ref(*t)) {
+            if boolean_zero(&arena, args[0]) {
+                let (unary, unary_args) = unapps(&arena, args[1]);
+                if unary_args.len() != 1
+                    || (!is_ref(&arena, unary, *h) && !is_ref(&arena, unary, *t))
+                {
                     return None;
                 }
-                let (target, nested) = wire_expression(unary_args[0], &wires, *h, *t)?;
+                let (target, nested) = wire_expression(&arena, unary_args[0], &wires, *h, *t)?;
                 if !nested.is_empty() {
                     return None;
                 }
-                gates.push(if unary == &Open::Ref(*h) {
+                gates.push(if is_ref(&arena, unary, *h) {
                     Op::h(target)
                 } else {
                     Op::t(target)
                 });
-                wires[target] = Open::Ref(*inner);
+                wires[target] = *inner;
             } else {
-                let (control, cu) = wire_expression(args[0], &wires, *h, *t)?;
-                let (target, tu) = wire_expression(args[1], &wires, *h, *t)?;
+                let (control, cu) = wire_expression(&arena, args[0], &wires, *h, *t)?;
+                let (target, tu) = wire_expression(&arena, args[1], &wires, *h, *t)?;
                 if control == target || !cu.is_empty() || !tu.is_empty() {
                     return None;
                 }
                 gates.push(Op::cx(control, target));
-                wires[control] = Open::Ref(*outer);
-                wires[target] = Open::Ref(*inner);
+                wires[control] = *outer;
+                wires[target] = *inner;
             }
-            node = body.as_ref().clone();
+            node = *body;
             continue;
         }
 
-        let Open::Lam { binder, body } = &node else {
+        let OpenNode::Lam { binder, body } = arena.get(node) else {
             return None;
         };
-        let (tuple_head, tuple_args) = unapps(body);
-        if tuple_head != &Open::Ref(*binder) || tuple_args.len() != wires.len() {
+        let (tuple_head, tuple_args) = unapps(&arena, *body);
+        if !is_ref(&arena, tuple_head, *binder) || tuple_args.len() != wires.len() {
             return None;
         }
         for (expected, arg) in tuple_args.into_iter().enumerate() {
-            let (wire, unary) = wire_expression(arg, &wires, *h, *t)?;
+            let (wire, unary) = wire_expression(&arena, arg, &wires, *h, *t)?;
             if wire != expected || !unary.is_empty() {
                 return None;
             }
@@ -584,12 +644,28 @@ pub fn compiler_certificate(compiled: &Compiled) -> Result<CertEntries, CompileE
     if recognize_compiled(&compiled.term).as_ref() != Some(&compiled.circuit) {
         return Err(CompileError::MalformedImage);
     }
+    compiler_certificate_from_term(&compiled.term)
+}
+
+/// Recognize a compiler image and derive its syntax-directed certificate
+/// without cloning the source term.  This is the cap-free selector path;
+/// `recognized_metadata` remains the owned audit convenience used by Phase 3.
+pub(crate) fn recognized_certificate(
+    term: &Term,
+) -> Result<Option<(Circuit, CertEntries)>, CompileError> {
+    let Some(circuit) = recognize_compiled(term) else {
+        return Ok(None);
+    };
+    Ok(Some((circuit, compiler_certificate_from_term(term)?)))
+}
+
+fn compiler_certificate_from_term(term: &Term) -> Result<CertEntries, CompileError> {
     let h_binder = vec![Dir::F, Dir::F, Dir::F];
     let t_binder = vec![Dir::F, Dir::F, Dir::F, Dir::B];
     let c_binder = vec![Dir::F, Dir::F, Dir::F, Dir::B, Dir::B];
     let mut producers: HashMap<Path, KdKey> = HashMap::new();
 
-    for (root, node) in walk(&compiled.term) {
+    for (root, node) in walk(term) {
         if !matches!(node, Term::App(..)) {
             continue;
         }
@@ -599,10 +675,10 @@ pub fn compiler_certificate(compiled: &Compiled) -> Result<CertEntries, CompileE
         continuation.push(Dir::A);
         let mut inner = continuation.clone();
         inner.push(Dir::B);
-        if matches!(subterm(&compiled.term, &gate), Some(Term::Var(_)))
-            && binder_path(&compiled.term, &gate) == Some(c_binder.clone())
-            && matches!(subterm(&compiled.term, &continuation), Some(Term::Lam(_)))
-            && matches!(subterm(&compiled.term, &inner), Some(Term::Lam(_)))
+        if matches!(subterm(term, &gate), Some(Term::Var(_)))
+            && binder_path(term, &gate) == Some(c_binder.clone())
+            && matches!(subterm(term, &continuation), Some(Term::Lam(_)))
+            && matches!(subterm(term, &inner), Some(Term::Lam(_)))
         {
             let invoked = Lp {
                 occ: gate,
@@ -626,7 +702,7 @@ pub fn compiler_certificate(compiled: &Compiled) -> Result<CertEntries, CompileE
     }
 
     let mut certificate: HashMap<Path, Vec<KdKey>> = HashMap::new();
-    for (path, node) in walk(&compiled.term) {
+    for (path, node) in walk(term) {
         let Term::App(head, argument) = node else {
             continue;
         };
@@ -635,7 +711,7 @@ pub fn compiler_certificate(compiled: &Compiled) -> Result<CertEntries, CompileE
         };
         let mut head_path = path.clone();
         head_path.push(Dir::F);
-        let head_binder = binder_path(&compiled.term, &head_path);
+        let head_binder = binder_path(term, &head_path);
         if head_binder.as_ref() != Some(&h_binder) && head_binder.as_ref() != Some(&t_binder) {
             continue;
         }
@@ -643,7 +719,7 @@ pub fn compiler_certificate(compiled: &Compiled) -> Result<CertEntries, CompileE
             if matches!(inner_head.as_ref(), Term::Var(_)) {
                 let mut inner_path = path.clone();
                 inner_path.extend([Dir::A, Dir::F]);
-                let inner_binder = binder_path(&compiled.term, &inner_path);
+                let inner_binder = binder_path(term, &inner_path);
                 if inner_binder.as_ref() == Some(&h_binder)
                     || inner_binder.as_ref() == Some(&t_binder)
                 {
@@ -657,7 +733,7 @@ pub fn compiler_certificate(compiled: &Compiled) -> Result<CertEntries, CompileE
             Term::Lam(_) => Vec::new(),
             Term::Var(_) => {
                 let producer_path =
-                    binder_path(&compiled.term, &boundary).ok_or(CompileError::MissingProducer)?;
+                    binder_path(term, &boundary).ok_or(CompileError::MissingProducer)?;
                 vec![producers
                     .get(&producer_path)
                     .cloned()

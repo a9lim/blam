@@ -69,15 +69,17 @@ without the feature and say how to get themselves; do not "fix" that by
 deleting the arm. A third pillar, `quantum-algebraic` (qALC: quantum *control*,
 storeless, runtime states in ℓ² over token configurations), has an accepted
 Python/Lean reference and proof surface in `qalc/`; its Rust engine
-(`src/qalc/`) is at phase 3 of the ratified sketch
+(`src/qalc/`) has completed phases 0–4 of the ratified sketch
 (`docs/quantum-algebraic/rust-pillar.md`): typed schema, the
 PyReprKey/wire codec split, the canonical-invariant `Amp`, the kernel
 step table with its exact-Dw evolvers (`src/qalc/kernel.rs`), and the
 composed full-NF machine (`src/qalc/readback.rs` — dispatcher, BA
 adapters, typed totalization, predecessor inverses, composed
 evolvers), plus the linear-SSA compiler, native-CNOT shadow, structural
-admission, and finite checker (`compiler.rs`, `shadow.rs`, `gate2check.rs`).
-Fixtures live in three trees with three exporters: the kernel
+admission, and finite checker (`compiler.rs`, `shadow.rs`, `gate2check.rs`),
+plus checked Gate-1 admission/WF/RRI and total public semantics
+(`admission.rs`, `wf.rs`, `semantics.rs`). Fixtures live in three runtime
+trees plus one embedded selector pin, with four exporters: the kernel
 files under `tests/qalc/` — twenty suite programs plus three Dw-only
 T-phase probes, regenerated only by `qalc/export_rust_fixtures.py`
 (the qALC workflow byte-checks them) — and the 30 composed Gate-1
@@ -85,7 +87,9 @@ cores plus RBL corpus under `tests/qalc/composed/`, regenerated only
 by `qalc/export_composed_fixtures.py`; the complete 917-state mixed Gate-2
 carrier, expanded repr corpus, and Python-generated compiler-pin manifest live
 under `tests/qalc/gate2/`, regenerated only by
-`qalc/export_gate2_fixtures.py`. `tests/qalc_kernel.rs`,
+`qalc/export_gate2_fixtures.py`; `src/qalc/admission_pins.qfx` is stripped
+from the authoritative kernel fixtures only by
+`qalc/export_admission_fixtures.py`. `tests/qalc_kernel.rs`,
 `tests/qalc_composed.rs`, and `tests/qalc_gate2.rs` regenerate every one byte-identically from
 the Rust engine alone — the Gate-1 30-core differential (7,507 states
 / 7,417 columns, per-edge predecessor inverses, totalization probes)
@@ -112,9 +116,9 @@ earlier halt, arbitrary finite amplitudes, and cap-free structural compiler
 admission. Clean finite Bell/Toffoli/nonlinear carriers and the 917-state
 Python/Lean differential remain independent evidence. Historical alternatives,
 audits, and superseded proof routes live only in `docs/ledger/`, git history,
-and external audit records. Rust Phase 4 should now add total combined
-admission and the public semantic objects; census remains later. qALC work
-must leave classical and qBLC rows bit-identical.
+and external audit records. Rust Phase 4 landed 2026-08-17; the `blam qalc`
+driver group and census remain later. qALC work must leave classical and qBLC
+rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →

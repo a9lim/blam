@@ -5,12 +5,14 @@ on:
     branches: [main, dev]
     paths:
       - "qalc/**"
+      - "src/qalc/**"
       - "tests/qalc/**"
       - ".github/workflows/qalc.yml"
   pull_request:
     branches: [main]
     paths:
       - "qalc/**"
+      - "src/qalc/**"
       - "tests/qalc/**"
       - ".github/workflows/qalc.yml"
 
@@ -44,3 +46,5 @@ jobs:
           PYTHONHASHSEED=2 python qalc/export_composed_fixtures.py --check
           PYTHONHASHSEED=1 python qalc/export_gate2_fixtures.py --check
           PYTHONHASHSEED=2 python qalc/export_gate2_fixtures.py --check
+          PYTHONHASHSEED=1 python qalc/export_admission_fixtures.py --check
+          PYTHONHASHSEED=2 python qalc/export_admission_fixtures.py --check
