@@ -15,7 +15,7 @@
 use blam::hash::sha256_hex;
 use blam::qalc::amp::Amp;
 use blam::qalc::kernel::{self, Psi};
-use blam::qalc::mark::{LogEntry, TapeEntry};
+use blam::qalc::mark::{GateTag, LogEntry, TapeEntry};
 use blam::qalc::state::{KState, RunCore, Vb, Vert};
 use blam::qalc::term::{Dir, GateName, Term};
 use blam::qalc::wire::{
@@ -278,8 +278,9 @@ fn r_path(p: &[Dir]) -> String {
 fn r_log_entry(e: &LogEntry) -> String {
     match e {
         LogEntry::Lp(lp) => format!("L({}|{})", r_path(&lp.occ), lp.slice.len()),
-        LogEntry::Gam(g) => format!("g{}", g.ch()),
-        LogEntry::Alpha(a) => format!("a{}{}", a.gate.ch(), a.bit),
+        LogEntry::Gam(g) => format!("g{}", g.token()),
+        LogEntry::Cgam(_) => "gc".to_string(),
+        LogEntry::Alpha(a) => format!("a{}{}", a.gate.token(), a.bit),
         LogEntry::Rbl(r) => format!("rbl({})", r_path(&r.output)),
     }
 }
@@ -290,10 +291,12 @@ fn r_tape_entry(e: &TapeEntry) -> String {
         TapeEntry::BulletBa => "ba".into(),
         TapeEntry::Rho => "R".into(),
         TapeEntry::Lp(lp) => format!("L({}|{})", r_path(&lp.occ), lp.slice.len()),
-        TapeEntry::Gam(g) => format!("g{}", g.ch()),
-        TapeEntry::Mu(g) => format!("m{}", g.ch()),
-        TapeEntry::Ans(g, b) => format!("A{}{}", g.ch(), b),
-        TapeEntry::Alpha(a) => format!("a{}{}", a.gate.ch(), a.bit),
+        TapeEntry::Gam(g) => format!("g{}", g.token()),
+        TapeEntry::Mu(g) => format!("m{}", g.token()),
+        TapeEntry::Cgam(_) => "gc".to_string(),
+        TapeEntry::Cmu { .. } => "mc".to_string(),
+        TapeEntry::Ans(g, b) => format!("A{}{}", g.token(), b),
+        TapeEntry::Alpha(a) => format!("a{}{}", a.gate.token(), a.bit),
         TapeEntry::Rb(r) => format!("RB({})", r.depth),
         TapeEntry::Rbl(r) => format!("rbl({})", r_path(&r.output)),
     }
@@ -347,7 +350,7 @@ fn run_matches(e: &Exp, c: &RunCore) -> bool {
     if let Some((bit, k)) = e.vb {
         if c.vb
             != Some(Vb {
-                gate: GateName::H,
+                gate: GateTag::H,
                 bit,
                 k,
             })

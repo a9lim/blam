@@ -69,24 +69,31 @@ without the feature and say how to get themselves; do not "fix" that by
 deleting the arm. A third pillar, `quantum-algebraic` (qALC: quantum *control*,
 storeless, runtime states in ℓ² over token configurations), has an accepted
 Python/Lean reference and proof surface in `qalc/`; its Rust engine
-(`src/qalc/`) is at phase 2 of the ratified sketch
+(`src/qalc/`) is at phase 3 of the ratified sketch
 (`docs/quantum-algebraic/rust-pillar.md`): typed schema, the
 PyReprKey/wire codec split, the canonical-invariant `Amp`, the kernel
 step table with its exact-Dw evolvers (`src/qalc/kernel.rs`), and the
 composed full-NF machine (`src/qalc/readback.rs` — dispatcher, BA
 adapters, typed totalization, predecessor inverses, composed
-evolvers). Fixtures live in two trees with two exporters: the kernel
+evolvers), plus the linear-SSA compiler, native-CNOT shadow, structural
+admission, and finite checker (`compiler.rs`, `shadow.rs`, `gate2check.rs`).
+Fixtures live in three trees with three exporters: the kernel
 files under `tests/qalc/` — twenty suite programs plus three Dw-only
 T-phase probes, regenerated only by `qalc/export_rust_fixtures.py`
 (the qALC workflow byte-checks them) — and the 30 composed Gate-1
 cores plus RBL corpus under `tests/qalc/composed/`, regenerated only
-by `qalc/export_composed_fixtures.py`. `tests/qalc_kernel.rs` and
-`tests/qalc_composed.rs` regenerate every one byte-identically from
+by `qalc/export_composed_fixtures.py`; the complete 917-state mixed Gate-2
+carrier, expanded repr corpus, and Python-generated compiler-pin manifest live
+under `tests/qalc/gate2/`, regenerated only by
+`qalc/export_gate2_fixtures.py`. `tests/qalc_kernel.rs`,
+`tests/qalc_composed.rs`, and `tests/qalc_gate2.rs` regenerate every one byte-identically from
 the Rust engine alone — the Gate-1 30-core differential (7,507 states
 / 7,417 columns, per-edge predecessor inverses, totalization probes)
-is closed. Kernel error/guard arms unreached by any carrier or probe,
-and the composed `egi`/`invalid-kernel-target` arm, are pinned by
-review only (a passed Codex drift review, findings folded). `docs/quantum-algebraic/architecture.md` is the contract;
+and the Gate-2 917-state / 913-column differential are closed. Kernel
+error/guard arms unreached by any carrier or probe, the composed
+`egi`/`invalid-kernel-target` arm, and Gate-2 shadow error/refused-predecessor
+arms outside clean compiler carriers are pinned by review only (passed Codex
+drift reviews, findings folded). `docs/quantum-algebraic/architecture.md` is the contract;
 `token.md` is the active IAM-lineage token design; `kernel.md` is the
 current-only v1.43 register; `machine.md` is read-only history. Architecture
 Gate 1 is closed: the reference composed machine supplies exact H/T
@@ -105,8 +112,9 @@ earlier halt, arbitrary finite amplitudes, and cap-free structural compiler
 admission. Clean finite Bell/Toffoli/nonlinear carriers and the 917-state
 Python/Lean differential remain independent evidence. Historical alternatives,
 audits, and superseded proof routes live only in `docs/ledger/`, git history,
-and external audit records. The Rust qALC pillar should implement this proved
-surface first. qALC work must leave classical and qBLC rows bit-identical.
+and external audit records. Rust Phase 4 should now add total combined
+admission and the public semantic objects; census remains later. qALC work
+must leave classical and qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →

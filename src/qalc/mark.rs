@@ -29,6 +29,46 @@ use std::sync::Arc;
 
 use super::term::{Dir, GateName, Path};
 
+/// Dynamic gate identity stored in frames, tickets, virtual booleans, and
+/// certificates. Source `c` is deliberately absent: its two persistent
+/// output ports have distinct identities `c1` and `c2`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub enum GateTag {
+    H,
+    T,
+    C1,
+    C2,
+}
+
+impl GateTag {
+    pub fn token(self) -> &'static str {
+        match self {
+            GateTag::H => "h",
+            GateTag::T => "t",
+            GateTag::C1 => "c1",
+            GateTag::C2 => "c2",
+        }
+    }
+
+    pub fn source(self) -> Option<GateName> {
+        match self {
+            GateTag::H => Some(GateName::H),
+            GateTag::T => Some(GateName::T),
+            GateTag::C1 | GateTag::C2 => None,
+        }
+    }
+}
+
+impl GateName {
+    pub fn tag(self) -> Option<GateTag> {
+        match self {
+            GateName::H => Some(GateTag::H),
+            GateName::T => Some(GateTag::T),
+            GateName::C => None,
+        }
+    }
+}
+
 /// A logged position `('L', occ, slice)`: a dynamic subterm copy. The
 /// slice is a captured log segment, so its entries are log-alphabet
 /// values (lp-like only — W0 v1.23 excludes bullets from the log).
@@ -49,8 +89,44 @@ pub struct Lp {
 pub enum LogEntry {
     Lp(Lp),
     Gam(GateName),
+    Cgam(CGam),
     Alpha(Alpha),
     Rbl(Rbl),
+}
+
+/// One native-CNOT port.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum CPort {
+    First,
+    Second,
+}
+
+impl CPort {
+    pub fn number(self) -> u8 {
+        match self {
+            CPort::First => 1,
+            CPort::Second => 2,
+        }
+    }
+
+    pub fn tag(self) -> GateTag {
+        match self {
+            CPort::First => GateTag::C1,
+            CPort::Second => GateTag::C2,
+        }
+    }
+}
+
+/// Native-CNOT probe marker
+/// `('G', 'c', port, invoked, occurrence, first, second, continuation)`.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct CGam {
+    pub port: CPort,
+    pub invoked: Lp,
+    pub occurrence: Path,
+    pub first: Path,
+    pub second: Path,
+    pub continuation: Path,
 }
 
 /// Synthetic logged return address `('RBL', parent_function, output,
@@ -89,7 +165,7 @@ pub enum Epoch {
 /// An answer ticket `('AL', g, i, b′, epoch)` — instance-tagged.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Alpha {
-    pub gate: GateName,
+    pub gate: GateTag,
     pub instance: Lp,
     pub bit: u8,
     pub epoch: Epoch,
@@ -99,7 +175,7 @@ pub struct Alpha {
 /// in RS, which is kept canonically sorted by [`frame_repr`].
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Frame {
-    pub gate: GateName,
+    pub gate: GateTag,
     pub instance: Lp,
     pub bit: u8,
     pub epoch: Epoch,
@@ -109,7 +185,7 @@ pub struct Frame {
 /// names as dead, sorted inside the bundle by [`kd_key_repr`].
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct KdKey {
-    pub gate: GateName,
+    pub gate: GateTag,
     pub instance: Lp,
 }
 
@@ -125,6 +201,8 @@ pub enum TapeEntry {
     Lp(Lp),
     Gam(GateName),
     Mu(GateName),
+    Cgam(CGam),
+    Cmu { port: CPort, invoked: Lp },
     Ans(GateName, u8),
     Alpha(Alpha),
     Rb(Rb),
@@ -136,16 +214,81 @@ pub enum TapeEntry {
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum KsHead {
     /// `('K', g, i)` — a decoded ticket, bit-free dead record.
-    Decode { gate: GateName, instance: Lp },
+    Decode { gate: GateTag, instance: Lp },
     /// `('KD', keys)` — certified erasure's tagged bundle, emitted on
     /// every certified fire, empty included. Keys sorted by repr.
     DeadBundle(Vec<KdKey>),
     /// `('KA', g, i)` — suppressed decode's history head, NOT a dead
     /// record (excluded from dead/bitfree key sets by design).
-    Suppressed { gate: GateName, instance: Lp },
+    Suppressed { gate: GateTag, instance: Lp },
     /// `('K', l)` — a retained-whole which-path spectator. The cargo is
     /// an arrival position: a real lp, or a mismatched ticket.
     RetainWhole(RetainCargo),
+    /// Parked first native-CNOT input (`CP`).
+    CnotPark {
+        invoked: Lp,
+        bit: u8,
+        descriptor: CDescriptor,
+        frames: Vec<FrameDescriptor>,
+        occurrence: Path,
+        continuation: Path,
+    },
+    /// Completed native-CNOT history (`CH`).
+    CnotHistory {
+        invoked: Lp,
+        first: CDescriptor,
+        first_frames: Vec<FrameDescriptor>,
+        second: CDescriptor,
+        second_frames: Vec<FrameDescriptor>,
+        occurrence: Path,
+        continuation: Path,
+    },
+    /// Bit-free port record consumed by full-NF readback (`CD`).
+    CnotDead {
+        port: CPort,
+        invoked: Lp,
+        epoch: Epoch,
+        logged: Lp,
+        answered: bool,
+    },
+    /// Bit-free predecessor coordinate for a delivered handle (`CQ`).
+    CnotQuery {
+        port: CPort,
+        invoked: Lp,
+        logged: Lp,
+    },
+    /// Reversible midpoint for a split native-CNOT row (`CS`).
+    CnotStage(CStage),
+}
+
+/// Bit-free description of one consumed native-CNOT input.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum CDescriptor {
+    Alpha {
+        gate: GateTag,
+        instance: Lp,
+        epoch: Epoch,
+    },
+    /// Conservatively retained arrival head. Compiler-clean carriers use an
+    /// `Lp`; `Alpha` keeps the raw table total on a mismatched ticket.
+    Logged(RetainCargo),
+}
+
+/// One removed replay-frame coordinate; its bit is reconstructed from
+/// the CNOT output.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct FrameDescriptor {
+    pub gate: GateTag,
+    pub instance: Lp,
+    pub epoch: Epoch,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum CStage {
+    Park,
+    Fire,
+    Deliver,
+    AnswerPort,
 }
 
 /// Retain-whole cargo: what an arrival classifier can carry.
@@ -194,6 +337,7 @@ enum Tok<'a> {
     Epoch(&'a Epoch),
     Log(&'a LogEntry),
     Lp(&'a Lp),
+    Path(&'a Path),
 }
 
 fn render(out: &mut String, root: Tok<'_>) {
@@ -202,6 +346,7 @@ fn render(out: &mut String, root: Tok<'_>) {
         match t {
             Tok::Lit(s) => out.push_str(s),
             Tok::Bit(b) => out.push_str(&b.to_string()),
+            Tok::Path(p) => push_path(out, p),
             Tok::Epoch(e) => match e {
                 Epoch::Fresh => out.push_str("('F',)"),
                 Epoch::Recall(t) => {
@@ -221,8 +366,23 @@ fn render(out: &mut String, root: Tok<'_>) {
                 LogEntry::Lp(lp) => stack.push(Tok::Lp(lp)),
                 LogEntry::Gam(g) => {
                     out.push_str("('G', ");
-                    push_str_repr(out, &g.ch().to_string());
+                    push_str_repr(out, g.token());
                     out.push(')');
+                }
+                LogEntry::Cgam(g) => {
+                    out.push_str("('G', 'c', ");
+                    out.push_str(&g.port.number().to_string());
+                    out.push_str(", ");
+                    stack.push(Tok::Lit(")"));
+                    stack.push(Tok::Path(&g.continuation));
+                    stack.push(Tok::Lit(", "));
+                    stack.push(Tok::Path(&g.second));
+                    stack.push(Tok::Lit(", "));
+                    stack.push(Tok::Path(&g.first));
+                    stack.push(Tok::Lit(", "));
+                    stack.push(Tok::Path(&g.occurrence));
+                    stack.push(Tok::Lit(", "));
+                    stack.push(Tok::Lp(&g.invoked));
                 }
                 LogEntry::Rbl(r) => {
                     out.push_str("('RBL', ");
@@ -235,7 +395,7 @@ fn render(out: &mut String, root: Tok<'_>) {
                 }
                 LogEntry::Alpha(a) => {
                     out.push_str("('AL', ");
-                    push_str_repr(out, &a.gate.ch().to_string());
+                    push_str_repr(out, a.gate.token());
                     out.push_str(", ");
                     stack.push(Tok::Lit(")"));
                     stack.push(Tok::Epoch(&a.epoch));
@@ -268,7 +428,7 @@ fn render(out: &mut String, root: Tok<'_>) {
 pub fn frame_repr(f: &Frame) -> String {
     let mut out = String::new();
     out.push_str("('R', ");
-    push_str_repr(&mut out, &f.gate.ch().to_string());
+    push_str_repr(&mut out, f.gate.token());
     out.push_str(", ");
     render(&mut out, Tok::Lp(&f.instance));
     out.push_str(", ");
@@ -284,7 +444,7 @@ pub fn frame_repr(f: &Frame) -> String {
 pub fn kd_key_repr(k: &KdKey) -> String {
     let mut out = String::new();
     out.push('(');
-    push_str_repr(&mut out, &k.gate.ch().to_string());
+    push_str_repr(&mut out, k.gate.token());
     out.push_str(", ");
     render(&mut out, Tok::Lp(&k.instance));
     out.push(')');
@@ -313,7 +473,7 @@ mod tests {
     fn repr_matches_python_by_hand() {
         // repr(('R', 'h', ('L', ('f', 'a'), ()), 0, ('EA', ('F',))))
         let f = Frame {
-            gate: GateName::H,
+            gate: GateTag::H,
             instance: Lp {
                 occ: vec![Dir::F, Dir::A],
                 slice: vec![],
@@ -327,7 +487,7 @@ mod tests {
         );
         // Singleton path and singleton slice both carry the trailing comma.
         let k = KdKey {
-            gate: GateName::T,
+            gate: GateTag::T,
             instance: Lp {
                 occ: vec![Dir::B],
                 slice: vec![LogEntry::Gam(GateName::H)],
@@ -338,7 +498,7 @@ mod tests {
         // repr(('R', 'h', ('L', ('a',), (('RBL', ('f',), (), ('b',)),)),
         //       0, ('F',))) — verified against the Python reference.
         let f = Frame {
-            gate: GateName::H,
+            gate: GateTag::H,
             instance: Lp {
                 occ: vec![Dir::A],
                 slice: vec![LogEntry::Rbl(Rbl {
@@ -366,11 +526,11 @@ mod tests {
             })],
         };
         let f = Frame {
-            gate: GateName::T,
+            gate: GateTag::T,
             instance: Lp {
                 occ: vec![Dir::F],
                 slice: vec![LogEntry::Alpha(Alpha {
-                    gate: GateName::T,
+                    gate: GateTag::T,
                     instance: inner,
                     bit: 1,
                     epoch: Epoch::Fresh,
@@ -385,7 +545,7 @@ mod tests {
              ('b',), ('f', 'a')),)), 1, ('F',)),)), 1, ('F',))"
         );
         let k = KdKey {
-            gate: GateName::H,
+            gate: GateTag::H,
             instance: Lp {
                 occ: vec![Dir::A, Dir::B],
                 slice: vec![LogEntry::Rbl(Rbl {
@@ -423,7 +583,7 @@ mod tests {
             };
         }
         let f = Frame {
-            gate: GateName::H,
+            gate: GateTag::H,
             instance: lp,
             bit: 0,
             epoch,

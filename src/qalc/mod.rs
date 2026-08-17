@@ -21,14 +21,18 @@
 //! state grammar and the `PyReprKey` canonical-order renderer),
 //! [`state`], [`amp`] (the canonical-invariant amplitude), and [`wire`]
 //! (the fixture format). Phase 1 adds [`kernel`] — the step table and
-//! the exact-Dw evolvers, pinned by the complete-carrier column
-//! fixtures. The composed machine and everything above it arrive in
-//! later phases.
+//! exact-Dw evolvers, pinned by complete-carrier column fixtures. Phase 2
+//! adds the [`readback`] full-NF machine. Phase 3 adds the [`compiler`],
+//! native-CNOT [`shadow`], and finite [`gate2check`] audit. Total combined
+//! admission and the public semantic objects remain Phase 4.
 
 pub mod amp;
+pub mod compiler;
+pub mod gate2check;
 pub mod kernel;
 pub mod mark;
 pub mod readback;
+pub mod shadow;
 pub mod state;
 pub mod term;
 pub mod wire;

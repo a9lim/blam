@@ -30,7 +30,7 @@ use std::collections::HashMap;
 
 use super::amp::Amp;
 use super::kernel::{instance, step};
-use super::mark::{Alpha, Epoch, LogEntry, Lp, Rb, Rbl, TapeEntry};
+use super::mark::{Alpha, Epoch, GateTag, LogEntry, Lp, Rb, Rbl, TapeEntry};
 use super::state::{
     BinderIdentity, BinderMark, ErrorGarbage, ErrorKind, Kind, Nf, NfRun, NfState, NfTerminal,
     RunCore, ScopeResidue, TerminalCarrier, TerminalGarbage, Vert, Zipper,
@@ -47,6 +47,15 @@ pub struct NfRow {
     pub dk: u8,
     pub rule: String,
     pub state: NfState,
+}
+
+/// Explicit composed-machine selection. Gate 2 changes the kernel delegate
+/// and one readback priority row; it is a value threaded by callers, never an
+/// ambient mutable dispatcher like the Python harness's `configure()`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MachineKind {
+    Gate1,
+    Gate2,
 }
 
 /// A composed-machine host defect: the typed analogue of the Python
@@ -92,7 +101,7 @@ fn det(rule: &str, s: NfState) -> Vec<NfRow> {
 // BA adapters (top-level tape entries only — `application_invariant.py`
 // gates the fact that BA never occurs below top level).
 
-fn kernel_token(t: &RunCore) -> RunCore {
+pub(super) fn kernel_token(t: &RunCore) -> RunCore {
     let mut out = t.clone();
     for e in &mut out.tape {
         if *e == TapeEntry::BulletBa {
@@ -102,7 +111,7 @@ fn kernel_token(t: &RunCore) -> RunCore {
     out
 }
 
-fn composed_token(mut t: RunCore) -> RunCore {
+pub(super) fn composed_token(mut t: RunCore) -> RunCore {
     for e in &mut t.tape {
         if *e == TapeEntry::Bullet {
             *e = TapeEntry::BulletBa;
@@ -190,7 +199,7 @@ fn leading_lambdas(tree: &Nf) -> usize {
     n
 }
 
-fn canonical_boolean(tree: &Nf) -> Option<u8> {
+pub fn canonical_boolean(tree: &Nf) -> Option<u8> {
     if let Nf::Lam(b) = tree {
         if let Nf::Lam(b2) = b.as_ref() {
             if let Nf::Var(i) = b2.as_ref() {
@@ -396,7 +405,7 @@ fn virtual_prefix_code<'a>(
     output_path: &[Dir],
     code_path: &[Dir],
     binders: &[BinderMark],
-) -> Option<(GateName, &'a Lp, &'a Epoch, [BinderMark; 2])> {
+) -> Option<(GateTag, &'a Lp, &'a Epoch, [BinderMark; 2])> {
     let bit = canonical_boolean(output)?;
     let alpha: &Alpha = match (bit, prefix) {
         (0, [TapeEntry::Alpha(a)]) => a,
@@ -726,6 +735,7 @@ pub fn nf_init() -> NfState {
 /// One composed step before totalization — the reference's
 /// `_nf_step_partial`, arm for arm.
 fn nf_step_partial(
+    machine: MachineKind,
     term: &Term,
     state: &NfState,
     cert: Option<&CertEntries>,
@@ -751,6 +761,38 @@ fn nf_step_partial(
         }
         NfState::Run(NfRun { token, zipper }) => (token, zipper),
     };
+
+    // Gate 2's only composed priority override. A query reaching the inner
+    // CNOT continuation binder must expose the persistent port before the
+    // generic b4 row. Midpoint completion has the same priority. Error rows
+    // deliberately fall through to the ordinary adapter, whose selected
+    // kernel delegate types their landing exactly like the Python wrapper.
+    if machine == MachineKind::Gate2 {
+        let plain = kernel_token(token);
+        let custom = super::shadow::finish_stage(&plain)
+            .or_else(|| super::shadow::deliver_port(term, &plain).map(super::shadow::split_rows));
+        if let Some(rows) = custom {
+            let mut out = Vec::with_capacity(rows.len());
+            for row in rows {
+                let super::state::KState::Run(target) = row.state else {
+                    out.clear();
+                    break;
+                };
+                out.push(NfRow {
+                    sign: row.sign,
+                    dk: row.dk,
+                    rule: row.rule.to_string(),
+                    state: NfState::Run(NfRun {
+                        token: composed_token(target),
+                        zipper: zipper.clone(),
+                    }),
+                });
+            }
+            if !out.is_empty() {
+                return Ok(out);
+            }
+        }
+    }
 
     // A virtual boolean is a Church boolean whose two binders do not
     // occur in the immutable source term; the zipper supplies their
@@ -1200,7 +1242,11 @@ fn nf_step_partial(
     }
 
     // Kernel steps see exactly their audited plain-bullet alphabet.
-    let rows = step(term, &super::state::KState::Run(kernel_token(token)), cert)?;
+    let kernel_state = super::state::KState::Run(kernel_token(token));
+    let rows = match machine {
+        MachineKind::Gate1 => step(term, &kernel_state, cert),
+        MachineKind::Gate2 => super::shadow::step(term, &kernel_state, cert),
+    }?;
     if rows.is_empty() {
         return Ok(error_row("stuck", token, zipper));
     }
@@ -1315,7 +1361,7 @@ fn virtual_carrier_inverse(
     output: &Nf,
     output_path: &[Dir],
     code_path: &[Dir],
-    gate: GateName,
+    gate: GateTag,
     instance: &Lp,
     epoch: &Epoch,
     remaining_binders: &[BinderMark],
@@ -1719,7 +1765,17 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
 /// `error-machine-exception` state carrying the complete offending
 /// source.
 pub fn nf_step(term: &Term, state: &NfState, cert: Option<&CertEntries>) -> Vec<NfRow> {
-    match nf_step_partial(term, state, cert) {
+    nf_step_with(MachineKind::Gate1, term, state, cert)
+}
+
+/// Totalized composed step under an explicit machine table.
+pub fn nf_step_with(
+    machine: MachineKind,
+    term: &Term,
+    state: &NfState,
+    cert: Option<&CertEntries>,
+) -> Vec<NfRow> {
+    match nf_step_partial(machine, term, state, cert) {
         Ok(rows) => rows,
         Err(_defect) => vec![NfRow {
             sign: 1,
@@ -1765,11 +1821,12 @@ impl From<ComposedDefect> for NfError {
 }
 
 fn nf_step_amp(
+    machine: MachineKind,
     term: &Term,
     s: &NfState,
     cert: Option<&CertEntries>,
 ) -> Result<Vec<(Amp, String, NfState)>, NfError> {
-    nf_step(term, s, cert)
+    nf_step_with(machine, term, s, cert)
         .into_iter()
         .map(|r| {
             let a =
@@ -1790,6 +1847,15 @@ pub fn evolve_nf_trace(
     cert: Option<&CertEntries>,
     max_steps: u64,
 ) -> Result<Vec<NfPsi>, NfError> {
+    evolve_nf_trace_with(MachineKind::Gate1, term, cert, max_steps)
+}
+
+pub fn evolve_nf_trace_with(
+    machine: MachineKind,
+    term: &Term,
+    cert: Option<&CertEntries>,
+    max_steps: u64,
+) -> Result<Vec<NfPsi>, NfError> {
     let mut psi: NfPsi = vec![(nf_init(), Amp::ONE)];
     let mut maps = Vec::new();
     for _ in 0..max_steps {
@@ -1799,7 +1865,7 @@ pub fn evolve_nf_trace(
         let mut out: NfPsi = Vec::new();
         let mut index: HashMap<NfState, usize> = HashMap::new();
         for (s, amp) in &psi {
-            for (coefficient, _rule, target) in nf_step_amp(term, s, cert)? {
+            for (coefficient, _rule, target) in nf_step_amp(machine, term, s, cert)? {
                 let contribution = amp.mul(coefficient).ok_or(NfError::Capacity)?;
                 if let Some(&at) = index.get(&target) {
                     out[at].1 = out[at].1.add(contribution).ok_or(NfError::Capacity)?;
@@ -1844,6 +1910,16 @@ pub fn nf_carrier_and_columns(
     tick_depth: u64,
     state_cap: usize,
 ) -> Result<NfCarrier, NfError> {
+    nf_carrier_and_columns_with(MachineKind::Gate1, term, cert, tick_depth, state_cap)
+}
+
+pub fn nf_carrier_and_columns_with(
+    machine: MachineKind,
+    term: &Term,
+    cert: Option<&CertEntries>,
+    tick_depth: u64,
+    state_cap: usize,
+) -> Result<NfCarrier, NfError> {
     let start = nf_init();
     let mut ids: HashMap<NfState, usize> = HashMap::new();
     ids.insert(start.clone(), 0);
@@ -1858,11 +1934,11 @@ pub fn nf_carrier_and_columns(
                 continue;
             }
         }
-        let rows = nf_step_amp(term, &s, cert)?;
+        let rows = nf_step_amp(machine, term, &s, cert)?;
         let mut col: Vec<super::wire::ColRow> = Vec::with_capacity(rows.len());
         let mut norm = Amp::ZERO;
         for (coefficient, rule, target) in rows {
-            check_inverse(term, &rule, &s, &target)?;
+            check_inverse(machine, term, &rule, &s, &target)?;
             let id = match ids.get(&target) {
                 Some(&id) => id,
                 None => {
@@ -1891,22 +1967,27 @@ pub fn nf_carrier_and_columns(
 /// Recompute the exact predecessor of a compressing edge and require
 /// the source back.
 fn check_inverse(
+    machine: MachineKind,
     term: &Term,
     rule: &str,
     source: &NfState,
     target: &NfState,
 ) -> Result<(), NfError> {
-    let rebuilt = match rule {
-        "rootdone" => {
-            let NfState::RunDone(NfTerminal::Halt { output, garbage }) = target else {
-                return Err(NfError::InverseMismatch);
-            };
-            terminal_predecessor(output, garbage)
+    let rebuilt = if machine == MachineKind::Gate2 && super::shadow::is_custom_rule(rule) {
+        super::shadow::custom_predecessor(term, rule, target).map_err(|_| ComposedDefect::Inverse)
+    } else {
+        match rule {
+            "rootdone" => {
+                let NfState::RunDone(NfTerminal::Halt { output, garbage }) = target else {
+                    return Err(NfError::InverseMismatch);
+                };
+                terminal_predecessor(output, garbage)
+            }
+            "enter" => enter_predecessor(term, target),
+            "return" => return_predecessor(term, target),
+            "head-neutral-gate" => neutral_probe_predecessor(term, target),
+            _ => return Ok(()),
         }
-        "enter" => enter_predecessor(term, target),
-        "return" => return_predecessor(term, target),
-        "head-neutral-gate" => neutral_probe_predecessor(term, target),
-        _ => return Ok(()),
     };
     match rebuilt {
         Ok(run) if matches!(source, NfState::Run(s) if *s == run) => Ok(()),
@@ -1918,6 +1999,16 @@ fn check_inverse(
 /// column inner products via shared targets, carrier ids as the
 /// unordered pair key.
 pub fn nf_gram(
+    term: &Term,
+    cert: Option<&CertEntries>,
+    tick_depth: u64,
+    state_cap: usize,
+) -> Result<super::kernel::GramReport, NfError> {
+    nf_gram_with(MachineKind::Gate1, term, cert, tick_depth, state_cap)
+}
+
+pub fn nf_gram_with(
+    machine: MachineKind,
     term: &Term,
     cert: Option<&CertEntries>,
     tick_depth: u64,
@@ -1939,7 +2030,7 @@ pub fn nf_gram(
                 continue;
             }
         }
-        let rows = nf_step_amp(term, &s, cert)?;
+        let rows = nf_step_amp(machine, term, &s, cert)?;
         let mut column: Vec<(usize, Amp)> = Vec::new();
         let mut col_index: HashMap<usize, usize> = HashMap::new();
         for (coefficient, _rule, target) in rows {

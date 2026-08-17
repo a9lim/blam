@@ -4,12 +4,15 @@ This document is the durable architecture contract for blam's
 quantum-algebraic pillar. It uses the same structure as the classical and
 quantum architectures so the three systems can be compared layer by layer.
 
-**The Rust pillar is not yet implemented**: nothing in `src/` or `data/` is
-qALC-relative yet, but both §9 architecture gates are closed. The accepted
-machine, compiler, proofs, batteries, and generated evidence are versioned in
-`../../qalc/`; `GATE1.md` and `GATE2.md` are the proof records. Development
-history and the superseded rewriting-machine formalizations live in
-`../ledger/2026-08.md`, git history, and `machine.md`.
+**The Rust reference pillar has completed phases 0–3 of 4**: typed schema and
+codec, the kernel, composed Gate-1 readback, and the Gate-2 compiler/shadow
+surface are implemented under `src/qalc/`. The accepted Python/Lean machine,
+compiler, proofs, and batteries remain authoritative in `../../qalc/`;
+checked-in qfx fixtures close the Python/Rust boundary byte-for-byte without
+running Python during `cargo test`. Phase 4 — total Gate-1/Gate-2 admission
+and public semantic objects — remains open. `GATE1.md` and `GATE2.md` are the
+proof records; development history and superseded rewriting-machine
+formalizations live in `../ledger/2026-08.md`, git history, and `machine.md`.
 
 ## 1. Purpose and position among the pillars
 

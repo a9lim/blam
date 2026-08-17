@@ -281,9 +281,13 @@ input cut to exact ideal columns at one symbolic time, with arbitrary finite
 amplitudes, full-NF output, literal common terminal garbage, tick zero, and no
 earlier halt. The cap-free structural compiler selector and clean Bell,
 Toffoli, nonlinear-reuse, and Python/Lean differential checks complete the
-proof boundary. The Rust qALC reference pillar is the next implementation
-step. Its accepted executable reference, batteries, generated finite evidence,
-and Lean clean-compilation theorem are versioned in
+proof boundary. The Rust qALC reference pillar has phases 0–3 landed: typed
+codec/kernel/readback, the Gate-2
+linear-SSA compiler and native-CNOT shadow, structural admission and finite
+checker, all 43 short circuits, the three large clean witnesses, and the full
+917-state mixed Python/Rust differential. Total admission and the public
+semantic objects remain Phase 4. The authoritative executable reference,
+batteries, generated finite evidence, and Lean clean-compilation theorem are versioned in
 [qalc/](https://github.com/a9lim/blam/tree/main/qalc).
 Canonical evidence lives in
 [data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization

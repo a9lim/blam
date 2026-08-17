@@ -82,6 +82,12 @@ def w_gate(g):
     return g
 
 
+def w_tag(g):
+    if g not in ("h", "t", "c1", "c2"):
+        die("gate tag", g)
+    return g
+
+
 def w_path(p):
     for c in p:
         if c not in ("f", "a", "b"):
@@ -99,6 +105,18 @@ def is_alpha(e):
 
 def is_gam(e):
     return isinstance(e, tuple) and len(e) == 2 and e[0] == "G"
+
+
+def is_cgam(e):
+    return (isinstance(e, tuple) and len(e) == 8
+            and e[:2] == ("G", "c") and e[2] in (1, 2))
+
+
+def w_cgam(e):
+    if not is_cgam(e):
+        die("cgam", e)
+    return ("( cg i:%d " % e[2] + w_lp(e[3]) + " "
+            + " ".join(w_path(p) for p in e[4:]) + " )")
 
 
 def w_epoch(e):
@@ -123,7 +141,7 @@ def w_alpha(a):
     _, g, i, b, epoch = a
     if b not in (0, 1) or type(b) is not int:
         die("alpha bit", a)
-    return ("( al " + w_gate(g) + " " + w_lp(i) + " i:%d " % b
+    return ("( al " + w_tag(g) + " " + w_lp(i) + " i:%d " % b
             + w_epoch(epoch) + " )")
 
 
@@ -154,6 +172,8 @@ def w_log_entry(e):
         return w_lp(e)
     if is_gam(e):
         return "( gm " + w_gate(e[1]) + " )"
+    if is_cgam(e):
+        return w_cgam(e)
     if is_alpha(e):
         return w_alpha(e)
     if is_rbl(e):
@@ -172,8 +192,13 @@ def w_tape_entry(e):
         return w_lp(e)
     if is_gam(e):
         return "( gm " + w_gate(e[1]) + " )"
+    if is_cgam(e):
+        return w_cgam(e)
     if isinstance(e, tuple) and len(e) == 2 and e[0] == "M":
         return "( mu " + w_gate(e[1]) + " )"
+    if (isinstance(e, tuple) and len(e) == 4
+            and e[:2] == ("M", "c") and e[2] in (1, 2)):
+        return "( cm i:%d %s )" % (e[2], w_lp(e[3]))
     if isinstance(e, tuple) and len(e) == 3 and e[0] == "A":
         if e[2] not in (0, 1) or type(e[2]) is not int:
             die("answer bit", e)
@@ -197,7 +222,7 @@ def w_frame(f):
     _, g, i, b, epoch = f
     if b not in (0, 1) or type(b) is not int:
         die("frame bit", f)
-    return ("( fr " + w_gate(g) + " " + w_lp(i) + " i:%d " % b
+    return ("( fr " + w_tag(g) + " " + w_lp(i) + " i:%d " % b
             + w_epoch(epoch) + " )")
 
 
@@ -205,14 +230,31 @@ def w_kd_key(k):
     if not (isinstance(k, tuple) and len(k) == 2):
         die("kd key", k)
     g, i = k
-    return "( k " + w_gate(g) + " " + w_lp(i) + " )"
+    return "( k " + w_tag(g) + " " + w_lp(i) + " )"
+
+
+def w_cdescriptor(d):
+    if isinstance(d, tuple) and len(d) == 4 and d[0] == "DA":
+        return ("( da " + w_tag(d[1]) + " " + w_lp(d[2]) + " "
+                + w_epoch(d[3]) + " )")
+    if isinstance(d, tuple) and len(d) == 2 and d[0] == "DL":
+        cargo = w_lp(d[1]) if is_lp(d[1]) else w_alpha(d[1])
+        return "( dl " + cargo + " )"
+    die("CNOT descriptor", d)
+
+
+def w_frame_descriptor(d):
+    if not (isinstance(d, tuple) and len(d) == 3):
+        die("frame descriptor", d)
+    return ("( fd " + w_tag(d[0]) + " " + w_lp(d[1]) + " "
+            + w_epoch(d[2]) + " )")
 
 
 def w_ks_head(e):
     if isinstance(e, tuple) and len(e) == 3 and e[0] == "K":
-        return "( kr " + w_gate(e[1]) + " " + w_lp(e[2]) + " )"
+        return "( kr " + w_tag(e[1]) + " " + w_lp(e[2]) + " )"
     if isinstance(e, tuple) and len(e) == 3 and e[0] == "KA":
-        return "( ka " + w_gate(e[1]) + " " + w_lp(e[2]) + " )"
+        return "( ka " + w_tag(e[1]) + " " + w_lp(e[2]) + " )"
     if isinstance(e, tuple) and len(e) == 2 and e[0] == "KD":
         return ("( kd ( " + "".join(w_kd_key(k) + " " for k in e[1]) + ") )")
     if isinstance(e, tuple) and len(e) == 2 and e[0] == "K":
@@ -222,6 +264,34 @@ def w_ks_head(e):
         if is_alpha(cargo):
             return "( kw " + w_alpha(cargo) + " )"
         die("retain-whole cargo", e)
+    if isinstance(e, tuple) and len(e) == 7 and e[0] == "CP":
+        if type(e[2]) is not int or e[2] not in (0, 1):
+            die("CNOT park bit", e)
+        return ("( cp " + w_lp(e[1]) + " i:%d " % e[2]
+                + w_cdescriptor(e[3]) + " "
+                + w_seq(e[4], w_frame_descriptor) + " "
+                + w_path(e[5]) + " " + w_path(e[6]) + " )")
+    if isinstance(e, tuple) and len(e) == 8 and e[0] == "CH":
+        return ("( ch " + w_lp(e[1]) + " " + w_cdescriptor(e[2]) + " "
+                + w_seq(e[3], w_frame_descriptor) + " "
+                + w_cdescriptor(e[4]) + " "
+                + w_seq(e[5], w_frame_descriptor) + " "
+                + w_path(e[6]) + " " + w_path(e[7]) + " )")
+    if (isinstance(e, tuple) and len(e) == 6 and e[0] == "CD"
+            and e[1] in (1, 2)):
+        if type(e[5]) is not int or e[5] not in (0, 1):
+            die("CNOT dead phase", e)
+        return ("( cd i:%d " % e[1] + w_lp(e[2]) + " " + w_epoch(e[3])
+                + " " + w_lp(e[4]) + " i:%d )" % e[5])
+    if (isinstance(e, tuple) and len(e) == 4 and e[0] == "CQ"
+            and e[1] in (1, 2)):
+        return "( cq i:%d %s %s )" % (e[1], w_lp(e[2]), w_lp(e[3]))
+    if isinstance(e, tuple) and len(e) == 2 and e[0] == "CS":
+        stages = {"park-c": "park", "fire-c": "fire",
+                  "deliver-c": "deliver", "answer-c-port": "answer"}
+        if e[1] not in stages:
+            die("CNOT stage", e)
+        return "( cs " + stages[e[1]] + " )"
     die("ks head", e)
 
 
@@ -231,7 +301,7 @@ def w_vb(vb):
     g, b, k = vb
     if b not in (0, 1) or k not in (0, 1, 2):
         die("vb", vb)
-    return "( vb " + w_gate(g) + " i:%d i:%d )" % (b, k)
+    return "( vb " + w_tag(g) + " i:%d i:%d )" % (b, k)
 
 
 def w_seq(xs, item):

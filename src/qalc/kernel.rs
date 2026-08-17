@@ -30,8 +30,8 @@ use std::sync::Arc;
 
 use super::amp::Amp;
 use super::mark::{
-    frame_repr, kd_key_repr, Alpha, Epoch, Frame, KdKey, KsHead, LogEntry, Lp, RetainCargo,
-    TapeEntry,
+    frame_repr, kd_key_repr, Alpha, Epoch, Frame, GateTag, KdKey, KsHead, LogEntry, Lp,
+    RetainCargo, TapeEntry,
 };
 use super::state::{KState, Kind, Residue, RunCore, Vb, Vert};
 use super::term::{binder_path, level, subterm, Dir, GateName, Term};
@@ -40,7 +40,7 @@ use super::wire::{CertEntries, ColRow, Column};
 /// A `(gate, instance)` key — the identity every storage guard, replay
 /// lookup, and certified pop is keyed by. Borrowed: the sets built from
 /// a state during one step never outlive it.
-type Key<'a> = (GateName, &'a Lp);
+type Key<'a> = (GateTag, &'a Lp);
 
 /// One unmerged transition row, in the reference's `(sign, k_incr,
 /// rule, state)` shape. `dk` is the √2-denominator increment (1 on
@@ -188,7 +188,7 @@ fn add_keys_log<'a>(e: &'a LogEntry, out: &mut HashSet<Key<'a>>) {
             out.insert((a.gate, &a.instance));
         }
         LogEntry::Lp(lp) => add_keys_lp(lp, out),
-        LogEntry::Gam(_) | LogEntry::Rbl(_) => {}
+        LogEntry::Gam(_) | LogEntry::Cgam(_) | LogEntry::Rbl(_) => {}
     }
 }
 
@@ -201,7 +201,7 @@ fn add_keys_lp<'a>(lp: &'a Lp, out: &mut HashSet<Key<'a>>) {
                     out.insert((a.gate, &a.instance));
                 }
                 LogEntry::Lp(inner) => stack.push(inner),
-                LogEntry::Gam(_) | LogEntry::Rbl(_) => {}
+                LogEntry::Gam(_) | LogEntry::Cgam(_) | LogEntry::Rbl(_) => {}
             }
         }
     }
@@ -275,7 +275,7 @@ fn add_bits_log<'a>(e: &'a LogEntry, bits: &mut HashMap<Key<'a>, u8>, conflict: 
         match x {
             LogEntry::Alpha(a) => note_bit((a.gate, &a.instance), a.bit, bits, conflict),
             LogEntry::Lp(lp) => stack.extend(&lp.slice),
-            LogEntry::Gam(_) | LogEntry::Rbl(_) => {}
+            LogEntry::Gam(_) | LogEntry::Cgam(_) | LogEntry::Rbl(_) => {}
         }
     }
 }
@@ -362,7 +362,7 @@ pub(super) fn instance(c: &RunCore) -> Option<&Lp> {
 /// (`sort_by_cached_key` is stable) rather than as a sorted-input
 /// insertion, so a non-canonical RS is normalized exactly as Python
 /// would, never silently mis-placed.
-fn rs_insert(rs: Vec<Frame>, fr: Frame) -> Vec<Frame> {
+pub(super) fn rs_insert(rs: Vec<Frame>, fr: Frame) -> Vec<Frame> {
     let mut out = rs;
     out.push(fr);
     out.sort_by_cached_key(frame_repr);
@@ -498,6 +498,9 @@ pub fn step(term: &Term, s: &KState, cert: Option<&CertEntries>) -> Result<Vec<R
 }
 
 fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
+    let Some(tag) = g.tag() else {
+        return err_full("species-leaf", c);
+    };
     match c.tape.first() {
         Some(TapeEntry::Bullet) => {
             let Some(i) = instance(c) else {
@@ -510,13 +513,13 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
             let dead = ks_dead_keys(&c.ks);
             let bitfree = ks_bitfree_keys(&c.ks);
             if let Some(TapeEntry::Alpha(a)) = c.tape.get(j) {
-                if a.gate == g {
+                if a.gate == tag {
                     // a ticket of this gate probed at this leaf
                     if a.instance != *i {
                         // a foreign instance's ticket probed here
                         return err_full("alien-ticket", c);
                     }
-                    if bitfree.contains(&(g, i)) {
+                    if bitfree.contains(&(tag, i)) {
                         // v1.8.1: a live ticket must never shadow a
                         // bit-free dead-storage record
                         return err_full("key-alias", c);
@@ -527,20 +530,20 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                         // the replay record (v1.7 instance-keyed set)
                         let have: Vec<&Frame> =
                             c.rs.iter()
-                                .filter(|f| f.gate == g && f.instance == *i)
+                                .filter(|f| f.gate == tag && f.instance == *i)
                                 .collect();
                         if have.iter().any(|f| f.bit != a.bit) || have.len() > 1 {
                             return err_full("frame-conflict", c);
                         }
                         let fr2 = Frame {
-                            gate: g,
+                            gate: tag,
                             instance: i.clone(),
                             bit: a.bit,
                             epoch: recall_epoch(&a.epoch, have.first().map(|f| &f.epoch)),
                         };
                         let rs0: Vec<Frame> =
                             c.rs.iter()
-                                .filter(|f| !(f.gate == g && f.instance == *i))
+                                .filter(|f| !(f.gate == tag && f.instance == *i))
                                 .cloned()
                                 .collect();
                         let rs2 = rs_insert(rs0, fr2);
@@ -565,9 +568,9 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
             }
             let mine: Vec<&Frame> =
                 c.rs.iter()
-                    .filter(|f| f.gate == g && f.instance == *i)
+                    .filter(|f| f.gate == tag && f.instance == *i)
                     .collect();
-            if !mine.is_empty() && bitfree.contains(&(g, i)) {
+            if !mine.is_empty() && bitfree.contains(&(tag, i)) {
                 // v1.8.1: a live frame shadowing a bit-free record
                 return err_full("key-alias", c);
             }
@@ -581,7 +584,7 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                 if j >= 3 {
                     let mut tape = vec![TapeEntry::Bullet; bp as usize + 1];
                     tape.push(TapeEntry::Alpha(Alpha {
-                        gate: g,
+                        gate: tag,
                         instance: i.clone(),
                         bit: bp,
                         epoch: mine[0].epoch.clone(),
@@ -595,7 +598,7 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                 // under-applied re-seek: out of scope
                 return err_full("replay-err", c);
             }
-            if dead.contains(&(g, i)) {
+            if dead.contains(&(tag, i)) {
                 // v1.8 refire guard: one-fire-per-instance is a
                 // machine invariant, typed, never silent
                 return err_full("refire", c);
@@ -629,7 +632,7 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                         c.log.clone(),
                         c.tape[2..].to_vec(),
                         Some(Vb {
-                            gate: *ag,
+                            gate: ag.tag().expect("h/t answer tag"),
                             bit: *bit,
                             k: 0,
                         }),
@@ -925,11 +928,14 @@ fn classical_down(term: &Term, c: &RunCore, t: &Term) -> Result<Vec<Row>, Defect
                 }
             }
             // too many head lambdas for the question: not a boolean
-            Some(TapeEntry::Mu(_)) | Some(TapeEntry::Rho) => Ok(err_full("shape-err", c)),
-            // v1.21: a gate token meeting a binder is a species failure
-            Some(TapeEntry::Gam(_)) | Some(TapeEntry::Ans(..)) | Some(TapeEntry::Alpha(_)) => {
-                Ok(err_full("species-binder", c))
+            Some(TapeEntry::Mu(_)) | Some(TapeEntry::Cmu { .. }) | Some(TapeEntry::Rho) => {
+                Ok(err_full("shape-err", c))
             }
+            // v1.21: a gate token meeting a binder is a species failure
+            Some(TapeEntry::Gam(_))
+            | Some(TapeEntry::Cgam(_))
+            | Some(TapeEntry::Ans(..))
+            | Some(TapeEntry::Alpha(_)) => Ok(err_full("species-binder", c)),
             _ => Ok(vec![]), // classical final
         },
         Term::Var(_) => {
@@ -982,6 +988,7 @@ fn classical_up(c: &RunCore) -> Vec<Row> {
             // lp_like transport: lp, gam, and alpha heads all descend
             Some(TapeEntry::Lp(lp)) => arg_row(c, parent, LogEntry::Lp(lp.clone())),
             Some(TapeEntry::Gam(g)) => arg_row(c, parent, LogEntry::Gam(*g)),
+            Some(TapeEntry::Cgam(g)) => arg_row(c, parent, LogEntry::Cgam(g.clone())),
             Some(TapeEntry::Alpha(a)) => arg_row(c, parent, LogEntry::Alpha(a.clone())),
             // v1.21: mu, rho, and answer heads have no transport rule
             Some(_) => err_full("species-transport", c),
@@ -1005,7 +1012,7 @@ fn classical_up(c: &RunCore) -> Vec<Row> {
             Some(LogEntry::Lp(lp)) => bt1_row(c, parent, TapeEntry::Lp(lp.clone())),
             Some(LogEntry::Alpha(a)) => bt1_row(c, parent, TapeEntry::Alpha(a.clone())),
             Some(LogEntry::Rbl(r)) => bt1_row(c, parent, TapeEntry::Rbl(r.clone())),
-            Some(LogEntry::Gam(_)) | None => vec![],
+            Some(LogEntry::Gam(_)) | Some(LogEntry::Cgam(_)) | None => vec![],
         },
     }
 }

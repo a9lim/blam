@@ -21,7 +21,7 @@
 
 use std::sync::Arc;
 
-use super::mark::{Epoch, Frame, KsHead, LogEntry, Lp, TapeEntry};
+use super::mark::{Epoch, Frame, GateTag, KsHead, LogEntry, Lp, TapeEntry};
 use super::term::{GateName, Path};
 
 /// Token direction: descending into the term or ascending out of it.
@@ -34,7 +34,7 @@ pub enum Vert {
 /// The virtual-boolean phase `(g, b′, k)`, `k ∈ {0, 1, 2}`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct Vb {
-    pub gate: GateName,
+    pub gate: GateTag,
     pub bit: u8,
     pub k: u8,
 }
@@ -134,7 +134,7 @@ pub enum BinderIdentity {
         log: Vec<LogEntry>,
     },
     Virtual {
-        gate: GateName,
+        gate: GateTag,
         instance: Lp,
         phase: u8,
         code: Path,
@@ -160,7 +160,7 @@ pub enum ScopeResidue {
     },
     Virtual {
         output: Path,
-        gate: GateName,
+        gate: GateTag,
         instance: Lp,
         epoch: Epoch,
     },
@@ -185,7 +185,7 @@ pub enum TerminalCarrier {
     },
     Virtual {
         output: Path,
-        gate: GateName,
+        gate: GateTag,
         instance: Lp,
         epoch: Epoch,
     },

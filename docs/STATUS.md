@@ -530,7 +530,9 @@ states), derived Toffoli (14,809), and nonlinear target reuse (30,393), and
 eight differential shards match all 917 mixed-carrier states field-for-field
 across Python and Lean. The authoritative record and battery are
 `../qalc/GATE2.md` and `python qalc/gate2_check.py`; Gate 1 re-closes
-unchanged. The Rust qALC reference pillar is now the next implementation step.
+unchanged. Rust phases 0–3 now differentially reproduce the typed kernel,
+composed Gate-1 machine, and this Gate-2 compiler/shadow surface; total
+admission and public semantic objects remain Phase 4.
 Superseded audits, countermodels, and rejected routes live only in the ledger,
 git history, and external audit records.
 
@@ -547,14 +549,14 @@ graph, and external audit records.
 
 The open docket, in order:
 
-1. **Rust qALC reference pillar:** implement the closed Gate-2 compiler and
-   composed semantics first, with compiler-term/certificate pins,
-   Python/Lean/Rust differential fixtures, and bit-identical classical and
-   qBLC rows. Census machinery comes later. The ratified implementation
+1. **Rust qALC reference pillar:** complete Phase 4 — total combined
+   Gate-1/Gate-2 admission, then public semantic objects — on the now-landed
+   compiler/shadow differential. Preserve bit-identical classical and qBLC
+   rows; census machinery comes later. The ratified implementation
    sketch is `quantum-algebraic/rust-pillar.md` (Codex-reviewed on thread
-   `qalc-rust-pillar`); **phases 0–2 of 4 are landed** (all
+   `qalc-rust-pillar`); **phases 0–3 of 4 are landed** (phases 0–2 on
    2026-08-14: schema/codec/`Amp`/fixtures, the kernel step table, then
-   the composed machine — all 53 fixture files, kernel and composed,
+   the composed machine — all 55 fixture files, kernel and composed,
    regenerate byte-identically from the Rust engine; ledger entries
    same day). The phase-1 Codex drift review (2026-08-14, same thread)
    found no transition-table drift; its four findings — iterative
@@ -569,8 +571,20 @@ The open docket, in order:
    (`recall-err`, `replay-err`, `frame-conflict`, `pop-err`,
    `key-alias`, `no-instance`, `shape-err`, `verr`, `stuck-vb`,
    `rootneutral`, `species-*`) and the composed
-   `egi`/`invalid-kernel-target` arm stay pinned by review only. Next:
-   phase 3, Gate-2 (compiler, shadow step table, battery surface).
+   `egi`/`invalid-kernel-target` arm stay pinned by review only. The same
+   boundary is explicit for Gate-2 shadow error arms and refused custom
+   predecessors outside the clean compiler carriers; the final Opus drift
+   review found and closed the shortened-`var`/VB priority defect, while the
+   residual unreachable arms remain review pins rather than differential
+   evidence. Phase 3
+   landed 2026-08-17: the typed linear-SSA compiler/recognizer/certificate,
+   native-CNOT shadow and exact inverses, compiler-indexed WF and finite audit,
+   all 43 short circuits, the Bell/Toffoli/nonlinear witnesses, and the full
+   917-state / 913-column mixed differential. The tree now has 57 qfx files
+   plus the Python-generated five-case compiler-pin manifest under the Gate-2
+   tree. Next: phase 4,
+   total admission plus public `U`, `μ_p`, `ρ_p`, finite `M`, and `Ω_qALC`
+   approximants; census remains later.
 2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and broader arrival/pop determinacy.
 3. Downstream research: D-circuit dyadicity, universality/domination for `M`,

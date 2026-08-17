@@ -22,7 +22,8 @@
 
 use super::amp::Amp;
 use super::mark::{
-    Alpha, Epoch, Frame, KdKey, KsHead, LogEntry, Lp, Rb, Rbl, RetainCargo, TapeEntry,
+    Alpha, CDescriptor, CGam, CPort, CStage, Epoch, Frame, FrameDescriptor, GateTag, KdKey, KsHead,
+    LogEntry, Lp, Rb, Rbl, RetainCargo, TapeEntry,
 };
 use super::state::{
     BinderIdentity, BinderMark, ErrorGarbage, ErrorKind, KState, Kind, Nf, NfRun, NfState,
@@ -157,6 +158,24 @@ fn p_gate(t: &mut Toks) -> R<GateName> {
     }
 }
 
+fn p_tag(t: &mut Toks) -> R<GateTag> {
+    match t.next()? {
+        "h" => Ok(GateTag::H),
+        "t" => Ok(GateTag::T),
+        "c1" => Ok(GateTag::C1),
+        "c2" => Ok(GateTag::C2),
+        x => Err(format!("bad dynamic gate tag '{x}'")),
+    }
+}
+
+fn p_cport(t: &mut Toks) -> R<CPort> {
+    match t.uint::<u8>("CNOT port")? {
+        1 => Ok(CPort::First),
+        2 => Ok(CPort::Second),
+        p => Err(format!("CNOT port out of {{1,2}}: {p}")),
+    }
+}
+
 fn p_path(t: &mut Toks) -> R<Path> {
     t.open()?;
     let mut p = Vec::new();
@@ -213,7 +232,7 @@ fn p_lp(t: &mut Toks) -> R<Lp> {
 }
 
 fn p_alpha_body(t: &mut Toks) -> R<Alpha> {
-    let gate = p_gate(t)?;
+    let gate = p_tag(t)?;
     let instance = p_lp(t)?;
     let bit = t.bit()?;
     let epoch = p_epoch(t)?;
@@ -235,10 +254,29 @@ fn p_log_entry(t: &mut Toks) -> R<LogEntry> {
             t.close()?;
             Ok(LogEntry::Gam(g))
         }
+        "cg" => Ok(LogEntry::Cgam(p_cgam_body(t)?)),
         "al" => Ok(LogEntry::Alpha(p_alpha_body(t)?)),
         "rbl" => Ok(LogEntry::Rbl(p_rbl_body(t)?)),
         x => Err(format!("bad log entry tag '{x}'")),
     }
+}
+
+fn p_cgam_body(t: &mut Toks) -> R<CGam> {
+    let port = p_cport(t)?;
+    let invoked = p_lp(t)?;
+    let occurrence = p_path(t)?;
+    let first = p_path(t)?;
+    let second = p_path(t)?;
+    let continuation = p_path(t)?;
+    t.close()?;
+    Ok(CGam {
+        port,
+        invoked,
+        occurrence,
+        first,
+        second,
+        continuation,
+    })
 }
 
 fn p_rbl_body(t: &mut Toks) -> R<Rbl> {
@@ -303,6 +341,13 @@ fn p_tape_entry(t: &mut Toks) -> R<TapeEntry> {
             t.close()?;
             Ok(TapeEntry::Mu(g))
         }
+        "cg" => Ok(TapeEntry::Cgam(p_cgam_body(t)?)),
+        "cm" => {
+            let port = p_cport(t)?;
+            let invoked = p_lp(t)?;
+            t.close()?;
+            Ok(TapeEntry::Cmu { port, invoked })
+        }
         "an" => {
             let g = p_gate(t)?;
             let b = t.bit()?;
@@ -320,7 +365,7 @@ fn p_frame(t: &mut Toks) -> R<Frame> {
     t.open()?;
     match t.next()? {
         "fr" => {
-            let gate = p_gate(t)?;
+            let gate = p_tag(t)?;
             let instance = p_lp(t)?;
             let bit = t.bit()?;
             let epoch = p_epoch(t)?;
@@ -340,7 +385,7 @@ fn p_kd_key(t: &mut Toks) -> R<KdKey> {
     t.open()?;
     match t.next()? {
         "k" => {
-            let gate = p_gate(t)?;
+            let gate = p_tag(t)?;
             let instance = p_lp(t)?;
             t.close()?;
             Ok(KdKey { gate, instance })
@@ -349,17 +394,64 @@ fn p_kd_key(t: &mut Toks) -> R<KdKey> {
     }
 }
 
+fn p_cdescriptor(t: &mut Toks) -> R<CDescriptor> {
+    t.open()?;
+    let out = match t.next()? {
+        "da" => CDescriptor::Alpha {
+            gate: p_tag(t)?,
+            instance: p_lp(t)?,
+            epoch: p_epoch(t)?,
+        },
+        "dl" => {
+            t.open()?;
+            let cargo = match t.next()? {
+                "lp" => RetainCargo::Lp(p_lp_body(t)?),
+                "al" => RetainCargo::Alpha(p_alpha_body(t)?),
+                x => return Err(format!("bad CNOT logged descriptor tag '{x}'")),
+            };
+            CDescriptor::Logged(cargo)
+        }
+        x => return Err(format!("bad CNOT descriptor tag '{x}'")),
+    };
+    t.close()?;
+    Ok(out)
+}
+
+fn p_frame_descriptor(t: &mut Toks) -> R<FrameDescriptor> {
+    t.open()?;
+    if t.next()? != "fd" {
+        return Err("expected frame descriptor".into());
+    }
+    let out = FrameDescriptor {
+        gate: p_tag(t)?,
+        instance: p_lp(t)?,
+        epoch: p_epoch(t)?,
+    };
+    t.close()?;
+    Ok(out)
+}
+
+fn p_cstage(t: &mut Toks) -> R<CStage> {
+    match t.next()? {
+        "park" => Ok(CStage::Park),
+        "fire" => Ok(CStage::Fire),
+        "deliver" => Ok(CStage::Deliver),
+        "answer" => Ok(CStage::AnswerPort),
+        x => Err(format!("bad CNOT stage '{x}'")),
+    }
+}
+
 fn p_ks_head(t: &mut Toks) -> R<KsHead> {
     t.open()?;
     match t.next()? {
         "kr" => {
-            let gate = p_gate(t)?;
+            let gate = p_tag(t)?;
             let instance = p_lp(t)?;
             t.close()?;
             Ok(KsHead::Decode { gate, instance })
         }
         "ka" => {
-            let gate = p_gate(t)?;
+            let gate = p_tag(t)?;
             let instance = p_lp(t)?;
             t.close()?;
             Ok(KsHead::Suppressed { gate, instance })
@@ -384,6 +476,73 @@ fn p_ks_head(t: &mut Toks) -> R<KsHead> {
             t.close()?;
             Ok(KsHead::RetainWhole(cargo))
         }
+        "cp" => {
+            let invoked = p_lp(t)?;
+            let bit = t.bit()?;
+            let descriptor = p_cdescriptor(t)?;
+            let frames = p_seq(t, p_frame_descriptor)?;
+            let occurrence = p_path(t)?;
+            let continuation = p_path(t)?;
+            t.close()?;
+            Ok(KsHead::CnotPark {
+                invoked,
+                bit,
+                descriptor,
+                frames,
+                occurrence,
+                continuation,
+            })
+        }
+        "ch" => {
+            let invoked = p_lp(t)?;
+            let first = p_cdescriptor(t)?;
+            let first_frames = p_seq(t, p_frame_descriptor)?;
+            let second = p_cdescriptor(t)?;
+            let second_frames = p_seq(t, p_frame_descriptor)?;
+            let occurrence = p_path(t)?;
+            let continuation = p_path(t)?;
+            t.close()?;
+            Ok(KsHead::CnotHistory {
+                invoked,
+                first,
+                first_frames,
+                second,
+                second_frames,
+                occurrence,
+                continuation,
+            })
+        }
+        "cd" => {
+            let port = p_cport(t)?;
+            let invoked = p_lp(t)?;
+            let epoch = p_epoch(t)?;
+            let logged = p_lp(t)?;
+            let answered = t.bit()? != 0;
+            t.close()?;
+            Ok(KsHead::CnotDead {
+                port,
+                invoked,
+                epoch,
+                logged,
+                answered,
+            })
+        }
+        "cq" => {
+            let port = p_cport(t)?;
+            let invoked = p_lp(t)?;
+            let logged = p_lp(t)?;
+            t.close()?;
+            Ok(KsHead::CnotQuery {
+                port,
+                invoked,
+                logged,
+            })
+        }
+        "cs" => {
+            let stage = p_cstage(t)?;
+            t.close()?;
+            Ok(KsHead::CnotStage(stage))
+        }
         x => Err(format!("bad ks head tag '{x}'")),
     }
 }
@@ -396,7 +555,7 @@ fn p_vb(t: &mut Toks) -> R<Option<Vb>> {
     t.open()?;
     match t.next()? {
         "vb" => {
-            let gate = p_gate(t)?;
+            let gate = p_tag(t)?;
             let bit = t.bit()?;
             let k: u8 = t.uint("vb phase")?;
             if k > 2 {
@@ -541,7 +700,7 @@ fn p_binder_identity(t: &mut Toks) -> R<BinderIdentity> {
             BinderIdentity::Source { path, log }
         }
         "vrt" => {
-            let gate = p_gate(t)?;
+            let gate = p_tag(t)?;
             let instance = p_lp(t)?;
             let phase = t.bit()?;
             let code = p_path(t)?;
@@ -581,7 +740,7 @@ fn p_scope_residue(t: &mut Toks) -> R<ScopeResidue> {
         }
         "rvr" => {
             let output = p_path(t)?;
-            let gate = p_gate(t)?;
+            let gate = p_tag(t)?;
             let instance = p_lp(t)?;
             let epoch = p_epoch(t)?;
             ScopeResidue::Virtual {
@@ -622,7 +781,7 @@ fn p_terminal_carrier(t: &mut Toks) -> R<Option<TerminalCarrier>> {
         }
         "cvr" => {
             let output = p_path(t)?;
-            let gate = p_gate(t)?;
+            let gate = p_tag(t)?;
             let instance = p_lp(t)?;
             let epoch = p_epoch(t)?;
             TerminalCarrier::Virtual {
@@ -820,7 +979,10 @@ fn p_term(t: &mut Toks) -> R<Term> {
             let a = p_term(t)?;
             Term::App(Box::new(f), Box::new(a))
         }
-        "g" => Term::Gate(p_gate(t)?),
+        "g" => {
+            let gate = p_gate(t)?;
+            Term::Gate(gate)
+        }
         x => return Err(format!("bad term tag '{x}'")),
     };
     t.close()?;
@@ -860,7 +1022,15 @@ fn p_rule(t: &mut Toks) -> R<String> {
 // Serializers — the normative encoding. One writer per parser.
 
 fn w_gate(out: &mut String, g: GateName) {
-    out.push(g.ch());
+    out.push_str(g.token());
+}
+
+fn w_tag(out: &mut String, g: GateTag) {
+    out.push_str(g.token());
+}
+
+fn w_cport(out: &mut String, p: CPort) {
+    out.push_str(&format!("i:{}", p.number()));
 }
 
 fn w_path(out: &mut String, p: &[Dir]) {
@@ -903,7 +1073,7 @@ fn w_lp(out: &mut String, lp: &Lp) {
 
 fn w_alpha(out: &mut String, a: &Alpha) {
     out.push_str("( al ");
-    w_gate(out, a.gate);
+    w_tag(out, a.gate);
     out.push(' ');
     w_lp(out, &a.instance);
     out.push_str(&format!(" i:{} ", a.bit));
@@ -919,9 +1089,22 @@ fn w_log_entry(out: &mut String, e: &LogEntry) {
             w_gate(out, *g);
             out.push_str(" )");
         }
+        LogEntry::Cgam(g) => w_cgam(out, g),
         LogEntry::Alpha(a) => w_alpha(out, a),
         LogEntry::Rbl(r) => w_rbl(out, r),
     }
+}
+
+fn w_cgam(out: &mut String, g: &CGam) {
+    out.push_str("( cg ");
+    w_cport(out, g.port);
+    out.push(' ');
+    w_lp(out, &g.invoked);
+    for p in [&g.occurrence, &g.first, &g.second, &g.continuation] {
+        out.push(' ');
+        w_path(out, p);
+    }
+    out.push_str(" )");
 }
 
 fn w_rbl(out: &mut String, r: &Rbl) {
@@ -963,6 +1146,14 @@ fn w_tape_entry(out: &mut String, e: &TapeEntry) {
             w_gate(out, *g);
             out.push_str(" )");
         }
+        TapeEntry::Cgam(g) => w_cgam(out, g),
+        TapeEntry::Cmu { port, invoked } => {
+            out.push_str("( cm ");
+            w_cport(out, *port);
+            out.push(' ');
+            w_lp(out, invoked);
+            out.push_str(" )");
+        }
         TapeEntry::Ans(g, b) => {
             out.push_str("( an ");
             w_gate(out, *g);
@@ -976,7 +1167,7 @@ fn w_tape_entry(out: &mut String, e: &TapeEntry) {
 
 fn w_frame(out: &mut String, f: &Frame) {
     out.push_str("( fr ");
-    w_gate(out, f.gate);
+    w_tag(out, f.gate);
     out.push(' ');
     w_lp(out, &f.instance);
     out.push_str(&format!(" i:{} ", f.bit));
@@ -986,24 +1177,69 @@ fn w_frame(out: &mut String, f: &Frame) {
 
 fn w_kd_key(out: &mut String, k: &KdKey) {
     out.push_str("( k ");
-    w_gate(out, k.gate);
+    w_tag(out, k.gate);
     out.push(' ');
     w_lp(out, &k.instance);
     out.push_str(" )");
+}
+
+fn w_cdescriptor(out: &mut String, d: &CDescriptor) {
+    match d {
+        CDescriptor::Alpha {
+            gate,
+            instance,
+            epoch,
+        } => {
+            out.push_str("( da ");
+            w_tag(out, *gate);
+            out.push(' ');
+            w_lp(out, instance);
+            out.push(' ');
+            w_epoch(out, epoch);
+            out.push_str(" )");
+        }
+        CDescriptor::Logged(cargo) => {
+            out.push_str("( dl ");
+            match cargo {
+                RetainCargo::Lp(lp) => w_lp(out, lp),
+                RetainCargo::Alpha(a) => w_alpha(out, a),
+            }
+            out.push_str(" )");
+        }
+    }
+}
+
+fn w_frame_descriptor(out: &mut String, d: &FrameDescriptor) {
+    out.push_str("( fd ");
+    w_tag(out, d.gate);
+    out.push(' ');
+    w_lp(out, &d.instance);
+    out.push(' ');
+    w_epoch(out, &d.epoch);
+    out.push_str(" )");
+}
+
+fn w_cstage(out: &mut String, s: CStage) {
+    out.push_str(match s {
+        CStage::Park => "park",
+        CStage::Fire => "fire",
+        CStage::Deliver => "deliver",
+        CStage::AnswerPort => "answer",
+    });
 }
 
 fn w_ks_head(out: &mut String, h: &KsHead) {
     match h {
         KsHead::Decode { gate, instance } => {
             out.push_str("( kr ");
-            w_gate(out, *gate);
+            w_tag(out, *gate);
             out.push(' ');
             w_lp(out, instance);
             out.push_str(" )");
         }
         KsHead::Suppressed { gate, instance } => {
             out.push_str("( ka ");
-            w_gate(out, *gate);
+            w_tag(out, *gate);
             out.push(' ');
             w_lp(out, instance);
             out.push_str(" )");
@@ -1024,6 +1260,86 @@ fn w_ks_head(out: &mut String, h: &KsHead) {
             }
             out.push_str(" )");
         }
+        KsHead::CnotPark {
+            invoked,
+            bit,
+            descriptor,
+            frames,
+            occurrence,
+            continuation,
+        } => {
+            out.push_str("( cp ");
+            w_lp(out, invoked);
+            out.push_str(&format!(" i:{bit} "));
+            w_cdescriptor(out, descriptor);
+            out.push(' ');
+            w_seq(out, frames, w_frame_descriptor);
+            out.push(' ');
+            w_path(out, occurrence);
+            out.push(' ');
+            w_path(out, continuation);
+            out.push_str(" )");
+        }
+        KsHead::CnotHistory {
+            invoked,
+            first,
+            first_frames,
+            second,
+            second_frames,
+            occurrence,
+            continuation,
+        } => {
+            out.push_str("( ch ");
+            w_lp(out, invoked);
+            out.push(' ');
+            w_cdescriptor(out, first);
+            out.push(' ');
+            w_seq(out, first_frames, w_frame_descriptor);
+            out.push(' ');
+            w_cdescriptor(out, second);
+            out.push(' ');
+            w_seq(out, second_frames, w_frame_descriptor);
+            out.push(' ');
+            w_path(out, occurrence);
+            out.push(' ');
+            w_path(out, continuation);
+            out.push_str(" )");
+        }
+        KsHead::CnotDead {
+            port,
+            invoked,
+            epoch,
+            logged,
+            answered,
+        } => {
+            out.push_str("( cd ");
+            w_cport(out, *port);
+            out.push(' ');
+            w_lp(out, invoked);
+            out.push(' ');
+            w_epoch(out, epoch);
+            out.push(' ');
+            w_lp(out, logged);
+            out.push_str(&format!(" i:{} )", u8::from(*answered)));
+        }
+        KsHead::CnotQuery {
+            port,
+            invoked,
+            logged,
+        } => {
+            out.push_str("( cq ");
+            w_cport(out, *port);
+            out.push(' ');
+            w_lp(out, invoked);
+            out.push(' ');
+            w_lp(out, logged);
+            out.push_str(" )");
+        }
+        KsHead::CnotStage(stage) => {
+            out.push_str("( cs ");
+            w_cstage(out, *stage);
+            out.push_str(" )");
+        }
     }
 }
 
@@ -1032,7 +1348,7 @@ fn w_vb(out: &mut String, vb: &Option<Vb>) {
         None => out.push('n'),
         Some(v) => {
             out.push_str("( vb ");
-            w_gate(out, v.gate);
+            w_tag(out, v.gate);
             out.push_str(&format!(" i:{} i:{} )", v.bit, v.k));
         }
     }
@@ -1161,7 +1477,7 @@ fn w_binder_identity(out: &mut String, i: &BinderIdentity) {
             code,
         } => {
             out.push_str("( vrt ");
-            w_gate(out, *gate);
+            w_tag(out, *gate);
             out.push(' ');
             w_lp(out, instance);
             out.push_str(&format!(" i:{phase} "));
@@ -1197,7 +1513,7 @@ fn w_scope_residue(out: &mut String, r: &ScopeResidue) {
             out.push_str("( rvr ");
             w_path(out, output);
             out.push(' ');
-            w_gate(out, *gate);
+            w_tag(out, *gate);
             out.push(' ');
             w_lp(out, instance);
             out.push(' ');
@@ -1244,7 +1560,7 @@ fn w_terminal_carrier(out: &mut String, c: &Option<TerminalCarrier>) {
             out.push_str("( cvr ");
             w_path(out, output);
             out.push(' ');
-            w_gate(out, *gate);
+            w_tag(out, *gate);
             out.push(' ');
             w_lp(out, instance);
             out.push(' ');
@@ -2033,6 +2349,13 @@ pub fn state_bytes(s: &KState) -> String {
 pub fn nf_state_bytes(s: &NfState) -> String {
     let mut out = String::new();
     w_nf_state(&mut out, s);
+    out
+}
+
+/// One invocation term's canonical fixture bytes.
+pub fn term_bytes(t: &Term) -> String {
+    let mut out = String::new();
+    w_term(&mut out, t);
     out
 }
 

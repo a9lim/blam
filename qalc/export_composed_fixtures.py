@@ -47,7 +47,7 @@ from export_rust_fixtures import (HEADER, ZERO64, die, w_amp, w_frame,
                                   w_gate, w_kd_key, w_ks_head, w_log_entry,
                                   w_lp, w_path, w_residue, w_rule,
                                   w_run_body, w_seq, w_state, w_tape_entry,
-                                  w_term)
+                                  w_tag, w_term)
 from dw import ONE, ZERO as DZERO
 from dw_machine import edge_coefficient
 from kernel import FRAME, Done, Run
@@ -123,7 +123,7 @@ def w_binder_identity(i):
     if i[0] == "virtual" and len(i) == 5:
         if i[3] not in (0, 1) or type(i[3]) is not int:
             die("virtual phase", i)
-        return ("( vrt " + w_gate(i[1]) + " " + w_lp(i[2])
+        return ("( vrt " + w_tag(i[1]) + " " + w_lp(i[2])
                 + " i:%d " % i[3] + w_path(i[4]) + " )")
     die("binder identity", i)
 
@@ -140,7 +140,7 @@ def w_scope_residue(r):
         return ("( rex " + w_path(r.output_path) + " "
                 + w_seq(r.prefix, w_tape_entry) + " )")
     if isinstance(r, VirtualScopeResidue):
-        return ("( rvr " + w_path(r.output_path) + " " + w_gate(r.gate)
+        return ("( rvr " + w_path(r.output_path) + " " + w_tag(r.gate)
                 + " " + w_lp(r.instance) + " " + base.w_epoch(r.epoch)
                 + " )")
     if isinstance(r, PureScopeResidue):
@@ -159,7 +159,7 @@ def w_terminal_carrier(c):
         return ("( cex " + w_path(c.output_path) + " "
                 + w_seq(c.prefix, w_tape_entry) + " )")
     if isinstance(c, VirtualScopeResidue):
-        return ("( cvr " + w_path(c.output_path) + " " + w_gate(c.gate)
+        return ("( cvr " + w_path(c.output_path) + " " + w_tag(c.gate)
                 + " " + w_lp(c.instance) + " " + base.w_epoch(c.epoch)
                 + " )")
     die("terminal carrier", c)

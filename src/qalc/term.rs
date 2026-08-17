@@ -42,11 +42,12 @@ pub enum GateName {
 }
 
 impl GateName {
-    pub fn ch(self) -> char {
+    /// Python/reference token for this source gate or dynamic port tag.
+    pub fn token(self) -> &'static str {
         match self {
-            GateName::H => 'h',
-            GateName::T => 't',
-            GateName::C => 'c',
+            GateName::H => "h",
+            GateName::T => "t",
+            GateName::C => "c",
         }
     }
 }

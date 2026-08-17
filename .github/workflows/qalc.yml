@@ -37,4 +37,10 @@ jobs:
       - name: Gate 1 and Gate 2
         run: python qalc/gate2_check.py
       - name: Rust differential fixtures are current
-        run: python qalc/export_rust_fixtures.py --check
+        run: |
+          PYTHONHASHSEED=1 python qalc/export_rust_fixtures.py --check
+          PYTHONHASHSEED=2 python qalc/export_rust_fixtures.py --check
+          PYTHONHASHSEED=1 python qalc/export_composed_fixtures.py --check
+          PYTHONHASHSEED=2 python qalc/export_composed_fixtures.py --check
+          PYTHONHASHSEED=1 python qalc/export_gate2_fixtures.py --check
+          PYTHONHASHSEED=2 python qalc/export_gate2_fixtures.py --check

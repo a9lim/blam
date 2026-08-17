@@ -15,9 +15,7 @@ use blam::qalc::wire::{
 };
 
 fn fixture_files() -> Vec<(String, String)> {
-    // Both fixture trees: the kernel exporter's flat files and the
-    // composed exporter's `composed/` subdirectory (whose corpus grows
-    // the PyReprKey pins with RBL-carrying frames and bundle keys).
+    // All fixture trees: kernel, composed Gate 1, and native-CNOT Gate 2.
     let dir = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/qalc");
     let mut names: Vec<String> = std::fs::read_dir(dir)
         .expect("tests/qalc exists — regenerate with python qalc/export_rust_fixtures.py")
@@ -28,6 +26,14 @@ fn fixture_files() -> Vec<(String, String)> {
         std::fs::read_dir(format!("{dir}/composed"))
             .expect("tests/qalc/composed exists — regenerate with python qalc/export_composed_fixtures.py")
             .map(|e| format!("composed/{}", e.unwrap().file_name().into_string().unwrap()))
+            .filter(|n| n.ends_with(".qfx")),
+    );
+    names.extend(
+        std::fs::read_dir(format!("{dir}/gate2"))
+            .expect(
+                "tests/qalc/gate2 exists — regenerate with python qalc/export_gate2_fixtures.py",
+            )
+            .map(|e| format!("gate2/{}", e.unwrap().file_name().into_string().unwrap()))
             .filter(|n| n.ends_with(".qfx")),
     );
     names.sort();
