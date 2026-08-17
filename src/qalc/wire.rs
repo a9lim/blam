@@ -1875,6 +1875,23 @@ pub fn parse_fixtures(text: &str) -> Result<Fixtures, WireError> {
     Ok(fx)
 }
 
+/// Parse one canonical qALC invocation term without wrapping it in a fixture
+/// section.  This is the text boundary used by the `blam qalc run`, `gram`,
+/// and `compile --term-only` pipeline.  A term is exactly one line and must
+/// consume the complete input; trailing records are never ignored.
+pub fn parse_term(text: &str) -> Result<Term, WireError> {
+    if text.contains(['\n', '\r']) {
+        return Err(WireError {
+            line: 1,
+            what: "a standalone term must occupy exactly one line".into(),
+        });
+    }
+    let mut toks = Toks::new(text);
+    let term = p_term(&mut toks).map_err(|what| WireError { line: 1, what })?;
+    toks.done().map_err(|what| WireError { line: 1, what })?;
+    Ok(term)
+}
+
 type Lines<'a> = std::iter::Enumerate<std::str::Lines<'a>>;
 
 /// One parsed probe over states of type `S`.

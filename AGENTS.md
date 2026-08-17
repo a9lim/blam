@@ -116,9 +116,10 @@ earlier halt, arbitrary finite amplitudes, and cap-free structural compiler
 admission. Clean finite Bell/Toffoli/nonlinear carriers and the 917-state
 Python/Lean differential remain independent evidence. Historical alternatives,
 audits, and superseded proof routes live only in `docs/ledger/`, git history,
-and external audit records. Rust Phase 4 landed 2026-08-17; the `blam qalc`
-driver group and census remain later. qALC work must leave classical and qBLC
-rows bit-identical.
+and external audit records. Rust Phase 4 and the default-built `blam qalc`
+`run`/`gram`/`compile`/`fixtures` group landed 2026-08-17; census remains a
+separate later layer. qALC work must leave classical and qBLC rows
+bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →

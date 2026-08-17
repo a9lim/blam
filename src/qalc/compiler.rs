@@ -765,6 +765,11 @@ pub fn compiled_runtime(circuit: &Circuit) -> u64 {
     out
 }
 
+/// Common encoded-input cut of the clean compiler sector.
+pub fn prepared_at(width: usize) -> u64 {
+    47 * width as u64 + 4
+}
+
 pub fn physical_event_kinds(circuit: &Circuit) -> Vec<Kind> {
     let mut out = Vec::new();
     for gate in &circuit.gates {

@@ -11,7 +11,8 @@
 use blam::qalc::mark::{frame_repr, kd_is_canonical, kd_key_repr, rs_is_canonical, KsHead};
 use blam::qalc::state::{KState, Residue, RunCore};
 use blam::qalc::wire::{
-    column_commitment, parse_fixtures, serialize_fixtures, state_bytes, CorpusValue, Fixtures,
+    column_commitment, parse_fixtures, parse_term, serialize_fixtures, state_bytes, term_bytes,
+    CorpusValue, Fixtures,
 };
 
 fn fixture_files() -> Vec<(String, String)> {
@@ -67,6 +68,15 @@ fn round_trip_is_byte_exact() {
             "{name}: serialize(parse(file)) drifted"
         );
     }
+}
+
+#[test]
+fn standalone_term_codec_is_complete() {
+    let text = "( ap ( l ( v i:1 ) ) ( g h ) )";
+    let term = parse_term(text).expect("standalone term");
+    assert_eq!(term_bytes(&term), text);
+    assert!(parse_term(&format!("{text} trailing")).is_err());
+    assert!(parse_term(&format!("{text}\n")).is_err());
 }
 
 #[test]

@@ -6,14 +6,22 @@ on:
     paths:
       - "qalc/**"
       - "src/qalc/**"
+      - "src/cli/qalc/**"
+      - "src/cli/main.rs"
       - "tests/qalc/**"
+      - "tests/qalc_cli.rs"
+      - "tests/qalc_codec.rs"
       - ".github/workflows/qalc.yml"
   pull_request:
     branches: [main]
     paths:
       - "qalc/**"
       - "src/qalc/**"
+      - "src/cli/qalc/**"
+      - "src/cli/main.rs"
       - "tests/qalc/**"
+      - "tests/qalc_cli.rs"
+      - "tests/qalc_codec.rs"
       - ".github/workflows/qalc.yml"
 
 concurrency:
@@ -32,6 +40,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - name: Install pinned Lean toolchain
         run: |
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
@@ -48,3 +58,7 @@ jobs:
           PYTHONHASHSEED=2 python qalc/export_gate2_fixtures.py --check
           PYTHONHASHSEED=1 python qalc/export_admission_fixtures.py --check
           PYTHONHASHSEED=2 python qalc/export_admission_fixtures.py --check
+      - name: Rust qALC differential and drivers
+        run: >-
+          cargo test --release --test qalc_cli --test qalc_codec
+          --test qalc_kernel --test qalc_composed --test qalc_gate2

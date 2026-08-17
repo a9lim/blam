@@ -138,8 +138,13 @@ src/hash.rs      the vendored SHA-256 byte-hashing core hoisted from
                  cli::ckpt; checkpoint output unchanged)
 ```
 
-Drivers: a `blam qalc` subcommand group (`run`, `gram`, `compile`,
-`fixtures`), compiled by default like the other pillars. Certificate
+Drivers: the default-built `blam qalc` subcommand group is landed: `run`
+applies exact finite-time public `U`; `gram` performs the selected live-machine
+finite audit; `compile` accepts zero-based `h:W` / `t:W` / `cx:C:T` source and
+emits the canonical term plus cut/runtime metadata; `fixtures` regenerates
+every runtime qfx product and separately revalidates the stripped selector
+pin. Direct canonical terms, term files, and named qfx programs share one
+strict parser. Certificate
 *discovery* (`certify.py`'s `discover_total`) is deliberately **not** in
 the tree at any phase: canonical certificates are pinned data, the
 compiler certificate is a syntax walk, and the hybrid pipeline stays a
@@ -287,6 +292,11 @@ differential, not "looks done".
   nine-clause battery through crate tests plus the repository-level dual
   feature/cross-pillar gates for clauses 1 and 9. Exit: battery green in both
   feature shapes; STATUS/docs updated; ledger entry.
+- **Post-phase driver surface (landed 2026-08-17).** `src/cli/qalc/` owns
+  `run`, `gram`, `compile`, and `fixtures`; the library adds only the standalone
+  canonical-term parser, iterative closedness predicate, selected-machine Gram
+  entry point, and the named prepared-cut helper those drivers require. Census
+  is deliberately separate.
 
 ## 7. Differential harness
 

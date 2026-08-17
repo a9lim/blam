@@ -546,6 +546,19 @@ fixtures, cross-checked against those source fixtures by Rust, and byte-checked
 under two hash seeds. The structural recognizer/selector is iterative and has
 an explicit >256-depth compiler-image regression; Gate-1 validation instead
 rejects source depth above 256 before any recursive pure normalizer runs.
+The default-built `blam qalc` group is now live: `compile` accepts the typed
+zero-based `h:W` / `t:W` / `cx:C:T` circuit language and emits the canonical
+term plus prepared-cut, post-cut runtime, total time, and certificate metadata;
+`run` applies the total selector and exact `U`; `gram` audits the selected live
+machine; and `fixtures` fully regenerates runtime qfx carriers, columns,
+commitments, traces, finals, and probes. Direct terms, term files, and named qfx
+programs share one strict input path. The verifier separately recognizes the
+intentionally stripped 20-program admission pin, revalidates every selected
+certificate, and byte-compares it with the embedded artifact.
+Qfx inputs preserve their certificate and tick-cut provenance; Gram returns a
+typed CLI failure for an invalid cut or any nonzero defect, and every emitted
+compiled term is proved within the wire-parser cap and round-tripped before it
+is printed.
 Superseded audits, countermodels, and rejected routes live only in the ledger,
 git history, and external audit records.
 
@@ -562,10 +575,8 @@ graph, and external audit records.
 
 The open docket, in order:
 
-1. Add the promised `blam qalc` driver group (`run`, `gram`, `compile`,
-   `fixtures`) over the now-public reference API, then design census machinery
-   as a separate measured layer. Neither is part of the closed Phase-4
-   semantics claim.
+1. Design qALC census machinery as a separate measured layer over the now-live
+   reference API and CLI. It is not part of the closed Phase-4 semantics claim.
 2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and broader arrival/pop determinacy.
 3. Downstream research: D-circuit dyadicity, universality/domination for `M`,

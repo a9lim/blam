@@ -287,8 +287,20 @@ linear-SSA compiler and native-CNOT shadow, structural admission and finite
 checker, checked Gate-1 admission plus theorem-backed structural Gate-2
 selection with conservative fallback,
 public exact semantic objects, all 43 short circuits, the three large clean
-witnesses, and the full 917-state mixed Python/Rust differential. CLI drivers
-and census integration remain follow-on work. The authoritative executable reference,
+witnesses, and the full 917-state mixed Python/Rust differential. The
+default-built `blam qalc` group now exposes that surface directly:
+
+```bash
+blam qalc compile 2 h:0 cx:0:1       # typed circuit -> canonical qALC term
+blam qalc run 'TERM' --steps 221     # exact U^221 and halt/error/running mass
+blam qalc gram 'TERM'                # selected-machine finite Gram audit
+blam qalc fixtures tests/qalc/HH.qfx # full engine-backed qfx regeneration
+blam qalc compile 1 h:0 --term-only | blam qalc run --file - --steps 51
+```
+
+`run` and `gram` also accept `--file FILE [--program NAME]`, with `--file -`
+reading the one-line form emitted by `compile --term-only`. Census remains follow-on
+work. The authoritative executable reference,
 batteries, generated finite evidence, and Lean clean-compilation theorem are versioned in
 [qalc/](https://github.com/a9lim/blam/tree/main/qalc).
 Canonical evidence lives in

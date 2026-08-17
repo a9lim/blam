@@ -64,6 +64,32 @@ pub enum Term {
     Gate(GateName),
 }
 
+/// Iterative closedness check for the full qALC source alphabet. Gate leaves
+/// are constants; variables remain 1-indexed and must resolve to an enclosing
+/// lambda. This is the public input-domain check used by the CLI before total
+/// sector selection.
+pub fn is_closed(term: &Term) -> bool {
+    let mut stack = vec![(term, 0u32)];
+    while let Some((term, depth)) = stack.pop() {
+        match term {
+            Term::Var(index) if *index >= 1 && *index <= depth => {}
+            Term::Var(_) => return false,
+            Term::Gate(_) => {}
+            Term::Lam(body) => {
+                let Some(depth) = depth.checked_add(1) else {
+                    return false;
+                };
+                stack.push((body, depth));
+            }
+            Term::App(function, argument) => {
+                stack.push((argument, depth));
+                stack.push((function, depth));
+            }
+        }
+    }
+    true
+}
+
 /// The subterm at `path`, or `None` when the path leaves the term — the
 /// typed analogue of `lam_iam.subterm`, total instead of crashing.
 pub fn subterm<'t>(mut t: &'t Term, path: &[Dir]) -> Option<&'t Term> {
@@ -135,5 +161,7 @@ mod tests {
         // A free-variable occurrence and a non-Var path both refuse.
         assert_eq!(binder_path(&p, &[Dir::F]), None);
         assert!(subterm(&p, &[Dir::A, Dir::A]).is_none());
+        assert!(is_closed(&p));
+        assert!(!is_closed(&Term::Var(1)));
     }
 }

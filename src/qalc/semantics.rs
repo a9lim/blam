@@ -12,7 +12,7 @@ use super::admission::{try_admit, Gate1Admission};
 use super::amp::Amp;
 use super::gate2check::{structural_admission, StructuralAdmission};
 use super::kernel::edge_coefficient;
-use super::readback::{nf_init, nf_step_with, MachineKind};
+use super::readback::{nf_gram_with, nf_init, nf_step_with, MachineKind, NfError};
 use super::state::{Nf, NfState, NfTerminal, TerminalGarbage};
 use super::term::Term;
 use super::wire::CertEntries;
@@ -382,6 +382,25 @@ pub fn evolve(sector: &Sector, transitions: u64) -> Result<Superposition, Semant
         vector = u(sector, &vector)?;
     }
     Ok(vector)
+}
+
+/// Finite exact Gram audit of the selected live machine.  For an admitted
+/// sector this checks the same machine/certificate pair used by [`u`].  For
+/// a conservative sector it intentionally audits the underlying Gate-1 live
+/// transition before history is attached; the public history-extended step
+/// remains isometric by construction even when this report finds a defect.
+pub fn gram(
+    sector: &Sector,
+    tick_depth: u64,
+    state_cap: usize,
+) -> Result<super::kernel::GramReport, NfError> {
+    nf_gram_with(
+        sector.machine(),
+        sector.term(),
+        sector.certificate(),
+        tick_depth,
+        state_cap,
+    )
 }
 
 fn done_halt(state: &NfState) -> Option<(&Nf, &TerminalGarbage, u64)> {

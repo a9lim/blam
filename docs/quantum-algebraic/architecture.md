@@ -723,8 +723,9 @@ Every qALC engine change must then satisfy:
 
 Items 1 and 2 gated implementation and are now closed; the Rust reference
 pillar implements their proved state, compiler, certificate, admission, and
-semantic surfaces. CLI/census optimization follows only after this exact
-Python/Lean/Rust differential agreement. Items 3–10 remain research or
+semantic surfaces. The exact `blam qalc` compile/run/gram/fixtures drivers are
+now landed; census design and optimization remain the next implementation
+layer after this exact Python/Lean/Rust differential agreement. Items 3–10 remain research or
 product-shape questions, not prerequisites for the reference evaluator.
 
 ## 10. Lineage and related documents
