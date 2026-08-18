@@ -228,7 +228,7 @@ peak at support 4, and hit no evolution, support, or density capacity. At 256
 steps one halt and five errors remain in the running population relative to
 the stable pair.
 
-The 1,024-step run is the current performance candidate. A definitive
+For 4..24, the 1,024-step run is the performance candidate. A definitive
 1,000-state preflight admits 18,858 programs; the remaining 190 retry the
 unchanged 300,000-state selector in an eight-worker pool and are conservative
 on this population. Preflight failure is never a verdict. The run completes in
@@ -236,6 +236,29 @@ on this population. Preflight failure is never a verdict. The run completes in
 programs/s, 11.1 GB peak footprint); n=24 takes 10.87 seconds. Its deterministic
 report has SHA-256
 `55fb31c008c77bf98418f2a2606bde6ba7af1d3c32d149866a9e96bc900c9671`.
+
+The incremental extension (2026-08-18, same machine and thread counts, 64
+checkpoint groups, one shared 900-second wall budget per size) measured:
+
+| n | programs | 1,024 steps | 4,096 steps | 8,192 steps | deepest h/e/r | result |
+|---:|---:|---:|---:|---:|---:|---|
+| 25 | 14,334 | 32.783 s | 37.389 s | — | 6,074 / 8,252 / 23 | stable at 1,024/4,096 |
+| 26 | 27,465 | 89.831 s | 105.746 s | — | 11,504 / 15,943 / 64 | stable at 1,024/4,096 |
+| 27 | 47,146 | 69.666 s | 94.840 s | — | 19,295 / 27,894 / 45 | stable at 1,024/4,096 |
+| 28 | 89,270 | 238.985 s | 289.214 s | 356.500 s | 36,210 / 53,025 / 247 | not converged |
+
+Thus the contiguous 1,024/4,096 convergence record now reaches 27 bits. At
+n=28 the halt contribution stays exactly `(4513,0,0,0,50)` at all three
+clocks, but the nonzero error-program count rises by six while the running
+count falls by six at step 4,096, then moves by another two in each direction
+at step 8,192. The upper contribution correspondingly tightens from
+`(36359,0,0,0,56)` through `(36353,0,0,0,56)` to
+`(36351,0,0,0,56)`. No run hits evolution, support, or density capacity and
+peak support remains four. The nominal 15-minute size budget expires after
+901 seconds of watchdog-granularity wall time; the next 16,384-step checkpoint
+contains one of 64 groups, not a report. The canonical rows and report digests
+are `../data/qalc/census_convergence.txt`; the resumable protocol is
+`../scripts/qalc-census-extend.sh`.
 
 The carrier index and discovery order share immutable states, each target is
 hashed once on insertion, and admission derives Gram from the checked carrier.
@@ -277,10 +300,13 @@ and generated `native_decide` evaluations are explicit trust boundaries.
 
 ### qALC docket
 
-1. Extend the checkpointed population past 24 bits and repeat clock-convergence
-   checks at each new edge before fixing a canonical census protocol. The
-   1,024-step clock is sufficient on 4..24, but that bounded equality does not
-   yet pin a universal canonical default.
+1. Resolve the n=28 late-error clock edge before extending the contiguous
+   convergence claim. The 1,024-step clock is sufficient on 4..27 but false as
+   a convergence clock at n=28; 4,096 is also not stable against 8,192. Extract
+   the late arrivals or add arrival-time telemetry, then choose an adaptive or
+   certified stopping rule rather than promoting another finite clock to a
+   universal default. The partial 16,384-step checkpoint is resumable only
+   under a deliberately larger per-size budget.
 2. Optionally strengthen the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and arrival/pop determinacy.
 3. Investigate D-circuit dyadicity, universality/domination for `M`,

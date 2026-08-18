@@ -199,7 +199,7 @@ target/release/blam adjudicate 010001101000011010
 target/release/blam solomonoff 4 41 --table data/classical/solomonoff_table.txt \
     --unknown-floors data/classical/speed_floors.txt
 target/release/blam q census 4 41 --out data/quantum/census_table.txt
-target/release/blam qalc census 4 24 --steps 256
+scripts/qalc-census-extend.sh 25 60 15  # shared 15-minute budget per qALC size
 
 # certificate sweep, then kernel-check the kills in Lean
 target/release/blam cert search --file data/classical/unknowns.txt

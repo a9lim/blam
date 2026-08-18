@@ -35,7 +35,9 @@ work; do not duplicate its moving state here.
   are unversioned where a bound can advance: the covered range is stated in
   the file and `docs/STATUS.md`, superseded generations live in git history,
   and a bound bump regenerates in place. Regenerate rather than hand-edit via
-  `scripts/census-regen.sh` and `scripts/solomonoff-regen.sh`.
+  `scripts/census-regen.sh`, `scripts/solomonoff-regen.sh`, and
+  `scripts/qalc-census-extend.sh`. The qALC finite-clock convergence record is
+  in `data/qalc/`.
 
 ## Conventions that will bite you
 
