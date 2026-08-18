@@ -1,6 +1,6 @@
 # Upstream PR kit (a9 sends; nothing here is auto-submitted)
 
-The staging is done (2026-08-03): the a9lim/AIT fork carries `uni.rs`
+The a9lim/AIT fork carries `uni.rs`
 at its root as one additive commit over upstream master, and blam's
 `ref/AIT` submodule pins exactly that tree, so CI exercises the PR
 payload continuously. Steps when ready:

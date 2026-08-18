@@ -1,4 +1,4 @@
-"""Export the Rust pillar's phase-0/1 differential fixtures.
+"""Export the Rust pillar's kernel differential fixtures.
 
 Writes ``tests/qalc/*.qfx`` — the wire-format files ``src/qalc/wire.rs``
 parses. The serializers here mirror that module's writers byte for byte;
@@ -8,15 +8,14 @@ drift between the two implementations fails loudly on either side.
 Per program: the complete finite carrier through tick depth 2 (BFS in
 step-row order), exact unmerged columns with their SHA-256 commitment,
 the dynamic-trace digest chain, and the absorption-step final map. The
-dual-evaluator cross-oracle runs both the legacy Fraction evaluator and
+dual-evaluator cross-oracle runs both the independent Fraction evaluator and
 the exact Dw evaluator per transition and asserts full map equality
 before anything is written (docs/quantum-algebraic/rust-pillar.md §6).
 
-Gate-2 fixture families are NOT generated here: they need the shadow
-dispatcher installed (`gate2_admission.configure()`), and mixing the two
-step tables in one process is exactly the ambient-dispatcher trap the
-sketch's review measured. This exporter imports the plain kernel only;
-the phase-3 exporter will be a separate script run in its own process.
+Gate-2 fixture families are not generated here: they need the shadow
+dispatcher installed (`gate2_admission.configure()`), while this exporter
+imports the plain kernel only. `export_gate2_fixtures.py` runs that surface in
+its own process so the two step tables cannot share ambient dispatcher state.
 
 Usage, from the repository root:
     python qalc/export_rust_fixtures.py           # write tests/qalc/
@@ -37,7 +36,7 @@ from kernel import (ALPHA, BULLET, FRAME, RHO, Done, Run, RunDone, astep,
 from lam_iam import App, Gate, Lam, Var
 from suite import CERTS, PROGRAMS
 
-# The T-phase probes (rust-pillar.md §6 phase 0): fire-t1's ω is outside
+# The T-phase probes (rust-pillar.md §6): fire-t1's ω is outside
 # Q[√2], so these three run Dw-only — no Fraction cross-oracle — and are
 # pinned instead against the reference's exact hand-computed finals
 # (dw_machine.py's own assertions).

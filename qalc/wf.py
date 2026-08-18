@@ -5,7 +5,7 @@ WF(term, s) for Run states — the state-grammar invariant W0, the
 SORTED state language: exact-type purity (registers are exact
 tuples of exact tuples/str/int, checked without hashing and
 before any scan — impure states early-return ['W0'] so the lp
-cache and key dicts never hash hostile content); exact-int bits
+cache and key dicts never hash arbitrary content); exact-int bits
 in {0,1}; gates in {h,t}; exact arities; lp productions
 recursive with occurrences resolving to BOUND Vars of the CLOSED
 term (1-indexed — Var(0) is no variable) and satisfying the
@@ -33,7 +33,7 @@ kernel.md §6):
      (g, i) carry one bit — frames in rs; tickets on tape and log,
      deep through slice cargo; tickets buried in retained-whole
      K(l) records.
-  W4 (first-interrogation exclusivity, CLOSED as of v1.20): a
+  W4 (first-interrogation exclusivity): a
      vb-active state at instance i (= log head) holds NO other
      representation of its key in ANY of the four classes —
      frames in rs, live tickets deep through tape/log slice
@@ -44,7 +44,7 @@ kernel.md §6):
      reaches call -> fire -> anshead -> vb. The four exclusions
      close vvar preservation BY ENUMERATION (the emitted ticket
      can only violate W3/W8/W9 in the target, each partner class
-     excluded at the source: audits #11 and #12's countermodels);
+     excluded at the source);
      entry into the VB region (anshead) is guarded by the
      lifecycle on reachable states, and raw-entry closure is
      deliberately NOT claimed — see the version-controlled kernel register.
@@ -85,48 +85,42 @@ from collections import deque
 
 def wf(term, s):
     """Return [] if WF, else the violated invariant names."""
-    # v1.27 (audit #19's hostile-subclass countermodel): EXACT
-    # type — a Run subclass is not a state of the machine
+    # Exact type: a Run subclass is not a state of the machine
     # (init/evolve mint exact Runs), and overridden attribute
-    # access would run hostile code before purity could see
+    # access could run arbitrary code before purity could see
     # anything. Field access below happens only on exact
     # dataclass instances.
     if type(s) is not Run:
         return []
-    # v1.34 (audit #26's deleted-field countermodel): an EXACT
-    # frozen dataclass can have fields surgically removed via
+    # An exact frozen dataclass can have fields removed via
     # object.__delattr__ — exact in type, hollow in body. For
     # the UNDEFAULTED fields (path/d/log/tape) every downstream
     # access would raise, so hasattr gates them out (['W0']);
     # the DEFAULTED fields (vb/rs/ks) keep hasattr True via
     # their class-level defaults and the state is extensionally
-    # the default Run for every machine/checker observation
-    # (audit #27 verified: 110,232 comparisons, zero
-    # mismatches) — the fallback, not a hole. hasattr on an
+    # the default Run for every machine/checker observation: the fallback,
+    # not a hole. hasattr on an
     # exact instance runs no user code (the exact-type dispatch
     # above precedes); a missing undefaulted field is out of
     # the language.
     if not all(hasattr(s, f) for f in
                ('path', 'd', 'log', 'tape', 'vb', 'rs', 'ks')):
         return ['W0']
-    # v1.24 (audit #16's list-tape countermodel, completed): the
-    # CONTAINERS and every nested component are part of the
+    # The containers and every nested component are part of the
     # language. A list-valued tape passed WF (iteration checks
     # elements; nothing checked the tuple) and the fire's tuple
     # concatenation TypeError'd. The completion is EXACT-TYPE
     # PURITY — registers are exact tuples of exact
     # tuples/str/int, checked WITHOUT HASHING and before any
     # scan, because the lp cache and the W2/W3 key dicts hash
-    # state content: a nested object with a hostile __hash__
+    # state content: a nested object with a custom __hash__
     # would otherwise crash the checker itself (the binder_path
-    # lesson, one level down), and a hostile __eq__ could poison
+    # lesson, one level down), and a custom __eq__ could poison
     # the lp cache. Impure states are not in the language's
     # carrier at all — W1-W9 are not adjudicated over them.
     def pure(e):
-        # Iterative as of v1.26 (audit #18: a 1,500-deep exact
-        # tuple blew the recursive version) — explicit stack,
-        # depth-independent, still non-hashing. v1.27 (audit
-        # #19's 2^24-visit DAG): id-visited set — purity is
+        # The explicit stack is depth-independent and non-hashing. The
+        # id-visited set makes purity
         # intrinsic, shared subtrees check once, cost is
         # REPRESENTATION-linear (tuples cannot be cyclic).
         seen = set()
@@ -142,11 +136,11 @@ def wf(term, s):
             elif not (type(x) is str or type(x) is int):
                 return False
         return True
-    # v1.29 (audit #21's layer seven): the register ROOTS must
+    # The register roots must
     # themselves be exact tuples — pure(0) is True because an
     # int is a valid pure LEAF, so a scalar root passed the gate
     # and the container iteration crashed — and `d` joins the
-    # purity surface as an exact str (a hostile __eq__ object in
+    # purity surface as an exact str (a custom __eq__ object in
     # d executed at the membership check).
     if (not all(type(x) is tuple and pure(x)
                 for x in (s.path, s.log, s.tape, s.rs, s.ks))
@@ -154,10 +148,7 @@ def wf(term, s):
             or not (s.vb is None or pure(s.vb))):
         return ['W0']
     bad = []
-    # W0 (state grammar — v1.21 tokens, v1.22 the full language,
-    # v1.23 the log sort + slice equation + closed term, v1.24
-    # exact-type purity + 1-indexed closedness + the KA
-    # production): every token is a
+    # W0 (state grammar): every token is a
     # well-formed production with EXACT-INT bits in {0,1} — bool
     # is a subclass of int and is REFUSED, because rootval
     # string-formats the bit and 1.0/True would mint
@@ -206,26 +197,24 @@ def wf(term, s):
                 return None
         return t_
     def closed(t_):
-        # v1.24 (audit #16): 1-INDEXED de Bruijn — Var(1) is the
+        # 1-INDEXED de Bruijn: Var(1) is the
         # innermost binder, so Var(0) is not a variable of any
-        # term. v1.27 (audit #19): a full term validator with
-        # cycle rejection. v1.28 (audit #20's layer six): the
-        # validator computes MAX-FREE per node — Var i → i,
+        # term. The full term validator rejects cycles and computes
+        # MAX-FREE per node: Var i → i,
         # Lam → max(0, body − 1), App → max(f, a) — by iterative
         # post-order with ONE memo entry per node id, so shared
         # term DAGs are representation-LINEAR (the old
         # (id, depth) memo was Θ(n²) on App/Lam chains: every
         # node reachable at many depths); closed ⟺
         # max_free(root) == 0. Node dispatch is EXACT-TYPE — a
-        # term-node SUBCLASS is not a term node, and its hostile
+        # term-node subclass is not a term node, and its custom
         # attributes are never touched because the type check
-        # precedes every field access (audit #20's HostileLam) —
-        # and the Gate production is finally validated: names in
+        # precedes every field access. Gate names must be
         # {'h','t'} as the language always said (Gate('x')
         # passed wf and broke W0-preservation one step later;
         # Gate([]) crashed the machine on an unhashable name).
         # Cycles: on-path rejection, as before.
-        # v1.33 (audit #25's big-index countermodel): Var(1<<n)
+        # Var(1<<n)
         # under n lambdas is a Θ(n)-representation input whose
         # max-free propagation did n subtractions on n-BIT
         # integers — Θ(n²). THE CLAMP: count the distinct Lam
@@ -237,7 +226,7 @@ def wf(term, s):
         # the ==0 verdict exactly (clamped values stay positive
         # through every decrement), and all propagated values
         # are word-sized.
-        # v1.34 (audit #26): term-node fields may be ABSENT on
+        # Term-node fields may be absent on
         # exact instances (object.__delattr__ on the frozen
         # dataclass) — getattr sentinels; a hollow node is not
         # a term. The pre-pass validates Lam/App fields for the
@@ -316,8 +305,7 @@ def wf(term, s):
         None if the occurrence is invalid (not resolving to a
         Var; unbound). ALL the expensive per-occurrence work
         lives here — the walk, the index-based backward binder
-        scan (v1.29), and the 'a'-count — computed ONCE per
-        occurrence OBJECT. v1.31 (audit #23's layer nine):
+        scan, and the 'a'-count — computed ONCE per occurrence object.
         value-sharing without object-sharing defeated the
         per-LP memos — n distinct lp shells around ONE shared
         occurrence tuple paid the walk n times, Θ(n²) on a
@@ -343,7 +331,7 @@ def wf(term, s):
         return r
     def w0lp_shape(e):
         """LOCAL lp conditions only: shape, Var occurrence, the
-        v1.23 lambda-IAM logged-position equation (the slice
+        lambda-IAM logged-position equation (the slice
         captures exactly the log segment between occurrence and
         binder, len(slice) = level(occ) - level(binder), the
         occurrence BOUND). Nested slice tokens are validated by
@@ -358,8 +346,7 @@ def wf(term, s):
     lpmemo = {}
     seen_slices = set()
     def w0tok(e):
-        """v1.26 (audit #18's RecursionError class): the token
-        grammar as a CLOSURE SWEEP — a token is valid iff every
+        """Check the token grammar as a CLOSURE SWEEP: a token is valid iff every
         node of its closure satisfies its LOCAL predicate, which
         is exactly the recursive definition, iteratively. The
         memo is id-keyed and per-call (ids stable while the state
@@ -380,13 +367,12 @@ def wf(term, s):
                     if not w0lp_shape(x):
                         return False
                     lpmemo[id(x)] = True
-                    # v1.32 (audit #24's layer ten): EXTEND ONCE
+                    # Extend once
                     # PER SLICE — n distinct shells sharing one
                     # slice tuple re-pushed its elements per
                     # shell (each an O(1) memo hit, but n pushes
                     # x n shells = quadratic). Soundness rides
-                    # the aggregate-monotonicity doctrine audit
-                    # #24 confirmed by static enumeration: the
+                    # aggregate monotonicity: the
                     # call that first extends a slice either
                     # drains it fully (True) or fails and w0bad
                     # is already set.
@@ -424,9 +410,8 @@ def wf(term, s):
     def w0lp(e):
         """An lp production in full: local shape AND its closure
         (frame/K/KD/KA instances and standalone lp checks).
-        v1.30: full-lp id-memo (same-object repeats O(1)).
-        MEMO DOCTRINE (v1.31, audit #23's honesty catch — the
-        earlier "no optimistic leak" claim was literally false):
+        A full-lp id memo makes same-object repeats O(1).
+        Memo doctrine:
         per-entry truth is NOT the invariant of these memos.
         An optimistic lpmemo entry can go stale within a call
         (a closure failure after the install), and a stale True
@@ -444,7 +429,7 @@ def wf(term, s):
             r = w0lp_shape(e) and w0tok(e)
             lpfull[k] = r
         return r
-    # v1.23 (audit #15's bullet-log collision): the log is a
+    # The log is a
     # separate SORT — its alphabet is lp-like productions only
     # (lp/gamma/alpha; that is the log's grammar, not a phase
     # question: arg pushes lp_like heads and bt2 pushes slices,
@@ -454,11 +439,10 @@ def wf(term, s):
     # position crashes binder_path from inside WF).
     def w0log(e):
         return (is_lp(e) or is_gam(e) or is_alpha(e)) and w0tok(e)
-    # v1.28 (audit #20's hostile-term countermodel): the term
-    # gate comes FIRST — under v1.27 the rs/ks token loops below
+    # The term gate comes first. Otherwise the rs/ks token loops below
     # ran even when the term had already failed, and their
     # w0lp → walk calls dereferenced the unvalidated term, so a
-    # hostile term subclass still executed. After this gate,
+    # malformed term subclass could still execute. After this gate,
     # every downstream walk sees an exact, validated term.
     if not closed(term):
         return ['W0']
@@ -479,7 +463,7 @@ def wf(term, s):
             if not (e[1] in ('h', 't') and w0lp(e[2])):
                 w0bad = True
         elif isinstance(e, tuple) and len(e) == 2 and e[0] == 'KD':
-            # v1.32: the KD-keys sibling of the shared-slice
+            # The KD-keys sibling of the shared-slice
             # class, preempted — n KD entries sharing one keys
             # tuple would iterate it per entry; verified keys
             # tuples are id-memoized (both verdicts stored, so a
@@ -502,7 +486,7 @@ def wf(term, s):
                     and e[1][0] in ('L', 'AL') and w0tok(e[1])):
                 w0bad = True
         elif isinstance(e, tuple) and len(e) == 3 and e[0] == 'KA':
-            # v1.24 (audit #16): the suppressed-decode HISTORY
+            # The suppressed-decode HISTORY
             # head — a KS production, deliberately absent from
             # ks_dead_keys/ks_bitfree_keys (the key's answerable
             # representation survives in the frame/burial; W8,
@@ -517,7 +501,7 @@ def wf(term, s):
             and type(s.vb[2]) is int and s.vb[2] in (0, 1, 2)):
         w0bad = True
     if w0bad:
-        # v1.25 (audit #17's totality countermodels): the W0 GATE.
+        # The W0 gate keeps W1-W9 scans inside the language carrier.
         # Exact-pure malformed tuples — ('AL',), ('L',), an empty
         # () frame — passed purity, were correctly W0-flagged,
         # and then crashed the W1-W9 deep scans (IndexError from
@@ -542,7 +526,7 @@ def wf(term, s):
         keys.setdefault(k, set()).add(fr[3])
     if s.rs != tuple(sorted(s.rs, key=repr)):
         bad.append('W2-order')
-    # W3 is DEEP as of v1.10 (audit #2's root-cause note): one bit
+    # W3 is deep: one bit
     # per key across ALL bit-carrying representations — top-level
     # and slice-suspended tickets on tape and log, and tickets
     # buried in retained-whole K(l) records.
@@ -561,7 +545,7 @@ def wf(term, s):
         if i is not None:
             if (g, i) in seen_frames:
                 bad.append('W4-frame')
-            # DEEP as of v1.19 (audit #11's countermodel): a live
+            # A live
             # same-instance ticket suspended in slice cargo on tape
             # OR log violates first-interrogation exclusivity just
             # as a top-level one does — a vvar step re-emits it
@@ -572,8 +556,7 @@ def wf(term, s):
             if any((g, i) in K.alpha_keys_live(e)
                    for e in s.tape + s.log):
                 bad.append('W4-ticket')
-            # v1.20 (audit #12's storage/burial countermodels): the
-            # last two representation classes join the exclusion,
+            # The last two representation classes join the exclusion,
             # closing vvar preservation BY ENUMERATION — the
             # emitted ticket can only violate W3/W8/W9 in the
             # target, and each violating partner class is excluded
@@ -595,7 +578,7 @@ def wf(term, s):
                         bad.append('W4-burial')
                         break
     def gam_deep(e):
-        # iterative (v1.26); alpha/frame instance keys stay
+        # Iterative; alpha/frame instance keys stay
         # frozen names, never traversed
         n, stack = 0, [e]
         while stack:
@@ -628,11 +611,11 @@ def wf(term, s):
     # removes the popped frames but records only the keys left
     # with NO surviving representation — the riding-ticket
     # control pops a frame into an empty bundle) and typed at
-    # the leaf (key-alias). v1.11 (audit #3): preservation is NOT
+    # the leaf (key-alias). Preservation is not
     # unconditional — a duplicate-ticket alias source decodes into
     # a W8 violation, which is why W9 excludes it statically.
     def alpha_deep(e, out):
-        # iterative (v1.26)
+        # Iterative and depth-independent.
         stack = [e]
         while stack:
             x = stack.pop()
@@ -648,11 +631,10 @@ def wf(term, s):
     answerable |= {(fr[1], fr[2]) for fr in s.rs
                    if isinstance(fr, tuple) and fr[:1] == ('R',)
                    and len(fr) == 5}
-    # v1.10 restatement (audit #2): exclusivity is scoped to
+    # Exclusivity is scoped to
     # BIT-FREE dead storage — K(l)-buried tickets carry their bit
     # and coexist with frames/tickets under deep W3's adjudication.
-    # v1.12 extension (audit #4's algebra-row countermodel):
-    # bit-free storage excludes BURIAL keys too — a KD/K record
+    # Bit-free storage excludes burial keys too: a KD/K record
     # beside a same-key buried ticket has discarded the bit the
     # burial still carries, the coexistence the algebra types.
     # The fire and decode arms never create it (KD subtraction;
@@ -664,7 +646,7 @@ def wf(term, s):
             burial_keys |= K.alpha_keys_live(e[1])
     if (answerable | burial_keys) & K.ks_bitfree_keys(s.ks):
         bad.append('W8')
-    # W9 (v1.11, audit #3's duplicate-ticket witness): instance keys
+    # W9: instance keys
     # name UNIQUE seeks — at most one live alpha ticket per (g, i)
     # across tape and log, deep through slice cargo. Two agreeing
     # live tickets are an alias state (the registered agreeing-alias
@@ -675,7 +657,7 @@ def wf(term, s):
     # other representation classes.
     tickets = {}
     def alpha_count(e):
-        # iterative (v1.26)
+        # Iterative and depth-independent.
         stack = [e]
         while stack:
             x = stack.pop()
@@ -727,8 +709,8 @@ def sweep():
 def cert_fibres(term, cert, within=None):
     """The certificate's frozen fibre map: retained key
     (pos, slot, T, log, ks, Q) -> erased value (l, P), where
-    P/Q split rs by the boundary's popkeys (v1.10 instance-
-    directed erasure; set-valued legacy certs pop everything).
+    P/Q split rs by the boundary's popkeys (instance-directed
+    erasure; set-valued certificates pop everything).
     Single-valuedness is discovery condition (b)."""
     from certify import boundary_arrivals
     arr, _, _ = boundary_arrivals(term, cert)
@@ -758,10 +740,10 @@ def wf7(term, cert, s, fib):
     Q and incoming ks). States outside the fibre relation are
     outside the certified domain subtype."""
     from kernel import classify_arrival, is_gam
-    # v1.28 (audit #20's wf7 countermodels): W7 quantifies over
+    # W7 quantifies over
     # WF states, and the register's "wf7 declines
     # out-of-language sources" is now ENFORCED BY wf() ITSELF —
-    # exact-type dispatch (a hostile Run subclass never runs),
+    # exact-type dispatch (a Run subclass never runs),
     # then the total W0-safe precheck: a non-WF source is
     # declined before any hashing (the raw countermodels put a
     # list inside the path tuple and the fibre key; post-gate,
@@ -793,9 +775,7 @@ def wf7(term, cert, s, fib):
     return []
 
 def cert_disjointness(term, cert, within=None):
-    """The range-disjointness theorem, ACTUALLY mechanized (v1.8.1
-    working-review correction — the earlier version never
-    constructed a target): collect every reachable certified-
+    """Mechanically check range disjointness: collect every reachable certified-
     boundary source with its FULL state, build its fire targets and
     amplitudes via step(), and check the corrected case split:
       - different retained spectator (path, log, T, incoming ks,
@@ -806,7 +786,7 @@ def cert_disjointness(term, cert, within=None):
         (requires equal decode bundles — condition (e)) and
         orthogonal H-row columns, inner product COMPUTED.
     Returns (violations, same_boundary_pairs_checked).
-    v1.10: `within` restricts sources to the amplitude cone."""
+    `within` restricts sources to the amplitude cone."""
     from kernel import classify_arrival
     from fractions import Fraction
     s0 = next(iter(init(term)))
@@ -840,7 +820,7 @@ def cert_disjointness(term, cert, within=None):
             def spec(src):
                 pk = (cert[src.path] if isinstance(cert, dict)
                       else None)
-                # legacy set-certificates pop EVERYTHING: the
+                # Set-valued certificates pop everything: the
                 # retained spectator frames are empty there.
                 q = (() if pk is None else
                      tuple(fr for fr in src.rs
@@ -868,7 +848,7 @@ def cert_disjointness(term, cert, within=None):
 def cert_domain_sweep(term, cert, within=None):
     """Reachable ⊆ WF (W0–W9) under a certificate; returns the
     violation count (0 = the certified-domain-subtype lemma holds).
-    v1.10: `within` restricts the checked states to the amplitude
+    `within` restricts the checked states to the amplitude
     cone — the subtype the physics actually inhabits."""
     fib = cert_fibres(term, cert, within=within)
     s0 = next(iter(init(term)))
@@ -888,9 +868,9 @@ def cert_domain_sweep(term, cert, within=None):
 
 def cert_sweep():
     """Reachable ⊆ WF∧W7 under every canonical certificate, plus
-    the mechanized disjointness theorem, plus the audit round-2
-    collision regression: the reviewer's extra-frame source must be
-    W7-excluded AND (v1.8 decode records) must no longer share
+    the mechanized disjointness theorem and the extra-frame collision
+    regression: the synthetic extra-frame source must be W7-excluded and
+    decode records must no longer share
     targets with the reachable source."""
     from certify import boundary_arrivals
     print('\n--- W7 sweep + range disjointness (certified graphs) ---')
@@ -919,7 +899,7 @@ def cert_sweep():
         print('%-9s states %5d  WF∧W7 %s  disjointness %s (%d pairs)' %
               (name, len(seen), 'OK' if not bad else 'BAD %d' % len(bad),
                'OK' if not dis else 'BAD %d' % len(dis), npairs))
-    # the reviewer's WF collision pair, under v1.8
+    # Synthetic WF collision pair.
     term, cert = PROGRAMS['lone'], CERTS['lone']
     fib = cert_fibres(term, cert)
     s0 = next(iter(init(term)))
@@ -950,17 +930,17 @@ def cert_sweep():
           (w7_1 or 'OK', w7_2 or 'VIOLATED?',
            'DISJOINT (decode record)' if not set(map(repr, t1))
            & set(map(repr, t2)) else 'SHARED — REGRESSION'))
-    # v1.11: the exclusion CLASS moved with instance-directed
-    # certificates — the extra frame is now a retained-spectator
+    # With instance-directed certificates, the extra frame is a
+    # retained-spectator
     # coordinate, so the source falls outside the certified fibre
     # DOMAIN (W7-domain) instead of violating the fibre function
-    # (W7-fibre, the legacy pop-everything mechanism). The theorem
+    # (W7-fibre, the pop-everything mechanism). The theorem
     # the regression guards is "W7-excluded, targets disjoint";
     # accept either exclusion clause.
     ok = (not w7_1 and bool(w7_2)
           and not set(map(repr, t1)) & set(map(repr, t2)))
 
-    # v1.8.1 regression 1 (working-review): cross-slot decode-bundle
+    # Cross-slot decode-bundle
     # divergence must be REJECTED by certification. Take HNH's real
     # certified arrivals at ffbba and substitute the slot-1 cargo's
     # nested alpha instance with a distinct valid lp — the doctored
@@ -985,7 +965,7 @@ def cert_sweep():
           ' doctored REJECTED %s' % (transparent(real),
                                      not transparent(doctored)))
 
-    # v1.8.1 regression 2 (working-review): a live frame must not
+    # A live frame must not
     # shadow a dead record — reachable pstar replay source + K(h,i)
     # is W8-flagged and the kernel types it (key-alias).
     term_p = PROGRAMS['pstar']
@@ -1013,17 +993,17 @@ def cert_sweep():
     print('K+frame alias regression: WF flags %s, kernel rule %s'
           % (w8v or 'NOTHING — REGRESSION', rules))
 
-    # v1.11 regression 1 (audit #3's FATAL witness): two WF,
+    # Two WF,
     # transparent, same-slot certified-fire sources differing ONLY
     # in a retained-Q frame's bit must produce DISJOINT target
-    # sets — the retained spectator embeds verbatim. The v1.10
-    # fire arm erased Q into a bit-free KD record, collapsing the
+    # sets: the retained spectator embeds verbatim. Erasing Q into a bit-free
+    # KD record would collapse the
     # columns (inner product 1, an isometry violation).
     from lam_iam import App as _App, Lam as _Lam, Var as _Var, \
         Gate as _Gate
     tterm = _App(_Gate('h'), _Lam(_App(_Var(1), _Var(1))))
     tpath, tlog = ('a',), (K.GAM('h'),)
-    # v1.23: the carrier must satisfy the lambda-IAM slice
+    # The carrier must satisfy the lambda-IAM slice
     # equation (occ aba needs slice length 1); the valid
     # instance lp rides as slice cargo. Countermodel essence
     # (ordinary which-path cargo) unchanged.
@@ -1040,7 +1020,7 @@ def cert_sweep():
           % (all(not wf(tterm, s) for s in tsrc),
              len(tcols[0] & tcols[1])))
 
-    # v1.11 regression 2 (audit #3): two agreeing live tickets for
+    # Two agreeing live tickets for
     # one key are an ALIAS STATE — W9 flags the source statically,
     # so the W8-preservation theorem's WF hypothesis excludes it.
     talpha = K.ALPHA('h', tinst, 0)
@@ -1051,20 +1031,18 @@ def cert_sweep():
     print('duplicate-ticket regression: WF flags %s (needs W9)'
           % (w9v or 'NOTHING — REGRESSION'))
 
-    # v1.12 regressions (audit #4's countermodel pair): certified
+    # Certified
     # erasure must never record bit-free death for a key with a
     # surviving bit-carrying representation.
     # (1) alpha cargo + same-key RETAINED Q frame: the frame stays
     # the answerable representation; the KD bundle is EMPTY and the
-    # targets are WF-clean (the v1.11 arm recorded the key bit-free
-    # beside the frame — W8 in both targets).
+    # targets are WF-clean.
     tcargo_a = K.ALPHA('h', tinst, 0)
     tsrcq = Run(tpath, 'U', tlog,
                 (tcargo_a, K.MU('h'), K.RHO), None,
                 (K.FRAME('h', tinst, 0),), ())
     succq = step(tterm, tsrcq, {tpath: frozenset()})
-    # v1.23: the bundle is now ALWAYS present (audit #15's
-    # prefix-freeness repair); the theorem here is unchanged —
+    # The bundle is always present for prefix-freeness; the theorem is that
     # no key with a surviving representation enters it — so
     # the target carries exactly the EMPTY bundle.
     ok_rq = (all(not wf(tterm, t) for *_, t in succq)
@@ -1078,7 +1056,7 @@ def cert_sweep():
     # (2) alpha cargo + same-key agreeing BURIAL: the burial stays
     # the sole bit-carrying dead record; empty KD bundle;
     # extended-W8 clean (bitfree ∩ burial = ∅ in every target).
-    # v1.22: the carrier's occurrence must name a Var of tterm
+    # The carrier's occurrence must name a Var of tterm
     # (W0's semantic-lp check; the original fixture pointed at an
     # App). The countermodel's essence — the buried ticket's key —
     # rides in the slice cargo and is unchanged.
@@ -1092,7 +1070,7 @@ def cert_sweep():
             if isinstance(e, tuple) and len(e) == 2 and e[0] == 'K':
                 bur |= K.alpha_keys_live(e[1])
         return K.ks_bitfree_keys(ks) & bur
-    # v1.23: empty bundle explicit; the burial stays the sole
+    # With the empty bundle explicit, the burial stays the sole
     # BIT-CARRYING record (the theorem), after the bundle.
     ok_bb = (all(not wf(tterm, t) for *_, t in succb)
              and all(t.ks == (('KD', ()), tbur)
@@ -1104,12 +1082,12 @@ def cert_sweep():
              all(t.ks == (('KD', ()), tbur) for *_, t in succb),
              all(not _overlap(t.ks) for *_, t in succb)))
 
-    # v1.13 regression (audit #5's countermodel): popping a frame
+    # Popping a frame
     # whose replay-re-emitted ticket survives in the tape tail
     # must NOT record the key dead — the riding ticket stays the
     # answerable representation; empty KD bundle; targets
     # WF-clean.
-    # v1.23: slice equation, as with tcargo above.
+    # Slice equation, as with tcargo above.
     tcargo2 = ('L', ('a', 'b', 'a'), (('L', ('a', 'b', 'f'), ()),))
     tsrct = Run(tpath, 'U', tlog,
                 (tcargo2, K.MU('h'), K.ALPHA('h', tinst, 0),
@@ -1117,7 +1095,7 @@ def cert_sweep():
                 (K.FRAME('h', tinst, 0),), ())
     succt = step(tterm, tsrct,
                  {tpath: frozenset({('h', tinst)})})
-    # v1.23: empty bundle explicit; the popped key stays OUT of
+    # With the empty bundle explicit, the popped key stays out of
     # it (the theorem — its re-emitted ticket survives in T).
     ok_pt = (all(not wf(tterm, t) for *_, t in succt)
              and all(t.ks == (('KD', ()),) for *_, t in succt)
@@ -1130,7 +1108,7 @@ def cert_sweep():
              all(any(K.is_alpha(e) for e in t.tape)
                  for *_, t in succt)))
 
-    # v1.15 regression (audit #7's vacuity probe): a certificate
+    # A certificate
     # entry at a position with no boundary arrival is never
     # consulted, so nothing about it is ever checked —
     # machine_coverage must refuse it (non-vacuity) while the
@@ -1147,7 +1125,7 @@ def cert_sweep():
           '%s, canonical clean %s'
           % (not vac['machine_coverage'], can['machine_coverage']))
 
-    # v1.16 regression (audit #8's ghost-key probe): a popkey that
+    # A popkey that
     # occurs in NO arrival frame at its certified position can
     # never pop anything — it constrains nothing, and key-level
     # non-vacuity must refuse it. HH's canonical boundary is
@@ -1166,7 +1144,7 @@ def cert_sweep():
           % (not vk['machine_coverage'], vk['vacuous_keys'],
              can['vacuous_keys'] == 0))
 
-    # v1.19 regression (audit #11's deep-W4 countermodel): a live
+    # A live
     # same-instance ticket suspended in slice cargo must violate
     # W4 in a VB-active state — the top-level-only check let it
     # through, and the legal vvar step produced a two-live-ticket
@@ -1177,7 +1155,7 @@ def cert_sweep():
     ilp = ('L', ('f', 'f', 'b', 'b', 'a', 'f'), (GAM('h'),))
     carrier = ('L', ('f', 'f', 'b', 'b', 'a', 'f'),
                (K.ALPHA('h', ilp, 0),))
-    # v1.23: the stripped control must satisfy the slice
+    # The stripped control must satisfy the slice
     # equation (occ ffbbaf needs length 1) with gamma-free,
     # ticket-free cargo: an inner empty-slice-valid lp (ZERO's
     # variable at ffbbaabb). The control's point — same state,
@@ -1196,8 +1174,7 @@ def cert_sweep():
           % ('W4-ticket' in wf(hh, w4src(carrier)),
              wf(hh, w4src(cleanlp)) == []))
 
-    # v1.20 regression 1 (audit #12's storage/burial pair): the
-    # last two representation classes join W4's exclusion. Same-key
+    # The last two representation classes join W4's exclusion. Same-key
     # BIT-FREE storage in a VB-active state let vvar emit a live
     # ticket beside its own dead record (W8 target); a same-key
     # burial with a CONFLICTING bit let it emit a second bit for
@@ -1226,11 +1203,10 @@ def cert_sweep():
              wf(hh, w4s_src(())) == [] and wf(hh, w4agree) == [],
              wf(hh, w4atgt) == []))
 
-    # v1.20 regression 2 (audit #12's answer-species pair): the
-    # anshead species check was an ASSERT — an untyped crash on
-    # gamma/answer disagreement — and never consulted the LEAF
-    # (matched foreign markers were silently accepted into
-    # VB('t',...)). Typed now: leaf = gamma = answer, else
+    # The anshead species check must type gamma/answer disagreement instead
+    # of asserting and crashing. It also consults the leaf, so matched foreign
+    # markers cannot enter VB('t',...). The rule requires leaf = gamma = answer;
+    # otherwise it emits
     # species-ans. The retrace arm transports the mismatch and the
     # leaf types it one step later — no crash anywhere.
     spterm = _App(_Lam(_Var(1)), _Gate('h'))
@@ -1256,8 +1232,7 @@ def cert_sweep():
              [r for _, _, r, _ in step(rterm, rfirst[3], None)]
              == ['species-ans']))
 
-    # v1.21 regression (audit #13's grammar/stall findings): the
-    # answer-bit domain was nowhere enforced — ANS('h',2) was WF
+    # The answer-bit domain must be enforced: ANS('h',2) is not WF
     # and flowed through anshead to an out-of-alphabet halt2;
     # malformed tuples satisfied is_ans and crashed untyped
     # (ValueError); a gamma/answer pair meeting a binder stalled
@@ -1322,8 +1297,8 @@ def cert_sweep():
                               K.ANS('h', 0), RHO)))
              == ['anshead']))
 
-    # v1.22 regression (audit #14's language countermodels): W0's
-    # bit check used Python equality, admitting 1.0/True — and
+    # W0's bit check uses exact types rather than Python equality, which
+    # would admit 1.0/True and
     # rootval string-formats the bit, minting out-of-alphabet
     # terminal KINDS (halt1.0, haltTrue) from WF states; instance
     # fields and retained-whole cargo were never checked
@@ -1372,8 +1347,7 @@ def cert_sweep():
           'coordinates W0 %s, exact-int + lp controls intact %s'
           % (alias_ok, prod_ok, coord_ok, ctrl_ok))
 
-    # v1.23 regression 1 (audit #15's language countermodels,
-    # round III): the log is a separate sort (lp-like only — a
+    # The log is a separate sort (lp-like only: a
     # BULLET in the log passed every invariant and bt1 transported
     # it into a b1 collision, norm 2); the lambda-IAM
     # logged-position equation len(slice) = level(occ) -
@@ -1402,9 +1376,7 @@ def cert_sweep():
              'W0' in wf(L.Var(1), Run((), 'D', (), (RHO,))),
              'W0' not in wf(spterm, logsrc(spinst))))
 
-    # v1.23 regression 2 (audit #15's THEOREM countermodel — the
-    # first raw-subtype unitarity break since audit #3): omitting
-    # empty KD bundles made storage histories non-prefix-free — a
+    # Omitting empty KD bundles makes storage histories non-prefix-free: a
     # fresh certified decode (cargo ticket, empty incoming KS) and
     # a carried-in record (ordinary cargo, KD({k}) incoming)
     # produced IDENTICAL targets, inner product 1, norm 2. The
@@ -1438,17 +1410,15 @@ def cert_sweep():
              [r for _, _, r, _ in step(tterm, kpf_a, kpf_cert)]
              == ['fire-h', 'fire-h']))
 
-    # v1.24 regression 1 (audit #16's theorem countermodel — the
-    # audit-#15 sibling): the suppressed-decode arm appended ZERO
-    # storage heads, so a suppressed decode (incoming KS already
+    # The suppressed-decode arm must append one storage head. Appending zero
+    # lets a suppressed decode (incoming KS already
     # [K(l)]) and a retain-whole fire (incoming [], prepending
     # K(l)) produced IDENTICAL targets — norm 2 — through both
     # the same-key-frame and the agreeing-burial suppression
     # variants. Every fire arm now appends EXACTLY ONE arm-typed
     # head; the suppressed arm's ('KA', g, i) CARRIES ITS KEY
-    # because two different tickets both suppressing over a
-    # shared two-frame RS collided too (the author sibling — a
-    # contentless marker would have left it alive). Control: the
+    # because two different tickets suppressing over a shared two-frame RS
+    # would otherwise collide. Control: the
     # decode-RECORDED arm is unchanged.
     fr1 = K.FRAME('h', tinst, 0)
     fr2 = K.FRAME('h', tcargo, 0)
@@ -1481,36 +1451,34 @@ def cert_sweep():
           'control intact %s'
           % (pf_wf, pf_frame, pf_burial, pf_twokey, pf_ctrl))
 
-    # v1.24 regression 2 (audit #16's W0 totality countermodels):
-    # closed() accepted Var(0) under the 1-INDEXED convention
+    # closed() must reject Var(0) under the 1-indexed convention
     # (IndexError in binder_path one step inside WF), and nothing
     # sorted the CONTAINERS (a list-valued tape passed WF, then
     # the fire's tuple concatenation TypeError'd). W0 now checks
-    # exact-type purity without hashing — a nested tuple-subclass
-    # with a hostile __hash__ is flagged, not crashed on.
+    # exact-type purity without hashing: a nested tuple subclass
+    # with a failing __hash__ is flagged without invoking it.
     aterm = _App(_Gate('h'), _Lam(_Var(1)))
     alp = ('L', ('a', 'b'), ())
-    class _Evil(tuple):
+    class _BadHashTuple(tuple):
         def __hash__(self):
-            raise RuntimeError('hostile hash')
+            raise RuntimeError('forbidden hash')
     w0t_var0 = 'W0' in wf(L.Var(0), Run((), 'D', (), (RHO,)))
     w0t_list = 'W0' in wf(aterm, Run(('a',), 'U', (GAM('h'),),
                                      [alp, MU('h'), RHO]))
     try:
         w0t_evil = wf(aterm, Run(('a',), 'U', (GAM('h'),),
-                                 (_Evil(alp), MU('h'), RHO))) == ['W0']
+                                 (_BadHashTuple(alp), MU('h'), RHO))) == ['W0']
     except Exception:
         w0t_evil = False
     w0t_ctrl = wf(aterm, Run(('a',), 'U', (GAM('h'),),
                              (alp, MU('h'), RHO))) == []
     ok_w0t = w0t_var0 and w0t_list and w0t_evil and w0t_ctrl
     print('W0 totality regression: Var(0) W0 %s, list tape W0 %s, '
-          'hostile-hash subclass W0 without crash %s, tuple '
+          'bad-hash subclass W0 without crash %s, tuple '
           'control WF %s'
           % (w0t_var0, w0t_list, w0t_evil, w0t_ctrl))
 
-    # v1.25 regression 1 (audit #17's totality countermodels):
-    # exact-pure malformed tuples — ('AL',), ('L',), an empty ()
+    # Exact-pure malformed tuples — ('AL',), ('L',), an empty ()
     # frame — passed purity, were W0-flagged, and then CRASHED
     # the W1-W9 deep scans (IndexError inside the checker). The
     # W0 gate early-returns ['W0'] for out-of-language states;
@@ -1557,8 +1525,7 @@ def cert_sweep():
           'at both polarities %s, same-gate decode control fires %s'
           % (ag_cross, ag_ctrl))
 
-    # v1.26 regression (audit #18's layer-four totality
-    # countermodels): an exact-pure EMPTY TUPLE in the log
+    # An exact-pure empty tuple in the log
     # crashed wf() BEFORE the W0 gate (w0log -> is_gam -> bare
     # e[0]); a 1,500-deep exact tuple blew recursive pure(); a
     # 1,500-lambda term blew recursive closed(). Every traversal
@@ -1592,12 +1559,11 @@ def cert_sweep():
           '1500-lambda term WF without crash %s'
           % (tot4_empty, tot4_deep))
 
-    # v1.27 regression (audit #19's layer-five countermodels):
-    # garbage terms were silently ACCEPTED (closed() had no
-    # rejecting branch), a cyclic term graph hung the tree walk,
-    # a hostile Run SUBCLASS ran code from inside wf before
-    # purity, a 25-node shared DAG cost 2^24 purity visits, and
-    # wf7 crashed on an empty frame. closed() is now a full term
+    # Garbage terms must be rejected, cycles must terminate, and malformed
+    # subclasses must not execute custom accessors. In particular, closed()
+    # must have a
+    # rejecting branch, the term walk must detect cycles, shared DAGs must be
+    # visited by identity, and wf7 must decline malformed frames. closed() is a full term
     # validator (reject unknown kinds; on-path cycle detection;
     # (id,depth) memo), pure() is id-visited, dispatch is
     # exact-type, wf7 declines out-of-language rs. Controls: the
@@ -1609,10 +1575,10 @@ def cert_sweep():
             return False
     cyc = _Lam(_Var(1))
     object.__setattr__(cyc, 'body', cyc)
-    class _HostileRun(Run):
+    class _MalformedRun(Run):
         def __getattribute__(self, name):
             if name == 'path':
-                raise RuntimeError('hostile path')
+                raise RuntimeError('forbidden path access')
             return super().__getattribute__(name)
     dag = ('L', ('a', 'b'), ())
     for _ in range(24):
@@ -1621,7 +1587,7 @@ def cert_sweep():
     ok_tot5 = (tot5(lambda: wf('junk', root), ['W0'])
                and tot5(lambda: wf(object(), root), ['W0'])
                and tot5(lambda: wf(cyc, root), ['W0'])
-               and tot5(lambda: wf(tterm, _HostileRun(
+               and tot5(lambda: wf(tterm, _MalformedRun(
                    tpath, 'U', tlog, (RHO,))), [])
                and tot5(lambda: wf(tterm, Run(tpath, 'U', tlog,
                                               (dag, RHO))), ['W0'])
@@ -1635,31 +1601,22 @@ def cert_sweep():
                                               (tinst, MU('h'),
                                                RHO))), []))
     print('totality-V regression: junk/object/cyclic terms W0, '
-          'hostile subclass declined, 2^24 DAG prompt, wf7 '
+          'malformed subclass declined, 2^24 DAG prompt, wf7 '
           'malformed-frame declined, deep-term + genuine-Run '
           'controls intact: %s' % ok_tot5)
 
-    # v1.28 regression (audit #20's layer-six countermodels):
-    # hostile TERM subclasses ran code inside wf (exact-type
-    # dispatch protected only the state); the Gate production
-    # was unvalidated (Gate('x') passed wf and broke
-    # W0-preservation one step later; Gate([]) crashed the
-    # machine); wf7 raised on a hostile subclass, a list inside
-    # the path tuple, and a list in the arrival tail; and the
-    # (id,depth) memo was quadratic on App/Lam chains. The
-    # max-free validator is linear with exact-type node
-    # dispatch; wf7 is gated by wf itself. Controls: a genuine
-    # certified wf7 fibre answer, the suite roots, and a shared
-    # chain validated promptly.
-    class _HLam(_Lam):
+    # Term subclasses, invalid Gate values, unhashable state coordinates,
+    # and shared App/Lam chains exercise exact-type dispatch, total rejection,
+    # and representation-linear validation. wf7 is gated by wf itself.
+    class _MalformedLam(_Lam):
         def __getattribute__(self, name):
             if name == 'body':
-                raise RuntimeError('hostile body')
+                raise RuntimeError('forbidden body access')
             return super().__getattribute__(name)
-    class _HRun(Run):
+    class _MalformedRun2(Run):
         def __getattribute__(self, name):
             if name == 'path':
-                raise RuntimeError('hostile path')
+                raise RuntimeError('forbidden path access')
             return super().__getattribute__(name)
     def tot6(fn, want):
         try:
@@ -1670,13 +1627,13 @@ def cert_sweep():
     for _ in range(800):
         chain = _App(chain, _Lam(chain))
     root6 = Run((), 'D', (), (RHO,))
-    t6_term = (tot6(lambda: wf(_HLam(_Var(1)), root6), ['W0'])
+    t6_term = (tot6(lambda: wf(_MalformedLam(_Var(1)), root6), ['W0'])
                and tot6(lambda: wf(_Gate('x'), root6), ['W0'])
                and tot6(lambda: wf(_Gate(object()), root6), ['W0'])
                and tot6(lambda: wf(_Gate([]), root6), ['W0'])
                and tot6(lambda: wf(chain, root6), []))
     t6_wf7 = (tot6(lambda: wf7(tterm, {tpath: frozenset()},
-                               _HRun(tpath, 'U', tlog, (RHO,)),
+                               _MalformedRun2(tpath, 'U', tlog, (RHO,)),
                                {}), [])
               and tot6(lambda: wf7(tterm, {tpath: frozenset()},
                                    Run(([],), 'U', (), (RHO,)),
@@ -1693,23 +1650,18 @@ def cert_sweep():
                and wf7(tterm, {tpath: frozenset()}, kpf_a, fib6)
                == ['W7-domain'])
     ok_tot6 = t6_term and t6_wf7 and t6_ctrl
-    print('totality-VI regression: hostile term subclass + '
-          'invalid gates W0 %s, wf7 hostile/unhashable declined '
+    print('totality-VI regression: malformed term subclass + '
+          'invalid gates W0 %s, wf7 malformed/unhashable declined '
           '%s, WF-source-reaches-fibre + chain controls intact %s'
           % (t6_term, t6_wf7, t6_ctrl))
 
-    # v1.29 regression (audit #21's layer-seven countermodels):
-    # the register ROOTS were never type-checked (pure(0) True —
-    # an int is a pure leaf — then iteration crashed on all five
-    # fields); d was omitted from purity (a hostile __eq__
-    # executed at the membership check); the binder walk's
-    # p[:-1] copying was quadratic on long occurrences. Roots
-    # exact-tuple, d exact-str, index-based walk. The timing
+    # Register roots must be exact tuples, d must be an exact string, and the
+    # binder walk must be index-based. The timing
     # bound is loose (8x size under 24x time — quadratic would
     # be ~64x) to stay robust under machine load.
-    class _HD:
+    class _BadEqDirection:
         def __eq__(self, other):
-            raise RuntimeError('hostile d')
+            raise RuntimeError('forbidden direction comparison')
     def tot7(fn, want):
         try:
             return fn() == want
@@ -1724,7 +1676,7 @@ def cert_sweep():
     t7_roots = all(tot7(lambda f=f: wf(_Gate('h'), r7(**{f: 0})),
                         ['W0'])
                    for f in ('path', 'log', 'tape', 'rs', 'ks'))
-    t7_d = tot7(lambda: wf(_Gate('h'), r7(d=_HD())), ['W0'])
+    t7_d = tot7(lambda: wf(_Gate('h'), r7(d=_BadEqDirection())), ['W0'])
     t7_wf7 = tot7(lambda: wf7(_Gate('h'), {(): frozenset()},
                               r7(path=0), {}), [])
     import time as _time
@@ -1740,13 +1692,12 @@ def cert_sweep():
     rB, tB = _walk_time(8000)
     t7_lin = rA == [] and rB == [] and tB < 24 * max(tA, 1e-4)
     ok_tot7 = t7_roots and t7_d and t7_wf7 and t7_lin
-    print('totality-VII regression: scalar roots W0 %s, hostile '
+    print('totality-VII regression: scalar roots W0 %s, malformed '
           'd W0 without executing %s, wf7 declines %s, deep-lp '
           'walk linear-band %s'
           % (t7_roots, t7_d, t7_wf7, t7_lin))
 
-    # v1.30 regression (audit #22's composition countermodel):
-    # n frames sharing ONE valid deep lp cost Θ(n²) pre-gate —
+    # n frames sharing one valid deep lp must stay representation-linear;
     # four individually-linear parts composed quadratically
     # because w0lp_shape rescanned the occurrence before the
     # memo. The full-lp memo restores composition linearity;
@@ -1768,28 +1719,10 @@ def cert_sweep():
     rS, tS = comp28(250, True)
     rL, tL = comp28(2000, True)
     rD, _tD = comp28(64, False)
-    # v1.38 (audit #30): the timing family's 'X' is LOAD-BEARING
-    # — the W0 gate early-returns before the post-gate W2
-    # duplicate scan (quadratic by value-semantics on identical
-    # frames), isolating PRE-GATE cost; the rs loop runs
-    # unconditionally, so the machinery IS exercised (measured
-    # 100 w0lp calls at n=100). But the verdict alone cannot
-    # prove traversal, so the SENSITIVITY PAIR gates it: under
-    # an in-language direction a corrupt LAST frame of the
-    # left-to-right rs loop must flip the verdict to exactly
-    # ['W0'] — under the SHIPPED checker only the occurrence
-    # walk detects it. v1.39 (audit #31): the corrupt value is
-    # a tuple-well-shaped all-'b' lp one binder DEEPER than the
-    # term — its sole W0 defect is the unbound occurrence
-    # (walking n+1 'b's steps 'b' at the Var and dies); the
-    # shallow ('BAD',) sentinel was defeated by a canned-count
-    # mutant that skipped the walk for long all-'b' occurrences.
-    # v1.40/v1.41 (audits #32/#33): the pair gates the stated
-    # predicates — genuine 'W0'-free (the family's by-design
-    # verdict is W2-dup flags), corrupt exactly ['W0'] — and
-    # kills that mutant class; no fixed fixture pins a
-    # fixture-aware implementation or non-gated flags; scope
-    # statement in the register's §10.
+    # The timing family's 'X' isolates pre-gate cost from the W2 duplicate
+    # scan. A sensitivity pair proves that the occurrence walk ran: an
+    # in-language direction with one unbound, tuple-well-shaped lp must flip
+    # from W0-free to exactly ['W0'].
     n28 = 12
     t28s = _Var(n28)
     for _ in range(n28):
@@ -1811,8 +1744,7 @@ def cert_sweep():
              and tL < 24 * max(tS, 1e-4),
              rD == ['W0'], sens28))
 
-    # v1.31 regression (audit #23's layer nine): value-sharing
-    # without object-sharing — n DISTINCT lp shells around ONE
+    # Value-sharing without object-sharing: n distinct lp shells around one
     # shared occurrence tuple defeated the per-lp id-memos
     # (4x per doubling). The occurrence memo puts the work
     # where the sharing is. Plus the stale-memo interleaving
@@ -1822,11 +1754,8 @@ def cert_sweep():
         term29 = _Var(n)
         for _ in range(n):
             term29 = _Lam(term29)
-        # ONE shared occurrence object across all shells — the
-        # auditor's exact family (a first draft built a fresh
-        # ('b',)*n per shell, which is a genuinely Θ(n²)
-        # REPRESENTATION and rightly measures quadratic —
-        # caught in-round when the band failed)
+        # One shared occurrence object across all shells. A fresh ('b',)*n
+        # per shell would itself be a genuinely quadratic representation.
         occ_sh = ('b',) * n
         shells = tuple(('L', occ_sh, ()) for _ in range(n))
         if storage:
@@ -1852,19 +1781,15 @@ def cert_sweep():
     fresh = wf(sterm, Run(('b',), 'U', (slp,), (RHO,), None,
                           (K.FRAME('h', slp, 0),), ()))
     memo_ok = stale == ['W0'] and fresh == ['W0']
-    # v1.38 (audit #30): sensitivity pairs for BOTH storage
-    # variants — the 'X' timing states exercise the machinery
-    # through the unconditional rs/ks loops (measured 200
-    # w0lp_shape/occ_required calls at n=100), and the pairs
-    # gate that traversal through the public verdict.
+    # Sensitivity pairs for both storage variants gate traversal through the
+    # public verdict.
     n29 = 12
     t29s = _Var(n29)
     for _ in range(n29):
         t29s = _Lam(t29s)
     sh29s = tuple(('L', ('b',) * n29, ()) for _ in range(n29))
-    # v1.39 (audit #31): deep corrupt — tuple-well-shaped, its
-    # sole W0 defect the unbound occurrence (one 'b' beyond the
-    # binders); the shipped checker rejects it via the walk.
+    # The corrupt lp is tuple-well-shaped; its sole W0 defect is an unbound
+    # occurrence one binder beyond the term.
     ub29 = ('L', ('b',) * (n29 + 1), ())
     fr29g = tuple(K.FRAME('h', x, 0) for x in sh29s)
     fr29c = fr29g[:-1] + (K.FRAME('h', ub29, 0),)
@@ -1882,19 +1807,13 @@ def cert_sweep():
           'fresh-call verdicts W0 %s, traversal-sensitivity '
           'pairs %s' % (occ_lin, memo_ok, sens29))
 
-    # v1.32 regression (audit #24's layer ten + the preempted
-    # KD sibling): THREE shared-substructure families, each
-    # with a timing band at 8x size (24x limit; quadratic
-    # ~64x) — (a) the auditor's shared-slice family in rs
+    # Three shared-substructure families each use a timing band at 8x size
+    # (24x limit; quadratic about 64x): (a) the shared-slice family in rs
     # (n shells, ONE n-entry slice), (b) the same in
-    # K-storage, (c) the self-derived shared-KD-keys family.
-    # [v1.33 correction, per audit #25: this comment originally
-    # said FOUR families naming slice-cargo, which the loop
-    # never had — the same unmarked-miss class as v1.29's
-    # conservation grade, repeated one round after correcting
-    # it; slice-cargo is timed by regression thirty-one.]
+    # K-storage, and (c) the shared-KD-keys family. Slice cargo is timed by
+    # the occurrence-memo regression above.
     def shells30(n, kind):
-        # the auditor's layer-ten shape: term Lam(App(Var(1),
+        # Shape: term Lam(App(Var(1),
         # App(Var(1), ... Var(1)))) — path ('b','f') is a Var
         # with required slice 0 (the shared INNER lp), and path
         # ('b',) + ('a',)*(n-1) is the final Var with required
@@ -1931,25 +1850,18 @@ def cert_sweep():
         rl30, tl30 = shells30(800, kind)
         bands.append(rs30 == ['W0'] and rl30 == ['W0']
                      and tl30 < 24 * max(ts30, 1e-4))
-    # v1.38 (audit #30): sensitivity pairs for all three kinds —
-    # the 'X' states exercise the machinery through the
+    # Sensitivity pairs for all three kinds exercise the machinery through the
     # unconditional rs/ks loops (the early return isolates
     # pre-gate cost from the value-semantics W2 scan), and the
     # pairs gate that traversal through the public verdict: a
     # corrupted element must flip an in-language state to
-    # exactly ['W0']. v1.39 (audit #31): the walker is LIFO
-    # (extend, then pop from the END), so a corrupt at sl[-1]
-    # is visited FIRST — the v1.38 sentinel died at one visit
-    # and a slice-skipping mutant passed every gate. The
-    # corrupt element now sits at slice position 0 — popped
+    # exactly ['W0']. The walker is LIFO (extend, then pop from the end), so
+    # the corrupt element sits at slice position 0 and is popped
     # LAST by the LIFO walker in the rs/ks kinds (the KD
     # kind's corrupt is the last key of a left-to-right all())
     # — and is a tuple-well-shaped lp whose sole W0 defect is
-    # an unbound occurrence ('f' stepped at a Var), which the
-    # shipped checker rejects via the deep walk. v1.40/v1.41
-    # (audits #32/#33): the pairs gate the stated predicates
-    # under the shipped checker, not implementations or
-    # non-gated flags — scope statement in §10.
+    # an unbound occurrence ('f' stepped at a Var). The pairs gate the stated
+    # predicates rather than a particular implementation.
     n30 = 12
     t30s = _Var(1)
     for _ in range(n30 - 2):
@@ -1985,21 +1897,16 @@ def cert_sweep():
           'shared-KD-keys families W0 inside the linear band %s, '
           'traversal-sensitivity pairs %s' % (bands, sens30))
 
-    # v1.33 regression (audit #25's layer eleven): the big-index
-    # family — Var(1<<n) under n lambdas, Θ(n) representation
+    # The big-index family — Var(1<<n) under n lambdas, Θ(n) representation
     # with an n-BIT leaf — was quadratic through max-free's
     # big-int subtractions; the lam-count clamp makes every
     # propagated value word-sized. Plus the slice-cargo family
     # (n−1 distinct shells — one per 'a' of the carrier
     # occurrence, which is what the slice equation requires —
     # sharing one occurrence as the slice of ONE carrier on
-    # tape) and the bound-big-index control (no
-    # over-rejection from the clamp). v1.36 (audit #28): the
-    # first fixture's shell display was a constant expression —
-    # CPython folds it to ONE object, so the claimed distinct
-    # shells never existed; the shells now reference a named
-    # occurrence (a display carrying a name is built per
-    # iteration) and their distinctness is GATED, not claimed.
+    # tape) and the bound-big-index control. Each shell references a named
+    # occurrence so CPython cannot constant-fold the displays into one object;
+    # their distinctness is gated.
     def big31(n):
         term31 = _Var(1 << n)
         for _ in range(n):
@@ -2021,24 +1928,14 @@ def cert_sweep():
                 + shells31[1:]
         distinct31 = len({id(sh) for sh in shells31}) == n - 1
         carrier = ('L', occ31, shells31)
-        # v1.38 (audit #30): tape tokens sit INSIDE the
-        # short-circuited W0 conjunction — under 'X' the carrier
-        # was NEVER traversed (0 w0tok/w0lp_shape/occ_required
-        # calls; removing it left the whole output
-        # byte-identical). The state is now in-language, the
+        # Tape tokens sit inside the short-circuited W0 conjunction. Keeping
+        # the state in-language ensures the carrier is traversed; the
         # WF-clean verdict is gated, and the corrupt control is
-        # the positive traversal gate. v1.39 (audit #31): the
-        # walker is LIFO — extend, then pop from the END — so
-        # the v1.38 corrupt-at-sl[-1] was visited FIRST (one
-        # w0lp_shape call) and a slice-skipping mutant passed
-        # every gate; the corrupt shell now sits at slice
+        # the positive traversal gate. The walker is LIFO, so the corrupt shell sits at slice
         # position 0 (popped LAST — a full drain is required to
         # reach it, measured n-1 of n-1 shells visited) and is
-        # a tuple-well-shaped lp whose sole W0 defect is an
-        # unbound occurrence, which the shipped checker rejects
-        # via the deep walk. v1.40/v1.41 (audits #32/#33): the
-        # pair gates the stated predicates, not implementations
-        # or non-gated flags — §10 scope statement.
+        # a tuple-well-shaped lp whose sole W0 defect is an unbound
+        # occurrence. The pair gates the stated predicate, not an implementation.
         st = Run((), 'D', (), (carrier, RHO))
         t0 = _time.perf_counter()
         r = wf(term31, st)
@@ -2067,18 +1964,13 @@ def cert_sweep():
           % (big_ok, cargo_ok, dc_s and dc_l,
              rc_x == ['W0'], ctl_ok))
 
-    # v1.34 regression (audit #26's deleted-field
-    # countermodels): object.__delattr__ makes EXACT instances
+    # object.__delattr__ can make exact instances
     # hollow. The four UNDEFAULTED fields (path/d/log/tape)
     # vanish outright -> ['W0'] without raising; the three
     # DEFAULTED fields (vb/rs/ks) fall back to their
     # class-level defaults -> extensionally the default Run for
-    # every machine/checker observation (audit #27: 110,232
-    # comparisons, zero mismatches), honestly []. Hollow
-    # Lam/Var terms ['W0']; wf7 declines; constructor controls
-    # intact. [v1.35: this comment originally said all seven ->
-    # W0 — stale from the draft whose failing gate discovered
-    # the distinction; corrected per audit #27.]
+    # every machine/checker observation, honestly []. Hollow Lam/Var terms are
+    # W0; wf7 declines them; constructor controls remain intact.
     def fld32(mutate):
         try:
             return mutate() == ['W0']
@@ -2148,9 +2040,8 @@ def cert_sweep():
             and ok_occ and ok_sl and ok_big and ok_fld)
 
 def collisions_under_wf():
-    """The review's two raw-state collisions, re-examined against WF
-    and the v1.6/v1.7 rules."""
-    print('\n--- the review collisions, under WF ---')
+    """Check the two raw-state collision regressions against current WF."""
+    print('\n--- raw-state collision regressions under WF ---')
     term = L.App(L.Lam(L.Var(1)), L.Gate('h'))
     inst = ('L', ('f', 'b'), ())
     frames = (FRAME('h', inst, 0),)
@@ -2191,8 +2082,7 @@ if __name__ == '__main__':
     print('\nWF sweep:', 'PASS' if ok1 else 'FAIL',
           ' collision closure:', 'PASS' if ok2 else 'FAIL',
           ' W7/disjointness:', 'PASS' if ok3 else 'FAIL')
-    # The module verdict is the exit code (audit #7: the printed
-    # total alone bound nothing mechanical — the v1.6 collision
-    # pair gates ok2, the cert_sweep flags gate ok3, and any
+    # The module verdict is the exit code: the collision pair gates ok2,
+    # the cert_sweep flags gate ok3, and any
     # single regression failure must fail THIS).
     sys.exit(0 if ok1 and ok2 and ok3 else 1)

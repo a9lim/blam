@@ -1,10 +1,8 @@
 # qALC Gate 1 proof record
 
-Status: **CLOSED — Gate 1 PASS** (2026-08-11). Fresh-context audit #6 returned
-PASS with no required correction after five FAIL-and-repair rounds. The
-authoritative battery passes on the accepted machine. This record closes
-architecture §9 item 1 only; Gate 2 subsequently closed on 2026-08-13 in
-`GATE2.md`.
+Status: **CLOSED — Gate 1 PASS.** The authoritative battery passes on the
+accepted machine. This record states the Gate-1 boundary; the stronger clean
+compiler result is recorded separately in `GATE2.md`.
 
 ## 1. Concrete machine
 
@@ -17,7 +15,7 @@ NFRun(
 )
 ```
 
-`Run` is the audited epoch-bearing gate kernel. The zipper contains the
+`Run` is the epoch-bearing gate kernel. The zipper contains the
 partially constructed canonical 1-indexed de Bruijn normal form. A source
 binder is named by `(code position, current log)`, not position alone: one
 immutable lambda may be revisited in multiple exponential contexts.
@@ -32,7 +30,7 @@ RBL(parent-function, output-path, child)  forward return address
 ```
 
 The persistent composed carrier contains no paper bullet. Before dispatching
-an audited kernel row, `_kernel_token` maps top-level tape `BA` to the kernel's
+an accepted kernel row, `_kernel_token` maps top-level tape `BA` to the kernel's
 plain bullet. The reachable grammar forbids `BA` in log, LP cargo, instance
 keys, replay records, storage, and VB; those coordinates therefore agree
 literally. Every running target is mapped back by `_composed_token`, and the
@@ -252,7 +250,7 @@ log is `out_gate1_final.txt`; the final line is:
 QALC GATE1 FINAL BATTERY: PASS
 ```
 
-The run includes Python compilation, the complete audited kernel/checker
+The run includes Python compilation, the complete kernel/checker
 battery, typechecking and conservation instruments, RRI and instance-identity
 checks, exact Dw H/T arithmetic, full readback and composed-certificate
 batteries, the 1.19M-state marker/range sweep, semantic objects, two-pass
@@ -276,15 +274,8 @@ The claim boundary remains explicit:
   statements, local H/T tables, controller/fibre theorems, and the concrete
   seventeen-sector RRI replay are kernel checked with `decide +kernel` or
   ordinary proofs;
-- no qALC Rust module is in `src/`, and classical/qBLC sources have not
-  changed.
-
-Fresh-context audit #6 (`cl-20260811-232859-104f`, session
-`ca80c2e8-820d-490e-a439-53f627f2e554`, read-only) returned **PASS** with no
-required correction. Its chronology remains in the August ledger and external
-audit record. The audit independently checked source and artifact freshness
-but could not execute Python or Lean in its sandbox; the authoritative battery
-above is the execution evidence.
+- the Rust implementation is independent evidence over byte-pinned transition
+  and carrier fixtures, not a premise of the Python/Lean proof.
 
 ## 7. Current proof surface
 

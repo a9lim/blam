@@ -11,7 +11,7 @@
 //!
 //! Capacity discipline: every operation is fallible (`None` = i128
 //! overflow or a `K_CAP` exit) — a typed resource outcome, never a
-//! wrong number. Callers make evolution steps transactional (phase 1).
+//! wrong number. Callers make evolution steps transactional.
 //! There is no public `raise_k`: it is intentionally noncanonical and
 //! must never be a stored result.
 

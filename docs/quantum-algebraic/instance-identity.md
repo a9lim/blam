@@ -1,6 +1,6 @@
 # qALC gate-instance identity
 
-**Status: closed at the Gate-1 acceptance boundary (2026-08-11).**
+**Status: closed at the Gate-1 acceptance boundary.**
 `(gate, instance)` identifies one dynamic copy of either fixed invocation gate.
 Admission separately checks reachable-recall injectivity (RRI) on every finite
 carrier; the concrete Lean replay proves it for all 17 canonical typed sectors.
@@ -88,16 +88,14 @@ python qalc/QalcConcreteBuild.py --jobs 4
 ## 3. Current claim and optional strengthening
 
 Gate-1 `machine_coverage` requires exact finite-carrier RRI before a sector
-can use the admitted representation. A future admitted finite sector must
-supply the same generated replay. Rejected sectors retain the exact
+can use the admitted representation. Every admitted finite sector must supply
+the same generated replay. Rejected sectors retain the exact
 source-history fallback, so the semantics remains total.
 
 No theorem says typing or W0-W9 imply RRI on an arbitrary unbounded reachable
 graph. A uniform lifecycle/minimal-carrier derivation would be useful
 structure, but it is optional: neither Gate 1, Gate 2, nor the Rust reference
-implementation depends on it. Historical no-rider, ancestry, dominator, and
-phase-separation proof attempts and their countermodels are preserved only in
-the August ledger and git history.
+implementation depends on it.
 
 The executable `instance_identity.py` freezes the gate-copy reconstruction
 and raw-recall counterexample; `rri.py` remains a finite falsification

@@ -1,6 +1,6 @@
 """Forward-only full-normal-form readback for the qALC reference kernel.
 
-This module composes the audited gate kernel with an internal, single-token
+This module composes the gate kernel with an internal, single-token
 readback controller. The invocation term remains immutable; the only
 additional live state is an output zipper.
 
@@ -31,7 +31,7 @@ def RBL(parent_function_path, output_path, code_path):
     return ("RBL", parent_function_path, output_path, code_path)
 
 
-# The composed carrier has one lambda-IAM transport marker.  The audited
+# The composed carrier has one lambda-IAM transport marker. The
 # kernel is written with the paper's plain bullet, so the adapter translates
 # BA to plain on entry and plain back to BA on every running exit.  Plain
 # bullets are therefore kernel-internal and every persistent b3 has one source
@@ -977,7 +977,7 @@ def _nf_step_partial(term, state, certificate=None):
             if returned is not None:
                 return [(1, 0, "return", returned)]
 
-    # Kernel steps see exactly their audited plain-bullet alphabet.  The
+    # Kernel steps see exactly their plain-bullet alphabet. The
     # adapter rewrites top-level tape entries only; the reachable grammar
     # invariant proves that BA never occurs in LP cargo, keys, replay records,
     # storage, VB, or log, so every other coordinate agrees literally.

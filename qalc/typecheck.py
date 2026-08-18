@@ -124,8 +124,8 @@ def _has_gate(t):
 def fragment_check(term):
     """Shell-form programs only: returns
     {'typable': bool, 'type' | 'reason', 'h_only': bool}.
-    v1.9 (working-review catch): the language boundary is enforced
-    syntactically — the shell arguments must be exactly Gate('h')
+    The language boundary is enforced syntactically: the shell
+    arguments must be exactly Gate('h')
     then Gate('t'), and NO Gate literal may occur inside the body
     (gates are reachable only through the signature binders)."""
     if not (isinstance(term, App) and isinstance(term.f, App)
@@ -190,8 +190,8 @@ if __name__ == '__main__':
         esc_ok = esc_ok and not r['typable']
         print('%-10s typable=%s %s' %
               (name, r['typable'], r.get('type', r.get('reason'))))
-    # printed total + exit-code verdict (audit #11: this module had
-    # neither): 17 of the 20 suite programs are typable h-only
+    # The printed total and exit-code verdict require 17 of the 20 suite
+    # programs to be typable h-only
     # (q, dup, dupcall out — the registered fragment count), and
     # every escape must be rejected.
     total_ok = n_honly == 17 and esc_ok

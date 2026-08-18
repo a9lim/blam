@@ -57,13 +57,13 @@ an installed binary still takes explicit paths for them.
 
 ## Library
 
-Three layers: `blc` is the substrate both pillars share (terms, the wire
-format, closed-term enumeration, the reduction kernel), `classical` and
-`quantum` are the two pillars — each a `reference` executable spec, a
-`machine` differential-tested against it, and a `certificate` layer of
-trusted checkers — and `lab` holds the instruments nothing canonical
-depends on. One verb pair, semantic rather than cosmetic: classical
-terms `normalize`, quantum programs `run`.
+The library has a `blc` substrate, three semantic pillars, and a lab layer.
+`classical` and `quantum` each pair a reference executable spec with a
+differential-tested machine and trusted certificate checkers. `qalc` supplies
+the storeless quantum-control machine, exact amplitudes, structural admission,
+and circuit compiler. The `lab` feature holds research instruments nothing
+canonical depends on. One verb pair is semantic rather than cosmetic:
+classical terms `normalize`, quantum programs `run`.
 
 `classical::reference` is a textbook-faithful normal-order normalizer
 that serves as the executable spec. Terms use **1-indexed de Bruijn**
@@ -227,9 +227,8 @@ regeneration, Ω/K regeneration, certificate re-certification).
 - The certificate soundness battery is a crate unit test rather than an
   integration test, so plain `cargo test` streams every provable halter
   ≤28 bits through all four trusted checkers and asserts nothing fires.
-- Halt counts are invariant under every engine change in the repo's
-  history — CI diffs a census spot-check against the canonical table
-  on every push.
+- CI diffs a census spot-check against the canonical table on every push;
+  any halt-count drift is a failure.
 - CI checks formatting and clippy-with-warnings-denied, then runs the
   release test suite on Ubuntu and macOS in three shapes —
   `--all-features`, default features, and `--no-default-features` — so
@@ -241,125 +240,91 @@ regeneration, Ω/K regeneration, certificate re-certification).
 
 ## Selected results
 
-The measurements this engine exists for, in one breath: the complete
-census of all 526,039,969 closed terms of 4–41 bits (~16.5 min on an
-M5 Max) giving the first BBλ(41) bound (≥ 1,074,266,118 bits) and a
-BBλ(32) settled modulo the certificate layer (its one remaining
-unknown is a kernel-checked certified diverger); Ω restricted to ≤41
-bits exactly bracketed in [0.124105086764, 0.124105092895]; the
-170-bit self-interpreter certified locally optimal; and on the quantum
-side the first computed operator census of quantum-preparing programs
-(to our knowledge) —
-Ω_success exactly, single- and two-qubit state rankings, entanglement
-entering at exactly 41 bits, irrationality invading in measured
-layers (operator entries at 34, leaf masses at 45, per-size
-aggregates at 53 in the idiom sector — the non-λ⁵ complement
-measured exactly dyadic through 51 so far), and qBLC
-self-interpreting in 176 bits (proven minimal across the two-entry
-interpreter families).
+The complete classical census covers 526,039,969 closed terms through 41
+bits. It gives BBλ(41) >= 1,074,266,118 bits, settles BBλ(32) modulo the
+kernel-checked certificate layer, and brackets the finite-range halting mass
+as:
 
-The current research boundary and ordered docket live in
-[STATUS](https://github.com/a9lim/blam/blob/main/docs/STATUS.md). The durable
-architecture is split into
-[classical](https://github.com/a9lim/blam/blob/main/docs/classical/architecture.md)
-and
-[quantum](https://github.com/a9lim/blam/blob/main/docs/quantum/architecture.md)
-pillars; proof plans and research notes are grouped beneath those domains.
-A third pillar, **qALC** (quantum *control*: storeless, runtime states in
-ℓ² over token configurations), exists as a
-[ratified design contract](https://github.com/a9lim/blam/blob/main/docs/quantum-algebraic/architecture.md)
-with a machine-verified
-[kernel register](https://github.com/a9lim/blam/blob/main/docs/quantum-algebraic/kernel.md).
-Architecture Gate 1 is closed: exact H/T scattering, internal
-full-normal-form readback, typed terminal sectors, exact predecessor fibres,
-and static validated-carrier/conservative-history selection define `U`,
-`μ_p`, `ρ_p`, `M`, and `Ω_qALC`. Thirty finite operational cores pass the
-composed Lean assembly checks and fresh-context audit #6. Gate 2's clean
-coherent compilation theorem closed on 2026-08-13. The actual composed machine
-now refines arbitrary typed H/T/CNOT lists from one common reachable encoded-
-input cut to exact ideal columns at one symbolic time, with arbitrary finite
+```text
+Omega|<=41 in [0.124105086764, 0.124105092895]
+```
+
+The 170-bit classical self-interpreter is locally optimal across its three
+exhaustive slot-search families. The speed-prior sweep supplies exact Kt,
+depth, and time-spectrum data with post-certificate open mass below `5.93e-12`
+on the beta clock.
+
+The qBLC operator census covers the same population. Its successful mass is
+`3424188513 / 2^40`; entangled successful outputs first occur at 41 bits.
+The trusted skeleton layer proves 815,700 unknown-frontier programs divergent.
+Output-operator irrationality first appears at 34 bits, Galois-odd leaf mass at
+45 bits, and non-dyadic total successful mass at 53 bits.
+
+The current measurements, exact evidence paths, proof boundaries, and ordered
+docket live in [STATUS](docs/STATUS.md).
+
+### qALC
+
+qALC is the third pillar: storeless quantum control with runtime states in ℓ²
+over token configurations. The [architecture](docs/quantum-algebraic/architecture.md)
+and [kernel register](docs/quantum-algebraic/kernel.md) define exact H/T
+scattering, full-NF readback, typed terminal sectors, checked finite admission,
+a conservative total fallback, and the semantic objects `U`, `μ_p`, `ρ_p`,
+finite `M`, and `Ω_qALC`.
+
+The clean compiler sector refines arbitrary typed H/T/CNOT circuits from one
+common reachable input cut to exact ideal columns, with arbitrary finite
 amplitudes, full-NF output, literal common terminal garbage, tick zero, and no
-earlier halt. The cap-free structural compiler selector and clean Bell,
-Toffoli, nonlinear-reuse, and Python/Lean differential checks complete the
-proof boundary. The Rust qALC reference pillar has phases 0–4 landed: typed
-codec/kernel/readback, the Gate-2
-linear-SSA compiler and native-CNOT shadow, structural admission and finite
-checker, checked Gate-1 admission plus theorem-backed structural Gate-2
-selection with conservative fallback,
-public exact semantic objects, all 43 short circuits, the three large clean
-witnesses, and the full 917-state mixed Python/Rust differential. The
-default-built `blam qalc` group now exposes that surface directly:
+earlier halt. The Rust pillar implements the complete surface and byte-checks
+its transition/carrier evidence against the Python/Lean reference.
 
 ```bash
-blam qalc compile 2 h:0 cx:0:1       # typed circuit -> canonical qALC term
-blam qalc run 'TERM' --steps 221     # exact U^221 and halt/error/running mass
-blam qalc gram 'TERM'                # selected-machine finite Gram audit
-blam qalc fixtures tests/qalc/HH.qfx # full engine-backed qfx regeneration
+blam qalc compile 2 h:0 cx:0:1
+blam qalc run 'TERM' --steps 221
+blam qalc gram 'TERM'
+blam qalc fixtures tests/qalc/HH.qfx
 blam qalc compile 1 h:0 --term-only | blam qalc run --file - --steps 51
 ```
 
-`run` and `gram` also accept `--file FILE [--program NAME]`, with `--file -`
-reading the one-line form emitted by `compile --term-only`. Census remains follow-on
-work. The authoritative executable reference,
-batteries, generated finite evidence, and Lean clean-compilation theorem are versioned in
-[qalc/](https://github.com/a9lim/blam/tree/main/qalc).
-Canonical evidence lives in
-[data/](https://github.com/a9lim/blam/tree/main/data), the Lean formalization
-in [lean/](https://github.com/a9lim/blam/tree/main/lean), and the chronological
-record in the
-[monthly ledger](https://github.com/a9lim/blam/tree/main/docs/ledger).
+`run` and `gram` also accept `--file FILE [--program NAME]`; `--file -` reads
+the one-line form emitted by `compile --term-only`. qALC census is intentionally
+a separate layer.
 
 ## Layout
 
-- `src/` — the library (`blc` substrate, `classical` and `quantum`
-  pillars, `lab` instruments behind the `lab` feature); `src/cli/` — the
-  `blam` binary.
-- `examples/` — the README snippets, runnable.
-- `tests/` — the integration suites: differential lockstep, Tromp
-  conformance vectors, term and parser basics, and the checkpoint-resume
-  contract driven through the real binary. The certificate soundness
-  battery lives inside the crate, at
-  `src/classical/certificate/battery.rs`, so it runs under plain
-  `cargo test` while discovery stays off the default public surface.
-- `docs/STATUS.md` — the sole authority for moving results and the open
-  docket; `docs/classical/` and `docs/quantum/` hold durable architecture,
-  specifications, proof plans, and research notes; `docs/ledger/` is
-  chronological history.
-- `data/` — canonical evidence, divided into classical, quantum,
-  certificate, and self-interpreter domains (regenerated, never hand-edited;
-  superseded generations live in git history).
-- `scripts/` — the standing protocols, runnable.
-- `lean/` — the Lean 4 formalization (own README).
-- `qalc/` — the accepted Python reference machine, Gate-1/2 batteries,
-  generated finite evidence, and standalone Lean compilation theorem.
-- `tools/` — reusable low-level utilities and analyzers; prose and canonical
-  outputs do not live here.
-- `contrib/ait-uni/` — the portable upstream `uni.rs` PR kit and parity
-  harness.
-- `ref/AIT` — submodule: Tromp's corpus and execution oracles, read by
-  the parity harness.
+- `src/` — the library and `src/cli/` measurement driver. The library contains
+  the `blc` substrate, classical, quantum, and qALC pillars, plus lab-gated
+  instruments.
+- `examples/` — runnable versions of the README snippets.
+- `tests/` — integration, differential, conformance, qALC fixture, and
+  checkpoint-resume suites.
+- `docs/STATUS.md` — current measurements, proof boundaries, and open docket;
+  domain directories contain durable current contracts.
+- `data/` — canonical classical, quantum, certificate, and self-interpreter
+  outputs; regenerate rather than hand-edit.
+- `scripts/` — standing measurement and recertification protocols.
+- `lean/` — Lean 4 formalization and generated divergence theorems.
+- `qalc/` — accepted Python/Lean qALC reference, proof records, batteries, and
+  generated finite evidence.
+- `tools/` — reusable utilities and analyzers.
+- `contrib/ait-uni/` — portable `uni.rs` upstream kit and parity harness.
+- `ref/AIT` — pinned Tromp corpus and execution oracles.
 
-This root README is the repository's reading map and stable public story.
-Moving facts belong only in `docs/STATUS.md`; architecture documents state
-durable contracts, and the ledger is append-only history. The crates.io
-package ships the engine and its drivers (`src/`, `examples/`, this
-README, the license); research evidence, proofs, and supporting utilities
-live only in the repo.
+The crates.io package ships the engine and drivers (`src/`, `examples/`, this
+README, and the license). Research data, proofs, scripts, and reference
+oracles remain repository-only. Git history is the archive for superseded
+documentation and data generations.
 
 ## Attribution
 
-The λ-calculus, the encoding, the BBλ problem, the reference
-implementations, and the published values are all John Tromp's
+The lambda calculus, encoding, BBλ problem, reference implementations, and
+published values are John Tromp's
 ([tromp/AIT](https://github.com/tromp/AIT)); `classical::escalation` and
-`classical::oracle` re-implement algorithms from `BB.lhs`/`AIT.lhs`.
-This repo is an independent engine, verified against his.
+`classical::oracle` reimplement algorithms from `BB.lhs` and `AIT.lhs`.
+This repository is an independent engine verified against his.
 
-Built by [a9lim](https://github.com/a9lim). Development history is preserved
-in the
-[monthly ledger](https://github.com/a9lim/blam/tree/main/docs/ledger)
-and the commit graph; the live documentation describes the current system.
+Built by [a9lim](https://github.com/a9lim).
 
-AGPL-3.0-or-later — covering this repo's own code (© 2026 a9lim).
-The `ref/AIT` submodule is upstream Tromp material (which carries no
-license file; rights remain the author's), referenced by pin, never
-vendored.
+AGPL-3.0-or-later covers this repository's own code (© 2026 a9lim). The
+`ref/AIT` submodule is upstream Tromp material without a license file; rights
+remain the author's.

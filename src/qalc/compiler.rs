@@ -4,8 +4,8 @@
 //! The compiler emits one immutable `p h t c` invocation. Preparation and
 //! every logical gate terminate at a persistent native-CNOT port boundary;
 //! the structural certificate is recovered by a finite syntax walk, never by
-//! carrier discovery. Phase 3 exposed the structural admission; Phase 4
-//! composes it with Gate-1 admission and the public semantic `U`.
+//! carrier discovery. The total selector composes this structural path
+//! with checked Gate-1 admission and the conservative semantic fallback.
 
 use std::collections::HashMap;
 
@@ -648,8 +648,9 @@ pub fn compiler_certificate(compiled: &Compiled) -> Result<CertEntries, CompileE
 }
 
 /// Recognize a compiler image and derive its syntax-directed certificate
-/// without cloning the source term.  This is the cap-free selector path;
-/// `recognized_metadata` remains the owned audit convenience used by Phase 3.
+/// without cloning the source term. This is the cap-free selector path;
+/// `recognized_metadata` remains the owned audit convenience used by the
+/// independent finite checker.
 pub(crate) fn recognized_certificate(
     term: &Term,
 ) -> Result<Option<(Circuit, CertEntries)>, CompileError> {

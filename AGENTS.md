@@ -3,9 +3,9 @@
 Rust engine for binary lambda calculus / AIT experiments, verified against
 Tromp's Haskell. The root `README.md` is the public story and repository map.
 `docs/STATUS.md` is the single authority for current measurements and the open
-docket. Durable classical and quantum architecture, proof plans, research
-notes, and monthly history live under `docs/`. Canonical measurement outputs
-live in `data/`; standing protocols are runnable from `scripts/`.
+docket. Durable classical and quantum architecture, proof plans, and research
+notes live under `docs/`. Canonical measurement outputs live in `data/`;
+standing protocols are runnable from `scripts/`.
 
 This file carries the conventions and operational facts that must be in hand
 before changing the project. Read `docs/STATUS.md` before research or docket
@@ -26,8 +26,8 @@ work; do not duplicate its moving state here.
   arms only exist under default features), then a census spot-check
   (`scripts/spot-check.sh`) whose halt counts are
   bit-identical to `data/classical/census_table.txt` at the sizes touched.
-  Halts have been invariant through every change in history; treat drift as a
-  bug in the change, not a discovery.
+  Canonical halt counts are invariants; treat drift as a bug in the change,
+  not a discovery.
 - `data/` holds results, not scratch, and only canonical generations live in
   the tree. The classical census, frontier, and Ω/K outputs are in
   `data/classical/`; the operator census is in `data/quantum/`; certificate
@@ -62,64 +62,35 @@ work; do not duplicate its moving state here.
 
 ## The engines
 
-The library is three layers — `blc` substrate, symmetric `classical` and
-`quantum` pillars, `lab` behind its own feature — and one binary, `blam`,
-whose subcommands live in `src/cli/`. Lab-gated subcommands are recognised
-without the feature and say how to get themselves; do not "fix" that by
-deleting the arm. A third pillar, `quantum-algebraic` (qALC: quantum *control*,
-storeless, runtime states in ℓ² over token configurations), has an accepted
-Python/Lean reference and proof surface in `qalc/`; its Rust engine
-(`src/qalc/`) has completed phases 0–4 of the ratified sketch
-(`docs/quantum-algebraic/rust-pillar.md`): typed schema, the
-PyReprKey/wire codec split, the canonical-invariant `Amp`, the kernel
-step table with its exact-Dw evolvers (`src/qalc/kernel.rs`), and the
-composed full-NF machine (`src/qalc/readback.rs` — dispatcher, BA
-adapters, typed totalization, predecessor inverses, composed
-evolvers), plus the linear-SSA compiler, native-CNOT shadow, structural
-admission, and finite checker (`compiler.rs`, `shadow.rs`, `gate2check.rs`),
-plus checked Gate-1 admission/WF/RRI and total public semantics
-(`admission.rs`, `wf.rs`, `semantics.rs`). Fixtures live in three runtime
-trees plus one embedded selector pin, with four exporters: the kernel
-files under `tests/qalc/` — twenty suite programs plus three Dw-only
-T-phase probes, regenerated only by `qalc/export_rust_fixtures.py`
-(the qALC workflow byte-checks them) — and the 30 composed Gate-1
-cores plus RBL corpus under `tests/qalc/composed/`, regenerated only
-by `qalc/export_composed_fixtures.py`; the complete 917-state mixed Gate-2
-carrier, expanded repr corpus, and Python-generated compiler-pin manifest live
-under `tests/qalc/gate2/`, regenerated only by
-`qalc/export_gate2_fixtures.py`; `src/qalc/admission_pins.qfx` is stripped
-from the authoritative kernel fixtures only by
-`qalc/export_admission_fixtures.py`. `tests/qalc_kernel.rs`,
-`tests/qalc_composed.rs`, and `tests/qalc_gate2.rs` regenerate every one byte-identically from
-the Rust engine alone — the Gate-1 30-core differential (7,507 states
-/ 7,417 columns, per-edge predecessor inverses, totalization probes)
-and the Gate-2 917-state / 913-column differential are closed. Kernel
-error/guard arms unreached by any carrier or probe, the composed
-`egi`/`invalid-kernel-target` arm, and Gate-2 shadow error/refused-predecessor
-arms outside clean compiler carriers are pinned by review only (passed Codex
-drift reviews, findings folded). `docs/quantum-algebraic/architecture.md` is the contract;
-`token.md` is the active IAM-lineage token design; `kernel.md` is the
-current-only v1.43 register; `machine.md` is read-only history. Architecture
-Gate 1 is closed: the reference composed machine supplies exact H/T
-scattering, full-NF readback, typed halt/error sectors, exact predecessor
-fibres, validated finite admission with conservative-history fallback, and
-`U`/`μ_p`/`ρ_p`/`M`/`Ω_qALC`. Its 30 finite cores and concrete Lean
-checks pass the authoritative battery and fresh-context audit #6. The stronger
-ambient lifecycle theorem is optional; raw-WF recall is known noninjective.
+The library has a `blc` substrate, three semantic pillars (`classical`,
+`quantum`, and `qalc`), and a `lab` layer behind its own feature. The `blam`
+binary dispatches through `src/cli/`. Lab-gated subcommands are recognised
+without the feature and explain how to enable themselves; do not delete those
+dispatcher arms.
 
-The live implementation, batteries, generated evidence, and proof records are
-`qalc/{gate1_check.py,GATE1.md,gate2_check.py,GATE2.md}`. Gate 2
-closed on 2026-08-13: the actual composed machine now has an unbounded
-arbitrary-circuit H/T/CNOT refinement from one common reachable encoded-input
-cut to exact ideal columns, full-NF output, one literal terminal block, no
-earlier halt, arbitrary finite amplitudes, and cap-free structural compiler
-admission. Clean finite Bell/Toffoli/nonlinear carriers and the 917-state
-Python/Lean differential remain independent evidence. Historical alternatives,
-audits, and superseded proof routes live only in `docs/ledger/`, git history,
-and external audit records. Rust Phase 4 and the default-built `blam qalc`
-`run`/`gram`/`compile`/`fixtures` group landed 2026-08-17; census remains a
-separate later layer. qALC work must leave classical and qBLC rows
-bit-identical.
+qALC is quantum *control*: a storeless machine whose runtime states lie in
+ℓ² over token configurations. `docs/quantum-algebraic/architecture.md` is the
+semantic contract, `token.md` fixes token identity, `kernel.md` is the current
+v1.43 rule register, and `rust-pillar.md` maps the live Rust implementation.
+`src/qalc/` contains the exact amplitude domain, wire codec, kernel and
+full-normal-form machine, linear-SSA compiler, native-CNOT shadow, structural
+admission, finite checker, and total public semantics. The default-built
+`blam qalc` group exposes `run`, `gram`, `compile`, and `fixtures`; census is a
+separate research layer.
+
+The Python/Lean reference, batteries, proof records, and fixture exporters live
+in `qalc/`. Generated kernel fixtures, composed Gate-1 cores, the mixed Gate-2
+carrier, and the embedded admission selector are regenerated only through their
+four named exporters. The Rust differential tests regenerate the fixtures
+byte-identically and check the 7,507-state Gate-1 carrier and 917-state Gate-2
+carrier, including predecessor inverses and totalization probes. Error arms not
+reached by those carriers remain review-pinned rather than theorem-backed.
+Gate 1 supplies exact H/T scattering, full-NF readback, typed terminal sectors,
+validated finite admission, and the algorithmic-information objects. Gate 2
+supplies the unbounded arbitrary-circuit H/T/CNOT refinement from a common
+reachable input cut to exact ideal columns. The stronger ambient lifecycle
+theorem remains optional, and raw-WF recall is noninjective. qALC work must
+leave classical and qBLC rows bit-identical.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →
@@ -240,14 +211,12 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
   steps / 100k nodes / 4096 lemma steps, measured kill-equivalent to the
   battery's 2000/200k (`::THOROUGH`). A complete four-rung frontier sweep
   (v1 + HTR + selector + PDR) measured 981.3 s wall / 6,630 s user at
-  `--threads 8` on the M5 Max over the then-4,235-term frontier
-  (2026-08-08, the sweep that discovered the eight PDR kills) — 1.84
-  core-hours, well under the pre-measurement four-core-hour estimate,
-  wall tail-bound as predicted.
+  `--threads 8` on the M5 Max over the 4,235-term frontier that produced the
+  eight canonical PDR kills — 1.84 core-hours, with a tail-bound wall time.
   For a new kill, append to
   `data/certificates/ratchet_kills.tsv`, run `scripts/recert-kills.sh`,
   regenerate the frontier with `scripts/census-regen.sh`, trim Ω by exact
-  fraction arithmetic, and ledger it. The soundness battery is a crate unit
+  fraction arithmetic, and update `docs/STATUS.md`. The soundness battery is a crate unit
   test at `src/classical/certificate/battery.rs` — inside the crate so it runs
   under plain `cargo test` while discovery stays off the default public
   surface: 196,848 provable halters ≤28 bits through the exact sweep
@@ -280,17 +249,8 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
 ## Collaboration
 
 Claude and Codex are co-equal here; handoffs run over the `gaslamp` CLI.
-Existing threads: `blc-conformance` (certificate exchange),
-`blc-interpreter` (design theory), `blc-interp-search` (slot-search spec),
-`blc-qblc` (qBLC design ratification), `qblc-selfint` (self-interpretation and
-bisimulation), `qblc-omega-witnesses` (dyadicity hunt and phase-2 design),
-`blam-reshape` (v2 refactor design ratification and reviews),
-`qalc-architecture` (qALC design contract adversarial review,
-ratification, and amendments), `qalc-token-machine` (qALC token
-machine feasibility and kernel review), and `qalc-rust-pillar` (Rust
-reference pillar implementation-sketch review).
-The kernel audit rounds (closed 2026-08-10 at audit #35's PASS)
-deliberately ran threadless — a fresh context per round was the point —
-labeled `qalc-vNNN-fresh-audit`; reuse that convention for any future
-fresh-context verification.
-Send raw evidence—encodings, diffs, measured bits—not summaries.
+Use the other seat for a genuinely independent read, adversarial pressure, or
+verification. Whoever owns the task owns the synthesis. Send raw evidence—
+encodings, diffs, measurements, and exact claims—not a softened summary.
+When independence matters, open a fresh context instead of reviving one that
+already contains the design argument.

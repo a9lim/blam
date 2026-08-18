@@ -32,14 +32,14 @@ from kernel import (Run, RunDone, Done, step, init, classify_arrival,
 from lam_iam import is_lp as is_lp_e
 
 def gam_free(e):
-    """v1.7 condition (d): erased cargo must contain no suspended
+    """Condition (d): erased cargo must contain no suspended
     gamma — a certified erasure deleting an in-flight probe's gamma
     would break the W5 probe-pairing invariant (its mu survives,
     unpaired). Measured: zero certificate changes on the suite
     (no certified boundary erases gamma cargo). Suspended ALPHA
     cargo is permitted — HNH's earned coherence erases captured
-    ticket copies at terminal interrogations — and as of v1.8 the
-    no-reseek side condition is MECHANICALLY ENFORCED at runtime:
+    ticket copies at terminal interrogations. The no-reseek side
+    condition is mechanically enforced at runtime:
     the erasure leaves a decode record and the kernel's refire
     guard types out any post-erasure fresh call (kernel.md §3).
     The former compile-time obligation is discharged."""
@@ -54,11 +54,11 @@ from collections import deque
 from rri_direct import direct_certificate
 
 def dynamic_clean(term, cert, max_steps=3000, state_cap=200000):
-    """The hybrid pipeline (working-review verdict): amplitude
+    """In the hybrid pipeline, amplitude
     truth decides whether a structurally valid machine RUN SUCCEEDS
     — never whether the machine is an isometry (orbit-norm
-    preservation does not give isometry; the T|0>=T|1>=|1>
-    countermodel). Under the FINAL frozen candidate, evolve exactly
+    preservation does not give isometry; T|0>=T|1>=|1> is a
+    counterexample). Under the frozen candidate, evolve exactly
     from init and require the guard/err sector to hold exactly zero
     amplitude at EVERY step (residue-injectivity makes err states
     per-source, so cancellation cannot mask a guard fire), no stuck
@@ -140,8 +140,8 @@ def popkeys_for(arrivals):
     """The instance keys this boundary may pop: those whose frame
     bit equals the arrival slot at EVERY arrival where the key is
     present (slot-correlation = the redundancy the erasure needs).
-    Keys failing this are retained SPECTATORS (v1.10 — the W
-    countermodel: an outer coin's frame around an inner
+    Keys failing this are retained SPECTATORS. The W regression
+    shows why: an outer coin's frame around an inner
     interference is uncorrelated with the inner slot and must
     survive the pop)."""
     ok, bad = set(), set()
@@ -156,7 +156,7 @@ def popkeys_for(arrivals):
 
 def transparent(arrivals, popkeys=None):
     """The admission conditions for instance-directed certified
-    erasure. popkeys=None means pop-everything (legacy reading).
+    erasure. popkeys=None means pop everything.
     With P = rs ∩ popkeys (erased) and Q = rs minus popkeys (retained
     spectators):
       (a) every popped frame's bit equals the arrival slot;
@@ -206,7 +206,7 @@ def transparent(arrivals, popkeys=None):
 
 def discover(term, max_rounds=8):
     """Exploratory structural fixpoint. Certificates are DICTS
-    pos -> frozenset(popkeys) as of v1.10 (instance-directed
+    pos -> frozenset(popkeys) for instance-directed
     erasure); position-set membership still works for the kernel."""
     cert = {}
     for _ in range(max_rounds):
@@ -228,7 +228,7 @@ def discover_total(term, state_cap=100000, round_cap=8):
     admission). Three deterministic phases, any cap or failure
     falling back to the sound conservative answer:
 
-    1. LEGACY-CONSERVATIVE FIXPOINT: admit only boundaries whose
+    1. CONSERVATIVE FIXPOINT: admit only boundaries whose
        every frame key is slot-correlated (pop-everything
        reading), iterated to a fixpoint under hard caps.
        Amplitude support never drives this phase.
@@ -268,7 +268,7 @@ def discover_total(term, state_cap=100000, round_cap=8):
             ks |= {(fr[1], fr[2]) for fr in rs}
         return frozenset(ks)
 
-    # Phase 1: legacy-conservative fixpoint.
+    # Phase 1: conservative fixpoint.
     cert = {}
     for _ in range(round_cap):
         try:
@@ -364,8 +364,8 @@ def discover_total(term, state_cap=100000, round_cap=8):
         if got is not None:
             cert = got
     cert = cert or None
-    # Phase 3: final validation — with GREEDY RESCUE (audit #5's
-    # palpha countermodel; pool completed after audit #6): a
+    # Phase 3: final validation with GREEDY RESCUE. The palpha
+    # regression shows why: a
     # failing map is not discarded whole; the validated-greedy
     # discipline is re-applied from scratch over the FULL
     # candidate pool — phase-1 fixpoint positions plus every
@@ -420,13 +420,12 @@ def validate(term, cert):
     mass. machine_coverage is the conjunction. It claims MACHINE
     soundness + clean execution — NOT agreement with any external
     ideal semantics; per-program physics expectations live in the
-    suite's written-first regression table (working-review
-    language corrections applied)."""
+    suite's written-first regression table."""
     arr, poperr, basis = boundary_arrivals(term, cert)
     if cert:
         fn_ok = all(transparent(a, cert.get(pos))
                     for pos, a in arr.items() if pos in cert)
-        # NON-VACUITY (audits #7 and #8), position AND key level:
+        # NON-VACUITY, at both position and key level:
         # a certified position with no boundary arrival is never
         # consulted, and a popkey absent from every arrival frame
         # at its position can never pop anything — either way the
@@ -465,7 +464,7 @@ def validate(term, cert):
         wfbad = _wf.cert_domain_sweep(term, cert)
         disbad, _ = _wf.cert_disjointness(term, cert)
     else:
-        # v1.11 (audit #3 charge-2 gap): the no-certificate reading
+        # The no-certificate reading
         # owes the same reachable-WF sweep — an empty certified
         # domain makes W7 and disjointness vacuous, never the WF
         # check itself.
@@ -526,8 +525,7 @@ if __name__ == '__main__':
     print('\n%-9s %-28s %-8s %s' % ('program', 'EXPLORATORY discover()',
                                     'matches', 'validation'))
     print('(canonical certificates are discover_total above; a '
-          'DIFF(hand=None) row is the v1.8 validation rejection '
-          'working — the exploratory fixpoint exists but fails '
+          'DIFF(hand=None) row means the exploratory fixpoint exists but fails '
           'semantic coverage, so the canonical pipeline refuses it)')
     for name, term in PROGRAMS.items():
         cert = discover(term)
@@ -542,6 +540,5 @@ if __name__ == '__main__':
               (name, sorted(''.join(p) for p in cert) if cert else '-',
                match, v, d.get('final', d), len(fr)))
 
-    # The module verdict is the exit code (audit #11: forced FAIL
-    # prints previously left exit 0).
+    # The module verdict is the exit code; a forced FAIL must not exit 0.
     sys.exit(0 if tot_ok and homega_ok else 1)

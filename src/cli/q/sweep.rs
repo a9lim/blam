@@ -21,16 +21,14 @@
 
 use blam::quantum::machine::{Machine, Pool, QProgram};
 use blam::quantum::scalar::Dw;
-use blam::quantum::{Budget, Fate, Leaf};
+#[cfg(any(test, feature = "lab"))]
+use blam::quantum::Fate;
+use blam::quantum::{Budget, Leaf};
 
 /// What every sweep reads off a program's leaves beyond its own tally.
 ///
-/// The whole struct is the shared contract, so it is stated once and in
-/// full: `halt_mass` and `resolved` belong to the dyadicity sweeps
-/// (`q galois`, lab-gated), `total_mass` to the tests below, and a build
-/// without `lab` therefore leaves some of it unread rather than meaning
-/// something different.
-#[allow(dead_code)]
+/// `halt_mass` and `resolved` belong to the lab-gated dyadicity sweeps;
+/// production census builds carry only the maximum-step telemetry they use.
 #[derive(Clone, Copy, Debug)]
 pub struct Summary {
     /// Largest contraction count over the branch tree (budget headroom).
@@ -38,16 +36,16 @@ pub struct Summary {
     /// Σ Halt-leaf mass — the program's own Ω_success contribution.
     /// `None` if any Halt leaf's mass overflowed, so the √2-decomposition
     /// of this program is undecided rather than wrong.
+    #[cfg(any(test, feature = "lab"))]
     pub halt_mass: Option<Dw>,
     /// Every leaf is Halt or Err: the tree is complete, so it is
     /// bit-identical at every larger budget (terminal stability) and its
     /// aggregates may be committed.
+    #[cfg(any(test, feature = "lab"))]
     pub resolved: bool,
-    /// Σ over all leaves, `None` on overflow — the battery's own witness,
-    /// exposed so a caller can report the vacuous case if it wants to.
-    /// No driver does today; the tests below are what read it, and they
-    /// are the reason it stays (an assertion nobody can inspect is a
-    /// weaker claim than one anybody can).
+    /// Σ over all leaves, `None` on overflow — exposed only to the tests
+    /// that pin the mass-conservation battery.
+    #[cfg(test)]
     pub total_mass: Option<Dw>,
 }
 
@@ -66,11 +64,14 @@ pub fn run_and_summarize(
 
     let mut max_steps = 0u64;
     let mut total_mass = Some(Dw::ZERO);
+    #[cfg(any(test, feature = "lab"))]
     let mut halt_mass = Some(Dw::ZERO);
+    #[cfg(any(test, feature = "lab"))]
     let mut resolved = true;
     for leaf in leaves.iter() {
         max_steps = max_steps.max(leaf.steps);
         total_mass = total_mass.and_then(|s| leaf.mass.and_then(|x| s.add(x)));
+        #[cfg(any(test, feature = "lab"))]
         match leaf.fate {
             Fate::Halt(_) => halt_mass = halt_mass.and_then(|s| leaf.mass.and_then(|x| s.add(x))),
             Fate::Err(_) => {}
@@ -88,8 +89,11 @@ pub fn run_and_summarize(
     }
     Summary {
         max_steps,
+        #[cfg(any(test, feature = "lab"))]
         halt_mass,
+        #[cfg(any(test, feature = "lab"))]
         resolved,
+        #[cfg(test)]
         total_mass,
     }
 }

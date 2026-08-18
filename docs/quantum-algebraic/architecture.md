@@ -4,15 +4,13 @@ This document is the durable architecture contract for blam's
 quantum-algebraic pillar. It uses the same structure as the classical and
 quantum architectures so the three systems can be compared layer by layer.
 
-**The Rust reference pillar completed phases 0–4 on 2026-08-17**: typed schema
-and codec, the kernel, composed Gate-1 readback, Gate-2 compiler/shadow,
-validated admission, total selection, and the exact semantic objects are
-implemented under `src/qalc/`. The accepted Python/Lean machine,
+The Rust reference pillar implements the typed schema and codec, kernel,
+composed Gate-1 readback, Gate-2 compiler/shadow, validated admission, total
+selection, and exact semantic objects under `src/qalc/`. The accepted Python/Lean machine,
 compiler, proofs, and batteries remain authoritative in `../../qalc/`;
 checked-in qfx fixtures close the Python/Rust boundary byte-for-byte without
 running Python during `cargo test`. `GATE1.md` and `GATE2.md` are the
-proof records; development history and superseded rewriting-machine
-formalizations live in `../ledger/2026-08.md`, git history, and `machine.md`.
+proof records. The Rust implementation contract is `rust-pillar.md`.
 
 ## 1. Purpose and position among the pillars
 
@@ -180,8 +178,7 @@ exponential), and internal query/readback control. Positions are
 structural — a rooted zipper into the invocation term — with no
 allocation identity.
 
-Two rejected substrates motivate this choice (record: `machine.md` and
-the ledger). Bare terms are too coarse: for a rigid
+Bare terms are too coarse: for a rigid
 context, the sources `λf. f (h 0̂) 0̂` and `λf. f 0̂ (h 0̂)` are
 orthogonal, but their images under a bare-term step overlap in
 `λf. f 0̂ 0̂`, so no bare-term linear extension is an isometry. And
@@ -196,8 +193,7 @@ pairwise-disjoint ranges classified by position kind and tape top — as
 prior structure. That is the design guide, not the proof: the complete
 qALC table, including δ scattering, full-normal-form readback, error
 entry, and halted entry, still owes the orthonormal-columns proof on the
-reachable graph. The active machine design is `token.md`; `machine.md`
-is the historical record of the failed rewriting formalizations.
+reachable graph. The active machine design is `token.md`.
 
 ### 4.2 The step isometry
 
@@ -457,9 +453,8 @@ Recognized compiler images take a cap-free structural admission path; finite
 carrier validation is an independent audit oracle rather than a premise of
 the unbounded theorem. The 43 width-two circuits through length two, the
 1,013/14,809/30,393-state named carriers, and the 917-state Python/Lean
-differential remain executable checks. Rejected selector, ROM, and linear-CPS
-routes are historical evidence in the ledger and git history. The
-authoritative theorem record is `../../qalc/GATE2.md`.
+differential remain executable checks. The authoritative theorem record is
+`../../qalc/GATE2.md`.
 
 This establishes a universal circuit gate set inside the compiled fragment.
 A separate domination or universality theorem for the semimeasure/operator
@@ -467,10 +462,11 @@ object `M` remains downstream work.
 
 ## 7. Rust engine stack and verification contract
 
-Planned module tree `blam::qalc`, drivers under a new `blam` subcommand
-group; the reference evaluator represents `ψ_τ` as an exact sparse map
-from configurations to `Dw` scalars and applies `U` transition by
-transition.
+`blam::qalc` represents `ψ_τ` as an exact sparse map from configurations to
+canonical `Amp` scalars and applies `U` transition by transition. The
+default-built `blam qalc` group exposes exact `run`, `gram`, `compile`, and
+fixture-regeneration commands. The module and fixture map is
+`rust-pillar.md`.
 
 A fast engine, if the reference is too slow for a census, faces a
 *stricter* bar than qBLC lockstep — final fate/mass/support equality is
@@ -517,9 +513,8 @@ superposed token configurations — a classically-positioned token driving
 a hidden quantum payload register is the classical-control corner, not
 this pillar.
 
-**Encoded clean δ fibres** (amendment, ratified-with-edits through
-`qalc-architecture` 2026-08-09; the original law is the special case
-`E_a = identity`). A δ event may act on a certified encoded arrival
+**Encoded clean δ fibres.** The unencoded law is the special case
+`E_a = identity`. A δ event may act on a certified encoded arrival
 subspace. For each program sector `p` and δ-boundary identifier
 `a = (p, m, q)`, the machine must exhibit a logical spectator set `K_a`
 and an isometric encoding
@@ -640,16 +635,11 @@ Every qALC engine change must then satisfy:
   superposition. Classical IAM bideterminism is the design guide, not
   the proof: the complete qALC transition table — including δ
   scattering, full-normal-form readback, error entry, and halted entry —
-  must still satisfy the orthonormal-columns contract. The route was
-  chosen over β-dynamics on a reversible rewriting machine after the
-  latter's coherence protocol fell to a no-cloning countermodel
-  (`machine.md` §9.1: copying a superposed δ-argument result before
-  uncomputation produces `CNOT(|+⟩|0⟩) = |Φ⁺⟩`, and the adjoint pass
-  cannot restore a clean entry state). The token machine's clock and
-  merge discipline define `U`, `μ_p`, and `M`; a rewriting machine is
-  the parked alternative and would define *different objects* — no
-  equivalence, refinement, or preservation of the rewriting proposal is
-  claimed.
+  must still satisfy the orthonormal-columns contract. Copying a
+  superposed δ-argument before uncomputation produces
+  `CNOT(|+⟩|0⟩) = |Φ⁺⟩`, so an adjoint pass cannot restore a clean entry
+  state. The token machine's clock and merge discipline define `U`, `μ_p`,
+  and `M`; no equivalence to a rewriting-machine semantics is claimed.
 - **Typed invariant-sector halting, common origin:** fixed points are
   incompatible with injectivity; invariance suffices for monotone mass;
   the common-origin tick and the normative halted form (§4.3) are chosen,
@@ -679,8 +669,8 @@ Every qALC engine change must then satisfy:
 
 ## 9. Boundaries and open obligations
 
-1. **CLOSED — reversible machine + local minimal-garbage theorem** (§4.1,
-   §4.5; 2026-08-11). The accepted IAM-lineage table includes H/T scattering,
+1. **Closed — reversible machine + local minimal-garbage theorem** (§4.1,
+   §4.5). The accepted IAM-lineage table includes H/T scattering,
    internal full-normal-form readback, typed error entry, and synchronized
    halted ticks. Thirty admitted closed operational cores (7,507 states,
    7,417 one-step columns) have exact `Z[ω]/√2^k` Gram, global deterministic
@@ -689,11 +679,10 @@ Every qALC engine change must then satisfy:
    the actual predecessor fibre, halt/error sectors are forward invariant,
    and a static validated-carrier/conservative-history selector defines `U`,
    `μ_p`, `ρ_p`, `M`, and `Ω_qALC`. The authoritative battery and ordinary-
-   kernel seventeen-sector RRI replay pass; fresh-context audit #6 returned
-   PASS with no required correction. Python closure and the generated large
+   kernel seventeen-sector RRI replay pass. Python closure and the generated large
    `native_decide` evaluations are explicit trust boundaries. This is not a
    universal minimal-carrier or ambient lifecycle theorem.
-2. **CLOSED — clean coherent compilation** (§6; 2026-08-13): one-sector typed
+2. **Closed — clean coherent compilation** (§6): one-sector typed
    H/T/CNOT circuit compilation (with Toffoli derived exactly) at the common
    reachable `47n+4` word boundary. The actual composed-machine theorem proves
    arbitrary-boundary gate transport, compiler/WF/certificate preservation,
@@ -703,7 +692,7 @@ Every qALC engine change must then satisfy:
    of one closed invocation. Bell uncompute and nonlinear target-as-later-
    control reuse are exact witnesses. Structural compiler admission is
    cap-free; finite carriers and the 917-state Python/Lean differential remain
-   independent checks. The Rust reference implementation is now authorized.
+   independent checks. The Rust reference implements this surface.
 3. Merge-discipline canonicity: is the minimal-garbage `U` unique in any
    useful sense, and what exactly is the class of programs whose branches
    re-merge (the "coherence is earned" economy made precise)?
@@ -718,15 +707,12 @@ Every qALC engine change must then satisfy:
    `Ω_success` — inequalities, domination, or incomparability.
 8. Reachability: which finitely-supported ring-valued unit vectors arise
    as `ψ_τ` (small lemma, low priority).
-9. Signature order freeze (§3) before any canonical data.
-10. Output convention (§4.6) — deliberately open, mirroring qBLC.
+9. Output convention (§4.6) — whether to add a designated-output alternative
+   to the current whole-normal-form object, mirroring the same qBLC question.
 
-Items 1 and 2 gated implementation and are now closed; the Rust reference
-pillar implements their proved state, compiler, certificate, admission, and
-semantic surfaces. The exact `blam qalc` compile/run/gram/fixtures drivers are
-now landed; census design and optimization remain the next implementation
-layer after this exact Python/Lean/Rust differential agreement. Items 3–10 remain research or
+Items 1 and 2 are the implemented contract. Items 3–9 are research or
 product-shape questions, not prerequisites for the reference evaluator.
+Moving census work is maintained in `../STATUS.md`.
 
 ## 10. Lineage and related documents
 
@@ -749,7 +735,7 @@ would inform).
 - Classical counterpart: `../classical/architecture.md`
 - Quantum-store counterpart: `../quantum/architecture.md`
 - Active machine design: `token.md`
-- Historical failed rewriting drafts (v0/v1): `machine.md`
-- Development history and review record: `../ledger/2026-08.md`
+- Rust implementation contract: `rust-pillar.md`
 - Moving state and docket: `../STATUS.md`
-- Canonical evidence: none yet; `data/quantum-algebraic/` reserved.
+- Canonical differential evidence: `../../tests/qalc/` and
+  `../../src/qalc/admission_pins.qfx`

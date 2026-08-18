@@ -94,7 +94,7 @@ def _source_has_gate(node):
 
 
 def _project_entry(entry):
-    """Embed one composed value deeply in the audited kernel alphabet."""
+    """Embed one composed value deeply in the kernel alphabet."""
     if entry == APP_BULLET:
         return BULLET
     if is_rb(entry):
@@ -121,7 +121,7 @@ def kernel_projection(token):
     mu/gamma scaffold, retaining its contribution to log level and probe
     balance even inside LP cargo.  BA projects to the ordinary lambda-IAM
     bullet.  This embeds controller bookkeeping in the exact token grammar
-    whose W0--W9 checker was audited.
+    checked by W0--W9.
     """
     return Run(token.path, token.d, _project_entries(token.log),
                _project_entries(token.tape), _project_entry(token.vb),

@@ -1,6 +1,6 @@
 # Blc — Lean 4 formalization
 
-The first BLC formalization in Lean (none existed as of 2026-07).
+The kernel-checked BLC formalization used by blam's certificate layer.
 All fully proved — zero sorries, no mathlib:
 
 ```

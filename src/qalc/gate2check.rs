@@ -1,6 +1,6 @@
 //! Finite, executable checks for the structurally admitted Gate-2 compiler
 //! sector.  The cap-free syntax walk owns admission; this module is the
-//! independent complete-carrier audit oracle used by Phase 3 tests.
+//! independent complete-carrier audit oracle used by the differential tests.
 
 use std::collections::{HashMap, HashSet};
 
@@ -36,7 +36,7 @@ impl StructuralAdmission {
 }
 
 /// Recognize and admit only the compiler grammar.  `Ok(None)` is an ordinary
-/// non-image; Phase 4's total public selector then tries Gate-1 admission and
+/// non-image; the total public selector then tries Gate-1 admission and
 /// finally the conservative fallback.
 pub fn structural_admission(term: &Term) -> Result<Option<StructuralAdmission>, CompileError> {
     let Some((circuit, certificate)) = recognized_certificate(term)? else {

@@ -1,7 +1,7 @@
 """Accepted native-CNOT reference extension for closed qALC Gate 2.
 
-The filename preserves the construction-era source pin. The v1.43 kernel is
-imported unchanged; this module adds the three-argument constant ``c M N K``.
+The Gate-1 kernel is imported unchanged; this module adds the three-argument
+constant ``c M N K``.
 Its inputs are queried in sequence and its persistent outputs bind ``K``'s
 first two lambdas. Explicit controller rows, stage splits, predecessors, and
 compiler-sector invariants are proved by the Gate-2 Lean surface.

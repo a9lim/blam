@@ -2,7 +2,7 @@
 Current register: docs/quantum-algebraic/kernel.md (the register
 carries the version; this file does not duplicate it).
 
-H/T structural kernel.  The legacy evaluator is exact Q[sqrt2] on h-only
+H/T structural kernel. The real evaluator is exact Q[sqrt2] on h-only
 sectors; ``dw_machine.py`` supplies exact Z[omega]/sqrt(2)^k coefficients for
 the full H/T table.  The eight classical lam_iam rules plus:
 
@@ -81,10 +81,7 @@ def FRAME(g, i, b, epoch=FIRST_FRAME_EPOCH):
     return ('R', g, i, b, epoch)   # replay frame, instance + epoch
 RHO = ('R',)                                 # root frame (arity disambiguates)
 
-# v1.26 (audit #18's empty-tuple countermodel): the emptiness
-# conjunct — is_lp always had it; these four indexed e[0] bare,
-# so is_gam(()) IndexError'd from inside wf BEFORE the W0 gate.
-# Identical on every non-empty tuple.
+# The emptiness conjunct makes the tag predicates total on empty tuples.
 def is_gam(e):   return isinstance(e, tuple) and bool(e) and e[0] == 'G'
 def is_mu(e):    return isinstance(e, tuple) and bool(e) and e[0] == 'M'
 def is_ans(e):   return isinstance(e, tuple) and bool(e) and e[0] == 'A'
@@ -147,7 +144,7 @@ def instance(s):
     return s.log[0] if (s.log and is_lp(s.log[0])) else None
 
 def rs_insert(rs, fr):
-    """v1.7: the replay RECORD — rs is an instance-keyed set kept in
+    """The replay RECORD is an instance-keyed set kept in
     a canonical sorted order (state identity must not depend on the
     order interleaved re-seeks happened to record in)."""
     return tuple(sorted(rs + (fr,), key=repr))
@@ -155,9 +152,8 @@ def rs_insert(rs, fr):
 def alpha_keys_live(e):
     """(gate, instance) keys of LIVE alpha tickets nested in an
     entry: traverse lp slices only. Instance KEYS are frozen names
-    (the W5 ghost-count lesson) and are never traversed. Iterative
-    as of v1.26 (audit #18's RecursionError class): explicit
-    stack, depth-independent."""
+    (the W5 ghost-count lesson) and are never traversed. The explicit
+    stack is depth-independent."""
     out, stack = set(), [e]
     while stack:
         x = stack.pop()
@@ -172,8 +168,8 @@ def ks_bitfree_keys(ks):
     records ('K', g, i) and certified bundles ('KD', keys). The
     bit is discarded, so a live same-key representation shadowing
     one of these could alias undetectably — the key-alias hazard
-    class (v1.10: audit #2 showed K(l)-buried tickets are NOT in
-    this class — they carry their bit, so deep W3 adjudicates
+    class. K(l)-buried tickets are not in this class: they carry
+    their bit, so deep W3 adjudicates
     them; W8 exclusivity is scoped to bit-free records).
     ('KA', g, i) history heads are DELIBERATELY excluded: a
     suppressed decode's key keeps its answerable representation
@@ -204,8 +200,8 @@ def ks_dead_keys(ks):
 
 def alpha_bits_deep(e, out):
     """Collect (g, i) -> bit for every alpha nested in an entry
-    (lp slices traversed; instance keys not). Iterative as of
-    v1.26: explicit stack, depth-independent."""
+    (lp slices traversed; instance keys not). The explicit stack
+    is depth-independent."""
     stack = [e]
     while stack:
         x = stack.pop()
@@ -283,7 +279,7 @@ def step(term, s, cert=None):
                     return [(1, 0, 'alien-ticket',
                              RunDone('err', (s.path, s.d, s.log, s.tape, s.vb, s.rs, s.ks)))]
                 if (t.name, i) in bitfree:
-                    # v1.8.1 (working-review catch): a live ticket
+                    # A live ticket
                     # must never shadow a dead-storage record — the
                     # bit-free K has discarded exactly the bit that
                     # would detect divergent aliasing. Typed.
@@ -292,7 +288,7 @@ def step(term, s, cert=None):
                 if j == bp + 1:
                     # recall: consistent transit replay off the ticket,
                     # no fire; the discriminator moves to the replay
-                    # RECORD (v1.2 repair; v1.7: instance-keyed set —
+                    # RECORD, an instance-keyed set:
                     # a re-seek cycle's re-recording is IDEMPOTENT,
                     # because the record is a function of the instance;
                     # a same-instance push with a different bit is the
@@ -320,19 +316,18 @@ def step(term, s, cert=None):
             mine = [fr for fr in s.rs if fr[0] == 'R' and len(fr) == 5
                     and fr[1] == t.name and fr[2] == i]
             if mine and (t.name, i) in bitfree:
-                # v1.8.1: a live frame shadowing a BIT-FREE record is
+                # A live frame shadowing a BIT-FREE record is
                 # the aliasing hazard (the record discarded the bit
                 # that would detect divergence). Typed.
                 return [(1, 0, 'key-alias',
                          RunDone('err', (s.path, s.d, s.log, s.tape, s.vb, s.rs, s.ks)))]
             if mine:
-                # replay (v1.7: DEEP KEYED LOOKUP): a fresh re-seek of
+                # Replay uses DEEP KEYED LOOKUP: a fresh re-seek of
                 # an instance whose ticket was consumed rederives its
                 # selection from the instance's record wherever it
                 # sits — the record is keyed by (gate, instance), and
-                # LIFO position was never semantic (the v1.3 head-only
-                # guard was conservatism; Q's literal interleaving
-                # trace is the ground truth that dissolved it). The
+                # LIFO position is not semantic. Q's literal interleaving
+                # trace requires this lookup. The
                 # buried-frame error class no longer exists. Same-
                 # instance records with conflicting bits are typed.
                 if len(mine) > 1:
@@ -348,7 +343,7 @@ def step(term, s, cert=None):
                 # under-applied re-seek: out of scope
                 return [(1, 0, 'replay-err',
                          RunDone('err', (s.path, s.d, s.log, s.tape, s.vb, s.rs, s.ks)))]
-            # v1.8 refire guard (audit round 2): an instance whose
+            # The refire guard rejects an instance whose
             # ticket is dead storage in ks can never be recalled or
             # replayed — its selection was erased bit-free — so a
             # fresh call here would fire the same copy a second
@@ -363,9 +358,8 @@ def step(term, s, cert=None):
                      (GAM(t.name), BULLET, BULLET, MU(t.name)) + s.tape[1:]))]
         if s.tape and is_gam(s.tape[0]) and len(s.tape) > 1 \
                 and is_ans(s.tape[1]):                   # anshead
-            # v1.20/v1.21 (audits #12, #13): this was an ASSERT —
-            # an untyped crash on gamma/answer disagreement — that
-            # never consulted the LEAF (matched foreign markers
+            # Gamma/answer disagreement is typed rather than asserted.
+            # The check consults the leaf (matched foreign markers
             # gamma_t . A_t at an h leaf entered VB('t',...)), and
             # then an unpack that crashed on malformed tuples
             # (ValueError) while an out-of-range answer bit flowed
@@ -390,7 +384,7 @@ def step(term, s, cert=None):
             return [(1, 0, 'species-neutral',
                      RunDone('err', (s.path, s.d, s.log, s.tape, s.vb, s.rs, s.ks)))]
         if s.tape:
-            # v1.21 (audit #13's untyped-stall class): an answer,
+            # An answer,
             # ticket, or value meeting the leaf without its
             # classifier shape previously stalled silently. Typed.
             return [(1, 0, 'species-leaf',
@@ -404,7 +398,7 @@ def step(term, s, cert=None):
         c = classify_arrival(s.tape)
         if c is not None:
             b, l, T = c
-            # v1.6 (fresh-review range-disjointness catch): the probe
+            # For range disjointness, the probe
             # frame's gate kind must match the boundary's gam — over
             # the raw state type, fires differing only in mu('h') vs
             # mu('t') would otherwise collide on identical targets.
@@ -420,7 +414,7 @@ def step(term, s, cert=None):
             # consumer gate is independently present in ANS(g, b') and in
             # the gate-indexed landing range.  Rejecting a foreign producer
             # here would make Clifford+T composition impossible.
-            # v1.10 (audit #2's nested-conflict witness): a fire must
+            # A fire must
             # never silently erase or bury a bit disagreement — deep
             # W3 at the boundary: cargo-nested alpha bits and RS
             # frame bits, one bit per key, else typed.
@@ -433,7 +427,7 @@ def step(term, s, cert=None):
                 return [(1, 0, 'key-alias',
                          RunDone('err', (s.path, s.d, s.log, s.tape,
                                          s.vb, s.rs, s.ks)))]
-            # v1.5 (review-mandated): the fire is an ENCODED fibre.
+            # The fire is an ENCODED fibre.
             # Conservative default — retain the decoded spectator
             # D(l): an alpha ticket whose bit matches the slot decodes
             # to its (gate, instance) — the bit is redundant with the
@@ -441,21 +435,21 @@ def step(term, s, cert=None):
             # interfere; anything else (real lp, mismatched alpha) is
             # retained whole, so same-slot arrivals with different
             # which-path data stay orthogonal (the C-collapse
-            # countermodel). Certified boundary (v1.11 literal
+            # counterexample). At a certified boundary, literal
             # P/Q) — erase the cargo l and the POPPED frames P;
             # retained spectators Q embed verbatim: sound iff the
             # certificate proved l = G(b, kappa) and P = F(b,
             # kappa) at the retained coordinate (the corrected
             # fibre condition; discovery checks it).
             if cert is not None and s.path in cert:
-                # v1.10: INSTANCE-DIRECTED certified erasure (the W
-                # countermodel's blocker): the certificate names the
+                # INSTANCE-DIRECTED certified erasure blocks the W
+                # counterexample: the certificate names the
                 # keys it pops at this boundary — keys proven
                 # slot-correlated at every cone arrival; other
                 # frames are retained SPECTATORS (which-path data of
                 # unrelated instances, e.g. an outer coin's frame
                 # around an inner interference) and join the fibre's
-                # retained side. A set-valued certificate (legacy)
+                # retained side. A set-valued certificate
                 # pops everything.
                 popkeys = (cert[s.path] if isinstance(cert, dict)
                            else None)
@@ -470,18 +464,17 @@ def step(term, s, cert=None):
                 if any(fr[3] != b for fr in P):
                     return [(1, 0, 'pop-err',
                              RunDone('err', (s.path, s.d, s.log, s.tape, s.vb, s.rs, s.ks)))]
-                # v1.8: certified erasure leaves a DECODE BUNDLE —
+                # Certified erasure leaves a DECODE BUNDLE:
                 # one tagged ('KD', keys) entry naming every live
                 # alpha nested in the erased cargo l and every
-                # popped frame's instance. v1.8.1 (working-review
-                # catch): the fibre function property is PER-SLOT,
+                # popped frame's instance. The fibre function property is PER-SLOT,
                 # so branch consistency is not free — certification
                 # now REQUIRES cross-slot bundle equality
                 # (transparent condition (e)); under that condition
                 # the bundle is branch-independent, coherence is
                 # unaffected, and the erasure is injective on the
                 # ticket/frame dimension. Feeds the guards.
-                # v1.11 (audit #3's fatal finding): the bundle names
+                # The bundle names
                 # only the POPPED frames' instances; retained
                 # spectators Q are embedded verbatim in the target —
                 # erasing them here converted every retained frame
@@ -489,7 +482,7 @@ def step(term, s, cert=None):
                 # that differ only in a spectator bit.
                 dk = alpha_keys_live(l) | {(fr[1], fr[2])
                                            for fr in P}
-                # v1.12 (audit #4's countermodel pair): the bundle
+                # The bundle
                 # names only keys with NO surviving bit-carrying
                 # representation. A retained Q frame stays the
                 # ANSWERABLE representation of its key (the decode
@@ -503,7 +496,7 @@ def step(term, s, cert=None):
                     if (isinstance(e, tuple) and len(e) == 2
                             and e[0] == 'K'):
                         dk -= alpha_keys_live(e[1])
-                # v1.13 (audit #5's countermodel): live tickets
+                # Live tickets
                 # surviving in the tape tail or the log are
                 # answerable representations too — a popped frame
                 # whose replay-re-emitted ticket rides in T must
@@ -512,8 +505,8 @@ def step(term, s, cert=None):
                     dk -= alpha_keys_live(e)
                 for e in s.log:
                     dk -= alpha_keys_live(e)
-                # v1.23 (audit #15's prefix-freeness countermodel):
-                # the bundle is emitted UNCONDITIONALLY — an empty
+                # For prefix-freeness, the bundle is emitted
+                # UNCONDITIONALLY: an empty
                 # bundle is ('KD', ()) — so target storage is
                 # always (new-bundle . incoming) and incoming KS is
                 # recoverable by stripping the head. Omitting empty
@@ -522,15 +515,15 @@ def step(term, s, cert=None):
                 ks2 = (('KD', tuple(sorted(dk, key=repr))),) + s.ks
                 rs2 = Q
             elif is_alpha(l) and l[3] == b:
-                # D(alpha) = (gate, i). v1.8.1: if a same-key frame
+                # D(alpha) = (gate, i). If a same-key frame
                 # exists (this ticket was REPLAY-re-emitted), the
                 # frame remains the answerable representation and no
                 # dead record is created — the W8 exclusivity
-                # invariant holds by construction. v1.12: same-key
+                # invariant holds by construction. Same-key
                 # BURIALS likewise suppress the record — the buried
                 # ticket stays the bit-carrying dead record, and a
                 # bit-free K beside it would be the exclusivity
-                # hazard (audit #4's algebra-row countermodel).
+                # hazard.
                 if (any(fr[0] == 'R' and len(fr) == 5
                         and (fr[1], fr[2]) == (l[1], l[2])
                         for fr in s.rs)
@@ -539,8 +532,7 @@ def step(term, s, cert=None):
                                and (l[1], l[2])
                                in alpha_keys_live(e[1])
                                for e in s.ks)):
-                    # v1.24 (audit #16's countermodel): the
-                    # suppressed arm must still append its ONE
+                    # The suppressed arm must still append its ONE
                     # history head — appending zero let a
                     # suppressed decode (incoming KS already
                     # [K(l)]) impersonate a retain-whole fire
@@ -573,7 +565,7 @@ def step(term, s, cert=None):
             # T is diagonal on the same clean spectator fibre.  The
             # structural row names expose its exact scalar: fire-t0 has
             # coefficient 1, fire-t1 coefficient omega.  `step_dw` is the
-            # exact cyclotomic evaluator; the legacy real evaluator never
+            # exact cyclotomic evaluator; the real evaluator never
             # sees these rows in the canonical h-only sectors.
             if b == 0:
                 return [(1, 0, 'fire-t0', a0)]
@@ -620,7 +612,7 @@ def step(term, s, cert=None):
                          RunDone('err', (s.path, s.d, s.log, s.tape, s.vb, s.rs, s.ks)))]
             if s.tape and (is_gam(s.tape[0]) or is_ans(s.tape[0])
                            or is_alpha(s.tape[0])):
-                # v1.21 (audit #13's untyped-stall class): a gate
+                # A gate
                 # token meeting a binder is a species failure, not
                 # a classical final (bt2 never matches gamma/alpha
                 # by design; an answer has no binder at all).
@@ -647,7 +639,7 @@ def step(term, s, cert=None):
                 return [(1, 0, 'arg', RunT(parent + ('a',), 'D',
                          (s.tape[0],) + s.log, s.tape[1:]))]
             if s.tape:
-                # v1.21 (audit #13's untyped-stall class): mu, rho,
+                # Mu, rho,
                 # and answer heads have no transport rule here —
                 # previously a silent stall. Typed.
                 return [(1, 0, 'species-transport',
@@ -682,7 +674,7 @@ def asq(amp):
 
 def evolve(term, psi, nsteps, watch=None, cert=None):
     """psi: dict state -> (p, q) with value p + q*sqrt2 — exact
-    Q[sqrt2], no monomial restriction (v1.4 gate item 8). One global
+    Q[sqrt2], with no monomial restriction. One global
     step: every basis state steps by its rules; amplitudes merge."""
     for i in range(nsteps):
         out = {}

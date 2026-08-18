@@ -1,8 +1,7 @@
 //! SHA-256 (FIPS 180-4), self-contained so no digest costs a dependency.
 //!
-//! Hoisted from `cli/ckpt.rs` as pure code motion when the qALC pillar's
-//! fixture commitments needed the same core from the library side
-//! (`docs/quantum-algebraic/rust-pillar.md` §7). Users: the checkpoint
+//! Shared by qALC fixture commitments and the CLI rather than duplicated in
+//! either layer (`docs/quantum-algebraic/rust-pillar.md` §7). Users: the checkpoint
 //! header fingerprint (`cli::ckpt::sha256_16`), the skeleton residual
 //! provenance rows, and the qALC differential fixture digests.
 

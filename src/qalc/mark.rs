@@ -18,8 +18,7 @@
 //! is stable; callers preserving fixture order rely on comparison only,
 //! never on re-sorting equal keys.
 //!
-//! The renderer is iterative (an explicit work stack), matching the
-//! reference's v1.26 discipline: the wire parser's
+//! The renderer is iterative (an explicit work stack): the wire parser's
 //! [`crate::qalc::wire::DEPTH_CAP`] bounds decoded *input* only —
 //! stepping builds deeper values (`var` nests lps, recall grows epoch
 //! trees), so no depth is safe to recurse on. No error path exists:
@@ -71,7 +70,7 @@ impl GateName {
 
 /// A logged position `('L', occ, slice)`: a dynamic subterm copy. The
 /// slice is a captured log segment, so its entries are log-alphabet
-/// values (lp-like only — W0 v1.23 excludes bullets from the log).
+/// values (lp-like only; W0 excludes bullets from the log).
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Lp {
     pub occ: Path,
@@ -191,8 +190,7 @@ pub struct KdKey {
 
 /// Tape-alphabet entry. `BulletBa` is the composed stratum's `("BA",)`
 /// application marker (kernel-internal tapes carry plain bullets; the
-/// readback adapter translates at the boundary — phase 2 consumes it,
-/// the grammar carries it from the start).
+/// readback adapter translates at the boundary).
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum TapeEntry {
     Bullet,
@@ -209,8 +207,8 @@ pub enum TapeEntry {
     Rbl(Rbl),
 }
 
-/// One inert storage head; every fire appends exactly one
-/// (prefix-freeness across arms, kernel v1.24).
+/// One inert storage head; every fire appends exactly one for
+/// prefix-freeness across arms.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum KsHead {
     /// `('K', g, i)` — a decoded ticket, bit-free dead record.
@@ -330,7 +328,7 @@ fn push_path(out: &mut String, p: &[Dir]) {
 /// One pending unit of rendering work. Nested values go back on the
 /// stack (pushed in reverse of output order) instead of down the call
 /// stack: stepping builds lp/epoch nesting past any decoded depth, so
-/// the renderer must be depth-independent (reference v1.26).
+/// the renderer must be depth-independent.
 enum Tok<'a> {
     Lit(&'static str),
     Bit(u8),
@@ -564,8 +562,8 @@ mod tests {
     #[test]
     fn renderer_is_depth_independent() {
         // Stepping grows lp/epoch nesting past any decoded depth, so
-        // the renderer must survive depths far beyond stack recursion
-        // (reference v1.26). Teardown is iterative for the same reason:
+        // the renderer must survive depths far beyond stack recursion.
+        // Teardown is iterative for the same reason:
         // derived Drop recurses.
         const DEPTH: usize = 1 << 20;
         let mut epoch = Epoch::Fresh;

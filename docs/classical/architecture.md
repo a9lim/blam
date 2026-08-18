@@ -1,8 +1,7 @@
 # Classical BLC architecture
 
 This document is the durable architecture contract for blam's classical
-pillar. Current measurements and the open docket live in `../STATUS.md`;
-chronological development history lives in `../ledger/`.
+pillar. Current measurements and the open docket live in `../STATUS.md`.
 
 ## 1. Purpose and target objects
 

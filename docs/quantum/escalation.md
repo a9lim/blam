@@ -130,7 +130,7 @@ demanded; the β-reduction is infinite, so the qBLC execution has one
 infinite branch, never forks, never touches the store, and has no
 Halt leaf.
 
-Prerequisite instrumentation — **landed**. `CapOut` is now a struct,
+Prerequisite instrumentation is present. `CapOut` is a struct,
 `{ reason: CapReason::{Steps, Size}, steps, high_water_bits }`: which
 cap fired, the reduction steps taken before the abort, and the largest
 term size in BLC bits reached anywhere along the chain. Both abort

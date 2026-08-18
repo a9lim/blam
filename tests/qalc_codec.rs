@@ -6,7 +6,7 @@
 //! recompute; and every state in every fixture holds the reference's
 //! canonical-order discipline (RS by frame repr, KD-bundle keys by key
 //! repr) under the RUST comparator — which is exactly the cross-language
-//! ordering agreement phase 1 will lean on.
+//! ordering agreement relies on.
 
 use blam::qalc::mark::{frame_repr, kd_is_canonical, kd_key_repr, rs_is_canonical, KsHead};
 use blam::qalc::state::{KState, Residue, RunCore};

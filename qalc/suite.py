@@ -2,10 +2,9 @@
 marginals + guard/alias invariants + certificate controls.
 
 Twelve sectors (HH, HNH, negative, selector, lone, pstar, 3coin,
-q, qprime, q2, dup, Ccoll), the audit witnesses (buried, palpha,
+q, qprime, q2, dup, Ccoll), the guard/certificate regressions (buried, palpha,
 dupcall, B, W), and the interleaving stressors (weave, hweave, qq).
-V12_BASIS marks the owned v1.2->v1.7 basis drift (marginals never
-moved). CERTS are the canonical discover_total outputs, frozen as
+CERTS are the canonical discover_total outputs, frozen as
 machine metadata and re-derived by certify.py on every run.
 """
 import sys
@@ -40,20 +39,20 @@ PROGRAMS = {
     'q':        prog(App(H2, App(App(App(App(H2, ZERO), E), N), ZERO))),
     'qprime':   prog(App(H2, App(App(App(App(H2, ZERO), EP), N), ZERO))),
     'q2':       prog(App(H2, App(App(App(H2, ZERO), ZERO), ONE))),
-    # Codex's copy-discrimination probe (v1.3 review): two dynamic
+    # Copy-discrimination probe: two dynamic
     # instances of the same argument occurrence, distinct log slices
     'dup':      prog(App(Lam(App(Var(1), Var(1))), App(H2, ZERO))),
-    # Codex's v1.4 fatal countermodel: C collapses both booleans to 1^
+    # C-collapse counterexample: C collapses both booleans to 1^
     # non-injectively; same-slot arrivals with distinct lps must stay
     # orthogonal at the outer fire (the conservative encoded fibre)
     'Ccoll':    prog(App(H2, App(Lam(Lam(Lam(App(App(Var(3), Var(1)),
                                               Var(1))))), App(H2, ZERO)))),
-    # the v1.6 fresh-review boundary witness: ((h 0^) SEL SEL)(h 0^)
-    # interleaves two live instances' re-seeks. Healed by the v1.7
-    # replay record: runs total and clean to {1/2, 1/2}, support 4.
+    # Boundary regression: ((h 0^) SEL SEL)(h 0^) interleaves two live
+    # instances' re-seeks. The replay record keeps the run total and clean
+    # at {1/2, 1/2}, support 4.
     'buried':   prog(App(App(App(App(H2, ZERO), SEL), SEL),
                          App(H2, ZERO))),
-    # v1.7 stress set — pointed interleavings for the replay record.
+    # Pointed interleavings for the replay record.
     # weave: coin1 selects between two wire-identity occurrences;
     # the selected E feeds coin2's boolean to the root. Predict:
     # coin1 decoheres non-injectively, coin2 geometric: 1/2+1/2, sup 4.
@@ -71,21 +70,19 @@ PROGRAMS = {
     'qq':       prog(App(App(App(App(H2, ZERO), SEL), SEL),
                          App(App(App(App(H2, ZERO), SEL), SEL),
                              App(H2, ZERO)))),
-    # v1.8 regressions — the audit round-2 countermodels.
-    # palpha (the auditor's Pα): C = h (h (NOT (h 0^))); C I h 1^.
-    # Under v1.7, discover admitted a certificate whose alpha-cargo
+    # P-alpha regression: C = h (h (NOT (h 0^))); C I h 1^.
+    # Exploratory discovery admits a certificate whose alpha-cargo
     # erasure was followed by a fresh call of the erased instance
-    # (stuck at t=180). v1.8: discover_total validates the certified
-    # graph -> None; canonical dynamics is the plain run. Physics:
+    # (stuck at t=180). discover_total validates the certified graph and
+    # returns None; canonical dynamics is the plain run. Physics:
     # C = H H X H |0> = |+>; the zero branch applies I to 1^, the
     # one branch applies H: {halt0: 1/4, halt1: 3/4}, support 3.
     'palpha':   prog(App(App(App(App(H2, App(H2, App(NOTP,
                          App(H2, ZERO)))), I), H2), ONE)),
-    # dupcall (the auditor's fuzz candidate 16): an instance's
+    # Duplicate-call regression: an instance's
     # ticket is consumed by the fire's alpha DECODE (bit-free
     # spectator), then the same instance is re-sought — neither
-    # ticket nor frame exists, so v1.7 silently fired the same
-    # copy twice. v1.8 types it out: the refire guard makes
+    # ticket nor frame exists. The refire guard types this out and makes
     # one-fire-per-instance a machine invariant. UNTYPABLE
     # (typecheck.py: occurs check — NOT'/EP branches ununifiable),
     # so outside the fragment claim; the guard is defense-in-depth
@@ -93,17 +90,16 @@ PROGRAMS = {
     'dupcall':  prog(App(App(App(App(App(App(H2, ZERO),
                          App(H2, ONE)), ONE), NOTP), EP),
                          App(N, App(H2, ONE)))),
-    # v1.10 regressions — the audit round-3 (fresh audit #2) pair.
     # B = C I h 1^ with C = h (NOT (h 0^)) = HXH|0> = |0>, so
     # B = I 1^ = 1^ deterministically — needs C's wire
-    # interference. Audit #2's narrowing witness: v1.9 validation
-    # rejected B's coherence-restoring certificate because refire
+    # interference. Structural-only validation rejects B's
+    # coherence-restoring certificate because refire
     # was STRUCTURALLY reachable on a branch of amplitude exactly
-    # zero. The v1.10 hybrid (structural admission + dynamic
+    # zero. The hybrid structural-admission/dynamic-cleanliness check
     # cleanliness) admits it: canonical {halt1: 1}.
     'B':        prog(App(App(App(App(H2, App(NOTP, App(H2, ZERO))),
                          I), H2), ONE)),
-    # W = (h 0^) E E B — audit #2's fatal witness, healed. The
+    # W = (h 0^) E E B. The
     # outer coin selects between identical E's (branch-equal
     # continuations), so the hand-computed circuit ideal is B's
     # {halt1: 1} — and the canonical certificate reaches it: the
@@ -114,9 +110,6 @@ PROGRAMS = {
                          App(App(App(App(H2, App(NOTP,
                              App(H2, ZERO))), I), H2), ONE))),
 }
-V12_BASIS = {'HH': 82, 'HNH': 104, 'negative': 103, 'selector': 173,
-             'lone': 53, 'pstar': 458, '3coin': 180}
-
 Q_OUTER_FIRE = ('f', 'f', 'b', 'b', 'a')   # the outer-h boundary in q family
 
 def _p(*ss):
@@ -162,7 +155,7 @@ CERTS = {
     'weave':    _c('ffbbaa', 'ffbbfffa'),
     'hweave':   _c('ffbba', 'ffbbafffa'),
     'qq':       _c('ffbbaaa', 'ffbbafffa', 'ffbbfffa'),
-    # palpha (audit-2 witness): certified via the phase-3 greedy
+    # P-alpha is certified via the phase-3 greedy
     # rescue — its one poppable key at ffbba is excluded to
     # spectator, all three boundaries certify cargo-only.
     # Guard-silent, basis 275 (plain: 474), marginal unchanged.
@@ -170,13 +163,11 @@ CERTS = {
     'B':        _c('ffbbfffa', 'ffbbfffaaa') | {
                  tuple('ffbba'): frozenset(
                      {('h', _L('ffbbffff'))})},
-    # W (audit #2's fatal witness, HEALED in v1.11): the inner
+    # W's inner
     # boundary pops the inner coin's two branch-dependent instance
     # names; the outer coin's frames ride through every inner
-    # boundary as retained spectators. This is exactly the staged
-    # uncomputation v1.10 registered as inexpressible — expressible
-    # all along; the v1.10 measurement exercised the spectator-
-    # transition defect, not the certificate language.
+    # boundary as retained spectators. This staged uncomputation exercises
+    # the spectator transition rather than a certificate-language limit.
     'W':        _c('ffbbafffa', 'ffbbafffaaa', 'ffbbfffa') | {
                  tuple('ffbbaa'): frozenset(
                      {('h', _L('ffbbaffff',
@@ -185,10 +176,9 @@ CERTS = {
                                _L('ffbbffaba', _L('ffbbffabfb'))))})},
 }
 
-# the written-first physics regression table (working-review
-# language: per-program expectations, each marked 'hand'
-# (hand-computed circuit reading, independently confirmed by
-# audits where noted), 'machine-measured' (dupcall only: the typed
+# The written-first physics regression table uses per-program expectations
+# marked 'hand' (hand-computed circuit reading) or 'machine-measured'
+# (dupcall only: the typed
 # err mass is the machine's own refusal — no circuit reading
 # exists for an untyped program, so the row pins the measurement,
 # not an ideal), or 'placement-open' (the canonical certificate
@@ -196,7 +186,7 @@ CERTS = {
 # not a soundness defect). machine_coverage never claims physics
 # agreement — THIS table does, program by program.
 PHYSICS = {
-    'HH':       ({'halt0': '1'}, 'hand; audit-1 confirmed'),
+    'HH':       ({'halt0': '1'}, 'hand'),
     'HNH':      ({'halt0': '1'}, 'hand; certificate load-bearing'),
     'negative': ({'haltI': '1'}, 'hand'),
     'selector': ({'halt0': '1/2', 'halt1': '1/2'}, 'hand'),
@@ -204,55 +194,46 @@ PHYSICS = {
     'pstar':    ({'halt0': '1/2', 'halt1': '1/2'}, 'hand'),
     '3coin':    ({'halt0': '1/2', 'halt1': '1/2'}, 'hand'),
     'q':        ({'halt0': '1/2', 'halt1': '1/2'}, 'hand; untyped'),
-    'qprime':   ({'halt0': '1/2', 'halt1': '1/2'},
-                 'hand; audit-1 confirmed'),
+    'qprime':   ({'halt0': '1/2', 'halt1': '1/2'}, 'hand'),
     'q2':       ({'halt0': '1/2', 'halt1': '1/2'}, 'hand'),
     'dup':      ({'halt0': '1/4', 'halt1': '1/4', 'haltI': '1/2'},
                  'hand; untyped copy regression'),
     'Ccoll':    ({'halt0': '1/2', 'halt1': '1/2'},
                  'hand; decoheres correctly'),
-    'buried':   ({'halt0': '1/2', 'halt1': '1/2'},
-                 'hand; audit-1 confirmed'),
-    'weave':    ({'halt0': '1/2', 'halt1': '1/2'},
-                 'hand; audit-1 confirmed'),
+    'buried':   ({'halt0': '1/2', 'halt1': '1/2'}, 'hand'),
+    'weave':    ({'halt0': '1/2', 'halt1': '1/2'}, 'hand'),
     'hweave':   ({'halt0': '1/2', 'halt1': '1/2'}, 'hand'),
-    'qq':       ({'halt0': '1/2', 'halt1': '1/2'},
-                 'hand; audit-1 confirmed'),
+    'qq':       ({'halt0': '1/2', 'halt1': '1/2'}, 'hand'),
     'palpha':   ({'halt0': '1/4', 'halt1': '3/4'},
-                 'hand; audit-2 confirmed; certified v1.13 '
-                 '(greedy rescue), marginal unchanged'),
+                 'hand; greedy-rescue certificate, marginal unchanged'),
     'dupcall':  ({'err': '1/2', 'halt0': '1/4', 'halt1': '1/4'},
                  'machine-measured; untyped, typed rejection'),
-    'B':        ({'halt1': '1'},
-                 'hand; audit-2 decomposition witness, healed; '
-                 'audits 3+4 confirmed'),
+    'B':        ({'halt1': '1'}, 'hand; decomposition regression'),
     'W':        ({'halt1': '1'},
-                 'hand; audit-2 fatal witness, healed; audits 3+4 '
-                 'confirmed (W = B: both selector branches are '
+                 'hand; W = B because both selector branches are '
                  'E =beta I; refire amplitudes verified zero '
                  'per-step)'),
 }
 
 # programs where a guard rule is EXPECTED to be structurally
 # reachable (with the guard set) — everything else asserts none.
-# v1.7: the replay record gives the interleaved re-seek semantics;
-# 'buried' (the v1.6 review witness) now runs to completion.
-# v1.8: 'dupcall' — plain graph errs typed at alien-ticket (the
+# The replay record gives the interleaved re-seek semantics; 'buried' runs
+# to completion. 'dupcall' has a plain graph typed at alien-ticket (the
 # re-seek's foreign ticket reaches the wrong leaf before the dead
 # key is consulted); the refire guard fires in its CERTIFIED graph
-# (under the v1.7-era cert {'ffbbaaa'}), which is the dedicated
+# (under the deliberately invalid cert {'ffbbaaa'}), which is the dedicated
 # positive control in the invariants section below. Canonical
 # cert: discover_total -> None (validation rejects), so the
 # canonical pipeline never runs that graph.
 EXPECTED_GUARDS = {'dupcall': {'alien-ticket'},
                    # B: refire is STRUCTURALLY reachable in its
                    # canonical certified graph — on a branch whose
-                   # amplitude is exactly zero. That is the v1.10
-                   # hybrid's core case: structural admission +
+                   # amplitude is exactly zero. This is the hybrid's core
+                   # case: structural admission +
                    # dynamic cleanliness (zero guard/err mass at
                    # every step, verified) admit the coherence-
-                   # restoring certificate the v1.9 structural veto
-                   # rejected. The physics table asserts {halt1: 1}.
+                   # restoring certificate. The physics table asserts
+                   # {halt1: 1}.
                    'B': {'refire'},
                    # W: same hybrid case as B — refire structurally
                    # reachable in the canonical certified graph on
@@ -375,7 +356,7 @@ GUARD_RULES = {'no-instance', 'alien-ticket',
                'key-alias'}
 
 def rule_inventory(term, cert, tick_depth=2, cap=100000):
-    """v1.6: reachable-rule set + per-state (g,i) aliasing check.
+    """Reachable-rule set + per-state (g,i) aliasing check.
     Aliasing: within one state, any two instance-keyed entries
     (alpha tickets on the tape, R frames on rs) with equal (g, i)
     must carry equal bits — equal lps naming different selections
@@ -433,25 +414,21 @@ if __name__ == '__main__':
         cert = CERTS.get(name)
         g = gram(term, cert)
         d = run_dyn(term, cert)
-        v12 = V12_BASIS.get(name)
-        mark = ''
-        if v12 is not None:
-            mark = 'OK(v1.2)' if g['basis'] == v12 else 'DRIFT(v1.2=%d)' % v12
         dyn = d.get('final', d)
         fr = frames_in_residues(d.get('residues', []))
         gram_bad += (len(g['stuck']) + len(g['nonunit'])
                      + len(g['nonorth']))
-        print('%-9s %6d %6d %8d %9d   %s sup=%s t=%s %s %s' %
+        print('%-9s %6d %6d %8d %9d   %s sup=%s t=%s %s' %
               (name, g['basis'], len(g['stuck']), len(g['nonunit']),
                len(g['nonorth']), dyn, d.get('support'), d.get('t'),
-               mark, ('frames=%s' % sorted(fr)) if fr else 'no-frames'))
+               ('frames=%s' % sorted(fr)) if fr else 'no-frames'))
         for s in g['stuck'][:3]:
             print('    STUCK:', s)
         for s1, s2, ip in g['nonorth'][:3]:
             print('    NONORTH ip=%s' % (ip,))
 
     if mode in ('all', 'invariants'):
-        print('\n--- v1.6 lp invariants: guard-rule reachability + '
+        print('\n--- lp invariants: guard-rule reachability + '
               '(g,i) aliasing ---')
         bad = 0
         for name, term in PROGRAMS.items():
@@ -488,15 +465,15 @@ if __name__ == '__main__':
         print('negative control (pstar, wrong cert): pop-err %s' %
               ('REACHED (correct)' if 'pop-err' in wrongrules
                else 'NOT REACHED (regression!)'))
-        # v1.8 refire positive control: dupcall under the v1.7-era
-        # certificate is the audit's duplicate-fresh-call graph; the
+        # Refire positive control: dupcall under a deliberately invalid
+        # certificate is the duplicate-fresh-call graph; the
         # refire guard MUST be reachable there (typed, not silent),
         # and its certified dynamics must be all-err.
         rfr, _ = rule_inventory(PROGRAMS['dupcall'], _p('ffbbaaa'))
         rfd = run_dyn(PROGRAMS['dupcall'], _p('ffbbaaa'), 500)
         refire_ok = ('refire' in rfr
                      and rfd.get('final', {}).get('err') == '1')
-        print('refire control (dupcall, v1.7-era cert): %s' %
+        print('refire control (dupcall, invalid cert): %s' %
               ('REACHED, all-err (correct)' if refire_ok
                else 'REGRESSION: %s %s' % (sorted(rfr & GUARD_RULES),
                                            rfd.get('final', rfd))))
@@ -562,8 +539,8 @@ if __name__ == '__main__':
               % (len(bad['stuck']), len(bad['nonunit']),
                  len(bad['nonorth']), dbad.get('final', dbad)))
 
-    # The module verdict is the exit code (audit #11: forced FAIL
-    # prints previously left exit 0). Mode-skipped blocks stay
+    # The module verdict is the exit code; forced FAIL must not exit 0.
+    # Mode-skipped blocks stay
     # vacuously true; the Gram table gates in every mode it ran.
     sys.exit(0 if gram_bad == 0 and controls_ok and physics_ok
              else 1)

@@ -10,8 +10,8 @@ with entry weights (mod 2):
   lp ('L', occ, slice) : (len(occ) - len(binder_path)) + sum W(slice)
   K2 retained-whole record ('K', l)      : W(l)
   K3 decode record / KD bundle           : 0
-  KA suppressed-decode head              : 0   (v1.25, audit #17:
-        the mark joined the SWEPT alphabet; reachable edges
+  KA suppressed-decode head              : 0   (the mark is part of
+        the swept alphabet; reachable edges
         cannot constrain a reachably-dead mark, so one disclosed
         raw suppressed edge is the constraining instrument)
 
@@ -85,7 +85,7 @@ def check_program(name, term, cert):
                 if rule == 'fire-h':
                     c = classify_arrival(s.tape)
                     lw = w(term, c[1])
-                    # v1.5: the conservative fire retains D(l) in ks
+                    # The conservative fire retains D(l) in ks
                     # and flips uniformly; only certified ERASURE
                     # charges the defect 1 - w(l)
                     if cert is not None and s.path in cert:
@@ -104,18 +104,14 @@ def check_program(name, term, cert):
                 dq.append(s2)
     return len(seen), edges, bad, fire_defects
 
-# ---- v1.6 additions ----
+# ---- terminal and gauge checks ----
 # (1) terminal chains checked mechanically, not asserted: every
 #     RunDone/Done state must have in-degree 1 and out-degree 1 in the
 #     reachable graph (unique predecessor -> flip-by-assignment is
 #     well-defined; linear chains confirmed).
 # (2) gauge-pinned uniqueness as a swept theorem: parametrize the mark
 #     weights by v in {0,1}^10 over (gam, mu, A, alpha, rho, R, K3,
-#     K2e, KD, KA) — KD joined at v1.17 (audit #9: the 8-parameter
-#     sweep left KD's zero weight asserted rather than enumerated);
-#     KA joined at v1.25 (audit #17: the 9-parameter sweep left the
-#     new mark out entirely — it fell through prof_entry at implicit
-#     weight 0, unenumerated) — and check the full flip/defect law
+#     K2e, KD, KA) and check the full flip/defect law
 #     under every assignment. Entry weights are LINEAR in v, so each
 #     edge carries an 11-vector profile (base + ten mark counts) and
 #     assignments are dot products. KA never occurs on a reachable
@@ -193,8 +189,7 @@ def collect(term, cert):
                     lprof = [0] * (NPAR + 1)
                     prof_entry(term, c[1], lprof)
                     certified = cert is not None and s.path in cert
-                    # F = POPPED frame count (audit #10: the old
-                    # len(s.rs) recording counted retained Q
+                    # F = POPPED frame count. len(s.rs) would count retained Q
                     # spectators too — 38 reachable witnesses,
                     # orbit-masked by w(R)=0; the register's
                     # popped-frame statement was correct).
@@ -277,7 +272,7 @@ def gauge_and_terminals():
                 passing.append(v)
         return passing
 
-    # v1.25 (audit #17): KA never occurs on a reachable edge, so
+    # KA never occurs on a reachable edge, so
     # the reachable sweep cannot constrain it — ONE raw
     # suppressed-decode fire (wf.py regression twenty's frame-skip
     # fixture: WF, uncertified, reachably unmintable) is the
@@ -356,15 +351,13 @@ if __name__ == '__main__':
     # (measured offset 0). HH's branches arrive as alpha tickets
     # (w = 0 both); HNH's two relevant arrivals are ordinary lps of
     # weight ONE — equal to each other, which is all the branch-
-    # offset law needs (audit #10 caught the old comment claiming
-    # alpha arrivals for both).
+    # offset law needs.
     print('branch weights equal per program (HH: 0/0, HNH: 1/1);',
           'sync confirmed dynamically in suite')
-    print('\n--- v1.6: terminal chains + gauge-pinned uniqueness ---')
+    print('\n--- terminal chains + gauge-pinned uniqueness ---')
     ok = gauge_and_terminals()
-    print('\nTOTAL VIOLATIONS:', allbad, ' v1.6 checks:',
+    print('\nTOTAL VIOLATIONS:', allbad, ' structural checks:',
           'PASS' if ok else 'FAIL', ' branch-offset:',
           'PASS' if off_ok else 'FAIL')
-    # The module verdict is the exit code (audit #10 flagged the
-    # print-only verdict — the same class wf.py was FAILed for).
+    # The module verdict is the exit code; print-only failure is insufficient.
     sys.exit(0 if allbad == 0 and ok and off_ok else 1)

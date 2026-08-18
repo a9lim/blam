@@ -1,14 +1,12 @@
 # qALC kernel — current register
 
-**Architecture status:** Gate 1 closed on 2026-08-11 and Gate 2 closed on
-2026-08-13. The proof records are `../../qalc/GATE1.md` and
-`../../qalc/GATE2.md`; the Rust reference pillar is now authorized.
+**Architecture status:** Gates 1 and 2 are closed. The proof records are
+`../../qalc/GATE1.md` and `../../qalc/GATE2.md`; the Rust reference pillar is
+implemented in `../../src/qalc/`.
 The native-CNOT rows extend this v1.43 base in the proved Gate-2 compiler
 sector rather than changing the accepted Gate-1 kernel.
 
-**Kernel status: v1.43.** The transition and W0--W9 well-formedness surface is
-v1.42, which passed fresh-context independent audit #35 with no required
-correction. v1.43 is validation-only: it adds complete finite nonterminal
+**Kernel status: v1.43.** The validation layer adds complete finite nonterminal
 carrier closure and a Gram-independent reachable-recall certificate as an
 unconditional admission check. It changes no transition, WF predicate, frozen
 certificate, physics row, or accepted canonical program. The concrete Lean
@@ -24,11 +22,9 @@ with live `t`, full-normal-form zipper readback, exact predecessor fibres,
 typed halt/error sectors, a conservative source-history fallback, and the
 semantic objects `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`.
 
-This file states the current machine and verification boundary. Audit rounds,
-failed claims, and repairs live in `../ledger/2026-08.md`, git history, and
-external audit records. The accepted executable reference and proofs live in
-`../../qalc/`; `token.md` is the active design and `machine.md` is read-only
-history.
+This file states the current machine and verification boundary. The accepted
+executable reference and proofs live in `../../qalc/`; `token.md` is the
+active design.
 
 ## 1. Scope
 
@@ -58,13 +54,12 @@ RS      ::= canonically sorted set of replay RECORDS R_g(i, b′)
           — one per (gate, instance); transport-inert; recall's
           push is idempotent, replay reads it wherever it sits
 KS      ::= stack of storage heads — inert history; EVERY fire
-            appends EXACTLY ONE (v1.24: prefix-freeness across
-            all arms — incoming KS is the tail after stripping
-            one head):
+            appends EXACTLY ONE, so incoming KS is the tail after
+            stripping one head:
             ('K', g, i)      one decoded ticket (fire's α-decode)
             ('KD', {keys})   certified erasure's tagged bundle —
                              emitted on EVERY certified fire,
-                             empty if no key died bare (v1.23)
+                             empty if no key died bare
             ('K', l)         a retained-whole which-path spectator
             ('KA', g, i)     suppressed decode's history head —
                              NOT a dead record: the key's
@@ -157,16 +152,9 @@ head):**
 arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
    μ's gate kind ≠ γ's       → species-mu
    cargo is a ticket of a FOREIGN gate (α with kind ≠ γ's, either
-   bit polarity)             → alien-gate  [v1.25, audit #17: the
-                                decode row's subscript is
-                                load-bearing — α_t at an h
-                                boundary with a matching bit was
-                                silently decoded into ('K','t',i)
-                                under an H row; reachably
-                                unmintable (α_t's only mint site
-                                is behind the t-fire fence) but
-                                detectable, so typed; retain-whole
-                                never sees a foreign-gate ticket]
+   bit polarity)             → alien-gate  [the decode subscript is
+                                load-bearing; every detectable foreign
+                                ticket is typed]
    any (g, i) with two bits among cargo-nested α and RS frames
                              → key-alias  [deep bit coherence at
                                 the boundary: a fire must never
@@ -178,11 +166,8 @@ arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
        an outer coin's frame around an inner interference)
        any P frame with bit ≠ b → pop-err
        erase (l, P); rs' = Q; leave ('KD', keys) — one tagged
-       bundle, emitted on EVERY certified fire (v1.23, audit
-       #15: an omitted empty bundle made storage histories
-       non-prefix-free — a fresh decode and a carried-in record
-       collided on identical targets, norm 2; target storage is
-       always new-bundle · incoming, so incoming KS strips off),
+       bundle, emitted on EVERY certified fire; target storage is
+       always new-bundle · incoming, so incoming KS strips off,
        naming every key that died with NO surviving
        bit-carrying representation ANYWHERE in the target:
          keys = (α-keys(l) ∪ keys(P))
@@ -204,23 +189,17 @@ arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
        same-key burial exists (the buried ticket remains the
        bit-carrying dead record); in the suppressed case no DEAD
        RECORD is created (W8 exclusivity by construction) but
-       the arm still appends its one history head ('KA', g, i) —
-       v1.24, audit #16: appending nothing let a suppressed
-       decode impersonate a retain-whole fire on identical
-       targets (norm 2, both suppression variants), and the head
-       carries the KEY because two different tickets suppressing
-       over a shared two-frame RS collided too (the author
-       sibling). KA feeds no guard: ks_dead_keys and
+       the arm still appends its one history head ('KA', g, i).
+       The key distinguishes suppressed decodes from retain-whole
+       fires and from one another. KA feeds no guard: ks_dead_keys and
        ks_bitfree_keys exclude it, so a replay off the surviving
        frame stays legal
    else (RETAIN-WHOLE): keep ('K', l) — same-slot arrivals with
        different which-path data stay orthogonal
    then fire: targets (pos, ↑, γ_g·L, A_g(b′)·T′), amplitudes the
    Q_g row for input b; Q_h = H. g = t → t-unimplemented, a
-   typed SCOPE FENCE (v1.23, audit #15: h-only is a claim about
-   programs, and the machine must be total on WF — the raise
-   crashed from WF states; Q_t over ℤ[ω] stays deliberately
-   unexercised). Other shapes → species.
+   typed SCOPE FENCE: h-only is a program claim, while the kernel
+   remains total on WF. Other shapes → species.
 
 retrace      (pos, ↑, γ_g·L, A_g(b′)·T) → (parent+'f', ↓, L,
              γ_g·A_g(b′)·T)      [bt1's action on the γ head]
@@ -228,13 +207,9 @@ retrace      (pos, ↑, γ_g·L, A_g(b′)·T) → (parent+'f', ↓, L,
 anshead      (g, ↓, L, γ·A·T): leaf, γ, and A gate kinds must all
              agree, tuple arities exact, answer bit ∈ {0, 1} —
              the answer arriving at a leaf is that leaf's own
-             gate's answer — else → species-ans  [v1.20/v1.21,
-             audits #12/#13: this was an ASSERT (untyped crash on
-             γ/A disagreement) that never consulted the LEAF —
-             matched foreign markers γ_t·A_t at an h leaf were
-             silently accepted into VB(t,…) — followed by an
-             unpack that crashed on malformed tuples while an
-             out-of-range bit flowed to an out-of-alphabet halt]
+             gate's answer — else → species-ans. The leaf kind,
+             marker kinds, arities, and bit range are all checked
+             before entering VB.
              A second γ/A pair deeper in the tail is accepted
              here and typed `stuck-vb` one step later.
              (g, ↓, L, γ_g·A_g(b′)·T) → (g, VB(g, b′, 0), L, T)
@@ -253,8 +228,7 @@ root         (root, ↑, ε, P_b·ρ)  → RunDone(b̂, res)
              other ρ arrivals     → RunDone(err, res)
 halt/ticks   RunDone → Halt(nf, res, 0) → tick → …
 errors       VB with a non-• non-classifier tape top; ↓-stuck on
-             μ/ρ; neutral constants under μ/ρ; and the v1.21
-             stall closures (audit #13): γ/A/α meeting a binder
+             μ/ρ; neutral constants under μ/ρ; γ/A/α meeting a binder
              → species-binder (foreign-lp and empty-tape finals
              stay classical finals — typing them would diverge
              from the λIAM substrate); A/α/l meeting the gate
@@ -280,8 +254,7 @@ dead), erased by **certified erasure** (→ `KD` bundle, dead), or
 **buried whole** inside a retained `K(l)` record (bit present but
 unreachable — dead for recall/replay, adjudicated by deep W3).
 Replay re-emits fresh tickets off the frame; a re-emitted ticket
-that decodes leaves no record while its frame lives. The key-state
-algebra (audit-#2/working-review completion):
+that decodes leaves no record while its frame lives. The key-state algebra:
 
     answerable + bit-free dead        → typed (key-alias)
     answerable + bit-carrying burial  → allowed iff bits agree
@@ -308,9 +281,8 @@ configuration is the agreeing-alias gap's ticket-dimension face;
 it has never been reached in any sweep or fuzz run, consistent
 with lp-uniqueness (§9).
 
-A bit-carrying burial blocking a fresh call is sound but
-conservatively incomplete — in principle an explicit decoder could
-support replay from it; registered as future work.
+A bit-carrying burial blocks a fresh call conservatively. An explicit burial
+decoder could widen admission, but is not part of the current machine.
 
 **Load-bearing derivations** (from the literal-boolean ground
 truth, not stipulated): classical transport is the whole delivery
@@ -350,7 +322,7 @@ Q = the spectators):
 "amplitudes decide whether a run succeeds, never whether the
 machine is an isometry"):
 
-1. **Legacy-conservative structural fixpoint**: admit only
+1. **Conservative structural fixpoint**: admit only
    boundaries whose every frame key is slot-correlated
    (pop-everything), iterated under hard caps. Amplitude support
    never drives admission (self-supporting certificate cycles).
@@ -394,29 +366,20 @@ maximal nor minimal is claimed**. Smaller clean certificates with
 identical physics exist (measured: `W` reaches `{halt1: 1}` with
 the single ∅-pop boundary `ffbbafffa`, basis 734 vs the canonical
 498; `B` likewise with `ffbbfffa` alone), and the greedy order can
-leave admissible boundaries unexplored. What IS claimed (audit
-#8 caught the earlier at-admission phrasing overstating phase 1,
-which admits structurally): every phase-2 and rescue acceptance
+leave admissible boundaries unexplored. What is claimed: every spectator and rescue acceptance
 passed full validation at acceptance, NO certificate is ever
 returned without the assembled map passing full validation, the
 map is a deterministic function of the program, and the frozen
-values reproduce bit-for-bit. Minimal (and maximal) canonical
-certificates are docketed future work.
+values reproduce bit-for-bit. Minimal and maximal canonical certificates are
+outside the current claim.
 
-**Validation** (`validate`) splits per the working-review verdict:
+**Validation** (`validate`) separates two obligations:
 the STRUCTURAL side — totality, Gram orthonormality on the
 structural reachable basis, unconditional transparency, reachable
 ⊆ WF∧W7∧W8∧W9, mechanized disjointness, and NON-VACUITY at both
-levels (audits #7 and #8: a certified position with no boundary
-arrival is never consulted, and a popkey occurring in no arrival
-frame at its position can never pop anything — either entry
-constrains nothing, and `machine_coverage` refuses maps
-containing one. Canonical maps are never vacuous, by the two
-paths into a frozen map: a phase-1 fixpoint map takes its
-positions and keys directly from the converged arrivals, and
-every other acceptance goes through `settle()`, which rejects
-trials whose positions leave the arrivals and recomputes popkeys
-from them) — is mandatory and
+levels — a certified position must be reached and every popkey must occur in
+an arrival frame there. `machine_coverage` refuses vacuous maps, and
+`settle()` recomputes keys from reached arrivals — is mandatory and
 isometry-bearing (orbit-norm preservation alone is NOT isometry:
 `T|0⟩ = T|1⟩ = |1⟩` holds norm 1 forever from `|0⟩` while
 collapsing columns). The DYNAMIC side — exact evolution of the
@@ -424,15 +387,14 @@ frozen candidate with **zero guard/err amplitude at every step**
 (residue-injectivity prevents cancellation masking a guard fire),
 termination, zero final err mass — decides run success and no
 longer lets zero-amplitude structural branches veto
-coherence-restoring certificates (the audit-#2 `B` witness).
+coherence-restoring certificates (the `B` witness).
 `machine_coverage` is the conjunction; it claims machine soundness
 and clean execution, **never** agreement with an external ideal
 semantics — no such total reference exists for bare λ-terms (the
 eliminator's physical reading — wire, measurement, garbage,
 promised uncomputation — is absent from the syntax); per-program
-physics expectations live in the suite's written-first table, each
-marked hand-derived (audit-confirmed where noted) or — `dupcall`
-only — machine-measured: no circuit reading exists for the untyped
+physics expectations live in the suite's written-first table, each marked
+hand-derived or — for `dupcall` only — machine-measured: no circuit reading exists for the untyped
 refusal row, so it pins the measurement, not an ideal. What
 certification proves
 is: **every admitted erasure has a checked reversible decoding
@@ -462,102 +424,21 @@ unrestricted pop-everything reading and the canonical dicts is claimed.
 For Run states; reachable ⊆ WF is machine-checked per program, and
 the machine's unitarity claims quantify over the subtype:
 
-- **W0** (state grammar — v1.21 tokens, v1.22 the token
-  language, v1.23 the SORTED language, v1.24 exact-type purity
-  after audits #14–#16's countermodels): the state language of
-  §2, mechanized — exact-type PURITY first (the five registers
-  are exact tuples of exact tuples/str/int, verified WITHOUT
-  HASHING before any scan; impure states early-return W0, so a
-  hostile `__hash__`/`__eq__` can neither crash nor poison the
-  checker's caches, and list containers no longer pass); exact-
-  int bits (bool refused), gates in `{h,t}`, exact arities, lp
-  productions recursive with every occurrence resolving to a
-  BOUND Var of the CLOSED term — 1-INDEXED: `Var(0)` refused —
-  AND satisfying the λIAM logged-position equation `len(slice) =
-  level(occ) − level(binder)` via a bound-finding binder walk,
-  arrival-lp `K(l)` cargo, the `('KA', g, i)` history-head
-  production, coordinates `d`/`pos` in language, VB phase
-  exact-int in domain — and SORTED: the log's alphabet is
-  lp-like productions only (lp/γ/α — `arg` pushes lp-like heads
-  and `bt2` pushes slices; nothing else ever enters; a BULLET in
-  the log passed every invariant and `bt1` transported it into a
-  `b1` collision at norm 2). Machine-phase placement of
-  well-formed tokens within their sorts is the other invariants'
-  job — W0 is the language, not the protocol.
-  Grounds §1's output alphabet (`rootval` from a WF VB state can
-  only produce `halt0`/`halt1` — as exact ints) and closes audit
-  #14's stall/crash class: off-language coordinates and
-  semantically invalid lps are outside WF, so no WF state stalls
-  silently or crashes in `subterm`/`binder_path`. W0 is also a
-  GATE (v1.25, audit #17): when it flags, `wf()` returns
-  `['W0']` immediately — exact-pure malformed tuples (a bare
-  `('AL',)`, an empty `()` frame) were correctly W0-flagged and
-  then crashed the W1-W9 deep scans, so W1-W9 are adjudicated
-  only over the language's carrier, the same argument that
-  justifies the purity early-return; after a clean W0 every
-  token has exact shape and the scans index safely. TOTALITY on
-  the raw-object layer (v1.26/v1.27, audits #18/#19 — the
-  staircase ran: empty tuples through a bare-indexing
-  predicate, 1,500-deep recursion, silently accepted garbage
-  terms, a cyclic term graph, hostile Run AND term-node
-  subclasses, a 2^24 shared-DAG blowup, wf7 crashes, and the
-  unvalidated Gate production): dispatch is EXACT-TYPE
-  everywhere — `type(s) is Run` for states and per-node
-  exact-type for term nodes (a subclass is not a state or a
-  term node, and its overridden attribute access never runs:
-  the type check precedes every field access); every
-  traversal before and during W0 is ITERATIVE, pre-gate
-  HASH-FREE, and REPRESENTATION-LINEAR (id-visited purity;
-  `closed()` the MAX-FREE term validator — Gate names in
-  {'h','t'}, Var indices exact-int ≥ 1, unknown node kinds
-  rejected, cycles rejected on-path, ONE memo entry per node
-  id, closedness = max_free(root) == 0, measured linear where
-  the v1.27 (id, depth) memo was Θ(n²) on App/Lam chains — run
-  as an EARLY GATE before any token processing, so no
-  downstream walk sees an unvalidated term; the
-  token grammar a closure sweep with an id-keyed per-call
-  memo), so `wf()` accepts or W0-rejects ANY finite object
-  graph — malformed, cyclic, hostile-typed, or shared — without
-  crashing or hanging (SCOPE, restated locally per audit #28's
-  adopted suggestion: a finite STABLE graph under an unmodified
-  runtime — sys.settrace TOCTOU hooks and class-descriptor
-  injection mutate the trusted class/runtime mid-call and are
-  runtime mutation, not input; the status adjudication, audits
-  #27/#28), and `wf7()` is exact-type dispatched and
-  gated by the total `wf()` itself: "declines out-of-language
-  sources" is enforced, not promised. Past the gate, the W1-W9 scans and the machine share
-  the HOST'S STRUCTURAL-OPERATION BOUNDARY: hash, equality, AND
-  canonical-order repr — exactly the operations the machine's
-  own state discipline performs (evolve keys states by hash;
-  state identity is equality; `rs_insert` and the certified
-  bundle sort canonically BY REPR) — and these limits DIFFER,
-  family-dependently (measured twice: an 8,000-deep in-language
-  state hashes and dict-round-trips, then exceeds the repr
-  limit in the W2 canonical-order check; audit #21 extended
-  this — on the nested-lp family hash stays clean through depth
-  32,000 while equality and repr fail at 6,000; audit #20's
-  "cross together" reading was that probe family's coincidence
-  and is retracted). The boundary is the per-family MINIMUM of
-  the three limits, and the claimed, twice-confirmed fact is
-  ONE-WAY: no state inside the intersection of all three limits
-  crashes any post-gate scan. wf performs no structural
-  operation on state content
-  that the machine does not, so any state past the boundary is
-  one the machine could not itself build, canonically order,
-  store, or superpose; post-gate scan cost is value-semantics
-  (a shared DAG's value is genuinely exponential in its
-  representation). SCOPE: wf() and wf7() are the raw-total
-  STATE surface; the instrument helpers (`cert_fibres`,
-  `cert_disjointness`, `cert_domain_sweep`) take
-  INSTRUMENT-side inputs — term and certificate — on trust, as
-  every instrument does its own configuration: their behavior
-  on garbage configuration is UNSPECIFIED — they may crash,
-  hang, or quietly return meaningless values (measured:
-  cert_fibres(object(), {}) returns {}; cert_disjointness
-  ([], 0); cert_domain_sweep 1) — and no raw-totality claim
-  covers them. Zero reachable
-  fires on the twenty programs and the 218,546-state generated
-  corpus.
+- **W0** (total state grammar): exact built-in node and tuple types only;
+  bits are exact integers in range; gates are in `{h,t}`; tuple arities are
+  exact; every logged position resolves to a bound variable of the closed,
+  1-indexed source term and satisfies
+  `len(slice) = level(occurrence) - level(binder)`. Logs, tapes, replay
+  frames, storage heads, VB phases, directions, and positions must match the
+  grammar of §2, with RS and KD entries in canonical order. Validation is
+  iterative, hash-free until purity is established, cycle-safe, and
+  representation-linear on finite stable object graphs. A W0 failure returns
+  immediately, so W1-W9 never index malformed values. After W0, the checker
+  uses only the hash, equality, and canonical-repr operations also required by
+  machine state identity; inputs beyond the host's limits for those operations
+  are outside the representable machine carrier. Instrument helpers accept
+  configured term/certificate inputs, while `wf()` and `wf7()` own the
+  raw-state totality claim.
 - **W1** (log discipline): `|log| = level(pos)`.
 - **W2** (record uniqueness + canonicity): at most one frame per
   `(g, i)` in RS; RS canonically sorted (state identity is
@@ -566,14 +447,13 @@ the machine's unitarity claims quantify over the subtype:
   across ALL bit-carrying representations — frames, top-level and
   slice-suspended tickets on tape and log, and tickets buried in
   retained-whole `K(l)` records.
-- **W4** (first-interrogation exclusivity, CLOSED as of v1.20): a
+- **W4** (first-interrogation exclusivity): a
   VB-active state at instance `i` holds NO other representation
   of its key in ANY of the four classes — no `i`-frame in RS
   (`W4-frame`), no live `i`-ticket anywhere on tape or log deep
-  through slice cargo (`W4-ticket`, audit #11's countermodel),
-  no same-key bit-free storage (`W4-storage`, audit #12), and no
-  same-key burial with a CONFLICTING bit (`W4-burial`, audit
-  #12); an AGREEING burial is admissible — its `vvar` target is
+  through slice cargo (`W4-ticket`), no same-key bit-free storage
+  (`W4-storage`), and no same-key burial with a CONFLICTING bit
+  (`W4-burial`); an AGREEING burial is admissible — its `vvar` target is
   WF. The four exclusions close `vvar` preservation **by
   enumeration**: the emitted ticket `α_g(i,b′)` can only violate
   W3, W8, or W9 in the target, and each violating partner class
@@ -587,8 +467,7 @@ the machine's unitarity claims quantify over the subtype:
   a reachability fact (first interrogation), strictly stronger
   than raw-state closure at the region's entry. Zero states of
   the twenty programs excluded; zero W4-storage/W4-burial hits
-  over 218,546 states of 300 generated programs (the audit-#12
-  corpus).
+  over 218,546 states of 300 generated programs.
 - **W5** (probe pairing): deep-counted γ (through lp slices and
   retained `K(l)` records; instance KEYS are frozen names, never
   counted) = #μ(tape) + #A(tape) — every in-flight probe's γ is
@@ -633,7 +512,7 @@ w(•) = w(γ) = w(μ) = w(α) = w(ρ) = w(R) = 0;  w(A) = 1
 w(l) for l = (occ, slice) = (depth(occ) − depth(binder)) + Σ w(slice)
 w(K₂(l)) = w(l)  — a retained-whole spectator record carries its
                    lp's weight;  w(K₃) = w(KD) = w(KA) = 0
-                   (KA joined the alphabet at v1.25, audit #17)
+                   (KA is part of the pinned alphabet)
 ```
 
 **Theorem (uniform flip).** Every Run→Run rule flips φ —
@@ -645,15 +524,13 @@ frame count; `w(R) = 0` in the pinned gauge). Proof is per-row
 algebra; the load-bearing case is `var`/`bt2` (the teleport's
 distance is absorbed by the lp carrying it as weight).
 Mechanically verified on every reachable Run→Run edge of the
-battery, zero violations. The separating witnesses the previous
-phrasing got wrong (audit #9): `Ccoll`'s two reachable
+battery, zero violations. The separating witnesses are `Ccoll`'s two reachable
 conservative fires have `w(l) = 1` and delta 1 — an ordinary
 flip, not a `1 − w(l)` defect — and the Σ w(KS) term decides six
 reachable edges (two in `Ccoll`, four in `dupcall`). The weight
 assignment is **gauge-pinned**: of all 1024 assignments over the
 mark alphabet INCLUDING the KD and KA weights (ten swept
-parameters as of v1.25 — audit #17 caught the nine-parameter
-sweep omitting the new mark entirely), exactly the 4-element
+parameters), exactly the 4-element
 orbit generated by two symmetries survives — every survivor
 fixes KD and KA at 0 — and the orbit fixes every deployed
 consequence. The KA pinning requires a DISCLOSED instrument: KA
@@ -718,7 +595,7 @@ ways as virtual ancestry predicts.
 
 ### 7.4 Range disjointness (on WF∧W7, corrected statement)
 
-**Storage-history discipline (v1.24, all arms):** every fire arm
+**Storage-history discipline:** every fire arm
 appends EXACTLY ONE storage head, and the head species names the
 arm — `('KD', keys)` certified, `('K', g, i)` decode-recorded,
 `('KA', g, i)` decode-suppressed, `('K', l)` retain-whole — so
@@ -731,13 +608,9 @@ impossible (distinct tags, and the suppression condition is a
 function of the target's RS and KS-tail). Within one arm the
 head content plus the slot recovers the cargo key (certified:
 the fibre condition; decode/suppressed: the head's key;
-retain-whole: the head's lp). Audit #16's countermodels — a
-suppressed decode impersonating a retain-whole fire through
-either suppression variant, at norm 2 — and the author's two-key
-double-suppression sibling are exactly what the
-one-head-per-fire discipline forecloses; audit #15's
-empty-bundle collision was the certified arm's instance of the
-same defect.
+retain-whole: the head's lp). Regression fixtures pin the collisions that the
+one-head-per-fire discipline excludes: suppressed decode versus retain-whole,
+two-key double suppression, and omitted empty certified bundles.
 
 For two certified-fire sources at one boundary:
 
@@ -745,13 +618,11 @@ For two certified-fire sources at one boundary:
 different retained spectator (pos, log, T, incoming KS, retained Q)
     ⇒ disjoint targets. For pos/log/T/Q the targets embed the
       coordinate verbatim. For incoming KS the embedding is
-      new-bundle · incoming with the bundle ALWAYS present
-      (v1.23): equal targets force equal bundle heads (branch-
+      new-bundle · incoming with the bundle ALWAYS present:
+      equal targets force equal bundle heads (branch-
       equal by condition (e)) and hence equal incoming tails.
-      Audit #15's countermodel — a fresh decode (bundle {k},
-      empty incoming) colliding with a carried-in record (empty
-      bundle omitted, incoming {k}) — is exactly what the
-      always-emit discipline forecloses;
+      always emitting the bundle separates a fresh decode from a
+      carried-in record;
 same spectator, same slot
     ⇒ the SAME source (W7: the fibre is a function; state identity);
 same spectator, opposite slots
@@ -765,9 +636,8 @@ Mechanized for real: the checker collects reachable sources with
 full state, constructs their fire targets via the step function,
 compares decode bundles cross-slot (bundles computed with the §3
 subtraction — the bundle actually left), and computes column inner
-products. Zero violations over every certified graph. The audit
-countermodels guarding this theorem are permanent regressions
-(§10): the extra-frame collision (W7-excluded at the domain
+products. Zero violations over every certified graph. Permanent regression
+fixtures (§10) cover the extra-frame collision (W7-excluded at the domain
 clause — an added frame is a retained-spectator coordinate that
 leaves the certified fibre domain — with disjoint targets), the
 doctored bundle-divergent fibre (rejected by condition (e)), and
@@ -792,8 +662,7 @@ target because frame insertion is idempotent. The clone is not
 reachable. The exact reachable statement is therefore
 **reachable-recall injectivity**: no reachable first-return and
 replay-return sources may agree in every coordinate after deleting
-only the matching frame. The uniform proof attempt found that the
-previous two-class provenance slogan is not locally invariant:
+only the matching frame. A two-class provenance rule is not locally invariant:
 certified fire may pop the matching frame while its replay-emitted
 ticket survives in the tape tail or log, exactly the WF-clean
 `popped-frame/riding-ticket` regression. Even assuming frame survival,
@@ -808,7 +677,7 @@ inside one retained fibre, an opposite-answer child pair can change liveness
 asymmetrically only if its earlier routing to the Boolean arrival slot is
 non-injective (`RRIParentReturnInterface.lean`). Converting the first such
 routing merge into an earlier reachable separator/RFS remains the global gap.
-v1.43 instead makes a complete direct check of this predicate mandatory on
+The current validator makes a complete direct check of this predicate mandatory on
 every finite carrier admitted by `machine_coverage`.
 The local theorem remains useful if an unbounded semantic acceptance theorem
 is later wanted; it is no longer an assumption of the current finite-sector
@@ -852,7 +721,7 @@ the typed H/T/CNOT compiler image.
 
 The fixed-shell gate-copy theorem proves that `(gate, instance)` identifies a
 complete dynamic gate-copy address. Raw agreeing-frame recall remains
-noninjective over arbitrary WF states, so v1.43 checks RRI directly over each
+noninjective over arbitrary WF states, so admission checks RRI directly over each
 complete finite carrier. Concrete Lean replay closes both source-projection
 and actual-target RRI for all 17 canonical typed sectors. A uniform derivation
 from typing or W0-W9 remains optional and is not a premise of either
@@ -862,11 +731,6 @@ Standing typed fences are literal gate application, open bodies, unsupported
 kernel outputs, and every transition-table guard. The composed Gate-1 machine
 adds live T, arbitrary full-normal-form output, and exact terminal adapters
 outside this h-only kernel scope.
-
-The v1.42 transition/WF surface passed fresh-context audit #35 without
-correction. Validation-only v1.43 and the later composed Gate-1/2 proofs are
-covered by their own executable batteries and records; audit chronology and
-superseded proof routes live in the ledger and git history.
 
 ## 10. Verification state
 
@@ -890,11 +754,8 @@ The current kernel battery has one authoritative interpretation:
   H-reconvergent targets. The exporter is untrusted; Lean rechecks row equality,
   closure, and both RRI formulations.
 
-The v1.42 audit verdict applies to the transition/WF claim. The later composed
-Gate-1 audit applies to the accepted full machine. Neither result proves the
-optional ambient lifecycle theorem. The 25 rerunnable historical audit kits
-and their adjudicated exceptional exits are provenance, not current interface;
-the ledger records them without duplicating them here.
+The transition/WF battery and the composed Gate-1 battery cover distinct
+surfaces. Neither proves the optional ambient lifecycle theorem.
 
 ## 11. Reference HH step-indexed trace
 

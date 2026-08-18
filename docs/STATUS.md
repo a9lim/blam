@@ -1,9 +1,9 @@
 # Current state and open docket
 
-This is the single authority for blam's moving research state: canonical
-measurements, proof boundaries, and ordered next work. The root `README.md`
-is the stable public map; domain documents state durable contracts; the
-monthly ledger preserves chronology.
+This is the single authority for blam's moving measurements, proof boundaries,
+and ordered next work. `README.md` is the stable public map; domain documents
+state durable contracts; canonical outputs live in `data/`. Superseded state is
+available from Git history rather than retained in the live documentation.
 
 Last updated: 2026-08-17.
 
@@ -11,634 +11,256 @@ Last updated: 2026-08-17.
 
 ### Census and algorithmic probability
 
-- `data/classical/census_table.txt` covers every closed BLC term from 4
-  through 41 bits: 526,039,969 programs. The 4..40 prefix takes about six
-  minutes wall on the M5 Max (two 2026-08-07 runs under the two-phase group
-  scheduler, 323.6 s and 397.9 s, ~1,980 s user each — wall tracks ambient
-  load, user does not). The full 4..41 range has not been re-timed since the
-  scheduler landed, so its last measured 16.5 minutes stands as an upper
-  bound. The KN machine's single-thread throughput stands at its last
-  measurement, about 166M β-contractions per second on the M5 Max (the
-  figure README cites; this line is its authority). The 2026-08-07
-  regeneration under the r7 engine (no-whnf head memo,
-  partition-independent witness tie-break, sorted unknown order) is
-  fate-invariant at every size:
-  halt/diverge/unknown, max|nf|, and β totals bit-identical; only the
-  escalation-path distribution, witness lines, and ordering moved. Census
-  runs are group-checkpointed and delta-runnable (`--checkpoint`,
-  `--memo-in/out`; engine facts in AGENTS.md).
-- BBλ(41) is at least 1,074,266,118 normal-form bits. The n=32 row carries
-  exactly one unknown, and it is a certified diverger: a Ratchet kill in
-  `data/certificates/ratchet_kills.tsv`, kernel-checked as
-  `lean/Certs/Size32.lean`. So BBλ(32) is settled modulo the certificate
-  layer, not by the ladder alone, and the certified frontier below starts
-  at 33 bits.
-- The current certified frontier is `data/classical/unknowns.txt`: 4,227
-  terms after removing the certificate kills (the eight
-  PassengerDiagonalRatchet kills landed 2026-08-08; subtraction
-  identity 4,532 raw = 4,227 + 305 verified on regen).
-- The finite-range plain halting mass is
-  `Ω|≤41 ∈ [0.124105086764, 0.124105092895]`. Exact base fractions are
-  in `data/classical/solomonoff.txt`; the tightened upper endpoint also
-  accounts for certified divergers removed from the raw unknown mass
-  (305 kills, 14,730,395,648 × 2⁻⁶⁴ exactly; the 2026-08-08 trim
-  removed 53/2⁴¹).
-- The speed-prior (Levin) surface is canonical as of 2026-08-13:
-  `docs/classical/speed.md` is the contract, the `solomonoff` driver
-  computes it in the same sweep, and the certified record is the exact
-  2⁻¹²⁸ unit lines in `data/classical/solomonoff.txt`. Three time
-  gauges (β, transitions, honest = t_β + |x|); unknowns are charged on
-  the upper side only, at machine-recorded fuel-death floors
-  (`data/classical/speed_floors.txt`, 4,532 rows, the input to the
-  certificate trim). Measured at 4..41 with zero unclocked halters, so
-  every canonical Kt and depth⁰ is exact:
-  `Ω_speed(β)|≤41 ∈ [0.122396680340, 0.122396680346]`,
-  `Ω_speed(trans)|≤41` prints as a point at twelve decimals (width
-  ≤ 6.9e-17), `Ω_speed(honest)|≤41 ∈ [0.023402971976, 0.023402971981]`.
-  The 2026-08-13 certificate trim (the 305 kills' exact floor
-  contributions: 35,842,695,890,642,787,413,245 β /
-  5,954,305,136,037,143,901,865 trans /
-  35,842,664,687,044,860,650,404 honest, × 2⁻¹²⁸) tightens the open
-  mass to ≤ 5.926e-12 (β), ≤ 5.113e-17 (trans), ≤ 5.576e-12 (honest):
-  charging 1/t beats Ω's post-trim unknown mass (6.1e-9) by ~10³ under
-  β and ~10⁸ under transitions, with no new certificates.
-- Speed analytics at 4..41 (`data/classical/solomonoff_table.txt`
-  carries the per-x Kt/depth⁰/speed-mass columns): the deepest
-  computation is the rescue champion, t_β = 9,457,564 from a 41-bit
-  program to an 89,494,760-bit normal form; the largest
-  speed-compression gain is |x| − Kt = 31 (a 61-bit nf with Kt = 30);
-  the largest time penalty is Kt − K = 10 (a 62-bit nf, K = 40,
-  Kt = 50, depth⁰ = 844); the BBλ(41) champion output arrives at
-  t_β = 676,047 — deep output, shallow time. The empirical
-  coding-theorem constants are tiny (2026-08-13 full-dump measurement
-  over all 5,755,656 table nfs, sweep verified output-identical to
-  canonical): max K + lg m = 4.05 bits, max Kt + lg S_β = 3.55 bits,
-  means 0.44 and 0.43, no negative residuals — the witness bound holds
-  everywhere and multiplicity never exceeds ~16 effective minimal
-  programs. Table keys carry |x| ≤ 63 (KeySink); overflow nfs have
-  single-digit producer counts, bounding their residuals below the
-  measured maxima.
+- `data/classical/census_table.txt` covers every closed BLC term from 4 through
+  41 bits: 526,039,969 programs. The 4..40 prefix takes about six minutes wall
+  and about 1,980 seconds user on the M5 Max; the 4..41 range's 16.5-minute
+  measurement is an upper bound from before the current two-phase scheduler.
+  Single-thread KN throughput is about 166M beta contractions per second.
+- BBλ(41) is at least 1,074,266,118 normal-form bits. The sole n=32 ladder
+  unknown is a kernel-checked Ratchet diverger, so BBλ(32) is settled modulo
+  the certificate layer.
+- `data/classical/unknowns.txt` is the current certified frontier: 4,227 terms.
+  The identity `4,532 raw = 4,227 frontier + 305 certified kills` is checked by
+  regeneration.
+- The finite-range halting mass is
+  `Omega|<=41 in [0.124105086764, 0.124105092895]`. Exact fractions and the
+  certificate trim are in `data/classical/solomonoff.txt`.
+- Census runs support group checkpoints and cross-run memos. A delta run needs
+  the canonical memo input for fate-identical attribution; checkpoint and memo
+  formats are operational caches, not canonical data.
+
+The speed-prior surface is generated by the same `solomonoff` sweep and uses
+exact 2^-128 units. Its three clocks are beta contractions, transitions, and
+`honest = beta + |output|`. Unknowns contribute only to upper bounds, at the
+machine-recorded floors in `data/classical/speed_floors.txt`.
+
+- `Omega_speed(beta)|<=41 in [0.122396680340, 0.122396680346]`.
+- `Omega_speed(trans)|<=41` has width at most `6.9e-17`.
+- `Omega_speed(honest)|<=41 in [0.023402971976, 0.023402971981]`.
+- The post-certificate open masses are at most `5.926e-12` beta,
+  `5.113e-17` transitions, and `5.576e-12` honest.
+- The deepest recorded computation uses 9,457,564 beta contractions and
+  produces an 89,494,760-bit normal form. The largest measured `|x|-Kt` gain
+  is 31; the largest `Kt-K` penalty is 10. Per-output values live in
+  `data/classical/solomonoff_table.txt`.
 
 ### Divergence certificates and Lean
 
-- `data/certificates/ratchet_kills.tsv` contains 305 checked kills:
-  214 Ratchet, 34 HeadTowerRatchet, 39 SelectorRatchet, 8
-  PassengerDiagonalRatchet (2026-08-08, sizes 36/38/39/40×4/41 — all
-  one engine family, the §8.1 exemplar's 26-bit head under wraps and
-  trailing args), and ten rigid-head argument variants.
-- Every kill is replayed at four times the discovery budgets and compiled to
-  an individual Lean theorem in `lean/Certs/`.
-- `lake build Certs` checks all 305 `¬HasNormalForm` theorems and their wire
-  identities in a few seconds. The development has no sorries and no
-  mathlib dependency; its only reported axioms are `propext` and
-  `Quot.sound`.
-- `classical::certificate` is the trusted checker layer. `blam cert search`
-  is untrusted discovery, and `blam cert lean` generates `lean/Certs/`;
-  generated files are not edited by hand.
-- `blam cert diag` buckets are abort fingerprints for one proposed candidate,
-  not semantic class boundaries. Class counts inferred from those buckets are
-  lower bounds only.
+`data/certificates/ratchet_kills.tsv` contains 305 checked kills: 214 Ratchet,
+34 HeadTowerRatchet, 39 SelectorRatchet, 8 PassengerDiagonalRatchet, and ten
+rigid-head argument variants. Every kill is replayed above discovery budgets
+and emitted as an individual theorem in `lean/Certs/`.
+
+`lake build Certs` checks all 305 `not HasNormalForm` theorems and their wire
+identities. The Lean development has no sorries or mathlib dependency; its
+reported axioms are `propext` and `Quot.sound`. `classical::certificate` is the
+trusted checker layer; `blam cert search` and `blam cert diag` are untrusted
+discovery instruments. Diagnostic buckets are abort fingerprints, not semantic
+classes.
 
 ### Self-interpreter
 
-- The 170-bit classical self-interpreter is locally optimal across the three
-  exhaustive parametric slot searches. VAR, ABS, and APP each have the
-  reference fragment as their unique survivor, with no residual unknowns.
-- Fixpoint shape, continuation timing, environment-cell variants, and binder
-  placement have also been searched as described in
-  `classical/self-interpreter/design.md`.
-- The remaining mechanical improvement lane is the contextual search in
-  `classical/self-interpreter/search-spec.md` §2. A contextual survivor is a
-  hypothesis until it is spliced into the full interpreter and passes the
-  entire semantic battery.
+The 170-bit classical self-interpreter is locally optimal across the exhaustive
+VAR, ABS, and APP slot searches; each reference fragment is the unique
+survivor. Fixpoint shape, continuation timing, environment-cell variants, and
+binder placement are also exhausted within their specified families.
+
+The remaining mechanical lane is the contextual search in
+`classical/self-interpreter/search-spec.md` §2. A survivor is only a hypothesis
+until it is spliced into the full interpreter and passes the semantic battery.
 
 ### Classical docket
 
-(PassengerDiagonalRatchet shipped 2026-08-08 as the v4 class — checker,
-discovery rung, Lean assembly `lean/Blc/Passenger.lean`, eight kills
-through the full recert+kernel pipeline; Codex-reviewed. Spec §8.1 is
-marked implemented.)
-
-1. Derive the next selector/zfirst class from a concrete surviving trace.
-   Do not promote a `blam cert diag` bucket into a class without an exemplar
-   and a finite recurrence.
-2. Leave Drift gated until an exemplar exposes a finite generator
-   `R_(n+1) = G[R_n]`; an unconstrained family is not a certificate.
-3. Raise `census --rescue` before n=42. The largest successful n=41 rescue
-   used 9,457,564 of 10⁷ β-contractions, only 1.06× headroom.
-4. Formalize prefix-freeness and Kraft accounting from
-   `lean/Blc/Wire.lean`, then derive machine-checked K upper bounds.
-5. Parked lane — discrete Solomonoff/speed-prior induction. Decode
-   normal forms as Church bit-lists (I/O polarity is inverted), measure
-   the decode hit-rate over a full `--table` dump, then build the
-   prefix-tree conditional-prediction surface under m and S with
-   certified brackets: the open mass caps every conditional at 6.9e-9
-   under m but 5.9e-12 under post-trim S_β, so speed-prior induction
-   gives ~10³ tighter certified prediction intervals. Discrete-output
-   induction only — programs computing infinite streams are census
-   divergers; the monotone-machine lane (`ref/AIT` uni) is the true-M
-   object and a separate build.
+1. Derive a selector/zfirst certificate class from a concrete frontier trace
+   and finite recurrence; never promote a diagnostic bucket by itself.
+2. Keep Drift gated until an exemplar exposes
+   `R_(n+1) = G[R_n]` with a finite generator.
+3. Raise `census --rescue` before n=42. The current 10^7-beta cap has only
+   1.06x headroom over the largest successful n=41 rescue.
+4. Formalize prefix-freeness and Kraft accounting from `lean/Blc/Wire.lean`,
+   then derive machine-checked K upper bounds.
+5. For discrete Solomonoff induction, measure Church bit-list decode coverage
+   and build prefix-tree conditional predictions under `m` and `S`. Infinite
+   streams belong to the separate monotone-machine `ref/AIT` lane.
 
 ## Quantum state
 
-### Operator census
+### Operator census and unknown frontier
 
-- `data/quantum/census_table.txt` covers the full 4..41 population at
-  β=4096, transitions=2²⁶, 12 live qubits, and 4,096 branches. The run
-  takes about 30 minutes.
-- `Ω_success,≤41 = 3424188513 / 2⁴⁰` exactly.
-- The one-qubit operator is positive definite. The current named-state
-  ranking is `|0⟩ ≫ |+⟩ > T|+⟩ > |−⟩ ≫ |1⟩`.
-- The first entangled successful outputs occur at exactly 41 bits. In the
-  two-qubit ranking, `|00⟩ ≫ Φ⁺ > Φ⁻ > |++⟩`.
-- The 1,619,650 Unknown leaves sit on 1,619,647 programs. Budget was never
-  the frontier: 16× β resolves none, and 16× transitions resolve none of
-  the ≤26-bit population.
-- The trusted skeleton checker (`quantum::certificate`, driven by `blam q
-  skeleton`; ladder in `docs/quantum/escalation.md`) has adjudicated the
-  full frontier:
-  **815,700 programs are proven divergers** — 712,299 by exact recurrence
-  of the hole-inert reduction chain, 103,401 by hole-free residuals the
-  classical engines kill (58,373 oracle, 45,028 bb; split from Codex's
-  independent recount, to be re-pinned by the manifest regeneration) —
-  contributing exactly zero to Ω_success. Killed mass 27,958,835/2⁴¹ is
-  74.45% of the unknown mass; the bracket upper endpoint tightens from
-  860,741,351/2³⁸ ≈ 0.0031313588 to 6,857,971,973/2⁴¹ ≈ 0.0031186446
-  (3.91× narrower). Verdict counts, exact masses, and the sorted-stream
-  digests are double-computed (blam and Codex independently agree).
-  Zero slow halters surfaced. Residue: 184,444 hole-demanded (genuinely
-  quantum), 619,466 tier-1 capouts, and 37 hole-free residuals undecided
-  classically. Those 37 residuals are 74..11,978 bits — all outside the
-  enumerated ≤41 range (β-duplication grows encodings), so they are new
-  compactly-generated hard classical terms, not frontier members; 28 of
-  their *source programs* are verbatim classical-frontier members. The
-  tier-2 capout sweep is stopped by design: a 41,843-verdict sample was
-  100% capout, so a blind full sweep is low-information. `CapOut` carries
-  the fired cap (`reason: Steps | Size`), the step count, and the high-water
-  size in bits, and `blam q skeleton` reports the aggregate split on stderr,
-  so the next move is a stratified sample rather than a blind sweep. The
-  census table itself is unchanged — kills are an adjudication layer above
-  it; the canonical recording protocol is settled
-  (`quantum/escalation.md`) and its manifest build is docket work.
-- The signature is parametric end to end (`blam q census --sig`, exact
-  S/X/Z gates): alternate universes are runnable, lockstep-verified, and
-  deliberately labeled; canonical data stays on the frozen five. The frozen
-  order itself is `quantum::sig::FROZEN` with an order-pinning test, and is
-  measurement-backed through size 34 (signature-universe section below).
+- `data/quantum/census_table.txt` covers the full 4..41 population at beta
+  4,096, transitions 2^26, 12 live qubits, and 4,096 branches. A full run takes
+  about 30 minutes.
+- `Omega_success,<=41 = 3424188513 / 2^40` exactly.
+- The one-qubit operator is positive definite, with named-state ranking
+  `|0> >> |+> > T|+> > |-> >> |1>`. The first entangled successful outputs
+  occur at 41 bits; the two-qubit ranking is `|00> >> Phi+ > Phi- > |++>`.
+- The census has 1,619,650 Unknown leaves on 1,619,647 programs. Increasing
+  beta or transition budgets by 16x resolves none of the <=26-bit population.
 
-Escalation docket items 1 and 2 closed 2026-08-08 (overnight run;
-lockstep-verified with Codex on both):
+The trusted skeleton layer proves 815,700 programs divergent: 712,299 by exact
+hole-inert recurrence and 103,401 after transfer to the classical engines
+(58,373 oracle, 45,028 escalation). Their exact mass is 27,958,835/2^41,
+74.45% of the raw unknown mass. The upper endpoint tightens to
+6,857,971,973/2^41, a 3.91x narrower bracket.
 
-- **The capout stratification is measured, on the full population** —
-  `q skeleton --capout-telemetry` streams per-program
-  reason/steps/high-water, so the docket's sample became a census for
-  free. 619,466 capouts = 487,960 steps-bound (78.8%) + 131,506
-  size-bound (21.2%); the size-bound share settles near 20–22% in the
-  upper size tail (4..15% below n≈33). Size-bound growers breach the
-  16,384-bit ceiling at median 102 steps. The steps-bound high-water
-  distribution (median 3,850 bits, p99 15,898, max at the ceiling)
-  already suggested hidden growers, and the tier-2 conversion sample
-  proved it: every 10th steps-bound capout (48,796 programs,
-  deterministic) rerun at `--steps 4096` gives **2 Loop conversions
-  (both recur under 400 steps), 39,603 size-capouts (81.2% — growers
-  that ran out of steps first), 9,191 still steps-bound**. Exact-cycle
-  density ≈ 4×10⁻⁵: **another exact-cycle tier is refuted; the aimed
-  instrument is the rung-3 hole-parametric pattern-recurrence checker,
-  and its population is effectively the whole capout residue.** The
-  two tier-2 loops are not in the canonical record (tier-1 caps pin
-  it); they fall to rung 3 or a deliberate tier-2 protocol. The
-  16×-steps sample cost 522 s wall / 8,705 s user — a full tier-2
-  sweep would run ~1.5 h wall for ~20 expected kills of negligible
-  mass, and is not scheduled.
-- **The canonical manifest is installed**:
-  `data/quantum/skeleton_manifest.txt` (built by
-  `tools/skel_manifest.py`, regeneration commands inside). Both
-  pinned digests reproduce byte-identically (`3d89539b63d1…` verdicts,
-  `1ba28e2ffaf9…` input; LC_ALL=C sort — prefix-freeness makes
-  full-line byte-lex equal bits order). The Div split is re-pinned
-  from the driver's own stream (`via=` detail): 58,373 oracle /
-  45,028 bb. Masses are leaf-mass accounted with the Unknown/Capacity
-  split explicit (killed 27,958,835/2⁴¹; remaining Unknown
-  9,594,946/2⁴¹; the census's single qubit-cap Capacity leaf 1/2⁴¹;
-  bracket upper unchanged at 6,857,971,973/2⁴¹). All 37
-  residual-Unknown provenance rows carry residual sizes (74..11,978
-  bits), SHA-256 identities, and classical-frontier source membership
-  (28/37). Killed-side exactness argument (kill ⇒ single branch ⇒
-  program mass = leaf mass) is recorded in the tool and was
-  independently confirmed.
+The remaining frontier consists of 184,444 hole-demanded programs, 619,466
+tier-1 capouts, and 37 hole-free residuals undecided classically. Capouts split
+into 487,960 steps-bound and 131,506 size-bound. A deterministic 1-in-10 rerun
+of steps-bound cases at 16x steps yields 2 exact loops, 39,603 size capouts,
+and 9,191 steps capouts. The measured target is therefore the rung-3
+hole-parametric pattern-recurrence checker, not another exact-cycle tier.
 
-Escalation-lane docket, in order:
+`data/quantum/skeleton_manifest.txt` pins verdict/input digests, exact masses,
+the oracle/escalation split, and every residual's size and SHA-256 provenance.
+The census table itself is unchanged; skeleton kills are an adjudication layer.
 
-1. Build the rung-3 hole-parametric pattern-recurrence checker (design
-   ratified, `quantum/escalation.md` rung 3) — now the measured next
-   instrument for the ~750k grower-dominated capout residue.
-2. Rungs 4–5 for the hole-demanded residue: reference-configuration cycle
-   detection between measurements, then the E∞ universal-safety
-   certificate calculus (design ratified, `quantum/escalation.md`).
-3. If wholesale promotion of the discovery engine is wanted, repair the
-   bot_free/simplify uniformity argument (counterexample on record) or
-   supersede it with the pattern-recurrence checker.
-4. Parked lane — quantum speed prior (design sparred with Codex
-   2026-08-13, thread `qblc-speed-prior`; classical counterpart is
-   `docs/classical/speed.md`). Accepted shape: the canonical object is
-   the time-resolved PSD operator
-   `M_speed = Σ_p 2^−|p| Σ_leaf v_ℓ v_ℓ†/T(ℓ)` — a branch-harmonic
-   speed semidensity charging every measurement branch its own
-   root-to-leaf clock (the unnormalized leaf vector already carries
-   P(ℓ); do not double-count). `Ω_speed = Tr M_speed`; state surface
-   forks into `S_test(ψ) = ⟨ψ|M_speed|ψ⟩` (continues the named
-   rankings, fidelity-weighted) and `S_exact` (needs state
-   canonicalization up to global phase). Three distinct complexity
-   objects — Gács-style `H_speed = −lg⟨ψ|M|ψ⟩`, leaf witness
-   `Kt_leaf = min |p| + ⌈lg(T/P)⌉` (joint ceiling), and restart
-   `Kt_restart` — with NO O(1)-coincidence claim (multiplicity
-   counterexample on the thread; only −lg S ≤ Kt_leaf + O(1) holds).
-   The prior is intensional: over adaptive measured qBLC executions,
-   dependent on when a program measures — deferred measurement changes
-   the program and the clock, and that is honest. Implementation gate
-   before canonical: branch-local contraction/transition counters
-   (`Leaf` currently has no transition count; the machine keeps only a
-   program-global max), an effect-resource vector (new/meas/H/T/CNOT,
-   depth) since bare gate count makes classical control free, PSD-safe
-   directed rounding (round the scalar 1/T, never matrix entries),
-   Unknown *and* Capacity both open in brackets with branch-local
-   floors, small-range lockstep, and the regression-witness set listed
-   on the thread. Aggregate Ω_speed inherits the t/s/z trace blindness;
-   the state-resolved operator is the instrument that can separate
-   them — measure, never assume genericity. No direct literature
-   precedent found for the leaf transform Σ P/T (nearest: BvDL quantum
-   K, Gács semidensity, Luby–Sinclair–Zuckerman restarts,
-   Filan–Leike–Hutter stochastic speed prior).
+### Signature and Galois structure
 
-### Signature-universe exploration
+The canonical signature remains `h meas new cnot t`, pinned by
+`quantum::sig::FROZEN`. It is the maximum of all 120 five-primitive
+permutations through every measured depth up to 34. The primitive set is the
+unique minimal complete set within the eight-gate campaign: `new`, `meas`, and
+`cnot` are arity-unique requirements; `{h,t}` supplies a universal unary core;
+`s`, `x`, and `z` are lambda-definable.
 
-Round 2 of the signature campaign ran 2026-08-07: 146 universes over sizes
-4..=32, plus the top twelve permutations re-run to 34; 9,276 core-seconds.
-Every run is `blam q census 4 32 --sig LIST --threads 1`, so the campaign is
-regenerable from the tree without a driver. Harness check: the frozen-order
-run is bit-identical to `data/quantum/census_table.txt` rows 4..32, and its
-Ω_{success,≤24} is 46757/2²⁴ — the 2026-08-02 pilot's winning value. The
-outputs are non-canonical by construction and are not carried in `data/`.
+`Omega_success` is phase-blind and cannot certify universality: replacing `t`
+with diagonal Clifford gates preserves every measured aggregate. Alternate
+signatures remain runnable and lockstep-tested but are noncanonical.
 
-- **The frozen order stands, and its tie-break is now a measurement.** `h
-  meas new cnot t` is the maximum of the 120 permutations at every depth
-  measured (≤24, 26, 28, 30, 32, 34). In the 2026-08-02 pilot it won a
-  *lexicographic* tie with its h↔t mirror `t meas new cnot h`; that tie
-  breaks by
-  measurement at N=28 and stays strict through 34, in the frozen order's
-  favour (margin 309/2³⁵ ≈ 9.0e-9 at ≤34). The top ten are identical at
-  ≤24, ≤32 and ≤34; 35 of the 120 move position in the tail, and distinct
-  Ω values go 52 → 72 as degeneracies break. No re-canonicalization is
-  indicated.
-- **The set axis has no freedom.** `{new, meas, cnot, h, t}` is the *unique*
-  minimal complete signature over the eight-gate alphabet: `new` is the only
-  handle source, `cnot` the only two-qubit gate, `meas` the only branch, and
-  among the unary gates dropping `t` leaves the finite single-qubit Clifford
-  group while dropping `h` leaves a finite monomial group. `s`, `x`, `z` are
-  λ-definable over the five (`s = λq. t (t q)`, `z = λq. s (s q)`,
-  `x = λq. h (z (h q))`), so a superset buys bits, never power.
-- **Ω_success is blind to the non-Clifford resource — it cannot rank sets,
-  only orders.** `h meas new cnot s` — Clifford only, Gottesman–Knill
-  simulable, *not* universal — scores Ω_{success,≤32} = 25810093/√2⁶⁶ with
-  190460/1964964/5404 halt/err/unk leaves: the frozen five's numbers, exact
-  tuple and every count. Total successful mass is a trace and therefore
-  phase-blind, and `t`, `s`, `z` are all diagonal, so the functional cannot
-  see which one occupies a slot; `s` and `z` are exactly interchangeable
-  everywhere measured, and `x` (a permutation, not a phase) separates from
-  them only through fate-split programs (12/2³² in one slot). `h` is the
-  only primitive Ω_success resolves. Universality is therefore a design
-  decision (`quantum/architecture.md` §7), not something this functional
-  certified or could certify — a threshold-minimizing campaign on the set
-  axis needs a different instrument.
-- **Arity dominates content, about 4× per slot.** Best Ω_{success,≤32} by
-  signature length: 4 slots 1.090e-2 (`h new cnot t`), 5 slots 3.005e-3
-  (frozen), 6 slots 8.076e-4 (`h x meas new cnot t`), 7 slots 1.031e-4,
-  8 slots 2.182e-5. The best six-gate universe loses to the *worst* of the
-  120 five-gate permutations (8.076e-4 against 1.208e-3), so promoting a
-  definable gate to a primitive never repays its signature slot. Within the
-  six-gate universes the extra gate wants to be early: slots 1–2 beat slots
-  5–6 by 1.45×, whichever gate it is. Cross-arity Ω comparisons measure the
-  argument-count cost, not the gate set.
-- No universe in the 146 has non-dyadic Ω at ≤32, so nothing here lowers the
-  irrationality thresholds below the measured 34/45/53.
+The current irrationality thresholds are distinct:
 
-What remains open on this lane: the deeper permutation sweep (≤36 and
-beyond), the witness extraction below, and — if the thresholds are still the
-target — an instrument that is not Ω_success. A re-canonicalization
-decision, if a strongly better universe ever appears, is a9's call.
+- 34 bits: shortest successful program with an irrational output-operator
+  entry;
+- 45 bits: shortest five-lambda idiom program with Galois-odd leaf masses;
+- 53 bits: shortest known program with non-dyadic total successful mass.
 
-### Irrationality and Galois structure
+The idiom aggregate is dyadic through 52 and non-dyadic at 53. The complement
+has zero measured sqrt(2) coefficient through 51; sizes 52 and 53 remain open.
+The finite-trace Galois identity is proved at paper level in
+`quantum/galois.md`; the sub-53 exclusion, CNOT-capable companion, and
+infinite-tree statement remain open.
 
-Three thresholds must remain distinct:
-
-- 34 bits: shortest successful program whose output operator has an
-  irrational entry;
-- 45 bits: shortest five-lambda gate-idiom program with Galois-odd leaf
-  masses; and
-- 53 bits: shortest known program whose total successful mass is non-dyadic,
-  via the fate-divergent witness P53.
-
-The idiom-sector aggregate is dyadic through 52 and non-dyadic at 53. The
-non-five-lambda complement has exact zero `√2` coefficient at every measured
-size 42..51, with no fate-divergent program. The complement sweep is paused
-at 51; n=52 and n=53 remain. The zero coefficient is measured cancellation,
-not a theorem.
-
-A fourth, weaker threshold sits below all three and must not be confused with
-them: **27 bits, the shortest program that both creates a superposition and
-sends the two measurement outcomes to different verdict classes** — the
-dyadic-mass precursor of P53, which additionally needs *irrational* masses on
-the split. It comes from the signature campaign above, as a mass-difference
-argument rather than a witness in hand: swapping h↔t in a signature can only
-move a program's total successful mass if that program's leaves span more
-than one verdict class, since otherwise trace preservation gives the same
-total either way; leaf counts are preserved because a T-measurement still
-forks two leaves, one of mass 0. Measured, the h↔t mirror ties hold exactly
-through n=26 and first break at n=27 (six of the 60 permutation pairs; four
-more at 28, two at 29, 48 still tied at 32), while per-size halt/err/unk leaf
-counts never differ for any pair at any size. The earliest break is exactly
-2⁻²⁸ = ½·2⁻²⁷, i.e. one 27-bit program with half its mass changing class. On
-the frozen order the same break is at 28. This retires the 2026-08-02
-prediction that the mirror ties would break at larger N.
-
-**The witness, `P27`, is in hand and the split is Halt/Err.** Batch
-re-adjudication of all 47,146 closed 27-bit programs under `h new meas cnot
-t` and its mirror finds *exactly one* mass difference and zero leaf-count
-differences, confirming the mechanism directly rather than by aggregate:
-
-```text
-000000010110011110011101010   λa.λb.λc. c (a (b c)) c
-```
-
-Under `h new meas cnot t` it is `meas (h (new meas)) meas cnot t`: `new`
-allocates on a junk argument, `h` superposes, and the measurement's Church
-boolean selects the head of what remains — outcome 0 (true, by the inverted
-polarity) selects `meas`, which is then applied to the primitive `t` and
-raises `Err(Species)`; outcome 1 selects `cnot`, whose partial application is
-a normal form and Halts with an empty live store. So the leaves are
-`Err(Species)` and `Halt(live=0)` at ½ each, successful mass ½; under the
-mirror the diagonal `t` gives outcome 0 the whole mass and successful mass 0.
-Both readings are `blam q run`-confirmed. P27 is the minimal shape of the
-phenomenon P53 needs: P53 additionally requires the split to carry irrational
-masses, which costs the extra 26 bits.
-
-The finite-trace Galois identity T1 is proved at paper level in
-`quantum/galois.md`. The sub-53 exclusion T2, its CNOT-capable companion, and
-the infinite-tree statement T3 remain open.
+`P27 = 000000010110011110011101010` is the minimal measured precursor that
+creates a superposition and sends its outcomes to different verdict classes.
+Under `h new meas cnot t` its leaves are Halt and Species error at mass 1/2;
+under the h/t mirror its successful mass is zero.
 
 ### Odd-sector abstract interpreter
 
-Stage 1a asks for the minimum source weight of a closed, CNOT-free trace with
-a Galois-odd leaf mass. The reference monitor and compositional DP are
-`lab::odd` and `lab::oddmin`, driven by `blam q oddmin` (all behind the
-`lab` feature); their current contract is
-`quantum/oddmin.md`.
+`lab::odd` is the trusted trace monitor and `lab::oddmin` the compositional DP,
+driven by lab-gated `blam q oddmin`. They cover closed CNOT-free traces only.
 
-Current measurements:
+- witness45 is accepted with a 44-node summary; the 28-bit CNOT witness is
+  rejected as out of scope;
+- exact agreement with `quantum::reference` holds for all 6,069 closed
+  programs through 22 bits;
+- splice-level Top is zero through W=24 and first appears at W=25;
+- closed acceptance is zero through W=33, establishing the current stage-1a
+  lower bound; and
+- W=34 exceeds the million-summary cap at the weight-30 slice, so pruning must
+  reduce mid-ladder states rather than only the top-weight series.
 
-- witness45 is accepted with a 44-node summary, while the 28-bit CNOT witness
-  is rejected as out of scope;
-- exact agreement with the reference evaluator (`quantum::reference`) holds
-  on all 6,069 closed programs through 22 bits;
-- the remaining 19 conservative cells are all concretely non-odd and arise
-  from alpha-only port identity;
-- splice-level top is zero through W=24 and first appears at W=25 (2 cells);
-- closed-slice summary counts are 96, 743, 6,271, 18,812, 57,324, 177,713,
-  558,377, and 984,707 at W=16, 20, 24, 26, 28, 30, 32, and 33;
-  closed-acceptance top counts are 0, 3, 37, 149, 555, 2,176, 8,047, and
-  17,173 respectively, with splice-level top at 0, 0, 0, 2, 8, 45, 216, and
-  478; the W=24 run takes about one second, W=28 about 14 s, W=30 about
-  31 s, W=32 about 116 s, and W=33 about 220 s (2026-08-07,
-  post-optimization; every row is its own run — the depth ceiling
-  `dmax(w) = (max_w − w)/2` makes a taller run's intermediate lines a
-  different quantity);
-- **acceptance is still zero at W=33**: no closed CNOT-free trace of source
-  weight ≤33 carries a Galois-odd leaf mass, which is the stage-1a lower
-  bound and the reason the ladder to 44 matters;
-- **W=33 is the tallest completable run, and the ceiling is set mid-ladder.**
-  W=34 aborts after 149 s at *weight 30*, whose slice reaches 1,005,363 —
-  5.7× the 177,713 the same weight shows as the top of its own run. The stop
-  rule reads every weight, and the taller depth ceiling makes mid-ladder
-  slices the largest objects in a run, so the old "million-summary stop near
-  W≈33" projected from the top-weight series and read the wrong one. Pruning
-  for the ladder to 44 has to bite mid-ladder; and
-- measured top-weight growth is about 1.76× per weight unit (3.10×, 3.14×,
-  and 1.76× across 28→30, 30→32, and 32→33).
+Next: alpha-normalize `BindId`, strengthen epsilon/canonical-port quotienting,
+prove a simulation-preorder antichain, add the component-scoped post-fixpoint
+with a trusted checker, then resume the ladder to 44. CNOT belongs to the
+separate Pauli-string path-parity analysis.
 
-Next steps, in order:
+### Self-interpretation and conditional operators
 
-1. BindId alpha-normalization, weak-epsilon canonicalization, and canonical
-   port renumbering;
-2. add a simulation-preorder antichain after proving constructor
-   monotonicity;
-3. add the general component-scoped post-fixpoint with ScopeId origins and a
-   trusted checker that verifies only the post-fixpoint; and
-4. add search-side pruning for the ladder to 44.
+The qBLC self-interpreter `E_q = intL I` is 176 bits. Direct and interpreted
+runs agree at the complete effect-tree level through 24 bits. Lean pins the
+wire identities and quote linearity. Parser, selector, weak-head, readback, and
+divergence-sensitive bisimulation obligations remain open as stated in
+`quantum/bisimulation.md`; global minimality is not claimed.
 
-The handle-aliasing lemma is scoped to closed, pre-CNOT programs. CNOT's
-Church pair reintroduces handles inside lambda values and belongs to stage
-1b's Pauli-string path-parity analysis.
+`blam q census --cond-k K` implements the conditional family `G_k`, but no
+canonical generation exists yet. Before one, choose whole-live-store versus a
+designated-output convention, derive explicit comparison constants with
+`M^(k)`, then measure small `G_1` and `G_2` approximants.
 
-### Self-interpretation and bisimulation
+### Quantum docket
 
-- `E_q = intL I` is 176 bits. The six-bit adapter is minimal within the
-  `intL` protocol; global optimality is open.
-- Direct and interpreted runs agree at the effect-tree level on the complete
-  measured population through 24 bits, including terminal fates, stores, and
-  exact branch masses.
-- `lean/Blc/Selfint.lean` kernel-pins `intL` and the 176-bit wrapper by wire
-  identity and proves quote linearity.
-- Parser correctness L1, selector correctness L2, weak-head preservation L3,
-  readback collapse L4, and the divergence-sensitive bisimulation clauses
-  B1–B5 remain proof obligations. Their exact statements are in
-  `quantum/bisimulation.md`.
-- The two-entry interpreter families have minimum 176. The remaining finite
-  search lane is a joint root-and-knot context around the 150-bit core.
+1. Build the rung-3 pattern-recurrence checker for the capout population.
+2. Add reference-configuration cycles and the E-infinity universal-safety
+   calculus for the hole-demanded residue.
+3. Implement branch-local clocks and resource vectors before defining a
+   quantum speed prior; round `1/T`, never individual matrix entries.
+4. Complete the complement sweep at sizes 52 and 53.
+5. Continue the odd-sector pruning program and the bisimulation proof.
 
-### Conditional family `G_k`
+## Quantum-algebraic state
 
-The conditional object is implemented by `blam q census --cond-k K` but has
-not yet received its first canonical data generation. The next work is:
+qALC is the storeless quantum-control pillar: runtime vectors live in ℓ² over
+token configurations of one immutable invocation term. Gate arguments reach
+delta nodes by reversible routing, never by copying.
 
-1. decide whether Object B retains the current whole-live-store output or
-   defines a separate designated-output convention;
-2. derive explicit bit constants for
-   `c m(k) G_k ⪯ M^(k) ⪯ C G_k`; and
-3. run canonical small-size `G_1` and `G_2` approximants, then measure
-   `−log⟨ψ|G_k|ψ⟩` for named states.
+The public Rust pillar in `src/qalc/` implements the typed term/state grammar,
+canonical exact amplitudes, H/T kernel, composed full-NF readback, native-CNOT
+compiler sector, finite admission, conservative fallback, and exact `U`,
+`μ_p`, `ρ_p`, finite `M`, and `Ω_qALC` approximants. The default-built
+`blam qalc` group exposes `compile`, `run`, `gram`, and `fixtures`; census is a
+separate layer.
 
-The output choice is genuinely object-defining. A designated output restores
-compositional discarding but must be specified and measured separately from
-the whole-live-store operator census.
+Gate 1 is closed on 30 admitted operational cores: 7,507 states and 7,417
+exact columns, plus 41,258 pure normalizers, a 1,187,953-state application and
+controller invariant, and direct RRI on all 17 canonical typed sectors.
+Generated Lean checks shapes, predecessors, ranges, Gram identities, and the
+terminal tick lift. Raw-WF recall is noninjective; finite complete-carrier RRI
+is a mandatory admission condition.
 
-## Quantum-algebraic state (qALC)
+Gate 2 proves clean compilation for every positive-width finite typed
+H/T/CNOT circuit. Every basis word occurs at the common reachable `47n+4` cut;
+the actual machine reaches the exact ideal column at symbolic time
 
-qALC is the third pillar: quantum control on a storeless IAM-lineage token
-machine whose runtime basis is in ℓ² over configurations. The invocation
-term is immutable; values reach `h` and `t` by routing, never copying.
-`quantum-algebraic/architecture.md` is the ratified contract,
-`quantum-algebraic/token.md` the active design, and
-`quantum-algebraic/kernel.md` the current machine register. The two rejected
-rewriting-machine drafts remain read-only in `quantum-algebraic/machine.md`.
-The accepted Python/Lean reference and proof surface lives in `../qalc/`.
-The Rust pillar (`blam::qalc`) has completed phases 0–4 of the ratified
-reference sketch. Alongside the typed schema/codec, kernel, composed
-readback, and Gate-2 compiler/shadow, `admission.rs` and `wf.rs` now
-revalidate the frozen Gate-1 candidates through complete carrier closure,
-the typed W0–W9 subset, certificate transparency/nonvacuity, exact Gram and
-range checks, closed-output/pure-normalizer comparison, and the independent
-v1.43 direct RRI gate. `semantics.rs` exposes total compiler-first selection
-with checked Gate-1/no-erasure retry and conservative-history fallback, plus
-exact `U`, `μ_p`, `ρ_p`, finite `M`, and `Ω_qALC` approximants. Runtime `Amp`
-remains separate from Kraft-weighted `ExactSum` aggregation.
+```text
+13n + 15 + 50 #H + 58 #T + 32 #CNOT
+```
 
-**Architecture Gate 1 is closed** (2026-08-11). The accepted version-controlled
-machine combines the v1.43 kernel with exact H/T scattering, internal
-full-normal-form zipper readback, typed source-retaining errors, common-origin
-halt/tick sectors, and exact predecessor fibres. A static selector admits a
-validated finite carrier when one closes and otherwise uses the proved
-source-history representation. This defines exact `U`, `μ_p`, `ρ_p`,
-finite `M`, and `Ω_qALC` approximants for every finite closed-program
-sector.
+with arbitrary finite amplitudes, full-NF output, one literal terminal block,
+tick zero, and no earlier halt. Structural admission is a cap-free syntax walk.
+Finite evidence includes all 43 width-two circuits through length two, clean
+Bell/Toffoli/nonlinear-reuse carriers, and the complete 917-state mixed
+Python/Lean/Rust differential.
 
-The authoritative Gate-1 battery covers 30 admitted operational cores: 7,507
-states and 7,417 exact columns, plus 41,258 pure normalizers, the complete
-application/controller invariant over 1,187,953 reached states, and RRI on all
-17 canonical typed sectors. Generated Lean assembles shape, predecessor,
-literal-range, and exact-Gram checks; regeneration is byte-checked.
-Fresh-context audit #6 passed without correction. The record and command are
-`../qalc/GATE1.md` and `python qalc/gate1_check.py` from the repository root.
+The Python/Lean reference and authoritative batteries are `qalc/GATE1.md`,
+`qalc/GATE2.md`, `python qalc/gate1_check.py`, and
+`python qalc/gate2_check.py`. Runtime fixtures live in `tests/qalc/`; the
+embedded selector pin is `src/qalc/admission_pins.qfx`. Python carrier closure
+and generated `native_decide` evaluations are explicit trust boundaries.
 
-**Architecture Gate 2 is closed** (2026-08-13). For every positive width and
-finite typed H/T/CNOT circuit, `physicalCleanCompile` now refines the actual
-composed token machine from one common reachable `47n+4` input cut to the
-exact ideal `Dw` circuit column at one symbolic time. The proof inducts over
-arbitrary compiler boundaries, preserves the compiler-indexed WF/storage and
-syntax-directed certificate invariants, performs full-NF tuple readback and
-the entire preparation/gate-history unwind, and ends every branch at tick zero
-with one literal ordered terminal-garbage object. A tick-propagation argument
-rules out every earlier terminal branch. Every encoded word is proved to occur
-at the same cut of one closed invocation, and arbitrary finite input
-amplitudes extend linearly in that sector.
+### qALC docket
 
-The live selector therefore admits recognized compiler images by a cap-free
-syntax walk and compiler certificate; finite carrier validation remains only
-an independent audit oracle. All 43 width-two circuits of length at most two
-remain physically clean. Complete carriers pass for Bell uncompute (1,013
-states), derived Toffoli (14,809), and nonlinear target reuse (30,393), and
-eight differential shards match all 917 mixed-carrier states field-for-field
-across Python and Lean. The authoritative record and battery are
-`../qalc/GATE2.md` and `python qalc/gate2_check.py`; Gate 1 re-closes
-unchanged. Rust phases 0–3 differentially reproduce the proved kernel,
-composed Gate-1, and Gate-2 compiler/shadow. Phase 4 independently ports and
-battery-checks admission, fallback, and the semantic objects against those
-already-differential transition layers; it does not claim a new Phase-4
-Python/Rust output differential. The 20 embedded certificate candidates
-revalidate and are not preempted by the independently checked no-erasure
-retry; arbitrary non-compiler gated terms outside that frozen set currently
-have only the no-erasure attempt. Norm and
-monotone halt mass hold through the suite's 2,361 transitions; HH,
-H–NOT′–H, the negative witness, reduced-density checks, a public compiled
-H/T/CNOT sector, 201 pure closed terms through size 7, and the 105
-effect-free `p h t` invocations among them all pass.
-The embedded selector pin is generated only from the authoritative kernel
-fixtures, cross-checked against those source fixtures by Rust, and byte-checked
-under two hash seeds. The structural recognizer/selector is iterative and has
-an explicit >256-depth compiler-image regression; Gate-1 validation instead
-rejects source depth above 256 before any recursive pure normalizer runs.
-The default-built `blam qalc` group is now live: `compile` accepts the typed
-zero-based `h:W` / `t:W` / `cx:C:T` circuit language and emits the canonical
-term plus prepared-cut, post-cut runtime, total time, and certificate metadata;
-`run` applies the total selector and exact `U`; `gram` audits the selected live
-machine; and `fixtures` fully regenerates runtime qfx carriers, columns,
-commitments, traces, finals, and probes. Direct terms, term files, and named qfx
-programs share one strict input path. The verifier separately recognizes the
-intentionally stripped 20-program admission pin, revalidates every selected
-certificate, and byte-compares it with the embedded artifact.
-Qfx inputs preserve their certificate and tick-cut provenance; Gram returns a
-typed CLI failure for an invalid cut or any nonzero defect, and every emitted
-compiled term is proved within the wire-parser cap and round-tripped before it
-is printed.
-Superseded audits, countermodels, and rejected routes live only in the ledger,
-git history, and external audit records.
-
-The kernel transition/WF surface is v1.42, which passed fresh-context audit
-#35. Validation-only v1.43 adds a mandatory Gram-independent complete-carrier
-reachable-recall check without changing transitions, frozen certificates, or
-accepted canonical programs. The concrete Lean mirror rechecks every exported
-row and proves both RRI formulations on the 17 typed sectors, including
-certified-H reconvergence. Raw-WF recall is noninjective; the stronger ambient
-lifecycle/minimal-carrier theorem remains optional and open. Python carrier
-closure and large generated `native_decide` evaluations are explicit trust
-boundaries. Audit chronology lives only in `ledger/2026-08.md`, the commit
-graph, and external audit records.
-
-The open docket, in order:
-
-1. Design qALC census machinery as a separate measured layer over the now-live
-   reference API and CLI. It is not part of the closed Phase-4 semantics claim.
-2. Optional stronger structure: the ambient lifecycle/minimal-carrier theorem,
-   general probe-exit classification, and broader arrival/pop determinacy.
-3. Downstream research: D-circuit dyadicity, universality/domination for `M`,
+1. Design census machinery over the exact public API without changing the
+   closed semantics claim.
+2. Optionally strengthen the ambient lifecycle/minimal-carrier theorem,
+   general probe-exit classification, and arrival/pop determinacy.
+3. Investigate D-circuit dyadicity, universality/domination for `M`,
    self-interpretation up to timing dilation, and relations among the three
-   Ω objects.
+   Omega objects.
 
 ## Repository and release state
 
-- The v2 shape is on `dev`: one `blam` binary in place of the thirteen
-  driver bins, a three-layer library (`blc` substrate, symmetric `classical`
-  and `quantum` pillars, `lab` behind a non-default feature), the halting
-  ladder consolidated into `classical::ladder`, engine config carried as data
-  on that path rather than through the environment, and `qpilot` deleted —
-  the frozen signature order lives as `quantum::sig::FROZEN` plus an
-  order-pinning test, and its pilot campaign in the ledger.
-- Checkpoints are `blamckpt v4` and memo files use a shared tag-first codec.
-  Both formats break their predecessors: any checkpoint or memo file from
-  before the bump is invalid and must be regenerated. Nothing in `data/`
-  uses either format, so the cost is recompute only.
-- The census two-phase group scheduler measures 1.97× on a controlled
-  sequential A/B at 4..38 (250.8 s → 127.0 s) and 2.24× with
-  `--checkpoint --groups 64` (389.5 s → 174.0 s), with every canonical output
-  bit-identical — including a 140,883-term survivor manifest, partition
-  invariance across threads {1, 2, 18} × groups {1, 7, 64}, and resume after
-  a SIGKILL mid-phase-B.
-- **v2.0.0 is released** (2026-08-08): published to crates.io via trusted
-  publishing, tagged, and GitHub-released from the CI-validated main SHA.
-  The pipeline now triggers on the main push itself and its guard waits
-  for CI success on the exact SHA before anything runs — crates.io
-  rejects `workflow_run`-minted trusted-publishing tokens (measured,
-  status 400), which the first armed run discovered; the invariant
-  (publication never outruns the verification bar) is unchanged. dev
-  never arms it.
-- CI runs formatting, clippy with warnings denied, the release test suite in
-  three feature shapes (`--all-features`, default, `--no-default-features`)
-  on Ubuntu and macOS, `uni.rs` parity, the classical 4..32 census
-  spot-check, all Lean certificates, and the `ref/AIT` additivity guard.
-- `ref/AIT` is the a9lim/AIT fork at upstream plus one additive `uni.rs`
-  commit. `contrib/ait-uni/` contains the portable source, parity harness, and
-  upstream PR kit. No upstream pull request is currently open.
+- Version 2.0.0 is the current release. The crate has one `blam` binary, a
+  shared `blc` substrate, classical/quantum/qALC pillars, and lab-gated
+  research instruments.
+- Checkpoints are `blamckpt v4`; memo files use the shared tag-first codec.
+  Older cache files are invalid and must be regenerated. No canonical file in
+  `data/` uses either format.
+- CI checks formatting, warning-free Clippy, release tests with all/default/no
+  default features on Ubuntu and macOS, `uni.rs` parity, the classical census
+  spot-check, Lean certificates, qALC Python/Lean batteries and fixture
+  regeneration, and `ref/AIT` additivity.
+- `ref/AIT` is pinned to the additive a9lim/AIT fork. Only
+  `contrib/ait-uni/verify.sh` reads it.
 
-### Release risks
+### Accepted operational risks
 
-Known and accepted for v2, stated so nobody has to rediscover them:
-
-- **`--memo-in` is a trusted semantic cache.** Its records assign fates to
-  terms the run never adjudicates, so a forged or corrupt memo file can
-  change census output. The checkpoint header's `sha256_16` of the memo file
-  pins *which* file the records came from, not that its facts are true; only
-  a memo file this engine wrote is safe to feed back.
-- **Checkpoint flush is process-kill recovery, not power-loss durability.**
-  Records are `write_all` plus `flush`, with no `sync_all` — a SIGKILL loses
-  nothing, a power cut or kernel panic can leave the tail in the page cache.
-  Torn tails are discarded on resume, so the failure mode is lost work, not
-  wrong work.
-- **Alternate signature universes and very large budgets carry less
-  evidence.** The `--sig` S/X/Z universes are lockstep-verified but every
-  canonical measurement is on the frozen five; likewise the ladder's
-  verification history sits at the measured budgets, not at arbitrarily
-  raised caps. Both are runnable and both are thinner ice.
-- **The low-level arena APIs assume their preconditions.** `Pool`/`Node`
-  (`classical::machine`, `quantum::machine`) take arena ids the caller is
-  responsible for keeping valid, and the escalation entry points want closed,
-  ⊥-free terms. These are documented preconditions, not checked ones: a
-  violation panics at best.
+- `--memo-in` is a trusted semantic cache. Its SHA-256 pin identifies the file;
+  it does not prove the cached fates.
+- Checkpoint flush protects process-kill recovery, not power-loss durability;
+  a torn tail loses work and is discarded on resume.
+- Alternate signature universes and raised budgets are runnable but have less
+  evidence than the canonical configuration.
+- Low-level arena APIs require valid node ids, and escalation APIs require
+  closed, bottom-free terms. Violating these documented preconditions may
+  panic.

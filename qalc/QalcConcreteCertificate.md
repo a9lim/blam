@@ -1,6 +1,6 @@
 # Concrete Lean replay of the qALC direct RRI certificate
 
-**Status (2026-08-11): CLOSED for the 17 canonical typed
+**Status: CLOSED for the 17 canonical typed
 `machine_coverage` sectors; reusable finite-sector checker complete.  The
 uniform lifecycle theorem remains open.**
 
@@ -30,8 +30,8 @@ projection and cannot mix phases.
 
 The checked carrier is terminal-covered rather than artificially truncated.
 `terminal_forward` is a theorem of the concrete `step`, including every
-`Done(tick) -> Done(tick+1)` row, so the external terminal premise identified
-by the earlier audit is no longer trusted Python.
+`Done(tick) -> Done(tick+1)` row, so terminal closure is checked in Lean rather
+than supplied as a trusted Python premise.
 
 ## Generated canonical theorem suite
 

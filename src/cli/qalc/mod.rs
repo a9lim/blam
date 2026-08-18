@@ -1,5 +1,5 @@
 //! The qALC reference pillar's default-built command group.  These are thin
-//! drivers over the Phase-4 public API: exact finite-time evolution, finite
+//! drivers over the public API: exact finite-time evolution, finite
 //! Gram audit, structural circuit compilation, and engine-backed qfx
 //! verification.  Census remains a separate measured layer.
 

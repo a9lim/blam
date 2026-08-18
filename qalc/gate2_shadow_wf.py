@@ -3,8 +3,8 @@
 The CNOT controller crosses its three source applications and two virtual
 continuation binders by explicit reversible rows.  Consequently its compiler
 sectors do *not* satisfy Gate 1's raw lambda-IAM logged-position equation.
-This checker states the honest replacement: ordinary entries retain their
-audited grammar, while an SSA compiler occurrence is a unique static owner and
+This checker states the replacement: ordinary entries retain their kernel
+grammar, while an SSA compiler occurrence is a unique static owner and
 may carry a shortened log slice.  The missing level is bounded by the live
 CNOT continuation histories that account for the shortcut.
 

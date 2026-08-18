@@ -69,9 +69,8 @@ OUT_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "tests", "qalc", "composed")
 
-# Gate 1's frozen aggregate manifest and rule inventory (measured
-# 2026-08-14 from the reference; `tests/qalc_composed.rs` pins the same
-# numbers from the Rust engine).
+# Gate 1's frozen aggregate manifest and rule inventory;
+# `tests/qalc_composed.rs` pins the same numbers from the Rust engine.
 MANIFEST = (7507, 7417, 90)
 RULES = frozenset((
     "anshead", "arg", "b1", "b2", "b3", "b4", "bt1", "bt1g", "bt2",

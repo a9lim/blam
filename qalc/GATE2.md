@@ -1,14 +1,14 @@
 # qALC Gate 2 proof record
 
 Status: **CLOSED — clean coherent compilation proved and the cap-free
-structural selector enabled** (2026-08-13).
+structural selector enabled.**
 
 Gate 2 now has an unbounded Lean refinement from the actual composed token
 machine to the ideal typed H/T/CNOT circuit semantics. The theorem uses one
 immutable compiled invocation, one common reachable encoded-input cut, exact
 `Dw` amplitudes, a symbolic common time, literal common terminal garbage, and
-an explicit no-earlier-halt result. The Rust reference pillar is authorized to
-begin; it must implement this proved surface rather than invent a new one.
+an explicit no-earlier-halt result. The Rust reference pillar implements this
+proved surface and independently regenerates its finite evidence.
 
 ## 1. Closed theorem
 
@@ -85,11 +85,10 @@ coloring. `CP`, `CH`, `CQ`, and `CD` retain predecessor coordinates, and every
 successful custom row has a literal inverse. Full-NF delivery consumes live
 port frames while retaining bit-free predecessor records.
 
-This primitive is necessary. Lambda-defined and selector/ROM entanglers either
+This primitive is necessary: lambda-defined and selector/ROM entanglers either
 duplicate a quantum-producing argument or retain which-leaf residue. Their
 exact Bell traces split into distinct garbage/tick blocks and have zero
-off-diagonal reduced density. Those rejected routes remain in the August
-ledger and git history.
+off-diagonal reduced density.
 
 `gate2_compiler.py` emits a linear SSA program in one `p h t c` invocation.
 Preparation reaches every `n`-bit word at the common cut. H/T/CNOT consume the
@@ -160,8 +159,7 @@ physical/compiler checks, regenerates finite Lean evidence twice
 byte-identically, checks the cap-free selector path, and compiles the complete
 handwritten Gate-2 theorem surface.
 
-Gate 2 closure authorizes the next session's Rust reference pillar. Its first
-implementation should preserve:
+The Rust reference pillar preserves:
 
 1. the typed positive-width H/T/CNOT circuit grammar and linear SSA compiler;
 2. exact compiler-term and certificate pins against the Python/Lean sources;
@@ -170,5 +168,6 @@ implementation should preserve:
 5. differential fixtures plus Bell, Toffoli, nonlinear-reuse, mutation, and
    no-earlier-halt tests.
 
-The Rust work is an implementation of the closed theorem, not new evidence for
-it. Classical and qBLC behavior must remain bit-identical.
+Rust implements the closed theorem and supplies independent differential
+evidence; it does not strengthen the Lean claim. Classical and qBLC behavior
+remain bit-identical.

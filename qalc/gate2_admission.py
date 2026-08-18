@@ -1,4 +1,4 @@
-"""Finite audit of structurally recognized Gate-2 programs.
+"""Finite check of structurally recognized Gate-2 programs.
 
 This complete-carrier validator remains an independent regression oracle for
 small compiler images.  It is deliberately absent from canonical selection:

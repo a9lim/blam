@@ -233,8 +233,8 @@ def probe(term, k, max_steps=4096):
     return {'outcome': 'timeout', 'k': k, 't': t}
 
 # ---- closed-term enumeration ----
-# size: Var=1, Lam=1+|body|, App=1+|f|+|a|  (stated measure; independent
-# of the reviewer's enumeration)
+# size: Var=1, Lam=1+|body|, App=1+|f|+|a|  (stated measure,
+# independent of this enumerator)
 def terms_of(size, depth):
     if size <= 0:
         return
@@ -347,6 +347,5 @@ if __name__ == '__main__':
         print('  FAIL:', f)
     print('TOTAL FAILURES:', len(fails))
     viol = battery()
-    # The module verdict is the exit code (audit #10 flagged the
-    # print-only verdict).
+    # The module verdict is the exit code; print-only failure is insufficient.
     sys.exit(0 if not fails and viol == 0 else 1)

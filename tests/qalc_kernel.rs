@@ -827,7 +827,7 @@ fn hh_trace_matches_kernel_md_section_11() {
             vec![
                 // The register printed this row's position as ffbbf; the
                 // reference machine (and its own t=32 b3 landing at ffbba)
-                // say ffbbaf — corrected 2026-08-14.
+                // say ffbbaf; the reference trace pins this path.
                 Exp {
                     path: Some("ffbbaf"),
                     d: Some(Vert::U),

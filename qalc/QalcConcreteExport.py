@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Emit untrusted finite carriers for Lean's concrete qALC RRI checker.
 
-Lean recomputes every successor from the v1.42 table in
+Lean recomputes every successor from the table in
 ``QalcConcreteKernel.lean``.  This exporter is therefore only a carrier and
 fixture producer: omission or mistranslation makes closure or row conformance
 fail rather than proving the desired theorem.
@@ -326,7 +326,7 @@ def lean_certificate(cert):
     assert isinstance(cert, dict)
     items = []
     for path, keys in sorted(cert.items()):
-        assert keys is not None, "legacy pop-all certificates are out of scope"
+        assert keys is not None, "set-valued pop-all certificates are out of scope"
         keys = sorted(keys, key=key_order)
         items.append(f"({lean_path(path)}, [" +
                      ", ".join(lean_key(x) for x in keys) + "])")

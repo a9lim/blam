@@ -630,12 +630,13 @@ fn head_shape<'a>(term: &Term, token: &'a RunCore) -> Option<(usize, &'a Lp, usi
 /// fault: it indexes binders against the raw cursor with no guard, so
 /// an empty binder list short-circuits to no-shape but a missing
 /// cursor beside nonempty binders raises (`len(None)`).
-#[allow(clippy::type_complexity)]
+type NeutralProbeShape<'a> = (GateName, &'a Lp, u64, usize, &'a Rb, &'a [TapeEntry]);
+
 fn neutral_probe_shape<'a>(
     term: &Term,
     token: &'a RunCore,
     z: &Zipper,
-) -> Result<Option<(GateName, &'a Lp, u64, usize, &'a Rb, &'a [TapeEntry])>, ComposedDefect> {
+) -> Result<Option<NeutralProbeShape<'a>>, ComposedDefect> {
     let tape = &token.tape;
     if token.d != Vert::U || tape.len() < 5 {
         return Ok(None);
@@ -1794,9 +1795,8 @@ pub fn nf_step_with(
 // ---------------------------------------------------------------------------
 // Exact-Dw composed evolution, carrier enumeration, and Gram — the
 // composed analogues of the kernel evolvers, sharing
-// `kernel::edge_coefficient`. Crate-facing machinery for the Gate-1
-// differential; no public semantic `U` (that is phase 4, behind real
-// admission).
+// `kernel::edge_coefficient`. The public semantic `U` reaches these only
+// through validated admission or the conservative fallback.
 
 /// A composed machine-level error. `InverseMismatch` is the carrier
 /// walk's per-edge predecessor check failing — a compressing row whose

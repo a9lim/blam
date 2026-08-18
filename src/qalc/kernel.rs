@@ -6,7 +6,7 @@
 //! The Python reference is frozen and authoritative; this module ports
 //! its transition surface rule for rule and is pinned by the
 //! complete-carrier column fixtures and dynamic trace digests under
-//! `tests/qalc/` (`docs/quantum-algebraic/rust-pillar.md` §6 phase 1).
+//! `tests/qalc/` (`docs/quantum-algebraic/rust-pillar.md` §6).
 //! Row *order* within a column is semantic — the fixtures record exact
 //! ordered unmerged rows — so every arm returns its rows in the
 //! reference's order.
@@ -22,8 +22,8 @@
 //!
 //! Certificates are pinned data (the frozen `CERTS` of `qalc/suite.py`,
 //! carried per-program in the fixture files): typed, unchecked, and
-//! consumed as-is. Nothing here validates or discovers one — that is
-//! the phase-4 admission surface.
+//! consumed as-is. Validation belongs to the admission layer; discovery
+//! remains outside the Rust engine.
 
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
@@ -178,8 +178,8 @@ fn cons_ks(head: KsHead, tail: &[KsHead]) -> Vec<KsHead> {
 // Traversal covers lp slices only; instance keys are frozen names and
 // are never traversed (the W5 ghost-count lesson), and epochs carry no
 // keys. Traversals are iterative (explicit work stack) — the
-// reference's v1.26 discipline after audit #18's RecursionError class.
-// The wire `DEPTH_CAP` bounds decoded input only; `var` builds lps
+// reference discipline is iterative because reachable runs can exceed the
+// decoded input depth. The wire `DEPTH_CAP` bounds decoded input only; `var` builds lps
 // nested past any decoded depth, so no depth is safe to recurse on.
 
 fn add_keys_log<'a>(e: &'a LogEntry, out: &mut HashSet<Key<'a>>) {
@@ -357,7 +357,7 @@ pub(super) fn instance(c: &RunCore) -> Option<&Lp> {
     }
 }
 
-/// v1.7: RS is an instance-keyed set in canonical repr order. The
+/// RS is an instance-keyed set in canonical repr order. The
 /// reference stably sorts all of `rs + (fr,)` — implemented verbatim
 /// (`sort_by_cached_key` is stable) rather than as a sorted-input
 /// insertion, so a non-canonical RS is normalized exactly as Python
@@ -520,14 +520,14 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                         return err_full("alien-ticket", c);
                     }
                     if bitfree.contains(&(tag, i)) {
-                        // v1.8.1: a live ticket must never shadow a
+                        // A live ticket must never shadow a
                         // bit-free dead-storage record
                         return err_full("key-alias", c);
                     }
                     if j == a.bit as usize + 1 {
                         // recall: consistent transit replay off the
                         // ticket, no fire; the discriminator moves to
-                        // the replay record (v1.7 instance-keyed set)
+                        // the instance-keyed replay record
                         let have: Vec<&Frame> =
                             c.rs.iter()
                                 .filter(|f| f.gate == tag && f.instance == *i)
@@ -571,11 +571,11 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                     .filter(|f| f.gate == tag && f.instance == *i)
                     .collect();
             if !mine.is_empty() && bitfree.contains(&(tag, i)) {
-                // v1.8.1: a live frame shadowing a bit-free record
+                // A live frame shadowing a bit-free record
                 return err_full("key-alias", c);
             }
             if !mine.is_empty() {
-                // replay (v1.7 deep keyed lookup): rederive the
+                // Replay uses deep keyed lookup: rederive the
                 // instance's selection from its record wherever it sits
                 if mine.len() > 1 {
                     return err_full("frame-conflict", c);
@@ -599,7 +599,7 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                 return err_full("replay-err", c);
             }
             if dead.contains(&(tag, i)) {
-                // v1.8 refire guard: one-fire-per-instance is a
+                // The refire guard makes one-fire-per-instance a
                 // machine invariant, typed, never silent
                 return err_full("refire", c);
             }
@@ -618,7 +618,7 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
         }
         Some(TapeEntry::Gam(gg)) => {
             if let Some(TapeEntry::Ans(ag, bit)) = c.tape.get(1) {
-                // v1.20/v1.21: leaf = gamma = answer, bit in {0, 1} —
+                // Leaf = gamma = answer, bit in {0, 1}:
                 // typed, never an assert
                 if *gg != *ag || *ag != g || *bit > 1 {
                     return err_full("species-ans", c);
@@ -653,12 +653,12 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
 fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
     if let Some(arr) = classify_arrival(&c.tape) {
         let (b, l, tail) = (arr.slot, arr.head, arr.tail);
-        // v1.6: the probe frame's gate kind must match the boundary's
+        // The probe frame's gate kind must match the boundary's
         // gam (range disjointness over the raw state type)
         if arr.mu != g {
             return err_full("species-mu", c);
         }
-        // v1.10 deep W3 at the boundary: cargo-nested alpha bits and
+        // Deep W3 at the boundary: cargo-nested alpha bits and
         // RS frame bits, one bit per key, else typed
         let mut bits: HashMap<Key<'_>, u8> = HashMap::new();
         let mut conflict = false;
@@ -676,13 +676,13 @@ fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
         if conflict {
             return err_full("key-alias", c);
         }
-        // v1.5: the fire is an encoded fibre; certified erasure (v1.11
-        // literal P/Q) / alpha decode / retain whole
+        // The fire is an encoded fibre: certified erasure with literal P/Q,
+        // alpha decode, or retain whole.
         let popkeys = cert
             .and_then(|entries| entries.iter().find(|(p, _)| *p == c.path))
             .map(|(_, keys)| keys);
         let (rs2, ks2) = if let Some(popkeys) = popkeys {
-            // v1.10 instance-directed certified erasure: pop P, retain
+            // Instance-directed certified erasure: pop P, retain
             // the spectators Q verbatim
             let in_pop = |f: &&Frame| {
                 popkeys
@@ -693,7 +693,7 @@ fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
             if p.iter().any(|f| f.bit != b) {
                 return err_full("pop-err", c);
             }
-            // v1.8/v1.11/v1.12/v1.13: the bundle names only keys with
+            // The bundle names only keys with
             // no surviving bit-carrying or answerable representation —
             // subtract retained Q frames, retained-whole burials, and
             // live tickets in the tape tail and the log
@@ -729,7 +729,7 @@ fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
             for k in live {
                 dk.remove(&k);
             }
-            // v1.23: the bundle is emitted unconditionally (empty
+            // The bundle is emitted unconditionally (empty
             // included) — storage histories stay prefix-free
             let mut keys: Vec<KdKey> = dk
                 .into_iter()
@@ -746,10 +746,10 @@ fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
         } else if let ArrHead::Alpha(a) = l {
             if a.bit == b {
                 // D(alpha) = (gate, i): the bit is redundant with the
-                // slot. v1.8.1/v1.12: a same-key frame or burial keeps
+                // slot. A same-key frame or burial keeps
                 // the answerable representation — the fire appends the
                 // inert KA history head instead of a dead record
-                // (v1.24: exactly one head per fire, never zero).
+                // (exactly one head per fire, never zero).
                 let in_frame =
                     c.rs.iter()
                         .any(|f| f.gate == a.gate && f.instance == a.instance);
@@ -931,7 +931,7 @@ fn classical_down(term: &Term, c: &RunCore, t: &Term) -> Result<Vec<Row>, Defect
             Some(TapeEntry::Mu(_)) | Some(TapeEntry::Cmu { .. }) | Some(TapeEntry::Rho) => {
                 Ok(err_full("shape-err", c))
             }
-            // v1.21: a gate token meeting a binder is a species failure
+            // A gate token meeting a binder is a species failure.
             Some(TapeEntry::Gam(_))
             | Some(TapeEntry::Cgam(_))
             | Some(TapeEntry::Ans(..))
@@ -990,7 +990,7 @@ fn classical_up(c: &RunCore) -> Vec<Row> {
             Some(TapeEntry::Gam(g)) => arg_row(c, parent, LogEntry::Gam(*g)),
             Some(TapeEntry::Cgam(g)) => arg_row(c, parent, LogEntry::Cgam(g.clone())),
             Some(TapeEntry::Alpha(a)) => arg_row(c, parent, LogEntry::Alpha(a.clone())),
-            // v1.21: mu, rho, and answer heads have no transport rule
+            // Mu, rho, and answer heads have no transport rule.
             Some(_) => err_full("species-transport", c),
             None => vec![],
         },

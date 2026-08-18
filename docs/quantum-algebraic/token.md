@@ -1,11 +1,9 @@
 # qALC machine — token-transport design
 
-**Status: Gates 1 and 2 closed.** The §4 kernel is registered current-only in
-`kernel.md`; the complete proof records and executable reference live in
-`../../qalc/`. Fresh-context Gate-1 audit #6 returned PASS,
-and the universal Gate-2 clean-compilation theorem closed on 2026-08-13. The
-Rust reference pillar is the next implementation step. The qALC machine is
-IAM-lineage token transport
+**Status: Gates 1 and 2 closed and implemented.** The §4 kernel is registered
+in `kernel.md`; the complete proof records and executable reference live in
+`../../qalc/`, and the Rust implementation lives in `../../src/qalc/`. The
+qALC machine is IAM-lineage token transport
 (architecture §8): the invocation term is immutable and read-only, the
 runtime basis is token configurations, and gate arguments reach δs by
 routing, never by copying. The rationale: the Interaction Abstract
@@ -13,29 +11,25 @@ Machine (Danos–Regnier) is **bideterministic — natively reversible** —
 so orthonormal columns can come from the dynamics instead of being
 engineered onto them; there is no substitution, no closure
 construction, no environment erasure; and the exponential context does
-reversibly what content tags did irreversibly in the rejected
-rewriting substrate. Quantum prior art: Hasuo–Hoshino (quantum GoI),
+reversibly what irreversible content tags cannot. Quantum prior art:
+Hasuo–Hoshino (quantum GoI),
 Dal Lago–Faggian–Valiron–Yoshimizu (multitoken machines) —
-typed/linear settings. The 2026-08-12 Gate-2 construction audit rejected
-geometric selection and the constant-weight ROM, then isolated a native
-two-port CNOT with persistent reusable outputs. Its buffered SSA compiler has
+typed/linear settings. Gate 2 uses a native two-port CNOT with persistent
+reusable outputs. Its buffered SSA compiler has
 an unbounded actual-machine refinement to the ideal H/T/CNOT circuit column,
 including common reachable inputs, literal terminal garbage, full-NF output,
 arbitrary superpositions, and no earlier halt. Clean Bell, derived Toffoli,
 nonlinear-reuse carriers, and a 917-state Python/Lean differential remain the
 independent executable evidence.
-This document is current-only: guardrails (§1), the exact classical
-substrate (§2), the accepted quantum-control extensions (§3), and the
-current state register (§4). History — the route choice, the ratified
-amendment, the review record, the failed rewriting drafts — lives in
-`../ledger/2026-08.md` and `machine.md`.
+This document contains the guardrails (§1), exact classical substrate (§2),
+accepted quantum-control extensions (§3), and current state register (§4).
 
 ## 1. Guardrails
 
 Any design is dead on arrival unless it respects:
 
 1. **No basis-copying of unknown superpositions** —
-   `CNOT(|+⟩|0⟩) = |Φ⁺⟩`, `(H⊗I)|Φ⁺⟩ ≠ |0⟩|+⟩` (`machine.md` §9.1).
+   `CNOT(|+⟩|0⟩) = |Φ⁺⟩`, `(H⊗I)|Φ⁺⟩ ≠ |0⟩|+⟩`.
    Values reach δs by *transport* or not at all; no machine rule
    copies an already-superposed runtime value.
 2. **Global single-map injectivity on the reachable basis** — distinct
@@ -59,8 +53,8 @@ Any design is dead on arrival unless it respects:
    Boolean-as-position is acceptable precisely when that pairing is
    exhibited; a classically-positioned token driving a hidden quantum
    payload register is the classical-control corner, not this pillar.
-   Amended (ratified 2026-08-09): a δ event may act through a
-   certified **encoded fibre** `E_a|b,κ⟩ = |b, G_a(b,κ), F_a(b,κ), κ⟩`
+   A δ event may act through a certified **encoded fibre**
+   `E_a|b,κ⟩ = |b, G_a(b,κ), F_a(b,κ), κ⟩`
    — coherent decoding of bit-correlated arrival/replay coordinates
    before `Q_q`, with per-boundary exhibition, source and landing
    disjointness, and an effectively computable certification whose
@@ -178,7 +172,7 @@ gate interrogation is necessarily new machinery.
 ## 3. Accepted quantum-control extensions
 
 The current machine extends the immutable-term λIAM substrate at four explicit
-surfaces. Their complete executable definitions live in the scratch reference;
+surfaces. Their complete executable definitions live in the Python reference;
 this document records the design shape rather than duplicating the row table.
 
 ### 3.1 H/T interrogation and replay
@@ -249,26 +243,23 @@ The load-bearing Lean endpoint is
 checks cover all 43 width-two circuits through length two, Bell uncompute,
 derived Toffoli, nonlinear target reuse, mutation controls, and a 917-state
 Python/Lean differential. The authoritative records are
-`../../qalc/GATE1.md` and `../../qalc/GATE2.md`; rejected routes and design
-chronology live only in the ledger and git history.
+`../../qalc/GATE1.md` and `../../qalc/GATE2.md`.
 
 ## 4. Current state register
 
-The original three-program kernel target has been exceeded: the current
-reference machine covers the exact lambda-IAM substrate, H/T gate transport,
+The current reference machine covers the exact lambda-IAM substrate, H/T gate transport,
 full-normal-form readback, typed terminal sectors, and static total semantics.
 Detailed machine definitions and proof boundaries live in `kernel.md`; the
-completed composed proof is `../../qalc/GATE1.md`. Audit chronology belongs
-only in `../ledger/2026-08.md`, git history, and external audit records.
+composed proof is `../../qalc/GATE1.md`.
 
 | Item | Current status |
 |---|---|
-| Architecture Gate 1 | **Closed.** Thirty admitted finite operational cores cover 7,507 states and 7,417 exact columns; generated Lean checks literal ranges, predecessor inversion, and exact Gram identity. Fresh-context Gate-1 audit #6 passed with no required correction. |
-| Kernel | **v1.43.** The v1.42 transition/WF surface passed fresh audit #35. v1.43 adds the mandatory Gram-independent reachable-recall certificate without changing transitions, frozen certificates, or accepted canonical programs. |
+| Architecture Gate 1 | **Closed.** Thirty admitted finite operational cores cover 7,507 states and 7,417 exact columns; generated Lean checks literal ranges, predecessor inversion, and exact Gram identity. |
+| Kernel | **v1.43.** The current validation adds mandatory Gram-independent reachable-recall checking without changing transitions, frozen certificates, or accepted canonical programs. |
 | Transport and transparency | **Closed for admitted finite sectors.** Gate values move by token routing, encoded-fibre erasure is certificate-controlled, and rejection selects the conservative source-history representation. |
 | Instance identity | **Closed at the required boundary.** `(g,i)` identifies fixed-shell gate copies; complete-carrier RRI is checked before admission and replayed in Lean on all 17 canonical typed sectors. Raw-WF recall is noninjective, so no stronger raw theorem is claimed. |
 | Readback and scalars | **Closed.** The internal zipper reads complete normal forms; bare and variable-headed `h`/`t` applications remain neutral; `t` uses exact `diag(1,omega)` arithmetic over `Z[omega]/sqrt(2)^k`. |
 | Terminal and semantic objects | **Closed.** Typed error/halt entry and unilateral ticks are forward invariant. Static sector selection defines exact `U`, `mu_p`, `rho_p`, finite `M`, and `Omega_qALC` approximants for every finite closed program. |
 | Time register | **Kernel theorem.** The coloring, branch-offset law, and mark-free fire-free conservation theorem explain why step-encoded classical selection decoheres and identify the permitted escape mechanisms. |
-| Architecture Gate 2 | **Closed (2026-08-13).** The native CNOT and buffered SSA compiler have an unbounded actual-machine refinement for arbitrary typed H/T/CNOT lists, a common reachable encoded-input cut, exact ideal columns, arbitrary finite amplitudes, full-NF output, one literal terminal block, no earlier halt, and cap-free structural admission. |
+| Architecture Gate 2 | **Closed.** The native CNOT and buffered SSA compiler have an unbounded actual-machine refinement for arbitrary typed H/T/CNOT lists, a common reachable encoded-input cut, exact ideal columns, arbitrary finite amplitudes, full-NF output, one literal terminal block, no earlier halt, and cap-free structural admission. |
 | Optional stronger structure | The ambient uniform lifecycle/minimal-carrier theorem, general probe-exit classification, and broader arrival/pop determinacy remain research lanes; none is a Gate-1 premise. |

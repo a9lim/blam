@@ -3,10 +3,9 @@
 //! ℓ² over token configurations.
 //!
 //! The accepted Python/Lean reference and proof surface live in `qalc/`
-//! at the repository root; Architecture Gates 1 and 2 are closed and
-//! this module is their differential Rust port, phased per
-//! `docs/quantum-algebraic/rust-pillar.md` (ratified 2026-08-14). The
-//! Python surface stays authoritative: frozen certificates and Gate-2
+//! at the repository root; this module is its differential Rust port,
+//! specified by `docs/quantum-algebraic/rust-pillar.md`. The Python
+//! surface stays authoritative: frozen certificates and Gate-2
 //! evidence enter as pinned fixture data under `tests/qalc/`, never as
 //! re-derived output.
 //!
@@ -17,15 +16,12 @@
 //! bit-identical with this module present or deleted; the per-phase
 //! verification bar checks both.
 //!
-//! Phase-0 surface (schema and codec): [`term`], [`mark`] (the typed
-//! state grammar and the `PyReprKey` canonical-order renderer),
-//! [`state`], [`amp`] (the canonical-invariant amplitude), and [`wire`]
-//! (the fixture format). Phase 1 adds [`kernel`] — the step table and
-//! exact-Dw evolvers, pinned by complete-carrier column fixtures. Phase 2
-//! adds the [`readback`] full-NF machine. Phase 3 adds the [`compiler`],
-//! native-CNOT [`shadow`], and finite [`gate2check`] audit. Phase 4 adds
-//! validated Gate-1 [`admission`], the typed [`wf`] subset, and the public
-//! total [`semantics`] objects.
+//! Schema and exact dynamics are split by responsibility: [`term`],
+//! [`mark`], [`state`], [`amp`], and [`wire`] define identity and
+//! interchange; [`kernel`] and [`readback`] define Gate-1 evolution;
+//! [`compiler`], [`shadow`], and [`gate2check`] define the clean circuit
+//! sector; [`admission`], [`wf`], and [`semantics`] make selection and the
+//! public semantic objects total.
 
 pub mod admission;
 pub mod amp;

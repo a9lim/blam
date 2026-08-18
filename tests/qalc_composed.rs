@@ -15,7 +15,7 @@
 //!
 //! The per-core expectations were measured from the frozen Python
 //! reference (`readback_certify.composed_carrier` at `tick_depth=2`)
-//! on 2026-08-14; the aggregate is Gate 1's 7,507 states / 7,417
+//! by the canonical fixture set; the aggregate is Gate 1's 7,507 states / 7,417
 //! columns over 30 cores, with 90 tick-cut leaves.
 
 use blam::hash::sha256_hex;

@@ -1,6 +1,6 @@
-"""Pinned-gauge coloring audit for the accepted native-CNOT rows.
+"""Pinned-gauge coloring check for the accepted native-CNOT rows.
 
-The accepted v1.43 raw-kernel weights remain fixed.  This file enumerates
+The raw-kernel weights remain fixed. This file enumerates
 every binary weight assignment for the new raw mark species and checks the
 Run-to-Run flip/encoded-fire law on the compiled Toffoli and nonlinear-reuse
 carriers.  Full-NF port delivery is a composed-controller boundary and is
