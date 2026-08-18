@@ -3,8 +3,7 @@
 This document is the durable architecture contract for blam's quantum
 pillar. It uses the same structure as the classical architecture so the two
 systems can be compared layer by layer. Current measurements and the open
-docket live in `../STATUS.md`; chronological development history lives in
-`../ledger/`.
+docket live in `../STATUS.md`.
 
 ## 1. Purpose and target objects
 
@@ -80,14 +79,11 @@ The five-lambda wrapper is a common programming idiom, not a syntactic
 restriction. Object A runs a program on the signature; Object B first supplies
 the dimension condition and then the signature.
 
-The order was chosen once, by an exhaustive 120-permutation pilot against a
-predeclared functional. That campaign is finished history and is recorded in
-`../ledger/`; the driver that ran it no longer exists. The frozen order's
-single home in code is `quantum::sig::FROZEN`, and unit tests pin both the
-sequence and its being a permutation of `Prim::CANONICAL_SET`, because every
-canonical number in `../../data/quantum/` is relative to it. Alternate orders
-remain reachable through `--sig` and produce non-canonical data by
-construction.
+The canonical order's single home in code is `quantum::sig::FROZEN`. Unit
+tests pin both the sequence and its being a permutation of
+`Prim::CANONICAL_SET`, because every canonical number in
+`../../data/quantum/` is relative to it. Alternate orders remain reachable
+through `--sig` and produce non-canonical data by construction.
 
 ### Values, stores, and dynamic linearity
 

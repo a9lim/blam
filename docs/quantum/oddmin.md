@@ -295,7 +295,7 @@ below names the function that carries it.
 | witness45 accepts and the 28-bit CNOT witness does not | `lab::oddmin::tests::gate_witness45_accepts_cnot28_does_not` |
 | differential against the exact reference evaluator over all 6,069 closed programs through 22 bits | `lab::oddmin::tests::small_population_agreement_vs_qeval` |
 
-Two claims this list used to make are withdrawn for want of a test. There is
+Two stronger claims are intentionally absent for want of a test. There is
 no statevector comparison: the monitor is checked against the trusted kernels
 and against hand traces, not against an independent exact simulation of the
 gate word. And there is no abstract stale-handle gate: the `StaleEpoch`
@@ -380,16 +380,8 @@ recompute acceptance, and replay witness45. Search-supplied pair omissions are
 trusted only after the checker proves them incompatible. No accept bit and no
 post-fixpoint supplied by search is accepted without recomputation.
 
-The next implementation sequence is:
-
-1. alpha-normalize `BindId`, canonicalize weak-epsilon structure, and
-   renumber ports canonically;
-2. probe W=30 (W=26 and W=28 are measured — §7);
-3. prove constructor monotonicity and add a simulation-preorder antichain;
-4. add a general component-scoped post-fixpoint whose ScopeId origins and
-   closure are checked by the trusted side; and
-5. add an independent search implementation and freeze the certificate
-   format only after the growth curve is viable.
+The ordered work needed to cross this certificate boundary is maintained in
+`../STATUS.md`; this document fixes the semantic and checker obligations.
 
 The stage-1a handle-aliasing argument applies only to closed pre-CNOT traces.
 CNOT returns a Church pair containing handles, so stage 1b must model aliasing

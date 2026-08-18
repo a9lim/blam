@@ -180,8 +180,8 @@ beta_total — meeting the repo's verification bar for engine changes.
 ## Supporting Python tools
 
 `search_var.py` and `search_abs.py` (the closed-Church-marker probes
-the spec was written to kill) are superseded and deleted — git
-history holds them. `lc.py`, `db.py` and `harness.py` remain live
+the spec was written to kill) are intentionally absent. `lc.py`, `db.py`, and
+`harness.py` are live
 (used above for the golden cross-check and source-chain battery),
 as does `tools/self-interpreter/search_fix.py` (the knot search of `design.md`).
 

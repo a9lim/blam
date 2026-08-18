@@ -133,15 +133,6 @@ pub enum CallTarget {
     Received(BindId),
 }
 
-/// Port reference inside a head: a summary's own port, or a port of
-/// a value received earlier (resolved through the specialization
-/// environment at splice time).
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub enum PortRef {
-    Own(PortId),
-    Received(BindId),
-}
-
 /// Distinguished-lineage role of a handle value. Staleness is
 /// carried by the cap at seams, not by the head.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -179,17 +170,17 @@ enum UnaryPrim {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Head {
     Lam {
-        apply: PortRef,
+        apply: PortId,
     },
     Prim {
         which: Which,
-        held: Option<PortRef>,
+        held: Option<PortId>,
     },
     Handle {
         role: Role,
     },
     Neutral {
-        spine: Option<PortRef>,
+        spine: Option<PortId>,
     },
     /// A value received through a ★ observation: behaves as whatever
     /// the binding resolves to; use sites case-split.
@@ -646,9 +637,7 @@ pub fn lam_ref(body: &Summary) -> Summary {
     edges.push((
         0,
         Label::RetOut {
-            head: Head::Lam {
-                apply: PortRef::Own(p),
-            },
+            head: Head::Lam { apply: p },
             rel: CapRel::PURE,
         },
         done,
@@ -762,18 +751,7 @@ type ContId = u32;
 /// extension time, mirroring qeval, and never re-walked).
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum CPort {
-    Sub {
-        side: Side,
-        root: Root,
-        env: EnvId,
-    },
-    /// The behavior of a value received through a SPECIFIC observed
-    /// species. Its only minter is `opaque_val`, which the collapsed
-    /// fan (frozen shape 3) only ever calls with ★ — so nothing
-    /// constructs it today. Every consumer still handles it, so
-    /// re-enabling the fan is a one-line change there.
-    #[allow(dead_code)]
-    Recv(BindId),
+    Sub { side: Side, root: Root, env: EnvId },
     Spine(Option<CPortId>, CPortId),
 }
 
@@ -1171,7 +1149,6 @@ impl<'a> Composer<'a> {
         }
         let depth = match &p {
             CPort::Sub { env, .. } => 1 + self.env_depth[*env as usize],
-            CPort::Recv(_) => 0,
             CPort::Spine(prev, arg) => prev
                 .map(|c| self.cport_depth[c as usize])
                 .unwrap_or(0)
@@ -1442,11 +1419,7 @@ impl<'a> Composer<'a> {
     fn enter_from(&mut self, at: ONode, thunk: CPortId, cont: ContId, inflight: Net) {
         match self.cports[thunk as usize].clone() {
             CPort::Sub { .. } => self.enter(Some(at), thunk, cont, inflight),
-            // Forcing an opaque received behavior: symbolic — the
-            // ambient will resolve it. Represented at apply sites
-            // only; a bare force of a Recv is dispatch, handled by
-            // callers.
-            CPort::Recv(_) | CPort::Spine(..) => {}
+            CPort::Spine(..) => {}
         }
     }
 
@@ -1490,12 +1463,6 @@ impl<'a> Composer<'a> {
                     }
                     self.enter(Some(at), entered, ret_to, inflight);
                 }
-                // A lambda whose apply port is a received value: the
-                // same deferred ambient application as the Opaque
-                // head below, and it must carry the same guard.
-                // Unreachable under the collapsed fan (no `CPort::Recv`
-                // is minted), live again the moment it is re-enabled.
-                CPort::Recv(b) => self.defer_ambient_apply(at, b, inflight, arg, ret_to),
                 // Spine cports are built only for neutral heads.
                 CPort::Spine(..) => unreachable!("a lambda apply port is never a spine"),
             },
@@ -1826,17 +1793,8 @@ impl<'a> Composer<'a> {
     /// driver's normal-form surface.
     fn descend(&mut self, at: ONode, val: ValId, inflight: Net, self_cont: ContId, ret_to: ContId) {
         let v = self.vals[val as usize];
-        // The two descending arms used to be guarded by "this port is
-        // not a received value" — descending an opaque lambda mints
-        // observation fans forever, and an opaque value's
-        // normalization belongs to the ambient resolver. Under the
-        // collapsed fan no `CPort::Recv` is ever minted, so both
-        // guards were constantly true. They survive as assertions; a
-        // re-enabled fan must restore them as guards.
-        let received = |c: &Composer, p: CPortId| matches!(c.cports[p as usize], CPort::Recv(_));
         match v.head {
-            CHead::Lam { apply } => {
-                debug_assert!(!received(self, apply), "descent met an opaque lambda");
+            CHead::Lam { .. } => {
                 // Apply to a zero-cost rigid formal and keep
                 // descending (memoized self-continuation).
                 let empty = self.intern_env(Env::default());
@@ -1851,7 +1809,6 @@ impl<'a> Composer<'a> {
                 which: Which::Cnot,
                 held: Some(h1),
             } => {
-                debug_assert!(!received(self, h1), "descent met an opaque held argument");
                 // A surviving partial normalizes its held argument
                 // (call-by-name debt paid at the NF surface), then
                 // stays a partial.
@@ -1927,9 +1884,8 @@ impl<'a> Composer<'a> {
     }
 
     /// The opaque value observed through a symbolic RetIn. Only ★
-    /// under the collapsed fan (frozen shape 3) — the specific
-    /// species are the ones that would mint `CPort::Recv`, which is
-    /// why nothing downstream sees a received port today.
+    /// under the collapsed fan (frozen shape 3). Specific species are
+    /// deliberately outside the current abstraction.
     fn opaque_val(&mut self, pat: HeadPat, bout: BindId) -> ValId {
         match pat {
             HeadPat::Any => self.intern_val(Val {
@@ -2095,12 +2051,7 @@ impl<'a> Composer<'a> {
                             break 'scan;
                         }
                         Head::PureWiden | Head::Opaque { .. } => {}
-                        Head::Lam {
-                            apply: PortRef::Own(p),
-                        }
-                        | Head::Neutral {
-                            spine: Some(PortRef::Own(p)),
-                        } => {
+                        Head::Lam { apply: p } | Head::Neutral { spine: Some(p) } => {
                             if let Some(&pn) = s.ports.get(p as usize) {
                                 q.push_back(pn);
                             }
@@ -2127,7 +2078,6 @@ impl<'a> Composer<'a> {
         self.cport_pure_memo.insert(cp, false);
         let pure =
             match self.cports[cp as usize].clone() {
-                CPort::Recv(_) => false,
                 CPort::Spine(prev, arg) => {
                     prev.map(|c| self.cport_pure(c)).unwrap_or(true) && self.cport_pure(arg)
                 }
@@ -2242,14 +2192,10 @@ impl<'a> Composer<'a> {
                                 None
                             }
                         };
-                        match pr {
-                            Some(PortRef::Received(bb)) => reference(bb, &mut free),
-                            Some(PortRef::Own(p)) => {
-                                if let Some(&pn) = s.ports.get(p as usize) {
-                                    meet(&mut mb, &mut q, pn, &here);
-                                }
+                        if let Some(p) = pr {
+                            if let Some(&pn) = s.ports.get(p as usize) {
+                                meet(&mut mb, &mut q, pn, &here);
                             }
-                            None => {}
                         }
                     }
                     _ => {}
@@ -2299,30 +2245,22 @@ impl<'a> Composer<'a> {
     }
 
     /// Resolve a source-side RetOut head into composed values.
-    ///
-    /// `PortRef::Received` cannot occur: only `opaque_val` mints a
-    /// received port, and the collapsed fan never calls it with a
-    /// specific species. Those arms trip rather than silently
-    /// resolving to a bound value under a stale environment.
     fn resolve_head(&mut self, side: Side, env: EnvId, head: Head, rel: CapRel) -> Vec<ValId> {
         let cap = rel.cap_out;
         match head {
-            Head::Lam { apply } => match apply {
-                PortRef::Own(p) => {
-                    let cp = self.sub_cport(side, p, env);
-                    vec![self.intern_val(Val {
-                        head: CHead::Lam { apply: cp },
-                        cap: Cap::None,
-                    })]
-                }
-                PortRef::Received(_) => unreachable!("no received apply port under the ★ fan"),
-            },
+            Head::Lam { apply } => {
+                let cp = self.sub_cport(side, apply, env);
+                vec![self.intern_val(Val {
+                    head: CHead::Lam { apply: cp },
+                    cap: Cap::None,
+                })]
+            }
             Head::Prim { which, held } => match held {
                 None => vec![self.intern_val(Val {
                     head: CHead::Prim { which, held: None },
                     cap: Cap::None,
                 })],
-                Some(PortRef::Own(p)) => {
+                Some(p) => {
                     let cp = self.sub_cport(side, p, env);
                     vec![self.intern_val(Val {
                         head: CHead::Prim {
@@ -2332,19 +2270,13 @@ impl<'a> Composer<'a> {
                         cap: Cap::None,
                     })]
                 }
-                Some(PortRef::Received(_)) => {
-                    unreachable!("no received held argument under the ★ fan")
-                }
             },
             Head::Handle { role } => vec![self.intern_val(Val {
                 head: CHead::Handle { role },
                 cap: if role == Role::DCur { cap } else { Cap::None },
             })],
             Head::Neutral { spine } => {
-                let sp = spine.map(|s| match s {
-                    PortRef::Own(p) => self.sub_cport(side, p, env),
-                    PortRef::Received(_) => unreachable!("no received spine port under the ★ fan"),
-                });
+                let sp = spine.map(|p| self.sub_cport(side, p, env));
                 vec![self.intern_val(Val {
                     head: CHead::Neutral { spine: sp },
                     cap: Cap::None,
@@ -2641,12 +2573,12 @@ impl<'a> Composer<'a> {
                                 fs.edges.push((n, Label::RetIn { pat, bind, rel }, b))
                             }
                             PreLabel::Call { target, arg } => {
-                                let arg2 = arg.map(|cp| fs.own_port(cx, cp));
+                                let arg2 = arg.map(|cp| fs.assign(cx, cp));
                                 fs.edges.push((n, Label::Call { target, arg: arg2 }, b));
                             }
                             PreLabel::CallF { fcport, arg } => {
-                                let target = CallTarget::Formal(fs.own_port(cx, fcport));
-                                let arg2 = arg.map(|cp| fs.own_port(cx, cp));
+                                let target = CallTarget::Formal(fs.assign(cx, fcport));
+                                let arg2 = arg.map(|cp| fs.assign(cx, cp));
                                 fs.edges.push((n, Label::Call { target, arg: arg2 }, b));
                             }
                             PreLabel::RetOut { head, rel } => {
@@ -2714,16 +2646,13 @@ struct Flat {
 impl Flat {
     /// Resolve a composed-port reference; assigning a new port roots
     /// its subgraph and releases its deferred symbolic returns.
-    fn assign(&mut self, cx: &Composer, cp: CPortId) -> PortRef {
-        if let CPort::Recv(b) = cx.cports[cp as usize] {
-            return PortRef::Received(b);
-        }
+    fn assign(&mut self, cx: &Composer, cp: CPortId) -> PortId {
         if let Some(&p) = self.port_of.get(&cp) {
-            return PortRef::Own(p);
+            return p;
         }
         if self.port_roots.len() >= MAX_PORTS {
             self.abort.get_or_insert(Abort::PortCap);
-            return PortRef::Own(0);
+            return 0;
         }
         let p = self.port_roots.len() as PortId;
         self.port_of.insert(cp, p);
@@ -2767,17 +2696,7 @@ impl Flat {
         for (n, head, rel, b) in self.deferred.remove(&cp).unwrap_or_default() {
             self.work.push_back(FWork::Sym(n, head, rel, b));
         }
-        PortRef::Own(p)
-    }
-
-    /// `assign` where the result must be an own port. Received ports
-    /// are never minted under the collapsed fan, so this is total;
-    /// the old fallbacks silently answered port 0.
-    fn own_port(&mut self, cx: &Composer, cp: CPortId) -> PortId {
-        match self.assign(cx, cp) {
-            PortRef::Own(p) => p,
-            PortRef::Received(_) => unreachable!("no received ports under the ★ fan"),
-        }
+        p
     }
 
     /// Translate a composed head, assigning referenced ports.
@@ -3039,9 +2958,7 @@ mod tests {
             edges: vec![(
                 0,
                 RetOut {
-                    head: Head::Lam {
-                        apply: PortRef::Own(0),
-                    },
+                    head: Head::Lam { apply: 0 },
                     rel: CapRel::PURE,
                 },
                 1,

@@ -1,0 +1,178 @@
+qalc-fixtures v1
+begin program 3coin
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a ) ( )
+centry ( f f b b f a a ) ( )
+centry ( f f b b f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program B
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( ap ( v i:2 ) ( ap ( l ( l ( l ( ap ( ap ( v i:3 ) ( v i:1 ) ) ( v i:2 ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ( l ( v i:1 ) ) ) ( v i:2 ) ) ( l ( l ( v i:1 ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a ) ( ( k h ( lp ( f f b b f f f f ) ( ) ) ) )
+centry ( f f b b f f f a ) ( )
+centry ( f f b b f f f a a a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program Ccoll
+term ( ap ( ap ( l ( l ( ap ( v i:2 ) ( ap ( l ( l ( l ( ap ( ap ( v i:3 ) ( v i:1 ) ) ( v i:1 ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program HH
+term ( ap ( ap ( l ( l ( ap ( v i:2 ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program HNH
+term ( ap ( ap ( l ( l ( ap ( v i:2 ) ( ap ( l ( l ( l ( ap ( ap ( v i:3 ) ( v i:1 ) ) ( v i:2 ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a ) ( )
+centry ( f f b b a a a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program W
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( ap ( l ( v i:1 ) ) ( v i:1 ) ) ) ) ( l ( ap ( l ( v i:1 ) ) ( v i:1 ) ) ) ) ( ap ( ap ( ap ( ap ( v i:2 ) ( ap ( l ( l ( l ( ap ( ap ( v i:3 ) ( v i:1 ) ) ( v i:2 ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ( l ( v i:1 ) ) ) ( v i:2 ) ) ( l ( l ( v i:1 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a ) ( ( k h ( lp ( f f b b a f f f f ) ( ( lp ( f f b b f a b a ) ( ( lp ( f f b b f a b f b ) ( ) ) ) ) ) ) ) ( k h ( lp ( f f b b a f f f f ) ( ( lp ( f f b b f f a b a ) ( ( lp ( f f b b f f a b f b ) ( ) ) ) ) ) ) ) )
+centry ( f f b b a f f f a ) ( )
+centry ( f f b b a f f f a a a ) ( )
+centry ( f f b b f f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program buried
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a ) ( )
+centry ( f f b b f f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program dup
+term ( ap ( ap ( l ( l ( ap ( l ( ap ( v i:1 ) ( v i:1 ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program dupcall
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:1 ) ) ) ) ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( l ( ap ( ap ( v i:3 ) ( v i:1 ) ) ( v i:2 ) ) ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:2 ) ) ) ) ( l ( l ( v i:1 ) ) ) ) ) ) ( ap ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:1 ) ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+cert none
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program hweave
+term ( ap ( ap ( l ( l ( ap ( v i:2 ) ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( ap ( l ( v i:1 ) ) ( v i:1 ) ) ) ) ( l ( ap ( l ( v i:1 ) ) ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a ) ( )
+centry ( f f b b a f f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program lone
+term ( ap ( ap ( l ( l ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program negative
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( v i:1 ) ) ) ( l ( v i:1 ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program palpha
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( ap ( v i:2 ) ( ap ( v i:2 ) ( ap ( l ( l ( l ( ap ( ap ( v i:3 ) ( v i:1 ) ) ( v i:2 ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( l ( v i:1 ) ) ) ( v i:2 ) ) ( l ( l ( v i:1 ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a ) ( )
+centry ( f f b b f f f a a ) ( )
+centry ( f f b b f f f a a a a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program pstar
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( v i:2 ) ) ( v i:2 ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a ) ( )
+centry ( f f b b f f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program q
+term ( ap ( ap ( l ( l ( ap ( v i:2 ) ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( ap ( l ( v i:1 ) ) ( v i:1 ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a ) ( ( k h ( lp ( f f b b a f f f f ) ( ( gm h ) ) ) ) )
+centry ( f f b b a f f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program q2
+term ( ap ( ap ( l ( l ( ap ( v i:2 ) ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ( l ( l ( v i:1 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a ) ( ( k h ( lp ( f f b b a f f f ) ( ( gm h ) ) ) ) )
+centry ( f f b b a f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program qprime
+term ( ap ( ap ( l ( l ( ap ( v i:2 ) ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:2 ) ) ) ) ( l ( l ( v i:1 ) ) ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a ) ( ( k h ( lp ( f f b b a f f f f ) ( ( gm h ) ) ) ) )
+centry ( f f b b a f f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program qq
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a a ) ( )
+centry ( f f b b a f f f a ) ( )
+centry ( f f b b f f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program selector
+term ( ap ( ap ( l ( l ( ap ( l ( ap ( ap ( v i:1 ) ( l ( l ( v i:1 ) ) ) ) ( l ( l ( v i:2 ) ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program
+begin program weave
+term ( ap ( ap ( l ( l ( ap ( ap ( ap ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ( l ( ap ( l ( v i:1 ) ) ( v i:1 ) ) ) ) ( l ( ap ( l ( v i:1 ) ) ( v i:1 ) ) ) ) ( ap ( v i:2 ) ( l ( l ( v i:2 ) ) ) ) ) ) ) ( g h ) ) ( g t ) )
+tickdepth i:2
+begin cert
+centry ( f f b b a a ) ( )
+centry ( f f b b f f f a ) ( )
+end cert
+commitment 0000000000000000000000000000000000000000000000000000000000000000
+end program

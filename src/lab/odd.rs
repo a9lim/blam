@@ -40,8 +40,8 @@
 //! certificate and the validation oracle for its compositional DP;
 //! it deliberately contains no term evaluation — pair it with
 //! `quantum::reference::run_traced`. The pure mask kernels (`step_h`, `step_t`,
-//! `step_meas`) are shared with the future certificate transfer
-//! transfers; keep them total and allocation-free.
+//! `step_meas`) are shared with the compositional transfer; keep them total
+//! and allocation-free.
 
 use crate::quantum::Effect;
 use std::collections::HashMap;

@@ -1,8 +1,7 @@
 # Classical BLC architecture
 
 This document is the durable architecture contract for blam's classical
-pillar. Current measurements and the open docket live in `../STATUS.md`;
-chronological development history lives in `../ledger/`.
+pillar. Current measurements and the open docket live in `../STATUS.md`.
 
 ## 1. Purpose and target objects
 
@@ -12,6 +11,8 @@ machine for algorithmic information theory. Its principal outputs are:
 - the exhaustive halt/diverge/unknown census of closed BLC terms by wire size;
 - BBλ lower bounds from the largest computed normal forms;
 - exact finite-range Solomonoff mass, prefix complexity, and Ω brackets;
+- the speed-prior (Levin) surface: S(x), Kt(x), depth⁰(x), certified
+  Ω_speed brackets, and per-gauge time spectra (`speed.md`);
 - a mechanically checked frontier of unresolved programs; and
 - reusable divergence certificates whose accepted instances are replayed in
   Lean.
@@ -161,7 +162,8 @@ accounting so repeated checks stay O(1) without changing meter charges.
 
 `src/classical/certificate/` is the trusted checker layer. `mod.rs` holds the
 pattern-term representation and the trusted checkers `verify`, `verify_htr`,
-and `verify_selector` for Ratchet, HeadTowerRatchet, and SelectorRatchet.
+`verify_selector`, and `verify_pdr` for Ratchet, HeadTowerRatchet,
+SelectorRatchet, and PassengerDiagonalRatchet.
 `search_impl.rs` is untrusted discovery — public as
 `classical::certificate::search` only under the `lab` feature, compiled for
 tests otherwise — and `battery.rs` is the in-crate soundness battery, which
@@ -361,7 +363,7 @@ all closed terms through 18 bits plus targeted deep vectors, and the two-phase
 scheduler is pinned against an unsplit one-pass sweep, size by size, through
 28 bits. The certificate soundness battery passes 196,848 provable halters
 through the exact discovery ladder and requires zero certificate fires. All
-297 canonical kills are additionally kernel-checked in Lean with wire-identity
+305 canonical kills are additionally kernel-checked in Lean with wire-identity
 theorems.
 
 Independent Python tools remain deliberately separate where shared
@@ -430,6 +432,7 @@ classes, not larger instances of the same bounded reducer.
 The durable engine contract ends here. Moving measurements and work ordering
 belong in `../STATUS.md`.
 
+- Speed-prior (Levin) surface contract: `speed.md`
 - Certificate classes and their proof obligations:
   `certificates/specification.md`
 - Frontier classification evidence: `certificates/frontier.md`

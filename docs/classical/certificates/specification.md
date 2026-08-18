@@ -1,11 +1,12 @@
 # Ratchet certificates: mechanical divergence proofs for growing-context loops
 
-Status: three classes live in `src/classical/certificate/` — trusted
+Status: four classes live in `src/classical/certificate/` — trusted
 checkers in `mod.rs`, untrusted discovery in `search_impl.rs` (public as
 `classical::certificate::search` behind the `lab` feature, driven by
 `blam cert search`):
-v1–v1.2 (§3), `HeadTowerRatchet` (§5), and `SelectorRatchet` (§6).
-Section 8 specifies the planned v4 classes. All checkers are trusted and
+v1–v1.2 (§3), `HeadTowerRatchet` (§5), `SelectorRatchet` (§6), and
+`PassengerDiagonalRatchet` (§8.1).
+Section 8's remaining entries specify gated extensions. All checkers are trusted and
 discovery is untrusted; every implemented assembly theorem is
 additionally **machine-checked in Lean**
 (`lean/Blc/{Ratchet,HeadTower,Selector,Rigid}.lean` — the last is the
@@ -369,9 +370,9 @@ budgets.
   found must be identical (the checker result is budget-independent
   once found).
 
-## 8. v4: the next classes (PassengerDiagonal implemented, rest gated)
+## 8. v4 extensions (PassengerDiagonal live, remainder gated)
 
-Build order: **PassengerDiagonal first** (landed 2026-08-08: trusted
+Current order: **PassengerDiagonal is implemented** (trusted
 verifier `verify_pdr`, discovery `try_pdr` as `try_kill`'s fourth
 rung, Lean assembly `lean/Blc/Passenger.lean`; the forcing exemplar
 certifies with kO = kU = kD = kS = 1 and the battery stays

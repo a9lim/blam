@@ -3,17 +3,21 @@
 //! Binary lambda calculus engine for algorithmic information theory
 //! experiments.
 //!
-//! Three layers:
+//! Four layers:
 //!
-//! - [`blc`] — the substrate both pillars share: terms, the wire format,
+//! - [`blc`] — the substrate shared by the lambda-calculus pillars: terms,
+//!   the wire format,
 //!   closed-term enumeration, and the reduction kernel.
-//! - [`classical`] and [`quantum`] — the two pillars, each shaped the
+//! - [`classical`] and [`quantum`] — the BLC and qBLC pillars, each shaped the
 //!   same way: a `reference` module that is the executable spec, a
 //!   `machine` that is the fast path differential-tested against it, and
 //!   a `certificate` layer of trusted checkers. The classical pillar
 //!   additionally carries the divergence `oracle` and the `escalation`
 //!   engine; the quantum pillar the exact `scalar` ring and the frozen
 //!   signature order.
+//! - [`qalc`] — the storeless quantum-control pillar: exact amplitudes,
+//!   token-machine execution, structural admission, circuit compilation,
+//!   and total public semantics.
 //! - `lab` — research instruments behind the `lab` feature, depended on
 //!   by nothing in the pillars.
 //!
@@ -26,6 +30,8 @@
 
 pub mod blc;
 pub mod classical;
+pub mod hash;
+pub mod qalc;
 pub mod quantum;
 
 #[cfg(feature = "lab")]

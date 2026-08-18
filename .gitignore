@@ -3,6 +3,7 @@
 !/ref/AIT
 /.claude/
 __pycache__/
+*.olean
 .DS_Store
 lean/.lake/
 /tmp/

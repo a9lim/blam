@@ -343,6 +343,15 @@ pub struct Machine {
     /// `Machine::max_trans` maxes over a run's branch tree, because there
     /// the cap binds per branch, not per program.
     pub last_trans: u64,
+    /// β-steps counted by the most recent `normalize*` call at exit. On
+    /// `Ok` it equals the returned count; on `Err(Beta)` it is
+    /// `limit + 1` — the fuel check fires after counting a contraction
+    /// that is never performed — and on the other errors it is the βs
+    /// fully performed. Either way a term that halts at all satisfies
+    /// `t_β ≥ last_steps` after a failed run, which is the certified
+    /// t-floor the speed-prior brackets charge unknowns at
+    /// (`docs/classical/speed.md` §3).
+    pub last_steps: u64,
 }
 
 impl Machine {
@@ -482,10 +491,12 @@ impl Machine {
             trans += 1;
             if trans > trans_limit {
                 self.last_trans = trans;
+                self.last_steps = steps;
                 return Err(OutOfFuel::Transitions);
             }
             if S::CAN_ABORT && sink.aborted() {
                 self.last_trans = trans;
+                self.last_steps = steps;
                 return Err(OutOfFuel::Aborted);
             }
             match pool.nodes[t as usize] {
@@ -500,6 +511,7 @@ impl Machine {
                         steps += 1;
                         if steps > limit {
                             self.last_trans = trans;
+                            self.last_steps = steps;
                             return Err(OutOfFuel::Beta);
                         }
                         env = self.push_clo(at, ae, env);
@@ -554,11 +566,13 @@ impl Machine {
                             trans += 1;
                             if trans > trans_limit {
                                 self.last_trans = trans;
+                                self.last_steps = steps;
                                 return Err(OutOfFuel::Transitions);
                             }
                             match self.stack.pop() {
                                 None => {
                                     self.last_trans = trans;
+                                    self.last_steps = steps;
                                     return Ok(steps);
                                 }
                                 Some(Frame::LamEnd) => depth -= 1,
@@ -622,6 +636,58 @@ mod tests {
             });
         }
         assert_eq!(n_terms, 19048, "all closed terms 4..=24");
+    }
+
+    /// The speed-prior t-floors read `last_steps` at fuel death
+    /// (`docs/classical/speed.md` §3). The three death shapes: a β death
+    /// counts the contraction it could not fund (limit + 1); an
+    /// eval-loop transitions death records the βs fully performed; a
+    /// readback transitions death can record the already-final β count.
+    /// In every case a completing run's count is ≥ the recorded floor.
+    #[test]
+    fn fuel_death_counters_are_certified_floors() {
+        let mut pool = Pool::new();
+        let mut vm = Machine::new();
+        let mut sink = SizeSink::default();
+        // (λ1)(λ1): one β then readback. Uncapped truth first.
+        let root = pool.decode_str("0001001010").expect("closed");
+        assert_eq!(vm.normalize(&pool, root, 1 << 20, &mut sink), Ok(1));
+        // β death at limit 0: floor = 1 = the unfunded contraction, and
+        // the completing count 1 meets it with equality.
+        assert_eq!(
+            vm.normalize_capped(&pool, root, 0, 1 << 20, &mut sink),
+            Err(OutOfFuel::Beta)
+        );
+        assert_eq!(vm.last_steps, 1);
+        // Readback transitions death: λ1 spends transition 1 on the Lam
+        // walk, transition 2 on the rigid Var emit, and dies on the
+        // readback loop's own counter (transition 3 > cap 2) — the
+        // inner check, not the eval-loop one. β is already final (0),
+        // so the floor holds with equality.
+        let nf = pool.decode_str("0010").expect("closed");
+        assert_eq!(
+            vm.normalize_capped(&pool, nf, 1 << 20, 2, &mut sink),
+            Err(OutOfFuel::Transitions)
+        );
+        assert_eq!(vm.last_steps, 0);
+        // Mid-eval transitions death on a deep 32-bit halter: the
+        // recorded prefix never exceeds the completing run's count.
+        let deep = pool
+            .decode_str("01000110100001100110011001100010")
+            .expect("closed");
+        let t = vm
+            .normalize(&pool, deep, 1 << 22, &mut sink)
+            .expect("halts");
+        assert_eq!(t, 427);
+        assert_eq!(
+            vm.normalize_capped(&pool, deep, 1 << 22, 50, &mut sink),
+            Err(OutOfFuel::Transitions)
+        );
+        assert!(
+            vm.last_steps <= t,
+            "floor {} > true count {t}",
+            vm.last_steps
+        );
     }
 
     /// Several terms in one arena — the slot-search shape. The cache

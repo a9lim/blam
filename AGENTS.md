@@ -3,9 +3,9 @@
 Rust engine for binary lambda calculus / AIT experiments, verified against
 Tromp's Haskell. The root `README.md` is the public story and repository map.
 `docs/STATUS.md` is the single authority for current measurements and the open
-docket. Durable classical and quantum architecture, proof plans, research
-notes, and monthly history live under `docs/`. Canonical measurement outputs
-live in `data/`; standing protocols are runnable from `scripts/`.
+docket. Durable classical and quantum architecture, proof plans, and research
+notes live under `docs/`. Canonical measurement outputs live in `data/`;
+standing protocols are runnable from `scripts/`.
 
 This file carries the conventions and operational facts that must be in hand
 before changing the project. Read `docs/STATUS.md` before research or docket
@@ -26,8 +26,8 @@ work; do not duplicate its moving state here.
   arms only exist under default features), then a census spot-check
   (`scripts/spot-check.sh`) whose halt counts are
   bit-identical to `data/classical/census_table.txt` at the sizes touched.
-  Halts have been invariant through every change in history; treat drift as a
-  bug in the change, not a discovery.
+  Canonical halt counts are invariants; treat drift as a bug in the change,
+  not a discovery.
 - `data/` holds results, not scratch, and only canonical generations live in
   the tree. The classical census, frontier, and Ω/K outputs are in
   `data/classical/`; the operator census is in `data/quantum/`; certificate
@@ -35,7 +35,9 @@ work; do not duplicate its moving state here.
   are unversioned where a bound can advance: the covered range is stated in
   the file and `docs/STATUS.md`, superseded generations live in git history,
   and a bound bump regenerates in place. Regenerate rather than hand-edit via
-  `scripts/census-regen.sh` and `scripts/solomonoff-regen.sh`.
+  `scripts/census-regen.sh`, `scripts/solomonoff-regen.sh`, and
+  `scripts/qalc-census-extend.sh`. The qALC finite-clock convergence record is
+  in `data/qalc/`.
 
 ## Conventions that will bite you
 
@@ -62,11 +64,48 @@ work; do not duplicate its moving state here.
 
 ## The engines
 
-The library is three layers — `blc` substrate, symmetric `classical` and
-`quantum` pillars, `lab` behind its own feature — and one binary, `blam`,
-whose subcommands live in `src/cli/`. Lab-gated subcommands are recognised
-without the feature and say how to get themselves; do not "fix" that by
-deleting the arm.
+The library has a `blc` substrate, three semantic pillars (`classical`,
+`quantum`, and `qalc`), and a `lab` layer behind its own feature. The `blam`
+binary dispatches through `src/cli/`. Lab-gated subcommands are recognised
+without the feature and explain how to enable themselves; do not delete those
+dispatcher arms.
+
+qALC is quantum *control*: a storeless machine whose runtime states lie in
+ℓ² over token configurations. `docs/quantum-algebraic/architecture.md` is the
+semantic contract, `token.md` fixes token identity, `kernel.md` is the current
+v1.43 rule register, and `rust-pillar.md` maps the live Rust implementation.
+`src/qalc/` contains the exact amplitude domain, wire codec, kernel and
+full-normal-form machine, linear-SSA compiler, native-CNOT shadow, structural
+admission, finite checker, and total public semantics. The default-built
+`blam qalc` group exposes `run`, `gram`, `compile`, `fixtures`, and the separate
+measured `census` layer over ordinary prefix-free `p h t` invocations.
+The census's 1,000-state admission preflight is one-sided: success is a
+complete checked admission, but failure is only a scheduling signal and must
+retry the canonical 300,000-state selector. Retries run in a separate pool
+(`--retry-threads`, auto-capped at eight); never turn preflight failure
+into a conservative verdict. Selection/evolution phase timings are stderr-only
+and deliberately absent from deterministic reports and checkpoints.
+
+The Python/Lean reference, batteries, proof records, and fixture exporters live
+in `qalc/`. Generated kernel fixtures, composed Gate-1 cores, the mixed Gate-2
+carrier, and the embedded admission selector are regenerated only through their
+four named exporters. The Rust differential tests regenerate the fixtures
+byte-identically and check the 7,507-state Gate-1 carrier and 917-state Gate-2
+carrier, including predecessor inverses and totalization probes. Error arms not
+reached by those carriers remain review-pinned rather than theorem-backed.
+Gate 1 supplies exact H/T scattering, full-NF readback, typed terminal sectors,
+validated finite admission, and the algorithmic-information objects. Gate 2
+supplies the unbounded arbitrary-circuit H/T/CNOT refinement from a common
+reachable input cut to exact ideal columns. The stronger ambient lifecycle
+theorem remains optional, and raw-WF recall is noninjective. qALC work must
+leave classical and qBLC rows bit-identical.
+
+`gate1_check.py` and `gate2_check.py` are explicit local runtime/Python gates.
+The qALC CI workflow runs neither those exhaustive batteries nor Lean: it owns
+only fixture determinism, while the ordinary CI release suites own the Rust
+differentials. Run `gate1_lean_check.py` and `gate2_lean_check.py` manually only
+when the Lean/generated-proof surface or its exporters intentionally move; do
+not rerun them for Rust-only changes.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →
@@ -117,6 +156,14 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
 - `blc::enumerate`: tasks are bit-reversal-interleaved on purpose.
   Expensive terms cluster by enumeration prefix and rayon splits by index
   range; do not simplify the order back.
+- The `solomonoff` driver also owns the speed-prior (Levin) surface
+  (`docs/classical/speed.md` is the contract). Two unit grids coexist in its
+  outputs: m/Ω masses are 2⁻⁶⁴ units, speed masses are 2⁻¹²⁸ units with
+  directed rounding — do not mix them when post-processing. Unknowns are
+  charged on the upper side only, at t-floors read from the machine's
+  fuel-death counters (`Machine::last_steps`; on a β death the counter
+  includes the contraction it could not fund). `data/classical/speed_floors.txt`
+  is part of the certificate-trim protocol, not a diagnostic.
 - The census memos live in the census driver, deliberately outside the ladder:
   they reuse one term's fate for a *different* term, which is a fact about an
   enumeration rather than about a term. Keeping them out is what lets
@@ -179,14 +226,12 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
   steps / 100k nodes / 4096 lemma steps, measured kill-equivalent to the
   battery's 2000/200k (`::THOROUGH`). A complete four-rung frontier sweep
   (v1 + HTR + selector + PDR) measured 981.3 s wall / 6,630 s user at
-  `--threads 8` on the M5 Max over the 4,235-term frontier
-  (2026-08-08, the sweep that discovered the eight PDR kills) — 1.84
-  core-hours, well under the pre-measurement four-core-hour estimate,
-  wall tail-bound as predicted.
+  `--threads 8` on the M5 Max over the 4,235-term frontier that produced the
+  eight canonical PDR kills — 1.84 core-hours, with a tail-bound wall time.
   For a new kill, append to
   `data/certificates/ratchet_kills.tsv`, run `scripts/recert-kills.sh`,
   regenerate the frontier with `scripts/census-regen.sh`, trim Ω by exact
-  fraction arithmetic, and ledger it. The soundness battery is a crate unit
+  fraction arithmetic, and update `docs/STATUS.md`. The soundness battery is a crate unit
   test at `src/classical/certificate/battery.rs` — inside the crate so it runs
   under plain `cargo test` while discovery stays off the default public
   surface: 196,848 provable halters ≤28 bits through the exact sweep
@@ -219,9 +264,8 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
 ## Collaboration
 
 Claude and Codex are co-equal here; handoffs run over the `gaslamp` CLI.
-Existing threads: `blc-conformance` (certificate exchange),
-`blc-interpreter` (design theory), `blc-interp-search` (slot-search spec),
-`blc-qblc` (qBLC design ratification), `qblc-selfint` (self-interpretation and
-bisimulation), `qblc-omega-witnesses` (dyadicity hunt and phase-2 design), and
-`blam-reshape` (v2 refactor design ratification and reviews).
-Send raw evidence—encodings, diffs, measured bits—not summaries.
+Use the other seat for a genuinely independent read, adversarial pressure, or
+verification. Whoever owns the task owns the synthesis. Send raw evidence—
+encodings, diffs, measurements, and exact claims—not a softened summary.
+When independence matters, open a fresh context instead of reviving one that
+already contains the design argument.

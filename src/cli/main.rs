@@ -17,6 +17,7 @@ mod ckpt;
 mod normalize;
 mod out;
 mod q;
+mod qalc;
 mod solomonoff;
 
 #[cfg(feature = "lab")]
@@ -33,11 +34,13 @@ ENGINES
   normalize BITS               normalize a closed term on the KN machine
   adjudicate BITS | --file F   run the full halting ladder, verbosely
   q run BITS                   run a qBLC program, one line per leaf
+  qalc run|gram|compile|fixtures   qALC exact reference drivers
 
 MEASUREMENTS
   census [MIN] MAX             halt/diverge/unknown census by term size
   solomonoff [MIN] MAX         Solomonoff prior m(x), K(x), Omega bounds
   q census [MIN] MAX           the quantum operator census
+  qalc census [MIN] MAX        finite-clock qALC census over BLC p h t
   q skeleton FILE              trusted skeleton sweep over a terms file
   q selfint [MAX_N] [PHASE]    qBLC self-interpretation measurement
 
@@ -91,6 +94,7 @@ fn dispatch(argv: &[String]) -> Result<(), String> {
         "solomonoff" => solomonoff::run(rest),
         "cert" => cert::run(rest),
         "q" => q::run(rest),
+        "qalc" => qalc::run(rest),
         #[cfg(feature = "lab")]
         "trace" => trace::run(rest),
         #[cfg(not(feature = "lab"))]
@@ -137,6 +141,12 @@ mod tests {
             vec!["q", "census"],
             vec!["q", "skeleton"],
             vec!["q", "selfint"],
+            vec!["qalc"],
+            vec!["qalc", "run"],
+            vec!["qalc", "gram"],
+            vec!["qalc", "compile"],
+            vec!["qalc", "fixtures"],
+            vec!["qalc", "census"],
         ];
         for mut path in always {
             path.push("--help");
@@ -167,6 +177,8 @@ mod tests {
             vec!["help", "adjudicate"],
             vec!["help", "solomonoff"],
             vec!["help", "q", "census"],
+            vec!["help", "qalc", "compile"],
+            vec!["help", "qalc", "census"],
             vec!["help", "cert", "lean"],
         ] {
             assert!(dispatch(&argv(&path)).is_ok(), "{path:?}");
@@ -190,6 +202,8 @@ mod tests {
         assert!(e.contains("unknown command `ceusus`"), "{e}");
         assert!(e.contains("blam --help"), "{e}");
         let e = dispatch(&argv(&["q", "sensus"])).unwrap_err();
+        assert!(e.contains("unknown"), "{e}");
+        let e = dispatch(&argv(&["qalc", "sensus"])).unwrap_err();
         assert!(e.contains("unknown"), "{e}");
         let e = dispatch(&argv(&["cert", "serch"])).unwrap_err();
         assert!(e.contains("unknown"), "{e}");

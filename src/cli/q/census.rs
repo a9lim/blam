@@ -578,7 +578,6 @@ pub fn run(argv: &[String]) -> R<()> {
             args::hint("q census")
         ));
     }
-    // Phase 3: becomes explicit library config.
     let ecfg = args::engine_cfg("q census", work_mult, probe_fuel)?;
     // Every declared output path, opened (and truncated) before any
     // compute: a mistyped --out used to panic after the whole sweep.
@@ -603,11 +602,9 @@ pub fn run(argv: &[String]) -> R<()> {
     // order; a killed run keeps everything finished.
     if let Some(path) = terms_file {
         // Preflight, sequential and before the pool: every line is one
-        // closed program of at most 64 bits. The old path packed the
-        // line's LOW 64 bits and asserted `bit_size == len`, which
-        // checks canonicality rather than packability — so a 68-bit
-        // halter was silently truncated into a different (Species-error)
-        // program, and a 66-bit line hit the assert mid-sweep.
+        // closed program of at most 64 bits. Enforce the bound before
+        // packing: `bit_size == len` checks canonicality, not packability,
+        // and therefore cannot protect against truncating a wider program.
         let owned = args::read_packed_terms_file("q census", &path)?;
         let programs: Vec<(&str, QProgram)> = owned
             .iter()

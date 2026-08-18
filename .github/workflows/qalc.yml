@@ -1,0 +1,52 @@
+name: qALC
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "qalc/**"
+      - "src/qalc/**"
+      - "src/cli/qalc/**"
+      - "src/cli/main.rs"
+      - "tests/qalc/**"
+      - "tests/qalc_cli.rs"
+      - "tests/qalc_codec.rs"
+      - ".github/workflows/qalc.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "qalc/**"
+      - "src/qalc/**"
+      - "src/cli/qalc/**"
+      - "src/cli/main.rs"
+      - "tests/qalc/**"
+      - "tests/qalc_cli.rs"
+      - "tests/qalc_codec.rs"
+      - ".github/workflows/qalc.yml"
+
+concurrency:
+  group: qalc-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  fixture-determinism:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Rust differential fixtures are current
+        run: |
+          PYTHONHASHSEED=1 python qalc/export_rust_fixtures.py --check
+          PYTHONHASHSEED=2 python qalc/export_rust_fixtures.py --check
+          PYTHONHASHSEED=1 python qalc/export_composed_fixtures.py --check
+          PYTHONHASHSEED=2 python qalc/export_composed_fixtures.py --check
+          PYTHONHASHSEED=1 python qalc/export_gate2_fixtures.py --check
+          PYTHONHASHSEED=2 python qalc/export_gate2_fixtures.py --check
+          PYTHONHASHSEED=1 python qalc/export_admission_fixtures.py --check
+          PYTHONHASHSEED=2 python qalc/export_admission_fixtures.py --check

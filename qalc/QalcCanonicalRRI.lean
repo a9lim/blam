@@ -1,0 +1,17 @@
+import QalcCanonicalSector_p_HH
+import QalcCanonicalSector_p_HNH
+import QalcCanonicalSector_p_negative
+import QalcCanonicalSector_p_selector
+import QalcCanonicalSector_p_lone
+import QalcCanonicalSector_p_pstar
+import QalcCanonicalSector_p_3coin
+import QalcCanonicalSector_p_qprime
+import QalcCanonicalSector_p_q2
+import QalcCanonicalSector_p_Ccoll
+import QalcCanonicalSector_p_buried
+import QalcCanonicalSector_p_weave
+import QalcCanonicalSector_p_hweave
+import QalcCanonicalSector_p_qq
+import QalcCanonicalSector_p_palpha
+import QalcCanonicalSector_p_B
+import QalcCanonicalSector_p_W
