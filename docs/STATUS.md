@@ -231,7 +231,27 @@ consume 38--42 seconds across the three runs while adjacent odd sizes remain
 under 2.2 seconds even at 4,096 steps. Because selection precedes evolution
 and wall time grows only 18% when the clock grows 16×, this strongly points to
 Gate-1 carrier admission rather than sparse evolution; separate selector/run
-timers have not yet tested that inference.
+timers had not yet tested that inference.
+
+The admission optimization pass then confirmed and reduced that tail. The CLI
+now reports summed worker time for selection, carrier construction, Gram,
+admission obligations, RRI, digesting, evolution, and observation, plus the
+slowest selection witnesses; these nondeterministic timings stay on stderr and
+out of reports/checkpoints. On the same 4..24, 1,024-step protocol, 18,858
+programs complete a definitive 1,000-state admission preflight and the 190
+inconclusive programs retry the unchanged 300,000-state canonical selector in
+an eight-worker second phase. All 190 canonical retries are conservative on
+this bounded population, but preflight failure is never itself a conservative
+verdict. The carrier's discovery order and hash index now share immutable
+states, insertion hashes each target once, and admission derives Gram from the
+already checked carrier instead of walking it twice.
+
+The optimized run completed in 21.50 seconds wall (21.37 seconds measured
+sweep, 107.84 seconds user, 891 programs/s, 11.1 GB peak footprint), versus
+43.66 seconds and 436 programs/s before the pass: 2.03x wall throughput. Its
+deterministic report is byte-identical to the pre-optimization 1,024-step
+report. The isolated n=24 row fell from 23.58 to 12.12 seconds in the measured
+instrumented comparison.
 
 Gate 1 is closed on 30 admitted operational cores: 7,507 states and 7,417
 exact columns, plus 41,258 pure normalizers, a 1,187,953-state application and
@@ -254,17 +274,20 @@ Finite evidence includes all 43 width-two circuits through length two, clean
 Bell/Toffoli/nonlinear-reuse carriers, and the complete 917-state mixed
 Python/Lean/Rust differential.
 
-The Python/Lean reference and authoritative batteries are `qalc/GATE1.md`,
-`qalc/GATE2.md`, `python qalc/gate1_check.py`, and
-`python qalc/gate2_check.py`. Runtime fixtures live in `tests/qalc/`; the
+The Python/Lean reference and theorem records are `qalc/GATE1.md` and
+`qalc/GATE2.md`. The authoritative runtime batteries are
+`python qalc/gate1_check.py` and `python qalc/gate2_check.py`; explicit manual
+proof checks are `gate1_lean_check.py` and `gate2_lean_check.py`. Lean is not
+part of qALC CI. Runtime fixtures live in `tests/qalc/`; the
 embedded selector pin is `src/qalc/admission_pins.qfx`. Python carrier closure
 and generated `native_decide` evaluations are explicit trust boundaries.
 
 ### qALC docket
 
-1. Instrument and reduce the even-size Gate-1 admission tail before extending
-   the population past 24 bits. The 1,024-step clock is sufficient on 4..24,
-   but that bounded equality does not yet pin a universal canonical default.
+1. Extend the checkpointed population past 24 bits and repeat clock-convergence
+   checks at each new edge before fixing a canonical census protocol. The
+   1,024-step clock is sufficient on 4..24, but that bounded equality does not
+   yet pin a universal canonical default.
 2. Optionally strengthen the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and arrival/pop determinacy.
 3. Investigate D-circuit dyadicity, universality/domination for `M`,

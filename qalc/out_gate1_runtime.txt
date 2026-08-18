@@ -1,0 +1,421 @@
+QALC GATE 1 RUNTIME BATTERY
+## python-compile
+$ /Users/a9lim/.venv/bin/python -m py_compile kernel.py wf.py readback.py readback_checks.py readback_certify.py application_invariant.py semantics.py gate1_programs.py controller_invariant.py
+
+exit=0
+
+## kernel-suite
+$ /Users/a9lim/.venv/bin/python suite.py
+program    basis  stuck  nonunit   nonorth   dynamic
+HH            82      0        0         0   {'halt0': '1'} sup=1 t=49 no-frames
+HNH          104      0        0         0   {'halt0': '1'} sup=1 t=64 no-frames
+negative      83      0        0         0   {'haltI': '1'} sup=2 t=48 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f'), ()), 0, ('EA', ('F',))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f'), ()), 1, ('EA', ('F',)))]
+selector     106      0        0         0   {'halt1': '1/2', 'halt0': '1/2'} sup=2 t=61 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'b', 'f', 'f'), ()),)), 0, ('EA', ('F',))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'b', 'f', 'f'), ()),)), 1, ('EA', ('F',)))]
+lone          53      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=2 t=31 no-frames
+pstar        242      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=4 t=89 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 1, ('EP', ('EA', ('F',)), ('EA', ('F',))))]
+3coin        180      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=4 t=67 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f'), ()), 0, ('EA', ('F',))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f'), ()), 1, ('EA', ('F',)))]
+q            218      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=4 t=136 no-frames
+qprime       246      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=4 t=136 no-frames
+q2           115      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=4 t=68 no-frames
+dup           90      0        0         0   {'halt0': '1/4', 'halt1': '1/4', 'haltI': '1/2'} sup=3 t=53 no-frames
+Ccoll        143      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=4 t=65 no-frames
+buried       432      0        0         0   {'halt1': '1/2', 'halt0': '1/2'} sup=4 t=141 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()),)), 0, ('EA', ('F',))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()),)), 1, ('EA', ('F',))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'f', 'f'), ()),)), 0, ('EA', ('F',))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'f', 'f'), ()),)), 1, ('EA', ('F',))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 0, ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 1, ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))]
+weave        290      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=4 t=105 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 1, ('EP', ('EA', ('F',)), ('EA', ('F',))))]
+hweave       225      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=4 t=105 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'f', 'f'), (('G', 'h'),)), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'f', 'f'), (('G', 'h'),)), 1, ('EP', ('EA', ('F',)), ('EA', ('F',))))]
+qq          2192      0        0         0   {'halt0': '1/2', 'halt1': '1/2'} sup=8 t=346 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'a', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()))), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'a', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()))), 1, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'a', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'f', 'f'), ()))), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'a', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'f', 'f'), ()))), 1, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'a', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()))), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'a', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()))), 1, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'a', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'f', 'f'), ()))), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'a', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'f', 'f'), ()))), 1, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'f', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()),)), 0, ('EP', ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))), ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'f', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()),)), 1, ('EP', ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))), ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'f', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'f', 'f'), ()),)), 0, ('EP', ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))), ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'f', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'f', 'f'), ()),)), 1, ('EP', ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))), ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 0, ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 1, ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))]
+palpha       275      0        0         0   {'halt1': '3/4', 'halt0': '1/4'} sup=3 t=141 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 1, ('EP', ('EA', ('F',)), ('EA', ('F',))))]
+dupcall      632      0        0         0   {'err': '1/2', 'halt1': '1/4', 'halt0': '1/4'} sup=4 t=315 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()))), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'a', 'f'), (('L', ('f', 'f', 'b', 'b', 'a', 'f', 'b', 'f', 'f'), ()), ('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'f'), ()))), 1, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f', 'f', 'f'), ()), 0, ('EA', ('F',))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f', 'f', 'f'), ()), 1, ('EP', ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))))), ('EP', ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))), ('EP', ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('EP', ('EP', ('EA', ('F',)), ('EA', ('F',))), ('EP', ('EA', ('F',)), ('EA', ('F',))))))))]
+B            186      0        0         0   {'halt1': '1'} sup=1 t=109 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 0, ('EP', ('EA', ('F',)), ('EA', ('F',))))]
+W            498      0        0         0   {'halt1': '1'} sup=2 t=183 frames=[('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'f', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'a'), (('L', ('f', 'f', 'b', 'b', 'f', 'a', 'b', 'f', 'b'), ()),)),)), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'a', 'f', 'f', 'f', 'f'), (('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'a'), (('L', ('f', 'f', 'b', 'b', 'f', 'f', 'a', 'b', 'f', 'b'), ()),)),)), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 0, ('EP', ('EA', ('F',)), ('EA', ('F',)))), ('R', 'h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()), 1, ('EP', ('EA', ('F',)), ('EA', ('F',))))]
+
+--- lp invariants: guard-rule reachability + (g,i) aliasing ---
+HH        guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt rootdone tick var vb2 vvar
+HNH       guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt rootdone tick var vb2 vvar
+negative  guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall rootdone tick var vb2 vvar
+selector  guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall rootdone tick var vb2 vvar
+lone      guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt rootdone tick var vb2 vvar
+pstar     guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+3coin     guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall rootdone tick var vb2 vvar
+q         guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+qprime    guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+q2        guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall rootdone tick var vb2 vvar
+dup       guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt rootdone rootval tick var vb2 vvar
+Ccoll     guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt rootdone tick var vb2 vvar
+buried    guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+weave     guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+hweave    guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+qq        guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+palpha    guards-fired=none aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+dupcall   guards-fired=['alien-ticket'] (expected) aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+B         guards-fired=['refire'] (expected) aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+W         guards-fired=['refire'] (expected) aliased=0   rules: anshead arg b1 b2 b3 b4 bt1 bt1g bt2 call fire-h halt recall replay rootdone tick var vb2 vvar
+negative control (pstar, wrong cert): pop-err REACHED (correct)
+refire control (dupcall, invalid cert): REACHED, all-err (correct)
+lp-invariant regressions: PASS
+
+--- the physics regression table (written-first) ---
+HH        {'halt0': '1'}                                 OK  [hand]
+HNH       {'halt0': '1'}                                 OK  [hand; certificate load-bearing]
+negative  {'haltI': '1'}                                 OK  [hand]
+selector  {'halt1': '1/2', 'halt0': '1/2'}               OK  [hand]
+lone      {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand]
+pstar     {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand]
+3coin     {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand]
+q         {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand; untyped]
+qprime    {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand]
+q2        {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand]
+dup       {'halt0': '1/4', 'halt1': '1/4', 'haltI': '1/2'} OK  [hand; untyped copy regression]
+Ccoll     {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand; decoheres correctly]
+buried    {'halt1': '1/2', 'halt0': '1/2'}               OK  [hand]
+weave     {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand]
+hweave    {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand]
+qq        {'halt0': '1/2', 'halt1': '1/2'}               OK  [hand]
+palpha    {'halt1': '3/4', 'halt0': '1/4'}               OK  [hand; greedy-rescue certificate, marginal unchanged]
+dupcall   {'err': '1/2', 'halt1': '1/4', 'halt0': '1/4'} OK  [machine-measured; untyped, typed rejection]
+B         {'halt1': '1'}                                 OK  [hand; decomposition regression]
+W         {'halt1': '1'}                                 OK  [hand; W = B because both selector branches are E =beta I; refire amplitudes verified zero per-step)]
+physics table: PASS
+
+--- q family WITHOUT certificate (frames + time decohere) ---
+q       basis 256 stuck 0 defects 0  {'halt0': '1/2', 'halt1': '1/2'} sup=4 frames=2
+qprime  basis 284 stuck 0 defects 0  {'halt0': '1/2', 'halt1': '1/2'} sup=4 frames=2
+q2      basis 153 stuck 0 defects 0  {'halt0': '1/2', 'halt1': '1/2'} sup=4 frames=2
+
+--- outer-boundary arrival telemetry (time register) ---
+q       arrivals=[(84, 0, (0,)), (119, 1, (1,))]  offset=35
+qprime  arrivals=[(112, 0, (0,)), (119, 1, (1,))]  offset=7
+q2      arrivals=[(48, 0, (0,)), (51, 1, (1,))]  offset=3
+
+--- negative control: p* with a WRONG certificate ---
+fire positions: ['ffbba', 'ffbbfffa']
+with wrong cert: stuck 0 nonunit 0 nonorth 0  dyn={'err': '1'}
+exit=0
+
+## certificate-selector
+$ /Users/a9lim/.venv/bin/python certify.py
+--- discover_total: totality + frozen-CERTS agreement ---
+discover_total == frozen CERTS on all 20 programs: PASS
+totality witness h(Omega): discover_total -> None (conservative reject)
+
+program   EXPLORATORY discover()       matches  validation
+(canonical certificates are discover_total above; a DIFF(hand=None) row means the exploratory fixpoint exists but fails semantic coverage, so the canonical pipeline refuses it)
+HH        ['ffbbaa']                   HAND==AUTO {'basis': 82, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 76, 'rri_direct_recalls': 0, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=49', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1'} frames=0
+HNH       ['ffbba', 'ffbbaaa']         HAND==AUTO {'basis': 104, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 98, 'rri_direct_recalls': 0, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=64', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1'} frames=0
+negative  ['ffbbffa']                  HAND==AUTO {'basis': 83, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 77, 'rri_direct_recalls': 2, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=48', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'haltI': '1'} frames=2
+selector  ['ffbbaa']                   HAND==AUTO {'basis': 106, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 100, 'rri_direct_recalls': 2, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=61', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt1': '1/2', 'halt0': '1/2'} frames=2
+lone      ['ffbba']                    HAND==AUTO {'basis': 53, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 47, 'rri_direct_recalls': 0, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=31', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=0
+pstar     ['ffbba', 'ffbbfffa']        HAND==AUTO {'basis': 242, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 230, 'rri_direct_recalls': 6, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=89', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=2
+3coin     ['ffbbaa', 'ffbbfaa', 'ffbbffa'] HAND==AUTO {'basis': 180, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 168, 'rri_direct_recalls': 4, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=67', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=2
+q         ['ffbba', 'ffbbafffa']       HAND==AUTO {'basis': 218, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 212, 'rri_direct_recalls': 5, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=136', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=0
+qprime    ['ffbba', 'ffbbafffa']       HAND==AUTO {'basis': 246, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 240, 'rri_direct_recalls': 6, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=136', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=0
+q2        ['ffbba', 'ffbbaffa']        HAND==AUTO {'basis': 115, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 109, 'rri_direct_recalls': 2, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=68', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=0
+dup       ['ffbbaa']                   HAND==AUTO {'basis': 90, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 81, 'rri_direct_recalls': 0, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=53', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/4', 'halt1': '1/4', 'haltI': '1/2'} frames=0
+Ccoll     ['ffbbaaa']                  HAND==AUTO {'basis': 143, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 131, 'rri_direct_recalls': 0, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=65', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=0
+buried    ['ffbbaa', 'ffbbfffa']       HAND==AUTO {'basis': 432, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 420, 'rri_direct_recalls': 14, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=141', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt1': '1/2', 'halt0': '1/2'} frames=6
+weave     ['ffbbaa', 'ffbbfffa']       HAND==AUTO {'basis': 290, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 278, 'rri_direct_recalls': 6, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=105', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=2
+hweave    ['ffbba', 'ffbbafffa']       HAND==AUTO {'basis': 225, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 213, 'rri_direct_recalls': 4, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=105', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=2
+qq        ['ffbbaaa', 'ffbbafffa', 'ffbbfffa'] HAND==AUTO {'basis': 2192, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 2168, 'rri_direct_recalls': 78, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': [], 'dynamic_clean': True, 'dynamic_note': 'halted t=346', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt0': '1/2', 'halt1': '1/2'} frames=14
+palpha    ['ffbba', 'ffbbfffaa', 'ffbbfffaaaa'] DIFF(hand={('f', 'f', 'b', 'b', 'a'): frozenset(), ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'a', 'a'): frozenset(), ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'a', 'a', 'a', 'a'): frozenset()} auto={('f', 'f', 'b', 'b', 'f', 'f', 'f', 'a', 'a', 'a', 'a'): frozenset(), ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'a', 'a'): frozenset(), ('f', 'f', 'b', 'b', 'a'): frozenset({('h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f'), ()))})}) {'basis': 215, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 206, 'rri_direct_recalls': 3, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': ['refire'], 'dynamic_clean': False, 'dynamic_note': 'err mass at t=110', 'err_mass': '1/2', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': False} dyn={'halt1': '1/2', 'err': '1/2'} frames=1
+dupcall   ['ffbbaaa', 'ffbbffffaa', 'ffbbfffffa'] DIFF(hand=None auto={('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f', 'f', 'a'): frozenset(), ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f', 'a', 'a'): frozenset(), ('f', 'f', 'b', 'b', 'a', 'a', 'a'): frozenset({('h', ('L', ('f', 'f', 'b', 'b', 'f', 'f', 'f', 'f', 'f', 'f'), ()))})}) {'basis': 294, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 282, 'rri_direct_recalls': 6, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': ['alien-ticket', 'refire'], 'dynamic_clean': False, 'dynamic_note': 'err mass at t=77', 'err_mass': '1', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': False} dyn={'err': '1'} frames=3
+B         ['ffbba', 'ffbbfffa', 'ffbbfffaaa'] HAND==AUTO {'basis': 186, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 177, 'rri_direct_recalls': 3, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': ['refire'], 'dynamic_clean': True, 'dynamic_note': 'halted t=109', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt1': '1'} frames=1
+W         ['ffbbaa', 'ffbbafffa', 'ffbbafffaaa', 'ffbbfffa'] HAND==AUTO {'basis': 498, 'pop_err_reachable': 0, 'rri_direct_certified': True, 'rri_direct_reason': 'pass', 'rri_direct_states': 480, 'rri_direct_recalls': 10, 'rri_direct_witnesses': 0, 'rri_target_factorization_failures': 0, 'rs_function': True, 'stuck': 0, 'gram_defects': 0, 'guards_structural': ['refire'], 'dynamic_clean': True, 'dynamic_note': 'halted t=183', 'err_mass': '0', 'aliased': 0, 'wf_violations': 0, 'disjointness_violations': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'machine_coverage': True} dyn={'halt1': '1'} frames=4
+exit=0
+
+## typecheck
+$ /Users/a9lim/.venv/bin/python typecheck.py
+program   typable  h-only  type / reason
+HH        True     True    a -> a -> a
+HNH       True     True    a -> a -> a
+negative  True     True    a -> a
+selector  True     True    a -> a -> a
+lone      True     True    a -> a -> a
+pstar     True     True    a -> a -> a
+3coin     True     True    a -> a -> a
+q         False    None    occurs check
+qprime    True     True    a -> a -> a
+q2        True     True    a -> a -> a
+dup       False    None    occurs check
+Ccoll     True     True    a -> a -> a
+buried    True     True    a -> a -> a
+weave     True     True    a -> a -> a
+hweave    True     True    a -> a -> a
+qq        True     True    a -> a -> a
+palpha    True     True    a -> a -> a
+dupcall   False    None    occurs check
+B         True     True    a -> a -> a
+W         True     True    a -> a -> a
+
+--- escapes (must be untypable / out of fragment) ---
+h h        typable=False occurs check
+self-app   typable=False occurs check
+h (h) arg  typable=False occurs check
+body gate  typable=False gate literal inside body
+body gateh typable=False gate literal inside body
+swapped    typable=False shell args must be Gate(h), Gate(t)
+h h shell  typable=False shell args must be Gate(h), Gate(t)
+fragment total: typable-h-only 17/20 (expect 17), escapes rejected True -> PASS
+exit=0
+
+## conservation
+$ /Users/a9lim/.venv/bin/python conservation.py
+closed terms <= size 10: 10180   (1.3s)
+  k=1: surface  1841  stuck  8336  timeout   3   lemA ok/FAIL 1841/0   thm ok/FAIL 1841/0
+  k=2: surface  4890  stuck  5287  timeout   3   lemA ok/FAIL 4890/0   thm ok/FAIL 4890/0
+  k=3: surface  7721  stuck  2456  timeout   3   lemA ok/FAIL 7721/0   thm ok/FAIL 7721/0
+TOTAL FAILURES: 0
+
+--- battery: every classifier arrival, by ancestry ---
+program   arrivals | mark-free: ok viol | marked: eq neq
+HH               5 |            1    0 |          2   2
+HNH              5 |            1    0 |          2   2
+negative         1 |            1    0 |          0   0
+selector         3 |            3    0 |          0   0
+lone             3 |            1    0 |          1   1
+pstar            6 |            2    0 |          2   2
+3coin            7 |            3    0 |          2   2
+q                5 |            3    0 |          1   1
+qprime           5 |            3    0 |          1   1
+q2               5 |            3    0 |          1   1
+dup              1 |            1    0 |          0   0
+Ccoll            5 |            1    0 |          2   2
+buried           6 |            6    0 |          0   0
+weave            6 |            2    0 |          2   2
+hweave           4 |            2    0 |          1   1
+qq               7 |            7    0 |          0   0
+palpha           9 |            3    0 |          3   3
+dupcall          5 |            5    0 |          0   0
+B                7 |            3    0 |          2   2
+W               12 |            4    0 |          4   4
+mark-free violations TOTAL: 0
+exit=0
+
+## polarity
+$ /Users/a9lim/.venv/bin/python polarity.py
+program    basis  edges violations   fire-defect profile (w(l) -> defect)
+HH            82     83          0   w=0:d=1 x6
+HNH          104    105          0   w=0:d=1 x2 w=1:d=0 x4
+negative      83     82          0   w=0:d=1 x2
+selector     106    105          0   w=0:d=1 x2
+lone          53     52          0   w=0:d=1 x2
+pstar        242    241          0   w=0:d=1 x6
+3coin        180    179          0   w=0:d=1 x6
+q            218    219          0   w=0:d=1 x4 w=1:d=0 x2
+qprime       246    247          0   w=0:d=1 x4 w=1:d=0 x2
+q2           115    116          0   w=0:d=1 x4 w=1:d=0 x2
+dup           90     89          0   w=0:d=1 x4
+Ccoll        143    142          0   w=0:d=1 x4 w=1:d=1 x2
+buried       432    431          0   w=0:d=1 x6
+weave        290    289          0   w=0:d=1 x6
+hweave       225    224          0   w=0:d=1 x6
+qq          2192   2191          0   w=0:d=1 x14
+palpha       275    278          0   w=0:d=1 x6 w=1:d=0 x6
+dupcall      632    631          0   w=0:d=1 x2 w=1:d=1 x4
+B            186    187          0   w=0:d=1 x2 w=1:d=0 x6
+W            498    501          0   w=0:d=1 x6 w=1:d=0 x12
+
+--- branch-offset theorem on the q family ---
+q       w(l0)=0 w(l1)=1  predicted parity 1  measured offset 35 (parity 1)  OK
+qprime  w(l0)=0 w(l1)=1  predicted parity 1  measured offset 7 (parity 1)  OK
+q2      w(l0)=0 w(l1)=1  predicted parity 1  measured offset 3 (parity 1)  OK
+
+--- coherent-class control: HH / HNH arrival weights equal ---
+branch weights equal per program (HH: 0/0, HNH: 1/1); sync confirmed dynamically in suite
+
+--- terminal chains + gauge-pinned uniqueness ---
+terminal chains: 0 degree violations (every RunDone/Done in-degree 1, out-degree 1)
+gauge sweep (reachable edges only): 8/1024 pass; KA unconstrained as expected: YES
+gauge sweep (+2 raw suppressed-decode edges, disclosed): 4/1024 pass; predicted orbit with w(KA)=0 MATCH: [(0, 0, 1, 0, 0, 0, 0, 0, 0, 0), (0, 0, 1, 0, 1, 0, 0, 0, 0, 0), (1, 1, 0, 0, 0, 0, 0, 0, 0, 0), (1, 1, 0, 0, 1, 0, 0, 0, 0, 0)]
+
+TOTAL VIOLATIONS: 0  structural checks: PASS  branch-offset: PASS
+exit=0
+
+## well-formedness
+$ /Users/a9lim/.venv/bin/python wf.py
+program     states   runs  WF
+HH             164    148  OK
+HNH            246    222  OK
+negative       166    150  OK
+selector       212    196  OK
+lone           106     90  OK
+pstar          484    452  OK
+3coin          360    328  OK
+q              474    450  OK
+qprime         530    506  OK
+q2             268    244  OK
+dup            180    156  OK
+Ccoll          286    254  OK
+buried         864    832  OK
+weave          580    548  OK
+hweave         450    418  OK
+qq            4384   4320  OK
+palpha         749    713  OK
+dupcall       1264   1232  OK
+B              609    573  OK
+W             1760   1688  OK
+reachable-subset-of-WF violations TOTAL: 0
+
+--- raw-state collision regressions under WF ---
+vvar source WF: ['W4-frame']  replay source WF: OK
+targets equal: False (vvar source violates W4 -> excluded from the WF domain)
+WF vvar source WF: OK  targets equal now: False (rs contents differ)
+mu-kind pair rules: ['fire-h', 'fire-h'] vs ['species-mu'] (species-mu types the mismatch; no shared fire targets)
+shared targets: False
+
+--- W7 sweep + range disjointness (certified graphs) ---
+HH        states    82  WF∧W7 OK  disjointness OK (0 pairs)
+HNH       states   104  WF∧W7 OK  disjointness OK (1 pairs)
+negative  states    83  WF∧W7 OK  disjointness OK (0 pairs)
+selector  states   106  WF∧W7 OK  disjointness OK (0 pairs)
+lone      states    53  WF∧W7 OK  disjointness OK (0 pairs)
+pstar     states   242  WF∧W7 OK  disjointness OK (1 pairs)
+3coin     states   180  WF∧W7 OK  disjointness OK (0 pairs)
+q         states   218  WF∧W7 OK  disjointness OK (1 pairs)
+qprime    states   246  WF∧W7 OK  disjointness OK (1 pairs)
+q2        states   115  WF∧W7 OK  disjointness OK (1 pairs)
+dup       states    90  WF∧W7 OK  disjointness OK (1 pairs)
+Ccoll     states   143  WF∧W7 OK  disjointness OK (0 pairs)
+buried    states   432  WF∧W7 OK  disjointness OK (1 pairs)
+weave     states   290  WF∧W7 OK  disjointness OK (1 pairs)
+hweave    states   225  WF∧W7 OK  disjointness OK (1 pairs)
+qq        states  2192  WF∧W7 OK  disjointness OK (7 pairs)
+palpha    states   275  WF∧W7 OK  disjointness OK (1 pairs)
+B         states   186  WF∧W7 OK  disjointness OK (1 pairs)
+W         states   498  WF∧W7 OK  disjointness OK (8 pairs)
+collision regression: source W7 OK, +frame W7 ['W7-domain'], targets DISJOINT (decode record)
+bundle-divergence regression: real arrivals transparent True, doctored REJECTED True
+K+frame alias regression: WF flags ['W8'], kernel rule ['key-alias']
+retained-Q disjointness regression: sources WF True, common targets 0 (must be 0)
+duplicate-ticket regression: WF flags ['W9'] (needs W9)
+retained-Q KD regression: targets WF True, bundle empty True, frame retained True
+bitfree-burial regression: targets WF True, burial sole bit-carrying record True, overlap empty True
+popped-frame/riding-ticket regression: targets WF True, popped key out of the bundle True, ticket survives True
+vacuous-position regression: unreachable entry refused True, canonical clean True
+ghost-key regression: inert popkey refused True (vacuous_keys=1), canonical vacuous_keys 0 True
+deep-W4 regression: slice-suspended ticket flagged True, stripped control clean True
+W4 storage/burial regression: bitfree-K/KD + conflict flagged True, clean + agreeing-burial WF True (agree target WF True)
+answer-species regression: mismatched/foreign markers typed True, matched anshead intact True, retrace chain typed True
+grammar/stall regression: W0 flags + species-ans on all five bad answers True, VB domain flagged True, three stall arms typed True, classical final + deeper pair intact True
+state-language regression: numeric/bool aliases W0 + species-ans True, malformed productions W0 True, coordinates W0 True, exact-int + lp controls intact True
+log-sort/slice-equation regression: bullet/answer/mu/rho log entries W0 True, slice-length violation W0 True, open-term state W0 True, lp log entry intact True
+KS prefix-freeness regression: sources WF True, targets disjoint True, empty bundle explicit True, t boundary typed True (h fire control intact True)
+fire prefix-freeness regression: sources WF True, frame-skip disjoint + KA head True, burial-skip disjoint + KA head True, two-key pair disjoint True, recorded-arm control intact True
+W0 totality regression: Var(0) W0 True, list tape W0 True, bad-hash subclass W0 without crash True, tuple control WF True
+checker totality regression: bare-AL/bare-L/empty-frame states exactly ['W0'] without crash True, in-language multi-flag control intact True
+cross-gate regression: foreign-producer tickets enter H at both polarities True, same-gate decode control fires True
+totality-IV regression: empty tuple in each register exactly ['W0'] without crash True, 1500-deep tuple W0 + 1500-lambda term WF without crash True
+totality-V regression: junk/object/cyclic terms W0, malformed subclass declined, 2^24 DAG prompt, wf7 malformed-frame declined, deep-term + genuine-Run controls intact: True
+totality-VI regression: malformed term subclass + invalid gates W0 True, wf7 malformed/unhashable declined True, WF-source-reaches-fibre + chain controls intact True
+totality-VII regression: scalar roots W0 True, malformed d W0 without executing True, wf7 declines True, deep-lp walk linear-band True
+composition-linearity regression: shared-lp family W0 at both sizes within the linear band True, distinct-lps control True, traversal-sensitivity pair True
+occurrence-memo regression: distinct-shells families W0 inside the linear band True, stale-interleaving + fresh-call verdicts W0 True, traversal-sensitivity pairs True
+shared-substructure regression: shared-slice rs/ks + shared-KD-keys families W0 inside the linear band [True, True, True], traversal-sensitivity pairs True
+big-index/slice-cargo regression: big-index family W0 inside the linear band True, slice-cargo family WF-clean inside the linear band True with shells distinct True and corrupt-shell control W0 True, bound-index control WF True
+fieldless regression: undefaulted hollow Runs W0 True, defaulted fields fall back to class defaults True, hollow Lam/Var terms W0 True, wf7 declines True, constructor controls intact True
+W7/disjointness total: PASS
+
+WF sweep: PASS  collision closure: PASS  W7/disjointness: PASS
+exit=0
+
+## rri-attack
+$ /Users/a9lim/.venv/bin/python rri.py
+canonical: fires=67 programs=20 projected_collisions=0 recall_absent=110 recall_present=53 replays=108 rider_fires=0 states=6392 surviving_ticket_fires=4 complete=true
+RRI ATTACK: PASS (finite falsification only)
+exit=0
+
+## instance-identity
+$ /Users/a9lim/.venv/bin/python instance_identity.py
+canonical: programs=20 states=6392 gate_states=1196 keyed=1196 keys=58
+closed<=11: programs=41272 states=1416476 completed=41262 truncated=10 calls=46252 keys=46252 recall=176 replay=4 max_visits=5 guard_hits=0 nonorthogonal_columns=0
+raw-recall-boundary: wf_pair=yes targets_disjoint=yes clone_reachable=no path=fa
+INSTANCE IDENTITY: PASS
+exit=0
+
+## exact-dw
+$ /Users/a9lim/.venv/bin/python dw.py
+DW EXACT H/T GRAM: PASS
+exit=0
+
+## exact-dw-machine
+$ /Users/a9lim/.venv/bin/python dw_machine.py
+HH        basis=  82 defects=0
+HNH       basis= 104 defects=0
+negative  basis=  83 defects=0
+selector  basis= 106 defects=0
+lone      basis=  53 defects=0
+pstar     basis= 242 defects=0
+3coin     basis= 180 defects=0
+q         basis= 218 defects=0
+qprime    basis= 246 defects=0
+q2        basis= 115 defects=0
+dup       basis=  90 defects=0
+Ccoll     basis= 143 defects=0
+buried    basis= 432 defects=0
+weave     basis= 290 defects=0
+hweave    basis= 225 defects=0
+qq        basis=2192 defects=0
+palpha    basis= 275 defects=0
+dupcall   basis= 632 defects=0
+B         basis= 186 defects=0
+W         basis= 498 defects=0
+T0        basis=  42 exact={'halt0': Dw(a=1, b=0, c=0, d=0, k=0)}
+T1        basis=  43 exact={'halt1': Dw(a=0, b=1, c=0, d=0, k=0)}
+HTH0      basis= 123 exact={'halt0': Dw(a=1, b=1, c=0, d=0, k=2), 'halt1': Dw(a=1, b=-1, c=0, d=0, k=2)}
+QALC DW GRAM: PASS
+exit=0
+
+## readback
+$ /Users/a9lim/.venv/bin/python readback_checks.py
+QALC READBACK CHECKS: PASS pure=41258 pure_gram=2621/64042 basis=6726 divergence_steps=2000 terminal_sectors=3 coherence=2 neutral=4 mixed=7/903 semantic=20/2361
+exit=0
+
+## composed-certificates
+$ /Users/a9lim/.venv/bin/python readback_certify.py
+HH        {'certified': True, 'basis': 82, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '1f1964609bf32f881c2b8fba3f8ff19ab2cf9cf30a604d33b83da7a804e762c1'}
+HNH       {'certified': True, 'basis': 104, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'da9ee0c0c979f393e13485601bad0d2b1ace2d2a0dc73e5e794614dd9066d9bb'}
+negative  {'certified': True, 'basis': 89, 'arrivals': 1, 'positions': 1, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '5fe0328af1c58dbf31d9d60eed0cd445abaaa9ec5a4a103164d8d3b788bbfa71'}
+selector  {'certified': True, 'basis': 113, 'arrivals': 1, 'positions': 1, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'd2f318b4623c2b8971f53053f005ffc35ceba9f7598ed5432aedf13c6eca6c6f'}
+lone      {'certified': True, 'basis': 53, 'arrivals': 1, 'positions': 1, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '8115157c5aa2e9938c5cc08481e4d01a6e03afbfa622126e5f14542641080deb'}
+pstar     {'certified': True, 'basis': 242, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '6d46e41508f787452ad184f0b697901e323c4317724776cb6d40f09e560cb6c6'}
+3coin     {'certified': True, 'basis': 180, 'arrivals': 3, 'positions': 3, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'b0782567dc3e09356fb5cfa82000012ee477c456fee62d5e7db62ed33c1cd1c3'}
+q         {'certified': True, 'basis': 218, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '1bd6ce0f4fb1da1d1a3824791abc5f9e273aa884722e30a062b45666966c3c5a'}
+qprime    {'certified': True, 'basis': 246, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '551aca37a2c98f1458b3e6af7f5af29a8b919630235a3fc44e2f4a2891797a57'}
+q2        {'certified': True, 'basis': 115, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'ce39fc8b057a8b7d1f45259bcf55bc0a013e7fa54d113dd4584d31228cf3380a'}
+dup       {'certified': True, 'basis': 142, 'arrivals': 2, 'positions': 1, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'dbc602ecd2cfa9e2428e190dbaf23f02686f267bed644285d509d3f3001c34d9'}
+Ccoll     {'certified': True, 'basis': 143, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '0485192566216014540035958985c0bd7afcb22f14e32207ed09b14f98e4d9b5'}
+buried    {'certified': True, 'basis': 446, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'd3ed03d481861a874d0e5c5a7f0cf0e9d1a473f8678c95e7d4d0159ad78fc69b'}
+weave     {'certified': True, 'basis': 290, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '33e304e936861e4df83481a2571f473a051876ef6ea3cdcc594512b720e61a4e'}
+hweave    {'certified': True, 'basis': 225, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '32141e2f5fde02417ee757ea9ae25c1644be3be32e8e3f94cab6290510f92dca'}
+qq        {'certified': True, 'basis': 2220, 'arrivals': 7, 'positions': 3, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'e1fd78d2149c26a1f3bedf489b5984b61f8926ef31eb4a15735b99c49e018740'}
+palpha    {'certified': True, 'basis': 278, 'arrivals': 6, 'positions': 4, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'da1d395bc99fcc712e20518fd579bfdb4d6c05f488657cf063a327655d73246a'}
+dupcall   {'certified': True, 'basis': 639, 'arrivals': 3, 'positions': 3, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '72fc75b766231d6497acd65f6dbd297eacf979547e26fc202a66c6e426647a12'}
+B         {'certified': True, 'basis': 189, 'arrivals': 4, 'positions': 3, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '0dddba1778436ef494c9acb5c360b7b0409a466393fa39ad7eebc29f85409669'}
+W         {'certified': True, 'basis': 504, 'arrivals': 9, 'positions': 4, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '3dfbc7794afd006ac2bb480734e82c54ba19e700d39054bdf79567f262cba3d3'}
+mixed-H-arg {'certified': True, 'basis': 63, 'arrivals': 3, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '70bb31e5ba432c0bd26cf22761f14c52aae75ead671cf6c0cc1c1fe69f2fab29'}
+mixed-T-arg {'certified': True, 'basis': 51, 'arrivals': 2, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '62ed0a55504c9535b3a08209fa17edb2336120a2d7ca84695e1e82f03d07f960'}
+stress-spine3 {'certified': True, 'basis': 219, 'arrivals': 13, 'positions': 6, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'f36f32abbbe7fa4018f7097fe7d6d60e8c76606ea1bd3eb3a85d482bb34059c5'}
+stress-nested-H {'certified': True, 'basis': 92, 'arrivals': 5, 'positions': 3, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'be857ddbc8e03e7f59c7dfb9ceafbf99627225f4fec58a0499df17db0d4b8fd3'}
+stress-beta-H {'certified': True, 'basis': 154, 'arrivals': 4, 'positions': 2, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '2d3a6f8bb651e6b0f99c17d8f19ee46bd06d73af519644ca3a8131be8c383220'}
+stress-nested-scope {'certified': True, 'basis': 172, 'arrivals': 9, 'positions': 4, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'a198aeceafb2c1d320b7d6cc561fa644b2402631d573338c15eaf89fdc70e8d7'}
+stress-two-H {'certified': True, 'basis': 152, 'arrivals': 9, 'positions': 4, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '14cc70d948a04b5e571928a03c54ee639af1cf787e6b5c655ec8119b550b79d8'}
+neutral-bare-t {'certified': True, 'basis': 22, 'arrivals': 0, 'positions': 0, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'c40d4eee565185e11d46b01a9320f4ea3c560e20dad1e0895cd19ba4ad37c892'}
+neutral-H1     {'certified': True, 'basis': 28, 'arrivals': 0, 'positions': 0, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': 'd67af10dbabd43c7000a142626c03ba8d577fe903279ebc627ab0ea8f7189ff4'}
+neutral-H2     {'certified': True, 'basis': 36, 'arrivals': 0, 'positions': 0, 'fibre_functions': True, 'stuck': 0, 'recall_collisions': 0, 'pop_collisions': 0, 'pop_errors': 0, 'stuck_errors': 0, 'host_errors': 0, 'wf_violations': 0, 'wf7_violations': 0, 'range_violations': 0, 'output_nf_violations': 0, 'pure_output_mismatch': 0, 'nonunit': 0, 'nonorthogonal': 0, 'vacuous_positions': 0, 'vacuous_keys': 0, 'carrier_digest': '25b3be059a4ddf4a1208f14f7f7b34978ef4ea4a9f18b6714bc2e73ac9ffff30'}
+QALC COMPOSED CERTIFICATES: PASS basis=7507 selector=22
+exit=0
+
+## application-marker
+$ /Users/a9lim/.venv/bin/python application_invariant.py
+QALC APPLICATION MARKER: PASS pure=41258 bases=1187953 b3_inverses=38823 collisions=0
+exit=0
+
+## controller-invariant
+$ /Users/a9lim/.venv/bin/python controller_invariant.py
+QALC CONTROLLER INVARIANT: PASS pure=41258 bases=1187953 enter=56356 return=56373 pure_return=56345 stripped_fibre=4 W10=0 W11=0
+exit=0
+
+## semantic-objects
+$ /Users/a9lim/.venv/bin/python semantics.py
+QALC SEMANTICS: PASS
+exit=0
+
+QALC GATE1 RUNTIME BATTERY: PASS

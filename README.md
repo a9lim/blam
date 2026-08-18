@@ -294,6 +294,8 @@ the one-line form emitted by `compile --term-only`. `census` is the separate
 measured layer over ordinary closed BLC programs: it invokes each `p` as
 `p h t`, retains the original `2^-|p|` weight, reports exact halt/error/running
 mass and an Ω bracket, and optionally writes sparse finite-`M` coordinates.
+Its checked-admission preflight and bounded full-cap pool change scheduling
+only; `--admission-threads` can tune the latter without changing the report.
 
 ## Layout
 

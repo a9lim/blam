@@ -227,7 +227,7 @@ fn census_is_thread_checkpoint_and_matrix_invariant() {
         "qalc",
         "census",
         "4",
-        "12",
+        "17",
         "--steps",
         "64",
         "--support",
@@ -236,7 +236,7 @@ fn census_is_thread_checkpoint_and_matrix_invariant() {
     let mut args = shared.to_vec();
     args.extend(["--threads", "1", "--matrix", mono_matrix.to_str().unwrap()]);
     let mono = success(&args);
-    assert!(mono.contains("## Totals (30 programs)"), "{mono}");
+    assert!(mono.contains("## Totals (360 programs)"), "{mono}");
     assert!(mono.contains("selection structural-gate2 0"), "{mono}");
     assert!(mono.contains("Tr M"), "{mono}");
 
@@ -244,6 +244,8 @@ fn census_is_thread_checkpoint_and_matrix_invariant() {
     args.extend([
         "--threads",
         "2",
+        "--admission-threads",
+        "1",
         "--matrix",
         parallel_matrix.to_str().unwrap(),
     ]);
@@ -262,6 +264,8 @@ fn census_is_thread_checkpoint_and_matrix_invariant() {
         checkpoint.to_str().unwrap(),
         "--groups",
         "3",
+        "--admission-threads",
+        "2",
         "--matrix",
         checkpoint_matrix.to_str().unwrap(),
     ]);
@@ -280,6 +284,8 @@ fn census_is_thread_checkpoint_and_matrix_invariant() {
         checkpoint.to_str().unwrap(),
         "--groups",
         "3",
+        "--admission-threads",
+        "1",
         "--matrix",
         resumed_matrix.to_str().unwrap(),
     ]);

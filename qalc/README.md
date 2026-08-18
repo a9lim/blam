@@ -7,9 +7,11 @@ fixture-pinned port; neither surface replaces the other as evidence.
 The authoritative entry points are:
 
 - `GATE1.md` and `gate1_check.py`: composed full-NF semantics, finite
-  admission, and the Gate-1 battery;
+  admission, and the Gate-1 runtime battery;
 - `GATE2.md` and `gate2_check.py`: native-CNOT clean compilation and the
-  Gate-2 battery;
+  Gate-2 runtime battery;
+- `gate1_lean_check.py` and `gate2_lean_check.py`: explicit manual proof
+  checks, run only when the Lean/generated-proof surface intentionally moves;
 - `kernel.py`, `wf.py`, `certify.py`, and `rri_direct.py`: the kernel and
   admission surface;
 - `readback.py`, `readback_certify.py`, and `semantics.py`: composed readback,
@@ -22,17 +24,25 @@ The authoritative entry points are:
 - `QalcConcreteCertificate.md` and `QalcConcreteBuild.py`: concrete Gate-1
   reachable-recall replay and rebuild entry point.
 
-Run the complete reference battery from the repository root:
+Run the authoritative runtime battery from the repository root:
 
 ```bash
 python qalc/gate1_check.py
 python qalc/gate2_check.py
 ```
 
-The path-scoped qALC workflow runs the same battery and checks all four Rust
-fixture exporters under two Python hash seeds. Generated `.lean` files and the
-checked-in Gate-1 log are proof evidence; `.olean` files and `__pycache__/` are
-ignored build products.
+When the proof surface changes, run its separate manual checks explicitly:
+
+```bash
+python qalc/gate1_lean_check.py
+python qalc/gate2_lean_check.py
+```
+
+The path-scoped qALC workflow intentionally runs no Lean: it runs the runtime
+battery, checks all four Rust fixture exporters under two Python hash seeds,
+and exercises the Rust differential suites. Generated `.lean` files and the
+historical full Gate-1 log are proof evidence; `.olean` files and
+`__pycache__/` are ignored build products.
 
 The semantic contract is
 [`docs/quantum-algebraic/architecture.md`](../docs/quantum-algebraic/architecture.md),

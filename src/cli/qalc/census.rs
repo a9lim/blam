@@ -5,10 +5,11 @@
 use crate::args::{self, Args, R};
 use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
 use blam::blc::wire::enc_to_string;
+use blam::qalc::admission::AdmissionTelemetry;
 use blam::qalc::amp::Amp;
 use blam::qalc::semantics::{
-    error_mass, halt_mass, initial_vector, kraft_weight, rho, running_mass, select, u,
-    SelectionKind, SemanticsError,
+    error_mass, halt_mass, initial_vector, kraft_weight, rho, running_mass, select_probe_profiled,
+    select_profiled, u, Sector, SelectionKind, SemanticsError,
 };
 use blam::qalc::term::{from_blc, invoke_ht};
 use blam::qalc::wire::nf_bytes;
@@ -16,9 +17,10 @@ use blam::quantum::scalar::ExactSum;
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::fmt::Write as _;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 type MatrixKey = (String, String);
+const ADMISSION_PREFLIGHT_CAP: usize = 1_000;
 
 const USAGE: &str = "\
 blam qalc census [MIN] MAX — finite-clock qALC census over ordinary BLC programs
@@ -31,6 +33,7 @@ semantics
 
 run
   --threads N     rayon threads (0 = ambient, the default)
+  --admission-threads N  full-cap admission pool (0 = up to 8, default)
   --out FILE      write the deterministic report to FILE as well as stdout
   --matrix FILE   accumulate and write sparse finite M coordinates
   --checkpoint FILE   kill-safe group-level resume
@@ -42,6 +45,35 @@ bracket adds exact still-running mass. Error mass is excluded. `--matrix`
 retains arbitrary-normal-form coordinates and can be much larger than the
 scalar census; rho and its trace are audited even when coordinates are not
 retained.";
+
+#[derive(Clone, Copy, Debug, Default)]
+struct PerfTelemetry {
+    programs: u64,
+    full_admissions: u64,
+    selection: Duration,
+    evolution: Duration,
+    observation: Duration,
+    admission: AdmissionTelemetry,
+}
+
+impl PerfTelemetry {
+    fn merge(&mut self, other: Self) {
+        self.programs += other.programs;
+        self.full_admissions += other.full_admissions;
+        self.selection += other.selection;
+        self.evolution += other.evolution;
+        self.observation += other.observation;
+        self.admission.merge(other.admission);
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+struct SlowSelection {
+    elapsed: Duration,
+    witness: (u8, u64),
+    kind: SelectionKind,
+    admission: AdmissionTelemetry,
+}
 
 #[derive(Clone, Debug)]
 struct Tally {
@@ -60,6 +92,8 @@ struct Tally {
     error: ExactSum,
     running: ExactSum,
     matrix: HashMap<MatrixKey, ExactSum>,
+    perf: PerfTelemetry,
+    slow_selection: Vec<SlowSelection>,
 }
 
 impl Tally {
@@ -80,6 +114,8 @@ impl Tally {
             error: ExactSum::ZERO,
             running: ExactSum::ZERO,
             matrix: HashMap::new(),
+            perf: PerfTelemetry::default(),
+            slow_selection: Vec::new(),
         }
     }
 
@@ -126,6 +162,15 @@ impl Tally {
                 .or_insert(ExactSum::ZERO)
                 .merge(&value);
         }
+        self.perf.merge(other.perf);
+        self.slow_selection.extend(other.slow_selection);
+        self.slow_selection.sort_unstable_by(|left, right| {
+            right
+                .elapsed
+                .cmp(&left.elapsed)
+                .then_with(|| left.witness.cmp(&right.witness))
+        });
+        self.slow_selection.truncate(8);
         self
     }
 }
@@ -309,30 +354,53 @@ fn semantic_error(enc: u64, len: u8, at: u64, error: SemanticsError) -> String {
     )
 }
 
-fn sweep_one(
-    enc: u64,
-    len: u8,
-    steps: u64,
-    support_cap: usize,
-    collect_matrix: bool,
-    tally: &mut Tally,
-) -> R<()> {
+fn parse_invocation(enc: u64, len: u8) -> R<blam::qalc::term::Term> {
     let mut bits = (0..len).rev().map(|bit| enc >> bit & 1 == 1);
     let pure = blam::parse_prefix(&mut bits)
         .map_err(|e| format!("blam qalc census: enumerator decode failed: {e}"))?;
     if bits.next().is_some() {
         return Err("blam qalc census: enumerator emitted trailing program bits".into());
     }
-    let invocation = invoke_ht(from_blc(&pure));
-    let sector = select(invocation);
+    Ok(invoke_ht(from_blc(&pure)))
+}
+
+struct SelectedSector {
+    sector: Sector,
+    elapsed: Duration,
+    admission: AdmissionTelemetry,
+    full_admission: bool,
+}
+
+fn sweep_sector(
+    enc: u64,
+    len: u8,
+    steps: u64,
+    support_cap: usize,
+    collect_matrix: bool,
+    selected: SelectedSector,
+    tally: &mut Tally,
+) -> R<()> {
+    tally.perf.selection += selected.elapsed;
+    tally.perf.admission.merge(selected.admission);
+    tally.perf.programs += 1;
+    tally.perf.full_admissions += u64::from(selected.full_admission);
     tally.programs += 1;
-    tally.selection[selection_index(sector.selection_kind())] += 1;
+    tally.selection[selection_index(selected.sector.selection_kind())] += 1;
 
     let witness = (len, enc);
-    let mut vector = initial_vector(&sector);
+    if selected.elapsed >= Duration::from_millis(10) {
+        tally.slow_selection.push(SlowSelection {
+            elapsed: selected.elapsed,
+            witness,
+            kind: selected.sector.selection_kind(),
+            admission: selected.admission,
+        });
+    }
+    let evolution_started = Instant::now();
+    let mut vector = initial_vector(&selected.sector);
     let mut peak_support = vector.len();
     for at in 1..=steps {
-        match u(&sector, &vector) {
+        match u(&selected.sector, &vector) {
             Ok(next) => {
                 peak_support = peak_support.max(next.len());
                 if next.len() > support_cap {
@@ -350,9 +418,11 @@ fn sweep_one(
             Err(error) => return Err(semantic_error(enc, len, at, error)),
         }
     }
+    tally.perf.evolution += evolution_started.elapsed();
     tally.note_support(peak_support, witness);
     tally.branched_programs += u64::from(peak_support > 1);
 
+    let observation_started = Instant::now();
     let halted = halt_mass(&vector).map_err(|e| semantic_error(enc, len, steps, e))?;
     let errored = error_mass(&vector).map_err(|e| semantic_error(enc, len, steps, e))?;
     let running = running_mass(&vector).map_err(|e| semantic_error(enc, len, steps, e))?;
@@ -404,7 +474,98 @@ fn sweep_one(
         Err(SemanticsError::Capacity) => tally.capacity[2] += 1,
         Err(error) => return Err(semantic_error(enc, len, steps, error)),
     }
+    tally.perf.observation += observation_started.elapsed();
     Ok(())
+}
+
+#[derive(Clone, Copy, Debug)]
+struct DeferredAdmission {
+    enc: u64,
+    len: u8,
+    probe_elapsed: Duration,
+    probe_telemetry: AdmissionTelemetry,
+}
+
+#[derive(Debug, Default)]
+struct ProbeTally {
+    tally: Tally,
+    deferred: Vec<DeferredAdmission>,
+}
+
+impl ProbeTally {
+    fn merge(mut self, other: Self) -> Self {
+        self.tally = self.tally.merge(other.tally);
+        self.deferred.extend(other.deferred);
+        self
+    }
+}
+
+fn probe_one(
+    enc: u64,
+    len: u8,
+    steps: u64,
+    support_cap: usize,
+    collect_matrix: bool,
+    out: &mut ProbeTally,
+) -> R<()> {
+    let invocation = parse_invocation(enc, len)?;
+    let started = Instant::now();
+    let (sector, telemetry) = select_probe_profiled(invocation, ADMISSION_PREFLIGHT_CAP);
+    let elapsed = started.elapsed();
+    match sector {
+        Some(sector) => sweep_sector(
+            enc,
+            len,
+            steps,
+            support_cap,
+            collect_matrix,
+            SelectedSector {
+                sector,
+                elapsed,
+                admission: telemetry,
+                full_admission: false,
+            },
+            &mut out.tally,
+        ),
+        None => {
+            out.deferred.push(DeferredAdmission {
+                enc,
+                len,
+                probe_elapsed: elapsed,
+                probe_telemetry: telemetry,
+            });
+            Ok(())
+        }
+    }
+}
+
+fn sweep_deferred(
+    deferred: DeferredAdmission,
+    steps: u64,
+    support_cap: usize,
+    collect_matrix: bool,
+    tally: &mut Tally,
+) -> R<()> {
+    let invocation = parse_invocation(deferred.enc, deferred.len)?;
+    let started = Instant::now();
+    let (sector, full_telemetry) = select_profiled(invocation);
+    let elapsed = started.elapsed();
+    let mut telemetry = deferred.probe_telemetry;
+    telemetry.merge(full_telemetry);
+    sweep_sector(
+        deferred.enc,
+        deferred.len,
+        steps,
+        support_cap,
+        collect_matrix,
+        SelectedSector {
+            sector,
+            elapsed: deferred.probe_elapsed + elapsed,
+            admission: telemetry,
+            full_admission: true,
+        },
+        tally,
+    )
 }
 
 fn matrix_trace(matrix: &HashMap<MatrixKey, ExactSum>) -> ExactSum {
@@ -619,6 +780,7 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut steps = 256u64;
     let mut support_cap = 100_000usize;
     let mut threads = 0usize;
+    let mut admission_threads = 0usize;
     let mut out_path: Option<String> = None;
     let mut matrix_path: Option<String> = None;
     let mut checkpoint_path: Option<String> = None;
@@ -629,6 +791,7 @@ pub fn run(argv: &[String]) -> R<()> {
             "--steps" => steps = args.num(token)?,
             "--support" => support_cap = args.num(token)?,
             "--threads" => threads = args.num(token)?,
+            "--admission-threads" => admission_threads = args.num(token)?,
             "--out" => out_path = Some(args.value(token)?.to_string()),
             "--matrix" => matrix_path = Some(args.value(token)?.to_string()),
             "--checkpoint" => checkpoint_path = Some(args.value(token)?.to_string()),
@@ -668,8 +831,19 @@ pub fn run(argv: &[String]) -> R<()> {
     let collect_matrix = matrix_file.is_some();
     args::build_pool(threads)?;
     let thread_count = rayon::current_num_threads();
+    let admission_threads = if admission_threads == 0 {
+        thread_count.min(8)
+    } else {
+        admission_threads.min(thread_count)
+    }
+    .max(1);
+    let admission_pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(admission_threads)
+        .thread_name(|index| format!("qalc-admit-{index}"))
+        .build()
+        .map_err(|error| format!("blam qalc census: cannot build admission pool: {error}"))?;
     eprintln!(
-        "qALC census: sizes {min_n}..={max_n}, invocation p h t, steps={steps}, support={support_cap}, matrix={collect_matrix}, {thread_count} threads"
+        "qALC census: sizes {min_n}..={max_n}, invocation p h t, steps={steps}, support={support_cap}, matrix={collect_matrix}, {thread_count} threads, {admission_threads} full-admission threads"
     );
 
     let config = format!(
@@ -695,14 +869,14 @@ pub fn run(argv: &[String]) -> R<()> {
             .map_or(thread_count * 32, |state| state.target);
         let tasks = interleave_tasks(split_tasks(n, target));
         let run_slice = |slice: &[blam::blc::enumerate::GenTask]| -> R<Tally> {
-            slice
+            let probed = slice
                 .par_iter()
-                .try_fold(Tally::new, |mut tally, task| {
+                .try_fold(ProbeTally::default, |mut tally, task| {
                     let mut failure = None;
                     run_task(task, &mut |enc, len| {
                         if failure.is_none() {
                             failure =
-                                sweep_one(enc, len, steps, support_cap, collect_matrix, &mut tally)
+                                probe_one(enc, len, steps, support_cap, collect_matrix, &mut tally)
                                     .err();
                         }
                     });
@@ -711,7 +885,19 @@ pub fn run(argv: &[String]) -> R<()> {
                         None => Ok(tally),
                     }
                 })
-                .try_reduce(Tally::new, |left, right| Ok(left.merge(right)))
+                .try_reduce(ProbeTally::default, |left, right| Ok(left.merge(right)))?;
+            let deferred = admission_pool.install(|| {
+                probed
+                    .deferred
+                    .par_iter()
+                    .copied()
+                    .try_fold(Tally::new, |mut tally, deferred| {
+                        sweep_deferred(deferred, steps, support_cap, collect_matrix, &mut tally)?;
+                        Ok::<Tally, String>(tally)
+                    })
+                    .try_reduce(Tally::new, |left, right| Ok(left.merge(right)))
+            })?;
+            Ok(probed.tally.merge(deferred))
         };
         let (tally, seconds) = match &mut checkpoint {
             Some(state) => {
@@ -753,6 +939,29 @@ pub fn run(argv: &[String]) -> R<()> {
             tally.peak_support,
             tally.programs as f64 / seconds.max(f64::MIN_POSITIVE),
         );
+        eprintln!(
+            "      worker-s over {} measured programs: select {:.3} [carrier {:.3}, gram {:.3}, obligations {:.3}, rri {:.3}, digest {:.3}; {} attempts, {} full]  evolve {:.3}  observe {:.3}",
+            tally.perf.programs,
+            tally.perf.selection.as_secs_f64(),
+            tally.perf.admission.carrier.as_secs_f64(),
+            tally.perf.admission.gram.as_secs_f64(),
+            tally.perf.admission.obligations.as_secs_f64(),
+            tally.perf.admission.rri.as_secs_f64(),
+            tally.perf.admission.digest.as_secs_f64(),
+            tally.perf.admission.attempts,
+            tally.perf.full_admissions,
+            tally.perf.evolution.as_secs_f64(),
+            tally.perf.observation.as_secs_f64(),
+        );
+        for slow in &tally.slow_selection {
+            eprintln!(
+                "      slow select {:>8.3}s  {:?}  carrier {:>8.3}s  {}",
+                slow.elapsed.as_secs_f64(),
+                slow.kind,
+                slow.admission.carrier.as_secs_f64(),
+                enc_to_string(slow.witness.1, slow.witness.0),
+            );
+        }
         rows.push(Row::from_tally(n, &tally));
         total = total.merge(tally);
     }

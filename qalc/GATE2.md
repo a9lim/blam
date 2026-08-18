@@ -154,10 +154,12 @@ target is reused as a later control. Bell uncompute is
 python qalc/gate2_check.py
 ```
 
-The authoritative battery recompiles Python, re-closes Gate 1, runs the
-physical/compiler checks, regenerates finite Lean evidence twice
-byte-identically, checks the cap-free selector path, and compiles the complete
-handwritten Gate-2 theorem surface.
+The authoritative runtime battery recompiles Python, re-closes the Gate-1
+runtime surface, runs the physical/compiler checks, and checks the cap-free
+selector path. It neither generates nor compiles Lean. When the proof surface
+or its exporters intentionally change, run `python qalc/gate1_lean_check.py`
+and `python qalc/gate2_lean_check.py` explicitly; Lean is intentionally absent
+from CI.
 
 The Rust reference pillar preserves:
 

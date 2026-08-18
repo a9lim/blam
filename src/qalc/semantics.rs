@@ -8,7 +8,10 @@ use std::sync::Arc;
 
 use crate::quantum::scalar::ExactSum;
 
-use super::admission::{try_admit, Gate1Admission};
+use super::admission::{
+    try_admit, try_admit_probe_with_cap_profiled, try_admit_profiled, AdmissionTelemetry,
+    Gate1Admission,
+};
 use super::amp::Amp;
 use super::gate2check::{structural_admission, StructuralAdmission};
 use super::kernel::edge_coefficient;
@@ -110,6 +113,62 @@ pub fn select(term: Term) -> Sector {
     Sector {
         term: Arc::new(term),
         selection,
+    }
+}
+
+/// The total selector plus diagnostic Gate-1 phase timings. Structural Gate-2
+/// images never enter Gate 1 and therefore return zeroed admission telemetry.
+pub fn select_profiled(term: Term) -> (Sector, AdmissionTelemetry) {
+    let (selection, telemetry) = match structural_admission(&term) {
+        Ok(Some(admission)) => (
+            Selection::Structural(admission),
+            AdmissionTelemetry::default(),
+        ),
+        _ => {
+            let (admission, telemetry) = try_admit_profiled(&term);
+            (
+                admission
+                    .map(Selection::Gate1)
+                    .unwrap_or(Selection::Conservative),
+                telemetry,
+            )
+        }
+    };
+    (
+        Sector {
+            term: Arc::new(term),
+            selection,
+        },
+        telemetry,
+    )
+}
+
+/// Definitive cheap selector probe for population scheduling. `Some` is a
+/// fully validated sector identical to canonical selection. `None` means only
+/// that the caller must retry through [`select_profiled`] at the canonical
+/// cap; it is never a conservative verdict.
+pub fn select_probe_profiled(
+    term: Term,
+    gate1_state_cap: usize,
+) -> (Option<Sector>, AdmissionTelemetry) {
+    match structural_admission(&term) {
+        Ok(Some(admission)) => (
+            Some(Sector {
+                term: Arc::new(term),
+                selection: Selection::Structural(admission),
+            }),
+            AdmissionTelemetry::default(),
+        ),
+        _ => {
+            let (admission, telemetry) = try_admit_probe_with_cap_profiled(&term, gate1_state_cap);
+            (
+                admission.map(|admission| Sector {
+                    term: Arc::new(term),
+                    selection: Selection::Gate1(admission),
+                }),
+                telemetry,
+            )
+        }
     }
 }
 

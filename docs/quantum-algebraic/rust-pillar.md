@@ -30,6 +30,12 @@ The population census remains a separate measured layer over this reference
 API. `blam qalc census` supplies the ordinary BLC enumerator, `p h t`
 invocation convention, exact Kraft aggregation, resource brackets,
 checkpointing, and optional sparse-`M` persistence without changing `U`.
+Selection is scheduled in two phases: a successful 1,000-state first-candidate
+probe is already a complete checked admission, while every inconclusive probe
+retries the unchanged 300,000-state canonical selector in a bounded rayon
+pool. A probe failure never selects conservative history. Performance timing
+is stderr-only telemetry and does not enter the deterministic report or
+checkpoint accumulator.
 
 ## 2. Module map
 
@@ -162,7 +168,9 @@ blam qalc census [MIN] MAX          finite-clock census over ordinary BLC p h t
 program from a qfx file. A qfx input is provenance-bearing: its certificate
 must equal the certificate selected by the public semantics before execution.
 `census` instead constructs the canonical invocation from each enumerated BLC
-program and keeps the gates outside its prefix length.
+program and keeps the gates outside its prefix length. `--admission-threads`
+controls only the full-cap second-phase pool (up to eight workers by default),
+not the selector or census semantics.
 
 The qALC verification contract is:
 
@@ -178,7 +186,11 @@ cargo test --release
 bash scripts/spot-check.sh
 ```
 
-CI repeats the Python fixture checks under a second hash seed. Rust tests also
+The two gate commands above are runtime/Python batteries and intentionally do
+not generate or compile Lean. `python qalc/gate1_lean_check.py` and
+`python qalc/gate2_lean_check.py` are manual proof-surface checks, run only
+when that surface intentionally changes; Lean is not part of qALC CI. CI
+repeats the Python fixture checks under a second hash seed. Rust tests also
 pin norm equality, monotone halt mass, orthonormal columns, effect-free
 conservativity, HH cancellation, H-NOT'-H coherence, the negative witness,
 compiler cleanliness, and cross-pillar isolation.

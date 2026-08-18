@@ -243,22 +243,26 @@ Exact T and HTH fixtures check amplitudes, not merely probabilities.
 
 ## 6. Verification record
 
-`gate1_check.py` is the authoritative rerunnable command. Its current durable
-log is `out_gate1_final.txt`; the final line is:
+`gate1_check.py` is the authoritative rerunnable runtime command. Its durable
+log is `out_gate1_runtime.txt`; the final line is:
 
 ```text
-QALC GATE1 FINAL BATTERY: PASS
+QALC GATE1 RUNTIME BATTERY: PASS
 ```
 
 The run includes Python compilation, the complete kernel/checker
 battery, typechecking and conservation instruments, RRI and instance-identity
 checks, exact Dw H/T arithmetic, full readback and composed-certificate
-batteries, the 1.19M-state marker/range sweep, semantic objects, two-pass
-byte-identical regeneration with a recorded source-set digest, compilation of
-all 30 composed machine files, every core
-Lean theorem with an explicit `.olean`, and the 165.8-second concrete Lean RRI
-replay of all seventeen typed canonical sectors including certified-H
-reconvergence.
+batteries, the 1.19M-state marker/range sweep, and semantic objects. It neither
+generates nor compiles Lean.
+
+`gate1_lean_check.py` is the separate explicit proof-surface command. Run it
+only when the handwritten/generated Lean surface or its Python exporters move.
+It performs two-pass byte-identical regeneration with a source-set digest,
+compiles all composed machine files and core Lean theorems, and runs the
+concrete Lean RRI replay of all seventeen typed canonical sectors. The prior
+combined battery record remains in `out_gate1_final.txt` as historical proof
+evidence; Lean is intentionally absent from the runtime gate and CI.
 
 The claim boundary remains explicit:
 

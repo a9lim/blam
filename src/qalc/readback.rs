@@ -26,7 +26,7 @@
 //! where the reference silently slices. All are unreachable on the
 //! pinned carriers.
 
-use std::collections::HashMap;
+use std::collections::{hash_map::Entry, HashMap};
 
 use super::amp::Amp;
 use super::kernel::{instance, step};
@@ -1904,6 +1904,60 @@ pub struct NfCarrier {
     pub columns: Vec<super::wire::Column>,
 }
 
+/// Exact merged-column Gram report derived from an already checked carrier.
+/// This is algebraically identical to [`nf_gram`] on the same cut, but avoids
+/// rebuilding the reachable graph during Gate-1 admission.
+pub fn nf_gram_from_carrier(carrier: &NfCarrier) -> Result<super::kernel::GramReport, NfError> {
+    let mut incoming: HashMap<usize, Vec<(usize, Amp)>> = HashMap::new();
+    let mut nonunit = 0usize;
+    for (source, rows) in &carrier.columns {
+        let mut column: Vec<(usize, Amp)> = Vec::new();
+        let mut col_index: HashMap<usize, usize> = HashMap::new();
+        for (coefficient, _rule, target) in rows {
+            if let Some(&at) = col_index.get(target) {
+                column[at].1 = column[at].1.add(*coefficient).ok_or(NfError::Capacity)?;
+            } else {
+                col_index.insert(*target, column.len());
+                column.push((*target, *coefficient));
+            }
+        }
+        let mut norm = Amp::ZERO;
+        for (target, coefficient) in column {
+            norm = norm
+                .add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
+                .ok_or(NfError::Capacity)?;
+            incoming
+                .entry(target)
+                .or_default()
+                .push((*source, coefficient));
+        }
+        nonunit += usize::from(norm != Amp::ONE);
+    }
+
+    let mut dots: HashMap<(usize, usize), Amp> = HashMap::new();
+    for columns in incoming.values() {
+        for (left_at, (left, left_coefficient)) in columns.iter().enumerate() {
+            for (right, right_coefficient) in &columns[left_at + 1..] {
+                if left == right {
+                    continue;
+                }
+                let key = (*left.min(right), *left.max(right));
+                let product = left_coefficient
+                    .conj()
+                    .and_then(|lc| lc.mul(*right_coefficient))
+                    .ok_or(NfError::Capacity)?;
+                let current = dots.get(&key).copied().unwrap_or(Amp::ZERO);
+                dots.insert(key, current.add(product).ok_or(NfError::Capacity)?);
+            }
+        }
+    }
+    Ok(super::kernel::GramReport {
+        basis: carrier.order.len(),
+        nonunit,
+        nonorthogonal: dots.values().filter(|value| !value.is_zero()).count(),
+    })
+}
+
 pub fn nf_carrier_and_columns(
     term: &Term,
     cert: Option<&CertEntries>,
@@ -1920,30 +1974,37 @@ pub fn nf_carrier_and_columns_with(
     tick_depth: u64,
     state_cap: usize,
 ) -> Result<NfCarrier, NfError> {
-    let start = nf_init();
-    let mut ids: HashMap<NfState, usize> = HashMap::new();
-    ids.insert(start.clone(), 0);
+    // The discovery index and ordered carrier share each immutable state.
+    // Keeping owned `NfState` keys in both structures used to deep-clone every
+    // token, zipper, and residue, which doubled the live graph at the 300k
+    // admission cap. Drop the index and unwrap the unique ordered owners only
+    // after discovery is complete, preserving the public carrier type.
+    let start = Arc::new(nf_init());
+    let mut ids: HashMap<Arc<NfState>, usize> = HashMap::new();
+    ids.insert(Arc::clone(&start), 0);
     let mut order = vec![start];
     let mut columns: Vec<super::wire::Column> = Vec::new();
     let mut at = 0;
     while at < order.len() {
-        let s = order[at].clone();
+        let s = Arc::clone(&order[at]);
         at += 1;
-        if let NfState::Done { tick, .. } = &s {
+        if let NfState::Done { tick, .. } = s.as_ref() {
             if *tick >= tick_depth {
                 continue;
             }
         }
-        let rows = nf_step_amp(machine, term, &s, cert)?;
+        let rows = nf_step_amp(machine, term, s.as_ref(), cert)?;
         let mut col: Vec<super::wire::ColRow> = Vec::with_capacity(rows.len());
         let mut norm = Amp::ZERO;
         for (coefficient, rule, target) in rows {
-            check_inverse(machine, term, &rule, &s, &target)?;
-            let id = match ids.get(&target) {
-                Some(&id) => id,
-                None => {
+            check_inverse(machine, term, &rule, s.as_ref(), &target)?;
+            let target = Arc::new(target);
+            let id = match ids.entry(target) {
+                Entry::Occupied(entry) => *entry.get(),
+                Entry::Vacant(entry) => {
                     let id = order.len();
-                    ids.insert(target.clone(), id);
+                    let target = Arc::clone(entry.key());
+                    entry.insert(id);
                     order.push(target);
                     id
                 }
@@ -1961,6 +2022,11 @@ pub fn nf_carrier_and_columns_with(
         }
         columns.push((at - 1, col));
     }
+    drop(ids);
+    let order = order
+        .into_iter()
+        .map(|state| Arc::try_unwrap(state).expect("carrier index was dropped"))
+        .collect();
     Ok(NfCarrier { order, columns })
 }
 
@@ -2014,31 +2080,33 @@ pub fn nf_gram_with(
     tick_depth: u64,
     state_cap: usize,
 ) -> Result<super::kernel::GramReport, NfError> {
-    let start = nf_init();
-    let mut ids: HashMap<NfState, usize> = HashMap::new();
-    ids.insert(start.clone(), 0);
+    let start = Arc::new(nf_init());
+    let mut ids: HashMap<Arc<NfState>, usize> = HashMap::new();
+    ids.insert(Arc::clone(&start), 0);
     let mut order = vec![start];
     let mut incoming: HashMap<usize, Vec<(usize, Amp)>> = HashMap::new();
     let mut nonunit = 0usize;
     let mut at = 0;
     while at < order.len() {
-        let s = order[at].clone();
+        let s = Arc::clone(&order[at]);
         let src = at;
         at += 1;
-        if let NfState::Done { tick, .. } = &s {
+        if let NfState::Done { tick, .. } = s.as_ref() {
             if *tick >= tick_depth {
                 continue;
             }
         }
-        let rows = nf_step_amp(machine, term, &s, cert)?;
+        let rows = nf_step_amp(machine, term, s.as_ref(), cert)?;
         let mut column: Vec<(usize, Amp)> = Vec::new();
         let mut col_index: HashMap<usize, usize> = HashMap::new();
         for (coefficient, _rule, target) in rows {
-            let id = match ids.get(&target) {
-                Some(&id) => id,
-                None => {
+            let target = Arc::new(target);
+            let id = match ids.entry(target) {
+                Entry::Occupied(entry) => *entry.get(),
+                Entry::Vacant(entry) => {
                     let id = order.len();
-                    ids.insert(target.clone(), id);
+                    let target = Arc::clone(entry.key());
+                    entry.insert(id);
                     order.push(target);
                     id
                 }
