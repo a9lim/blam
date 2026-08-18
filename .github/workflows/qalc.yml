@@ -2,7 +2,7 @@ name: qALC
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
     paths:
       - "qalc/**"
       - "src/qalc/**"

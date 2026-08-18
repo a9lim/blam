@@ -289,7 +289,7 @@ and generated `native_decide` evaluations are explicit trust boundaries.
 
 ## Repository and release state
 
-- Version 2.0.0 is the current release. The crate has one `blam` binary, a
+- The crate version is 2.1.0. It has one `blam` binary, a
   shared `blc` substrate, classical/quantum/qALC pillars, and lab-gated
   research instruments.
 - Checkpoints are `blamckpt v4`; memo files use the shared tag-first codec.
