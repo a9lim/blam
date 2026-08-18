@@ -198,8 +198,40 @@ The public Rust pillar in `src/qalc/` implements the typed term/state grammar,
 canonical exact amplitudes, H/T kernel, composed full-NF readback, native-CNOT
 compiler sector, finite admission, conservative fallback, and exact `U`,
 `μ_p`, `ρ_p`, finite `M`, and `Ω_qALC` approximants. The default-built
-`blam qalc` group exposes `compile`, `run`, `gram`, and `fixtures`; census is a
-separate layer.
+`blam qalc` group exposes `compile`, `run`, `gram`, `fixtures`, and a separate
+finite-clock `census` layer.
+
+`blam qalc census [MIN] MAX` enumerates the ordinary prefix-free BLC
+population, invokes every program as `p h t`, and charges only the original
+program length. At one exact global `U` clock it reports Kraft-weighted
+halt/error/running mass, the lower `Ω_qALC` approximant and halt-plus-running
+upper bracket, selector and support telemetry, and coherent-output counts.
+`--matrix FILE` additionally retains the arbitrary-normal-form sparse `M`;
+termwise mass conservation and `Tr ρ_p = μ_p` are checked in both modes.
+Rayon reduction, group checkpoints, and matrix output are deterministic across
+thread counts and resume boundaries.
+
+The first bounded performance campaign (2026-08-17, M5 Max, 18 threads,
+sizes 4..24, 19,048 programs, support 100,000, sparse-`M` retention off but
+`ρ`/trace audits on) measured:
+
+| U steps | wall | programs/s | nonzero running programs | Ω lower | upper bracket |
+|---:|---:|---:|---:|---:|---:|
+| 256 | 42.03 s | 453 | 40 | 0.040183752775192 | 0.040192037820816 |
+| 1,024 | 43.66 s | 436 | 34 | 0.040183812379837 | 0.040191739797592 |
+| 4,096 | 49.42 s | 385 | 34 | 0.040183812379837 | 0.040191739797592 |
+
+The 1,024- and 4,096-step deterministic reports are byte-identical apart from
+their protocol header. All three runs select 18,858 validated Gate-1 sectors
+and 190 conservative sectors, find 85 programs with coherent output blocks,
+peak at support 4, and hit no evolution, support, or density capacity. At 256
+steps one halt and five errors remain in the running population relative to
+the stable pair. Timing is dominated by an even-size tail: n=22 and n=24 alone
+consume 38--42 seconds across the three runs while adjacent odd sizes remain
+under 2.2 seconds even at 4,096 steps. Because selection precedes evolution
+and wall time grows only 18% when the clock grows 16×, this strongly points to
+Gate-1 carrier admission rather than sparse evolution; separate selector/run
+timers have not yet tested that inference.
 
 Gate 1 is closed on 30 admitted operational cores: 7,507 states and 7,417
 exact columns, plus 41,258 pure normalizers, a 1,187,953-state application and
@@ -230,8 +262,9 @@ and generated `native_decide` evaluations are explicit trust boundaries.
 
 ### qALC docket
 
-1. Design census machinery over the exact public API without changing the
-   closed semantics claim.
+1. Instrument and reduce the even-size Gate-1 admission tail before extending
+   the population past 24 bits. The 1,024-step clock is sufficient on 4..24,
+   but that bounded equality does not yet pin a universal canonical default.
 2. Optionally strengthen the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and arrival/pop determinacy.
 3. Investigate D-circuit dyadicity, universality/domination for `M`,

@@ -2369,6 +2369,14 @@ pub fn nf_state_bytes(s: &NfState) -> String {
     out
 }
 
+/// One full-normal-form output's canonical fixture bytes.  The census uses
+/// this stable identity for sparse `M` coordinates and checkpoint records.
+pub fn nf_bytes(n: &Nf) -> String {
+    let mut out = String::new();
+    w_nf(&mut out, n);
+    out
+}
+
 /// One invocation term's canonical fixture bytes.
 pub fn term_bytes(t: &Term) -> String {
     let mut out = String::new();

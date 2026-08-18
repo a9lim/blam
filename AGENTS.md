@@ -75,8 +75,8 @@ v1.43 rule register, and `rust-pillar.md` maps the live Rust implementation.
 `src/qalc/` contains the exact amplitude domain, wire codec, kernel and
 full-normal-form machine, linear-SSA compiler, native-CNOT shadow, structural
 admission, finite checker, and total public semantics. The default-built
-`blam qalc` group exposes `run`, `gram`, `compile`, and `fixtures`; census is a
-separate research layer.
+`blam qalc` group exposes `run`, `gram`, `compile`, `fixtures`, and the separate
+measured `census` layer over ordinary prefix-free `p h t` invocations.
 
 The Python/Lean reference, batteries, proof records, and fixture exporters live
 in `qalc/`. Generated kernel fixtures, composed Gate-1 cores, the mixed Gate-2

@@ -465,7 +465,8 @@ object `M` remains downstream work.
 `blam::qalc` represents `ψ_τ` as an exact sparse map from configurations to
 canonical `Amp` scalars and applies `U` transition by transition. The
 default-built `blam qalc` group exposes exact `run`, `gram`, `compile`, and
-fixture-regeneration commands. The module and fixture map is
+fixture-regeneration commands plus the separate finite-clock `census` driver
+over ordinary `p h t` invocations. The module and fixture map is
 `rust-pillar.md`.
 
 A fast engine, if the reference is too slow for a census, faces a

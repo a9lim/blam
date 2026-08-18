@@ -64,6 +64,62 @@ pub enum Term {
     Gate(GateName),
 }
 
+/// Copy an ordinary BLC program into the qALC term alphabet.  This is the
+/// population bridge used by the census: program bits still describe only
+/// `Var`/`Lam`/`App`; invocation-supplied gates are added separately.
+///
+/// The traversal is iterative so the helper inherits the BLC substrate's
+/// stack-safe wire discipline instead of introducing a recursive conversion
+/// cliff at the pillar boundary.
+pub fn from_blc(program: &crate::blc::Term) -> Term {
+    enum Work<'a> {
+        Visit(&'a crate::blc::Term),
+        Lam,
+        App,
+    }
+
+    let mut work = vec![Work::Visit(program)];
+    let mut values = Vec::new();
+    while let Some(item) = work.pop() {
+        match item {
+            Work::Visit(crate::blc::Term::Var(index)) => values.push(Term::Var(*index)),
+            Work::Visit(crate::blc::Term::Lam(body)) => {
+                work.push(Work::Lam);
+                work.push(Work::Visit(body));
+            }
+            Work::Visit(crate::blc::Term::App(function, argument)) => {
+                work.push(Work::App);
+                work.push(Work::Visit(argument));
+                work.push(Work::Visit(function));
+            }
+            Work::Lam => {
+                let body = values.pop().expect("visited lambda body");
+                values.push(Term::Lam(Box::new(body)));
+            }
+            Work::App => {
+                let argument = values.pop().expect("visited application argument");
+                let function = values.pop().expect("visited application function");
+                values.push(Term::App(Box::new(function), Box::new(argument)));
+            }
+        }
+    }
+    assert_eq!(values.len(), 1, "one BLC root produces one qALC root");
+    values.pop().expect("one converted root")
+}
+
+/// The canonical Gate-1 invocation convention.  `h` and `t` are machine
+/// inputs, not program bits, so callers must retain the original BLC length
+/// for Kraft accounting.
+pub fn invoke_ht(program: Term) -> Term {
+    Term::App(
+        Box::new(Term::App(
+            Box::new(program),
+            Box::new(Term::Gate(GateName::H)),
+        )),
+        Box::new(Term::Gate(GateName::T)),
+    )
+}
+
 /// Iterative closedness check for the full qALC source alphabet. Gate leaves
 /// are constants; variables remain 1-indexed and must resolve to an enclosing
 /// lambda. This is the public input-domain check used by the CLI before total
@@ -163,5 +219,17 @@ mod tests {
         assert!(subterm(&p, &[Dir::A, Dir::A]).is_none());
         assert!(is_closed(&p));
         assert!(!is_closed(&Term::Var(1)));
+    }
+
+    #[test]
+    fn ordinary_blc_programs_cross_only_at_invocation() {
+        let pure = crate::blc::lam(crate::blc::Term::Var(1));
+        let converted = from_blc(&pure);
+        assert_eq!(converted, lam(Term::Var(1)));
+        assert!(is_closed(&converted));
+
+        let invoked = invoke_ht(converted);
+        assert!(is_closed(&invoked));
+        assert!(matches!(invoked, Term::App(_, argument) if *argument == Term::Gate(GateName::T)));
     }
 }

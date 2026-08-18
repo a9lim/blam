@@ -211,3 +211,84 @@ fn every_checked_in_qfx_is_regenerated_by_the_cli() {
         String::from_utf8_lossy(&output.stderr)
     );
 }
+
+#[test]
+fn census_is_thread_checkpoint_and_matrix_invariant() {
+    let dir = std::env::temp_dir().join(format!("blam-qalc-census-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    let mono_matrix = dir.join("mono-matrix.txt");
+    let parallel_matrix = dir.join("parallel-matrix.txt");
+    let checkpoint_matrix = dir.join("checkpoint-matrix.txt");
+    let resumed_matrix = dir.join("resumed-matrix.txt");
+    let checkpoint = dir.join("census.ckpt");
+
+    let shared = [
+        "qalc",
+        "census",
+        "4",
+        "12",
+        "--steps",
+        "64",
+        "--support",
+        "256",
+    ];
+    let mut args = shared.to_vec();
+    args.extend(["--threads", "1", "--matrix", mono_matrix.to_str().unwrap()]);
+    let mono = success(&args);
+    assert!(mono.contains("## Totals (30 programs)"), "{mono}");
+    assert!(mono.contains("selection structural-gate2 0"), "{mono}");
+    assert!(mono.contains("Tr M"), "{mono}");
+
+    let mut args = shared.to_vec();
+    args.extend([
+        "--threads",
+        "2",
+        "--matrix",
+        parallel_matrix.to_str().unwrap(),
+    ]);
+    let parallel = success(&args);
+    assert_eq!(parallel, mono);
+    assert_eq!(
+        std::fs::read_to_string(&parallel_matrix).unwrap(),
+        std::fs::read_to_string(&mono_matrix).unwrap()
+    );
+
+    let mut args = shared.to_vec();
+    args.extend([
+        "--threads",
+        "2",
+        "--checkpoint",
+        checkpoint.to_str().unwrap(),
+        "--groups",
+        "3",
+        "--matrix",
+        checkpoint_matrix.to_str().unwrap(),
+    ]);
+    let checkpointed = success(&args);
+    assert_eq!(checkpointed, mono);
+    assert_eq!(
+        std::fs::read_to_string(&checkpoint_matrix).unwrap(),
+        std::fs::read_to_string(&mono_matrix).unwrap()
+    );
+
+    let mut args = shared.to_vec();
+    args.extend([
+        "--threads",
+        "1",
+        "--checkpoint",
+        checkpoint.to_str().unwrap(),
+        "--groups",
+        "3",
+        "--matrix",
+        resumed_matrix.to_str().unwrap(),
+    ]);
+    let resumed = success(&args);
+    assert_eq!(resumed, mono);
+    assert_eq!(
+        std::fs::read_to_string(&resumed_matrix).unwrap(),
+        std::fs::read_to_string(&mono_matrix).unwrap()
+    );
+
+    let _ = std::fs::remove_dir_all(&dir);
+}

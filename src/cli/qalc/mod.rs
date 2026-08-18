@@ -9,6 +9,7 @@ use blam::qalc::term::{is_closed, Term};
 use blam::qalc::wire::{parse_fixtures, parse_term, CertEntries, HEADER};
 use std::io::Read as _;
 
+mod census;
 mod compile;
 mod fixtures;
 mod gram;
@@ -23,10 +24,11 @@ usage: blam qalc <subcommand> [args]
   gram TERM                finite exact Gram audit of the selected machine
   compile WIDTH [GATE...]  compile typed H/T/CNOT linear-SSA source
   fixtures FILE...         regenerate and byte-check qfx evidence
+  census [MIN] MAX         finite-clock census over ordinary BLC p h t
 
 TERM is the canonical one-line qALC wire expression. `run` and `gram` also
 accept `--file FILE [--program NAME]`; a qfx file with one program needs no
-name. Census is deliberately not part of this group yet.";
+name. Census is a measured layer over the exact public evaluator.";
 
 pub fn run(argv: &[String]) -> R<()> {
     let Some(sub) = argv.first() else {
@@ -44,6 +46,7 @@ pub fn run(argv: &[String]) -> R<()> {
         "gram" => gram::run(rest),
         "compile" => compile::run(rest),
         "fixtures" => fixtures::run(rest),
+        "census" => census::run(rest),
         other => Err(format!(
             "blam qalc: unknown subcommand `{other}`\ntry `blam qalc --help`"
         )),

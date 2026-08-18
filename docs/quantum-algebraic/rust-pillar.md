@@ -26,8 +26,10 @@ own tree. It adds no traits or configuration to the classical or qBLC pillars.
 The classical census and qBLC operator census must remain bit-identical with
 qALC present or absent.
 
-qALC census design is outside this implementation layer. The current CLI is a
-reference and verification surface, not a population-measurement driver.
+The population census remains a separate measured layer over this reference
+API. `blam qalc census` supplies the ordinary BLC enumerator, `p h t`
+invocation convention, exact Kraft aggregation, resource brackets,
+checkpointing, and optional sparse-`M` persistence without changing `U`.
 
 ## 2. Module map
 
@@ -153,11 +155,14 @@ blam qalc run TERM                 exact finite-time evolution under U
 blam qalc gram TERM                finite Gram audit of the selected machine
 blam qalc compile WIDTH [GATE...]  compile h:W, t:W, and cx:C:T operations
 blam qalc fixtures FILE...         regenerate and byte-check qfx evidence
+blam qalc census [MIN] MAX          finite-clock census over ordinary BLC p h t
 ```
 
 `run` and `gram` accept a canonical term, a one-term text file, or a named
 program from a qfx file. A qfx input is provenance-bearing: its certificate
 must equal the certificate selected by the public semantics before execution.
+`census` instead constructs the canonical invocation from each enumerated BLC
+program and keeps the gates outside its prefix length.
 
 The qALC verification contract is:
 

@@ -544,7 +544,10 @@ pub struct FiniteApproximation {
     pub omega_qalc: ExactSum,
 }
 
-fn weighted(value: Amp, bit_length: u32) -> Option<crate::quantum::scalar::Dw> {
+/// Cross one runtime scalar into the exact Kraft accumulator at weight
+/// `2^-bit_length`.  Census callers supply the original prefix-program length;
+/// invocation gates are convention, not program bits.
+pub fn kraft_weight(value: Amp, bit_length: u32) -> Option<crate::quantum::scalar::Dw> {
     (bit_length <= crate::quantum::scalar::K_CAP_ACCUM / 2)
         .then(|| value.into_dw().div_pow2(bit_length))?
 }
@@ -557,13 +560,13 @@ pub fn finite_m(
     let mut omega = ExactSum::ZERO;
     for (bit_length, sector) in programs {
         let vector = evolve(sector, transitions)?;
-        omega.add(weighted(halt_mass(&vector)?, *bit_length));
+        omega.add(kraft_weight(halt_mass(&vector)?, *bit_length));
         if !omega.is_exact() {
             return Err(SemanticsError::Capacity);
         }
         for (coordinate, value) in rho(&vector)? {
             let sum = matrix.entry(coordinate).or_insert(ExactSum::ZERO);
-            sum.add(weighted(value, *bit_length));
+            sum.add(kraft_weight(value, *bit_length));
             if !sum.is_exact() {
                 return Err(SemanticsError::Capacity);
             }

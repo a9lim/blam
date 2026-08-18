@@ -178,6 +178,7 @@ says how to get them rather than pretending they do not exist.
 | `trace` *(lab)* | reduction-shape classifier and probe instruments |
 | `q run` | run one qBLC program, one line per branch leaf |
 | `q census` | the quantum operator census (`--cond-k K` dimension-conditioned mode, `--sig` alternate signature universes) |
+| `qalc census` | exact finite-clock `p h t` census with Ω brackets and optional sparse `M` output |
 | `q skeleton` | the trusted divergence sweep over census Unknowns (`--sig` sets the hole count by its length) |
 | `q selfint` | qBLC self-interpretation and effect-tree bisimulation measurement |
 | `q galois idiom` / `q galois complement` *(lab)* | the two-stage dyadicity campaign |
@@ -198,6 +199,7 @@ target/release/blam adjudicate 010001101000011010
 target/release/blam solomonoff 4 41 --table data/classical/solomonoff_table.txt \
     --unknown-floors data/classical/speed_floors.txt
 target/release/blam q census 4 41 --out data/quantum/census_table.txt
+target/release/blam qalc census 4 24 --steps 256
 
 # certificate sweep, then kernel-check the kills in Lean
 target/release/blam cert search --file data/classical/unknowns.txt
@@ -284,11 +286,14 @@ blam qalc run 'TERM' --steps 221
 blam qalc gram 'TERM'
 blam qalc fixtures tests/qalc/HH.qfx
 blam qalc compile 1 h:0 --term-only | blam qalc run --file - --steps 51
+blam qalc census 4 24 --steps 256 --matrix qalc-matrix.txt
 ```
 
 `run` and `gram` also accept `--file FILE [--program NAME]`; `--file -` reads
-the one-line form emitted by `compile --term-only`. qALC census is intentionally
-a separate layer.
+the one-line form emitted by `compile --term-only`. `census` is the separate
+measured layer over ordinary closed BLC programs: it invokes each `p` as
+`p h t`, retains the original `2^-|p|` weight, reports exact halt/error/running
+mass and an Ω bracket, and optionally writes sparse finite-`M` coordinates.
 
 ## Layout
 

@@ -40,6 +40,7 @@ MEASUREMENTS
   census [MIN] MAX             halt/diverge/unknown census by term size
   solomonoff [MIN] MAX         Solomonoff prior m(x), K(x), Omega bounds
   q census [MIN] MAX           the quantum operator census
+  qalc census [MIN] MAX        finite-clock qALC census over BLC p h t
   q skeleton FILE              trusted skeleton sweep over a terms file
   q selfint [MAX_N] [PHASE]    qBLC self-interpretation measurement
 
@@ -145,6 +146,7 @@ mod tests {
             vec!["qalc", "gram"],
             vec!["qalc", "compile"],
             vec!["qalc", "fixtures"],
+            vec!["qalc", "census"],
         ];
         for mut path in always {
             path.push("--help");
@@ -176,6 +178,7 @@ mod tests {
             vec!["help", "solomonoff"],
             vec!["help", "q", "census"],
             vec!["help", "qalc", "compile"],
+            vec!["help", "qalc", "census"],
             vec!["help", "cert", "lean"],
         ] {
             assert!(dispatch(&argv(&path)).is_ok(), "{path:?}");
