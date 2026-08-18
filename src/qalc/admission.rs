@@ -694,44 +694,36 @@ pub fn validate(
     certificate: Option<&CertEntries>,
     state_cap: usize,
 ) -> Result<AdmissionReport, AdmissionError> {
-    validate_profiled(term, certificate, state_cap).0
-}
-
-fn validate_profiled(
-    term: &Term,
-    certificate: Option<&CertEntries>,
-    state_cap: usize,
-) -> (Result<AdmissionReport, AdmissionError>, AdmissionTelemetry) {
-    let mut telemetry = AdmissionTelemetry {
-        attempts: 1,
-        ..AdmissionTelemetry::default()
-    };
-    let result = validate_inner(term, certificate, state_cap, &mut telemetry);
-    (result, telemetry)
+    validate_inner(term, certificate, state_cap, None)
 }
 
 fn validate_inner(
     term: &Term,
     certificate: Option<&CertEntries>,
     state_cap: usize,
-    telemetry: &mut AdmissionTelemetry,
+    mut telemetry: Option<&mut AdmissionTelemetry>,
 ) -> Result<AdmissionReport, AdmissionError> {
+    if let Some(telemetry) = telemetry.as_mut() {
+        telemetry.attempts += 1;
+    }
     if !syntax_within_limit(term) {
         return Err(AdmissionError::InvalidTerm);
     }
     if certificate.is_some_and(|certificate| !certificate_well_formed(certificate)) {
         return Err(AdmissionError::MalformedCertificate);
     }
-    let started = Instant::now();
-    let carrier_result = nf_carrier_and_columns(term, certificate, 2, state_cap);
-    telemetry.carrier += started.elapsed();
+    let carrier_result = measured(
+        telemetry.as_mut().map(|telemetry| &mut telemetry.carrier),
+        || nf_carrier_and_columns(term, certificate, 2, state_cap),
+    );
     let carrier = carrier_result?;
-    let started = Instant::now();
-    let gram_result = nf_gram_from_carrier(&carrier);
-    telemetry.gram += started.elapsed();
+    let gram_result = measured(
+        telemetry.as_mut().map(|telemetry| &mut telemetry.gram),
+        || nf_gram_from_carrier(&carrier),
+    );
     let gram = gram_result?;
 
-    let obligations_started = Instant::now();
+    let obligations_started = telemetry.as_ref().map(|_| Instant::now());
     let mut arrivals: HashMap<Vec<Dir>, Vec<Arrival>> = HashMap::new();
     let mut wf_violations = 0usize;
     for state in &carrier.order {
@@ -847,10 +839,13 @@ fn validate_inner(
                 .unwrap_or(true),
         )
     };
-    telemetry.obligations += obligations_started.elapsed();
-    let started = Instant::now();
-    let rri_violations = rri_violations(term, certificate, state_cap.min(100_000));
-    telemetry.rri += started.elapsed();
+    if let (Some(telemetry), Some(started)) = (telemetry.as_mut(), obligations_started) {
+        telemetry.obligations += started.elapsed();
+    }
+    let rri_violations = measured(
+        telemetry.as_mut().map(|telemetry| &mut telemetry.rri),
+        || rri_violations(term, certificate, state_cap.min(100_000)),
+    );
     let certified = wf_violations == 0
         && transparency_violations == 0
         && vacuous_positions == 0
@@ -862,9 +857,10 @@ fn validate_inner(
         && gram.nonunit == 0
         && gram.nonorthogonal == 0
         && rri_violations == 0;
-    let started = Instant::now();
-    let rust_wire_digest = rust_wire_digest(&carrier.order);
-    telemetry.digest += started.elapsed();
+    let rust_wire_digest = measured(
+        telemetry.as_mut().map(|telemetry| &mut telemetry.digest),
+        || rust_wire_digest(&carrier.order),
+    );
     Ok(AdmissionReport {
         certified,
         basis: carrier.order.len(),
@@ -882,6 +878,16 @@ fn validate_inner(
         rri_violations,
         rust_wire_digest,
     })
+}
+
+fn measured<T>(slot: Option<&mut Duration>, operation: impl FnOnce() -> T) -> T {
+    let Some(slot) = slot else {
+        return operation();
+    };
+    let started = Instant::now();
+    let result = operation();
+    *slot += started.elapsed();
+    result
 }
 
 fn pinned_candidates() -> &'static Vec<(Term, Option<CertEntries>)> {
@@ -909,7 +915,7 @@ fn pinned_candidate(term: &Term) -> Option<Option<CertEntries>> {
 /// validation/resource failure is `None`, never an unchecked no-erasure
 /// certificate.
 pub fn try_admit_with_cap(term: &Term, state_cap: usize) -> Option<Gate1Admission> {
-    try_admit_with_cap_profiled(term, state_cap).0
+    try_admit_with_cap_inner(term, state_cap, None)
 }
 
 /// Admission with explicit performance telemetry for population drivers.
@@ -919,8 +925,17 @@ pub fn try_admit_with_cap_profiled(
     state_cap: usize,
 ) -> (Option<Gate1Admission>, AdmissionTelemetry) {
     let mut telemetry = AdmissionTelemetry::default();
+    let admission = try_admit_with_cap_inner(term, state_cap, Some(&mut telemetry));
+    (admission, telemetry)
+}
+
+fn try_admit_with_cap_inner(
+    term: &Term,
+    state_cap: usize,
+    mut telemetry: Option<&mut AdmissionTelemetry>,
+) -> Option<Gate1Admission> {
     if !syntax_within_limit(term) || state_cap == 0 {
-        return (None, telemetry);
+        return None;
     }
     let pinned = pinned_candidate(term);
     let mut candidates = Vec::new();
@@ -931,23 +946,23 @@ pub fn try_admit_with_cap_profiled(
         candidates.push(None);
     }
     for candidate in candidates {
-        let (report, attempt_telemetry) = validate_profiled(term, candidate.as_ref(), state_cap);
-        telemetry.merge(attempt_telemetry);
-        let Ok(report) = report else {
+        let Ok(report) = validate_inner(
+            term,
+            candidate.as_ref(),
+            state_cap,
+            telemetry.as_deref_mut(),
+        ) else {
             continue;
         };
         if report.certified {
-            return (
-                Some(Gate1Admission {
-                    certificate: candidate,
-                    basis: report.basis,
-                    rust_wire_digest: report.rust_wire_digest,
-                }),
-                telemetry,
-            );
+            return Some(Gate1Admission {
+                certificate: candidate,
+                basis: report.basis,
+                rust_wire_digest: report.rust_wire_digest,
+            });
         }
     }
-    (None, telemetry)
+    None
 }
 
 /// Cheap first-candidate probe for a population scheduler. A successful
@@ -962,7 +977,8 @@ pub fn try_admit_probe_with_cap_profiled(
         return (None, AdmissionTelemetry::default());
     }
     let candidate = pinned_candidate(term).unwrap_or(None);
-    let (report, telemetry) = validate_profiled(term, candidate.as_ref(), state_cap);
+    let mut telemetry = AdmissionTelemetry::default();
+    let report = validate_inner(term, candidate.as_ref(), state_cap, Some(&mut telemetry));
     let admission = report
         .ok()
         .filter(|report| report.certified)
@@ -976,10 +992,6 @@ pub fn try_admit_probe_with_cap_profiled(
 
 pub fn try_admit(term: &Term) -> Option<Gate1Admission> {
     try_admit_with_cap(term, CANONICAL_STATE_CAP)
-}
-
-pub fn try_admit_profiled(term: &Term) -> (Option<Gate1Admission>, AdmissionTelemetry) {
-    try_admit_with_cap_profiled(term, CANONICAL_STATE_CAP)
 }
 
 #[cfg(test)]
@@ -1048,19 +1060,35 @@ mod tests {
     }
 
     #[test]
-    fn carrier_derived_gram_matches_independent_walk() {
-        let identity = lam(Term::Var(1));
-        let carrier = nf_carrier_and_columns(&identity, None, 2, 10_000).unwrap();
-        let derived = nf_gram_from_carrier(&carrier).unwrap();
-        let independent = super::super::readback::nf_gram(&identity, None, 2, 10_000).unwrap();
-        assert_eq!(
-            (derived.basis, derived.nonunit, derived.nonorthogonal),
-            (
-                independent.basis,
-                independent.nonunit,
-                independent.nonorthogonal
+    fn carrier_derived_gram_matches_independent_walk_on_frozen_suite() {
+        let fixtures = parse_fixtures(include_str!("admission_pins.qfx")).unwrap();
+        for fixture in fixtures.programs {
+            let carrier = nf_carrier_and_columns(
+                &fixture.term,
+                fixture.cert.as_ref(),
+                2,
+                CANONICAL_STATE_CAP,
             )
-        );
+            .unwrap();
+            let derived = nf_gram_from_carrier(&carrier).unwrap();
+            let independent = super::super::readback::nf_gram(
+                &fixture.term,
+                fixture.cert.as_ref(),
+                2,
+                CANONICAL_STATE_CAP,
+            )
+            .unwrap();
+            assert_eq!(
+                (derived.basis, derived.nonunit, derived.nonorthogonal),
+                (
+                    independent.basis,
+                    independent.nonunit,
+                    independent.nonorthogonal
+                ),
+                "{}",
+                fixture.name
+            );
+        }
     }
 
     #[test]

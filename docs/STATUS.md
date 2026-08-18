@@ -5,7 +5,7 @@ and ordered next work. `README.md` is the stable public map; domain documents
 state durable contracts; canonical outputs live in `data/`. Superseded state is
 available from Git history rather than retained in the live documentation.
 
-Last updated: 2026-08-17.
+Last updated: 2026-08-18.
 
 ## Classical state
 
@@ -211,47 +211,38 @@ termwise mass conservation and `Tr ρ_p = μ_p` are checked in both modes.
 Rayon reduction, group checkpoints, and matrix output are deterministic across
 thread counts and resume boundaries.
 
-The first bounded performance campaign (2026-08-17, M5 Max, 18 threads,
+The bounded clock-convergence record (2026-08-17, M5 Max, 18 threads,
 sizes 4..24, 19,048 programs, support 100,000, sparse-`M` retention off but
-`ρ`/trace audits on) measured:
+`ρ`/trace audits on) is:
 
-| U steps | wall | programs/s | nonzero running programs | Ω lower | upper bracket |
-|---:|---:|---:|---:|---:|---:|
-| 256 | 42.03 s | 453 | 40 | 0.040183752775192 | 0.040192037820816 |
-| 1,024 | 43.66 s | 436 | 34 | 0.040183812379837 | 0.040191739797592 |
-| 4,096 | 49.42 s | 385 | 34 | 0.040183812379837 | 0.040191739797592 |
+| U steps | nonzero running programs | Ω lower | upper bracket |
+|---:|---:|---:|---:|
+| 256 | 40 | 0.040183752775192 | 0.040192037820816 |
+| 1,024 | 34 | 0.040183812379837 | 0.040191739797592 |
+| 4,096 | 34 | 0.040183812379837 | 0.040191739797592 |
 
 The 1,024- and 4,096-step deterministic reports are byte-identical apart from
 their protocol header. All three runs select 18,858 validated Gate-1 sectors
 and 190 conservative sectors, find 85 programs with coherent output blocks,
 peak at support 4, and hit no evolution, support, or density capacity. At 256
 steps one halt and five errors remain in the running population relative to
-the stable pair. Timing is dominated by an even-size tail: n=22 and n=24 alone
-consume 38--42 seconds across the three runs while adjacent odd sizes remain
-under 2.2 seconds even at 4,096 steps. Because selection precedes evolution
-and wall time grows only 18% when the clock grows 16×, this strongly points to
-Gate-1 carrier admission rather than sparse evolution; separate selector/run
-timers had not yet tested that inference.
+the stable pair.
 
-The admission optimization pass then confirmed and reduced that tail. The CLI
-now reports summed worker time for selection, carrier construction, Gram,
-admission obligations, RRI, digesting, evolution, and observation, plus the
-slowest selection witnesses; these nondeterministic timings stay on stderr and
-out of reports/checkpoints. On the same 4..24, 1,024-step protocol, 18,858
-programs complete a definitive 1,000-state admission preflight and the 190
-inconclusive programs retry the unchanged 300,000-state canonical selector in
-an eight-worker second phase. All 190 canonical retries are conservative on
-this bounded population, but preflight failure is never itself a conservative
-verdict. The carrier's discovery order and hash index now share immutable
-states, insertion hashes each target once, and admission derives Gram from the
-already checked carrier instead of walking it twice.
+The 1,024-step run is the current performance candidate. A definitive
+1,000-state preflight admits 18,858 programs; the remaining 190 retry the
+unchanged 300,000-state selector in an eight-worker pool and are conservative
+on this population. Preflight failure is never a verdict. The run completes in
+21.60 seconds wall (21.46 seconds measured sweep, 105.68 seconds user, 888
+programs/s, 11.1 GB peak footprint); n=24 takes 10.87 seconds. Its deterministic
+report has SHA-256
+`55fb31c008c77bf98418f2a2606bde6ba7af1d3c32d149866a9e96bc900c9671`.
 
-The optimized run completed in 21.50 seconds wall (21.37 seconds measured
-sweep, 107.84 seconds user, 891 programs/s, 11.1 GB peak footprint), versus
-43.66 seconds and 436 programs/s before the pass: 2.03x wall throughput. Its
-deterministic report is byte-identical to the pre-optimization 1,024-step
-report. The isolated n=24 row fell from 23.58 to 12.12 seconds in the measured
-instrumented comparison.
+The carrier index and discovery order share immutable states, each target is
+hashed once on insertion, and admission derives Gram from the checked carrier.
+The CLI reports summed worker time for carrier construction, Gram, admission
+obligations, RRI, digesting, evolution, and observation, plus the slowest
+selection witnesses. Timings are stderr-only and never enter deterministic
+reports or checkpoints.
 
 Gate 1 is closed on 30 admitted operational cores: 7,507 states and 7,417
 exact columns, plus 41,258 pure normalizers, a 1,187,953-state application and
@@ -275,13 +266,12 @@ Bell/Toffoli/nonlinear-reuse carriers, and the complete 917-state mixed
 Python/Lean/Rust differential.
 
 The Python/Lean reference and theorem records are `qalc/GATE1.md` and
-`qalc/GATE2.md`. The authoritative runtime batteries are
-`python qalc/gate1_check.py` and `python qalc/gate2_check.py`; explicit manual
-proof checks are `gate1_lean_check.py` and `gate2_lean_check.py`. Lean is not
-part of qALC CI, and the exhaustive Python batteries are local rather than
-per-commit gates. The path-scoped workflow checks fixture determinism only;
-ordinary CI already owns the Rust differentials. Runtime fixtures live in
-`tests/qalc/`; the
+`qalc/GATE2.md`. `python qalc/gate2_check.py` is the complete runtime battery
+and includes Gate 1; `gate1_check.py` is the Gate-1-only entry point. Explicit
+manual proof checks are `gate1_lean_check.py` and `gate2_lean_check.py`. Lean
+and the exhaustive Python batteries are not part of qALC CI. The path-scoped
+workflow checks fixture determinism only; ordinary CI owns the Rust
+differentials. Runtime fixtures live in `tests/qalc/`; the
 embedded selector pin is `src/qalc/admission_pins.qfx`. Python carrier closure
 and generated `native_decide` evaluations are explicit trust boundaries.
 
@@ -307,8 +297,9 @@ and generated `native_decide` evaluations are explicit trust boundaries.
   `data/` uses either format.
 - CI checks formatting, warning-free Clippy, release tests with all/default/no
   default features on Ubuntu and macOS, `uni.rs` parity, the classical census
-  spot-check, Lean certificates, qALC Python/Lean batteries and fixture
-  regeneration, and `ref/AIT` additivity.
+  spot-check, Lean certificates, qALC fixture determinism, and `ref/AIT`
+  additivity. The exhaustive qALC Python and Lean batteries are explicit local
+  proof-surface checks.
 - `ref/AIT` is pinned to the additive a9lim/AIT fork. Only
   `contrib/ait-uni/verify.sh` reads it.
 

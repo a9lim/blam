@@ -13,10 +13,6 @@ LOG = ROOT / "out_gate1_runtime.txt"
 
 
 SECTIONS = [
-    ("python-compile", [sys.executable, "-m", "py_compile",
-     "kernel.py", "wf.py", "readback.py", "readback_checks.py",
-     "readback_certify.py", "application_invariant.py", "semantics.py",
-     "gate1_programs.py", "controller_invariant.py"]),
     ("kernel-suite", [sys.executable, "suite.py"]),
     ("certificate-selector", [sys.executable, "certify.py"]),
     ("typecheck", [sys.executable, "typecheck.py"]),

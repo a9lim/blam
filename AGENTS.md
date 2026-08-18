@@ -79,8 +79,8 @@ admission, finite checker, and total public semantics. The default-built
 measured `census` layer over ordinary prefix-free `p h t` invocations.
 The census's 1,000-state admission preflight is one-sided: success is a
 complete checked admission, but failure is only a scheduling signal and must
-retry the canonical 300,000-state selector. Full retries run in a separate
-pool (`--admission-threads`, auto-capped at eight); never turn preflight failure
+retry the canonical 300,000-state selector. Retries run in a separate pool
+(`--retry-threads`, auto-capped at eight); never turn preflight failure
 into a conservative verdict. Selection/evolution phase timings are stderr-only
 and deliberately absent from deterministic reports and checkpoints.
 
@@ -101,10 +101,9 @@ leave classical and qBLC rows bit-identical.
 `gate1_check.py` and `gate2_check.py` are explicit local runtime/Python gates.
 The qALC CI workflow runs neither those exhaustive batteries nor Lean: it owns
 only fixture determinism, while the ordinary CI release suites own the Rust
-differentials. Hosted proof compilation and redundant Python/Rust reclosure
-exceeded the useful path-gate budget. Run `gate1_lean_check.py` and
-`gate2_lean_check.py` manually only when the Lean/generated-proof surface or
-its exporters intentionally move; do not rerun them for Rust-only changes.
+differentials. Run `gate1_lean_check.py` and `gate2_lean_check.py` manually only
+when the Lean/generated-proof surface or its exporters intentionally move; do
+not rerun them for Rust-only changes.
 
 `classical::ladder` owns the halting ladder, and every classical driver
 (`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →

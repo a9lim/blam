@@ -33,7 +33,7 @@ semantics
 
 run
   --threads N     rayon threads (0 = ambient, the default)
-  --admission-threads N  full-cap admission pool (0 = up to 8, default)
+  --retry-threads N  canonical admission retry pool (0 = up to 8, default)
   --out FILE      write the deterministic report to FILE as well as stdout
   --matrix FILE   accumulate and write sparse finite M coordinates
   --checkpoint FILE   kill-safe group-level resume
@@ -48,8 +48,8 @@ retained.";
 
 #[derive(Clone, Copy, Debug, Default)]
 struct PerfTelemetry {
-    programs: u64,
-    full_admissions: u64,
+    measured_programs: u64,
+    canonical_retries: u64,
     selection: Duration,
     evolution: Duration,
     observation: Duration,
@@ -58,8 +58,8 @@ struct PerfTelemetry {
 
 impl PerfTelemetry {
     fn merge(&mut self, other: Self) {
-        self.programs += other.programs;
-        self.full_admissions += other.full_admissions;
+        self.measured_programs += other.measured_programs;
+        self.canonical_retries += other.canonical_retries;
         self.selection += other.selection;
         self.evolution += other.evolution;
         self.observation += other.observation;
@@ -72,7 +72,7 @@ struct SlowSelection {
     elapsed: Duration,
     witness: (u8, u64),
     kind: SelectionKind,
-    admission: AdmissionTelemetry,
+    carrier: Duration,
 }
 
 #[derive(Clone, Debug)]
@@ -368,7 +368,6 @@ struct SelectedSector {
     sector: Sector,
     elapsed: Duration,
     admission: AdmissionTelemetry,
-    full_admission: bool,
 }
 
 fn sweep_sector(
@@ -382,8 +381,7 @@ fn sweep_sector(
 ) -> R<()> {
     tally.perf.selection += selected.elapsed;
     tally.perf.admission.merge(selected.admission);
-    tally.perf.programs += 1;
-    tally.perf.full_admissions += u64::from(selected.full_admission);
+    tally.perf.measured_programs += 1;
     tally.programs += 1;
     tally.selection[selection_index(selected.sector.selection_kind())] += 1;
 
@@ -393,7 +391,7 @@ fn sweep_sector(
             elapsed: selected.elapsed,
             witness,
             kind: selected.sector.selection_kind(),
-            admission: selected.admission,
+            carrier: selected.admission.carrier,
         });
     }
     let evolution_started = Instant::now();
@@ -523,7 +521,6 @@ fn probe_one(
                 sector,
                 elapsed,
                 admission: telemetry,
-                full_admission: false,
             },
             &mut out.tally,
         ),
@@ -552,6 +549,7 @@ fn sweep_deferred(
     let elapsed = started.elapsed();
     let mut telemetry = deferred.probe_telemetry;
     telemetry.merge(full_telemetry);
+    tally.perf.canonical_retries += 1;
     sweep_sector(
         deferred.enc,
         deferred.len,
@@ -562,7 +560,6 @@ fn sweep_deferred(
             sector,
             elapsed: deferred.probe_elapsed + elapsed,
             admission: telemetry,
-            full_admission: true,
         },
         tally,
     )
@@ -780,7 +777,7 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut steps = 256u64;
     let mut support_cap = 100_000usize;
     let mut threads = 0usize;
-    let mut admission_threads = 0usize;
+    let mut retry_threads = 0usize;
     let mut out_path: Option<String> = None;
     let mut matrix_path: Option<String> = None;
     let mut checkpoint_path: Option<String> = None;
@@ -791,7 +788,7 @@ pub fn run(argv: &[String]) -> R<()> {
             "--steps" => steps = args.num(token)?,
             "--support" => support_cap = args.num(token)?,
             "--threads" => threads = args.num(token)?,
-            "--admission-threads" => admission_threads = args.num(token)?,
+            "--retry-threads" => retry_threads = args.num(token)?,
             "--out" => out_path = Some(args.value(token)?.to_string()),
             "--matrix" => matrix_path = Some(args.value(token)?.to_string()),
             "--checkpoint" => checkpoint_path = Some(args.value(token)?.to_string()),
@@ -831,19 +828,19 @@ pub fn run(argv: &[String]) -> R<()> {
     let collect_matrix = matrix_file.is_some();
     args::build_pool(threads)?;
     let thread_count = rayon::current_num_threads();
-    let admission_threads = if admission_threads == 0 {
+    let retry_threads = if retry_threads == 0 {
         thread_count.min(8)
     } else {
-        admission_threads.min(thread_count)
+        retry_threads.min(thread_count)
     }
     .max(1);
-    let admission_pool = rayon::ThreadPoolBuilder::new()
-        .num_threads(admission_threads)
-        .thread_name(|index| format!("qalc-admit-{index}"))
+    let retry_pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(retry_threads)
+        .thread_name(|index| format!("qalc-retry-{index}"))
         .build()
-        .map_err(|error| format!("blam qalc census: cannot build admission pool: {error}"))?;
+        .map_err(|error| format!("blam qalc census: cannot build retry pool: {error}"))?;
     eprintln!(
-        "qALC census: sizes {min_n}..={max_n}, invocation p h t, steps={steps}, support={support_cap}, matrix={collect_matrix}, {thread_count} threads, {admission_threads} full-admission threads"
+        "qALC census: sizes {min_n}..={max_n}, invocation p h t, steps={steps}, support={support_cap}, matrix={collect_matrix}, {thread_count} threads, {retry_threads} retry threads"
     );
 
     let config = format!(
@@ -886,7 +883,7 @@ pub fn run(argv: &[String]) -> R<()> {
                     }
                 })
                 .try_reduce(ProbeTally::default, |left, right| Ok(left.merge(right)))?;
-            let deferred = admission_pool.install(|| {
+            let deferred = retry_pool.install(|| {
                 probed
                     .deferred
                     .par_iter()
@@ -940,8 +937,8 @@ pub fn run(argv: &[String]) -> R<()> {
             tally.programs as f64 / seconds.max(f64::MIN_POSITIVE),
         );
         eprintln!(
-            "      worker-s over {} measured programs: select {:.3} [carrier {:.3}, gram {:.3}, obligations {:.3}, rri {:.3}, digest {:.3}; {} attempts, {} full]  evolve {:.3}  observe {:.3}",
-            tally.perf.programs,
+            "      worker-s over {} measured programs: select {:.3} [carrier {:.3}, gram {:.3}, obligations {:.3}, rri {:.3}, digest {:.3}; {} attempts, {} canonical retries]  evolve {:.3}  observe {:.3}",
+            tally.perf.measured_programs,
             tally.perf.selection.as_secs_f64(),
             tally.perf.admission.carrier.as_secs_f64(),
             tally.perf.admission.gram.as_secs_f64(),
@@ -949,7 +946,7 @@ pub fn run(argv: &[String]) -> R<()> {
             tally.perf.admission.rri.as_secs_f64(),
             tally.perf.admission.digest.as_secs_f64(),
             tally.perf.admission.attempts,
-            tally.perf.full_admissions,
+            tally.perf.canonical_retries,
             tally.perf.evolution.as_secs_f64(),
             tally.perf.observation.as_secs_f64(),
         );
@@ -958,7 +955,7 @@ pub fn run(argv: &[String]) -> R<()> {
                 "      slow select {:>8.3}s  {:?}  carrier {:>8.3}s  {}",
                 slow.elapsed.as_secs_f64(),
                 slow.kind,
-                slow.admission.carrier.as_secs_f64(),
+                slow.carrier.as_secs_f64(),
                 enc_to_string(slow.witness.1, slow.witness.0),
             );
         }

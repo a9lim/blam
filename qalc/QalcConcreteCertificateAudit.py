@@ -72,7 +72,7 @@ def negativeCert : Certificate := {lean_certificate(negative_cert)}
 def bare : State := {lean_state(bare)}
 def framed : State := {lean_state(framed)}
 
--- The old raw-WF alias pair now has structurally disjoint recall targets.
+-- These raw-WF sources have structurally disjoint recall targets.
 -- No reachability or finite-carrier RRI premise is used here.
 theorem raw_recall_targets_disjoint :
     (step negativeTerm bare negativeCert).map (·.target) !=

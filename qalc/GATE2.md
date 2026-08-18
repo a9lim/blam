@@ -3,7 +3,7 @@
 Status: **CLOSED — clean coherent compilation proved and the cap-free
 structural selector enabled.**
 
-Gate 2 now has an unbounded Lean refinement from the actual composed token
+Gate 2 has an unbounded Lean refinement from the actual composed token
 machine to the ideal typed H/T/CNOT circuit semantics. The theorem uses one
 immutable compiled invocation, one common reachable encoded-input cut, exact
 `Dw` amplitudes, a symbolic common time, literal common terminal garbage, and
@@ -128,7 +128,7 @@ or added axiom.
 
 ## 4. Independent finite evidence
 
-The Python battery still exercises every width-two circuit of length at most
+The Python battery exercises every width-two circuit of length at most
 two and the mandatory named carriers:
 
 | program | common cut | run | certificate entries | states |
@@ -154,14 +154,12 @@ target is reused as a later control. Bell uncompute is
 python qalc/gate2_check.py
 ```
 
-The authoritative runtime battery recompiles Python, re-closes the Gate-1
-runtime surface, runs the physical/compiler checks, and checks the cap-free
-selector path. It neither generates nor compiles Lean. When the proof surface
-or its exporters intentionally change, run `python qalc/gate1_lean_check.py`
-and `python qalc/gate2_lean_check.py` explicitly; Lean is intentionally absent
-from qALC CI. The full Python runtime battery is likewise explicit and local;
-the path-scoped workflow checks fixture determinism, while ordinary CI owns the
-Rust differential suites.
+The authoritative runtime battery re-closes Gate 1, runs the physical/compiler
+checks, and checks the cap-free selector path. It neither generates nor
+compiles Lean. When the proof surface or its exporters intentionally change,
+run `python qalc/gate1_lean_check.py` and `python qalc/gate2_lean_check.py`.
+Runtime and proof batteries are explicit local commands; qALC CI checks
+fixture determinism, while ordinary CI owns the Rust differential suites.
 
 The Rust reference pillar preserves:
 

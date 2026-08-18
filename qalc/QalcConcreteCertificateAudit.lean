@@ -10,7 +10,7 @@ def negativeCert : Certificate := [([.fn, .fn, .body, .body, .fn, .fn, .arg], []
 def bare : State := .run ({ path := [.fn, .arg], direction := .down, log := [.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)], tape := [.bullet, .alpha .h (.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)) false (.fresh), .lp [.fn, .fn, .body, .body, .fn, .arg, .body] (.nil), .bullet, .rho], vb := none, frames := [], storage := [.bundle []] })
 def framed : State := .run ({ path := [.fn, .arg], direction := .down, log := [.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)], tape := [.bullet, .alpha .h (.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)) false (.fresh), .lp [.fn, .fn, .body, .body, .fn, .arg, .body] (.nil), .bullet, .rho], vb := none, frames := [⟨⟨.h, .lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)⟩, false, .recalledAbsent (.fresh)⟩], storage := [.bundle []] })
 
--- The old raw-WF alias pair now has structurally disjoint recall targets.
+-- These raw-WF sources have structurally disjoint recall targets.
 -- No reachability or finite-carrier RRI premise is used here.
 theorem raw_recall_targets_disjoint :
     (step negativeTerm bare negativeCert).map (·.target) !=

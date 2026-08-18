@@ -168,14 +168,13 @@ blam qalc census [MIN] MAX          finite-clock census over ordinary BLC p h t
 program from a qfx file. A qfx input is provenance-bearing: its certificate
 must equal the certificate selected by the public semantics before execution.
 `census` instead constructs the canonical invocation from each enumerated BLC
-program and keeps the gates outside its prefix length. `--admission-threads`
-controls only the full-cap second-phase pool (up to eight workers by default),
+program and keeps the gates outside its prefix length. `--retry-threads`
+controls only the canonical second-phase pool (up to eight workers by default),
 not the selector or census semantics.
 
 The qALC verification contract is:
 
 ```bash
-python qalc/gate1_check.py
 python qalc/gate2_check.py
 PYTHONHASHSEED=1 python qalc/export_rust_fixtures.py --check
 PYTHONHASHSEED=1 python qalc/export_composed_fixtures.py --check
@@ -186,13 +185,12 @@ cargo test --release
 bash scripts/spot-check.sh
 ```
 
-The two gate commands above are explicit local runtime/Python batteries and
-intentionally do not generate or compile Lean. `python
-qalc/gate1_lean_check.py` and `python qalc/gate2_lean_check.py` are manual
-proof-surface checks, run only when that surface intentionally changes. The
-path-scoped qALC CI runs neither full battery nor Lean; it checks fixture
-determinism under two hash seeds, while ordinary CI owns the Rust differential
-suites. Rust tests also
+The Gate-2 command includes the Gate-1 runtime battery; neither generates nor
+compiles Lean. Use `python qalc/gate1_check.py` for Gate-1-only runtime work.
+`python qalc/gate1_lean_check.py` and `python qalc/gate2_lean_check.py` are
+manual proof-surface checks, run only when that surface intentionally changes.
+The path-scoped qALC CI checks fixture determinism under two hash seeds, while
+ordinary CI owns the Rust differential suites. Rust tests also
 pin norm equality, monotone halt mass, orthonormal columns, effect-free
 conservativity, HH cancellation, H-NOT'-H coherence, the negative witness,
 compiler cleanliness, and cross-pillar isolation.

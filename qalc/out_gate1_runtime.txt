@@ -1,9 +1,4 @@
 QALC GATE 1 RUNTIME BATTERY
-## python-compile
-$ /Users/a9lim/.venv/bin/python -m py_compile kernel.py wf.py readback.py readback_checks.py readback_certify.py application_invariant.py semantics.py gate1_programs.py controller_invariant.py
-
-exit=0
-
 ## kernel-suite
 $ /Users/a9lim/.venv/bin/python suite.py
 program    basis  stuck  nonunit   nonorth   dynamic

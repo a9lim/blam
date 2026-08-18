@@ -27,6 +27,7 @@
 //! pinned carriers.
 
 use std::collections::{hash_map::Entry, HashMap};
+use std::sync::Arc;
 
 use super::amp::Amp;
 use super::kernel::{instance, step};
@@ -37,7 +38,6 @@ use super::state::{
 };
 use super::term::{binder_path, subterm, Dir, GateName, Path, Term};
 use super::wire::CertEntries;
-use std::sync::Arc;
 
 /// One unmerged composed transition row, in the reference's
 /// `(sign, k_incr, rule, state)` shape.
@@ -1904,12 +1904,76 @@ pub struct NfCarrier {
     pub columns: Vec<super::wire::Column>,
 }
 
+#[derive(Default)]
+struct GramAccumulator {
+    incoming: HashMap<usize, Vec<(usize, Amp)>>,
+    nonunit: usize,
+}
+
+impl GramAccumulator {
+    fn push_column(&mut self, source: usize, column: Vec<(usize, Amp)>) -> Result<(), NfError> {
+        let mut norm = Amp::ZERO;
+        for (target, coefficient) in column {
+            norm = norm
+                .add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
+                .ok_or(NfError::Capacity)?;
+            self.incoming
+                .entry(target)
+                .or_default()
+                .push((source, coefficient));
+        }
+        self.nonunit += usize::from(norm != Amp::ONE);
+        Ok(())
+    }
+
+    fn finish(self, basis: usize) -> Result<super::kernel::GramReport, NfError> {
+        let mut dots: HashMap<(usize, usize), Amp> = HashMap::new();
+        for columns in self.incoming.values() {
+            for (left_at, (left, left_coefficient)) in columns.iter().enumerate() {
+                for (right, right_coefficient) in &columns[left_at + 1..] {
+                    if left == right {
+                        continue;
+                    }
+                    let key = (*left.min(right), *left.max(right));
+                    let product = left_coefficient
+                        .conj()
+                        .and_then(|lc| lc.mul(*right_coefficient))
+                        .ok_or(NfError::Capacity)?;
+                    let current = dots.get(&key).copied().unwrap_or(Amp::ZERO);
+                    dots.insert(key, current.add(product).ok_or(NfError::Capacity)?);
+                }
+            }
+        }
+        Ok(super::kernel::GramReport {
+            basis,
+            nonunit: self.nonunit,
+            nonorthogonal: dots.values().filter(|value| !value.is_zero()).count(),
+        })
+    }
+}
+
+fn intern_state(
+    ids: &mut HashMap<Arc<NfState>, usize>,
+    order: &mut Vec<Arc<NfState>>,
+    target: NfState,
+) -> usize {
+    match ids.entry(Arc::new(target)) {
+        Entry::Occupied(entry) => *entry.get(),
+        Entry::Vacant(entry) => {
+            let id = order.len();
+            let target = Arc::clone(entry.key());
+            entry.insert(id);
+            order.push(target);
+            id
+        }
+    }
+}
+
 /// Exact merged-column Gram report derived from an already checked carrier.
 /// This is algebraically identical to [`nf_gram`] on the same cut, but avoids
 /// rebuilding the reachable graph during Gate-1 admission.
 pub fn nf_gram_from_carrier(carrier: &NfCarrier) -> Result<super::kernel::GramReport, NfError> {
-    let mut incoming: HashMap<usize, Vec<(usize, Amp)>> = HashMap::new();
-    let mut nonunit = 0usize;
+    let mut gram = GramAccumulator::default();
     for (source, rows) in &carrier.columns {
         let mut column: Vec<(usize, Amp)> = Vec::new();
         let mut col_index: HashMap<usize, usize> = HashMap::new();
@@ -1921,41 +1985,9 @@ pub fn nf_gram_from_carrier(carrier: &NfCarrier) -> Result<super::kernel::GramRe
                 column.push((*target, *coefficient));
             }
         }
-        let mut norm = Amp::ZERO;
-        for (target, coefficient) in column {
-            norm = norm
-                .add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
-                .ok_or(NfError::Capacity)?;
-            incoming
-                .entry(target)
-                .or_default()
-                .push((*source, coefficient));
-        }
-        nonunit += usize::from(norm != Amp::ONE);
+        gram.push_column(*source, column)?;
     }
-
-    let mut dots: HashMap<(usize, usize), Amp> = HashMap::new();
-    for columns in incoming.values() {
-        for (left_at, (left, left_coefficient)) in columns.iter().enumerate() {
-            for (right, right_coefficient) in &columns[left_at + 1..] {
-                if left == right {
-                    continue;
-                }
-                let key = (*left.min(right), *left.max(right));
-                let product = left_coefficient
-                    .conj()
-                    .and_then(|lc| lc.mul(*right_coefficient))
-                    .ok_or(NfError::Capacity)?;
-                let current = dots.get(&key).copied().unwrap_or(Amp::ZERO);
-                dots.insert(key, current.add(product).ok_or(NfError::Capacity)?);
-            }
-        }
-    }
-    Ok(super::kernel::GramReport {
-        basis: carrier.order.len(),
-        nonunit,
-        nonorthogonal: dots.values().filter(|value| !value.is_zero()).count(),
-    })
+    gram.finish(carrier.order.len())
 }
 
 pub fn nf_carrier_and_columns(
@@ -1974,11 +2006,9 @@ pub fn nf_carrier_and_columns_with(
     tick_depth: u64,
     state_cap: usize,
 ) -> Result<NfCarrier, NfError> {
-    // The discovery index and ordered carrier share each immutable state.
-    // Keeping owned `NfState` keys in both structures used to deep-clone every
-    // token, zipper, and residue, which doubled the live graph at the 300k
-    // admission cap. Drop the index and unwrap the unique ordered owners only
-    // after discovery is complete, preserving the public carrier type.
+    // The discovery index and ordered carrier share each immutable state, so
+    // every token, zipper, and residue is stored once. Drop the index and
+    // unwrap the unique ordered owners before returning the public carrier.
     let start = Arc::new(nf_init());
     let mut ids: HashMap<Arc<NfState>, usize> = HashMap::new();
     ids.insert(Arc::clone(&start), 0);
@@ -1998,17 +2028,7 @@ pub fn nf_carrier_and_columns_with(
         let mut norm = Amp::ZERO;
         for (coefficient, rule, target) in rows {
             check_inverse(machine, term, &rule, s.as_ref(), &target)?;
-            let target = Arc::new(target);
-            let id = match ids.entry(target) {
-                Entry::Occupied(entry) => *entry.get(),
-                Entry::Vacant(entry) => {
-                    let id = order.len();
-                    let target = Arc::clone(entry.key());
-                    entry.insert(id);
-                    order.push(target);
-                    id
-                }
-            };
+            let id = intern_state(&mut ids, &mut order, target);
             norm = norm
                 .add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
                 .ok_or(NfError::Capacity)?;
@@ -2084,8 +2104,7 @@ pub fn nf_gram_with(
     let mut ids: HashMap<Arc<NfState>, usize> = HashMap::new();
     ids.insert(Arc::clone(&start), 0);
     let mut order = vec![start];
-    let mut incoming: HashMap<usize, Vec<(usize, Amp)>> = HashMap::new();
-    let mut nonunit = 0usize;
+    let mut gram = GramAccumulator::default();
     let mut at = 0;
     while at < order.len() {
         let s = Arc::clone(&order[at]);
@@ -2100,17 +2119,7 @@ pub fn nf_gram_with(
         let mut column: Vec<(usize, Amp)> = Vec::new();
         let mut col_index: HashMap<usize, usize> = HashMap::new();
         for (coefficient, _rule, target) in rows {
-            let target = Arc::new(target);
-            let id = match ids.entry(target) {
-                Entry::Occupied(entry) => *entry.get(),
-                Entry::Vacant(entry) => {
-                    let id = order.len();
-                    let target = Arc::clone(entry.key());
-                    entry.insert(id);
-                    order.push(target);
-                    id
-                }
-            };
+            let id = intern_state(&mut ids, &mut order, target);
             if let Some(&k) = col_index.get(&id) {
                 column[k].1 = column[k].1.add(coefficient).ok_or(NfError::Capacity)?;
             } else {
@@ -2118,41 +2127,10 @@ pub fn nf_gram_with(
                 column.push((id, coefficient));
             }
         }
-        let mut norm = Amp::ZERO;
-        for (id, coefficient) in &column {
-            norm = norm
-                .add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
-                .ok_or(NfError::Capacity)?;
-            incoming.entry(*id).or_default().push((src, *coefficient));
-        }
-        if norm != Amp::ONE {
-            nonunit += 1;
-        }
+        gram.push_column(src, column)?;
         if order.len() > state_cap {
             return Err(NfError::StateCap);
         }
     }
-    let mut dots: HashMap<(usize, usize), Amp> = HashMap::new();
-    for columns in incoming.values() {
-        for (left_at, (left, left_coefficient)) in columns.iter().enumerate() {
-            for (right, right_coefficient) in &columns[left_at + 1..] {
-                if left == right {
-                    continue;
-                }
-                let key = (*left.min(right), *left.max(right));
-                let product = left_coefficient
-                    .conj()
-                    .and_then(|lc| lc.mul(*right_coefficient))
-                    .ok_or(NfError::Capacity)?;
-                let cur = dots.get(&key).copied().unwrap_or(Amp::ZERO);
-                dots.insert(key, cur.add(product).ok_or(NfError::Capacity)?);
-            }
-        }
-    }
-    let nonorthogonal = dots.values().filter(|v| !v.is_zero()).count();
-    Ok(super::kernel::GramReport {
-        basis: order.len(),
-        nonunit,
-        nonorthogonal,
-    })
+    gram.finish(order.len())
 }

@@ -9,8 +9,8 @@ use std::sync::Arc;
 use crate::quantum::scalar::ExactSum;
 
 use super::admission::{
-    try_admit, try_admit_probe_with_cap_profiled, try_admit_profiled, AdmissionTelemetry,
-    Gate1Admission,
+    try_admit, try_admit_probe_with_cap_profiled, try_admit_with_cap_profiled, AdmissionTelemetry,
+    Gate1Admission, CANONICAL_STATE_CAP,
 };
 use super::amp::Amp;
 use super::gate2check::{structural_admission, StructuralAdmission};
@@ -125,7 +125,7 @@ pub fn select_profiled(term: Term) -> (Sector, AdmissionTelemetry) {
             AdmissionTelemetry::default(),
         ),
         _ => {
-            let (admission, telemetry) = try_admit_profiled(&term);
+            let (admission, telemetry) = try_admit_with_cap_profiled(&term, CANONICAL_STATE_CAP);
             (
                 admission
                     .map(Selection::Gate1)

@@ -24,12 +24,14 @@ The authoritative entry points are:
 - `QalcConcreteCertificate.md` and `QalcConcreteBuild.py`: concrete Gate-1
   reachable-recall replay and rebuild entry point.
 
-Run the authoritative runtime battery from the repository root:
+Run the complete runtime battery from the repository root:
 
 ```bash
-python qalc/gate1_check.py
 python qalc/gate2_check.py
 ```
+
+`gate2_check.py` includes Gate 1. Use `python qalc/gate1_check.py` when only the
+Gate-1 runtime surface needs reclosure.
 
 When the proof surface changes, run its separate manual checks explicitly:
 
@@ -41,9 +43,8 @@ python qalc/gate2_lean_check.py
 The path-scoped qALC workflow intentionally runs neither the exhaustive Python
 batteries nor Lean. Its unique job is to check all four Rust fixture exporters
 under two Python hash seeds; the ordinary CI release suites already exercise
-the Rust differential tests on Linux and macOS. Generated `.lean` files and
-the historical full Gate-1 log are proof evidence; `.olean` files and
-`__pycache__/` are ignored build products.
+the Rust differential tests on Linux and macOS. Generated `.lean` files are
+proof evidence; `.olean` files and `__pycache__/` are ignored build products.
 
 The semantic contract is
 [`docs/quantum-algebraic/architecture.md`](../docs/quantum-algebraic/architecture.md),

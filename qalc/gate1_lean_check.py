@@ -29,6 +29,9 @@ CORE_LEAN = (
     "FiniteMachine",
     "Gate1Assembly",
 )
+GRAM_PREFIX = "QalcReadbackGram_p_"
+GATE2_GRAM_PREFIX = f"{GRAM_PREFIX}gate2_"
+EXPECTED_GRAMS = 30
 
 
 def run(*arguments: str) -> None:
@@ -39,11 +42,16 @@ def compile_lean(stem: str) -> None:
     run(str(LEAN), "-q", "-o", f"{stem}.olean", f"{stem}.lean")
 
 
+def gram_paths() -> tuple[Path, ...]:
+    return tuple(
+        path
+        for path in sorted(ROOT.glob(f"{GRAM_PREFIX}*.lean"))
+        if not path.name.startswith(GATE2_GRAM_PREFIX)
+    )
+
+
 def generated_gram_sources() -> dict[str, bytes]:
-    return {
-        path.name: path.read_bytes()
-        for path in sorted(ROOT.glob("QalcReadbackGram_p_*.lean"))
-    }
+    return {path.name: path.read_bytes() for path in gram_paths()}
 
 
 def source_set_digest(sources: dict[str, bytes]) -> str:
@@ -62,6 +70,10 @@ def main() -> None:
     second = generated_gram_sources()
     if first != second:
         raise AssertionError("Gate-1 Lean carrier generation is not stable")
+    if len(second) != EXPECTED_GRAMS:
+        raise AssertionError(
+            f"expected {EXPECTED_GRAMS} Gate-1 Gram files, found {len(second)}"
+        )
     print(
         "Gate 1 Lean generation: PASS "
         f"({len(second)} files, sha256={source_set_digest(second)})"
@@ -71,7 +83,7 @@ def main() -> None:
         compile_lean(stem)
     print("Gate 1 handwritten Lean compilation: PASS")
 
-    gram_stems = sorted(path.stem for path in ROOT.glob("QalcReadbackGram_p_*.lean"))
+    gram_stems = [path.stem for path in gram_paths()]
     with ThreadPoolExecutor(max_workers=4) as executor:
         list(executor.map(compile_lean, gram_stems))
     print(f"Gate 1 composed Lean Gram compilation: PASS ({len(gram_stems)} files)")
