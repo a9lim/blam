@@ -288,6 +288,19 @@ Finite evidence includes all 43 width-two circuits through length two, clean
 Bell/Toffoli/nonlinear-reuse carriers, and the complete 917-state mixed
 Python/Lean/Rust differential.
 
+The infinite-object characterization is now explicit in
+`quantum-algebraic/objects.md`. The global machine is the computable
+program-sector direct sum of exact isometries with unilateral halt/error tick
+tails. Its finite `M` approximants increase in Loewner order to a positive
+trace-class operator with `Tr M = Omega_qALC`. The injective wrapper
+`p -> lambda h. lambda t. p` adds exactly four BLC bits and embeds the complete
+classical output prior diagonally, giving the contract-level inequalities
+`M >= D_BLC / 16` and `Omega_qALC >= Omega_BLC / 16`; an 8-bit wrapped
+identity gives the unconditional `Omega_qALC >= 1/256`. This closes classical
+diagonal domination, not Gács universality. The semantic step uses the
+all-program effect-free-conservativity contract; Rust pins the exact rank-one
+identity contribution, while a universal Lean theorem remains open.
+
 The Python/Lean reference and theorem records are `qalc/GATE1.md` and
 `qalc/GATE2.md`. `python qalc/gate2_check.py` is the complete runtime battery
 and includes Gate 1; `gate1_check.py` is the Gate-1-only entry point. Explicit
@@ -309,9 +322,12 @@ and generated `native_decide` evaluations are explicit trust boundaries.
    under a deliberately larger per-size budget.
 2. Optionally strengthen the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and arrival/pop determinacy.
-3. Investigate D-circuit dyadicity, universality/domination for `M`,
-   self-interpretation up to timing dilation, and relations among the three
-   Omega objects.
+3. Prove the all-program pure-path conservativity theorem, then decide whether
+   classical `Omega_BLC` is Solovay complete for the actual closed-term code.
+   For full `M` universality, fix the effective infinite-dimensional target
+   class and build or rule out a synchronized clean compiler with uniform
+   additive description overhead. Separately pursue D-circuit dyadicity,
+   qALC/qBLC translations, and self-interpretation up to timing dilation.
 
 ## Repository and release state
 

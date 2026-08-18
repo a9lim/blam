@@ -781,6 +781,45 @@ mod tests {
     }
 
     #[test]
+    fn four_bit_classical_wrapper_has_exact_rank_one_contribution() {
+        // W(p) = lambda h. lambda t. p is the constant-overhead classical
+        // corner of M.  Pin the wire accounting and one complete semantic
+        // contribution together: p = I has four bits, W(p) has eight, and
+        // W(p) h t returns |I><I| with Kraft weight 2^-8.
+        let program = crate::blc::lam(crate::blc::var(1));
+        let wrapped = crate::blc::lam(crate::blc::lam(program.clone()));
+        assert_eq!(wrapped.bit_size(), program.bit_size() + 4);
+        assert_eq!(wrapped.to_bits(), format!("0000{}", program.to_bits()));
+
+        let invoked = super::super::term::invoke_ht(super::super::term::from_blc(&wrapped));
+        let sector = select(invoked);
+        let (time, vector) = to_absorption(&sector, 64);
+        assert_eq!(halt_mass(&vector).unwrap(), Amp::ONE);
+        assert_eq!(error_mass(&vector).unwrap(), Amp::ZERO);
+
+        let output = Nf::Lam(Arc::new(Nf::Var(1)));
+        assert_eq!(
+            rho(&vector).unwrap(),
+            HashMap::from([((output.clone(), output.clone()), Amp::ONE)])
+        );
+
+        let finite = finite_m(&[(wrapped.bit_size() as u32, sector)], time).unwrap();
+        let omega = finite.omega_qalc.value().unwrap().reduce();
+        assert_eq!(
+            (omega.a, omega.b, omega.c, omega.d, omega.k),
+            (1, 0, 0, 0, 16)
+        );
+        assert_eq!(
+            finite
+                .matrix
+                .get(&(output.clone(), output))
+                .and_then(ExactSum::value)
+                .map(|value| value.reduce()),
+            Some(omega)
+        );
+    }
+
+    #[test]
     fn public_u_runs_the_structural_gate2_machine() {
         use crate::qalc::compiler::{compile_circuit, Circuit, Op};
 

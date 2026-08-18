@@ -207,6 +207,7 @@ The ambient lifecycle/minimal-carrier theorem, general probe-exit
 classification, and broader arrival/pop determinacy are optional research
 questions. They are not premises of `U` or the clean compilation theorem.
 
-The authoritative semantic contract is `architecture.md`; the transition
+The authoritative semantic contract is `architecture.md`; `objects.md`
+characterizes the induced infinite `U`, `M`, and `Omega_qALC`; the transition
 register is `kernel.md`; the executable theorem boundaries are
 `../../qalc/GATE1.md` and `../../qalc/GATE2.md`.

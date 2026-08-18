@@ -80,7 +80,9 @@ mass.
 
 The Kraft accounting is unchanged from qBLC: `|p|` is the program's own
 prefix-free length, and the applied constants are invocation convention,
-not program bits.
+not program bits.  `objects.md` derives the infinite-operator consequences,
+including trace-class convergence, the exact four-bit classical diagonal
+embedding, and the boundary between that result and Gács-style universality.
 
 ## 3. Semantic contract
 
@@ -699,21 +701,31 @@ Every qALC engine change must then satisfy:
    re-merge (the "coherence is earned" economy made precise)?
 4. D-circuit-shaped dyadicity in the h-only fragment (§6): statement and
    proof against the machine of item 1.
-5. Universality/domination statement for `M` (§6), downstream of item 2.
+5. **Partly closed — domination for `M`:** `objects.md` proves at the
+   semantic-contract level that the injective four-bit wrapper
+   `p -> lambda h. lambda t. p` gives
+   `M >= D_BLC / 16`. Full Gács-style domination of arbitrary effective
+   semidensities remains open and needs a synchronized clean compiler with
+   uniform additive description overhead; finite circuit universality alone
+   does not supply it.
 6. Self-interpretation: interpretation slows branches, timing is physical
    (§4.5), so bisimulation with the classical self-interpreter is at best
    up-to-dilation with garbage uncomputed before output; whether an
    exact-ring universal simulation exists at all is open.
-7. Relations among Ω objects: `Ω_qALC` versus classical `Ω` and qBLC's
-   `Ω_success` — inequalities, domination, or incomparability.
+7. **Partly closed — relations among Omega objects:** the same wrapper gives
+   `Omega_qALC >= Omega_BLC / 16`. Solovay completeness is conditional on the
+   corresponding classical BLC coding theorem, which is not established.
+   No qALC/qBLC ordering is known; it requires a constant-overhead clean
+   translation or an incomparability argument.
 8. Reachability: which finitely-supported ring-valued unit vectors arise
    as `ψ_τ` (small lemma, low priority).
 9. Output convention (§4.6) — whether to add a designated-output alternative
    to the current whole-normal-form object, mirroring the same qBLC question.
 
-Items 1 and 2 are the implemented contract. Items 3–9 are research or
-product-shape questions, not prerequisites for the reference evaluator.
-Moving census work is maintained in `../STATUS.md`.
+Items 1 and 2 are the implemented contract. Items 5 and 7 now contain exact
+classical-embedding results but retain stronger open clauses; items 3–9 are
+otherwise research or product-shape questions, not prerequisites for the
+reference evaluator. Moving census work is maintained in `../STATUS.md`.
 
 ## 10. Lineage and related documents
 
