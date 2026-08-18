@@ -159,7 +159,9 @@ runtime surface, runs the physical/compiler checks, and checks the cap-free
 selector path. It neither generates nor compiles Lean. When the proof surface
 or its exporters intentionally change, run `python qalc/gate1_lean_check.py`
 and `python qalc/gate2_lean_check.py` explicitly; Lean is intentionally absent
-from CI.
+from qALC CI. The full Python runtime battery is likewise explicit and local;
+the path-scoped workflow checks fixture determinism, while ordinary CI owns the
+Rust differential suites.
 
 The Rust reference pillar preserves:
 

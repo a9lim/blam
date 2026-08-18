@@ -278,7 +278,10 @@ The Python/Lean reference and theorem records are `qalc/GATE1.md` and
 `qalc/GATE2.md`. The authoritative runtime batteries are
 `python qalc/gate1_check.py` and `python qalc/gate2_check.py`; explicit manual
 proof checks are `gate1_lean_check.py` and `gate2_lean_check.py`. Lean is not
-part of qALC CI. Runtime fixtures live in `tests/qalc/`; the
+part of qALC CI, and the exhaustive Python batteries are local rather than
+per-commit gates. The path-scoped workflow checks fixture determinism only;
+ordinary CI already owns the Rust differentials. Runtime fixtures live in
+`tests/qalc/`; the
 embedded selector pin is `src/qalc/admission_pins.qfx`. Python carrier closure
 and generated `native_decide` evaluations are explicit trust boundaries.
 

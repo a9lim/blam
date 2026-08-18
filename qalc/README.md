@@ -38,10 +38,11 @@ python qalc/gate1_lean_check.py
 python qalc/gate2_lean_check.py
 ```
 
-The path-scoped qALC workflow intentionally runs no Lean: it runs the runtime
-battery, checks all four Rust fixture exporters under two Python hash seeds,
-and exercises the Rust differential suites. Generated `.lean` files and the
-historical full Gate-1 log are proof evidence; `.olean` files and
+The path-scoped qALC workflow intentionally runs neither the exhaustive Python
+batteries nor Lean. Its unique job is to check all four Rust fixture exporters
+under two Python hash seeds; the ordinary CI release suites already exercise
+the Rust differential tests on Linux and macOS. Generated `.lean` files and
+the historical full Gate-1 log are proof evidence; `.olean` files and
 `__pycache__/` are ignored build products.
 
 The semantic contract is

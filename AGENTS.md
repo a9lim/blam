@@ -98,9 +98,11 @@ reachable input cut to exact ideal columns. The stronger ambient lifecycle
 theorem remains optional, and raw-WF recall is noninjective. qALC work must
 leave classical and qBLC rows bit-identical.
 
-`gate1_check.py` and `gate2_check.py` are runtime/Python gates only. They and
-the qALC CI workflow intentionally do not invoke Lean: hosted proof compilation
-exceeded the useful CI budget. Run `gate1_lean_check.py` and
+`gate1_check.py` and `gate2_check.py` are explicit local runtime/Python gates.
+The qALC CI workflow runs neither those exhaustive batteries nor Lean: it owns
+only fixture determinism, while the ordinary CI release suites own the Rust
+differentials. Hosted proof compilation and redundant Python/Rust reclosure
+exceeded the useful path-gate budget. Run `gate1_lean_check.py` and
 `gate2_lean_check.py` manually only when the Lean/generated-proof surface or
 its exporters intentionally move; do not rerun them for Rust-only changes.
 

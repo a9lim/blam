@@ -264,6 +264,10 @@ concrete Lean RRI replay of all seventeen typed canonical sectors. The prior
 combined battery record remains in `out_gate1_final.txt` as historical proof
 evidence; Lean is intentionally absent from the runtime gate and CI.
 
+The exhaustive runtime battery is also a local release/proof-surface command,
+not a per-commit qALC CI step. The path-scoped workflow checks deterministic
+fixture regeneration; ordinary CI exercises the Rust differential surface.
+
 The claim boundary remains explicit:
 
 - the stronger ambient all-program RRI lifecycle theorem remains open, but is

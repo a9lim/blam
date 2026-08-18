@@ -186,11 +186,13 @@ cargo test --release
 bash scripts/spot-check.sh
 ```
 
-The two gate commands above are runtime/Python batteries and intentionally do
-not generate or compile Lean. `python qalc/gate1_lean_check.py` and
-`python qalc/gate2_lean_check.py` are manual proof-surface checks, run only
-when that surface intentionally changes; Lean is not part of qALC CI. CI
-repeats the Python fixture checks under a second hash seed. Rust tests also
+The two gate commands above are explicit local runtime/Python batteries and
+intentionally do not generate or compile Lean. `python
+qalc/gate1_lean_check.py` and `python qalc/gate2_lean_check.py` are manual
+proof-surface checks, run only when that surface intentionally changes. The
+path-scoped qALC CI runs neither full battery nor Lean; it checks fixture
+determinism under two hash seeds, while ordinary CI owns the Rust differential
+suites. Rust tests also
 pin norm equality, monotone halt mass, orthonormal columns, effect-free
 conservativity, HH cancellation, H-NOT'-H coherence, the negative witness,
 compiler cleanliness, and cross-pillar isolation.

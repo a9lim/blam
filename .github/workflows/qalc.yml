@@ -32,18 +32,14 @@ permissions:
   contents: read
 
 jobs:
-  runtime-and-differential:
+  fixture-determinism:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - name: Gate 1 and Gate 2 runtime batteries
-        run: python qalc/gate2_check.py
       - name: Rust differential fixtures are current
         run: |
           PYTHONHASHSEED=1 python qalc/export_rust_fixtures.py --check
@@ -54,7 +50,3 @@ jobs:
           PYTHONHASHSEED=2 python qalc/export_gate2_fixtures.py --check
           PYTHONHASHSEED=1 python qalc/export_admission_fixtures.py --check
           PYTHONHASHSEED=2 python qalc/export_admission_fixtures.py --check
-      - name: Rust qALC differential and drivers
-        run: >-
-          cargo test --release --test qalc_cli --test qalc_codec
-          --test qalc_kernel --test qalc_composed --test qalc_gate2
