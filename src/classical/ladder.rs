@@ -35,7 +35,7 @@
 
 use crate::classical::escalation::{self, emit_bits, EngineCfg, LTerm, NoNf, Why, DEFAULT_CAP};
 use crate::classical::machine::{Machine, Pool, Sink};
-use crate::classical::oracle::no_nf;
+use crate::classical::oracle::no_nf_unmetered;
 use crate::classical::OutOfFuel;
 
 /// Transition cap per β on the two KN rungs. Measured across 4..40:
@@ -267,7 +267,7 @@ pub fn adjudicate_fast<S: Sink + Default>(
         };
         return out(halt, Rung::Prescan, tel);
     }
-    if cfg.oracle && no_nf(0, (pool, root)) {
+    if cfg.oracle && no_nf_unmetered(0, (pool, root)) {
         return out(Verdict::Diverge, Rung::Oracle, tel);
     }
     *sink = S::default();

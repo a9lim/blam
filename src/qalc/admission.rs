@@ -49,12 +49,23 @@ impl AdmissionTelemetry {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug)]
 pub struct Gate1Admission {
     certificate: Option<CertEntries>,
     basis: usize,
-    rust_wire_digest: String,
+    rust_wire_digest: Option<String>,
 }
+
+// The digest is optional local telemetry, not selector identity. A profiled
+// population admission that skipped it must remain the same certificate as a
+// diagnostic admission that computed it.
+impl PartialEq for Gate1Admission {
+    fn eq(&self, other: &Self) -> bool {
+        self.certificate == other.certificate && self.basis == other.basis
+    }
+}
+
+impl Eq for Gate1Admission {}
 
 impl Gate1Admission {
     pub fn certificate(&self) -> Option<&CertEntries> {
@@ -72,7 +83,9 @@ impl Gate1Admission {
     /// SHA-256 of sorted Rust qfx state encodings. This is local telemetry,
     /// not Python's separately formatted `repr` carrier digest.
     pub fn rust_wire_digest(&self) -> &str {
-        &self.rust_wire_digest
+        self.rust_wire_digest
+            .as_deref()
+            .expect("this admission path omitted local digest telemetry")
     }
 }
 
@@ -694,7 +707,7 @@ pub fn validate(
     certificate: Option<&CertEntries>,
     state_cap: usize,
 ) -> Result<AdmissionReport, AdmissionError> {
-    validate_inner(term, certificate, state_cap, None)
+    validate_inner(term, certificate, state_cap, None, true)
 }
 
 fn validate_inner(
@@ -702,6 +715,7 @@ fn validate_inner(
     certificate: Option<&CertEntries>,
     state_cap: usize,
     mut telemetry: Option<&mut AdmissionTelemetry>,
+    with_digest: bool,
 ) -> Result<AdmissionReport, AdmissionError> {
     if let Some(telemetry) = telemetry.as_mut() {
         telemetry.attempts += 1;
@@ -782,7 +796,7 @@ fn validate_inner(
         for (_, rule, target) in rows {
             incoming.entry(*target).or_default().push((*source, rule));
             adapter_errors += usize::from(matches!(
-                rule.as_str(),
+                rule.as_ref(),
                 "error-pop-err"
                     | "error-stuck"
                     | "error-machine-exception"
@@ -857,10 +871,12 @@ fn validate_inner(
         && gram.nonunit == 0
         && gram.nonorthogonal == 0
         && rri_violations == 0;
-    let rust_wire_digest = measured(
-        telemetry.as_mut().map(|telemetry| &mut telemetry.digest),
-        || rust_wire_digest(&carrier.order),
-    );
+    let rust_wire_digest = with_digest.then(|| {
+        measured(
+            telemetry.as_mut().map(|telemetry| &mut telemetry.digest),
+            || rust_wire_digest(&carrier.order),
+        )
+    });
     Ok(AdmissionReport {
         certified,
         basis: carrier.order.len(),
@@ -876,7 +892,7 @@ fn validate_inner(
         nonunit: gram.nonunit,
         nonorthogonal: gram.nonorthogonal,
         rri_violations,
-        rust_wire_digest,
+        rust_wire_digest: rust_wire_digest.unwrap_or_default(),
     })
 }
 
@@ -915,7 +931,7 @@ fn pinned_candidate(term: &Term) -> Option<Option<CertEntries>> {
 /// validation/resource failure is `None`, never an unchecked no-erasure
 /// certificate.
 pub fn try_admit_with_cap(term: &Term, state_cap: usize) -> Option<Gate1Admission> {
-    try_admit_with_cap_inner(term, state_cap, None)
+    try_admit_with_cap_inner(term, state_cap, None, true)
 }
 
 /// Admission with explicit performance telemetry for population drivers.
@@ -925,7 +941,19 @@ pub fn try_admit_with_cap_profiled(
     state_cap: usize,
 ) -> (Option<Gate1Admission>, AdmissionTelemetry) {
     let mut telemetry = AdmissionTelemetry::default();
-    let admission = try_admit_with_cap_inner(term, state_cap, Some(&mut telemetry));
+    let admission = try_admit_with_cap_inner(term, state_cap, Some(&mut telemetry), true);
+    (admission, telemetry)
+}
+
+/// Population-driver variant that omits the local wire digest. The selector
+/// verdict and certificate are identical to [`try_admit_with_cap_profiled`].
+#[doc(hidden)]
+pub fn try_admit_with_cap_profiled_without_digest(
+    term: &Term,
+    state_cap: usize,
+) -> (Option<Gate1Admission>, AdmissionTelemetry) {
+    let mut telemetry = AdmissionTelemetry::default();
+    let admission = try_admit_with_cap_inner(term, state_cap, Some(&mut telemetry), false);
     (admission, telemetry)
 }
 
@@ -933,6 +961,7 @@ fn try_admit_with_cap_inner(
     term: &Term,
     state_cap: usize,
     mut telemetry: Option<&mut AdmissionTelemetry>,
+    with_digest: bool,
 ) -> Option<Gate1Admission> {
     if !syntax_within_limit(term) || state_cap == 0 {
         return None;
@@ -951,6 +980,7 @@ fn try_admit_with_cap_inner(
             candidate.as_ref(),
             state_cap,
             telemetry.as_deref_mut(),
+            with_digest,
         ) else {
             continue;
         };
@@ -958,7 +988,8 @@ fn try_admit_with_cap_inner(
             return Some(Gate1Admission {
                 certificate: candidate,
                 basis: report.basis,
-                rust_wire_digest: report.rust_wire_digest,
+                rust_wire_digest: (!report.rust_wire_digest.is_empty())
+                    .then_some(report.rust_wire_digest),
             });
         }
     }
@@ -973,19 +1004,43 @@ pub fn try_admit_probe_with_cap_profiled(
     term: &Term,
     state_cap: usize,
 ) -> (Option<Gate1Admission>, AdmissionTelemetry) {
+    try_admit_probe_with_cap_profiled_inner(term, state_cap, true)
+}
+
+/// Population-driver probe variant that omits the local wire digest.
+#[doc(hidden)]
+pub fn try_admit_probe_with_cap_profiled_without_digest(
+    term: &Term,
+    state_cap: usize,
+) -> (Option<Gate1Admission>, AdmissionTelemetry) {
+    try_admit_probe_with_cap_profiled_inner(term, state_cap, false)
+}
+
+fn try_admit_probe_with_cap_profiled_inner(
+    term: &Term,
+    state_cap: usize,
+    with_digest: bool,
+) -> (Option<Gate1Admission>, AdmissionTelemetry) {
     if !syntax_within_limit(term) || state_cap == 0 {
         return (None, AdmissionTelemetry::default());
     }
     let candidate = pinned_candidate(term).unwrap_or(None);
     let mut telemetry = AdmissionTelemetry::default();
-    let report = validate_inner(term, candidate.as_ref(), state_cap, Some(&mut telemetry));
+    let report = validate_inner(
+        term,
+        candidate.as_ref(),
+        state_cap,
+        Some(&mut telemetry),
+        with_digest,
+    );
     let admission = report
         .ok()
         .filter(|report| report.certified)
         .map(|report| Gate1Admission {
             certificate: candidate,
             basis: report.basis,
-            rust_wire_digest: report.rust_wire_digest,
+            rust_wire_digest: (!report.rust_wire_digest.is_empty())
+                .then_some(report.rust_wire_digest),
         });
     (admission, telemetry)
 }
@@ -1096,6 +1151,19 @@ mod tests {
         let identity = lam(Term::Var(1));
         let (probe, _) = try_admit_probe_with_cap_profiled(&identity, 1_000);
         assert_eq!(probe, try_admit(&identity));
+    }
+
+    #[test]
+    fn population_probe_omits_only_digest_telemetry() {
+        let identity = lam(Term::Var(1));
+        let (full, full_telemetry) = try_admit_probe_with_cap_profiled(&identity, 1_000);
+        let (fast, fast_telemetry) =
+            try_admit_probe_with_cap_profiled_without_digest(&identity, 1_000);
+        assert_eq!(fast, full);
+        assert!(full.unwrap().rust_wire_digest.is_some());
+        assert!(fast.unwrap().rust_wire_digest.is_none());
+        assert!(full_telemetry.digest > Duration::ZERO);
+        assert_eq!(fast_telemetry.digest, Duration::ZERO);
     }
 
     #[test]

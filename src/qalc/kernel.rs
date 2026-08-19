@@ -1181,7 +1181,7 @@ pub fn carrier_and_columns(
             norm = norm
                 .add(coefficient.norm_sq().ok_or(MachineError::Capacity)?)
                 .ok_or(MachineError::Capacity)?;
-            col.push((coefficient, rule.to_string(), id));
+            col.push((coefficient, rule.into(), id));
         }
         if norm != Amp::ONE {
             return Err(MachineError::ColumnNorm);

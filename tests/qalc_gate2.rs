@@ -73,7 +73,7 @@ fn step_paths(
             let coefficient = edge_coefficient(row.sign, row.dk, &row.rule).unwrap();
             let contribution = amplitude.mul(coefficient).unwrap();
             let mut history = rows.clone();
-            history.push(row.rule);
+            history.push(row.rule.into_owned());
             merge(&mut out, (row.state, history), contribution);
         }
     }
@@ -248,7 +248,7 @@ fn macro_events(
                 &state,
                 Some(certificate),
             );
-            let rules: HashSet<&str> = rows.iter().map(|row| row.rule.as_str()).collect();
+            let rules: HashSet<&str> = rows.iter().map(|row| row.rule.as_ref()).collect();
             let local = if rules == HashSet::from(["fire-h"]) {
                 Some(Kind::H)
             } else if !rules.is_empty()

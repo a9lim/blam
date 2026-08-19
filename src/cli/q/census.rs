@@ -44,7 +44,7 @@ use rayon::prelude::*;
 use std::fmt::Write as _;
 use std::time::Instant;
 
-use super::sweep::run_and_summarize;
+use super::sweep::run_and_check;
 
 const SECT: usize = 5; // sectors 0,1,2,3, and 4 = "≥4"
 
@@ -316,13 +316,13 @@ fn sweep_one(
     let (enc, len) = (prog.enc(), prog.len_bits());
     // The shared per-program step: run, plus the mass-conservation
     // battery every quantum sweep owes (cli/q/sweep.rs).
-    let summary = run_and_summarize(m, pool, prog, budget, leaves);
+    let max_steps = run_and_check(m, pool, prog, budget, leaves);
     let n = len as u32;
     t.programs += 1;
     t.leaves += leaves.len() as u64;
     t.max_leaves = t.max_leaves.max(leaves.len() as u64);
     t.max_trans = t.max_trans.max(m.max_trans);
-    t.max_steps = t.max_steps.max(summary.max_steps);
+    t.max_steps = t.max_steps.max(max_steps);
 
     let mut kinds = [false; 4]; // halt, err, unk, cap seen
     for leaf in leaves.iter() {
@@ -619,8 +619,7 @@ pub fn run(argv: &[String]) -> R<()> {
         programs.par_iter().for_each_init(
             || (Pool::new(), QMachine::new(), Vec::new()),
             |(pool, m, leaves), (bits, prog)| {
-                let summary = run_and_summarize(m, pool, prog, &budget, leaves);
-                let max_steps = summary.max_steps;
+                let max_steps = run_and_check(m, pool, prog, &budget, leaves);
                 let (mut h, mut e, mut u, mut c) = (0u64, 0u64, 0u64, 0u64);
                 let mut halt_mass = ExactSum::ZERO;
                 for leaf in leaves.iter() {

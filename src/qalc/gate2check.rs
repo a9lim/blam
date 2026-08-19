@@ -996,7 +996,7 @@ pub fn validate(
         for (_, rule, target) in rows {
             incoming.entry(*target).or_default().push((*source, rule));
             if matches!(
-                rule.as_str(),
+                rule.as_ref(),
                 "error-pop-err"
                     | "error-stuck"
                     | "error-machine-exception"

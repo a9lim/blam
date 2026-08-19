@@ -58,6 +58,11 @@ const FALSE_NODE: u32 = 5;
 #[derive(Debug)]
 pub struct Pool {
     nodes: Vec<Node>,
+    /// `decode_u64`'s build stack. Every closed non-variable term pushes at
+    /// least one pending constructor, so keeping this allocation beside the
+    /// arena removes one malloc/free pair from every census program. It is
+    /// scratch only and deliberately survives [`Pool::clear`].
+    dwork: Vec<wire::Pending<u32>>,
 }
 
 /// `Default` must go through `new`: a bare empty arena is missing the
@@ -87,7 +92,10 @@ impl wire::Build for Pool {
 
 impl Pool {
     pub fn new() -> Pool {
-        let mut p = Pool { nodes: Vec::new() };
+        let mut p = Pool {
+            nodes: Vec::new(),
+            dwork: Vec::new(),
+        };
         p.clear();
         p
     }
@@ -124,7 +132,12 @@ impl Pool {
     /// wire-grammar decoder in [`wire`], no string round-trip.
     pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {
         let mut bits = (0..len).rev().map(|j| (enc >> j) & 1 == 1);
-        wire::decode(&mut bits, &mut Vec::new(), self)
+        // Take/restore rather than borrowing both fields through `self`, and
+        // restore after an early-EOF `None` exactly like the classical pool.
+        let mut work = std::mem::take(&mut self.dwork);
+        let root = wire::decode(&mut bits, &mut work, self);
+        self.dwork = work;
+        root
     }
 
     /// Import a tree-side term (tests).

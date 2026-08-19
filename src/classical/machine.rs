@@ -309,14 +309,44 @@ impl Sink for StringSink {
 /// did, behind the same transition clamp.
 const LVL_TAG: u32 = 1 << 31;
 
-#[derive(Debug, Clone, Copy)]
-enum Frame {
-    /// Pending application argument (eval phase).
-    Arg(u32, u32),
-    /// Passed under a binder; pop decrements depth.
-    LamEnd,
-    /// Spine argument awaiting its own normalization (readback phase).
-    Norm(u32, u32),
+/// One packed continuation word. Pool node ids are fenced below 2^31 before
+/// evaluation, leaving the high bit of the term half free to distinguish a
+/// normalization job from an application argument. `u64::MAX` is LamEnd.
+/// This keeps each frame at 8 bytes instead of the enum layout's 12.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Frame(u64);
+
+const _: () = assert!(std::mem::size_of::<Frame>() == 8);
+
+impl Frame {
+    const NORM_TAG: u32 = 1 << 31;
+    const LAM_END: Frame = Frame(u64::MAX);
+
+    #[inline]
+    fn arg(term: u32, env: u32) -> Frame {
+        debug_assert_eq!(term & Self::NORM_TAG, 0);
+        Frame((u64::from(env) << 32) | u64::from(term))
+    }
+
+    #[inline]
+    fn norm(term: u32, env: u32) -> Frame {
+        debug_assert_eq!(term & Self::NORM_TAG, 0);
+        Frame((u64::from(env) << 32) | u64::from(term | Self::NORM_TAG))
+    }
+
+    #[inline]
+    fn as_arg(self) -> Option<(u32, u32)> {
+        let term = self.0 as u32;
+        (self != Self::LAM_END && term & Self::NORM_TAG == 0)
+            .then_some((term, (self.0 >> 32) as u32))
+    }
+
+    #[inline]
+    fn as_norm(self) -> Option<(u32, u32)> {
+        let term = self.0 as u32;
+        (self != Self::LAM_END && term & Self::NORM_TAG != 0)
+            .then_some((term & !Self::NORM_TAG, (self.0 >> 32) as u32))
+    }
 }
 
 const NIL: u32 = u32::MAX;
@@ -501,11 +531,11 @@ impl Machine {
             }
             match pool.nodes[t as usize] {
                 Node::App(f, a) => {
-                    self.stack.push(Frame::Arg(a, env));
+                    self.stack.push(Frame::arg(a, env));
                     t = f;
                 }
                 Node::Lam(b) => {
-                    if let Some(&Frame::Arg(at, ae)) = self.stack.last() {
+                    if let Some((at, ae)) = self.stack.last().and_then(|frame| frame.as_arg()) {
                         // β-contraction: bind the argument closure, enter body.
                         self.stack.pop();
                         steps += 1;
@@ -523,7 +553,7 @@ impl Machine {
                         sink.zero();
                         depth += 1;
                         env = self.push_lvl(depth, env);
-                        self.stack.push(Frame::LamEnd);
+                        self.stack.push(Frame::LAM_END);
                         t = b;
                     }
                 }
@@ -545,9 +575,11 @@ impl Machine {
                         // to Norm frames — top of stack is the innermost
                         // argument, which preorder wants first.
                         let mut run = 0usize;
-                        while run < self.stack.len()
-                            && matches!(self.stack[self.stack.len() - 1 - run], Frame::Arg(..))
-                        {
+                        for frame in self.stack.iter_mut().rev() {
+                            let Some((term, env)) = frame.as_arg() else {
+                                break;
+                            };
+                            *frame = Frame::norm(term, env);
                             run += 1;
                         }
                         for _ in 0..run {
@@ -555,12 +587,6 @@ impl Machine {
                             sink.one();
                         }
                         sink.var(depth - k + 1);
-                        let base = self.stack.len() - run;
-                        for f in self.stack[base..].iter_mut() {
-                            if let Frame::Arg(a, e) = *f {
-                                *f = Frame::Norm(a, e);
-                            }
-                        }
                         // Readback: pull the next pending job.
                         loop {
                             trans += 1;
@@ -575,13 +601,14 @@ impl Machine {
                                     self.last_steps = steps;
                                     return Ok(steps);
                                 }
-                                Some(Frame::LamEnd) => depth -= 1,
-                                Some(Frame::Norm(nt, ne)) => {
+                                Some(Frame::LAM_END) => depth -= 1,
+                                Some(frame) if frame.as_norm().is_some() => {
+                                    let (nt, ne) = frame.as_norm().expect("matched norm frame");
                                     t = nt;
                                     env = ne;
                                     continue 'eval;
                                 }
-                                Some(Frame::Arg(..)) => unreachable!(),
+                                Some(_) => unreachable!(),
                             }
                         }
                     }

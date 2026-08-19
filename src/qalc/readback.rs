@@ -26,6 +26,7 @@
 //! where the reference silently slices. All are unreachable on the
 //! pinned carriers.
 
+use std::borrow::Cow;
 use std::collections::{hash_map::Entry, HashMap};
 use std::sync::Arc;
 
@@ -45,7 +46,7 @@ use super::wire::CertEntries;
 pub struct NfRow {
     pub sign: i8,
     pub dk: u8,
-    pub rule: String,
+    pub rule: super::wire::Rule,
     pub state: NfState,
 }
 
@@ -88,11 +89,11 @@ impl From<super::kernel::Defect> for ComposedDefect {
     }
 }
 
-fn det(rule: &str, s: NfState) -> Vec<NfRow> {
+fn det(rule: &'static str, s: NfState) -> Vec<NfRow> {
     vec![NfRow {
         sign: 1,
         dk: 0,
-        rule: rule.to_string(),
+        rule: Cow::Borrowed(rule),
         state: s,
     }]
 }
@@ -688,11 +689,11 @@ fn neutral_probe_shape<'a>(
 // ---------------------------------------------------------------------------
 // Error landings.
 
-fn error_row(rule: &str, token: &RunCore, z: &Zipper) -> Vec<NfRow> {
+fn error_row(rule: &'static str, token: &RunCore, z: &Zipper) -> Vec<NfRow> {
     vec![NfRow {
         sign: 1,
         dk: 0,
-        rule: format!("error-{rule}"),
+        rule: Cow::Owned(format!("error-{rule}")),
         state: NfState::RunDone(NfTerminal::Error {
             kind: ErrorKind::Typed(rule.to_string()),
             garbage: ErrorGarbage::Composed {
@@ -782,7 +783,7 @@ fn nf_step_partial(
                 out.push(NfRow {
                     sign: row.sign,
                     dk: row.dk,
-                    rule: row.rule.to_string(),
+                    rule: Cow::Borrowed(row.rule),
                     state: NfState::Run(NfRun {
                         token: composed_token(target),
                         zipper: zipper.clone(),
@@ -1257,7 +1258,7 @@ fn nf_step_partial(
             super::state::KState::Run(target) => out.push(NfRow {
                 sign: r.sign,
                 dk: r.dk,
-                rule: r.rule.to_string(),
+                rule: Cow::Borrowed(r.rule),
                 state: NfState::Run(NfRun {
                     token: composed_token(target),
                     zipper: zipper.clone(),
@@ -1272,7 +1273,7 @@ fn nf_step_partial(
                 out.push(NfRow {
                     sign: r.sign,
                     dk: r.dk,
-                    rule: format!("error-{}", r.rule),
+                    rule: Cow::Owned(format!("error-{}", r.rule)),
                     state: NfState::RunDone(NfTerminal::Error {
                         kind: ErrorKind::Typed(kind_str),
                         garbage: ErrorGarbage::Kernel {
@@ -1286,7 +1287,7 @@ fn nf_step_partial(
             target @ super::state::KState::Done { .. } => out.push(NfRow {
                 sign: r.sign,
                 dk: r.dk,
-                rule: "error-invalid-kernel-target".to_string(),
+                rule: Cow::Borrowed("error-invalid-kernel-target"),
                 state: NfState::RunDone(NfTerminal::Error {
                     kind: ErrorKind::Typed("invalid-kernel-target".to_string()),
                     garbage: ErrorGarbage::InvalidKernelTarget {
@@ -1781,7 +1782,7 @@ pub fn nf_step_with(
         Err(_defect) => vec![NfRow {
             sign: 1,
             dk: 0,
-            rule: "error-machine-exception".to_string(),
+            rule: Cow::Borrowed("error-machine-exception"),
             state: NfState::RunDone(NfTerminal::Error {
                 kind: ErrorKind::Fault("host-fault".to_string()),
                 garbage: ErrorGarbage::Fault {
@@ -1825,7 +1826,7 @@ fn nf_step_amp(
     term: &Term,
     s: &NfState,
     cert: Option<&CertEntries>,
-) -> Result<Vec<(Amp, String, NfState)>, NfError> {
+) -> Result<Vec<(Amp, super::wire::Rule, NfState)>, NfError> {
     nf_step_with(machine, term, s, cert)
         .into_iter()
         .map(|r| {

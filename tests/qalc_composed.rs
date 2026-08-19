@@ -200,7 +200,7 @@ fn composed_carriers_match_the_reference_counts() {
         for (_, rows) in &carrier.columns {
             assert!(!rows.is_empty(), "{name}: empty non-cut column");
             for (_, rule, _) in rows {
-                rules.insert(rule.clone());
+                rules.insert(rule.to_string());
             }
         }
         total_states += states;

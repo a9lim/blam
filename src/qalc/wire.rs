@@ -29,6 +29,7 @@ use super::state::{
     BinderIdentity, BinderMark, ErrorGarbage, ErrorKind, KState, Kind, Nf, NfRun, NfState,
     NfTerminal, Residue, RunCore, ScopeResidue, TerminalCarrier, TerminalGarbage, Vb, Vert, Zipper,
 };
+use std::borrow::Cow;
 use std::sync::Arc;
 
 use super::term::{Dir, GateName, Path, Term};
@@ -1006,7 +1007,7 @@ fn p_amp(t: &mut Toks) -> R<Amp> {
     }
 }
 
-fn p_rule(t: &mut Toks) -> R<String> {
+fn p_rule(t: &mut Toks) -> R<Rule> {
     let x = t.next()?;
     if x.is_empty()
         || !x
@@ -1015,7 +1016,7 @@ fn p_rule(t: &mut Toks) -> R<String> {
     {
         return Err(format!("bad rule token '{x}'"));
     }
-    Ok(x.to_string())
+    Ok(Cow::Owned(x.to_string()))
 }
 
 // ---------------------------------------------------------------------------
@@ -1738,8 +1739,11 @@ pub struct CorpusPair {
 
 /// A parsed certificate: `(position, popkeys)` entries.
 pub type CertEntries = Vec<(Path, Vec<KdKey>)>;
+/// Transition label. Runtime tables use borrowed static spellings; parsed
+/// fixtures own their tokens. The wire value remains the exact same text.
+pub type Rule = Cow<'static, str>;
 /// One unmerged column row: `(coefficient, rule, target id)`.
-pub type ColRow = (Amp, String, usize);
+pub type ColRow = (Amp, Rule, usize);
 /// One source's exact ordered rows, unmerged: `(source id, rows)`.
 pub type Column = (usize, Vec<ColRow>);
 
@@ -1766,7 +1770,7 @@ pub struct ProgramFixture {
 
 /// One probe row: exact coefficient, rule, and full target state
 /// (probe targets may be off-carrier, so no id indirection).
-pub type ProbeRow = (Amp, String, NfState);
+pub type ProbeRow = (Amp, Rule, NfState);
 
 /// One composed core's phase-2 pins: the same shape as
 /// [`ProgramFixture`] over composed states, plus totalization/inverse
@@ -1895,7 +1899,7 @@ pub fn parse_term(text: &str) -> Result<Term, WireError> {
 type Lines<'a> = std::iter::Enumerate<std::str::Lines<'a>>;
 
 /// One parsed probe over states of type `S`.
-type Probe<S> = (S, Vec<(Amp, String, S)>);
+type Probe<S> = (S, Vec<(Amp, Rule, S)>);
 
 /// The section fields shared by kernel and composed program blocks,
 /// generic over the state parser so the two grammars cannot drift.

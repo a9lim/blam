@@ -9,7 +9,8 @@ use std::sync::Arc;
 use crate::quantum::scalar::ExactSum;
 
 use super::admission::{
-    try_admit, try_admit_probe_with_cap_profiled, try_admit_with_cap_profiled, AdmissionTelemetry,
+    try_admit, try_admit_probe_with_cap_profiled, try_admit_probe_with_cap_profiled_without_digest,
+    try_admit_with_cap_profiled, try_admit_with_cap_profiled_without_digest, AdmissionTelemetry,
     Gate1Admission, CANONICAL_STATE_CAP,
 };
 use super::amp::Amp;
@@ -119,13 +120,27 @@ pub fn select(term: Term) -> Sector {
 /// The total selector plus diagnostic Gate-1 phase timings. Structural Gate-2
 /// images never enter Gate 1 and therefore return zeroed admission telemetry.
 pub fn select_profiled(term: Term) -> (Sector, AdmissionTelemetry) {
+    select_profiled_inner(term, true)
+}
+
+/// Census selector variant that omits local carrier-digest telemetry.
+#[doc(hidden)]
+pub fn select_profiled_without_digest(term: Term) -> (Sector, AdmissionTelemetry) {
+    select_profiled_inner(term, false)
+}
+
+fn select_profiled_inner(term: Term, with_digest: bool) -> (Sector, AdmissionTelemetry) {
     let (selection, telemetry) = match structural_admission(&term) {
         Ok(Some(admission)) => (
             Selection::Structural(admission),
             AdmissionTelemetry::default(),
         ),
         _ => {
-            let (admission, telemetry) = try_admit_with_cap_profiled(&term, CANONICAL_STATE_CAP);
+            let (admission, telemetry) = if with_digest {
+                try_admit_with_cap_profiled(&term, CANONICAL_STATE_CAP)
+            } else {
+                try_admit_with_cap_profiled_without_digest(&term, CANONICAL_STATE_CAP)
+            };
             (
                 admission
                     .map(Selection::Gate1)
@@ -151,6 +166,23 @@ pub fn select_probe_profiled(
     term: Term,
     gate1_state_cap: usize,
 ) -> (Option<Sector>, AdmissionTelemetry) {
+    select_probe_profiled_inner(term, gate1_state_cap, true)
+}
+
+/// Census probe variant that omits local carrier-digest telemetry.
+#[doc(hidden)]
+pub fn select_probe_profiled_without_digest(
+    term: Term,
+    gate1_state_cap: usize,
+) -> (Option<Sector>, AdmissionTelemetry) {
+    select_probe_profiled_inner(term, gate1_state_cap, false)
+}
+
+fn select_probe_profiled_inner(
+    term: Term,
+    gate1_state_cap: usize,
+    with_digest: bool,
+) -> (Option<Sector>, AdmissionTelemetry) {
     match structural_admission(&term) {
         Ok(Some(admission)) => (
             Some(Sector {
@@ -160,7 +192,11 @@ pub fn select_probe_profiled(
             AdmissionTelemetry::default(),
         ),
         _ => {
-            let (admission, telemetry) = try_admit_probe_with_cap_profiled(&term, gate1_state_cap);
+            let (admission, telemetry) = if with_digest {
+                try_admit_probe_with_cap_profiled(&term, gate1_state_cap)
+            } else {
+                try_admit_probe_with_cap_profiled_without_digest(&term, gate1_state_cap)
+            };
             (
                 admission.map(|admission| Sector {
                     term: Arc::new(term),

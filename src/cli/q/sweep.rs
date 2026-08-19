@@ -52,7 +52,7 @@ pub struct Summary {
 /// Run one program to its leaves and check the mass-conservation battery.
 ///
 /// `leaves` is cleared and refilled; it is the caller's reusable buffer.
-pub fn run_and_summarize(
+fn run_and_summarize_inner<const DETAILS: bool>(
     m: &mut Machine,
     pool: &mut Pool,
     prog: &QProgram,
@@ -65,17 +65,21 @@ pub fn run_and_summarize(
     let mut max_steps = 0u64;
     let mut total_mass = Some(Dw::ZERO);
     #[cfg(any(test, feature = "lab"))]
-    let mut halt_mass = Some(Dw::ZERO);
+    let mut halt_mass = DETAILS.then_some(Dw::ZERO);
     #[cfg(any(test, feature = "lab"))]
-    let mut resolved = true;
+    let mut resolved = DETAILS;
     for leaf in leaves.iter() {
         max_steps = max_steps.max(leaf.steps);
         total_mass = total_mass.and_then(|s| leaf.mass.and_then(|x| s.add(x)));
         #[cfg(any(test, feature = "lab"))]
-        match leaf.fate {
-            Fate::Halt(_) => halt_mass = halt_mass.and_then(|s| leaf.mass.and_then(|x| s.add(x))),
-            Fate::Err(_) => {}
-            Fate::Unknown | Fate::Capacity(_) => resolved = false,
+        if DETAILS {
+            match leaf.fate {
+                Fate::Halt(_) => {
+                    halt_mass = halt_mass.and_then(|s| leaf.mass.and_then(|x| s.add(x)))
+                }
+                Fate::Err(_) => {}
+                Fate::Unknown | Fate::Capacity(_) => resolved = false,
+            }
         }
     }
     if let Some(s) = total_mass {
@@ -96,6 +100,32 @@ pub fn run_and_summarize(
         #[cfg(test)]
         total_mass,
     }
+}
+
+/// Production-census spelling: run the shared mass-conservation battery and
+/// return only the step telemetry that caller consumes. In a lab build the
+/// const parameter lets LLVM delete dyadicity-only fate aggregation instead
+/// of making every ordinary census program maintain unused detail.
+pub fn run_and_check(
+    m: &mut Machine,
+    pool: &mut Pool,
+    prog: &QProgram,
+    budget: &Budget,
+    leaves: &mut Vec<Leaf>,
+) -> u64 {
+    run_and_summarize_inner::<false>(m, pool, prog, budget, leaves).max_steps
+}
+
+/// Detailed spelling for the lab-gated dyadicity sweeps and their tests.
+#[cfg(any(test, feature = "lab"))]
+pub fn run_and_summarize(
+    m: &mut Machine,
+    pool: &mut Pool,
+    prog: &QProgram,
+    budget: &Budget,
+    leaves: &mut Vec<Leaf>,
+) -> Summary {
+    run_and_summarize_inner::<true>(m, pool, prog, budget, leaves)
 }
 
 #[cfg(test)]

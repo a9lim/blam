@@ -8,8 +8,9 @@ use blam::blc::wire::enc_to_string;
 use blam::qalc::admission::AdmissionTelemetry;
 use blam::qalc::amp::Amp;
 use blam::qalc::semantics::{
-    error_mass, halt_mass, initial_vector, kraft_weight, rho, running_mass, select_probe_profiled,
-    select_profiled, u, Sector, SelectionKind, SemanticsError,
+    error_mass, halt_mass, initial_vector, kraft_weight, rho, running_mass,
+    select_probe_profiled_without_digest, select_profiled_without_digest, u, Sector, SelectionKind,
+    SemanticsError,
 };
 use blam::qalc::term::{from_blc, invoke_ht};
 use blam::qalc::wire::nf_bytes;
@@ -508,7 +509,8 @@ fn probe_one(
 ) -> R<()> {
     let invocation = parse_invocation(enc, len)?;
     let started = Instant::now();
-    let (sector, telemetry) = select_probe_profiled(invocation, ADMISSION_PREFLIGHT_CAP);
+    let (sector, telemetry) =
+        select_probe_profiled_without_digest(invocation, ADMISSION_PREFLIGHT_CAP);
     let elapsed = started.elapsed();
     match sector {
         Some(sector) => sweep_sector(
@@ -545,7 +547,7 @@ fn sweep_deferred(
 ) -> R<()> {
     let invocation = parse_invocation(deferred.enc, deferred.len)?;
     let started = Instant::now();
-    let (sector, full_telemetry) = select_profiled(invocation);
+    let (sector, full_telemetry) = select_profiled_without_digest(invocation);
     let elapsed = started.elapsed();
     let mut telemetry = deferred.probe_telemetry;
     telemetry.merge(full_telemetry);
