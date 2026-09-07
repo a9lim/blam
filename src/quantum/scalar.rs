@@ -698,6 +698,271 @@ pub fn show_parts(parts: ((i128, u32), (i128, u32))) -> String {
     format!("{ra}/2^{re} + ({sa}/2^{se})·√2")
 }
 
+// ---------------------------------------------------------------------------
+// Speed-prior units: a real mass over an integer clock, directed into
+// 2^-128 units.
+
+/// `floor(√2·2^127)`: the 128-bit fixed-point bracket of √2 that rounds the
+/// √2-part of a non-dyadic mass. Pinned by `sqrt2_fix127_is_floor`, which
+/// squares it in 256-bit arithmetic: `S² ≤ 2^255 < (S+1)²`.
+const SQRT2_FIX127: u128 = 0xb504_f333_f9de_6484_597d_89b3_754a_be9f;
+
+/// Minimal unsigned 256-bit integer — four big-endian u64 limbs, so the
+/// derived ordering is numeric. Only what [`speed_units`] needs; nothing
+/// here is a general bignum.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct U256([u64; 4]);
+
+impl U256 {
+    const ZERO: U256 = U256([0; 4]);
+
+    fn from_u128(x: u128) -> U256 {
+        U256([0, 0, (x >> 64) as u64, x as u64])
+    }
+
+    fn to_u128(self) -> Option<u128> {
+        (self.0[0] == 0 && self.0[1] == 0).then(|| ((self.0[2] as u128) << 64) | self.0[3] as u128)
+    }
+
+    fn is_zero(self) -> bool {
+        self == U256::ZERO
+    }
+
+    /// Exact `a·b`: two u128 factors always fit in 256 bits.
+    fn mul_u128(a: u128, b: u128) -> U256 {
+        let (a1, a0) = (a >> 64, a as u64 as u128);
+        let (b1, b0) = (b >> 64, b as u64 as u128);
+        let p00 = a0 * b0;
+        let p01 = a0 * b1;
+        let p10 = a1 * b0;
+        let p11 = a1 * b1;
+        // Column sums with explicit carries; each partial is < 2^128.
+        let mid = (p00 >> 64) + (p01 as u64 as u128) + (p10 as u64 as u128);
+        let lo = ((mid as u64 as u128) << 64) | (p00 as u64 as u128);
+        let hi = p11 + (p01 >> 64) + (p10 >> 64) + (mid >> 64);
+        U256([(hi >> 64) as u64, hi as u64, (lo >> 64) as u64, lo as u64])
+    }
+
+    fn checked_add(self, o: U256) -> Option<U256> {
+        let mut out = [0u64; 4];
+        let mut carry = 0u128;
+        for i in (0..4).rev() {
+            let s = self.0[i] as u128 + o.0[i] as u128 + carry;
+            out[i] = s as u64;
+            carry = s >> 64;
+        }
+        (carry == 0).then_some(U256(out))
+    }
+
+    /// `self − o`, or `None` when the result would be negative.
+    fn checked_sub(self, o: U256) -> Option<U256> {
+        if self < o {
+            return None;
+        }
+        let mut out = [0u64; 4];
+        let mut borrow = 0i128;
+        for i in (0..4).rev() {
+            let d = self.0[i] as i128 - o.0[i] as i128 - borrow;
+            borrow = i128::from(d < 0);
+            out[i] = (d + (borrow << 64)) as u64;
+        }
+        Some(U256(out))
+    }
+
+    fn checked_shl(self, bits: u32) -> Option<U256> {
+        if bits == 0 {
+            return Some(self);
+        }
+        if bits >= 256 {
+            return self.is_zero().then_some(self);
+        }
+        let (words, rem) = ((bits / 64) as usize, bits % 64);
+        let mut out = [0u64; 4];
+        for (i, slot) in out.iter_mut().enumerate() {
+            let src = i + words;
+            if src < 4 {
+                *slot |= self.0[src] << rem;
+                if rem != 0 && src + 1 < 4 {
+                    *slot |= self.0[src + 1] >> (64 - rem);
+                }
+            }
+        }
+        // Overflow iff any bit shifted out was set: shift back and compare.
+        (U256(out).shr(bits) == self).then_some(U256(out))
+    }
+
+    /// `floor(self / 2^bits)`.
+    fn shr(self, bits: u32) -> U256 {
+        if bits == 0 {
+            return self;
+        }
+        if bits >= 256 {
+            return U256::ZERO;
+        }
+        let (words, rem) = ((bits / 64) as usize, bits % 64);
+        let mut out = [0u64; 4];
+        for i in (0..4).rev() {
+            if i < words {
+                break;
+            }
+            let dst = i;
+            let src = i - words;
+            out[dst] = self.0[src] >> rem;
+            if rem != 0 && src >= 1 {
+                out[dst] |= self.0[src - 1] << (64 - rem);
+            }
+        }
+        U256(out)
+    }
+
+    /// `ceil(self / 2^bits)`.
+    fn shr_ceil(self, bits: u32) -> Option<U256> {
+        let floor = self.shr(bits);
+        let exact = floor.checked_shl(bits) == Some(self);
+        if exact {
+            Some(floor)
+        } else {
+            floor.checked_add(U256::from_u128(1))
+        }
+    }
+
+    /// `(floor(self / d), self mod d)` for a u64 divisor.
+    fn div_rem_u64(self, d: u64) -> (U256, u64) {
+        debug_assert!(d != 0);
+        let mut out = [0u64; 4];
+        let mut rem = 0u128;
+        for (slot, &word) in out.iter_mut().zip(&self.0) {
+            let cur = (rem << 64) | word as u128;
+            *slot = (cur / d as u128) as u64;
+            rem = cur % d as u128;
+        }
+        (U256(out), rem as u64)
+    }
+}
+
+/// A signed 256-bit value as sign + magnitude, for combining the rational
+/// and √2 parts of a mass whose coefficients may have mixed signs.
+#[derive(Clone, Copy, Debug)]
+struct S256 {
+    negative: bool,
+    magnitude: U256,
+}
+
+impl S256 {
+    fn new(negative: bool, magnitude: U256) -> S256 {
+        S256 {
+            negative: negative && !magnitude.is_zero(),
+            magnitude,
+        }
+    }
+
+    fn checked_add(self, o: S256) -> Option<S256> {
+        if self.negative == o.negative {
+            return Some(S256::new(
+                self.negative,
+                self.magnitude.checked_add(o.magnitude)?,
+            ));
+        }
+        if self.magnitude >= o.magnitude {
+            Some(S256::new(
+                self.negative,
+                self.magnitude.checked_sub(o.magnitude)?,
+            ))
+        } else {
+            Some(S256::new(
+                o.negative,
+                o.magnitude.checked_sub(self.magnitude)?,
+            ))
+        }
+    }
+}
+
+/// Directed `(floor, ceil)` of `m·2^128 / max(t, 1)` in 2^-128 units, for
+/// a real nonnegative mass `m` and an integer clock `t`.
+///
+/// This is the speed-prior contribution of halted mass `m` that arrived at
+/// time `t`, in the same 2^-128 grid `docs/classical/speed.md` §3 fixes
+/// for the classical Levin sums. Every return is a certified enclosure,
+/// never a preview. Dyadic masses round exactly, with at most one unit of
+/// slack from the division. A √2-part is bracketed through
+/// [`SQRT2_FIX127`], which adds slack that scales with `|s|·2^(1−e)` for
+/// `m = (r + s√2)/2^e` in reduced form, plus outward rounding at both
+/// ends — small for the masses a census produces, but not bounded by a
+/// constant, since cancellation between `r` and `s√2` permits large
+/// coefficients under a small value. Callers report the realised slack
+/// rather than assume a bound.
+///
+/// Only the scalar is rounded. The discount `1/t` on an operator block is
+/// exact; a caller that wants a certified operator bracket scales the
+/// block by these endpoints over the block's own trace, not by `1/t`
+/// again.
+///
+/// `None` when `m` is not real, is negative (decided exactly, including
+/// values whose sign only the conjugate reveals), or when the result does
+/// not fit `u128` (`m = 1` at `t = 1`, or coefficients past the
+/// arithmetic's range).
+pub fn speed_units(m: Dw, t: u64) -> Option<(u128, u128)> {
+    let t = t.max(1);
+    if m.try_sign_real()? < 0 {
+        return None;
+    }
+    let (a, b, k) = m.real_parts()?;
+    // value = (r + s·√2) / 2^e
+    let (r, s, e) = if k.is_multiple_of(2) {
+        (a, b, k / 2)
+    } else {
+        (b.checked_mul(2)?, a, k.div_ceil(2))
+    };
+    if e > 128 {
+        return None;
+    }
+    let shift = 128 - e;
+    // Rational part: |r|·2^shift, exact.
+    let rational = S256::new(r < 0, U256::from_u128(r.unsigned_abs()).checked_shl(shift)?);
+    // √2 part: |s|·√2·2^shift ∈ [ |s|·S·2^shift/2^127 , |s|·(S+1)·2^shift/2^127 ].
+    let (sqrt_lo, sqrt_hi) = if s == 0 {
+        (U256::ZERO, U256::ZERO)
+    } else {
+        let mag = s.unsigned_abs();
+        let lo = U256::mul_u128(mag, SQRT2_FIX127);
+        let hi = U256::mul_u128(mag, SQRT2_FIX127 + 1);
+        if shift >= 127 {
+            (lo.checked_shl(shift - 127)?, hi.checked_shl(shift - 127)?)
+        } else {
+            (lo.shr(127 - shift), hi.shr_ceil(127 - shift)?)
+        }
+    };
+    // Lower bound on the numerator uses the smaller √2 bracket for s > 0
+    // and the larger (subtracted) one for s < 0; the upper bound mirrors it.
+    let (num_lo, num_hi) = if s < 0 {
+        (
+            rational.checked_add(S256::new(true, sqrt_hi))?,
+            rational.checked_add(S256::new(true, sqrt_lo))?,
+        )
+    } else {
+        (
+            rational.checked_add(S256::new(false, sqrt_lo))?,
+            rational.checked_add(S256::new(false, sqrt_hi))?,
+        )
+    };
+    if num_hi.negative {
+        return None;
+    }
+    let lower = if num_lo.negative {
+        0
+    } else {
+        num_lo.magnitude.div_rem_u64(t).0.to_u128()?
+    };
+    let (q, rem) = num_hi.magnitude.div_rem_u64(t);
+    let upper = if rem == 0 {
+        q
+    } else {
+        q.checked_add(U256::from_u128(1))?
+    }
+    .to_u128()?;
+    Some((lower, upper))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1231,5 +1496,150 @@ mod tests {
         assert!(is_dyadic(Dw::ONE));
         // Dyadic masses have zero √2 part.
         assert!(sqrt2_part(Dw::ONE).is_zero());
+    }
+
+    #[test]
+    fn sqrt2_fix127_is_floor() {
+        let s = SQRT2_FIX127;
+        let two_255 = U256::from_u128(1).checked_shl(255).unwrap();
+        assert!(U256::mul_u128(s, s) <= two_255);
+        assert!(U256::mul_u128(s + 1, s + 1) > two_255);
+    }
+
+    #[test]
+    fn u256_primitives() {
+        let x = U256::from_u128(u128::MAX);
+        assert_eq!(x.checked_shl(128).unwrap().shr(128), x);
+        assert!(x.checked_shl(129).is_none());
+        // (2^128 − 1)² + 2·(2^128 − 1) = 2^256 − 1: the largest value fits,
+        // and one more overflows.
+        let max = U256::mul_u128(u128::MAX, u128::MAX)
+            .checked_add(U256::mul_u128(2, u128::MAX))
+            .unwrap();
+        assert_eq!(max, U256([u64::MAX; 4]));
+        assert!(max.checked_add(U256::from_u128(1)).is_none());
+        let (q, r) = U256::mul_u128(1 << 100, 1 << 100).div_rem_u64(3);
+        assert_eq!(r, 1); // 2^200 mod 3 = (−1)^200 = 1
+                          // 2^200/3 does not fit u128, and multiplying the quotient back
+                          // recovers the dividend minus the remainder.
+        assert!(q.to_u128().is_none());
+        assert_eq!(
+            U256::mul_u128(3, 1).checked_add(U256::ZERO).unwrap(),
+            U256::from_u128(3)
+        );
+        let back = q
+            .checked_shl(1)
+            .and_then(|twice| twice.checked_add(q))
+            .and_then(|thrice| thrice.checked_add(U256::from_u128(r as u128)))
+            .unwrap();
+        assert_eq!(back, U256::mul_u128(1 << 100, 1 << 100));
+        assert_eq!(U256::from_u128(7).shr_ceil(1), Some(U256::from_u128(4)));
+        assert_eq!(U256::from_u128(8).shr_ceil(1), Some(U256::from_u128(4)));
+        assert!(U256::from_u128(3).checked_sub(U256::from_u128(4)).is_none());
+    }
+
+    #[test]
+    fn speed_units_dyadic_matches_u128_formula() {
+        // m = 3/2^5 at t = 7: 3·2^123/7, floor and ceil.
+        let m = Dw {
+            a: 3,
+            b: 0,
+            c: 0,
+            d: 0,
+            k: 10,
+        };
+        let num = 3u128 << 123;
+        assert_eq!(speed_units(m, 7), Some((num / 7, num.div_ceil(7))));
+        // t = 0 clamps to 1; an exact division has zero slack.
+        assert_eq!(speed_units(m, 0), Some((num, num)));
+        assert_eq!(speed_units(Dw::ZERO, 5), Some((0, 0)));
+    }
+
+    #[test]
+    fn speed_units_brackets_sqrt2_masses() {
+        let unit = 2f64.powi(128);
+        // (2 + √2)/4 = |1 + ω|²/4, non-dyadic with positive √2 part.
+        let m = Dw {
+            a: 2,
+            b: 1,
+            c: 0,
+            d: -1,
+            k: 4,
+        };
+        let (lo, hi) = speed_units(m, 1).unwrap();
+        assert!(hi - lo <= 2);
+        let expect = (2.0 + std::f64::consts::SQRT_2) / 4.0;
+        assert!((lo as f64 / unit - expect).abs() < 1e-15);
+        // (2 − √2)/4 = |1 − ω|²/4: mixed signs, at t = 3.
+        let m = Dw {
+            a: 2,
+            b: -1,
+            c: 0,
+            d: 1,
+            k: 4,
+        };
+        let (lo, hi) = speed_units(m, 3).unwrap();
+        assert!(hi - lo <= 2);
+        let expect = (2.0 - std::f64::consts::SQRT_2) / 12.0;
+        assert!((lo as f64 / unit - expect).abs() < 1e-15);
+        // Odd denominator exponent: 1/√2³ = √2/4.
+        let m = Dw {
+            a: 1,
+            b: 0,
+            c: 0,
+            d: 0,
+            k: 3,
+        };
+        let (lo, hi) = speed_units(m, 1).unwrap();
+        assert!(hi - lo <= 2);
+        assert!((lo as f64 / unit - std::f64::consts::SQRT_2 / 4.0).abs() < 1e-15);
+        // Cancellation widens the √2 bracket: 3 − 2√2 ≈ 0.1716 at e = 0
+        // costs |s|·2^(1−e) = 4 units beyond the division, and the
+        // enclosure still holds.
+        let m = Dw {
+            a: 3,
+            b: -2,
+            c: 0,
+            d: 2,
+            k: 0,
+        };
+        let (lo, hi) = speed_units(m, 1).unwrap();
+        assert!(hi - lo <= 5);
+        let expect = 3.0 - 2.0 * std::f64::consts::SQRT_2;
+        assert!((lo as f64 / unit - expect).abs() < 1e-15);
+        // A full unit mass fits when the clock leaves room; at t = 1 it
+        // would be 2^128 and is refused.
+        assert_eq!(speed_units(Dw::ONE, 2), Some((1 << 127, 1 << 127)));
+        assert_eq!(speed_units(Dw::ONE, 1), None);
+        // A negative value that only its conjugate reveals:
+        // 47321 − 33461√2 = −1/(47321 + 33461√2).
+        assert_eq!(
+            speed_units(
+                Dw {
+                    a: 47321,
+                    b: -33461,
+                    c: 0,
+                    d: 33461,
+                    k: 0
+                },
+                3
+            ),
+            None
+        );
+        // Not real, and not a mass, are refused.
+        assert_eq!(speed_units(Dw::OMEGA, 1), None);
+        assert_eq!(
+            speed_units(
+                Dw {
+                    a: -1,
+                    b: 0,
+                    c: 0,
+                    d: 0,
+                    k: 2
+                },
+                1
+            ),
+            None
+        );
     }
 }

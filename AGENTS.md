@@ -78,7 +78,11 @@ v1.43 rule register, and `rust-pillar.md` maps the live Rust implementation.
 full-normal-form machine, linear-SSA compiler, native-CNOT shadow, structural
 admission, finite checker, and total public semantics. The default-built
 `blam qalc` group exposes `run`, `gram`, `compile`, `fixtures`, and the separate
-measured `census` layer over ordinary prefix-free `p h t` invocations.
+measured `census` layer over ordinary prefix-free `p h t` invocations. The
+census always accumulates the exact halt-arrival spectrum and open floors
+(checkpoint config `qalc-census-v1`); `--speed FILE` renders the speed prior of
+`docs/quantum-algebraic/speed.md` from them without touching the deterministic
+report, whose digests the convergence record pins.
 The census's 1,000-state admission preflight is one-sided: success is a
 complete checked admission, but failure is only a scheduling signal and must
 retry the canonical 300,000-state selector. Retries run in a separate pool

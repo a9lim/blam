@@ -178,7 +178,7 @@ says how to get them rather than pretending they do not exist.
 | `trace` *(lab)* | reduction-shape classifier and probe instruments |
 | `q run` | run one qBLC program, one line per branch leaf |
 | `q census` | the quantum operator census (`--cond-k K` dimension-conditioned mode, `--sig` alternate signature universes) |
-| `qalc census` | exact finite-clock `p h t` census with Ω brackets and optional sparse `M` output |
+| `qalc census` | exact finite-clock `p h t` census with Ω brackets, optional sparse `M` output, and the `--speed` arrival spectrum with certified Ω_speed brackets |
 | `q skeleton` | the trusted divergence sweep over census Unknowns (`--sig` sets the hole count by its length) |
 | `q selfint` | qBLC self-interpretation and effect-tree bisimulation measurement |
 | `q galois idiom` / `q galois complement` *(lab)* | the two-stage dyadicity campaign |

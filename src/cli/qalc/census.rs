@@ -8,15 +8,15 @@ use blam::blc::wire::enc_to_string;
 use blam::qalc::admission::AdmissionTelemetry;
 use blam::qalc::amp::Amp;
 use blam::qalc::semantics::{
-    error_mass, halt_mass, initial_vector, kraft_weight, rho, running_mass,
+    error_mass, halt_arrivals, halt_mass, initial_vector, kraft_weight, rho, running_mass,
     select_probe_profiled_without_digest, select_profiled_without_digest, u, Sector, SelectionKind,
     SemanticsError,
 };
 use blam::qalc::term::{from_blc, invoke_ht};
 use blam::qalc::wire::nf_bytes;
-use blam::quantum::scalar::ExactSum;
+use blam::quantum::scalar::{speed_units, ExactSum};
 use rayon::prelude::*;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::fmt::Write as _;
 use std::time::{Duration, Instant};
 
@@ -37,6 +37,7 @@ run
   --retry-threads N  canonical admission retry pool (0 = up to 8, default)
   --out FILE      write the deterministic report to FILE as well as stdout
   --matrix FILE   accumulate and write sparse finite M coordinates
+  --speed FILE    write the speed prior: arrival spectrum and Omega_speed brackets
   --checkpoint FILE   kill-safe group-level resume
   --groups K      groups per size for --checkpoint (default 64)
 
@@ -45,7 +46,10 @@ The lower approximation is exact halted mass at the requested clock; the upper
 bracket adds exact still-running mass. Error mass is excluded. `--matrix`
 retains arbitrary-normal-form coordinates and can be much larger than the
 scalar census; rho and its trace are audited even when coordinates are not
-retained.";
+retained. The speed prior (Levin) charges every halted block 1/a at its
+arrival time a = clock - tick and still-running mass at most 1/(clock+1);
+`--speed` writes the exact arrival spectrum and the directed 2^-128-unit
+brackets, and the deterministic report is unchanged by it.";
 
 #[derive(Clone, Copy, Debug, Default)]
 struct PerfTelemetry {
@@ -92,6 +96,13 @@ struct Tally {
     halt: ExactSum,
     error: ExactSum,
     running: ExactSum,
+    /// Kraft-weighted halted mass by arrival time: `Σ_p 2^-|p| Δμ_p(a)`.
+    /// Exact and sparse; the speed prior is a post-pass over it.
+    arrivals: BTreeMap<u64, ExactSum>,
+    /// Kraft-weighted still-running mass by its speed floor, the clock the
+    /// program reached plus one (the requested clock unless capacity cut
+    /// the run short).
+    open_floors: BTreeMap<u64, ExactSum>,
     matrix: HashMap<MatrixKey, ExactSum>,
     perf: PerfTelemetry,
     slow_selection: Vec<SlowSelection>,
@@ -114,6 +125,8 @@ impl Tally {
             halt: ExactSum::ZERO,
             error: ExactSum::ZERO,
             running: ExactSum::ZERO,
+            arrivals: BTreeMap::new(),
+            open_floors: BTreeMap::new(),
             matrix: HashMap::new(),
             perf: PerfTelemetry::default(),
             slow_selection: Vec::new(),
@@ -157,6 +170,18 @@ impl Tally {
         self.halt.merge(&other.halt);
         self.error.merge(&other.error);
         self.running.merge(&other.running);
+        for (arrival, value) in other.arrivals {
+            self.arrivals
+                .entry(arrival)
+                .or_insert(ExactSum::ZERO)
+                .merge(&value);
+        }
+        for (floor, value) in other.open_floors {
+            self.open_floors
+                .entry(floor)
+                .or_insert(ExactSum::ZERO)
+                .merge(&value);
+        }
         for (coordinate, value) in other.matrix {
             self.matrix
                 .entry(coordinate)
@@ -241,6 +266,16 @@ impl crate::ckpt::CkptRecord for Tally {
             Some((at, len, enc)) => writeln!(out, "C {at} {len} {enc}").unwrap(),
             None => out.push_str("C - - -\n"),
         }
+        for (arrival, value) in &self.arrivals {
+            write!(out, "A {arrival}").unwrap();
+            value.write_ckpt(out);
+            out.push('\n');
+        }
+        for (floor, value) in &self.open_floors {
+            write!(out, "F {floor}").unwrap();
+            value.write_ckpt(out);
+            out.push('\n');
+        }
         let mut matrix: Vec<_> = self.matrix.iter().collect();
         matrix.sort_unstable_by(|a, b| a.0.cmp(b.0));
         for ((left, right), value) in matrix {
@@ -252,7 +287,8 @@ impl crate::ckpt::CkptRecord for Tally {
 
     fn parse_line(&mut self, line: &str) -> Option<()> {
         let mut fields = line.split_whitespace();
-        match fields.next()? {
+        let tag = fields.next()?;
+        match tag {
             "S" => {
                 let mut number = || fields.next()?.parse::<u64>().ok();
                 self.programs = number()?;
@@ -294,6 +330,20 @@ impl crate::ckpt::CkptRecord for Tally {
                 };
                 fields.next().is_none().then_some(())
             }
+            "A" | "F" => {
+                let key: u64 = fields.next()?.parse().ok()?;
+                let value = ExactSum::parse_ckpt(&mut fields)?;
+                let map = if tag == "A" {
+                    &mut self.arrivals
+                } else {
+                    &mut self.open_floors
+                };
+                if fields.next().is_some() || map.insert(key, value).is_some() {
+                    None
+                } else {
+                    Some(())
+                }
+            }
             "M" => {
                 let left = unhex(fields.next()?)?;
                 let right = unhex(fields.next()?)?;
@@ -321,6 +371,8 @@ struct Row {
     peak_support: usize,
     matrix_coordinates: usize,
     halt: ExactSum,
+    arrivals: BTreeMap<u64, ExactSum>,
+    open_floors: BTreeMap<u64, ExactSum>,
 }
 
 impl Row {
@@ -336,6 +388,8 @@ impl Row {
             peak_support: tally.peak_support,
             matrix_coordinates: tally.matrix.len(),
             halt: tally.halt,
+            arrivals: tally.arrivals.clone(),
+            open_floors: tally.open_floors.clone(),
         }
     }
 }
@@ -398,6 +452,9 @@ fn sweep_sector(
     let evolution_started = Instant::now();
     let mut vector = initial_vector(&selected.sector);
     let mut peak_support = vector.len();
+    // The clock the retained vector actually stands at: `steps`, or one
+    // short of the transition a capacity cut refused.
+    let mut reached = steps;
     for at in 1..=steps {
         match u(&selected.sector, &vector) {
             Ok(next) => {
@@ -405,6 +462,7 @@ fn sweep_sector(
                 if next.len() > support_cap {
                     tally.capacity[1] += 1;
                     tally.note_capacity(at, witness);
+                    reached = at - 1;
                     break;
                 }
                 vector = next;
@@ -412,6 +470,7 @@ fn sweep_sector(
             Err(SemanticsError::Capacity) => {
                 tally.capacity[0] += 1;
                 tally.note_capacity(at, witness);
+                reached = at - 1;
                 break;
             }
             Err(error) => return Err(semantic_error(enc, len, at, error)),
@@ -441,6 +500,35 @@ fn sweep_sector(
     tally.halt.add(kraft_weight(halted, len as u32));
     tally.error.add(kraft_weight(errored, len as u32));
     tally.running.add(kraft_weight(running, len as u32));
+
+    let arrivals =
+        halt_arrivals(&vector, reached).map_err(|e| semantic_error(enc, len, reached, e))?;
+    let mut arrived = Amp::ZERO;
+    for mass in arrivals.values() {
+        arrived = arrived
+            .add(*mass)
+            .ok_or_else(|| semantic_error(enc, len, reached, SemanticsError::Capacity))?;
+    }
+    if arrived != halted {
+        return Err(format!(
+            "blam qalc census: arrival histogram differs from halt mass for {}",
+            enc_to_string(enc, len)
+        ));
+    }
+    for (arrival, mass) in arrivals {
+        tally
+            .arrivals
+            .entry(arrival)
+            .or_insert(ExactSum::ZERO)
+            .add(kraft_weight(mass, len as u32));
+    }
+    if !running.is_zero() {
+        tally
+            .open_floors
+            .entry(reached + 1)
+            .or_insert(ExactSum::ZERO)
+            .add(kraft_weight(running, len as u32));
+    }
 
     match rho(&vector) {
         Ok(density) => {
@@ -725,6 +813,206 @@ fn render_report(
     report
 }
 
+/// One speed-prior bracket in 2^-128 units over an arrival histogram and
+/// its open floors (`docs/classical/speed.md` §3 grid, directed rounding).
+#[derive(Clone, Copy, Debug, Default)]
+struct SpeedBracket {
+    /// `Σ_a floor(H(a)·2^128 / a)`.
+    lower: u128,
+    /// `Σ_a ceil(H(a)·2^128 / a)`.
+    halt_upper: u128,
+    /// `Σ_f ceil(R(f)·2^128 / f)`: still-running mass at its floor.
+    open_upper: u128,
+    arrivals: usize,
+    deepest: Option<u64>,
+}
+
+impl SpeedBracket {
+    fn upper(&self) -> R<u128> {
+        self.halt_upper
+            .checked_add(self.open_upper)
+            .ok_or_else(|| "blam qalc census: speed upper bracket overflowed".to_string())
+    }
+}
+
+fn speed_bracket(
+    arrivals: &BTreeMap<u64, ExactSum>,
+    floors: &BTreeMap<u64, ExactSum>,
+) -> R<SpeedBracket> {
+    let overflow = || "blam qalc census: speed bracket overflowed 2^128 units".to_string();
+    let mut out = SpeedBracket::default();
+    for (&arrival, mass) in arrivals {
+        let value = mass
+            .value()
+            .ok_or_else(|| "blam qalc census: exact arrival mass overflowed".to_string())?;
+        let (lo, hi) = speed_units(value, arrival).ok_or_else(|| {
+            format!(
+                "blam qalc census: arrival mass at step {arrival} is not a unit mass: {}",
+                mass.exact_str()
+            )
+        })?;
+        out.lower = out.lower.checked_add(lo).ok_or_else(overflow)?;
+        out.halt_upper = out.halt_upper.checked_add(hi).ok_or_else(overflow)?;
+        out.arrivals += 1;
+        out.deepest = Some(arrival);
+    }
+    for (&floor, mass) in floors {
+        let value = mass
+            .value()
+            .ok_or_else(|| "blam qalc census: exact running mass overflowed".to_string())?;
+        let (_, hi) = speed_units(value, floor).ok_or_else(|| {
+            format!(
+                "blam qalc census: running mass at floor {floor} is not a unit mass: {}",
+                mass.exact_str()
+            )
+        })?;
+        out.open_upper = out.open_upper.checked_add(hi).ok_or_else(overflow)?;
+    }
+    Ok(out)
+}
+
+/// A 2^-128-unit mass as a decimal preview.
+fn units_f64(units: u128) -> f64 {
+    units as f64 / 2f64.powi(128)
+}
+
+fn render_speed(
+    min_n: u32,
+    max_n: u32,
+    steps: u64,
+    support_cap: usize,
+    rows: &[Row],
+    total: &Tally,
+) -> R<String> {
+    let mut out = String::new();
+    writeln!(
+        out,
+        "# qALC speed prior (Levin) spec v0 — ordinary closed BLC p, invocation p h t"
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "# sizes {min_n}..={max_n}  steps={steps} support={support_cap}"
+    )
+    .unwrap();
+    out.push_str(
+        "# clock: global U transitions. A halted block that entered the halt sector at\n\
+         # time a (tick = clock - a) is charged 2^-|p| Δμ_p(a) / a. Still-running mass at a\n\
+         # program's reached clock c is open: 0 below, at most 2^-|p| running / (c+1) above.\n\
+         # units: 2^-128, directed (floor into lower, ceil into upper); exact masses are\n\
+         # (a,b,c,d,k): (a+b*w+c*w^2+d*w^3)/sqrt(2)^k, w=e^(i*pi/4)\n#\n",
+    );
+    out.push_str(
+        "# n   arrivals  deepest   speed-lower(units)   speed-upper(units)   open-upper(units)   speed-lower(f64)  speed-upper(f64)\n",
+    );
+    for row in rows {
+        let bracket = speed_bracket(&row.arrivals, &row.open_floors)?;
+        let upper = bracket.upper()?;
+        writeln!(
+            out,
+            "{:>4} {:>9} {:>8}  {:>40} {:>40} {:>40}  {:.12e}  {:.12e}",
+            row.n,
+            bracket.arrivals,
+            bracket.deepest.map_or("-".to_string(), |a| a.to_string()),
+            bracket.lower,
+            upper,
+            bracket.open_upper,
+            units_f64(bracket.lower),
+            units_f64(upper),
+        )
+        .unwrap();
+    }
+    out.push_str("#\n");
+    let bracket = speed_bracket(&total.arrivals, &total.open_floors)?;
+    let upper = bracket.upper()?;
+    let omega_units = total
+        .halt
+        .value()
+        .and_then(|value| speed_units(value, 1))
+        .ok_or_else(|| "blam qalc census: exact halt mass is not a unit mass".to_string())?;
+    if bracket.lower > omega_units.0 {
+        return Err("blam qalc census: Omega_speed lower exceeds Omega_qALC lower".into());
+    }
+    writeln!(out, "## Totals ({} programs)", total.programs).unwrap();
+    writeln!(
+        out,
+        "Omega_speed lower = {}  = {:.15}",
+        bracket.lower,
+        units_f64(bracket.lower)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "Omega_speed upper = {}  = {:.15}   (halt ceil + running/(clock+1))",
+        upper,
+        units_f64(upper)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "open running     <= {}  = {:.6e}",
+        bracket.open_upper,
+        units_f64(bracket.open_upper)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "bracket width     = {}  = {:.6e}",
+        upper - bracket.lower,
+        units_f64(upper - bracket.lower)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "halt rounding slack = {} units   (upper − lower over halted arrivals alone)",
+        bracket.halt_upper - bracket.lower
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "Omega_qALC lower  = {}  = {:.15}   (unit floor of the exact halt mass)",
+        omega_units.0,
+        units_f64(omega_units.0)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "arrival times {}  deepest {}",
+        bracket.arrivals,
+        bracket.deepest.map_or("-".to_string(), |a| a.to_string())
+    )
+    .unwrap();
+    out.push_str("#\n## Arrival spectrum: n  a  exact(H_n(a))  real\n");
+    for row in rows {
+        for (arrival, value) in &row.arrivals {
+            writeln!(
+                out,
+                "A {} {} {} {:.15e}",
+                row.n,
+                arrival,
+                value.exact_str(),
+                value.re()
+            )
+            .unwrap();
+        }
+    }
+    out.push_str("## Open floors: n  floor  exact(R_n(floor))  real\n");
+    for row in rows {
+        for (floor, value) in &row.open_floors {
+            writeln!(
+                out,
+                "F {} {} {} {:.15e}",
+                row.n,
+                floor,
+                value.exact_str(),
+                value.re()
+            )
+            .unwrap();
+        }
+    }
+    Ok(out)
+}
+
 fn render_matrix(
     min_n: u32,
     max_n: u32,
@@ -755,11 +1043,19 @@ fn render_matrix(
     out
 }
 
-fn reject_path_aliases(out: Option<&str>, matrix: Option<&str>, checkpoint: Option<&str>) -> R<()> {
+fn reject_path_aliases(
+    out: Option<&str>,
+    matrix: Option<&str>,
+    speed: Option<&str>,
+    checkpoint: Option<&str>,
+) -> R<()> {
     for (left_name, left, right_name, right) in [
         ("--out", out, "--matrix", matrix),
+        ("--out", out, "--speed", speed),
         ("--out", out, "--checkpoint", checkpoint),
+        ("--matrix", matrix, "--speed", speed),
         ("--matrix", matrix, "--checkpoint", checkpoint),
+        ("--speed", speed, "--checkpoint", checkpoint),
     ] {
         if left.is_some() && left == right {
             return Err(format!(
@@ -782,6 +1078,7 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut retry_threads = 0usize;
     let mut out_path: Option<String> = None;
     let mut matrix_path: Option<String> = None;
+    let mut speed_path: Option<String> = None;
     let mut checkpoint_path: Option<String> = None;
     let mut groups_flag = 0usize;
     let mut args = Args::new("qalc census", argv);
@@ -793,6 +1090,7 @@ pub fn run(argv: &[String]) -> R<()> {
             "--retry-threads" => retry_threads = args.num(token)?,
             "--out" => out_path = Some(args.value(token)?.to_string()),
             "--matrix" => matrix_path = Some(args.value(token)?.to_string()),
+            "--speed" => speed_path = Some(args.value(token)?.to_string()),
             "--checkpoint" => checkpoint_path = Some(args.value(token)?.to_string()),
             "--groups" => groups_flag = args.num(token)?,
             _ if token.starts_with('-') => return Err(args.unknown(token)),
@@ -816,6 +1114,7 @@ pub fn run(argv: &[String]) -> R<()> {
     reject_path_aliases(
         out_path.as_deref(),
         matrix_path.as_deref(),
+        speed_path.as_deref(),
         checkpoint_path.as_deref(),
     )?;
 
@@ -825,6 +1124,10 @@ pub fn run(argv: &[String]) -> R<()> {
     };
     let mut matrix_file = match &matrix_path {
         Some(path) => Some(crate::out::create("qalc census", "--matrix", path)?),
+        None => None,
+    };
+    let mut speed_file = match &speed_path {
+        Some(path) => Some(crate::out::create("qalc census", "--speed", path)?),
         None => None,
     };
     let collect_matrix = matrix_file.is_some();
@@ -846,7 +1149,7 @@ pub fn run(argv: &[String]) -> R<()> {
     );
 
     let config = format!(
-        "qalc-census-v0 min={min_n} max={max_n} steps={steps} support={support_cap} matrix={}",
+        "qalc-census-v1 min={min_n} max={max_n} steps={steps} support={support_cap} matrix={}",
         u8::from(collect_matrix)
     );
     let mut checkpoint = match &checkpoint_path {
@@ -997,6 +1300,10 @@ pub fn run(argv: &[String]) -> R<()> {
         let matrix = render_matrix(min_n, max_n, steps, support_cap, &total.matrix);
         crate::out::write_all("qalc census", path, file, matrix.as_bytes())?;
     }
+    if let (Some(path), Some(file)) = (&speed_path, speed_file.as_mut()) {
+        let speed = render_speed(min_n, max_n, steps, support_cap, &rows, &total)?;
+        crate::out::write_all("qalc census", path, file, speed.as_bytes())?;
+    }
     Ok(())
 }
 
@@ -1012,6 +1319,8 @@ mod tests {
         tally.note_support(7, (10, 42));
         tally.note_capacity(9, (10, 42));
         tally.halt.add(Some(blam::quantum::scalar::Dw::ONE));
+        tally.arrivals.insert(37, tally.halt);
+        tally.open_floors.insert(1025, tally.halt);
         tally.matrix.insert(
             ("( nl ( nv i:1 ) )".into(), "( nv i:2 )".into()),
             tally.halt,
@@ -1028,6 +1337,9 @@ mod tests {
         assert_eq!(parsed.earliest_capacity, tally.earliest_capacity);
         assert_eq!(parsed.halt.value(), tally.halt.value());
         assert_eq!(parsed.matrix.len(), 1);
+        assert_eq!(parsed.arrivals.len(), 1);
+        assert_eq!(parsed.arrivals[&37].value(), tally.halt.value());
+        assert_eq!(parsed.open_floors[&1025].value(), tally.halt.value());
     }
 
     #[test]

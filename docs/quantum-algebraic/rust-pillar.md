@@ -170,7 +170,10 @@ must equal the certificate selected by the public semantics before execution.
 `census` instead constructs the canonical invocation from each enumerated BLC
 program and keeps the gates outside its prefix length. `--retry-threads`
 controls only the canonical second-phase pool (up to eight workers by default),
-not the selector or census semantics.
+not the selector or census semantics. `--speed FILE` writes the speed-prior
+surface of `speed.md` — the exact arrival spectrum and the directed
+`Ω_speed` brackets — from the same run, leaving the deterministic report
+byte-identical.
 
 The qALC verification contract is:
 

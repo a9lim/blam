@@ -5,7 +5,7 @@ and ordered next work. `README.md` is the stable public map; domain documents
 state durable contracts; canonical outputs live in `data/`. Superseded state is
 available from Git history rather than retained in the live documentation.
 
-Last updated: 2026-08-18.
+Last updated: 2026-09-07.
 
 ## Classical state
 
@@ -184,7 +184,9 @@ designated-output convention, derive explicit comparison constants with
 2. Add reference-configuration cycles and the E-infinity universal-safety
    calculus for the hole-demanded residue.
 3. Implement branch-local clocks and resource vectors before defining a
-   quantum speed prior; round `1/T`, never individual matrix entries.
+   quantum speed prior; round `1/T`, never individual matrix entries. The
+   qALC counterpart (`quantum-algebraic/speed.md`) is measured and its
+   `quantum::scalar::speed_units` rounding is the shared piece.
 4. Complete the complement sweep at sizes 52 and 53.
 5. Continue the odd-sector pruning program and the bisimulation proof.
 
@@ -237,15 +239,17 @@ programs/s, 11.1 GB peak footprint); n=24 takes 10.87 seconds. Its deterministic
 report has SHA-256
 `55fb31c008c77bf98418f2a2606bde6ba7af1d3c32d149866a9e96bc900c9671`.
 
-The incremental extension (2026-08-18, same machine and thread counts, 64
-checkpoint groups, one shared 900-second wall budget per size) measured:
+The incremental extension (protocol of 2026-08-18, same machine and thread
+counts, 64 checkpoint groups, one shared 900-second wall budget per size;
+regenerated 2026-09-07 with the speed-prior columns, every non-timing column
+and report digest identical, wall times from the regeneration) measured:
 
 | n | programs | 1,024 steps | 4,096 steps | 8,192 steps | deepest h/e/r | result |
 |---:|---:|---:|---:|---:|---:|---|
-| 25 | 14,334 | 32.783 s | 37.389 s | — | 6,074 / 8,252 / 23 | stable at 1,024/4,096 |
-| 26 | 27,465 | 89.831 s | 105.746 s | — | 11,504 / 15,943 / 64 | stable at 1,024/4,096 |
-| 27 | 47,146 | 69.666 s | 94.840 s | — | 19,295 / 27,894 / 45 | stable at 1,024/4,096 |
-| 28 | 89,270 | 238.985 s | 289.214 s | 356.500 s | 36,210 / 53,025 / 247 | not converged |
+| 25 | 14,334 | 31.199 s | 36.638 s | — | 6,074 / 8,252 / 23 | stable at 1,024/4,096 |
+| 26 | 27,465 | 87.293 s | 102.686 s | — | 11,504 / 15,943 / 64 | stable at 1,024/4,096 |
+| 27 | 47,146 | 66.858 s | 90.378 s | — | 19,295 / 27,894 / 45 | stable at 1,024/4,096 |
+| 28 | 89,270 | 215.108 s | 270.764 s | 319.721 s | 36,210 / 53,025 / 247 | not converged |
 
 Thus the contiguous 1,024/4,096 convergence record now reaches 27 bits. At
 n=28 the halt contribution stays exactly `(4513,0,0,0,50)` at all three
@@ -256,9 +260,52 @@ at step 8,192. The upper contribution correspondingly tightens from
 `(36351,0,0,0,56)`. No run hits evolution, support, or density capacity and
 peak support remains four. The nominal 15-minute size budget expires after
 901 seconds of watchdog-granularity wall time; the next 16,384-step checkpoint
-contains one of 64 groups, not a report. The canonical rows and report digests
+contains 14 of 64 groups, not a report. The canonical rows and report digests
 are `../data/qalc/census_convergence.txt`; the resumable protocol is
 `../scripts/qalc-census-extend.sh`.
+
+### Speed prior
+
+The qALC speed prior (`quantum-algebraic/speed.md`) charges every halted
+block `1/a` at its arrival time `a = clock − tick`, read off the halt
+sector's own tick register, and charges still-running mass at most
+`1/(clock+1)` on the upper side. The census always accumulates the exact
+arrival spectrum; `--speed FILE` renders it, and the convergence record now
+carries the `Ω_speed` columns in 2⁻¹²⁸ units beside the `Ω_qALC` ones.
+Measured on the same runs (decimals are previews of the certified unit
+values):
+
+| n | clock | Ω_speed lower | Ω_speed upper | speed width | Ω_qALC width |
+|---:|---:|---:|---:|---:|---:|
+| 4..24 | 1,024 | 0.002163939964415 | 0.002163947698482 | 7.734e-9 | 7.927e-6 |
+| 4..24 | 4,096 | 0.002163939964415 | 0.002163941899348 | 1.935e-9 | 7.927e-6 |
+| 25 | 1,024 | 0.000005523279746 | 0.000005523948481 | 6.687e-10 | 6.855e-7 |
+| 25 | 4,096 | 0.000005523279746 | 0.000005523447052 | 1.673e-10 | 6.855e-7 |
+| 26 | 1,024 | 0.000005189173196 | 0.000005190103610 | 9.304e-10 | 9.537e-7 |
+| 26 | 4,096 | 0.000005189173196 | 0.000005189405970 | 2.328e-10 | 9.537e-7 |
+| 27 | 1,024 | 0.000004305350675 | 0.000004305677773 | 3.271e-10 | 3.353e-7 |
+| 27 | 4,096 | 0.000004305350675 | 0.000004305432509 | 8.183e-11 | 3.353e-7 |
+| 28 | 1,024 | 0.000003969081425 | 0.000003970008205 | 9.268e-10 | 9.499e-7 |
+| 28 | 4,096 | 0.000003969081425 | 0.000003969307834 | 2.264e-10 | 9.276e-7 |
+| 28 | 8,192 | 0.000003969081425 | 0.000003969193734 | 1.123e-10 | 9.201e-7 |
+
+The lower endpoint is identical across clocks at every size — no halt
+arrives after step 1,003, the deepest arrival at both 26 and 28 — and the
+width scales with the floor: the 4..24 open subtotal is exactly
+`⌈133·2^104/(clock+1)⌉` at both clocks, and at n=28 the three widths fall
+by the floor ratio times the small decrease in running mass as late errors
+leave. The speed bracket is three to four orders of magnitude narrower than
+the `Ω_qALC` bracket and keeps tightening where `Ω_qALC`'s barely moves.
+This is an ε-accuracy stopping rule for `Ω_speed` over the enumerated
+sizes, including at n=28; it does not certify that the error and running
+counts have settled, nor does it narrow the undiscounted `Ω_qALC` bracket.
+Every population through 28 is dyadic, so the realised halt-rounding slack
+equals the number of inexact divisions (96 units at 4..24). The design was
+verified adversarially by Codex on thread `qalc-speed-prior` (2026-09-07):
+the arrival readout, floor sharpness, exact-arithmetic containment,
+operator claims, and the headline all held; the retracted claims — that the
+native clock is the classical honest gauge or an effect-resource vector, and
+a constant slack bound — are recorded in `speed.md` §1 and §3.
 
 The carrier index and discovery order share immutable states, each target is
 hashed once on insertion, and admission derives Gram from the checked carrier.
@@ -314,15 +361,21 @@ and generated `native_decide` evaluations are explicit trust boundaries.
 ### qALC docket
 
 1. Resolve the n=28 late-error clock edge before extending the contiguous
-   convergence claim. The 1,024-step clock is sufficient on 4..27 but false as
-   a convergence clock at n=28; 4,096 is also not stable against 8,192. Extract
-   the late arrivals or add arrival-time telemetry, then choose an adaptive or
-   certified stopping rule rather than promoting another finite clock to a
-   universal default. The partial 16,384-step checkpoint is resumable only
-   under a deliberately larger per-size budget.
-2. Optionally strengthen the ambient lifecycle/minimal-carrier theorem,
+   convergence claim for `Ω_qALC`. The 1,024-step clock is sufficient on
+   4..27 but false as a convergence clock at n=28; 4,096 is also not stable
+   against 8,192. The arrival spectrum now gives halt-side arrival telemetry
+   (deepest halt 1,003), and the speed prior gives a certified ε-stopping
+   rule for `Ω_speed`; what remains is the error/running side — extract the
+   late errors' arrival times, then decide whether the protocol should
+   accept a size on the certified `Ω_speed` width, on settled error counts,
+   or on both. The partial 16,384-step checkpoint is resumable only under a
+   deliberately larger per-size budget.
+2. Extend the speed surface: per-output arrival blocks for `M_speed` and a
+   witness `Kt`, a defined honest gauge and effect-resource vector (the
+   native clock is neither), and the `RunDone(Error)` floor refinement.
+3. Optionally strengthen the ambient lifecycle/minimal-carrier theorem,
    general probe-exit classification, and arrival/pop determinacy.
-3. Prove the all-program pure-path conservativity theorem, then decide whether
+4. Prove the all-program pure-path conservativity theorem, then decide whether
    classical `Omega_BLC` is Solovay complete for the actual closed-term code.
    For full `M` universality, fix the effective infinite-dimensional target
    class and build or rule out a synchronized clean compiler with uniform

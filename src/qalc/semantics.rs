@@ -2,7 +2,7 @@
 //! finite-time halt mass `mu_p`, reduced output operator `rho_p`, and finite
 //! directed approximants of `M` / `Omega_qALC`.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
 
@@ -362,6 +362,8 @@ pub enum SemanticsError {
     NormLeak,
     NotConservativeLanding,
     InvalidPredecessor,
+    /// A halted state whose tick exceeds the clock it was read at.
+    TickBeyondClock,
 }
 
 fn norm(vector: &Superposition) -> Result<Amp, SemanticsError> {
@@ -518,6 +520,32 @@ pub fn halt_mass(vector: &Superposition) -> Result<Amp, SemanticsError> {
         }
     }
     Ok(total)
+}
+
+/// Halted mass by arrival time.  Every halted block enters the halt sector
+/// at tick zero (architecture §4.3, common origin) and only ticks after
+/// that, so at clock `now` a halted state with tick `k` arrived at
+/// `a = now − k`; the map holds `Δμ_p(a) = μ_p(a) − μ_p(a − 1)` and sums
+/// exactly to [`halt_mass`].  This is the readout the speed prior charges
+/// at `1/a`; nothing is traced or grouped, so it is independent of the
+/// coherence blocks of [`rho`].
+pub fn halt_arrivals(
+    vector: &Superposition,
+    now: u64,
+) -> Result<BTreeMap<u64, Amp>, SemanticsError> {
+    let mut out: BTreeMap<u64, Amp> = BTreeMap::new();
+    for (basis, amplitude) in vector {
+        let Some((_, _, tick)) = done_halt(basis.live()) else {
+            continue;
+        };
+        let arrival = now
+            .checked_sub(tick)
+            .ok_or(SemanticsError::TickBeyondClock)?;
+        let mass = amplitude.norm_sq().ok_or(SemanticsError::Capacity)?;
+        let entry = out.entry(arrival).or_insert(Amp::ZERO);
+        *entry = entry.add(mass).ok_or(SemanticsError::Capacity)?;
+    }
+    Ok(out)
 }
 
 pub fn error_mass(vector: &Superposition) -> Result<Amp, SemanticsError> {
@@ -770,6 +798,37 @@ mod tests {
             vector = next;
         }
         panic!("forced fallback never fired H");
+    }
+
+    #[test]
+    fn halt_arrivals_are_the_halt_mass_increments() {
+        // A branching H sector and a plain one: at every clock the arrival
+        // histogram is exactly the sequence of halt-mass increments, and a
+        // tick beyond the clock is refused rather than wrapped.
+        for term in [pinned("lone"), lam(Term::Var(1))] {
+            let sector = select(term);
+            let clock = 96;
+            let mu = mu_approximants(&sector, clock).unwrap();
+            let vector = evolve(&sector, clock).unwrap();
+            let arrivals = halt_arrivals(&vector, clock).unwrap();
+            let mut total = Amp::ZERO;
+            for time in 1..=clock as usize {
+                let increment = mu[time].1.sub(mu[time - 1].1).unwrap();
+                let recorded = arrivals.get(&(time as u64)).copied();
+                if increment.is_zero() {
+                    assert_eq!(recorded, None, "spurious arrival at {time}");
+                } else {
+                    assert_eq!(recorded, Some(increment), "arrival mass at {time}");
+                }
+                total = total.add(increment).unwrap();
+            }
+            assert_eq!(total, halt_mass(&vector).unwrap());
+            assert!(!arrivals.is_empty());
+            assert_eq!(
+                halt_arrivals(&vector, 0),
+                Err(SemanticsError::TickBeyondClock)
+            );
+        }
     }
 
     #[test]

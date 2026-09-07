@@ -5,7 +5,10 @@
 #     1024 -> 4096 -> 8192 -> 16384 -> ...
 #
 # and is accepted only when two adjacent deterministic reports are identical
-# after removing the clock header.  A timeout stops the campaign at that size;
+# after removing the clock header.  Each run also writes the speed-prior file
+# (`--speed`, docs/quantum-algebraic/speed.md); its brackets are clock-
+# dependent by design and never enter the stability test, but the summary
+# carries their totals beside the Omega_qALC columns.  A timeout stops the campaign at that size;
 # group checkpoints and the cumulative spent-seconds file make a later run at
 # a deliberately larger budget resumable without silently resetting the old
 # allowance.
@@ -62,6 +65,7 @@ run_clock() {
     dir=$OUT/n$n
     report=$dir/$clock.txt
     log=$dir/$clock.log
+    speed=$dir/$clock.speed.txt
     checkpoint=$dir/$clock.ckpt
     started=$(date +%s)
 
@@ -69,6 +73,7 @@ run_clock() {
         --steps "$clock" --support "$SUPPORT" \
         --threads "$THREADS" --retry-threads "$RETRY_THREADS" \
         --checkpoint "$checkpoint" --groups "$CKPT_GROUPS" \
+        --speed "$speed" \
         > "$report" 2> "$log" &
     child=$!
     timed_out=0
@@ -173,12 +178,13 @@ summary=$OUT/convergence.txt
     echo "# qALC finite-clock convergence census"
     echo "# generated $(date +%F); invocation=p-h-t support=$SUPPORT matrix=false"
     echo "# threads=$THREADS retry-threads=$RETRY_THREADS groups=$CKPT_GROUPS per-size-budget=${BUDGET}s"
-    echo "# n steps wall-s programs gate1 cons halt error running cap peak omega-lower-exact bracket-upper-exact report-sha256"
+    echo "# omega-speed columns are 2^-128 units from the run's speed file (lower, upper, open running subtotal)"
+    echo "# n steps wall-s programs gate1 cons halt error running cap peak omega-lower-exact bracket-upper-exact speed-lower speed-upper speed-open report-sha256"
     scan=$MIN
     while [ "$scan" -le "$MAX" ]; do
         scan_dir=$OUT/n$scan
         [ -d "$scan_dir" ] || break
-        for report in $(find "$scan_dir" -maxdepth 1 -type f -name '[0-9]*.txt' -size +0c | sort -t/ -k4n); do
+        for report in $(find "$scan_dir" -maxdepth 1 -type f -name '[0-9]*.txt' ! -name '*.speed.txt' -size +0c | sort -t/ -k4n); do
             clock=$(basename "$report" .txt)
             log=$scan_dir/$clock.log
             report_complete "$report" "$log" || continue
@@ -187,10 +193,14 @@ summary=$OUT/convergence.txt
             wall=$(sed -n 's/.*(\([0-9][0-9.]*\)s, [0-9][0-9.]*\/s).*/\1/p' "$log" | tail -n 1)
             lower=$(awk '/^Omega_qALC lower =/ { print $4; exit }' "$report")
             upper=$(awk '/^bracket upper/ { print $4; exit }' "$report")
+            speed=$scan_dir/$clock.speed.txt
+            speed_lower=$(awk '/^Omega_speed lower =/ { print $4; exit }' "$speed")
+            speed_upper=$(awk '/^Omega_speed upper =/ { print $4; exit }' "$speed")
+            speed_open=$(awk '/^open running/ { print $4; exit }' "$speed")
             digest=$(shasum -a 256 "$report" | awk '{print $1}')
-            printf '%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n' \
+            printf '%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n' \
                 "$scan" "$clock" "$wall" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" \
-                "$lower" "$upper" "$digest"
+                "$lower" "$upper" "${speed_lower:--}" "${speed_upper:--}" "${speed_open:--}" "$digest"
         done
         if [ -s "$scan_dir/stable_clocks" ]; then
             set -- $(cat "$scan_dir/stable_clocks")
