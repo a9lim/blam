@@ -80,8 +80,8 @@ def streamOf (bits : List Bool) (R : Term) : Term :=
 /-- `⌜p⌝ = stream(p, FALSE)`. -/
 def quote (p : Term) : Term := streamOf (blcCode p) falseT
 
-/-- Tromp's 170-bit binary-LC interpreter (ref/AIT int.lam via
-tools/blcc.py — the checked-in optimum), transcribed to 0-indexed
+/-- Tromp's 170-bit binary-LC interpreter (ref/AIT int.lam @ fd4e9b0 via
+tools/blcc.py; upstream's is now 168), transcribed to 0-indexed
 de Bruijn. `wire_intL` below is the kernel's guarantee that this
 constant and those bits are the same object. -/
 def intL : Term := .app (.lam (.app (.var 0) (.var 0))) (.lam (.app (.lam (.lam (.lam (.app (.var 0) (.lam (.lam (.app (.app (.var 1) (.app (.var 0) (.lam (.app (.var 5) (.lam (.app (.app (.var 1) (.app (.var 5) (.lam (.lam (.app (.var 2) (.lam (.lam (.app (.app (.var 1) (.var 2)) (.app (.var 0) (.var 3)))))))))) (.app (.var 6) (.lam (.app (.var 6) (.lam (.app (.app (.var 2) (.var 0)) (.app (.var 1) (.var 0))))))))))))) (.app (.app (.var 3) (.var 0)) (.app (.app (.var 0) (.var 0)) (.var 0)))))))))) (.app (.var 0) (.var 0))))

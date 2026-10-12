@@ -44,7 +44,8 @@ congruence, so `U(C) =β U(REF)` makes `C` interchangeable under every
 instantiation of the frame. Applying to `rest` widens acceptance from β to
 βη, which only strengthens a negative result.
 
-Goldens (independently recomputed from `ref/AIT/ait/int.lam` via
+Goldens (independently recomputed from the 170-bit `ref/AIT/ait/int.lam` of
+tromp/AIT `fd4e9b0` — upstream is now 168, see `design.md` — via
 `tools/blcc.py` + `lc.py`, and byte-identical to the two published in
 `search-spec.md`):
 
@@ -171,7 +172,7 @@ beta_total — meeting the repo's verification bar for engine changes.
   term's actual occurrence mask (`tests::obligations_match_brute_force`).
 - **Split coverage**: `split_tasks` at targets 1/7/64/1000 reproduces the
   direct enumeration exactly (`tests::split_covers_exactly`).
-- **Source chain**: `ref/AIT/ait/int.lam` → `tools/blcc.py` → 170 bits → passes
+- **Source chain**: `ref/AIT/ait/int.lam` @ `fd4e9b0` → `tools/blcc.py` → 170 bits → passes
   the 10-program battery in `harness.py`; the three slots at their syntactic
   positions in that term are exactly the 21/43/41-bit strings searched, and
   re-splicing the survivors reproduces the same 170 bits with the battery
@@ -183,7 +184,8 @@ beta_total — meeting the repo's verification bar for engine changes.
 the spec was written to kill) are intentionally absent. `lc.py`, `db.py`, and
 `harness.py` are live
 (used above for the golden cross-check and source-chain battery),
-as does `tools/self-interpreter/search_fix.py` (the knot search of `design.md`).
+as are `tools/self-interpreter/search_fix.py` (the knot search of `design.md`)
+and `float_out.py` (the let-float neighborhood in `design.md`'s header note).
 
 ## What this does not cover
 

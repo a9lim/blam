@@ -1,5 +1,17 @@
 # Design theory: why 170 bits is a local optimum
 
+> **Superseded at 168 (2026-09, recorded 2026-10-11).** Sean Palmer's
+> `int.lam` (tromp/AIT `2cfa384`) beats the 170 with a binder move none of
+> the families below generated: β-expand the zero-branch continuation
+> `\bit1. …` out from under `\list \bit0 \list1` and bind it just inside
+> `\cont`. The let costs one λ and one application (+6) and saves 8 in
+> de Bruijn depth (`L=16, A=26, X=30` against `15, 25, 38`). The measured
+> verdicts below stand for the families they name; the *Inference*
+> section's "not another binder move" does not.
+> `tools/self-interpreter/float_out.py` finds the 168 as the 170's unique
+> improving one-step let-float and nothing below 168 within two pure
+> expansions.
+
 The structural question is whether there is a route below the 170-bit
 self-interpreter through *global* rearrangement — fixpoint shape,
 continuation timing, environment representation — as opposed to the

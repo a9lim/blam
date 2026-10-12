@@ -34,7 +34,8 @@ use blam::{app, lam, var, Term};
 use rayon::prelude::*;
 use std::time::Instant;
 
-/// ref/AIT/ait/int.lam via tools/blcc.py (the 170-bit checked-in optimum).
+/// The 170-bit ref/AIT/ait/int.lam of tromp/AIT fd4e9b0 via tools/blcc.py
+/// (upstream's is now 168; docs/classical/self-interpreter/design.md).
 const INTL: &str = "01000110100001000000011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010010111110100101101010011010";
 
 /// λ⁵. meas (h (t (h (new t)))) — the first-nondyadic-leaves witness (n=45).

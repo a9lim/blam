@@ -65,9 +65,22 @@ VAR, ABS, and APP slot searches; each reference fragment is the unique
 survivor. Fixpoint shape, continuation timing, environment-cell variants, and
 binder placement are also exhausted within their specified families.
 
-The remaining mechanical lane is the contextual search in
-`classical/self-interpreter/search-spec.md` §2. A survivor is only a hypothesis
-until it is spliced into the full interpreter and passes the semantic battery.
+Upstream has since gone below it. Sean Palmer's 168-bit `int.lam` (tromp/AIT
+`2cfa384`, Sep 2026; `uni.lam` 196 → 190, plus a 178-bit non-strict `uni`) is
+one β-expansion of the 170: the zero-branch continuation is let-floated out
+from under `\list \bit0 \list1` to sit just inside `\cont`, +6 bits of redex
+for −8 of de Bruijn depth. None of our families generated it; binder placement
+moved only the existing `intL = a a` binding.
+`tools/self-interpreter/float_out.py` finds the 168 as the 170's unique
+improving one-step let-float, and finds nothing below 168 within two pure
+expansions (best +5 at one step, +7 at two).
+
+Open mechanical lanes: the VAR/ABS/APP slot searches re-run on the 168's frame
+(its binder stack differs, so the 170's certificates do not transfer), a mixed
+expand/reduce neighborhood (`float_out.py` composes expansions only), and the
+contextual search in `classical/self-interpreter/search-spec.md` §2. A survivor
+is only a hypothesis until it is spliced into the full interpreter and passes
+the semantic battery.
 
 ### Classical docket
 

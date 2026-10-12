@@ -1,5 +1,5 @@
 //! Exhaustive **parametric** slot search for the 170-bit BLC self-interpreter
-//! (`ref/AIT/ait/int.lam`), per
+//! (`ref/AIT/ait/int.lam` as of tromp/AIT `fd4e9b0`), per
 //! `docs/classical/self-interpreter/search-spec.md` §1 and §4.
 //!
 //! The interpreter's three branch bodies sit under a stack of rigid binders:

@@ -371,8 +371,9 @@ implementation would weaken the evidence:
 
 - `tools/blcc.py` checks compilation;
 - `tools/certificates/loop32_trace.py` checks the foundational growing loop;
-- `tools/self-interpreter/harness.py` (with `lc.py`, `db.py`) checks the
-  published 170-bit term, and `search_fix.py` runs the knot search;
+- `tools/self-interpreter/harness.py` (with `lc.py`, `db.py`) checks
+  interpreter candidates, `search_fix.py` runs the knot search, and
+  `float_out.py` the let-float neighborhood that reaches upstream's 168;
 - `tools/bbtxt.py` cross-matches Tromp's `BB.txt` `-- TODO:` fail traces —
   the terms his own BB run could not adjudicate — against our census
   unknowns, encoding his de Bruijn notation to BLC bits and reporting, per

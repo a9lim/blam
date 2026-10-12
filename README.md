@@ -252,7 +252,8 @@ Omega|<=41 in [0.124105086764, 0.124105092895]
 ```
 
 The 170-bit classical self-interpreter is locally optimal across its three
-exhaustive slot-search families. The speed-prior sweep supplies exact Kt,
+exhaustive slot-search families; upstream has since reached 168 bits (Sean
+Palmer) by a let-float outside them. The speed-prior sweep supplies exact Kt,
 depth, and time-spectrum data with post-certificate open mass below `5.93e-12`
 on the beta clock.
 
