@@ -1,0 +1,129 @@
+{
+ "name": "abs",
+ "ambient": 5,
+ "holes": [
+  [
+   "CELL",
+   2
+  ]
+ ],
+ "required": [
+  0,
+  2
+ ],
+ "max_cost": 16,
+ "all": 1967,
+ "tested": 52,
+ "unknown": 0,
+ "cycles": 0,
+ "hits": [
+  {
+   "cost": 16,
+   "bits_with_holes": "0111100000011110[CELL]"
+  }
+ ],
+ "rows": [
+  {
+   "cost": 0,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 1,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 2,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 3,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 4,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 5,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 6,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 7,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 8,
+   "all": 7,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 9,
+   "all": 6,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 10,
+   "all": 21,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 11,
+   "all": 20,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 12,
+   "all": 75,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 13,
+   "all": 102,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 14,
+   "all": 281,
+   "tested": 12,
+   "hits": 0
+  },
+  {
+   "cost": 15,
+   "all": 420,
+   "tested": 8,
+   "hits": 0
+  },
+  {
+   "cost": 16,
+   "all": 1033,
+   "tested": 32,
+   "hits": 1
+  }
+ ]
+}

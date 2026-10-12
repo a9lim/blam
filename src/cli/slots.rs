@@ -160,7 +160,12 @@ fn occurrence(frame: u8, depth: u8, n: u8) -> Option<u8> {
     if i > frame + depth {
         return None;
     }
-    Some(if i <= depth { 0 } else { 1 << (i - depth - 1) })
+    // Frame variables past the eighth carry no obligation bit.
+    Some(if i <= depth || i - depth > 8 {
+        0
+    } else {
+        1 << (i - depth - 1)
+    })
 }
 
 #[inline(always)]

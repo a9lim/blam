@@ -1,0 +1,121 @@
+{
+ "name": "next_packed",
+ "ambient": 2,
+ "holes": [
+  [
+   "ABS",
+   1
+  ],
+  [
+   "APP",
+   1
+  ]
+ ],
+ "required": [
+  0,
+  1
+ ],
+ "max_cost": 14,
+ "all": 3246,
+ "tested": 72,
+ "unknown": 0,
+ "cycles": 0,
+ "hits": [
+  {
+   "cost": 14,
+   "bits_with_holes": "01110000101110[ABS][APP]"
+  }
+ ],
+ "rows": [
+  {
+   "cost": 0,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 1,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 2,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 3,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 4,
+   "all": 2,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 5,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 6,
+   "all": 8,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 7,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 8,
+   "all": 32,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 9,
+   "all": 16,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 10,
+   "all": 134,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 11,
+   "all": 96,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 12,
+   "all": 494,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 13,
+   "all": 512,
+   "tested": 24,
+   "hits": 0
+  },
+  {
+   "cost": 14,
+   "all": 1952,
+   "tested": 48,
+   "hits": 1
+  }
+ ]
+}

@@ -1,0 +1,106 @@
+{
+ "name": "admin",
+ "ambient": 1,
+ "holes": [
+  [
+   "HANDLER",
+   3
+  ],
+  [
+   "NEXT",
+   1
+  ]
+ ],
+ "required": [],
+ "max_cost": 12,
+ "all": 122,
+ "tested": 122,
+ "unknown": 0,
+ "cycles": 0,
+ "hits": [
+  {
+   "cost": 12,
+   "bits_with_holes": "000100000110[HANDLER][NEXT]"
+  }
+ ],
+ "rows": [
+  {
+   "cost": 0,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 1,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 2,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 3,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 4,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 5,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 6,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 7,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 8,
+   "all": 6,
+   "tested": 6,
+   "hits": 0
+  },
+  {
+   "cost": 9,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 10,
+   "all": 16,
+   "tested": 16,
+   "hits": 0
+  },
+  {
+   "cost": 11,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 12,
+   "all": 100,
+   "tested": 100,
+   "hits": 1
+  }
+ ]
+}

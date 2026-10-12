@@ -181,7 +181,7 @@ impl Probe {
         }
     }
 
-    fn new(m: &str) -> Probe {
+    pub(super) fn new(m: &str) -> Probe {
         let mut head = Vec::new();
         push_bits(&mut head, "0000" /* \c \n */);
         push_bits(&mut head, "0101" /* ((E c) S) */);
@@ -249,21 +249,21 @@ impl Sink for Golden<'_> {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum Verdict {
+pub(super) enum Verdict {
     Pass,
     Fail,
     Unknown,
 }
 
-struct Ctx<'a> {
-    cfg: EngineCfg,
-    pre: &'a [bool],
-    post: &'a [bool],
-    probes: &'a [Probe],
+pub(super) struct Ctx<'a> {
+    pub(super) cfg: EngineCfg,
+    pub(super) pre: &'a [bool],
+    pub(super) post: &'a [bool],
+    pub(super) probes: &'a [Probe],
 }
 
 impl Ctx<'_> {
-    fn assemble(&self, buf: &mut Vec<bool>, p: &Probe, enc: u64, len: u8) {
+    pub(super) fn assemble(&self, buf: &mut Vec<bool>, p: &Probe, enc: u64, len: u8) {
         buf.clear();
         buf.extend_from_slice(&p.head);
         buf.extend_from_slice(self.pre);
@@ -274,7 +274,7 @@ impl Ctx<'_> {
         buf.extend_from_slice(&p.tail);
     }
 
-    fn judge(
+    pub(super) fn judge(
         &self,
         pool: &mut Pool,
         vm: &mut Machine,
@@ -286,7 +286,7 @@ impl Ctx<'_> {
     }
 
     /// `mult` scales each probe's β budget relative to the reference run.
-    fn judge_at(
+    pub(super) fn judge_at(
         &self,
         pool: &mut Pool,
         vm: &mut Machine,
@@ -367,15 +367,15 @@ pub(super) fn programs(limit: usize) -> Vec<String> {
 }
 
 #[derive(Default)]
-struct Stats {
-    total: u64,
-    fail: u64,
-    pass: Vec<(u64, u8)>,
-    unknown: Vec<(u64, u8)>,
+pub(super) struct Stats {
+    pub(super) total: u64,
+    pub(super) fail: u64,
+    pub(super) pass: Vec<(u64, u8)>,
+    pub(super) unknown: Vec<(u64, u8)>,
 }
 
 impl Stats {
-    fn merge(mut self, o: Stats) -> Stats {
+    pub(super) fn merge(mut self, o: Stats) -> Stats {
         self.total += o.total;
         self.fail += o.fail;
         self.pass.extend(o.pass);
@@ -384,7 +384,7 @@ impl Stats {
     }
 }
 
-fn spliced(pre: &[bool], post: &[bool], enc: u64, len: u8) -> String {
+pub(super) fn spliced(pre: &[bool], post: &[bool], enc: u64, len: u8) -> String {
     let b = |v: &[bool]| {
         v.iter()
             .map(|&x| if x { '1' } else { '0' })

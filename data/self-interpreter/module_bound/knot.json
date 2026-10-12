@@ -1,0 +1,119 @@
+{
+ "name": "knot",
+ "all": 14803,
+ "unknown": 0,
+ "diverge": 5,
+ "hits": [
+  {
+   "cost": 20,
+   "bits_with_holes": "01000110100001[H]011010"
+  }
+ ],
+ "rows": [
+  {
+   "cost": 0,
+   "all": 1,
+   "hits": 0
+  },
+  {
+   "cost": 1,
+   "all": 0,
+   "hits": 0
+  },
+  {
+   "cost": 2,
+   "all": 1,
+   "hits": 0
+  },
+  {
+   "cost": 3,
+   "all": 0,
+   "hits": 0
+  },
+  {
+   "cost": 4,
+   "all": 1,
+   "hits": 0
+  },
+  {
+   "cost": 5,
+   "all": 0,
+   "hits": 0
+  },
+  {
+   "cost": 6,
+   "all": 5,
+   "hits": 0
+  },
+  {
+   "cost": 7,
+   "all": 0,
+   "hits": 0
+  },
+  {
+   "cost": 8,
+   "all": 11,
+   "hits": 0
+  },
+  {
+   "cost": 9,
+   "all": 6,
+   "hits": 0
+  },
+  {
+   "cost": 10,
+   "all": 27,
+   "hits": 0
+  },
+  {
+   "cost": 11,
+   "all": 14,
+   "hits": 0
+  },
+  {
+   "cost": 12,
+   "all": 85,
+   "hits": 0
+  },
+  {
+   "cost": 13,
+   "all": 64,
+   "hits": 0
+  },
+  {
+   "cost": 14,
+   "all": 237,
+   "hits": 0
+  },
+  {
+   "cost": 15,
+   "all": 230,
+   "hits": 0
+  },
+  {
+   "cost": 16,
+   "all": 733,
+   "hits": 0
+  },
+  {
+   "cost": 17,
+   "all": 836,
+   "hits": 0
+  },
+  {
+   "cost": 18,
+   "all": 2273,
+   "hits": 0
+  },
+  {
+   "cost": 19,
+   "all": 2934,
+   "hits": 0
+  },
+  {
+   "cost": 20,
+   "all": 7345,
+   "hits": 1
+  }
+ ]
+}

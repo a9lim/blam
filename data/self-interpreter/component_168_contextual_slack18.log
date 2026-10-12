@@ -1,0 +1,33 @@
+start 168 bits, slack 18, au=true eta=true contextual=true descend=false, 8 threads
+  layer 1: +208 new, 209 total, 0.0s
+  layer 2: +17057 new, 17266 total, 0.0s
+  layer 3: +70307 new, 87573 total, 0.5s
+  layer 4: +214394 new, 301967 total, 2.4s
+  layer 5: +512857 new, 814824 total, 8.0s
+  layer 6: +942828 new, 1757652 total, 21.5s
+  layer 7: +1619845 new, 3377497 total, 45.4s
+  layer 8: +2094369 new, 5471866 total, 85.4s
+  layer 9: +2633179 new, 8105045 total, 138.4s
+  layer 10: +2565754 new, 10670799 total, 203.0s
+  layer 11: +2299140 new, 12969939 total, 266.1s
+  layer 12: +1717131 new, 14687070 total, 320.6s
+  layer 13: +1057957 new, 15745027 total, 362.8s
+  layer 14: +583700 new, 16328727 total, 389.7s
+  layer 15: +254189 new, 16582916 total, 404.1s
+  layer 16: +106499 new, 16689415 total, 410.3s
+  layer 17: +54804 new, 16744219 total, 412.9s
+  layer 18: +34798 new, 16779017 total, 414.2s
+  layer 19: +23600 new, 16802617 total, 415.1s
+  layer 20: +16466 new, 16819083 total, 415.7s
+  layer 21: +9665 new, 16828748 total, 416.1s
+  layer 22: +5501 new, 16834249 total, 416.3s
+  layer 23: +2427 new, 16836676 total, 416.4s
+  layer 24: +931 new, 16837607 total, 416.5s
+  layer 25: +258 new, 16837865 total, 416.5s
+  layer 26: +74 new, 16837939 total, 416.5s
+  layer 27: +17 new, 16837956 total, 416.5s
+  layer 28: +5 new, 16837961 total, 416.5s
+  layer 29: +0 new, 16837961 total, 416.5s
+component under the limit: 16837961 states, 2156068 distinct terms; size histogram (delta:count) 0:1 1:3 2:5 3:12 4:26 5:42 6:157 7:472 8:962 9:2036 10:4291 11:7772 12:14596 13:33755 14:74844 15:148235 16:292840 17:563513 18:1012506
+0 term(s) below 168, 0 tie(s)
+timeout 840 $S/target/release/blam golf component --bits $B --slack 18   8    3232.35s user 9.14s system 766% cpu 7:02.94 total

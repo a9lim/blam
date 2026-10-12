@@ -1,0 +1,247 @@
+control: the cell
+    `_` frame [arg args exp bit1 cont intL x]
+    144 fixed bits; --max-size 24 --must 1,2
+    total 57390 fills in 0.0s: 1 survivors, 0 unknown
+    SURVIVOR 24 bits  000001011101110011011110
+      interpreter 168 bits
+value list x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    146 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value list1 list1 x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    148 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value list1 bit0 x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    149 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value bit0 list1 x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    149 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value list list1 x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    150 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value list1 list x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    150 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value list1 next x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    151 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value next x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    147 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value list bit0 x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    151 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 2 survivors, 0 unknown
+    SURVIVOR 24 bits  000001011101110011011110
+    SURVIVOR 25 bits  0001011000111000011011110
+      interpreter 175 bits
+      interpreter 176 bits
+value bit0 x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    145 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value list1 cont x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    152 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+value list list x cell
+    `_` frame [arg args exp bit1 cont intL x]
+    152 fixed bits; --max-size 25 --must 1,2
+    total 110510 fills in 0.0s: 0 survivors, 0 unknown
+cell leaky x value
+    `_` frame [list1 bit0 list next cont intL x]
+    164 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 0 survivors, 0 unknown
+cell leaky x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    144 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.7s: 0 survivors, 12 unknown
+cell scott x value
+    `_` frame [list1 bit0 list next cont intL x]
+    157 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 0 survivors, 0 unknown
+cell scott x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    137 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.7s: 0 survivors, 12 unknown
+cell scott-flip x value
+    `_` frame [list1 bit0 list next cont intL x]
+    157 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 0 survivors, 0 unknown
+cell scott-flip x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    137 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.7s: 0 survivors, 12 unknown
+cell leaky-flip x value
+    `_` frame [list1 bit0 list next cont intL x]
+    164 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 0 survivors, 0 unknown
+cell leaky-flip x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    144 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.7s: 0 survivors, 12 unknown
+cell selK x value
+    `_` frame [list1 bit0 list next cont intL x]
+    168 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 35 survivors, 0 unknown
+    SURVIVOR 2 bits  10
+    SURVIVOR 8 bits  01001010
+    SURVIVOR 9 bits  000111010
+    SURVIVOR 9 bits  010011010
+    SURVIVOR 9 bits  011110110
+    SURVIVOR 10 bits  0100110110
+    SURVIVOR 11 bits  01011101010
+    SURVIVOR 11 bits  01001101110
+    SURVIVOR 11 bits  01001100010
+    SURVIVOR 12 bits  010111011010
+    SURVIVOR 12 bits  010011011110
+    SURVIVOR 12 bits  010011000110
+    SURVIVOR 12 bits  011000001110
+    SURVIVOR 12 bits  011110000010
+    SURVIVOR 13 bits  0100110111110
+    SURVIVOR 13 bits  0100110011010
+    SURVIVOR 13 bits  0100110001110
+    SURVIVOR 13 bits  0100110000010
+    SURVIVOR 13 bits  0101110111010
+    SURVIVOR 13 bits  0101110001010
+      interpreter 170 bits
+      interpreter 176 bits
+      interpreter 177 bits
+      interpreter 177 bits
+      interpreter 177 bits
+      interpreter 178 bits
+      interpreter 179 bits
+      interpreter 179 bits
+      interpreter 179 bits
+      interpreter 180 bits
+      interpreter 180 bits
+      interpreter 180 bits
+      interpreter 180 bits
+      interpreter 180 bits
+      interpreter 181 bits
+      interpreter 181 bits
+      interpreter 181 bits
+      interpreter 181 bits
+      interpreter 181 bits
+      interpreter 181 bits
+cell selK x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    148 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.7s: 4 survivors, 12 unknown
+    SURVIVOR 22 bits  0101111110100101101010
+    SURVIVOR 23 bits  01011111101001011010110
+    SURVIVOR 24 bits  010111111010010110101110
+    SURVIVOR 24 bits  010111111010010110100010
+      interpreter 170 bits
+      interpreter 171 bits
+      interpreter 172 bits
+      interpreter 172 bits
+cell cons-flip x value
+    `_` frame [list1 bit0 list next cont intL x]
+    166 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 0 survivors, 0 unknown
+cell cons-flip x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    146 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.7s: 0 survivors, 12 unknown
+cell cons-flip2 x value
+    `_` frame [list1 bit0 list next cont intL x]
+    166 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 0 survivors, 0 unknown
+cell cons-flip2 x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    146 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.7s: 0 survivors, 12 unknown
+cell k-arg x value
+    `_` frame [list1 bit0 list next cont intL x]
+    151 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 0 survivors, 0 unknown
+cell k-arg x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    131 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.8s: 0 survivors, 12 unknown
+cell args-first x value
+    `_` frame [list1 bit0 list next cont intL x]
+    166 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 0 survivors, 0 unknown
+cell args-first x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    146 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.7s: 0 survivors, 12 unknown
+cell apply-args x value
+    `_` frame [list1 bit0 list next cont intL x]
+    166 fixed bits; --max-size 14
+    total 533 fills in 0.0s: 0 survivors, 0 unknown
+cell apply-args x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    146 fixed bits; --max-size 24 --must 5
+    total 16096 fills in 0.7s: 0 survivors, 12 unknown
+169 krep x APP value
+    `_` frame [args exp2 exp bit1 cont intL x]
+    152 fixed bits; --max-size 17
+    total 2904 fills in 0.0s: 1 survivors, 0 unknown
+    SURVIVOR 17 bits  01011110100111010
+      interpreter 169 bits
+169 krep x VAR
+    `_` frame [list1 bit0 list next cont intL x]
+    147 fixed bits; --max-size 21 --must 5
+    total 2433 fills in 0.1s: 0 survivors, 1 unknown
+169 eta-handler x VAR fn
+    `_` frame [bit0 list next cont intL x]
+    145 fixed bits; --max-size 21 --must 4
+    total 4382 fills in 0.5s: 0 survivors, 18 unknown
+169 eta-handler x zero branch
+    `_` frame [bit0 list next cont intL x]
+    158 fixed bits; --max-size 11
+    total 102 fills in 0.0s: 1 survivors, 1 unknown
+    SURVIVOR 11 bits  00011011110
+      interpreter 169 bits
+169 select-first x APP continuation
+    `_` frame [bit1 cont intL x]
+    132 fixed bits; --max-size 34 --must 3
+    total 25452149 fills in 75.4s: 0 survivors, 43614 unknown
+joint value ~ x cell _
+    `_` frame [arg args exp bit1 cont intL x], `~` frame [list1 bit0 list next cont intL x]
+    142 fixed bits; --max-size 26 --max2 12 --max-sum 26
+    total 795310 fill pairs in 1.6s: 1 survivors, 33 unknown
+    `~` = 10 (2 bits)
+    SURVIVOR 24 bits  000001011101110011011110
+    `~` = 00011010 (8 bits)
+    `~` = 0111110110 (10 bits)
+    `~` = 000110011010 (12 bits)
+    `~` = 000101101010 (12 bits)
+    `~` = 011111011110 (12 bits)
+    `~` = 011111000110 (12 bits)
+joint cell _ x APP body ~
+    `_` frame [arg args exp bit1 cont intL x], `~` frame [args exp2 exp bit1 cont intL x]
+    127 fixed bits; --max-size 26 --must 1 --max2 19 --must2 2,3 --max-sum 41
+    total 78240524 fill pairs in 16.8s: 1 survivors, 0 unknown
+    `~` = 01011110100111010 (17 bits)
+    SURVIVOR 24 bits  000001011101110011011110
+joint APP body _ x VAR ~
+    `_` frame [args exp2 exp bit1 cont intL x], `~` frame [list1 bit0 list next cont intL x]
+    129 fixed bits; --max-size 19 --must 2,3 --max2 24 --must2 5 --max-sum 39
+    total 2830368 fill pairs in 28.8s: 1 survivors, 1819 unknown
+    `~` = 0101111101111101110 (19 bits)
+    `~` = 0101111110100101101010 (22 bits)
+    SURVIVOR 17 bits  01011110100111010
+    `~` = 0101111100011111101110 (22 bits)
+    `~` = 01100101111101111101110 (23 bits)
+    `~` = 01010111110101110111110 (23 bits)
+    `~` = 01011111001101111101110 (23 bits)
+    `~` = 01011111001111110101110 (23 bits)
+    `~` = 01010111110111110111010 (23 bits)
+    `~` = 010101111101101110111110 (24 bits)
+    `~` = 010111110011101111101110 (24 bits)
+    `~` = 010111110011111101101110 (24 bits)
+    `~` = 010111111100011111101110 (24 bits)
+    `~` = 010101111101111101110110 (24 bits)
+python3 tools/self-interpreter/sketches.py  863.37s user 21.27s system 676% cpu 2:10.72 total

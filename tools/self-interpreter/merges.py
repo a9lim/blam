@@ -47,6 +47,35 @@ VARIANTS = [
    (\bit1\l2. intL env (\f. bit1 (cont (\arg. intL (\zx\zy. zx arg (zy env)) bit1 l2))
                                  (intL env (\a. cont (f a)))) l2)""")
      + r" (\x.x) (\x.x)", True, 226, True),
+    # The last push (design.md): the nearest correct variants, and the bare
+    # leaky cell as a second negative control.
+    ("control: bare leaky cell", INT168.replace(
+        r"\zx\zy. zx arg (zy args)", r"\zx. zx arg (\zy. zy args)"),
+     False, 166, False),
+    ("leaky cell repaired by a constant thunk", INT168.replace(
+        r"\zx\zy. zx arg (zy args)", r"\zx. zx (\u. arg) (\zy. zy args)"),
+     False, 169, True),
+    ("leaky cell repaired by its own selector", INT168.replace(
+        r"\zx\zy. zx arg (zy args)", r"\zx. zx (zx arg) (\zy. zy args)"),
+     False, 170, True),
+    ("share ABS's return and APP's second parse: (bit1 cont intL)",
+     knot(rf"""\cont.
+   (\next. \list.list (\bit0\list1.bit0 (list1 next) {VAR}))
+   (\bit1.intL (\exp. (bit1 cont intL) (\y. bit1
+      (\arg. exp (\zx\zy. zx arg (zy y)))
+      (cont (\args. exp args (y args))))))"""), False, 172, True),
+    ("optional second parse, no-input parser \\k. k k",
+     knot(rf"""\cont. \list.list (\bit0\list1.bit0
+   (list1 (\bit1.intL (\exp. bit1 (\k. k k) intL (\exp2. cont (\args. bit1
+      (\arg. exp (\zx\zy. zx arg (zy args))) (exp args (exp2 args)))))))
+   {VAR})"""), False, 177, True),
+    ("function environment, variable value \\e. e list1",
+     knot(r"""\cont.
+   (\next. \list.list (\bit0\list1.bit0 (list1 next)
+                         (cont (\e. e list1) (list1 list1 list1))))
+   (\bit1.intL (\exp.bit1 (cont (\args\arg.exp (\s. s (\b. b (\u. arg) args))))
+                          (intL (\exp2.cont (\args.exp args (exp2 args))))))"""),
+     False, 177, True),
 ]
 
 

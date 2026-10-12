@@ -1,0 +1,117 @@
+{
+ "name": "app_packed",
+ "ambient": 3,
+ "holes": [
+  [
+   "LIFT",
+   1
+  ]
+ ],
+ "required": [
+  1,
+  2
+ ],
+ "max_cost": 14,
+ "all": 1079,
+ "tested": 20,
+ "unknown": 0,
+ "cycles": 0,
+ "hits": [
+  {
+   "cost": 14,
+   "bits_with_holes": "01111000011110[LIFT]"
+  }
+ ],
+ "rows": [
+  {
+   "cost": 0,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 1,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 2,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 3,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 4,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 5,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 6,
+   "all": 5,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 7,
+   "all": 4,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 8,
+   "all": 15,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 9,
+   "all": 12,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 10,
+   "all": 45,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 11,
+   "all": 58,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 12,
+   "all": 165,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 13,
+   "all": 224,
+   "tested": 12,
+   "hits": 0
+  },
+  {
+   "cost": 14,
+   "all": 549,
+   "tested": 8,
+   "hits": 1
+  }
+ ]
+}

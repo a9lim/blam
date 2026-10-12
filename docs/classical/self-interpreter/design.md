@@ -353,7 +353,7 @@ environment, or continuation conventions that the contract and the bit
 polarity fix. The table above lists every protocol change tried so far and
 why it lost.
 
-## The universal machine (2026-10-13)
+## The universal machine (2026-10-12)
 
 For algorithmic information theory the figure that matters is the universal
 machine, `U (⌜M⌝ : N) = M N` for closed `M`, rather than the self-interpreter.
@@ -447,3 +447,300 @@ strict premium is a base environment with no normal form on lookup. The
 cheap alternatives (`dbl`, `F`, the parser's own handler) all return values
 or re-read input. Ω via a shared `dbl` (`\b. b (a a)`, 12 bits over the 178)
 is the cheapest found.
+
+## The last push (2026-10-12)
+
+a9 asked for one more round on the 168, aimed at ideas the mechanical lanes
+above cannot reach. It ran in two waves of independent Codex sessions,
+alongside new joint searches of my own.
+
+- **Wave 1** had four sessions, one lens each: stream puns; values and
+  environments; control and recursion; and a wildcard that also tried for
+  lower bounds.
+- **Wave 2** had five sessions. Each got all of wave 1's replies and chased
+  one of its leads:
+  - fusing the control region;
+  - recursion carried by the stream or the continuation;
+  - escaping the lower bounds' assumptions;
+  - the universal machines;
+  - the strongest optimality statement that can be certified.
+- **My own searches:** joint slot searches with a new sketch instrument, and
+  the contextual component pushed to slack 18.
+
+Nothing went below 168. What follows is the record. Every complete
+interpreter size is *measured* (compiled, then `battery.py` on all 667
+programs) unless marked otherwise. `tools/self-interpreter/merges.py`
+re-measures the nearest ones.
+
+### Two corrections
+
+- **The leaky-cell repairs are +1 and +2, not +3 and +4.** Measured in the
+  168's own frame:
+  - `\zx. zx (\u. arg) (\zy. zy args)` is **169**;
+  - `\zx. zx (zx arg) (\zy. zy args)` is **170**.
+
+  The 171 and 172 at the top of this file were measured in the 170's
+  frame.
+- **`battery.py` compares β-normal forms, not βη.** An interpreter that is
+  correct only up to η fails it: one with arguments before environments
+  measures 237 and passes a separate βη audit.
+
+### A conditional lower bound: the 168 is optimal in a module grammar
+
+`tools/self-interpreter/module_bound.py` splits the interpreter into modules
+along the operation-minimality section's partition. It enumerates each
+module exhaustively at its own de Bruijn depth: every term up to the
+reference size, including redexes and discarded code. Neighbouring modules
+are replaced by fresh rigid symbols, and a module passes when its β-normal
+forms on rigid probes equal the law it must satisfy.
+
+| module | law (neighbours rigid) | generated | minimum |
+|---|---|---:|---:|
+| VAR | `c s n` on the unary suffixes `0`, `10`, `110` | 56,703 | **22** |
+| dispatch | `D[K, s] = s next`, `D[F, s] = VAR`, two binders | 7,475 | **16 + 4** |
+| cell | `T(a,e) K n = a`, `T(a, T(b,e)) F (0:n) = b` | 97,435 | **24** |
+| lift | `L e = f e (g e)` | 9,182 | **19** |
+| ABS around the cell | `c (\env \arg. f (R arg env))` | 1,967 | **16 + 24** |
+| APP around the lift | `p (\g. c (V f g))` | 4,324 | **16 + 19** |
+| NEXT around ABS, APP | `p (\f. A f)` / `p (\f. B f)` by tag | 6,426 | **15 + 2** |
+| administration | `\c \list. list (H c (J c))` | 122 | **12** |
+| knot around an opaque body | keeps weak-head-unfolding the body forever | 14,803 | **20 + 2** |
+
+Every minimum is unique and is the 168's own module. `module_bound.py
+assemble` fills the minima into one another and reproduces the 168 bit for
+bit, so the bound has no gap:
+
+```text
+22 + 12 + 20 + 22 + 17 + 40 + 35 = 168
+```
+
+All searches are exact, with no unresolved reduction. A repeated
+normal-order state counts as a proof of looping. `audit` re-normalizes every
+probe with an independent normalizer and a sample with the Rust machine:
+70,645 and 543 checks, no disagreement.
+
+**The cell law is the weakest one reachable.** The cell needs only the two
+behaviours that `λx.x` and `λx.λy.x` expose, on a real unary suffix and a
+self-built environment. So restricting lookup to what the interpreter
+actually sees does not rescue a smaller two-variable cell. Wave 2 also
+showed that APP's lift needs 19 bits even when tested only on closed
+subterms: the parser forces their values to be `K F` and `K G`, and four
+closed pairs reject all 5,151 smaller candidates.
+
+**The grammar is narrower than all interpreters, and the gap is
+precise.** Its clauses:
+
+- modules are opaque;
+- neighbours are rigid when a module's law is checked, which is stronger
+  than the public contract;
+- the capture layout is the 168's: `next` named, the handler under
+  `\list \bit0 \list1`;
+- the knot treats the body as opaque.
+
+A smaller interpreter must break one clause. It need not abandon CPS,
+stream-valued variables, or the public contract.
+
+The layout is exactly where slack would come from. Re-searching five
+modules with only their own live variables in scope (the `*_packed` cases)
+costs 160 in all:
+
+| module | in the 168 | own variables only | extra depth in the 168 |
+|---|---:|---:|---|
+| VAR | 22 | 19 | `cont` crosses 3 binders |
+| dispatch | 20 | 19 | `next` crosses `list` |
+| NEXT | 17 | 16 | `intL` crosses `cont` |
+| ABS | 40 | 39 | `cont` crosses `bit1` |
+| APP | 35 | 33 | `intL`, `cont` cross `bit1` |
+
+160 is not a candidate. These frames cannot coexist in one lexical tree.
+For the fixed core, `letopt` has already priced every let structure of up
+to four cuts that trades on this 8-bit tax, and the 168 is optimal among
+them.
+
+### Joint slot searches (`blam selfint hole`)
+
+`blam selfint hole TEMPLATE` takes the wire bits of any interpreter with a
+`_` hole, and optionally a second hole `~` searched jointly. It enumerates
+every fill and checks the same exact contract as `ctx`: 91 probes, goldens
+from the 168. A hand-made protocol change in one place can thus be paired
+with an exhaustive search for the compensating fragment elsewhere.
+`tools/self-interpreter/sketches.py` holds the 37 sketches; their log is
+`data/self-interpreter/sketches_168.log`.
+
+| sketch | fills | result |
+|---|---:|---|
+| 12 variable values (`list`, `list1 list1`, `bit0 list1`, `list1 next`, …) × cell ≤ 25 | 110,510 each | only `list bit0` (= `list1` in context): cell 24, and the 25-bit K-repair |
+| 10 cells (leaky, Scott and flipped, selK, cons' flips, `\zx. zx arg`, …) × variable value ≤ 14 | 533 each | only selK, at 170 |
+| the same 10 cells × whole VAR ≤ 24 | 16,096 each | only selK, at 170 |
+| 169 K-repair frame × APP value ≤ 17, × VAR ≤ 21 | 2,904; 2,433 | only the 168's fills |
+| 169 η-handler frame × VAR function ≤ 21, × zero branch ≤ 11 | 4,382; 102 | only the 168's fills |
+| 169 select-first frame × APP continuation ≤ 34 | 25,452,149 | nothing below 168 |
+| **joint** variable value ≤ 12 × cell, sum ≤ 26 | 795,310 pairs | only the 168's (2 + 24) |
+| **joint** cell × APP value body, sum ≤ 41 | 78,240,524 pairs | only the 168's (24 + 17) |
+| **joint** VAR × APP value body, sum ≤ 39 | 2,830,368 pairs | only the 168's (22 + 17) |
+
+So the environment, lookup and application protocols are optimal jointly as
+well as singly. The capped fills are the re-parsing loops `ctx` already
+met. The joint VAR × APP search has 12 such VAR fills, as the single-slot
+search does. A spot check of the value × cell caps runs out of fuel on
+`λx.x`, where the 168 needs 37 β.
+
+The contextual component (the boolean commuting moves, above) now runs to
+slack 18: 2,156,068 distinct terms and 16.8 million flag-states under a
+186-bit ceiling, with nothing below 168 and no tie. The log is
+`component_168_contextual_slack18.log`.
+
+### Protocol changes measured
+
+Grouped by what they change. Unless marked, each passes the battery and is
+bigger.
+
+| idea | bits | obstacle |
+|---|---:|---|
+| **Stream and bits** | | |
+| Right-associated skip `l (l l)` | 168, *fails* | returns `N r`; the identity program already fails |
+| Skip's ignored argument `bit0` / `next` / `cont` / `intL` | 169–173 | deeper reference than `list1` |
+| Read both tag bits before dispatch (with or without `next`) | 193 | VAR still needs `list1`, so `list2` is extra |
+| Delay the tag read: `list1 bit0` with bit0 = K | 178 | the tail still needs its own projection |
+| Rest as a thunk `l l`, forced at APP and at the boundary | 202 | forcing sites and an output adapter |
+| Thunked parser inputs too | 217 | thunk constructors plus adapters |
+| Raw suffix returned, skip at parser entry | 247 | sentinels for first parses, two adapters |
+| `intL exp` as APP's second continuation | 142, *fails* | an environment reader is not an application continuation |
+| `r intL = bit1 value rest`: read with the parser | 164, *fails* | keeps the value for ABS, the rest for APP; loses one each |
+| **Values and environments** | | |
+| Bare leaky cell | 166, *fails* | `λx.x` alone leaks the rigid `N` into a neutral application |
+| Leaky cell, `bit1` (= K in ABS) as the thunk | 174 | `bit1` is deep |
+| Leaky cell, environment applied after selection | 171 | `\zx\zy. zx (\u.arg) zy args` |
+| Cells ≤ 27 bits that the battery accepts | 168–171 | only the four known forms |
+| Function environment `\s. s (\b. b (\u.a) e)`, value `\e. e list1` | 177 | no lookup helper needed; the value adapter costs 7 |
+| Environment applied to the code | 183 | adapters on both sides |
+| Leading-1-aware environment | 180 | sentinel parameter and forwarding |
+| Variable value `list` with cons' cells | 170, *fails* | lookup starts one cell too far |
+| K-thunked environments / K-wrapped values / CPS values | 191 / 225 / 242 | forcing everywhere and an external decoder |
+| Scott cells with a shared lookup (two orders) | 236 / 243 | a 12-bit cheaper cell, a recursive lookup |
+| Indices parsed into Scott selectors by `intL` | 222 | zero/successor parsing and accessors |
+| Absolute de Bruijn levels | 449 | depth state and runtime append |
+| Lookup fused with skipping the variable code | 296 | larger cells, dummy extensions while scanning |
+| Values that also return their code suffix (ABS captures it) | 273 | cell 24 → 36, APP value 19 → 52 |
+| … and APP really parsing its argument from that suffix | 286 | runtime parsing machinery |
+| APP reparses the captured argument code at evaluation | 199 | a second parser call and its closures |
+| Self-skipping semantic capsules (`p p = K R`, `p p p = R`) | 332 | projections and repacking |
+| Whole ABS values with leading-1, transposed and self-passing VARs | — | 10,092,839 fills: no survivor, 169 capped |
+| **Control and calling convention** | | |
+| `next` inside `\list` | 170 | +2 of depth |
+| Parser takes the stream first | 201–208 | recursive calls lose η over the stream |
+| Handler signatures with `cont` (all orders) | 192–255 | adapters between stream fields |
+| Continuation gets `rest, value` | 214 | ABS keeps its rest; boundary flip |
+| Parser returns a cell `\c. c value rest` (either field order) | 211 / 226 | explicit rest binders and rebuilt cells |
+| ABS's return and APP's second parse share `(bit1 cont intL)` | 172 | one λ fewer, one application more, +2 depth |
+| Decide before parsing and η the handler, together | 170 | the two +1s add |
+| Optional second parse, no-input parser `\k. k k` | 177 | was 179; the tag is still decided inside the value |
+| Branch transformers for the ABS/APP continuation | 176 | transformer binders and applications |
+| Direct evaluation plus a separate syntax skipper | 293 | two recursive bodies and retained code pointers |
+| **Recursion** | | |
+| Self-passing `next` with a shared parser, best of 72 orders | 182 | carrier plumbing exceeds the knot |
+| Self-passing `next` sharing the handler | 206 | stream-to-handler adapters |
+| Recursion inside the bit handler (24 argument orders) | 202 | recursive entry needs an adapter |
+| Recursor passed through continuations, before / after the value | 206 / 204 | callback arguments plus a public adapter |
+| Saturated parser passed through callbacks | 200 | keeps the knot, adds plumbing |
+| Recursor carried in a Scott cell with the rest or the value | 223–262 | packing, unpacking, restoring the rest |
+| Knot shared with skip's self-application | 168 | optimization returns the 168 itself |
+| Knot shared as a triple self-application | 176, *fails*; 181 | the third self-argument reaches the body |
+| Known leading 0 of closed programs at entry | 201 | the specialised entry does not pay for itself |
+| Both recursive call heads replaced, with the knot removed | — | 221,930,567 pairs (34 free bits): no survivor |
+
+The last row is the strongest test of recursion without the knot. Two holes
+replace both recursive call heads. They can use the stream, its tail, both
+tags, the continuation and the first expression, and may build any
+self-application within 34 bits. The two pairs that ran out of budget are
+excluded analytically: each loses its head normal form before a callback
+runs. Two cheaper variants were also clean: with the knot but without the
+`intL` let (8,884 pairs), and with `next` inlined too (131,345). Two
+proposed free carriers erase what they carry:
+
+```text
+V_M R = M         a closed value's environment slot
+(s s) R = N       skip's ignored argument
+```
+
+### Fused control, as grammar and as holes
+
+- **Grammars** with an abstract CPS parser oracle. Only the original
+  ordering survives at each level:
+  - first-parse scheduling: 1,167,608 well-scoped candidates;
+  - first-bit dispatch, second-bit read and first parse jointly: 7,495,488
+    candidates from 121,080,960 trees;
+  - the same region with ABS and APP continuations λ-lifted: 2,949,120
+    candidates, where only select-first (169) survives.
+- **Concrete holes** with `intL` and `x` exposed: reader, post-parse
+  selector, whole NEXT, and both orders of the 172's payload. Up to 5.4
+  million fills each. After two-cut `letopt`, every survivor is the 168, a
+  169, or the 172.
+- **The 172** itself, under contextual polishing without η to slack 16
+  (188,587 states), has nothing smaller.
+
+### Stream algebra
+
+Write `l = 1^k0 ++ N`, with head `b` and tail `r`. Then
+`{l, K N, N-headed spines}` is closed under application:
+
+```text
+l l = K N        l (K N) = N r        (K N) X = N
+```
+
+So no pure self-application of a stream yields the tag or the first tail on
+its own. A catalogue of 197 applications of `l` alone gave nothing new, and
+`(l l) l` is the unique two-application skip. Separately, 2,419,280 dispatch
+bodies built from applications of `l`, `cont` and `next` were enumerated
+through every size below the reference's 46; none handles both `00…` and
+`10…`.
+
+### The universal machines
+
+| idea | bits | result |
+|---|---:|---|
+| `intL dbl` with `dbl` shared with the knot | 178 | tie |
+| Knot generator as the base environment | 179 | |
+| Triple self-pass `(\a. a a a) …` | 178 | tie |
+| The parser as its own continuation, `E (E E)` | 182 | |
+| A cell-returning parser fed back to itself, `(P input) P = M N` | 216 | correct; the transformer parser is too large |
+| Handler feedback, `H K v N = M N` | 206 / 204 | correct; handler recursion costs |
+| `(\e. e (\v. v (\b. e))) E` | 188, not strict | open `1`, `2` reduce to `I` |
+| `(\f. f f (\v. v (f dbl))) G` | 189, not strict | nil erases Ω before it is forced |
+| `(\e. e (\v. v (\b r. e))) E` | 191, not strict | `1 1` reduces to `I` |
+
+**A strictness trap.** An environment with no normal form can still fail
+strictness after object-level application: free indices alone diverge, but
+`1 1` normalizes. Head divergence avoids it. The 190 passes all six
+nil-terminated probes.
+
+**Wirings.** Six scoped wiring families around `E`, `G` or `dbl` were
+searched through 189 bits: 310,283 fills, with no strict machine below 190.
+One family, an arbitrary context around `G` with up to 27 bits, leaves 282
+capped. The other searches:
+
+- 1.68 million bodies changed by wave-1 variants: no strict survivor, 2,613
+  capped. Its sub-178 non-strict subset is clean.
+- 72,504,149 whole-VAR fills under five top continuations: no strict
+  survivor, 161,954 capped.
+
+The B-fixed strict contexts of 39–43 bits (30,967,305,647) remain unsearched.
+
+### Read
+
+The 168 is now pinned from several independent directions:
+
+- **its parts:** each module is the unique minimum of its own law, and
+  they sum to exactly 168;
+- **its neighbourhood:** βη to +24, contextual to +18, let structure to
+  four cuts, single and joint slots;
+- **over a hundred protocol changes**, every one measured.
+
+The conditional theorem names the only ways out: fusing control across
+module boundaries; sharing work between modules; changing the capture
+layout, which is worth at most 8 bits; or a knot entangled with the body.
+Wave 2 attacked each of these with joint grammars, joint holes, and
+knot-free call heads, and found nothing. Further rearrangement of opaque
+payloads has poor prospects. A sub-168 would need a specific new identity
+involving the knot variable, the stream encoding or semantic values, of
+the kind `cons'` and `skipvar` were.

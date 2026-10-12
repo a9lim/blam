@@ -58,7 +58,7 @@ INSTRUMENTS
   trace scan|single|dump|verify-loop32   reduction-shape classifier
                                                                  (lab feature)
   slots var|abs|app            self-interpreter slot search       (lab feature)
-  selfint ctx|wiring           searches below the 168             (lab feature)
+  selfint ctx|hole|wiring      searches below the 168             (lab feature)
   golf letopt|component|check  size optimizers for BLC programs   (lab feature)
   q galois idiom|complement    the dyadicity campaign             (lab feature)
   q oddmin [W]                 gated reference DP for the CNOT-free lane
@@ -232,6 +232,7 @@ mod tests {
             vec!["slots"],
             vec!["selfint"],
             vec!["selfint", "ctx"],
+            vec!["selfint", "hole"],
             vec!["golf"],
             vec!["golf", "letopt"],
             vec!["golf", "component"],

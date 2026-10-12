@@ -116,6 +116,33 @@ context around the 168's parser body:
 
 Strict contexts of 39..43 bits (about 31 billion) remain.
 
+A last push (`classical/self-interpreter/design.md`, "The last push")
+added two waves of independent design attempts, nine lenses in all,
+and joint searches. Nothing went below 168:
+
+- **A conditional lower bound.** `tools/self-interpreter/module_bound.py`
+  splits the 168 into opaque modules (knot, administration, dispatch, VAR,
+  NEXT, ABS around the cell, APP around the lift). Every module is
+  exhaustively the unique minimum of its own law, with its neighbours rigid.
+  The minima reassemble into the 168 bit for bit:
+  22 + 12 + 20 + 22 + 17 + 40 + 35 = 168. A smaller interpreter must fuse
+  control across modules, share work between them, change the capture
+  layout (worth at most 8 bits), or entangle the knot with the body.
+- **Joint slot searches.** `blam selfint hole` (lab) searches one or two
+  holes in any interpreter template; `tools/self-interpreter/sketches.py`
+  holds 37 sketches. Variable value × cell, cell × APP value (78 million
+  pairs), and VAR × APP value each find only the 168's own pair.
+- **Contextual component to slack 18:** 2,156,068 terms, no tie.
+- **Over a hundred protocol changes measured**, about 120 in wave 1 alone.
+  The nearest correct ones are the 169s and 170s and a 172; `merges.py`
+  re-measures them. The leaky-cell repairs are 169 and 170 in the 168's
+  frame, not 171 and 172.
+- **The knot.** Replacing both recursive call heads with the knot removed:
+  221,930,567 pairs, no survivor.
+- **Universal machines.** No strict U below 190 in six scoped wiring
+  families (310,283 fills) or among 72.5 million whole-VAR fills. The
+  remaining capped fills and the 39..43-bit contexts are listed there.
+
 ### The other AIT programs
 
 `classical/golf.md` records shrinking the rest of tromp/AIT. Tromp's

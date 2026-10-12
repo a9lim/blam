@@ -184,7 +184,7 @@ says how to get them rather than pretending they do not exist.
 | `q galois idiom` / `q galois complement` *(lab)* | the two-stage dyadicity campaign |
 | `q oddmin` *(lab)* | gated reference-DP driver for the CNOT-free √2 theorem lane |
 | `slots` *(lab)* | exhaustive self-interpreter slot searches |
-| `selfint ctx` / `wiring` *(lab)* | searches below the 168 and the universal machine: contextual slots, every wiring around the parser |
+| `selfint ctx` / `hole` / `wiring` *(lab)* | searches below the 168 and the universal machine: contextual slots, one- or two-hole sketches of any interpreter, every wiring around the parser |
 | `golf letopt` / `component` / `check` *(lab)* | size optimizers for any BLC program: exact let structures, βη component search and descent, β-certificates and normal-form differentials |
 
 ```bash
@@ -257,7 +257,11 @@ The classical self-interpreter's VAR, ABS, and APP slots are exhaustively
 optimal both in Tromp's 170-bit interpreter and in Sean Palmer's 168-bit
 successor, which found its two bits in a let-float outside the slot families. Exact
 let-structure enumeration, contextual slot search, and the βη component to
-slack 24 find nothing below the 168. The rest of Tromp's corpus was not as
+slack 24 find nothing below the 168. A conditional lower bound holds as
+well. Split the 168 into opaque modules, each with its own law, and each
+module is exhaustively the unique minimum of its law. Together they sum to
+exactly 168. Two waves of independent design attempts tested over a hundred
+protocol changes, and none went below it. The rest of Tromp's corpus was not as
 tight. The same instruments plus hand redesigns shrink:
 
 - the IOCCC BLC8 universal machine, from 43 bytes to 41 (strict) and 38
