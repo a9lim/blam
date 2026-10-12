@@ -75,12 +75,13 @@ moved only the existing `intL = a a` binding.
 improving one-step let-float, and finds nothing below 168 within two pure
 expansions (best +5 at one step, +7 at two).
 
-Open mechanical lanes: the VAR/ABS/APP slot searches re-run on the 168's frame
-(its binder stack differs, so the 170's certificates do not transfer), a mixed
-expand/reduce neighborhood (`float_out.py` composes expansions only), and the
-contextual search in `classical/self-interpreter/search-spec.md` §2. A survivor
-is only a hypothesis until it is spliced into the full interpreter and passes
-the semantic battery.
+The slot searches re-run in the 168's own frames (VAR 7, ABS/APP 5; the 170's
+certificates do not transfer) return the same verdict: each reference is the
+unique survivor with no residual unknowns, ABS through 1,071,355,016 candidates
+in 21.6 s. Open mechanical lanes: a mixed expand/reduce neighborhood
+(`float_out.py` composes expansions only) and the contextual search in
+`classical/self-interpreter/search-spec.md` §2. A survivor is only a hypothesis
+until it is spliced into the full interpreter and passes the semantic battery.
 
 ### Classical docket
 

@@ -10,7 +10,8 @@
 > section's "not another binder move" does not.
 > `tools/self-interpreter/float_out.py` finds the 168 as the 170's unique
 > improving one-step let-float and nothing below 168 within two pure
-> expansions.
+> expansions. Re-searched in the 168's own frames, its three slots are
+> again each the unique survivor (`results.md`).
 
 The structural question is whether there is a route below the 170-bit
 self-interpreter through *global* rearrangement — fixpoint shape,

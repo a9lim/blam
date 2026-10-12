@@ -1,0 +1,46 @@
+slot var168: frame 7, reference 22 bits, golden nf 49 bits, must-mask 0b00010001
+  reference: cont list1 (list1 list1 list1)
+  canary: reference reproduces the golden normal form (PASS)
+
+size       naive(frame)       pruned(must)   ratio
+   2                  1                  0       -
+   3                  1                  0       -
+   4                  2                  0       -
+   5                  2                  0       -
+   6                  4                  0       -
+   7                  5                  0       -
+   8                 10                  0       -
+   9                 13                  0       -
+  10                 26                  2     13x
+  11                 40                  0       -
+  12                 76                  0       -
+  13                122                  4     30x
+  14                231                  8     29x
+  15                388                 12     32x
+  16                726                 30     24x
+  17               1257                 42     30x
+  18               2342                 94     25x
+  19               4143                178     23x
+  20               7706                366     21x
+  21              13851                672     21x
+  22              25757               1342     19x
+ sum              56703               2750     21x
+
+threads 9, rung1 beta 256 trans 16384, rung2 beta 4096 trans 262144
+
+size         candidates       mismatch    diverge   unknown survivors       time_s
+  10                  2              2          0         0         0         0.00   esc [0, 0, 0, 0]
+  13                  4              4          0         0         0         0.00   esc [0, 0, 0, 0]
+  14                  8              8          0         0         0         0.00   esc [0, 0, 0, 0]
+  15                 12             12          0         0         0         0.00   esc [0, 0, 0, 0]
+  16                 30             30          0         0         0         0.00   esc [0, 0, 0, 0]
+  17                 42             42          0         0         0         0.00   esc [0, 0, 0, 0]
+  18                 94             94          0         0         0         0.00   esc [0, 0, 0, 0]
+  19                178            178          0         0         0         0.00   esc [0, 0, 0, 0]
+  20                366            366          0         0         0         0.00   esc [0, 0, 0, 0]
+  21                672            672          0         0         0         0.00   esc [0, 0, 0, 0]
+  22               1342           1341          0         0         1         0.00   esc [0, 0, 0, 0]
+     SURVIVOR  22 bits  0101111110100101101010   cont list1 (list1 list1 list1)
+
+total 2750 candidates in 0.0s: 2749 mismatch, 0 proved divergent, 0 unknown, 1 survivors
+VERDICT: the reference var168 slot is exhaustively optimal at <= 22 bits (1 survivor(s) at 22 bits, no residual unknowns)

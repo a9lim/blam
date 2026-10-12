@@ -23,10 +23,29 @@ ABS  43  cont (\args arg. exp (\zx zy. zx arg (zy args)))
 APP  41  intL (\exp2. cont (\args. exp args (exp2 args)))
 ```
 
-There is no micro-trick hiding in the branch bodies. Sub-170 has to come
-from somewhere else — which, with `design.md` already closing fixpoint
-shape, continuation timing, cons-cell variants and binder placement, leaves
-the global evaluator/continuation representation as the only open door.
+There is no micro-trick hiding in the branch bodies. Sub-170 had to come
+from somewhere else, and did: upstream's 168 is a let-float of the
+scaffolding (`design.md`'s header note), not the global
+evaluator/continuation change this section once predicted.
+
+## The 168's frames
+
+Sean Palmer's 168-bit interpreter keeps the three bodies but floats the
+zero-branch continuation out from under `\list \bit0 \list1`, so ABS and APP
+sit under `[exp bit1 cont intL a]` (frame 5) and VAR under
+`[list1 bit0 list next cont intL a]` (frame 7). Every frame reference is
+repriced, which voids the 170's certificates; `blam slots var168|abs168|app168`
+searches them afresh (logs `slotsearch_*168.log`, same 9 threads):
+
+| Slot | frame | reference | candidates ≤ ref size | survivors | residual unknowns | proved divergent | wall |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| VAR | 7 | 22 bits | 2,750 | **1** (= reference) | 0 | 0 | <0.1 s |
+| APP | 5 | 35 bits | 7,774,880 | **1** (= reference) | 0 | 34 | 0.1 s |
+| ABS | 5 | 40 bits | 1,071,355,016 | **1** (= reference) | 0 | 90,001 | 21.6 s |
+
+Same verdict, and rung 5 was again never needed. The bodies are the same
+terms as the 170's; the 8 bits they shrink by (105 → 97) are pure frame
+repricing, and no shorter body exists in either frame.
 
 ## Method
 
