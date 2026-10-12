@@ -1,0 +1,18 @@
+slot cell (frame 7: arg args exp bit1 cont intL x), reference 24 bits; 91 probe programs, reference beta 37..548
+size       candidates   unknown survivors     time_s
+   7                2         0         0        0.0
+  10                4         0         0        0.0
+  11                8         0         0        0.0
+  12                6         0         0        0.0
+  13               30         0         0        0.0
+  14               42         0         0        0.0
+  15               82         0         0        0.0
+  16              142         0         0        0.0
+  17              320         0         0        0.0
+  18              534         0         0        0.0
+  19             1144         0         0        0.0
+  20             2010         0         0        0.0
+  21             4042         0         0        0.0
+  22             7374         0         0        0.0
+  23            14688         0         0        0.0
+total 30428 candidates in 0.0s: 0 survivors, 0 unknown

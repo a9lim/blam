@@ -219,3 +219,8 @@ small-program differential testing. `blam slots` has the hook for it: drop
 the `must` mask to 0 and the enumerator sweeps every occurrence mask (ABS
 then costs 29.1B candidates ≈ 11 min at the measured 45M candidates/s, APP
 8.1B ≈ 3 min) — but a survivor there is a hypothesis, not a proof.
+
+The contextual lane has since been run as `blam selfint ctx`
+(`design.md`, "Three follow-up searches"). It splices candidates into the 168
+and checks the exact contract on 91 programs. It finds no survivor below any
+slot's reference size, the dispatch handler through 39 of its 41 bits.

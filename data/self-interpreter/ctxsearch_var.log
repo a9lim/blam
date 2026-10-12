@@ -1,0 +1,18 @@
+slot var (frame 7: list1 bit0 list next cont intL x), reference 22 bits; 91 probe programs, reference beta 37..548
+size       candidates   unknown survivors     time_s
+   6                1         0         0        0.0
+   9                1         0         0        0.0
+  10                2         0         0        0.0
+  11                2         0         0        0.0
+  12                5         0         0        0.0
+  13                8         0         0        0.0
+  14               15         0         0        0.0
+  15               27         0         0        0.0
+  16               54         0         0        0.0
+  17               90         0         0        0.0
+  18              174         0         0        0.0
+  19              322         1         0        0.1
+     UNKNOWN  19 bits  0101111101111101110
+  20              615         0         0        0.0
+  21             1117         0         0        0.0
+total 2433 candidates in 0.1s: 0 survivors, 1 unknown

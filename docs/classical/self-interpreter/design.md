@@ -224,3 +224,130 @@ What remained open at this point: a βη rearrangement beyond +16; a let
 structure whose payoff needs several costly lets at once; and a fragment
 that works only in context, which the parametric slot searches cannot see.
 The next section searches all three.
+
+## Three follow-up searches (2026-10-12)
+
+The three lanes the operation-minimality analysis left open, run with the
+lab instruments `blam selfint letopt | ctx | component`
+(`src/cli/selfint/`). Logs are in `data/self-interpreter/`.
+
+### 1. Every let structure of the core (`letopt`)
+
+Inline every let of the 168 except the knot: the result is a 179-bit core
+with `x x` at both recursive call sites. A *cut* moves the subterm(s) at one
+or more core positions into a let bound just above an ancestor node. Any name
+the moved subterm needs that is not in scope there becomes a parameter, so
+one cut is let-floating and λ-lifting together. Identical binder-free
+positions may share a cut; that is how `intL = x x` arises. Cuts may nest
+freely: uses and lets inside moved subterms, and lets inside other lets'
+arguments. Each configuration is rendered at its exact optimum: parameters
+ordered by use count with η-peelable ones dropped, and lets sharing a node
+tried in every order. A sampling test inlines 20,000 random renderings back
+to the core to check βη-equality and the size accounting.
+
+The core has 468 candidate cuts (12 shared). Exhaustively, with no size
+ceiling along the way:
+
+| cuts | valid configurations | smallest |
+|---:|---:|---:|
+| 0 | 1 | 179 (the core) |
+| 1 | 468 | **170** — 50_ft_lock's interpreter (the `x x` share) |
+| 2 | 89,785 | **168** — Palmer's, uniquely |
+| 3 | 10,181,950 | 173 |
+| 4 | 789,542,687 | 179 |
+
+Around the 168 (`--around 3`): its own two cuts plus any one, two, or three
+more give at least 173, 179, and 185 bits (3,182,656 valid configurations
+at +3). Each further let or λ-lift on top of the 168 costs 5–6 bits.
+
+So, within let structure, the history is the optimum path: the best one-cut
+structure is the 170 and the best two-cut structure is the 168. Every
+further let or λ-lift costs at least 5 bits, at any intermediate size. This
+replaces the βη search's "unique minimum under 184 bits" with a ceiling-free
+statement for this class.
+
+### 2. Contextual slots (`ctx`)
+
+The parametric slot searches (`results.md`) excluded fragments that work
+only because of what the frame variables are at run time. In the ABS branch
+`bit1` is `true`; in APP it is `false`. `x x` is `intL`. In VAR, `list` is
+`(false : list1)`, so `list bit0` is `list1`.
+
+This search splices each candidate into the 168 and accepts it only if the
+interpreter then meets the exact contract on 91 probe programs: every closed
+term of 4..14 bits plus the battery's deep-index and reducible extras. The
+check normalizes `\c \n. E' c (⌜M⌝ ++ n)` against the reference's own normal
+form, with `c` and `n` rigid. Enumeration keeps only contextual
+obligations: `cont` everywhere, as the only route to the rigid continuation,
+and `exp` in ABS/APP, as the only route to the parsed subterm. Candidates
+strictly smaller than the reference:
+
+| slot | frame | reference | candidates | survivors | unknown |
+|---|---:|---:|---:|---:|---:|
+| VAR | 7 | 22 | 2,433 | 0 | 1 |
+| APP's value `\args. exp args (exp2 args)` | 6 | 19 | 1,158 | 0 | 0 |
+| cons' cell | 7 | 24 | 30,428 | 0 | 0 |
+| APP | 5 | 35 | 21,555,108 | 0 | 3 |
+| ABS | 5 | 40 | 558,135,222 | 0 | 1,983 |
+| dispatch handler, sizes ≤ 39 only | 5 | 42 | 704,680,301 | 0 | 42,721,990* |
+
+"Unknown" means the candidate passed or ran out of budget on every probe,
+including after 512× the reference's budget plus the divergence oracle and
+the escalation engine. It is not a survivor. The VAR unknown, `next cont
+list`, re-parses the same stream forever with a growing continuation. Of the
+APP unknowns, `cont (intL intL (intL exp) intL)` is refuted by Church–Rosser:
+on a top-level application it returns `c X ⌜N⌝++n`, never `c (λz. M N) n`.
+The other two, `intL intL (intL exp) intL cont` and its `exp`/`cont` swap,
+halt correctly on application-free programs. On `(\1 1)(\\1)` they exhaust
+the escalation engine at 10× its default capacity and 4× its work meter.
+The ABS unknowns sampled are Ω-shaped self-applications of `intL` partials,
+such as `(\l. l l) (intL (intL exp) (intL cont))`.
+
+\* The handler run stops a candidate after three budget-exhausted probes and
+does not escalate a size with more than 20,000 unknowns. So its unknowns
+are "no failing probe before three caps", mostly handlers that ignore the
+stream and recurse. Its sizes 40 and 41 (about 1.86 billion candidates) were
+not run: the machine was on battery.
+
+### 3. βη component in Rust (`component`)
+
+`blam selfint component` ports `beta_search.py` move for move and reproduces
+its components exactly (10 / 227 / 2,717 / 115,182 terms at slack
+4 / 8 / 12 / 16; a regression test pins the first three). An arithmetic size
+pre-check (per-position free-index histograms) skips out-of-ceiling
+abstractions and anti-unifications without building them. That makes slack 16
+take 1.5 s, against 6 minutes in Python.
+
+| slack | ceiling | component | below 168 | ties | wall |
+|---:|---:|---:|---:|---:|---:|
+| 20 | 188 | 2,011,848 | 0 | 0 | 38 s |
+| 24 | 192 | 25,405,902 | 0 | 0 | 7.8 min, 4.5 GB |
+
+Anti-unification contributes 1 term at slack 16 and 25 at slack 20. Growth
+per 4 bits of slack falls: 42× (12 → 16), 17× (16 → 20), 12.6× (20 → 24).
+
+`--contextual` flags the 168's boolean binders (`bit0`, `bit1`, `zx`; a test
+pins exactly these three) and carries the flags through every move. It adds
+four kinds of move for flagged `b`: `(b X Y) Z <~> b (X Z) (Y Z)`, `F (b X Y)
+<~> b (F X) (F Y)`, `\v. b X Y <~> b (\v. X) (\v. Y)`, and branch
+specialization. These equalities hold on the inputs the interpreter actually
+receives, not βη. At slack 4 / 8 / 12 the contextual component has 42 / 843 /
+15,518 distinct terms (42 / 2,338 / 116,832 flag-carrying states). Three
+169-bit neighbors appear already at slack 4; nothing goes below 168, and
+there is no tie.
+
+### Where this leaves the 168
+
+Every lane the operation-minimality section named has now been searched
+mechanically:
+
+- let structure, exactly up to four cuts;
+- βη rearrangement, to +24;
+- context-dependent slot replacements, for every slot up to its reference
+  size (the handler only through 39 of its 41 bits).
+
+None goes below 168, and the 168 has no tie in any of them. A smaller
+interpreter would have to change an operation's *protocol*: the stream,
+environment, or continuation conventions that the contract and the bit
+polarity fix. The table above lists every protocol change tried so far and
+why it lost.

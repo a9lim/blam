@@ -184,6 +184,7 @@ says how to get them rather than pretending they do not exist.
 | `q galois idiom` / `q galois complement` *(lab)* | the two-stage dyadicity campaign |
 | `q oddmin` *(lab)* | gated reference-DP driver for the CNOT-free √2 theorem lane |
 | `slots` *(lab)* | exhaustive self-interpreter slot searches |
+| `selfint letopt` / `ctx` / `component` *(lab)* | searches below the 168: exact let structures, contextual slots, the βη component |
 
 ```bash
 cargo build --release                 # census, solomonoff, q census, cert lean
@@ -253,7 +254,9 @@ Omega|<=41 in [0.124105086764, 0.124105092895]
 
 The classical self-interpreter's VAR, ABS, and APP slots are exhaustively
 optimal both in Tromp's 170-bit interpreter and in Sean Palmer's 168-bit
-successor, which found its two bits in a let-float outside the slot families. The speed-prior sweep supplies exact Kt,
+successor, which found its two bits in a let-float outside the slot families. Exact
+let-structure enumeration, contextual slot search, and the βη component to
+slack 24 find nothing below the 168. The speed-prior sweep supplies exact Kt,
 depth, and time-spectrum data with post-certificate open mass below `5.93e-12`
 on the beta clock.
 

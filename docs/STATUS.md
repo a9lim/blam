@@ -5,7 +5,7 @@ and ordered next work. `README.md` is the stable public map; domain documents
 state durable contracts; canonical outputs live in `data/`. Superseded state is
 available from Git history rather than retained in the live documentation.
 
-Last updated: 2026-09-07.
+Last updated: 2026-10-12.
 
 ## Classical state
 
@@ -80,11 +80,30 @@ below 168 and no tie, in 6.0 min wall on 10 workers.
 The slot searches re-run in the 168's own frames (VAR 7, ABS/APP 5; the 170's
 certificates do not transfer) return the same verdict: each reference is the
 unique survivor with no residual unknowns, ABS through 1,071,355,016 candidates
-in 21.6 s. Open mechanical lanes: the βη component above slack 16 (10–40×
-per 4 bits), internal calling-convention permutations (outside the βη class,
-so out of the component search's reach), and the contextual search in
-`classical/self-interpreter/search-spec.md` §2. A survivor is only a hypothesis
-until it is spliced into the full interpreter and passes the semantic battery.
+in 21.6 s.
+
+The 168 is operation-minimal (`classical/self-interpreter/design.md`): each of
+its 26 applications and 16 λs does a necessary job, and every protocol change
+tried so far loses. Three follow-up searches (`blam selfint`, lab; logs in
+`data/self-interpreter/`) found nothing below 168 and no tie:
+
+- `letopt` renders every let structure of the 179-bit let-free core exactly,
+  with no size ceiling. The best size by number of cuts is 170, 168, 173, 179
+  over 0.8 billion configurations. The 170 and the 168 are the unique optima at
+  one and two cuts, and adding one to three cuts to the 168 costs at least 5
+  bits per cut.
+- `ctx` splices each slot candidate into the 168 and checks the exact contract
+  on 91 programs, so fragments that rely on run-time context count. VAR, APP,
+  ABS, the cons' cell, and APP's value are exhausted below their reference
+  sizes: 580 million candidates, no survivor. The dispatch handler is done only
+  through 39 of its 41 bits (705 million candidates, no survivor); sizes 40 and
+  41 remain.
+- `component` ports `beta_search.py` (identical components through slack 16)
+  about 240× faster. Slack 20 gives 2,011,848 terms and slack 24 gives
+  25,405,902 terms (ceiling 192). `--contextual` adds the sound boolean
+  commuting moves; it is exhausted to slack 12.
+
+Survivors of any of these are hypotheses until `battery.py` passes them.
 
 ### Classical docket
 
