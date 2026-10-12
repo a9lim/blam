@@ -1,0 +1,16 @@
+ref/AIT/ait/int.lam: 168 bits, slack 16 (limit 184), au=True eta=True, 10 workers
+  layer 1: +201 new, 202 total, 0.1s
+  layer 2: +10713 new, 10915 total, 0.6s
+  layer 3: +8164 new, 19079 total, 32.2s
+  layer 4: +25522 new, 44601 total, 57.7s
+  layer 5: +24596 new, 69197 total, 134.0s
+  layer 6: +32744 new, 101941 total, 211.1s
+  layer 7: +9470 new, 111411 total, 307.6s
+  layer 8: +3627 new, 115038 total, 338.5s
+  layer 9: +142 new, 115180 total, 351.0s
+  layer 10: +2 new, 115182 total, 351.5s
+  layer 11: +0 new, 115182 total, 351.5s
+  component under the limit: 115182 terms, size histogram (delta: count) {0: 1, 2: 2, 3: 4, 4: 3, 5: 8, 6: 97, 7: 89, 8: 249, 9: 560, 10: 699, 11: 1242, 12: 3148, 13: 9126, 14: 14017, 15: 30132, 16: 55805}
+  0 other term(s) tie at 168 bits
+  nothing below 168 bits in the component under the limit
+python3 -u tools/self-interpreter/beta_search.py ref/AIT/ait/int.lam --slack   3413.46s user 11.38s system 955% cpu 5:58.27 total

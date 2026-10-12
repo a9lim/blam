@@ -8,10 +8,11 @@
 > de Bruijn depth (`L=16, A=26, X=30` against `15, 25, 38`). The measured
 > verdicts below stand for the families they name; the *Inference*
 > section's "not another binder move" does not.
-> `tools/self-interpreter/float_out.py` finds the 168 as the 170's unique
-> improving one-step let-float and nothing below 168 within two pure
-> expansions. Re-searched in the 168's own frames, its three slots are
-> again each the unique survivor (`results.md`).
+> The βη component search below reaches the 168 from the 170 in one
+> let-abstraction, and finds nothing smaller than or tying the 168 in
+> the 168's own component under 184 bits. Re-searched in the 168's own
+> frames, its three slots are again each the unique survivor
+> (`results.md`).
 
 The structural question is whether there is a route below the 170-bit
 self-interpreter through *global* rearrangement — fixpoint shape,
@@ -90,6 +91,50 @@ Proved scope: contexts whose weak-head reduction exposes `H Y` with
 `Y` equal to an earlier state on the reduction path. Not covered:
 knots entangled with the interpreter body, or more exotic
 β-convertible cycles.
+
+## βη component search (`tools/self-interpreter/beta_search.py`)
+
+Explore the start term's connected component under single moves, keeping
+every term at or below `|T0| + slack` bits:
+
+- **reduce** any β-redex, duplicating if it must; **η−** and **η+**;
+- **abstract** one occurrence, or all occurrences, of a subterm whose free
+  variables point above some node `N`: `N → (\v. N[S := v]) S` (the let-float
+  that produced the 168);
+- **anti-unify** two subterms under `N` that share a skeleton `G`:
+  `N → (\g. N[S₁ := g A₁…, S₂ := g A₂…]) (\x⃗. G)`. This is a macro for two
+  abstractions and a CSE, so helpers in the style of `cons'` and `skipvar`
+  are one step away instead of roughly 15 bits uphill.
+
+Every move preserves βη-equivalence, and each expansion is checked by
+reducing the redex it introduced back to the exact predecessor. So every
+term in the component is the same algorithm, and a smaller one would be
+correct by construction (the battery runs on it anyway). Tromp's own
+optimizer in `blcc.py` is a reduction-only beam search; the expansions are
+what this adds.
+
+Positive control: from the 170, the 168 is in the component at slack 0.
+From the 168 (`data/self-interpreter/betasearch_168.log`):
+
+| slack | ceiling | component | wall (10 workers, with self-test) |
+|---:|---:|---:|---:|
+| 4 | 172 | 10 | 0.5 s |
+| 8 | 176 | 227 | 7.2 s |
+| 12 | 180 | 2,717 | 14.2 s |
+| 16 | 184 | 115,182 | 6.0 min |
+
+Nothing below 168 and no tie at any slack: the 168 is the unique minimum of
+its component under 184 bits. Its nearest neighbors sit at +2. One is the
+170 itself, one reduction away. The other binds `intL = a a` inside the
+floated continuation instead of around `\cont`, reached by inlining that
+binding (171) and re-sharing it one level down. The component grows 10–40×
+per 4 bits of slack.
+
+Out of reach by construction: anything not βη-equal to the 168. That
+includes data-representation changes like the 206 → 170 `cons'`/`skipvar`
+rewrite and internal calling-convention permutations, such as the order of
+`\args \arg` or of the `cons'` selectors, which keep the external `E C ⌜M⌝`
+contract but change the term's β-class.
 
 ## Inference
 

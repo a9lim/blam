@@ -71,15 +71,18 @@ one β-expansion of the 170: the zero-branch continuation is let-floated out
 from under `\list \bit0 \list1` to sit just inside `\cont`, +6 bits of redex
 for −8 of de Bruijn depth. None of our families generated it; binder placement
 moved only the existing `intL = a a` binding.
-`tools/self-interpreter/float_out.py` finds the 168 as the 170's unique
-improving one-step let-float, and finds nothing below 168 within two pure
-expansions (best +5 at one step, +7 at two).
+`tools/self-interpreter/beta_search.py` explores a term's βη component
+(reductions, η steps, let-abstractions, pairwise anti-unifications) under a
+size ceiling. It reaches the 168 from the 170 at zero slack. From the 168 at
+slack 16 (ceiling 184 bits) the component closes at 115,182 terms with nothing
+below 168 and no tie, in 6.0 min wall on 10 workers.
 
 The slot searches re-run in the 168's own frames (VAR 7, ABS/APP 5; the 170's
 certificates do not transfer) return the same verdict: each reference is the
 unique survivor with no residual unknowns, ABS through 1,071,355,016 candidates
-in 21.6 s. Open mechanical lanes: a mixed expand/reduce neighborhood
-(`float_out.py` composes expansions only) and the contextual search in
+in 21.6 s. Open mechanical lanes: the βη component above slack 16 (10–40×
+per 4 bits), internal calling-convention permutations (outside the βη class,
+so out of the component search's reach), and the contextual search in
 `classical/self-interpreter/search-spec.md` §2. A survivor is only a hypothesis
 until it is spliced into the full interpreter and passes the semantic battery.
 

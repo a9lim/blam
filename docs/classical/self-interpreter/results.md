@@ -204,7 +204,7 @@ the spec was written to kill) are intentionally absent. `lc.py`, `db.py`, and
 `harness.py` are live
 (used above for the golden cross-check and source-chain battery),
 as are `tools/self-interpreter/search_fix.py` (the knot search of `design.md`)
-and `float_out.py` (the let-float neighborhood in `design.md`'s header note).
+and `beta_search.py` (the βη component search of `design.md`).
 
 ## What this does not cover
 
