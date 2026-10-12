@@ -75,8 +75,10 @@ pub struct Core {
     tin: Vec<u32>,
     tout: Vec<u32>,
     root: u32,
-    /// The knot head `\x. x x`; nothing inside it is cut.
-    head: u32,
+    /// Knot heads: `\x. x x` applied to a λ. They are never cut on their
+    /// own, but may share a let with an identical closed subterm (the way
+    /// Tromp's universal machine shares `dbl`).
+    heads: Vec<u32>,
 }
 
 impl Core {
@@ -87,14 +89,22 @@ impl Core {
             tin: Vec::new(),
             tout: Vec::new(),
             root: 0,
-            head: NONE,
+            heads: Vec::new(),
         };
         let mut names: Vec<u8> = Vec::new();
         let mut next_name = 0u8;
         c.root = c.push_term(t, &mut names, &mut next_name);
         assert!(next_name < LETBASE, "core has too many binders");
-        if let CN::App(f, _) = c.node[c.root as usize] {
-            c.head = f;
+        for i in 0..c.node.len() {
+            if let CN::App(f, x) = c.node[i] {
+                if let (CN::Lam(v, b), CN::Lam(..)) = (c.node[f as usize], c.node[x as usize]) {
+                    if let CN::App(p, q) = c.node[b as usize] {
+                        if matches!((c.node[p as usize], c.node[q as usize]), (CN::Var(a), CN::Var(bb)) if a == v && bb == v) {
+                            c.heads.push(f);
+                        }
+                    }
+                }
+            }
         }
         c.parent = vec![NONE; c.node.len()];
         for i in 0..c.node.len() {
@@ -154,25 +164,24 @@ impl Core {
         self.tin[n as usize] <= self.tin[x as usize] && self.tout[x as usize] <= self.tout[n as usize]
     }
 
-    fn binder_free(&self, n: u32) -> bool {
+    /// Structural key: binders inside the subterm by relative index, free
+    /// names by name. Equal keys mean the subterms are the same term.
+    fn key(&self, n: u32, local: &mut Vec<u8>, s: &mut String) {
         match self.node[n as usize] {
-            CN::Var(_) => true,
-            CN::Lam(..) => false,
-            CN::App(f, x) => self.binder_free(f) && self.binder_free(x),
-        }
-    }
-
-    fn key(&self, n: u32, s: &mut String) {
-        match self.node[n as usize] {
-            CN::Var(x) => s.push_str(&format!("v{x} ")),
+            CN::Var(x) => match local.iter().rposition(|&y| y == x) {
+                Some(i) => s.push_str(&format!("b{} ", local.len() - 1 - i)),
+                None => s.push_str(&format!("v{x} ")),
+            },
             CN::Lam(x, b) => {
-                s.push_str(&format!("L{x} "));
-                self.key(b, s);
+                s.push_str("L ");
+                local.push(x);
+                self.key(b, local, s);
+                local.pop();
             }
             CN::App(f, x) => {
                 s.push_str("A ");
-                self.key(f, s);
-                self.key(x, s);
+                self.key(f, local, s);
+                self.key(x, local, s);
             }
         }
     }
@@ -188,7 +197,9 @@ impl Core {
     }
 
     fn movable(&self, n: u32) -> bool {
-        n != self.root && !self.within(n, self.head) && !matches!(self.node[n as usize], CN::Var(_))
+        n != self.root
+            && !self.heads.iter().any(|&h| self.within(n, h))
+            && !matches!(self.node[n as usize], CN::Var(_))
     }
 }
 
@@ -199,7 +210,7 @@ pub struct Cut {
 }
 
 /// Every single-position cut (each movable node to each strict ancestor)
-/// and every shared cut of identical binder-free subterms.
+/// and every shared cut of identical subterms (knot heads included).
 pub fn candidates(core: &Core) -> Vec<Cut> {
     let mut out = Vec::new();
     for p in 0..core.node.len() as u32 {
@@ -212,9 +223,9 @@ pub fn candidates(core: &Core) -> Vec<Cut> {
     }
     let mut groups: BTreeMap<String, Vec<u32>> = BTreeMap::new();
     for p in 0..core.node.len() as u32 {
-        if core.movable(p) && core.binder_free(p) {
+        if core.movable(p) || core.heads.contains(&p) {
             let mut k = String::new();
-            core.key(p, &mut k);
+            core.key(p, &mut Vec::new(), &mut k);
             groups.entry(k).or_default().push(p);
         }
     }

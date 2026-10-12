@@ -104,6 +104,17 @@ tried so far loses. Three follow-up searches (`blam selfint`, lab; logs in
 
 Survivors of any of these are hypotheses until `battery.py` passes them.
 
+The universal machine (`U (⌜M⌝:N) = M N`; Tromp's 178 non-strict, 190 strict)
+was searched in its own right. `blam selfint wiring` enumerates every closed
+context around the 168's parser body:
+- no non-strict machine below 178 (14.9 million contexts, with four tied
+  178-bit wirings, one of them new);
+- no strict machine below 185 (contexts through 38 bits);
+- `letopt` and `component` (to slack 20) on the 178 and the 190 find nothing
+  smaller either.
+
+Strict contexts of 39..43 bits (about 31 billion) remain.
+
 ### Classical docket
 
 1. Derive a selector/zfirst certificate class from a concrete frontier trace

@@ -9,6 +9,7 @@ mod component;
 mod ctx;
 mod letopt;
 mod term;
+mod wiring;
 
 use crate::args::{self, R};
 
@@ -19,7 +20,8 @@ usage: blam selfint <search> [flags]   (`blam selfint <search> --help`)
 
   letopt    exact enumeration of let structures over the let-free core
   ctx       contextual slot search: splice into the 168, check the contract
-  component βη component search under a size ceiling (Rust beta_search)";
+  component βη component search under a size ceiling (Rust beta_search)
+  wiring    every closed context around the parser body (universal machine)";
 
 pub fn run(argv: &[String]) -> R<()> {
     match argv.first().map(String::as_str) {
@@ -30,6 +32,7 @@ pub fn run(argv: &[String]) -> R<()> {
         Some("letopt") => letopt::run(&argv[1..]),
         Some("ctx") => ctx::run(&argv[1..]),
         Some("component") => component::run(&argv[1..]),
+        Some("wiring") => wiring::run(&argv[1..]),
         Some(other) => Err(format!(
             "blam selfint: unknown search `{other}`\n{}",
             args::hint("selfint")

@@ -351,3 +351,98 @@ interpreter would have to change an operation's *protocol*: the stream,
 environment, or continuation conventions that the contract and the bit
 polarity fix. The table above lists every protocol change tried so far and
 why it lost.
+
+## The universal machine (2026-10-13)
+
+For algorithmic information theory the figure that matters is the universal
+machine, `U (⌜M⌝ : N) = M N` for closed `M`, rather than the self-interpreter.
+Tromp gives two (`ref/AIT/ait/uni.lam`):
+
+```text
+178, non-strict:  (\x. x x) F (\x. x x)            = intL dbl
+190, strict:      (\a. a F (\b. b (a a))) (\a. a a) = intL (\z. z Ω)
+F = \x. (\intL. B) (x x)
+```
+
+`B` is the 168's parser body `\cont. …` (146 bits), whose only free variable
+is `intL`, used twice. Strict means, in BLC.tex's words, that "any attempt to
+apply free indices diverges", so the machine forces closed programs. The 190
+gets this by making the base environment Ω.
+
+U's contract leaves the output boundary to us: there is no `λz` and no
+external `C`. So any protocol that lost for the self-interpreter only at that
+boundary could win here. Every U is `B` plus *wiring* (the fixpoint, the
+top-level continuation, the base environment, and any sharing), so the
+U-specific question is the cheapest wiring.
+
+### Every wiring (`blam selfint wiring`)
+
+Hold `B` fixed and enumerate every closed context `C[·]` with one hole. The
+hole's `intL` may be bound to any enclosing binder; the k-th costs 2k bits.
+Each `C[B]` must meet the contract `\n. C[B] (⌜M⌝ ++ n) = \n. M n` on 91
+programs, with the reference's normal forms as goldens. The 178 is a 32-bit
+context.
+
+- **Non-strict.** All 28,373,474 contexts of at most 32 bits. None of at most
+  31 bits survives (14.9M contexts), so no universal machine of this shape is
+  below 178. Exactly four 32-bit wirings survive, all 178 bits:
+
+  ```text
+  ((\x. x x) F) (\x. x x)          Tromp's intL dbl
+  (\a. a F a) (\a. a a)            dbl shared with the knot
+  (\a. a a (\x. x x)) F            F F dbl
+  (\a. a a a) (\a. a F)            new: G G G = intL G; the continuation is
+                                   G = \a. a F, the base environment is F
+  ```
+
+  16,420 contexts of at most 31 bits exhausted their budget on three probes
+  without failing one. On `λx.x`, the halting ladder proves 12,449 of them
+  divergent, which refutes them, since the answer has a normal form. Of the
+  4 that halt, 3 give the wrong answer. The fourth,
+  `λS. (λf. f (f (B f))) (λg. g S g)`, is right on `λx.x` and provably
+  divergent on `λλ1`. The remaining 3,961 are undecided on `λx.x`, `λλ1` and
+  `λx.x x`. None halts within 10⁷ β on `λx.x`, where the 178 takes 37 β.
+
+- **Strict.** `--strict` requires the closed contract and, in addition, no
+  normal form within 2¹⁶ β on open programs that use their free variable
+  (`1`, `2`, `\2`, `1 1`, `\\4`), each terminated by `nil`. That is
+  Tromp's KS convention.
+
+  The tail has to be concrete. With a symbolic tail, the first run passed
+  `intL (intL intL)` at 182 bits: its base environment is the parser's own
+  dispatch handler, so a free variable re-parses the leftover input, and with
+  a symbolic tail that gets stuck and *looks* divergent. Terminated by `nil`,
+  it halts with garbage on `1`, `\2`, and `1 1` while the 190 diverges. The
+  corrected filter rejects the 178 and the 182 and passes the 190.
+
+  Contexts of 33..38 bits (strict machines up to 184 bits): 1,270,679,556
+  contexts, no survivor. All four 178-bit wirings fail the strict check. So no
+  strict machine of this shape is below 185 bits. Contexts of 39..43 bits
+  (about 31 billion, roughly 13 hours) remain; the 190 is a 44-bit context.
+
+### βη and let structure on U itself
+
+`letopt` now detects knots anywhere and lets identical subterms, knot heads
+included, share a let. On the 189-bit core of the 178 (510 candidate cuts),
+the best size is 180, 178, 178 at one, two, and three cuts: `intL dbl` at
+two, and the `dbl`-sharing form at three. On the 205-bit core of the 190
+(528 candidate cuts), it is 196, 192, 190, with the 190 itself at three
+cuts. `component` from the 178 to slack 20 has 8,527,620 terms, nothing
+below 178, and the two sharing forms as its only ties. From the 190 it has
+5,563,972 terms, with nothing below 190 and no tie.
+
+A contextual slot search under U's contract was not run. In U, the inner
+values, continuations, and environments are exactly those of the
+self-interpreter; only the top level differs, and the slots are shared
+between the top and every nested level. So a slot candidate correct on
+nested programs is correct at the top, and the self-interpreter's `ctx`
+results apply unchanged.
+
+### Read
+
+Within wirings around this parser, 178 is optimal for the non-strict
+machine, with four tied wirings, and no strict machine is below 185. The
+strict premium is a base environment with no normal form on lookup. The
+cheap alternatives (`dbl`, `F`, the parser's own handler) all return values
+or re-read input. Ω via a shared `dbl` (`\b. b (a a)`, 12 bits over the 178)
+is the cheapest found.

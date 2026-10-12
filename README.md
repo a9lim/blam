@@ -184,7 +184,7 @@ says how to get them rather than pretending they do not exist.
 | `q galois idiom` / `q galois complement` *(lab)* | the two-stage dyadicity campaign |
 | `q oddmin` *(lab)* | gated reference-DP driver for the CNOT-free √2 theorem lane |
 | `slots` *(lab)* | exhaustive self-interpreter slot searches |
-| `selfint letopt` / `ctx` / `component` *(lab)* | searches below the 168: exact let structures, contextual slots, the βη component |
+| `selfint letopt` / `ctx` / `component` / `wiring` *(lab)* | searches below the 168 and the universal machines: exact let structures, contextual slots, the βη component, every wiring around the parser |
 
 ```bash
 cargo build --release                 # census, solomonoff, q census, cert lean

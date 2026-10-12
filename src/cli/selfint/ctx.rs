@@ -138,20 +138,20 @@ fn split168(slot: &CSlot) -> R<(Vec<bool>, Vec<bool>)> {
 
 /// One probe program: the probe's wire bits around the interpreter, and the
 /// golden normal form produced by the reference.
-struct Probe {
+pub(super) struct Probe {
     /// `\c \n. ` + `E c` application spine, before the interpreter.
-    head: Vec<bool>,
+    pub(super) head: Vec<bool>,
     /// after the interpreter: `c` then the stream ⌜M⌝ ++ n.
-    tail: Vec<bool>,
-    golden: Vec<u8>,
-    beta: u64,
+    pub(super) tail: Vec<bool>,
+    pub(super) golden: Vec<u8>,
+    pub(super) beta: u64,
 }
 
-fn push_bits(v: &mut Vec<bool>, s: &str) {
+pub(super) fn push_bits(v: &mut Vec<bool>, s: &str) {
     v.extend(s.bytes().map(|c| c == b'1'));
 }
 
-fn var_bits(v: &mut Vec<bool>, i: usize) {
+pub(super) fn var_bits(v: &mut Vec<bool>, i: usize) {
     for _ in 0..i {
         v.push(true);
     }
@@ -159,6 +159,25 @@ fn var_bits(v: &mut Vec<bool>, i: usize) {
 }
 
 impl Probe {
+    /// The universal-machine contract: `\n. U (⌜M⌝ ++ n)` against `\n. M n`.
+    pub(super) fn new_uni(m: &str) -> Probe {
+        let mut head = Vec::new();
+        push_bits(&mut head, "00" /* \n */);
+        push_bits(&mut head, "01" /* U S */);
+        let mut tail = Vec::new();
+        for b in m.bytes() {
+            push_bits(&mut tail, "00010110");
+            push_bits(&mut tail, if b == b'0' { "0000110" } else { "000010" });
+        }
+        var_bits(&mut tail, 1 + m.len());
+        Probe {
+            head,
+            tail,
+            golden: Vec::new(),
+            beta: 0,
+        }
+    }
+
     fn new(m: &str) -> Probe {
         let mut head = Vec::new();
         push_bits(&mut head, "0000" /* \c \n */);
@@ -180,10 +199,10 @@ impl Probe {
     }
 }
 
-struct Golden<'a> {
-    g: &'a [u8],
-    pos: usize,
-    bad: bool,
+pub(super) struct Golden<'a> {
+    pub(super) g: &'a [u8],
+    pub(super) pos: usize,
+    pub(super) bad: bool,
 }
 
 impl Golden<'_> {
@@ -311,7 +330,7 @@ impl Ctx<'_> {
     }
 }
 
-fn programs(limit: usize) -> Vec<String> {
+pub(super) fn programs(limit: usize) -> Vec<String> {
     let mut out = Vec::new();
     for n in 4..=14u32 {
         blam::blc::enumerate::for_each_closed(n, &mut |enc, len| out.push(enc_to_string(enc, len)));

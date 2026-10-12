@@ -1,0 +1,49 @@
+start 178 bits, slack 20 (limit 198), au=true eta=true contextual=false, 18 threads
+  layer 1: +226 new, 227 total, 0.0s
+  layer 2: +21242 new, 21469 total, 0.0s
+  layer 3: +140851 new, 162320 total, 0.4s
+  layer 4: +322737 new, 485057 total, 2.5s
+  layer 5: +900500 new, 1385557 total, 7.5s
+  layer 6: +1213584 new, 2599141 total, 21.4s
+  layer 7: +1779553 new, 4378694 total, 41.3s
+  layer 8: +1541542 new, 5920236 total, 69.4s
+  layer 9: +1479917 new, 7400153 total, 94.9s
+  layer 10: +672847 new, 8073000 total, 117.8s
+  layer 11: +250480 new, 8323480 total, 128.5s
+  layer 12: +157443 new, 8480923 total, 132.5s
+  layer 13: +34130 new, 8515053 total, 135.0s
+  layer 14: +11774 new, 8526827 total, 135.5s
+  layer 15: +716 new, 8527543 total, 135.7s
+  layer 16: +62 new, 8527605 total, 135.7s
+  layer 17: +15 new, 8527620 total, 135.7s
+  layer 18: +0 new, 8527620 total, 135.7s
+component under the limit: 8527620 states, 8527620 distinct terms; size histogram (delta:count) 0:3 1:1 2:6 3:14 4:14 5:28 6:322 7:383 8:900 9:2079 10:2980 11:4992 12:21625 13:39217 14:77881 15:166051 16:276946 17:456793 18:939034 19:2308626 20:4229725
+  178 bits (1 moves from start)  0100010110000100000100000110000001011100110111100101111110100101101010000111100001011100111100000011110000001011101110011011110011111000011111000010111101001110100110101000011010
+  178 bits (2 moves from start)  0100010110100001101000010000010000011000000101110011011110010111111010010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010
+0 term(s) below 178, 2 tie(s)
+start 190 bits, slack 20 (limit 210), au=true eta=true contextual=false, 18 threads
+  layer 1: +247 new, 248 total, 0.0s
+  layer 2: +25990 new, 26238 total, 0.0s
+  layer 3: +175501 new, 201739 total, 0.5s
+  layer 4: +242242 new, 443981 total, 3.5s
+  layer 5: +827459 new, 1271440 total, 7.9s
+  layer 6: +677575 new, 1949015 total, 23.2s
+  layer 7: +1188507 new, 3137522 total, 35.8s
+  layer 8: +918516 new, 4056038 total, 57.7s
+  layer 9: +557207 new, 4613245 total, 74.3s
+  layer 10: +642691 new, 5255936 total, 84.1s
+  layer 11: +194518 new, 5450454 total, 95.7s
+  layer 12: +59895 new, 5510349 total, 99.3s
+  layer 13: +45905 new, 5556254 total, 100.4s
+  layer 14: +5330 new, 5561584 total, 101.2s
+  layer 15: +1720 new, 5563304 total, 101.3s
+  layer 16: +507 new, 5563811 total, 101.4s
+  layer 17: +86 new, 5563897 total, 101.4s
+  layer 18: +34 new, 5563931 total, 101.4s
+  layer 19: +21 new, 5563952 total, 101.4s
+  layer 20: +11 new, 5563963 total, 101.4s
+  layer 21: +8 new, 5563971 total, 101.4s
+  layer 22: +1 new, 5563972 total, 101.4s
+  layer 23: +0 new, 5563972 total, 101.4s
+component under the limit: 5563972 states, 5563972 distinct terms; size histogram (delta:count) 0:1 1:1 2:2 3:6 4:10 5:17 6:129 7:227 8:435 9:1001 10:1879 11:3336 12:10984 13:23345 14:45149 15:93488 16:167824 17:313810 18:627142 19:1426985 20:2848201
+0 term(s) below 190, 0 tie(s)
