@@ -256,9 +256,9 @@ ceiling along the way:
 | 3 | 10,181,950 | 173 |
 | 4 | 789,542,687 | 179 |
 
-Around the 168 (`--around 3`): its own two cuts plus any one, two, or three
-more give at least 173, 179, and 185 bits (3,182,656 valid configurations
-at +3). Each further let or λ-lift on top of the 168 costs 5–6 bits.
+Around the 168 (`--around 4`): its own two cuts plus any one to four more
+give at least 173, 179, 185, and 192 bits (182,418,093 valid configurations
+at +4). Each further let or λ-lift on top of the 168 costs 5–7 bits.
 
 So, within let structure, the history is the optimum path: the best one-cut
 structure is the 170 and the best two-cut structure is the 168. Every
@@ -289,7 +289,7 @@ strictly smaller than the reference:
 | cons' cell | 7 | 24 | 30,428 | 0 | 0 |
 | APP | 5 | 35 | 21,555,108 | 0 | 3 |
 | ABS | 5 | 40 | 558,135,222 | 0 | 1,983 |
-| dispatch handler, sizes ≤ 39 only | 5 | 42 | 704,680,301 | 0 | 42,721,990* |
+| dispatch handler | 5 | 42 | 2,563,792,977 | 0 | 162,309,366* |
 
 "Unknown" means the candidate passed or ran out of budget on every probe,
 including after 512× the reference's budget plus the divergence oracle and
@@ -306,8 +306,7 @@ such as `(\l. l l) (intL (intL exp) (intL cont))`.
 \* The handler run stops a candidate after three budget-exhausted probes and
 does not escalate a size with more than 20,000 unknowns. So its unknowns
 are "no failing probe before three caps", mostly handlers that ignore the
-stream and recurse. Its sizes 40 and 41 (about 1.86 billion candidates) were
-not run: the machine was on battery.
+stream and recurse.
 
 ### 3. βη component in Rust (`component`)
 
@@ -331,8 +330,9 @@ pins exactly these three) and carries the flags through every move. It adds
 four kinds of move for flagged `b`: `(b X Y) Z <~> b (X Z) (Y Z)`, `F (b X Y)
 <~> b (F X) (F Y)`, `\v. b X Y <~> b (\v. X) (\v. Y)`, and branch
 specialization. These equalities hold on the inputs the interpreter actually
-receives, not βη. At slack 4 / 8 / 12 the contextual component has 42 / 843 /
-15,518 distinct terms (42 / 2,338 / 116,832 flag-carrying states). Three
+receives, not βη. At slack 4 / 8 / 12 / 16 the contextual component has
+42 / 843 / 15,518 / 537,227 distinct terms (42 / 2,338 / 116,832 / 4,162,503
+flag-carrying states), against 10 / 227 / 2,717 / 115,182 plain. Three
 169-bit neighbors appear already at slack 4; nothing goes below 168, and
 there is no tie.
 
@@ -344,7 +344,7 @@ mechanically:
 - let structure, exactly up to four cuts;
 - βη rearrangement, to +24;
 - context-dependent slot replacements, for every slot up to its reference
-  size (the handler only through 39 of its 41 bits).
+  size.
 
 None goes below 168, and the 168 has no tie in any of them. A smaller
 interpreter would have to change an operation's *protocol*: the stream,

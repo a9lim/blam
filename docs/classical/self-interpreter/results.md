@@ -223,4 +223,4 @@ then costs 29.1B candidates ≈ 11 min at the measured 45M candidates/s, APP
 The contextual lane has since been run as `blam selfint ctx`
 (`design.md`, "Three follow-up searches"). It splices candidates into the 168
 and checks the exact contract on 91 programs. It finds no survivor below any
-slot's reference size, the dispatch handler through 39 of its 41 bits.
+slot's reference size.

@@ -90,18 +90,17 @@ tried so far loses. Three follow-up searches (`blam selfint`, lab; logs in
 - `letopt` renders every let structure of the 179-bit let-free core exactly,
   with no size ceiling. The best size by number of cuts is 170, 168, 173, 179
   over 0.8 billion configurations. The 170 and the 168 are the unique optima at
-  one and two cuts, and adding one to three cuts to the 168 costs at least 5
-  bits per cut.
+  one and two cuts. Adding one to four cuts to the 168 gives at least 173,
+  179, 185, and 192 bits.
 - `ctx` splices each slot candidate into the 168 and checks the exact contract
-  on 91 programs, so fragments that rely on run-time context count. VAR, APP,
-  ABS, the cons' cell, and APP's value are exhausted below their reference
-  sizes: 580 million candidates, no survivor. The dispatch handler is done only
-  through 39 of its 41 bits (705 million candidates, no survivor); sizes 40 and
-  41 remain.
+  on 91 programs, so fragments that rely on run-time context count. Every slot
+  is exhausted below its reference size: VAR, APP, ABS, the cons' cell, APP's
+  value, and the dispatch handler, 3.14 billion candidates in all, with no
+  survivor.
 - `component` ports `beta_search.py` (identical components through slack 16)
   about 240× faster. Slack 20 gives 2,011,848 terms and slack 24 gives
   25,405,902 terms (ceiling 192). `--contextual` adds the sound boolean
-  commuting moves; it is exhausted to slack 12.
+  commuting moves: 537,227 distinct terms at slack 16.
 
 Survivors of any of these are hypotheses until `battery.py` passes them.
 

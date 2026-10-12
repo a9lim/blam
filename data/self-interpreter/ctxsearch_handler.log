@@ -164,3 +164,24 @@ size       candidates   unknown survivors     time_s
      UNKNOWN  39 bits  010000110000110011001011110011011110110
      UNKNOWN  39 bits  010000110000110011001011110011111010110
 total 704680301 candidates in 572.3s: 0 survivors, 42721990 unknown
+# sizes 40 and 41, run separately on AC power (blam selfint ctx handler --min-size N --max-size N):
+slot handler (frame 5: list next cont intL x), reference 42 bits; 91 probe programs, reference beta 37..548
+size       candidates   unknown survivors     time_s
+     (40549559 unknowns: too many to escalate, reported as capped at 8x)
+  40        639080628  40549559         0      327.2
+     UNKNOWN  40 bits  0100001100001100001100101111101111101110
+     UNKNOWN  40 bits  0100001100001100001010111110101110111110
+     UNKNOWN  40 bits  0100001100001100001011111001101111101110
+     UNKNOWN  40 bits  0100001100001100001011111001111110101110
+     UNKNOWN  40 bits  0100001100001100001010111110111110111010
+total 639080628 candidates in 327.2s: 0 survivors, 40549559 unknown
+slot handler (frame 5: list next cont intL x), reference 42 bits; 91 probe programs, reference beta 37..548
+size       candidates   unknown survivors     time_s
+     (79037817 unknowns: too many to escalate, reported as capped at 8x)
+  41       1220032048  79037817         0      613.8
+     UNKNOWN  41 bits  01000011000011000000101111110111111011110
+     UNKNOWN  41 bits  01000011000011000011100101111101111101110
+     UNKNOWN  41 bits  01000011000011000010101111101101110111110
+     UNKNOWN  41 bits  01000011000011000010111110011101111101110
+     UNKNOWN  41 bits  01000011000011000010111110011111101101110
+total 1220032048 candidates in 613.9s: 0 survivors, 79037817 unknown
