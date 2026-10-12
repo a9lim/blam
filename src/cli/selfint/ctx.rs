@@ -52,6 +52,8 @@ usage: blam selfint ctx SLOT [--max-size N] [--min-size N] [--programs N]
   --programs N    probe programs (default: all closed terms of 4..=14 bits
                   plus deep-index extras, about 70)
   --counts-only   print the per-size candidate counts and stop
+  --escalate N    re-run a size's budget-capped candidates at 512x budget plus
+                  the divergence oracle when there are at most N (default 20000)
 
 A candidate survives when the spliced interpreter meets the contract on
 every probe program; survivors still need battery.py.";
@@ -265,6 +267,9 @@ impl Ctx<'_> {
         mult: u64,
     ) -> Verdict {
         let mut verdict = Verdict::Pass;
+        // A candidate that runs out of budget on this many probes cannot be
+        // a survivor; stop paying for it.
+        let mut open = 0;
         for p in self.probes {
             self.assemble(buf, p, enc, len);
             pool.clear();
@@ -294,7 +299,11 @@ impl Ctx<'_> {
                             _ => {}
                         }
                     }
-                    verdict = Verdict::Unknown
+                    verdict = Verdict::Unknown;
+                    open += 1;
+                    if open == 3 {
+                        return verdict;
+                    }
                 }
             }
         }
@@ -360,6 +369,7 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut counts_only = false;
     let mut tasks_per_thread = 64usize;
     let mut threads = 0usize;
+    let mut escalate = 20_000usize;
     let mut p = Args::new("selfint ctx", argv);
     while let Some(tok) = p.next() {
         match tok {
@@ -368,6 +378,7 @@ pub fn run(argv: &[String]) -> R<()> {
             "--programs" => n_programs = p.num(tok)?,
             "--tasks" => tasks_per_thread = p.num(tok)?,
             "--threads" => threads = p.num(tok)?,
+            "--escalate" => escalate = p.num(tok)?,
             "--counts-only" => {
                 p.flag(tok)?;
                 counts_only = true;
@@ -485,12 +496,24 @@ pub fn run(argv: &[String]) -> R<()> {
         // Escalate caps: a candidate that only ran out of budget is re-run
         // with 512x the reference's budget per probe.
         let mut st = st;
-        let unknown = std::mem::take(&mut st.unknown);
-        for (enc, len) in unknown {
-            match ctx.judge_at(&mut pool, &mut vm, &mut buf, enc, len, 512) {
-                Verdict::Pass => st.pass.push((enc, len)),
+        let unknown = if st.unknown.len() <= escalate {
+            std::mem::take(&mut st.unknown)
+        } else {
+            println!("     ({} unknowns: too many to escalate, reported as capped at 8x)", st.unknown.len());
+            Vec::new()
+        };
+        let settled: Vec<(Verdict, (u64, u8))> = unknown
+            .par_iter()
+            .map_init(
+                || (Pool::new(), Machine::new(), Vec::new()),
+                |(pool, vm, buf), &(enc, len)| (ctx.judge_at(pool, vm, buf, enc, len, 512), (enc, len)),
+            )
+            .collect();
+        for (v, c) in settled {
+            match v {
+                Verdict::Pass => st.pass.push(c),
                 Verdict::Fail => st.fail += 1,
-                Verdict::Unknown => st.unknown.push((enc, len)),
+                Verdict::Unknown => st.unknown.push(c),
             }
         }
         println!(

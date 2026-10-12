@@ -52,7 +52,9 @@ term smaller than or tying the start.";
 #[derive(Debug, PartialEq, Eq, Hash)]
 enum N {
     V(u32),
-    L(Rc<N>),
+    /// The flag marks a boolean binder (`bit0`, `bit1`, `zx` of the 168);
+    /// moves preserve it, and every λ a move creates is unflagged.
+    L(bool, Rc<N>),
     A(Rc<N>, Rc<N>),
 }
 type P = Rc<N>;
@@ -61,7 +63,10 @@ fn v(i: u32) -> P {
     Rc::new(N::V(i))
 }
 fn l(b: P) -> P {
-    Rc::new(N::L(b))
+    Rc::new(N::L(false, b))
+}
+fn lt(tag: bool, b: P) -> P {
+    Rc::new(N::L(tag, b))
 }
 fn a(f: P, x: P) -> P {
     Rc::new(N::A(f, x))
@@ -70,7 +75,7 @@ fn a(f: P, x: P) -> P {
 fn size(t: &N) -> u32 {
     match t {
         N::V(i) => i + 2,
-        N::L(b) => 2 + size(b),
+        N::L(_, b) => 2 + size(b),
         N::A(f, x) => 2 + size(f) + size(x),
     }
 }
@@ -79,7 +84,7 @@ fn shift(t: &P, d: i64, c: u32) -> P {
     match &**t {
         N::V(i) if *i >= c => v((*i as i64 + d) as u32),
         N::V(_) => t.clone(),
-        N::L(b) => l(shift(b, d, c + 1)),
+        N::L(g, b) => lt(*g, shift(b, d, c + 1)),
         N::A(f, x) => a(shift(f, d, c), shift(x, d, c)),
     }
 }
@@ -89,7 +94,7 @@ fn minfree(t: &N, c: u32) -> u32 {
     match t {
         N::V(i) if *i >= c => i - c,
         N::V(_) => u32::MAX,
-        N::L(b) => minfree(b, c + 1),
+        N::L(_, b) => minfree(b, c + 1),
         N::A(f, x) => minfree(f, c).min(minfree(x, c)),
     }
 }
@@ -97,7 +102,7 @@ fn minfree(t: &N, c: u32) -> u32 {
 fn occurs(i: u32, t: &N) -> bool {
     match t {
         N::V(j) => *j == i,
-        N::L(b) => occurs(i + 1, b),
+        N::L(_, b) => occurs(i + 1, b),
         N::A(f, x) => occurs(i, f) || occurs(i, x),
     }
 }
@@ -108,12 +113,12 @@ fn subst(o: u32, x: &P, t: &P) -> P {
         N::V(i) if *i == o => shift(x, o as i64, 0),
         N::V(i) if *i > o => v(i - 1),
         N::V(_) => t.clone(),
-        N::L(b) => l(subst(o + 1, x, b)),
+        N::L(g, b) => lt(*g, subst(o + 1, x, b)),
         N::A(f, y) => a(subst(o, x, f), subst(o, x, y)),
     }
 }
 
-fn encode(t: &N, out: &mut Key) {
+fn encode(t: &N, out: &mut Key, lams: &mut u32) {
     match t {
         N::V(i) => {
             for _ in 0..=*i {
@@ -121,31 +126,37 @@ fn encode(t: &N, out: &mut Key) {
             }
             out.push(false);
         }
-        N::L(b) => {
+        N::L(g, b) => {
+            if *g {
+                out.tags |= 1 << *lams;
+            }
+            *lams += 1;
             out.push(false);
             out.push(false);
-            encode(b, out);
+            encode(b, out, lams);
         }
         N::A(f, x) => {
             out.push(false);
             out.push(true);
-            encode(f, out);
-            encode(x, out);
+            encode(f, out, lams);
+            encode(x, out, lams);
         }
     }
 }
 
 fn decode(k: &Key) -> P {
-    fn go(k: &Key, i: &mut usize) -> P {
+    fn go(k: &Key, i: &mut usize, lams: &mut u32) -> P {
         if !k.get(*i) {
             let app = k.get(*i + 1);
             *i += 2;
             if app {
-                let f = go(k, i);
-                let x = go(k, i);
+                let f = go(k, i, lams);
+                let x = go(k, i, lams);
                 a(f, x)
             } else {
-                l(go(k, i))
+                let tag = k.tags >> *lams & 1 == 1;
+                *lams += 1;
+                lt(tag, go(k, i, lams))
             }
         } else {
             let mut n = 0;
@@ -158,14 +169,16 @@ fn decode(k: &Key) -> P {
         }
     }
     let mut i = 0;
-    go(k, &mut i)
+    go(k, &mut i, &mut 0)
 }
 
-/// A term's wire bits, packed MSB-first: the visited-set key.
+/// A term's wire bits, packed MSB-first, plus its boolean-binder flags (bit
+/// i = the i-th λ in preorder): the visited-set key.
 #[derive(Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Default, Debug)]
 pub struct Key {
     w: [u64; 5],
     len: u16,
+    tags: u64,
 }
 
 impl Key {
@@ -185,7 +198,7 @@ impl Key {
     }
     fn of(t: &N) -> Key {
         let mut k = Key::default();
-        encode(t, &mut k);
+        encode(t, &mut k, &mut 0);
         k
     }
     fn parse(s: &str) -> Key {
@@ -204,7 +217,7 @@ type Path = Vec<u8>;
 fn positions(t: &P, path: &mut Path, depth: u32, out: &mut Vec<(Path, P, u32)>) {
     out.push((path.clone(), t.clone(), depth));
     match &**t {
-        N::L(b) => {
+        N::L(_, b) => {
             path.push(1);
             positions(b, path, depth + 1, out);
             path.pop();
@@ -225,7 +238,7 @@ fn at(t: &P, p: &[u8]) -> P {
     let mut t = t.clone();
     for &i in p {
         t = match (&*t, i) {
-            (N::L(b), 1) => b.clone(),
+            (N::L(_, b), 1) => b.clone(),
             (N::A(f, _), 1) => f.clone(),
             (N::A(_, x), 2) => x.clone(),
             _ => unreachable!("bad path"),
@@ -239,7 +252,7 @@ fn put(t: &P, p: &[u8], new: P) -> P {
         return new;
     };
     match (&**t, i) {
-        (N::L(b), 1) => l(put(b, rest, new)),
+        (N::L(g, b), 1) => lt(*g, put(b, rest, new)),
         (N::A(f, x), 1) => a(put(f, rest, new), x.clone()),
         (N::A(f, x), 2) => a(f.clone(), put(x, rest, new)),
         _ => unreachable!("bad path"),
@@ -273,11 +286,11 @@ impl Mover {
         // reductions and η−
         for (p, s, _) in &pos {
             if let N::A(f, x) = &**s {
-                if let N::L(b) = &**f {
+                if let N::L(_, b) = &**f {
                     emit(put(t, p, subst(0, x, b)));
                 }
             }
-            if let N::L(b) = &**s {
+            if let N::L(_, b) = &**s {
                 if let N::A(f, x) = &**b {
                     if **x == N::V(0) && !occurs(0, f) {
                         emit(put(t, p, shift(f, -1, 0)));
@@ -455,7 +468,7 @@ impl Info {
                     info.var[i] = *x;
                     info.hist[i][(*x as usize).min(HIST - 1)] += 1;
                 }
-                N::L(_) => {
+                N::L(..) => {
                     info.kind[i] = 1;
                     info.nodes[i] = 1 + info.nodes[i + 1];
                     let b = info.hist[i + 1];
@@ -606,7 +619,7 @@ enum Sk {
     V(u32),
     O(u32),
     H(u32),
-    L(Box<Sk>),
+    L(bool, Box<Sk>),
     A(Box<Sk>, Box<Sk>),
 }
 
@@ -627,7 +640,7 @@ fn antiunify(s1: &P, k1: u32, s2: &P, k2: u32) -> Option<(Sk, Vec<(P, P)>)> {
     }
     fn walk(u1: &P, u2: &P, d: u32, k1: u32, k2: u32, holes: &mut Vec<(P, P)>) -> Option<Sk> {
         match (&**u1, &**u2) {
-            (N::L(b1), N::L(b2)) => Some(Sk::L(Box::new(walk(b1, b2, d + 1, k1, k2, holes)?))),
+            (N::L(g1, b1), N::L(g2, b2)) => Some(Sk::L(*g1 && *g2, Box::new(walk(b1, b2, d + 1, k1, k2, holes)?))),
             (N::A(f1, x1), N::A(f2, x2)) => {
                 let mark = holes.len();
                 let f = walk(f1, f2, d, k1, k2, holes);
@@ -665,45 +678,28 @@ fn build_skeleton(s: &Sk, h: u32, d: u32) -> P {
         Sk::V(i) => v(*i),
         Sk::O(m) => v(m + h + d),
         Sk::H(j) => v(d + h - 1 - j),
-        Sk::L(b) => l(build_skeleton(b, h, d + 1)),
+        Sk::L(g, b) => lt(*g, build_skeleton(b, h, d + 1)),
         Sk::A(f, x) => a(build_skeleton(f, h, d), build_skeleton(x, h, d)),
     }
 }
 
 // ------------------------------------------------------------- contextual moves
 
-/// Boolean binders of a term: λ nodes whose variable is used only as the head
-/// of a two-argument application `b X Y` and were boolean in the 168. We
-/// cannot track binder identity through arbitrary moves, so we identify them
-/// structurally: a λ whose bound variable occurs at least once, and only ever
-/// as the head of exactly two arguments. In the 168 that is exactly `bit0`,
-/// `bit1` and `zx`; the anti-unification and abstraction moves can create
-/// other such binders, which is why contextual survivors need the battery.
+/// Moves that hold only because a binder is a Church boolean. Boolean
+/// binders are the flagged λs (`N::L(true, _)`): the 168's `bit0`, `bit1`
+/// and `zx`, carried through every other move. For `b` such a binder:
+///
+/// ```text
+/// (b X Y) Z  <~>  b (X Z) (Y Z)        F (b X Y)  <~>  b (F X) (F Y)
+/// \v. b X Y  <~>  b (\v. X) (\v. Y)    b X Y  ~>  b X[b:=true] Y[b:=false]
+/// ```
 fn contextual_moves(t: &P, pos: &[(Path, P, u32)], emit: &mut impl FnMut(P)) {
-    // For a boolean selector b X Y at position s inside the scope of a
-    // boolean binder: push an application context in/out.
     for (p, s, _) in pos {
         // (b X Y) Z  ->  b (X Z) (Y Z)
         if let N::A(f, z) = &**s {
             if let Some((b, x, y)) = selector(f) {
                 if is_boolean_var(t, p, b) {
                     emit(put(t, p, a(a(v(b), a(x.clone(), z.clone())), a(y.clone(), z.clone()))));
-                }
-            }
-        }
-        // b (X Z) (Y Z)  ->  (b X Y) Z
-        if let Some((b, x, y)) = selector(s) {
-            if is_boolean_var(t, p, b) {
-                if let (N::A(x1, z1), N::A(y1, z2)) = (&*x, &*y) {
-                    if z1 == z2 {
-                        emit(put(t, p, a(a(a(v(b), x1.clone()), y1.clone()), z1.clone())));
-                    }
-                }
-                // b (F X) (F Y)  ->  F (b X Y)
-                if let (N::A(f1, x1), N::A(f2, y1)) = (&*x, &*y) {
-                    if f1 == f2 {
-                        emit(put(t, p, a(f1.clone(), a(a(v(b), x1.clone()), y1.clone()))));
-                    }
                 }
             }
         }
@@ -715,25 +711,35 @@ fn contextual_moves(t: &P, pos: &[(Path, P, u32)], emit: &mut impl FnMut(P)) {
                 }
             }
         }
-        // \v. b X Y  ->  b (\v. X) (\v. Y)   (b free in the λ: index b+1 inside)
-        if let N::L(body) = &**s {
+        // \v. b X Y  ->  b (\v. X) (\v. Y)   (b bound outside the λ)
+        if let N::L(g, body) = &**s {
             if let Some((b, x, y)) = selector(body) {
                 if b >= 1 && is_boolean_var(t, &[p.as_slice(), &[1]].concat(), b) {
-                    emit(put(t, p, a(a(v(b - 1), l(x.clone())), l(y.clone()))));
+                    emit(put(t, p, a(a(v(b - 1), lt(*g, x)), lt(*g, y))));
                 }
             }
         }
-        // b (\v. X) (\v. Y)  ->  \v. b X Y
         if let Some((b, x, y)) = selector(s) {
-            if let (N::L(x1), N::L(y1)) = (&*x, &*y) {
-                if is_boolean_var(t, p, b) {
-                    emit(put(t, p, l(a(a(v(b + 1), x1.clone()), y1.clone()))));
+            if !is_boolean_var(t, p, b) {
+                continue;
+            }
+            // b (X Z) (Y Z)  ->  (b X Y) Z ;  b (F X) (F Y)  ->  F (b X Y)
+            if let (N::A(x1, z1), N::A(y1, z2)) = (&*x, &*y) {
+                if z1 == z2 {
+                    emit(put(t, p, a(a(a(v(b), x1.clone()), y1.clone()), z1.clone())));
+                }
+                if x1 == y1 {
+                    emit(put(t, p, a(x1.clone(), a(a(v(b), z1.clone()), z2.clone()))));
                 }
             }
-        }
-        // specialization: inside X of b X Y, b's occurrences become true; in Y, false
-        if let Some((b, x, y)) = selector(s) {
-            if is_boolean_var(t, p, b) && (occurs(b, &x) || occurs(b, &y)) {
+            // b (\v. X) (\v. Y)  ->  \v. b X Y   (same flag on both)
+            if let (N::L(g1, x1), N::L(g2, y1)) = (&*x, &*y) {
+                if g1 == g2 {
+                    emit(put(t, p, lt(*g1, a(a(v(b + 1), x1.clone()), y1.clone()))));
+                }
+            }
+            // specialization
+            if occurs(b, &x) || occurs(b, &y) {
                 let tru = l(l(v(1)));
                 let fal = l(l(v(0)));
                 emit(put(t, p, a(a(v(b), replace_var(&x, b, &tru, 0)), replace_var(&y, b, &fal, 0))));
@@ -757,37 +763,29 @@ fn replace_var(t: &P, b: u32, with: &P, depth: u32) -> P {
     match &**t {
         N::V(i) if *i == b + depth => shift(with, depth as i64, 0),
         N::V(_) => t.clone(),
-        N::L(x) => l(replace_var(x, b, with, depth + 1)),
+        N::L(g, x) => lt(*g, replace_var(x, b, with, depth + 1)),
         N::A(f, x) => a(replace_var(f, b, with, depth), replace_var(x, b, with, depth)),
     }
 }
 
-/// Is free index `b` at position `p` bound by a boolean binder?
+/// Is index `b`, as seen at position `p`, bound by a flagged λ?
 fn is_boolean_var(t: &P, p: &[u8], b: u32) -> bool {
-    // find the binder: walk p, collecting λ positions
-    let mut lams: Vec<Path> = Vec::new();
+    let mut flags: Vec<bool> = Vec::new();
     let mut cur = t.clone();
-    for (i, &step) in p.iter().enumerate() {
-        if let N::L(_) = &*cur {
-            lams.push(p[..i].to_vec());
+    for &step in p {
+        if let N::L(g, _) = &*cur {
+            flags.push(*g);
         }
         cur = at(&cur, &[step]);
     }
-    if (b as usize) >= lams.len() {
-        return false;
-    }
-    let lp = &lams[lams.len() - 1 - b as usize];
-    let lam = at(t, lp);
-    let N::L(body) = &*lam else { return false };
-    let mut uses = 0;
-    selector_only(body, 0, &mut uses) && uses > 0
+    (b as usize) < flags.len() && flags[flags.len() - 1 - b as usize]
 }
 
 /// Every occurrence of index `j` is the head of a two-argument application.
 fn selector_only(t: &N, j: u32, uses: &mut u32) -> bool {
     match t {
         N::V(i) => *i != j,
-        N::L(b) => selector_only(b, j + 1, uses),
+        N::L(_, b) => selector_only(b, j + 1, uses),
         N::A(f, y) => {
             if let N::A(h, x) = &**f {
                 if let N::V(i) = **h {
@@ -799,6 +797,20 @@ fn selector_only(t: &N, j: u32, uses: &mut u32) -> bool {
             }
             selector_only(f, j, uses) && selector_only(y, j, uses)
         }
+    }
+}
+
+/// Flag the selector-only binders of the start term. In the 168 these are
+/// exactly `bit0`, `bit1` and `zx` (asserted by a test).
+fn flag_booleans(t: &P) -> P {
+    match &**t {
+        N::V(_) => t.clone(),
+        N::L(_, b) => {
+            let mut uses = 0;
+            let flag = selector_only(b, 0, &mut uses) && uses > 0;
+            lt(flag, flag_booleans(b))
+        }
+        N::A(f, x) => a(flag_booleans(f), flag_booleans(x)),
     }
 }
 
@@ -887,7 +899,10 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     p.at_most(0)?;
     args::build_pool(threads)?;
-    let k0 = Key::parse(&bits);
+    let mut k0 = Key::parse(&bits);
+    if contextual {
+        k0 = Key::of(&flag_booleans(&decode(&k0)));
+    }
     let base = k0.len as u32;
     let mover = Mover {
         limit: base + slack,
@@ -901,14 +916,29 @@ pub fn run(argv: &[String]) -> R<()> {
         rayon::current_num_threads()
     );
     let (all, parent) = explore(k0, &mover, true);
+    // Contextual states carry binder flags; report distinct wire bits.
+    let mut seen: HashMap<String, usize> = HashMap::new();
+    for (i, k) in all.iter().enumerate() {
+        seen.entry(k.bits()).or_insert(i);
+    }
     let mut hist: std::collections::BTreeMap<u32, u64> = Default::default();
-    for k in &all {
-        *hist.entry(k.len as u32).or_default() += 1;
+    for b in seen.keys() {
+        *hist.entry(b.len() as u32).or_default() += 1;
     }
     let h: Vec<String> = hist.iter().map(|(s, c)| format!("{}:{c}", *s as i64 - base as i64)).collect();
-    println!("component under the limit: {} terms; size histogram (delta:count) {}", all.len(), h.join(" "));
-    let mut low: Vec<usize> = (1..all.len()).filter(|&i| all[i].len as u32 <= base).collect();
-    low.sort_by_key(|&i| all[i].len);
+    println!(
+        "component under the limit: {} states, {} distinct terms; size histogram (delta:count) {}",
+        all.len(),
+        seen.len(),
+        h.join(" ")
+    );
+    let start = all[0].bits();
+    let mut low: Vec<usize> = seen
+        .iter()
+        .filter(|(b, _)| b.len() as u32 <= base && **b != start)
+        .map(|(_, &i)| i)
+        .collect();
+    low.sort_by_key(|&i| (all[i].len, i));
     for &i in low.iter().take(20) {
         let mut depth = 0;
         let mut j = i as u32;
@@ -919,11 +949,7 @@ pub fn run(argv: &[String]) -> R<()> {
         println!("  {} bits ({} moves from start)  {}", all[i].len, depth, all[i].bits());
     }
     let below = low.iter().filter(|&&i| (all[i].len as u32) < base).count();
-    println!(
-        "{} term(s) below {base}, {} tie(s)",
-        below,
-        low.len() - below
-    );
+    println!("{} term(s) below {base}, {} tie(s)", below, low.len() - below);
     Ok(())
 }
 
@@ -945,6 +971,16 @@ mod tests {
             let (all, _) = explore(Key::parse(INT168), &m, false);
             assert_eq!(all.len(), want, "slack {slack}");
         }
+    }
+
+    /// The selector-only binders of the 168 are exactly bit0, bit1 and zx.
+    #[test]
+    fn the_168_has_three_boolean_binders() {
+        let k = Key::of(&flag_booleans(&decode(&Key::parse(INT168))));
+        assert_eq!(k.tags.count_ones(), 3);
+        // preorder λ numbering: x, x, intL, cont, next, list, bit0, list1,
+        // bit1, exp, args, arg, zx, zy, exp2, args
+        assert_eq!(k.tags, 1 << 6 | 1 << 8 | 1 << 12);
     }
 
     #[test]

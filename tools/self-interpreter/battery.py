@@ -12,7 +12,8 @@ n stay rigid, so equal normal forms prove the contract for that M, not merely
 agreement on a marker.  Programs: every closed term of 4..MAXBITS bits plus a
 few deep-index extras.
 
-    battery.py FILE.lam [--uni] [--max-bits N]
+    battery.py FILE.lam... [--uni] [--max-bits N]
+    battery.py --bits BITS [--uni] [--max-bits N]
 
 Needs target/release/blam (cargo build --release).
 """
@@ -135,8 +136,13 @@ def main():
         i = args.index("--max-bits")
         max_bits = int(args[i + 1])
         del args[i:i + 2]
-    for path in (a for a in args if a != "--uni"):
-        E = compile_lam(Path(path).read_text())
+    targets = [a for a in args if a != "--uni"]
+    if targets and targets[0] == "--bits":
+        from lc import decode
+        targets = [("bits", decode(b, 0)[0]) for b in targets[1:]]
+    else:
+        targets = [(p, compile_lam(Path(p).read_text())) for p in targets]
+    for path, E in targets:
         ok, skip, bad = check(E, uni, max_bits)
         print(f"{len(enc(E)):5d} bits  ok={ok} skip={skip} fail={len(bad)}  {path}")
         for b in bad[:5]:

@@ -50,6 +50,8 @@ usage: blam selfint letopt [--bits BITS] [--max-cuts K] [--report-le S]
   --report-le S   print every configuration rendering at <= S bits
                   (default: the input size)
   --threads N     worker threads (default: all)
+  --around M      instead: fix the cuts that reproduce the input exactly and
+                  enumerate every superset with 1..=M more cuts
 
 Inlines every let except the root knot to get the core, generates every
 candidate cut, and renders each configuration at its exact optimum
@@ -687,6 +689,7 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut max_cuts = 3usize;
     let mut report_le: Option<u32> = None;
     let mut threads = 0usize;
+    let mut around: Option<usize> = None;
     let mut p = Args::new("selfint letopt", argv);
     while let Some(tok) = p.next() {
         match tok {
@@ -694,11 +697,15 @@ pub fn run(argv: &[String]) -> R<()> {
             "--max-cuts" => max_cuts = p.num(tok)?,
             "--report-le" => report_le = Some(p.num(tok)?),
             "--threads" => threads = p.num(tok)?,
+            "--around" => around = Some(p.num(tok)?),
             _ if tok.starts_with('-') => return Err(p.unknown(tok)),
             _ => p.push(tok),
         }
     }
     p.at_most(0)?;
+    if let Some(m) = around {
+        return run_around(&bits, m, report_le, threads);
+    }
     if max_cuts == 0 || max_cuts > MAXK {
         return Err(format!("blam selfint letopt: --max-cuts must be 1..={MAXK}"));
     }
@@ -750,6 +757,122 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     println!("smallest rendering over 0..={max_cuts} cuts: {overall} bits");
     Ok(())
+}
+
+/// The cuts (at most 3) whose rendering is exactly `input`.
+fn decompose(core: &Core, cuts: &[Cut], input: &T) -> Option<(Vec<usize>, Vec<(u32, u8)>)> {
+    let mut r = Renderer::new(core, cuts);
+    let want = input.size();
+    let n = cuts.len();
+    let mut found = None;
+    let check = |sel: &[usize], r: &mut Renderer| {
+        for order in let_orders(cuts, sel) {
+            if let Ok(s) = r.size(sel, &order) {
+                if s == want && r.term(sel, &order).ok().as_ref() == Some(input) {
+                    return Some((sel.to_vec(), order));
+                }
+            }
+        }
+        None
+    };
+    'outer: for i in 0..n {
+        if let Some(x) = check(&[i], &mut r) {
+            found = Some(x);
+            break;
+        }
+        for j in i + 1..n {
+            if let Some(x) = check(&[i, j], &mut r) {
+                found = Some(x);
+                break 'outer;
+            }
+        }
+    }
+    found
+}
+
+/// Every superset of the input's own cuts with 1..=m more cuts.
+fn run_around(bits: &str, m: usize, report_le: Option<u32>, threads: usize) -> R<()> {
+    args::build_pool(threads)?;
+    let input = T::parse(bits).ok_or("blam selfint letopt: --bits is not a closed BLC term")?;
+    let core = Core::from_term(&input.inline_lets());
+    let cuts = candidates(&core);
+    let report_le = report_le.unwrap_or(input.size());
+    let Some((base, _)) = decompose(&core, &cuts, &input) else {
+        return Err("blam selfint letopt: the input is not one or two cuts of its core".into());
+    };
+    println!("input {} bits = core + cuts {:?}", input.size(), base);
+    if base.len() + m > MAXK {
+        return Err(format!("blam selfint letopt: at most {} cuts in total", MAXK));
+    }
+    let rest: Vec<usize> = (0..cuts.len()).filter(|c| !base.contains(c)).collect();
+    for extra in 1..=m {
+        let t0 = Instant::now();
+        let total = Mutex::new(Tally::default());
+        (0..rest.len()).into_par_iter().for_each(|i0| {
+            let mut r = Renderer::new(&core, &cuts);
+            let mut t = Tally::default();
+            let mut pick = vec![i0];
+            around_rec(&mut r, &cuts, &base, &rest, &mut pick, extra, report_le, &mut t);
+            let mut g = total.lock().unwrap();
+            g.valid += t.valid;
+            g.invalid += t.invalid;
+            for (s, c) in t.hist {
+                *g.hist.entry(s).or_default() += c;
+            }
+            g.hits.extend(t.hits);
+        });
+        let t = total.into_inner().unwrap();
+        let low: Vec<String> = t.hist.iter().take(6).map(|(s, c)| format!("{s}:{c}")).collect();
+        println!(
+            "+{extra}: {} valid, {} invalid, {:.1}s; smallest sizes {}",
+            t.valid,
+            t.invalid,
+            t0.elapsed().as_secs_f64(),
+            low.join(" ")
+        );
+        let mut hits = t.hits;
+        hits.sort();
+        let mut r = Renderer::new(&core, &cuts);
+        for (s, sel, order) in hits.iter().take(20) {
+            let term = r.term(sel, order).expect("reported configurations render");
+            println!("  {s} {:?}\n      {}\n      {}", sel, term.show(), term.bits());
+        }
+    }
+    Ok(())
+}
+
+#[allow(clippy::too_many_arguments)]
+fn around_rec(
+    r: &mut Renderer,
+    cuts: &[Cut],
+    base: &[usize],
+    rest: &[usize],
+    pick: &mut Vec<usize>,
+    k: usize,
+    report_le: u32,
+    t: &mut Tally,
+) {
+    if pick.len() == k {
+        let mut sel: Vec<usize> = base.to_vec();
+        sel.extend(pick.iter().map(|&i| rest[i]));
+        match best(r, cuts, &sel) {
+            Some((s, order)) => {
+                t.valid += 1;
+                *t.hist.entry(s).or_default() += 1;
+                if s <= report_le {
+                    t.hits.push((s, sel, order));
+                }
+            }
+            None => t.invalid += 1,
+        }
+        return;
+    }
+    let last = *pick.last().unwrap();
+    for i in last + 1..rest.len() {
+        pick.push(i);
+        around_rec(r, cuts, base, rest, pick, k, report_le, t);
+        pick.pop();
+    }
 }
 
 #[cfg(test)]

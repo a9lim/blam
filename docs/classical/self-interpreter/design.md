@@ -204,7 +204,7 @@ against the exact battery in `battery.py`; the others are estimates.
 
 | idea | saves | obstacle |
 |---|---:|---|
-| Return the rest as a thunk: `list1 list1` is literally `K rest`, so VAR could be `cont list1 (list1 list1)` | 4 | Every term ends in a variable, so every rest becomes a thunk. `intL` then needs a uniform force `D` with `D b l h = h b l` (a pair constructor, ~19 bits), and `C` must receive `N`, not `K N`. |
+| Return the rest as a thunk: `list1 list1` is literally `K rest`, so VAR could be `cont list1 (list1 list1)` | 4 | Every term ends in a variable, so every rest becomes a thunk. `intL` then needs a uniform force `D` with `D b l h = h b l` in `list D H`; even a one-leaf `D` costs an application and a leaf (≥ 4 bits), so the trade breaks even at best. And `C` must receive `N`, not `K N`. |
 | Scott-pair environment `\f. f arg args` | ~12 | Stream-driven lookup flips orientation each step; a self-passing lookup helper costs ~45+. |
 | Leaky cell `\zx. zx arg (\zy. zy args)` | 2 | Lookup returns `x rest`. Absorbing it needs K-wrapped values, but λ-values escape to `C` and must be genuine functions of raw arguments. |
 | Variable value `list` (keep the leading 1) | — | Off by one in the environment; the repair costs a second cell. The zero branch still binds `list1`, so even a free repair saves nothing. |
@@ -220,11 +220,7 @@ functions, which rules out every cheaper cell; and `C` must receive the real
 the outermost continuation is ours, the thunk still fails: `intL` then
 receives real streams from `next` and thunks from APP's second parse.
 
-What remains open:
-
-1. A βη rearrangement beyond +16 that keeps the 26 applications and 16 λs but
-   reaches `X ≤ 29`, or adds a let that saves at least 7.
-2. A new identity of the 50_ft_lock kind: some term already in scope that
-   satisfies one of the merge laws above. The force law `D b l h = h b l` is
-   the most valuable (4 bits). A three-application VAR is already excluded by
-   the parametric VAR slot search.
+What remained open at this point: a βη rearrangement beyond +16; a let
+structure whose payoff needs several costly lets at once; and a fragment
+that works only in context, which the parametric slot searches cannot see.
+The next section searches all three.
