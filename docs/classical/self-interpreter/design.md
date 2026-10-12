@@ -228,8 +228,9 @@ The next section searches all three.
 ## Three follow-up searches (2026-10-12)
 
 The three lanes the operation-minimality analysis left open, run with the
-lab instruments `blam selfint letopt | ctx | component`
-(`src/cli/selfint/`). Logs are in `data/self-interpreter/`.
+lab instruments `blam golf letopt`, `blam selfint ctx` and
+`blam golf component` (`src/cli/golf/`, `src/cli/selfint/`). Logs are in
+`data/self-interpreter/`.
 
 ### 1. Every let structure of the core (`letopt`)
 
@@ -310,7 +311,7 @@ stream and recurse.
 
 ### 3. βη component in Rust (`component`)
 
-`blam selfint component` ports `beta_search.py` move for move and reproduces
+`blam golf component` ports `beta_search.py` move for move and reproduces
 its components exactly (10 / 227 / 2,717 / 115,182 terms at slack
 4 / 8 / 12 / 16; a regression test pins the first three). An arithmetic size
 pre-check (per-position free-index histograms) skips out-of-ceiling

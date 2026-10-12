@@ -28,8 +28,8 @@
 //! not sufficient, so strict survivors are hypotheses twice over.
 
 use super::ctx::{programs, Golden, Probe};
-use super::term::{T, INT168};
 use crate::args::{self, Args, R};
+use crate::golf::term::{INT168, T};
 use blam::classical::machine::{Machine, Pool, SizeSink, StringSink};
 use blam::classical::OutOfFuel;
 use rayon::prelude::*;
@@ -125,7 +125,14 @@ struct Pend {
 }
 
 /// Enumerate every context of size n (hole contributes 2k bits).
-fn gen(c: &Counts, pend: &mut Vec<Pend>, acc: u64, len: u8, hole: Option<(u8, u8)>, f: &mut impl FnMut(Ctx)) {
+fn gen(
+    c: &Counts,
+    pend: &mut Vec<Pend>,
+    acc: u64,
+    len: u8,
+    hole: Option<(u8, u8)>,
+    f: &mut impl FnMut(Ctx),
+) {
     let Some(p) = pend.pop() else {
         let (at, k) = hole.expect("one hole");
         let alen = len - at;
@@ -215,7 +222,14 @@ impl Judge<'_> {
         buf.extend_from_slice(&p.tail);
     }
 
-    fn judge(&self, pool: &mut Pool, vm: &mut Machine, buf: &mut Vec<bool>, c: &Ctx, mult: u64) -> Verdict {
+    fn judge(
+        &self,
+        pool: &mut Pool,
+        vm: &mut Machine,
+        buf: &mut Vec<bool>,
+        c: &Ctx,
+        mult: u64,
+    ) -> Verdict {
         let mut verdict = Verdict::Pass;
         let mut open = 0;
         for p in self.probes {
@@ -251,7 +265,10 @@ impl Judge<'_> {
                     return Verdict::Fail;
                 };
                 let mut sink = SizeSink(0);
-                if vm.normalize_capped(pool, root, 1 << 16, 1 << 22, &mut sink).is_ok() {
+                if vm
+                    .normalize_capped(pool, root, 1 << 16, 1 << 22, &mut sink)
+                    .is_ok()
+                {
                     return Verdict::Fail;
                 }
             }
@@ -272,7 +289,11 @@ fn show(c: &Ctx, body_size: u32) -> String {
 fn spliced(c: &Ctx, bodies: &[Vec<bool>]) -> String {
     let mut s = String::new();
     s.extend(bits_of(c.before, c.blen).map(|b| if b { '1' } else { '0' }));
-    s.extend(bodies[c.k as usize].iter().map(|&b| if b { '1' } else { '0' }));
+    s.extend(
+        bodies[c.k as usize]
+            .iter()
+            .map(|&b| if b { '1' } else { '0' }),
+    );
     s.extend(bits_of(c.after, c.alen).map(|b| if b { '1' } else { '0' }));
     s
 }
@@ -305,7 +326,13 @@ fn context_of(u: &str, body_bits: &str) -> Option<Ctx> {
     if pre.len() > 63 || post.len() > 63 {
         return None;
     }
-    let num = |x: &str| if x.is_empty() { 0 } else { u64::from_str_radix(x, 2).unwrap() };
+    let num = |x: &str| {
+        if x.is_empty() {
+            0
+        } else {
+            u64::from_str_radix(x, 2).unwrap()
+        }
+    };
     Some(Ctx {
         before: num(pre),
         blen: pre.len() as u8,
@@ -346,7 +373,9 @@ fn setup(n_programs: usize, strict: bool) -> Setup {
         };
         j.assemble(&mut buf, &pr, &reference);
         pool.clear();
-        let root = pool.decode(&mut buf.iter().copied()).expect("probe decodes");
+        let root = pool
+            .decode(&mut buf.iter().copied())
+            .expect("probe decodes");
         let mut s = StringSink(String::new());
         if let Ok(beta) = vm.normalize_capped(&pool, root, 1 << 20, 1 << 26, &mut s) {
             pr.golden = s.0.bytes().map(|c| c - b'0').collect();
@@ -461,7 +490,10 @@ pub fn run(argv: &[String]) -> R<()> {
         return Ok(());
     }
     let counts = Counts::new(max_size);
-    println!("{:>4} {:>14} {:>10} {:>9} {:>8}", "size", "contexts", "unknown", "survivors", "time_s");
+    println!(
+        "{:>4} {:>14} {:>10} {:>9} {:>8}",
+        "size", "contexts", "unknown", "survivors", "time_s"
+    );
     let mut total = 0u64;
     let mut survivors_all = 0usize;
     let mut dumped = String::new();
@@ -510,7 +542,10 @@ pub fn run(argv: &[String]) -> R<()> {
             }
         });
         flush(&mut batch, &mut unknown, &mut pass);
-        assert_eq!(seen, want, "enumeration disagrees with the count at size {n}");
+        assert_eq!(
+            seen, want,
+            "enumeration disagrees with the count at size {n}"
+        );
         // escalate budget-capped contexts
         let esc: Vec<(Verdict, Ctx)> = unknown
             .par_iter()
@@ -534,17 +569,29 @@ pub fn run(argv: &[String]) -> R<()> {
             t0.elapsed().as_secs_f64()
         );
         for c in pass.iter().take(20) {
-            println!("     SURVIVOR {}  total {} bits", show(c, body_size), spliced(c, &bodies).len());
+            println!(
+                "     SURVIVOR {}  total {} bits",
+                show(c, body_size),
+                spliced(c, &bodies).len()
+            );
             println!("       {}", spliced(c, &bodies));
         }
         for c in still.iter().take(5) {
             println!("     UNKNOWN  {}", show(c, body_size));
         }
         for c in &pass {
-            dumped.push_str(&format!("PASS {n} {} {}\n", show(c, body_size), spliced(c, &bodies)));
+            dumped.push_str(&format!(
+                "PASS {n} {} {}\n",
+                show(c, body_size),
+                spliced(c, &bodies)
+            ));
         }
         for c in &still {
-            dumped.push_str(&format!("UNKNOWN {n} {} {}\n", show(c, body_size), spliced(c, &bodies)));
+            dumped.push_str(&format!(
+                "UNKNOWN {n} {} {}\n",
+                show(c, body_size),
+                spliced(c, &bodies)
+            ));
         }
         total += seen;
         survivors_all += pass.len();
@@ -553,7 +600,8 @@ pub fn run(argv: &[String]) -> R<()> {
         println!("total {total} contexts: {survivors_all} survivors");
     }
     if let Some(path) = dump {
-        std::fs::write(&path, dumped).map_err(|e| format!("blam selfint wiring: --dump {path}: {e}"))?;
+        std::fs::write(&path, dumped)
+            .map_err(|e| format!("blam selfint wiring: --dump {path}: {e}"))?;
     }
     Ok(())
 }
@@ -597,9 +645,15 @@ mod tests {
                 let c = context_of(u, &st.body_bits).expect("context");
                 judge.judge(&mut pool, &mut vm, &mut buf, &c, 8)
             };
-            assert_eq!(verdict(&u178), if strict { Verdict::Fail } else { Verdict::Pass });
+            assert_eq!(
+                verdict(&u178),
+                if strict { Verdict::Fail } else { Verdict::Pass }
+            );
             assert_eq!(verdict(u190), Verdict::Pass);
-            assert_eq!(verdict(u182), if strict { Verdict::Fail } else { Verdict::Pass });
+            assert_eq!(
+                verdict(u182),
+                if strict { Verdict::Fail } else { Verdict::Pass }
+            );
         }
     }
 }

@@ -29,8 +29,8 @@
 //! `c`, and `exp` is the only route to the parsed body (ABS) or function
 //! (APP). See each slot's `must`.
 
-use super::term::INT168;
 use crate::args::{self, Args, R};
+use crate::golf::term::INT168;
 use crate::slots::{go, split_tasks, Counts, Pending};
 use blam::blc::wire::enc_to_string;
 use blam::classical::escalation::{normal_form, EngineCfg, LTerm, NoNf};
@@ -121,7 +121,10 @@ const CSLOTS: &[CSlot] = &[
 
 /// Splice points: the reference occurs exactly once in the 168.
 fn split168(slot: &CSlot) -> R<(Vec<bool>, Vec<bool>)> {
-    let at: Vec<usize> = INT168.match_indices(slot.reference).map(|(i, _)| i).collect();
+    let at: Vec<usize> = INT168
+        .match_indices(slot.reference)
+        .map(|(i, _)| i)
+        .collect();
     if at.len() != 1 {
         return Err(format!(
             "blam selfint ctx: slot {} reference occurs {} times in the 168",
@@ -271,7 +274,14 @@ impl Ctx<'_> {
         buf.extend_from_slice(&p.tail);
     }
 
-    fn judge(&self, pool: &mut Pool, vm: &mut Machine, buf: &mut Vec<bool>, enc: u64, len: u8) -> Verdict {
+    fn judge(
+        &self,
+        pool: &mut Pool,
+        vm: &mut Machine,
+        buf: &mut Vec<bool>,
+        enc: u64,
+        len: u8,
+    ) -> Verdict {
         self.judge_at(pool, vm, buf, enc, len, 8)
     }
 
@@ -314,7 +324,9 @@ impl Ctx<'_> {
                         }
                         match normal_form(self.cfg, 2_000_000, &LTerm::from_pool(pool, root)) {
                             Err(NoNf::Diverge { .. }) => return Verdict::Fail,
-                            Ok(nf) if nf.bit_size() != p.golden.len() as u64 => return Verdict::Fail,
+                            Ok(nf) if nf.bit_size() != p.golden.len() as u64 => {
+                                return Verdict::Fail
+                            }
                             _ => {}
                         }
                     }
@@ -373,7 +385,11 @@ impl Stats {
 }
 
 fn spliced(pre: &[bool], post: &[bool], enc: u64, len: u8) -> String {
-    let b = |v: &[bool]| v.iter().map(|&x| if x { '1' } else { '0' }).collect::<String>();
+    let b = |v: &[bool]| {
+        v.iter()
+            .map(|&x| if x { '1' } else { '0' })
+            .collect::<String>()
+    };
     format!("{}{}{}", b(pre), enc_to_string(enc, len), b(post))
 }
 
@@ -408,12 +424,17 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     p.at_most(1)?;
     let Some(name) = p.positional().first().copied() else {
-        return Err(format!("blam selfint ctx: missing slot name\n{}", args::hint("selfint ctx")));
+        return Err(format!(
+            "blam selfint ctx: missing slot name\n{}",
+            args::hint("selfint ctx")
+        ));
     };
-    let slot = CSLOTS
-        .iter()
-        .find(|s| s.name == name)
-        .ok_or_else(|| format!("blam selfint ctx: unknown slot `{name}`\n{}", args::hint("selfint ctx")))?;
+    let slot = CSLOTS.iter().find(|s| s.name == name).ok_or_else(|| {
+        format!(
+            "blam selfint ctx: unknown slot `{name}`\n{}",
+            args::hint("selfint ctx")
+        )
+    })?;
     args::build_pool(threads)?;
     let cfg = args::engine_cfg("selfint ctx", None, None)?;
     let (pre, post) = split168(slot)?;
@@ -436,15 +457,15 @@ pub fn run(argv: &[String]) -> R<()> {
         };
         ctx.assemble(&mut buf, &pr, ref_enc, ref_len);
         pool.clear();
-        let root = pool.decode(&mut buf.iter().copied()).expect("probe decodes");
+        let root = pool
+            .decode(&mut buf.iter().copied())
+            .expect("probe decodes");
         let mut s = StringSink(String::new());
-        match vm.normalize_capped(&pool, root, 1 << 20, 1 << 26, &mut s) {
-            Ok(beta) => {
-                pr.golden = s.0.bytes().map(|c| c - b'0').collect();
-                pr.beta = beta;
-                probes.push(pr);
-            }
-            Err(_) => {} // program has no normal form within budget: not a probe
+        // A program with no normal form within budget is not a probe.
+        if let Ok(beta) = vm.normalize_capped(&pool, root, 1 << 20, 1 << 26, &mut s) {
+            pr.golden = s.0.bytes().map(|c| c - b'0').collect();
+            pr.beta = beta;
+            probes.push(pr);
         }
     }
     // Cheapest probes first: most candidates die on the first one.
@@ -474,7 +495,10 @@ pub fn run(argv: &[String]) -> R<()> {
     let counts = Counts::new(slot.frame, slot.must, max_size);
     let t_all = Instant::now();
     let mut all = Stats::default();
-    println!("{:>4} {:>16} {:>9} {:>9} {:>10}", "size", "candidates", "unknown", "survivors", "time_s");
+    println!(
+        "{:>4} {:>16} {:>9} {:>9} {:>10}",
+        "size", "candidates", "unknown", "survivors", "time_s"
+    );
     for n in min_size..=max_size {
         let root = Pending {
             depth: 0,
@@ -491,7 +515,11 @@ pub fn run(argv: &[String]) -> R<()> {
             continue;
         }
         let t0 = Instant::now();
-        let tasks = split_tasks(&counts, root, rayon::current_num_threads() * tasks_per_thread);
+        let tasks = split_tasks(
+            &counts,
+            root,
+            rayon::current_num_threads() * tasks_per_thread,
+        );
         let st = tasks
             .par_iter()
             .map_init(
@@ -499,33 +527,47 @@ pub fn run(argv: &[String]) -> R<()> {
                 |(pool, vm, buf), task| {
                     let mut st = Stats::default();
                     let mut pending = task.pending.clone();
-                    go(&counts, &mut pending, task.acc, task.len, &mut |enc, len| {
-                        st.total += 1;
-                        match ctx.judge(pool, vm, buf, enc, len) {
-                            Verdict::Pass => st.pass.push((enc, len)),
-                            Verdict::Fail => st.fail += 1,
-                            Verdict::Unknown => st.unknown.push((enc, len)),
-                        }
-                    });
+                    go(
+                        &counts,
+                        &mut pending,
+                        task.acc,
+                        task.len,
+                        &mut |enc, len| {
+                            st.total += 1;
+                            match ctx.judge(pool, vm, buf, enc, len) {
+                                Verdict::Pass => st.pass.push((enc, len)),
+                                Verdict::Fail => st.fail += 1,
+                                Verdict::Unknown => st.unknown.push((enc, len)),
+                            }
+                        },
+                    );
                     st
                 },
             )
             .reduce(Stats::default, Stats::merge);
-        assert_eq!(st.total, want, "enumeration disagrees with the DP at size {n}");
+        assert_eq!(
+            st.total, want,
+            "enumeration disagrees with the DP at size {n}"
+        );
         // Escalate caps: a candidate that only ran out of budget is re-run
         // with 512x the reference's budget per probe.
         let mut st = st;
         let unknown = if st.unknown.len() <= escalate {
             std::mem::take(&mut st.unknown)
         } else {
-            println!("     ({} unknowns: too many to escalate, reported as capped at 8x)", st.unknown.len());
+            println!(
+                "     ({} unknowns: too many to escalate, reported as capped at 8x)",
+                st.unknown.len()
+            );
             Vec::new()
         };
         let settled: Vec<(Verdict, (u64, u8))> = unknown
             .par_iter()
             .map_init(
                 || (Pool::new(), Machine::new(), Vec::new()),
-                |(pool, vm, buf), &(enc, len)| (ctx.judge_at(pool, vm, buf, enc, len, 512), (enc, len)),
+                |(pool, vm, buf), &(enc, len)| {
+                    (ctx.judge_at(pool, vm, buf, enc, len, 512), (enc, len))
+                },
             )
             .collect();
         for (v, c) in settled {

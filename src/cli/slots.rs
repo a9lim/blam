@@ -303,7 +303,13 @@ impl Counts {
 }
 
 /// Enumerate every term satisfying the obligation stack, calling `f(bits, len)`.
-pub(crate) fn go(c: &Counts, pending: &mut Vec<Pending>, acc: u64, len: u8, f: &mut impl FnMut(u64, u8)) {
+pub(crate) fn go(
+    c: &Counts,
+    pending: &mut Vec<Pending>,
+    acc: u64,
+    len: u8,
+    f: &mut impl FnMut(u64, u8),
+) {
     let Some(p) = pending.pop() else {
         f(acc, len);
         return;

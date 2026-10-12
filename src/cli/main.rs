@@ -21,6 +21,8 @@ mod qalc;
 mod solomonoff;
 
 #[cfg(feature = "lab")]
+mod golf;
+#[cfg(feature = "lab")]
 mod selfint;
 #[cfg(feature = "lab")]
 pub(crate) mod slots;
@@ -56,7 +58,8 @@ INSTRUMENTS
   trace scan|single|dump|verify-loop32   reduction-shape classifier
                                                                  (lab feature)
   slots var|abs|app            self-interpreter slot search       (lab feature)
-  selfint letopt               searches below the 168             (lab feature)
+  selfint ctx|wiring           searches below the 168             (lab feature)
+  golf letopt|component|check  size optimizers for BLC programs   (lab feature)
   q galois idiom|complement    the dyadicity campaign             (lab feature)
   q oddmin [W]                 gated reference DP for the CNOT-free lane
                                                                  (lab feature)
@@ -110,6 +113,10 @@ fn dispatch(argv: &[String]) -> Result<(), String> {
         "selfint" => selfint::run(rest),
         #[cfg(not(feature = "lab"))]
         "selfint" => Err(no_lab("selfint")),
+        #[cfg(feature = "lab")]
+        "golf" => golf::run(rest),
+        #[cfg(not(feature = "lab"))]
+        "golf" => Err(no_lab("golf")),
         other => Err(format!(
             "blam: unknown command `{other}`\ntry `blam --help` for the command table"
         )),
@@ -224,7 +231,11 @@ mod tests {
             vec!["trace"],
             vec!["slots"],
             vec!["selfint"],
-            vec!["selfint", "letopt"],
+            vec!["selfint", "ctx"],
+            vec!["golf"],
+            vec!["golf", "letopt"],
+            vec!["golf", "component"],
+            vec!["golf", "check"],
             vec!["cert", "search"],
             vec!["cert", "diag"],
             vec!["q", "galois"],

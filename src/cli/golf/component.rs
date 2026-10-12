@@ -1,4 +1,4 @@
-//! Step 3 of the post-168 plan: the βη component search, in Rust.
+//! The βη component search, and descent by it.
 //!
 //! A port of `tools/self-interpreter/beta_search.py`, move for move:
 //!
@@ -13,6 +13,13 @@
 //! move preserves βη-equivalence, so every term found is the same algorithm.
 //! The port is checked against the Python reference by reproducing its
 //! component exactly: 115,182 terms from the 168 at slack 16.
+//!
+//! `--no-eta` drops both η directions, so every term found is β-convertible
+//! to the start: the same normal form under every argument, which is what a
+//! program whose output cannot be computed needs. `--descend` restarts the
+//! search from the smallest term found whenever a layer finishes below the
+//! current start, until a whole component under the ceiling has nothing
+//! smaller.
 //!
 //! With `--contextual`, four moves that are sound only because some binders
 //! are Church booleans (the stream's bits `bit0`/`bit1` and the cell's
@@ -29,23 +36,27 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::time::Instant;
 
-use super::term::INT168;
-
 const USAGE: &str = "\
-blam selfint component — βη component search under a size ceiling
+blam golf component — βη component search under a size ceiling
 
-usage: blam selfint component [--bits BITS] [--slack S] [--threads N]
-                              [--no-au] [--no-eta] [--contextual]
+usage: blam golf component --bits BITS [--slack S] [--threads N]
+                           [--no-au] [--no-eta] [--contextual]
+                           [--descend] [--max-states N]
 
-  --bits BITS     start term (default: the 168)
+  --bits BITS     start term
   --slack S       ceiling = |T0| + S bits (default 16)
   --no-au         drop anti-unification moves
-  --no-eta        drop η+ moves
+  --no-eta        drop η moves (both directions): β-convertible results
   --contextual    add the boolean commuting/specialization moves (bit0,
                   bit1, zx of the 168); survivors need battery.py
+  --descend       restart from the smallest term whenever a layer ends
+                  below the current start; the ceiling follows it down.
+                  Prints every term on the way (`path BITS`), one move apart
+  --max-states N  stop a component (or a descent round) after N states
 
 Breadth-first over the component; reports its size histogram and every
-term smaller than or tying the start.";
+term smaller than or tying the start. With --descend, reports each step
+down and the final term.";
 
 // ------------------------------------------------------------------ terms
 
@@ -128,6 +139,7 @@ fn encode(t: &N, out: &mut Key, lams: &mut u32) {
         }
         N::L(g, b) => {
             if *g {
+                assert!(*lams < 64, "boolean flags beyond the 64th λ");
                 out.tags |= 1 << *lams;
             }
             *lams += 1;
@@ -154,7 +166,7 @@ fn decode(k: &Key) -> P {
                 let x = go(k, i, lams);
                 a(f, x)
             } else {
-                let tag = k.tags >> *lams & 1 == 1;
+                let tag = *lams < 64 && k.tags >> *lams & 1 == 1;
                 *lams += 1;
                 lt(tag, go(k, i, lams))
             }
@@ -173,18 +185,21 @@ fn decode(k: &Key) -> P {
 }
 
 /// A term's wire bits, packed MSB-first, plus its boolean-binder flags (bit
-/// i = the i-th λ in preorder): the visited-set key.
+/// i = the i-th λ in preorder; only the first 64 λs can carry one): the
+/// visited-set key.
 #[derive(Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Default, Debug)]
 pub struct Key {
-    w: [u64; 5],
-    len: u16,
+    w: Vec<u64>,
+    len: u32,
     tags: u64,
 }
 
 impl Key {
     fn push(&mut self, b: bool) {
         let i = self.len as usize;
-        assert!(i < 320, "term too large for a key");
+        if i.is_multiple_of(64) {
+            self.w.push(0);
+        }
         if b {
             self.w[i / 64] |= 1 << (63 - i % 64);
         }
@@ -194,7 +209,9 @@ impl Key {
         self.w[i / 64] >> (63 - i % 64) & 1 == 1
     }
     fn bits(&self) -> String {
-        (0..self.len as usize).map(|i| if self.get(i) { '1' } else { '0' }).collect()
+        (0..self.len as usize)
+            .map(|i| if self.get(i) { '1' } else { '0' })
+            .collect()
     }
     fn of(t: &N) -> Key {
         let mut k = Key::default();
@@ -290,6 +307,9 @@ impl Mover {
                     emit(put(t, p, subst(0, x, b)));
                 }
             }
+            if !self.eta {
+                continue;
+            }
             if let N::L(_, b) = &**s {
                 if let N::A(f, x) = &**b {
                     if **x == N::V(0) && !occurs(0, f) {
@@ -319,8 +339,7 @@ impl Mover {
             let cross_n = info.above(qi, 0);
             let mut liftable: HashMap<Key, Vec<(Path, u32, usize)>> = HashMap::new();
             let mut order: Vec<Key> = Vec::new();
-            for si in qi + 1..end {
-                let (p, s, ds) = &pos[si];
+            for (si, (p, s, ds)) in pos.iter().enumerate().take(end).skip(qi + 1) {
                 let k = ds - dq;
                 if info.minfree[si] < k {
                     continue;
@@ -336,7 +355,8 @@ impl Mover {
             }
             for key in &order {
                 let occ = &liftable[key];
-                let mut sets: Vec<Vec<(Path, u32, usize)>> = occ.iter().map(|o| vec![o.clone()]).collect();
+                let mut sets: Vec<Vec<(Path, u32, usize)>> =
+                    occ.iter().map(|o| vec![o.clone()]).collect();
                 if occ.len() > 1
                     && !occ
                         .iter()
@@ -345,7 +365,7 @@ impl Mover {
                     sets.push(occ.clone());
                 }
                 let fvo = info.above(occ[0].2, 0);
-                let lifted_size = key.len as u32;
+                let lifted_size = key.len;
                 for chosen in sets {
                     // new = T - N + (app + λ) + N' + lifted, where N' is N
                     // shifted (+1 per crossing reference) with each S replaced
@@ -403,23 +423,35 @@ impl Mover {
                             }
                         }
                         let n_new = info.size[qi] + cross_n
-                            - info.size[i] - info.above(i, k1)
-                            - info.size[j] - info.above(j, k2)
+                            - info.size[i]
+                            - info.above(i, k1)
+                            - info.size[j]
+                            - info.above(j, k2)
                             + sites;
                         if tsize - info.size[qi] + 4 + n_new + g > self.limit {
                             continue;
                         }
                         let (p1, s1, _) = &pos[i];
                         let (p2, s2, _) = &pos[j];
-                        let Some((skel, hs)) = antiunify(s1, k1, s2, k2) else { continue };
+                        let Some((skel, hs)) = antiunify(s1, k1, s2, k2) else {
+                            continue;
+                        };
                         debug_assert_eq!(hs.len() as u32, h);
                         let mut gt = build_skeleton(&skel, h, 0);
                         for _ in 0..h {
                             gt = l(gt);
                         }
                         let mut body = shift(nn, 1, 0);
-                        body = put(&body, &p1[q.len()..], apps_shifted(k1, hs.iter().map(|h| &h.0)));
-                        body = put(&body, &p2[q.len()..], apps_shifted(k2, hs.iter().map(|h| &h.1)));
+                        body = put(
+                            &body,
+                            &p1[q.len()..],
+                            apps_shifted(k1, hs.iter().map(|h| &h.0)),
+                        );
+                        body = put(
+                            &body,
+                            &p2[q.len()..],
+                            apps_shifted(k2, hs.iter().map(|h| &h.1)),
+                        );
                         let n = put(t, q, a(l(body), gt));
                         debug_assert_eq!(size(&n), tsize - info.size[qi] + 4 + n_new + g);
                         emit(n);
@@ -432,7 +464,6 @@ impl Mover {
         }
     }
 }
-
 
 /// Per-position facts for a term's preorder positions.
 struct Info {
@@ -447,7 +478,10 @@ struct Info {
     hist: Vec<[u16; HIST]>,
 }
 
-const HIST: usize = 48;
+/// Histogram width: relative indices are below the term's binder depth, so
+/// `run` refuses a start term nested deeper than this; moves under the
+/// ceiling stay well inside it.
+const HIST: usize = 128;
 
 impl Info {
     fn of(pos: &[(Path, P, u32)]) -> Info {
@@ -472,9 +506,7 @@ impl Info {
                     info.kind[i] = 1;
                     info.nodes[i] = 1 + info.nodes[i + 1];
                     let b = info.hist[i + 1];
-                    for m in 1..HIST {
-                        info.hist[i][m - 1] = b[m];
-                    }
+                    info.hist[i][..HIST - 1].copy_from_slice(&b[1..]);
                 }
                 N::A(..) => {
                     info.kind[i] = 2;
@@ -486,14 +518,20 @@ impl Info {
                     }
                 }
             }
-            info.minfree[i] = info.hist[i].iter().position(|&c| c > 0).map_or(u32::MAX, |m| m as u32);
+            info.minfree[i] = info.hist[i]
+                .iter()
+                .position(|&c| c > 0)
+                .map_or(u32::MAX, |m| m as u32);
         }
         info
     }
 
     /// Occurrences in position i's subtree with relative index >= m.
     fn above(&self, i: usize, m: u32) -> u32 {
-        self.hist[i][(m as usize).min(HIST)..].iter().map(|&c| c as u32).sum()
+        self.hist[i][(m as usize).min(HIST)..]
+            .iter()
+            .map(|&c| c as u32)
+            .sum()
     }
 
     fn children(&self, i: usize) -> (usize, usize) {
@@ -513,7 +551,7 @@ struct SkSize {
 /// Structural equality of two subterms (by position) modulo shifting each's
 /// free part down by d1, d2.
 fn eq_shifted(info: &Info, a: usize, da: u32, b: usize, db: u32, depth: u32) -> bool {
-    if info.kind[a] != info.kind[b] || info.size[a] + 0 == u32::MAX {
+    if info.kind[a] != info.kind[b] {
         return false;
     }
     match info.kind[a] {
@@ -548,14 +586,21 @@ fn au_walk(
     sk: &mut SkSize,
     root: bool,
 ) -> bool {
-    fn hole(info: &Info, u1: usize, u2: usize, d: u32, holes: &mut Vec<(usize, usize, u32)>, sk: &mut SkSize, root: bool) -> bool {
+    fn hole(
+        info: &Info,
+        u1: usize,
+        u2: usize,
+        d: u32,
+        holes: &mut Vec<(usize, usize, u32)>,
+        sk: &mut SkSize,
+        root: bool,
+    ) -> bool {
         if root || info.minfree[u1] < d || info.minfree[u2] < d {
             return false;
         }
-        let j = match holes
-            .iter()
-            .position(|&(a1, a2, da)| eq_shifted(info, a1, da, u1, d, 0) && eq_shifted(info, a2, da, u2, d, 0))
-        {
+        let j = match holes.iter().position(|&(a1, a2, da)| {
+            eq_shifted(info, a1, da, u1, d, 0) && eq_shifted(info, a2, da, u2, d, 0)
+        }) {
             Some(j) => j,
             None => {
                 holes.push((u1, u2, d));
@@ -579,7 +624,9 @@ fn au_walk(
             let (f1, x1) = info.children(u1);
             let (f2, x2) = info.children(u2);
             sk.fixed += 2;
-            if au_walk(info, f1, f2, d, k1, k2, holes, sk, false) && au_walk(info, x1, x2, d, k1, k2, holes, sk, false) {
+            if au_walk(info, f1, f2, d, k1, k2, holes, sk, false)
+                && au_walk(info, x1, x2, d, k1, k2, holes, sk, false)
+            {
                 return true;
             }
             holes.truncate(mark);
@@ -640,7 +687,10 @@ fn antiunify(s1: &P, k1: u32, s2: &P, k2: u32) -> Option<(Sk, Vec<(P, P)>)> {
     }
     fn walk(u1: &P, u2: &P, d: u32, k1: u32, k2: u32, holes: &mut Vec<(P, P)>) -> Option<Sk> {
         match (&**u1, &**u2) {
-            (N::L(g1, b1), N::L(g2, b2)) => Some(Sk::L(*g1 && *g2, Box::new(walk(b1, b2, d + 1, k1, k2, holes)?))),
+            (N::L(g1, b1), N::L(g2, b2)) => Some(Sk::L(
+                *g1 && *g2,
+                Box::new(walk(b1, b2, d + 1, k1, k2, holes)?),
+            )),
             (N::A(f1, x1), N::A(f2, x2)) => {
                 let mark = holes.len();
                 let f = walk(f1, f2, d, k1, k2, holes);
@@ -699,7 +749,11 @@ fn contextual_moves(t: &P, pos: &[(Path, P, u32)], emit: &mut impl FnMut(P)) {
         if let N::A(f, z) = &**s {
             if let Some((b, x, y)) = selector(f) {
                 if is_boolean_var(t, p, b) {
-                    emit(put(t, p, a(a(v(b), a(x.clone(), z.clone())), a(y.clone(), z.clone()))));
+                    emit(put(
+                        t,
+                        p,
+                        a(a(v(b), a(x.clone(), z.clone())), a(y.clone(), z.clone())),
+                    ));
                 }
             }
         }
@@ -707,7 +761,11 @@ fn contextual_moves(t: &P, pos: &[(Path, P, u32)], emit: &mut impl FnMut(P)) {
         if let N::A(f, arg) = &**s {
             if let Some((b, x, y)) = selector(arg) {
                 if is_boolean_var(t, p, b) {
-                    emit(put(t, p, a(a(v(b), a(f.clone(), x.clone())), a(f.clone(), y.clone()))));
+                    emit(put(
+                        t,
+                        p,
+                        a(a(v(b), a(f.clone(), x.clone())), a(f.clone(), y.clone())),
+                    ));
                 }
             }
         }
@@ -742,7 +800,14 @@ fn contextual_moves(t: &P, pos: &[(Path, P, u32)], emit: &mut impl FnMut(P)) {
             if occurs(b, &x) || occurs(b, &y) {
                 let tru = l(l(v(1)));
                 let fal = l(l(v(0)));
-                emit(put(t, p, a(a(v(b), replace_var(&x, b, &tru, 0)), replace_var(&y, b, &fal, 0))));
+                emit(put(
+                    t,
+                    p,
+                    a(
+                        a(v(b), replace_var(&x, b, &tru, 0)),
+                        replace_var(&y, b, &fal, 0),
+                    ),
+                ));
             }
         }
     }
@@ -764,7 +829,10 @@ fn replace_var(t: &P, b: u32, with: &P, depth: u32) -> P {
         N::V(i) if *i == b + depth => shift(with, depth as i64, 0),
         N::V(_) => t.clone(),
         N::L(g, x) => lt(*g, replace_var(x, b, with, depth + 1)),
-        N::A(f, x) => a(replace_var(f, b, with, depth), replace_var(x, b, with, depth)),
+        N::A(f, x) => a(
+            replace_var(f, b, with, depth),
+            replace_var(x, b, with, depth),
+        ),
     }
 }
 
@@ -817,8 +885,16 @@ fn flag_booleans(t: &P) -> P {
 // ------------------------------------------------------------------ search
 
 /// Breadth-first exploration of `k0`'s component under `mover`. Returns every
-/// term reached (index 0 = start) and each one's parent index.
-fn explore(k0: Key, mover: &Mover, verbose: bool) -> (Vec<Key>, Vec<u32>) {
+/// term reached (index 0 = start) and each one's parent index. Stops early
+/// after `max_states` states, or after a layer that reaches a term shorter
+/// than `stop_below` bits.
+fn explore(
+    k0: Key,
+    mover: &Mover,
+    verbose: bool,
+    max_states: usize,
+    stop_below: u32,
+) -> (Vec<Key>, Vec<u32>) {
     let mut id: HashMap<Key, u32> = HashMap::new();
     let mut all: Vec<Key> = vec![k0.clone()];
     let mut parent: Vec<u32> = vec![u32::MAX];
@@ -826,7 +902,7 @@ fn explore(k0: Key, mover: &Mover, verbose: bool) -> (Vec<Key>, Vec<u32>) {
     let mut frontier: Vec<u32> = vec![0];
     let t0 = Instant::now();
     let mut layer = 0;
-    while !frontier.is_empty() {
+    while !frontier.is_empty() && all.len() < max_states {
         layer += 1;
         let found: Vec<(u32, Vec<Key>)> = frontier
             .par_iter()
@@ -840,10 +916,12 @@ fn explore(k0: Key, mover: &Mover, verbose: bool) -> (Vec<Key>, Vec<u32>) {
             })
             .collect();
         let mut next = Vec::new();
+        let mut shortest = u32::MAX;
         for (from, keys) in found {
             for k in keys {
                 if !id.contains_key(&k) {
                     let n = all.len() as u32;
+                    shortest = shortest.min(k.len);
                     id.insert(k.clone(), n);
                     all.push(k);
                     parent.push(from);
@@ -859,9 +937,21 @@ fn explore(k0: Key, mover: &Mover, verbose: bool) -> (Vec<Key>, Vec<u32>) {
                 t0.elapsed().as_secs_f64()
             );
         }
+        if shortest < stop_below {
+            break;
+        }
         frontier = next;
     }
     (all, parent)
+}
+
+/// Deepest binder nesting in `t`.
+fn depth(t: &N) -> u32 {
+    match t {
+        N::V(_) => 0,
+        N::L(_, b) => 1 + depth(b),
+        N::A(f, x) => depth(f).max(depth(x)),
+    }
 }
 
 pub fn run(argv: &[String]) -> R<()> {
@@ -869,18 +959,21 @@ pub fn run(argv: &[String]) -> R<()> {
         println!("{USAGE}");
         return Ok(());
     }
-    let mut bits = INT168.to_string();
+    let mut bits: Option<String> = None;
     let mut slack = 16u32;
     let mut threads = 0usize;
     let mut au = true;
     let mut eta = true;
     let mut contextual = false;
-    let mut p = Args::new("selfint component", argv);
+    let mut descend = false;
+    let mut max_states = usize::MAX;
+    let mut p = Args::new("golf component", argv);
     while let Some(tok) = p.next() {
         match tok {
-            "--bits" => bits = p.value(tok)?.to_string(),
+            "--bits" => bits = Some(p.value(tok)?.to_string()),
             "--slack" => slack = p.num(tok)?,
             "--threads" => threads = p.num(tok)?,
+            "--max-states" => max_states = p.num(tok)?,
             "--no-au" => {
                 p.flag(tok)?;
                 au = false
@@ -893,29 +986,90 @@ pub fn run(argv: &[String]) -> R<()> {
                 p.flag(tok)?;
                 contextual = true
             }
+            "--descend" => {
+                p.flag(tok)?;
+                descend = true
+            }
             _ if tok.starts_with('-') => return Err(p.unknown(tok)),
             _ => p.push(tok),
         }
     }
     p.at_most(0)?;
+    let bits = bits.ok_or("blam golf component: --bits is required")?;
+    if bits.is_empty() || !bits.bytes().all(|c| c == b'0' || c == b'1') {
+        return Err("blam golf component: --bits must be ASCII 0/1".into());
+    }
+    if descend && contextual {
+        return Err("blam golf component: --descend needs βη moves only, not --contextual".into());
+    }
     args::build_pool(threads)?;
     let mut k0 = Key::parse(&bits);
     if contextual {
         k0 = Key::of(&flag_booleans(&decode(&k0)));
     }
-    let base = k0.len as u32;
+    if depth(&decode(&k0)) + slack / 2 + 2 >= HIST as u32 {
+        return Err(format!(
+            "blam golf component: nesting too deep for the size pre-checks (HIST = {HIST})"
+        ));
+    }
+    println!(
+        "start {} bits, slack {slack}, au={au} eta={eta} contextual={contextual} descend={descend}, {} threads",
+        k0.len,
+        rayon::current_num_threads()
+    );
+    if descend {
+        let mut cur = k0;
+        let mut round = 0;
+        loop {
+            round += 1;
+            let base = cur.len;
+            let mover = Mover {
+                limit: base + slack,
+                au,
+                eta,
+                contextual: false,
+            };
+            let t0 = Instant::now();
+            let (all, parent) = explore(cur.clone(), &mover, false, max_states, base);
+            let bi = (0..all.len())
+                .min_by_key(|&i| (all[i].len, all[i].clone()))
+                .expect("start");
+            let best = all[bi].clone();
+            if best.len < base {
+                // the move path, start excluded: each line one move from the last
+                let mut chain = Vec::new();
+                let mut j = bi as u32;
+                while parent[j as usize] != u32::MAX {
+                    chain.push(j);
+                    j = parent[j as usize];
+                }
+                for &j in chain.iter().rev() {
+                    println!("path {}", all[j as usize].bits());
+                }
+            }
+            let capped = all.len() >= max_states;
+            println!(
+                "round {round}: from {base} bits, {} states{}, {:.1}s -> {} bits",
+                all.len(),
+                if capped { " (capped)" } else { "" },
+                t0.elapsed().as_secs_f64(),
+                best.len
+            );
+            if best.len >= base {
+                println!("best {} {}", cur.len, cur.bits());
+                return Ok(());
+            }
+            cur = best;
+        }
+    }
+    let base = k0.len;
     let mover = Mover {
         limit: base + slack,
         au,
         eta,
         contextual,
     };
-    println!(
-        "start {base} bits, slack {slack} (limit {}), au={au} eta={eta} contextual={contextual}, {} threads",
-        base + slack,
-        rayon::current_num_threads()
-    );
-    let (all, parent) = explore(k0, &mover, true);
+    let (all, parent) = explore(k0, &mover, true, max_states, 0);
     // Contextual states carry binder flags; report distinct wire bits.
     let mut seen: HashMap<String, usize> = HashMap::new();
     for (i, k) in all.iter().enumerate() {
@@ -925,10 +1079,14 @@ pub fn run(argv: &[String]) -> R<()> {
     for b in seen.keys() {
         *hist.entry(b.len() as u32).or_default() += 1;
     }
-    let h: Vec<String> = hist.iter().map(|(s, c)| format!("{}:{c}", *s as i64 - base as i64)).collect();
+    let h: Vec<String> = hist
+        .iter()
+        .map(|(s, c)| format!("{}:{c}", *s as i64 - base as i64))
+        .collect();
     println!(
-        "component under the limit: {} states, {} distinct terms; size histogram (delta:count) {}",
+        "component under the limit: {} states{}, {} distinct terms; size histogram (delta:count) {}",
         all.len(),
+        if all.len() >= max_states { " (capped)" } else { "" },
         seen.len(),
         h.join(" ")
     );
@@ -946,15 +1104,25 @@ pub fn run(argv: &[String]) -> R<()> {
             j = parent[j as usize];
             depth += 1;
         }
-        println!("  {} bits ({} moves from start)  {}", all[i].len, depth, all[i].bits());
+        println!(
+            "  {} bits ({} moves from start)  {}",
+            all[i].len,
+            depth,
+            all[i].bits()
+        );
     }
-    let below = low.iter().filter(|&&i| (all[i].len as u32) < base).count();
-    println!("{} term(s) below {base}, {} tie(s)", below, low.len() - below);
+    let below = low.iter().filter(|&&i| all[i].len < base).count();
+    println!(
+        "{} term(s) below {base}, {} tie(s)",
+        below,
+        low.len() - below
+    );
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
+    use super::super::term::INT168;
     use super::*;
 
     /// The Python reference's component sizes from the 168
@@ -968,7 +1136,7 @@ mod tests {
                 eta: true,
                 contextual: false,
             };
-            let (all, _) = explore(Key::parse(INT168), &m, false);
+            let (all, _) = explore(Key::parse(INT168), &m, false, usize::MAX, 0);
             assert_eq!(all.len(), want, "slack {slack}");
         }
     }

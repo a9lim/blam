@@ -84,7 +84,8 @@ in 21.6 s.
 
 The 168 is operation-minimal (`classical/self-interpreter/design.md`): each of
 its 26 applications and 16 λs does a necessary job, and every protocol change
-tried so far loses. Three follow-up searches (`blam selfint`, lab; logs in
+tried so far loses. Three follow-up searches (`blam golf letopt`,
+`blam selfint ctx`, `blam golf component`, lab; logs in
 `data/self-interpreter/`) found nothing below 168 and no tie:
 
 - `letopt` renders every let structure of the 179-bit let-free core exactly,

@@ -104,13 +104,18 @@ impl T {
     /// let and keeps the fixpoint. Normal order matters: a let can bind the
     /// knot's own argument, which only becomes a λ once the outer lets have
     /// been substituted.
+    #[cfg(test)]
     pub fn inline_lets(&self) -> T {
         let mut fuel = u32::MAX;
         self.inline_bounded(&mut fuel).expect("unbounded fuel")
     }
 
-    /// `inline_lets` with a contraction budget; `None` when it runs out.
+    /// `inline_lets` with a work budget; `None` when it runs out. Every node
+    /// visited costs one unit and every contraction the size of the term it
+    /// builds, which bounds the work, so a term that grows while it inlines
+    /// (a busy beaver is all lets) stops early.
     pub fn inline_bounded(&self, fuel: &mut u32) -> Option<T> {
+        *fuel = fuel.checked_sub(1)?;
         match self {
             T::V(i) => Some(T::V(*i)),
             T::L(b) => Some(l(b.inline_bounded(fuel)?)),
@@ -118,16 +123,14 @@ impl T {
                 let f = f.head(fuel)?;
                 match f {
                     T::L(ref body) if !f.is_self_app() => {
-                        *fuel = fuel.checked_sub(1)?;
-                        T::beta(body, x).inline_bounded(fuel)
+                        T::charged(body, x, fuel)?.inline_bounded(fuel)
                     }
                     T::L(ref body) => {
                         let x = x.inline_bounded(fuel)?;
                         if matches!(x, T::L(_)) {
                             return Some(a(f, x));
                         }
-                        *fuel = fuel.checked_sub(1)?;
-                        T::beta(body, &x).inline_bounded(fuel)
+                        T::charged(body, &x, fuel)?.inline_bounded(fuel)
                     }
                     f => Some(a(f.inline_bounded(fuel)?, x.inline_bounded(fuel)?)),
                 }
@@ -138,27 +141,31 @@ impl T {
     /// Leftmost-outermost reduction until the head is a λ, a variable, or a
     /// knot; the knot test normalizes the knot's argument.
     fn head(&self, fuel: &mut u32) -> Option<T> {
+        *fuel = fuel.checked_sub(1)?;
         match self {
             T::A(f, x) => {
                 let f = f.head(fuel)?;
                 match f {
-                    T::L(ref body) if !f.is_self_app() => {
-                        *fuel = fuel.checked_sub(1)?;
-                        T::beta(body, x).head(fuel)
-                    }
+                    T::L(ref body) if !f.is_self_app() => T::charged(body, x, fuel)?.head(fuel),
                     T::L(ref body) => {
                         let x = x.inline_bounded(fuel)?;
                         if matches!(x, T::L(_)) {
                             return Some(a(f, x));
                         }
-                        *fuel = fuel.checked_sub(1)?;
-                        T::beta(body, &x).head(fuel)
+                        T::charged(body, &x, fuel)?.head(fuel)
                     }
                     f => Some(a(f, (**x).clone())),
                 }
             }
             t => Some(t.clone()),
         }
+    }
+
+    /// One contraction, charged its result's size.
+    fn charged(body: &T, arg: &T, fuel: &mut u32) -> Option<T> {
+        let r = T::beta(body, arg);
+        *fuel = fuel.checked_sub(r.size())?;
+        Some(r)
     }
 
     fn is_self_app(&self) -> bool {
