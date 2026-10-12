@@ -27,7 +27,9 @@
 //! the only required frame variables are those whose information cannot
 //! reach the result any other way. `cont` is the only route to the rigid
 //! `c`, and `exp` is the only route to the parsed body (ABS) or function
-//! (APP). See each slot's `must`.
+//! (APP). See each slot's `must`. In `var` and `handler`, `next` also
+//! captures `cont`, so requiring `cont` there narrows the search;
+//! design.md's "The trick hunt" records the unrestricted re-runs.
 
 use crate::args::{self, Args, R};
 use crate::golf::term::INT168;

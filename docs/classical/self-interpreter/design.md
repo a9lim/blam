@@ -280,8 +280,10 @@ term of 4..14 bits plus the battery's deep-index and reducible extras. The
 check normalizes `\c \n. E' c (⌜M⌝ ++ n)` against the reference's own normal
 form, with `c` and `n` rigid. Enumeration keeps only contextual
 obligations: `cont` everywhere, as the only route to the rigid continuation,
-and `exp` in ABS/APP, as the only route to the parsed subterm. Candidates
-strictly smaller than the reference:
+and `exp` in ABS/APP, as the only route to the parsed subterm. (In VAR and
+the handler, `next` also captures `cont`. The trick hunt below re-runs
+those two slots without the obligation.) Candidates strictly smaller than
+the reference:
 
 | slot | frame | reference | candidates | survivors | unknown |
 |---|---:|---:|---:|---:|---:|
@@ -744,3 +746,77 @@ knot-free call heads, and found nothing. Further rearrangement of opaque
 payloads has poor prospects. A sub-168 would need a specific new identity
 involving the knot variable, the stream encoding or semantic values, of
 the kind `cons'` and `skipvar` were.
+
+### The trick hunt
+
+A last time-boxed round of three Codex sessions looked for a trick in each
+shape the theorem leaves open: fused control, shared work, and a knot
+entangled with the body. None went below 168. They proved two shapes
+impossible, found a few genuine identities that lose on accounting, and
+corrected one search filter.
+
+**One handler for both tag bits is impossible.** Using `H c` for the first
+bit and `H (A c)` for the second would delete `next`. That forces
+`E c (0:s) = E (A c) s` and `E c (1:s) = c s (s s s)`. Then `λx.x` gives
+`A (A c) (0:N) N = c (λz.I) N`. Both `I I` and `(K I) I` normalize to `I`,
+so each requires `A c (λz.I) N` to equal `c (λz.I) R`. But they leave
+different remainders R after the misread variable, so no `A` of any size
+satisfies both. Variants that escape the proof cost 203–219: explicit mode
+flags, tag-first dispatch, two continuation slots, and the tag `bit1 = KI`
+used as a skipping continuation.
+
+**Recursion carried by the interpreter's own objects** (escape 4):
+- A cell applied to itself performs the knot: `cell(a,e) cell(a,e) =
+  λk. a a (k e e)`. A cell holding F does `F F`, but the continuation
+  receives two extra arguments, and repairing that costs 199.
+- Every partially applied parser is a universal continuation: `F y c
+  (λz.M) N = M N`, because a value applied to the handler gives M. The
+  machine `(\x. x x (x x x)) F` is 180, a correct universal machine
+  2 bits above the 178.
+- Two direct shapes are impossible for any interpreter meeting the contract:
+  - `E E = E`, which the identity program refutes;
+  - a contract-preserving continuation that is also its own knot driver,
+    refuted with M = Ω.
+- Joint searches that change the knot generator together with the cell,
+  VAR, or the APP value (873,378, 1,176,245 and 56,803 pairs) find nothing.
+
+**Coincidences between the recurring shapes** (escapes 1 and 2):
+- An environment cell already performs application on closed denotations:
+  `cell a e (K M) (K P) = M P`. So APP's value could be `\args. args exp
+  exp2`, giving 164 bits. But it fails 577 programs:
+  - at the root the environment is the contract's arbitrary `z`;
+  - inside an environment `λz.I` equals the input bit `1`, so one call
+    cannot be both a lookup and an application.
+
+  No cell of any size repairs that alias, and none of 402,644 cells up to 27
+  bits does.
+- The joint searches over distant pairs find only the 168:
+
+  | pair | coverage | capped |
+  |---|---:|---:|
+  | whole NEXT structure × VAR | 651,844,225 pairs | 379,648 |
+  | dispatch reader × APP continuation | 271,637,651 pairs | 23, all discharged |
+  | whole dispatch × APP continuation | 776,816,521 pairs | 5,724,457 |
+  | administration's reader × VAR | 213,338 pairs | 8,998 |
+
+  The 23 discharged caps omit `cont` from APP's continuation, so their
+  normal forms cannot be headed by `C`.
+
+**A correction to `ctx`.** The VAR and dispatch-handler slot searches
+required a direct `cont`. That is not a sound contextual obligation there,
+because `next` is in scope and captures `cont`. The same applies to the
+VAR sketches above.
+- **VAR without the restriction:** 56,703 fills up to 22 bits. Only the 168
+  survives, and 81 fills are capped.
+- **The whole handler without the restriction:** 163,041,847 fills through
+  35 bits (interpreters ≤ 161), with no survivor and 12,071,331 capped.
+  Sizes 36–41 are not searched without the restriction. Going through
+  `next` can only deliver ABS- or APP-shaped values to `cont`, so a survivor
+  there would be surprising, but this is a gap.
+
+The module theorem is unaffected: its neighbours are rigid.
+
+So the only shapes left open are co-designed protocols that none of these
+searches reach: a handler and continuation designed together with the
+knot, or explicit modes with separate continuation slots. Everything
+measured in those directions costs 30 bits or more over the 168.

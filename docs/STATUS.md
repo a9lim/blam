@@ -142,6 +142,18 @@ and joint searches. Nothing went below 168:
 - **Universal machines.** No strict U below 190 in six scoped wiring
   families (310,283 fills) or among 72.5 million whole-VAR fills. The
   remaining capped fills and the 39..43-bit contexts are listed there.
+- **A trick hunt** ("The trick hunt" in design.md) took the open shapes one
+  at a time, and nothing went below 168:
+  - **one handler for both tag bits:** proved impossible at any size;
+  - **recursion carried by cells or parsers:** 199, plus a 180-bit
+    universal machine;
+  - **cell/APP aliasing:** 164 but incorrect, and no cell repairs it;
+  - **distant joint pairs:** up to 777 million tested.
+
+  It also corrected `ctx`: its VAR and handler slots required a direct
+  `cont`, but `next` captures it. VAR without that restriction is still
+  clean. The handler without it is searched only through 35 bits; 36–41
+  remain unsearched.
 
 ### The other AIT programs
 
