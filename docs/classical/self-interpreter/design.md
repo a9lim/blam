@@ -156,3 +156,75 @@ micro-trick was hiding in the branch bodies. The one mechanical route
 left is the contextual lane (`search-spec.md` §2) — and a survivor
 there is a hypothesis needing whole-interpreter splice + battery, not
 a proof.
+
+## The 168 is operation-minimal (2026-10-12)
+
+Itemized, the 168 spends its bits as follows (`L = 16`, `A = 26`, `X = 30`):
+
+| part | bits |
+|---|---:|
+| knot and `intL = x x` let | 22 |
+| `\cont`, the `next` let, `\list`, `list H` | 12 |
+| dispatch `bit0 (list1 next) ·` | 20 |
+| VAR `cont list1 (list1 list1 list1)` | 22 |
+| NEXT header `\bit1. intL (\exp. bit1 · ·)` | 17 |
+| ABS (the `cons'` cell alone is 24) | 40 |
+| APP | 35 |
+
+Each of the 26 applications does a distinct, necessary job:
+
+- knot: 3, plus 1 for the shared `intL` let;
+- reading and dispatching: read bit0 1, dispatch 2, read bit1 1, the `next`
+  let 1, first recursive parse 1, dispatch on bit1 2;
+- ABS: return 1, enter the body 1, build the cell 3;
+- APP: second parse 1, return 1, `exp args (exp2 args)` 3;
+- VAR: return 2, skip 2.
+
+The 16 λs are likewise forced: the knot's two, the two lets, the parser's
+`cont` and `list`, the handler's two, `bit1`, `exp`, the λ-value's `args` and
+`arg`, the cell's `zx` and `zy`, and APP's `exp2` and `args`.
+
+The index sum is pinned as well. It splits as cell 6, the rest of ABS 4,
+APP 9, NEXT header 3, dispatch 8. The conventions it rests on are not free
+choices:
+
+- the continuation's `(exp, rest)` order and `\args` before `\arg` come from
+  the contract `E C (⌜M⌝:N) = C (λz.M) N`;
+- the cell's `zx`/`zy` order comes from the stream's bit polarity;
+- `cont` before `list` is what lets three η-reductions happen.
+
+A let costs 6 bits, so it must save at least 7 in depth to pay off; the βη
+search above found none within +16.
+
+Consequence: a sub-168 must either delete an operation, or be a βη
+rearrangement whose every path from the 168 climbs above +16. Every
+operation-level merge tried so far dies on a nameable obstacle. Bit counts
+marked *measured* are reproduced by `tools/self-interpreter/merges.py`
+against the exact battery in `battery.py`; the others are estimates.
+
+| idea | saves | obstacle |
+|---|---:|---|
+| Return the rest as a thunk: `list1 list1` is literally `K rest`, so VAR could be `cont list1 (list1 list1)` | 4 | Every term ends in a variable, so every rest becomes a thunk. `intL` then needs a uniform force `D` with `D b l h = h b l` (a pair constructor, ~19 bits), and `C` must receive `N`, not `K N`. |
+| Scott-pair environment `\f. f arg args` | ~12 | Stream-driven lookup flips orientation each step; a self-passing lookup helper costs ~45+. |
+| Leaky cell `\zx. zx arg (\zy. zy args)` | 2 | Lookup returns `x rest`. Absorbing it needs K-wrapped values, but λ-values escape to `C` and must be genuine functions of raw arguments. |
+| Variable value `list` (keep the leading 1) | — | Off by one in the environment; the repair costs a second cell. The zero branch still binds `list1`, so even a free repair saves nothing. |
+| Destructured rest (`cont exp b l`), dropping `\list. list H` | 6 | `next` loses its η over the tail (+6 plus depth), and `E` needs adapters on both sides of the contract. |
+| Parse under the binder: direct values, so APP is `f a` and the variable is `list1 env` | large in APP/VAR | Threading the environment and reparsing ABS bodies cost more. *Measured:* universal machine 226 against 178. |
+| Share one combinator between the cell and APP (both have skeleton `a b (c d)`) | 5 | The let plus a four-λ definition costs ~32. |
+| Select the ABS/APP continuation before the first parse | — | *Measured:* 169 in the 168's frame. |
+| η-reduce the handler: `\bit0. bit0 (\l. l next) (\l. cont l (l l l))` | — | *Measured:* 169. |
+
+The binding constraint is the contract, twice over. λ-values must be genuine
+functions, which rules out every cheaper cell; and `C` must receive the real
+`N`, which rules out the thunk. Under the universal machine's contract, where
+the outermost continuation is ours, the thunk still fails: `intL` then
+receives real streams from `next` and thunks from APP's second parse.
+
+What remains open:
+
+1. A βη rearrangement beyond +16 that keeps the 26 applications and 16 λs but
+   reaches `X ≤ 29`, or adds a let that saves at least 7.
+2. A new identity of the 50_ft_lock kind: some term already in scope that
+   satisfies one of the merge laws above. The force law `D b l h = h b l` is
+   the most valuable (4 bits). A three-application VAR is already excluded by
+   the parametric VAR slot search.

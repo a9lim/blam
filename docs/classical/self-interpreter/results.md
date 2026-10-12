@@ -205,6 +205,9 @@ the spec was written to kill) are intentionally absent. `lc.py`, `db.py`, and
 (used above for the golden cross-check and source-chain battery),
 as are `tools/self-interpreter/search_fix.py` (the knot search of `design.md`)
 and `beta_search.py` (the βη component search of `design.md`).
+`battery.py` is the exact contract check (rigid continuation and tail, every
+closed program through 18 bits), and `merges.py` re-measures the
+operation-level variants in `design.md` against it.
 
 ## What this does not cover
 
