@@ -12,8 +12,11 @@ n stay rigid, so equal normal forms prove the contract for that M, not merely
 agreement on a marker.  Programs: every closed term of 4..MAXBITS bits plus a
 few deep-index extras.
 
-    battery.py FILE.lam... [--uni] [--max-bits N]
-    battery.py --bits BITS [--uni] [--max-bits N]
+    battery.py FILE.lam... [--uni] [--int4] [--max-bits N]
+    battery.py --bits BITS [--uni] [--int4] [--max-bits N]
+
+--int4 encodes the programs in int4.lam's four-primitive code (00 lambda,
+01 application, 10 variable zero, 11 successor) instead of BLC.
 
 Needs target/release/blam (cargo build --release).
 """
@@ -47,6 +50,15 @@ EXTRA = [
 
 def enc(t):
     return blcc.encode(t)
+
+
+def enc4(t):
+    """int4.lam's four-primitive code: 0-based index i is (11)^i 10."""
+    if t[0] == "V":
+        return "11" * t[1] + "10"
+    if t[0] == "L":
+        return "00" + enc4(t[1])
+    return "01" + enc4(t[1]) + enc4(t[2])
 
 
 def shift(t, d, c=0):
@@ -104,14 +116,14 @@ def programs(max_bits=18):
     return out + [dbparse.parse(s) for s in EXTRA]
 
 
-def _probe(E, M, uni):
+def _probe(E, M, uni, code=enc):
     if uni:
         want = ("L", ("A", shift(M, 1), ("V", 0)))
-        got = ("L", ("A", shift(E, 1), bitlist(enc(M), ("V", 0))))
+        got = ("L", ("A", shift(E, 1), bitlist(code(M), ("V", 0))))
     else:
         want = ("L", ("L", ("A", ("A", ("V", 1), ("L", shift(M, 3))), ("V", 0))))
         got = ("L", ("L", ("A", ("A", shift(E, 2), ("V", 1)),
-                             bitlist(enc(M), ("V", 0)))))
+                             bitlist(code(M), ("V", 0)))))
     w = normalize(enc(want), 1 << 16)
     if w is None:
         return "skip"
@@ -119,11 +131,11 @@ def _probe(E, M, uni):
     return "fuel" if g is None else ("ok" if g == w else "WRONG")
 
 
-def check(E, uni=False, max_bits=18, threads=10):
+def check(E, uni=False, max_bits=18, threads=10, code=enc):
     """Returns (ok, skipped, failures); failures lists (program bits, verdict)."""
     progs = programs(max_bits)
     with ThreadPoolExecutor(threads) as ex:
-        res = list(ex.map(lambda M: _probe(E, M, uni), progs))
+        res = list(ex.map(lambda M: _probe(E, M, uni, code), progs))
     bad = [(enc(M), r) for M, r in zip(progs, res) if r not in ("ok", "skip")]
     return sum(r == "ok" for r in res), sum(r == "skip" for r in res), bad
 
@@ -131,19 +143,20 @@ def check(E, uni=False, max_bits=18, threads=10):
 def main():
     args = sys.argv[1:]
     uni = "--uni" in args
+    code = enc4 if "--int4" in args else enc
     max_bits = 18
     if "--max-bits" in args:
         i = args.index("--max-bits")
         max_bits = int(args[i + 1])
         del args[i:i + 2]
-    targets = [a for a in args if a != "--uni"]
+    targets = [a for a in args if a not in ("--uni", "--int4")]
     if targets and targets[0] == "--bits":
         from lc import decode
         targets = [("bits", decode(b, 0)[0]) for b in targets[1:]]
     else:
         targets = [(p, compile_lam(Path(p).read_text())) for p in targets]
     for path, E in targets:
-        ok, skip, bad = check(E, uni, max_bits)
+        ok, skip, bad = check(E, uni, max_bits, code=code)
         print(f"{len(enc(E)):5d} bits  ok={ok} skip={skip} fail={len(bad)}  {path}")
         for b in bad[:5]:
             print("        ", *b)

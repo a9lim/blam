@@ -1,0 +1,117 @@
+-- tromp/AIT pairupK_p.lam (657 bits) with the 2025-12 parser design ported in.
+-- Port (Codex, 2026-10-12): environment cells become cons' cells and the
+-- variable's value is the stream after its leading 1, which looks itself up;
+-- the old bit-by-bit variable loop stays, only to record the consumed bits
+-- `ps`, which skipvar would not.
+-- This source compiles to 653; pairupK_p.blc (651 bits) is its beta-only
+-- descent, certified step by step by blam golf check --path pairupK_p.path.
+-- Verified on 60 contract-valid inputs (payload indices to 12, nesting,
+-- consumed data), whose normal forms match the original and an
+-- independently constructed expected result. It differs from the original
+-- on 24 of the 182 raw `golf check --io pairs` inputs, all outside the
+-- contract: the first program is not a valid description (p = \x.x hands
+-- back the rest of the input instead of a pair), so the second parse
+-- starts inside the second program and meets an open term, where the old
+-- dirty base environment and the new one give different garbage. With
+-- divergent base environments in both, the raw differences vanish.
+-- See docs/classical/golf.md.
+-- pairup operator for Kp.
+-- pairup (ps ++ pi ++ qs ++ qi) evaluates to <<po, qo>, rs>, provided that
+-- 1) ps and qs represent the lambda calculus programs p and q, respectively,
+-- 2) p (pi ++ X) evaluates to <po, X> for all X (even non-lists), and
+-- 3) q qi (ps ++ pi) evaluates to <qo, rs>.
+let
+  id = \x.x;
+  true = \x\y.x;
+  false = \x\y.y;
+  nil = false;
+
+  -- Enabling IFDIRTY replaces some omegas by suitable variables to save space.
+  -- IFDIRTY,  !CPS: 657 bits / CPS: 718
+  -- !IFDIRTY, !CPS: 787 bits / CPS: 787
+  IFDIRTY = true;
+  IFCPS = false;
+
+  ----------------------------------------------------------------------------
+  -- Parse and compile binary lambda calculus.
+  --
+  -- For reference, a generic monadic evaluator, using type
+  --   Val ~ m Val -> m Val
+  -- would be  uni return (liftM2 id) (\prog\ps\rs.prog omega (encode rs)) id
+  -- where encode :: [Bool] -> m Val.
+  --
+  -- In the continuation, ps contains the consumed bits as a difference list.
+
+  -- cons' lookup: the original ys stream is the variable's value.
+  -- Keep the old bit-recording recursion for ps; discard its variable value.
+  -- The initial ys captured by cnt stays intact across every unary step.
+  uni = \abs\app.let uni0 = \cnt\ps\xs.
+    xs (\b0.let ps0 = \ts.ps (\p.p b0 ts) in
+      \ys\uni0\cnt.ys (\b1.
+        let ps1 = \ts.ps0 (\p.p b1 ts) in
+          b0 (uni0 (\v1.(b1 (cnt (\ctx.abs (\v2.v1 (\zx\zy.zx v2 (zy ctx)))))
+                           (uni0 (\v2.cnt (\ctx.app (v1 ctx) (v2 ctx)))))))
+             (b1 (cnt ys)
+                 (\d\d.uni0 (\v.cnt ys) ps0 ys)) ps1)) uni0 cnt
+  in uni0;
+
+  ----------------------------------------------------------------------------
+  -- Pair evaluator, using m a = (label, a).
+  -- The label is usually 'omega', but the input is labelled such that each
+  -- tail of io is initially annotated with the corresponding prefix ys.
+
+  omega = omega;
+  absP = IFDIRTY (\v\p.v) (\v\p.p omega v);
+  appP = \ca.ca false;
+
+  listP = \x\xs\ys.
+     let mx = absP (\e.absP (x e));
+         mxs = xs listP (\rs.ys (\p.p x rs)) in
+     \p.p ys (\e.e false mx false mxs);
+
+  pairupP = uni absP appP (\prog\ps\pi.
+    let pspi = \d.(
+          prog (IFDIRTY d omega) -- provide ctx
+          (IFDIRTY d false)      -- monadic apply
+          (pi listP ps)          -- to monadic input, expect monadic <poM,qsM>
+          false                  -- get <poM,qsM>; can't use d here in case prog is id
+          (IFDIRTY (\p\e\p\e.e) (\p.p omega (\e\p.p omega (\e.e))))   -- monadic tail
+          true                   -- head of qsM is difflist of bits read
+          nil);                  -- terminate list
+        -- Direct evaluator, using the identity monad.
+        eval = uni id id (IFDIRTY id (\p\ps.p omega)) pi
+    in eval (ps pi) (\po\qs.eval qs (pspi qs) (\qo\rs\p.p (\p.p po qo) rs))) id;
+
+  ----------------------------------------------------------------------------
+  -- CPS evaluator, using m a = (a -> label -> label) -> label -> label
+  --   returnC = \a\r.r a;
+  --   bindC = \ma\mb\r.ma (\a.mb a r);
+  -- The label -> label function keeps track of the most recently seen tail
+  -- of the input.
+
+  absC = \v\r.IFDIRTY (r v) (\d.r v omega);
+  appC = \ca\cb\r.ca (\a.a cb r);
+
+  listC = \x\xs\ys.
+    let mx = \r.r (\a\r.r (x a));
+        mxs = xs listC (\rs.ys (\p.p x rs)) in
+    \r\d.r (\cb.(\r.cb (\a.a mx (\a.a mxs r)))) (ys nil);
+
+  pairupC = uni absC appC (\prog\ps\pi.
+    let pspi = \d.ps (
+          prog (IFDIRTY d omega)
+          (\a.a (pi listC (\f.f))
+            (\a.a (\r.r (\d\r.r id)) (\a\f.f)))
+          (IFDIRTY d omega));
+
+        -- Direct evaluator, using the identity monad.
+        eval = uni id id (IFDIRTY id (\p\ps.p omega)) pi
+    in eval (ps pi) (\po\qs.eval qs (pspi qs) (\qo\rs\p.p (\p.p po qo) rs))) id;
+
+  main = IFCPS pairupC pairupP
+in main
+
+-- (cat delimit.blc; echo -n  1111000111001; cat pairlen.blc) | ./blc run pairup2.lam
+-- <<11010,11010110>,>
+-- (cat delimit2.blc; echo -n 1110101110000000000; cat pairlen.blc; echo -n 1010) | ./blc run pairup2.lam
+-- <<10000000000,00000000>,1010>

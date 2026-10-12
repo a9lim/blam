@@ -14,7 +14,11 @@
 //! - **Differential.** Normalize the program applied to concrete inputs and
 //!   compare normal-form bits exactly. `none` normalizes the terms
 //!   themselves. `bits` applies each to every bit stream of length 0..=N
-//!   ending in a rigid tail `n` (`\n. P (s ++ n)`). `bytes` does the same
+//!   ending in a rigid tail `n` (`\n. P (s ++ n)`). `progs` restricts the
+//!   streams to a closed program of 4..=N bits followed by every data string
+//!   of up to three bits, for machines whose contract covers closed programs
+//!   only; `pairs` to two closed programs totalling at most N bits followed
+//!   by one data bit, for machines that read two. `bytes` does the same
 //!   with BLC8 byte lists: every closed program of 4..=N bits padded to
 //!   bytes, with and without a trailing data byte, then every single byte
 //!   and a fixed sample of random two- to four-byte inputs. Runs that exhaust the budget are
@@ -29,7 +33,8 @@ use rayon::prelude::*;
 const USAGE: &str = "\
 blam golf check — β-certificate and normal-form differential of two terms
 
-usage: blam golf check ORIG_BITS CAND_BITS [--io none|bits|bytes]
+usage: blam golf check ORIG_BITS CAND_BITS
+                       [--io none|bits|progs|pairs|bytes]
                        [--max-bits N] [--beta B] [--threads N]
        blam golf check --path FILE
 
@@ -37,7 +42,10 @@ usage: blam golf check ORIG_BITS CAND_BITS [--io none|bits|bytes]
                   β-convertible to the previous one (no differential)
   --io MODE       inputs for the differential (default none: the terms'
                   own normal forms); bits = every bit stream of length
-                  0..=N, bytes = BLC8 byte lists (see the module docs)
+                  0..=N, progs = every closed program of 4..=N bits then
+                  0..=3 data bits, pairs = two closed programs of at most
+                  N bits together then one data bit, bytes = BLC8 byte
+                  lists (module docs)
   --max-bits N    stream length for bits, program size for bytes
                   (default 12)
   --beta B        β budget per run (default 262144; transitions 64x)
@@ -49,6 +57,8 @@ when a differential input gives different normal forms.";
 enum Io {
     None,
     Bits,
+    Progs,
+    Pairs,
     Bytes,
 }
 
@@ -121,6 +131,44 @@ fn inputs(io: Io, max_bits: usize) -> Vec<(String, Vec<bool>)> {
                     let mut v = Vec::new();
                     list(&mut v, &bit_items(&s), true);
                     out.push((s, v));
+                }
+            }
+        }
+        Io::Progs => {
+            for n in 4..=max_bits {
+                let mut progs = Vec::new();
+                closed(n, 0, &mut progs);
+                for p in progs {
+                    for len in 0..=3 {
+                        for i in 0..1u64 << len {
+                            let d: String = (0..len)
+                                .rev()
+                                .map(|j| if i >> j & 1 == 1 { '1' } else { '0' })
+                                .collect();
+                            let s = format!("{p}{d}");
+                            let mut v = Vec::new();
+                            list(&mut v, &bit_items(&s), true);
+                            out.push((format!("{p}|{d}"), v));
+                        }
+                    }
+                }
+            }
+        }
+        Io::Pairs => {
+            let mut progs = Vec::new();
+            for n in 4..=max_bits.saturating_sub(4) {
+                closed(n, 0, &mut progs);
+            }
+            for p in &progs {
+                for q in &progs {
+                    if p.len() + q.len() > max_bits {
+                        continue;
+                    }
+                    for d in ["0", "1"] {
+                        let mut v = Vec::new();
+                        list(&mut v, &bit_items(&format!("{p}{q}{d}")), true);
+                        out.push((format!("{p}|{q}|{d}"), v));
+                    }
                 }
             }
         }
@@ -350,12 +398,10 @@ pub fn run(argv: &[String]) -> R<()> {
                 io = match p.value(tok)? {
                     "none" => Io::None,
                     "bits" => Io::Bits,
+                    "progs" => Io::Progs,
+                    "pairs" => Io::Pairs,
                     "bytes" => Io::Bytes,
-                    other => {
-                        return Err(format!(
-                            "blam golf check: --io takes none, bits or bytes, not `{other}`"
-                        ))
-                    }
+                    other => return Err(format!("blam golf check: unknown --io `{other}`")),
                 }
             }
             "--max-bits" => max_bits = p.num(tok)?,

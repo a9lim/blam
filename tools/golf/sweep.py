@@ -31,18 +31,22 @@ sys.path.insert(0, str(ROOT / "tools"))
 sys.setrecursionlimit(100000)
 import blcc  # noqa: E402
 
-BLAM = str(ROOT / "target" / "release" / "blam")
+# A long sweep should run a frozen copy: rebuilding target/release/blam
+# mid-run makes every later step fail.
+BLAM = os.environ.get("BLAM", str(ROOT / "target" / "release" / "blam"))
 
-# Files whose `in` term applies the artifact to sample data: reducing it
-# toward its normal form is shorter but not a smaller program.
+# Files whose `in` term is not the artifact: reducing it toward its normal
+# form is shorter but not a smaller program. Found by audit; tools/golf/table.py
+# lists them apart.
 DEMOS = {
-    "numerals/SK_numerals.lam",
-    "numerals/tuple_numerals.lam",
-    "rosetta/exp00.lam",
-    "rosetta/facY.lam",
-    "rosetta/forloops.lam",
-    "rosetta/variadicY.lam",
-    "ait/binary_better.lam",  # an example term for the BLC2 comparison
+    "numerals/SK_numerals.lam": "applies the artifact to sample data",
+    "numerals/tuple_numerals.lam": "applies the artifact to sample data",
+    "rosetta/exp00.lam": "applies the artifact to sample data",
+    "rosetta/facY.lam": "applies the artifact to sample data",
+    "rosetta/forloops.lam": "applies the artifact to sample data",
+    "rosetta/variadicY.lam": "applies the artifact to sample data",
+    "ait/binary_better.lam": "an example term for the BLC2 size comparison",
+    "ait/minbase.lam": "computes S from a smaller base",
 }
 
 

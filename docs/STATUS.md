@@ -116,6 +116,35 @@ context around the 168's parser body:
 
 Strict contexts of 39..43 bits (about 31 billion) remain.
 
+### The other AIT programs
+
+`classical/golf.md` records shrinking the rest of tromp/AIT. Tromp's
+optimizer only β-reduces. `blam golf` (lab) adds expansions: exact let
+structures, and β-only descent. Every result is certified β-convertible to
+the original, or, for a redesign, checked by an exact normal-form
+differential.
+
+- **The β-golf sweep** over all 117 programs shrinks 45 of them by 470 bits
+  in total (`data/golf/sweep.tsv`). Examples: `tweet` 2230 → 2168, `loader`
+  1797 → 1791, `uniK` 903 → 854, `mpi` 473 → 454.
+- **The BLC8 universal machine** (IOCCC `uni8.Blc`, 344 bits, 43 bytes) is
+  now 321 strict (41 bytes) and 300 non-strict (38 bytes). The ideas are a
+  shared bit reader (Codex), made non-recursive because a byte always has
+  eight bits. Both packed binaries run under Tromp's `uni.c`.
+- **The BLC2 machines**: `uni28` 500 → 399 strict and 382 non-strict;
+  `uni2` 340 → 333.
+- **The 2025-12 parser** (cons' cells, skipvar), ported into the programs
+  that still embed the old one:
+  - `int4` 189 → 178;
+  - `ko2kp` 615 → 557;
+  - `nf` 600 → 541;
+  - `pairupKP` 778 → 771;
+  - `pairupK_p` 657 → 651 and `pairup_Kp` 1402 → 1325, both verified on
+    contract-valid inputs only. On invalid first programs they differ from
+    the originals.
+
+The artifacts are in `data/golf/machines/`.
+
 ### Classical docket
 
 1. Derive a selector/zfirst certificate class from a concrete frontier trace
@@ -126,7 +155,13 @@ Strict contexts of 39..43 bits (about 31 billion) remain.
    1.06x headroom over the largest successful n=41 rescue.
 4. Formalize prefix-freeness and Kraft accounting from `lean/Blc/Wire.lean`,
    then derive machine-checked K upper bounds.
-5. For discrete Solomonoff induction, measure Church bit-list decode coverage
+5. AIT golf: the strict BLC8 machine is one bit over 40 bytes (321). Its
+   whole β-component at slack 16 (1.5M states) has nothing smaller, so 320
+   needs a structural idea. `uniK` (Kiselyov compilation) and `blc.lam`
+   (curried bits) still carry pre-redesign variable handling that the stream
+   pun cannot reach directly. Upstreaming the results to tromp/AIT is a9's
+   call.
+6. For discrete Solomonoff induction, measure Church bit-list decode coverage
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
 

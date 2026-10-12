@@ -257,7 +257,16 @@ The classical self-interpreter's VAR, ABS, and APP slots are exhaustively
 optimal both in Tromp's 170-bit interpreter and in Sean Palmer's 168-bit
 successor, which found its two bits in a let-float outside the slot families. Exact
 let-structure enumeration, contextual slot search, and the βη component to
-slack 24 find nothing below the 168. The speed-prior sweep supplies exact Kt,
+slack 24 find nothing below the 168. The rest of Tromp's corpus was not as
+tight. The same instruments plus hand redesigns shrink:
+
+- the IOCCC BLC8 universal machine, from 43 bytes to 41 (strict) and 38
+  (non-strict);
+- the bytewise BLC2 machine, 500 → 399 bits;
+- the programs behind the KP ≤ KO + c and symmetry-of-information constants;
+- 45 programs under β-golf alone
+
+([golf](docs/classical/golf.md)). The speed-prior sweep supplies exact Kt,
 depth, and time-spectrum data with post-certificate open mass below `5.93e-12`
 on the beta clock.
 
@@ -313,8 +322,8 @@ report.
   checkpoint-resume suites.
 - `docs/STATUS.md` — current measurements, proof boundaries, and open docket;
   domain directories contain durable current contracts.
-- `data/` — canonical classical, quantum, certificate, and self-interpreter
-  outputs; regenerate rather than hand-edit.
+- `data/` — canonical classical, quantum, certificate, self-interpreter, and
+  AIT-golf outputs; regenerate rather than hand-edit.
 - `scripts/` — standing measurement and recertification protocols.
 - `lean/` — Lean 4 formalization and generated divergence theorems.
 - `qalc/` — accepted Python/Lean qALC reference, proof records, batteries, and
