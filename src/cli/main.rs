@@ -21,7 +21,9 @@ mod qalc;
 mod solomonoff;
 
 #[cfg(feature = "lab")]
-mod slots;
+mod selfint;
+#[cfg(feature = "lab")]
+pub(crate) mod slots;
 #[cfg(feature = "lab")]
 mod trace;
 
@@ -54,6 +56,7 @@ INSTRUMENTS
   trace scan|single|dump|verify-loop32   reduction-shape classifier
                                                                  (lab feature)
   slots var|abs|app            self-interpreter slot search       (lab feature)
+  selfint letopt               searches below the 168             (lab feature)
   q galois idiom|complement    the dyadicity campaign             (lab feature)
   q oddmin [W]                 gated reference DP for the CNOT-free lane
                                                                  (lab feature)
@@ -103,6 +106,10 @@ fn dispatch(argv: &[String]) -> Result<(), String> {
         "slots" => slots::run(rest),
         #[cfg(not(feature = "lab"))]
         "slots" => Err(no_lab("slots")),
+        #[cfg(feature = "lab")]
+        "selfint" => selfint::run(rest),
+        #[cfg(not(feature = "lab"))]
+        "selfint" => Err(no_lab("selfint")),
         other => Err(format!(
             "blam: unknown command `{other}`\ntry `blam --help` for the command table"
         )),
@@ -216,6 +223,8 @@ mod tests {
         let paths = [
             vec!["trace"],
             vec!["slots"],
+            vec!["selfint"],
+            vec!["selfint", "letopt"],
             vec!["cert", "search"],
             vec!["cert", "diag"],
             vec!["q", "galois"],

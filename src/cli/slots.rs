@@ -145,11 +145,11 @@ const SLOTS: &[Slot] = &[
 /// `depth`, which must mention every frame variable in `must` and none in
 /// `forbid`. `v = frame + depth` free indices are addressable.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
-struct Pending {
-    depth: u8,
-    size: u8,
-    must: u8,
-    forbid: u8,
+pub(crate) struct Pending {
+    pub(crate) depth: u8,
+    pub(crate) size: u8,
+    pub(crate) must: u8,
+    pub(crate) forbid: u8,
 }
 
 /// The occurrence bit a variable leaf of BLC size `n` contributes at `depth`,
@@ -183,7 +183,7 @@ fn leaf_ok(frame: u8, p: Pending) -> bool {
 /// are dead (you cannot fit `exp`, `cont` and `intL` into a 2-bit subterm).
 /// The enumerator then spends its whole life walking subtrees that emit
 /// nothing. Zero-count pruning is what makes the sweep linear in *output*.
-struct Counts {
+pub(crate) struct Counts {
     frame: u8,
     /// mask (subset of the root's must) -> dense index
     idx: [u8; 256],
@@ -195,7 +195,7 @@ struct Counts {
 const MAX_DEPTH: usize = 24;
 
 impl Counts {
-    fn new(frame: u8, m0: u8, max_size: u8) -> Self {
+    pub(crate) fn new(frame: u8, m0: u8, max_size: u8) -> Self {
         // Both `must` and `forbid` only ever range over subsets of the root's
         // must-mask, so the dense axes are tiny (2^|m0| each).
         let mut subs: Vec<u8> = Vec::new();
@@ -251,7 +251,7 @@ impl Counts {
     }
 
     #[inline(always)]
-    fn get(&self, p: Pending) -> u64 {
+    pub(crate) fn get(&self, p: Pending) -> u64 {
         if p.size < 2 || p.depth as usize > MAX_DEPTH {
             return 0;
         }
@@ -303,7 +303,7 @@ impl Counts {
 }
 
 /// Enumerate every term satisfying the obligation stack, calling `f(bits, len)`.
-fn go(c: &Counts, pending: &mut Vec<Pending>, acc: u64, len: u8, f: &mut impl FnMut(u64, u8)) {
+pub(crate) fn go(c: &Counts, pending: &mut Vec<Pending>, acc: u64, len: u8, f: &mut impl FnMut(u64, u8)) {
     let Some(p) = pending.pop() else {
         f(acc, len);
         return;
@@ -367,10 +367,10 @@ fn go(c: &Counts, pending: &mut Vec<Pending>, acc: u64, len: u8, f: &mut impl Fn
 // -------------------------------------------------------------- task splitting
 
 #[derive(Clone)]
-struct Task {
-    pending: Vec<Pending>,
-    acc: u64,
-    len: u8,
+pub(crate) struct Task {
+    pub(crate) pending: Vec<Pending>,
+    pub(crate) acc: u64,
+    pub(crate) len: u8,
 }
 
 /// One level of `go`'s branch structure, as tasks. Kept in lockstep with `go`
@@ -446,7 +446,7 @@ fn expand(c: &Counts, t: &Task) -> Vec<Task> {
 /// heaviest one (DP-weighted), which balances far better than expanding the
 /// frontier level by level: the App fan-out makes subtree sizes span orders
 /// of magnitude at every depth.
-fn split_tasks(c: &Counts, root: Pending, target: usize) -> Vec<Task> {
+pub(crate) fn split_tasks(c: &Counts, root: Pending, target: usize) -> Vec<Task> {
     let mut store = vec![Task {
         pending: vec![root],
         acc: 0,
