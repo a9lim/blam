@@ -263,6 +263,15 @@ digits (`docs/classical/omega.md`):
 Omega in [0.125347188166, 0.125985262982]  =  0.001000000...
 ```
 
+The same sweep measures the coding theorem on BLC's own machine
+(`docs/classical/coding.md`).
+- **The constant.** It is certified at c ≥ 3.689, from K(x) + log₂ m(x).
+- **Compression onset.** Compression starts at 22 bits and stays a
+  duplication effect, at about 0.5% of normal forms, through 41 bits.
+- **Hidden shortest programs.** An output's mass among programs at least
+  6 bits longer than itself picks out the compressible outputs with AUC
+  0.98–1.00.
+
 The classical self-interpreter's VAR, ABS, and APP slots are exhaustively
 optimal both in Tromp's 170-bit interpreter and in Sean Palmer's 168-bit
 successor, which found its two bits in a let-float outside the slot families. Exact

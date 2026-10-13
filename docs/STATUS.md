@@ -79,6 +79,30 @@ That pins nine bits. The census alone pins two.
   - **Current reach.** Propagating divergence from small divergent cores
     certifies only 3.7×10⁻⁷ (HL=28).
 
+### The coding theorem
+
+`classical/coding.md` reads the coding theorem off the census, using the gap
+g(x) = K(x) + log₂ m(x). Its record is `data/classical/coding.txt`.
+
+- **The constant.** Certified c ≥ 3.689: every program shorter than 33 bits
+  is adjudicated, so K is exact for K ≤ 32, and m_N ≤ m.
+  - **Witness.** λ⁷.(7 7), a duplication break-even tie.
+  - **Still growing.** The bound reads 3.011, 3.472 and 3.689 at N = 37, 39
+    and 41, so it has not settled.
+  - **Levin analog.** Kt + log₂ S_β is at least 3.255.
+  - **Typical gap.** The median is 0.7–0.84 bits for K ≥ 18.
+- **Compression onset.** The first compressible normal form has 22 bits,
+  λf.(f λ_.f)(f λ_.f) with K = 21, through the duplicator (λ.1 1).
+  - **Mechanism.** All 384 compressible normal forms through 30 bits have
+    shortest programs that contain a duplicating redex.
+  - **Rate.** The compressible fraction stays flat at 0.2–0.6% through 41
+    bits, with a mean gain of about 2 bits.
+- **Hidden shortest programs (Codex's design).** Mass in disjoint shells of
+  strictly longer programs (38–39 and 40–41 bits) separates compressible from
+  incompressible outputs within every size from 22 to 32.
+  - **Strength.** AUC is 0.976–1.000, and it replicates across the two shells.
+  - **Limit.** It does not *grade* how much an output compresses.
+
 ### Divergence certificates and Lean
 
 `data/certificates/ratchet_kills.tsv` contains 305 checked kills: 214 Ratchet,

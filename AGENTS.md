@@ -38,7 +38,8 @@ work; do not duplicate its moving state here.
   the file and `docs/STATUS.md`, superseded generations live in git history,
   and a bound bump regenerates in place. Regenerate rather than hand-edit via
   `scripts/census-regen.sh`, `scripts/solomonoff-regen.sh`,
-  `scripts/omega-regen.sh`, and `scripts/qalc-census-extend.sh`.
+  `scripts/omega-regen.sh`, `scripts/coding-regen.sh`, and
+  `scripts/qalc-census-extend.sh`.
   `data/classical/omega.txt` (the bits of the true Ω) reads the census table
   and frontier, so rerun its script whenever either moves. The qALC
   finite-clock convergence record is in `data/qalc/`.
