@@ -15,6 +15,7 @@ mod census;
 mod cert;
 mod ckpt;
 mod normalize;
+mod omega;
 mod out;
 mod q;
 mod qalc;
@@ -43,6 +44,7 @@ ENGINES
 MEASUREMENTS
   census [MIN] MAX             halt/diverge/unknown census by term size
   solomonoff [MIN] MAX         Solomonoff prior m(x), K(x), Omega bounds
+  omega leaves [MIN] MAX       leaf tables for the true-Omega bounds
   q census [MIN] MAX           the quantum operator census
   qalc census [MIN] MAX        finite-clock qALC census over BLC p h t
   q skeleton FILE              trusted skeleton sweep over a terms file
@@ -98,6 +100,7 @@ fn dispatch(argv: &[String]) -> Result<(), String> {
         "adjudicate" => adjudicate::run(rest),
         "census" => census::run(rest),
         "solomonoff" => solomonoff::run(rest),
+        "omega" => omega::run(rest),
         "cert" => cert::run(rest),
         "q" => q::run(rest),
         "qalc" => qalc::run(rest),
@@ -148,6 +151,8 @@ mod tests {
             vec!["adjudicate"],
             vec!["census"],
             vec!["solomonoff"],
+            vec!["omega"],
+            vec!["omega", "leaves"],
             vec!["cert"],
             vec!["cert", "lean"],
             vec!["q"],

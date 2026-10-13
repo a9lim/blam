@@ -50,7 +50,7 @@ machine-recorded floors in `data/classical/speed_floors.txt`.
 census range. Both endpoints are exact rationals in `data/classical/omega.txt`:
 
 ```text
-0.125347188165688 <= Omega <= 0.125985262981611     Omega = 0.001000000...
+0.125480569931844 <= Omega <= 0.125985262981611     Omega = 0.001000000...
 ```
 
 That pins nine bits. The census alone pins two.
@@ -59,25 +59,37 @@ That pins nine bits. The census alone pins two.
   certified bound on the closed-term Kraft mass beyond it. That bound comes
   from an exactly checked recursion over binder depth: all closed terms sum
   to at most 0.126002847974358.
-- **Lower bound.** Census halting mass, plus 1.242×10⁻³ of certified weakly
-  normalizing mass at sizes 42..240, 66.2% of that range.
+- **Lower bound.** Census halting mass, plus 1.375×10⁻³ of certified weakly
+  normalizing mass at sizes 42..240, 73.3% of that range.
   - **How it is counted.** An exact integer DP counts a sound label function.
     Its rules are: neutral spines, neutral substitution, R10, erasing redexes,
-    and projections. Its leaves are every closed term ≤28 bits, normalized
-    (`omega_leaves.txt`).
-  - **Margin.** Sizes 42..64 alone already clear 1/8.
+    and projections.
+  - **Its leaves.** `blam omega leaves 41` judges every term once, through its
+    minimal closure on the census ladder. It covers every closed term ≤41 bits
+    in 3.9 minutes.
+  - **Margin.** Sizes 42..59 alone already clear 1/8.
 - **Verification.**
-  - The Python normalizer agrees with `blam normalize` on 15,069 terms.
+  - The leaf halt counts equal the census at every size.
   - The brute-force checker matches every DP array exactly over 8.4M term
     instances, with no unsound label.
-  - Codex audited independently: a named-variable normalizer rebuilt the leaf
-    table, and an array check covered 831k instances.
-- **Bit 10 is open.** It is 0 iff Ω < 1/8 + 2⁻¹⁰. Proving that takes 8.70×10⁻⁶
-  of certified non-normalizing mass beyond 41 bits.
-  - **Estimate.** Sampling puts the true value near 1.1×10⁻⁵, so bit 10 is
-    probably 0.
-  - **Current reach.** Propagating divergence from small divergent cores
-    certifies only 3.7×10⁻⁷ (HL=28).
+  - Codex audited independently: the leaf table, the DP arrays, and the Rust
+    instrument.
+- **Bit 10 is open, and statistically almost certainly 0.** This rests on
+  8M uniform samples of 42–300 bits on the full ladder
+  (`data/classical/omega_estimate.txt`).
+  - **Where Ω is.** Ω ≈ 0.1259743, 2.2×10⁻⁶ *below* 129/1024. The
+    optimistic end is 43 SE below even with every larger term and UNKNOWN
+    counted as halting.
+  - **Likely expansion.** 0.00100000001111111101….
+  - **What a proof needs.** 8.70×10⁻⁶ of certified non-normalizing mass beyond
+    41 bits, which is 80.2% of the divergent tail.
+- **Prover probes** (`tools/omega/divergence.py`, per term, on mass-weighted
+  divergent samples):
+  - **Propagation from cores.** With leaves at horizon 41 it reaches 11%.
+    Divergence cores are 50–80 bits.
+  - **Böhm trees truncated at depth 5–7.** Abstract evaluation reaches 81–82%,
+    with zero false certifications. It cannot be counted as it stands: its
+    label alphabet grows exponentially.
 
 ### The coding theorem
 
@@ -262,13 +274,16 @@ The artifacts are in `data/golf/machines/`.
 6. For discrete Solomonoff induction, measure Church bit-list decode coverage
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
-7. Ω's tenth bit needs a divergence prover that sees non-normalization arise
-   from redexes between parts that normalize separately (ω-style
-   self-application). Propagating divergence from small divergent cores
-   through strict contexts falls short by about 23×
-   (`classical/omega.md` §6). The WN side has slack: a horizon-41 leaf table
-   or a rule for normal-form bodies whose bound variable is never applied
-   would raise the lower bound, but no bit depends on that.
+7. Ω's tenth bit (`classical/omega.md` §6). Per term, truncated-Böhm-tree
+   evaluation certifies about 81% of the divergent tail, and 80.2% is needed.
+   What's missing is a *countable* version. There are two candidates:
+   - a coarse behaviour abstraction that keeps the self-application
+     structure, with its per-term coverage measured first;
+   - regular invariant languages closed under rewriting (Endrullis–Zantema
+     style), counted by a DP over automaton states.
+
+   If bit 10 falls, bits 11–13 need halting coverage of 73.6%, 86.6% and
+   93.1% (it is 73.3% now).
 
 ## Quantum state
 

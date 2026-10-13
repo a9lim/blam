@@ -172,6 +172,7 @@ says how to get them rather than pretending they do not exist.
 | `adjudicate` | the same ladder on one term or a file of them, verbosely |
 | `normalize` | normalize a closed term on the KN machine |
 | `solomonoff` | Solomonoff prior m(x), prefix complexity K(x), two-sided Ω bounds — exact 2⁻⁶⁴-unit arithmetic — plus the speed-prior (Levin) surface: S(x), Kt(x), depth⁰(x), certified Ω_speed brackets, and time spectra in exact 2⁻¹²⁸ units |
+| `omega leaves` | leaf tables for the certified bounds on the true Ω: every closed term ≤ MAX bits on the census ladder, each open term judged once through its minimal closure |
 | `cert search` *(lab)* | divergence-certificate discovery sweep over a frontier file |
 | `cert lean` | emit the certificate kills as Lean 4 modules for kernel checking |
 | `cert diag` *(lab)* | where the discovery pipeline drops a term, stage by stage |
@@ -260,8 +261,12 @@ the true halting probability over all sizes. That pins its first nine binary
 digits (`docs/classical/omega.md`):
 
 ```text
-Omega in [0.125347188166, 0.125985262982]  =  0.001000000...
+Omega in [0.125480569932, 0.125985262982]  =  0.001000000...
 ```
+
+An 8M-sample estimate on the full ladder puts Ω at 0.1259743, which is
+2.2×10⁻⁶ below the tenth bit's threshold. That makes the tenth bit 0 almost
+certainly, though it is not yet proven.
 
 The same sweep measures the coding theorem on BLC's own machine
 (`docs/classical/coding.md`).

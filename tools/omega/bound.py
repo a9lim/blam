@@ -5,7 +5,7 @@ and the binary digits they pin (docs/classical/omega.md).
 Lower bound: the census's witnessed halting mass through 41 bits, plus the
 exact Kraft mass of terms of sizes 42..N certified weakly normalizing by the
 label function of omega.md, counted by an exact integer DP over leaf tables
-from leaves.py.
+from `blam omega leaves HL`.
 
 Upper bound: census halting plus frontier mass through 41 bits, plus a
 certified bound on the closed-term Kraft mass beyond 41 bits. That bound comes
@@ -27,6 +27,9 @@ def read_leaves(path):
         if line.startswith("#"):
             if "HL=" in line:
                 hl = int(line.split("HL=")[1].split()[0])
+                if " sizes " in line:   # a leaf table must cover the complete horizon 4..HL
+                    lo, hi = line.split(" sizes ")[1].split()[0].split("..")
+                    assert (int(lo), int(hi)) == (4, hl), ("not a complete leaf table", lo, hi, hl)
             continue
         p = line.split()
         if p[0] == "A":
@@ -182,8 +185,9 @@ def main():
     N = int(opt("--max", "240"))
     hl, A, H, leaf_halt = read_leaves(args[0])
     closed, halt = census(opt("--census", "data/classical/census_table.txt"))
-    for n, c in leaf_halt.items():
-        assert halt.get(n) == c, ("leaf table disagrees with census", n, c, halt.get(n))
+    # Halt counts must equal the census's at every size of the horizon.
+    for n in range(4, hl + 1):
+        assert leaf_halt.get(n, 0) == halt.get(n, 0), ("leaf table disagrees with census", n, leaf_halt.get(n), halt.get(n))
     frontier = [line.strip() for line in open(opt("--unknowns", "data/classical/unknowns.txt"))
                 if line.strip() and not line.startswith("#")]
     top = max(closed)

@@ -41,7 +41,11 @@ work; do not duplicate its moving state here.
   `scripts/omega-regen.sh`, `scripts/coding-regen.sh`, and
   `scripts/qalc-census-extend.sh`.
   `data/classical/omega.txt` (the bits of the true Ω) reads the census table
-  and frontier, so rerun its script whenever either moves. The qALC
+  and frontier, so rerun its script whenever either moves. Its leaf table comes
+  from `blam omega leaves 41`, which judges each open term once, through its
+  minimal closure. bound.py's leaf/structural subtraction needs that
+  depth-independent predicate, so don't reintroduce per-closure judgements.
+  `scripts/omega-estimate.sh` is a statistical estimate, not a certificate. The qALC
   finite-clock convergence record is in `data/qalc/`.
 
 ## Conventions that will bite you
