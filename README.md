@@ -213,7 +213,8 @@ Engine knobs are flags on the ladder subcommands: `--work-mult`
 adjudication) and `--probe-fuel` (the redloop probe's β budget), with
 `BLC_WORK_MULT` / `BLC_PROBE_FUEL` honoured as fallbacks. The standing
 measurement protocols are encoded in `scripts/` (spot-check, census
-regeneration, Ω/K regeneration, certificate re-certification).
+regeneration, Ω/K regeneration, the bits of the true Ω, certificate
+re-certification).
 
 ## Verification
 
@@ -251,6 +252,15 @@ as:
 
 ```text
 Omega|<=41 in [0.124105086764, 0.124105092895]
+```
+
+Past the census range, a certified count of normalizing terms beyond 41
+bits, together with an exact bound on the closed-term Kraft mass, brackets
+the true halting probability over all sizes. That pins its first nine binary
+digits (`docs/classical/omega.md`):
+
+```text
+Omega in [0.125347188166, 0.125985262982]  =  0.001000000...
 ```
 
 The classical self-interpreter's VAR, ABS, and APP slots are exhaustively

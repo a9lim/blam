@@ -44,6 +44,41 @@ machine-recorded floors in `data/classical/speed_floors.txt`.
   is 31; the largest `Kt-K` penalty is 10. Per-output values live in
   `data/classical/solomonoff_table.txt`.
 
+### Bits of the true Ω
+
+`classical/omega.md` certifies bounds on Ω over *all* sizes, not just the
+census range. Both endpoints are exact rationals in `data/classical/omega.txt`:
+
+```text
+0.125347188165688 <= Omega <= 0.125985262981611     Omega = 0.001000000...
+```
+
+That pins nine bits. The census alone pins two.
+
+- **Upper bound.** Census halting plus frontier mass through 41 bits, plus a
+  certified bound on the closed-term Kraft mass beyond it. That bound comes
+  from an exactly checked recursion over binder depth: all closed terms sum
+  to at most 0.126002847974358.
+- **Lower bound.** Census halting mass, plus 1.242×10⁻³ of certified weakly
+  normalizing mass at sizes 42..240, 66.2% of that range.
+  - **How it is counted.** An exact integer DP counts a sound label function.
+    Its rules are: neutral spines, neutral substitution, R10, erasing redexes,
+    and projections. Its leaves are every closed term ≤28 bits, normalized
+    (`omega_leaves.txt`).
+  - **Margin.** Sizes 42..64 alone already clear 1/8.
+- **Verification.**
+  - The Python normalizer agrees with `blam normalize` on 15,069 terms.
+  - The brute-force checker matches every DP array exactly over 8.4M term
+    instances, with no unsound label.
+  - Codex audited independently: a named-variable normalizer rebuilt the leaf
+    table, and an array check covered 831k instances.
+- **Bit 10 is open.** It is 0 iff Ω < 1/8 + 2⁻¹⁰. Proving that takes 8.70×10⁻⁶
+  of certified non-normalizing mass beyond 41 bits.
+  - **Estimate.** Sampling puts the true value near 1.1×10⁻⁵, so bit 10 is
+    probably 0.
+  - **Current reach.** Propagating divergence from small divergent cores
+    certifies only 3.7×10⁻⁷ (HL=28).
+
 ### Divergence certificates and Lean
 
 `data/certificates/ratchet_kills.tsv` contains 305 checked kills: 214 Ratchet,
@@ -203,6 +238,13 @@ The artifacts are in `data/golf/machines/`.
 6. For discrete Solomonoff induction, measure Church bit-list decode coverage
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
+7. Ω's tenth bit needs a divergence prover that sees non-normalization arise
+   from redexes between parts that normalize separately (ω-style
+   self-application). Propagating divergence from small divergent cores
+   through strict contexts falls short by about 23×
+   (`classical/omega.md` §6). The WN side has slack: a horizon-41 leaf table
+   or a rule for normal-form bodies whose bound variable is never applied
+   would raise the lower bound, but no bit depends on that.
 
 ## Quantum state
 
