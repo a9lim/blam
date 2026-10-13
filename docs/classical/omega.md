@@ -354,6 +354,18 @@ measured with the same probe before any DP is built. On these measurements
 the target is at the edge of what per-term Böhm-tree evaluation reaches, so
 the coarsening has little room to lose.
 
+The obvious coarsening fails. The only sound one replaces labels with holes,
+so the natural finite alphabet is "the K most frequent labels".
+- **Setup.** Label frequencies are learned from the subterms of 3,000 random
+  terms (D = 4, labels capped at 64 nodes).
+- **Result.** Keeping every one of the 21,267 observed labels certifies only
+  12.9% of the divergent tail, and the top 1,000 only 6.5%. Unrestricted
+  evaluation reaches 78.6%.
+- **Reading.** The certifying labels form a long tail: divergence lives in
+  rare, specific shapes. A countable prover needs states that track
+  *structural* features, not semantic values. Merging variables is not
+  sound, so it cannot be the coarsening either.
+
 **A different route is regular invariants (Codex's suggestion; untested).**
 Endrullis and Zantema prove non-termination with regular tree languages that
 are closed under rewriting and disjoint from normal forms, synthesized by SAT

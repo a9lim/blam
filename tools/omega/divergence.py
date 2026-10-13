@@ -9,6 +9,9 @@ are feasibility measurements, not certificates: a count over all terms is
 still required.
 
   bt D [NS]         abstract evaluation over Böhm trees truncated at depth D
+  alphabet D [NS]   the same, with labels restricted to the K most frequent
+                    (learned from random terms' subterms, capped at 64 nodes;
+                    all others become holes) for several K
   propagate HL [NS] the label DP's propagation rules, with leaves decided by
                     blam's ladder up to horizon HL
 
@@ -163,6 +166,51 @@ class BohmEval:
         return None
 
 
+class RestrictedEval(BohmEval):
+    """Labels outside a fixed alphabet (keyed by binder depth) become holes: a sound coarsening."""
+
+    def __init__(self, D, cap=64, alpha=None):
+        super().__init__(D)
+        self.cap, self.alpha, self.freq = cap, alpha, collections.Counter()
+
+    def evk(self, t, memo, k=0):
+        key = (t, k)
+        if key in memo:
+            return memo[key]
+        if t[0] == 0:
+            r = t
+        elif t[0] == 1:
+            b = self.evk(t[1], memo, k + 1)
+            r = BOT if b == BOT else self.reduce((1, b), self.D)
+        else:
+            f, a = self.evk(t[1], memo, k), self.evk(t[2], memo, k)
+            r = BOT if f == BOT else self.reduce((2, f, a), self.D)
+        if r not in (BOT, HOLE) and nodes(r) > self.cap:
+            r = HOLE
+        if self.alpha is None:
+            self.freq[(k, r)] += 1
+        elif r not in (BOT, HOLE) and (k, r) not in self.alpha:
+            r = HOLE
+        memo[key] = r
+        return r
+
+    def verdict(self, t):
+        v = self.evk(t, {})
+        if v == BOT:
+            return "U"
+        st = [v]
+        while st:
+            u = st.pop()
+            if u == BOT:
+                return "D"
+            if u[0] == 1:
+                st.append(u[1])
+            elif u[0] == 2:
+                st.append(u[1])
+                st.append(u[2])
+        return None
+
+
 def parse(bits, i=0):
     if bits[i:i + 2] == "00":
         b, j = parse(bits, i + 2)
@@ -290,6 +338,19 @@ def main():
     path, nmax, mode, arg = sys.argv[1], int(sys.argv[2]), sys.argv[3], int(sys.argv[4])
     ns = int(sys.argv[5]) if len(sys.argv) > 5 else 1000
     terms = weighted_divergent(path, nmax, ns)
+    if mode == "alphabet":
+        S, rng = Sampler(nmax), random.Random(5)
+        sizes = list(range(42, nmax + 1))
+        train = [parse(S.sample(n, rng))[0] for n in rng.choices(sizes, weights=[S.mass(n) for n in sizes], k=3000)]
+        learn = RestrictedEval(arg)
+        for t in train:
+            learn.evk(t, {})
+        ranked = [lab for lab, _ in learn.freq.most_common()]
+        for K in (100, 1000, len(ranked)):
+            R = RestrictedEval(arg, alpha=set(ranked[:K]))
+            res = collections.Counter(R.verdict(t) for t in terms)
+            print(f"alphabet {arg}: top {K} of {len(ranked)} labels -> certified {(res['U'] + res['D']) / ns:.1%}")
+        return
     if mode == "bt":
         E = BohmEval(arg)
         res = collections.Counter(E.verdict(t) for t in terms)

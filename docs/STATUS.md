@@ -90,6 +90,9 @@ That pins nine bits. The census alone pins two.
   - **Böhm trees truncated at depth 5–7.** Abstract evaluation reaches 81–82%,
     with zero false certifications. It cannot be counted as it stands: its
     label alphabet grows exponentially.
+  - **Restricting to frequent labels collapses it.** With all 21k labels
+    observed in random terms it reaches only 12.9%, so the certifying labels
+    form a long tail.
 
 ### The coding theorem
 
@@ -276,11 +279,12 @@ The artifacts are in `data/golf/machines/`.
    streams belong to the separate monotone-machine `ref/AIT` lane.
 7. Ω's tenth bit (`classical/omega.md` §6). Per term, truncated-Böhm-tree
    evaluation certifies about 81% of the divergent tail, and 80.2% is needed.
-   What's missing is a *countable* version. There are two candidates:
-   - a coarse behaviour abstraction that keeps the self-application
-     structure, with its per-term coverage measured first;
-   - regular invariant languages closed under rewriting (Endrullis–Zantema
-     style), counted by a DP over automaton states.
+   What's missing is a *countable* version. A frequency-capped label alphabet
+   fails: it reaches 13%, because the certifying labels form a long tail.
+   - **Leading candidate:** regular invariant languages closed under
+     rewriting (Endrullis–Zantema style), whose automaton states track
+     structure, counted by a DP over (size, depth, state). Measure their
+     per-term coverage first.
 
    If bit 10 falls, bits 11–13 need halting coverage of 73.6%, 86.6% and
    93.1% (it is 73.3% now).
