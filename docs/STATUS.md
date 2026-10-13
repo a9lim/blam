@@ -512,12 +512,14 @@ and generated `native_decide` evaluations are explicit trust boundaries.
   Older cache files are invalid and must be regenerated. No canonical file in
   `data/` uses either format.
 - CI checks formatting, warning-free Clippy, release tests with all/default/no
-  default features on Ubuntu and macOS, `uni.rs` parity, the classical census
+  default features on Ubuntu and macOS, the classical census
   spot-check, Lean certificates, qALC fixture determinism, and `ref/AIT`
   additivity. The exhaustive qALC Python and Lean batteries are explicit local
   proof-surface checks.
-- `ref/AIT` is pinned to the additive a9lim/AIT fork. Only
-  `contrib/ait-uni/verify.sh` reads it.
+- `ref/AIT` is pinned to the additive a9lim/AIT fork. CI reads it only for
+  the additivity check; `tools/golf/sweep.py` reads its corpus locally.
+  The fork's `uni-rs` and `golf` branches carry the upstream PRs, drafted in
+  `contrib/PR_KIT.md`; a9 sends them.
 
 ### Accepted operational risks
 

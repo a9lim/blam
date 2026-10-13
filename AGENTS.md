@@ -18,9 +18,11 @@ work; do not duplicate its moving state here.
   additivity). Treat it read-only here; fork changes
   happen in their own clone, land on the fork's master, then a deliberate pin
   bump. Initialize with `git submodule update --init`.
-  `contrib/ait-uni/verify.sh` is the only thing in the tree that reads it —
+  Nothing in CI reads it beyond the additivity check, and
   `tests/tromp_vectors.rs` inlines its vectors, so the whole test suite
-  passes without the clone.
+  passes without the clone. `tools/golf/sweep.py` reads its `.lam` corpus
+  locally. `contrib/PR_KIT.md` holds the drafts for the upstream PRs (the
+  fork's `uni-rs` and `golf` branches); a9 sends them.
 - The verification bar for any engine change is `cargo test --release
   --all-features` *and* a plain `cargo test --release` (the no-lab dispatcher
   arms only exist under default features), then a census spot-check

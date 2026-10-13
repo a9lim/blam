@@ -42,7 +42,7 @@ research instruments (`lab::*`), the untrusted certificate-discovery
 surface, and the subcommands built on them.
 
 For the full lab — canonical data tables, the Lean formalization, and
-Tromp's reference corpus for the `uni.rs` parity harness:
+Tromp's reference corpus that the golf sweep reads:
 
 ```bash
 git clone --recurse-submodules https://github.com/a9lim/blam
@@ -226,8 +226,8 @@ regeneration, Ω/K regeneration, certificate re-certification).
   published A114852 count and BBλ value in range is reproduced
   exactly. The `ref/AIT` submodule — the
   [a9lim/AIT](https://github.com/a9lim/AIT) fork, pinned at upstream
-  plus one additive commit, additivity enforced in CI — backs the
-  `uni.rs` parity harness in `contrib/ait-uni/`.
+  plus one additive commit, additivity enforced in CI — is the corpus the
+  golf sweep reads.
 - The certificate soundness battery is a crate unit test rather than an
   integration test, so plain `cargo test` streams every provable halter
   ≤28 bits through all four trusted checkers and asserts nothing fires.
@@ -333,7 +333,7 @@ report.
 - `qalc/` — accepted Python/Lean qALC reference, proof records, batteries, and
   generated finite evidence.
 - `tools/` — reusable utilities and analyzers.
-- `contrib/ait-uni/` — portable `uni.rs` upstream kit and parity harness.
+- `contrib/PR_KIT.md` — drafts for the upstream tromp/AIT pull requests.
 - `ref/AIT` — pinned Tromp corpus and execution oracles.
 
 The crates.io package ships the engine and drivers (`src/`, `examples/`, this
