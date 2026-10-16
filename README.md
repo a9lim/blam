@@ -247,14 +247,14 @@ re-certification).
 ## Selected results
 
 The complete classical census covers 526,039,969 closed terms through 41
-bits. With kernel-checked exclusions it establishes **BBλ(33) = 1,812** and
-**BBλ(34) = 327,686 normal-form bits**; the exhaustive census itself remains
-a Rust computation. The proofs formalize Tromp's hand arguments
+bits. With kernel-checked adjudications it establishes **BBλ(33) = 1,812**,
+**BBλ(34) = 327,686**, and **BBλ(35) = 38,127,987,424,941 normal-form bits**;
+the exhaustive census itself remains a Rust computation. The proofs formalize Tromp's hand arguments
 ([proof record](docs/classical/certificates/busy-beaver.md)). It also gives
-BBλ(41) >= 1,074,266,118 bits and brackets the finite-range halting mass as:
+BBλ(41) >= 38,127,987,424,947 bits and brackets the finite-range halting mass as:
 
 ```text
-Omega|<=41 in [0.124105086763, 0.124105091889]
+Omega|<=41 in [0.124105086841, 0.124105091271]
 ```
 
 Past the census range, a certified count of normalizing terms beyond 41

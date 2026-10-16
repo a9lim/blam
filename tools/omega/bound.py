@@ -2,7 +2,7 @@
 """Certified bounds on the true halting probability Omega of closed BLC terms,
 and the binary digits they pin (docs/classical/omega.md).
 
-Lower bound: the census's witnessed halting mass through 41 bits, plus the
+Lower bound: the census and separately certified halting mass through 41 bits, plus the
 exact Kraft mass of terms of sizes 42..N certified weakly normalizing by the
 label function of omega.md, counted by an exact integer DP over leaf tables
 from `blam omega leaves HL`.
@@ -12,13 +12,18 @@ certified bound on the closed-term Kraft mass beyond 41 bits. That bound comes
 from rational q_k >= U_k (U_k = Kraft mass of terms valid at depth k),
 each checked exactly against V_k + q_{k+1}/4 + q_k^2/4 <= q_k.
 
-usage: bound.py LEAVES [--max N] [--census FILE] [--unknowns FILE] [--brief]
+usage: bound.py LEAVES [--max N] [--census FILE] [--unknowns FILE]
+                [--halts FILE] [--floors FILE] [--brief]
 """
 
 import sys
 from collections import defaultdict
 from fractions import Fraction
 from math import isqrt
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "certificates"))
+from bb import census_unknowns, halting_sizes
 
 
 def read_leaves(path):
@@ -162,12 +167,33 @@ def depth_mass_bound(K=80, digits=40):
 
 def census(path):
     halt, closed = {}, {}
-    for line in open(path):
+    for line in Path(path).read_text().splitlines():
         p = line.split()
         if line.startswith("#") or len(p) < 5 or not p[0].isdigit():
             continue
         closed[int(p[0])], halt[int(p[0])] = int(p[1]), int(p[2])
     return closed, halt
+
+
+def certified_census(args):
+    """Join raw measurements and separately certified halters without overlap.
+
+    The complete raw-unknown floor inventory is pinned to the supplied census
+    by every per-size count and printed witness. A future census that already
+    recognizes a halter must regenerate that inventory and its certificates.
+    """
+    opt = lambda name, d: (args[args.index(name) + 1] if name in args else d)
+    census_path = Path(opt("--census", "data/classical/census_table.txt"))
+    closed, halt = census(census_path)
+    raw = set(census_unknowns(census_path,
+              Path(opt("--floors", "data/classical/speed_floors.txt")), check_prior=False))
+    frontier = [s for s in Path(opt("--unknowns", "data/classical/unknowns.txt")).read_text().splitlines()
+                if s and not s.startswith("#")]
+    halters = halting_sizes(Path(opt("--halts", "data/certificates/bb_halts.tsv")))
+    assert len(frontier) == len(set(frontier)), "duplicate frontier term"
+    assert halters.keys() <= raw, "certified halter is not a raw census unknown"
+    assert set(frontier) <= raw - halters.keys(), "frontier/halter inventory mismatch"
+    return closed, halt, frontier, halters
 
 
 def binary(x, n):
@@ -192,12 +218,10 @@ def main():
     opt = lambda name, d: (args[args.index(name) + 1] if name in args else d)
     N = int(opt("--max", "240"))
     hl, A, H, leaf_halt = read_leaves(args[0])
-    closed, halt = census(opt("--census", "data/classical/census_table.txt"))
+    closed, halt, frontier, halters = certified_census(args)
     # Halt counts must equal the census's at every size of the horizon.
     for n in range(4, hl + 1):
         assert leaf_halt.get(n, 0) == halt.get(n, 0), ("leaf table disagrees with census", n, leaf_halt.get(n), halt.get(n))
-    frontier = [line.strip() for line in open(opt("--unknowns", "data/classical/unknowns.txt"))
-                if line.strip() and not line.startswith("#")]
     top = max(closed)
 
     arr = certified_counts(hl, A, H, N)
@@ -207,19 +231,21 @@ def main():
         assert T0[n] == closed[n], ("closed-term count disagrees with census", n)
     two = lambda n: Fraction(1, 2 ** n)
     halt_mass = sum(halt[n] * two(n) for n in halt)
+    extra_halt_mass = sum(two(len(p)) for p in halters)
     frontier_mass = sum(two(len(p)) for p in frontier)
     closed_mass = sum(closed[n] * two(n) for n in closed)
     tail_cert = sum(cert[n] * two(n) for n in range(top + 1, N + 1))
     tail_all = sum(T0[n] * two(n) for n in range(top + 1, N + 1))
     U0 = depth_mass_bound()
-    lower = halt_mass + tail_cert
-    upper = halt_mass + frontier_mass + (U0 - closed_mass)
+    lower = halt_mass + extra_halt_mass + tail_cert
+    upper = halt_mass + extra_halt_mass + frontier_mass + (U0 - closed_mass)
     assert lower <= upper
     lb, ub = binary(lower, 48), binary(upper, 48)
     pinned = next(i for i in range(48) if lb[i] != ub[i])
 
     print(f"# blam omega bound: leaves HL={hl}, certified sizes {top + 1}..{N}, census 4..{top}")
     print(f"census halting mass (4..{top})        = {float(halt_mass):.15f}")
+    print(f"certified extra halting mass         = {float(extra_halt_mass):.15f}  ({len(halters)} terms)")
     print(f"census frontier mass (4..{top})       = {float(frontier_mass):.6e}  ({len(frontier)} terms)")
     print(f"closed Kraft mass (4..{top})          = {float(closed_mass):.15f}")
     print(f"closed Kraft mass, all sizes         <= {decimal_bound(U0, True)}")

@@ -1,18 +1,22 @@
-# BBλ(33) and BBλ(34): checked exclusions
+# BBλ(33), BBλ(34), and BBλ(35): checked adjudications
 
-The exhaustive census and the divergence proofs together give
+The exhaustive census and the halting/divergence proofs together give
 
 ```
 BBλ(33) = 1,812 normal-form bits
-BBλ(34) = 327,686 normal-form bits.
+BBλ(34) = 327,686 normal-form bits
+BBλ(35) = 38,127,987,424,941 normal-form bits.
 ```
 
 Here BBλ(n) maximizes the BLC wire size of a full β-normal form over
 closed programs of **exactly n bits**. It is not the step-count busy beaver.
 The census had two unresolved programs at 33 bits and ten at 34; the
 34-bit lambda wrap of loop32 was already a checked Ratchet exclusion.
-The eleven remaining programs now each have a Lean proof of
-`¬ HasNormalForm`, including their exact wire identity.
+The eleven remaining programs each have a Lean proof of
+`¬ HasNormalForm`, including their exact wire identity. At 35 bits, the next
+eighteen frontier programs split into sixteen divergent programs and two
+halters whose outputs exceed the ladder's resource limits. All eighteen now
+have kernel-checked adjudications.
 
 **Proof boundary.** Lean checks these exclusions under arbitrary β reduction,
 not merely divergence of a bounded evaluator. The exhaustive enumeration,
@@ -20,12 +24,12 @@ previously adjudicated programs, and maximum-output measurements still rely
 on the Rust census. This is the same boundary as the established BBλ(32)
 result; it is not an end-to-end formalization of the census.
 
-**Attribution.** Tromp's checked-in `ref/AIT/BB/BB.txt`, around lines 65–118,
+**Attribution.** Tromp's checked-in `ref/AIT/BB/BB.txt`, around lines 65–258,
 already gives hand arguments for these programs. The contribution here is
 their formalization, reusable proof machinery, and integration into the
 project's certificate accounting, rather than new busy-beaver values.
 
-## The eleven seeds
+## The eleven 33/34-bit seeds
 
 The input ledger is `data/certificates/bb_seeds.tsv`. Names below are in
 the Lean `Blc` namespace; the listed proof files live under `lean/Blc/`.
@@ -145,29 +149,84 @@ the cycle lifts through every previously accumulated trailing argument.
 `BB34Spine.lean` proves the tower descent, vector concatenation, and
 unbounded productive milestone sequence.
 
+## The eighteen 35-bit cases
+
+The sixteen divergent seeds are recorded in `bb_seeds.tsv`:
+
+| module | cases | mechanism |
+|---|---:|---|
+| `BB35Pump` | 7 | open payload pumps, including hidden self-application |
+| `BB35Productive` | 4 | productive rigid arguments, left-payload pump, identity tower |
+| `BB35Spine` | 4 | growing application spines over `T x y = y (x y)` |
+| `BB35Reentry` | 1 | reentry towers with explicit identity wrappers |
+
+The spine proofs retain every trailing argument. The reentry proof includes
+identity wrappers in its inductive family so that each recurrence follows
+actual head reduction. An infinite arbitrary-beta path alone would not
+establish absence of a normal form.
+
+`Confluence.lean` proves Church–Rosser by Takahashi complete development and
+parallel reduction. It justifies finite beta preprocessing before an
+established no-normal-form result, and proves uniqueness of the two halters'
+normal forms. No evaluator or normalization assumption is added.
+
+The halting ledger `bb_halt_seeds.tsv` has these exact results:
+
+| input | normal-form bits | proof |
+|---|---:|---|
+| `01000101101010000001110011100110110` | 4,186,155,666 | `BB35Large` |
+| `01000101101010000001110011100111010` | 38,127,987,424,941 | `BB35Church` |
+
+For the champion, write `C_n = λf x. f^n x`. Its 35-bit source is
+`(λx. x x x) C_3`, which reduces to `C_27 C_3`, hence to `C_(3^27)`.
+`BB35Church.lean` proves the general positive-exponent rule
+`C_n C_m →* C_(m^n)`, normality, and `|C_n| = 5n+6`. Therefore its exact
+output size is `5 × 3^27 + 6 = 38,127,987,424,941` bits. The proof works with
+the symbolic numeral parameter; it never materializes the output.
+
+For the other halter, `A x y = x (x (y x))` and the source is
+`(λx. x x x) A`. `tools/certificates/bb35_large.py` emits a compositional
+shared-syntax certificate. Lean checks every shift, substitution, beta
+reduction, normality, and size equation. The final normal form has only
+296 distinct subtrees despite its 4,186,155,666-bit tree encoding. Sharing
+compresses the proof and its representation, not the claimed BLC size.
+The generator is untrusted; ordinary kernel checking takes a few seconds.
+
+Both certificates prove existence of a normal form and the stated size of
+**every** normal form. They certify no beta or transition clock: memoized
+generator work is not the engine's reduction count.
+
 ## Reproduction and accounting
 
 ```
 sh scripts/bb-regen.sh
-sh scripts/spot-check.sh 4 34
+python tools/certificates/bb35_large.py --check
+sh scripts/spot-check.sh 4 35
 cd lean && lake build Certs BusyBeaver
 ```
 
 The BB protocol regenerates `lean/BusyBeaver.lean` and the derived
-`data/certificates/bb_kills.tsv` from the seed ledger and the complete raw
+`data/certificates/bb_kills.tsv` and `bb_halts.tsv` from the two seed ledgers
+and the complete raw
 census unknown inventory. Each seed and every matching outer-lambda wrap
 gets a certificate containing its term, literal bits, wire equality,
-closedness, and no-normal-form proof. The kill ledger installs only after
+closedness, and either a no-normal-form proof or normal-form existence plus
+an exact output-size proof. The kill ledger installs only after
 kernel checking and auditing the aggregate certificate's axioms.
 
-There are 46 such exclusions through 41 bits. Lambda wrapping preserves
+There are 110 such exclusions and eight certified halters through 41 bits. Lambda wrapping preserves
 absence of a normal form by inversion of beta reduction under a lambda.
-The canonical frontier subtracts both certificate ledgers; the raw census
+The canonical frontier subtracts both divergence ledgers and the halting
+ledger; the raw census
 rows stay unchanged. `data/classical/certificate_bounds.txt` checks the
 subtraction identity and computes exact finite Ω and directed-rounded speed
-trims from the recorded per-program floors. `scripts/omega-regen.sh
+trims from the recorded per-program floors. Certified halters add their full
+Kraft mass to both finite-Ω endpoints, while removing the same mass from the
+frontier; their unclocked speed contributions retain the raw upper floors.
+The true-Ω computation adds the halter mass separately and leaves its existing
+leaf table and conservative tail DP unchanged. `scripts/omega-regen.sh
 --reuse-leaves` refreshes the true-Ω bound without rerunning unchanged ladder
-leaf judgments. CI checks the generated proof registry and exact bounds.
+leaf judgments. CI checks both generators, the proof registry, and exact bounds.
 
 The remaining frontier and next work live in `docs/STATUS.md`. No new
 automatic discovery class or census-engine special case is introduced by

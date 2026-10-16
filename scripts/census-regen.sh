@@ -1,9 +1,9 @@
 #!/bin/sh
 # Regenerate the canonical census table and the unknown frontier
 # (AGENTS.md, Ground rules: regenerate, never hand-edit). The frontier
-# is the raw census unknowns minus the certificate kills in
-# data/certificates/{ratchet_kills,bb_kills}.tsv; the subtraction identity
-# (raw = frontier + kills present, zero overlap) is reported.
+# is the raw census unknowns minus the checked adjudications in
+# data/certificates/{ratchet_kills,bb_kills,bb_halts}.tsv; the subtraction
+# identity (raw = frontier + adjudications present, zero overlap) is reported.
 #
 # The 4..40 prefix is about six minutes wall on the M5 Max under the
 # two-phase group scheduler (two 2026-08-07 runs, 323.6 s and 397.9 s;
@@ -45,13 +45,14 @@ fi
 {
     cut -f2 data/certificates/ratchet_kills.tsv
     awk '!/^#/ && NF {print $1}' data/certificates/bb_kills.tsv
+    awk '!/^#/ && NF {print $1}' data/certificates/bb_halts.tsv
 } | sort -u > "$OUT/kill_bits.txt"
 grep -vxF -f "$OUT/kill_bits.txt" "$OUT/raw_unknowns.txt" > "$OUT/unknowns.txt" || true
 RAW=$(wc -l < "$OUT/raw_unknowns.txt")
 FIN=$(wc -l < "$OUT/unknowns.txt")
 sort "$OUT/raw_unknowns.txt" > "$OUT/raw_sorted.txt"
 HIT=$(comm -12 "$OUT/raw_sorted.txt" "$OUT/kill_bits.txt" | wc -l)
-echo "census-regen: raw unknowns $RAW; certificate kills present $HIT; frontier $FIN"
+echo "census-regen: raw unknowns $RAW; certified adjudications present $HIT; frontier $FIN"
 if [ "$RAW" -ne $((FIN + HIT)) ]; then
     echo "census-regen: SUBTRACTION MISMATCH — investigate before installing" >&2
     exit 1

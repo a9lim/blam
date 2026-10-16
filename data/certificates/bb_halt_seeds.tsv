@@ -1,0 +1,3 @@
+# bits	module	term	normalizes	nf_size_proof	nf_bits
+01000101101010000001110011100110110	Blc.BB35Large	Blc.BB35Large.target	Blc.BB35Large.hasNormalForm	Blc.BB35Large.exact_normalForm_size	4186155666
+01000101101010000001110011100111010	Blc.BB35Church	Blc.BB35Church.term	Blc.BB35Church.normalizes	Blc.BB35Church.normalFormSize	38127987424941

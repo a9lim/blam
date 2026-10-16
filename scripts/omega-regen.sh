@@ -3,7 +3,7 @@
 # data/classical/omega_leaves.txt (leaf tables from every closed term <= 41 bits
 # on the census ladder, ~4 min) and data/classical/omega.txt (exact lower and
 # upper bounds and the pinned bits, ~20 s). Reads data/classical/census_table.txt
-# and unknowns.txt; regenerate those first if the census moves.
+# and unknowns.txt plus the checked bb_halts.tsv ledger; regenerate those first.
 # --reuse-leaves is for a certificate-only frontier trim: the census and
 # ladder leaf judgments did not change. bound.py rechecks leaf halt counts.
 # Usage: omega-regen.sh [HL] [MAX] | --reuse-leaves (default 41 240)

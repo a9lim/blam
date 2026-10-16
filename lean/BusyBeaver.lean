@@ -4,6 +4,12 @@ import Blc.BB33Second
 import Blc.BB34
 import Blc.BB34Compose
 import Blc.BB34Spine
+import Blc.BB35Church
+import Blc.BB35Large
+import Blc.BB35Productive
+import Blc.BB35Pump
+import Blc.BB35Reentry
+import Blc.BB35Spine
 import Blc.NormalOrder
 import Blc.Wire
 
@@ -21,10 +27,42 @@ theorem wrap_noNormalForm {t : Term} (h : ¬ HasNormalForm t) :
       rintro ⟨nf, hred, hnf⟩
       exact wrap_noNormalForm h n (lam_betas_nf hred hnf rfl)
 
+theorem wrap_hasNormalForm {t : Term} (h : HasNormalForm t) :
+    ∀ n, HasNormalForm (wrap n t)
+  | 0 => h
+  | n + 1 => by
+      obtain ⟨nf, hr, hn⟩ := wrap_hasNormalForm h n
+      refine ⟨.lam nf, betas_lam hr, ?_⟩
+      intro u hu
+      cases hu with
+      | lam hu => exact hn _ hu
+
+theorem wrap_nfSize {t : Term} {size : Nat}
+    (h : ∀ {nf}, Betas t nf → NormalForm nf → (blcCode nf).length = size)
+    (n : Nat) {nf : Term} (hr : Betas (wrap n t) nf) (hn : NormalForm nf) :
+    (blcCode nf).length = size + 2*n := by
+  induction n generalizing nf with
+  | zero => exact h hr hn
+  | succ n ih =>
+      obtain ⟨b, rfl, hb⟩ := lam_betas_shape hr
+      have hbn : NormalForm b := fun u hu => hn _ (Beta.lam hu)
+      have hs := ih hb hbn
+      simp only [blcCode, List.length_cons]
+      omega
+
 structure Certificate where
   term : Term
   bits : List Bool
   noNormalForm : ¬ HasNormalForm term
+  wire : blcCode term = bits
+  closed : Closed term
+
+structure HaltingCertificate where
+  term : Term
+  bits : List Bool
+  nfBits : Nat
+  normalizes : HasNormalForm term
+  nfSize : ∀ {nf}, Betas term nf → NormalForm nf → (blcCode nf).length = nfBits
   wire : blcCode term = bits
   closed : Closed term
 
@@ -119,6 +157,118 @@ def c00010001101000011000000110011110110 : Certificate where
   wire := by decide
   closed := by decide
 
+def c01000101100010100000011100101101010 : Certificate where
+  term := wrap 0 Blc.BB35Pump.Reentry.target
+  bits := [false, true, false, false, false, true, false, true, true, false, false, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, false, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.Reentry.noNormalForm 0
+  wire := by decide
+  closed := by decide
+
+def c01000101101010000001110010110110110 : Certificate where
+  term := wrap 0 Blc.BB35Pump.RightTwice.target
+  bits := [false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.RightTwice.noNormalForm 0
+  wire := by decide
+  closed := by decide
+
+def c01000101101010000001110010111010110 : Certificate where
+  term := wrap 0 Blc.BB35Pump.BothSides.target
+  bits := [false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, true, false, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.BothSides.noNormalForm 0
+  wire := by decide
+  closed := by decide
+
+def c01000101101010000001110011001110110 : Certificate where
+  term := wrap 0 Blc.BB35Pump.HiddenSquare.target4
+  bits := [false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, false, true, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.HiddenSquare.noNormalForm4 0
+  wire := by decide
+  closed := by decide
+
+def c01000110011000000110011101000011010 : Certificate where
+  term := wrap 0 Blc.BB35Spine.target7
+  bits := [false, true, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false, false, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm7 0
+  wire := by decide
+  closed := by decide
+
+def c01000110011000000111001101000011010 : Certificate where
+  term := wrap 0 Blc.BB35Pump.DoubleSquare.target8
+  bits := [false, true, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, false, false, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.DoubleSquare.noNormalForm8 0
+  wire := by decide
+  closed := by decide
+
+def c01000110011010000001110011001110110 : Certificate where
+  term := wrap 0 Blc.BB35Pump.HiddenSquare.target9
+  bits := [false, true, false, false, false, true, true, false, false, true, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, false, true, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.HiddenSquare.noNormalForm9 0
+  wire := by decide
+  closed := by decide
+
+def c01000110100000010111001011010110110 : Certificate where
+  term := wrap 0 Blc.BB35Productive.RepeatRight.target
+  bits := [false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, false, true, true, true, false, false, true, false, true, true, false, true, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.RepeatRight.noNormalForm 0
+  wire := by decide
+  closed := by decide
+
+def c01000110100000011001011101100110110 : Certificate where
+  term := wrap 0 Blc.BB35Productive.ApplyRight.target
+  bits := [false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, false, true, true, true, false, true, true, false, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.ApplyRight.noNormalForm 0
+  wire := by decide
+  closed := by decide
+
+def c01000110100000011001011101100111010 : Certificate where
+  term := wrap 0 Blc.BB35Productive.ApplyLeft.target
+  bits := [false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, false, true, true, true, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.ApplyLeft.noNormalForm 0
+  wire := by decide
+  closed := by decide
+
+def c01000110100001011000000110011101010 : Certificate where
+  term := wrap 0 Blc.BB35Spine.Reentry.target
+  bits := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.Reentry.noNormalForm 0
+  wire := by decide
+  closed := by decide
+
+def c01000110100001011000100001100111010 : Certificate where
+  term := wrap 0 Blc.BB35Reentry.target
+  bits := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, false, false, true, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Reentry.noNormalForm 0
+  wire := by decide
+  closed := by decide
+
+def c01000110100001100001011000100111010 : Certificate where
+  term := wrap 0 Blc.BB35Productive.IdentityTower.target
+  bits := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, true, false, false, false, false, true, false, true, true, false, false, false, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.IdentityTower.noNormalForm 0
+  wire := by decide
+  closed := by decide
+
+def c01000110100001100110000001100111010 : Certificate where
+  term := wrap 0 Blc.BB35Spine.target16
+  bits := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm16 0
+  wire := by decide
+  closed := by decide
+
+def c01000110100100011010000001100111010 : Certificate where
+  term := wrap 0 Blc.BB35Spine.target17
+  bits := [false, true, false, false, false, true, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm17 0
+  wire := by decide
+  closed := by decide
+
+def c01000110100100011010000001110011010 : Certificate where
+  term := wrap 0 Blc.BB35Pump.DoubleSquare.target18
+  bits := [false, true, false, false, false, true, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.DoubleSquare.noNormalForm18 0
+  wire := by decide
+  closed := by decide
+
 def c000100010101101010100000011100110110 : Certificate where
   term := wrap 1 Blc.BB34Binary.T2
   bits := [false, false, false, true, false, false, false, true, false, true, false, true, true, false, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, true, false]
@@ -193,6 +343,118 @@ def c0000010001101000011000000110011110110 : Certificate where
   term := wrap 2 Blc.BB33Second.target
   bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, true, false, true, true, false]
   noNormalForm := wrap_noNormalForm Blc.BB33Second.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c0001000101100010100000011100101101010 : Certificate where
+  term := wrap 1 Blc.BB35Pump.Reentry.target
+  bits := [false, false, false, true, false, false, false, true, false, true, true, false, false, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, false, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.Reentry.noNormalForm 1
+  wire := by decide
+  closed := by decide
+
+def c0001000101101010000001110010110110110 : Certificate where
+  term := wrap 1 Blc.BB35Pump.RightTwice.target
+  bits := [false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.RightTwice.noNormalForm 1
+  wire := by decide
+  closed := by decide
+
+def c0001000101101010000001110010111010110 : Certificate where
+  term := wrap 1 Blc.BB35Pump.BothSides.target
+  bits := [false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, true, false, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.BothSides.noNormalForm 1
+  wire := by decide
+  closed := by decide
+
+def c0001000101101010000001110011001110110 : Certificate where
+  term := wrap 1 Blc.BB35Pump.HiddenSquare.target4
+  bits := [false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, false, true, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.HiddenSquare.noNormalForm4 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110011000000110011101000011010 : Certificate where
+  term := wrap 1 Blc.BB35Spine.target7
+  bits := [false, false, false, true, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false, false, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm7 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110011000000111001101000011010 : Certificate where
+  term := wrap 1 Blc.BB35Pump.DoubleSquare.target8
+  bits := [false, false, false, true, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, false, false, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.DoubleSquare.noNormalForm8 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110011010000001110011001110110 : Certificate where
+  term := wrap 1 Blc.BB35Pump.HiddenSquare.target9
+  bits := [false, false, false, true, false, false, false, true, true, false, false, true, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, false, true, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.HiddenSquare.noNormalForm9 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110100000010111001011010110110 : Certificate where
+  term := wrap 1 Blc.BB35Productive.RepeatRight.target
+  bits := [false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, false, true, true, true, false, false, true, false, true, true, false, true, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.RepeatRight.noNormalForm 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110100000011001011101100110110 : Certificate where
+  term := wrap 1 Blc.BB35Productive.ApplyRight.target
+  bits := [false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, false, true, true, true, false, true, true, false, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.ApplyRight.noNormalForm 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110100000011001011101100111010 : Certificate where
+  term := wrap 1 Blc.BB35Productive.ApplyLeft.target
+  bits := [false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, false, true, true, true, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.ApplyLeft.noNormalForm 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110100001011000000110011101010 : Certificate where
+  term := wrap 1 Blc.BB35Spine.Reentry.target
+  bits := [false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.Reentry.noNormalForm 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110100001011000100001100111010 : Certificate where
+  term := wrap 1 Blc.BB35Reentry.target
+  bits := [false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, false, false, true, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Reentry.noNormalForm 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110100001100001011000100111010 : Certificate where
+  term := wrap 1 Blc.BB35Productive.IdentityTower.target
+  bits := [false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, true, false, false, false, false, true, false, true, true, false, false, false, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.IdentityTower.noNormalForm 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110100001100110000001100111010 : Certificate where
+  term := wrap 1 Blc.BB35Spine.target16
+  bits := [false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm16 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110100100011010000001100111010 : Certificate where
+  term := wrap 1 Blc.BB35Spine.target17
+  bits := [false, false, false, true, false, false, false, true, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm17 1
+  wire := by decide
+  closed := by decide
+
+def c0001000110100100011010000001110011010 : Certificate where
+  term := wrap 1 Blc.BB35Pump.DoubleSquare.target18
+  bits := [false, false, false, true, false, false, false, true, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.DoubleSquare.noNormalForm18 1
   wire := by decide
   closed := by decide
 
@@ -273,6 +535,118 @@ def c000000010001101000011000000110011110110 : Certificate where
   wire := by decide
   closed := by decide
 
+def c000001000101100010100000011100101101010 : Certificate where
+  term := wrap 2 Blc.BB35Pump.Reentry.target
+  bits := [false, false, false, false, false, true, false, false, false, true, false, true, true, false, false, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, false, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.Reentry.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c000001000101101010000001110010110110110 : Certificate where
+  term := wrap 2 Blc.BB35Pump.RightTwice.target
+  bits := [false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.RightTwice.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c000001000101101010000001110010111010110 : Certificate where
+  term := wrap 2 Blc.BB35Pump.BothSides.target
+  bits := [false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, true, false, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.BothSides.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c000001000101101010000001110011001110110 : Certificate where
+  term := wrap 2 Blc.BB35Pump.HiddenSquare.target4
+  bits := [false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, false, true, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.HiddenSquare.noNormalForm4 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110011000000110011101000011010 : Certificate where
+  term := wrap 2 Blc.BB35Spine.target7
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false, false, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm7 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110011000000111001101000011010 : Certificate where
+  term := wrap 2 Blc.BB35Pump.DoubleSquare.target8
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, false, false, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.DoubleSquare.noNormalForm8 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110011010000001110011001110110 : Certificate where
+  term := wrap 2 Blc.BB35Pump.HiddenSquare.target9
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, false, true, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, false, true, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.HiddenSquare.noNormalForm9 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110100000010111001011010110110 : Certificate where
+  term := wrap 2 Blc.BB35Productive.RepeatRight.target
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, false, true, true, true, false, false, true, false, true, true, false, true, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.RepeatRight.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110100000011001011101100110110 : Certificate where
+  term := wrap 2 Blc.BB35Productive.ApplyRight.target
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, false, true, true, true, false, true, true, false, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.ApplyRight.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110100000011001011101100111010 : Certificate where
+  term := wrap 2 Blc.BB35Productive.ApplyLeft.target
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, false, true, true, true, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.ApplyLeft.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110100001011000000110011101010 : Certificate where
+  term := wrap 2 Blc.BB35Spine.Reentry.target
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.Reentry.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110100001011000100001100111010 : Certificate where
+  term := wrap 2 Blc.BB35Reentry.target
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, false, false, true, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Reentry.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110100001100001011000100111010 : Certificate where
+  term := wrap 2 Blc.BB35Productive.IdentityTower.target
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, true, false, false, false, false, true, false, true, true, false, false, false, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.IdentityTower.noNormalForm 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110100001100110000001100111010 : Certificate where
+  term := wrap 2 Blc.BB35Spine.target16
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm16 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110100100011010000001100111010 : Certificate where
+  term := wrap 2 Blc.BB35Spine.target17
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm17 2
+  wire := by decide
+  closed := by decide
+
+def c000001000110100100011010000001110011010 : Certificate where
+  term := wrap 2 Blc.BB35Pump.DoubleSquare.target18
+  bits := [false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.DoubleSquare.noNormalForm18 2
+  wire := by decide
+  closed := by decide
+
 def c0000000100010101101010100000011100110110 : Certificate where
   term := wrap 3 Blc.BB34Binary.T2
   bits := [false, false, false, false, false, false, false, true, false, false, false, true, false, true, false, true, true, false, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, true, false]
@@ -350,6 +724,118 @@ def c00000000010001101000011000000110011110110 : Certificate where
   wire := by decide
   closed := by decide
 
+def c00000001000101100010100000011100101101010 : Certificate where
+  term := wrap 3 Blc.BB35Pump.Reentry.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, false, true, true, false, false, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, false, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.Reentry.noNormalForm 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000101101010000001110010110110110 : Certificate where
+  term := wrap 3 Blc.BB35Pump.RightTwice.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.RightTwice.noNormalForm 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000101101010000001110010111010110 : Certificate where
+  term := wrap 3 Blc.BB35Pump.BothSides.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, false, true, true, true, false, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.BothSides.noNormalForm 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000101101010000001110011001110110 : Certificate where
+  term := wrap 3 Blc.BB35Pump.HiddenSquare.target4
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, false, true, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.HiddenSquare.noNormalForm4 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110011000000110011101000011010 : Certificate where
+  term := wrap 3 Blc.BB35Spine.target7
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false, false, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm7 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110011000000111001101000011010 : Certificate where
+  term := wrap 3 Blc.BB35Pump.DoubleSquare.target8
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, false, false, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.DoubleSquare.noNormalForm8 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110011010000001110011001110110 : Certificate where
+  term := wrap 3 Blc.BB35Pump.HiddenSquare.target9
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, false, true, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, false, true, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.HiddenSquare.noNormalForm9 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110100000010111001011010110110 : Certificate where
+  term := wrap 3 Blc.BB35Productive.RepeatRight.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, false, true, true, true, false, false, true, false, true, true, false, true, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.RepeatRight.noNormalForm 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110100000011001011101100110110 : Certificate where
+  term := wrap 3 Blc.BB35Productive.ApplyRight.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, false, true, true, true, false, true, true, false, false, true, true, false, true, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.ApplyRight.noNormalForm 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110100000011001011101100111010 : Certificate where
+  term := wrap 3 Blc.BB35Productive.ApplyLeft.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, false, true, true, true, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.ApplyLeft.noNormalForm 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110100001011000000110011101010 : Certificate where
+  term := wrap 3 Blc.BB35Spine.Reentry.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.Reentry.noNormalForm 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110100001011000100001100111010 : Certificate where
+  term := wrap 3 Blc.BB35Reentry.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, true, true, false, false, false, true, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Reentry.noNormalForm 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110100001100001011000100111010 : Certificate where
+  term := wrap 3 Blc.BB35Productive.IdentityTower.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, true, false, false, false, false, true, false, true, true, false, false, false, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Productive.IdentityTower.noNormalForm 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110100001100110000001100111010 : Certificate where
+  term := wrap 3 Blc.BB35Spine.target16
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, true, true, false, false, true, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm16 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110100100011010000001100111010 : Certificate where
+  term := wrap 3 Blc.BB35Spine.target17
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, false, false, true, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Spine.noNormalForm17 3
+  wire := by decide
+  closed := by decide
+
+def c00000001000110100100011010000001110011010 : Certificate where
+  term := wrap 3 Blc.BB35Pump.DoubleSquare.target18
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, false, true, false]
+  noNormalForm := wrap_noNormalForm Blc.BB35Pump.DoubleSquare.noNormalForm18 3
+  wire := by decide
+  closed := by decide
+
 def certificates : List Certificate := [
   c010001011010100000011100101101010,
   c010001101000011000000110011110110,
@@ -364,6 +850,22 @@ def certificates : List Certificate := [
   c0100011010000001110000111001111010,
   c00010001011010100000011100101101010,
   c00010001101000011000000110011110110,
+  c01000101100010100000011100101101010,
+  c01000101101010000001110010110110110,
+  c01000101101010000001110010111010110,
+  c01000101101010000001110011001110110,
+  c01000110011000000110011101000011010,
+  c01000110011000000111001101000011010,
+  c01000110011010000001110011001110110,
+  c01000110100000010111001011010110110,
+  c01000110100000011001011101100110110,
+  c01000110100000011001011101100111010,
+  c01000110100001011000000110011101010,
+  c01000110100001011000100001100111010,
+  c01000110100001100001011000100111010,
+  c01000110100001100110000001100111010,
+  c01000110100100011010000001100111010,
+  c01000110100100011010000001110011010,
   c000100010101101010100000011100110110,
   c000100010110011010100000011100110110,
   c000100010110101000000101110100111010,
@@ -375,6 +877,22 @@ def certificates : List Certificate := [
   c000100011010000001110000111001111010,
   c0000010001011010100000011100101101010,
   c0000010001101000011000000110011110110,
+  c0001000101100010100000011100101101010,
+  c0001000101101010000001110010110110110,
+  c0001000101101010000001110010111010110,
+  c0001000101101010000001110011001110110,
+  c0001000110011000000110011101000011010,
+  c0001000110011000000111001101000011010,
+  c0001000110011010000001110011001110110,
+  c0001000110100000010111001011010110110,
+  c0001000110100000011001011101100110110,
+  c0001000110100000011001011101100111010,
+  c0001000110100001011000000110011101010,
+  c0001000110100001011000100001100111010,
+  c0001000110100001100001011000100111010,
+  c0001000110100001100110000001100111010,
+  c0001000110100100011010000001100111010,
+  c0001000110100100011010000001110011010,
   c00000100010101101010100000011100110110,
   c00000100010110011010100000011100110110,
   c00000100010110101000000101110100111010,
@@ -386,6 +904,22 @@ def certificates : List Certificate := [
   c00000100011010000001110000111001111010,
   c000000010001011010100000011100101101010,
   c000000010001101000011000000110011110110,
+  c000001000101100010100000011100101101010,
+  c000001000101101010000001110010110110110,
+  c000001000101101010000001110010111010110,
+  c000001000101101010000001110011001110110,
+  c000001000110011000000110011101000011010,
+  c000001000110011000000111001101000011010,
+  c000001000110011010000001110011001110110,
+  c000001000110100000010111001011010110110,
+  c000001000110100000011001011101100110110,
+  c000001000110100000011001011101100111010,
+  c000001000110100001011000000110011101010,
+  c000001000110100001011000100001100111010,
+  c000001000110100001100001011000100111010,
+  c000001000110100001100110000001100111010,
+  c000001000110100100011010000001100111010,
+  c000001000110100100011010000001110011010,
   c0000000100010101101010100000011100110110,
   c0000000100010110011010100000011100110110,
   c0000000100010110101000000101110100111010,
@@ -396,8 +930,108 @@ def certificates : List Certificate := [
   c0000000100011010000001100101110110011010,
   c0000000100011010000001110000111001111010,
   c00000000010001011010100000011100101101010,
-  c00000000010001101000011000000110011110110]
+  c00000000010001101000011000000110011110110,
+  c00000001000101100010100000011100101101010,
+  c00000001000101101010000001110010110110110,
+  c00000001000101101010000001110010111010110,
+  c00000001000101101010000001110011001110110,
+  c00000001000110011000000110011101000011010,
+  c00000001000110011000000111001101000011010,
+  c00000001000110011010000001110011001110110,
+  c00000001000110100000010111001011010110110,
+  c00000001000110100000011001011101100110110,
+  c00000001000110100000011001011101100111010,
+  c00000001000110100001011000000110011101010,
+  c00000001000110100001011000100001100111010,
+  c00000001000110100001100001011000100111010,
+  c00000001000110100001100110000001100111010,
+  c00000001000110100100011010000001100111010,
+  c00000001000110100100011010000001110011010]
 
-#print axioms certificates
+def h01000101101010000001110011100110110 : HaltingCertificate where
+  term := wrap 0 Blc.BB35Large.target
+  bits := [false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, true, false, false, true, true, false, true, true, false]
+  nfBits := 4186155666
+  normalizes := wrap_hasNormalForm Blc.BB35Large.hasNormalForm 0
+  nfSize := wrap_nfSize Blc.BB35Large.exact_normalForm_size 0
+  wire := by decide
+  closed := by decide
+
+def h01000101101010000001110011100111010 : HaltingCertificate where
+  term := wrap 0 Blc.BB35Church.term
+  bits := [false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, true, false, false, true, true, true, false, true, false]
+  nfBits := 38127987424941
+  normalizes := wrap_hasNormalForm Blc.BB35Church.normalizes 0
+  nfSize := wrap_nfSize Blc.BB35Church.normalFormSize 0
+  wire := by decide
+  closed := by decide
+
+def h0001000101101010000001110011100110110 : HaltingCertificate where
+  term := wrap 1 Blc.BB35Large.target
+  bits := [false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, true, false, false, true, true, false, true, true, false]
+  nfBits := 4186155668
+  normalizes := wrap_hasNormalForm Blc.BB35Large.hasNormalForm 1
+  nfSize := wrap_nfSize Blc.BB35Large.exact_normalForm_size 1
+  wire := by decide
+  closed := by decide
+
+def h0001000101101010000001110011100111010 : HaltingCertificate where
+  term := wrap 1 Blc.BB35Church.term
+  bits := [false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, true, false, false, true, true, true, false, true, false]
+  nfBits := 38127987424943
+  normalizes := wrap_hasNormalForm Blc.BB35Church.normalizes 1
+  nfSize := wrap_nfSize Blc.BB35Church.normalFormSize 1
+  wire := by decide
+  closed := by decide
+
+def h000001000101101010000001110011100110110 : HaltingCertificate where
+  term := wrap 2 Blc.BB35Large.target
+  bits := [false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, true, false, false, true, true, false, true, true, false]
+  nfBits := 4186155670
+  normalizes := wrap_hasNormalForm Blc.BB35Large.hasNormalForm 2
+  nfSize := wrap_nfSize Blc.BB35Large.exact_normalForm_size 2
+  wire := by decide
+  closed := by decide
+
+def h000001000101101010000001110011100111010 : HaltingCertificate where
+  term := wrap 2 Blc.BB35Church.term
+  bits := [false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, true, false, false, true, true, true, false, true, false]
+  nfBits := 38127987424945
+  normalizes := wrap_hasNormalForm Blc.BB35Church.normalizes 2
+  nfSize := wrap_nfSize Blc.BB35Church.normalFormSize 2
+  wire := by decide
+  closed := by decide
+
+def h00000001000101101010000001110011100110110 : HaltingCertificate where
+  term := wrap 3 Blc.BB35Large.target
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, true, false, false, true, true, false, true, true, false]
+  nfBits := 4186155672
+  normalizes := wrap_hasNormalForm Blc.BB35Large.hasNormalForm 3
+  nfSize := wrap_nfSize Blc.BB35Large.exact_normalForm_size 3
+  wire := by decide
+  closed := by decide
+
+def h00000001000101101010000001110011100111010 : HaltingCertificate where
+  term := wrap 3 Blc.BB35Church.term
+  bits := [false, false, false, false, false, false, false, true, false, false, false, true, false, true, true, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, true, true, true, false, false, true, true, true, false, true, false]
+  nfBits := 38127987424947
+  normalizes := wrap_hasNormalForm Blc.BB35Church.normalizes 3
+  nfSize := wrap_nfSize Blc.BB35Church.normalFormSize 3
+  wire := by decide
+  closed := by decide
+
+def haltingCertificates : List HaltingCertificate := [
+  h01000101101010000001110011100110110,
+  h01000101101010000001110011100111010,
+  h0001000101101010000001110011100110110,
+  h0001000101101010000001110011100111010,
+  h000001000101101010000001110011100110110,
+  h000001000101101010000001110011100111010,
+  h00000001000101101010000001110011100110110,
+  h00000001000101101010000001110011100111010]
+
+def audit := (certificates, haltingCertificates)
+
+#print axioms audit
 
 end BusyBeaver

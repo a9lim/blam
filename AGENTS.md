@@ -40,16 +40,20 @@ work; do not duplicate its moving state here.
   `scripts/census-regen.sh`, `scripts/solomonoff-regen.sh`,
   `scripts/omega-regen.sh`, `scripts/coding-regen.sh`, and
   `scripts/qalc-census-extend.sh`.
-  Direct BB exclusions are seeded in `data/certificates/bb_seeds.tsv`;
-  `scripts/bb-regen.sh` kernel-checks them and every census lambda wrap,
-  regenerates `bb_kills.tsv`, and refreshes the frontier and exact bounds.
+  Direct BB exclusions are seeded in `data/certificates/bb_seeds.tsv` and
+  exact halting outputs in `bb_halt_seeds.tsv`; `scripts/bb-regen.sh`
+  kernel-checks them and every census lambda wrap, regenerates `bb_kills.tsv`
+  and `bb_halts.tsv`, and refreshes the frontier and exact bounds. Certified
+  halters add mass to both finite-Ω endpoints while leaving the frontier;
+  without certified clocks they retain their raw speed upper floors. Their
+  mass must also enter both true-Ω endpoints; raw census/leaf counts stay fixed.
   `census-regen.sh --frontier-only` reuses the complete raw unknown inventory
   in `speed_floors.txt`, checked against census counts and all existing
-  frontier/certificate entries; the final frontier/kill union must match
+  frontier/certificate entries; the final frontier/diverger/halter partition must match
   exactly. The summary census table lists only 16 unknowns per size: never
   reconstruct the full frontier from its printed examples.
   `data/classical/omega.txt` (the bits of the true Ω) reads the census table
-  and frontier, so rerun its script whenever either moves. Its leaf table comes
+  and frontier plus `bb_halts.tsv`, so rerun its script whenever any moves. Its leaf table comes
   from `blam omega leaves 41`, which judges each open term once, through its
   minimal closure. bound.py's leaf/structural subtraction needs that
   depth-independent predicate, so don't reintroduce per-closure judgements.

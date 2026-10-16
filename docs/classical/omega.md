@@ -18,7 +18,7 @@ four bits he reported as `.0001` in 2009, is a different object.
 The certified interval is
 
 ```text
-0.125480569931843 <= Omega <= 0.125985261975710
+0.125480570009150 <= Omega <= 0.125985261357254
 ```
 
 Both endpoints are exact rationals, recorded in `omega.txt`. The interval lies
@@ -48,9 +48,12 @@ which is 2.2×10⁻⁶ *below* 129/1024. The likely expansion is
 Omega <= halt(<=41) + frontier(<=41) + (U_0 - closed(<=41))
 ```
 
-- **halt** and **closed** are the census's per-size counts
-  (`census_table.txt`), and **frontier** is the post-certificate unknown set
-  (`unknowns.txt`). The census's divergent terms are the only ones removed.
+- **halt** includes the census halters (`census_table.txt`) and the separately
+  checked halters in `certificates/bb_halts.tsv`; **closed** is the census
+  count. **frontier** is the post-certificate unknown set (`unknowns.txt`).
+  The three certificate ledgers partition the raw unknowns with that frontier:
+  certified halters move into halt, while certified divergers leave the upper
+  bound. The raw census and leaf tables stay unchanged.
 - **U_k is the Kraft mass of terms valid under k binders.** Its grammar has
   three parts:
   - variable mass V_k = (1 − 2⁻ᵏ)/2;

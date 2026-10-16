@@ -13,7 +13,8 @@ bracketed both ways. The exact parts are:
 Sizes above NMAX are extrapolated at the top window's rate; they carry about
 6e-7 of mass.
 
-usage: estimate.py VERDICTS NMAX [--resolve FILE] [--census FILE] [--unknowns FILE]
+usage: estimate.py VERDICTS NMAX [--resolve FILE] [--census FILE]
+                   [--unknowns FILE] [--halts FILE] [--floors FILE]
 
 --resolve FILE: verdict lines from a bigger-budget rerun of the UNKNOWN terms;
 they replace those terms' UNKNOWN verdicts.
@@ -68,13 +69,12 @@ def main():
     beyond = sum(S.mass(n) for n in range(NMAX + 1, NMAX + 201))
     se_lo, se_hi = math.sqrt(var_lo), math.sqrt(var_hi)
 
-    closed, halt = bound.census(opt("--census", "data/classical/census_table.txt"))
-    frontier = [line.strip() for line in open(opt("--unknowns", "data/classical/unknowns.txt"))
-                if line.strip() and not line.startswith("#")]
+    closed, halt, frontier, halters = bound.certified_census(args)
     two = lambda n: Fraction(1, 2 ** n)
     Cf = bound.depth_mass_bound()
     C = float(Cf)
-    d41 = float(sum((closed[n] - halt[n]) * two(n) for n in closed) - sum(two(len(p)) for p in frontier))
+    d41 = float(sum((closed[n] - halt[n]) * two(n) for n in closed)
+                - sum(two(len(p)) for p in halters) - sum(two(len(p)) for p in frontier))
     fr = float(sum(two(len(p)) for p in frontier))
     # Mass above NMAX + 200: at most C minus everything counted below it.
     resid = C - float(sum(closed[n] * two(n) for n in closed)) - sum(S.mass(n) for n in range(42, NMAX + 201))
