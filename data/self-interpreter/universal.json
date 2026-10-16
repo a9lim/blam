@@ -1,0 +1,429 @@
+{
+  "date": "2026-10-16",
+  "contract": "U (<M> ++ N) =beta M N for closed M and rigid N",
+  "reference_bits": 178,
+  "measurements": [
+    {
+      "case": "reference",
+      "raw_bits": 178,
+      "optimized_bits": 178,
+      "wire": "0101000110100001000001000001100000010111001101111001011111101001011010100001111000010111001111000000111100000010111011100110111100111110000111110000101111010011101001101000011010",
+      "max_program_bits": 18,
+      "ok": 667,
+      "skipped": 1,
+      "fail": 0
+    },
+    {
+      "case": "period-two",
+      "raw_bits": 179,
+      "optimized_bits": 179,
+      "wire": "01000101101010000110000100000100000110000001011100110111100101111110100101101010000111100001011100111100000011110000001011101110011011110011111000011111000010111101001110100110110",
+      "max_program_bits": 18,
+      "ok": 667,
+      "skipped": 1,
+      "fail": 0
+    },
+    {
+      "case": "raw-suffix",
+      "raw_bits": 203,
+      "optimized_bits": 203,
+      "wire": "01010001101000010000010000011000000101110011011110010111111010100001111000010111001111000000111100000010111011100110111100001011111100001111110000101111101001110100101101010011010000001011101100101101010",
+      "max_program_bits": 18,
+      "ok": 667,
+      "skipped": 1,
+      "fail": 0
+    },
+    {
+      "case": "curried-context",
+      "raw_bits": 462,
+      "optimized_bits": 378,
+      "wire": "010101000110100001000000000111100000000111110000001011100110000101100101111111111100111111111100000000001010110000000010111111110011110100111010000001111110110010111110011110000000000101110111001101111011011111111001011111111111011111111100001011111111111101111111111000011111111111001011111111101101001011111111001011111100111110101110010110101001101000010101100010001000100010",
+      "max_program_bits": 18,
+      "ok": 667,
+      "skipped": 1,
+      "fail": 0
+    },
+    {
+      "case": "leaky-cell",
+      "raw_bits": 176,
+      "optimized_bits": 176,
+      "wire": "01010001101000010000010000011000000101110011011110010111111010010110101000011110000101110011110000001111000010110110000110111100111110000111110000101111010011101001101000011010",
+      "max_program_bits": 18,
+      "ok": 3,
+      "skipped": 1,
+      "fail": 664
+    },
+    {
+      "case": "environment-application",
+      "raw_bits": 174,
+      "optimized_bits": 174,
+      "wire": "010100011010000100000100000110000001011100110111100101111110100101101010000111100001011100111100000011110000001011101110011011110011111000011111000010110111011001101000011010",
+      "max_program_bits": 18,
+      "ok": 116,
+      "skipped": 1,
+      "fail": 551
+    },
+    {
+      "case": "diagonal-native",
+      "raw_bits": 174,
+      "optimized_bits": 165,
+      "wire": "010100011010000100000100000110000001011100110111100101111110100101101010000111100001011100111100000011110000110010111100000101100111110000111110011101001101000011010",
+      "max_program_bits": 18,
+      "ok": 86,
+      "skipped": 1,
+      "fail": 581
+    }
+  ],
+  "searches": [
+    {
+      "case": "app-value-output",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "23",
+        "--max2",
+        "12",
+        "--max-sum",
+        "26",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "5d7dda579216a35d797c7ab9299ddd08159354c9c500fa12d3b322095bce86f3",
+      "pairs": 115327,
+      "wall_seconds": 0.0,
+      "survivors": 0,
+      "unknown": 1
+    },
+    {
+      "case": "cell-output",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "28",
+        "--max2",
+        "12",
+        "--max-sum",
+        "31",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "aff6f9605e3f0698b82d0f4130ec6d978b229b0d9c60d2771d4715542cfdb02e",
+      "pairs": 2399246,
+      "wall_seconds": 0.6,
+      "survivors": 0,
+      "unknown": 3840
+    },
+    {
+      "case": "variable-output",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "26",
+        "--max2",
+        "12",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "b042e2e64ff2b710818d1e9963c2d5897eb36683779e59e6a4466bd506fe346e",
+      "pairs": 710347,
+      "wall_seconds": 0.1,
+      "survivors": 0,
+      "unknown": 1530
+    },
+    {
+      "case": "app-output",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "38",
+        "--max2",
+        "12",
+        "--max-sum",
+        "42",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "dffa470735e8366d3064ac8b1c2d9dc8a27dd43ea85e14c1acc5e91962616ae0",
+      "pairs": 2081609943,
+      "wall_seconds": 441.4,
+      "survivors": 0,
+      "unknown": 92578
+    },
+    {
+      "case": "spine-args-exp-exp2-left",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "094e33563d9448a3a4c5f0709d3c51f534abf888768281c3dab04dbc2e358bc3",
+      "pairs": 10217445,
+      "wall_seconds": 28.4,
+      "survivors": 0,
+      "unknown": 113723
+    },
+    {
+      "case": "spine-args-exp-exp2-right",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "5643a26489b002513aff0dab8810ac85878f810169534641053f15e83b22b211",
+      "pairs": 10217445,
+      "wall_seconds": 28.8,
+      "survivors": 0,
+      "unknown": 113750
+    },
+    {
+      "case": "spine-args-exp2-exp-left",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "9c395001de23978bf5d30b8adf30edf8683ce540c43d7c84d801cc0a2be25b69",
+      "pairs": 10217445,
+      "wall_seconds": 29.6,
+      "survivors": 0,
+      "unknown": 113731
+    },
+    {
+      "case": "spine-args-exp2-exp-right",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "91c4ab3f66f8c8d7c2ca79408306bd67bb2b264ef6fa20f32571346d6361307b",
+      "pairs": 10217445,
+      "wall_seconds": 30.4,
+      "survivors": 0,
+      "unknown": 113739
+    },
+    {
+      "case": "spine-exp-args-exp2-left",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "dcdb3f5d699d91e6a69d0e1c8444aa90213b32059daae4ec6c25ceebae3a89f1",
+      "pairs": 10217445,
+      "wall_seconds": 28.7,
+      "survivors": 0,
+      "unknown": 113731
+    },
+    {
+      "case": "spine-exp-args-exp2-right",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "2d032af0e9f8598912327f1cd464a8f0ea8fe3ab55b647130cbac790b687c4b6",
+      "pairs": 10217445,
+      "wall_seconds": 29.8,
+      "survivors": 0,
+      "unknown": 113747
+    },
+    {
+      "case": "spine-exp-exp2-args-left",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "5e599edaf83bdb7b77a36be0a5c3d382aa843efd984ec642b8ab649aaa56cac0",
+      "pairs": 10217445,
+      "wall_seconds": 29.7,
+      "survivors": 0,
+      "unknown": 113746
+    },
+    {
+      "case": "spine-exp-exp2-args-right",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "6de7d02cade0e5c7b9df4f934b83cf5cb5472e73f5b115842a96195ce9ea5d94",
+      "pairs": 10217445,
+      "wall_seconds": 28.5,
+      "survivors": 0,
+      "unknown": 113745
+    },
+    {
+      "case": "spine-exp2-args-exp-left",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "da73563e3ab45d2767a1c34f31203b5f6353abbd04a712523c217ed68725b4c3",
+      "pairs": 10217445,
+      "wall_seconds": 23.6,
+      "survivors": 0,
+      "unknown": 113743
+    },
+    {
+      "case": "spine-exp2-args-exp-right",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "582758ff77e2b7658c6cd9355e12f3bdd893b9ec473c950364cbb1cb76934040",
+      "pairs": 10217445,
+      "wall_seconds": 23.9,
+      "survivors": 0,
+      "unknown": 113738
+    },
+    {
+      "case": "spine-exp2-exp-args-left",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "860326a81a58302508d3209c23fcda5ee891f41c5b1a2d247f8383bdb470eaa0",
+      "pairs": 10217445,
+      "wall_seconds": 25.0,
+      "survivors": 0,
+      "unknown": 113739
+    },
+    {
+      "case": "spine-exp2-exp-args-right",
+      "max_machine_bits": 177,
+      "probes": 91,
+      "flags": [
+        "--max-size",
+        "27",
+        "--max2",
+        "27",
+        "--max-sum",
+        "29",
+        "--uni",
+        "--escalate",
+        "0"
+      ],
+      "template_sha256": "b2eefa0fdb47a62473d66bf67028494b6571f4a1c1a9def2a618f6091d44f73c",
+      "pairs": 10217445,
+      "wall_seconds": 24.0,
+      "survivors": 0,
+      "unknown": 113737
+    }
+  ],
+  "diagonal_cell": {
+    "maximum_bits": 15,
+    "generated": 539,
+    "relevant": 138,
+    "head_law_passes": 0,
+    "normalizer_agreements": 138,
+    "unknown": 0
+  },
+  "search_totals": {
+    "pairs": 2207444203,
+    "survivors": 0,
+    "unknown": 1462818
+  },
+  "scope": "Finite screens; UNKNOWN is not rejection. Different sketches can encode the same machine. The sole app-value-output UNKNOWN is the literal Omega value and is analytically rejected on I I."
+}

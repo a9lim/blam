@@ -5,7 +5,7 @@ and ordered next work. `README.md` is the stable public map; domain documents
 state durable contracts; canonical outputs live in `data/`. Superseded state is
 available from Git history rather than retained in the live documentation.
 
-Last updated: 2026-10-12.
+Last updated: 2026-10-16.
 
 ## Classical state
 
@@ -189,6 +189,18 @@ context around the 168's parser body:
   smaller either.
 
 Strict contexts of 39..43 bits (about 31 billion) remain.
+
+A U-specific protocol pass (Oct 16) leaves **178** unchanged. A new
+alternating-parser construction is 179 bits and passes all 667 terminating
+battery probes. Joint output/slot and APP/cell/variable searches screened
+2,207,444,203 assignments below 178, with no survivor and 1,462,818 unresolved
+caps; these are not an optimality proof or distinct-machine counts. The
+ordinary interpreter's rigid-C exclusions do not automatically transfer to
+U's diagonal output contract. `tools/self-interpreter/universal.py` reproduces
+the experiments; `data/self-interpreter/universal.json` records their bounds,
+counts and exact candidate encodings. The design record includes an algebraic
+obstruction: native application plus diagonal decoding requires an internal
+encoding that distinguishes some beta-equivalent source programs.
 
 A last push (`classical/self-interpreter/design.md`, "The last push")
 added two waves of independent design attempts, nine lenses in all,

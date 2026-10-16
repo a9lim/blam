@@ -434,17 +434,19 @@ cuts. `component` from the 178 to slack 20 has 8,527,620 terms, nothing
 below 178, and the two sharing forms as its only ties. From the 190 it has
 5,563,972 terms, with nothing below 190 and no tie.
 
-A contextual slot search under U's contract was not run. In U, the inner
-values, continuations, and environments are exactly those of the
-self-interpreter; only the top level differs, and the slots are shared
-between the top and every nested level. So a slot candidate correct on
-nested programs is correct at the top, and the self-interpreter's `ctx`
-results apply unchanged.
+The self-interpreter's contextual exclusions do not automatically transfer
+to U. The reference shares its inner implementation between both machines,
+but a replacement can exploit U's restricted continuations or change several
+interfaces together. In particular, the root environment under `dbl` is the
+parsed value itself: `dbl v = v v`. The U-specific experiments below check
+that weaker contract directly.
 
 ### Read
 
-Within wirings around this parser, 178 is optimal for the non-strict
-machine, with four tied wirings, and no strict machine is below 185. The
+Within the tested wirings around this parser, no smaller non-strict machine
+was found, and four wirings tie at 178. The unresolved capped candidates
+prevent an unconditional optimality claim. No strict survivor was found below
+185 in the tested range. The
 strict premium is a base environment with no normal form on lookup. The
 cheap alternatives (`dbl`, `F`, the parser's own handler) all return values
 or re-read input. Ω via a shared `dbl` (`\b. b (a a)`, 12 bits over the 178)
@@ -820,3 +822,121 @@ So the only shapes left open are co-designed protocols that none of these
 searches reach: a handler and continuation designed together with the
 knot, or explicit modes with separate continuation slots. Everything
 measured in those directions costs 30 bits or more over the 168.
+
+## Optimizing the 178 directly (2026-10-16)
+
+This pass targets the non-strict universal-machine contract, with a rigid
+remainder: `U (⌜M⌝ ++ N) =β M N` for closed `M`. It found no improvement.
+`tools/self-interpreter/universal.py` reproduces the retained constructions,
+joint searches, and a small exact algebraic exclusion. The measured record
+is `data/self-interpreter/universal.json`.
+
+### A 179-bit alternating parser
+
+Let `B p` denote the ordinary parser body with recursive entry `p`. Define
+
+```text
+A_x = λk. B (k x)
+F   = λx. x A_x
+E   = F F
+R   = A_(A_F) F
+U   = F F F = E F
+```
+
+Beta reduction gives `E = B R` and `R = B E`. Mutual structural induction
+on the parsed syntax therefore gives both E and R the ordinary parser law.
+Moreover, `F (λenv.M) = M` for closed M, so F is also the final universal
+continuation. The complete machine is **179 bits**, with 667 passing exact
+normal-form probes and one skipped non-normalizing expected result.
+
+This changes the recursive carrier, not just its external wiring. Of 93
+nearby consumer/knot variants, 16 passed a 91-program screen. Sharing their
+recursive heads yields minima of 178, 179 and 180; the 178 is the known tie.
+Another 235 locally supplied-head and 459 collapsed-generator variants below
+178 had no passing candidate at a 4,096-beta screen. Those two exploratory
+screens did not retain separate wrong/capped counts, so they are not
+exhaustive exclusions.
+
+### Concrete changes of representation
+
+The following optimized programs were checked against all closed programs
+through 18 bits plus deep-index extras. The expected result that lacks a
+normal form is skipped; these finite batteries alone are not universal proofs.
+
+| construction | raw → optimized bits | pass / fail |
+|---|---:|---:|
+| reference | 178 → 178 | 667 / 0 |
+| alternating parser | 179 → 179 | 667 / 0 |
+| forward raw final-variable suffix; skip at APP and output | 203 → 203 | 667 / 0 |
+| curried lexical context; ABS is semantic identity | 462 → 378 | 667 / 0 |
+| bare leaky cell | 176 → 176 | 3 / 664 |
+| environment performs APP | 174 → 174 | 116 / 551 |
+| diagonal cell with native APP | 174 → 165 | 86 / 581 |
+
+The raw-suffix protocol saves eight bits in VAR, spends seventeen at APP,
+and needs a different output continuation. It gains no laziness: under
+normal order the original `cont s (s s s)` already delays skipping. A term
+with A applications has A+1 variable leaves, matching A following-operand
+skips and one final skip.
+
+The curried-context compiler represents a term at depth d by abstraction
+over its d lexical arguments. Consequently ABS only advances the context;
+at depth zero the value is M itself and the output continuation is I. The
+generalized application, constant lifting and environment construction needed
+to maintain that context overwhelm the saving.
+
+The diagonal negative control uses
+`cell a e = λb r. b (e false a) r` and native APP `f g`. It correctly handles
+`λ1` and `λλ1`, but already fails `λλ2`. Its 165-bit optimized size is not a
+universal machine. The optimizer includes eta reduction; both handwritten
+and optimized forms were independently checked on those counterexamples.
+
+### Joint U-specific searches
+
+All of these search complete machines of at most 177 bits, on 91 rigid-tail
+probes, with no occurrence masks and no automatic escalation. UNKNOWN means
+resource-capped, not refuted. Counts are candidate assignments; different
+sketches can produce the same machine.
+
+| coupled changes | assignments | survivors | unknown |
+|---|---:|---:|---:|
+| APP value × closed output continuation | 115,327 | 0 | 1 |
+| cell × closed output continuation | 2,399,246 | 0 | 3,840 |
+| whole VAR × closed output continuation | 710,347 | 0 | 1,530 |
+| whole APP × closed output continuation | 2,081,609,943 | 0 | 92,578 |
+| twelve APP spines × cell × variable value | 122,609,340 | 0 | 1,364,869 |
+
+The output continuations range through 12 bits; each case's exact fill limits
+are in the driver and JSON. The twelve spines are both associations of all
+permutations of `env`, `f`, and `g`, each occurring once. Cell and variable
+value are searched jointly with a combined 29-bit budget, each at most 27.
+The sole APP-value/output cap is the literal Ω value with the ordinary
+output continuation; `I I` analytically rejects it. Other caps remain open.
+
+### Two algebraic constraints
+
+**Diagonal decoding does not make native application free.** Suppose an
+encoding e respects beta equivalence, translates application directly, and
+decodes diagonally:
+
+```text
+e(M N) = e(M) e(N)       e(M) e(M) = M
+```
+
+Then `e(I) = e(I I) = I` and `e(K K) = K`. Because `(K K) I = K`,
+`e(K) = e(K K)e(I) = K I`. But `(K I)(K I) = I`, contradicting the required
+diagonal result K. Thus a native-APP solution must retain some syntactic
+distinctions between beta-equivalent programs internally. The argument does
+not exclude such intensional encodings.
+
+**The cheap diagonal environment change is too costly.** With `h(e)=e e`,
+transform a reader into `λe.f(e e)`. VAR grows from two to eleven bits, so a
+replacement cell q must be at most fifteen bits even to tie. It needs
+`q q = cell x (e e)`. There are 539 terms through fifteen bits in the two
+ambient variables, of which 138 mention both required variables. None of
+those 138 even satisfies the weaker head law `q q K N = x`, with N rigid.
+All checks terminate; the Python and Rust normalizers agree exactly.
+
+The remaining opportunity is a coordinated representation using reachable
+relationships between control and values. These experiments narrow several
+specific implementations of that idea; they do not prove 178 minimal.
