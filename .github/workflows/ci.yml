@@ -112,8 +112,8 @@ jobs:
       - run: bash scripts/spot-check.sh 4 32
 
   lean:
-    # Kernel-check all 305 divergence certificates (zero sorries, no
-    # mathlib; ~2 s once the pinned toolchain is cached).
+    # Kernel-check both certificate ledgers and their exact wire identities;
+    # verify that generated exclusions and exact probability trims are current.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -125,8 +125,10 @@ jobs:
           key: lean-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain', 'lean/lake-manifest.json') }}
       - run: curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
       - run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - run: lake build Certs
+      - run: lake build Certs BusyBeaver
         working-directory: lean
+      - run: python3 tools/certificates/bb.py --check
+      - run: python3 tools/certificates/bounds.py | diff - data/classical/certificate_bounds.txt
 
   fork-additive:
     # The ref/AIT submodule is the a9lim/AIT fork: upstream tromp/AIT plus

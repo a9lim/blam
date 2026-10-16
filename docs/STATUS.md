@@ -17,14 +17,20 @@ Last updated: 2026-10-16.
   measurement is an upper bound from before the current two-phase scheduler.
   Single-thread KN throughput is about 166M beta contractions per second.
 - BBλ(41) is at least 1,074,266,118 normal-form bits. The sole n=32 ladder
-  unknown is a kernel-checked Ratchet diverger, so BBλ(32) is settled modulo
-  the certificate layer.
-- `data/classical/unknowns.txt` is the current certified frontier: 4,227 terms.
-  The identity `4,532 raw = 4,227 frontier + 305 certified kills` is checked by
-  regeneration.
+  unknown is a kernel-checked Ratchet diverger. Direct Lean proofs now close
+  all eleven remaining n=33/34 cases: **BBλ(33) = 1,812** and
+  **BBλ(34) = 327,686 normal-form bits**. These are exact-size values,
+  established by the exhaustive Rust census plus kernel-checked exclusions;
+  the census itself is not formalized. The arguments formalize Tromp's hand
+  notes (`classical/certificates/busy-beaver.md`).
+- `data/classical/unknowns.txt` is the current certified frontier: 4,181 terms,
+  starting at 35 bits. The identity
+  `4,532 raw = 4,181 frontier + 305 ratchet kills + 46 BB kills` is checked by
+  regeneration. The 46 are eleven seeds plus 35 outer-lambda wraps.
 - The finite-range halting mass is
-  `Omega|<=41 in [0.124105086764, 0.124105092895]`. Exact fractions and the
-  certificate trim are in `data/classical/solomonoff.txt`.
+  `Omega|<=41 in [0.124105086763, 0.124105091889]`. Raw measurements remain in
+  `data/classical/solomonoff.txt`; exact post-certificate fractions and speed
+  trims are in `data/classical/certificate_bounds.txt`.
 - Census runs support group checkpoints and cross-run memos. A delta run needs
   the canonical memo input for fate-identical attribution; checkpoint and memo
   formats are operational caches, not canonical data.
@@ -34,11 +40,11 @@ exact 2^-128 units. Its three clocks are beta contractions, transitions, and
 `honest = beta + |output|`. Unknowns contribute only to upper bounds, at the
 machine-recorded floors in `data/classical/speed_floors.txt`.
 
-- `Omega_speed(beta)|<=41 in [0.122396680340, 0.122396680346]`.
-- `Omega_speed(trans)|<=41` has width at most `6.9e-17`.
-- `Omega_speed(honest)|<=41 in [0.023402971976, 0.023402971981]`.
-- The post-certificate open masses are at most `5.926e-12` beta,
-  `5.113e-17` transitions, and `5.576e-12` honest.
+- `Omega_speed(beta)|<=41 in [0.122396680340, 0.122396680344]`.
+- `Omega_speed(trans)|<=41` has width at most `4.8e-17`.
+- `Omega_speed(honest)|<=41 in [0.023402971975, 0.023402971980]`.
+- The post-certificate open masses are at most `3.630e-12` beta,
+  `4.799e-17` transitions, and `3.414e-12` honest.
 - The deepest recorded computation uses 9,457,564 beta contractions and
   produces an 89,494,760-bit normal form. The largest measured `|x|-Kt` gain
   is 31; the largest `Kt-K` penalty is 10. Per-output values live in
@@ -50,7 +56,7 @@ machine-recorded floors in `data/classical/speed_floors.txt`.
 census range. Both endpoints are exact rationals in `data/classical/omega.txt`:
 
 ```text
-0.125480569931844 <= Omega <= 0.125985262981611     Omega = 0.001000000...
+0.125480569931843 <= Omega <= 0.125985261975710     Omega = 0.001000000...
 ```
 
 That pins nine bits. The census alone pins two.
@@ -99,8 +105,9 @@ That pins nine bits. The census alone pins two.
 `classical/coding.md` reads the coding theorem off the census, using the gap
 g(x) = K(x) + log₂ m(x). Its record is `data/classical/coding.txt`.
 
-- **The constant.** Certified c ≥ 3.689: every program shorter than 33 bits
-  is adjudicated, so K is exact for K ≤ 32, and m_N ≤ m.
+- **The constant.** Certified c ≥ 3.689 from the measured K ≤ 32 cohort.
+  The new BB exclusions extend exact K to K ≤ 34; the coding report has
+  not been rerun on that larger cohort. In either range, m_N ≤ m.
   - **Witness.** λ⁷.(7 7), a duplication break-even tie.
   - **Still growing.** The bound reads 3.011, 3.472 and 3.689 at N = 37, 39
     and 41, so it has not settled.
@@ -125,8 +132,20 @@ g(x) = K(x) + log₂ m(x). Its record is `data/classical/coding.txt`.
 rigid-head argument variants. Every kill is replayed above discovery budgets
 and emitted as an individual theorem in `lean/Certs/`.
 
-`lake build Certs` checks all 305 `not HasNormalForm` theorems and their wire
-identities. The Lean development has no sorries or mathlib dependency; its
+`data/certificates/bb_kills.tsv` adds 46 exclusions from eleven direct proofs
+and their lambda closures. Their mechanisms are arbitrary-open-payload head
+cycles, productive descent through a hypothetical finite normal form, and
+growing argument spines. `NormalOrder.lean` proves the productive-descent
+bridge while preserving the identity of the hypothetical normal form.
+
+`lake build Certs BusyBeaver` checks all 351 exclusions and their wire
+identities. `scripts/bb-regen.sh` also audits the generated BB registry's
+axioms, refreshes the frontier, and recomputes exact probability trims.
+A fresh census 4..34 is bit-identical to every canonical row, including
+halting counts and maximum normal-form sizes. Both release suites pass
+(326 tests with all features, 277 with default features; three opt-in tests
+remain ignored in the former). The Lean development has no
+sorries or mathlib dependency; its
 reported axioms are `propext` and `Quot.sound`. `classical::certificate` is the
 trusted checker layer; `blam cert search` and `blam cert diag` are untrusted
 discovery instruments. Diagnostic buckets are abort fingerprints, not semantic
@@ -271,6 +290,10 @@ differential.
 The artifacts are in `data/golf/machines/`.
 
 ### Classical docket
+
+The next BB boundary is n=35, with 18 unresolved programs. The new head-cycle
+and productive-descent proofs are reusable starting points; no search beyond
+the eleven n=33/34 seeds and their pure lambda wraps was claimed here.
 
 1. Derive a selector/zfirst certificate class from a concrete frontier trace
    and finite recurrence; never promote a diagnostic bucket by itself.

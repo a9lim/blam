@@ -240,19 +240,21 @@ re-certification).
   `--all-features`, default features, and `--no-default-features` — so
   the lab targets, the no-lab dispatcher arms, and the im-rc-only
   library are each exercised.
-- Every one of the 305 certificate kills is an individually
+- Every certificate exclusion is an individually
   kernel-checked `¬HasNormalForm` theorem in Lean 4 (zero sorries, no
   mathlib), pinned to its wire bits by a kernel-checked encoding.
 
 ## Selected results
 
 The complete classical census covers 526,039,969 closed terms through 41
-bits. It gives BBλ(41) >= 1,074,266,118 bits, settles BBλ(32) modulo the
-kernel-checked certificate layer, and brackets the finite-range halting mass
-as:
+bits. With kernel-checked exclusions it establishes **BBλ(33) = 1,812** and
+**BBλ(34) = 327,686 normal-form bits**; the exhaustive census itself remains
+a Rust computation. The proofs formalize Tromp's hand arguments
+([proof record](docs/classical/certificates/busy-beaver.md)). It also gives
+BBλ(41) >= 1,074,266,118 bits and brackets the finite-range halting mass as:
 
 ```text
-Omega|<=41 in [0.124105086764, 0.124105092895]
+Omega|<=41 in [0.124105086763, 0.124105091889]
 ```
 
 Past the census range, a certified count of normalizing terms beyond 41
@@ -261,7 +263,7 @@ the true halting probability over all sizes. That pins its first nine binary
 digits (`docs/classical/omega.md`):
 
 ```text
-Omega in [0.125480569932, 0.125985262982]  =  0.001000000...
+Omega in [0.125480569931, 0.125985261976]  =  0.001000000...
 ```
 
 An 8M-sample estimate on the full ladder puts Ω at 0.1259743, which is

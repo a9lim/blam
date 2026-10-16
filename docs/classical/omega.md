@@ -18,7 +18,7 @@ four bits he reported as `.0001` in 2009, is a different object.
 The certified interval is
 
 ```text
-0.125480569931844 <= Omega <= 0.125985262981611
+0.125480569931843 <= Omega <= 0.125985261975710
 ```
 
 Both endpoints are exact rationals, recorded in `omega.txt`. The interval lies

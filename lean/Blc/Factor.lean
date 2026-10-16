@@ -213,6 +213,19 @@ theorem normalForm_headStep_none {t : Term} (h : NormalForm t) :
   | none => rfl
   | some v => exact absurd (beta_of_headStep (headStep_sound hs)) (h v)
 
+/-- Head factorization retaining the SAME normal form. Its identity is
+needed for strict normal-form-size descent in Blc.NormalOrder. -/
+theorem headFactorizes_nf {t nf : Term} (hred : Betas t nf)
+    (hnf : NormalForm nf) :
+    ∃ k p, headSteps k t = some p ∧ headStep p = none ∧ Betas p nf := by
+  induction hred with
+  | refl t => exact ⟨0, t, rfl, normalForm_headStep_none hnf, Betas.refl t⟩
+  | head hb _ ih =>
+      obtain ⟨k, p, hk, hp, hpn⟩ := ih hnf
+      obtain ⟨n, hn⟩ := beta_par hb
+      obtain ⟨k', q, hq, hqn, m, hqp⟩ := parN_head_pullback k hn hk hp
+      exact ⟨k', q, hq, hqn, betas_trans (parN_betas hqp) hpn⟩
+
 /-- Head factorization with transport: a term with a β-normal form
 head-reduces to a head-normal form that STILL HAS that normal form.
 This is what the rigid-head argument bridge (Blc/Rigid.lean) needs —
@@ -220,16 +233,7 @@ termination alone loses the connection to the normal form. -/
 theorem hasNormalForm_headFactorizes : ∀ {t : Term}, HasNormalForm t →
     ∃ k p, headSteps k t = some p ∧ headStep p = none ∧ HasNormalForm p := by
   intro t ⟨nf, hred, hnf⟩
-  have aux : ∃ k p, headSteps k t = some p ∧ headStep p = none ∧
-      Betas p nf := by
-    induction hred with
-    | refl t => exact ⟨0, t, rfl, normalForm_headStep_none hnf, Betas.refl t⟩
-    | head hb _ ih =>
-        obtain ⟨k, p, hk, hp, hpn⟩ := ih hnf
-        obtain ⟨n, hn⟩ := beta_par hb
-        obtain ⟨k', q, hq, hqn, m, hqp⟩ := parN_head_pullback k hn hk hp
-        exact ⟨k', q, hq, hqn, betas_trans (parN_betas hqp) hpn⟩
-  obtain ⟨k, p, hk, hp, hpn⟩ := aux
+  obtain ⟨k, p, hk, hp, hpn⟩ := headFactorizes_nf hred hnf
   exact ⟨k, p, hk, hp, nf, hpn, hnf⟩
 
 /-- Head normalization: a term with a β-normal form has a

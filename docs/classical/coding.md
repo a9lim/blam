@@ -16,11 +16,12 @@ come from `../../data/classical/coding.txt`, produced by
 - The Levin analog is g_S(x) = Kt(x) + log₂ S_β(x), using the β-gauge speed
   prior of `speed.md`.
 
-**Certification.** Every program shorter than 33 bits is adjudicated, since
-the frontier starts at 33. So K_N(x) = K(x) whenever K_N(x) ≤ 32. Also
-m_N(x) ≤ m(x), because masses only grow with N. Therefore, for K ≤ 32, each
-measured g_N(x) is a certified lower bound on the true g(x), and its
-maximum is a certified lower bound on c.
+**Certification.** The BB exclusions now adjudicate every program shorter
+than 35 bits, so K_N(x) = K(x) whenever K_N(x) ≤ 34. Also m_N(x) ≤ m(x),
+because masses only grow with N. The existing report analyzes the smaller
+K ≤ 32 cohort; each measured g_N(x) there is a certified lower bound on
+the true g(x), and its maximum is a certified lower bound on c. Extending
+the report to K ≤ 34 is a separate measurement.
 
 **A correction to the obvious experiment.** "Hold out the top program sizes
 and see whether the gap predicts K dropping" is ill-posed. For |x| ≤ N, K_N is

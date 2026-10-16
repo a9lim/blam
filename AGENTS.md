@@ -40,6 +40,14 @@ work; do not duplicate its moving state here.
   `scripts/census-regen.sh`, `scripts/solomonoff-regen.sh`,
   `scripts/omega-regen.sh`, `scripts/coding-regen.sh`, and
   `scripts/qalc-census-extend.sh`.
+  Direct BB exclusions are seeded in `data/certificates/bb_seeds.tsv`;
+  `scripts/bb-regen.sh` kernel-checks them and every census lambda wrap,
+  regenerates `bb_kills.tsv`, and refreshes the frontier and exact bounds.
+  `census-regen.sh --frontier-only` reuses the complete raw unknown inventory
+  in `speed_floors.txt`, checked against census counts and all existing
+  frontier/certificate entries; the final frontier/kill union must match
+  exactly. The summary census table lists only 16 unknowns per size: never
+  reconstruct the full frontier from its printed examples.
   `data/classical/omega.txt` (the bits of the true Ω) reads the census table
   and frontier, so rerun its script whenever either moves. Its leaf table comes
   from `blam omega leaves 41`, which judges each open term once, through its
@@ -243,8 +251,13 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
   eight canonical PDR kills — 1.84 core-hours, with a tail-bound wall time.
   For a new kill, append to
   `data/certificates/ratchet_kills.tsv`, run `scripts/recert-kills.sh`,
-  regenerate the frontier with `scripts/census-regen.sh`, trim Ω by exact
-  fraction arithmetic, and update `docs/STATUS.md`. The soundness battery is a crate unit
+  regenerate the frontier with `scripts/census-regen.sh --frontier-only`,
+  refresh Ω with `scripts/omega-regen.sh --reuse-leaves`, and update
+  `docs/STATUS.md`. Direct Lean proofs belong in the separate BB seed ledger;
+  `lake build Certs BusyBeaver` checks both proof surfaces. Exact finite Ω and
+  speed trims live in `data/classical/certificate_bounds.txt`, regenerated
+  by `tools/certificates/bounds.py`, never hand-edited.
+  The soundness battery is a crate unit
   test at `src/classical/certificate/battery.rs` — inside the crate so it runs
   under plain `cargo test` while discovery stays off the default public
   surface: 196,848 provable halters ≤28 bits through the exact sweep

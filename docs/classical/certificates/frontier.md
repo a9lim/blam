@@ -7,8 +7,10 @@ terms by the *shape* of their normal-order reduction; `blam cert diag`
 pipeline and reports,
 per term, exactly where it drops out. Both live behind the `lab`
 feature. Nothing here is a kill. The current
-kill set is `data/certificates/ratchet_kills.tsv`, summarized in
-`../../STATUS.md`. Raw tables regenerate in minutes
+kill set is the union of `data/certificates/ratchet_kills.tsv` and
+`data/certificates/bb_kills.tsv`, summarized in `../../STATUS.md`.
+The direct BB proofs and their lambda closures are described in
+`busy-beaver.md`. Raw tables regenerate in minutes
 (`blam trace scan --file data/classical/unknowns.txt --out data/certificates/frontier_classification.csv`,
 `blam cert diag <terms> --threads 8`); superseded map generations live in
 git history.

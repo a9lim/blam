@@ -179,6 +179,14 @@ def binary(x, n):
     return out
 
 
+def decimal_bound(x, upward, digits=15):
+    """Round an exact bound outward; a printed inequality must stay true."""
+    scale = 10 ** digits
+    q, r = divmod(x.numerator * scale, x.denominator)
+    q += int(upward and r != 0)
+    return f"{q // scale}.{q % scale:0{digits}d}"
+
+
 def main():
     args = sys.argv[1:]
     opt = lambda name, d: (args[args.index(name) + 1] if name in args else d)
@@ -214,11 +222,11 @@ def main():
     print(f"census halting mass (4..{top})        = {float(halt_mass):.15f}")
     print(f"census frontier mass (4..{top})       = {float(frontier_mass):.6e}  ({len(frontier)} terms)")
     print(f"closed Kraft mass (4..{top})          = {float(closed_mass):.15f}")
-    print(f"closed Kraft mass, all sizes         <= {float(U0):.15f}")
+    print(f"closed Kraft mass, all sizes         <= {decimal_bound(U0, True)}")
     print(f"certified WN mass ({top + 1}..{N})          = {float(tail_cert):.15f}"
           f"  ({float(tail_cert / tail_all):.4%} of those sizes' {float(tail_all):.6e})")
-    print(f"Omega >= {float(lower):.15f}")
-    print(f"Omega <= {float(upper):.15f}")
+    print(f"Omega >= {decimal_bound(lower, False)}")
+    print(f"Omega <= {decimal_bound(upper, True)}")
     print(f"binary: lower 0.{lb[:16]}…")
     print(f"        upper 0.{ub[:16]}…")
     print(f"pinned bits: {pinned}  ->  Omega = 0.{lb[:pinned]}…")

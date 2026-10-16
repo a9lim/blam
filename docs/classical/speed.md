@@ -115,10 +115,11 @@ is the max over its failed runs.
   n = 41 both are expected to be 0 — making every canonical Kt/depth⁰
   exact — and the count line is the check.
 
-The census-level certificate trim (removing certified divergers' floor
-contribution from the upper endpoint) is a by-hand exact-fraction step, as
-for Ω: the per-unknown floors and contributions are dumped to the floors
-file (§4) so the subtraction is a lookup, not a re-run.
+The census-level certificate trim removes certified divergers' floor
+contributions from the upper endpoint. `tools/certificates/bounds.py` checks
+both certificate ledgers against the raw inventory and regenerates
+`data/classical/certificate_bounds.txt` in exact integer units. The
+per-unknown floors (§4) make this a lookup without another evaluation run.
 
 ## 4. Data formats
 

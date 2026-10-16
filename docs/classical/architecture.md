@@ -363,7 +363,7 @@ all closed terms through 18 bits plus targeted deep vectors, and the two-phase
 scheduler is pinned against an unsplit one-pass sweep, size by size, through
 28 bits. The certificate soundness battery passes 196,848 provable halters
 through the exact discovery ladder and requires zero certificate fires. All
-305 canonical kills are additionally kernel-checked in Lean with wire-identity
+The canonical certificate kills are additionally kernel-checked in Lean with wire-identity
 theorems.
 
 Independent Python tools remain deliberately separate where shared
