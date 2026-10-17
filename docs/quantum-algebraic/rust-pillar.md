@@ -57,6 +57,7 @@ src/qalc/
   admission.rs   finite Gate-1 carrier validation and composed-carrier RRI
   wf.rs          the W0-W9 well-formedness subset used by admission
   semantics.rs   total sector selection and public semantic objects
+  fasthash.rs    deterministic hasher for lookup-only in-process tables
 ```
 
 `src/hash.rs` supplies the dependency-free SHA-256 core shared by qfx

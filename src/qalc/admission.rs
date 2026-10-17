@@ -7,7 +7,7 @@
 //! checked attempt.  Every cap, defect, or failed obligation is rejection;
 //! `semantics::select` turns rejection into conservative-history dynamics.
 
-use std::collections::{HashMap, HashSet};
+use super::fasthash::{HashMap, HashSet};
 use std::sync::{Arc, OnceLock};
 use std::time::{Duration, Instant};
 
@@ -171,7 +171,7 @@ fn add_alpha_bits_log(entry: &LogEntry, bits: &mut HashMap<KdKey, HashSet<u8>>) 
 }
 
 fn add_live_keys_log(entry: &LogEntry, out: &mut HashSet<KdKey>) {
-    let mut bits = HashMap::new();
+    let mut bits = HashMap::default();
     add_alpha_bits_log(entry, &mut bits);
     out.extend(bits.into_keys());
 }
@@ -225,7 +225,7 @@ fn gamma_free(cargo: &RetainCargo) -> bool {
 }
 
 fn erased_keys(arrival: &Arrival, popped: &[Frame], retained: &[Frame]) -> HashSet<KdKey> {
-    let mut out = HashSet::new();
+    let mut out = HashSet::default();
     add_live_keys_cargo(&arrival.cargo, &mut out);
     out.extend(popped.iter().map(|frame| KdKey {
         gate: frame.gate,
@@ -239,7 +239,7 @@ fn erased_keys(arrival: &Arrival, popped: &[Frame], retained: &[Frame]) -> HashS
     }
     for entry in &arrival.storage {
         if let KsHead::RetainWhole(cargo) = entry {
-            let mut buried = HashSet::new();
+            let mut buried = HashSet::default();
             add_live_keys_cargo(cargo, &mut buried);
             for key in buried {
                 out.remove(&key);
@@ -247,14 +247,14 @@ fn erased_keys(arrival: &Arrival, popped: &[Frame], retained: &[Frame]) -> HashS
         }
     }
     for entry in &arrival.tail {
-        let mut live = HashSet::new();
+        let mut live = HashSet::default();
         add_live_keys_tape(entry, &mut live);
         for key in live {
             out.remove(&key);
         }
     }
     for entry in &arrival.log {
-        let mut live = HashSet::new();
+        let mut live = HashSet::default();
         add_live_keys_log(entry, &mut live);
         for key in live {
             out.remove(&key);
@@ -269,8 +269,8 @@ fn transparent(arrivals: &[Arrival], popkeys: &[KdKey]) -> bool {
     type BundleKey = (Vec<TapeEntry>, Vec<LogEntry>, Vec<KsHead>, Vec<Frame>);
     let popset: HashSet<KdKey> = popkeys.iter().cloned().collect();
     let mut has_data = false;
-    let mut fibres: HashMap<FibreKey, FibreValue> = HashMap::new();
-    let mut bundles: HashMap<BundleKey, HashMap<u8, HashSet<KdKey>>> = HashMap::new();
+    let mut fibres: HashMap<FibreKey, FibreValue> = HashMap::default();
+    let mut bundles: HashMap<BundleKey, HashMap<u8, HashSet<KdKey>>> = HashMap::default();
     for arrival in arrivals {
         if !gamma_free(&arrival.cargo) {
             return false;
@@ -285,14 +285,14 @@ fn transparent(arrivals: &[Arrival], popkeys: &[KdKey]) -> bool {
         if popped.iter().any(|frame| frame.bit != arrival.slot) {
             return false;
         }
-        let mut bits = HashMap::new();
+        let mut bits = HashMap::default();
         match &arrival.cargo {
             RetainCargo::Alpha(alpha) => {
                 bits.entry(KdKey {
                     gate: alpha.gate,
                     instance: alpha.instance.clone(),
                 })
-                .or_insert_with(HashSet::new)
+                .or_insert_with(HashSet::default)
                 .insert(alpha.bit);
             }
             RetainCargo::Lp(lp) => {
@@ -306,7 +306,7 @@ fn transparent(arrivals: &[Arrival], popkeys: &[KdKey]) -> bool {
                 gate: frame.gate,
                 instance: frame.instance.clone(),
             })
-            .or_insert_with(HashSet::new)
+            .or_insert_with(HashSet::default)
             .insert(frame.bit);
         }
         if bits.values().any(|values| values.len() > 1) {
@@ -598,8 +598,8 @@ fn rri_violations(carrier: &NfCarrier) -> usize {
     // A projection is the erased kernel token beside the untouched zipper.
     type Projection<'a> = (RunCore, &'a Zipper);
     let mut violations = 0usize;
-    let mut projected: HashMap<(RecallKey, Projection), HashSet<bool>> = HashMap::new();
-    let mut targets: HashMap<(RecallKey, usize), HashSet<(bool, Projection)>> = HashMap::new();
+    let mut projected: HashMap<(RecallKey, Projection), HashSet<bool>> = HashMap::default();
+    let mut targets: HashMap<(RecallKey, usize), HashSet<(bool, Projection)>> = HashMap::default();
     for (source, rows) in &carrier.columns {
         if !rows.iter().any(|(_, rule, _)| *rule == "recall") {
             continue;
@@ -639,7 +639,7 @@ fn rust_wire_digest(states: &[NfState]) -> String {
 }
 
 fn certificate_well_formed(certificate: &CertEntries) -> bool {
-    let mut positions = HashSet::new();
+    let mut positions = HashSet::default();
     certificate.iter().all(|(position, keys)| {
         positions.insert(position) && keys.iter().collect::<HashSet<_>>().len() == keys.len()
     })
@@ -681,7 +681,7 @@ fn validate_inner(
     let gram = gram_result?;
 
     let obligations_started = telemetry.as_ref().map(|_| Instant::now());
-    let mut arrivals: HashMap<Vec<Dir>, Vec<Arrival>> = HashMap::new();
+    let mut arrivals: HashMap<Vec<Dir>, Vec<Arrival>> = HashMap::default();
     let mut wf_violations = 0usize;
     for state in &carrier.order {
         let NfState::Run(run) = state else {
@@ -733,7 +733,7 @@ fn validate_inner(
         }
     }
 
-    let mut incoming: HashMap<usize, Vec<(usize, &str)>> = HashMap::new();
+    let mut incoming: HashMap<usize, Vec<(usize, &str)>> = HashMap::default();
     let mut adapter_errors = 0usize;
     for (source, rows) in &carrier.columns {
         for (_, rule, target) in rows {
@@ -792,7 +792,7 @@ fn validate_inner(
         usize::from(
             normal_form(term.clone(), &mut budget, 0)
                 .and_then(|normal| term_as_nf(&normal))
-                .map(|normal| outputs != HashSet::from([normal]))
+                .map(|normal| outputs != HashSet::from_iter([normal]))
                 .unwrap_or(true),
         )
     };
@@ -1324,7 +1324,7 @@ mod tests {
                         _ => None,
                     })
                     .collect();
-                assert_eq!(outputs, HashSet::from([term_as_nf(&expected).unwrap()]));
+                assert_eq!(outputs, HashSet::from_iter([term_as_nf(&expected).unwrap()]));
                 let report = validate(&invoked, None, 10_000).unwrap();
                 assert!(report.certified, "invoked size={size}: {report:?}");
                 invoked_effect_free += 1;

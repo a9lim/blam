@@ -2,7 +2,7 @@
 //! finite-time halt mass `mu_p`, reduced output operator `rho_p`, and finite
 //! directed approximants of `M` / `Omega_qALC`.
 
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap};
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
 
@@ -14,6 +14,7 @@ use super::admission::{
     Gate1Admission, CANONICAL_STATE_CAP,
 };
 use super::amp::Amp;
+use super::fasthash::{FastHasher, HashMap as FastMap, HashSet as FastSet};
 use super::gate2check::{structural_admission, StructuralAdmission};
 use super::kernel::edge_coefficient;
 use super::readback::{nf_gram_with, nf_init, nf_step_with, MachineKind, NfError};
@@ -237,7 +238,7 @@ struct History(Option<Arc<HistoryNode>>);
 
 impl History {
     fn append(&self, live: &NfState) -> Self {
-        let mut hasher = std::collections::hash_map::DefaultHasher::new();
+        let mut hasher = FastHasher::default();
         self.len().hash(&mut hasher);
         self.digest().hash(&mut hasher);
         live.hash(&mut hasher);
@@ -393,13 +394,13 @@ pub fn initial_vector(sector: &Sector) -> Superposition {
 /// The step is transactional: any capacity/basis failure discards the local
 /// target map and returns a typed outcome.
 pub fn u(sector: &Sector, vector: &Superposition) -> Result<Superposition, SemanticsError> {
-    let mut distinct = HashSet::new();
+    let mut distinct = FastSet::default();
     if !vector.iter().all(|(basis, _)| distinct.insert(basis)) {
         return Err(SemanticsError::DuplicateBasis);
     }
     let source_norm = norm(vector)?;
     let mut target: Superposition = Vec::new();
-    let mut index: HashMap<BasisState, usize> = HashMap::new();
+    let mut index: FastMap<BasisState, usize> = FastMap::default();
     for (source, amplitude) in vector {
         let (live, history) = match (sector.conservative(), source) {
             (false, BasisState::Admitted(live)) => (live, None),
@@ -603,7 +604,7 @@ struct TraceBlock {
 }
 
 pub fn rho(vector: &Superposition) -> Result<DensityMatrix, SemanticsError> {
-    let mut blocks: HashMap<TraceBlock, HashMap<Nf, Amp>> = HashMap::new();
+    let mut blocks: FastMap<TraceBlock, FastMap<Nf, Amp>> = FastMap::default();
     for (basis, amplitude) in vector {
         let (live, history) = match basis {
             BasisState::Admitted(live) => (live, None),
@@ -717,6 +718,7 @@ pub fn omega_qalc_approximant(
 mod tests {
     use super::*;
     use crate::qalc::wire::parse_fixtures;
+    use std::collections::HashSet;
 
     fn lam(term: Term) -> Term {
         Term::Lam(Box::new(term))

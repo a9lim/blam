@@ -27,6 +27,7 @@
 pub mod admission;
 pub mod amp;
 pub mod compiler;
+pub(crate) mod fasthash;
 pub mod gate2check;
 pub mod kernel;
 pub mod mark;

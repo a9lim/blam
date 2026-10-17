@@ -27,7 +27,7 @@
 //! pinned carriers.
 
 use std::borrow::Cow;
-use std::collections::HashMap;
+use super::fasthash::HashMap;
 use std::sync::Arc;
 
 use super::amp::Amp;
@@ -1864,7 +1864,7 @@ pub fn evolve_nf_trace_with(
             return Ok(maps);
         }
         let mut out: NfPsi = Vec::new();
-        let mut index: HashMap<NfState, usize> = HashMap::new();
+        let mut index: HashMap<NfState, usize> = HashMap::default();
         for (s, amp) in &psi {
             for (coefficient, _rule, target) in nf_step_amp(machine, term, s, cert)? {
                 let contribution = amp.mul(coefficient).ok_or(NfError::Capacity)?;
@@ -1928,7 +1928,7 @@ impl GramAccumulator {
     }
 
     fn finish(self, basis: usize) -> Result<super::kernel::GramReport, NfError> {
-        let mut dots: HashMap<(usize, usize), Amp> = HashMap::new();
+        let mut dots: HashMap<(usize, usize), Amp> = HashMap::default();
         for columns in self.incoming.values() {
             for (left_at, (left, left_coefficient)) in columns.iter().enumerate() {
                 for (right, right_coefficient) in &columns[left_at + 1..] {
@@ -1975,10 +1975,7 @@ impl CarrierIndex {
     }
 
     fn state_hash(state: &NfState) -> u64 {
-        use std::hash::{Hash, Hasher};
-        let mut hasher = std::collections::hash_map::DefaultHasher::new();
-        state.hash(&mut hasher);
-        hasher.finish()
+        super::fasthash::hash_one(state)
     }
 
     /// The id of `target`, appending it to `order` on first touch.
@@ -2025,7 +2022,7 @@ pub fn nf_gram_from_carrier(carrier: &NfCarrier) -> Result<super::kernel::GramRe
     let mut gram = GramAccumulator::default();
     for (source, rows) in &carrier.columns {
         let mut column: Vec<(usize, Amp)> = Vec::new();
-        let mut col_index: HashMap<usize, usize> = HashMap::new();
+        let mut col_index: HashMap<usize, usize> = HashMap::default();
         for (coefficient, _rule, target) in rows {
             if let Some(&at) = col_index.get(target) {
                 column[at].1 = column[at].1.add(*coefficient).ok_or(NfError::Capacity)?;
@@ -2157,7 +2154,7 @@ pub fn nf_gram_with(
         }
         let rows = nf_step_amp(machine, term, &order[src], cert)?;
         let mut column: Vec<(usize, Amp)> = Vec::new();
-        let mut col_index: HashMap<usize, usize> = HashMap::new();
+        let mut col_index: HashMap<usize, usize> = HashMap::default();
         for (coefficient, _rule, target) in rows {
             let id = index.intern(&mut order, target);
             if let Some(&k) = col_index.get(&id) {

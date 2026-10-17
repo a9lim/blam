@@ -10,7 +10,7 @@
 //! W1--W6 and W8--W9 are checked directly.  W7 is certificate-relative and
 //! is checked over the complete composed carrier in `admission`.
 
-use std::collections::{HashMap, HashSet};
+use super::fasthash::{HashMap, HashSet};
 
 use super::mark::{
     rs_is_canonical, Alpha, Frame, GateTag, KdKey, KsHead, LogEntry, Lp, RetainCargo, TapeEntry,
@@ -295,7 +295,7 @@ fn key(gate: GateTag, instance: &Lp) -> KdKey {
 }
 
 fn bitfree_keys(storage: &[KsHead]) -> HashSet<KdKey> {
-    let mut out = HashSet::new();
+    let mut out = HashSet::default();
     for entry in storage {
         match entry {
             KsHead::Decode { gate, instance } => {
@@ -326,7 +326,7 @@ pub fn check(term: &Term, state: &RunCore) -> Vec<Violation> {
         bad.push(Violation::W1);
     }
 
-    let mut frame_keys = HashSet::new();
+    let mut frame_keys = HashSet::default();
     if !state
         .rs
         .iter()
@@ -336,7 +336,7 @@ pub fn check(term: &Term, state: &RunCore) -> Vec<Violation> {
         bad.push(Violation::W2);
     }
 
-    let mut bits = HashMap::new();
+    let mut bits = HashMap::default();
     let mut coherent = true;
     for frame in &state.rs {
         coherent &= note_bit(&mut bits, key(frame.gate, &frame.instance), frame.bit);
@@ -426,7 +426,7 @@ pub fn check(term: &Term, state: &RunCore) -> Vec<Violation> {
     }
 
     let mut answerable = frame_keys;
-    let mut tickets: HashMap<KdKey, usize> = HashMap::new();
+    let mut tickets: HashMap<KdKey, usize> = HashMap::default();
     for entry in &state.log {
         walk_alpha_log(entry, |a| {
             let k = key(a.gate, &a.instance);
@@ -441,7 +441,7 @@ pub fn check(term: &Term, state: &RunCore) -> Vec<Violation> {
             *tickets.entry(k).or_default() += 1;
         });
     }
-    let mut burial = HashSet::new();
+    let mut burial = HashSet::default();
     for entry in &state.ks {
         if let KsHead::RetainWhole(cargo) = entry {
             walk_alpha_cargo(cargo, |a| {

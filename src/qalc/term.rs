@@ -11,11 +11,29 @@
 
 /// One path segment: `f` = application function, `a` = application
 /// argument, `b` = lambda body.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Dir {
     F,
     A,
     B,
+}
+
+/// One byte per segment, and a path packs 32 segments per word: paths are
+/// the most-hashed values in every state, and the derived impl spent one
+/// 8-byte hasher write per segment. Consistent with the derived `Eq`.
+impl std::hash::Hash for Dir {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        state.write_u8(*self as u8);
+    }
+
+    fn hash_slice<H: std::hash::Hasher>(data: &[Self], state: &mut H) {
+        // The slice impl has already written the length, so base-4 packing
+        // without a terminator is injective.
+        for chunk in data.chunks(32) {
+            let word = chunk.iter().fold(0u64, |word, d| (word << 2) | *d as u64);
+            state.write_u64(word);
+        }
+    }
 }
 
 impl Dir {

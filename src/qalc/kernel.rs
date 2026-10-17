@@ -25,7 +25,7 @@
 //! consumed as-is. Validation belongs to the admission layer; discovery
 //! remains outside the Rust engine.
 
-use std::collections::{HashMap, HashSet};
+use super::fasthash::{HashMap, HashSet};
 use std::sync::Arc;
 
 use super::amp::Amp;
@@ -230,7 +230,7 @@ fn add_keys_cargo<'a>(cargo: &'a RetainCargo, out: &mut HashSet<Key<'a>>) {
 /// bundles. `KA` heads are deliberately excluded (the suppressed key's
 /// answerable representation survives in its frame or burial).
 fn ks_bitfree_keys<'a>(ks: &'a [KsHead]) -> HashSet<Key<'a>> {
-    let mut out = HashSet::new();
+    let mut out = HashSet::default();
     for e in ks {
         match e {
             KsHead::Decode { gate, instance } => {
@@ -660,7 +660,7 @@ fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
         }
         // Deep W3 at the boundary: cargo-nested alpha bits and
         // RS frame bits, one bit per key, else typed
-        let mut bits: HashMap<Key<'_>, u8> = HashMap::new();
+        let mut bits: HashMap<Key<'_>, u8> = HashMap::default();
         let mut conflict = false;
         match l {
             ArrHead::Alpha(a) => note_bit((a.gate, &a.instance), a.bit, &mut bits, &mut conflict),
@@ -697,7 +697,7 @@ fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
             // no surviving bit-carrying or answerable representation —
             // subtract retained Q frames, retained-whole burials, and
             // live tickets in the tape tail and the log
-            let mut dk: HashSet<Key<'_>> = HashSet::new();
+            let mut dk: HashSet<Key<'_>> = HashSet::default();
             match l {
                 ArrHead::Alpha(a) => {
                     dk.insert((a.gate, &a.instance));
@@ -712,14 +712,14 @@ fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
             }
             for e in &c.ks {
                 if let KsHead::RetainWhole(cargo) = e {
-                    let mut buried = HashSet::new();
+                    let mut buried = HashSet::default();
                     add_keys_cargo(cargo, &mut buried);
                     for k in buried {
                         dk.remove(&k);
                     }
                 }
             }
-            let mut live = HashSet::new();
+            let mut live = HashSet::default();
             for e in tail {
                 add_keys_tape(e, &mut live);
             }
@@ -755,7 +755,7 @@ fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
                         .any(|f| f.gate == a.gate && f.instance == a.instance);
                 let in_burial = c.ks.iter().any(|e| {
                     if let KsHead::RetainWhole(cargo) = e {
-                        let mut buried = HashSet::new();
+                        let mut buried = HashSet::default();
                         add_keys_cargo(cargo, &mut buried);
                         buried.contains(&(a.gate, &a.instance))
                     } else {
@@ -1099,7 +1099,7 @@ pub fn evolve_trace(
             return Ok(maps);
         }
         let mut out: Psi = Vec::new();
-        let mut index: HashMap<KState, usize> = HashMap::new();
+        let mut index: HashMap<KState, usize> = HashMap::default();
         for (s, amp) in &psi {
             let rows = step_amp(term, s, cert)?;
             if rows.is_empty() {
@@ -1149,7 +1149,7 @@ pub fn carrier_and_columns(
     state_cap: usize,
 ) -> Result<Carrier, MachineError> {
     let start = init_state();
-    let mut ids: HashMap<KState, usize> = HashMap::new();
+    let mut ids: HashMap<KState, usize> = HashMap::default();
     ids.insert(start.clone(), 0);
     let mut order = vec![start];
     let mut columns: Vec<Column> = Vec::new();
@@ -1215,10 +1215,10 @@ pub fn gram(
     state_cap: usize,
 ) -> Result<GramReport, MachineError> {
     let start = init_state();
-    let mut ids: HashMap<KState, usize> = HashMap::new();
+    let mut ids: HashMap<KState, usize> = HashMap::default();
     ids.insert(start.clone(), 0);
     let mut order = vec![start];
-    let mut incoming: HashMap<usize, Vec<(usize, Amp)>> = HashMap::new();
+    let mut incoming: HashMap<usize, Vec<(usize, Amp)>> = HashMap::default();
     let mut nonunit = 0usize;
     let mut at = 0;
     while at < order.len() {
@@ -1233,7 +1233,7 @@ pub fn gram(
         let rows = step_amp(term, &s, cert)?;
         // merged column in first-touch target order
         let mut column: Vec<(usize, Amp)> = Vec::new();
-        let mut col_index: HashMap<usize, usize> = HashMap::new();
+        let mut col_index: HashMap<usize, usize> = HashMap::default();
         for (coefficient, _rule, target) in rows {
             let id = match ids.get(&target) {
                 Some(&id) => id,
@@ -1265,7 +1265,7 @@ pub fn gram(
             return Err(MachineError::StateCap);
         }
     }
-    let mut dots: HashMap<(usize, usize), Amp> = HashMap::new();
+    let mut dots: HashMap<(usize, usize), Amp> = HashMap::default();
     for columns in incoming.values() {
         for (left_at, (left, left_coefficient)) in columns.iter().enumerate() {
             for (right, right_coefficient) in &columns[left_at + 1..] {
