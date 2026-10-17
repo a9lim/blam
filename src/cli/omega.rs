@@ -82,8 +82,13 @@ fn leading(enc: u64, len: u8) -> (u32, u64) {
     }
     // Walk the body with a stack of pending-slot depths.
     let mut used = 0u64;
-    let mut stack: Vec<u32> = vec![lead];
-    while let Some(d) = stack.pop() {
+    // A closed term of <= 63 bits has at most 32 pending slots.
+    let mut stack = [0u32; 64];
+    stack[0] = lead;
+    let mut sp = 1usize;
+    while sp > 0 {
+        sp -= 1;
+        let d = stack[sp];
         if bit(i) {
             let mut v = 0u32;
             while bit(i) {
@@ -97,11 +102,13 @@ fn leading(enc: u64, len: u8) -> (u32, u64) {
             }
         } else if bit(i + 1) {
             i += 2;
-            stack.push(d);
-            stack.push(d);
+            stack[sp] = d;
+            stack[sp + 1] = d;
+            sp += 2;
         } else {
             i += 2;
-            stack.push(d + 1);
+            stack[sp] = d + 1;
+            sp += 1;
         }
     }
     debug_assert_eq!(i, len as u32);
@@ -277,22 +284,30 @@ pub fn run(argv: &[String]) -> R<()> {
                     (a.merge(b), s)
                 },
             );
-        let b = survivors
-            .par_iter()
-            .with_max_len(1)
-            .map_init(
-                || (Pool::new(), Machine::new()),
-                |(pool, vm), &(enc, len)| {
+        let b = {
+            let next = std::sync::atomic::AtomicUsize::new(0);
+            let workers = rayon::current_num_threads().min(survivors.len());
+            (0..workers)
+                .into_par_iter()
+                .map(|_| {
+                    let mut pool = Pool::new();
+                    let mut vm = Machine::new();
                     let mut acc = Acc::new(max_n as usize);
                     let mut sink = LeadSink::default();
-                    pool.clear();
-                    let root = pool.decode_u64(enc, len).expect("valid term");
-                    let o = ladder::adjudicate_slow(&cfg, pool, vm, root, &mut sink);
-                    record(&mut acc, &o, enc, len, &sink);
+                    loop {
+                        let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        let Some(&(enc, len)) = survivors.get(i) else {
+                            break;
+                        };
+                        pool.clear();
+                        let root = pool.decode_u64(enc, len).expect("valid term");
+                        let o = ladder::adjudicate_slow(&cfg, &pool, &mut vm, root, &mut sink);
+                        record(&mut acc, &o, enc, len, &sink);
+                    }
                     acc
-                },
-            )
-            .reduce(|| Acc::new(max_n as usize), Acc::merge);
+                })
+                .reduce(|| Acc::new(max_n as usize), Acc::merge)
+        };
         acc = acc.merge(a).merge(b);
         eprintln!(
             "n={n}: halt {} ({} slow-path survivors, {:.1}s total)",
