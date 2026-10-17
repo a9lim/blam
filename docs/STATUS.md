@@ -262,11 +262,15 @@ weight-30 slice, so pruning must reduce mid-ladder states.
 
 ### Self-interpretation and conditional operators
 
-`E_q = intL I` is 176 bits, built from Tromp's 170. Direct and interpreted runs
-agree at the complete effect-tree level through 24 bits, and Lean pins the
+`E_q = intL I` is 174 bits, built from Palmer's 168. Direct and interpreted runs
+agree at the complete effect-tree level through 24 bits (`blam q selfint 24`:
+19,014 programs verified, 34 skipped as unresolved, 0 trace or pure-NF
+mismatches; witness45 and the poisoned-seed canary pass), and Lean pins the
 wire identities and quote linearity; the bisimulation obligations are open
-(`quantum/bisimulation.md`). Palmer's 168 gives a 174-bit candidate
-`int168 I` that has not been run.
+(`quantum/bisimulation.md`). The ≤24 sweep takes 2.4 h wall and 38 CPU-hours
+on the M5 Max, almost all in `quantum::reference`, whose `subst` re-shifts the
+substituted term at every binder; at ≤16 that costs the 168 3× the 170's CPU
+time for 6% more β.
 
 `blam q census --cond-k K` implements the conditional family `G_k`, but no
 canonical generation exists. Before one: choose whole-live-store versus a
@@ -279,13 +283,12 @@ designated-output convention, derive explicit comparison constants with
    population.
 2. Add reference-configuration cycles and the E∞ universal-safety calculus for
    the hole-demanded residue.
-3. Run the 168-based `E_q` (174 bits) through `blam q selfint`.
-4. Implement branch-local clocks and resource vectors before defining a qBLC
+3. Implement branch-local clocks and resource vectors before defining a qBLC
    speed prior; round `1/T`, never individual matrix entries. The qALC
    counterpart is measured, and `quantum::scalar::speed_units` is the shared
    rounding.
-5. Complete the complement sweep at sizes 52 and 53.
-6. Continue the odd-sector pruning program (α-normalize `BindId`, stronger
+4. Complete the complement sweep at sizes 52 and 53.
+5. Continue the odd-sector pruning program (α-normalize `BindId`, stronger
    ε/canonical-port quotienting, a simulation-preorder antichain, the
    component-scoped post-fixpoint with a trusted checker, then the ladder to
    44) and the bisimulation proof. CNOT belongs to the separate Pauli-string

@@ -1,14 +1,14 @@
 //! qBLC self-interpretation, measured against the contract in
 //! `docs/quantum/bisimulation.md`.
 //!
-//! The interpreter is `E_q = intL I`: Tromp's 170-bit binary-LC interpreter
-//! applied to the identity as continuation. Protocol: intL cont bits =
-//! cont (\env.parsed) unparsed, so with cont = I the unparsed tail lands in
-//! the environment slot — never consulted for closed programs (Tromp's own
-//! `uni = intL (\z.z omega)` leans on the same invariance with a divergent
-//! env). The signature then threads through ordinary application: no adapter
-//! beyond the continuation exists, which is the HOAS payoff of passing
-//! primitives by application. |E_q| = 176 bits.
+//! The interpreter is `E_q = intL I`: Sean Palmer's 168-bit binary-LC
+//! interpreter (`int.lam`'s `intL`) applied to the identity as continuation.
+//! Protocol: intL cont bits = cont (\env.parsed) unparsed, so with cont = I
+//! the unparsed tail lands in the environment slot — never consulted for
+//! closed programs (Tromp's own `uni = intL (\z.z omega)` leans on the same
+//! invariance with a divergent env). The signature then threads through
+//! ordinary application: no adapter beyond the continuation exists, which is
+//! the HOAS payoff of passing primitives by application. |E_q| = 174 bits.
 //!
 //! Verification: for every closed p (4..=max_n) whose direct run p σ⃗ fully
 //! resolves (all leaves Halt/Err) at census budgets, the interpreted run
@@ -34,9 +34,15 @@ use blam::{app, lam, var, Term};
 use rayon::prelude::*;
 use std::time::Instant;
 
-/// The 170-bit ref/AIT/ait/int.lam of tromp/AIT fd4e9b0 via tools/blcc.py
-/// (upstream's is Palmer's 168; docs/classical/self-interpreter/interpreter.md).
-const INTL: &str = "01000110100001000000011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010010111110100101101010011010";
+/// Sean Palmer's 168-bit `int.lam` (tromp/AIT `2cfa384`;
+/// docs/classical/self-interpreter/interpreter.md). The repo's one copy of
+/// the interpreter's wire; the classical lab instruments import it from here.
+pub(crate) const INT168: &str = "010001101000010000010000011000000101110011011110010111111010010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010";
+
+/// `E_q = intL I`.
+fn eq_term() -> Term {
+    app(parse_all(INT168).expect("intL parses"), lam(var(1)))
+}
 
 /// λ⁵. meas (h (t (h (new t)))) — the first-nondyadic-leaves witness (n=45).
 const WITNESS45: &str = "000000000001111100111111001100111111001111010";
@@ -195,9 +201,7 @@ pub fn run(argv: &[String]) -> R<()> {
         }
     };
 
-    let intl = parse_all(INTL).expect("intL parses");
-    assert_eq!(intl.bit_size(), 170, "intL is the 170-bit interpreter");
-    let eq = app(intl, lam(var(1)));
+    let eq = eq_term();
     println!("E_q = intL I   |E_q| = {} bits", eq.bit_size());
     println!("wire: {}", eq.to_bits());
 
@@ -225,12 +229,9 @@ pub fn run(argv: &[String]) -> R<()> {
         // Term is Rc-based (not Send): rebuild E_q once per rayon worker.
         let outcomes: Vec<Outcome> = programs
             .par_iter()
-            .map_init(
-                || app(parse_all(INTL).expect("intL parses"), lam(var(1))),
-                |eq, &(enc, len)| {
-                    check(&enc_to_string(enc, len), eq, &direct_budget, &interp_budget)
-                },
-            )
+            .map_init(eq_term, |eq, &(enc, len)| {
+                check(&enc_to_string(enc, len), eq, &direct_budget, &interp_budget)
+            })
             .collect();
 
         let mut verified = 0u64;
@@ -289,13 +290,7 @@ pub fn run(argv: &[String]) -> R<()> {
         let nf_outcomes: Vec<Outcome> = programs
             .par_iter()
             .map_init(
-                || {
-                    (
-                        app(parse_all(INTL).expect("intL parses"), lam(var(1))),
-                        Pool::new(),
-                        Machine::new(),
-                    )
-                },
+                || (eq_term(), Pool::new(), Machine::new()),
                 |(eq, pool, vm), &(enc, len)| nf_check(&enc_to_string(enc, len), eq, pool, vm),
             )
             .collect();
@@ -336,24 +331,18 @@ mod tests {
 
     /// E_q's wire code, pinned: any drift in intL or the adapter
     /// is a loud failure, not a silent constant change.
-    const EQ_WIRE: &str = "01010001101000010000000110000001011100110000111111100001011100111111100000011110000001011101110011011110011111111000011111111000010111101001110100101111101001011010100110100010";
-
-    fn eq_term() -> Term {
-        let intl = parse_all(INTL).expect("intL parses");
-        assert_eq!(intl.bit_size(), 170);
-        app(intl, lam(var(1)))
-    }
+    const EQ_WIRE: &str = "010100011010000100000100000110000001011100110111100101111110100101101010000111100001011100111100000011110000001011101110011011110011111000011111000010111101001110100110100010";
 
     #[test]
-    fn selfint_constant_is_176_bits() {
+    fn selfint_constant_is_174_bits() {
         let eq = eq_term();
-        assert_eq!(eq.bit_size(), 176);
+        assert_eq!(eq.bit_size(), 174);
         assert_eq!(eq.to_bits(), EQ_WIRE);
     }
 
     /// Trace equivalence (`docs/quantum/bisimulation.md`) on a fast core:
     /// the full ≤14 population plus the n=45 nondyadic witness. The full
-    /// ≤24 sweep lives in the bin (`qselfint 24`), not the suite.
+    /// ≤24 sweep lives in the bin (`blam q selfint 24`), not the suite.
     #[test]
     fn selfint_traces_leq14_and_witness45() {
         let eq = eq_term();

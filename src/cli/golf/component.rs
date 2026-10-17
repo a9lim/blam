@@ -1122,8 +1122,8 @@ pub fn run(argv: &[String]) -> R<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::super::term::INT168;
     use super::*;
+    use crate::q::selfint::INT168;
 
     /// The Python reference's component sizes from the 168
     /// (`docs/classical/self-interpreter/interpreter.md` §3, βη component table).

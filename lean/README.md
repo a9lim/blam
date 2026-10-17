@@ -154,7 +154,7 @@ Busy-beaver proofs (`docs/classical/certificates/busy-beaver.md`):
 qBLC self-interpretation:
 
 - `Blc/Selfint.lean` — the pure fragment of `docs/quantum/bisimulation.md`:
-  proves `intL`'s wire identity, `|E_q| = |intL I| = 176`, and the quote-size
+  proves `intL`'s wire identity, `|E_q| = |intL I| = 174`, and the quote-size
   identity `|stream(M,R)| = 14·|M| + zeros(M) + |R|`; states the translation
   contract `Implements` and the parser obligations as named `Prop`s, which
   remain open.

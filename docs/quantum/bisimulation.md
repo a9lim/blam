@@ -4,8 +4,8 @@ The precise statement and proof plan for the first open boundary of
 `architecture.md` §8: `E_q ⌜p⌝ σ⃗` and `p σ⃗` are equivalent up to pure
 β-stuttering, in unbounded semantics.
 
-`E_q = intL I` is 176 bits, built from the `intL` of Tromp's 170-bit
-`int.lam` (tromp/AIT `fd4e9b0`; `src/cli/q/selfint.rs`, pinned by
+`E_q = intL I` is 174 bits, built from the `intL` of Sean Palmer's 168-bit
+`int.lam` (tromp/AIT `2cfa384`; `src/cli/q/selfint.rs`, pinned by
 `lean/Blc/Selfint.lean`). Everything here is a proof target, not yet proved.
 The complete measured population through 24 bits agrees at the effect-tree
 level, and the poisoned-seed canary (the unit test
@@ -305,7 +305,7 @@ Falsifier: any effect-order, label, mass, or fate mismatch between
 `p σ⃗` and `E_q ⌜p⌝ σ⃗` on any program — none observed at any size
 swept. L1 and L2 are the first mechanization target (pure λ-calculus, no
 store); the quantum clauses ride on them. `lean/Blc/Selfint.lean`
-kernel-pins `intL` by wire identity, checks `|E_q| = 176` and the §2 size
+kernel-pins `intL` by wire identity, checks `|E_q| = 174` and the §2 size
 identities, and defines `Implements` under head reduction. Its machine-level
 parser target is `ParserResult M R Q U`: `int.lam`'s VAR branch passes
 `cont list1 (skipvar list1)`, and because head reduction never enters
@@ -318,20 +318,16 @@ qBLC lifting. Proof order: L2 by induction on
 the unary selector, then `ParserStatement` by structural induction,
 closed L1 as corollary.
 
-## 8. The parked sub-176 lane
+## 8. The parked sub-174 lane
 
-With the 170-bit `intL` opaque, sub-176 is impossible: any closed invocation
-pays the six-bit `App + I`. Sean Palmer's 168-bit interpreter
-(`../classical/self-interpreter/interpreter.md`) shares the 170's parser
-contract, so `E_q = int168 I` is a 174-bit candidate; it has not been run
-through `blam q selfint`, and the Lean pins and §2 identities above are stated
-for the 170. Below that, a winner must reorganize the recursive knot and root
-entry jointly. The narrow lane, parked until the theorem contract is stable:
-freeze `cons'` and the three certified recursive branch meanings;
-one generic recursive entry + one closed-root entry sharing a knot;
-the root entry may assume root-non-VAR, continuation `I`, tail
-arbitrary; enumerate compiled totals below the smallest E_q that passes
-the battery (176 today; 174 if the 168-based candidate passes); probe both
-contracts;
-splice survivors through the full `blam q selfint` battery. Hand-compile
-the two-entry families and do bit accounting before any enumeration.
+With the 168-bit `intL` opaque, sub-174 is impossible: any closed invocation
+pays the six-bit `App + I`, and nothing below 168 is known for the interpreter
+itself (`../classical/self-interpreter/interpreter.md`). Below that, a winner
+must reorganize the recursive knot and root entry jointly. The narrow lane,
+parked until the theorem contract is stable: freeze `cons'` and the three
+certified recursive branch meanings; one generic recursive entry + one
+closed-root entry sharing a knot; the root entry may assume root-non-VAR,
+continuation `I`, tail arbitrary; enumerate compiled totals below 174, the
+smallest E_q that passes the battery; probe both contracts; splice survivors
+through the full `blam q selfint` battery. Hand-compile the two-entry families
+and do bit accounting before any enumeration.

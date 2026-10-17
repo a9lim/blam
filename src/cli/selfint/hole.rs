@@ -15,7 +15,7 @@
 
 use super::ctx::{programs, spliced, Ctx, Probe, Stats, Verdict};
 use crate::args::{self, Args, R};
-use crate::golf::term::INT168;
+use crate::q::selfint::INT168;
 use crate::slots::{go, split_tasks, Counts, Pending};
 use blam::blc::wire::enc_to_string;
 use blam::classical::escalation::EngineCfg;

@@ -532,7 +532,7 @@ mod tests {
     /// apart on the self-interpreter contract's stream.
     #[test]
     fn certificate_and_differential_controls() {
-        use super::super::term::INT168;
+        use crate::q::selfint::INT168;
         let t = T::parse(INT168).unwrap();
         let core = t.inline_lets();
         assert_eq!(common_reduct(&t, &core), Some(179));

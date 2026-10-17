@@ -1005,8 +1005,8 @@ fn around_rec(
 
 #[cfg(test)]
 mod tests {
-    use super::super::term::INT168;
     use super::*;
+    use crate::q::selfint::INT168;
 
     fn setup() -> (T, Core, Vec<Cut>) {
         let core_t = T::parse(INT168).unwrap().inline_lets();

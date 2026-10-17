@@ -29,7 +29,8 @@
 
 use super::ctx::{programs, Golden, Probe};
 use crate::args::{self, Args, R};
-use crate::golf::term::{INT168, T};
+use crate::golf::term::T;
+use crate::q::selfint::INT168;
 use blam::classical::machine::{Machine, Pool, SizeSink, StringSink};
 use blam::classical::OutOfFuel;
 use rayon::prelude::*;

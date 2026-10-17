@@ -5,8 +5,8 @@ mechanization (pure λ-calculus, no store; the quantum clauses ride on
 this layer).
 
 PROVED here, zero sorries: the artifact pins — intL's wire identity
-(`wire_intL`, the kernel vouches the constant IS Tromp's 170-bit
-interpreter) and |E_q| = |intL I| = 176 — and the quote-size identity
+(`wire_intL`, the kernel vouches the constant IS Palmer's 168-bit
+interpreter) and |E_q| = |intL I| = 174 — and the quote-size identity
 |stream(M,R)| = 14·|M| + zeros(M) + |R| (`streamOf_length`): the
 measured quote linearity, now kernel-checked.
 
@@ -80,29 +80,29 @@ def streamOf (bits : List Bool) (R : Term) : Term :=
 /-- `⌜p⌝ = stream(p, FALSE)`. -/
 def quote (p : Term) : Term := streamOf (blcCode p) falseT
 
-/-- Tromp's 170-bit binary-LC interpreter (ref/AIT int.lam @ fd4e9b0 via
-tools/blcc.py; upstream's is now 168), transcribed to 0-indexed
-de Bruijn. `wire_intL` below is the kernel's guarantee that this
-constant and those bits are the same object. -/
-def intL : Term := .app (.lam (.app (.var 0) (.var 0))) (.lam (.app (.lam (.lam (.lam (.app (.var 0) (.lam (.lam (.app (.app (.var 1) (.app (.var 0) (.lam (.app (.var 5) (.lam (.app (.app (.var 1) (.app (.var 5) (.lam (.lam (.app (.var 2) (.lam (.lam (.app (.app (.var 1) (.var 2)) (.app (.var 0) (.var 3)))))))))) (.app (.var 6) (.lam (.app (.var 6) (.lam (.app (.app (.var 2) (.var 0)) (.app (.var 1) (.var 0))))))))))))) (.app (.app (.var 3) (.var 0)) (.app (.app (.var 0) (.var 0)) (.var 0)))))))))) (.app (.var 0) (.var 0))))
+/-- Sean Palmer's 168-bit binary-LC interpreter (ref/AIT int.lam @
+2cfa384), transcribed to 0-indexed de Bruijn. `wire_intL` below is the
+kernel's guarantee that this constant and those bits are the same
+object. -/
+def intL : Term := .app (.lam (.app (.var 0) (.var 0))) (.lam (.app (.lam (.lam (.app (.lam (.lam (.app (.var 0) (.lam (.lam (.app (.app (.var 1) (.app (.var 0) (.var 3))) (.app (.app (.var 4) (.var 0)) (.app (.app (.var 0) (.var 0)) (.var 0))))))))) (.lam (.app (.var 2) (.lam (.app (.app (.var 1) (.app (.var 2) (.lam (.lam (.app (.var 2) (.lam (.lam (.app (.app (.var 1) (.var 2)) (.app (.var 0) (.var 3)))))))))) (.app (.var 3) (.lam (.app (.var 3) (.lam (.app (.app (.var 2) (.var 0)) (.app (.var 1) (.var 0)))))))))))))) (.app (.var 0) (.var 0))))
 
-def intLWire : List Bool := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, true, false, true, true, true, false, false, true, true, false, false, false, false, true, true, true, true, true, true, true, false, false, false, false, true, false, true, true, true, false, false, true, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, true, false, true, true, true, false, true, true, true, false, false, true, true, false, true, true, true, true, false, false, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, false, false, false, false, true, false, true, true, true, true, false, true, false, false, true, true, true, false, true, false, false, true, false, true, true, true, true, true, false, true, false, false, true, false, true, true, false, true, false, true, false, false, true, true, false, true, false]
+def intLWire : List Bool := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, false, false, false, false, true, false, false, false, false, false, true, true, false, false, false, false, false, false, true, false, true, true, true, false, false, true, true, false, true, true, true, true, false, false, true, false, true, true, true, true, true, true, false, true, false, false, true, false, true, true, false, true, false, true, false, false, false, false, true, true, true, true, false, false, false, false, true, false, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, true, false, true, true, true, false, true, true, true, false, false, true, true, false, true, true, true, true, false, false, true, true, true, true, true, false, false, false, false, true, true, true, true, true, false, false, false, false, true, false, true, true, true, true, false, true, false, false, true, true, true, false, true, false, false, true, true, false, true, false]
 
-/-- `E_q = intL I`: the measured 176-bit qBLC self-interpreter. -/
+/-- `E_q = intL I`: the measured 174-bit qBLC self-interpreter. -/
 def intLI : Term := .app intL (.lam (.var 0))
 
 -- The raised recursion depth is an elaborator allowance for the
--- 170-bit computations below, not a proof-strength change.
+-- 168-bit computations below, not a proof-strength change.
 set_option maxRecDepth 8192
 
-/-- The kernel vouches the transcription: intL's code IS the 170-bit
+/-- The kernel vouches the transcription: intL's code IS the 168-bit
 wire (the certlean wire-identity pattern, applied to the interpreter). -/
 theorem wire_intL : blcCode intL = intLWire := by decide
 
-theorem intL_size : intLWire.length = 170 := by decide
+theorem intL_size : intLWire.length = 168 := by decide
 
-/-- |E_q| = 176 — the self-interpretation constant, kernel-checked. -/
-theorem intLI_size : (blcCode intLI).length = 176 := by decide
+/-- |E_q| = 174 — the self-interpretation constant, kernel-checked. -/
+theorem intLI_size : (blcCode intLI).length = 174 := by decide
 
 -- ---------------------------------------------------------------------------
 -- Closedness plumbing for the size identity.
@@ -147,8 +147,8 @@ theorem streamOf_length (bits : List Bool) {R : Term} (hR : FreeUnder 0 R) :
         omega
 
 /-- |⌜p⌝| = 14·|p| + zeros(p) + 6 — quote linearity, kernel-checked
-(the measured |E_q ⌜p⌝| = 184 + 14|p| + zeros(p) is this plus
-|E_q| = 176 and the two-bit application tag). -/
+(the measured |E_q ⌜p⌝| = 182 + 14|p| + zeros(p) is this plus
+|E_q| = 174 and the two-bit application tag). -/
 theorem quote_length (p : Term) :
     (blcCode (quote p)).length
       = 14 * (blcCode p).length + (blcCode p).count false + 6 := by

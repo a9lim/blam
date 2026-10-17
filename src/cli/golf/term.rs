@@ -278,12 +278,10 @@ fn show_at(t: &T, depth: u32, prec: u8, s: &mut String) {
     }
 }
 
-/// Tromp/AIT `2cfa384`: Sean Palmer's 168-bit `int.lam`.
-pub const INT168: &str = "010001101000010000010000011000000101110011011110010111111010010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010";
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::q::selfint::INT168;
 
     #[test]
     fn roundtrip_and_size() {
