@@ -357,9 +357,12 @@ fn sweep_one(
                 if let Some(mv) = leaf.mass {
                     if !is_dyadic(mv) {
                         t.nondyadic += 1;
-                        if t.first_nondyadic.is_none() {
-                            t.first_nondyadic = Some((len, enc));
-                        }
+                        // The merge keeps the smaller witness, so each
+                        // fold must too: a fold's *first* witness need not
+                        // be its least, and the reported one would then
+                        // depend on the task partition.
+                        let key = (len, enc);
+                        t.first_nondyadic = Some(t.first_nondyadic.map_or(key, |w| w.min(key)));
                     }
                 }
             }
@@ -390,9 +393,8 @@ fn sweep_one(
         t.forked += 1;
         if kinds.iter().filter(|&&k| k).count() > 1 {
             t.fate_div += 1;
-            if t.first_fate_div.is_none() {
-                t.first_fate_div = Some((len, enc));
-            }
+            let key = (len, enc);
+            t.first_fate_div = Some(t.first_fate_div.map_or(key, |w| w.min(key)));
         }
     }
 }

@@ -218,6 +218,23 @@ enum Frame {
     Skip,
 }
 
+/// Charge `hops` skipped transitions ([`Val::Hop`]) to a branch at
+/// `trans ≤ cap`: the new count, or — when the uncompressed machine would
+/// have died inside the skipped stretch — the count it dies at, `cap + 1`.
+/// Compared against the remaining budget rather than summed, because the
+/// qBLC transition budget is an unrestricted `u64` and a jump, unlike a
+/// single step, can carry the sum past `u64::MAX` (a pool that shares
+/// subtrees can reach a count near the cap in few cells — Codex's
+/// counterexample).
+fn hop_charge(trans: u64, hops: u64, cap: u64) -> Result<u64, u64> {
+    debug_assert!(trans <= cap);
+    if hops > cap - trans {
+        Err(cap.saturating_add(1))
+    } else {
+        Ok(trans + hops)
+    }
+}
+
 const NIL: u32 = u32::MAX;
 
 /// A suspended branch: everything not shared. The env arena and node pool
@@ -413,7 +430,9 @@ impl Machine {
                                     let (mut c, mut cv) = (e, v);
                                     let walked = loop {
                                         chain.push(c);
-                                        if trans + chain.len() as u64 > budget.trans {
+                                        if hop_charge(trans, chain.len() as u64, budget.trans)
+                                            .is_err()
+                                        {
                                             break None;
                                         }
                                         let Val::Clo(ct, ce) = cv else {
@@ -440,7 +459,7 @@ impl Machine {
                                     };
                                     let Some((fin, tail)) = walked else {
                                         self.chain = chain;
-                                        trans = budget.trans + 1;
+                                        trans = budget.trans.saturating_add(1);
                                         break 'run Some(Fate::Unknown);
                                     };
                                     let m = chain.len() as u32;
@@ -455,10 +474,10 @@ impl Machine {
                                 }
                                 _ => 0,
                             };
-                            if hops != 0 {
-                                trans += u64::from(hops);
-                                if trans > budget.trans {
-                                    trans = budget.trans + 1;
+                            match hop_charge(trans, u64::from(hops), budget.trans) {
+                                Ok(t) => trans = t,
+                                Err(dead) => {
+                                    trans = dead;
                                     break 'run Some(Fate::Unknown);
                                 }
                             }
@@ -933,6 +952,24 @@ mod tests {
         );
     }
 
+    /// A jump is charged against the remaining budget, so a count near
+    /// `u64::MAX` dies exactly where single steps would instead of
+    /// wrapping past the cap.
+    #[test]
+    fn hop_charge_never_wraps_past_the_cap() {
+        assert_eq!(hop_charge(5, 3, 10), Ok(8));
+        assert_eq!(hop_charge(5, 5, 10), Ok(10));
+        assert_eq!(hop_charge(5, 6, 10), Err(11));
+        assert_eq!(hop_charge(u64::MAX - 1, 3, u64::MAX - 1), Err(u64::MAX));
+        assert_eq!(hop_charge(u64::MAX - 4, 3, u64::MAX - 1), Ok(u64::MAX - 1));
+        assert_eq!(hop_charge(u64::MAX - 1, 1, u64::MAX), Ok(u64::MAX));
+        assert_eq!(hop_charge(u64::MAX, 1, u64::MAX), Err(u64::MAX));
+        assert_eq!(
+            hop_charge(0, u64::from(u32::MAX), u64::MAX),
+            Ok(u64::from(u32::MAX))
+        );
+    }
+
     /// `is_canonical`'s one-instruction unary read agrees with the bit
     /// loop it replaced on every closed term to 22 bits (with every
     /// truncation and extension) and a dense low-word sweep.
@@ -1036,6 +1073,73 @@ mod tests {
                 }
             },
         );
+    }
+
+    /// Branches share the env arena, so a chain one branch compresses is
+    /// re-entered compressed by its sibling. `λh m n c t. (λx. (λy₁. …
+    /// (λy_k. B) y_{k−1} …) x) I` binds an alias chain and B forks on a
+    /// measurement, then forces the chain in both branches — once through
+    /// a fresh selector cell (`meas (new I) y_k y_k`: the sibling meets
+    /// the compressed suffix mid-walk) and once by looking `y_k` up
+    /// directly (`meas (new I) (λq. y_k) (λq. y_k) I`: the sibling's first
+    /// read is the compressed cell). Every transition cap through the
+    /// whole run, both machines.
+    #[test]
+    fn hop_compression_is_exact_across_measurement_branches() {
+        use crate::blc::{app, lam, var};
+        let mut pool = Pool::new();
+        let mut m = Machine::new();
+        for (k, direct) in [1u32, 2, 5, 9]
+            .into_iter()
+            .flat_map(|k| [(k, false), (k, true)])
+        {
+            let d = 1 + k; // binders between the signature and the body
+            let meas = var(4 + d);
+            let new = var(3 + d);
+            let coin = app(meas, app(new, lam(var(1))));
+            let mut t = if direct {
+                let f = || lam(var(2));
+                app(app(app(coin, f()), f()), lam(var(1)))
+            } else {
+                app(app(coin, var(1)), var(1))
+            };
+            for _ in 0..k {
+                t = app(lam(t), var(1));
+            }
+            t = app(lam(t), lam(var(1)));
+            for _ in 0..5 {
+                t = lam(t);
+            }
+            let run = |pool: &mut Pool, m: &mut Machine, budget: &Budget, hops: bool| {
+                pool.clear();
+                let root = pool.from_term(&t);
+                let sig = pool.apply_signature(root, &FROZEN);
+                let mut leaves = Vec::new();
+                if hops {
+                    m.run_into_impl::<true>(pool, sig, budget, &mut leaves);
+                } else {
+                    m.run_into_impl::<false>(pool, sig, budget, &mut leaves);
+                }
+                (leaves, m.max_trans)
+            };
+            let full = run(&mut pool, &mut m, &Budget::default(), false);
+            assert_eq!(full.0.len(), 2, "k={k}: the measurement forks");
+            assert!(
+                full.0.iter().all(|l| matches!(l.fate, Fate::Halt(_))),
+                "k={k}"
+            );
+            for trans in 1..=full.1 + 2 {
+                let budget = Budget {
+                    trans,
+                    ..Budget::default()
+                };
+                assert_eq!(
+                    run(&mut pool, &mut m, &budget, true),
+                    run(&mut pool, &mut m, &budget, false),
+                    "k={k} direct={direct} trans={trans}"
+                );
+            }
+        }
     }
 
     /// The 18- and 20-bit census Unknowns are Ω-shaped alias builders:

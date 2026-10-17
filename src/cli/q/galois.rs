@@ -601,9 +601,16 @@ mod complement {
     //!   `--slice i/m` (sweep/count): run every m-th interleaved task with
     //!   offset i — disjoint exact cover, so a big size splits into
     //!   independent runs under a9's ≤1-2h-per-run cap; slice tallies
-    //!   merge by exact addition (unit-tested).
+    //!   merge by exact addition (unit-tested). A sliced run splits at the
+    //!   fixed `SLICE_TASKS` target, so slices cover exactly across thread
+    //!   counts; the task split defines them, so all slices of one size
+    //!   must come from one blam version.
 
     use super::{consumed_mentions, CappedWitnesses, WITNESS_CAP};
+
+    /// Task-split target of a `--slice` run: fixed, so a slice is the same
+    /// set of programs whatever `--threads` the run had.
+    const SLICE_TASKS: usize = 1 << 15;
     use crate::args::{self, Args, R};
     use crate::q::sweep::run_and_summarize;
     use blam::blc::enumerate::{interleave_tasks, run_task, split_tasks};
@@ -984,8 +991,9 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
   --file FILE  unresolved-wire stream (default qcomplement_unresolved.txt);
                sweep truncates it, adjudicate reads it and writes <FILE>.rem
   --slice i/m  run every m-th interleaved task with offset i — a disjoint
-               exact cover, so one size splits into independent runs
-               (sweep/count only)";
+               exact cover at any thread count, so one size splits into
+               independent runs (sweep/count only; take every slice of a
+               size from the same blam version)";
 
     pub fn run(argv: &[String]) -> R<()> {
         if args::wants_help(argv) {
@@ -1097,7 +1105,14 @@ usage: blam q galois complement [LO] [HI] [flags]     (default 46 53)
         let t0 = Instant::now();
         for n in lo..=hi {
             let tn = Instant::now();
-            let mut tasks = interleave_tasks(split_tasks(n, nthreads * 2048));
+            // Slices index the task list, so a sliced run splits at a fixed
+            // target: `i/m` then names the same programs at any thread
+            // count, and slices from different runs still cover exactly.
+            let target = match slice {
+                Some(_) => SLICE_TASKS,
+                None => nthreads * 2048,
+            };
+            let mut tasks = interleave_tasks(split_tasks(n, target));
             if let Some((si, sm)) = slice {
                 tasks = tasks
                     .into_iter()

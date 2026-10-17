@@ -96,7 +96,7 @@ for differential tests, not exhaustive sweeps.
 
 `src/blc/enumerate.rs` generates closed terms directly as `(u64, length)`
 pairs. The enumeration splits into subtree tasks by exact term count — a
-task is expanded while it holds more than `⌈total / target⌉` terms, from a
+task is expanded while it holds more than `⌊total / target⌋` terms, from a
 DP over the grammar's subtree sizes — so no prefix family (the `0000…`
 λ-tower held half of n=41 under a level-wise split) can outweigh a worker's
 share. Tasks are then bit-reversal-interleaved because expensive terms
@@ -318,12 +318,13 @@ or rescue during which the rest of the pool idles. Without `--checkpoint` the
 census hides that tail behind the next size: size n depends on exactly two
 earlier results — size n−2's λ-wrap memo and the no-whnf facts of sizes
 ≤ n−6, since a head of a closed n-bit application has at most n−6 bits — so
-the even and odd sizes run as two lanes, each sequential within itself, and a
-lane waits only for the other lane's sizes ≤ n−6. Every size sees exactly the
-facts the sequential sweep would let it use, so rows are identical; the main
-thread prints them in size order. The lanes are plain threads feeding the
-shared pool, so `--threads 1` cannot deadlock, and `tests/census_lanes.rs`
-holds the pipeline to the sequential path under a watchdog. A checkpointed
+size n+1 can start as soon as size n−1 is final, while size n is still
+running. The census keeps two sizes in flight — it starts n+1, then waits for
+and reports n — so every size sees exactly the facts the sequential sweep
+would let it use, rows are identical, and the main thread prints them in size
+order. Sizes run on plain scoped threads feeding the shared pool, so
+`--threads 1` cannot deadlock, and `tests/census_overlap.rs` holds the overlapped
+path to the sequential one under a watchdog. A checkpointed
 run keeps sizes strictly sequential, so its file stays a single ordered log.
 Per-size `time_s` is then each size's own elapsed time, and overlapping sizes'
 times sum to more than the run's wall time.
