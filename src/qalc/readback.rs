@@ -27,7 +27,7 @@
 //! pinned carriers.
 
 use std::borrow::Cow;
-use std::collections::{hash_map::Entry, HashMap};
+use std::collections::HashMap;
 use std::sync::Arc;
 
 use super::amp::Amp;
@@ -1953,20 +1953,68 @@ impl GramAccumulator {
     }
 }
 
-fn intern_state(
-    ids: &mut HashMap<Arc<NfState>, usize>,
-    order: &mut Vec<Arc<NfState>>,
-    target: NfState,
-) -> usize {
-    match ids.entry(Arc::new(target)) {
-        Entry::Occupied(entry) => *entry.get(),
-        Entry::Vacant(entry) => {
-            let id = order.len();
-            let target = Arc::clone(entry.key());
-            entry.insert(id);
-            order.push(target);
-            id
+/// The carrier walk's discovery index: carrier ids in first-touch order,
+/// each state's content hash computed once and stored beside it, and an
+/// open-addressing table of ids keyed by that stored hash. Growth
+/// re-buckets stored hashes and never re-hashes a state; a probe compares
+/// full structural equality only on a stored-hash hit and allocates
+/// nothing for a duplicate.
+struct CarrierIndex {
+    hashes: Vec<u64>,
+    table: Vec<usize>,
+}
+
+impl CarrierIndex {
+    const EMPTY: usize = usize::MAX;
+
+    fn new() -> Self {
+        Self {
+            hashes: Vec::new(),
+            table: vec![Self::EMPTY; 1 << 10],
         }
+    }
+
+    fn state_hash(state: &NfState) -> u64 {
+        use std::hash::{Hash, Hasher};
+        let mut hasher = std::collections::hash_map::DefaultHasher::new();
+        state.hash(&mut hasher);
+        hasher.finish()
+    }
+
+    /// The id of `target`, appending it to `order` on first touch.
+    fn intern(&mut self, order: &mut Vec<NfState>, target: NfState) -> usize {
+        debug_assert_eq!(order.len(), self.hashes.len());
+        let hash = Self::state_hash(&target);
+        let mask = self.table.len() - 1;
+        let mut slot = hash as usize & mask;
+        loop {
+            match self.table[slot] {
+                Self::EMPTY => break,
+                id if self.hashes[id] == hash && order[id] == target => return id,
+                _ => slot = (slot + 1) & mask,
+            }
+        }
+        let id = order.len();
+        self.table[slot] = id;
+        self.hashes.push(hash);
+        order.push(target);
+        if self.hashes.len() * 4 > self.table.len() * 3 {
+            self.grow();
+        }
+        id
+    }
+
+    fn grow(&mut self) {
+        let mut table = vec![Self::EMPTY; self.table.len() * 2];
+        let mask = table.len() - 1;
+        for (id, &hash) in self.hashes.iter().enumerate() {
+            let mut slot = hash as usize & mask;
+            while table[slot] != Self::EMPTY {
+                slot = (slot + 1) & mask;
+            }
+            table[slot] = id;
+        }
+        self.table = table;
     }
 }
 
@@ -2007,29 +2055,27 @@ pub fn nf_carrier_and_columns_with(
     tick_depth: u64,
     state_cap: usize,
 ) -> Result<NfCarrier, NfError> {
-    // The discovery index and ordered carrier share each immutable state, so
-    // every token, zipper, and residue is stored once. Drop the index and
-    // unwrap the unique ordered owners before returning the public carrier.
-    let start = Arc::new(nf_init());
-    let mut ids: HashMap<Arc<NfState>, usize> = HashMap::new();
-    ids.insert(Arc::clone(&start), 0);
-    let mut order = vec![start];
+    // The ordered carrier owns every state; the discovery index holds only
+    // ids and stored hashes.
+    let mut index = CarrierIndex::new();
+    let mut order = Vec::new();
+    index.intern(&mut order, nf_init());
     let mut columns: Vec<super::wire::Column> = Vec::new();
     let mut at = 0;
     while at < order.len() {
-        let s = Arc::clone(&order[at]);
+        let src = at;
         at += 1;
-        if let NfState::Done { tick, .. } = s.as_ref() {
+        if let NfState::Done { tick, .. } = &order[src] {
             if *tick >= tick_depth {
                 continue;
             }
         }
-        let rows = nf_step_amp(machine, term, s.as_ref(), cert)?;
+        let rows = nf_step_amp(machine, term, &order[src], cert)?;
         let mut col: Vec<super::wire::ColRow> = Vec::with_capacity(rows.len());
         let mut norm = Amp::ZERO;
         for (coefficient, rule, target) in rows {
-            check_inverse(machine, term, &rule, s.as_ref(), &target)?;
-            let id = intern_state(&mut ids, &mut order, target);
+            check_inverse(machine, term, &rule, &order[src], &target)?;
+            let id = index.intern(&mut order, target);
             norm = norm
                 .add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
                 .ok_or(NfError::Capacity)?;
@@ -2041,13 +2087,8 @@ pub fn nf_carrier_and_columns_with(
         if order.len() > state_cap {
             return Err(NfError::StateCap);
         }
-        columns.push((at - 1, col));
+        columns.push((src, col));
     }
-    drop(ids);
-    let order = order
-        .into_iter()
-        .map(|state| Arc::try_unwrap(state).expect("carrier index was dropped"))
-        .collect();
     Ok(NfCarrier { order, columns })
 }
 
@@ -2101,26 +2142,24 @@ pub fn nf_gram_with(
     tick_depth: u64,
     state_cap: usize,
 ) -> Result<super::kernel::GramReport, NfError> {
-    let start = Arc::new(nf_init());
-    let mut ids: HashMap<Arc<NfState>, usize> = HashMap::new();
-    ids.insert(Arc::clone(&start), 0);
-    let mut order = vec![start];
+    let mut index = CarrierIndex::new();
+    let mut order = Vec::new();
+    index.intern(&mut order, nf_init());
     let mut gram = GramAccumulator::default();
     let mut at = 0;
     while at < order.len() {
-        let s = Arc::clone(&order[at]);
         let src = at;
         at += 1;
-        if let NfState::Done { tick, .. } = s.as_ref() {
+        if let NfState::Done { tick, .. } = &order[src] {
             if *tick >= tick_depth {
                 continue;
             }
         }
-        let rows = nf_step_amp(machine, term, s.as_ref(), cert)?;
+        let rows = nf_step_amp(machine, term, &order[src], cert)?;
         let mut column: Vec<(usize, Amp)> = Vec::new();
         let mut col_index: HashMap<usize, usize> = HashMap::new();
         for (coefficient, _rule, target) in rows {
-            let id = intern_state(&mut ids, &mut order, target);
+            let id = index.intern(&mut order, target);
             if let Some(&k) = col_index.get(&id) {
                 column[k].1 = column[k].1.add(coefficient).ok_or(NfError::Capacity)?;
             } else {
