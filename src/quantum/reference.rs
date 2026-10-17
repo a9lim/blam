@@ -92,6 +92,17 @@ fn shifted(t: &QTerm, d: i64, cutoff: u32) -> Option<QTerm> {
     }
 }
 
+/// Does `t` mention a variable free beyond `depth` binders? The closedness
+/// test `instantiate` caches, without building a shifted copy to ask.
+fn has_free(t: &QTerm, depth: u32) -> bool {
+    match t {
+        QTerm::Var(n) => *n > depth,
+        QTerm::Lam(b) => has_free(b, depth + 1),
+        QTerm::App(f, a) => has_free(f, depth) || has_free(a, depth),
+        _ => false,
+    }
+}
+
 /// `body` with variable `depth + 1` (the λ being contracted, seen from
 /// `depth` binders inside the body) replaced by `arg` shifted up by
 /// `depth`, and the body's variables free beyond it lowered by one. `None`
@@ -102,7 +113,7 @@ fn shifted(t: &QTerm, d: i64, cutoff: u32) -> Option<QTerm> {
 fn instantiate(body: &QTerm, arg: &QTerm, depth: u32, closed: &mut Option<bool>) -> Option<QTerm> {
     match body {
         QTerm::Var(n) if *n == depth + 1 => {
-            if depth == 0 || *closed.get_or_insert_with(|| shifted(arg, 1, 1).is_none()) {
+            if depth == 0 || *closed.get_or_insert_with(|| !has_free(arg, 0)) {
                 Some(arg.clone())
             } else {
                 Some(shifted(arg, depth as i64, 1).unwrap_or_else(|| arg.clone()))
