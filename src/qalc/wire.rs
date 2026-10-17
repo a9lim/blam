@@ -221,7 +221,7 @@ fn p_lp_body(t: &mut Toks) -> R<Lp> {
     }
     t.close()?;
     t.close()?;
-    Ok(Lp { occ, slice })
+    Ok(Lp::new(occ, slice))
 }
 
 fn p_lp(t: &mut Toks) -> R<Lp> {

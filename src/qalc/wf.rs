@@ -32,10 +32,7 @@ pub enum Violation {
 }
 
 fn project_lp(lp: &Lp) -> Lp {
-    Lp {
-        occ: lp.occ.clone(),
-        slice: lp.slice.iter().map(project_log).collect(),
-    }
+    Lp::new(lp.occ.clone(), lp.slice.iter().map(project_log).collect())
 }
 
 fn project_alpha(alpha: &Alpha) -> Alpha {

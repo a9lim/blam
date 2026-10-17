@@ -681,10 +681,7 @@ fn compiler_certificate_from_term(term: &Term) -> Result<CertEntries, CompileErr
             && matches!(subterm(term, &continuation), Some(Term::Lam(_)))
             && matches!(subterm(term, &inner), Some(Term::Lam(_)))
         {
-            let invoked = Lp {
-                occ: gate,
-                slice: Vec::new(),
-            };
+            let invoked = Lp::new(gate, Vec::new());
             producers.insert(
                 continuation.clone(),
                 KdKey {

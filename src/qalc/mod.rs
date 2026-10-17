@@ -34,6 +34,7 @@ pub mod mark;
 pub mod readback;
 pub mod semantics;
 pub mod shadow;
+pub mod shared;
 pub mod state;
 pub mod term;
 pub mod wf;

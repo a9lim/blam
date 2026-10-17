@@ -58,6 +58,7 @@ src/qalc/
   wf.rs          the W0-W9 well-formedness subset used by admission
   semantics.rs   total sector selection and public semantic objects
   fasthash.rs    deterministic hasher for lookup-only in-process tables
+  shared.rs      pointer-shared values with cached content hashes
 ```
 
 `src/hash.rs` supplies the dependency-free SHA-256 core shared by qfx

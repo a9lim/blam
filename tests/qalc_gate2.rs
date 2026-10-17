@@ -82,7 +82,7 @@ fn step_paths(
 }
 
 fn mask_lp(lp: &mut Lp) {
-    for entry in &mut lp.slice {
+    for entry in &mut lp.make_mut().slice {
         mask_log(entry);
     }
 }

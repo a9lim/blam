@@ -664,10 +664,7 @@ pub fn step(term: &Term, state: &KState, cert: Option<&CertEntries>) -> Result<V
         let binder = binder_path(term, &core.path).ok_or(Defect::UnboundVar)?;
         let needed = level(&core.path) - level(&binder);
         if core.log.len() < needed {
-            let lp = Lp {
-                occ: core.path.clone(),
-                slice: core.log.clone(),
-            };
+            let lp = Lp::new(core.path.clone(), core.log.clone());
             let mut tape = vec![TapeEntry::Lp(lp)];
             tape.extend_from_slice(&core.tape);
             let mut target = core.clone();

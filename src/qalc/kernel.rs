@@ -946,10 +946,7 @@ fn classical_down(term: &Term, c: &RunCore, t: &Term) -> Result<Vec<Row>, Defect
             if c.log.len() < n {
                 return Err(Defect::LogUnderflow);
             }
-            let lp = Lp {
-                occ: c.path.clone(),
-                slice: c.log[..n].to_vec(),
-            };
+            let lp = Lp::new(c.path.clone(), c.log[..n].to_vec());
             Ok(det(
                 "var",
                 run_t(
