@@ -82,7 +82,7 @@ assert_eq!((nf.to_bits().as_str(), steps), ("0010", 2)); // λx.x
 ```
 
 `classical::machine` is the production engine: a defunctionalized Crégut-style
-strong-normalization machine (~166M β/s single-thread), backed by a
+strong-normalization machine (~170M β/s single-thread), backed by a
 reusable flat `Vec<Node>` pool, with β *and* transition budgets and the
 normal form streamed to a `Sink`. Measuring a gigabyte-scale normal form
 therefore needs no gigabyte-scale output allocation.

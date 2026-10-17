@@ -115,7 +115,7 @@ The rescue cap's headroom over the largest successful rescue is thin (STATUS
 has the numbers): raise `--rescue` before running n=42. The second KN rung's
 64× transition cap reroutes exactly one term in 4..40 (n=39) through
 escalation to the same halt; both transition trims are verdict-identical on
-full sweeps. A census 4..40 takes about 1.5 minutes wall and 23 CPU-minutes on
+full sweeps. A census 4..40 takes about 21 s wall and 5.3 CPU-minutes on
 the M5 Max; user time is the stable number, wall tracks ambient load.
 
 - `classical::machine` (KN machine): every `Sink` implementation must supply

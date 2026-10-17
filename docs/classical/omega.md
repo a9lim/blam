@@ -162,8 +162,8 @@ The rules behind it:
 
 `blam omega leaves 41` runs the census ladder on every closed term of at most
 41 bits. It uses the census's two-phase scheduler: cheap rungs fused with
-generation, then survivors one term at a time. A full run takes 3.9 minutes,
-with 6.3 GB peak.
+generation, then survivors one term at a time. A full run takes 47 s on the
+M5 Max, with 5.8 GB peak footprint.
 
 - **One judgement per term.** Each open term M is judged exactly once,
   through its minimal closure λ^maxfree(M) M. A closed term whose outermost

@@ -109,11 +109,18 @@ starvation.
 - terms live in a reusable flat `Pool` of `Node`s addressed by `u32` indices;
 - the environment and control stacks are explicit, so evaluation does not
   depend on the native call stack;
-- the pool is cleared and reused between terms; and
+- the pool is cleared and reused between terms;
 - normal-form bits stream into a `Sink`, allowing size measurement without
   materializing large outputs. `Sink::var` is a required method, never
   defaulted: a default that spelled `1ⁿ0` out through `one`/`zero` would
-  cost O(n) per variable in an n nothing charges for.
+  cost O(n) per variable in an n nothing charges for; and
+- var→var indirection is skipped, not stepped: a closure whose term is a bare
+  `Var` only re-reads another, strictly older, immutable cell, so the first
+  entry walks the chain to its first non-`Var` closure or rigid level and
+  rewrites every cell on it to jump there, charging the skipped transitions
+  exactly. Verdicts, β and transition counts, fuel-death counters, abort
+  points, and readback are the plain machine's, which stays in the tests as
+  the oracle. The qBLC machine does the same over its shared branch arena.
 
 The KN machine is equivalent to normalization by evaluation under
 defunctionalization and preserves leftmost-outermost β-counts. Its measured

@@ -5,7 +5,7 @@ boundaries, and ordered next work. `README.md` is the public map, the domain
 documents under `docs/` state durable contracts and research records, and
 canonical outputs live in `data/`. Superseded state lives in Git history.
 
-Last updated: 2026-10-16.
+Last updated: 2026-10-17.
 
 ## Classical
 
@@ -13,11 +13,16 @@ Last updated: 2026-10-16.
 
 - `data/classical/census_table.txt` covers every closed BLC term from 4 through
   41 bits: 526,039,969 programs, 99.66% of which normalize. On the M5 Max a
-  fresh census 4..40 takes 92 s wall and 1,377 s user (4.6 GB peak footprint),
-  bit-identical to the canonical rows; the canonical table's own per-size
-  times sum to 225 s for 4..41, of which n=41 is 124 s. Wall time tracks
-  ambient load; user time is the stable number. Single-thread KN throughput is
-  about 166M β-contractions per second.
+  fresh census 4..41 takes 46 s wall and 717 s user (5.7 GB peak footprint),
+  and 4..40 takes 21 s wall and 315 s user (4.6 GB), bit-identical to every
+  canonical row and `#` line (the table's own per-size times, from an older
+  binary, sum to 225 s). Wall time tracks ambient load; user time is the
+  stable number. Most of the remaining CPU is the KN rescue and escalation of
+  the eventual Unknowns. Single-thread KN throughput is about 170M
+  β-contractions per second on β-bound runs; the machine skips var→var
+  indirection chains with exact transition accounting (82% of rescue
+  transitions on the 36..37-bit frontier), so transition-bound rescues run
+  10-13× faster than plain stepping.
 - **BBλ(33) = 1,812**, **BBλ(34) = 327,686**, and
   **BBλ(35) = 38,127,987,424,941** normal-form bits, exact by the exhaustive
   Rust census plus kernel-checked adjudications of every program the census
@@ -72,7 +77,7 @@ That pins nine bits; the census alone pins two.
 - **Lower bound:** the census's halting mass, the eight certified halters, and
   1.375×10⁻³ of certified weakly normalizing mass at 42..240 bits, 73.3% of
   that range. An exact integer DP counts a sound label function over leaf
-  tables from `blam omega leaves 41` (3.9 minutes), which judges every term
+  tables from `blam omega leaves 41` (47 s), which judges every term
   through its minimal closure on the census ladder. A brute-force checker
   matches every DP array over 8.4M term instances, and Codex audited the leaf
   table, the DP, and the Rust instrument independently.
@@ -130,8 +135,8 @@ certificates, and their wire identities; the Lean development has no sorries
 or mathlib, and its axioms are `propext` and `Quot.sound`.
 `scripts/bb-regen.sh` audits the BB registry's axioms, refreshes the
 frontier, and recomputes the exact bounds. A fresh census 4..40 is
-bit-identical to every canonical row. Both release suites pass: 326 tests
-with all features (three opt-in tests ignored) and 277 with default features.
+bit-identical to every canonical row. Both release suites pass: 347 tests
+with all features (three opt-in tests ignored) and 298 with default features.
 
 ### Self-interpreter and universal machine
 
@@ -199,7 +204,9 @@ Artifacts are in `data/golf/machines/`.
 ### Operator census and unknown frontier
 
 - `data/quantum/census_table.txt` covers the full 4..41 population at β 4,096,
-  transitions 2²⁶, 12 live qubits, and 4,096 branches, in about 30 minutes.
+  transitions 2²⁶, 12 live qubits, and 4,096 branches, in 12 s wall and
+  200 s user; a regeneration matches the file in every byte but its header's
+  title line, which predates the operator's `M_Fock` name.
   `Omega_success,<=41 = 3424188513 / 2^40` exactly.
 - The one-qubit operator is positive definite, with named-state ranking
   `|0> >> |+> > T|+> > |-> >> |1>`. The first entangled successful outputs
@@ -267,7 +274,7 @@ agree at the complete effect-tree level through 24 bits (`blam q selfint 24`:
 19,014 programs verified, 34 skipped as unresolved, 0 trace or pure-NF
 mismatches; witness45 and the poisoned-seed canary pass), and Lean pins the
 wire identities and quote linearity; the bisimulation obligations are open
-(`quantum/bisimulation.md`). The ≤24 sweep takes 1.5 s wall and 20 CPU-seconds
+(`quantum/bisimulation.md`). The ≤24 sweep takes 1.5 s wall and 18 CPU-seconds
 on the M5 Max.
 
 `blam q census --cond-k K` implements the conditional family `G_k`, but no
@@ -350,9 +357,11 @@ protocol header (SHA-256 of the 1,024-step report
 `55fb31c008c77bf98418f2a2606bde6ba7af1d3c32d149866a9e96bc900c9671`). All runs
 select 18,858 validated Gate-1 sectors and 190 conservative sectors, find 85
 programs with coherent output blocks, peak at support 4, and hit no capacity.
-The 1,024-step run takes 21.6 s wall: its 1,000-state preflight admits 18,858
-programs, and the 190 others retry the 300,000-state selector in an
-eight-worker pool and land conservative.
+The 1,024-step run takes 1.1 s wall and 10 s user (4.1 GB peak RSS): its
+1,000-state preflight admits 18,858 programs, and the 190 others retry the
+300,000-state selector, queued longest-probe-first over every thread, and land
+conservative. The timings in the table below are the record runs'; the current
+binary runs n=25 at 1,024 steps in 0.7 s.
 
 Sizes 25..28, one shared 900-second budget per size:
 

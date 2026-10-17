@@ -175,7 +175,13 @@ plus its own checkpoint codec.
 primitives, handles, and a branch-local store. It shares the reference
 store-effect methods rather than reimplementing quantum algebra. The fast path
 preserves the complete leaf distribution: fates, normal forms, stores, exact
-masses, and classical β-contraction counts.
+masses, and classical β-contraction counts. Like the classical machine it skips
+var→var indirection chains with exact transition accounting (`Val::Hop`): every
+β of an Ω-shaped divergent program binds one more bare-`Var` alias, so a
+β-4,096 Unknown otherwise spends about 8.4M transitions re-reading cells. The
+env arena is shared by every branch of a run and cells are immutable, so a
+chain one branch resolves is valid in all of them; jumps are charged against
+the remaining transition budget, which is an unrestricted `u64`.
 
 ### Trusted skeleton checker
 
