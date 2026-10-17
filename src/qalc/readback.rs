@@ -106,16 +106,73 @@ fn det(rule: &'static str, s: NfState) -> Vec<NfRow> {
 pub(super) fn kernel_token(t: &RunCore) -> RunCore {
     let mut out = t.clone();
     for e in &mut out.tape {
-        if *e == TapeEntry::BulletBa {
+        if matches!(e, TapeEntry::BulletBa) {
             *e = TapeEntry::Bullet;
         }
     }
     out
 }
 
+/// Run `f` on the plain-bullet kernel state of `t` — `KState::Run(
+/// kernel_token(t))` — built in a per-thread scratch state whose vectors
+/// keep their capacity between steps, so the adapter allocates nothing.
+/// The scratch is overwritten field by field from `t` before every use.
+fn with_kernel_state<R>(t: &RunCore, f: impl FnOnce(&super::state::KState) -> R) -> R {
+    use super::state::KState;
+    use std::cell::RefCell;
+
+    type Empty = (
+        Shared<Vec<super::mark::Frame>>,
+        Shared<Vec<super::mark::KsHead>>,
+    );
+    thread_local! {
+        static SCRATCH: RefCell<(KState, Empty)> = RefCell::new({
+            let empty: Empty = (Vec::new().into(), Vec::new().into());
+            let state = KState::Run(RunCore {
+                path: Vec::new(),
+                d: Vert::D,
+                log: Vec::new(),
+                tape: Vec::new(),
+                vb: None,
+                rs: empty.0.clone(),
+                ks: empty.1.clone(),
+            });
+            (state, empty)
+        });
+    }
+    SCRATCH.with(|cell| {
+        let mut scratch = cell.borrow_mut();
+        let (slot, empty) = &mut *scratch;
+        let KState::Run(core) = slot else {
+            unreachable!("the scratch kernel state is always a run");
+        };
+        core.path.clone_from(&t.path);
+        core.d = t.d;
+        core.log.clone_from(&t.log);
+        core.tape.clear();
+        core.tape.extend(t.tape.iter().map(|e| match e {
+            TapeEntry::BulletBa => TapeEntry::Bullet,
+            e => e.clone(),
+        }));
+        core.vb = t.vb;
+        core.rs = t.rs.clone();
+        core.ks = t.ks.clone();
+        let out = f(slot);
+        // Release the borrowed entries now (capacity stays) rather than
+        // holding them, and the shared registers, until the next step.
+        if let KState::Run(core) = slot {
+            core.log.clear();
+            core.tape.clear();
+            core.rs = empty.0.clone();
+            core.ks = empty.1.clone();
+        }
+        out
+    })
+}
+
 pub(super) fn composed_token(mut t: RunCore) -> RunCore {
     for e in &mut t.tape {
-        if *e == TapeEntry::Bullet {
+        if matches!(e, TapeEntry::Bullet) {
             *e = TapeEntry::BulletBa;
         }
     }
@@ -191,6 +248,24 @@ fn holes(tree: &Nf) -> Vec<Path> {
     out
 }
 
+/// Does `tree` contain an open hole? `!holes(tree).is_empty()` without
+/// building the address list.
+fn has_hole(tree: &Nf) -> bool {
+    let mut stack = vec![tree];
+    while let Some(node) = stack.pop() {
+        match node {
+            Nf::Hole { .. } => return true,
+            Nf::Lam(b) => stack.push(b),
+            Nf::App(f, a) => {
+                stack.push(a);
+                stack.push(f);
+            }
+            Nf::Var(_) | Nf::Gate(_) => {}
+        }
+    }
+    false
+}
+
 fn leading_lambdas(tree: &Nf) -> usize {
     let mut n = 0;
     let mut cur = tree;
@@ -220,8 +295,28 @@ pub fn canonical_boolean(tree: &Nf) -> Option<u8> {
 // ---------------------------------------------------------------------------
 // Zipper operations.
 
+/// The first open hole in preorder — `holes(tree).first()` — found by a
+/// preorder walk that stops there and builds only that one address.
 fn next_cursor(tree: &Nf) -> Option<Path> {
-    holes(tree).into_iter().next()
+    // (node, depth of its address, direction taken into it)
+    let mut stack: Vec<(&Nf, usize, Option<Dir>)> = vec![(tree, 0, None)];
+    let mut path: Path = Vec::new();
+    while let Some((node, depth, dir)) = stack.pop() {
+        path.truncate(depth.saturating_sub(1));
+        if let Some(d) = dir {
+            path.push(d);
+        }
+        match node {
+            Nf::Hole { .. } => return Some(path),
+            Nf::Lam(b) => stack.push((b, depth + 1, Some(Dir::B))),
+            Nf::App(f, a) => {
+                stack.push((a, depth + 1, Some(Dir::A)));
+                stack.push((f, depth + 1, Some(Dir::F)));
+            }
+            Nf::Var(_) | Nf::Gate(_) => {}
+        }
+    }
+    None
 }
 
 fn fill(z: &Zipper, value: Nf) -> Result<Zipper, ComposedDefect> {
@@ -453,7 +548,9 @@ fn scope_residue(
     z: &Zipper,
 ) -> Result<(ScopeResidue, Shared<Vec<BinderMark>>), ComposedDefect> {
     let output = at(&z.tree, &rb.output)?;
-    if prefix.iter().all(|e| *e == TapeEntry::BulletBa) && prefix.len() == leading_lambdas(output) {
+    if prefix.iter().all(|e| matches!(e, TapeEntry::BulletBa))
+        && prefix.len() == leading_lambdas(output)
+    {
         return Ok((
             ScopeResidue::Pure {
                 output: rb.output.clone(),
@@ -493,7 +590,7 @@ fn scope_residue(
 fn terminal_garbage(token: &RunCore, rb: &Rb, prefix: &[TapeEntry], z: &Zipper) -> TerminalGarbage {
     match virtual_prefix_code(prefix, &z.tree, &rb.output, &rb.code, &z.binders) {
         None => {
-            let output_determines_prefix = prefix.iter().all(|e| *e == TapeEntry::BulletBa)
+            let output_determines_prefix = prefix.iter().all(|e| matches!(e, TapeEntry::BulletBa))
                 && prefix.len() == leading_lambdas(&z.tree);
             let carrier = if output_determines_prefix {
                 None
@@ -559,7 +656,7 @@ fn first_rb(tape: &[TapeEntry]) -> Option<(&[TapeEntry], &Rb, &[TapeEntry])> {
 /// Nearest scope delimiter after the complete leading BA prefix.
 fn rb_after_output_bullets(tape: &[TapeEntry]) -> Option<(usize, &Rb, &[TapeEntry])> {
     let mut count = 0;
-    while count < tape.len() && tape[count] == TapeEntry::BulletBa {
+    while count < tape.len() && matches!(tape[count], TapeEntry::BulletBa) {
         count += 1;
     }
     match tape.get(count) {
@@ -577,7 +674,7 @@ fn enter_shape<'a>(
 ) -> Result<Option<(&'a Rb, Path, Path, Path)>, ComposedDefect> {
     if token.d != Vert::U
         || token.path.last() != Some(&Dir::F)
-        || token.tape.first() != Some(&TapeEntry::BulletBa)
+        || !matches!(token.tape.first(), Some(TapeEntry::BulletBa))
     {
         return Ok(None);
     }
@@ -607,14 +704,14 @@ fn enter_shape<'a>(
 fn head_shape<'a>(term: &Term, token: &'a RunCore) -> Option<(usize, &'a Lp, usize, &'a Rb)> {
     let tape = &token.tape;
     let mut leading = 0;
-    while leading < tape.len() && tape[leading] == TapeEntry::BulletBa {
+    while leading < tape.len() && matches!(tape[leading], TapeEntry::BulletBa) {
         leading += 1;
     }
     let Some(TapeEntry::Lp(lp)) = tape.get(leading) else {
         return None;
     };
     let mut arity_end = leading + 1;
-    while arity_end < tape.len() && tape[arity_end] == TapeEntry::BulletBa {
+    while arity_end < tape.len() && matches!(tape[arity_end], TapeEntry::BulletBa) {
         arity_end += 1;
     }
     let Some(TapeEntry::Rb(rb)) = tape.get(arity_end) else {
@@ -646,7 +743,7 @@ fn neutral_probe_shape<'a>(
     let TapeEntry::Lp(lp) = &tape[0] else {
         return Ok(None);
     };
-    if tape[1] != TapeEntry::BulletBa || tape[2] != TapeEntry::BulletBa {
+    if !matches!(tape[1], TapeEntry::BulletBa) || !matches!(tape[2], TapeEntry::BulletBa) {
         return Ok(None);
     }
     let TapeEntry::Mu(gate) = &tape[3] else {
@@ -669,7 +766,7 @@ fn neutral_probe_shape<'a>(
         return Ok(None);
     };
     let mut extra_end = 4;
-    while extra_end < tape.len() && tape[extra_end] == TapeEntry::BulletBa {
+    while extra_end < tape.len() && matches!(tape[extra_end], TapeEntry::BulletBa) {
         extra_end += 1;
     }
     let Some(TapeEntry::Rb(rb)) = tape.get(extra_end) else {
@@ -1104,7 +1201,7 @@ fn nf_step_partial(
 
     if token.d == Vert::D
         && matches!(code, Term::Lam(_))
-        && token.tape.first() == Some(&TapeEntry::BulletBa)
+        && matches!(token.tape.first(), Some(TapeEntry::BulletBa))
     {
         let mut path = token.path.clone();
         path.push(Dir::B);
@@ -1200,7 +1297,7 @@ fn nf_step_partial(
 
     if token.d == Vert::U
         && token.path.last() == Some(&Dir::F)
-        && token.tape.first() == Some(&TapeEntry::BulletBa)
+        && matches!(token.tape.first(), Some(TapeEntry::BulletBa))
     {
         let token2 = RunCore {
             path: token.path[..token.path.len() - 1].to_vec(),
@@ -1222,8 +1319,8 @@ fn nf_step_partial(
 
     // A completed child returns forward.
     if let Some((prefix, rb, tail)) = first_rb(&token.tape) {
-        let subtree_closed = holes(at(&zipper.tree, &rb.output)?).is_empty();
-        let lambdas_match = !prefix.iter().all(|e| *e == TapeEntry::BulletBa)
+        let subtree_closed = !has_hole(at(&zipper.tree, &rb.output)?);
+        let lambdas_match = !prefix.iter().all(|e| matches!(e, TapeEntry::BulletBa))
             || leading_lambdas(at(&zipper.tree, &rb.output)?) == prefix.len();
         let at_scope_root = token.d == Vert::U && token.path == rb.code;
         if at_scope_root && subtree_closed && lambdas_match && rb.pending.is_empty() {
@@ -1249,11 +1346,10 @@ fn nf_step_partial(
     }
 
     // Kernel steps see exactly their audited plain-bullet alphabet.
-    let kernel_state = super::state::KState::Run(kernel_token(token));
-    let rows = match machine {
-        MachineKind::Gate1 => step(term, &kernel_state, cert),
-        MachineKind::Gate2 => super::shadow::step(term, &kernel_state, cert),
-    }?;
+    let rows = with_kernel_state(token, |kernel_state| match machine {
+        MachineKind::Gate1 => step(term, kernel_state, cert),
+        MachineKind::Gate2 => super::shadow::step(term, kernel_state, cert),
+    })?;
     if rows.is_empty() {
         return Ok(error_row("stuck", token, zipper));
     }
@@ -1312,8 +1408,8 @@ fn return_successor(token: &RunCore, zipper: &Zipper) -> Result<Option<NfRun>, C
     let Some((prefix, rb, tail)) = first_rb(&token.tape) else {
         return Ok(None);
     };
-    let subtree_closed = holes(at(&zipper.tree, &rb.output)?).is_empty();
-    let lambdas_match = !prefix.iter().all(|e| *e == TapeEntry::BulletBa)
+    let subtree_closed = !has_hole(at(&zipper.tree, &rb.output)?);
+    let lambdas_match = !prefix.iter().all(|e| matches!(e, TapeEntry::BulletBa))
         || leading_lambdas(at(&zipper.tree, &rb.output)?) == prefix.len();
     let at_scope_root = token.d == Vert::U && token.path == rb.code;
     let Some(LogEntry::Rbl(address)) = token.log.first() else {
@@ -1324,7 +1420,7 @@ fn return_successor(token: &RunCore, zipper: &Zipper) -> Result<Option<NfRun>, C
         && lambdas_match
         && address.output == rb.output
         && address.code == rb.code
-        && tail.first() == Some(&TapeEntry::BulletBa))
+        && matches!(tail.first(), Some(TapeEntry::BulletBa)))
     {
         return Ok(None);
     }
@@ -1573,7 +1669,7 @@ pub fn enter_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compose
     let NfState::Run(NfRun { token, zipper }) = target else {
         return Err(ComposedDefect::Inverse);
     };
-    if token.d != Vert::D || token.tape.len() < 2 || token.tape[1] != TapeEntry::BulletBa {
+    if token.d != Vert::D || token.tape.len() < 2 || !matches!(token.tape[1], TapeEntry::BulletBa) {
         return Err(ComposedDefect::Inverse);
     }
     let Some(LogEntry::Rbl(address)) = token.log.first() else {
@@ -1670,7 +1766,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
         || token.vb.is_some()
         || token.log.len() != 1
         || token.tape.len() < 3
-        || token.tape[1] != TapeEntry::BulletBa
+        || !matches!(token.tape[1], TapeEntry::BulletBa)
     {
         return Err(ComposedDefect::Inverse);
     }
@@ -1702,7 +1798,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
     // the gate spine arity: first argument is the current unarmed
     // cursor, all later arguments remain armed.
     let mut arity = 1;
-    while 1 + arity < token.tape.len() && token.tape[1 + arity] == TapeEntry::BulletBa {
+    while 1 + arity < token.tape.len() && matches!(token.tape[1 + arity], TapeEntry::BulletBa) {
         arity += 1;
     }
     let mut suffix = vec![Dir::F; arity - 1];

@@ -508,7 +508,7 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                 return err_full("no-instance", c);
             };
             let mut j = 0;
-            while j < c.tape.len() && c.tape[j] == TapeEntry::Bullet {
+            while j < c.tape.len() && matches!(c.tape[j], TapeEntry::Bullet) {
                 j += 1;
             }
             let dead = ks_dead_keys(&c.ks);
