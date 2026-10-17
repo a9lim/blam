@@ -10,19 +10,18 @@ BBλ(35) = 38,127,987,424,941 normal-form bits.
 
 Here BBλ(n) maximizes the BLC wire size of a full β-normal form over
 closed programs of **exactly n bits**. It is not the step-count busy beaver.
-The census had two unresolved programs at 33 bits and ten at 34; the
-34-bit lambda wrap of loop32 was already a checked Ratchet exclusion.
-The eleven remaining programs each have a Lean proof of
-`¬ HasNormalForm`, including their exact wire identity. At 35 bits, the next
-eighteen frontier programs split into sixteen divergent programs and two
-halters whose outputs exceed the ladder's resource limits. All eighteen now
-have kernel-checked adjudications.
+The census leaves two programs unresolved at 33 bits and ten at 34; one of the
+34-bit ones is loop32's lambda wrap, a Ratchet kill. The other eleven each
+have a Lean proof of `¬ HasNormalForm`, including their exact wire identity.
+The eighteen unresolved programs at 35 bits split into sixteen divergent
+programs and two halters whose outputs exceed the ladder's resource limits;
+all eighteen have kernel-checked adjudications.
 
 **Proof boundary.** Lean checks these exclusions under arbitrary β reduction,
-not merely divergence of a bounded evaluator. The exhaustive enumeration,
-previously adjudicated programs, and maximum-output measurements still rely
-on the Rust census. This is the same boundary as the established BBλ(32)
-result; it is not an end-to-end formalization of the census.
+not merely divergence of a bounded evaluator. The exhaustive enumeration, the
+census's own adjudications, and the maximum-output measurements rely on the
+Rust census. This is the same boundary as the established BBλ(32) result; it
+is not an end-to-end formalization of the census.
 
 **Attribution.** Tromp's checked-in `ref/AIT/BB/BB.txt`, around lines 65–258,
 already gives hand arguments for these programs. The contribution here is
@@ -32,7 +31,9 @@ project's certificate accounting, rather than new busy-beaver values.
 ## The eleven 33/34-bit seeds
 
 The input ledger is `data/certificates/bb_seeds.tsv`. Names below are in
-the Lean `Blc` namespace; the listed proof files live under `lean/Blc/`.
+the Lean `Blc` namespace. `BB34Binary` and `BB34Triple*` are namespaces in
+`lean/Blc/BB33First.lean`, and `BB34.SelfArgument`/`BB34.Duplicate` live in
+`lean/Blc/BB34.lean`; the rest are modules of the same name.
 
 | bits | proof | mechanism |
 |---|---|---|
@@ -200,7 +201,7 @@ generator work is not the engine's reduction count.
 
 ```
 sh scripts/bb-regen.sh
-python tools/certificates/bb35_large.py --check
+python3 tools/certificates/bb35_large.py --check
 sh scripts/spot-check.sh 4 35
 cd lean && lake build Certs BusyBeaver
 ```
@@ -228,6 +229,6 @@ leaf table and conservative tail DP unchanged. `scripts/omega-regen.sh
 --reuse-leaves` refreshes the true-Ω bound without rerunning unchanged ladder
 leaf judgments. CI checks both generators, the proof registry, and exact bounds.
 
-The remaining frontier and next work live in `docs/STATUS.md`. No new
-automatic discovery class or census-engine special case is introduced by
-these direct proofs.
+These proofs are direct: they add no automatic discovery class and no
+census-engine special case. The remaining frontier and next work live in
+`../../STATUS.md`.

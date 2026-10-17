@@ -21,10 +21,13 @@ The pillar implements:
 - checked finite Gate-1 admission with a conservative total fallback; and
 - exact `U`, `mu_p`, `rho_p`, finite `M`, and `Omega_qALC` approximants.
 
-`src/qalc/` depends only on `quantum::scalar::Dw` and `crate::hash` outside its
-own tree. It adds no traits or configuration to the classical or qBLC pillars.
-The classical census and qBLC operator census must remain bit-identical with
-qALC present or absent.
+Outside its own tree, `src/qalc/` reads only `quantum::scalar` (`Dw`,
+`ExactSum`, and the `K_CAP`/`K_CAP_ACCUM` limits), `crate::hash`, and
+`blc::Term` for the BLC-to-qALC conversion `term::from_blc`. It adds no traits
+or configuration to the classical or qBLC pillars. The classical census and
+qBLC operator census must remain bit-identical with qALC present or absent;
+that isolation rests on this import discipline and on the census spot-check,
+not on a dedicated test.
 
 The population census remains a separate measured layer over this reference
 API. `blam qalc census` supplies the ordinary BLC enumerator, `p h t`
@@ -127,7 +130,7 @@ ordinary non-image selection rather than inheriting a certificate.
 `U` is the exact one-step sparse linear extension of the selected machine.
 Halt and error sectors retain their predecessor information and advance on
 unilateral tick tails. `mu_p` and `rho_p` are finite-time observations of
-that same evolution; `finite_M` and `omega_qalc_approximant` add exact Kraft
+that same evolution; `finite_m` and `omega_qalc_approximant` add exact Kraft
 weights over finite program sets.
 
 ## 6. Differential evidence
@@ -195,16 +198,16 @@ manual proof-surface checks, run only when that surface intentionally changes.
 The path-scoped qALC CI checks fixture determinism under two hash seeds, while
 ordinary CI owns the Rust differential suites. Rust tests also
 pin norm equality, monotone halt mass, orthonormal columns, effect-free
-conservativity, HH cancellation, H-NOT'-H coherence, the negative witness,
-compiler cleanliness, and cross-pillar isolation.
+conservativity (a unit test in `admission.rs`), HH cancellation, H-NOT'-H
+coherence, the negative witness, and compiler cleanliness.
 
 ## 8. Boundaries
 
 The public semantic claim is exact for every finite closed input sector under
 the total selector. The finite Gate-1 certificates and concrete Lean mirrors
-do not prove a uniform raw-WF lifecycle theorem. Raw-WF recall is known to be
-noninjective; admission checks the stronger property only on complete
-reachable carriers.
+do not prove a uniform lifecycle theorem. The epoch-bearing recall row is
+injective, and admission checks the stronger source-projection RRI predicate
+only on complete reachable carriers.
 
 The ambient lifecycle/minimal-carrier theorem, general probe-exit
 classification, and broader arrival/pop determinacy are optional research

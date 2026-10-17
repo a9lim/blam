@@ -5,14 +5,13 @@
 # data/certificates/{ratchet_kills,bb_kills,bb_halts}.tsv; the subtraction
 # identity (raw = frontier + adjudications present, zero overlap) is reported.
 #
-# The 4..40 prefix is about six minutes wall on the M5 Max under the
-# two-phase group scheduler (two 2026-08-07 runs, 323.6 s and 397.9 s;
-# user time ~1,980 s each is the stable number — wall tracks ambient
-# load). Full 4..41 has not been re-timed since the scheduler landed,
-# so its last measured 16.5 min stands only as an upper bound.
-# n>=42 FIRST needs a --rescue raise — the max successful rescue at
+# The 4..40 prefix takes about 1.5 minutes wall and 23 CPU-minutes on the
+# M5 Max (2026-10-16: 92 s wall, 1,377 s user); user time is the stable
+# number, wall tracks ambient load. The canonical 4..41 table's per-size
+# times sum to 225 s.
+# n>=42 FIRST needs a --rescue raise — the max successful rescue through
 # n=41 is 9,457,564 beta against the 10^7 cap, 1.06x headroom
-# (AGENTS.md, The engines); a9 decides the new cap.
+# (docs/STATUS.md); a9 decides the new cap.
 #
 # Outputs install into data/ only when the full canonical range is run;
 # partial ranges land in tmp/census-regen/ for inspection.

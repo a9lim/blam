@@ -9,16 +9,19 @@ The classical pillar turns binary lambda calculus into an exact experimental
 machine for algorithmic information theory. Its principal outputs are:
 
 - the exhaustive halt/diverge/unknown census of closed BLC terms by wire size;
-- BBλ lower bounds from the largest computed normal forms;
-- exact finite-range Solomonoff mass, prefix complexity, and Ω brackets;
+- BBλ values and lower bounds from the largest computed normal forms, exact
+  where checked adjudications close a size (`certificates/busy-beaver.md`);
+- exact finite-range Solomonoff mass, prefix complexity, and Ω brackets, and
+  certified bounds on the true Ω over all sizes (`omega.md`);
 - the speed-prior (Levin) surface: S(x), Kt(x), depth⁰(x), certified
   Ω_speed brackets, and per-gauge time spectra (`speed.md`);
 - a mechanically checked frontier of unresolved programs; and
-- reusable divergence certificates whose accepted instances are replayed in
-  Lean.
+- reusable divergence certificates and direct proofs whose accepted
+  instances are replayed in Lean.
 
 The workload determines the architecture. There are 526,039,969 closed terms
-through 41 bits and the population grows by about 1.96× per bit. Roughly 99.7%
+through 41 bits, and the population grows by about 1.85× per bit at the top
+of that range (tending to about 1.96×). Roughly 99.7%
 of short closed terms normalize, usually in one β-step; deep reduction is
 concentrated in a tiny busy-beaver and self-interpreter tail. Enumeration
 therefore cares first about fixed per-term overhead and only second about peak
@@ -38,7 +41,7 @@ BLC uses the prefix code
 
 Variables are 1-indexed de Bruijn indices: `Var(1)` is bound by the nearest
 enclosing lambda. For a closed term with L lambdas, A applications, and
-X = Σ indices,
+X = Σ (index − 1) over variable occurrences,
 
 ```text
 |M| = 2L + 4A + 2 + X.
@@ -172,6 +175,13 @@ discovery stays off the default public surface. Accepted candidates are
 rechecked by the trusted layer and then emitted as Lean data by
 `blam cert lean`. The certificate contract is `certificates/specification.md`.
 
+Direct Lean proofs form a second, separate ledger: seed terms in
+`data/certificates/bb_seeds.tsv` (divergent) and `bb_halt_seeds.tsv` (exact
+halting outputs), which `scripts/bb-regen.sh` kernel-checks, extends to every
+census lambda wrap, and installs as `bb_kills.tsv` and `bb_halts.tsv`. The
+certified frontier is the raw census unknown set minus both kill ledgers and
+the certified halters; the census rows themselves never change.
+
 ### Drivers
 
 There is one binary, `blam` (`src/cli/`), whose command table is grouped by
@@ -180,11 +190,13 @@ epistemic tier rather than by typing depth:
 - engines: `blam normalize` (KN on a named term), `blam adjudicate` (the full
   ladder, verbosely or streamed over a file);
 - measurements: `blam census` (exhaustive behavioral census and BBλ),
-  `blam solomonoff` (exact finite-range m, K, and Ω accounting);
+  `blam solomonoff` (exact finite-range m, K, Ω, and speed-prior
+  accounting), `blam omega leaves` (leaf tables for the true-Ω bounds);
 - certificates: `blam cert search` (discovery), `blam cert lean` (Lean
   generation), `blam cert diag` (where discovery drops a term);
 - instruments: `blam trace` (reduction-shape classification), `blam slots`
-  (self-interpreter slot search).
+  and `blam selfint` (self-interpreter and universal-machine searches),
+  `blam golf` (size optimizers for BLC programs).
 
 Research instruments and the untrusted discovery surface live behind the
 non-default `lab` feature; a binary built without it still *recognises* their
@@ -281,7 +293,7 @@ parallelism changes instead. Each group runs in two phases:
 - **Phase A** fuses generation with the memo lookups and the ladder's cheap
   half, so a task's cost is roughly proportional to how many terms it emits —
   which is what a range split balances well. It returns the ~0.3% of terms
-  that survive rung 1.
+  that survive the cheap half.
 - **Phase B** re-schedules those survivors one at a time through an atomic
   counter, each worker holding one pool and machine for its whole run of the
   queue, so the longest single term costs its group its own runtime and
@@ -355,25 +367,27 @@ Every engine change must satisfy:
    without the `ref/AIT` clone);
 4. the relevant `scripts/spot-check.sh` census rows, with halt counts
    bit-identical to `data/classical/census_table.txt`; and
-5. certificate recertification (`scripts/recert-kills.sh`) and
-   `lake build Certs` when certificate paths or data change.
+5. certificate recertification (`scripts/recert-kills.sh`, `scripts/bb-regen.sh`)
+   and `lake build Certs BusyBeaver` when certificate paths or data change.
 
 The fast machine is exhaustively lockstep-tested against the reference over
 all closed terms through 18 bits plus targeted deep vectors, and the two-phase
 scheduler is pinned against an unsplit one-pass sweep, size by size, through
 28 bits. The certificate soundness battery passes 196,848 provable halters
-through the exact discovery ladder and requires zero certificate fires. All
-The canonical certificate kills are additionally kernel-checked in Lean with wire-identity
-theorems.
+through the exact discovery ladder and requires zero certificate fires. Every
+certificate kill and direct BB proof is kernel-checked in Lean with a
+wire-identity theorem.
 
 Independent Python tools remain deliberately separate where shared
 implementation would weaken the evidence:
 
 - `tools/blcc.py` checks compilation;
 - `tools/certificates/loop32_trace.py` checks the foundational growing loop;
-- `tools/self-interpreter/harness.py` (with `lc.py`, `db.py`) checks
-  interpreter candidates, `search_fix.py` runs the knot search, and
-  `beta_search.py` the βη component search that reaches upstream's 168;
+- `tools/self-interpreter/` (`harness.py` with `lc.py` and `db.py`,
+  `battery.py`, `search_fix.py`, `beta_search.py`, `module_bound.py`) checks
+  interpreter candidates and reproduces the self-interpreter searches
+  (`self-interpreter/interpreter.md`);
+- `tools/omega/` checks the true-Ω DP by brute force (`omega.md` §4);
 - `tools/bbtxt.py` cross-matches Tromp's `BB.txt` `-- TODO:` fail traces —
   the terms his own BB run could not adjudicate — against our census
   unknowns, encoding his de Bruijn notation to BLC bits and reporting, per
@@ -434,11 +448,14 @@ The durable engine contract ends here. Moving measurements and work ordering
 belong in `../STATUS.md`.
 
 - Speed-prior (Levin) surface contract: `speed.md`
+- Certified bounds on the true Ω: `omega.md`
+- The coding theorem measured on the census: `coding.md`
 - Certificate classes and their proof obligations:
   `certificates/specification.md`
 - Frontier classification evidence: `certificates/frontier.md`
-- Classical self-interpreter theory and exhaustive search:
-  `self-interpreter/`
+- Direct BB(33/34/35) proofs: `certificates/busy-beaver.md`
+- The self-interpreter and universal machine: `self-interpreter/`
+- Size optimization of Tromp's AIT programs: `golf.md`
 - Quantum counterpart: `../quantum/architecture.md`
 - Formal proofs: `../../lean/README.md`
 - Canonical classical evidence: `../../data/classical/`

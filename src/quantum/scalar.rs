@@ -4,7 +4,7 @@
 //!
 //! A value is (a + b·ω + c·ω² + d·ω³)/√2^k with integer coefficients and
 //! ω⁴ = −1. Every amplitude reachable by {H, T, CNOT} from |0…0⟩ lives here
-//! exactly (`docs/quantum/architecture.md`, "Exact arithmetic"): H's 1/√2 raises k, T
+//! exactly (`docs/quantum/architecture.md`, "Exact scalar ring"): H's 1/√2 raises k, T
 //! multiplies by ω, CNOT permutes. √2 = ω − ω³ sits in the numerator ring,
 //! so denominator alignment is numerator multiplication by √2.
 //!
@@ -884,12 +884,12 @@ impl S256 {
 /// time `t`, in the same 2^-128 grid `docs/classical/speed.md` §3 fixes
 /// for the classical Levin sums. Every return is a certified enclosure,
 /// never a preview. Dyadic masses round exactly, with at most one unit of
-/// slack from the division. A √2-part is bracketed through
-/// [`SQRT2_FIX127`], which adds slack that scales with `|s|·2^(1−e)` for
-/// `m = (r + s√2)/2^e` in reduced form, plus outward rounding at both
-/// ends — small for the masses a census produces, but not bounded by a
-/// constant, since cancellation between `r` and `s√2` permits large
-/// coefficients under a small value. Callers report the realised slack
+/// slack from the division. A √2-part is bracketed through the private
+/// constant `SQRT2_FIX127`, which adds slack that scales with
+/// `|s|·2^(1−e)` for `m = (r + s√2)/2^e` in reduced form, plus outward
+/// rounding at both ends — small for the masses a census produces, but not
+/// bounded by a constant, since cancellation between `r` and `s√2` permits
+/// large coefficients under a small value. Callers report the realised slack
 /// rather than assume a bound.
 ///
 /// Only the scalar is rounded. The discount `1/t` on an operator block is

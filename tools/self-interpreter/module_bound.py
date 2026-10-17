@@ -14,7 +14,7 @@ bit for bit, so within this grammar there is no gap:
     knot 22 + administration 12 + dispatch 20 + VAR 22 + NEXT 17
     + ABS 40 (16 + cell 24) + APP 35 (16 + lift 19) = 168.
 
-The grammar (design.md, "The last push") is narrower than every
+The grammar (docs/classical/self-interpreter/interpreter.md §4) is narrower than every
 interpreter:
 - modules are opaque and composed hygienically;
 - the laws hold with neighbours rigid;
@@ -175,7 +175,7 @@ class Grammar:
 
 # Each case: (ambient variables, holes as (name, min depth), required ambient
 # indices, max cost, probes). probes(t) yields (term, wanted normal form).
-# Ambient frames, innermost first, are in design.md.
+# Ambient frames, innermost first, are noted in each case's comment.
 
 def _var(t):
     k = 7  # [s b list next c p x]; wants c s n

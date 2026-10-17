@@ -385,8 +385,7 @@ pub enum Capacity {
 
 /// One store effect, as it fired. The per-leaf effect path (root to leaf,
 /// `Meas` outcomes included) is the trace surface of
-/// `docs/quantum/architecture.md`'s
-/// obligation 2: two runs are effect-trace equivalent when their leaf
+/// `docs/quantum/bisimulation.md`: two runs are effect-trace equivalent when their leaf
 /// sequences carry identical paths — β-steps are erased by construction,
 /// since only primitive firings append events.
 #[derive(Clone, Debug, PartialEq, Eq)]

@@ -14,7 +14,7 @@
 //! The soundness battery lives here, so it cannot be dropped from one
 //! sweep and kept in another: CP instruments conserve mass, so a program's
 //! leaf masses sum to exactly 1, asserted per program across every sweep
-//! (`docs/quantum/architecture.md`; AGENTS.md, "Soundness battery, free").
+//! (`docs/quantum/architecture.md` §5, item 4).
 //! The check is vacuous exactly when some leaf's mass overflowed — a
 //! resource outcome, never a wrong number — and says so rather than
 //! silently folding a `None` away.

@@ -2,7 +2,7 @@
 
 This document is the durable contract for blam's speed-prior (Levin) surface:
 definitions, exactness model, soundness arguments, and data formats. It
-extends the Solomonoff/Ω surface of `architecture.md` §1 and §4; current
+extends the Solomonoff/Ω surface of `architecture.md` §1 and §3; current
 measurements live in `../STATUS.md`.
 
 The one-sentence motivation: charging programs for time is exactly the move
@@ -92,8 +92,8 @@ Exit semantics, from the eval loop's structure:
 - Symmetrically for `last_trans` in the transitions gauge.
 
 So on every failed run, `2^(−n)/T ≤ 2^(−n)/max(last_steps, 1)` for a term
-that halts at all, and the ladder threads the failed rung-2 and rescue
-counters through `Telemetry::{kn2_died, rescue_died}`. A term's **t-floor**
+that halts at all, and the ladder threads the failed second-KN-rung and
+rescue counters through `Telemetry::{kn2_died, rescue_died}`. A term's **t-floor**
 is the max over its failed runs.
 
 **Bracket assembly.**
@@ -103,7 +103,9 @@ is the max over its failed runs.
 - Unknowns: 0 to the lower end; `2^(−n)/t-floor` (ceiling) to the upper
   end. At the canonical config a β-stuck rescue gives floor 10⁷+1; a
   transitions-stuck rescue gives whatever β-count it reached, with the
-  rung-2 floor as fallback — sound in every case, merely less tight.
+  second KN rung's floor as fallback — sound in every case, merely less
+  tight. The honest gauge's floor adds the minimum writing cost: 4 bits (the
+  smallest closed normal form) for an unknown, |x| for an unclocked halter.
 - **Unclocked halters** (`Halt { steps: None }`: the escalation engine
   proved the halt, the rescue could not recover the canonical count): halt
   mass counts them, speed brackets treat them like unknowns — 0 to the
@@ -111,30 +113,33 @@ is the max over its failed runs.
   candidacy (their time is unknown), so for any x with unclocked
   producers the clocked minima are **upper bounds**, and every affected
   table cell is marked with a trailing `?` (§4). The driver reports the
-  global count and the per-x `open_progs` column carries it; through
-  n = 41 both are expected to be 0 — making every canonical Kt/depth⁰
-  exact — and the count line is the check.
+  global count and the per-x `open_progs` column carries it. Through
+  n = 41 both are 0 (`solomonoff.txt` carries the count line), so every
+  canonical Kt/depth⁰ is exact relative to the adjudicated programs; a
+  frontier program could only enter with T at least its t-floor.
 
 The census-level certificate trim removes certified divergers' floor
-contributions from the upper endpoint. `tools/certificates/bounds.py` checks
-both certificate ledgers against the raw inventory and regenerates
-`data/classical/certificate_bounds.txt` in exact integer units. The
-per-unknown floors (§4) make this a lookup without another evaluation run.
+contributions from the upper endpoint. `tools/certificates/bounds.py`
+reconciles the three ledgers (`ratchet_kills.tsv`, `bb_kills.tsv`,
+`bb_halts.tsv`) against the raw inventory and regenerates
+`data/classical/certificate_bounds.txt` in exact integer units. Certified
+halters carry no clock, so their raw floors stay in the open upper subtotal
+(reported as `unclocked_halt_open`). The per-unknown floors (§4) make the
+trim a lookup without another evaluation run.
 
 ## 4. Data formats
 
-One sweep (`blam solomonoff`) produces everything; the speed surface is
-additive on the existing outputs:
+One sweep (`blam solomonoff`) produces everything:
 
-- `data/classical/solomonoff.txt` gains sections: Ω_speed brackets
+- `data/classical/solomonoff.txt` carries, beside the m/K/Ω summary, the
+  Ω_speed brackets
   per gauge (certified integer units plus nearest-f64 decimal previews,
   with the unknown/unclocked upper subtotal separated), the three spectra
   (sparse rows: `n=…: nf=… b0=… …`), and Kt analytics (most
   speed-compressible, largest Kt − K penalties, the speed coding-theorem
   section — heaviest x under S_β with the analytic self-program added,
-  Kt vs −log₂ S — and the deepest computations). Existing sections are
-  byte-stable: a regen diff must touch only the new material.
-- `data/classical/solomonoff_table.txt` columns extend to
+  Kt vs −log₂ S — and the deepest computations).
+- `data/classical/solomonoff_table.txt` has the columns
   `x |x| K_N count nontrivial_mass_2^-64 min_program kt depth0 open_progs
   speed_nontrivial_lo_2^-128 speed_nontrivial_hi_2^-128
   honest_nontrivial_lo_2^-128 honest_nontrivial_hi_2^-128 kt_program`.
@@ -142,9 +147,10 @@ additive on the existing outputs:
   consumers add the analytic self contribution (β: `2^(−|x|)`; honest:
   `2^(−|x|)/|x|`, directed) when |x| is within the sweep window.
   `kt`/`depth0` follow the print-time self-program rules; a trailing `?`
-  marks cells that are upper bounds because `open_progs > 0` (expected
-  never through 41). `kt_program`, like `min_program`, is the best
-  *nontrivial clocked* witness — `-` when none exists.
+  marks cells that are upper bounds because `open_progs > 0` (none through
+  41). `kt_program` is the best *nontrivial clocked* witness and
+  `min_program` the best nontrivial witness for K, clocked or not; each is
+  `-` when none exists.
 - `data/classical/speed_floors.txt` (`--unknown-floors`): one line per
   open program — unknowns and unclocked halters, distinguished by the
   leading kind column — with wire bits, size, β and transition floors,
@@ -156,7 +162,7 @@ additive on the existing outputs:
 - The full suite bar (`--all-features` and default) plus the census
   spot-check apply unchanged: `last_steps`/`kn2_died`/`rescue_died` are
   telemetry, and census output must stay bit-identical.
-- Merge order-independence: every new `Acc`/`Entry` field is a commutative
+- Merge order-independence: every speed `Acc`/`Entry` field is a commutative
   monoid or min-semilattice fold (masses add; kt by total order; depth⁰ by
   explicit three-way on k), so partition invariance holds by construction.
 - Sanity invariants, tested: lower ≤ upper on every bracket; per-gauge

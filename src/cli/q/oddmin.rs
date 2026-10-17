@@ -1,4 +1,4 @@
-//! oddmin prototype driver — the SPEC-ODDMIN §8 gated growth run.
+//! oddmin prototype driver — the SPEC-ODDMIN §7 gated growth run.
 //!
 //! Builds the weighted summary DP bottom-up (bases are VARIABLES
 //! ONLY — primitive axioms live exclusively in the closing

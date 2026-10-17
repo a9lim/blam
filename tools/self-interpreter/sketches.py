@@ -4,7 +4,7 @@
 Each sketch is the 168 written out with named binders, with one protocol
 changed by hand and a hole `_` (and optionally a second hole `~`) where the
 compensating fragment goes. The tool enumerates every fill and checks the
-exact contract on 91 probe programs. design.md, "The last push", records
+exact contract on 91 probe programs. docs/classical/self-interpreter/interpreter.md §4 ("Joint holes") records
 the results.
 
     sketches.py [NAME...]      run every sketch (default) or the named ones

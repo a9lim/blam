@@ -5,12 +5,9 @@ optimizer (`AIT.lhs`, `optimize 57 2 1`; reproduced byte-exactly by
 `tools/blcc.py`). That optimizer is a beam search over β-*reductions*. It never
 expands a term, so let-floating, λ-lifting, sharing two equal subterms, and
 floating a constant function out of a binder are invisible to it. Sean
-Palmer's 2-bit improvement of the self-interpreter (170 → 168) was one such
-expansion. The self-interpreter has since been searched to exhaustion
-(`self-interpreter/design.md`). The rest of the repository had not been
-searched at all.
-
-This document records three things:
+Palmer's 2-bit improvement of the self-interpreter (170 → 168) is one such
+expansion; the self-interpreter and the universal machine have their own
+records (`self-interpreter/`). This document covers the rest of tromp/AIT:
 
 - a sweep of every program in tromp/AIT with expansion-capable optimizers:
   45 programs shrink, 470 bits in all;
@@ -177,14 +174,14 @@ gives the following.
   `get k = let r = \bits. bits (\b\t\_. k b t) (\bytes. bytes r) in r`.
   The source compiles to 416, and a certified β-descent takes it to 399. The
   non-strict version ends in the identity continuation: 393, then 382.
-- **`uni2` (340 → 333).** Nothing structural survived: a Church-numeral
+- **`uni2` (340 → 333).** Nothing structural survives: a Church-numeral
   decoder, reversed environment fields and a closed `false` for the known tag
-  all lose. The 333 is β-golf of Tromp's source: the exact let search gives
-  334, then descent. Non-strict: 324 → 321.
+  all lose. The 333 is β-golf of Tromp's source, found by the exact let
+  search. Non-strict: 324 → 321.
 
 Codex verified the decoders with deeper tests through index 255 and
-three-level self-interpretation, as well as the differentials. I re-ran the
-differentials independently:
+three-level self-interpretation, as well as the differentials, which were
+also re-run independently:
 
 - `uni2`: every bit stream through 14 bits;
 - `uni28`: byte inputs through 18-bit programs.
@@ -223,7 +220,7 @@ The rest is the 168 verbatim, and the result is 178 bits, against 189.
 `battery.py --int4` checks the exact self-interpreter contract on every
 closed term of 4..16 bits plus deep-index extras: 236 of 236 for both the
 original and the port. As a negative control, `int.lam` under `--int4` fails
-19 of 40.
+19 of the 40 programs of the 4..12-bit battery.
 
 `golf check --io progs` compares normal forms on every closed program,
 followed by up to three data bits:

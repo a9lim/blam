@@ -151,10 +151,11 @@ controller stress sectors, and three neutral-gate sectors pass with zero WF,
 W7, range, pop, stuck, norm, or Gram violations. The mixed H and T terms each
 fire a gate inside an argument entered by readback and then RETURN to finish
 the enclosing normal form. The neutral sectors make both `HEAD-GATE` and
-`HEAD-NEUTRAL-GATE` live under the full validator and Lean exporter. The
-generated `QalcReadbackGram_p_*.lean` files contain the closed 7,507-state,
-7,417-column carriers. Each of the 30 files recomputes the global predecessor,
-literal range separation, and exact `Z[ω]/√2^k` Gram. This is the proof for
+`HEAD-NEUTRAL-GATE` live under the full validator and Lean exporter. The 30 generated Gate-1
+`QalcReadbackGram_p_*.lean` files (the three `_gate2_*` files share the prefix
+but are Gate-2 carriers) contain closed carriers totalling 7,507 states and
+7,417 columns. Each recomputes the global predecessor, literal range
+separation, and exact `Z[ω]/√2^k` Gram. This is the proof for
 the finite admitted carrier; it is not presented as an ambient theorem for an
 unexported program.
 
@@ -298,5 +299,6 @@ The claim boundary remains explicit:
 - `DeltaFibers.lean`, `Gate1Assembly.lean`, `FiniteMachine.lean`,
   `FiniteGram.lean`: delta blocks, concrete predecessor/range assembly, and
   exact Gram arithmetic.
-- `QalcReadbackGram_p_*.lean`: 30 closed composed finite operational cores.
+- `QalcReadbackGram_p_*.lean`: the 30 closed composed finite operational
+  cores (excluding the three `_gate2_*` carriers).
 - `semantics.py`: `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC` approximants.

@@ -16,19 +16,18 @@ come from `../../data/classical/coding.txt`, produced by
 - The Levin analog is g_S(x) = Kt(x) + log₂ S_β(x), using the β-gauge speed
   prior of `speed.md`.
 
-**Certification.** The BB proofs now adjudicate every program through
-35 bits, so K_N(x) = K(x) whenever K_N(x) ≤ 35 and the symbolic halters are
-included. Also m_N(x) ≤ m(x),
-because masses only grow with N. The existing report analyzes the smaller
-K ≤ 32 cohort; each measured g_N(x) there is a certified lower bound on
-the true g(x), and its maximum is a certified lower bound on c. Extending
-the report to K ≤ 35, including the two enormous symbolic outputs, is a
-separate measurement.
+**Certification.** Every program through 35 bits is adjudicated (the census
+plus the direct BB proofs), so K_N(x) = K(x) whenever K_N(x) ≤ 35, counting
+the two symbolic halters. Also m_N(x) ≤ m(x), because masses only grow with
+N. The report analyzes the K ≤ 32 cohort, so each measured g_N(x) is a
+certified lower bound on the true g(x), and its maximum is a certified lower
+bound on c. Extending it to K ≤ 35, with the two enormous symbolic outputs,
+is a separate measurement.
 
-**A correction to the obvious experiment.** "Hold out the top program sizes
-and see whether the gap predicts K dropping" is ill-posed. For |x| ≤ N, K_N is
+**Why hide the shortest programs.** "Hold out the top program sizes and see
+whether the gap predicts K dropping" is ill-posed: for |x| ≤ N, K_N is
 already exact, and adding longer programs cannot shorten it. The well-posed
-version hides the shortest programs instead (§4).
+test hides the shortest programs instead (§4).
 
 ## 2. The constant
 
@@ -48,8 +47,9 @@ The bound still grows with the census range. For the witness it is 3.011,
   bound. No finite census upper-bounds c; that would need an explicit
   decoder.
 - **Levin analog.** g_S is certified at ≥ 3.255, with the same witness.
-- **Typical gaps.** For K ≥ 18 the median gap is 0.7–0.84 bits, so a typical
-  output carries about 1.7 × 2^−K of algorithmic probability. For K ≤ 16 the
+- **Typical gaps.** For K ≥ 20 the median gap is 0.73–0.84 bits (0.66 and
+  0.67 at K = 18 and 19), so a typical output carries about 1.7 × 2^−K of
+  algorithmic probability. For K ≤ 16 the
   median is 0.09–0.62, and for the identity it is 0.090.
 
 ## 3. Where compression starts

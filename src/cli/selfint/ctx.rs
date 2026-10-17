@@ -29,7 +29,8 @@
 //! `c`, and `exp` is the only route to the parsed body (ABS) or function
 //! (APP). See each slot's `must`. In `var` and `handler`, `next` also
 //! captures `cont`, so requiring `cont` there narrows the search;
-//! design.md's "The trick hunt" records the unrestricted re-runs.
+//! `docs/classical/self-interpreter/interpreter.md` §4 records the
+//! unrestricted re-runs.
 
 use crate::args::{self, Args, R};
 use crate::golf::term::INT168;
@@ -52,7 +53,7 @@ usage: blam selfint ctx SLOT [--max-size N] [--min-size N] [--programs N]
   --max-size N    largest candidate (default: reference size - 1)
   --min-size N    smallest candidate (default 2)
   --programs N    probe programs (default: all closed terms of 4..=14 bits
-                  plus deep-index extras, about 70)
+                  plus deep-index extras, 91 in all)
   --counts-only   print the per-size candidate counts and stop
   --escalate N    re-run a size's budget-capped candidates at 512x budget plus
                   the divergence oracle when there are at most N (default 20000)

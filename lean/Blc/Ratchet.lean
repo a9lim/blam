@@ -105,7 +105,7 @@ def state (c : RatchetCert) (n : Nat) : Term :=
 /-- Certificate validity — every field is decidable for concrete
 data; `check`/`valid_of_check` below package them into one `decide`.
 
-`hOpen`/`hDesc`/`hBase` are the SPEC's obligations as symbolic traces
+`hOpen`/`hDesc`/`hBase` are the specification's obligations as symbolic traces
 with liftable sources (`symStepsApp`): OPEN `A Z →ₕ⁺ (Z Z) W[Z]`,
 DESC `W[Z] W[Z] →ₕ⁺ Z Z`, BASE `C0 C0 →ₕ⁺ A`. -/
 structure Valid (c : RatchetCert) : Prop where

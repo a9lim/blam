@@ -2,8 +2,8 @@
 //!
 //! A qBLC program is applied to its primitives in a fixed order, so the
 //! order is part of the measured universe: every canonical number in
-//! `data/quantum/` is relative to it. `docs/quantum/architecture.md`
-//! records why this ordering was frozen; THIS is its single home in
+//! `data/quantum/` is relative to it. `docs/quantum/architecture.md` §2
+//! records how this ordering was chosen; THIS is its single home in
 //! code. Alternate universes (`blam q census --sig`, `blam q skeleton
 //! --sig`) pass their own slice and produce non-canonical data by
 //! construction.
@@ -53,8 +53,8 @@ mod tests {
     ///
     /// The signature-order campaign that produced this ordering ran as
     /// its own driver (`qpilot`) over the permutations of the canonical
-    /// five; the campaign is in the ledger, the rationale in
-    /// `docs/quantum/architecture.md`, and the *result* is this array —
+    /// five; the campaign is in git history, the rationale in
+    /// `docs/quantum/architecture.md` §2, and the *result* is this array —
     /// so the driver was retired and this test took over its job. Every
     /// canonical number under `data/quantum/` is relative to this order:
     /// a silent reordering would not fail any measurement, it would

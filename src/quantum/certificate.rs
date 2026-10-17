@@ -70,12 +70,10 @@ pub enum SkelVerdict {
 
 /// Which cap fired, and where the chain had got to.
 ///
-/// `docs/quantum/escalation.md`, rung 3: "CapOut must record which cap
-/// fired and the high-water state, so that a stratified sample can split
-/// the population — size-bound monotone growers go to pattern discovery,
-/// step-bound bounded-size terms justify another exact-cycle tier." Both
-/// abort sites already knew which one they were; the verdict just did not
-/// carry it.
+/// `docs/quantum/escalation.md`, rung 3: the stratification input that
+/// splits the capout population — size-bound monotone growers go to
+/// pattern discovery, step-bound bounded-size terms would justify another
+/// exact-cycle tier.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct CapOut {
     pub reason: CapReason,

@@ -131,10 +131,10 @@ The `45 + 8` decomposition is evidence, not a proof. Untyped β-duplication
 allows one source occurrence to serve multiple runtime roles, so any lower
 bound needs quantitative subject reduction or an exact compositional search.
 
-Stage 1a proves the restricted minimum for **CNOT-free traces**. Its trusted
+Stage 1a targets the restricted minimum for **CNOT-free traces**. Its trusted
 monitor projects one guessed qubit lineage to `{NewD, HD, TD, MeasD}` and
-accepts only an odd readable measurement. The current compositional search
-contract and validation evidence are in `oddmin.md`.
+accepts only an odd readable measurement. The compositional search contract,
+its validation evidence, and its current lower bound are in `oddmin.md`.
 
 The CNOT-free restriction is forced by the source language. A 28-bit program
 already fires CNOT, so treating every CNOT as automatic odd acceptance could
@@ -169,9 +169,10 @@ minimum program with rational but non-dyadic limiting successful probability
 is a different problem; the current `1/3` construction only gives the upper
 bound 85.
 
-## 6. Current interpretation
+## 6. Interpretation (synthesis, not theorem)
 
-The measured pattern has a coherent structural explanation:
+The measured pattern has a coherent structural explanation, which T2 and T3
+would have to confirm:
 
 - below 45, the source grammar cannot afford the complete
   `H–odd-T–H–meas` sandwich;

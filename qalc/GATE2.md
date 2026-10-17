@@ -123,8 +123,12 @@ The load-bearing Lean surface is:
   `PhysicalCleanCompiled`.
 
 The theorem chain is parametric in width, circuit length, input word, and
-amplitudes. It contains no finite carrier, `native_decide`, `sorry`, `admit`,
-or added axiom.
+amplitudes. It contains no finite carrier, `sorry`, `admit`, or added axiom.
+Small closed Boolean facts inside the spine (in `Gate2PhysicalBoundary`,
+`Gate2ContextualUnary`, `Gate2PhysicalRefinement`, `Gate2ContextualPhysical`,
+`Gate2ContextualOutput`, `Gate2PhysicalCompiler`, and
+`Gate2PhysicalSchedule`) are discharged by `native_decide`, so their
+evaluation trusts Lean's compiled evaluator rather than kernel reduction.
 
 ## 4. Independent finite evidence
 

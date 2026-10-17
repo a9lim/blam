@@ -1126,7 +1126,7 @@ mod tests {
     use super::*;
 
     /// The Python reference's component sizes from the 168
-    /// (`design.md`, βη component search table).
+    /// (`docs/classical/self-interpreter/interpreter.md` §3, βη component table).
     #[test]
     fn reproduces_the_python_components() {
         for (slack, want) in [(4, 10), (8, 227), (12, 2717)] {

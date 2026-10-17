@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Re-measure the operation-level variants recorded in design.md.
+"""Re-measure the protocol variants recorded in
+docs/classical/self-interpreter/interpreter.md §5.
 
 Each variant is written out in full, compiled without the optimizer, sized,
 and run through battery.py's exact contract check.  A negative control (APP
@@ -47,7 +48,7 @@ VARIANTS = [
    (\bit1\l2. intL env (\f. bit1 (cont (\arg. intL (\zx\zy. zx arg (zy env)) bit1 l2))
                                  (intL env (\a. cont (f a)))) l2)""")
      + r" (\x.x) (\x.x)", True, 226, True),
-    # The last push (design.md): the nearest correct variants, and the bare
+    # interpreter.md §5: the nearest correct variants, and the bare
     # leaky cell as a second negative control.
     ("control: bare leaky cell", INT168.replace(
         r"\zx\zy. zx arg (zy args)", r"\zx. zx arg (\zy. zy args)"),

@@ -8,7 +8,9 @@ bullet points for a9 to write up in their own voice.
 - Two branches on the a9lim/AIT fork, each cut from upstream master:
   - `uni-rs`: one commit, `uni.rs` at the repo root.
   - `golf`: eight commits, one program each, so Tromp can take any subset.
-- Open each PR from its branch into `tromp/AIT` `master`.
+- Open each PR from its branch into `tromp/AIT` `master`. Both branches are
+  three commits behind the fork's master (upstream moved since they were
+  cut), so rebase each onto current upstream first.
 - The fork's `master` is unchanged: upstream plus `uni.rs`. blam's `ref/AIT`
   pins it, and blam's CI checks that it only *adds* files over upstream.
   - `golf` modifies upstream files, so it must not land on the fork's master.
@@ -51,8 +53,8 @@ bullet points for a9 to write up in their own voice.
   - input cells are memoized, the counterpart of uni.py's `inp[n]` cache;
   - stdin is read one byte at a time and stdout flushed per emission, so
     pipelines stream.
-- **Why call-by-name.** An earlier call-by-need draft halved the output of a
-  program whose duplicated argument runs output effects while being forced.
+- **Why call-by-name.** Call-by-need halves the output of a program whose
+  duplicated argument runs output effects while being forced.
 - **Speed.** About 18× uni.py on `primes1k.blc` (0.48 s against 8.7 s).
 - **Verified byte-identical with uni.py on Tromp's own vectors:**
   - the quine, under self-application;
@@ -118,8 +120,9 @@ programs
     optimizer never does) finds smaller β-convertible terms for 45
     programs in the repo, 470 bits in all. Examples outside this PR: `tweet`
     2230 → 2168, `uniK` 903 → 854, `primes256` 286 → 252.
-  - The β-only descents of four of this PR's programs go further still: nf
-    541, ko2kp 557, uni28 399 (non-strict 382), pairup_Kp 1325.
+  - The β-only descents of six of this PR's programs go further still: nf
+    541, ko2kp 557, uni28 399 (non-strict 382), pairupKP 771, pairupK_p 651,
+    pairup_Kp 1325.
   - These exist only as terms so far. Offer to turn any of them into source.
 - **Credit:** see above.
 
@@ -153,16 +156,23 @@ programs
       continuation;
     - a 164-bit candidate that fails, because the identity's value
       `λz.I` is the same six bits as the input symbol `1`.
-  - Pointer: `docs/classical/self-interpreter/design.md`.
+  - Pointer: `docs/classical/self-interpreter/interpreter.md` (and
+    `universal.md` for the 178/190).
 - **Busy-beaver and Ω results** (if still worth mentioning):
-  - The 32-bit loop term the ledger excluded by hand now has a
-    machine-checked divergence proof, a "ratchet" certificate.
-  - 305 frontier kills across four certificate classes, each a
-    kernel-checked Lean theorem: no `sorry`, no mathlib.
+  - BBλ(33) = 1,812, BBλ(34) = 327,686, BBλ(35) = 38,127,987,424,941: his
+    BB.txt hand arguments for the programs the census leaves open, formalized
+    as kernel-checked Lean proofs (the 35-bit champion is Church 3^27, proved
+    symbolically). The exhaustive census itself is Rust, not Lean.
+  - The 32-bit loop term the ledger excludes by hand has a machine-checked
+    divergence proof, a "ratchet" certificate; 305 frontier kills across four
+    certificate classes are each a kernel-checked Lean theorem (no `sorry`,
+    no mathlib).
   - The census covers every closed term of 4..41 bits:
-    BBλ(41) ≥ 1,074,266,118 bits.
+    BBλ(41) ≥ 38,127,987,424,947 bits.
   - Ω restricted to programs of at most 41 bits lies in
-    [0.124105086764, 0.124105092895].
+    [0.124105086841, 0.124105091271]; over all sizes, the closed-term Ω
+    (normalizing terms, not his universal-machine Ω) is pinned to nine
+    bits, 0.001000000….
   - His published A114852 counts and BBλ values all reproduce, as do the
     BB.txt halt counts at n = 32.
 - **License question.** The AIT repo has no license file. blam is AGPL with

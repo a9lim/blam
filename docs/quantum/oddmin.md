@@ -14,7 +14,9 @@ Stage 1a targets the statement:
 > The minimum BLC wire size of a closed program with a CNOT-free qBLC effect
 > trace and a Galois-odd leaf mass is 45.
 
-`witness45`, pinned in `src/lab/odd.rs`, establishes the upper bound. The
+`witness45` (`W45` in `lab::odd::tests::witnesses_accepted_on_their_odd_leaves`;
+the CLI's `WITNESS45` in `src/cli/q/galois.rs` and `src/cli/q/selfint.rs` is
+the same bits) establishes the upper bound. The
 search must prove the lower bound by retaining every concrete CNOT-free odd
 trace in a finite compositional abstraction.
 
@@ -355,13 +357,12 @@ summaries at the top; a W=34 run aborts after 149 s at *weight 30*, where the
 slice reaches 1,005,363 — 5.7× the 177,713 that the same weight shows when it
 is the top of its own run. The stop rule reads every weight, and the depth
 ceiling `dmax(w) = (max_w − w)/2` makes the mid-ladder slices of a taller run
-the largest objects in it, so projecting the ceiling from the top-weight
-series (as "near W≈33" did) reads the wrong series and only happened to land
-next to the answer. Reaching 44 therefore requires canonicalization and
+the largest objects in it; the ceiling cannot be projected from the
+top-weight series. Reaching 44 therefore requires canonicalization and
 search-side pruning before a certificate generation is practical, and the
 pruning has to bite mid-ladder.
 
-The `accepts` column is the stage-1a lower bound and is still zero at W=33:
+The `accepts` column is the stage-1a lower bound and is zero through W=33:
 no closed CNOT-free trace of source weight ≤33 has a Galois-odd leaf mass.
 
 ## 8. Certificate boundary and next work

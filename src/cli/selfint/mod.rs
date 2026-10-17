@@ -1,7 +1,7 @@
 //! Searches below the 168-bit BLC self-interpreter (lab).
 //!
-//! `docs/classical/self-interpreter/design.md` records why the 168 resists
-//! single moves. These instruments are the searches that only make sense for
+//! `docs/classical/self-interpreter/interpreter.md` and `universal.md`
+//! record what these searches establish. These instruments are the searches that only make sense for
 //! the interpreter's own contract; the general size optimizers it also used
 //! (`letopt`, `component`) live in `blam golf`. Every candidate they report
 //! is a hypothesis until `tools/self-interpreter/battery.py` passes it.
@@ -22,7 +22,7 @@ usage: blam selfint <search> [flags]   (`blam selfint <search> --help`)
   wiring    every closed context around the parser body (universal machine)
 
 `blam golf letopt` and `blam golf component` are the let-structure and βη
-searches that design.md also reports.";
+searches docs/classical/self-interpreter/ also reports.";
 
 pub fn run(argv: &[String]) -> R<()> {
     match argv.first().map(String::as_str) {

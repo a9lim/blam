@@ -1,12 +1,15 @@
 # SPEC-BISIM — Effect-trace self-interpretation: the bisimulation theorem
 
-The precise statement and proof plan for `architecture.md` proof
-obligation 2: `E_q ⌜p⌝ σ⃗` and `p σ⃗` are equivalent up to pure
+The precise statement and proof plan for the first open boundary of
+`architecture.md` §8: `E_q ⌜p⌝ σ⃗` and `p σ⃗` are equivalent up to pure
 β-stuttering, in unbounded semantics.
 
-Everything here is stated as a proof target, not yet proved. The complete
-measured population through 24 bits agrees at the effect-tree level, and the
-poisoned-seed canary supports the selector invariant; §7 remains the
+`E_q = intL I` is 176 bits, built from the `intL` of Tromp's 170-bit
+`int.lam` (tromp/AIT `fd4e9b0`; `src/cli/q/selfint.rs`, pinned by
+`lean/Blc/Selfint.lean`). Everything here is a proof target, not yet proved.
+The complete measured population through 24 bits agrees at the effect-tree
+level, and the poisoned-seed canary (the unit test
+`selfint_effectful_tail_canary`) supports the selector invariant; §7 is the
 authority on proof status.
 
 **Why bisimulation and not trace-set equality.** Plain trace-set
@@ -127,8 +130,8 @@ to `ρ_R(Δ̂)` with `d ≥ i`, it reduces to `Âᵢ`, and the reduction
 neither evaluates nor inspects `R` or the closure's own dead wire
 suffix. This is the lexical-depth invariant as a lemma: closed
 programs never force the seed, and the effectful-tail canary
-(`blam q selfint`, QTerm-level `new t` in the seed) is its empirical
-shadow.
+(`selfint_effectful_tail_canary`, a QTerm-level `new t` in the seed) is
+its empirical shadow.
 
 **The relation is world-indexed and generated, not co-defined.** Defining
 ℛ as an arbitrary greatest bisimulation would let B4 equate distinct
@@ -201,7 +204,7 @@ induction on `M`. Named obligations:
   `ℓ = k+1` and prove the bodies related at world `k+1`. This is the
   rule used to prove binder compatibility, **not** an extra LTS
   transition: `quantum::reference` realizes it as syntactic under-λ
-  descent and the KN machine as `Val::Rigid`/`Lvl`. Under-binder
+  descent and the KN machine as `Val::Rigid` neutral values. Under-binder
   reduction is where P53-style fate divergence lives, so this case is
   load-bearing.
 - **C-STRICT (h, t, meas)** and **C-CNOT** ride on **L3**:
@@ -300,15 +303,14 @@ why census-ladder equivalence is deliberately NOT claimed.
 
 Falsifier: any effect-order, label, mass, or fate mismatch between
 `p σ⃗` and `E_q ⌜p⌝ σ⃗` on any program — none observed at any size
-swept. A Lean lane for L1/L2 is the natural first mechanization
-(pure λ-calculus, no store); the quantum clauses ride on it.
-`lean/Blc/Selfint.lean` kernel-pins `intL` by wire identity, checks
-`|E_q| = 176` and the §2 size identities, and defines `Implements` under
-head reduction. Its machine-level parser target is `ParserResult M R Q U`:
-`int.lam`'s VAR branch passes `cont list1 (skipvar list1)`; because head
-reduction never enters argument position, `C Q R` is unreachable as a
-machine execution. The statement therefore
-the statement exposes the residual tail `U ⇒ R`, continuation
+swept. L1 and L2 are the first mechanization target (pure λ-calculus, no
+store); the quantum clauses ride on them. `lean/Blc/Selfint.lean`
+kernel-pins `intL` by wire identity, checks `|E_q| = 176` and the §2 size
+identities, and defines `Implements` under head reduction. Its machine-level
+parser target is `ParserResult M R Q U`: `int.lam`'s VAR branch passes
+`cont list1 (skipvar list1)`, and because head reduction never enters
+argument position, `C Q R` is unreachable as a machine execution. The
+statement therefore exposes the residual tail `U ⇒ R`, with the continuation
 quantified inside. The τ*-forms above (KN, which does normalize the
 residual) are unchanged. Over pure terms the mechanized statement is
 the β-non-forcing theorem; the effectful poisoned-seed remains its
@@ -318,15 +320,18 @@ closed L1 as corollary.
 
 ## 8. The parked sub-176 lane
 
-The specialized-root search is parked until the theorem contract is stable,
-but it need not wait for the full proof.
-With `intL` opaque, sub-176 is impossible (any closed invocation
-already pays the six-bit `App + I`); a winner must reorganize the
-recursive knot and root entry jointly. The narrow lane, when opened:
+With the 170-bit `intL` opaque, sub-176 is impossible: any closed invocation
+pays the six-bit `App + I`. Sean Palmer's 168-bit interpreter
+(`../classical/self-interpreter/interpreter.md`) shares the 170's parser
+contract, so `E_q = int168 I` is a 174-bit candidate; it has not been run
+through `blam q selfint`, and the Lean pins and §2 identities above are stated
+for the 170. Below that, a winner must reorganize the recursive knot and root
+entry jointly. The narrow lane, parked until the theorem contract is stable:
 freeze `cons'` and the three certified recursive branch meanings;
 one generic recursive entry + one closed-root entry sharing a knot;
 the root entry may assume root-non-VAR, continuation `I`, tail
-arbitrary; enumerate compiled totals ≤175; probe both contracts;
+arbitrary; enumerate compiled totals below the smallest E_q that passes
+the battery (176 today; 174 if the 168-based candidate passes); probe both
+contracts;
 splice survivors through the full `blam q selfint` battery. Hand-compile
 the two-entry families and do bit accounting before any enumeration.
-Working expectation: 176 remains minimal in this lane.

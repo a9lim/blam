@@ -35,8 +35,9 @@ The census alone pins only two bits. Ω|≤41 = 0.1241… sits below 1/8, and th
 closed-term mass above 41 bits is 1.88×10⁻³, enough to cross 1/8. The ninth
 bit comes from the lower bound: the census's witnessed halting mass, plus a
 certified count of weakly normalizing terms beyond 41 bits. That count must
-exceed 8.95×10⁻⁴, which is 47.6% of the mass above 41 bits. The certificate
-reaches 73.3%.
+exceed 8.95×10⁻⁴, which is 47.7% of the closed mass at 42..240 bits, the
+range it covers. The certificate reaches 73.3%. Coverage percentages below
+use the same 42..240 basis.
 
 A statistical estimate (§6, not a certificate) puts Ω at 0.1259743 ± 10⁻⁷,
 which is 2.2×10⁻⁶ *below* 129/1024. The likely expansion is
@@ -49,7 +50,7 @@ Omega <= halt(<=41) + frontier(<=41) + (U_0 - closed(<=41))
 ```
 
 - **halt** includes the census halters (`census_table.txt`) and the separately
-  checked halters in `certificates/bb_halts.tsv`; **closed** is the census
+  checked halters in `data/certificates/bb_halts.tsv`; **closed** is the census
   count. **frontier** is the post-certificate unknown set (`unknowns.txt`).
   The three certificate ledgers partition the raw unknowns with that frontier:
   certified halters move into halt, while certified divergers leave the upper
@@ -66,7 +67,7 @@ Omega <= halt(<=41) + frontier(<=41) + (U_0 - closed(<=41))
     and rounded up at 10⁻⁴⁰.
   - Every inequality is checked in exact arithmetic.
   - The result is q₀ = 0.126002847974358…, against a true value of
-    0.1260028479738….
+    0.1260028479743579959….
 - **A coarser certificate suffices for the nine bits.** Codex's
   (q₀,…,q₄) = (0.1266, 0.490, 0.718, 0.856, 0.940) with q_k = 1 beyond gives
   Ω ≤ 0.1266 < 1/8 + 2⁻⁹, with no census input at all.
@@ -80,8 +81,8 @@ Omega >= halt(<=41) + sum over sizes 42..240 of (count of certified-WN closed te
 ### Label function
 
 Free variables are rigid constants, and maxfree(t) is t's largest free
-index (0 if closed). With leaf horizon HL = 28, each term gets one label,
-taken from the first matching case:
+index (0 if closed). With leaf horizon HL (41 for the canonical bound), each
+term gets one label, taken from the first matching case:
 
 - **N**: weakly normalizing (WN), with a neutral normal form `x Q₁…Q_r`;
 - **O**: WN;
@@ -90,8 +91,8 @@ taken from the first matching case:
 The cases are:
 
 1. **Leaf**, when |t| + 2·maxfree(t) ≤ HL. Take the closed term
-   λ^maxfree t, which has at most HL bits. If it normalizes within the
-   enumerator's fuel, label N or O by the normal form's type, else X.
+   λ^maxfree t, which has at most HL bits. If the census ladder proves it
+   halts, label N or O by the normal form's type, else X.
 2. **Variable**: N.
 3. **λM**: O if ℓ(M) ≠ X.
 4. **(λM) P** with a syntactic λ head. The first matching case wins:
@@ -169,11 +170,10 @@ with 6.3 GB peak.
   binder is used contributes, for each m ≤ L, its body M_m, whose maxfree is
   exactly m. The rows are cumulative over maxfree.
 - **Why that matters.** It makes the leaf predicate a single depth-independent
-  property, which the leaf/structural subtraction requires. Two separate
-  ladder runs on λʲM and λᵏM could otherwise disagree at a budget edge.
-  - This was a proof obligation Codex raised.
-  - The earlier per-closure table turned out identical within the horizon, so
-    no inconsistency had occurred, but the construction now guarantees it.
+  property, which the leaf/structural subtraction requires (a proof
+  obligation Codex raised). Two separate ladder runs on λʲM and λᵏM could
+  otherwise disagree at a budget edge; one judgement per term rules that out
+  by construction.
 - **Soundness of the rows.** A term the ladder leaves Unknown is simply not
   counted.
 - **Where the table lives.** `data/classical/omega_leaves.txt`. bound.py
@@ -185,10 +185,10 @@ with 6.3 GB peak.
   DP's closed-term counts, equal the census's at every size 4..41. `bound.py`
   asserts both.
 - **Two independent leaf builders agree.** Within horizon 28, the Rust table
-  matches row for row the one first built by an independent Python
-  normal-order normalizer, now retired. That normalizer's normal forms also
-  matched `blam normalize` bit for bit on two samples: every closed term
-  through 22 bits, and 1,500 random terms at each size from 23 to 28.
+  matches row for row the table built by an independent Python normal-order
+  normalizer (retired from the tree). That normalizer's normal forms also
+  matched `blam normalize` bit for bit on every closed term through 22 bits
+  and on 1,500 random terms at each size from 23 to 28.
   - **Codex audit.** Codex checked the Rust bit walk, used-binder mask, sink
     and indices against an AST-based reference on 17,703 terms up to 63 bits.
 - **Brute force.** `tools/omega/check.py` applies ℓ and ℓ⁰ directly to every
@@ -210,9 +210,9 @@ with 6.3 GB peak.
     the vacuous-binder derivation.
   - **DP arrays.** An independent array check at (14, 24, 6) matched every
     array, over 831,092 instances.
-  - **Findings.** A depth-padding bug in an early checker (since fixed); the
-    proof wording ("suffices", "witnessed"); the coarse upper certificate; and
-    the projection rule.
+  - **Contributions.** The coarse upper certificate (§2), the projection
+    rule, and corrections to the checker's depth padding and the proof
+    wording.
 
 ## 5. Measurements
 
@@ -229,7 +229,7 @@ Sizes 42..59 alone already give Ω > 1/8.
 | 150 | 0.462 | 0.425 |
 | 200 | 0.401 | 0.367 |
 
-About 88% of closed mass above 41 bits is λ-rooted. Closed applications are
+About 89% of closed mass at 42..240 bits is λ-rooted. Closed applications are
 certified only through R3 or the projection, because a closed term never has
 a neutral normal form.
 
@@ -237,29 +237,32 @@ At HL = 28, the rules contribute:
 
 | rules | certified mass, 42..240 | lower bound |
 |---|---:|---:|
-| R3, R4, R6, R10 | 1.115017×10⁻³ | 0.125220103893 |
-| + identity `(λ1) P`, ℓ(P) = O | 1.220839×10⁻³ | 0.125325926083 |
-| + all projections | 1.242101×10⁻³ | 0.125347188166 |
-| all, at HL = 41 | 1.375483×10⁻³ | 0.125480569932 |
+| R3, R4, R6, R10 | 1.115017×10⁻³ | 0.125220103970 |
+| + identity `(λ1) P`, ℓ(P) = O | 1.220839×10⁻³ | 0.125325926160 |
+| + all projections | 1.242101×10⁻³ | 0.125347188243 |
+| all, at HL = 41 | 1.375483×10⁻³ | 0.125480570009 |
+
+Each lower bound is the census's halting mass plus the eight certified BB
+halters (`bb_halts.tsv`, 7.73×10⁻¹¹) plus the certified mass.
 
 The rules matter more than the horizon.
 - **HL = 8:** the first four rules reach 51% of the mass above 41 bits.
-- **HL = 28:** they reach 59.5%.
+- **HL = 28:** they reach 59.4%.
 - **HL = 41 with all rules:** 73.3%. The lower bound then sits 7.7×10⁻⁶
-  below 1/8 + 2⁻¹¹. That would matter if bit 10 were ever proven: bit 11
-  needs 73.6%.
+  below 1/8 + 2⁻¹¹. That would matter if bit 10 were ever proven: bits 11,
+  12 and 13 need 73.7%, 86.7% and 93.2%.
 
 ## 6. Bit 10: the estimate and the prover it needs
 
-Ω < 1/8 + 2⁻¹⁰ = 129/1024 needs one of two certificates:
-
-- at least 8.70×10⁻⁶ of certified non-normalizing mass beyond 41 bits;
-- or 99.54% halting coverage beyond 41 bits, which is out of reach.
+Ω < 1/8 + 2⁻¹⁰ = 129/1024 needs the *upper* bound below 129/1024, and only
+certified non-normalizing mass lowers it: at least 8.70×10⁻⁶ of it beyond 41
+bits. More halting coverage cannot help, because the upper bound counts every
+uncertified term above 41 bits as halting.
 
 ### Where Ω actually is (an estimate, not a certificate)
 
-`scripts/omega-estimate.sh` draws 8,000,000 uniform closed terms of 42–300
-bits and decides each one on blam's full ladder. Halts are witnessed and
+`scripts/omega-estimate.sh` draws 8 million (7,999,998) uniform closed terms
+of 42–300 bits and decides each one on blam's full ladder. Halts are witnessed and
 divergences proved, so nothing here rests on "ran out of fuel".
 
 - **Allocation.** Stratified, Neyman-allocated by mass.
@@ -289,8 +292,9 @@ Two refinements, both from Codex, make the claim robust.
   bits, at most 6.9×10⁻⁹, is bracketed rather than ignored.
 
 So bit 10 is almost certainly 0, and the expansion is a near-carry,
-0.0010000000 1111111101…. A proof has to certify **80.2%** of the divergent
-mass beyond 41 bits. The share needed depends on how far the count reaches:
+0.0010000000 1111111101…. The report predates the BB(35) adjudications, which
+move its exact census parts by under 2×10⁻⁹, far inside one SE. A proof has
+to certify **80.2%** of the divergent mass beyond 41 bits. The share needed depends on how far the count reaches:
 counting only through 100 bits would need 96% of that range's divergence,
 and through 120 bits 89%. Per-size data: `data/classical/omega_estimate.txt`.
 
@@ -390,6 +394,7 @@ is the next measurement.
 
 ```sh
 scripts/omega-regen.sh            # leaf tables (blam omega leaves 41) + bounds
+scripts/omega-regen.sh --reuse-leaves   # bounds only, after a certificate-only frontier trim
 scripts/omega-estimate.sh         # the §6 estimate (~10 min of sampling + ~15 min UNKNOWN rerun)
 python3 tools/omega/check.py data/classical/omega_leaves.txt 16 26 4
 python3 tools/omega/divergence.py tmp/omega-estimate/verdicts.txt 300 bt 5    # §6 probes

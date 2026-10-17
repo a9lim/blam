@@ -6,11 +6,12 @@ quantum architectures so the three systems can be compared layer by layer.
 
 The Rust reference pillar implements the typed schema and codec, kernel,
 composed Gate-1 readback, Gate-2 compiler/shadow, validated admission, total
-selection, and exact semantic objects under `src/qalc/`. The accepted Python/Lean machine,
-compiler, proofs, and batteries remain authoritative in `../../qalc/`;
-checked-in qfx fixtures close the Python/Rust boundary byte-for-byte without
-running Python during `cargo test`. `GATE1.md` and `GATE2.md` are the
-proof records. The Rust implementation contract is `rust-pillar.md`.
+selection, and exact semantic objects under `src/qalc/`. The accepted
+Python/Lean machine, compiler, proofs, and batteries remain authoritative in
+`../../qalc/`; checked-in qfx fixtures close the Python/Rust boundary
+byte-for-byte without running Python during `cargo test`.
+`../../qalc/GATE1.md` and `../../qalc/GATE2.md` are the proof records. The
+Rust implementation contract is `rust-pillar.md`.
 
 ## 1. Purpose and position among the pillars
 
@@ -27,10 +28,9 @@ is a vector in ℓ² over machine configurations; superposition of *control*
 — of the reduction itself — is the object of study. qBLC's architecture
 (`../quantum/architecture.md` §7) chose classical control to obtain
 monotone positive operator approximants and to avoid an unresolved
-quantum-halting semantics. The construction here is designed to recover
-both inside quantum control (§4: typed invariant-sector halting;
-now realized by the machine of §9 item 1), which makes that choice a
-convenience rather than a necessity. And the objects it excludes —
+quantum-halting semantics. The machine here recovers both inside quantum
+control (§4.3, typed invariant-sector halting; realized by the machine of §9
+item 1), which makes that choice a convenience rather than a necessity. And the objects it excludes —
 interference between reduction paths, real-valued halting mass, coherent
 output operators — are exactly the ones this pillar exists to measure.
 
@@ -94,9 +94,8 @@ quantum constant**: `h` and `t` exist only as opaque values passed in by
 the invocation `p h t`, so prefix-freeness and the Kraft sum are untouched
 by construction, the same trick qBLC's signature uses. The two-lambda
 wrapper `λh.λt. …` is an idiom, not a restriction. The application order
-`h` before `t` matches the frozen qBLC signature's relative order; it must
-be frozen in one place in code, with an order-pinning test, before any
-canonical data is generated.
+`h` before `t` matches the frozen qBLC signature's relative order; its one
+home in code is `qalc::term::invoke_ht`, pinned by a unit test.
 
 ### Canonical booleans and polarity
 
@@ -193,9 +192,9 @@ substrate is IAM-lineage token transport (Danos–Regnier), whose
 classical transition table is bideterministic — injective per row, with
 pairwise-disjoint ranges classified by position kind and tape top — as
 prior structure. That is the design guide, not the proof: the complete
-qALC table, including δ scattering, full-normal-form readback, error
-entry, and halted entry, still owes the orthonormal-columns proof on the
-reachable graph. The active machine design is `token.md`.
+qALC table, including δ scattering, full-normal-form readback, error entry,
+and halted entry, is proved column-orthonormal on every admitted reachable
+carrier (§9 item 1). The machine design is `token.md`.
 
 ### 4.2 The step isometry
 
@@ -314,9 +313,9 @@ orthogonalized by a quantum transition. A global minimum over arbitrary
 reversible realizations is not claimed: that comparison class is unlikely
 to be canonical and may hide undecidable semantic equivalence. The accepted
 static selector uses a validated finite carrier when one closes and an exact
-history fallback otherwise; therefore `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`
-are now defined. The stronger ambient all-program lifecycle theorem remains
-open but is not a premise of a finite admission.
+history fallback otherwise, so `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC` are
+defined for every program. The stronger ambient all-program lifecycle
+theorem remains open but is not a premise of a finite admission.
 
 **Synchronization as convention.** Under the common-origin tick, a
 branch's halting time is recorded in its tick offset: two branches
@@ -573,14 +572,14 @@ at canonical initialization, never a branch-dependent runtime
 register. Validation must prove encoded-range coverage, unique
 decoding, the `G`- and `F`-function properties, absence of reachable
 pop-error, and all source/range orthogonality obligations — Gram
-enumeration alone is not certificate soundness.
-
-The v1-era arrival-position erasure is subsumed: it is the encoded
-fibre with `F_a` trivial and `G_a` the certified arrival-position
-function.
+enumeration alone is not certificate soundness. Plain arrival-position
+erasure is the encoded fibre with `F_a` trivial and `G_a` the certified
+arrival-position function.
 
 Second, halted dynamics has the §4.3 normative typed form.
-Every qALC engine change must then satisfy:
+Every qALC engine change must then satisfy (the complete command list,
+including the fixture exporters' `--check` runs and the census spot-check,
+is `rust-pillar.md` §7):
 
 1. `cargo test --release --all-features` and plain `cargo test --release`;
 2. exact norm conservation (equality battery) on every tested program;
@@ -638,7 +637,8 @@ Every qALC engine change must then satisfy:
   superposition. Classical IAM bideterminism is the design guide, not
   the proof: the complete qALC transition table — including δ
   scattering, full-normal-form readback, error entry, and halted entry —
-  must still satisfy the orthonormal-columns contract. Copying a
+  satisfies the orthonormal-columns contract on every admitted carrier
+  (§9 item 1). Copying a
   superposed δ-argument before uncomputation produces
   `CNOT(|+⟩|0⟩) = |Φ⁺⟩`, so an adjoint pass cannot restore a clean entry
   state. The token machine's clock and merge discipline define `U`, `μ_p`,
@@ -722,10 +722,11 @@ Every qALC engine change must then satisfy:
 9. Output convention (§4.6) — whether to add a designated-output alternative
    to the current whole-normal-form object, mirroring the same qBLC question.
 
-Items 1 and 2 are the implemented contract. Items 5 and 7 now contain exact
-classical-embedding results but retain stronger open clauses; items 3–9 are
+Items 1 and 2 are the implemented contract. Items 5 and 7 contain exact
+classical-embedding results and stronger open clauses; items 3–9 are
 otherwise research or product-shape questions, not prerequisites for the
-reference evaluator. Moving census work is maintained in `../STATUS.md`.
+reference evaluator. Moving census work and the ordered docket are in
+`../STATUS.md`.
 
 ## 10. Lineage and related documents
 
@@ -747,7 +748,9 @@ would inform).
 
 - Classical counterpart: `../classical/architecture.md`
 - Quantum-store counterpart: `../quantum/architecture.md`
-- Active machine design: `token.md`
+- Machine design: `token.md`; transition register: `kernel.md`; gate-copy
+  identity and reachable-recall injectivity: `instance-identity.md`
+- Infinite objects `U`, `M`, `Ω_qALC`: `objects.md`; speed prior: `speed.md`
 - Rust implementation contract: `rust-pillar.md`
 - Moving state and docket: `../STATUS.md`
 - Canonical differential evidence: `../../tests/qalc/` and

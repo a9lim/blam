@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Reproduce the universal-machine protocol experiments in design.md.
+"""Reproduce the universal-machine protocol experiments in
+docs/classical/self-interpreter/universal.md.
 
 The target is U (<M> ++ N) = M N for closed M, with a rigid tail N.
 It is deliberately weaker than the self-interpreter's rigid-C contract.

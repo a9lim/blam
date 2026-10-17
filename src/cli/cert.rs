@@ -114,7 +114,7 @@ mod search {
         (depth, cur, args)
     }
 
-    /// The library sweep plus this tool's hnf descent: run the three-rung
+    /// The library sweep plus this tool's hnf descent: run the four-rung
     /// ladder on `t`, and on failure recurse into the closed spine
     /// arguments of its hnf. Returns the kill and the spine path it sits
     /// at (empty = the term itself).

@@ -35,7 +35,7 @@ use rayon::prelude::*;
 use std::time::Instant;
 
 /// The 170-bit ref/AIT/ait/int.lam of tromp/AIT fd4e9b0 via tools/blcc.py
-/// (upstream's is now 168; docs/classical/self-interpreter/design.md).
+/// (upstream's is Palmer's 168; docs/classical/self-interpreter/interpreter.md).
 const INTL: &str = "01000110100001000000011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010010111110100101101010011010";
 
 /// λ⁵. meas (h (t (h (new t)))) — the first-nondyadic-leaves witness (n=45).
@@ -351,7 +351,7 @@ mod tests {
         assert_eq!(eq.to_bits(), EQ_WIRE);
     }
 
-    /// Trace equivalence (`docs/quantum/architecture.md` obligation 2) on a fast core:
+    /// Trace equivalence (`docs/quantum/bisimulation.md`) on a fast core:
     /// the full ≤14 population plus the n=45 nondyadic witness. The full
     /// ≤24 sweep lives in the bin (`qselfint 24`), not the suite.
     #[test]

@@ -24,18 +24,18 @@ different machine, and readback is internal, so the cost of constructing the
 normal form is inside `τ` in the machine's own units. It is *not* the
 classical honest gauge `t + |x|`: readback manipulates structured output and
 does not charge a transition per output bit — `λh.λt.x_n` with
-`x_n = λⁿ.(n n … n)` reaches a 498-bit normal form at clock 167 and a
-1,798-bit one at clock 327. Nor is the clock a resource vector: Gate 2's
+`x_n = λⁿ.(n n … n)` reaches a 498-bit normal form at clock 167 (n = 20)
+and a 1,798-bit one at clock 327 (n = 40). Nor is the clock a resource vector: Gate 2's
 end-to-end arrival time on the compiler fragment, `60n + 19 + 50·#H +
 58·#T + 32·#CNOT` including the `47n + 4` preparation, is a scalar cost
 decomposition of that fragment, and the scalar clock retains no
 independently reweightable effect counts. Honest and resource gauges are
 separate objects, not yet defined for qALC.
 
-Halt entry is typed and common-origin (`architecture.md` §4.3): the final
-readback transition produces `Done(nf, garbage, control, tick 0)`, and the
-halt sector then only ticks. So at clock `τ` a halted basis state with tick
-`k` **arrived** at
+Halt entry is typed and common-origin (`architecture.md` §4.3): readback
+ends in `RunDone`, the next transition enters `Halt(nf, garbage, control, 0)`,
+and the halt sector then only ticks. So at clock `τ` a halted basis state
+with tick `k` **arrived** at
 
 ```text
 a = τ − k,
@@ -74,13 +74,12 @@ halted piece `P_halt U (I − P_halt) ψ_{a−1} = P_{halt, tick 0} U ψ_{a−1}
   bucket, so the spectrum supports *any* discount exactly — `1/a`,
   Schmidhuber's phase-wise `2^(−⌈lg a⌉)`, or anything else — rather than only
   bucket-constant ones. `Ω_speed` is a post-pass over it.
-- **Complexity objects.** The three objects of the qBLC design sketch carry
-  over with the leaf probability replaced by the diagonal weight of an
-  arrival block: the Gács-style `−lg ⟨ψ|M_speed|ψ⟩`, a witness
+- **Complexity objects.** Three complexity objects are defined from the
+  diagonal weight of an arrival block: the Gács-style
+  `−lg ⟨ψ|M_speed|ψ⟩`, a witness
   `Kt(x) = min_{p, a} |p| + ⌈lg (a / ⟨x|B_a^{(p)}|x⟩)⌉`, and a restart
   cost. None is measured yet, and no O(1) coincidence between them is
-  claimed — the multiplicity counterexample on the qBLC thread applies
-  unchanged.
+  claimed.
 
 Invariance caveat, stated once: `Ω_qALC` is machine-relative already
 (`architecture.md` §3); `Ω_speed` is additionally clock-relative, and the
@@ -160,6 +159,5 @@ report:
 - the open floors, `F n floor exact real`, one line per size and floor.
 
 The census checkpoint (`qalc-census-v1`) carries both maps as `A` and `F`
-records, so a resumed run emits the same file as a monolithic one.
-Checkpoints written under `qalc-census-v0` are refused; nothing in `data/`
-uses them.
+records, so a resumed run emits the same file as a monolithic one; a
+checkpoint with any other config tag is refused.
