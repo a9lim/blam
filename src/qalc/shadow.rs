@@ -409,7 +409,7 @@ fn fire_second(term: &Term, state: &RunCore, arrival: Arrival) -> Vec<Row> {
             tape,
             vb: None,
             rs: records.into(),
-            ks: storage.into(),
+            ks: storage,
         }),
     )
 }
@@ -914,7 +914,7 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
                 tape,
                 vb: target.vb,
                 rs: records.into(),
-                ks: storage.into(),
+                ks: storage,
             })
         }
         "deliver-c" => {
