@@ -34,7 +34,7 @@ semantics
 
 run
   --threads N     rayon threads (0 = ambient, the default)
-  --retry-threads N  canonical admission retry pool (0 = up to 8, default)
+  --retry-threads N  canonical admission retry pool (0 = all threads, default)
   --out FILE      write the deterministic report to FILE as well as stdout
   --matrix FILE   accumulate and write sparse finite M coordinates
   --speed FILE    write the speed prior: arrival spectrum and Omega_speed brackets
@@ -1244,8 +1244,10 @@ pub fn run(argv: &[String]) -> R<()> {
     let collect_matrix = matrix_file.is_some();
     args::build_pool(threads)?;
     let thread_count = rayon::current_num_threads();
+    // A 300,000-state canonical carrier now peaks near 0.2 GB, so the retry
+    // queue defaults to every thread; the flag still bounds it.
     let retry_threads = if retry_threads == 0 {
-        thread_count.min(8)
+        thread_count
     } else {
         retry_threads.min(thread_count)
     }

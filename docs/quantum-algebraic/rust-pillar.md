@@ -35,10 +35,12 @@ invocation convention, exact Kraft aggregation, resource brackets,
 checkpointing, and optional sparse-`M` persistence without changing `U`.
 Selection is scheduled in two phases: a successful 1,000-state first-candidate
 probe is already a complete checked admission, while every inconclusive probe
-retries the unchanged 300,000-state canonical selector in a bounded rayon
-pool. A probe failure never selects conservative history. Performance timing
-is stderr-only telemetry and does not enter the deterministic report or
-checkpoint accumulator.
+retries the unchanged 300,000-state canonical selector. Without a checkpoint,
+every size is probed first and all retries then run as one longest-probe-first
+work queue in a bounded rayon pool; with one, each group finishes its own
+retries before its record is appended. A probe failure never selects
+conservative history. Performance timing is stderr-only telemetry and does not
+enter the deterministic report or checkpoint accumulator.
 
 ## 2. Module map
 
@@ -174,7 +176,7 @@ program from a qfx file. A qfx input is provenance-bearing: its certificate
 must equal the certificate selected by the public semantics before execution.
 `census` instead constructs the canonical invocation from each enumerated BLC
 program and keeps the gates outside its prefix length. `--retry-threads`
-controls only the canonical second-phase pool (up to eight workers by default),
+controls only the canonical second-phase pool (every rayon thread by default),
 not the selector or census semantics. `--speed FILE` writes the speed-prior
 surface of `speed.md` — the exact arrival spectrum and the directed
 `Ω_speed` brackets — from the same run, leaving the deterministic report
