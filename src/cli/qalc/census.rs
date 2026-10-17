@@ -626,6 +626,45 @@ fn probe_one(
     }
 }
 
+/// Per-size stderr telemetry (never part of the deterministic report).
+fn print_size(n: u32, tally: &Tally, seconds: f64) {
+    eprintln!(
+        "n={n:>2}: {:>9} programs  gate1 {:>8}  cons {:>8}  h/e/r {}/{}/{}  cap {:?}  peak {}  ({seconds:.3}s, {:.0}/s)",
+        tally.programs,
+        tally.selection[1],
+        tally.selection[2],
+        tally.halt_programs,
+        tally.error_programs,
+        tally.running_programs,
+        tally.capacity,
+        tally.peak_support,
+        tally.programs as f64 / seconds.max(f64::MIN_POSITIVE),
+    );
+    eprintln!(
+        "      worker-s over {} measured programs: select {:.3} [carrier {:.3}, gram {:.3}, obligations {:.3}, rri {:.3}, digest {:.3}; {} attempts, {} canonical retries]  evolve {:.3}  observe {:.3}",
+        tally.perf.measured_programs,
+        tally.perf.selection.as_secs_f64(),
+        tally.perf.admission.carrier.as_secs_f64(),
+        tally.perf.admission.gram.as_secs_f64(),
+        tally.perf.admission.obligations.as_secs_f64(),
+        tally.perf.admission.rri.as_secs_f64(),
+        tally.perf.admission.digest.as_secs_f64(),
+        tally.perf.admission.attempts,
+        tally.perf.canonical_retries,
+        tally.perf.evolution.as_secs_f64(),
+        tally.perf.observation.as_secs_f64(),
+    );
+    for slow in &tally.slow_selection {
+        eprintln!(
+            "      slow select {:>8.3}s  {:?}  carrier {:>8.3}s  {}",
+            slow.elapsed.as_secs_f64(),
+            slow.kind,
+            slow.carrier.as_secs_f64(),
+            enc_to_string(slow.witness.1, slow.witness.0),
+        );
+    }
+}
+
 fn sweep_deferred(
     deferred: DeferredAdmission,
     steps: u64,
@@ -653,6 +692,67 @@ fn sweep_deferred(
         },
         tally,
     )
+}
+
+/// Run canonical retries through one atomic work queue, longest probe first
+/// (the 1,000-state probe's cost is the cost proxy for the 300,000-state
+/// retry), accumulating per-size tallies. `Tally::merge` is order-free, so
+/// the schedule never reaches the report.
+#[allow(clippy::too_many_arguments)]
+fn retry_queue(
+    pool: &rayon::ThreadPool,
+    workers: usize,
+    mut deferred: Vec<(usize, DeferredAdmission)>,
+    sizes: usize,
+    steps: u64,
+    support_cap: usize,
+    collect_matrix: bool,
+) -> R<Vec<Tally>> {
+    use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+    use std::sync::Mutex;
+
+    deferred.sort_by(|(left_size, left), (right_size, right)| {
+        right
+            .probe_elapsed
+            .cmp(&left.probe_elapsed)
+            .then_with(|| (left_size, left.len, left.enc).cmp(&(right_size, right.len, right.enc)))
+    });
+    let next = AtomicUsize::new(0);
+    let failed = AtomicBool::new(false);
+    let failure: Mutex<Option<String>> = Mutex::new(None);
+    let merged: Mutex<Vec<Tally>> = Mutex::new((0..sizes).map(|_| Tally::new()).collect());
+    let workers = workers.min(deferred.len());
+    pool.scope(|scope| {
+        for _ in 0..workers {
+            scope.spawn(|_| {
+                let mut local: Vec<Tally> = (0..sizes).map(|_| Tally::new()).collect();
+                while !failed.load(Ordering::Relaxed) {
+                    let at = next.fetch_add(1, Ordering::Relaxed);
+                    let Some(&(size, item)) = deferred.get(at) else {
+                        break;
+                    };
+                    if let Err(error) =
+                        sweep_deferred(item, steps, support_cap, collect_matrix, &mut local[size])
+                    {
+                        failed.store(true, Ordering::Relaxed);
+                        failure
+                            .lock()
+                            .expect("retry failure slot")
+                            .get_or_insert(error);
+                        break;
+                    }
+                }
+                let mut merged = merged.lock().expect("retry tallies");
+                for (slot, tally) in merged.iter_mut().zip(local) {
+                    *slot = std::mem::take(slot).merge(tally);
+                }
+            });
+        }
+    });
+    if let Some(error) = failure.into_inner().expect("retry failure slot") {
+        return Err(error);
+    }
+    Ok(merged.into_inner().expect("retry tallies"))
 }
 
 fn matrix_trace(matrix: &HashMap<MatrixKey, ExactSum>) -> ExactSum {
@@ -1163,46 +1263,44 @@ pub fn run(argv: &[String]) -> R<()> {
     };
 
     let started = Instant::now();
-    let mut rows = Vec::new();
-    let mut total = Tally::new();
-    for n in min_n..=max_n {
-        let target = checkpoint
-            .as_ref()
-            .map_or(thread_count * 32, |state| state.target);
-        let tasks = interleave_tasks(split_tasks(n, target));
-        let run_slice = |slice: &[blam::blc::enumerate::GenTask]| -> R<Tally> {
-            let probed = slice
-                .par_iter()
-                .try_fold(ProbeTally::default, |mut tally, task| {
-                    let mut failure = None;
-                    run_task(task, &mut |enc, len| {
-                        if failure.is_none() {
-                            failure =
-                                probe_one(enc, len, steps, support_cap, collect_matrix, &mut tally)
-                                    .err();
-                        }
-                    });
-                    match failure {
-                        Some(error) => Err(error),
-                        None => Ok(tally),
+    let probe_slice = |slice: &[blam::blc::enumerate::GenTask]| -> R<ProbeTally> {
+        slice
+            .par_iter()
+            .try_fold(ProbeTally::default, |mut tally, task| {
+                let mut failure = None;
+                run_task(task, &mut |enc, len| {
+                    if failure.is_none() {
+                        failure =
+                            probe_one(enc, len, steps, support_cap, collect_matrix, &mut tally)
+                                .err();
                     }
-                })
-                .try_reduce(ProbeTally::default, |left, right| Ok(left.merge(right)))?;
-            let deferred = retry_pool.install(|| {
-                probed
-                    .deferred
-                    .par_iter()
-                    .copied()
-                    .try_fold(Tally::new, |mut tally, deferred| {
-                        sweep_deferred(deferred, steps, support_cap, collect_matrix, &mut tally)?;
-                        Ok::<Tally, String>(tally)
-                    })
-                    .try_reduce(Tally::new, |left, right| Ok(left.merge(right)))
-            })?;
-            Ok(probed.tally.merge(deferred))
-        };
-        let (tally, seconds) = match &mut checkpoint {
-            Some(state) => {
+                });
+                match failure {
+                    Some(error) => Err(error),
+                    None => Ok(tally),
+                }
+            })
+            .try_reduce(ProbeTally::default, |left, right| Ok(left.merge(right)))
+    };
+    let retry = |deferred: Vec<(usize, DeferredAdmission)>, sizes: usize| -> R<Vec<Tally>> {
+        retry_queue(
+            &retry_pool,
+            retry_threads,
+            deferred,
+            sizes,
+            steps,
+            support_cap,
+            collect_matrix,
+        )
+    };
+    let checkpointed = checkpoint.is_some();
+    let mut measured_sizes: Vec<(u32, Tally, f64)> = Vec::new();
+    match &mut checkpoint {
+        Some(state) => {
+            // A checkpoint group record is a complete merged tally, so each
+            // group finishes its own canonical retries before it is appended.
+            for n in min_n..=max_n {
+                let tasks = interleave_tasks(split_tasks(n, state.target));
                 let per_group = tasks.len().div_ceil(state.groups).max(1);
                 let mut tally = Tally::new();
                 let mut seconds = 0.0;
@@ -1215,54 +1313,57 @@ pub fn run(argv: &[String]) -> R<()> {
                     let start = (group * per_group).min(tasks.len());
                     let end = ((group + 1) * per_group).min(tasks.len());
                     let group_started = Instant::now();
-                    let measured = run_slice(&tasks[start..end])?;
+                    let probed = probe_slice(&tasks[start..end])?;
+                    let deferred = probed.deferred.into_iter().map(|d| (0, d)).collect();
+                    let retried = retry(deferred, 1)?;
+                    let measured = retried
+                        .into_iter()
+                        .fold(probed.tally, |tally, retried| tally.merge(retried));
                     let elapsed = group_started.elapsed().as_secs_f64();
                     state.append(n, group, elapsed, &measured)?;
                     tally = tally.merge(measured);
                     seconds += elapsed;
                 }
-                (tally, seconds)
+                print_size(n, &tally, seconds);
+                measured_sizes.push((n, tally, seconds));
             }
-            None => {
+        }
+        None => {
+            // Probe every size first, then run every size's canonical retries
+            // as one longest-probe-first work queue: no size waits on its own
+            // slowest retry, and the queue keeps every retry worker busy
+            // until the last carrier.
+            let mut deferred = Vec::new();
+            for (index, n) in (min_n..=max_n).enumerate() {
+                let tasks = interleave_tasks(split_tasks(n, thread_count * 32));
                 let size_started = Instant::now();
-                let tally = run_slice(&tasks)?;
-                (tally, size_started.elapsed().as_secs_f64())
+                let probed = probe_slice(&tasks)?;
+                let seconds = size_started.elapsed().as_secs_f64();
+                eprintln!(
+                    "n={n:>2}: probed {} programs, {} canonical retries queued ({seconds:.3}s)",
+                    probed.tally.programs + probed.deferred.len() as u64,
+                    probed.deferred.len(),
+                );
+                deferred.extend(probed.deferred.into_iter().map(|d| (index, d)));
+                measured_sizes.push((n, probed.tally, seconds));
             }
-        };
-        eprintln!(
-            "n={n:>2}: {:>9} programs  gate1 {:>8}  cons {:>8}  h/e/r {}/{}/{}  cap {:?}  peak {}  ({seconds:.3}s, {:.0}/s)",
-            tally.programs,
-            tally.selection[1],
-            tally.selection[2],
-            tally.halt_programs,
-            tally.error_programs,
-            tally.running_programs,
-            tally.capacity,
-            tally.peak_support,
-            tally.programs as f64 / seconds.max(f64::MIN_POSITIVE),
-        );
-        eprintln!(
-            "      worker-s over {} measured programs: select {:.3} [carrier {:.3}, gram {:.3}, obligations {:.3}, rri {:.3}, digest {:.3}; {} attempts, {} canonical retries]  evolve {:.3}  observe {:.3}",
-            tally.perf.measured_programs,
-            tally.perf.selection.as_secs_f64(),
-            tally.perf.admission.carrier.as_secs_f64(),
-            tally.perf.admission.gram.as_secs_f64(),
-            tally.perf.admission.obligations.as_secs_f64(),
-            tally.perf.admission.rri.as_secs_f64(),
-            tally.perf.admission.digest.as_secs_f64(),
-            tally.perf.admission.attempts,
-            tally.perf.canonical_retries,
-            tally.perf.evolution.as_secs_f64(),
-            tally.perf.observation.as_secs_f64(),
-        );
-        for slow in &tally.slow_selection {
+            let retries = deferred.len();
+            let retry_started = Instant::now();
+            let retried = retry(deferred, measured_sizes.len())?;
             eprintln!(
-                "      slow select {:>8.3}s  {:?}  carrier {:>8.3}s  {}",
-                slow.elapsed.as_secs_f64(),
-                slow.kind,
-                slow.carrier.as_secs_f64(),
-                enc_to_string(slow.witness.1, slow.witness.0),
+                "retry queue: {retries} canonical retries over {retry_threads} threads in {:.3}s (size seconds below exclude it)",
+                retry_started.elapsed().as_secs_f64()
             );
+            for (slot, retried) in measured_sizes.iter_mut().zip(retried) {
+                slot.1 = std::mem::take(&mut slot.1).merge(retried);
+            }
+        }
+    }
+    let mut rows = Vec::new();
+    let mut total = Tally::new();
+    for (n, tally, seconds) in measured_sizes {
+        if !checkpointed {
+            print_size(n, &tally, seconds);
         }
         rows.push(Row::from_tally(n, &tally));
         total = total.merge(tally);
