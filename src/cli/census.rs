@@ -59,6 +59,7 @@ use blam::classical::machine::{Machine, Pool, SizeSink};
 use blam::classical::OutOfFuel;
 use rayon::prelude::*;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Arc, Condvar, Mutex, MutexGuard};
 use std::time::Instant;
 
 const USAGE: &str = "\
@@ -455,10 +456,25 @@ type MemoMap = std::collections::HashMap<(u64, u8), MemoV, MixBuild>;
 type NoWhnfSet = std::collections::HashSet<(u64, u8), MixBuild>;
 
 /// The census's cross-size verdict memory, read-only within a size:
-/// the parity-rolled λ-wrap memo and the monotone no-whnf head set.
+/// the parity-rolled λ-wrap memo and the monotone no-whnf head facts.
 struct Memos<'a> {
     wrap: &'a MemoMap,
-    no_whnf: &'a NoWhnfSet,
+    /// No-whnf facts indexed by the head's size. A head is the function
+    /// part of a closed application, whose closed argument has at least 4
+    /// bits, so an n-bit term only ever looks up sizes ≤ n − 6 — which is
+    /// what lets sizes n and n+1 run side by side (see `run_lanes`).
+    no_whnf: &'a [Arc<NoWhnfSet>],
+    any_whnf: bool,
+}
+
+impl<'a> Memos<'a> {
+    fn new(wrap: &'a MemoMap, no_whnf: &'a [Arc<NoWhnfSet>]) -> Memos<'a> {
+        Memos {
+            wrap,
+            no_whnf,
+            any_whnf: no_whnf.iter().any(|s| !s.is_empty()),
+        }
+    }
 }
 
 /// The memo layer: the two cross-size facts that can settle a term
@@ -489,10 +505,13 @@ fn memo_verdict(stats: &mut Stats, memos: &Memos, enc: u64, len: u8) -> bool {
     // are strict subterms, so the set (facts from strictly smaller
     // sizes) is read-only during a size. The kill is itself a no-whnf
     // fact and a valid λ-wrap Diverge seed.
-    if !memos.no_whnf.is_empty()
-        && (enc >> (len - 2)) & 0b11 == 0b01
-        && memos.no_whnf.contains(&head_of(enc, len))
-    {
+    if memos.any_whnf && (enc >> (len - 2)) & 0b11 == 0b01 && {
+        let head = head_of(enc, len);
+        memos
+            .no_whnf
+            .get(head.1 as usize)
+            .is_some_and(|s| s.contains(&head))
+    } {
         stats.diverge += 1;
         stats.head_hits += 1;
         stats.no_whnf_out.push((enc, len));
@@ -727,6 +746,203 @@ fn run_group(cfg: &Cfg, memos: &Memos, tasks: &[GenTask]) -> Stats {
     fast.merge(slow)
 }
 
+/// One size's result as the in-order reporter needs it.
+struct SizeOut {
+    stats: Stats,
+    secs: f64,
+    /// λ-wrap records this size could reuse (size n−2's) and forwards
+    /// to size n+2.
+    memo_in: usize,
+    memo_fwd: usize,
+    /// The forwarded records, sorted — only when `--memo-out` asks.
+    memo_recs: Vec<((u64, u8), MemoV)>,
+    /// No-whnf facts this size added beyond any seeded at its own size.
+    whnf_added: usize,
+}
+
+/// Census size `n` in one group over the whole task split.
+fn run_size(cfg: &Cfg, memos: &Memos, n: u32, target: usize) -> (Stats, f64) {
+    let tasks = interleave_tasks(split_tasks(n, target));
+    let t0 = Instant::now();
+    let s = run_group(cfg, memos, &tasks);
+    (s, t0.elapsed().as_secs_f64())
+}
+
+/// Roll size n's memos forward: its λ-wrap records replace size n−2's
+/// in `wrap` (they serve size n+2), and its no-whnf facts join any
+/// seeded at size n. Returns the reporter's record and n's fact set.
+fn hand_off(
+    mut stats: Stats,
+    secs: f64,
+    wrap: &mut MemoMap,
+    seeded: &NoWhnfSet,
+    want_memo_recs: bool,
+) -> (SizeOut, NoWhnfSet) {
+    let memo_in = wrap.len();
+    *wrap = stats.memo_out.drain(..).collect();
+    let mut memo_recs = Vec::new();
+    if want_memo_recs {
+        memo_recs = wrap.iter().map(|(k, v)| (*k, *v)).collect();
+        memo_recs.sort_unstable_by_key(|(k, _)| *k);
+    }
+    let mut set = seeded.clone();
+    set.extend(stats.no_whnf_out.iter().copied());
+    let whnf_added = set.len() - seeded.len();
+    let out = SizeOut {
+        stats,
+        secs,
+        memo_in,
+        memo_fwd: wrap.len(),
+        memo_recs,
+        whnf_added,
+    };
+    (out, set)
+}
+
+/// What the two lanes and the reporter share.
+struct Lanes {
+    st: Mutex<LaneState>,
+    cv: Condvar,
+}
+
+struct LaneState {
+    whnf: Vec<Arc<NoWhnfSet>>,
+    done: [bool; 64],
+    outs: Vec<Option<SizeOut>>,
+    /// Stop at the next size boundary (the reporter is gone or a lane
+    /// died).
+    stop: bool,
+    /// A lane panicked; the reporter must not wait for its sizes.
+    failed: bool,
+}
+
+impl Lanes {
+    /// The state, poisoned or not: every writer leaves it consistent
+    /// between statements, and the flags below exist for the panic case.
+    fn lock(&self) -> MutexGuard<'_, LaneState> {
+        self.st.lock().unwrap_or_else(|e| e.into_inner())
+    }
+}
+
+/// Dropped by a thread on its way out, so nobody waits on a thread that
+/// is gone: the reporter (`always`) stops the lanes however it leaves —
+/// an error or a failed `--verify` mid-sweep — while a lane signals only
+/// when it panics. A lane that simply finished its sizes must NOT stop
+/// the other lane, which may still owe the reporter its last size.
+struct StopOnDrop<'a> {
+    lanes: &'a Lanes,
+    always: bool,
+}
+
+impl Drop for StopOnDrop<'_> {
+    fn drop(&mut self) {
+        let panicking = std::thread::panicking();
+        if self.always || panicking {
+            let mut st = self.lanes.lock();
+            st.stop = true;
+            st.failed |= panicking;
+            self.lanes.cv.notify_all();
+        }
+    }
+}
+
+/// Census `lo..=hi` with sizes overlapped two at a time.
+///
+/// Size n depends on exactly two earlier results: the λ-wrap memo of
+/// size n−2 and the no-whnf facts of sizes ≤ n−6 (a head of an n-bit
+/// application has at most n−6 bits). So the even and odd sizes run as
+/// two lanes, each sequential within itself, and a lane waits only for
+/// the other lane's sizes ≤ n−6 — which it has almost always finished.
+/// A size's slow phase-B tail (one multi-second escalation or rescue)
+/// then overlaps the next size's work instead of idling every other
+/// core. Every size sees exactly the facts the sequential sweep would
+/// have let it use, so every row is identical; the reporter prints in
+/// size order from the calling thread.
+///
+/// Lanes are plain threads feeding the global rayon pool, never pool
+/// workers blocked on a condvar, so `--threads 1` cannot deadlock.
+fn run_lanes(
+    cfg: &Cfg,
+    (lo, hi): (u32, u32),
+    target: usize,
+    wraps: [MemoMap; 2],
+    whnf: Vec<Arc<NoWhnfSet>>,
+    want_memo_recs: bool,
+    report: &mut dyn FnMut(u32, SizeOut) -> R<()>,
+) -> R<()> {
+    let lanes = Lanes {
+        st: Mutex::new(LaneState {
+            whnf,
+            done: [false; 64],
+            outs: (0..64).map(|_| None).collect(),
+            stop: false,
+            failed: false,
+        }),
+        cv: Condvar::new(),
+    };
+    std::thread::scope(|scope| {
+        for (parity, mut wrap) in (0u32..).zip(wraps) {
+            let first = if lo % 2 == parity { lo } else { lo + 1 };
+            if first > hi {
+                continue;
+            }
+            let lanes = &lanes;
+            std::thread::Builder::new()
+                .name(format!("census-lane-{parity}"))
+                .spawn_scoped(scope, move || {
+                    let _guard = StopOnDrop {
+                        lanes,
+                        always: false,
+                    };
+                    for n in (first..=hi).step_by(2) {
+                        let facts = {
+                            let mut st = lanes.lock();
+                            while !st.stop
+                                && !(lo..=n.saturating_sub(6)).all(|m| st.done[m as usize])
+                            {
+                                st = lanes.cv.wait(st).unwrap_or_else(|e| e.into_inner());
+                            }
+                            if st.stop {
+                                return;
+                            }
+                            st.whnf.clone()
+                        };
+                        let (stats, secs) = run_size(cfg, &Memos::new(&wrap, &facts), n, target);
+                        let (out, set) =
+                            hand_off(stats, secs, &mut wrap, &facts[n as usize], want_memo_recs);
+                        let mut st = lanes.lock();
+                        st.whnf[n as usize] = Arc::new(set);
+                        st.done[n as usize] = true;
+                        st.outs[n as usize] = Some(out);
+                        lanes.cv.notify_all();
+                    }
+                })
+                .expect("spawn a census lane");
+        }
+        let _guard = StopOnDrop {
+            lanes: &lanes,
+            always: true,
+        };
+        for n in lo..=hi {
+            let out = {
+                let mut st = lanes.lock();
+                loop {
+                    if let Some(out) = st.outs[n as usize].take() {
+                        break out;
+                    }
+                    if st.failed {
+                        // A lane panicked; leaving the scope re-raises it.
+                        return Ok(());
+                    }
+                    st = lanes.cv.wait(st).unwrap_or_else(|e| e.into_inner());
+                }
+            };
+            report(n, out)?;
+        }
+        Ok(())
+    })
+}
+
 pub fn run(argv: &[String]) -> R<()> {
     if args::wants_help(argv) {
         println!("{USAGE}");
@@ -925,69 +1141,44 @@ pub fn run(argv: &[String]) -> R<()> {
     // With a checkpoint, per-size unknown dumping would duplicate lines
     // across resumed runs; collect and write the file once at the end.
     let mut deferred_unknowns: Vec<(u64, u8)> = Vec::new();
-    for n in min_n..=max_n {
-        // Generation is fused into the workers: each task enumerates its
-        // subtree of the term space and censuses terms as they appear.
-        let target = match &ckpt {
-            Some(c) => c.target,
-            None if cfg.chunk == 0 => rayon::current_num_threads() * 64,
-            None => cfg.chunk,
-        };
-        let tasks = interleave_tasks(split_tasks(n, target));
-        let memos = Memos {
-            wrap: &memo_by_parity[(n % 2) as usize],
-            no_whnf: &no_whnf,
-        };
-        let memos = &memos;
-        let run_slice = |slice: &[GenTask]| run_group(&cfg, memos, slice);
-        let (mut stats, secs) = match &mut ckpt {
-            Some(c) => {
-                let per = tasks.len().div_ceil(c.groups).max(1);
-                let mut acc = Stats::default();
-                let mut secs = 0.0;
-                for gi in 0..c.groups {
-                    if let Some((s, gsecs)) = c.take_restored(n, gi) {
-                        acc = acc.merge(s);
-                        secs += gsecs;
-                        continue;
-                    }
-                    let lo = (gi * per).min(tasks.len());
-                    let hi = ((gi + 1) * per).min(tasks.len());
-                    let t0 = Instant::now();
-                    let gs = run_slice(&tasks[lo..hi]);
-                    let gsecs = t0.elapsed().as_secs_f64();
-                    c.append(n, gi, gsecs, &gs)?;
-                    acc = acc.merge(gs);
-                    secs += gsecs;
-                }
-                (acc, secs)
-            }
-            None => {
-                let t0 = Instant::now();
-                let s = run_slice(&tasks);
-                (s, t0.elapsed().as_secs_f64())
-            }
-        };
-        let memo_in = memo_by_parity[(n % 2) as usize].len();
-        memo_by_parity[(n % 2) as usize] = stats.memo_out.drain(..).collect();
+    let checkpointed = ckpt.is_some();
+    // Generation is fused into the workers: each task enumerates its
+    // subtree of the term space and censuses terms as they appear.
+    let auto_target = match cfg.chunk {
+        0 => rayon::current_num_threads() * 64,
+        c => c,
+    };
+    // No-whnf facts by size (a key carries its length), seeded ones
+    // included; each size's set is final once that size completes.
+    let mut whnf_total = no_whnf.len();
+    let mut whnf_by_size: Vec<Arc<NoWhnfSet>> = vec![Arc::default(); 64];
+    for key in no_whnf.drain() {
+        Arc::make_mut(&mut whnf_by_size[key.1 as usize]).insert(key);
+    }
+    let want_memo_recs = memo_out_path.is_some();
+
+    // Everything below prints, in size order, from the main thread —
+    // whichever schedule produced the size.
+    let mut report = |n: u32, out: SizeOut| -> R<()> {
+        let SizeOut {
+            mut stats,
+            secs,
+            memo_in,
+            memo_fwd,
+            memo_recs,
+            whnf_added,
+        } = out;
         if stats.memo_hits > 0 || memo_in > 0 {
             eprintln!(
                 "    memo: {} hits of {} candidates; {} records forward",
-                stats.memo_hits,
-                memo_in,
-                memo_by_parity[(n % 2) as usize].len()
+                stats.memo_hits, memo_in, memo_fwd
             );
         }
         // Persist size n's memo records (sorted for stable diffs). Loads
         // dedup by key, so re-appends from resumed runs are harmless.
         if let (Some(path), Some(f)) = (&memo_out_path, memo_out.as_mut()) {
-            let mut recs: Vec<((u64, u8), MemoV)> = memo_by_parity[(n % 2) as usize]
-                .iter()
-                .map(|(k, v)| (*k, *v))
-                .collect();
-            recs.sort_unstable_by_key(|(k, _)| *k);
             let mut out = String::new();
-            for (k, v) in recs {
+            for (k, v) in memo_recs {
                 Rec::Wrap(k, v).write(&mut out);
             }
             let mut wrecs = stats.no_whnf_out.clone();
@@ -997,15 +1188,12 @@ pub fn run(argv: &[String]) -> R<()> {
             }
             crate::out::write_all("census", path, f, out.as_bytes())?;
         }
-        // Fold size n's no-whnf facts into the cross-size set.
         let new_whnf = stats.no_whnf_out.len();
-        no_whnf.extend(stats.no_whnf_out.drain(..));
+        whnf_total += whnf_added;
         if stats.head_hits > 0 || new_whnf > 0 {
             eprintln!(
                 "    no-whnf: {} head-memo kills; {} new facts ({} total)",
-                stats.head_hits,
-                new_whnf,
-                no_whnf.len()
+                stats.head_hits, new_whnf, whnf_total
             );
         }
 
@@ -1079,7 +1267,7 @@ pub fn run(argv: &[String]) -> R<()> {
             if stats.unknowns.len() > 16 {
                 println!("#   ... and {} more unknowns", stats.unknowns.len() - 16);
             }
-            if ckpt.is_some() {
+            if checkpointed {
                 deferred_unknowns.extend(stats.unknowns.iter().copied());
             } else if let Some(d) = dump.as_mut() {
                 // The file was truncated at run start, so this appends
@@ -1097,6 +1285,60 @@ pub fn run(argv: &[String]) -> R<()> {
                 println!("#   verify: max|nf| matches BBλ({n})");
             }
         }
+        Ok(())
+    };
+
+    if checkpointed || min_n == max_n {
+        for n in min_n..=max_n {
+            let p = (n % 2) as usize;
+            let (stats, secs) = {
+                let memos = Memos::new(&memo_by_parity[p], &whnf_by_size);
+                match &mut ckpt {
+                    Some(c) => {
+                        let tasks = interleave_tasks(split_tasks(n, c.target));
+                        let per = tasks.len().div_ceil(c.groups).max(1);
+                        let mut acc = Stats::default();
+                        let mut secs = 0.0;
+                        for gi in 0..c.groups {
+                            if let Some((s, gsecs)) = c.take_restored(n, gi) {
+                                acc = acc.merge(s);
+                                secs += gsecs;
+                                continue;
+                            }
+                            let lo = (gi * per).min(tasks.len());
+                            let hi = ((gi + 1) * per).min(tasks.len());
+                            let t0 = Instant::now();
+                            let gs = run_group(&cfg, &memos, &tasks[lo..hi]);
+                            let gsecs = t0.elapsed().as_secs_f64();
+                            c.append(n, gi, gsecs, &gs)?;
+                            acc = acc.merge(gs);
+                            secs += gsecs;
+                        }
+                        (acc, secs)
+                    }
+                    None => run_size(&cfg, &memos, n, auto_target),
+                }
+            };
+            let (out, set) = hand_off(
+                stats,
+                secs,
+                &mut memo_by_parity[p],
+                &whnf_by_size[n as usize],
+                want_memo_recs,
+            );
+            whnf_by_size[n as usize] = Arc::new(set);
+            report(n, out)?;
+        }
+    } else {
+        run_lanes(
+            &cfg,
+            (min_n, max_n),
+            auto_target,
+            memo_by_parity,
+            whnf_by_size,
+            want_memo_recs,
+            &mut report,
+        )?;
     }
     if ckpt.is_some() {
         if let Some(d) = dump.as_mut() {
@@ -1139,15 +1381,12 @@ mod tests {
     fn sweep(max_n: u32, groups: usize) -> Vec<String> {
         let cfg = Cfg::default();
         let mut memo_by_parity: [MemoMap; 2] = [MemoMap::default(), MemoMap::default()];
-        let mut no_whnf: NoWhnfSet = NoWhnfSet::default();
+        let mut no_whnf: Vec<Arc<NoWhnfSet>> = vec![Arc::default(); 64];
         let mut out = Vec::new();
         for n in 4..=max_n {
             let tasks = interleave_tasks(split_tasks(n, 32));
             let mut stats = {
-                let memos = Memos {
-                    wrap: &memo_by_parity[(n % 2) as usize],
-                    no_whnf: &no_whnf,
-                };
+                let memos = Memos::new(&memo_by_parity[(n % 2) as usize], &no_whnf);
                 if groups == 0 {
                     let mut s = Stats::default();
                     let (mut pool, mut vm) = (Pool::new(), Machine::new());
@@ -1170,7 +1409,7 @@ mod tests {
             };
             out.push(canon(&stats));
             memo_by_parity[(n % 2) as usize] = stats.memo_out.drain(..).collect();
-            no_whnf.extend(stats.no_whnf_out.drain(..));
+            Arc::make_mut(&mut no_whnf[n as usize]).extend(stats.no_whnf_out.drain(..));
         }
         out
     }

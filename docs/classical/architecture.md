@@ -311,6 +311,23 @@ of the ladder on a freshly decoded term reproduces the single pass exactly,
 transition counts included. Only the order of the per-group record vectors
 changes, and every consumer of those sorts or set-collects.
 
+### Overlapped sizes
+
+Phase B still ends on its single slowest term, a one-to-ten-second escalation
+or rescue during which the rest of the pool idles. Without `--checkpoint` the
+census hides that tail behind the next size: size n depends on exactly two
+earlier results — size n−2's λ-wrap memo and the no-whnf facts of sizes
+≤ n−6, since a head of a closed n-bit application has at most n−6 bits — so
+the even and odd sizes run as two lanes, each sequential within itself, and a
+lane waits only for the other lane's sizes ≤ n−6. Every size sees exactly the
+facts the sequential sweep would let it use, so rows are identical; the main
+thread prints them in size order. The lanes are plain threads feeding the
+shared pool, so `--threads 1` cannot deadlock, and `tests/census_lanes.rs`
+holds the pipeline to the sequential path under a watchdog. A checkpointed
+run keeps sizes strictly sequential, so its file stays a single ordered log.
+Per-size `time_s` is then each size's own elapsed time, and overlapping sizes'
+times sum to more than the run's wall time.
+
 ### Checkpointing and delta runs
 
 `--checkpoint FILE` splits each size into K sequential groups (`--groups`,

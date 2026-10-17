@@ -178,7 +178,10 @@ the M5 Max; user time is the stable number, wall tracks ambient load.
   ~0.3% of survivors through an atomic work queue at single-term granularity.
   Groups run sequentially; the unit of parallelism for an expensive term is
   that term, not the enumeration subtree it came from. The A/B measurements
-  are in `docs/classical/architecture.md` §7.
+  are in `docs/classical/architecture.md` §7. Without `--checkpoint`, even
+  and odd sizes run as two overlapped lanes (size n needs only size n−2's
+  λ-wrap memo and the no-whnf facts of sizes ≤ n−6); per-size `time_s` is
+  then each size's own elapsed time and no longer sums to the wall time.
 - `census --checkpoint FILE --groups K` gives kill-safe group-level resume
   (config-pinned header, torn tails discarded); `--memo-out` / `--memo-in`
   persist the λ-wrap and no-whnf memos across runs. The format is
