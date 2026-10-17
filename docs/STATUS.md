@@ -267,10 +267,8 @@ agree at the complete effect-tree level through 24 bits (`blam q selfint 24`:
 19,014 programs verified, 34 skipped as unresolved, 0 trace or pure-NF
 mismatches; witness45 and the poisoned-seed canary pass), and Lean pins the
 wire identities and quote linearity; the bisimulation obligations are open
-(`quantum/bisimulation.md`). The ≤24 sweep takes 2.4 h wall and 38 CPU-hours
-on the M5 Max, almost all in `quantum::reference`, whose `subst` re-shifts the
-substituted term at every binder; at ≤16 that costs the 168 3× the 170's CPU
-time for 6% more β.
+(`quantum/bisimulation.md`). The ≤24 sweep takes 1.5 s wall and 20 CPU-seconds
+on the M5 Max.
 
 `blam q census --cond-k K` implements the conditional family `G_k`, but no
 canonical generation exists. Before one: choose whole-live-store versus a
