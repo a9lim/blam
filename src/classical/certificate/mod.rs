@@ -277,56 +277,98 @@ pub fn plug(w: &PTerm, z: &PTerm) -> PTerm {
 /// Shift free indices *strictly above* `cutoff` by `d`. The cutoff
 /// convention differs from `escalation`'s shift (which lifts at `>=`):
 /// indices here are 1-based with `cutoff` counting binders already
-/// crossed, so `Var(cutoff)` is bound and must not move.
-fn shift_above(t: &PTerm, d: u32, cutoff: u32) -> PTerm {
+/// crossed, so `Var(cutoff)` is bound and must not move. `None` when no
+/// variable moves — the result is `t` itself — so an unchanged subtree
+/// keeps its `Rc` instead of being rebuilt node by node.
+fn shift_above(t: &PTerm, d: u32, cutoff: u32) -> Option<PTerm> {
     match t {
-        PTerm::Var(n) => {
-            if *n > cutoff {
-                PTerm::Var(n + d)
-            } else {
-                t.clone()
-            }
+        PTerm::Var(n) if *n > cutoff => Some(PTerm::Var(n + d)),
+        PTerm::Lam(b) => shift_above(b, d, cutoff + 1).map(plam),
+        PTerm::App(f, a) => {
+            let nf = shift_above(f, d, cutoff);
+            let na = shift_above(a, d, cutoff);
+            rebuild_app(f, a, nf, na)
         }
-        PTerm::Meta(i) => PTerm::Meta(*i),
-        PTerm::Lam(b) => plam(shift_above(b, d, cutoff + 1)),
-        PTerm::App(f, a) => papp(shift_above(f, d, cutoff), shift_above(a, d, cutoff)),
+        _ => None,
     }
 }
 
 /// Substitute `s` for `Var(j)` and decrement free variables above `j`
 /// (the one-pass β-substitution; matches the reference reducer in
 /// `tools/certificates/loop32_trace.py`).
-///
-/// When `s` is pattern-closed, `shift_above(s, 1, 0)` is the identity —
-/// the cutoff tracks binder depth, so every `Var` in a closed `s`
-/// satisfies `n <= cutoff` and `Meta` is never touched — and the
-/// per-binder re-shift is skipped. Without the skip one contraction
-/// costs O(#Lam(body) × |arg|) on top of the O(|body| + occ × |arg|)
-/// that `head_step`'s pre-contraction bound budgets for; a sampled
-/// frontier sweep spent half its CPU inside `shift_above`.
 fn subst_dec(t: &PTerm, j: u32, s: &PTerm) -> PTerm {
     subst_dec_c(t, j, s, s.max_free(0) == 0)
 }
 
+fn rebuild_app(
+    f: &Rc<PTerm>,
+    a: &Rc<PTerm>,
+    nf: Option<PTerm>,
+    na: Option<PTerm>,
+) -> Option<PTerm> {
+    if nf.is_none() && na.is_none() {
+        return None;
+    }
+    Some(PTerm::App(
+        nf.map_or_else(|| f.clone(), Rc::new),
+        na.map_or_else(|| a.clone(), Rc::new),
+    ))
+}
+
+/// [`subst_dec`] with `s`'s closedness precomputed. An occurrence
+/// `depth` binders below the substitution site receives `s` shifted by
+/// `depth` — computed once per depth that actually holds an occurrence,
+/// and never for a pattern-closed `s`, whose every `Var` sits at or
+/// below the cutoff — and every subtree that mentions neither `Var(j)`
+/// nor a variable above it keeps its `Rc`. Rebuilding every node and
+/// re-shifting `s` at each `Lam` crossed cost O(#Lam(body) × |arg|) of
+/// allocation per contraction on top of what `head_step`'s
+/// pre-contraction bound budgets for: one frontier term took 24 s
+/// of a 25-term sample, and the whole frontier sweep 1.8 core-hours,
+/// against 49 CPU-seconds this way.
 fn subst_dec_c(t: &PTerm, j: u32, s: &PTerm, s_closed: bool) -> PTerm {
-    match t {
-        PTerm::Var(n) => {
-            if *n == j {
-                s.clone()
-            } else if *n > j {
-                PTerm::Var(n - 1)
-            } else {
-                t.clone()
+    fn go(
+        t: &PTerm,
+        j: u32,
+        j0: u32,
+        s: &PTerm,
+        s_closed: bool,
+        cache: &mut Vec<Option<PTerm>>,
+    ) -> Option<PTerm> {
+        match t {
+            PTerm::Var(n) => {
+                if *n == j {
+                    let depth = (j - j0) as usize;
+                    if s_closed || depth == 0 {
+                        Some(s.clone())
+                    } else {
+                        if cache.len() <= depth {
+                            cache.resize(depth + 1, None);
+                        }
+                        Some(
+                            cache[depth]
+                                .get_or_insert_with(|| {
+                                    shift_above(s, depth as u32, 0).unwrap_or_else(|| s.clone())
+                                })
+                                .clone(),
+                        )
+                    }
+                } else if *n > j {
+                    Some(PTerm::Var(n - 1))
+                } else {
+                    None
+                }
+            }
+            PTerm::Meta(_) => None,
+            PTerm::Lam(b) => go(b, j + 1, j0, s, s_closed, cache).map(plam),
+            PTerm::App(f, a) => {
+                let nf = go(f, j, j0, s, s_closed, cache);
+                let na = go(a, j, j0, s, s_closed, cache);
+                rebuild_app(f, a, nf, na)
             }
         }
-        PTerm::Meta(i) => PTerm::Meta(*i),
-        PTerm::Lam(b) if s_closed => plam(subst_dec_c(b, j + 1, s, true)),
-        PTerm::Lam(b) => plam(subst_dec_c(b, j + 1, &shift_above(s, 1, 0), false)),
-        PTerm::App(f, a) => papp(
-            subst_dec_c(f, j, s, s_closed),
-            subst_dec_c(a, j, s, s_closed),
-        ),
     }
+    go(t, j, j, s, s_closed, &mut Vec::new()).unwrap_or_else(|| t.clone())
 }
 
 fn contract(body: &PTerm, arg: &PTerm) -> PTerm {
@@ -1328,5 +1370,89 @@ mod tests {
             Step::Did(t, _) => assert_eq!(t, plam(papp(PTerm::Meta(0), pvar(1)))),
             other => panic!("expected step, got {other:?}"),
         }
+    }
+}
+
+#[cfg(test)]
+mod subst_differential {
+    use super::*;
+
+    /// The rebuild-every-node shift the sharing one replaced.
+    fn shift_rebuild(t: &PTerm, d: u32, cutoff: u32) -> PTerm {
+        match t {
+            PTerm::Var(n) if *n > cutoff => PTerm::Var(n + d),
+            PTerm::Var(_) | PTerm::Meta(_) => t.clone(),
+            PTerm::Lam(b) => plam(shift_rebuild(b, d, cutoff + 1)),
+            PTerm::App(f, a) => papp(shift_rebuild(f, d, cutoff), shift_rebuild(a, d, cutoff)),
+        }
+    }
+
+    /// The per-binder-shift substitution the sharing one replaced.
+    fn old_subst(t: &PTerm, j: u32, s: &PTerm, s_closed: bool) -> PTerm {
+        match t {
+            PTerm::Var(n) => {
+                if *n == j {
+                    s.clone()
+                } else if *n > j {
+                    PTerm::Var(n - 1)
+                } else {
+                    t.clone()
+                }
+            }
+            PTerm::Meta(i) => PTerm::Meta(*i),
+            PTerm::Lam(b) if s_closed => plam(old_subst(b, j + 1, s, true)),
+            PTerm::Lam(b) => plam(old_subst(b, j + 1, &shift_rebuild(s, 1, 0), false)),
+            PTerm::App(f, a) => papp(old_subst(f, j, s, s_closed), old_subst(a, j, s, s_closed)),
+        }
+    }
+
+    struct Rng(u64);
+    impl Rng {
+        fn next(&mut self) -> u64 {
+            self.0 ^= self.0 << 13;
+            self.0 ^= self.0 >> 7;
+            self.0 ^= self.0 << 17;
+            self.0
+        }
+        fn term(&mut self, depth: u32, fuel: u32) -> PTerm {
+            let r = self.next() % 10;
+            if fuel == 0 || r < 3 {
+                if r == 0 {
+                    return PTerm::Meta((self.next() % 2) as u32);
+                }
+                return PTerm::Var(1 + (self.next() % (depth as u64 + 3)) as u32);
+            }
+            if r < 6 {
+                plam(self.term(depth + 1, fuel - 1))
+            } else {
+                papp(self.term(depth, fuel / 2), self.term(depth, fuel / 2))
+            }
+        }
+    }
+
+    /// 200,000 random (body, argument) pairs with metas, open arguments,
+    /// and free variables above the binder.
+    #[test]
+    fn sharing_subst_equals_per_binder_shift_subst() {
+        let mut rng = Rng(0x9E37_79B9_7F4A_7C15);
+        let mut n = 0u32;
+        for _ in 0..200_000 {
+            let body = rng.term(0, 24);
+            let arg = rng.term(0, 12);
+            let j = 1;
+            let closed = arg.max_free(0) == 0;
+            let want = old_subst(&body, j, &arg, closed);
+            let got = subst_dec_c(&body, j, &arg, closed);
+            assert_eq!(want, got, "body={body} arg={arg}");
+            // exercise both closedness flags on closed args as well
+            if closed {
+                assert_eq!(
+                    old_subst(&body, j, &arg, false),
+                    subst_dec_c(&body, j, &arg, false)
+                );
+            }
+            n += 1;
+        }
+        assert!(n > 0);
     }
 }

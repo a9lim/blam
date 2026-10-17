@@ -208,9 +208,10 @@ the M5 Max; user time is the stable number, wall tracks ambient load.
   `try_kill` is the one four-rung sweep that both `blam cert search` and the
   soundness battery run. Sweep defaults (`CertBudgets::SWEEP`) are 1000 steps
   / 100k nodes / 4096 lemma steps, measured kill-equivalent to the battery's
-  2000/200k (`::THOROUGH`). A complete sweep over a frontier of about 4,200
-  terms takes about 16 minutes wall and 1.8 core-hours at `--threads 8` on
-  the M5 Max, with a tail-bound wall time.
+  2000/200k (`::THOROUGH`). A complete sweep over the 4,109-term frontier
+  takes about 4 s wall and 63 CPU-seconds on the M5 Max; substitution shares
+  unchanged subtrees and shifts the argument once per occurrence depth, and
+  the rebuild-everything form it replaced took 1.8 core-hours.
 - **New kills.** Append to `data/certificates/ratchet_kills.tsv`, run
   `scripts/recert-kills.sh`, regenerate the frontier with
   `scripts/census-regen.sh --frontier-only`, refresh Ω with
