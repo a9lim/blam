@@ -1948,6 +1948,29 @@ fn nf_step_amp(
         .collect()
 }
 
+/// [`nf_step_amp`] for the carrier walks, without re-collecting the rows:
+/// every coefficient is computed first, so a Capacity refusal still
+/// precedes any row being consumed, and the caller then reads each row's
+/// coefficient with [`row_coefficient`].
+fn nf_step_checked(
+    machine: MachineKind,
+    term: &Term,
+    s: &NfState,
+    cert: Option<&CertEntries>,
+) -> Result<Vec<NfRow>, NfError> {
+    let rows = nf_step_with(machine, term, s, cert);
+    for r in &rows {
+        super::kernel::edge_coefficient(r.sign, r.dk, &r.rule).ok_or(NfError::Capacity)?;
+    }
+    Ok(rows)
+}
+
+/// The edge coefficient of a row [`nf_step_checked`] already accepted.
+fn row_coefficient(r: &NfRow) -> Amp {
+    super::kernel::edge_coefficient(r.sign, r.dk, &r.rule)
+        .expect("nf_step_checked computed this coefficient")
+}
+
 /// A sparse composed superposition in deterministic first-touch order.
 pub type NfPsi = Vec<(NfState, Amp)>;
 
@@ -2140,10 +2163,16 @@ pub fn nf_carrier_and_columns_with(
                 continue;
             }
         }
-        let rows = nf_step_amp(machine, term, &order[src], cert)?;
+        let rows = nf_step_checked(machine, term, &order[src], cert)?;
         let mut col: Vec<super::wire::ColRow> = Vec::with_capacity(rows.len());
         let mut norm = Amp::ZERO;
-        for (coefficient, rule, target) in rows {
+        for row in rows {
+            let coefficient = row_coefficient(&row);
+            let NfRow {
+                rule,
+                state: target,
+                ..
+            } = row;
             check_inverse(machine, term, &rule, &order[src], &target)?;
             let id = index.intern(&mut order, target);
             // A deterministic row's unit coefficient is the common case:
@@ -2230,11 +2259,12 @@ pub fn nf_gram_with(
                 continue;
             }
         }
-        let rows = nf_step_amp(machine, term, &order[src], cert)?;
+        let rows = nf_step_checked(machine, term, &order[src], cert)?;
         let mut column: Vec<(usize, Amp)> = Vec::new();
         let mut col_index: HashMap<usize, usize> = HashMap::default();
-        for (coefficient, _rule, target) in rows {
-            let id = index.intern(&mut order, target);
+        for row in rows {
+            let coefficient = row_coefficient(&row);
+            let id = index.intern(&mut order, row.state);
             if let Some(&k) = col_index.get(&id) {
                 column[k].1 = column[k].1.add(coefficient).ok_or(NfError::Capacity)?;
             } else {
