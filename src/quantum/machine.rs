@@ -777,14 +777,13 @@ fn is_canonical(enc: u64, len: u8) -> bool {
             }
             i -= 2;
         } else {
-            // `1ⁿ0`
-            while i > 0 && (enc >> (i - 1)) & 1 == 1 {
-                i -= 1;
-            }
-            if i == 0 {
+            // `1ⁿ0`: the unread bits left-aligned (i ≥ 2 here), so the
+            // run cannot count past the end of the word.
+            let ones = (enc << (64 - u32::from(i))).leading_ones();
+            if ones >= u32::from(i) {
                 return false; // ran out before the terminating 0
             }
-            i -= 1;
+            i -= ones as u8 + 1;
             pending -= 1;
         }
     }
@@ -932,6 +931,62 @@ mod tests {
                 assert_eq!(got, expect, "program {src}");
             },
         );
+    }
+
+    /// `is_canonical`'s one-instruction unary read agrees with the bit
+    /// loop it replaced on every closed term to 22 bits (with every
+    /// truncation and extension) and a dense low-word sweep.
+    #[test]
+    fn is_canonical_matches_the_bit_loop() {
+        fn bit_loop(enc: u64, len: u8) -> bool {
+            if len < 64 && enc >> len != 0 {
+                return false;
+            }
+            let (mut i, mut pending) = (len, 1u32);
+            while pending > 0 {
+                if i < 2 {
+                    return false;
+                }
+                if (enc >> (i - 1)) & 1 == 0 {
+                    if (enc >> (i - 2)) & 1 == 1 {
+                        pending += 1;
+                    }
+                    i -= 2;
+                } else {
+                    while i > 0 && (enc >> (i - 1)) & 1 == 1 {
+                        i -= 1;
+                    }
+                    if i == 0 {
+                        return false;
+                    }
+                    i -= 1;
+                    pending -= 1;
+                }
+            }
+            i == 0
+        }
+        for n in 4..=22 {
+            for_each_closed(n, &mut |enc, len| {
+                assert!(is_canonical(enc, len));
+                for cut in 0..len {
+                    let (e, l) = (enc >> (len - cut), cut);
+                    assert_eq!(is_canonical(e, l), bit_loop(e, l));
+                }
+                for (e, l) in [
+                    (enc << 1, len + 1),
+                    (enc << 2 | 3, len + 2),
+                    (enc | 1 << 40, len),
+                ] {
+                    assert_eq!(is_canonical(e, l), bit_loop(e, l), "{e:#x}/{l}");
+                }
+            });
+        }
+        for enc in 0..1u64 << 16 {
+            for len in [1u8, 2, 9, 16, 17, 33, 63, 64] {
+                assert_eq!(is_canonical(enc, len), bit_loop(enc, len));
+                assert_eq!(is_canonical(!enc, len), bit_loop(!enc, len));
+            }
+        }
     }
 
     /// Run `prog` through the compressed and the uncompressed machine and
