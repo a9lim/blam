@@ -2140,9 +2140,14 @@ pub fn nf_carrier_and_columns_with(
         for (coefficient, rule, target) in rows {
             check_inverse(machine, term, &rule, &order[src], &target)?;
             let id = index.intern(&mut order, target);
-            norm = norm
-                .add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
-                .ok_or(NfError::Capacity)?;
+            // A deterministic row's unit coefficient is the common case:
+            // 0 + |1|^2 is 1 exactly, without the ring arithmetic.
+            norm = if norm == Amp::ZERO && coefficient == Amp::ONE {
+                Amp::ONE
+            } else {
+                norm.add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
+                    .ok_or(NfError::Capacity)?
+            };
             col.push((coefficient, rule, id));
         }
         if norm != Amp::ONE {

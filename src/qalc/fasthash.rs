@@ -114,10 +114,15 @@ pub fn hash_one<T: Hash + ?Sized>(value: &T) -> u64 {
 /// Growth re-buckets the stored hashes and never re-hashes a key; a probe
 /// asks the caller for full equality only on a stored-hash hit, so a
 /// duplicate costs one hash and no allocation.
+///
+/// A table slot packs the id with the top half of its hash, so a probe
+/// touches the stored-hash array only on a tag match; the table stays at
+/// most half full.
 #[derive(Debug)]
 pub struct HashIndex {
     hashes: Vec<u64>,
-    table: Vec<usize>,
+    /// `0` is empty; otherwise `(hash >> 32) << 32 | (id + 1)`.
+    table: Vec<u64>,
 }
 
 impl Default for HashIndex {
@@ -127,18 +132,24 @@ impl Default for HashIndex {
 }
 
 impl HashIndex {
-    const EMPTY: usize = usize::MAX;
+    const TAG: u64 = !0u64 << 32;
 
     pub fn new() -> Self {
         Self {
             hashes: Vec::new(),
-            table: vec![Self::EMPTY; 8],
+            table: vec![0; 8],
         }
     }
 
     /// The number of interned ids.
     pub fn len(&self) -> usize {
         self.hashes.len()
+    }
+
+    #[inline]
+    fn slot_entry(hash: u64, id: usize) -> u64 {
+        let id = u32::try_from(id + 1).expect("HashIndex ids fit in 32 bits");
+        (hash & Self::TAG) | u64::from(id)
     }
 
     /// `Ok(id)` of the interned key with this `hash` for which `is_match`
@@ -153,30 +164,36 @@ impl HashIndex {
         let mask = self.table.len() - 1;
         let mut slot = hash as usize & mask;
         loop {
-            match self.table[slot] {
-                Self::EMPTY => break,
-                id if self.hashes[id] == hash && is_match(id) => return Ok(id),
-                _ => slot = (slot + 1) & mask,
+            let entry = self.table[slot];
+            if entry == 0 {
+                break;
             }
+            if entry & Self::TAG == hash & Self::TAG {
+                let id = (entry & !Self::TAG) as usize - 1;
+                if self.hashes[id] == hash && is_match(id) {
+                    return Ok(id);
+                }
+            }
+            slot = (slot + 1) & mask;
         }
         let id = self.hashes.len();
-        self.table[slot] = id;
+        self.table[slot] = Self::slot_entry(hash, id);
         self.hashes.push(hash);
-        if self.hashes.len() * 4 > self.table.len() * 3 {
+        if self.hashes.len() * 2 > self.table.len() {
             self.grow();
         }
         Err(id)
     }
 
     fn grow(&mut self) {
-        let mut table = vec![Self::EMPTY; self.table.len() * 2];
+        let mut table = vec![0u64; self.table.len() * 2];
         let mask = table.len() - 1;
         for (id, &hash) in self.hashes.iter().enumerate() {
             let mut slot = hash as usize & mask;
-            while table[slot] != Self::EMPTY {
+            while table[slot] != 0 {
                 slot = (slot + 1) & mask;
             }
-            table[slot] = id;
+            table[slot] = Self::slot_entry(hash, id);
         }
         self.table = table;
     }
