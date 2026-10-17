@@ -47,7 +47,7 @@ fn project_alpha(alpha: &Alpha) -> Alpha {
 fn project_log(entry: &LogEntry) -> LogEntry {
     match entry {
         LogEntry::Lp(lp) => LogEntry::Lp(project_lp(lp)),
-        LogEntry::Alpha(alpha) => LogEntry::Alpha(project_alpha(alpha)),
+        LogEntry::Alpha(alpha) => LogEntry::Alpha(project_alpha(alpha).into()),
         // Each nested RBL pairs with one nested RB.  Gamma/mu is the
         // balanced kernel scaffold used by the Python checker.
         LogEntry::Rbl(_) => LogEntry::Gam(GateName::H),
@@ -69,7 +69,7 @@ fn project_tape(entry: &TapeEntry) -> TapeEntry {
         TapeEntry::Rb(_) => TapeEntry::Mu(GateName::H),
         TapeEntry::Rbl(_) => TapeEntry::Gam(GateName::H),
         TapeEntry::Lp(lp) => TapeEntry::Lp(project_lp(lp)),
-        TapeEntry::Alpha(alpha) => TapeEntry::Alpha(project_alpha(alpha)),
+        TapeEntry::Alpha(alpha) => TapeEntry::Alpha(project_alpha(alpha).into()),
         _ => entry.clone(),
     }
 }

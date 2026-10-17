@@ -139,7 +139,7 @@ fn arrival(core: &RunCore) -> Option<(u8, RetainCargo, Vec<TapeEntry>)> {
     fn cargo(entry: &TapeEntry) -> Option<RetainCargo> {
         match entry {
             TapeEntry::Lp(lp) => Some(RetainCargo::Lp(lp.clone())),
-            TapeEntry::Alpha(alpha) => Some(RetainCargo::Alpha(alpha.clone())),
+            TapeEntry::Alpha(alpha) => Some(RetainCargo::Alpha((**alpha).clone())),
             _ => None,
         }
     }

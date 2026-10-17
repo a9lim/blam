@@ -134,7 +134,7 @@ pub enum LogEntry {
     Lp(Lp),
     Gam(GateName),
     Cgam(Shared<CGam>),
-    Alpha(Alpha),
+    Alpha(Shared<Alpha>),
     Rbl(Shared<Rbl>),
 }
 
@@ -247,7 +247,7 @@ pub enum TapeEntry {
     Cgam(Shared<CGam>),
     Cmu { port: CPort, invoked: Lp },
     Ans(GateName, u8),
-    Alpha(Alpha),
+    Alpha(Shared<Alpha>),
     Rb(Shared<Rb>),
     Rbl(Shared<Rbl>),
 }
@@ -572,12 +572,15 @@ mod tests {
             gate: GateTag::T,
             instance: Lp::new(
                 vec![Dir::F],
-                vec![LogEntry::Alpha(Alpha {
-                    gate: GateTag::T,
-                    instance: inner,
-                    bit: 1,
-                    epoch: Epoch::Fresh,
-                })],
+                vec![LogEntry::Alpha(
+                    Alpha {
+                        gate: GateTag::T,
+                        instance: inner,
+                        bit: 1,
+                        epoch: Epoch::Fresh,
+                    }
+                    .into(),
+                )],
             ),
             bit: 1,
             epoch: Epoch::Fresh,

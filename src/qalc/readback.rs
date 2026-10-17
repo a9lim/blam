@@ -964,12 +964,15 @@ fn nf_step_partial(
                     let zipper2 = fill(zipper, Nf::Var(selected_index))?;
                     let mut tape: Vec<TapeEntry> =
                         std::iter::repeat_n(TapeEntry::BulletBa, usize::from(vb.bit) + 1).collect();
-                    tape.push(TapeEntry::Alpha(Alpha {
-                        gate: vb.gate,
-                        instance: invoked.clone(),
-                        bit: vb.bit,
-                        epoch: Epoch::Fresh,
-                    }));
+                    tape.push(TapeEntry::Alpha(
+                        Alpha {
+                            gate: vb.gate,
+                            instance: invoked.clone(),
+                            bit: vb.bit,
+                            epoch: Epoch::Fresh,
+                        }
+                        .into(),
+                    ));
                     tape.extend_from_slice(&token.tape);
                     let token2 = RunCore {
                         path: token.path.clone(),
@@ -1470,12 +1473,15 @@ fn virtual_carrier_inverse(
     remaining_binders: &[BinderMark],
 ) -> Result<(Vec<TapeEntry>, Vec<BinderMark>), ComposedDefect> {
     let bit = canonical_boolean(output).ok_or(ComposedDefect::Inverse)?;
-    let alpha = TapeEntry::Alpha(Alpha {
-        gate,
-        instance: instance.clone(),
-        bit,
-        epoch: epoch.clone(),
-    });
+    let alpha = TapeEntry::Alpha(
+        Alpha {
+            gate,
+            instance: instance.clone(),
+            bit,
+            epoch: epoch.clone(),
+        }
+        .into(),
+    );
     let prefix = if bit == 0 {
         vec![alpha]
     } else {

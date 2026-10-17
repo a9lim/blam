@@ -96,7 +96,7 @@ fn mask_log(entry: &mut LogEntry) {
     match entry {
         LogEntry::Lp(lp) => mask_lp(lp),
         LogEntry::Cgam(marker) => mask_lp(&mut marker.make_mut().invoked),
-        LogEntry::Alpha(alpha) => mask_alpha(alpha),
+        LogEntry::Alpha(alpha) => mask_alpha(&mut alpha.make_mut()),
         LogEntry::Gam(_) | LogEntry::Rbl(_) => {}
     }
 }
@@ -129,7 +129,7 @@ fn mask_tape(entry: &mut TapeEntry) {
         TapeEntry::Cgam(marker) => mask_lp(&mut marker.make_mut().invoked),
         TapeEntry::Cmu { invoked, .. } => mask_lp(invoked),
         TapeEntry::Ans(_, bit) => *bit = 0,
-        TapeEntry::Alpha(alpha) => mask_alpha(alpha),
+        TapeEntry::Alpha(alpha) => mask_alpha(&mut alpha.make_mut()),
         TapeEntry::Bullet
         | TapeEntry::BulletBa
         | TapeEntry::Rho

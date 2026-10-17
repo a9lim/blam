@@ -131,7 +131,7 @@ impl ArrivalHead {
     fn tape(self) -> TapeEntry {
         match self {
             ArrivalHead::Lp(lp) => TapeEntry::Lp(lp),
-            ArrivalHead::Alpha(a) => TapeEntry::Alpha(a),
+            ArrivalHead::Alpha(a) => TapeEntry::Alpha(a.into()),
         }
     }
 }
@@ -145,7 +145,7 @@ struct Arrival {
 fn arrival_head(e: &TapeEntry) -> Option<ArrivalHead> {
     match e {
         TapeEntry::Lp(lp) => Some(ArrivalHead::Lp(lp.clone())),
-        TapeEntry::Alpha(a) => Some(ArrivalHead::Alpha(a.clone())),
+        TapeEntry::Alpha(a) => Some(ArrivalHead::Alpha((**a).clone())),
         _ => None,
     }
 }
@@ -465,12 +465,15 @@ pub(super) fn deliver_port(term: &Term, state: &RunCore) -> Option<Vec<Row>> {
         && state.tape[2] == TapeEntry::Bullet
     {
         let mut emitted = vec![TapeEntry::Bullet; frame.bit as usize];
-        emitted.push(TapeEntry::Alpha(Alpha {
-            gate: port.tag(),
-            instance: invoked.clone(),
-            bit: frame.bit,
-            epoch: frame.epoch.clone(),
-        }));
+        emitted.push(TapeEntry::Alpha(
+            Alpha {
+                gate: port.tag(),
+                instance: invoked.clone(),
+                bit: frame.bit,
+                epoch: frame.epoch.clone(),
+            }
+            .into(),
+        ));
         emitted.extend_from_slice(&state.tape[3..]);
         let mut log = logged.slice.clone();
         log.extend_from_slice(&state.log);
@@ -935,12 +938,15 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
             if target.tape.len() <= bit
                 || target.tape[..bit].iter().any(|e| *e != TapeEntry::Bullet)
                 || target.tape[bit]
-                    != TapeEntry::Alpha(Alpha {
-                        gate: port.tag(),
-                        instance: invoked.clone(),
-                        bit: bit as u8,
-                        epoch: frames[0].epoch.clone(),
-                    })
+                    != TapeEntry::Alpha(
+                        Alpha {
+                            gate: port.tag(),
+                            instance: invoked.clone(),
+                            bit: bit as u8,
+                            epoch: frames[0].epoch.clone(),
+                        }
+                        .into(),
+                    )
                 || !target.log.starts_with(&logged.slice)
             {
                 return Err(());

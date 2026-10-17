@@ -460,12 +460,15 @@ pub fn step(term: &Term, s: &KState, cert: Option<&CertEntries>) -> Result<Vec<R
         for _ in 0..=vb.bit {
             tape.push(TapeEntry::Bullet);
         }
-        tape.push(TapeEntry::Alpha(Alpha {
-            gate: vb.gate,
-            instance: i.clone(),
-            bit: vb.bit,
-            epoch: Epoch::Fresh,
-        }));
+        tape.push(TapeEntry::Alpha(
+            Alpha {
+                gate: vb.gate,
+                instance: i.clone(),
+                bit: vb.bit,
+                epoch: Epoch::Fresh,
+            }
+            .into(),
+        ));
         tape.extend_from_slice(&c.tape);
         return Ok(det(
             "vvar",
@@ -584,12 +587,15 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                 let bp = mine[0].bit;
                 if j >= 3 {
                     let mut tape = vec![TapeEntry::Bullet; bp as usize + 1];
-                    tape.push(TapeEntry::Alpha(Alpha {
-                        gate: tag,
-                        instance: i.clone(),
-                        bit: bp,
-                        epoch: mine[0].epoch.clone(),
-                    }));
+                    tape.push(TapeEntry::Alpha(
+                        Alpha {
+                            gate: tag,
+                            instance: i.clone(),
+                            bit: bp,
+                            epoch: mine[0].epoch.clone(),
+                        }
+                        .into(),
+                    ));
                     tape.extend_from_slice(&c.tape[3..]);
                     return det(
                         "replay",

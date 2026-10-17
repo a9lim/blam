@@ -256,7 +256,7 @@ fn p_log_entry(t: &mut Toks) -> R<LogEntry> {
             Ok(LogEntry::Gam(g))
         }
         "cg" => Ok(LogEntry::Cgam(p_cgam_body(t)?.into())),
-        "al" => Ok(LogEntry::Alpha(p_alpha_body(t)?)),
+        "al" => Ok(LogEntry::Alpha(p_alpha_body(t)?.into())),
         "rbl" => Ok(LogEntry::Rbl(p_rbl_body(t)?.into())),
         x => Err(format!("bad log entry tag '{x}'")),
     }
@@ -355,7 +355,7 @@ fn p_tape_entry(t: &mut Toks) -> R<TapeEntry> {
             t.close()?;
             Ok(TapeEntry::Ans(g, b))
         }
-        "al" => Ok(TapeEntry::Alpha(p_alpha_body(t)?)),
+        "al" => Ok(TapeEntry::Alpha(p_alpha_body(t)?.into())),
         "rb" => Ok(TapeEntry::Rb(p_rb_body(t)?.into())),
         "rbl" => Ok(TapeEntry::Rbl(p_rbl_body(t)?.into())),
         x => Err(format!("bad tape entry tag '{x}'")),

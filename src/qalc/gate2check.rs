@@ -550,7 +550,7 @@ fn project_log(e: &LogEntry) -> LogEntry {
         LogEntry::Lp(lp) => LogEntry::Lp(project_lp(lp)),
         LogEntry::Gam(g) => LogEntry::Gam(*g),
         LogEntry::Cgam(g) => LogEntry::Cgam(project_cgam(g).into()),
-        LogEntry::Alpha(a) => LogEntry::Alpha(project_alpha(a)),
+        LogEntry::Alpha(a) => LogEntry::Alpha(project_alpha(a).into()),
         LogEntry::Rbl(_) => LogEntry::Gam(GateName::H),
     }
 }
@@ -569,7 +569,7 @@ fn project_tape(e: &TapeEntry) -> TapeEntry {
         TapeEntry::Rb(_) => TapeEntry::Mu(GateName::H),
         TapeEntry::Rbl(_) => TapeEntry::Gam(GateName::H),
         TapeEntry::Lp(lp) => TapeEntry::Lp(project_lp(lp)),
-        TapeEntry::Alpha(a) => TapeEntry::Alpha(project_alpha(a)),
+        TapeEntry::Alpha(a) => TapeEntry::Alpha(project_alpha(a).into()),
         TapeEntry::Cgam(g) => TapeEntry::Cgam(project_cgam(g).into()),
         TapeEntry::Cmu { port, invoked } => TapeEntry::Cmu {
             port: *port,
@@ -706,7 +706,7 @@ fn arrival(c: &RunCore) -> Option<(u8, RetainCargo, Vec<TapeEntry>)> {
     fn cargo(e: &TapeEntry) -> Option<RetainCargo> {
         match e {
             TapeEntry::Lp(lp) => Some(RetainCargo::Lp(lp.clone())),
-            TapeEntry::Alpha(a) => Some(RetainCargo::Alpha(a.clone())),
+            TapeEntry::Alpha(a) => Some(RetainCargo::Alpha((**a).clone())),
             _ => None,
         }
     }
