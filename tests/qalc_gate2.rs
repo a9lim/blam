@@ -209,11 +209,11 @@ fn logical_skeleton(state: &NfState) -> String {
         if let Some(vb) = &mut run.token.vb {
             vb.bit = 0;
         }
-        for frame in &mut run.token.rs {
+        for frame in run.token.rs.make_mut().iter_mut() {
             frame.bit = 0;
             mask_lp(&mut frame.instance);
         }
-        run.token.ks.iter_mut().for_each(mask_storage);
+        run.token.ks.make_mut().iter_mut().for_each(mask_storage);
         mask_nf(&mut run.zipper.make_mut().tree);
     }
     nf_state_bytes(&state)
@@ -369,7 +369,7 @@ fn input_cut(
         );
         let mut masked = state;
         if let NfState::Run(run) = &mut masked {
-            for frame in &mut run.token.rs {
+            for frame in run.token.rs.make_mut().iter_mut() {
                 if frame.gate == GateTag::C2
                     && compiled.prep_occurrences.contains(&frame.instance.occ)
                 {
@@ -657,8 +657,8 @@ fn virtual_boolean_dispatch_precedes_the_shortened_var_extension() {
             bit: 0,
             k: 0,
         }),
-        rs: Vec::new(),
-        ks: Vec::new(),
+        rs: Vec::new().into(),
+        ks: Vec::new().into(),
     });
     let KState::Run(core) = &state else {
         unreachable!()
@@ -700,7 +700,7 @@ fn projected_probe_balance_and_complete_frame_harvest_are_load_bearing() {
     assert!(run.token.rs.len() >= 2);
     let first = run.token.rs[0].clone();
     let last = run.token.rs.last().unwrap().clone();
-    run.token.rs = vec![first.clone(), first, last.clone()];
+    run.token.rs = vec![first.clone(), first, last.clone()].into();
     run.token.log.insert(0, LogEntry::Lp(last.instance.clone()));
     run.token.vb = Some(Vb {
         gate: last.gate,

@@ -581,7 +581,7 @@ fn recall_view(core: &RunCore) -> Option<(RecallKey, bool, RunCore)> {
     }
     let mut erased = core.clone();
     if let Some(index) = matching {
-        erased.rs.remove(index);
+        erased.rs.make_mut().remove(index);
     }
     Some((
         (alpha.gate, alpha.instance.clone(), alpha.bit),
@@ -703,8 +703,8 @@ fn validate_inner(
                         cargo,
                         tail,
                         log: core.log,
-                        frames: core.rs,
-                        storage: core.ks,
+                        frames: core.rs.into_inner(),
+                        storage: core.ks.into_inner(),
                     });
             }
         }
@@ -1078,7 +1078,7 @@ mod tests {
 
     fn with_frame(run: &NfRun, frame: &Frame, epoch: Epoch) -> NfRun {
         let mut framed = run.clone();
-        framed.token.rs.push(Frame {
+        framed.token.rs.make_mut().push(Frame {
             epoch,
             ..frame.clone()
         });

@@ -125,6 +125,21 @@ impl<T: Hash> From<T> for Shared<T> {
     }
 }
 
+impl<T: Hash> FromIterator<T> for Shared<Vec<T>> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        Self::new(iter.into_iter().collect())
+    }
+}
+
+impl<'a, T> IntoIterator for &'a Shared<Vec<T>> {
+    type Item = &'a T;
+    type IntoIter = std::slice::Iter<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.value.iter()
+    }
+}
+
 impl<T: Hash + Default> Default for Shared<T> {
     fn default() -> Self {
         Self::new(T::default())

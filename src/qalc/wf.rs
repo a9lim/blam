@@ -469,8 +469,8 @@ mod tests {
             log: vec![],
             tape: vec![TapeEntry::Bullet, TapeEntry::Bullet, TapeEntry::Rho],
             vb: None,
-            rs: vec![],
-            ks: vec![],
+            rs: Vec::new().into(),
+            ks: Vec::new().into(),
         };
         assert!(check(&term, &root).is_empty());
 

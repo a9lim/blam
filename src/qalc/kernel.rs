@@ -29,6 +29,7 @@ use super::fasthash::{HashMap, HashSet};
 use std::sync::Arc;
 
 use super::amp::Amp;
+use super::shared::Shared;
 use super::mark::{
     frame_repr, kd_key_repr, Alpha, Epoch, Frame, GateTag, KdKey, KsHead, LogEntry, Lp,
     RetainCargo, TapeEntry,
@@ -101,8 +102,8 @@ pub fn init_state() -> KState {
         log: vec![],
         tape: vec![TapeEntry::Bullet, TapeEntry::Bullet, TapeEntry::Rho],
         vb: None,
-        rs: vec![],
-        ks: vec![],
+        rs: Vec::new().into(),
+        ks: Vec::new().into(),
     })
 }
 
@@ -557,7 +558,7 @@ fn gate_leaf(c: &RunCore, g: GateName) -> Vec<Row> {
                                 log: c.log.clone(),
                                 tape,
                                 vb: None,
-                                rs: rs2,
+                                rs: rs2.into(),
                                 ks: c.ks.clone(),
                             }),
                         );
@@ -790,6 +791,7 @@ fn boundary(c: &RunCore, g: GateName, cert: Option<&CertEntries>) -> Vec<Row> {
                 cons_ks(KsHead::RetainWhole(RetainCargo::Lp((*lp).clone())), &c.ks),
             )
         };
+        let ks2: Shared<Vec<KsHead>> = ks2.into();
         let arm = |bit: u8| {
             KState::Run(RunCore {
                 path: c.path.clone(),

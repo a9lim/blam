@@ -598,8 +598,8 @@ fn p_run_body(t: &mut Toks) -> R<RunCore> {
         log,
         tape,
         vb,
-        rs,
-        ks,
+        rs: rs.into(),
+        ks: ks.into(),
     })
 }
 
@@ -623,7 +623,12 @@ fn p_residue(t: &mut Toks) -> R<Residue> {
             let rs = p_seq(t, p_frame)?;
             let ks = p_seq(t, p_ks_head)?;
             t.close()?;
-            Ok(Residue::Root { log, tape, rs, ks })
+            Ok(Residue::Root {
+                log,
+                tape,
+                rs: rs.into(),
+                ks: ks.into(),
+            })
         }
         x => Err(format!("bad residue tag '{x}'")),
     }
@@ -810,8 +815,8 @@ fn p_terminal_garbage(t: &mut Toks) -> R<TerminalGarbage> {
             t.close()?;
             Ok(TerminalGarbage {
                 carrier,
-                frames,
-                storage,
+                frames: frames.into(),
+                storage: storage.into(),
                 binders: binders.into(),
                 residues: residues.into(),
             })

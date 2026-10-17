@@ -42,7 +42,8 @@ pub struct Vb {
 
 /// A running kernel token: `(pos, d, log, tape, VB, RS, KS)`. RS is
 /// canonically sorted (`mark::frame_repr` order — order-free identity);
-/// KS is inert append-only history, newest head first.
+/// KS is inert append-only history, newest head first. RS and KS change
+/// only at gate rows, so they are [`Shared`] across the steps between.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct RunCore {
     pub path: Path,
@@ -50,8 +51,8 @@ pub struct RunCore {
     pub log: Vec<LogEntry>,
     pub tape: Vec<TapeEntry>,
     pub vb: Option<Vb>,
-    pub rs: Vec<Frame>,
-    pub ks: Vec<KsHead>,
+    pub rs: Shared<Vec<Frame>>,
+    pub ks: Shared<Vec<KsHead>>,
 }
 
 /// Output sector: the kernel alphabet plus the absorbing error sector.
@@ -83,8 +84,8 @@ pub enum Residue {
     Root {
         log: Vec<LogEntry>,
         tape: Vec<TapeEntry>,
-        rs: Vec<Frame>,
-        ks: Vec<KsHead>,
+        rs: Shared<Vec<Frame>>,
+        ks: Shared<Vec<KsHead>>,
     },
 }
 
@@ -196,8 +197,8 @@ pub enum TerminalCarrier {
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct TerminalGarbage {
     pub carrier: Option<TerminalCarrier>,
-    pub frames: Vec<Frame>,
-    pub storage: Vec<KsHead>,
+    pub frames: Shared<Vec<Frame>>,
+    pub storage: Shared<Vec<KsHead>>,
     pub binders: Shared<Vec<BinderMark>>,
     pub residues: Shared<Vec<ScopeResidue>>,
 }

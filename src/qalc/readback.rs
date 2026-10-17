@@ -723,8 +723,8 @@ pub fn nf_init() -> NfState {
                 pending: Vec::new(),
             }.into())],
             vb: None,
-            rs: Vec::new(),
-            ks: Vec::new(),
+            rs: Vec::new().into(),
+            ks: Vec::new().into(),
         },
         zipper: Zipper {
             tree: Nf::Hole { armed: false },

@@ -949,8 +949,8 @@ pub fn validate(
                         cargo,
                         tail,
                         log: core.log,
-                        frames: core.rs,
-                        storage: core.ks,
+                        frames: core.rs.into_inner(),
+                        storage: core.ks.into_inner(),
                     });
             }
         }
