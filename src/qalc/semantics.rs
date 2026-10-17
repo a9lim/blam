@@ -14,7 +14,7 @@ use super::admission::{
     Gate1Admission, CANONICAL_STATE_CAP,
 };
 use super::amp::Amp;
-use super::fasthash::{FastHasher, HashMap as FastMap, HashSet as FastSet};
+use super::fasthash::{hash_one, FastHasher, HashIndex, HashMap as FastMap, HashSet as FastSet};
 use super::gate2check::{structural_admission, StructuralAdmission};
 use super::kernel::edge_coefficient;
 use super::readback::{nf_gram_with, nf_init, nf_step_with, MachineKind, NfError};
@@ -400,7 +400,8 @@ pub fn u(sector: &Sector, vector: &Superposition) -> Result<Superposition, Seman
     }
     let source_norm = norm(vector)?;
     let mut target: Superposition = Vec::new();
-    let mut index: FastMap<BasisState, usize> = FastMap::default();
+    // First-touch target ids, each target hashed once and never cloned.
+    let mut index = HashIndex::new();
     for (source, amplitude) in vector {
         let (live, history) = match (sector.conservative(), source) {
             (false, BasisState::Admitted(live)) => (live, None),
@@ -424,14 +425,14 @@ pub fn u(sector: &Sector, vector: &Superposition) -> Result<Superposition, Seman
             } else {
                 BasisState::Admitted(row.state)
             };
-            if let Some(&at) = index.get(&basis) {
-                target[at].1 = target[at]
-                    .1
-                    .add(contribution)
-                    .ok_or(SemanticsError::Capacity)?;
-            } else {
-                index.insert(basis.clone(), target.len());
-                target.push((basis, contribution));
+            match index.find_or_insert(hash_one(&basis), |at| target[at].0 == basis) {
+                Ok(at) => {
+                    target[at].1 = target[at]
+                        .1
+                        .add(contribution)
+                        .ok_or(SemanticsError::Capacity)?;
+                }
+                Err(_) => target.push((basis, contribution)),
             }
         }
     }
@@ -440,6 +441,66 @@ pub fn u(sector: &Sector, vector: &Superposition) -> Result<Superposition, Seman
         return Err(SemanticsError::NormLeak);
     }
     Ok(target)
+}
+
+/// `U^ticks` on a vector `U` has fully absorbed, without stepping it.
+///
+/// In an admitted sector every `NfDone` basis state has exactly one
+/// successor, the same terminal at the next tick, with edge coefficient
+/// one. A vector made only of such states is therefore carried by each
+/// application of [`u`] to the same vector with every tick advanced by one:
+/// targets stay distinct and in source order, amplitudes and norm are
+/// unchanged, and nothing merges or cancels. The duplicate-basis, norm,
+/// and coefficient checks that `u` repeats every step are tick-independent,
+/// so they are made once here with `u`'s own errors.
+///
+/// `Ok(None)` means "not applicable — step with `u`": a conservative
+/// sector (its history grows every step), a basis state that has not
+/// absorbed, an amplitude the unit coefficient does not fix, or a tick
+/// that would overflow.
+pub fn advance_absorbed(
+    sector: &Sector,
+    vector: &Superposition,
+    ticks: u64,
+) -> Result<Option<Superposition>, SemanticsError> {
+    if sector.conservative()
+        || !vector
+            .iter()
+            .all(|(basis, _)| matches!(basis, BasisState::Admitted(NfState::Done { .. })))
+    {
+        return Ok(None);
+    }
+    if ticks == 0 {
+        return Ok(Some(vector.clone()));
+    }
+    let mut distinct = FastSet::default();
+    if !vector.iter().all(|(basis, _)| distinct.insert(basis)) {
+        return Err(SemanticsError::DuplicateBasis);
+    }
+    norm(vector)?;
+    let unit = edge_coefficient(1, 0, "tick").ok_or(SemanticsError::Capacity)?;
+    let mut out = Vec::with_capacity(vector.len());
+    for (basis, amplitude) in vector {
+        let BasisState::Admitted(NfState::Done { terminal, tick }) = basis else {
+            unreachable!("checked above");
+        };
+        let Some(tick) = tick.checked_add(ticks) else {
+            return Ok(None);
+        };
+        if amplitude.mul(unit) != Some(*amplitude) {
+            return Ok(None);
+        }
+        if !amplitude.is_zero() {
+            out.push((
+                BasisState::Admitted(NfState::Done {
+                    terminal: terminal.clone(),
+                    tick,
+                }),
+                *amplitude,
+            ));
+        }
+    }
+    Ok(Some(out))
 }
 
 /// Mathematical spelling retained as a public alias beside idiomatic Rust
@@ -800,6 +861,73 @@ mod tests {
             vector = next;
         }
         panic!("forced fallback never fired H");
+    }
+
+    #[test]
+    fn advance_absorbed_is_repeated_u() {
+        // Pinned admitted sectors (branching, cancelling, and erroring
+        // programs among them) plus invoked BLC programs that halt, err, and
+        // stay running: once a vector absorbs, advancing it k ticks is
+        // exactly k applications of U, and before that it is refused.
+        let mut terms: Vec<Term> = parse_fixtures(include_str!("admission_pins.qfx"))
+            .unwrap()
+            .programs
+            .into_iter()
+            .map(|fixture| fixture.term)
+            .collect();
+        use crate::blc::{app, lam, var};
+        let omega = app(lam(app(var(1), var(1))), lam(app(var(1), var(1))));
+        for program in [
+            lam(var(1)),
+            lam(lam(var(2))),
+            lam(lam(app(var(2), var(1)))),
+            lam(lam(app(var(1), var(2)))),
+            lam(lam(app(var(2), app(var(2), var(1))))),
+            lam(lam(app(app(var(2), var(1)), var(1)))),
+            lam(omega),
+        ] {
+            terms.push(super::super::term::invoke_ht(super::super::term::from_blc(
+                &program,
+            )));
+        }
+        let mut absorbed_sectors = 0;
+        for term in terms {
+            let sector = select(term);
+            let mut vector = initial_vector(&sector);
+            for _ in 0..512 {
+                let absorbed = vector
+                    .iter()
+                    .all(|(basis, _)| matches!(basis.live(), NfState::Done { .. }));
+                if absorbed && sector.is_admitted() {
+                    break;
+                }
+                assert_eq!(advance_absorbed(&sector, &vector, 5), Ok(None));
+                vector = u(&sector, &vector).unwrap();
+            }
+            if sector.conservative() {
+                assert_eq!(advance_absorbed(&sector, &vector, 5), Ok(None));
+                continue;
+            }
+            if !vector
+                .iter()
+                .all(|(basis, _)| matches!(basis.live(), NfState::Done { .. }))
+            {
+                continue;
+            }
+            absorbed_sectors += 1;
+            for ticks in [0u64, 1, 2, 7, 64] {
+                let mut stepped = vector.clone();
+                for _ in 0..ticks {
+                    stepped = u(&sector, &stepped).unwrap();
+                }
+                assert_eq!(
+                    advance_absorbed(&sector, &vector, ticks),
+                    Ok(Some(stepped)),
+                    "ticks={ticks}"
+                );
+            }
+        }
+        assert_eq!(absorbed_sectors, 26);
     }
 
     #[test]

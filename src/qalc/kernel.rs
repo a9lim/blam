@@ -29,11 +29,11 @@ use super::fasthash::{HashMap, HashSet};
 use std::sync::Arc;
 
 use super::amp::Amp;
-use super::shared::Shared;
 use super::mark::{
     frame_repr, kd_key_repr, Alpha, Epoch, Frame, GateTag, KdKey, KsHead, LogEntry, Lp,
     RetainCargo, TapeEntry,
 };
+use super::shared::Shared;
 use super::state::{KState, Kind, Residue, RunCore, Vb, Vert};
 use super::term::{binder_path, level, subterm, Dir, GateName, Term};
 use super::wire::{CertEntries, ColRow, Column};

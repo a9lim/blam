@@ -682,11 +682,14 @@ fn projected_probe_balance_and_complete_frame_harvest_are_load_bearing() {
     let NfState::Run(run) = &mut scaffold_imbalance else {
         unreachable!()
     };
-    run.token.log.push(LogEntry::Rbl(Rbl {
-        parent: Vec::new(),
-        output: Vec::new(),
-        code: Vec::new(),
-    }.into()));
+    run.token.log.push(LogEntry::Rbl(
+        Rbl {
+            parent: Vec::new(),
+            output: Vec::new(),
+            code: Vec::new(),
+        }
+        .into(),
+    ));
     assert!(
         gate2check::shadow_wf(&compiled, &scaffold_imbalance)
             .contains(&ShadowViolation::ProbeBalance),

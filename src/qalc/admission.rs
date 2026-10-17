@@ -1324,7 +1324,10 @@ mod tests {
                         _ => None,
                     })
                     .collect();
-                assert_eq!(outputs, HashSet::from_iter([term_as_nf(&expected).unwrap()]));
+                assert_eq!(
+                    outputs,
+                    HashSet::from_iter([term_as_nf(&expected).unwrap()])
+                );
                 let report = validate(&invoked, None, 10_000).unwrap();
                 assert!(report.certified, "invoked size={size}: {report:?}");
                 invoked_effect_free += 1;

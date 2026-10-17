@@ -8,9 +8,9 @@ use blam::blc::wire::enc_to_string;
 use blam::qalc::admission::AdmissionTelemetry;
 use blam::qalc::amp::Amp;
 use blam::qalc::semantics::{
-    error_mass, halt_arrivals, halt_mass, initial_vector, kraft_weight, rho, running_mass,
-    select_probe_profiled_without_digest, select_profiled_without_digest, u, Sector, SelectionKind,
-    SemanticsError,
+    advance_absorbed, error_mass, halt_arrivals, halt_mass, initial_vector, kraft_weight, rho,
+    running_mass, select_probe_profiled_without_digest, select_profiled_without_digest, u, Sector,
+    SelectionKind, SemanticsError,
 };
 use blam::qalc::term::{from_blc, invoke_ht};
 use blam::qalc::wire::nf_bytes;
@@ -456,7 +456,18 @@ fn sweep_sector(
     // short of the transition a capacity cut refused.
     let mut reached = steps;
     for at in 1..=steps {
-        match u(&selected.sector, &vector) {
+        // Once an admitted vector has fully absorbed, the remaining
+        // transitions only advance every tick (`advance_absorbed`), so they
+        // are applied at once; everything read below is identical.
+        let stepped = match advance_absorbed(&selected.sector, &vector, steps - at + 1) {
+            Ok(Some(absorbed)) => {
+                vector = absorbed;
+                break;
+            }
+            Ok(None) => u(&selected.sector, &vector),
+            Err(error) => Err(error),
+        };
+        match stepped {
             Ok(next) => {
                 peak_support = peak_support.max(next.len());
                 if next.len() > support_cap {

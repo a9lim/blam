@@ -26,18 +26,18 @@
 //! where the reference silently slices. All are unreachable on the
 //! pinned carriers.
 
-use std::borrow::Cow;
 use super::fasthash::HashMap;
+use std::borrow::Cow;
 use std::sync::Arc;
 
 use super::amp::Amp;
 use super::kernel::{instance, step};
 use super::mark::{Alpha, Epoch, GateTag, LogEntry, Lp, Rb, Rbl, TapeEntry};
+use super::shared::Shared;
 use super::state::{
     BinderIdentity, BinderMark, ErrorGarbage, ErrorKind, Kind, Nf, NfRun, NfState, NfTerminal,
     RunCore, ScopeResidue, TerminalCarrier, TerminalGarbage, Vert, Zipper,
 };
-use super::shared::Shared;
 use super::term::{binder_path, subterm, Dir, GateName, Path, Term};
 use super::wire::CertEntries;
 
@@ -716,12 +716,15 @@ pub fn nf_init() -> NfState {
             path: Vec::new(),
             d: Vert::D,
             log: Vec::new(),
-            tape: vec![TapeEntry::Rb(Rb {
-                depth: 0,
-                output: Vec::new(),
-                code: Vec::new(),
-                pending: Vec::new(),
-            }.into())],
+            tape: vec![TapeEntry::Rb(
+                Rb {
+                    depth: 0,
+                    output: Vec::new(),
+                    code: Vec::new(),
+                    pending: Vec::new(),
+                }
+                .into(),
+            )],
             vb: None,
             rs: Vec::new().into(),
             ks: Vec::new().into(),
@@ -1442,12 +1445,15 @@ pub fn terminal_predecessor(
         }
     };
     let mut tape = prefix;
-    tape.push(TapeEntry::Rb(Rb {
-        depth: leading_lambdas(output) as u64,
-        output: Vec::new(),
-        code: Vec::new(),
-        pending: Vec::new(),
-    }.into()));
+    tape.push(TapeEntry::Rb(
+        Rb {
+            depth: leading_lambdas(output) as u64,
+            output: Vec::new(),
+            code: Vec::new(),
+            pending: Vec::new(),
+        }
+        .into(),
+    ));
     Ok(NfRun {
         token: RunCore {
             path: Vec::new(),
@@ -1956,65 +1962,27 @@ impl GramAccumulator {
     }
 }
 
-/// The carrier walk's discovery index: carrier ids in first-touch order,
-/// each state's content hash computed once and stored beside it, and an
-/// open-addressing table of ids keyed by that stored hash. Growth
-/// re-buckets stored hashes and never re-hashes a state; a probe compares
-/// full structural equality only on a stored-hash hit and allocates
-/// nothing for a duplicate.
-struct CarrierIndex {
-    hashes: Vec<u64>,
-    table: Vec<usize>,
-}
+/// The carrier walk's discovery index: carrier ids in first-touch order
+/// over the ordered carrier itself, each state hashed once
+/// ([`HashIndex`](super::fasthash::HashIndex)).
+struct CarrierIndex(super::fasthash::HashIndex);
 
 impl CarrierIndex {
-    const EMPTY: usize = usize::MAX;
-
     fn new() -> Self {
-        Self {
-            hashes: Vec::new(),
-            table: vec![Self::EMPTY; 1 << 10],
-        }
-    }
-
-    fn state_hash(state: &NfState) -> u64 {
-        super::fasthash::hash_one(state)
+        Self(super::fasthash::HashIndex::new())
     }
 
     /// The id of `target`, appending it to `order` on first touch.
     fn intern(&mut self, order: &mut Vec<NfState>, target: NfState) -> usize {
-        debug_assert_eq!(order.len(), self.hashes.len());
-        let hash = Self::state_hash(&target);
-        let mask = self.table.len() - 1;
-        let mut slot = hash as usize & mask;
-        loop {
-            match self.table[slot] {
-                Self::EMPTY => break,
-                id if self.hashes[id] == hash && order[id] == target => return id,
-                _ => slot = (slot + 1) & mask,
+        debug_assert_eq!(order.len(), self.0.len());
+        let hash = super::fasthash::hash_one(&target);
+        match self.0.find_or_insert(hash, |id| order[id] == target) {
+            Ok(id) => id,
+            Err(id) => {
+                order.push(target);
+                id
             }
         }
-        let id = order.len();
-        self.table[slot] = id;
-        self.hashes.push(hash);
-        order.push(target);
-        if self.hashes.len() * 4 > self.table.len() * 3 {
-            self.grow();
-        }
-        id
-    }
-
-    fn grow(&mut self) {
-        let mut table = vec![Self::EMPTY; self.table.len() * 2];
-        let mask = table.len() - 1;
-        for (id, &hash) in self.hashes.iter().enumerate() {
-            let mut slot = hash as usize & mask;
-            while table[slot] != Self::EMPTY {
-                slot = (slot + 1) & mask;
-            }
-            table[slot] = id;
-        }
-        self.table = table;
     }
 }
 

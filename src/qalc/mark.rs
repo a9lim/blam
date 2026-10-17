@@ -538,11 +538,14 @@ mod tests {
             gate: GateTag::H,
             instance: Lp::new(
                 vec![Dir::A],
-                vec![LogEntry::Rbl(Rbl {
-                    parent: vec![Dir::F],
-                    output: vec![],
-                    code: vec![Dir::B],
-                }.into())],
+                vec![LogEntry::Rbl(
+                    Rbl {
+                        parent: vec![Dir::F],
+                        output: vec![],
+                        code: vec![Dir::B],
+                    }
+                    .into(),
+                )],
             ),
             bit: 0,
             epoch: Epoch::Fresh,
@@ -556,11 +559,14 @@ mod tests {
         // commas at both nesting levels — verified against Python.
         let inner = Lp::new(
             vec![],
-            vec![LogEntry::Rbl(Rbl {
-                parent: vec![],
-                output: vec![Dir::B],
-                code: vec![Dir::F, Dir::A],
-            }.into())],
+            vec![LogEntry::Rbl(
+                Rbl {
+                    parent: vec![],
+                    output: vec![Dir::B],
+                    code: vec![Dir::F, Dir::A],
+                }
+                .into(),
+            )],
         );
         let f = Frame {
             gate: GateTag::T,
@@ -585,11 +591,14 @@ mod tests {
             gate: GateTag::H,
             instance: Lp::new(
                 vec![Dir::A, Dir::B],
-                vec![LogEntry::Rbl(Rbl {
-                    parent: vec![Dir::A],
-                    output: vec![Dir::B, Dir::F],
-                    code: vec![],
-                }.into())],
+                vec![LogEntry::Rbl(
+                    Rbl {
+                        parent: vec![Dir::A],
+                        output: vec![Dir::B, Dir::F],
+                        code: vec![],
+                    }
+                    .into(),
+                )],
             ),
         };
         assert_eq!(

@@ -108,6 +108,80 @@ pub fn hash_one<T: Hash + ?Sized>(value: &T) -> u64 {
     hasher.finish()
 }
 
+/// A first-touch interning index over a caller-owned `Vec`: ids in
+/// insertion order, each key's hash computed once by the caller and stored
+/// beside its id, and open addressing over ids keyed by that stored hash.
+/// Growth re-buckets the stored hashes and never re-hashes a key; a probe
+/// asks the caller for full equality only on a stored-hash hit, so a
+/// duplicate costs one hash and no allocation.
+#[derive(Debug)]
+pub struct HashIndex {
+    hashes: Vec<u64>,
+    table: Vec<usize>,
+}
+
+impl Default for HashIndex {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl HashIndex {
+    const EMPTY: usize = usize::MAX;
+
+    pub fn new() -> Self {
+        Self {
+            hashes: Vec::new(),
+            table: vec![Self::EMPTY; 8],
+        }
+    }
+
+    /// The number of interned ids.
+    pub fn len(&self) -> usize {
+        self.hashes.len()
+    }
+
+    /// `Ok(id)` of the interned key with this `hash` for which `is_match`
+    /// holds, or `Err(id)` after recording `hash` as the next id — the
+    /// caller then appends the key at that id.
+    #[inline]
+    pub fn find_or_insert(
+        &mut self,
+        hash: u64,
+        mut is_match: impl FnMut(usize) -> bool,
+    ) -> Result<usize, usize> {
+        let mask = self.table.len() - 1;
+        let mut slot = hash as usize & mask;
+        loop {
+            match self.table[slot] {
+                Self::EMPTY => break,
+                id if self.hashes[id] == hash && is_match(id) => return Ok(id),
+                _ => slot = (slot + 1) & mask,
+            }
+        }
+        let id = self.hashes.len();
+        self.table[slot] = id;
+        self.hashes.push(hash);
+        if self.hashes.len() * 4 > self.table.len() * 3 {
+            self.grow();
+        }
+        Err(id)
+    }
+
+    fn grow(&mut self) {
+        let mut table = vec![Self::EMPTY; self.table.len() * 2];
+        let mask = table.len() - 1;
+        for (id, &hash) in self.hashes.iter().enumerate() {
+            let mut slot = hash as usize & mask;
+            while table[slot] != Self::EMPTY {
+                slot = (slot + 1) & mask;
+            }
+            table[slot] = id;
+        }
+        self.table = table;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -122,5 +196,25 @@ mod tests {
         let mut b = FastHasher::default();
         b.write(&[0; 4]);
         assert_ne!(a.finish(), b.finish());
+    }
+
+    #[test]
+    fn hash_index_is_first_touch_and_collision_safe() {
+        // Every key shares one hash, so ids rest on the equality callback
+        // alone, across several growths.
+        let mut keys: Vec<u32> = Vec::new();
+        let mut index = HashIndex::new();
+        for round in 0..2 {
+            for key in 0..100u32 {
+                match index.find_or_insert(7, |id| keys[id] == key) {
+                    Ok(id) => assert!(round == 1 && id == key as usize),
+                    Err(id) => {
+                        assert!(round == 0 && id == keys.len());
+                        keys.push(key);
+                    }
+                }
+            }
+        }
+        assert_eq!(index.len(), 100);
     }
 }
