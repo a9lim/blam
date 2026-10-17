@@ -321,8 +321,8 @@ fn replace_rb(entries: &[TapeEntry], old: &Rb, new: Rb) -> Result<Vec<TapeEntry>
     let mut out = Vec::with_capacity(entries.len());
     let mut replaced = false;
     for e in entries {
-        if !replaced && matches!(e, TapeEntry::Rb(r) if r == old) {
-            out.push(TapeEntry::Rb(new.clone()));
+        if !replaced && matches!(e, TapeEntry::Rb(r) if **r == *old) {
+            out.push(TapeEntry::Rb(new.clone().into()));
             replaced = true;
         } else {
             out.push(e.clone());
@@ -721,7 +721,7 @@ pub fn nf_init() -> NfState {
                 output: Vec::new(),
                 code: Vec::new(),
                 pending: Vec::new(),
-            })],
+            }.into())],
             vb: None,
             rs: Vec::new(),
             ks: Vec::new(),
@@ -820,7 +820,7 @@ fn nf_step_partial(
                     code: rb.code.clone(),
                     pending: rb.pending.clone(),
                 };
-                let mut tape = vec![TapeEntry::Rb(rb2)];
+                let mut tape = vec![TapeEntry::Rb(rb2.into())];
                 tape.extend_from_slice(&token.tape[1..]);
                 let token2 = RunCore {
                     path: token.path.clone(),
@@ -911,7 +911,7 @@ fn nf_step_partial(
                 code: rb.code.clone(),
                 pending: rb.pending.clone(),
             };
-            let mut tape = vec![TapeEntry::Rb(rb2)];
+            let mut tape = vec![TapeEntry::Rb(rb2.into())];
             tape.extend_from_slice(&token.tape[1..]);
             let mut path = token.path.clone();
             path.push(Dir::B);
@@ -1010,12 +1010,12 @@ fn nf_step_partial(
                     binders: zipper2.binders,
                     residues,
                 };
-                let mut tape = vec![TapeEntry::Rb(child_rb), TapeEntry::BulletBa];
+                let mut tape = vec![TapeEntry::Rb(child_rb.into()), TapeEntry::BulletBa];
                 tape.extend(after_mu);
                 let token2 = RunCore {
                     path: occurrence,
                     d: Vert::D,
-                    log: vec![LogEntry::Rbl(address)],
+                    log: vec![LogEntry::Rbl(address.into())],
                     tape,
                     vb: token.vb,
                     rs: token.rs.clone(),
@@ -1149,9 +1149,9 @@ fn nf_step_partial(
         };
         let parent_rb = parent_rb.clone();
         let parent_tail = replace_rb(&token.tape[1..], &parent_rb, parent_rb2)?;
-        let mut log = vec![LogEntry::Rbl(address)];
+        let mut log = vec![LogEntry::Rbl(address.into())];
         log.extend_from_slice(&token.log);
-        let mut tape = vec![TapeEntry::Rb(child_rb), TapeEntry::BulletBa];
+        let mut tape = vec![TapeEntry::Rb(child_rb.into()), TapeEntry::BulletBa];
         tape.extend(parent_tail);
         let token2 = RunCore {
             path: argument_path,
@@ -1447,7 +1447,7 @@ pub fn terminal_predecessor(
         output: Vec::new(),
         code: Vec::new(),
         pending: Vec::new(),
-    }));
+    }.into()));
     Ok(NfRun {
         token: RunCore {
             path: Vec::new(),
@@ -1528,10 +1528,10 @@ pub fn return_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compos
         output: output_path,
         code: child_path.clone(),
     };
-    let mut log = vec![LogEntry::Rbl(address)];
+    let mut log = vec![LogEntry::Rbl(address.into())];
     log.extend_from_slice(&token.log);
     let mut tape = prefix;
-    tape.push(TapeEntry::Rb(delimiter));
+    tape.push(TapeEntry::Rb(delimiter.into()));
     tape.push(TapeEntry::BulletBa);
     tape.extend_from_slice(&token.tape);
     let source_token = RunCore {
@@ -1685,7 +1685,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
         output: first_output.clone(),
         code: occurrence.clone(),
     };
-    if token.log.first() != Some(&LogEntry::Rbl(address))
+    if token.log.first() != Some(&LogEntry::Rbl(address.into()))
         || child_rb.output != first_output
         || child_rb.code != *occurrence
     {

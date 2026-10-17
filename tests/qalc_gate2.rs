@@ -95,7 +95,7 @@ fn mask_alpha(alpha: &mut Alpha) {
 fn mask_log(entry: &mut LogEntry) {
     match entry {
         LogEntry::Lp(lp) => mask_lp(lp),
-        LogEntry::Cgam(marker) => mask_lp(&mut marker.invoked),
+        LogEntry::Cgam(marker) => mask_lp(&mut marker.make_mut().invoked),
         LogEntry::Alpha(alpha) => mask_alpha(alpha),
         LogEntry::Gam(_) | LogEntry::Rbl(_) => {}
     }
@@ -126,7 +126,7 @@ fn mask_key(key: &mut KdKey) {
 fn mask_tape(entry: &mut TapeEntry) {
     match entry {
         TapeEntry::Lp(lp) => mask_lp(lp),
-        TapeEntry::Cgam(marker) => mask_lp(&mut marker.invoked),
+        TapeEntry::Cgam(marker) => mask_lp(&mut marker.make_mut().invoked),
         TapeEntry::Cmu { invoked, .. } => mask_lp(invoked),
         TapeEntry::Ans(_, bit) => *bit = 0,
         TapeEntry::Alpha(alpha) => mask_alpha(alpha),
@@ -686,7 +686,7 @@ fn projected_probe_balance_and_complete_frame_harvest_are_load_bearing() {
         parent: Vec::new(),
         output: Vec::new(),
         code: Vec::new(),
-    }));
+    }.into()));
     assert!(
         gate2check::shadow_wf(&compiled, &scaffold_imbalance)
             .contains(&ShadowViolation::ProbeBalance),

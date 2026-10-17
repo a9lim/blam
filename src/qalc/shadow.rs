@@ -246,7 +246,7 @@ fn fresh_c_call(term: &Term, state: &RunCore) -> Vec<Row> {
         &continuation,
     );
     let mut tape = vec![
-        TapeEntry::Cgam(marker),
+        TapeEntry::Cgam(marker.into()),
         TapeEntry::Bullet,
         TapeEntry::Bullet,
         TapeEntry::Cmu {
@@ -301,7 +301,7 @@ fn park_first(state: &RunCore, arrival: Arrival) -> Vec<Row> {
         },
     ];
     tape.extend_from_slice(&arrival.tail[1..]);
-    let mut log = vec![LogEntry::Cgam(marker2)];
+    let mut log = vec![LogEntry::Cgam(marker2.into())];
     log.extend_from_slice(&state.log[1..]);
     let mut ks = vec![parked];
     ks.extend_from_slice(&state.ks);
@@ -801,10 +801,10 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
                 &marker.second,
                 &marker.continuation,
             );
-            let mut log = vec![LogEntry::Cgam(marker1)];
+            let mut log = vec![LogEntry::Cgam(marker1.into())];
             log.extend_from_slice(&target.log[1..]);
             let mut source = target;
-            source.path = marker.first;
+            source.path = marker.first.clone();
             source.d = Vert::U;
             source.log = log;
             source.tape = tape;
@@ -902,7 +902,7 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
             });
             tape.push(TapeEntry::Bullet);
             tape.extend_from_slice(&target.tape[2..]);
-            let mut log = vec![LogEntry::Cgam(marker)];
+            let mut log = vec![LogEntry::Cgam(marker.into())];
             log.extend_from_slice(&target.log);
             Ok(RunCore {
                 path: second_path,

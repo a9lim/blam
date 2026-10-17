@@ -133,9 +133,9 @@ impl std::fmt::Debug for Lp {
 pub enum LogEntry {
     Lp(Lp),
     Gam(GateName),
-    Cgam(CGam),
+    Cgam(Shared<CGam>),
     Alpha(Alpha),
-    Rbl(Rbl),
+    Rbl(Shared<Rbl>),
 }
 
 /// One native-CNOT port.
@@ -244,12 +244,12 @@ pub enum TapeEntry {
     Lp(Lp),
     Gam(GateName),
     Mu(GateName),
-    Cgam(CGam),
+    Cgam(Shared<CGam>),
     Cmu { port: CPort, invoked: Lp },
     Ans(GateName, u8),
     Alpha(Alpha),
-    Rb(Rb),
-    Rbl(Rbl),
+    Rb(Shared<Rb>),
+    Rbl(Shared<Rbl>),
 }
 
 /// One inert storage head; every fire appends exactly one for
@@ -542,7 +542,7 @@ mod tests {
                     parent: vec![Dir::F],
                     output: vec![],
                     code: vec![Dir::B],
-                })],
+                }.into())],
             ),
             bit: 0,
             epoch: Epoch::Fresh,
@@ -560,7 +560,7 @@ mod tests {
                 parent: vec![],
                 output: vec![Dir::B],
                 code: vec![Dir::F, Dir::A],
-            })],
+            }.into())],
         );
         let f = Frame {
             gate: GateTag::T,
@@ -589,7 +589,7 @@ mod tests {
                     parent: vec![Dir::A],
                     output: vec![Dir::B, Dir::F],
                     code: vec![],
-                })],
+                }.into())],
             ),
         };
         assert_eq!(
