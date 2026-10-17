@@ -2189,11 +2189,32 @@ pub fn nf_carrier_and_columns_with(
             return Err(NfError::ColumnNorm);
         }
         if order.len() > state_cap {
+            discard_carrier((order, columns));
             return Err(NfError::StateCap);
         }
         columns.push((src, col));
     }
     Ok(NfCarrier { order, columns })
+}
+
+/// Carriers at least this large are torn down off the calling thread.
+const DEFERRED_TEARDOWN_STATES: usize = 1 << 16;
+
+/// Drop a refused carrier. Tearing down a large refused carrier (every
+/// state's tape, log, and path, and every shared node they pin) is a
+/// quarter of its walk; nothing observes it, so a large one is handed to a
+/// short-lived thread and the caller moves on. Small carriers drop inline,
+/// and so does a large one whose thread cannot be spawned (the refused
+/// closure, carrier included, is dropped by `spawn` itself).
+fn discard_carrier(carrier: (Vec<NfState>, Vec<super::wire::Column>)) {
+    if carrier.0.len() < DEFERRED_TEARDOWN_STATES {
+        return;
+    }
+    // The handle is dropped: the thread is detached, and a process that
+    // exits first simply returns the memory to the system.
+    let _ = std::thread::Builder::new()
+        .name("qalc-carrier-drop".into())
+        .spawn(move || drop(carrier));
 }
 
 /// Recompute the exact predecessor of a compressing edge and require
