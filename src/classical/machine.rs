@@ -349,13 +349,38 @@ impl Frame {
     }
 }
 
-const NIL: u32 = u32::MAX;
+/// The empty environment. Bit 31 is clear so that a closure's env word
+/// never carries [`HOP_TAG`]; every real cell index sits below it (cells
+/// are fewer than transitions, and transitions are clamped to
+/// [`Machine::MAX_TRANS`] = 2³¹ − 1).
+const NIL: u32 = 0x7FFF_FFFF;
+
+/// Marks a compressed var→var chain in a closure cell's SECOND word. A
+/// closure whose term is a bare `Var` is pure indirection: entering it
+/// spends one transition re-reading another cell, and call-by-name builds
+/// such chains hundreds of cells deep (82% of all rescue transitions on
+/// the 36..37-bit frontier). Cells are immutable and every hop lands on
+/// a strictly older cell, so the chain from a cell to its first non-`Var`
+/// closure or rigid level — the cell it *resolves* to — is a pure
+/// function of the cell. Once walked, each cell on the chain is
+/// rewritten to `(final cell, hops | HOP_TAG)`: a later entry jumps
+/// straight to the final cell and charges the hops it skipped, so the
+/// transition count, every fuel death, and the readback are exactly the
+/// uncompressed machine's (see `normalize_inner`).
+///
+/// The tag is free on closures because their env word is a cell index
+/// or [`NIL`], both below 2³¹, and on levels because their second word
+/// is 0. The hop count is below 2³¹ because each hop strictly decreases
+/// the cell index.
+const HOP_TAG: u32 = 1 << 31;
 
 /// The machine. Reused across terms; arenas reset per `normalize` call.
 #[derive(Debug, Default)]
 pub struct Machine {
     /// Env cell payloads: `(term, env)` for an unevaluated closure,
-    /// `(LVL_TAG | level, 0)` for a rigid de Bruijn level. Split from
+    /// `(LVL_TAG | level, 0)` for a rigid de Bruijn level, and
+    /// `(final cell, hops | HOP_TAG)` for a closure whose var→var chain
+    /// has been walked ([`HOP_TAG`]). Split from
     /// `parents` so a cell is 12 B across the two vectors instead of the
     /// 16 B of the old `(Val, u32)` tuple — the de Bruijn walk chases
     /// 4-byte hops through a dense array, and the discriminant is a bit
@@ -364,6 +389,9 @@ pub struct Machine {
     /// Per env cell: the enclosing cell's index (the walk's linked list).
     parents: Vec<u32>,
     stack: Vec<Frame>,
+    /// Scratch for the var→var chain being compressed (cells in walk
+    /// order). Carries no state between transitions.
+    chain: Vec<u32>,
     /// Transitions consumed by the most recent `normalize*` call
     /// (telemetry: measures real transition/β ratios so budget caps can
     /// be set from data instead of the blanket 64× heuristic).
@@ -473,6 +501,9 @@ impl Machine {
         if self.stack.capacity() > KEEP {
             self.stack = Vec::with_capacity(KEEP);
         }
+        if self.chain.capacity() > KEEP {
+            self.chain = Vec::with_capacity(KEEP);
+        }
         r
     }
 
@@ -562,7 +593,79 @@ impl Machine {
                     for _ in 1..i {
                         e = self.parents[e as usize];
                     }
-                    let (w0, w1) = self.envs[e as usize];
+                    let (mut w0, mut w1) = self.envs[e as usize];
+                    // Var→var indirection ([`HOP_TAG`]). The uncompressed
+                    // machine reads this cell now, at transition `trans`,
+                    // and then spends one transition per hop until it
+                    // reads the chain's final cell; nothing else moves in
+                    // between — no β, no push, no emission, so `steps`,
+                    // the stack, `depth`, and the sink (hence
+                    // `sink.aborted()`, which only emission can flip) are
+                    // the values they hold now. So the final cell is read
+                    // at `trans + hops`, and a transition cap falling
+                    // inside the chain is a death at exactly
+                    // `trans_limit + 1` with the current `steps`.
+                    let hops = if w1 & HOP_TAG != 0 {
+                        let hops = w1 & !HOP_TAG;
+                        (w0, w1) = self.envs[w0 as usize];
+                        hops
+                    } else if w0 & LVL_TAG == 0 && matches!(pool.nodes[w0 as usize], Node::Var(_)) {
+                        // First walk of this chain: follow it to its final
+                        // cell, then rewrite every cell on it to jump there.
+                        let mut chain = std::mem::take(&mut self.chain);
+                        chain.clear();
+                        let (mut c, mut cw0, mut cw1) = (e, w0, w1);
+                        let (fin, tail) = loop {
+                            chain.push(c);
+                            if trans + chain.len() as u64 > trans_limit {
+                                self.chain = chain;
+                                self.last_trans = trans_limit + 1;
+                                self.last_steps = steps;
+                                return Err(OutOfFuel::Transitions);
+                            }
+                            let Node::Var(j) = pool.nodes[cw0 as usize] else {
+                                unreachable!("chain cells hold Var closures")
+                            };
+                            let mut n = cw1;
+                            for _ in 1..j {
+                                n = self.parents[n as usize];
+                            }
+                            let (n0, n1) = self.envs[n as usize];
+                            if n1 & HOP_TAG != 0 {
+                                // An already-compressed suffix.
+                                break (n0, n1 & !HOP_TAG);
+                            }
+                            if n0 & LVL_TAG == 0 && matches!(pool.nodes[n0 as usize], Node::Var(_))
+                            {
+                                (c, cw0, cw1) = (n, n0, n1);
+                                continue;
+                            }
+                            break (n, 0);
+                        };
+                        let m = chain.len() as u32;
+                        for (k, &ck) in chain.iter().enumerate() {
+                            let d = m - k as u32 + tail;
+                            debug_assert!(d & HOP_TAG == 0 && fin < ck);
+                            self.envs[ck as usize] = (fin, d | HOP_TAG);
+                        }
+                        self.chain = chain;
+                        (w0, w1) = self.envs[fin as usize];
+                        m + tail
+                    } else {
+                        0
+                    };
+                    if hops != 0 {
+                        trans += u64::from(hops);
+                        if trans > trans_limit {
+                            self.last_trans = trans_limit + 1;
+                            self.last_steps = steps;
+                            return Err(OutOfFuel::Transitions);
+                        }
+                    }
+                    debug_assert!(
+                        w1 & HOP_TAG == 0,
+                        "a chain's final cell is never compressed"
+                    );
                     if w0 & LVL_TAG == 0 {
                         // Call-by-name: enter the stored closure.
                         t = w0;
@@ -621,6 +724,222 @@ impl Machine {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The machine as it was before [`HOP_TAG`] compression, transition
+    /// for transition: the oracle for the compressed loop. Returns what
+    /// `normalize_capped` returns plus `(last_trans, last_steps)`.
+    fn uncompressed<S: Sink>(
+        pool: &Pool,
+        root: u32,
+        limit: u64,
+        trans_limit: u64,
+        sink: &mut S,
+    ) -> (Result<u64, OutOfFuel>, u64, u64) {
+        let trans_limit = trans_limit.min(Machine::MAX_TRANS);
+        let mut envs: Vec<(u32, u32)> = Vec::new();
+        let mut parents: Vec<u32> = Vec::new();
+        let mut stack: Vec<Frame> = Vec::new();
+        let (mut steps, mut depth, mut t, mut env, mut trans) = (0u64, 0u32, root, NIL, 0u64);
+        'eval: loop {
+            trans += 1;
+            if trans > trans_limit {
+                return (Err(OutOfFuel::Transitions), trans, steps);
+            }
+            if S::CAN_ABORT && sink.aborted() {
+                return (Err(OutOfFuel::Aborted), trans, steps);
+            }
+            match pool.nodes[t as usize] {
+                Node::App(f, a) => {
+                    stack.push(Frame::arg(a, env));
+                    t = f;
+                }
+                Node::Lam(b) => {
+                    if let Some((at, ae)) = stack.last().and_then(|f| f.as_arg()) {
+                        stack.pop();
+                        steps += 1;
+                        if steps > limit {
+                            return (Err(OutOfFuel::Beta), trans, steps);
+                        }
+                        envs.push((at, ae));
+                        parents.push(env);
+                        env = (envs.len() - 1) as u32;
+                        t = b;
+                    } else {
+                        sink.zero();
+                        sink.zero();
+                        depth += 1;
+                        envs.push((depth | LVL_TAG, 0));
+                        parents.push(env);
+                        env = (envs.len() - 1) as u32;
+                        stack.push(Frame::LAM_END);
+                        t = b;
+                    }
+                }
+                Node::Var(i) => {
+                    let mut e = env;
+                    for _ in 1..i {
+                        e = parents[e as usize];
+                    }
+                    let (w0, w1) = envs[e as usize];
+                    if w0 & LVL_TAG == 0 {
+                        t = w0;
+                        env = w1;
+                    } else {
+                        let k = w0 & !LVL_TAG;
+                        let mut run = 0usize;
+                        for frame in stack.iter_mut().rev() {
+                            let Some((term, env)) = frame.as_arg() else {
+                                break;
+                            };
+                            *frame = Frame::norm(term, env);
+                            run += 1;
+                        }
+                        for _ in 0..run {
+                            sink.zero();
+                            sink.one();
+                        }
+                        sink.var(depth - k + 1);
+                        loop {
+                            trans += 1;
+                            if trans > trans_limit {
+                                return (Err(OutOfFuel::Transitions), trans, steps);
+                            }
+                            match stack.pop() {
+                                None => return (Ok(steps), trans, steps),
+                                Some(Frame::LAM_END) => depth -= 1,
+                                Some(frame) => {
+                                    (t, env) = frame.as_norm().expect("norm frame");
+                                    continue 'eval;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Run both machines on one (term, β cap, transition cap) and demand
+    /// identical results, fuel counters, and emitted bits.
+    fn agree(
+        vm: &mut Machine,
+        pool: &Pool,
+        root: u32,
+        limit: u64,
+        cap: u64,
+    ) -> Result<u64, OutOfFuel> {
+        let mut a = StringSink::default();
+        let got = vm.normalize_capped(pool, root, limit, cap, &mut a);
+        let mut b = StringSink::default();
+        let want = uncompressed(pool, root, limit, cap, &mut b);
+        assert_eq!(
+            (got, vm.last_trans, vm.last_steps),
+            want,
+            "result/last_trans/last_steps at β {limit}, transitions {cap}"
+        );
+        assert_eq!(a.0, b.0, "emitted bits at β {limit}, transitions {cap}");
+        got
+    }
+
+    /// Hop compression is invisible: every closed term to 24 bits, under
+    /// β and transition caps from starved to ample, gives the old
+    /// machine's verdict, β count, transition count, fuel-death counters,
+    /// and normal-form bits.
+    #[test]
+    fn hop_compression_matches_the_uncompressed_machine_exhaustively() {
+        let mut pool = Pool::new();
+        let mut vm = Machine::new();
+        let mut n_terms = 0u64;
+        for n in 4..=24 {
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                pool.clear();
+                let root = pool.decode_u64(enc, len).expect("valid term");
+                for (limit, cap) in [
+                    (0, 1 << 20),
+                    (3, 1 << 20),
+                    (64, 4096),
+                    (4096, 4096 * 64),
+                    (1 << 20, 1),
+                    (1 << 20, 7),
+                    (1 << 20, 40),
+                    (1 << 20, 300),
+                ] {
+                    agree(&mut vm, &pool, root, limit, cap);
+                }
+                n_terms += 1;
+            });
+        }
+        assert_eq!(n_terms, 19048);
+    }
+
+    /// Deep var→var chains, with the transition cap swept so that it
+    /// lands inside a first walk, inside a compressed jump, at its last
+    /// hop, and just past it. The terms are 36..38-bit frontier
+    /// programs whose rescue runs are >99% var→var transitions.
+    #[test]
+    fn hop_compression_is_exact_at_every_cap_inside_deep_chains() {
+        let mut vm = Machine::new();
+        for bits in [
+            "010001101000011001100000011100110110",
+            "010001101000011001100000011001111010",
+            "010001101000011001100000011100111010",
+            "000100010110110100000011100101101010",
+        ] {
+            let mut pool = Pool::new();
+            let root = pool.decode_str(bits).expect("closed");
+            for cap in 1..=6000 {
+                agree(&mut vm, &pool, root, 1 << 20, cap);
+            }
+            for cap in (6000..400_000).step_by(997) {
+                agree(&mut vm, &pool, root, 1 << 20, cap);
+            }
+            // And the β cap binding first, deep in.
+            for limit in [10, 100, 1000, 5000] {
+                agree(&mut vm, &pool, root, limit, 1 << 24);
+            }
+        }
+    }
+
+    /// An aborting sink still stops at the same transition: no hop can
+    /// skip the poll that would have fired, because only emission flips
+    /// `aborted`.
+    #[test]
+    fn hop_compression_preserves_abort_points() {
+        #[derive(Default)]
+        struct Budget(String, usize);
+        impl Sink for Budget {
+            const CAN_ABORT: bool = true;
+            fn zero(&mut self) {
+                self.0.push('0');
+            }
+            fn one(&mut self) {
+                self.0.push('1');
+            }
+            fn var(&mut self, n: u32) {
+                self.0.extend(std::iter::repeat_n('1', n as usize));
+                self.0.push('0');
+            }
+            fn aborted(&self) -> bool {
+                self.0.len() >= self.1
+            }
+        }
+        let mut pool = Pool::new();
+        let mut vm = Machine::new();
+        for n in 12..=22 {
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                pool.clear();
+                let root = pool.decode_u64(enc, len).expect("valid term");
+                for stop in [1, 5, 17] {
+                    let mut a = Budget(String::new(), stop);
+                    let got = vm.normalize_capped(&pool, root, 1 << 16, 1 << 20, &mut a);
+                    let mut b = Budget(String::new(), stop);
+                    let want = uncompressed(&pool, root, 1 << 16, 1 << 20, &mut b);
+                    assert_eq!((got, vm.last_trans, vm.last_steps), want, "enc {enc:#x}");
+                    assert_eq!(a.0, b.0);
+                }
+            });
+        }
+    }
 
     /// The pre-scan question answered the slow, obvious way, with no
     /// cache in the path — the oracle for everything below.
