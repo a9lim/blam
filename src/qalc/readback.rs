@@ -37,6 +37,7 @@ use super::state::{
     BinderIdentity, BinderMark, ErrorGarbage, ErrorKind, Kind, Nf, NfRun, NfState, NfTerminal,
     RunCore, ScopeResidue, TerminalCarrier, TerminalGarbage, Vert, Zipper,
 };
+use super::shared::Shared;
 use super::term::{binder_path, subterm, Dir, GateName, Path, Term};
 use super::wire::CertEntries;
 
@@ -280,7 +281,7 @@ fn emit_lambda(z: &Zipper, identity: BinderIdentity) -> Result<Zipper, ComposedD
     let mut body_cursor = cursor.clone();
     body_cursor.push(Dir::B);
     let mut binders = updated.binders;
-    binders.push(BinderMark {
+    binders.make_mut().push(BinderMark {
         output: cursor,
         identity,
     });
@@ -450,7 +451,7 @@ fn scope_residue(
     prefix: &[TapeEntry],
     rb: &Rb,
     z: &Zipper,
-) -> Result<(ScopeResidue, Vec<BinderMark>), ComposedDefect> {
+) -> Result<(ScopeResidue, Shared<Vec<BinderMark>>), ComposedDefect> {
     let output = at(&z.tree, &rb.output)?;
     if prefix.iter().all(|e| *e == TapeEntry::BulletBa) && prefix.len() == leading_lambdas(output) {
         return Ok((
@@ -475,7 +476,7 @@ fn scope_residue(
                     instance: invoked.clone(),
                     epoch: epoch.clone(),
                 },
-                remaining,
+                remaining.into(),
             ))
         }
         _ => Ok((
@@ -536,7 +537,7 @@ fn terminal_garbage(token: &RunCore, rb: &Rb, prefix: &[TapeEntry], z: &Zipper) 
                 }),
                 frames: token.rs.clone(),
                 storage: token.ks.clone(),
-                binders: remaining,
+                binders: remaining.into(),
                 residues: z.residues.clone(),
             }
         }
@@ -689,7 +690,7 @@ fn neutral_probe_shape<'a>(
 // ---------------------------------------------------------------------------
 // Error landings.
 
-fn error_row(rule: &'static str, token: &RunCore, z: &Zipper) -> Vec<NfRow> {
+fn error_row(rule: &'static str, token: &RunCore, z: &Shared<Zipper>) -> Vec<NfRow> {
     vec![NfRow {
         sign: 1,
         dk: 0,
@@ -728,9 +729,10 @@ pub fn nf_init() -> NfState {
         zipper: Zipper {
             tree: Nf::Hole { armed: false },
             cursor: Some(Vec::new()),
-            binders: Vec::new(),
-            residues: Vec::new(),
-        },
+            binders: Vec::new().into(),
+            residues: Vec::new().into(),
+        }
+        .into(),
     })
 }
 
@@ -837,7 +839,7 @@ fn nf_step_partial(
                     "vlam",
                     NfState::Run(NfRun {
                         token: token2,
-                        zipper: zipper2,
+                        zipper: zipper2.into(),
                     }),
                 ));
             }
@@ -882,7 +884,7 @@ fn nf_step_partial(
                         "vvar",
                         NfState::Run(NfRun {
                             token: token2,
-                            zipper: zipper2,
+                            zipper: zipper2.into(),
                         }),
                     ));
                 }
@@ -926,7 +928,7 @@ fn nf_step_partial(
                 "vlam",
                 NfState::Run(NfRun {
                     token: token2,
-                    zipper: zipper2,
+                    zipper: zipper2.into(),
                 }),
             ));
         }
@@ -951,7 +953,7 @@ fn nf_step_partial(
                     "head-gate",
                     NfState::Run(NfRun {
                         token: token2,
-                        zipper: zipper2,
+                        zipper: zipper2.into(),
                     }),
                 ));
             }
@@ -1001,7 +1003,7 @@ fn nf_step_partial(
                     logged_argument: lp.clone(),
                 };
                 let mut residues = zipper2.residues.clone();
-                residues.push(residue);
+                residues.make_mut().push(residue);
                 let zipper2 = Zipper {
                     tree: zipper2.tree,
                     cursor: zipper2.cursor,
@@ -1023,7 +1025,7 @@ fn nf_step_partial(
                     "head-neutral-gate",
                     NfState::Run(NfRun {
                         token: token2,
-                        zipper: zipper2,
+                        zipper: zipper2.into(),
                     }),
                 ));
             }
@@ -1065,7 +1067,7 @@ fn nf_step_partial(
                     "head",
                     NfState::Run(NfRun {
                         token: token2,
-                        zipper: zipper2,
+                        zipper: zipper2.into(),
                     }),
                 ));
             }
@@ -1164,7 +1166,7 @@ fn nf_step_partial(
             "enter",
             NfState::Run(NfRun {
                 token: token2,
-                zipper: zipper2,
+                zipper: zipper2.into(),
             }),
         ));
     }
@@ -1330,7 +1332,7 @@ fn return_successor(token: &RunCore, zipper: &Zipper) -> Result<Option<NfRun>, C
     let parent_path = parent_function[..parent_function.len() - 1].to_vec();
     let (residue, binders) = scope_residue(prefix, rb, zipper)?;
     let mut residues = zipper.residues.clone();
-    residues.push(residue);
+    residues.make_mut().push(residue);
     let zipper2 = Zipper {
         tree: zipper.tree.clone(),
         cursor: zipper.cursor.clone(),
@@ -1348,7 +1350,7 @@ fn return_successor(token: &RunCore, zipper: &Zipper) -> Result<Option<NfRun>, C
     };
     Ok(Some(NfRun {
         token: token2,
-        zipper: zipper2,
+        zipper: zipper2.into(),
     }))
 }
 
@@ -1416,7 +1418,7 @@ pub fn terminal_predecessor(
     let (prefix, binders) = match &garbage.carrier {
         None => (
             vec![TapeEntry::BulletBa; leading_lambdas(output)],
-            garbage.binders.clone(),
+            (*garbage.binders).clone(),
         ),
         Some(TerminalCarrier::Exact {
             output: carrier_output,
@@ -1425,7 +1427,7 @@ pub fn terminal_predecessor(
             if !carrier_output.is_empty() {
                 return Err(ComposedDefect::Inverse);
             }
-            (prefix.clone(), garbage.binders.clone())
+            (prefix.clone(), (*garbage.binders).clone())
         }
         Some(TerminalCarrier::Virtual {
             output: carrier_output,
@@ -1459,9 +1461,10 @@ pub fn terminal_predecessor(
         zipper: Zipper {
             tree: output.clone(),
             cursor: None,
-            binders,
+            binders: binders.into(),
             residues: garbage.residues.clone(),
-        },
+        }
+        .into(),
     })
 }
 
@@ -1479,10 +1482,10 @@ pub fn return_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compos
         ScopeResidue::Pure { output } => (
             output.clone(),
             vec![TapeEntry::BulletBa; leading_lambdas(at(&zipper.tree, output)?)],
-            zipper.binders.clone(),
+            (*zipper.binders).clone(),
         ),
         ScopeResidue::Exact { output, prefix } => {
-            (output.clone(), prefix.clone(), zipper.binders.clone())
+            (output.clone(), prefix.clone(), (*zipper.binders).clone())
         }
         ScopeResidue::Virtual {
             output,
@@ -1543,8 +1546,8 @@ pub fn return_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compos
     let source_zipper = Zipper {
         tree: zipper.tree.clone(),
         cursor: zipper.cursor.clone(),
-        binders,
-        residues: zipper.residues[..zipper.residues.len() - 1].to_vec(),
+        binders: binders.into(),
+        residues: zipper.residues[..zipper.residues.len() - 1].to_vec().into(),
     };
     // The structural child path must still belong to the immutable term.
     if !matches!(subterm(term, &token.path), Some(Term::App(..))) {
@@ -1555,7 +1558,7 @@ pub fn return_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compos
     }
     Ok(NfRun {
         token: source_token,
-        zipper: source_zipper,
+        zipper: source_zipper.into(),
     })
 }
 
@@ -1630,7 +1633,7 @@ pub fn enter_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compose
     }
     Ok(NfRun {
         token: source_token,
-        zipper: source_zipper,
+        zipper: source_zipper.into(),
     })
 }
 
@@ -1724,7 +1727,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
         tree: source_tree,
         cursor: Some(output_root),
         binders: zipper.binders.clone(),
-        residues: zipper.residues[..zipper.residues.len() - 1].to_vec(),
+        residues: zipper.residues[..zipper.residues.len() - 1].to_vec().into(),
     };
     let after_mu = &token.tape[2..];
     let Some(parent_rb) = after_mu.iter().find_map(|e| match e {
@@ -1759,7 +1762,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
     };
     Ok(NfRun {
         token: source_token,
-        zipper: source_zipper,
+        zipper: source_zipper.into(),
     })
 }
 

@@ -22,6 +22,7 @@
 use std::sync::Arc;
 
 use super::mark::{Epoch, Frame, GateTag, KsHead, LogEntry, Lp, TapeEntry};
+use super::shared::Shared;
 use super::term::{GateName, Path};
 
 /// Token direction: descending into the term or ascending out of it.
@@ -197,25 +198,28 @@ pub struct TerminalGarbage {
     pub carrier: Option<TerminalCarrier>,
     pub frames: Vec<Frame>,
     pub storage: Vec<KsHead>,
-    pub binders: Vec<BinderMark>,
-    pub residues: Vec<ScopeResidue>,
+    pub binders: Shared<Vec<BinderMark>>,
+    pub residues: Shared<Vec<ScopeResidue>>,
 }
 
-/// The output zipper: the only live state beyond the token.
+/// The output zipper: the only live state beyond the token. The binder
+/// and residue registers change only at readback rows, so they are
+/// [`Shared`] across every state that keeps them.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Zipper {
     pub tree: Nf,
     pub cursor: Option<Path>,
-    pub binders: Vec<BinderMark>,
-    pub residues: Vec<ScopeResidue>,
+    pub binders: Shared<Vec<BinderMark>>,
+    pub residues: Shared<Vec<ScopeResidue>>,
 }
 
 /// A running composed state: kernel token (BA tape alphabet) plus the
-/// output zipper.
+/// output zipper. Every kernel row keeps the zipper, so it is [`Shared`]:
+/// a run of kernel steps stores one zipper, and hashes it once.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct NfRun {
     pub token: RunCore,
-    pub zipper: Zipper,
+    pub zipper: Shared<Zipper>,
 }
 
 /// A composed error kind. `Typed` is `("error", k)` — a kernel kind or
@@ -234,17 +238,20 @@ pub enum ErrorKind {
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum ErrorGarbage {
     /// `_error` without residue: the `(token, zipper)` pair.
-    Composed { token: RunCore, zipper: Zipper },
+    Composed {
+        token: RunCore,
+        zipper: Shared<Zipper>,
+    },
     /// A kernel `RunDone` wrap: the `(token, zipper, residue)` triple.
     Kernel {
         token: RunCore,
-        zipper: Zipper,
+        zipper: Shared<Zipper>,
         residue: Residue,
     },
     /// A kernel `Done` target reached the composed adapter.
     InvalidKernelTarget {
         token: RunCore,
-        zipper: Zipper,
+        zipper: Shared<Zipper>,
         target: Box<KState>,
     },
     /// Totalized host fault: `("raised-source", state)`.

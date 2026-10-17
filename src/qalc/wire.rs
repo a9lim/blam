@@ -812,8 +812,8 @@ fn p_terminal_garbage(t: &mut Toks) -> R<TerminalGarbage> {
                 carrier,
                 frames,
                 storage,
-                binders,
-                residues,
+                binders: binders.into(),
+                residues: residues.into(),
             })
         }
         x => Err(format!("expected tg found '{x}'")),
@@ -837,8 +837,8 @@ fn p_zipper(t: &mut Toks) -> R<Zipper> {
             Ok(Zipper {
                 tree,
                 cursor,
-                binders,
-                residues,
+                binders: binders.into(),
+                residues: residues.into(),
             })
         }
         x => Err(format!("expected zp found '{x}'")),
@@ -877,7 +877,7 @@ fn p_error_garbage(t: &mut Toks) -> R<ErrorGarbage> {
                 x => return Err(format!("expected run found '{x}'")),
             }
             let token = p_run_body(t)?;
-            let zipper = p_zipper(t)?;
+            let zipper = p_zipper(t)?.into();
             ErrorGarbage::Composed { token, zipper }
         }
         "egk" => {
@@ -887,7 +887,7 @@ fn p_error_garbage(t: &mut Toks) -> R<ErrorGarbage> {
                 x => return Err(format!("expected run found '{x}'")),
             }
             let token = p_run_body(t)?;
-            let zipper = p_zipper(t)?;
+            let zipper = p_zipper(t)?.into();
             let residue = p_residue(t)?;
             ErrorGarbage::Kernel {
                 token,
@@ -902,7 +902,7 @@ fn p_error_garbage(t: &mut Toks) -> R<ErrorGarbage> {
                 x => return Err(format!("expected run found '{x}'")),
             }
             let token = p_run_body(t)?;
-            let zipper = p_zipper(t)?;
+            let zipper = p_zipper(t)?.into();
             let target = Box::new(p_state(t)?);
             ErrorGarbage::InvalidKernelTarget {
                 token,
@@ -949,7 +949,7 @@ fn p_nf_state(t: &mut Toks) -> R<NfState> {
                 x => return Err(format!("expected run found '{x}'")),
             }
             let token = p_run_body(t)?;
-            let zipper = p_zipper(t)?;
+            let zipper = p_zipper(t)?.into();
             NfState::Run(NfRun { token, zipper })
         }
         "nrd" => NfState::RunDone(p_nf_terminal(t)?),

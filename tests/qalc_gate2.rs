@@ -214,7 +214,7 @@ fn logical_skeleton(state: &NfState) -> String {
             mask_lp(&mut frame.instance);
         }
         run.token.ks.iter_mut().for_each(mask_storage);
-        mask_nf(&mut run.zipper.tree);
+        mask_nf(&mut run.zipper.make_mut().tree);
     }
     nf_state_bytes(&state)
 }
