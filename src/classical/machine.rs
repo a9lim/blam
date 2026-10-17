@@ -105,6 +105,10 @@ impl Pool {
     /// decoder in [`wire`], building into this arena). Returns the
     /// root index.
     pub fn decode(&mut self, bits: &mut impl Iterator<Item = bool>) -> Option<u32> {
+        self.decode_bits(bits)
+    }
+
+    fn decode_bits(&mut self, bits: &mut impl wire::Bits) -> Option<u32> {
         // The build stack is taken out for the duration and put back
         // whole, so an early EOF return cannot leak the buffer.
         let mut work = std::mem::take(&mut self.dwork);
@@ -127,7 +131,7 @@ impl Pool {
     }
 
     pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {
-        self.decode(&mut (0..len).rev().map(|j| (enc >> j) & 1 == 1))
+        self.decode_bits(&mut wire::Packed::new(enc, len))
     }
 
     /// Decode a '0'/'1' string (whitespace ignored) that must encode

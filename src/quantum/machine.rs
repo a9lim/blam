@@ -131,7 +131,7 @@ impl Pool {
     /// Decode one BLC term off a packed (bits, length) pair — the one
     /// wire-grammar decoder in [`wire`], no string round-trip.
     pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {
-        let mut bits = (0..len).rev().map(|j| (enc >> j) & 1 == 1);
+        let mut bits = wire::Packed::new(enc, len);
         // Take/restore rather than borrowing both fields through `self`, and
         // restore after an early-EOF `None` exactly like the classical pool.
         let mut work = std::mem::take(&mut self.dwork);

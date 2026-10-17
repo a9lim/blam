@@ -49,6 +49,80 @@ pub(crate) trait Build {
     fn app(&mut self, f: Self::Id, a: Self::Id) -> Self::Id;
 }
 
+/// Where the decoder reads its bits. Any `bool` iterator is one; a
+/// packed word ([`Packed`]) is the sweeps' fast path.
+pub(crate) trait Bits {
+    /// The next bit, `None` at end of stream.
+    fn bit(&mut self) -> Option<bool>;
+    /// Having consumed a variable's leading `1`, consume the rest of its
+    /// `1ⁿ0` and return n; `None` if the stream ends first.
+    #[inline]
+    fn var_index(&mut self) -> Option<u32> {
+        let mut n: u32 = 1;
+        while self.bit()? {
+            n += 1;
+        }
+        Some(n)
+    }
+}
+
+impl<I: Iterator<Item = bool>> Bits for I {
+    #[inline]
+    fn bit(&mut self) -> Option<bool> {
+        self.next()
+    }
+}
+
+/// The low `len` bits of a word, read MSB-first — the enumerators'
+/// `(enc, len)` packing. Bits above `len` are never read. A variable's
+/// unary run is one `leading_ones` instead of a loop over bits; every
+/// census and sweep decode comes through here.
+pub(crate) struct Packed {
+    enc: u64,
+    /// Unread bits; the next one is bit `left − 1`.
+    left: u32,
+}
+
+impl Packed {
+    #[inline]
+    pub(crate) fn new(enc: u64, len: u8) -> Packed {
+        debug_assert!(len <= 64, "a u64 packs at most 64 bits");
+        Packed {
+            enc,
+            left: u32::from(len),
+        }
+    }
+}
+
+impl Bits for Packed {
+    #[inline]
+    fn bit(&mut self) -> Option<bool> {
+        if self.left == 0 {
+            return None;
+        }
+        self.left -= 1;
+        Some(self.enc >> self.left & 1 == 1)
+    }
+
+    #[inline]
+    fn var_index(&mut self) -> Option<u32> {
+        if self.left == 0 {
+            return None;
+        }
+        // The unread bits, left-aligned; everything below them is zero,
+        // so the run cannot count past the end of the stream.
+        let ones = (self.enc << (64 - self.left)).leading_ones();
+        if ones >= self.left {
+            // Truncated mid-variable: the bit loop would have read to the
+            // end of the stream looking for the `0`.
+            self.left = 0;
+            return None;
+        }
+        self.left -= ones + 1;
+        Some(ones + 1)
+    }
+}
+
 /// The one decoder for the BLC term grammar. `None` = the stream ended
 /// mid-term; callers own their error shape. `work` is caller-owned so a
 /// sweep can reuse one buffer across millions of decodes; it is cleared
@@ -57,15 +131,15 @@ pub(crate) trait Build {
 /// Explicit pending-constructor stack: a λ-tower of depth d costs d heap
 /// slots, not d stack frames, so wire-legal input can never overflow.
 pub(crate) fn decode<B: Build>(
-    bits: &mut impl Iterator<Item = bool>,
+    bits: &mut impl Bits,
     work: &mut Vec<Pending<B::Id>>,
     b: &mut B,
 ) -> Option<B::Id> {
     work.clear();
     loop {
         // parse one leaf-or-opener
-        let mut done: B::Id = match bits.next()? {
-            false => match bits.next()? {
+        let mut done: B::Id = match bits.bit()? {
+            false => match bits.bit()? {
                 // 00: lambda
                 false => {
                     work.push(Pending::Lam);
@@ -78,13 +152,7 @@ pub(crate) fn decode<B: Build>(
                 }
             },
             // 1^n 0: variable n (n >= 1)
-            true => {
-                let mut n: u32 = 1;
-                while bits.next()? {
-                    n += 1;
-                }
-                b.var(n)
-            }
+            true => b.var(bits.var_index()?),
         };
         // close as many constructors as `done` completes
         loop {
@@ -170,6 +238,43 @@ pub fn enc_to_string(enc: u64, len: u8) -> String {
 mod tests {
     use super::*;
     use crate::blc::enumerate::for_each_closed;
+
+    /// The packed source reads exactly what the bit iterator reads: same
+    /// term (or same `None`) and the same number of bits consumed, on
+    /// every closed term to 22 bits with junk above and after it, and on
+    /// every word of a dense low-bit sweep including truncated ones.
+    #[test]
+    fn packed_bits_decode_exactly_like_the_iterator() {
+        let check = |enc: u64, len: u8| {
+            let mut it = (0..len).rev().map(|j| (enc >> j) & 1 == 1);
+            let mut w1 = Vec::new();
+            let a = decode(&mut it, &mut w1, &mut TermBuilder);
+            let rest_a = it.count();
+            let mut pk = Packed::new(enc, len);
+            let mut w2 = Vec::new();
+            let b = decode(&mut pk, &mut w2, &mut TermBuilder);
+            assert_eq!(a, b, "enc {enc:#x} len {len}");
+            assert_eq!(rest_a as u32, pk.left, "bits consumed: enc {enc:#x} len {len}");
+        };
+        for n in 4..=22 {
+            for_each_closed(n, &mut |enc, len| {
+                check(enc, len);
+                // Trailing bits after the term, and garbage above `len`.
+                check(enc << 3 | 0b101, len + 3);
+                check(enc | 0xF0 << len.min(56), len);
+                // Every truncation.
+                for cut in 0..len {
+                    check(enc >> (len - cut), cut);
+                }
+            });
+        }
+        for enc in 0..1u64 << 16 {
+            for len in [0u8, 1, 7, 15, 16, 40, 64] {
+                check(enc, len);
+                check(!enc, len);
+            }
+        }
+    }
 
     /// The recursive rendering `Display` replaced, kept here as the spec the
     /// iterative printer is differential-tested against.
