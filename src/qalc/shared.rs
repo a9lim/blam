@@ -8,13 +8,11 @@
 //! 300,000-state carrier from storing the same zipper 300,000 times.
 //!
 //! Identity stays structural. `Hash` writes the cached content hash, which
-//! is a deterministic function of the value (the [`FastHasher`] digest of
+//! is a deterministic function of the value (the `qalc::fasthash` digest of
 //! `T`'s own `Hash`), so equal values hash equally wherever they were
 //! allocated; `Eq` is pointer equality as a fast path, then cached-hash
 //! inequality as a fast rejection, then full structural equality.
 //! Allocation identity is never semantic.
-//!
-//! [`FastHasher`]: super::fasthash::FastHasher
 
 use std::fmt;
 use std::hash::{Hash, Hasher};
