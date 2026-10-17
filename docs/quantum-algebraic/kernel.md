@@ -734,9 +734,11 @@ old-frame epoch) — and every other source coordinate is either transported
 verbatim or fixed by the row: the leaf fixes the gate, the log head the
 instance, the frame the bit, and `j = b′ + 1` the bullet run. The recall row is
 therefore injective on every source with canonical RS (W2), with no
-reachability premise (`RecallEpoch.lean`: `recallTarget_injective`,
-`decode_recall_epoch`, `recall_epoch_fibre_exact`). The same coordinate
-separates the three landing pairs that frame-idempotent insertion would merge:
+reachability premise. `RecallEpoch.lean` mechanizes the abstract row
+(`recallTarget_injective`, `decode_recall_epoch`, `recall_epoch_fibre_exact`);
+its instantiation by the concrete row is the coordinate argument above. The
+same coordinate separates the three landing pairs that frame-idempotent
+insertion would merge:
 
 - frame-absent versus agreeing-frame recall: canonical `negative` has a
   reachable frame-free recall source whose raw clone with the agreeing frame
@@ -750,32 +752,71 @@ separates the three landing pairs that frame-idempotent insertion would merge:
 - `vvar` versus `replay` landings: `vvar` emits epoch `F`, replay a frame
   epoch, which is never `F` (`vvar_replay_ranges_disjoint`).
 
-**Complete-carrier RRI is an admission condition.**
-`rri_direct.direct_certificate` enumerates the complete nonterminal carrier
-(cap 100,000 states; hitting the cap is rejection), recomputes closure,
-requires every recall source to have exactly one row, rejects matching-frame
-multiplicity, and checks (i) source-projection RRI — no two recall sources
-with one full key `(g, i, b′)` share a frame-erased projection in opposite
-phases (matching frame absent/present) — and (ii) actual-target
-factorization. Under the epoch-bearing row a common recall target forces a
-common source, so no target bucket mixes phases or projections and (ii) fails
-only on a pair that (i) already rejects; (i) is strictly stronger than row
-injectivity and is the binding predicate of `validate`. The concrete Lean
-replay proves both forms (`RRIOn`, `RecallTargetRRIOn`) on the 17 canonical
-typed sectors (`../../qalc/QalcConcreteCertificate.md`). The Python checker and
-its Rust port (`../../src/qalc/admission.rs`) identify the matching frame as
-`R_g(i, b′, EA(F))`; the Lean `recallView?` accepts a same-key, same-bit frame
-of any epoch.
+**Complete-carrier RRI is an admission condition.** One predicate is checked
+everywhere: `rri_direct.recall_view` and `rri_facts` in Python,
+`recall_view` and `rri_violations` in `../../src/qalc/admission.rs`, and
+`recallView?` with `certificateBool` in Lean. A recall source's view is its full
+key `(g, i, b′)`, its phase — whether the matching frame, the same-gate,
+same-instance, same-bit frame of *any* epoch, is present — and its
+projection, the source with exactly that frame erased. A replay return writes
+`EP(e, e_old)`, so the match cannot be restricted to the first-recall epoch
+`EA(F)`. A same-key frame with the other bit, a second matching frame, or a
+recall row beside another row has no view and rejects. The predicate is
+
+- (i) source-projection RRI: no `(key, projection)` bucket mixes phases;
+- (ii) actual-target RRI: no `(key, target)` bucket mixes phases or
+  projections.
+
+(ii) follows from row injectivity; (i) is strictly stronger and is the binding
+condition. The converse of (ii) — a common projection forcing a common target —
+is not part of the predicate: it would require the erased frame epochs to
+agree.
+
+It is checked on three carriers:
+
+- **Gate-1 admission** (`../../qalc/readback_certify.py` `validate_nf`, hence
+  `admit_nf_total` for an erasure candidate and for the no-erasure fallback
+  alike; `admission.rs` `validate`) checks (i) and (ii) on the complete
+  composed carrier it has already closed. The view reads the BA-adapted kernel
+  token, and the projection keeps the zipper, so it is the exact composed
+  source with its matching frame erased. Some recall sources exist only on the
+  composed carrier: `dup` and `stress-beta-H` have two each and none on their
+  kernel carriers.
+- **Kernel `machine_coverage`** (`certify.validate`) runs
+  `rri_direct.direct_certificate` on the complete kernel ρ-root carrier. The
+  cap is 100,000 states, and hitting it is rejection. That run recomputes
+  closure, and every certificate `discover_total` returns has passed it.
+- **The concrete Lean replay** proves (i) and (ii) (`RRIOn`,
+  `RecallTargetRRIOn`) on the kernel carriers of the 17 canonical typed
+  sectors (`../../qalc/QalcConcreteCertificate.md`). Its executable target
+  check is exactly (ii), so hash fingerprints only filter comparisons.
+
+Later-epoch matching frames are reachable. On the twenty-program kernel suite,
+the 163 recall sources are 55 frame-absent, 53 present at `EA(F)`, and 55
+present at a replay epoch `EP(·,·)`. Every source there is alone in its
+projection bucket, so the suite alone cannot tell the any-epoch view from a
+first-epoch match. Raw controls built from `negative`'s reachable frame-absent
+source pin the difference:
+
+- its clone with a replay-epoch matching frame is a phase witness for (i)
+  (`rri.py`, the composed liveness check in `readback_certify.py`, and
+  `replay_epoch_frame_is_present`);
+- two clones differing only in the erased epoch are not a witness, and they
+  land on distinct targets (`rri.py`, and
+  `recall_view_erases_a_matching_frame_of_any_epoch` in `admission.rs`);
+- two such epochs share one Lean hash (Codex's witness: `hashEpoch` is affine
+  in its children), and the exact target check accepts them
+  (`hash_equal_epochs_check_exactly` in `QalcConcreteCertificateAudit.lean`).
 
 **Open and optional.** No theorem derives (i) from typing or W0–W9 on an
 arbitrary unbounded reachable graph; a uniform proof would factor through a
 reachable no-rider lemma, unique α ancestry, and a cross-phase separation
 lemma stable under Hadamard/certified-fibre reconvergence. `rri.py` is a
 finite falsification instrument only: on the twenty-program suite (6,392
-states; 110 frame-absent and 53 frame-present recall sources) it finds zero
+states; 55 frame-absent and 108 frame-present recall sources) it finds zero
 projected collisions and zero rider fires. Neither architecture gate depends
-on the uniform theorem. Every detectable divergent manifestation remains
-typed.
+on the uniform theorem; the finite predecessor, range, and Gram assembly does
+not consume RRI. Every detectable divergent manifestation remains typed.
 
 ## 8. The typed fragment
 
@@ -819,10 +860,11 @@ the typed H/T/CNOT compiler image.
 
 The fixed-shell gate-copy theorem proves that `(gate, instance)` identifies a
 complete dynamic gate-copy address. The epoch-bearing recall row is injective
-on every W2-canonical source; admission additionally checks the stronger
-source-projection RRI predicate over each complete finite carrier, and
-concrete Lean replay closes both source-projection and actual-target RRI for
-all 17 canonical typed sectors. A uniform derivation from typing or W0-W9
+on every W2-canonical source. Kernel `machine_coverage` additionally checks
+the stronger source-projection RRI predicate on the complete kernel carrier,
+and Gate-1 admission checks it on the complete composed carrier (§7.5). The
+concrete Lean replay closes source-projection and actual-target RRI for all 17
+canonical typed sectors. A uniform derivation from typing or W0-W9
 remains optional and is not a premise of either architecture gate.
 
 Standing typed fences: gate literals in a program body and malformed shells
@@ -866,7 +908,8 @@ Gate-1 runtime battery; its durable log is `../../qalc/out_gate1_runtime.txt`.
   sources (53 certified), and 18 exact H-reconvergent targets. The exporter is
   untrusted; Lean rechecks row equality, closure, and both RRI formulations.
   `QalcConcreteCertificateAudit.lean` proves the raw `negative` pair's recall
-  targets disjoint, rejects an initial prefix as nonclosed, and pins `qprime`'s
+  targets disjoint, the any-epoch phase witness and the hash-equal-epoch target
+  control of §7.5, rejects an initial prefix as nonclosed, and pins `qprime`'s
   certified-H reconvergence with both arms;
 - the Rust port is pinned by the complete-carrier column fixtures and trace
   digests under `../../tests/qalc/` and by `../../tests/qalc_kernel.rs`,

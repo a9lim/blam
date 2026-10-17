@@ -143,12 +143,19 @@ requires:
   neutral only when its first argument is variable-headed; pure admissions
   must also equal the independent beta-normalizer's result;
 - no recall or b3 target collision;
+- source-projection and actual-target reachable-recall injectivity (RRI) on
+  the complete composed carrier, for every candidate including the
+  no-erasure fallback: the view reads the BA-adapted kernel token and matches
+  a frame of any epoch, and the projection keeps the zipper
+  (`../docs/quantum-algebraic/kernel.md` §7.5);
 - no common deterministic target (H/H is the sole allowed shared range);
 - exact unit column norms and zero pairwise Gram off-diagonals.
 
 All twenty canonical sectors, two mixed delta/readback sectors, five
 controller stress sectors, and three neutral-gate sectors pass with zero WF,
-W7, range, pop, stuck, norm, or Gram violations. The mixed H and T terms each
+W7, range, pop, stuck, RRI, norm, or Gram violations. Their composed carriers
+hold 167 recall sources, four more than the kernel carriers: `dup` and
+`stress-beta-H` recall only after readback. The mixed H and T terms each
 fire a gate inside an argument entered by readback and then RETURN to finish
 the enclosing normal form. The neutral sectors make both `HEAD-GATE` and
 `HEAD-NEUTRAL-GATE` live under the full validator and Lean exporter. The 30 generated Gate-1
@@ -269,8 +276,11 @@ differential surface.
 The claim boundary remains explicit:
 
 - the stronger ambient all-program RRI lifecycle theorem remains open, but is
-  not required for a finite admitted sector because complete-carrier RRI is a
-  mandatory certificate condition and is concretely replayed;
+  not required for a finite admitted sector: complete-carrier RRI is a
+  mandatory admission condition, checked on the admitted composed carrier
+  (§3), and the concrete Lean replay proves it on the kernel carriers of the
+  seventeen typed canonical sectors. No predecessor, range, or Gram theorem
+  consumes it;
 - generated machine proofs own the predecessor/range/Gram facts conditional
   on their exported complete row list; Python closure owns completeness and
   injective physical-state enumeration of that finite list;

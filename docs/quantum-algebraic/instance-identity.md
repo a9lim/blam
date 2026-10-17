@@ -3,10 +3,11 @@
 **Status: closed at the Gate-1 acceptance boundary.**
 `(gate, instance)` identifies one dynamic copy of either fixed invocation gate.
 The epoch-bearing recall row is injective on every source with canonical RS
-(W2), with no reachability premise (`../../qalc/RecallEpoch.lean`). Admission
-separately checks the stronger source-projection form of reachable-recall
-injectivity (RRI) on every finite carrier; the concrete Lean replay proves it
-for all 17 canonical typed sectors.
+(W2), with no reachability premise (`../../qalc/RecallEpoch.lean` mechanizes
+the abstract row). Admission separately checks the stronger source-projection
+form of reachable-recall injectivity (RRI) on every complete finite carrier it
+admits; the concrete Lean replay proves it for all 17 canonical typed
+sectors.
 
 ## 1. Gate-copy theorem
 
@@ -58,15 +59,20 @@ and W7-clean and is unreachable; the two sources take `recall` to distinct
 targets.
 
 The admission statement is finite-carrier RRI, which is stronger than row
-injectivity. For one term, frozen certificate, and key, erase only the
-matching frame from each reachable recall source while retaining every other
-coordinate. No two recall sources may share that erased projection or actual
-target unless they are the same source.
+injectivity. For one term, frozen certificate, and full key `(g, i, b′)`,
+erase only the matching frame — same gate, instance, and bit, of any epoch —
+from each reachable recall source while retaining every other coordinate.
+Two recall sources sharing that erased projection must agree on whether the
+frame was present, and two sharing an actual target must share the erased
+projection and phase. A projection may land on several targets: sources that
+differ only in the erased frame's epoch are distinct and separately admitted.
+The exact predicate and the carriers it runs on are in `kernel.md` §7.5.
 
-`rri_direct.py` checks this on a complete nonterminal carrier, including
-outgoing closure, terminal-forward coverage, dispatch purity, frame
-multiplicity, source projection, and actual-target factorization. Failure or a
-carrier cap rejects machine coverage; RRI is not inferred from a Gram result.
+`rri_direct.py` checks this on a complete kernel carrier, including outgoing
+closure, terminal-forward coverage, dispatch purity, frame multiplicity,
+source projection, and actual-target RRI; Gate-1 admission applies the same
+view and predicate to the complete composed carrier. Failure or a carrier cap
+rejects; RRI is not inferred from a Gram result.
 
 The reusable Lean layer is:
 
@@ -77,7 +83,8 @@ The reusable Lean layer is:
 - `QalcConcreteExport.py`: untrusted finite data/row exporter whose rows Lean
   recomputes; and
 - `QalcConcreteCertificateAudit.lean`: the raw `negative` pair's disjoint
-  recall targets, incomplete-carrier rejection, and certified-H reconvergence
+  recall targets, the any-epoch phase witness, the hash-equal-epoch target
+  control, incomplete-carrier rejection, and certified-H reconvergence
   controls.
 
 The generated canonical suite covers 5,220 nonterminal states, 5,279 rows,
@@ -94,7 +101,10 @@ python qalc/QalcConcreteBuild.py --jobs 4
 
 Kernel `machine_coverage` (`certify.validate`) requires the direct
 finite-carrier RRI certificate, so every erasure certificate the canonical
-selector returns has passed it. The generated Lean replay exists for the 17
+selector proposes has passed it on the kernel carrier. Gate-1 admission
+(`readback_certify.validate_nf` and `admission.rs`) then requires RRI on the
+complete composed carrier for every candidate, the no-erasure fallback
+included. The generated Lean replay exists for the 17
 canonical typed sectors; `QalcConcreteExport.emit_program` generates the same
 replay for any further finite sector. Rejected sectors retain the exact source-history
 fallback, so the semantics remains total.

@@ -18,6 +18,7 @@ from readback import (APP_BULLET, Hole, NFDone, NFGate, NFApp, NFLam, NFRun,
                       is_rb, is_rbl, nf_init, nf_step)
 from readback_checks import (ReductionLimit, as_output, normal_form,
                              reachable_gram)
+from rri_direct import recall_view, rri_facts
 from wf import wf, wf7
 
 
@@ -177,6 +178,7 @@ def composed_carrier(term, certificate=None, tick_depth=2,
     stuck = []
     recall_targets = {}
     recall_collisions = []
+    recall_rows = []
     pop_targets = {}
     pop_collisions = []
     incoming = {}
@@ -200,6 +202,8 @@ def composed_carrier(term, certificate=None, tick_depth=2,
         rows = nf_step(term, source, certificate)
         if not rows:
             stuck.append(source)
+        if any(rule == "recall" for _sign, _denominator, rule, _target in rows):
+            recall_rows.append((source, rows))
         for _sign, _denominator, rule, target in rows:
             rules.add(rule)
             incoming.setdefault(target, []).append((source, rule))
@@ -223,9 +227,34 @@ def composed_carrier(term, certificate=None, tick_depth=2,
         "rules": rules,
         "stuck": stuck,
         "recall_collisions": recall_collisions,
+        "recall_rows": recall_rows,
         "pop_collisions": pop_collisions,
         "incoming": incoming,
     }
+
+
+def composed_rri_violations(recall_rows):
+    """Source-projection and actual-target RRI on the composed carrier.
+
+    The view reads the BA-adapted kernel token (`_kernel_token`, a bijection
+    on the reachable grammar; never the lossy deep `kernel_projection`), and
+    the projection keeps the zipper, so it is the exact composed source with
+    its matching frame erased.  An actual recall without a view, or beside
+    another row, rejects.
+    """
+    entries = []
+    malformed = 0
+    for source, rows in recall_rows:
+        view = (recall_view(_kernel_token(source.token))
+                if isinstance(source, NFRun) and len(rows) == 1 else None)
+        if view is None:
+            malformed += 1
+            continue
+        key, present, projection = view
+        entries.append(((key, present, (projection, source.zipper)),
+                        rows[0][3]))
+    witnesses, target_witnesses, target_failures, _, _ = rri_facts(entries)
+    return malformed + witnesses + target_witnesses + target_failures
 
 
 def validate_nf(term, certificate=None, state_cap=300_000):
@@ -281,6 +310,7 @@ def validate_nf(term, certificate=None, state_cap=300_000):
             rules = {rule for _source, rule in distinct}
             if rules != {"fire-h"} or len(sources) != 2:
                 range_violations.append((target, tuple(distinct)))
+    rri_violations = composed_rri_violations(carrier["recall_rows"])
     pop_errors = sum(rule == "error-pop-err" for rule in carrier["rules"])
     stuck_errors = sum(rule == "error-stuck" for rule in carrier["rules"])
     host_errors = sum(rule in {"error-machine-exception",
@@ -306,6 +336,7 @@ def validate_nf(term, certificate=None, state_cap=300_000):
         fibre_functions
         and not carrier["stuck"]
         and not carrier["recall_collisions"]
+        and rri_violations == 0
         and not carrier["pop_collisions"]
         and pop_errors == 0
         and host_errors == 0
@@ -329,6 +360,7 @@ def validate_nf(term, certificate=None, state_cap=300_000):
         "fibre_functions": fibre_functions,
         "stuck": len(carrier["stuck"]),
         "recall_collisions": len(carrier["recall_collisions"]),
+        "rri_violations": rri_violations,
         "pop_collisions": len(carrier["pop_collisions"]),
         "pop_errors": pop_errors,
         "stuck_errors": stuck_errors,
@@ -422,6 +454,22 @@ def selector_battery(state_cap=300_000):
     if not _output_is_closed_nf(
             NFLam(NFApp(NFGate("h"), NFVar(1)))):
         raise AssertionError("neutral variable-headed gate NF rejected")
+    # The composed RRI gate is live: a reachable frame-absent recall source and
+    # its clone carrying the matching frame at a replay-return epoch share one
+    # erased projection in opposite phases.
+    from dataclasses import replace
+    from kernel import FIRST_FRAME_EPOCH, FRAME, recall_epoch, rs_insert
+    negative, negative_cert = PROGRAMS["negative"], CERTS["negative"]
+    ((source, rows), *_) = composed_carrier(
+        negative, negative_cert, state_cap=state_cap)["recall_rows"]
+    key, present, _ = recall_view(_kernel_token(source.token))
+    frame = FRAME(*key, recall_epoch(FIRST_FRAME_EPOCH, FIRST_FRAME_EPOCH))
+    clone = replace(source, token=replace(
+        source.token, rs=rs_insert(source.token.rs, frame)))
+    clone_rows = nf_step(negative, clone, negative_cert)
+    if (present or composed_rri_violations(
+            [(source, rows), (clone, clone_rows)]) != 1):
+        raise AssertionError("composed RRI gate is not live")
     pure = Lam(Var(1))
     pure_result = validate_nf(pure, None, state_cap=state_cap)
     if (not pure_result["certified"]

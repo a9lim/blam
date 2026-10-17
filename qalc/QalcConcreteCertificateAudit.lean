@@ -17,6 +17,40 @@ theorem raw_recall_targets_disjoint :
       (step negativeTerm framed negativeCert).map (·.target) := by
   decide +kernel
 
+-- The recall view matches a frame of any epoch: a replay-return frame is
+-- present at the frame-absent source's projection, an RRI phase witness.
+def replayed : State := .run ({ path := [.fn, .arg], direction := .down, log := [.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)], tape := [.bullet, .alpha .h (.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)) false (.fresh), .lp [.fn, .fn, .body, .body, .fn, .arg, .body] (.nil), .bullet, .rho], vb := none, frames := [⟨⟨.h, .lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)⟩, false, .recalledPresent (.recalledAbsent (.fresh)) (.recalledAbsent (.fresh))⟩], storage := [.bundle []] })
+
+theorem replay_epoch_frame_is_present :
+    recallPhase replayed = true ∧
+    eqBool (recallProjection replayed) (recallProjection bare) = true ∧
+    pairRRI negativeTerm negativeCert bare replayed = false := by
+  decide +kernel
+
+-- Two epochs with one hash give equal target fingerprints, engaging the
+-- summary guard.  The sources differ only in the erased epoch, so they share
+-- projection and phase but land apart; the target checker accepts exactly
+-- the stated one-way property rather than a hash-dependent converse.
+def hashLeftEpoch : Epoch := .recalledAbsent (.recalledPresent (.fresh) (.recalledAbsent (.fresh)))
+def hashRightEpoch : Epoch := .recalledPresent (.fresh) (.recalledAbsent (.recalledAbsent (.fresh)))
+def hashLeft : State := .run ({ path := [.fn, .arg], direction := .down, log := [.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)], tape := [.bullet, .alpha .h (.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)) false (.fresh), .lp [.fn, .fn, .body, .body, .fn, .arg, .body] (.nil), .bullet, .rho], vb := none, frames := [⟨⟨.h, .lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)⟩, false, .recalledAbsent (.recalledPresent (.fresh) (.recalledAbsent (.fresh)))⟩], storage := [.bundle []] })
+def hashRight : State := .run ({ path := [.fn, .arg], direction := .down, log := [.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)], tape := [.bullet, .alpha .h (.lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)) false (.fresh), .lp [.fn, .fn, .body, .body, .fn, .arg, .body] (.nil), .bullet, .rho], vb := none, frames := [⟨⟨.h, .lp [.fn, .fn, .body, .body, .fn, .fn, .fn] (.nil)⟩, false, .recalledPresent (.fresh) (.recalledAbsent (.recalledAbsent (.fresh)))⟩], storage := [.bundle []] })
+
+theorem hash_equal_epochs_check_exactly :
+    hashLeftEpoch != hashRightEpoch ∧
+    hashEpoch hashLeftEpoch = hashEpoch hashRightEpoch ∧
+    eqBool (uniqueRecallTarget? negativeTerm negativeCert hashLeft)
+      (uniqueRecallTarget? negativeTerm negativeCert hashRight) = false ∧
+    eqBool ((recallTargetSummary? negativeTerm negativeCert hashLeft).map
+        (·.targetFingerprint))
+      ((recallTargetSummary? negativeTerm negativeCert hashRight).map
+        (·.targetFingerprint)) = true ∧
+    pairTargetFacts negativeTerm negativeCert hashLeft hashRight = true ∧
+    summariesTargetFacts
+      (recallTargetSummaries negativeTerm negativeCert [hashLeft, hashRight])
+      = true := by
+  decide +kernel
+
 -- A finite prefix is not a certificate: closure rejects the initial singleton.
 theorem prefix_rejected :
     certificateBool negativeTerm negativeCert [initial] = false := by

@@ -205,9 +205,9 @@ def raw_recall_boundary():
         ticket = s.tape[j] if j < len(s.tape) else None
         if not is_alpha(ticket):
             continue
-        frame = FRAME(ticket[1], ticket[2], ticket[3])
-        if frame in s.rs:
+        if any(frame[1:3] == ticket[1:3] for frame in s.rs):
             continue
+        frame = FRAME(ticket[1], ticket[2], ticket[3])
         candidate = replace(s, rs=s.rs + (frame,))
         if wf(term, candidate) or wf7(term, cert, candidate, fibres):
             continue

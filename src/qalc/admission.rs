@@ -7,15 +7,16 @@
 //! checked attempt.  Every cap, defect, or failed obligation is rejection;
 //! `semantics::select` turns rejection into conservative-history dynamics.
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, OnceLock};
 use std::time::{Duration, Instant};
 
-use super::kernel::{init_state, step as kernel_step};
 use super::mark::{Frame, GateTag, KdKey, KsHead, LogEntry, Lp, RetainCargo, TapeEntry};
-use super::readback::{nf_carrier_and_columns, nf_gram_from_carrier, NfError};
-use super::state::{KState, Nf, NfState, NfTerminal, RunCore, Vert};
-use super::term::{Dir, GateName, Path, Term};
+use super::readback::{
+    kernel_token, nf_carrier_and_columns, nf_gram_from_carrier, NfCarrier, NfError,
+};
+use super::state::{Nf, NfState, NfTerminal, RunCore, Vert, Zipper};
+use super::term::{Dir, GateName, Term};
 use super::wf::{check as check_wf, kernel_projection};
 use super::wire::{nf_state_bytes, parse_fixtures, CertEntries};
 
@@ -550,22 +551,14 @@ fn term_as_nf(term: &Term) -> Option<Nf> {
     values.is_empty().then_some(value)
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-struct RecallProjection {
-    path: Path,
-    d: Vert,
-    log: Vec<LogEntry>,
-    tape: Vec<TapeEntry>,
-    rs: Vec<Frame>,
-    ks: Vec<KsHead>,
-}
-
 type RecallKey = (GateTag, Lp, u8);
 
-fn recall_view(state: &KState) -> Option<(RecallKey, bool, RecallProjection)> {
-    let KState::Run(core) = state else {
-        return None;
-    };
+/// The recall view of `rri_direct.recall_view` and the Lean `recallView?`:
+/// the full key of the ticket after the bullet run, whether its matching
+/// frame — same gate, instance, and bit, of ANY epoch — is present, and the
+/// token with exactly that frame erased.  A same-key frame with the other
+/// bit, or a second matching frame, has no view, which rejects.
+fn recall_view(core: &RunCore) -> Option<(RecallKey, bool, RunCore)> {
     if core.vb.is_some() {
         return None;
     }
@@ -576,113 +569,63 @@ fn recall_view(state: &KState) -> Option<(RecallKey, bool, RecallProjection)> {
     let Some(TapeEntry::Alpha(alpha)) = core.tape.get(at) else {
         return None;
     };
-    let first_epoch = super::mark::Epoch::Recall(Arc::new(super::mark::Epoch::Fresh));
-    let matches: Vec<_> = core
-        .rs
-        .iter()
-        .enumerate()
-        .filter(|(_, frame)| {
-            frame.gate == alpha.gate
-                && frame.instance == alpha.instance
-                && frame.bit == alpha.bit
-                && frame.epoch == first_epoch
-        })
-        .map(|(index, _)| index)
-        .collect();
-    if matches.len() > 1 {
-        return None;
+    let mut matching = None;
+    for (index, frame) in core.rs.iter().enumerate() {
+        if frame.gate != alpha.gate || frame.instance != alpha.instance {
+            continue;
+        }
+        if frame.bit != alpha.bit || matching.is_some() {
+            return None;
+        }
+        matching = Some(index);
     }
-    let mut rs = core.rs.clone();
-    let present = !matches.is_empty();
-    if let Some(&index) = matches.first() {
-        rs.remove(index);
+    let mut erased = core.clone();
+    if let Some(index) = matching {
+        erased.rs.remove(index);
     }
     Some((
         (alpha.gate, alpha.instance.clone(), alpha.bit),
-        present,
-        RecallProjection {
-            path: core.path.clone(),
-            d: core.d,
-            log: core.log.clone(),
-            tape: core.tape.clone(),
-            rs,
-            ks: core.ks.clone(),
-        },
+        matching.is_some(),
+        erased,
     ))
 }
 
-fn rri_violations(term: &Term, cert: Option<&CertEntries>, state_cap: usize) -> usize {
-    let initial = init_state();
-    let mut seen = HashSet::from([initial.clone()]);
-    let mut queue = VecDeque::from([initial]);
-    let mut recalls = Vec::new();
-    while let Some(source) = queue.pop_front() {
-        let Ok(rows) = kernel_step(term, &source, cert) else {
-            return 1;
+/// Source-projection and actual-target RRI over the complete composed
+/// carrier admission has already closed (`readback_certify.validate_nf`).
+/// The view reads the BA-adapted kernel token; the projection keeps the
+/// zipper, so it is the exact composed source with its matching frame erased.
+fn rri_violations(carrier: &NfCarrier) -> usize {
+    // A projection is the erased kernel token beside the untouched zipper.
+    type Projection<'a> = (RunCore, &'a Zipper);
+    let mut violations = 0usize;
+    let mut projected: HashMap<(RecallKey, Projection), HashSet<bool>> = HashMap::new();
+    let mut targets: HashMap<(RecallKey, usize), HashSet<(bool, Projection)>> = HashMap::new();
+    for (source, rows) in &carrier.columns {
+        if !rows.iter().any(|(_, rule, _)| *rule == "recall") {
+            continue;
+        }
+        let view = match (rows.as_slice(), &carrier.order[*source]) {
+            ([(_, _, target)], NfState::Run(run)) => {
+                recall_view(&kernel_token(&run.token)).map(|view| (view, &run.zipper, *target))
+            }
+            _ => None,
         };
-        let recall_rows: Vec<_> = rows.iter().filter(|row| row.rule == "recall").collect();
-        if !recall_rows.is_empty() {
-            if rows.len() != 1 || recall_rows.len() != 1 {
-                return 1;
-            }
-            let Some(view) = recall_view(&source) else {
-                return 1;
-            };
-            recalls.push((view, recall_rows[0].state.clone()));
-        }
-        for row in rows {
-            if matches!(&row.state, KState::Done { .. }) || seen.contains(&row.state) {
-                continue;
-            }
-            if seen.len() >= state_cap {
-                return 1;
-            }
-            seen.insert(row.state.clone());
-            queue.push_back(row.state);
-        }
-    }
-
-    // Replay closure independently of the queue bookkeeping, matching
-    // rri_direct.py's successor-covered premise rather than trusting that
-    // discovery itself could not have skipped a landing.
-    for source in &seen {
-        let Ok(rows) = kernel_step(term, source, cert) else {
-            return 1;
+        let Some(((key, present, erased), zipper, target)) = view else {
+            violations += 1;
+            continue;
         };
-        if rows
-            .iter()
-            .any(|row| !matches!(&row.state, KState::Done { .. }) && !seen.contains(&row.state))
-        {
-            return 1;
-        }
-    }
-
-    let mut projected: HashMap<(RecallKey, RecallProjection), HashSet<bool>> = HashMap::new();
-    let mut targets: HashMap<(RecallKey, KState), (HashSet<bool>, HashSet<RecallProjection>)> =
-        HashMap::new();
-    let mut factored: HashMap<(RecallKey, RecallProjection), HashSet<KState>> = HashMap::new();
-    for ((key, present, projection), target) in recalls {
         projected
-            .entry((key.clone(), projection.clone()))
+            .entry((key.clone(), (erased.clone(), zipper)))
             .or_default()
             .insert(present);
-        let bucket = targets.entry((key.clone(), target.clone())).or_default();
-        bucket.0.insert(present);
-        bucket.1.insert(projection.clone());
-        factored
-            .entry((key, projection))
+        targets
+            .entry((key, target))
             .or_default()
-            .insert(target);
+            .insert((present, (erased, zipper)));
     }
-    projected.values().filter(|phases| phases.len() > 1).count()
-        + targets
-            .values()
-            .filter(|(phases, projections)| phases.len() > 1 || projections.len() > 1)
-            .count()
-        + factored
-            .values()
-            .filter(|targets| targets.len() > 1)
-            .count()
+    violations
+        + projected.values().filter(|phases| phases.len() > 1).count()
+        + targets.values().filter(|sources| sources.len() > 1).count()
 }
 
 fn rust_wire_digest(states: &[NfState]) -> String {
@@ -858,7 +801,7 @@ fn validate_inner(
     }
     let rri_violations = measured(
         telemetry.as_mut().map(|telemetry| &mut telemetry.rri),
-        || rri_violations(term, certificate, state_cap.min(100_000)),
+        || rri_violations(&carrier),
     );
     let certified = wf_violations == 0
         && transparency_violations == 0
@@ -1051,6 +994,10 @@ pub fn try_admit(term: &Term) -> Option<Gate1Admission> {
 
 #[cfg(test)]
 mod tests {
+    use super::super::amp::Amp;
+    use super::super::mark::Epoch;
+    use super::super::state::NfRun;
+    use super::super::wire::Rule;
     use super::*;
 
     fn lam(term: Term) -> Term {
@@ -1097,6 +1044,95 @@ mod tests {
             assert_eq!(source.programs[0].term, fixture.term, "{}", fixture.name);
             assert_eq!(source.programs[0].cert, fixture.cert, "{}", fixture.name);
         }
+    }
+
+    /// `negative`'s first reachable recall source (frame-absent) and its key.
+    fn negative_recall_source() -> (NfRun, Frame) {
+        let fixtures = parse_fixtures(include_str!("admission_pins.qfx")).unwrap();
+        let fixture = fixtures
+            .programs
+            .into_iter()
+            .find(|fixture| fixture.name == "negative")
+            .unwrap();
+        let carrier =
+            nf_carrier_and_columns(&fixture.term, fixture.cert.as_ref(), 2, CANONICAL_STATE_CAP)
+                .unwrap();
+        let (source, _) = carrier
+            .columns
+            .iter()
+            .find(|(_, rows)| rows.iter().any(|(_, rule, _)| *rule == "recall"))
+            .unwrap();
+        let NfState::Run(run) = &carrier.order[*source] else {
+            panic!("recall source is a running state");
+        };
+        let ((gate, instance, bit), present, _) = recall_view(&kernel_token(&run.token)).unwrap();
+        assert!(!present);
+        let frame = Frame {
+            gate,
+            instance,
+            bit,
+            epoch: Epoch::Fresh,
+        };
+        (run.clone(), frame)
+    }
+
+    fn with_frame(run: &NfRun, frame: &Frame, epoch: Epoch) -> NfRun {
+        let mut framed = run.clone();
+        framed.token.rs.push(Frame {
+            epoch,
+            ..frame.clone()
+        });
+        framed
+    }
+
+    fn recall_carrier(sources: Vec<NfRun>) -> NfCarrier {
+        let count = sources.len();
+        NfCarrier {
+            order: sources.into_iter().map(NfState::Run).collect(),
+            columns: (0..count)
+                .map(|source| {
+                    (
+                        source,
+                        vec![(Amp::ONE, Rule::Borrowed("recall"), count + source)],
+                    )
+                })
+                .collect(),
+        }
+    }
+
+    #[test]
+    fn recall_view_erases_a_matching_frame_of_any_epoch() {
+        use Epoch::{Fresh, Recall, RecallOver};
+        let (absent, frame) = negative_recall_source();
+        let first = Recall(Arc::new(Fresh));
+        // A replay return writes EP(e, e_old): the frame is present, and the
+        // erased projection must equal the absent source's.
+        let replayed = RecallOver(Arc::new(first.clone()), Arc::new(first.clone()));
+        let base = recall_view(&kernel_token(&absent.token)).unwrap();
+        let framed = with_frame(&absent, &frame, replayed.clone());
+        let view = recall_view(&kernel_token(&framed.token)).unwrap();
+        assert!(view.1);
+        assert_eq!((&view.0, &view.2), (&base.0, &base.2));
+        // Absent versus later-epoch present at one projection is a witness.
+        assert_eq!(
+            rri_violations(&recall_carrier(vec![absent.clone(), framed.clone()])),
+            1
+        );
+        // Two present sources differing only in the erased epoch share a
+        // projection and phase and land apart: not a witness.
+        let other = with_frame(&absent, &frame, Recall(Arc::new(first)));
+        assert_eq!(rri_violations(&recall_carrier(vec![framed, other])), 0);
+        // A same-key frame carrying the other bit has no view and rejects.
+        let foreign = with_frame(
+            &absent,
+            &Frame {
+                bit: 1 - frame.bit,
+                ..frame.clone()
+            },
+            Fresh,
+        );
+        assert!(recall_view(&kernel_token(&foreign.token)).is_none());
+        assert_eq!(rri_violations(&recall_carrier(vec![foreign])), 1);
     }
 
     #[test]

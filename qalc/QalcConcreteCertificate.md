@@ -25,9 +25,14 @@ RecallTargetRRIOn term certificate (Reachable term certificate)
 ```
 
 The first theorem excludes a bare/framed phase collision at one erased recall
-projection.  The second proves the stronger actual-target factorization: for
-same-key recall rows, a common target is equivalent to a common erased source
-projection and cannot mix phases.
+projection; the erased frame is the same-key, same-bit frame of any epoch.
+The second is actual-target RRI: for same-key recall rows, a common target
+forces a common erased source projection and phase.  The executable checker
+decides exactly these two propositions — the predicate `rri_direct.py` and
+`../src/qalc/admission.rs` check (`../docs/quantum-algebraic/kernel.md`
+§7.5).  It does not require a common projection to force a common target:
+sources differing only in the erased epoch share a projection and land
+apart.
 
 The checked carrier is terminal-covered rather than artificially truncated.
 `terminal_forward` is a theorem of the concrete `step`, including every
@@ -61,9 +66,15 @@ exact H reconvergent targets  18
 
 The dedicated `QalcConcreteCertificateAudit.lean` additionally proves that the
 registered raw absent/present `negative` pair has disjoint recall targets with
-no reachability or carrier premise, rejects an initial prefix for nonclosure,
-and proves that qprime's two distinct certified Hadamard sources have two arms
-and an exact common target.
+no reachability or carrier premise; that the same source cloned with a
+replay-epoch matching frame is present at the absent source's projection, a
+phase witness (`replay_epoch_frame_is_present`); that two clones whose
+distinct frame epochs share one hash (Codex's witness) have equal target
+fingerprints, distinct targets, and pass the target checker
+(`hash_equal_epochs_check_exactly`);
+rejects an initial prefix for nonclosure; and proves that qprime's two
+distinct certified Hadamard sources have two arms and an exact common
+target.
 
 The stress sector `qq` contains 2,160 states and 78 recalls.  It is generated
 as a `_Core` module (term, certificate, and chunk checkers), 68 data modules,
@@ -83,7 +94,9 @@ evaluation axiom.
 Two fingerprints are performance filters, not proof assumptions:
 
 - RRI/target buckets compare full keys, projections, states, and phases after
-  a fingerprint match.  A collision therefore triggers more exact checks.
+  a fingerprint match.  Equal keys with equal projections, or equal targets,
+  have equal fingerprints, so a collision only triggers more exact checks and
+  changes no verdict.
 - carrier membership uses an exporter-supplied numeric index but compares the
   full target state on every hit.  `carrierIndexedClosed_sound` proves that any
   accepted indexed closure is ordinary list-membership closure.  An incorrect
@@ -95,12 +108,9 @@ missing reachable state fails Lean closure; a wrong row fails exact row
 conformance; a bad hash fails indexed closure.  The concrete theorem is about
 the Lean transition table, while exact row conformance on all 5,220 carrier
 states supplies the executable bridge to the Python admission gate.  Off the
-carrier the mirror is not claimed row-identical: on a raw state with two
-same-key, same-bit frames and no head ticket, Python types `frame-conflict`
-while Lean takes `replay` or `replay-err`.
-The two RRI predicates also differ in phase detection: Lean's `recallView?`
-counts any same-key, same-bit frame as present, while `rri_direct.py` counts
-only the first-recall frame `R_g(i, b′, EA(F))`.
+carrier the mirror is not claimed row-identical in general; replay, like
+recall, types any same-key frame multiplicity as `frame-conflict`, as the
+register does.
 
 The build is:
 

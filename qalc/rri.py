@@ -12,20 +12,25 @@ from __future__ import annotations
 import argparse
 from collections import Counter, defaultdict, deque
 from collections.abc import Iterable
+from dataclasses import replace
 
 from certify import discover_total
 from conservation import terms_of
 from kernel import (
     Done,
+    FIRST_FRAME_EPOCH,
     FRAME,
     Run,
     alpha_keys_live,
     classify_arrival,
     init,
     is_gam,
+    recall_epoch,
+    rs_insert,
     step,
 )
 from lam_iam import App, Gate
+from rri_direct import recall_view, rri_facts
 from suite import CERTS, PROGRAMS
 from typecheck import fragment_check
 
@@ -65,25 +70,6 @@ def popped_keys(state: Run, cert) -> set[tuple]:
     return keys if selected is None else keys & set(selected)
 
 
-def recall_record(state: Run) -> tuple[tuple, bool, tuple]:
-    j = 0
-    while j < len(state.tape) and state.tape[j] == "•":
-        j += 1
-    alpha = state.tape[j]
-    frame = FRAME(alpha[1], alpha[2], alpha[3])
-    reduced_rs = tuple(entry for entry in state.rs if entry != frame)
-    projection = (
-        state.path,
-        state.d,
-        state.log,
-        state.tape,
-        state.vb,
-        reduced_rs,
-        state.ks,
-    )
-    return (alpha[1], alpha[2], alpha[3]), frame in state.rs, projection
-
-
 def canonical_suite() -> tuple[Counter, bool]:
     counts = Counter()
     for key in ("projected_collisions", "rider_fires"):
@@ -111,7 +97,7 @@ def canonical_suite() -> tuple[Counter, bool]:
                 elif rule == "replay":
                     counts["replays"] += 1
                 elif rule == "recall":
-                    _, present, projection = recall_record(source)
+                    _, present, projection = recall_view(source)
                     counts["recall_present" if present else "recall_absent"] += 1
                     if projection in projections and projections[projection] != present:
                         counts["projected_collisions"] += 1
@@ -124,6 +110,57 @@ def canonical_suite() -> tuple[Counter, bool]:
         counts["states"] += len(seen)
     summary("canonical", counts, complete="true")
     return counts, failed
+
+
+def epoch_controls() -> bool:
+    """Raw recall pairs the canonical suite cannot separate.
+
+    Every canonical source is alone in its projection bucket, so the suite
+    does not distinguish a first-epoch-only frame match from the any-epoch
+    view.  Clone `negative`'s reachable frame-absent recall source with a
+    matching frame of a replay-return epoch: the view must read it present at
+    the absent source's projection (one witness).  Two clones differing only
+    in that erased epoch share projection and phase and land on distinct
+    targets: no witness, since only target-to-projection is required.
+    """
+    term, cert = PROGRAMS["negative"], CERTS["negative"]
+    seen = set(init(term))
+    queue = deque(seen)
+    absent = None
+    while queue and absent is None:
+        source = queue.popleft()
+        edges = successors(term, source, cert)
+        if isinstance(source, Run) and edges and edges[0][2] == "recall":
+            absent = source
+        for *_, target in edges:
+            if target not in seen:
+                seen.add(target)
+                queue.append(target)
+    key, present, _ = recall_view(absent)
+
+    def framed(epoch):
+        return replace(absent, rs=rs_insert(absent.rs, FRAME(*key, epoch)))
+
+    def entries(states):
+        out = []
+        for state in states:
+            ((_sign, _denominator, rule, target),) = step(term, state, cert)
+            assert rule == "recall", rule
+            out.append((recall_view(state), target))
+        return out
+
+    replayed = framed(recall_epoch(FIRST_FRAME_EPOCH, FIRST_FRAME_EPOCH))
+    rider = framed(recall_epoch(FIRST_FRAME_EPOCH, None))
+    phase_pair = rri_facts(entries([absent, replayed]))
+    epoch_pair = entries([replayed, rider])
+    ok = (not present and phase_pair[:3] == (1, 0, 0)
+          and rri_facts(epoch_pair)[:3] == (0, 0, 0)
+          and epoch_pair[0][1] != epoch_pair[1][1])
+    print("epoch-controls: absent/replay-epoch witness=%d "
+          "epoch-only witnesses=%d distinct_targets=%s"
+          % (phase_pair[0], sum(rri_facts(epoch_pair)[:3]),
+             "yes" if epoch_pair[0][1] != epoch_pair[1][1] else "no"))
+    return ok
 
 
 def typed_programs(max_size: int) -> Iterable[tuple[int, object, object]]:
@@ -190,7 +227,7 @@ def typed_pipeline(max_size: int, cap: int) -> tuple[Counter, bool]:
                 elif rule == "replay":
                     counts["replays"] += 1
                 elif rule == "recall":
-                    _, present, _ = recall_record(source)
+                    _, present, _ = recall_view(source)
                     counts["recall_present" if present else "recall_absent"] += 1
             for *_, target in edges:
                 if target in seen:
@@ -295,7 +332,7 @@ def all_closed(max_size: int, cap: int) -> tuple[Counter, bool]:
                 source = queue.popleft()
                 edges = successors(term, source, None)
                 if isinstance(source, Run) and edges and edges[0][2] == "recall":
-                    key, present, projection = recall_record(source)
+                    key, present, projection = recall_view(source)
                     if projection in projections and projections[projection] != present:
                         counts["projected_collisions"] += 1
                         failed = True
@@ -357,6 +394,7 @@ def main() -> int:
 
     if args.mode == "canonical":
         _, failed = canonical_suite()
+        failed = not epoch_controls() or failed
     elif args.mode == "typed":
         _, failed = typed_pipeline(args.max_size, args.cap)
     elif args.mode == "overapprox":

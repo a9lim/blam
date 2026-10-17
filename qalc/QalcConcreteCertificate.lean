@@ -6,8 +6,9 @@ import RRIDirectCertificate
 
 An untrusted producer may list a candidate finite carrier.  `certificateBool`
 recomputes every qALC row with `QalcConcrete.step`, checks initial membership,
-terminal-covered closure, singleton recall dispatch and both projection/target
-factorizations, and checks RRI on every pair.  The theorems below lift a true
+terminal-covered closure, singleton recall dispatch, and on every pair both
+source-projection RRI and actual-target RRI (a common target forces a common
+erased projection and phase).  The theorems below lift a true
 Boolean result to inductive reachability.
 -/
 
@@ -341,12 +342,12 @@ def pairTargetFacts (term : Term) (certificate : Certificate)
     match uniqueRecallTarget? term certificate left,
         uniqueRecallTarget? term certificate right with
     | some leftTarget, some rightTarget =>
-        -- Both directions are checked: target equality iff erased-source
-        -- projection equality, and a common target cannot mix phases.
-        let sameTarget := eqBool leftTarget rightTarget
-        let sameProjection := eqBool (recallProjection left) (recallProjection right)
-        eqBool sameTarget sameProjection &&
-          (!sameTarget || eqBool (recallPhase left) (recallPhase right))
+        -- Exactly `RecallTargetRRIOn`: a common target forces a common
+        -- erased-source projection and phase.  The converse would demand
+        -- old-frame-epoch agreement, which the projection erases.
+        !eqBool leftTarget rightTarget ||
+          (eqBool (recallProjection left) (recallProjection right) &&
+            eqBool (recallPhase left) (recallPhase right))
     | _, _ => false
   else true
 
@@ -366,10 +367,8 @@ def recallTargetSummaries (term : Term) (certificate : Certificate)
 def pairTargetSummary (left right : RecallTargetSummary) : Bool :=
   if eqBool left.targetFingerprint right.targetFingerprint then
     if eqBool left.key right.key then
-      let sameTarget := eqBool left.target right.target
-      let sameProjection := eqBool left.projection right.projection
-      eqBool sameTarget sameProjection &&
-        (!sameTarget || eqBool left.phase right.phase)
+      !eqBool left.target right.target ||
+        (eqBool left.projection right.projection && eqBool left.phase right.phase)
     else true
   else true
 

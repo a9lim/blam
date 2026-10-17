@@ -54,7 +54,7 @@ src/qalc/
   compiler.rs    typed H/T/CNOT circuits and linear-SSA compiler/recognizer
   shadow.rs      native-CNOT transition table and custom predecessors
   gate2check.rs  compiler-sector structural checks and finite audit
-  admission.rs   finite Gate-1 carrier validation and direct RRI check
+  admission.rs   finite Gate-1 carrier validation and composed-carrier RRI
   wf.rs          the W0-W9 well-formedness subset used by admission
   semantics.rs   total sector selection and public semantic objects
 ```
