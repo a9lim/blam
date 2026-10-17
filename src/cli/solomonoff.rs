@@ -616,41 +616,73 @@ pub fn run(argv: &[String]) -> R<()> {
     for n in min_n..=max_n {
         let tn = Instant::now();
         let tasks = interleave_tasks(split_tasks(n, rayon::current_num_threads() * 64));
-        let a = tasks
+        // Two-phase, as in the census: phase A fuses generation with the
+        // ladder's cheap half; the ~0.3% survivors (which carry ~98% of
+        // the CPU: rung 2, the engine, the rescue) go through an atomic
+        // single-term queue in phase B.
+        let record =
+            |acc: &mut Acc, enc: u64, len: u8, o: &ladder::LadderOutcome, sink: &KeySink| match o
+                .verdict
+            {
+                Verdict::Halt { steps, .. } => acc.record_halt(enc, len, sink, steps, &o.tel),
+                Verdict::Diverge => {
+                    acc.diverge += 1;
+                    acc.diverge_mass += mass_of(len);
+                }
+                Verdict::Unknown(_) => acc.record_unknown(enc, len, &o.tel),
+            };
+        let (a, survivors) = tasks
             .par_iter()
             .map_init(
                 || (Pool::new(), Machine::new()),
                 |(pool, vm), task| {
                     let mut acc = Acc::default();
+                    let mut surv: Vec<(u64, u8)> = Vec::new();
                     let mut sink = KeySink::default();
                     run_task(task, &mut |enc, len| {
                         acc.total += 1;
                         pool.clear();
                         let root = pool.decode_u64(enc, len).expect("valid term");
-                        let o = ladder::adjudicate(&cfg, pool, vm, root, &mut sink);
-                        match o.verdict {
-                            // `steps`: Some(0) is a pre-scan normal form
-                            // (trivial self-computation, no m(x) mass),
-                            // None a rescue-less engine halt — genuinely
-                            // nontrivial, but charged as open on the
-                            // speed side because the canonical count is
-                            // unavailable.
-                            Verdict::Halt { steps, .. } => {
-                                acc.record_halt(enc, len, &sink, steps, &o.tel);
-                            }
-                            Verdict::Diverge => {
-                                acc.diverge += 1;
-                                acc.diverge_mass += mass_of(len);
-                            }
-                            Verdict::Unknown(_) => {
-                                acc.record_unknown(enc, len, &o.tel);
-                            }
+                        match ladder::adjudicate_fast(&cfg, pool, vm, root, &mut sink) {
+                            ladder::FastOutcome::Done(o) => record(&mut acc, enc, len, &o, &sink),
+                            ladder::FastOutcome::Survivor => surv.push((enc, len)),
                         }
                     });
-                    acc
+                    (acc, surv)
                 },
             )
-            .reduce(Acc::default, Acc::merge);
+            .reduce(
+                || (Acc::default(), Vec::new()),
+                |(a, mut s), (b, t)| {
+                    s.extend(t);
+                    (a.merge(b), s)
+                },
+            );
+        let b = {
+            let next = std::sync::atomic::AtomicUsize::new(0);
+            let workers = rayon::current_num_threads().min(survivors.len());
+            (0..workers)
+                .into_par_iter()
+                .map(|_| {
+                    let mut pool = Pool::new();
+                    let mut vm = Machine::new();
+                    let mut sink = KeySink::default();
+                    let mut acc = Acc::default();
+                    loop {
+                        let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        let Some(&(enc, len)) = survivors.get(i) else {
+                            break;
+                        };
+                        pool.clear();
+                        let root = pool.decode_u64(enc, len).expect("valid term");
+                        let o = ladder::adjudicate_slow(&cfg, &pool, &mut vm, root, &mut sink);
+                        record(&mut acc, enc, len, &o, &sink);
+                    }
+                    acc
+                })
+                .reduce(Acc::default, Acc::merge)
+        };
+        let a = a.merge(b);
         acc = acc.merge(a);
         eprintln!(
             "n={n}: cumulative {} terms, {} distinct nontrivial nfs ({:.1}s, {:.1}s total)",
