@@ -254,7 +254,10 @@ mod tests {
             let mut w2 = Vec::new();
             let b = decode(&mut pk, &mut w2, &mut TermBuilder);
             assert_eq!(a, b, "enc {enc:#x} len {len}");
-            assert_eq!(rest_a as u32, pk.left, "bits consumed: enc {enc:#x} len {len}");
+            assert_eq!(
+                rest_a as u32, pk.left,
+                "bits consumed: enc {enc:#x} len {len}"
+            );
         };
         for n in 4..=22 {
             for_each_closed(n, &mut |enc, len| {
