@@ -812,13 +812,7 @@ mod tests {
 
     /// Run both machines on one (term, β cap, transition cap) and demand
     /// identical results, fuel counters, and emitted bits.
-    fn agree(
-        vm: &mut Machine,
-        pool: &Pool,
-        root: u32,
-        limit: u64,
-        cap: u64,
-    ) -> Result<u64, OutOfFuel> {
+    fn agree(vm: &mut Machine, pool: &Pool, root: u32, limit: u64, cap: u64) {
         let mut a = StringSink::default();
         let got = vm.normalize_capped(pool, root, limit, cap, &mut a);
         let mut b = StringSink::default();
@@ -829,7 +823,6 @@ mod tests {
             "result/last_trans/last_steps at β {limit}, transitions {cap}"
         );
         assert_eq!(a.0, b.0, "emitted bits at β {limit}, transitions {cap}");
-        got
     }
 
     /// Hop compression is invisible: every closed term to 24 bits, under

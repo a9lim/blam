@@ -41,13 +41,14 @@
 //! in argument position is inert on both sides and travels through β
 //! opaquely.
 
-use crate::blc::reduction::beta;
-use crate::blc::{app, lam, Term};
+use crate::blc::reduction::beta_shared;
+use crate::blc::{lam, Term};
 use crate::classical::escalation::{normal_form, EngineCfg, LTerm, NoNf};
 use crate::classical::machine::{Machine, Pool, SizeSink};
 use crate::classical::oracle;
 use crate::quantum::sig;
 use std::collections::HashSet;
+use std::rc::Rc;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SkelVerdict {
@@ -148,24 +149,52 @@ enum Step {
 /// `out.len()` grows by exactly `Term::bit_size`'s contribution at every
 /// node), and the largest free index (hole-freeness). The loop used to
 /// walk the term three times and build a `String` besides.
-fn write_bits_max_free(t: &Term, depth: u32, out: &mut String) -> u32 {
+fn write_bits_max_free(t: &Term, depth: u32, out: &mut Vec<u8>) -> u32 {
     match t {
         Term::Var(n) => {
-            for _ in 0..*n {
-                out.push('1');
-            }
-            out.push('0');
+            out.resize(out.len() + *n as usize, b'1');
+            out.push(b'0');
             n.saturating_sub(depth)
         }
         Term::Lam(b) => {
-            out.push_str("00");
+            out.extend_from_slice(b"00");
             write_bits_max_free(b, depth + 1, out)
         }
         Term::App(f, a) => {
-            out.push_str("01");
+            out.extend_from_slice(b"01");
             let hf = write_bits_max_free(f, depth, out);
             hf.max(write_bits_max_free(a, depth, out))
         }
+    }
+}
+
+/// Word-at-a-time hasher for the recurrence set: the keys are long
+/// 0/1 strings, where SipHash costs ~1 ns/byte. Exactness is untouched —
+/// the set still compares full keys; only bucket placement changes.
+#[derive(Default)]
+struct WordHasher(u64);
+
+impl std::hash::Hasher for WordHasher {
+    fn write(&mut self, bytes: &[u8]) {
+        const K: u64 = 0x517c_c1b7_2722_0a95;
+        let mut chunks = bytes.chunks_exact(8);
+        for c in &mut chunks {
+            let w = u64::from_le_bytes(c.try_into().unwrap());
+            self.0 = (self.0.rotate_left(5) ^ w).wrapping_mul(K);
+        }
+        let rem = chunks.remainder();
+        if !rem.is_empty() {
+            let mut buf = [0u8; 8];
+            buf[..rem.len()].copy_from_slice(rem);
+            let w = u64::from_le_bytes(buf);
+            self.0 = (self.0.rotate_left(5) ^ w ^ ((rem.len() as u64) << 56)).wrapping_mul(K);
+        }
+    }
+    fn finish(&self) -> u64 {
+        let mut x = self.0;
+        x ^= x >> 32;
+        x = x.wrapping_mul(0x9E37_79B9_7F4A_7C15);
+        x ^ (x >> 29)
     }
 }
 
@@ -181,14 +210,14 @@ fn step(t: &Term, depth: u32) -> Step {
         },
         Term::App(f, a) => {
             match &**f {
-                Term::Lam(body) => return Step::Did(beta(body, a)),
+                Term::Lam(body) => return Step::Did(beta_shared(body, a)),
                 Term::Var(n) if *n > depth => return Step::Hole,
                 _ => {}
             }
             match step(f, depth) {
-                Step::Did(nf) => Step::Did(app(nf, (**a).clone())),
+                Step::Did(nf) => Step::Did(Term::App(Rc::new(nf), a.clone())),
                 Step::Nf => match step(a, depth) {
-                    Step::Did(na) => Step::Did(app((**f).clone(), na)),
+                    Step::Did(na) => Step::Did(Term::App(f.clone(), Rc::new(na))),
                     other => other,
                 },
                 Step::Hole => Step::Hole,
@@ -209,18 +238,19 @@ pub fn adjudicate(p: &Term, slots: u32, caps: &SkelCaps) -> Result<SkelVerdict, 
         return Err(OpenProgram { max_free });
     }
     let mut t = sig::with_holes(p, slots);
-    // The exact wire string is the trusted-proof recurrence key: `Loop` is
+    // The exact wire bits are the trusted-proof recurrence key: `Loop` is
     // only sound because two states that compare equal here ARE equal, so
-    // this stays a full `String` set and never becomes a hash.
-    let mut seen: HashSet<String> = HashSet::new();
+    // this stays a set of full keys and never becomes a set of hashes —
+    // the hasher only places buckets.
+    let mut seen: HashSet<Vec<u8>, std::hash::BuildHasherDefault<WordHasher>> = HashSet::default();
     let mut steps = 0u64;
     // Every read of `high_water` below is preceded by the `max` against the
     // current term's size in the same iteration, so it starts at zero
     // rather than costing an extra `bit_size` walk up front.
     let mut high_water = 0u64;
-    // Reused across iterations: the key is only cloned into `seen` on a
-    // miss, so a growing chain no longer re-grows a fresh buffer per step.
-    let mut bits = String::new();
+    // Reused across iterations: each step clones the key once, into
+    // `seen`, rather than growing a fresh buffer.
+    let mut bits: Vec<u8> = Vec::new();
     let cap = |reason, steps, high_water_bits| {
         Ok(SkelVerdict::CapOut(CapOut {
             reason,
@@ -238,13 +268,12 @@ pub fn adjudicate(p: &Term, slots: u32, caps: &SkelCaps) -> Result<SkelVerdict, 
         if nbits > caps.size_bits {
             return cap(CapReason::Size, steps, high_water);
         }
-        if seen.contains(bits.as_str()) {
+        if !seen.insert(bits.clone()) {
             return Ok(SkelVerdict::Loop { steps });
         }
         if steps >= caps.steps {
             return cap(CapReason::Steps, steps, high_water);
         }
-        seen.insert(bits.clone());
         match step(&t, 0) {
             Step::Did(nt) => {
                 t = nt;
@@ -403,8 +432,8 @@ pub fn adjudicate_with_transfer(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::blc::var;
     use crate::blc::wire::parse_all;
+    use crate::blc::{app, var};
 
     fn d() -> Term {
         lam(app(var(1), var(1)))
