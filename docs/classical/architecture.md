@@ -95,7 +95,11 @@ for differential tests, not exhaustive sweeps.
 ### Enumeration and fast normalization
 
 `src/blc/enumerate.rs` generates closed terms directly as `(u64, length)`
-pairs. Subtree tasks are bit-reversal-interleaved because expensive terms
+pairs. The enumeration splits into subtree tasks by exact term count — a
+task is expanded while it holds more than `⌈total / target⌉` terms, from a
+DP over the grammar's subtree sizes — so no prefix family (the `0000…`
+λ-tower held half of n=41 under a level-wise split) can outweigh a worker's
+share. Tasks are then bit-reversal-interleaved because expensive terms
 cluster by enumeration prefix; interleaving prevents long-tail worker
 starvation.
 
@@ -312,10 +316,10 @@ changes, and every consumer of those sorts or set-collects.
 `--checkpoint FILE` splits each size into K sequential groups (`--groups`,
 default 64) and appends each group's full accumulator to the file as it
 completes; rerunning the same command resumes after the last complete group.
-The format is `blamckpt v4`:
+The format is `blamckpt v5`:
 
 ```text
-blamckpt v4 <driver config ...> target=N groups=K
+blamckpt v5 <driver config ...> target=N groups=K
 G <n> <gi> <secs>
 <record body lines, driver-owned tags — G/E reserved>
 E <n> <gi>
@@ -330,7 +334,9 @@ tie-break at tied |nf|, so the reported champion does not depend on the
 partition.
 
 The header is the fence. It pins everything that can change what a group
-record *means*: the ladder budgets, the record-format version, the engine
+record *means*: the ladder budgets, the record-format version (which also
+pins the task-split algorithm, since a group is a slice of the split's task
+list by index), the engine
 tunables that change verdicts (work multiplier, probe fuel), and the SHA-256
 fingerprint of the *contents* of any seeded memo file. A mismatch refuses the
 resume loudly rather than merging two different measurements into one table

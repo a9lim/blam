@@ -182,7 +182,7 @@ the M5 Max; user time is the stable number, wall tracks ambient load.
 - `census --checkpoint FILE --groups K` gives kill-safe group-level resume
   (config-pinned header, torn tails discarded); `--memo-out` / `--memo-in`
   persist the λ-wrap and no-whnf memos across runs. The format is
-  `blamckpt v4` and the memo files use a shared tag-first codec: files written
+  `blamckpt v5` and the memo files use a shared tag-first codec: files written
   by any earlier format are invalid and must be regenerated. The checkpoint
   module is CLI-internal (`src/cli/ckpt.rs`), shared by `census`, `q census`,
   and `qalc census`; each driver owns the proof that its accumulator merges

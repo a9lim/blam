@@ -425,7 +425,7 @@ halt-rounding slack equals the number of inexact divisions (96 units at
 
 - The crate is 2.1.0: one `blam` binary over a `blc` substrate, the
   classical, quantum, and qALC pillars, and lab-gated research instruments.
-- Checkpoints are `blamckpt v4`, and memo files use the shared tag-first
+- Checkpoints are `blamckpt v5`, and memo files use the shared tag-first
   codec; older cache files are invalid. Nothing in `data/` uses either.
 - CI runs on pushes to `main` and pull requests into it, not on `dev`. It
   checks formatting, warning-free Clippy, rustdoc with warnings denied, the

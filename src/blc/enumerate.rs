@@ -62,9 +62,34 @@ pub struct GenTask {
 }
 
 /// Partition the size-n enumeration into at least `target` independent
-/// tasks (or as many as the tree allows).
+/// tasks (or as many as the tree allows), none holding more than
+/// `⌈total / target⌉` terms unless it is a single term.
 pub fn split_tasks(n: u32, target: usize) -> Vec<GenTask> {
     split_tasks_at(0, n, 0, 0, target)
+}
+
+/// Exact subtree sizes of the `go` grammar: `c[v][m]` is the number of
+/// terms of size exactly `m` with `v` enclosing binders, for `v ≤ max_v`
+/// and `m ≤ max_m`. A [`GenTask`] emits the product of its pending
+/// obligations' counts.
+fn subtree_counts(max_v: usize, max_m: usize) -> Vec<Vec<u128>> {
+    // Lam bodies raise `v` by one per two bits, so a table for binder
+    // depth up to max_v needs rows to max_v + max_m / 2.
+    let rows = max_v + max_m / 2 + 1;
+    let mut c = vec![vec![0u128; max_m + 1]; rows + 1];
+    for m in 2..=max_m {
+        for v in 0..rows {
+            let mut t = u128::from(m - 1 <= v);
+            if m >= 4 {
+                t += c[v + 1][m - 2];
+            }
+            for i in 2..=m.saturating_sub(4) {
+                t += c[v][i] * c[v][m - 2 - i];
+            }
+            c[v][m] = t;
+        }
+    }
+    c
 }
 
 /// `split_tasks` generalized to a seeded root: enumerate terms with `v`
@@ -72,6 +97,14 @@ pub fn split_tasks(n: u32, target: usize) -> Vec<GenTask> {
 /// bit prefix. The λ⁵-idiom sweeps seed (v=5, n−10) under the ten prefix
 /// bits of five abstractions; emitted (enc, len) pairs are then complete
 /// closed programs, directly runnable by the packed-term engines.
+///
+/// The split is by exact term count, not by tree level: a task is
+/// expanded (in enumeration order, so the result is still prefix-ordered
+/// for [`interleave_tasks`]) exactly when it holds more than
+/// `⌈total / target⌉` terms. The level-wise split it replaces stopped at
+/// the first level with `target` tasks, and the λ-tower prefix `0000…`
+/// kept up to half a size in one task (52% of n=41 at 18 threads), which
+/// no reordering of the list can split. Zero-term tasks are dropped.
 ///
 /// # Panics
 ///
@@ -82,59 +115,66 @@ pub fn split_tasks_at(v: u32, n: u32, prefix: u64, prefix_len: u8, target: usize
         n + prefix_len as u32 <= 63,
         "u64-packed enumeration caps at 63 bits: {n} body + {prefix_len} prefix"
     );
-    let mut cur = vec![GenTask {
+    let c = subtree_counts(v as usize, n as usize);
+    let weight = |t: &GenTask| -> u128 {
+        t.pending
+            .iter()
+            .map(|&(v, m)| c[v as usize][m as usize])
+            .product()
+    };
+    let root = GenTask {
         pending: vec![(v, n)],
         acc: prefix,
         len: prefix_len,
-    }];
-    while cur.len() < target {
-        let mut next = Vec::new();
-        let mut expanded = false;
-        for t in cur.drain(..) {
-            let mut pending = t.pending;
-            let Some((v, n)) = pending.pop() else {
-                next.push(GenTask {
-                    pending,
-                    acc: t.acc,
-                    len: t.len,
-                });
-                continue;
-            };
-            expanded = true;
-            if n >= 2 && n - 1 <= v {
-                let bits = ((1u64 << (n - 1)) - 1) << 1;
-                next.push(GenTask {
-                    pending: pending.clone(),
-                    acc: t.acc << n | bits,
-                    len: t.len + n as u8,
-                });
-            }
-            if n >= 4 {
-                let mut p = pending.clone();
-                p.push((v + 1, n - 2));
-                next.push(GenTask {
-                    pending: p,
-                    acc: t.acc << 2,
-                    len: t.len + 2,
-                });
-            }
-            for i in 2..=n.saturating_sub(4) {
-                let mut p = pending.clone();
-                p.push((v, n - 2 - i));
-                p.push((v, i));
-                next.push(GenTask {
-                    pending: p,
-                    acc: t.acc << 2 | 1,
-                    len: t.len + 2,
-                });
-            }
+    };
+    let total = weight(&root);
+    let cap = total.div_ceil(target.max(1) as u128).max(1);
+    let mut out = Vec::new();
+    // Explicit DFS: children are pushed in reverse so they pop, and are
+    // emitted, in `go`'s order (Var, Lam, App by ascending split).
+    let mut work = vec![root];
+    while let Some(t) = work.pop() {
+        let w = weight(&t);
+        if w == 0 {
+            continue;
         }
-        cur = next;
-        if !expanded {
-            break;
+        if w <= cap || t.pending.is_empty() {
+            out.push(t);
+            continue;
         }
+        let mut pending = t.pending;
+        let (v, n) = pending.pop().expect("non-empty");
+        let mut children = Vec::new();
+        if n >= 2 && n - 1 <= v {
+            let bits = ((1u64 << (n - 1)) - 1) << 1;
+            children.push(GenTask {
+                pending: pending.clone(),
+                acc: t.acc << n | bits,
+                len: t.len + n as u8,
+            });
+        }
+        if n >= 4 {
+            let mut p = pending.clone();
+            p.push((v + 1, n - 2));
+            children.push(GenTask {
+                pending: p,
+                acc: t.acc << 2,
+                len: t.len + 2,
+            });
+        }
+        for i in 2..=n.saturating_sub(4) {
+            let mut p = pending.clone();
+            p.push((v, n - 2 - i));
+            p.push((v, i));
+            children.push(GenTask {
+                pending: p,
+                acc: t.acc << 2 | 1,
+                len: t.len + 2,
+            });
+        }
+        work.extend(children.into_iter().rev());
     }
-    cur
+    out
 }
 
 /// Bit-reversal interleave of a task list. Expensive terms cluster by
@@ -224,6 +264,51 @@ mod tests {
                     run_task(&t, &mut |e, l| via.push((e, l)));
                 }
                 via.sort_unstable();
+                assert_eq!(via, direct, "n={n} target={target}");
+            }
+        }
+    }
+
+    /// The weights the split balances on are exact: every task's
+    /// emitted count is the product of its obligations' table entries,
+    /// and no task over the cap survives unless it is one term.
+    #[test]
+    fn split_tasks_balance_by_exact_count() {
+        for n in [17u32, 22, 26] {
+            let total = count_closed(n) as usize;
+            for target in [1usize, 7, 64, 1000] {
+                let tasks = split_tasks(n, target);
+                assert!(tasks.len() >= target.min(total), "n={n} target={target}");
+                let cap = total.div_ceil(target);
+                let mut sum = 0usize;
+                for t in &tasks {
+                    let mut k = 0usize;
+                    run_task(t, &mut |_, _| k += 1);
+                    assert!(k > 0, "zero-term task survived");
+                    assert!(
+                        k <= cap || t.pending.is_empty(),
+                        "n={n} target={target}: {k} > {cap}"
+                    );
+                    sum += k;
+                }
+                assert_eq!(sum, total);
+            }
+        }
+    }
+
+    /// Tasks come out in enumeration order — the order
+    /// [`interleave_tasks`] scatters — so concatenating them reproduces
+    /// the direct enumeration exactly, not just as a set.
+    #[test]
+    fn split_tasks_preserve_enumeration_order() {
+        for n in [14u32, 21] {
+            let mut direct = Vec::new();
+            for_each_closed(n, &mut |e, l| direct.push((e, l)));
+            for target in [3usize, 50, 400] {
+                let mut via = Vec::new();
+                for t in split_tasks(n, target) {
+                    run_task(&t, &mut |e, l| via.push((e, l)));
+                }
                 assert_eq!(via, direct, "n={n} target={target}");
             }
         }
