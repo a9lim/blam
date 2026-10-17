@@ -1,13 +1,12 @@
-//! The census's two-lane size pipeline, end to end through the binary.
+//! The census's overlapped sizes, end to end through the binary.
 //!
-//! Without `--checkpoint` the census overlaps even and odd sizes (each
-//! size needs only size n−2's λ-wrap memo and the no-whnf facts of sizes
-//! ≤ n−6); with one it runs sizes strictly in order. Both must print the
-//! same table, and the pipeline must finish whichever lane runs out of
-//! sizes first — a lane that stopped its sibling on a normal exit once
-//! hung the reporter waiting for a size nobody would compute. So every
-//! run here is under a watchdog, and the ranges cover both parities of
-//! endpoint, a two-size range, and a single thread.
+//! Without `--checkpoint` the census keeps two sizes in flight (size n
+//! needs only size n−2's λ-wrap memo and the no-whnf facts of sizes
+//! ≤ n−6, so n+1 starts while n finishes); with one it runs sizes
+//! strictly in order. Both must print the same table. Every run here is
+//! under a watchdog, so a scheduling bug fails instead of hanging, and the
+//! ranges cover both parities of endpoint, a two-size range, and a single
+//! thread.
 #![cfg(feature = "cli")]
 
 use std::process::{Command, Stdio};
@@ -79,7 +78,7 @@ fn pipelined_sizes_match_the_sequential_sweep() {
         let ck = ck.to_str().expect("utf-8 temp path");
         let sequential = census(&[range[0], range[1], "--checkpoint", ck], limit);
         for threads in ["0", "1"] {
-            let lanes = census(&[range[0], range[1], "--threads", threads], limit);
+            let overlapped = census(&[range[0], range[1], "--threads", threads], limit);
             // The checkpoint header line is the one legitimate difference.
             let strip = |s: &str| {
                 s.lines()
@@ -88,7 +87,7 @@ fn pipelined_sizes_match_the_sequential_sweep() {
                     .join("\n")
             };
             assert_eq!(
-                strip(&lanes),
+                strip(&overlapped),
                 strip(&sequential),
                 "census {range:?} --threads {threads}"
             );

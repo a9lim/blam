@@ -59,7 +59,7 @@ use blam::classical::machine::{Machine, Pool, SizeSink};
 use blam::classical::OutOfFuel;
 use rayon::prelude::*;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, Condvar, Mutex, MutexGuard};
+use std::sync::Arc;
 use std::time::Instant;
 
 const USAGE: &str = "\
@@ -462,7 +462,7 @@ struct Memos<'a> {
     /// No-whnf facts indexed by the head's size. A head is the function
     /// part of a closed application, whose closed argument has at least 4
     /// bits, so an n-bit term only ever looks up sizes ≤ n − 6 — which is
-    /// what lets sizes n and n+1 run side by side (see `run_lanes`).
+    /// what lets sizes n and n+1 run side by side (see `run_overlapped`).
     no_whnf: &'a [Arc<NoWhnfSet>],
     any_whnf: bool,
 }
@@ -799,145 +799,59 @@ fn hand_off(
     (out, set)
 }
 
-/// What the two lanes and the reporter share.
-struct Lanes {
-    st: Mutex<LaneState>,
-    cv: Condvar,
-}
-
-struct LaneState {
-    whnf: Vec<Arc<NoWhnfSet>>,
-    done: [bool; 64],
-    outs: Vec<Option<SizeOut>>,
-    /// Stop at the next size boundary (the reporter is gone or a lane
-    /// died).
-    stop: bool,
-    /// A lane panicked; the reporter must not wait for its sizes.
-    failed: bool,
-}
-
-impl Lanes {
-    /// The state, poisoned or not: every writer leaves it consistent
-    /// between statements, and the flags below exist for the panic case.
-    fn lock(&self) -> MutexGuard<'_, LaneState> {
-        self.st.lock().unwrap_or_else(|e| e.into_inner())
-    }
-}
-
-/// Dropped by a thread on its way out, so nobody waits on a thread that
-/// is gone: the reporter (`always`) stops the lanes however it leaves —
-/// an error or a failed `--verify` mid-sweep — while a lane signals only
-/// when it panics. A lane that simply finished its sizes must NOT stop
-/// the other lane, which may still owe the reporter its last size.
-struct StopOnDrop<'a> {
-    lanes: &'a Lanes,
-    always: bool,
-}
-
-impl Drop for StopOnDrop<'_> {
-    fn drop(&mut self) {
-        let panicking = std::thread::panicking();
-        if self.always || panicking {
-            let mut st = self.lanes.lock();
-            st.stop = true;
-            st.failed |= panicking;
-            self.lanes.cv.notify_all();
-        }
-    }
-}
-
-/// Census `lo..=hi` with sizes overlapped two at a time.
+/// Census `lo..=hi` with two sizes in flight.
 ///
 /// Size n depends on exactly two earlier results: the λ-wrap memo of
-/// size n−2 and the no-whnf facts of sizes ≤ n−6 (a head of an n-bit
-/// application has at most n−6 bits). So the even and odd sizes run as
-/// two lanes, each sequential within itself, and a lane waits only for
-/// the other lane's sizes ≤ n−6 — which it has almost always finished.
-/// A size's slow phase-B tail (one multi-second escalation or rescue)
-/// then overlaps the next size's work instead of idling every other
-/// core. Every size sees exactly the facts the sequential sweep would
-/// have let it use, so every row is identical; the reporter prints in
-/// size order from the calling thread.
-///
-/// Lanes are plain threads feeding the global rayon pool, never pool
-/// workers blocked on a condvar, so `--threads 1` cannot deadlock.
-fn run_lanes(
+/// size n−2 and the no-whnf facts of sizes ≤ n−6 (a head of a closed
+/// n-bit application has at most n−6 bits). So size n+1 can start as
+/// soon as size n−1 is final — while size n is still running — and a
+/// size's slow phase-B tail (one multi-second escalation or rescue)
+/// overlaps the next size's work instead of idling every other core.
+/// The loop keeps one size running ahead: it starts n+1, then waits for
+/// and reports n. Every size sees exactly the facts the sequential sweep
+/// would have let it use, so every row is identical, and rows print in
+/// size order. Sizes run on plain scoped threads feeding the global
+/// rayon pool, never on pool workers blocked waiting for each other, so
+/// `--threads 1` cannot deadlock; a panic re-raises at the join.
+fn run_overlapped(
     cfg: &Cfg,
     (lo, hi): (u32, u32),
     target: usize,
-    wraps: [MemoMap; 2],
-    whnf: Vec<Arc<NoWhnfSet>>,
+    wraps: &mut [MemoMap; 2],
+    whnf: &mut [Arc<NoWhnfSet>],
     want_memo_recs: bool,
     report: &mut dyn FnMut(u32, SizeOut) -> R<()>,
 ) -> R<()> {
-    let lanes = Lanes {
-        st: Mutex::new(LaneState {
-            whnf,
-            done: [false; 64],
-            outs: (0..64).map(|_| None).collect(),
-            stop: false,
-            failed: false,
-        }),
-        cv: Condvar::new(),
-    };
     std::thread::scope(|scope| {
-        for (parity, mut wrap) in (0u32..).zip(wraps) {
-            let first = if lo % 2 == parity { lo } else { lo + 1 };
-            if first > hi {
-                continue;
-            }
-            let lanes = &lanes;
+        // Hand size n its inputs: its parity's λ-wrap map (size n−2's,
+        // final because n−2 was reported) and the fact sets as of now
+        // (final through n−2, all it can use).
+        let start = |n: u32, wraps: &mut [MemoMap; 2], whnf: &[Arc<NoWhnfSet>]| {
+            let mut wrap = std::mem::take(&mut wraps[(n % 2) as usize]);
+            let facts = whnf.to_vec();
             std::thread::Builder::new()
-                .name(format!("census-lane-{parity}"))
+                .name(format!("census-{n}"))
                 .spawn_scoped(scope, move || {
-                    let _guard = StopOnDrop {
-                        lanes,
-                        always: false,
-                    };
-                    for n in (first..=hi).step_by(2) {
-                        let facts = {
-                            let mut st = lanes.lock();
-                            while !st.stop
-                                && !(lo..=n.saturating_sub(6)).all(|m| st.done[m as usize])
-                            {
-                                st = lanes.cv.wait(st).unwrap_or_else(|e| e.into_inner());
-                            }
-                            if st.stop {
-                                return;
-                            }
-                            st.whnf.clone()
-                        };
-                        let (stats, secs) = run_size(cfg, &Memos::new(&wrap, &facts), n, target);
-                        let (out, set) =
-                            hand_off(stats, secs, &mut wrap, &facts[n as usize], want_memo_recs);
-                        let mut st = lanes.lock();
-                        st.whnf[n as usize] = Arc::new(set);
-                        st.done[n as usize] = true;
-                        st.outs[n as usize] = Some(out);
-                        lanes.cv.notify_all();
-                    }
+                    let (stats, secs) = run_size(cfg, &Memos::new(&wrap, &facts), n, target);
+                    let (out, set) =
+                        hand_off(stats, secs, &mut wrap, &facts[n as usize], want_memo_recs);
+                    (out, set, wrap)
                 })
-                .expect("spawn a census lane");
-        }
-        let _guard = StopOnDrop {
-            lanes: &lanes,
-            always: true,
+                .expect("spawn a census size")
         };
+        let mut running = start(lo, wraps, whnf);
         for n in lo..=hi {
-            let out = {
-                let mut st = lanes.lock();
-                loop {
-                    if let Some(out) = st.outs[n as usize].take() {
-                        break out;
-                    }
-                    if st.failed {
-                        // A lane panicked; leaving the scope re-raises it.
-                        return Ok(());
-                    }
-                    st = lanes.cv.wait(st).unwrap_or_else(|e| e.into_inner());
-                }
-            };
+            let next = (n < hi).then(|| start(n + 1, wraps, whnf));
+            let (out, set, wrap) = running
+                .join()
+                .unwrap_or_else(|panic| std::panic::resume_unwind(panic));
+            wraps[(n % 2) as usize] = wrap;
+            whnf[n as usize] = Arc::new(set);
             report(n, out)?;
+            match next {
+                Some(h) => running = h,
+                None => break,
+            }
         }
         Ok(())
     })
@@ -1330,12 +1244,12 @@ pub fn run(argv: &[String]) -> R<()> {
             report(n, out)?;
         }
     } else {
-        run_lanes(
+        run_overlapped(
             &cfg,
             (min_n, max_n),
             auto_target,
-            memo_by_parity,
-            whnf_by_size,
+            &mut memo_by_parity,
+            &mut whnf_by_size,
             want_memo_recs,
             &mut report,
         )?;
