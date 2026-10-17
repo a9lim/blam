@@ -267,8 +267,9 @@ pins.
 - The census's 1,000-state admission preflight is one-sided: success is a
   complete checked admission, but failure is only a scheduling signal and
   must retry the canonical 300,000-state selector. Retries run in a separate
-  pool (`--retry-threads`, auto-capped at eight); never turn preflight
-  failure into a conservative verdict. Selection/evolution phase timings are
+  pool (`--retry-threads`, default every thread), queued longest-probe-first
+  behind every size's probe phase; never turn preflight failure into a
+  conservative verdict. Selection/evolution phase timings are
   stderr-only and deliberately absent from deterministic reports and
   checkpoints.
 - The Python/Lean reference, batteries, proof records, and fixture exporters

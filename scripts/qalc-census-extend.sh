@@ -19,7 +19,7 @@
 # Scratch and checkpoints live under tmp/qalc-census-extend/.  The generated
 # summary is tmp/qalc-census-extend/convergence.txt.  Set QALC_INSTALL=1 to
 # install that summary as data/qalc/census_convergence.txt.
-# QALC_THREADS and QALC_RETRY_THREADS default to 18 and 8 respectively.
+# QALC_THREADS defaults to 18 and QALC_RETRY_THREADS to QALC_THREADS.
 set -eu
 
 cd "$(dirname "$0")/.."
@@ -28,7 +28,7 @@ MIN=${1:-28}
 MAX=${2:-60}
 MINUTES=${3:-15}
 THREADS=${QALC_THREADS:-18}
-RETRY_THREADS=${QALC_RETRY_THREADS:-8}
+RETRY_THREADS=${QALC_RETRY_THREADS:-$THREADS}
 OUT=tmp/qalc-census-extend
 CKPT_GROUPS=64
 SUPPORT=100000
