@@ -329,6 +329,10 @@ pins.
   n=37.
 - This is a9's daily driver. Leave RAM headroom, kill strays when done, and
   check `ps aux | grep blam` before declaring the machine clean.
+- Never time a frontier term with `blam normalize` at a large `--beta`: its
+  sink materializes the normal form, and a readback-heavy term's grows without
+  bound (one 10⁷-β run reached 95 GB). Time engines through a counting sink
+  (`SizeSink`, as the ladder does) or `blam adjudicate`.
 
 ## Collaboration
 
