@@ -79,8 +79,8 @@ jobs:
   test:
     # --release is the repo's own verification bar (AGENTS.md): the cert
     # battery pushes 196,848 provable halters through the sweep ladder and
-    # is built for release speed. tromp_vectors inlines its vectors; the
-    # ref/AIT checkout is for the uni.rs parity step (contrib/ait-uni).
+    # is built for release speed. tromp_vectors inlines its vectors, so the
+    # suite needs no ref/AIT checkout.
     strategy:
       fail-fast: false
       matrix:
@@ -88,8 +88,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          submodules: true
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       # --all-features so the `lab` surface (research instruments, the
@@ -100,8 +98,6 @@ jobs:
       - run: cargo test --release
       # The engine must also build with im-rc alone.
       - run: cargo test --release --no-default-features
-      - name: uni.rs parity (byte-identical vs uni.py on Tromp's corpus)
-        run: bash contrib/ait-uni/verify.sh
 
   census-spot-check:
     # The standing regression guarantee: halt counts are bit-identical to
@@ -116,8 +112,8 @@ jobs:
       - run: bash scripts/spot-check.sh 4 32
 
   lean:
-    # Kernel-check all 305 divergence certificates (zero sorries, no
-    # mathlib; ~2 s once the pinned toolchain is cached).
+    # Kernel-check both certificate ledgers and their exact wire identities;
+    # verify that generated exclusions and exact probability trims are current.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -129,8 +125,12 @@ jobs:
           key: lean-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain', 'lean/lake-manifest.json') }}
       - run: curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
       - run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - run: lake build Certs
+      - run: python3 tools/certificates/bb35_large.py --check
+      - run: lake build Certs BusyBeaver
         working-directory: lean
+      - run: python3 tools/certificates/bb.py --check
+      - run: python3 tools/certificates/bounds.py | diff - data/classical/certificate_bounds.txt
+      - run: python3 tools/omega/test_accounting.py
 
   fork-additive:
     # The ref/AIT submodule is the a9lim/AIT fork: upstream tromp/AIT plus

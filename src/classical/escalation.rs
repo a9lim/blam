@@ -61,7 +61,7 @@ pub enum LTerm {
 }
 
 /// A λ node. Fields are private: the body is reachable only through the
-/// engine's own traversals and [`emit_bits`], so no caller can build an
+/// engine's own traversals and its bit emitter, so no caller can build an
 /// `LTerm` whose cached (private) `Meta` disagrees with its shape.
 #[derive(Debug)]
 pub struct LamN {
@@ -206,7 +206,7 @@ impl LTerm {
 ///
 /// Panics on ⊥: every call site holds either a normal form or a closed
 /// probe subject, both ⊥-free by construction.
-pub fn emit_bits<S: crate::classical::machine::Sink>(t: &LTerm, sink: &mut S) {
+pub(crate) fn emit_bits<S: crate::classical::machine::Sink>(t: &LTerm, sink: &mut S) {
     match t {
         Var(n) => sink.var(*n),
         Lam(x) => {
@@ -263,7 +263,7 @@ fn charge(n: u64) {
     spend_work_n(i64::try_from(n).unwrap_or(i64::MAX));
 }
 
-pub fn lam(t: LTerm) -> LTerm {
+pub(crate) fn lam(t: LTerm) -> LTerm {
     spend_work();
     let (l, a) = t.counts();
     let m = Meta {
@@ -277,7 +277,7 @@ pub fn lam(t: LTerm) -> LTerm {
     Lam(Rc::new(LamN { b: t, m }))
 }
 
-pub fn app(f: LTerm, a: LTerm) -> LTerm {
+pub(crate) fn app(f: LTerm, a: LTerm) -> LTerm {
     spend_work();
     let (fl, fa) = f.counts();
     let (al, aa) = a.counts();
@@ -736,10 +736,34 @@ fn redloop(run: &Run, t: &LTerm) -> bool {
     }
 }
 
+// `LTerm::hash` writes one already-avalanched cached u64. Feeding that value
+// through SipHash again only spends cycles; this hasher preserves the cached
+// value as the bucket hash. History iteration order is never observed.
+#[derive(Default)]
+struct CachedHashHasher(u64);
+
+impl std::hash::Hasher for CachedHashHasher {
+    fn finish(&self) -> u64 {
+        self.0
+    }
+
+    fn write(&mut self, bytes: &[u8]) {
+        for &byte in bytes {
+            self.0 = mix(self.0 ^ u64::from(byte));
+        }
+    }
+
+    fn write_u64(&mut self, value: u64) {
+        self.0 = value;
+    }
+}
+
+type CachedHashBuild = std::hash::BuildHasherDefault<CachedHashHasher>;
+
 // Persistent set with O(1) clone — the same structural sharing BB.lhs gets
 // from Data.Set; a std HashSet clone at every history fork is quadratic on
 // long escalation runs. Keys hash O(1) via the cached structural hash.
-type Hist = im_rc::HashSet<LTerm>;
+type Hist = im_rc::HashSet<LTerm, CachedHashBuild>;
 
 /// `spine`: this call is still the root term's own head-reduction
 /// demand — carried through head descents and β-contracta, dropped on
@@ -765,7 +789,7 @@ fn bb_nf(
             let sub_seen = if weak {
                 seen
             } else {
-                empty = Hist::new();
+                empty = Hist::default();
                 &empty
             };
             let a = bb_nf(run, true, f, sub_seen, cap, &tn.f, spine)?;
@@ -826,7 +850,7 @@ fn run_nf(oracle: bool, cfg: EngineCfg, cap_bits: i64, t: &LTerm) -> Result<LTer
     fn nf0(run: &Run, cap: &mut i64, t: &LTerm, root: bool) -> Result<LTerm, NoNf> {
         match t {
             Lam(x) => Ok(lam(nf0(run, cap, &x.b, false)?)),
-            _ => bb_nf(run, false, 0, &Hist::new(), cap, t, root),
+            _ => bb_nf(run, false, 0, &Hist::default(), cap, t, root),
         }
     }
     // Restores on the way out, panic included.

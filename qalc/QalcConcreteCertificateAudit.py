@@ -8,11 +8,12 @@ from dataclasses import replace
 from pathlib import Path
 
 import certify
-from kernel import FRAME, Run, init, step
+from kernel import (FIRST_FRAME_EPOCH, FRAME, FRESH_EPOCH, Run, init,
+                    recall_epoch, rs_insert, step)
 import suite
 
-from QalcConcreteExport import (carrier_and_rows, lean_certificate, lean_run,
-                                lean_state, lean_term)
+from QalcConcreteExport import (carrier_and_rows, lean_certificate,
+                                lean_epoch, lean_run, lean_state, lean_term)
 
 
 def raw_recall_pair(term, cert):
@@ -26,14 +27,31 @@ def raw_recall_pair(term, cert):
             while source.tape[j] == "•":
                 j += 1
             alpha = source.tape[j]
-            frame = FRAME(alpha[1], alpha[2], alpha[3])
-            if frame not in source.rs:
+            if not any(frame[1:3] == alpha[1:3] for frame in source.rs):
+                frame = FRAME(alpha[1], alpha[2], alpha[3])
                 return source, replace(source, rs=source.rs + (frame,))
         for _sign, _denominator, _rule, target in rows:
             if isinstance(target, Run) and target not in seen:
                 seen.add(target)
                 todo.append(target)
     raise AssertionError("negative raw recall pair disappeared")
+
+
+def with_matching_frame(source, epoch):
+    j = 0
+    while source.tape[j] == "•":
+        j += 1
+    alpha = source.tape[j]
+    frame = FRAME(alpha[1], alpha[2], alpha[3], epoch)
+    return replace(source, rs=rs_insert(source.rs, frame))
+
+
+# Distinct epochs with one affine hash: hashEpoch is linear in its children,
+# so both reduce to 438 P + 107 + 4 C (P, C the hashMix constants).
+HASH_LEFT_EPOCH = recall_epoch(recall_epoch(FRESH_EPOCH, FIRST_FRAME_EPOCH),
+                               None)
+HASH_RIGHT_EPOCH = recall_epoch(FRESH_EPOCH,
+                                recall_epoch(FIRST_FRAME_EPOCH, None))
 
 
 def h_reconvergence(term, cert):
@@ -54,6 +72,10 @@ def main():
     negative = suite.PROGRAMS["negative"]
     negative_cert = certify.discover_total(negative)
     bare, framed = raw_recall_pair(negative, negative_cert)
+    replayed = with_matching_frame(
+        bare, recall_epoch(FIRST_FRAME_EPOCH, FIRST_FRAME_EPOCH))
+    hash_left = with_matching_frame(bare, HASH_LEFT_EPOCH)
+    hash_right = with_matching_frame(bare, HASH_RIGHT_EPOCH)
 
     qprime = suite.PROGRAMS["qprime"]
     qprime_cert = certify.discover_total(qprime)
@@ -77,6 +99,40 @@ def framed : State := {lean_state(framed)}
 theorem raw_recall_targets_disjoint :
     (step negativeTerm bare negativeCert).map (·.target) !=
       (step negativeTerm framed negativeCert).map (·.target) := by
+  decide +kernel
+
+-- The recall view matches a frame of any epoch: a replay-return frame is
+-- present at the frame-absent source's projection, an RRI phase witness.
+def replayed : State := {lean_state(replayed)}
+
+theorem replay_epoch_frame_is_present :
+    recallPhase replayed = true ∧
+    eqBool (recallProjection replayed) (recallProjection bare) = true ∧
+    pairRRI negativeTerm negativeCert bare replayed = false := by
+  decide +kernel
+
+-- Two epochs with one hash give equal target fingerprints, engaging the
+-- summary guard.  The sources differ only in the erased epoch, so they share
+-- projection and phase but land apart; the target checker accepts exactly
+-- the stated one-way property rather than a hash-dependent converse.
+def hashLeftEpoch : Epoch := {lean_epoch(HASH_LEFT_EPOCH)}
+def hashRightEpoch : Epoch := {lean_epoch(HASH_RIGHT_EPOCH)}
+def hashLeft : State := {lean_state(hash_left)}
+def hashRight : State := {lean_state(hash_right)}
+
+theorem hash_equal_epochs_check_exactly :
+    hashLeftEpoch != hashRightEpoch ∧
+    hashEpoch hashLeftEpoch = hashEpoch hashRightEpoch ∧
+    eqBool (uniqueRecallTarget? negativeTerm negativeCert hashLeft)
+      (uniqueRecallTarget? negativeTerm negativeCert hashRight) = false ∧
+    eqBool ((recallTargetSummary? negativeTerm negativeCert hashLeft).map
+        (·.targetFingerprint))
+      ((recallTargetSummary? negativeTerm negativeCert hashRight).map
+        (·.targetFingerprint)) = true ∧
+    pairTargetFacts negativeTerm negativeCert hashLeft hashRight = true ∧
+    summariesTargetFacts
+      (recallTargetSummaries negativeTerm negativeCert [hashLeft, hashRight])
+      = true := by
   decide +kernel
 
 -- A finite prefix is not a certificate: closure rejects the initial singleton.

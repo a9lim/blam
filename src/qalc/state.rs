@@ -22,6 +22,7 @@
 use std::sync::Arc;
 
 use super::mark::{Epoch, Frame, GateTag, KsHead, LogEntry, Lp, TapeEntry};
+use super::shared::Shared;
 use super::term::{GateName, Path};
 
 /// Token direction: descending into the term or ascending out of it.
@@ -41,7 +42,8 @@ pub struct Vb {
 
 /// A running kernel token: `(pos, d, log, tape, VB, RS, KS)`. RS is
 /// canonically sorted (`mark::frame_repr` order — order-free identity);
-/// KS is inert append-only history, newest head first.
+/// KS is inert append-only history, newest head first. RS and KS change
+/// only at gate rows, so they are [`Shared`] across the steps between.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct RunCore {
     pub path: Path,
@@ -49,8 +51,8 @@ pub struct RunCore {
     pub log: Vec<LogEntry>,
     pub tape: Vec<TapeEntry>,
     pub vb: Option<Vb>,
-    pub rs: Vec<Frame>,
-    pub ks: Vec<KsHead>,
+    pub rs: Shared<Vec<Frame>>,
+    pub ks: Shared<Vec<KsHead>>,
 }
 
 /// Output sector: the kernel alphabet plus the absorbing error sector.
@@ -82,8 +84,8 @@ pub enum Residue {
     Root {
         log: Vec<LogEntry>,
         tape: Vec<TapeEntry>,
-        rs: Vec<Frame>,
-        ks: Vec<KsHead>,
+        rs: Shared<Vec<Frame>>,
+        ks: Shared<Vec<KsHead>>,
     },
 }
 
@@ -195,27 +197,30 @@ pub enum TerminalCarrier {
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct TerminalGarbage {
     pub carrier: Option<TerminalCarrier>,
-    pub frames: Vec<Frame>,
-    pub storage: Vec<KsHead>,
-    pub binders: Vec<BinderMark>,
-    pub residues: Vec<ScopeResidue>,
+    pub frames: Shared<Vec<Frame>>,
+    pub storage: Shared<Vec<KsHead>>,
+    pub binders: Shared<Vec<BinderMark>>,
+    pub residues: Shared<Vec<ScopeResidue>>,
 }
 
-/// The output zipper: the only live state beyond the token.
+/// The output zipper: the only live state beyond the token. The binder
+/// and residue registers change only at readback rows, so they are
+/// [`Shared`] across every state that keeps them.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Zipper {
     pub tree: Nf,
     pub cursor: Option<Path>,
-    pub binders: Vec<BinderMark>,
-    pub residues: Vec<ScopeResidue>,
+    pub binders: Shared<Vec<BinderMark>>,
+    pub residues: Shared<Vec<ScopeResidue>>,
 }
 
 /// A running composed state: kernel token (BA tape alphabet) plus the
-/// output zipper.
+/// output zipper. Every kernel row keeps the zipper, so it is [`Shared`]:
+/// a run of kernel steps stores one zipper, and hashes it once.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct NfRun {
     pub token: RunCore,
-    pub zipper: Zipper,
+    pub zipper: Shared<Zipper>,
 }
 
 /// A composed error kind. `Typed` is `("error", k)` — a kernel kind or
@@ -234,17 +239,20 @@ pub enum ErrorKind {
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum ErrorGarbage {
     /// `_error` without residue: the `(token, zipper)` pair.
-    Composed { token: RunCore, zipper: Zipper },
+    Composed {
+        token: RunCore,
+        zipper: Shared<Zipper>,
+    },
     /// A kernel `RunDone` wrap: the `(token, zipper, residue)` triple.
     Kernel {
         token: RunCore,
-        zipper: Zipper,
+        zipper: Shared<Zipper>,
         residue: Residue,
     },
     /// A kernel `Done` target reached the composed adapter.
     InvalidKernelTarget {
         token: RunCore,
-        zipper: Zipper,
+        zipper: Shared<Zipper>,
         target: Box<KState>,
     },
     /// Totalized host fault: `("raised-source", state)`.

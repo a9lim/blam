@@ -10,9 +10,9 @@
 //! leave a truncated *suffix*: the first malformed line ends the valid
 //! prefix and everything from there is discarded and recomputed.
 //!
-//! Record format (v4):
+//! Record format (v5):
 //! ```text
-//! blamckpt v4 <driver config ...> target=N groups=K
+//! blamckpt v5 <driver config ...> target=N groups=K
 //! G <n> <gi> <secs as f64 bits>
 //! <record body lines, driver-owned tags — anything but G/E>
 //! E <n> <gi>
@@ -29,11 +29,15 @@
 //! in a kill-safe format. `open` therefore `set_len`s the file back to
 //! the end of the last complete record before appending to it.
 //!
-//! The v3→v4 bump widened what the config string must pin: not just the
-//! ladder budgets but the record format version, the engine tunables
-//! that change verdicts (work multiplier, probe fuel), and the CONTENT
-//! of any seeded memo file — a resume onto records computed with
-//! different cross-size facts would merge two different measurements.
+//! The version tag pins what the header line cannot: the record format
+//! and the task split itself (`blc::enumerate::split_tasks`). A group is
+//! a slice of the split's task list by index, so a resume under a
+//! different split would assign different terms to the same group and
+//! double-count or drop some. The config string pins the rest: the
+//! ladder budgets, the engine tunables that change verdicts (work
+//! multiplier, probe fuel), and the CONTENT of any seeded memo file — a
+//! resume onto records computed with different cross-size facts would
+//! merge two different measurements.
 
 use crate::args::R;
 use std::collections::HashMap;
@@ -41,7 +45,7 @@ use std::io::{BufRead, Write};
 
 /// Format tag on the header line. Bump when a change makes existing
 /// records unmergeable with new ones.
-const VERSION: &str = "blamckpt v4";
+const VERSION: &str = "blamckpt v5";
 
 /// A driver's per-group accumulator: how it serializes to and parses
 /// from checkpoint body lines.

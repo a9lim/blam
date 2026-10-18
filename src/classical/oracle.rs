@@ -80,63 +80,76 @@ fn istest(is: u64, n: u32) -> bool {
     (1..63).contains(&n) && is >> (n - 1) & 1 == 1 && is >= 1 << n
 }
 
+#[inline(always)]
+fn charge<const METERED: bool>() {
+    if METERED {
+        spend_work();
+    }
+}
+
+#[inline(always)]
+fn exhausted<const METERED: bool>() -> bool {
+    METERED && work_exhausted()
+}
+
 /// term's head variable is free (at or above the sentinel).
-fn is_f<T: LView>(is: u64, t: T) -> bool {
-    spend_work();
+fn is_f<const METERED: bool, T: LView>(is: u64, t: T) -> bool {
+    charge::<METERED>();
     match t.node() {
         NV::Var(n) => n >= 63 || 1u64 << n > is,
-        NV::App(a, _) => is_f(is, a),
+        NV::App(a, _) => is_f::<METERED, _>(is, a),
         _ => false,
     }
 }
 
-fn is_w<T: LView>(is: u64, t: T) -> bool {
-    spend_work();
-    if is >= MAX_IS || work_exhausted() {
+fn is_w<const METERED: bool, T: LView>(is: u64, t: T) -> bool {
+    charge::<METERED>();
+    if is >= MAX_IS || exhausted::<METERED>() {
         return false;
     }
     match t.node() {
         NV::Var(n) => istest(is, n),
-        NV::Lam(a) => is_b(2 * is + 1, a),
+        NV::Lam(a) => is_b::<METERED, _>(2 * is + 1, a),
         _ => false,
     }
 }
 
-fn is_b<T: LView>(is: u64, t: T) -> bool {
-    spend_work();
-    if is >= MAX_IS || work_exhausted() {
+fn is_b<const METERED: bool, T: LView>(is: u64, t: T) -> bool {
+    charge::<METERED>();
+    if is >= MAX_IS || exhausted::<METERED>() {
         return false;
     }
     match t.node() {
         NV::App(a, b) => {
-            if is_f(is, a) {
-                is_b(is, b)
+            if is_f::<METERED, _>(is, a) {
+                is_b::<METERED, _>(is, b)
             } else if matches!(a.node(), NV::App(..)) {
-                is_b(is, a)
+                is_b::<METERED, _>(is, a)
             } else {
-                is_w(is, a) && (is_w(is, b) || is_b(is, b))
+                is_w::<METERED, _>(is, a)
+                    && (is_w::<METERED, _>(is, b) || is_b::<METERED, _>(is, b))
             }
         }
-        NV::Lam(a) => is_b(2 * is, a),
+        NV::Lam(a) => is_b::<METERED, _>(2 * is, a),
         _ => false,
     }
 }
 
-fn is_w3a<T: LView>(is: u64, t: T) -> bool {
-    spend_work();
-    if is >= MAX_IS || work_exhausted() {
+fn is_w3a<const METERED: bool, T: LView>(is: u64, t: T) -> bool {
+    charge::<METERED>();
+    if is >= MAX_IS || exhausted::<METERED>() {
         return false;
     }
     match t.node() {
         NV::Var(n) => istest(is, n),
-        NV::Lam(a) => is_b3(2 * is + 1, a),
+        NV::Lam(a) => is_b3::<METERED, _>(2 * is + 1, a),
         _ => false,
     }
 }
 
-fn is_w3b<T: LView>(is: u64, t: T) -> bool {
-    spend_work();
-    if is >= MAX_IS || work_exhausted() {
+fn is_w3b<const METERED: bool, T: LView>(is: u64, t: T) -> bool {
+    charge::<METERED>();
+    if is >= MAX_IS || exhausted::<METERED>() {
         return false;
     }
     match t.node() {
@@ -146,7 +159,7 @@ fn is_w3b<T: LView>(is: u64, t: T) -> bool {
                 if is >= MAX_IS / 2 {
                     false
                 } else {
-                    is_b3(4 * is + 1, b)
+                    is_b3::<METERED, _>(4 * is + 1, b)
                 }
             }
             _ => false,
@@ -155,33 +168,45 @@ fn is_w3b<T: LView>(is: u64, t: T) -> bool {
     }
 }
 
-fn is_b3<T: LView>(is: u64, t: T) -> bool {
-    spend_work();
-    if is >= MAX_IS || work_exhausted() {
+fn is_b3<const METERED: bool, T: LView>(is: u64, t: T) -> bool {
+    charge::<METERED>();
+    if is >= MAX_IS || exhausted::<METERED>() {
         return false;
     }
     match t.node() {
         NV::App(a, b) => {
-            if is_f(is, a) {
-                is_b3(is, b)
+            if is_f::<METERED, _>(is, a) {
+                is_b3::<METERED, _>(is, b)
             } else if matches!(a.node(), NV::App(f, _) if matches!(f.node(), NV::App(..))) {
-                is_b3(is, a)
+                is_b3::<METERED, _>(is, a)
             } else if let NV::App(af, _) = a.node() {
-                is_w3b(is, af) && (is_w3b(is, b) || is_b3(is, b))
+                is_w3b::<METERED, _>(is, af)
+                    && (is_w3b::<METERED, _>(is, b) || is_b3::<METERED, _>(is, b))
             } else {
                 false
             }
         }
-        NV::Lam(a) => is_b3(2 * is, a),
+        NV::Lam(a) => is_b3::<METERED, _>(2 * is, a),
         _ => false,
     }
 }
 
-fn is_b23<T: LView>(is: u64, t: T) -> bool {
+fn is_b23<const METERED: bool, T: LView>(is: u64, t: T) -> bool {
     match t.node() {
-        NV::App(a, b) => is_w3a(is, a) && (is_w3b(is, b) || is_b3(is, b)),
+        NV::App(a, b) => {
+            is_w3a::<METERED, _>(is, a)
+                && (is_w3b::<METERED, _>(is, b) || is_b3::<METERED, _>(is, b))
+        }
         _ => false,
     }
+}
+
+fn no_nf_with<const METERED: bool, T: LView>(f: u32, t: T) -> bool {
+    if f >= 62 {
+        return false;
+    }
+    let is = 1u64 << f;
+    is_b::<METERED, _>(is, t) || is_b23::<METERED, _>(is, t)
 }
 
 /// `true` ⇒ the term (at free-variable threshold `f` binders) has no
@@ -199,11 +224,14 @@ fn is_b23<T: LView>(is: u64, t: T) -> bool {
 /// census prefilter runs with the meter disarmed (`i64::MAX`) and so
 /// sees the predicate's full strength.
 pub fn no_nf<T: LView>(f: u32, t: T) -> bool {
-    if f >= 62 {
-        return false;
-    }
-    let is = 1u64 << f;
-    is_b(is, t) || is_b23(is, t)
+    no_nf_with::<true, _>(f, t)
+}
+
+/// Full-strength oracle for callers definitionally outside an escalation
+/// meter scope. Monomorphization deletes every TLS access; the predicate and
+/// traversal order are otherwise identical to [`no_nf`].
+pub(crate) fn no_nf_unmetered<T: LView>(f: u32, t: T) -> bool {
+    no_nf_with::<false, _>(f, t)
 }
 
 #[cfg(test)]

@@ -6,13 +6,14 @@ uniform lifecycle theorem remains open.**
 
 ## Result
 
-`QalcConcreteKernel.lean` is an executable Lean mirror of the unchanged
-v1.42 transition surface used by validation-only v1.43.  It includes the
-mutually recursive logged-position grammar, all eight lambda-IAM rows,
-`call`/`vvar`/`recall`/`replay`, certified and uncertified `h` fire, both
-Hadamard arms and signs, frame popping, KD survivor subtraction, burial and
-suppression, the `t` fence, root classification, and the universal terminal
-tick row.
+`QalcConcreteKernel.lean` is an executable Lean mirror of the `kernel.py`
+transition table (register v1.44, `../docs/quantum-algebraic/kernel.md`).  It
+includes the mutually recursive logged-position grammar, the recursive recall
+epoch, all eight lambda-IAM rows, `call`/`vvar`/`recall`/`replay`, certified
+and uncertified fire for both gates (both Hadamard arms and signs; the
+diagonal `fire-t0`/`fire-t1` rows with their `ω` power), frame popping, KD
+survivor subtraction, burial and suppression, every typed error row, root
+classification, and the universal terminal tick row.
 
 `QalcConcreteCertificate.lean` proves that a finite candidate carrier which
 passes the executable checks contains every reachable recall source.  It then
@@ -24,9 +25,14 @@ RecallTargetRRIOn term certificate (Reachable term certificate)
 ```
 
 The first theorem excludes a bare/framed phase collision at one erased recall
-projection.  The second proves the stronger actual-target factorization: for
-same-key recall rows, a common target is equivalent to a common erased source
-projection and cannot mix phases.
+projection; the erased frame is the same-key, same-bit frame of any epoch.
+The second is actual-target RRI: for same-key recall rows, a common target
+forces a common erased source projection and phase.  The executable checker
+decides exactly these two propositions — the predicate `rri_direct.py` and
+`../src/qalc/admission.rs` check (`../docs/quantum-algebraic/kernel.md`
+§7.5).  It does not require a common projection to force a common target:
+sources differing only in the erased epoch share a projection and land
+apart.
 
 The checked carrier is terminal-covered rather than artificially truncated.
 `terminal_forward` is a theorem of the concrete `step`, including every
@@ -58,15 +64,24 @@ certified h-fire sources      53
 exact H reconvergent targets  18
 ```
 
-The dedicated `QalcConcreteCertificateAudit.lean` additionally pins the
-registered raw absent/present negative pair as rejected, rejects an initial
-prefix for nonclosure, and proves that qprime's two distinct certified
-Hadamard sources have two arms and an exact common target.
+The dedicated `QalcConcreteCertificateAudit.lean` additionally proves that the
+registered raw absent/present `negative` pair has disjoint recall targets with
+no reachability or carrier premise; that the same source cloned with a
+replay-epoch matching frame is present at the absent source's projection, a
+phase witness (`replay_epoch_frame_is_present`); that two clones whose
+distinct frame epochs share one hash (Codex's witness) have equal target
+fingerprints, distinct targets, and pass the target checker
+(`hash_equal_epochs_check_exactly`);
+rejects an initial prefix for nonclosure; and proves that qprime's two
+distinct certified Hadamard sources have two arms and an exact common
+target.
 
 The stress sector `qq` contains 2,160 states and 78 recalls.  It is generated
-as 68 data modules plus 68 independently kernel-checked proof modules and one
-small assembler.  This split avoids Lean's pathological snapshot traversal of
-one multi-megabyte source while retaining one carrier and one final theorem.
+as a `_Core` module (term, certificate, and chunk checkers), 68 data modules,
+a `_Carrier` module that assembles them, 68 independently kernel-checked proof
+modules, and an assembler that states the final theorems.  This split avoids
+Lean's pathological snapshot traversal of one multi-megabyte source while
+retaining one carrier and one final theorem.
 
 ## Trusted-computing boundary
 
@@ -79,7 +94,9 @@ evaluation axiom.
 Two fingerprints are performance filters, not proof assumptions:
 
 - RRI/target buckets compare full keys, projections, states, and phases after
-  a fingerprint match.  A collision therefore triggers more exact checks.
+  a fingerprint match.  Equal keys with equal projections, or equal targets,
+  have equal fingerprints, so a collision only triggers more exact checks and
+  changes no verdict.
 - carrier membership uses an exporter-supplied numeric index but compares the
   full target state on every hit.  `carrierIndexedClosed_sound` proves that any
   accepted indexed closure is ordinary list-membership closure.  An incorrect
@@ -90,7 +107,10 @@ The exporter remains untrusted in the ordinary proof-by-reflection sense.  A
 missing reachable state fails Lean closure; a wrong row fails exact row
 conformance; a bad hash fails indexed closure.  The concrete theorem is about
 the Lean transition table, while exact row conformance on all 5,220 carrier
-states supplies the executable bridge to the Python v1.43 gate.
+states supplies the executable bridge to the Python admission gate.  Off the
+carrier the mirror is not claimed row-identical in general; replay, like
+recall, types any same-key frame multiplicity as `frame-conflict`, as the
+register does.
 
 The build is:
 
@@ -98,18 +118,16 @@ The build is:
 python qalc/QalcConcreteBuild.py --jobs 4
 ```
 
-Fresh full replay on the M5 Max completed with:
-
-```text
-QALC CONCRETE RRI: PASS (155.7s)
-```
+It ends with `QALC CONCRETE RRI: PASS (<elapsed>s)`; a full replay measured
+155.7 s on the M5 Max.
 
 ## Exact remaining boundary
 
 This closes the concrete formal-replay item for the canonical admitted
 sectors and supplies a reusable generator/checker for any further finite
-sector.  It does **not** prove that typing or W0--W9 imply RRI on an arbitrary
-unbounded reachable graph.  The uniform no-rider/ancestry/cross-phase theorem
-remains open at phase-sensitive certified-H history coherence.  It is no
-longer a premise of finite `machine_coverage`, whose direct carrier gate is
-the accepted-program theorem.
+sector.  Recall-row injectivity itself is structural (`RecallEpoch.lean`); the
+replay does **not** prove that typing or W0--W9 imply source-projection RRI on
+an arbitrary unbounded reachable graph.  The uniform
+no-rider/ancestry/cross-phase theorem remains open at phase-sensitive
+certified-H history coherence.  It is not a premise of finite
+`machine_coverage`, whose direct carrier gate is the accepted-program theorem.

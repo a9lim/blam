@@ -2,17 +2,19 @@
 //! finite-time halt mass `mu_p`, reduced output operator `rho_p`, and finite
 //! directed approximants of `M` / `Omega_qALC`.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap};
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
 
 use crate::quantum::scalar::ExactSum;
 
 use super::admission::{
-    try_admit, try_admit_probe_with_cap_profiled, try_admit_with_cap_profiled, AdmissionTelemetry,
+    try_admit, try_admit_probe_with_cap_profiled, try_admit_probe_with_cap_profiled_without_digest,
+    try_admit_with_cap_profiled, try_admit_with_cap_profiled_without_digest, AdmissionTelemetry,
     Gate1Admission, CANONICAL_STATE_CAP,
 };
 use super::amp::Amp;
+use super::fasthash::{hash_one, FastHasher, HashIndex, HashMap as FastMap, HashSet as FastSet};
 use super::gate2check::{structural_admission, StructuralAdmission};
 use super::kernel::edge_coefficient;
 use super::readback::{nf_gram_with, nf_init, nf_step_with, MachineKind, NfError};
@@ -119,13 +121,27 @@ pub fn select(term: Term) -> Sector {
 /// The total selector plus diagnostic Gate-1 phase timings. Structural Gate-2
 /// images never enter Gate 1 and therefore return zeroed admission telemetry.
 pub fn select_profiled(term: Term) -> (Sector, AdmissionTelemetry) {
+    select_profiled_inner(term, true)
+}
+
+/// Census selector variant that omits local carrier-digest telemetry.
+#[doc(hidden)]
+pub fn select_profiled_without_digest(term: Term) -> (Sector, AdmissionTelemetry) {
+    select_profiled_inner(term, false)
+}
+
+fn select_profiled_inner(term: Term, with_digest: bool) -> (Sector, AdmissionTelemetry) {
     let (selection, telemetry) = match structural_admission(&term) {
         Ok(Some(admission)) => (
             Selection::Structural(admission),
             AdmissionTelemetry::default(),
         ),
         _ => {
-            let (admission, telemetry) = try_admit_with_cap_profiled(&term, CANONICAL_STATE_CAP);
+            let (admission, telemetry) = if with_digest {
+                try_admit_with_cap_profiled(&term, CANONICAL_STATE_CAP)
+            } else {
+                try_admit_with_cap_profiled_without_digest(&term, CANONICAL_STATE_CAP)
+            };
             (
                 admission
                     .map(Selection::Gate1)
@@ -151,6 +167,23 @@ pub fn select_probe_profiled(
     term: Term,
     gate1_state_cap: usize,
 ) -> (Option<Sector>, AdmissionTelemetry) {
+    select_probe_profiled_inner(term, gate1_state_cap, true)
+}
+
+/// Census probe variant that omits local carrier-digest telemetry.
+#[doc(hidden)]
+pub fn select_probe_profiled_without_digest(
+    term: Term,
+    gate1_state_cap: usize,
+) -> (Option<Sector>, AdmissionTelemetry) {
+    select_probe_profiled_inner(term, gate1_state_cap, false)
+}
+
+fn select_probe_profiled_inner(
+    term: Term,
+    gate1_state_cap: usize,
+    with_digest: bool,
+) -> (Option<Sector>, AdmissionTelemetry) {
     match structural_admission(&term) {
         Ok(Some(admission)) => (
             Some(Sector {
@@ -160,7 +193,11 @@ pub fn select_probe_profiled(
             AdmissionTelemetry::default(),
         ),
         _ => {
-            let (admission, telemetry) = try_admit_probe_with_cap_profiled(&term, gate1_state_cap);
+            let (admission, telemetry) = if with_digest {
+                try_admit_probe_with_cap_profiled(&term, gate1_state_cap)
+            } else {
+                try_admit_probe_with_cap_profiled_without_digest(&term, gate1_state_cap)
+            };
             (
                 admission.map(|admission| Sector {
                     term: Arc::new(term),
@@ -201,7 +238,7 @@ struct History(Option<Arc<HistoryNode>>);
 
 impl History {
     fn append(&self, live: &NfState) -> Self {
-        let mut hasher = std::collections::hash_map::DefaultHasher::new();
+        let mut hasher = FastHasher::default();
         self.len().hash(&mut hasher);
         self.digest().hash(&mut hasher);
         live.hash(&mut hasher);
@@ -326,6 +363,8 @@ pub enum SemanticsError {
     NormLeak,
     NotConservativeLanding,
     InvalidPredecessor,
+    /// A halted state whose tick exceeds the clock it was read at.
+    TickBeyondClock,
 }
 
 fn norm(vector: &Superposition) -> Result<Amp, SemanticsError> {
@@ -355,13 +394,14 @@ pub fn initial_vector(sector: &Sector) -> Superposition {
 /// The step is transactional: any capacity/basis failure discards the local
 /// target map and returns a typed outcome.
 pub fn u(sector: &Sector, vector: &Superposition) -> Result<Superposition, SemanticsError> {
-    let mut distinct = HashSet::new();
+    let mut distinct = FastSet::default();
     if !vector.iter().all(|(basis, _)| distinct.insert(basis)) {
         return Err(SemanticsError::DuplicateBasis);
     }
     let source_norm = norm(vector)?;
     let mut target: Superposition = Vec::new();
-    let mut index: HashMap<BasisState, usize> = HashMap::new();
+    // First-touch target ids, each target hashed once and never cloned.
+    let mut index = HashIndex::new();
     for (source, amplitude) in vector {
         let (live, history) = match (sector.conservative(), source) {
             (false, BasisState::Admitted(live)) => (live, None),
@@ -385,14 +425,14 @@ pub fn u(sector: &Sector, vector: &Superposition) -> Result<Superposition, Seman
             } else {
                 BasisState::Admitted(row.state)
             };
-            if let Some(&at) = index.get(&basis) {
-                target[at].1 = target[at]
-                    .1
-                    .add(contribution)
-                    .ok_or(SemanticsError::Capacity)?;
-            } else {
-                index.insert(basis.clone(), target.len());
-                target.push((basis, contribution));
+            match index.find_or_insert(hash_one(&basis), |at| target[at].0 == basis) {
+                Ok(at) => {
+                    target[at].1 = target[at]
+                        .1
+                        .add(contribution)
+                        .ok_or(SemanticsError::Capacity)?;
+                }
+                Err(_) => target.push((basis, contribution)),
             }
         }
     }
@@ -401,6 +441,66 @@ pub fn u(sector: &Sector, vector: &Superposition) -> Result<Superposition, Seman
         return Err(SemanticsError::NormLeak);
     }
     Ok(target)
+}
+
+/// `U^ticks` on a vector `U` has fully absorbed, without stepping it.
+///
+/// In an admitted sector every `NfDone` basis state has exactly one
+/// successor, the same terminal at the next tick, with edge coefficient
+/// one. A vector made only of such states is therefore carried by each
+/// application of [`u`] to the same vector with every tick advanced by one:
+/// targets stay distinct and in source order, amplitudes and norm are
+/// unchanged, and nothing merges or cancels. The duplicate-basis, norm,
+/// and coefficient checks that `u` repeats every step are tick-independent,
+/// so they are made once here with `u`'s own errors.
+///
+/// `Ok(None)` means "not applicable — step with `u`": a conservative
+/// sector (its history grows every step), a basis state that has not
+/// absorbed, an amplitude the unit coefficient does not fix, or a tick
+/// that would overflow.
+pub fn advance_absorbed(
+    sector: &Sector,
+    vector: &Superposition,
+    ticks: u64,
+) -> Result<Option<Superposition>, SemanticsError> {
+    if sector.conservative()
+        || !vector
+            .iter()
+            .all(|(basis, _)| matches!(basis, BasisState::Admitted(NfState::Done { .. })))
+    {
+        return Ok(None);
+    }
+    if ticks == 0 {
+        return Ok(Some(vector.clone()));
+    }
+    let mut distinct = FastSet::default();
+    if !vector.iter().all(|(basis, _)| distinct.insert(basis)) {
+        return Err(SemanticsError::DuplicateBasis);
+    }
+    norm(vector)?;
+    let unit = edge_coefficient(1, 0, "tick").ok_or(SemanticsError::Capacity)?;
+    let mut out = Vec::with_capacity(vector.len());
+    for (basis, amplitude) in vector {
+        let BasisState::Admitted(NfState::Done { terminal, tick }) = basis else {
+            unreachable!("checked above");
+        };
+        let Some(tick) = tick.checked_add(ticks) else {
+            return Ok(None);
+        };
+        if amplitude.mul(unit) != Some(*amplitude) {
+            return Ok(None);
+        }
+        if !amplitude.is_zero() {
+            out.push((
+                BasisState::Admitted(NfState::Done {
+                    terminal: terminal.clone(),
+                    tick,
+                }),
+                *amplitude,
+            ));
+        }
+    }
+    Ok(Some(out))
 }
 
 /// Mathematical spelling retained as a public alias beside idiomatic Rust
@@ -484,6 +584,32 @@ pub fn halt_mass(vector: &Superposition) -> Result<Amp, SemanticsError> {
     Ok(total)
 }
 
+/// Halted mass by arrival time.  Every halted block enters the halt sector
+/// at tick zero (architecture §4.3, common origin) and only ticks after
+/// that, so at clock `now` a halted state with tick `k` arrived at
+/// `a = now − k`; the map holds `Δμ_p(a) = μ_p(a) − μ_p(a − 1)` and sums
+/// exactly to [`halt_mass`].  This is the readout the speed prior charges
+/// at `1/a`; nothing is traced or grouped, so it is independent of the
+/// coherence blocks of [`rho`].
+pub fn halt_arrivals(
+    vector: &Superposition,
+    now: u64,
+) -> Result<BTreeMap<u64, Amp>, SemanticsError> {
+    let mut out: BTreeMap<u64, Amp> = BTreeMap::new();
+    for (basis, amplitude) in vector {
+        let Some((_, _, tick)) = done_halt(basis.live()) else {
+            continue;
+        };
+        let arrival = now
+            .checked_sub(tick)
+            .ok_or(SemanticsError::TickBeyondClock)?;
+        let mass = amplitude.norm_sq().ok_or(SemanticsError::Capacity)?;
+        let entry = out.entry(arrival).or_insert(Amp::ZERO);
+        *entry = entry.add(mass).ok_or(SemanticsError::Capacity)?;
+    }
+    Ok(out)
+}
+
 pub fn error_mass(vector: &Superposition) -> Result<Amp, SemanticsError> {
     let mut total = Amp::ZERO;
     for (basis, amplitude) in vector {
@@ -539,7 +665,7 @@ struct TraceBlock {
 }
 
 pub fn rho(vector: &Superposition) -> Result<DensityMatrix, SemanticsError> {
-    let mut blocks: HashMap<TraceBlock, HashMap<Nf, Amp>> = HashMap::new();
+    let mut blocks: FastMap<TraceBlock, FastMap<Nf, Amp>> = FastMap::default();
     for (basis, amplitude) in vector {
         let (live, history) = match basis {
             BasisState::Admitted(live) => (live, None),
@@ -653,6 +779,7 @@ pub fn omega_qalc_approximant(
 mod tests {
     use super::*;
     use crate::qalc::wire::parse_fixtures;
+    use std::collections::HashSet;
 
     fn lam(term: Term) -> Term {
         Term::Lam(Box::new(term))
@@ -734,6 +861,104 @@ mod tests {
             vector = next;
         }
         panic!("forced fallback never fired H");
+    }
+
+    #[test]
+    fn advance_absorbed_is_repeated_u() {
+        // Pinned admitted sectors (branching, cancelling, and erroring
+        // programs among them) plus invoked BLC programs that halt, err, and
+        // stay running: once a vector absorbs, advancing it k ticks is
+        // exactly k applications of U, and before that it is refused.
+        let mut terms: Vec<Term> = parse_fixtures(include_str!("admission_pins.qfx"))
+            .unwrap()
+            .programs
+            .into_iter()
+            .map(|fixture| fixture.term)
+            .collect();
+        use crate::blc::{app, lam, var};
+        let omega = app(lam(app(var(1), var(1))), lam(app(var(1), var(1))));
+        for program in [
+            lam(var(1)),
+            lam(lam(var(2))),
+            lam(lam(app(var(2), var(1)))),
+            lam(lam(app(var(1), var(2)))),
+            lam(lam(app(var(2), app(var(2), var(1))))),
+            lam(lam(app(app(var(2), var(1)), var(1)))),
+            lam(omega),
+        ] {
+            terms.push(super::super::term::invoke_ht(super::super::term::from_blc(
+                &program,
+            )));
+        }
+        let mut absorbed_sectors = 0;
+        for term in terms {
+            let sector = select(term);
+            let mut vector = initial_vector(&sector);
+            for _ in 0..512 {
+                let absorbed = vector
+                    .iter()
+                    .all(|(basis, _)| matches!(basis.live(), NfState::Done { .. }));
+                if absorbed && sector.is_admitted() {
+                    break;
+                }
+                assert_eq!(advance_absorbed(&sector, &vector, 5), Ok(None));
+                vector = u(&sector, &vector).unwrap();
+            }
+            if sector.conservative() {
+                assert_eq!(advance_absorbed(&sector, &vector, 5), Ok(None));
+                continue;
+            }
+            if !vector
+                .iter()
+                .all(|(basis, _)| matches!(basis.live(), NfState::Done { .. }))
+            {
+                continue;
+            }
+            absorbed_sectors += 1;
+            for ticks in [0u64, 1, 2, 7, 64] {
+                let mut stepped = vector.clone();
+                for _ in 0..ticks {
+                    stepped = u(&sector, &stepped).unwrap();
+                }
+                assert_eq!(
+                    advance_absorbed(&sector, &vector, ticks),
+                    Ok(Some(stepped)),
+                    "ticks={ticks}"
+                );
+            }
+        }
+        assert_eq!(absorbed_sectors, 26);
+    }
+
+    #[test]
+    fn halt_arrivals_are_the_halt_mass_increments() {
+        // A branching H sector and a plain one: at every clock the arrival
+        // histogram is exactly the sequence of halt-mass increments, and a
+        // tick beyond the clock is refused rather than wrapped.
+        for term in [pinned("lone"), lam(Term::Var(1))] {
+            let sector = select(term);
+            let clock = 96;
+            let mu = mu_approximants(&sector, clock).unwrap();
+            let vector = evolve(&sector, clock).unwrap();
+            let arrivals = halt_arrivals(&vector, clock).unwrap();
+            let mut total = Amp::ZERO;
+            for time in 1..=clock as usize {
+                let increment = mu[time].1.sub(mu[time - 1].1).unwrap();
+                let recorded = arrivals.get(&(time as u64)).copied();
+                if increment.is_zero() {
+                    assert_eq!(recorded, None, "spurious arrival at {time}");
+                } else {
+                    assert_eq!(recorded, Some(increment), "arrival mass at {time}");
+                }
+                total = total.add(increment).unwrap();
+            }
+            assert_eq!(total, halt_mass(&vector).unwrap());
+            assert!(!arrivals.is_empty());
+            assert_eq!(
+                halt_arrivals(&vector, 0),
+                Err(SemanticsError::TickBeyondClock)
+            );
+        }
     }
 
     #[test]

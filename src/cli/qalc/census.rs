@@ -8,14 +8,15 @@ use blam::blc::wire::enc_to_string;
 use blam::qalc::admission::AdmissionTelemetry;
 use blam::qalc::amp::Amp;
 use blam::qalc::semantics::{
-    error_mass, halt_mass, initial_vector, kraft_weight, rho, running_mass, select_probe_profiled,
-    select_profiled, u, Sector, SelectionKind, SemanticsError,
+    advance_absorbed, error_mass, halt_arrivals, halt_mass, initial_vector, kraft_weight, rho,
+    running_mass, select_probe_profiled_without_digest, select_profiled_without_digest, u, Sector,
+    SelectionKind, SemanticsError,
 };
 use blam::qalc::term::{from_blc, invoke_ht};
 use blam::qalc::wire::nf_bytes;
-use blam::quantum::scalar::ExactSum;
+use blam::quantum::scalar::{speed_units, ExactSum};
 use rayon::prelude::*;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::fmt::Write as _;
 use std::time::{Duration, Instant};
 
@@ -33,9 +34,10 @@ semantics
 
 run
   --threads N     rayon threads (0 = ambient, the default)
-  --retry-threads N  canonical admission retry pool (0 = up to 8, default)
+  --retry-threads N  canonical admission retry pool (0 = all threads, default)
   --out FILE      write the deterministic report to FILE as well as stdout
   --matrix FILE   accumulate and write sparse finite M coordinates
+  --speed FILE    write the speed prior: arrival spectrum and Omega_speed brackets
   --checkpoint FILE   kill-safe group-level resume
   --groups K      groups per size for --checkpoint (default 64)
 
@@ -44,7 +46,10 @@ The lower approximation is exact halted mass at the requested clock; the upper
 bracket adds exact still-running mass. Error mass is excluded. `--matrix`
 retains arbitrary-normal-form coordinates and can be much larger than the
 scalar census; rho and its trace are audited even when coordinates are not
-retained.";
+retained. The speed prior (Levin) charges every halted block 1/a at its
+arrival time a = clock - tick and still-running mass at most 1/(clock+1);
+`--speed` writes the exact arrival spectrum and the directed 2^-128-unit
+brackets, and the deterministic report is unchanged by it.";
 
 #[derive(Clone, Copy, Debug, Default)]
 struct PerfTelemetry {
@@ -91,6 +96,13 @@ struct Tally {
     halt: ExactSum,
     error: ExactSum,
     running: ExactSum,
+    /// Kraft-weighted halted mass by arrival time: `Σ_p 2^-|p| Δμ_p(a)`.
+    /// Exact and sparse; the speed prior is a post-pass over it.
+    arrivals: BTreeMap<u64, ExactSum>,
+    /// Kraft-weighted still-running mass by its speed floor, the clock the
+    /// program reached plus one (the requested clock unless capacity cut
+    /// the run short).
+    open_floors: BTreeMap<u64, ExactSum>,
     matrix: HashMap<MatrixKey, ExactSum>,
     perf: PerfTelemetry,
     slow_selection: Vec<SlowSelection>,
@@ -113,6 +125,8 @@ impl Tally {
             halt: ExactSum::ZERO,
             error: ExactSum::ZERO,
             running: ExactSum::ZERO,
+            arrivals: BTreeMap::new(),
+            open_floors: BTreeMap::new(),
             matrix: HashMap::new(),
             perf: PerfTelemetry::default(),
             slow_selection: Vec::new(),
@@ -156,6 +170,18 @@ impl Tally {
         self.halt.merge(&other.halt);
         self.error.merge(&other.error);
         self.running.merge(&other.running);
+        for (arrival, value) in other.arrivals {
+            self.arrivals
+                .entry(arrival)
+                .or_insert(ExactSum::ZERO)
+                .merge(&value);
+        }
+        for (floor, value) in other.open_floors {
+            self.open_floors
+                .entry(floor)
+                .or_insert(ExactSum::ZERO)
+                .merge(&value);
+        }
         for (coordinate, value) in other.matrix {
             self.matrix
                 .entry(coordinate)
@@ -240,6 +266,16 @@ impl crate::ckpt::CkptRecord for Tally {
             Some((at, len, enc)) => writeln!(out, "C {at} {len} {enc}").unwrap(),
             None => out.push_str("C - - -\n"),
         }
+        for (arrival, value) in &self.arrivals {
+            write!(out, "A {arrival}").unwrap();
+            value.write_ckpt(out);
+            out.push('\n');
+        }
+        for (floor, value) in &self.open_floors {
+            write!(out, "F {floor}").unwrap();
+            value.write_ckpt(out);
+            out.push('\n');
+        }
         let mut matrix: Vec<_> = self.matrix.iter().collect();
         matrix.sort_unstable_by(|a, b| a.0.cmp(b.0));
         for ((left, right), value) in matrix {
@@ -251,7 +287,8 @@ impl crate::ckpt::CkptRecord for Tally {
 
     fn parse_line(&mut self, line: &str) -> Option<()> {
         let mut fields = line.split_whitespace();
-        match fields.next()? {
+        let tag = fields.next()?;
+        match tag {
             "S" => {
                 let mut number = || fields.next()?.parse::<u64>().ok();
                 self.programs = number()?;
@@ -293,6 +330,20 @@ impl crate::ckpt::CkptRecord for Tally {
                 };
                 fields.next().is_none().then_some(())
             }
+            "A" | "F" => {
+                let key: u64 = fields.next()?.parse().ok()?;
+                let value = ExactSum::parse_ckpt(&mut fields)?;
+                let map = if tag == "A" {
+                    &mut self.arrivals
+                } else {
+                    &mut self.open_floors
+                };
+                if fields.next().is_some() || map.insert(key, value).is_some() {
+                    None
+                } else {
+                    Some(())
+                }
+            }
             "M" => {
                 let left = unhex(fields.next()?)?;
                 let right = unhex(fields.next()?)?;
@@ -320,6 +371,8 @@ struct Row {
     peak_support: usize,
     matrix_coordinates: usize,
     halt: ExactSum,
+    arrivals: BTreeMap<u64, ExactSum>,
+    open_floors: BTreeMap<u64, ExactSum>,
 }
 
 impl Row {
@@ -335,6 +388,8 @@ impl Row {
             peak_support: tally.peak_support,
             matrix_coordinates: tally.matrix.len(),
             halt: tally.halt,
+            arrivals: tally.arrivals.clone(),
+            open_floors: tally.open_floors.clone(),
         }
     }
 }
@@ -397,13 +452,28 @@ fn sweep_sector(
     let evolution_started = Instant::now();
     let mut vector = initial_vector(&selected.sector);
     let mut peak_support = vector.len();
+    // The clock the retained vector actually stands at: `steps`, or one
+    // short of the transition a capacity cut refused.
+    let mut reached = steps;
     for at in 1..=steps {
-        match u(&selected.sector, &vector) {
+        // Once an admitted vector has fully absorbed, the remaining
+        // transitions only advance every tick (`advance_absorbed`), so they
+        // are applied at once; everything read below is identical.
+        let stepped = match advance_absorbed(&selected.sector, &vector, steps - at + 1) {
+            Ok(Some(absorbed)) => {
+                vector = absorbed;
+                break;
+            }
+            Ok(None) => u(&selected.sector, &vector),
+            Err(error) => Err(error),
+        };
+        match stepped {
             Ok(next) => {
                 peak_support = peak_support.max(next.len());
                 if next.len() > support_cap {
                     tally.capacity[1] += 1;
                     tally.note_capacity(at, witness);
+                    reached = at - 1;
                     break;
                 }
                 vector = next;
@@ -411,6 +481,7 @@ fn sweep_sector(
             Err(SemanticsError::Capacity) => {
                 tally.capacity[0] += 1;
                 tally.note_capacity(at, witness);
+                reached = at - 1;
                 break;
             }
             Err(error) => return Err(semantic_error(enc, len, at, error)),
@@ -440,6 +511,35 @@ fn sweep_sector(
     tally.halt.add(kraft_weight(halted, len as u32));
     tally.error.add(kraft_weight(errored, len as u32));
     tally.running.add(kraft_weight(running, len as u32));
+
+    let arrivals =
+        halt_arrivals(&vector, reached).map_err(|e| semantic_error(enc, len, reached, e))?;
+    let mut arrived = Amp::ZERO;
+    for mass in arrivals.values() {
+        arrived = arrived
+            .add(*mass)
+            .ok_or_else(|| semantic_error(enc, len, reached, SemanticsError::Capacity))?;
+    }
+    if arrived != halted {
+        return Err(format!(
+            "blam qalc census: arrival histogram differs from halt mass for {}",
+            enc_to_string(enc, len)
+        ));
+    }
+    for (arrival, mass) in arrivals {
+        tally
+            .arrivals
+            .entry(arrival)
+            .or_insert(ExactSum::ZERO)
+            .add(kraft_weight(mass, len as u32));
+    }
+    if !running.is_zero() {
+        tally
+            .open_floors
+            .entry(reached + 1)
+            .or_insert(ExactSum::ZERO)
+            .add(kraft_weight(running, len as u32));
+    }
 
     match rho(&vector) {
         Ok(density) => {
@@ -508,7 +608,8 @@ fn probe_one(
 ) -> R<()> {
     let invocation = parse_invocation(enc, len)?;
     let started = Instant::now();
-    let (sector, telemetry) = select_probe_profiled(invocation, ADMISSION_PREFLIGHT_CAP);
+    let (sector, telemetry) =
+        select_probe_profiled_without_digest(invocation, ADMISSION_PREFLIGHT_CAP);
     let elapsed = started.elapsed();
     match sector {
         Some(sector) => sweep_sector(
@@ -536,6 +637,45 @@ fn probe_one(
     }
 }
 
+/// Per-size stderr telemetry (never part of the deterministic report).
+fn print_size(n: u32, tally: &Tally, seconds: f64) {
+    eprintln!(
+        "n={n:>2}: {:>9} programs  gate1 {:>8}  cons {:>8}  h/e/r {}/{}/{}  cap {:?}  peak {}  ({seconds:.3}s, {:.0}/s)",
+        tally.programs,
+        tally.selection[1],
+        tally.selection[2],
+        tally.halt_programs,
+        tally.error_programs,
+        tally.running_programs,
+        tally.capacity,
+        tally.peak_support,
+        tally.programs as f64 / seconds.max(f64::MIN_POSITIVE),
+    );
+    eprintln!(
+        "      worker-s over {} measured programs: select {:.3} [carrier {:.3}, gram {:.3}, obligations {:.3}, rri {:.3}, digest {:.3}; {} attempts, {} canonical retries]  evolve {:.3}  observe {:.3}",
+        tally.perf.measured_programs,
+        tally.perf.selection.as_secs_f64(),
+        tally.perf.admission.carrier.as_secs_f64(),
+        tally.perf.admission.gram.as_secs_f64(),
+        tally.perf.admission.obligations.as_secs_f64(),
+        tally.perf.admission.rri.as_secs_f64(),
+        tally.perf.admission.digest.as_secs_f64(),
+        tally.perf.admission.attempts,
+        tally.perf.canonical_retries,
+        tally.perf.evolution.as_secs_f64(),
+        tally.perf.observation.as_secs_f64(),
+    );
+    for slow in &tally.slow_selection {
+        eprintln!(
+            "      slow select {:>8.3}s  {:?}  carrier {:>8.3}s  {}",
+            slow.elapsed.as_secs_f64(),
+            slow.kind,
+            slow.carrier.as_secs_f64(),
+            enc_to_string(slow.witness.1, slow.witness.0),
+        );
+    }
+}
+
 fn sweep_deferred(
     deferred: DeferredAdmission,
     steps: u64,
@@ -545,7 +685,7 @@ fn sweep_deferred(
 ) -> R<()> {
     let invocation = parse_invocation(deferred.enc, deferred.len)?;
     let started = Instant::now();
-    let (sector, full_telemetry) = select_profiled(invocation);
+    let (sector, full_telemetry) = select_profiled_without_digest(invocation);
     let elapsed = started.elapsed();
     let mut telemetry = deferred.probe_telemetry;
     telemetry.merge(full_telemetry);
@@ -563,6 +703,67 @@ fn sweep_deferred(
         },
         tally,
     )
+}
+
+/// Run canonical retries through one atomic work queue, longest probe first
+/// (the 1,000-state probe's cost is the cost proxy for the 300,000-state
+/// retry), accumulating per-size tallies. `Tally::merge` is order-free, so
+/// the schedule never reaches the report.
+#[allow(clippy::too_many_arguments)]
+fn retry_queue(
+    pool: &rayon::ThreadPool,
+    workers: usize,
+    mut deferred: Vec<(usize, DeferredAdmission)>,
+    sizes: usize,
+    steps: u64,
+    support_cap: usize,
+    collect_matrix: bool,
+) -> R<Vec<Tally>> {
+    use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+    use std::sync::Mutex;
+
+    deferred.sort_by(|(left_size, left), (right_size, right)| {
+        right
+            .probe_elapsed
+            .cmp(&left.probe_elapsed)
+            .then_with(|| (left_size, left.len, left.enc).cmp(&(right_size, right.len, right.enc)))
+    });
+    let next = AtomicUsize::new(0);
+    let failed = AtomicBool::new(false);
+    let failure: Mutex<Option<String>> = Mutex::new(None);
+    let merged: Mutex<Vec<Tally>> = Mutex::new((0..sizes).map(|_| Tally::new()).collect());
+    let workers = workers.min(deferred.len());
+    pool.scope(|scope| {
+        for _ in 0..workers {
+            scope.spawn(|_| {
+                let mut local: Vec<Tally> = (0..sizes).map(|_| Tally::new()).collect();
+                while !failed.load(Ordering::Relaxed) {
+                    let at = next.fetch_add(1, Ordering::Relaxed);
+                    let Some(&(size, item)) = deferred.get(at) else {
+                        break;
+                    };
+                    if let Err(error) =
+                        sweep_deferred(item, steps, support_cap, collect_matrix, &mut local[size])
+                    {
+                        failed.store(true, Ordering::Relaxed);
+                        failure
+                            .lock()
+                            .expect("retry failure slot")
+                            .get_or_insert(error);
+                        break;
+                    }
+                }
+                let mut merged = merged.lock().expect("retry tallies");
+                for (slot, tally) in merged.iter_mut().zip(local) {
+                    *slot = std::mem::take(slot).merge(tally);
+                }
+            });
+        }
+    });
+    if let Some(error) = failure.into_inner().expect("retry failure slot") {
+        return Err(error);
+    }
+    Ok(merged.into_inner().expect("retry tallies"))
 }
 
 fn matrix_trace(matrix: &HashMap<MatrixKey, ExactSum>) -> ExactSum {
@@ -723,6 +924,206 @@ fn render_report(
     report
 }
 
+/// One speed-prior bracket in 2^-128 units over an arrival histogram and
+/// its open floors (`docs/classical/speed.md` §3 grid, directed rounding).
+#[derive(Clone, Copy, Debug, Default)]
+struct SpeedBracket {
+    /// `Σ_a floor(H(a)·2^128 / a)`.
+    lower: u128,
+    /// `Σ_a ceil(H(a)·2^128 / a)`.
+    halt_upper: u128,
+    /// `Σ_f ceil(R(f)·2^128 / f)`: still-running mass at its floor.
+    open_upper: u128,
+    arrivals: usize,
+    deepest: Option<u64>,
+}
+
+impl SpeedBracket {
+    fn upper(&self) -> R<u128> {
+        self.halt_upper
+            .checked_add(self.open_upper)
+            .ok_or_else(|| "blam qalc census: speed upper bracket overflowed".to_string())
+    }
+}
+
+fn speed_bracket(
+    arrivals: &BTreeMap<u64, ExactSum>,
+    floors: &BTreeMap<u64, ExactSum>,
+) -> R<SpeedBracket> {
+    let overflow = || "blam qalc census: speed bracket overflowed 2^128 units".to_string();
+    let mut out = SpeedBracket::default();
+    for (&arrival, mass) in arrivals {
+        let value = mass
+            .value()
+            .ok_or_else(|| "blam qalc census: exact arrival mass overflowed".to_string())?;
+        let (lo, hi) = speed_units(value, arrival).ok_or_else(|| {
+            format!(
+                "blam qalc census: arrival mass at step {arrival} is not a unit mass: {}",
+                mass.exact_str()
+            )
+        })?;
+        out.lower = out.lower.checked_add(lo).ok_or_else(overflow)?;
+        out.halt_upper = out.halt_upper.checked_add(hi).ok_or_else(overflow)?;
+        out.arrivals += 1;
+        out.deepest = Some(arrival);
+    }
+    for (&floor, mass) in floors {
+        let value = mass
+            .value()
+            .ok_or_else(|| "blam qalc census: exact running mass overflowed".to_string())?;
+        let (_, hi) = speed_units(value, floor).ok_or_else(|| {
+            format!(
+                "blam qalc census: running mass at floor {floor} is not a unit mass: {}",
+                mass.exact_str()
+            )
+        })?;
+        out.open_upper = out.open_upper.checked_add(hi).ok_or_else(overflow)?;
+    }
+    Ok(out)
+}
+
+/// A 2^-128-unit mass as a decimal preview.
+fn units_f64(units: u128) -> f64 {
+    units as f64 / 2f64.powi(128)
+}
+
+fn render_speed(
+    min_n: u32,
+    max_n: u32,
+    steps: u64,
+    support_cap: usize,
+    rows: &[Row],
+    total: &Tally,
+) -> R<String> {
+    let mut out = String::new();
+    writeln!(
+        out,
+        "# qALC speed prior (Levin) spec v0 — ordinary closed BLC p, invocation p h t"
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "# sizes {min_n}..={max_n}  steps={steps} support={support_cap}"
+    )
+    .unwrap();
+    out.push_str(
+        "# clock: global U transitions. A halted block that entered the halt sector at\n\
+         # time a (tick = clock - a) is charged 2^-|p| Δμ_p(a) / a. Still-running mass at a\n\
+         # program's reached clock c is open: 0 below, at most 2^-|p| running / (c+1) above.\n\
+         # units: 2^-128, directed (floor into lower, ceil into upper); exact masses are\n\
+         # (a,b,c,d,k): (a+b*w+c*w^2+d*w^3)/sqrt(2)^k, w=e^(i*pi/4)\n#\n",
+    );
+    out.push_str(
+        "# n   arrivals  deepest   speed-lower(units)   speed-upper(units)   open-upper(units)   speed-lower(f64)  speed-upper(f64)\n",
+    );
+    for row in rows {
+        let bracket = speed_bracket(&row.arrivals, &row.open_floors)?;
+        let upper = bracket.upper()?;
+        writeln!(
+            out,
+            "{:>4} {:>9} {:>8}  {:>40} {:>40} {:>40}  {:.12e}  {:.12e}",
+            row.n,
+            bracket.arrivals,
+            bracket.deepest.map_or("-".to_string(), |a| a.to_string()),
+            bracket.lower,
+            upper,
+            bracket.open_upper,
+            units_f64(bracket.lower),
+            units_f64(upper),
+        )
+        .unwrap();
+    }
+    out.push_str("#\n");
+    let bracket = speed_bracket(&total.arrivals, &total.open_floors)?;
+    let upper = bracket.upper()?;
+    let omega_units = total
+        .halt
+        .value()
+        .and_then(|value| speed_units(value, 1))
+        .ok_or_else(|| "blam qalc census: exact halt mass is not a unit mass".to_string())?;
+    if bracket.lower > omega_units.0 {
+        return Err("blam qalc census: Omega_speed lower exceeds Omega_qALC lower".into());
+    }
+    writeln!(out, "## Totals ({} programs)", total.programs).unwrap();
+    writeln!(
+        out,
+        "Omega_speed lower = {}  = {:.15}",
+        bracket.lower,
+        units_f64(bracket.lower)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "Omega_speed upper = {}  = {:.15}   (halt ceil + running/(clock+1))",
+        upper,
+        units_f64(upper)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "open running     <= {}  = {:.6e}",
+        bracket.open_upper,
+        units_f64(bracket.open_upper)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "bracket width     = {}  = {:.6e}",
+        upper - bracket.lower,
+        units_f64(upper - bracket.lower)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "halt rounding slack = {} units   (upper − lower over halted arrivals alone)",
+        bracket.halt_upper - bracket.lower
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "Omega_qALC lower  = {}  = {:.15}   (unit floor of the exact halt mass)",
+        omega_units.0,
+        units_f64(omega_units.0)
+    )
+    .unwrap();
+    writeln!(
+        out,
+        "arrival times {}  deepest {}",
+        bracket.arrivals,
+        bracket.deepest.map_or("-".to_string(), |a| a.to_string())
+    )
+    .unwrap();
+    out.push_str("#\n## Arrival spectrum: n  a  exact(H_n(a))  real\n");
+    for row in rows {
+        for (arrival, value) in &row.arrivals {
+            writeln!(
+                out,
+                "A {} {} {} {:.15e}",
+                row.n,
+                arrival,
+                value.exact_str(),
+                value.re()
+            )
+            .unwrap();
+        }
+    }
+    out.push_str("## Open floors: n  floor  exact(R_n(floor))  real\n");
+    for row in rows {
+        for (floor, value) in &row.open_floors {
+            writeln!(
+                out,
+                "F {} {} {} {:.15e}",
+                row.n,
+                floor,
+                value.exact_str(),
+                value.re()
+            )
+            .unwrap();
+        }
+    }
+    Ok(out)
+}
+
 fn render_matrix(
     min_n: u32,
     max_n: u32,
@@ -753,11 +1154,19 @@ fn render_matrix(
     out
 }
 
-fn reject_path_aliases(out: Option<&str>, matrix: Option<&str>, checkpoint: Option<&str>) -> R<()> {
+fn reject_path_aliases(
+    out: Option<&str>,
+    matrix: Option<&str>,
+    speed: Option<&str>,
+    checkpoint: Option<&str>,
+) -> R<()> {
     for (left_name, left, right_name, right) in [
         ("--out", out, "--matrix", matrix),
+        ("--out", out, "--speed", speed),
         ("--out", out, "--checkpoint", checkpoint),
+        ("--matrix", matrix, "--speed", speed),
         ("--matrix", matrix, "--checkpoint", checkpoint),
+        ("--speed", speed, "--checkpoint", checkpoint),
     ] {
         if left.is_some() && left == right {
             return Err(format!(
@@ -780,6 +1189,7 @@ pub fn run(argv: &[String]) -> R<()> {
     let mut retry_threads = 0usize;
     let mut out_path: Option<String> = None;
     let mut matrix_path: Option<String> = None;
+    let mut speed_path: Option<String> = None;
     let mut checkpoint_path: Option<String> = None;
     let mut groups_flag = 0usize;
     let mut args = Args::new("qalc census", argv);
@@ -791,6 +1201,7 @@ pub fn run(argv: &[String]) -> R<()> {
             "--retry-threads" => retry_threads = args.num(token)?,
             "--out" => out_path = Some(args.value(token)?.to_string()),
             "--matrix" => matrix_path = Some(args.value(token)?.to_string()),
+            "--speed" => speed_path = Some(args.value(token)?.to_string()),
             "--checkpoint" => checkpoint_path = Some(args.value(token)?.to_string()),
             "--groups" => groups_flag = args.num(token)?,
             _ if token.starts_with('-') => return Err(args.unknown(token)),
@@ -814,6 +1225,7 @@ pub fn run(argv: &[String]) -> R<()> {
     reject_path_aliases(
         out_path.as_deref(),
         matrix_path.as_deref(),
+        speed_path.as_deref(),
         checkpoint_path.as_deref(),
     )?;
 
@@ -825,11 +1237,17 @@ pub fn run(argv: &[String]) -> R<()> {
         Some(path) => Some(crate::out::create("qalc census", "--matrix", path)?),
         None => None,
     };
+    let mut speed_file = match &speed_path {
+        Some(path) => Some(crate::out::create("qalc census", "--speed", path)?),
+        None => None,
+    };
     let collect_matrix = matrix_file.is_some();
     args::build_pool(threads)?;
     let thread_count = rayon::current_num_threads();
+    // A 300,000-state canonical carrier now peaks near 0.2 GB, so the retry
+    // queue defaults to every thread; the flag still bounds it.
     let retry_threads = if retry_threads == 0 {
-        thread_count.min(8)
+        thread_count
     } else {
         retry_threads.min(thread_count)
     }
@@ -844,7 +1262,7 @@ pub fn run(argv: &[String]) -> R<()> {
     );
 
     let config = format!(
-        "qalc-census-v0 min={min_n} max={max_n} steps={steps} support={support_cap} matrix={}",
+        "qalc-census-v1 min={min_n} max={max_n} steps={steps} support={support_cap} matrix={}",
         u8::from(collect_matrix)
     );
     let mut checkpoint = match &checkpoint_path {
@@ -858,46 +1276,44 @@ pub fn run(argv: &[String]) -> R<()> {
     };
 
     let started = Instant::now();
-    let mut rows = Vec::new();
-    let mut total = Tally::new();
-    for n in min_n..=max_n {
-        let target = checkpoint
-            .as_ref()
-            .map_or(thread_count * 32, |state| state.target);
-        let tasks = interleave_tasks(split_tasks(n, target));
-        let run_slice = |slice: &[blam::blc::enumerate::GenTask]| -> R<Tally> {
-            let probed = slice
-                .par_iter()
-                .try_fold(ProbeTally::default, |mut tally, task| {
-                    let mut failure = None;
-                    run_task(task, &mut |enc, len| {
-                        if failure.is_none() {
-                            failure =
-                                probe_one(enc, len, steps, support_cap, collect_matrix, &mut tally)
-                                    .err();
-                        }
-                    });
-                    match failure {
-                        Some(error) => Err(error),
-                        None => Ok(tally),
+    let probe_slice = |slice: &[blam::blc::enumerate::GenTask]| -> R<ProbeTally> {
+        slice
+            .par_iter()
+            .try_fold(ProbeTally::default, |mut tally, task| {
+                let mut failure = None;
+                run_task(task, &mut |enc, len| {
+                    if failure.is_none() {
+                        failure =
+                            probe_one(enc, len, steps, support_cap, collect_matrix, &mut tally)
+                                .err();
                     }
-                })
-                .try_reduce(ProbeTally::default, |left, right| Ok(left.merge(right)))?;
-            let deferred = retry_pool.install(|| {
-                probed
-                    .deferred
-                    .par_iter()
-                    .copied()
-                    .try_fold(Tally::new, |mut tally, deferred| {
-                        sweep_deferred(deferred, steps, support_cap, collect_matrix, &mut tally)?;
-                        Ok::<Tally, String>(tally)
-                    })
-                    .try_reduce(Tally::new, |left, right| Ok(left.merge(right)))
-            })?;
-            Ok(probed.tally.merge(deferred))
-        };
-        let (tally, seconds) = match &mut checkpoint {
-            Some(state) => {
+                });
+                match failure {
+                    Some(error) => Err(error),
+                    None => Ok(tally),
+                }
+            })
+            .try_reduce(ProbeTally::default, |left, right| Ok(left.merge(right)))
+    };
+    let retry = |deferred: Vec<(usize, DeferredAdmission)>, sizes: usize| -> R<Vec<Tally>> {
+        retry_queue(
+            &retry_pool,
+            retry_threads,
+            deferred,
+            sizes,
+            steps,
+            support_cap,
+            collect_matrix,
+        )
+    };
+    let checkpointed = checkpoint.is_some();
+    let mut measured_sizes: Vec<(u32, Tally, f64)> = Vec::new();
+    match &mut checkpoint {
+        Some(state) => {
+            // A checkpoint group record is a complete merged tally, so each
+            // group finishes its own canonical retries before it is appended.
+            for n in min_n..=max_n {
+                let tasks = interleave_tasks(split_tasks(n, state.target));
                 let per_group = tasks.len().div_ceil(state.groups).max(1);
                 let mut tally = Tally::new();
                 let mut seconds = 0.0;
@@ -910,54 +1326,57 @@ pub fn run(argv: &[String]) -> R<()> {
                     let start = (group * per_group).min(tasks.len());
                     let end = ((group + 1) * per_group).min(tasks.len());
                     let group_started = Instant::now();
-                    let measured = run_slice(&tasks[start..end])?;
+                    let probed = probe_slice(&tasks[start..end])?;
+                    let deferred = probed.deferred.into_iter().map(|d| (0, d)).collect();
+                    let retried = retry(deferred, 1)?;
+                    let measured = retried
+                        .into_iter()
+                        .fold(probed.tally, |tally, retried| tally.merge(retried));
                     let elapsed = group_started.elapsed().as_secs_f64();
                     state.append(n, group, elapsed, &measured)?;
                     tally = tally.merge(measured);
                     seconds += elapsed;
                 }
-                (tally, seconds)
+                print_size(n, &tally, seconds);
+                measured_sizes.push((n, tally, seconds));
             }
-            None => {
+        }
+        None => {
+            // Probe every size first, then run every size's canonical retries
+            // as one longest-probe-first work queue: no size waits on its own
+            // slowest retry, and the queue keeps every retry worker busy
+            // until the last carrier.
+            let mut deferred = Vec::new();
+            for (index, n) in (min_n..=max_n).enumerate() {
+                let tasks = interleave_tasks(split_tasks(n, thread_count * 32));
                 let size_started = Instant::now();
-                let tally = run_slice(&tasks)?;
-                (tally, size_started.elapsed().as_secs_f64())
+                let probed = probe_slice(&tasks)?;
+                let seconds = size_started.elapsed().as_secs_f64();
+                eprintln!(
+                    "n={n:>2}: probed {} programs, {} canonical retries queued ({seconds:.3}s)",
+                    probed.tally.programs + probed.deferred.len() as u64,
+                    probed.deferred.len(),
+                );
+                deferred.extend(probed.deferred.into_iter().map(|d| (index, d)));
+                measured_sizes.push((n, probed.tally, seconds));
             }
-        };
-        eprintln!(
-            "n={n:>2}: {:>9} programs  gate1 {:>8}  cons {:>8}  h/e/r {}/{}/{}  cap {:?}  peak {}  ({seconds:.3}s, {:.0}/s)",
-            tally.programs,
-            tally.selection[1],
-            tally.selection[2],
-            tally.halt_programs,
-            tally.error_programs,
-            tally.running_programs,
-            tally.capacity,
-            tally.peak_support,
-            tally.programs as f64 / seconds.max(f64::MIN_POSITIVE),
-        );
-        eprintln!(
-            "      worker-s over {} measured programs: select {:.3} [carrier {:.3}, gram {:.3}, obligations {:.3}, rri {:.3}, digest {:.3}; {} attempts, {} canonical retries]  evolve {:.3}  observe {:.3}",
-            tally.perf.measured_programs,
-            tally.perf.selection.as_secs_f64(),
-            tally.perf.admission.carrier.as_secs_f64(),
-            tally.perf.admission.gram.as_secs_f64(),
-            tally.perf.admission.obligations.as_secs_f64(),
-            tally.perf.admission.rri.as_secs_f64(),
-            tally.perf.admission.digest.as_secs_f64(),
-            tally.perf.admission.attempts,
-            tally.perf.canonical_retries,
-            tally.perf.evolution.as_secs_f64(),
-            tally.perf.observation.as_secs_f64(),
-        );
-        for slow in &tally.slow_selection {
+            let retries = deferred.len();
+            let retry_started = Instant::now();
+            let retried = retry(deferred, measured_sizes.len())?;
             eprintln!(
-                "      slow select {:>8.3}s  {:?}  carrier {:>8.3}s  {}",
-                slow.elapsed.as_secs_f64(),
-                slow.kind,
-                slow.carrier.as_secs_f64(),
-                enc_to_string(slow.witness.1, slow.witness.0),
+                "retry queue: {retries} canonical retries over {retry_threads} threads in {:.3}s (size seconds below exclude it)",
+                retry_started.elapsed().as_secs_f64()
             );
+            for (slot, retried) in measured_sizes.iter_mut().zip(retried) {
+                slot.1 = std::mem::take(&mut slot.1).merge(retried);
+            }
+        }
+    }
+    let mut rows = Vec::new();
+    let mut total = Tally::new();
+    for (n, tally, seconds) in measured_sizes {
+        if !checkpointed {
+            print_size(n, &tally, seconds);
         }
         rows.push(Row::from_tally(n, &tally));
         total = total.merge(tally);
@@ -995,6 +1414,10 @@ pub fn run(argv: &[String]) -> R<()> {
         let matrix = render_matrix(min_n, max_n, steps, support_cap, &total.matrix);
         crate::out::write_all("qalc census", path, file, matrix.as_bytes())?;
     }
+    if let (Some(path), Some(file)) = (&speed_path, speed_file.as_mut()) {
+        let speed = render_speed(min_n, max_n, steps, support_cap, &rows, &total)?;
+        crate::out::write_all("qalc census", path, file, speed.as_bytes())?;
+    }
     Ok(())
 }
 
@@ -1010,6 +1433,8 @@ mod tests {
         tally.note_support(7, (10, 42));
         tally.note_capacity(9, (10, 42));
         tally.halt.add(Some(blam::quantum::scalar::Dw::ONE));
+        tally.arrivals.insert(37, tally.halt);
+        tally.open_floors.insert(1025, tally.halt);
         tally.matrix.insert(
             ("( nl ( nv i:1 ) )".into(), "( nv i:2 )".into()),
             tally.halt,
@@ -1026,6 +1451,9 @@ mod tests {
         assert_eq!(parsed.earliest_capacity, tally.earliest_capacity);
         assert_eq!(parsed.halt.value(), tally.halt.value());
         assert_eq!(parsed.matrix.len(), 1);
+        assert_eq!(parsed.arrivals.len(), 1);
+        assert_eq!(parsed.arrivals[&37].value(), tally.halt.value());
+        assert_eq!(parsed.open_floors[&1025].value(), tally.halt.value());
     }
 
     #[test]

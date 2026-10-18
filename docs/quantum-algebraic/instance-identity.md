@@ -2,9 +2,12 @@
 
 **Status: closed at the Gate-1 acceptance boundary.**
 `(gate, instance)` identifies one dynamic copy of either fixed invocation gate.
-Admission separately checks reachable-recall injectivity (RRI) on every finite
-carrier; the concrete Lean replay proves it for all 17 canonical typed sectors.
-Raw-WF recall is intentionally not claimed injective.
+The epoch-bearing recall row is injective on every source with canonical RS
+(W2), with no reachability premise (`../../qalc/RecallEpoch.lean` mechanizes
+the abstract row). Admission separately checks the stronger source-projection
+form of reachable-recall injectivity (RRI) on every complete finite carrier it
+admits; the concrete Lean replay proves it for all 17 canonical typed
+sectors.
 
 ## 1. Gate-copy theorem
 
@@ -48,32 +51,41 @@ can repeat and are not promoted to global copy identifiers.
 
 ## 2. Reachable-recall boundary
 
-The stronger raw-state claim is false. A reachable frame-absent recall source
-can be augmented with its agreeing replay frame while preserving the registered
-WF predicates; both sources then take `recall` to the same target. The
-augmented source is not reachable, but the pair proves that WF alone cannot
-justify an injective transition column.
+A recall target stores the exact predecessor coordinate (ticket epoch,
+optional old-frame epoch) in the new frame's epoch, so the row itself is
+injective (`kernel.md` §7.5). In canonical `negative`, a reachable
+frame-absent recall source augmented with its agreeing replay frame stays WF
+and W7-clean and is unreachable; the two sources take `recall` to distinct
+targets.
 
-The accepted statement is finite-carrier RRI. For one term, frozen
-certificate, and key, erase only the matching frame from each reachable recall
-source while retaining every other coordinate. No two recall sources may share
-that erased projection or actual target unless they are the same source.
+The admission statement is finite-carrier RRI, which is stronger than row
+injectivity. For one term, frozen certificate, and full key `(g, i, b′)`,
+erase only the matching frame — same gate, instance, and bit, of any epoch —
+from each reachable recall source while retaining every other coordinate.
+Two recall sources sharing that erased projection must agree on whether the
+frame was present, and two sharing an actual target must share the erased
+projection and phase. A projection may land on several targets: sources that
+differ only in the erased frame's epoch are distinct and separately admitted.
+The exact predicate and the carriers it runs on are in `kernel.md` §7.5.
 
-`rri_direct.py` checks this on a complete nonterminal carrier, including
-outgoing closure, terminal-forward coverage, dispatch purity, frame
-multiplicity, source projection, and actual-target factorization. Failure or a
-carrier cap rejects machine coverage; RRI is not inferred from a Gram result.
+`rri_direct.py` checks this on a complete kernel carrier, including outgoing
+closure, terminal-forward coverage, dispatch purity, frame multiplicity,
+source projection, and actual-target RRI; Gate-1 admission applies the same
+view and predicate to the complete composed carrier. Failure or a carrier cap
+rejects; RRI is not inferred from a Gram result.
 
 The reusable Lean layer is:
 
 - `RRIDirectCertificate.lean`: generic complete-carrier and terminal lifting;
-- `QalcConcreteKernel.lean`: executable mirror of the Gate-1 kernel;
+- `QalcConcreteKernel.lean`: executable mirror of the epoch-bearing kernel;
 - `QalcConcreteCertificate.lean`: closure, source-projection RRI,
   actual-target RRI, and terminal-forward theorems;
 - `QalcConcreteExport.py`: untrusted finite data/row exporter whose rows Lean
   recomputes; and
-- `QalcConcreteCertificateAudit.lean`: raw-collision, incomplete-carrier,
-  certified-H, and target-factorization controls.
+- `QalcConcreteCertificateAudit.lean`: the raw `negative` pair's disjoint
+  recall targets, the any-epoch phase witness, the hash-equal-epoch target
+  control, incomplete-carrier rejection, and certified-H reconvergence
+  controls.
 
 The generated canonical suite covers 5,220 nonterminal states, 5,279 rows,
 142 recall sources, 53 certified-H sources, and 18 exact H-reconvergent
@@ -87,20 +99,25 @@ python qalc/QalcConcreteBuild.py --jobs 4
 
 ## 3. Current claim and optional strengthening
 
-Gate-1 `machine_coverage` requires exact finite-carrier RRI before a sector
-can use the admitted representation. Every admitted finite sector must supply
-the same generated replay. Rejected sectors retain the exact
-source-history fallback, so the semantics remains total.
+Kernel `machine_coverage` (`certify.validate`) requires the direct
+finite-carrier RRI certificate, so every erasure certificate the canonical
+selector proposes has passed it on the kernel carrier. Gate-1 admission
+(`readback_certify.validate_nf` and `admission.rs`) then requires RRI on the
+complete composed carrier for every candidate, the no-erasure fallback
+included. The generated Lean replay exists for the 17
+canonical typed sectors; `QalcConcreteExport.emit_program` generates the same
+replay for any further finite sector. Rejected sectors retain the exact source-history
+fallback, so the semantics remains total.
 
-No theorem says typing or W0-W9 imply RRI on an arbitrary unbounded reachable
-graph. A uniform lifecycle/minimal-carrier derivation would be useful
-structure, but it is optional: neither Gate 1, Gate 2, nor the Rust reference
-implementation depends on it.
+No theorem says typing or W0-W9 imply source-projection RRI on an arbitrary
+unbounded reachable graph. A uniform lifecycle/minimal-carrier derivation
+would be useful structure, but it is optional: neither Gate 1, Gate 2, nor the
+Rust reference implementation depends on it.
 
 The executable `instance_identity.py` freezes the gate-copy reconstruction
-and raw-recall counterexample; `rri.py` remains a finite falsification
-instrument. The authoritative acceptance boundary is `GATE1.md`, not the
-absence of a counterexample in either sweep.
+and the raw-recall distinct-target control; `rri.py` is a finite falsification
+instrument. The authoritative acceptance boundary is `../../qalc/GATE1.md`,
+not the absence of a counterexample in either sweep.
 
 ## 4. Source pin
 

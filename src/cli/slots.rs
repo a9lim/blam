@@ -1,6 +1,7 @@
 //! Exhaustive **parametric** slot search for the 170-bit BLC self-interpreter
-//! (`ref/AIT/ait/int.lam`), per
-//! `docs/classical/self-interpreter/search-spec.md` §1 and §4.
+//! (`ref/AIT/ait/int.lam` as of tromp/AIT `fd4e9b0`) and Sean Palmer's 168-bit
+//! successor (tromp/AIT `2cfa384`), per
+//! `docs/classical/self-interpreter/slots.md` ("The contract").
 //!
 //! The interpreter's three branch bodies sit under a stack of rigid binders:
 //!
@@ -13,8 +14,21 @@
 //! ```
 //!
 //! so a candidate for a slot is an *open* term over a frame of 8 (ABS, APP)
-//! or 6 (VAR) rigid variables. We close it under those binders plus one
-//! extra rigid `rest`:
+//! or 6 (VAR) rigid variables. The 168 let-floats the zero-branch
+//! continuation out from under `\list \bit0 \list1`, which moves every slot:
+//!
+//! ```text
+//! (\a. a a) (\a. (\intL. \cont.
+//!    (\next. \list. list (\bit0 \list1. bit0 (list1 next) <VAR>))
+//!    (\bit1. intL (\exp. bit1  <ABS>  <APP> )))
+//!   (a a))
+//! ```
+//!
+//! so its ABS and APP frames are 5 wide and its VAR frame 7 (`next` sits
+//! between `list` and `cont`). Every frame variable reference is repriced, so
+//! the 170's certificates say nothing about the 168's slots; the `*168` rows
+//! are searched afresh. Either way, we close a candidate under its frame plus
+//! one extra rigid `rest`:
 //!
 //! ```text
 //! U(C) = \rest \a \intL \cont \list \bit0 \list1 \bit1 \exp. C rest
@@ -54,7 +68,7 @@ use std::time::Instant;
 /// that occur *rigidly* in that golden normal form: β-reduction cannot invent
 /// a free variable, so a candidate lacking one cannot reach the golden. That
 /// is the only enumeration constraint used, and it is a theorem, not a
-/// heuristic (`docs/classical/self-interpreter/search-spec.md` §4).
+/// heuristic (`docs/classical/self-interpreter/slots.md`, "Enumeration with obligations").
 struct Slot {
     name: &'static str,
     /// Number of rigid frame binders in scope at the slot.
@@ -98,6 +112,31 @@ const SLOTS: &[Slot] = &[
         reference: "01111111100001111111100001011110100111010",
         golden: "00000000000000000001011111111000011111111000010111101001110101111111110",
     },
+    // The 168's slots: same three bodies, repriced frames.
+    Slot {
+        name: "var168",
+        frame: 7,
+        must: 0b0010001, // list1 (bit 0) + cont (bit 4)
+        names: &["list1", "bit0", "list", "next", "cont", "intL", "a"],
+        reference: "0101111110100101101010",
+        golden: "0000000000000000010101111110100101101010111111110",
+    },
+    Slot {
+        name: "abs168",
+        frame: 5,
+        must: 0b00101, // exp (bit 0) + cont (bit 2)
+        names: &["exp", "bit1", "cont", "intL", "a"],
+        reference: "0111100000011110000001011101110011011110",
+        golden: "0000000000000101111000000111100000010111011100110111101111110",
+    },
+    Slot {
+        name: "app168",
+        frame: 5,
+        must: 0b01101, // exp (bit 0) + cont (bit 2) + intL (bit 3)
+        names: &["exp", "bit1", "cont", "intL", "a"],
+        reference: "01111100001111100001011110100111010",
+        golden: "00000000000001011111000011111000010111101001110101111110",
+    },
 ];
 
 // --------------------------------------------------- obligation-aware enumerator
@@ -106,11 +145,11 @@ const SLOTS: &[Slot] = &[
 /// `depth`, which must mention every frame variable in `must` and none in
 /// `forbid`. `v = frame + depth` free indices are addressable.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
-struct Pending {
-    depth: u8,
-    size: u8,
-    must: u8,
-    forbid: u8,
+pub(crate) struct Pending {
+    pub(crate) depth: u8,
+    pub(crate) size: u8,
+    pub(crate) must: u8,
+    pub(crate) forbid: u8,
 }
 
 /// The occurrence bit a variable leaf of BLC size `n` contributes at `depth`,
@@ -121,7 +160,12 @@ fn occurrence(frame: u8, depth: u8, n: u8) -> Option<u8> {
     if i > frame + depth {
         return None;
     }
-    Some(if i <= depth { 0 } else { 1 << (i - depth - 1) })
+    // Frame variables past the eighth carry no obligation bit.
+    Some(if i <= depth || i - depth > 8 {
+        0
+    } else {
+        1 << (i - depth - 1)
+    })
 }
 
 #[inline(always)]
@@ -144,7 +188,7 @@ fn leaf_ok(frame: u8, p: Pending) -> bool {
 /// are dead (you cannot fit `exp`, `cont` and `intL` into a 2-bit subterm).
 /// The enumerator then spends its whole life walking subtrees that emit
 /// nothing. Zero-count pruning is what makes the sweep linear in *output*.
-struct Counts {
+pub(crate) struct Counts {
     frame: u8,
     /// mask (subset of the root's must) -> dense index
     idx: [u8; 256],
@@ -156,7 +200,7 @@ struct Counts {
 const MAX_DEPTH: usize = 24;
 
 impl Counts {
-    fn new(frame: u8, m0: u8, max_size: u8) -> Self {
+    pub(crate) fn new(frame: u8, m0: u8, max_size: u8) -> Self {
         // Both `must` and `forbid` only ever range over subsets of the root's
         // must-mask, so the dense axes are tiny (2^|m0| each).
         let mut subs: Vec<u8> = Vec::new();
@@ -212,7 +256,7 @@ impl Counts {
     }
 
     #[inline(always)]
-    fn get(&self, p: Pending) -> u64 {
+    pub(crate) fn get(&self, p: Pending) -> u64 {
         if p.size < 2 || p.depth as usize > MAX_DEPTH {
             return 0;
         }
@@ -264,7 +308,13 @@ impl Counts {
 }
 
 /// Enumerate every term satisfying the obligation stack, calling `f(bits, len)`.
-fn go(c: &Counts, pending: &mut Vec<Pending>, acc: u64, len: u8, f: &mut impl FnMut(u64, u8)) {
+pub(crate) fn go(
+    c: &Counts,
+    pending: &mut Vec<Pending>,
+    acc: u64,
+    len: u8,
+    f: &mut impl FnMut(u64, u8),
+) {
     let Some(p) = pending.pop() else {
         f(acc, len);
         return;
@@ -328,10 +378,10 @@ fn go(c: &Counts, pending: &mut Vec<Pending>, acc: u64, len: u8, f: &mut impl Fn
 // -------------------------------------------------------------- task splitting
 
 #[derive(Clone)]
-struct Task {
-    pending: Vec<Pending>,
-    acc: u64,
-    len: u8,
+pub(crate) struct Task {
+    pub(crate) pending: Vec<Pending>,
+    pub(crate) acc: u64,
+    pub(crate) len: u8,
 }
 
 /// One level of `go`'s branch structure, as tasks. Kept in lockstep with `go`
@@ -407,7 +457,7 @@ fn expand(c: &Counts, t: &Task) -> Vec<Task> {
 /// heaviest one (DP-weighted), which balances far better than expanding the
 /// frontier level by level: the App fan-out makes subtree sizes span orders
 /// of magnitude at every depth.
-fn split_tasks(c: &Counts, root: Pending, target: usize) -> Vec<Task> {
+pub(crate) fn split_tasks(c: &Counts, root: Pending, target: usize) -> Vec<Task> {
     let mut store = vec![Task {
         pending: vec![root],
         acc: 0,
@@ -774,7 +824,11 @@ fn render(slot: &Slot, enc: u64, len: u8) -> String {
 const USAGE: &str = "\
 blam slots — exhaustive parametric slot search for the self-interpreter
 
-usage: blam slots (var|abs|app) [flags]
+usage: blam slots (var|abs|app)[168] [flags]
+
+  var/abs/app search the 170-bit interpreter's slots; the 168 suffix
+  searches the same bodies in the 168-bit interpreter's frames.
+
 
   --min-size N    smallest candidate size in bits (default 2)
   --max-size N    largest candidate size (default: the reference's size)
@@ -810,13 +864,13 @@ pub fn run(argv: &[String]) -> R<()> {
     p.at_most(1)?;
     let Some(slot_name) = p.positional().first().copied() else {
         return Err(format!(
-            "blam slots: missing slot name (var | abs | app)\n{}",
+            "blam slots: missing slot name (var | abs | app, optionally suffixed 168)\n{}",
             args::hint("slots")
         ));
     };
     let Some(slot) = SLOTS.iter().find(|s| s.name == slot_name) else {
         return Err(format!(
-            "blam slots: unknown slot `{slot_name}` (expected var, abs, or app)\n{}",
+            "blam slots: unknown slot `{slot_name}` (expected var, abs, app, or a 168 variant)\n{}",
             args::hint("slots")
         ));
     };
@@ -1102,8 +1156,8 @@ mod tests {
 
     #[test]
     fn obligations_match_brute_force() {
-        for frame in [6u8, 8] {
-            for must in [0u8, 0b1, 0b100001, 0b1100001] {
+        for frame in [5u8, 6, 7, 8] {
+            for must in [0u8, 0b1, 0b100001, 0b1100001, 0b00101, 0b01101, 0b0010001] {
                 let must = must & ((1u16 << frame) - 1) as u8;
                 for n in 2..=17u8 {
                     let via = enumerate(
@@ -1127,8 +1181,8 @@ mod tests {
 
     #[test]
     fn dp_matches_enumeration() {
-        for frame in [6u8, 8] {
-            for must in [0u8, 0b100001] {
+        for frame in [5u8, 6, 7, 8] {
+            for must in [0u8, 0b100001, 0b01101] {
                 let c = Counts::new(frame, must, 20);
                 for n in 2..=20u8 {
                     let p = Pending {
@@ -1144,7 +1198,7 @@ mod tests {
     }
 
     /// The published regression values from
-    /// `docs/classical/self-interpreter/search-spec.md` §4.
+    /// `docs/classical/self-interpreter/slots.md`.
     #[test]
     fn spec_regression_counts() {
         let sum = |must: u8, hi: u8| -> u64 {
@@ -1168,7 +1222,7 @@ mod tests {
 
     #[test]
     fn split_covers_exactly() {
-        for frame in [6u8, 8] {
+        for frame in [5u8, 6, 7, 8] {
             for must in [0u8, 0b100001] {
                 for n in [12u8, 17, 21] {
                     let root = Pending {
@@ -1198,6 +1252,7 @@ mod tests {
 
     #[test]
     fn reference_slots_are_survivors() {
+        resolve_engine_cfg().unwrap(); // as `run` does; escalation reads it
         for slot in SLOTS {
             let golden = bits_of(slot.golden);
             let enc = u64::from_str_radix(slot.reference, 2).unwrap();
@@ -1228,6 +1283,7 @@ mod tests {
     /// input bits would look just as green as one that normalizes.
     #[test]
     fn beta_variants_of_the_reference_also_pass() {
+        resolve_engine_cfg().unwrap(); // as `run` does; escalation reads it
         for slot in SLOTS {
             let golden = bits_of(slot.golden);
             // (\x. x) REF
@@ -1260,10 +1316,11 @@ mod tests {
     /// the golden.
     #[test]
     fn adjudication_agrees_with_full_normalization() {
+        resolve_engine_cfg().unwrap(); // as `run` does; escalation reads it
         use blam::classical::machine::StringSink;
         for slot in SLOTS {
             let golden = bits_of(slot.golden);
-            let hi = if slot.frame == 6 {
+            let hi = if slot.name.starts_with("var") {
                 slot.reference.len() as u8
             } else {
                 28

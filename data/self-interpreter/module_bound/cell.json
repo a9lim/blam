@@ -1,0 +1,172 @@
+{
+ "name": "cell",
+ "ambient": 2,
+ "holes": [],
+ "required": [
+  0,
+  1
+ ],
+ "max_cost": 24,
+ "all": 97435,
+ "tested": 31414,
+ "unknown": 0,
+ "cycles": 0,
+ "hits": [
+  {
+   "cost": 24,
+   "bits_with_holes": "000001011101110011011110"
+  }
+ ],
+ "rows": [
+  {
+   "cost": 0,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 1,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 2,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 3,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 4,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 5,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 6,
+   "all": 3,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 7,
+   "all": 3,
+   "tested": 2,
+   "hits": 0
+  },
+  {
+   "cost": 8,
+   "all": 6,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 9,
+   "all": 8,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 10,
+   "all": 17,
+   "tested": 4,
+   "hits": 0
+  },
+  {
+   "cost": 11,
+   "all": 24,
+   "tested": 8,
+   "hits": 0
+  },
+  {
+   "cost": 12,
+   "all": 46,
+   "tested": 6,
+   "hits": 0
+  },
+  {
+   "cost": 13,
+   "all": 70,
+   "tested": 18,
+   "hits": 0
+  },
+  {
+   "cost": 14,
+   "all": 137,
+   "tested": 30,
+   "hits": 0
+  },
+  {
+   "cost": 15,
+   "all": 221,
+   "tested": 70,
+   "hits": 0
+  },
+  {
+   "cost": 16,
+   "all": 413,
+   "tested": 94,
+   "hits": 0
+  },
+  {
+   "cost": 17,
+   "all": 687,
+   "tested": 200,
+   "hits": 0
+  },
+  {
+   "cost": 18,
+   "all": 1291,
+   "tested": 354,
+   "hits": 0
+  },
+  {
+   "cost": 19,
+   "all": 2221,
+   "tested": 712,
+   "hits": 0
+  },
+  {
+   "cost": 20,
+   "all": 4114,
+   "tested": 1170,
+   "hits": 0
+  },
+  {
+   "cost": 21,
+   "all": 7194,
+   "tested": 2346,
+   "hits": 0
+  },
+  {
+   "cost": 22,
+   "all": 13332,
+   "tested": 4106,
+   "hits": 0
+  },
+  {
+   "cost": 23,
+   "all": 23746,
+   "tested": 8044,
+   "hits": 0
+  },
+  {
+   "cost": 24,
+   "all": 43898,
+   "tested": 14250,
+   "hits": 1
+  }
+ ]
+}

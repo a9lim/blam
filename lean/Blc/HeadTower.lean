@@ -1,5 +1,5 @@
 /-
-The HeadTowerRatchet (v2) assembly: SPEC.md §5's six-obligation
+The HeadTowerRatchet (v2) assembly: docs/classical/certificates/specification.md §5's six-obligation
 certificate class formalized, to Codex's round-eight Lean design
 (gaslamp blc-conformance) — for loops whose tower argument itself
 takes head position (`A Z →ₕ⁺ Z W[Z]`), the shape v1's opacity must

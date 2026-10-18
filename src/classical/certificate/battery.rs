@@ -1,6 +1,6 @@
 //! Certificate soundness battery (certificate specification §7): stream discovery's
-//! candidates through ALL trusted verifiers (v1 ratchet, HTR,
-//! SelectorRatchet — the exact sweep ladder) over every closed term
+//! candidates through ALL trusted verifiers (Ratchet, HTR, SelectorRatchet,
+//! PassengerDiagonalRatchet — the exact sweep ladder) over every closed term
 //! of 4..=28 bits that
 //! provably HALTS, and assert no certificate ever fires. This tests the
 //! implementation, not the math — a certificate on a halter would mean
@@ -46,7 +46,7 @@ fn no_certificate_fires_on_any_small_halter() {
                 halters += 1;
                 let bits = enc_to_string(enc, len);
                 let t = parse_all(&bits).unwrap();
-                // Stream ALL candidate families through all three trusted
+                // Stream ALL candidate families through all four trusted
                 // checkers — the exact sweep ladder `cert search` runs,
                 // at the battery's doubled trace budget.
                 if let Some(kill) = try_kill(&t, &CertBudgets::THOROUGH) {

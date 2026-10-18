@@ -180,7 +180,7 @@ halting probability is Solovay complete among left-c.e. reals, then so is
 `Omega_qALC`, and it is Martin-Lof random.  The antecedent is not established
 in this repository.  A small self-interpreter or Turing completeness alone is
 not enough: the standard theorem needs an optimal prefix machine with
-additive description overhead.  The 170-bit BLC interpreter consumes an
+additive description overhead.  The 168-bit BLC self-interpreter consumes an
 encoded term and does not by itself discharge that coding theorem.
 
 ## 5. What “universal `M`” must mean
@@ -228,7 +228,9 @@ Primary references:
   for the standard coincidence between universal prefix-machine halting
   probabilities and Martin-Lof-random left-c.e. reals.
 
-## 6. Sharpened docket
+## 6. Open questions
+
+`../STATUS.md` orders these against the rest of the qALC docket.
 
 1. Promote the wrapper theorem's semantic clause from contract plus finite
    battery to an all-program formal theorem for the pure token/readback path.

@@ -1,0 +1,24 @@
+-- BLC2 universal machine over BLC8 bytes (tromp/AIT uni28.lam), non-strict.
+-- tromp/AIT's uni28.lam compiles to 500 bits. This source compiles to 393;
+-- uni28_nonstrict.blc (382 bits) is its beta-only descent (blam golf
+-- component --descend --no-eta), certified step by step with blam golf
+-- check --path. Design (Codex, 2026-10-12): one bit reader `get` serves the
+-- parser, the Levenshtein delimiter and the digit accumulator, with its
+-- continuation held outside the reader's fixpoint; the final continuation
+-- is the identity, so cont exp bits bytes = M bytes for closed M.
+-- Verified against the 500 by `blam golf check --io bytes --max-bits 18`
+-- (0 differ; the inputs that halt here only are complete open programs)
+-- and by direct-evaluation tests through index 255 and three-level
+-- self-interpretation; see docs/classical/golf.md.
+let
+ id = \x.x;
+ true = \x\y.x;
+ get = \k.let loop = \bits.bits (\b\tail\ignored.k b tail) (\bytes.bytes loop) in loop;
+ readbit = \f\cont\n.get (\bit.cont (\x.n (n (bit x (f x)))));
+ delimit = \f\cont.get (\bit.bit (cont id) (delimit (readbit f) (\n.n cont f)));
+ int = \cont.get (\bit0.bit0
+   (get (\bit1.int (\exp.bit1 (cont (\args\arg.exp (\z.z arg args)))
+        (int (\exp2.cont (\args.exp args (exp2 args)))))))
+   (delimit (\l.l bit0) (\n.cont (\args.n args true))));
+ omega = omega
+in \bytes.bytes (int id)

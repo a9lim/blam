@@ -11,17 +11,25 @@
 
 mod adjudicate;
 mod args;
+mod blc;
 mod census;
 mod cert;
 mod ckpt;
+mod feed;
+mod golf;
 mod normalize;
+mod omega;
 mod out;
+mod program;
 mod q;
 mod qalc;
 mod solomonoff;
+mod uni;
 
 #[cfg(feature = "lab")]
-mod slots;
+mod selfint;
+#[cfg(feature = "lab")]
+pub(crate) mod slots;
 #[cfg(feature = "lab")]
 mod trace;
 
@@ -31,14 +39,20 @@ blam — binary lambda calculus engine for algorithmic information theory
 usage: blam <command> [args]        (`blam <command> --help` for details)
 
 ENGINES
-  normalize BITS               normalize a closed term on the KN machine
-  adjudicate BITS | --file F   run the full halting ladder, verbosely
+  normalize TERM               normalize a closed term on the KN machine
+  adjudicate TERM | --file F   run the full halting ladder, verbosely
   q run BITS                   run a qBLC program, one line per leaf
   qalc run|gram|compile|fixtures   qALC exact reference drivers
+
+PROGRAMS
+  blc ACTION PROGFILE [ARGS]   John Tromp's blc tool: run, nf, blc, size, ...
+  uni [-b] [PROGRAM...]        John Tromp's universal machine uni
+  golf letopt|component|check  size optimizers for BLC programs
 
 MEASUREMENTS
   census [MIN] MAX             halt/diverge/unknown census by term size
   solomonoff [MIN] MAX         Solomonoff prior m(x), K(x), Omega bounds
+  omega leaves [MIN] MAX       leaf tables for the true-Omega bounds
   q census [MIN] MAX           the quantum operator census
   qalc census [MIN] MAX        finite-clock qALC census over BLC p h t
   q skeleton FILE              trusted skeleton sweep over a terms file
@@ -54,10 +68,13 @@ INSTRUMENTS
   trace scan|single|dump|verify-loop32   reduction-shape classifier
                                                                  (lab feature)
   slots var|abs|app            self-interpreter slot search       (lab feature)
+  selfint ctx|hole|wiring      searches below the 168             (lab feature)
   q galois idiom|complement    the dyadicity campaign             (lab feature)
   q oddmin [W]                 gated reference DP for the CNOT-free lane
                                                                  (lab feature)
 
+A TERM is wire bits (0/1), a .lam / .blc / .blc8 file, or λ-notation such
+as '(\\x.x x) (\\y.y)' or de Bruijn '(\\1 1) (\\1)'.
 Engine knobs: --work-mult N / --probe-fuel N on the ladder subcommands
 (BLC_WORK_MULT / BLC_PROBE_FUEL are honoured as fallbacks).
 `blam --version` prints the crate version.";
@@ -89,9 +106,12 @@ fn dispatch(argv: &[String]) -> Result<(), String> {
     let rest = &argv[1..];
     match cmd.as_str() {
         "normalize" => normalize::run(rest),
+        "blc" => blc::run(rest),
+        "uni" => uni::run(rest),
         "adjudicate" => adjudicate::run(rest),
         "census" => census::run(rest),
         "solomonoff" => solomonoff::run(rest),
+        "omega" => omega::run(rest),
         "cert" => cert::run(rest),
         "q" => q::run(rest),
         "qalc" => qalc::run(rest),
@@ -103,6 +123,11 @@ fn dispatch(argv: &[String]) -> Result<(), String> {
         "slots" => slots::run(rest),
         #[cfg(not(feature = "lab"))]
         "slots" => Err(no_lab("slots")),
+        #[cfg(feature = "lab")]
+        "selfint" => selfint::run(rest),
+        #[cfg(not(feature = "lab"))]
+        "selfint" => Err(no_lab("selfint")),
+        "golf" => golf::run(rest),
         other => Err(format!(
             "blam: unknown command `{other}`\ntry `blam --help` for the command table"
         )),
@@ -132,8 +157,16 @@ mod tests {
         let always = [
             vec!["normalize"],
             vec!["adjudicate"],
+            vec!["blc"],
+            vec!["uni"],
+            vec!["golf"],
+            vec!["golf", "letopt"],
+            vec!["golf", "component"],
+            vec!["golf", "check"],
             vec!["census"],
             vec!["solomonoff"],
+            vec!["omega"],
+            vec!["omega", "leaves"],
             vec!["cert"],
             vec!["cert", "lean"],
             vec!["q"],
@@ -161,7 +194,13 @@ mod tests {
     fn top_level_help_lists_every_group() {
         assert!(dispatch(&argv(&["--help"])).is_ok());
         assert!(dispatch(&argv(&[])).is_ok());
-        for group in ["ENGINES", "MEASUREMENTS", "CERTIFICATES", "INSTRUMENTS"] {
+        for group in [
+            "ENGINES",
+            "PROGRAMS",
+            "MEASUREMENTS",
+            "CERTIFICATES",
+            "INSTRUMENTS",
+        ] {
             assert!(USAGE.contains(group), "{group} missing from the help");
         }
     }
@@ -216,6 +255,9 @@ mod tests {
         let paths = [
             vec!["trace"],
             vec!["slots"],
+            vec!["selfint"],
+            vec!["selfint", "ctx"],
+            vec!["selfint", "hole"],
             vec!["cert", "search"],
             vec!["cert", "diag"],
             vec!["q", "galois"],

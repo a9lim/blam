@@ -21,10 +21,13 @@ The pillar implements:
 - checked finite Gate-1 admission with a conservative total fallback; and
 - exact `U`, `mu_p`, `rho_p`, finite `M`, and `Omega_qALC` approximants.
 
-`src/qalc/` depends only on `quantum::scalar::Dw` and `crate::hash` outside its
-own tree. It adds no traits or configuration to the classical or qBLC pillars.
-The classical census and qBLC operator census must remain bit-identical with
-qALC present or absent.
+Outside its own tree, `src/qalc/` reads only `quantum::scalar` (`Dw`,
+`ExactSum`, and the `K_CAP`/`K_CAP_ACCUM` limits), `crate::hash`, and
+`blc::Term` for the BLC-to-qALC conversion `term::from_blc`. It adds no traits
+or configuration to the classical or qBLC pillars. The classical census and
+qBLC operator census must remain bit-identical with qALC present or absent;
+that isolation rests on this import discipline and on the census spot-check,
+not on a dedicated test.
 
 The population census remains a separate measured layer over this reference
 API. `blam qalc census` supplies the ordinary BLC enumerator, `p h t`
@@ -32,10 +35,12 @@ invocation convention, exact Kraft aggregation, resource brackets,
 checkpointing, and optional sparse-`M` persistence without changing `U`.
 Selection is scheduled in two phases: a successful 1,000-state first-candidate
 probe is already a complete checked admission, while every inconclusive probe
-retries the unchanged 300,000-state canonical selector in a bounded rayon
-pool. A probe failure never selects conservative history. Performance timing
-is stderr-only telemetry and does not enter the deterministic report or
-checkpoint accumulator.
+retries the unchanged 300,000-state canonical selector. Without a checkpoint,
+every size is probed first and all retries then run as one longest-probe-first
+work queue in a bounded rayon pool; with one, each group finishes its own
+retries before its record is appended. A probe failure never selects
+conservative history. Performance timing is stderr-only telemetry and does not
+enter the deterministic report or checkpoint accumulator.
 
 ## 2. Module map
 
@@ -51,9 +56,11 @@ src/qalc/
   compiler.rs    typed H/T/CNOT circuits and linear-SSA compiler/recognizer
   shadow.rs      native-CNOT transition table and custom predecessors
   gate2check.rs  compiler-sector structural checks and finite audit
-  admission.rs   finite Gate-1 carrier validation and direct RRI check
+  admission.rs   finite Gate-1 carrier validation and composed-carrier RRI
   wf.rs          the W0-W9 well-formedness subset used by admission
   semantics.rs   total sector selection and public semantic objects
+  fasthash.rs    deterministic hasher for lookup-only in-process tables
+  shared.rs      pointer-shared values with cached content hashes
 ```
 
 `src/hash.rs` supplies the dependency-free SHA-256 core shared by qfx
@@ -127,7 +134,7 @@ ordinary non-image selection rather than inheriting a certificate.
 `U` is the exact one-step sparse linear extension of the selected machine.
 Halt and error sectors retain their predecessor information and advance on
 unilateral tick tails. `mu_p` and `rho_p` are finite-time observations of
-that same evolution; `finite_M` and `omega_qalc_approximant` add exact Kraft
+that same evolution; `finite_m` and `omega_qalc_approximant` add exact Kraft
 weights over finite program sets.
 
 ## 6. Differential evidence
@@ -169,8 +176,11 @@ program from a qfx file. A qfx input is provenance-bearing: its certificate
 must equal the certificate selected by the public semantics before execution.
 `census` instead constructs the canonical invocation from each enumerated BLC
 program and keeps the gates outside its prefix length. `--retry-threads`
-controls only the canonical second-phase pool (up to eight workers by default),
-not the selector or census semantics.
+controls only the canonical second-phase pool (every rayon thread by default),
+not the selector or census semantics. `--speed FILE` writes the speed-prior
+surface of `speed.md` — the exact arrival spectrum and the directed
+`Ω_speed` brackets — from the same run, leaving the deterministic report
+byte-identical.
 
 The qALC verification contract is:
 
@@ -192,16 +202,16 @@ manual proof-surface checks, run only when that surface intentionally changes.
 The path-scoped qALC CI checks fixture determinism under two hash seeds, while
 ordinary CI owns the Rust differential suites. Rust tests also
 pin norm equality, monotone halt mass, orthonormal columns, effect-free
-conservativity, HH cancellation, H-NOT'-H coherence, the negative witness,
-compiler cleanliness, and cross-pillar isolation.
+conservativity (a unit test in `admission.rs`), HH cancellation, H-NOT'-H
+coherence, the negative witness, and compiler cleanliness.
 
 ## 8. Boundaries
 
 The public semantic claim is exact for every finite closed input sector under
 the total selector. The finite Gate-1 certificates and concrete Lean mirrors
-do not prove a uniform raw-WF lifecycle theorem. Raw-WF recall is known to be
-noninjective; admission checks the stronger property only on complete
-reachable carriers.
+do not prove a uniform lifecycle theorem. The epoch-bearing recall row is
+injective, and admission checks the stronger source-projection RRI predicate
+only on complete reachable carriers.
 
 The ambient lifecycle/minimal-carrier theorem, general probe-exit
 classification, and broader arrival/pop determinacy are optional research

@@ -51,15 +51,15 @@ leaves with exactly `k` live qubits. Each `k` receives its own full Kraft
 budget. Uniformity in `k`, rather than domination within one finite sector,
 is the content required of a Gács-style conditional universality theorem.
 
-The two objects satisfy a coding sandwich of the form
+The two objects are expected to satisfy a coding sandwich of the form
 
 ```text
 c m(k) G_k ⪯ M^(k) ⪯ C G_k,
 ```
 
 where the lower comparison pays the algorithmic cost of addressing `k` and
-the upper comparison discards the condition at constant program cost. They
-are not equal. In particular, normalizing `M^(k)` by its sector trace does not
+the upper comparison discards the condition at constant program cost; the
+explicit constants are not yet derived. The objects are not equal. In particular, normalizing `M^(k)` by its sector trace does not
 produce `G_k`: the trace is only lower semicomputable and the quotient need
 not be lower semicomputable.
 
@@ -79,11 +79,16 @@ The five-lambda wrapper is a common programming idiom, not a syntactic
 restriction. Object A runs a program on the signature; Object B first supplies
 the dimension condition and then the signature.
 
-The canonical order's single home in code is `quantum::sig::FROZEN`. Unit
+The order was chosen by a predeclared pilot over all 120 orderings of the
+five primitives: it has the largest `Ω_success` at every depth measured
+(≤24, 26, 28, 30, 32, 34), and its tie with the h↔t mirror
+`t meas new cnot h` breaks in its favour from 28 bits on. The canonical
+order's single home in code is `quantum::sig::FROZEN`. Unit
 tests pin both the sequence and its being a permutation of
 `Prim::CANONICAL_SET`, because every canonical number in
-`../../data/quantum/` is relative to it. Alternate orders remain reachable
-through `--sig` and produce non-canonical data by construction.
+`../../data/quantum/` is relative to it. `--sig` runs alternate signatures,
+reorderings or other primitive universes (`Prim` also has `s`, `x`, and `z`),
+and produces non-canonical data by construction.
 
 ### Values, stores, and dynamic linearity
 
@@ -155,11 +160,10 @@ coefficients plus a denominator exponent, capped at `K_CAP`. Arithmetic
 overflow becomes a capacity fate rather than wrapping or silently
 approximating.
 
-The Galois accounting is merged into the same module rather than living in a
-separate radical layer: `radical_parts` splits a real scalar into its rational
-and `√2` halves, `sqrt2_part` re-embeds the `√2` coefficient so it can ride
-its own accumulator, and `is_dyadic` is the predicate the dyadicity campaign
-tests. `ExactSum` is the one exact accumulator every sweep, census, and
+The same module carries the Galois accounting: `radical_parts` splits a real
+scalar into its rational and `√2` halves, `sqrt2_part` re-embeds the `√2`
+coefficient so it can ride its own accumulator, and `is_dyadic` is the
+predicate the dyadicity campaign tests. `ExactSum` is the one exact accumulator every sweep, census, and
 campaign uses. It is structurally overflow-safe — an overflowed total has no
 readable field, only an `Option` value, a loud `expect_exact`, and an
 explicitly diagnostic partial — and carries an f64 mirror for display columns
@@ -171,7 +175,13 @@ plus its own checkpoint codec.
 primitives, handles, and a branch-local store. It shares the reference
 store-effect methods rather than reimplementing quantum algebra. The fast path
 preserves the complete leaf distribution: fates, normal forms, stores, exact
-masses, and classical β-contraction counts.
+masses, and classical β-contraction counts. Like the classical machine it skips
+var→var indirection chains with exact transition accounting (`Val::Hop`): every
+β of an Ω-shaped divergent program binds one more bare-`Var` alias, so a
+β-4,096 Unknown otherwise spends about 8.4M transitions re-reading cells. The
+env arena is shared by every branch of a run and cells are immutable, so a
+chain one branch resolves is valid in all of them; jumps are charged against
+the remaining transition budget, which is an unrestricted `u64`.
 
 ### Trusted skeleton checker
 
@@ -181,22 +191,20 @@ leftmost-outermost β — no simplify, no oracle, no history abstraction. Its
 verdicts are `Loop`, `HoleFree`, `NormalWithHoles`, `HoleDemanded`, and
 `CapOut`; the last carries which cap fired and the chain's high-water size.
 
-**Transfer theorem.** If the symbolic chain never exposes a hole in operator
-position, then under the primitive substitution `σ` no δ-rule is ever demanded,
-so the quantum machine walks the identical chain: an exact recurrence is a
-proven diverger contributing zero to `Ω_success`, a hole-inert normal form is a
-quantum Halt with empty store at full mass, and a hole-free residual is a
-closed pure term both machines share, so classical semantic verdicts transfer
-wholesale in both directions. Skeleton halts alone prove nothing, and a
-demanded hole yields no claim. `escalation.md` is the authority on the ladder
-built from this checker, its rungs, and the residual adjudication that follows
-`HoleFree`; this section does not restate them.
+Its transfer theorem (no hole ever demanded in operator position means the
+quantum machine walks the identical chain) is what lets a `Loop`, a
+hole-inert normal form, or a classically adjudicated hole-free residual stand
+for the quantum run. `escalation.md` is the authority on the theorem, the
+ladder built from this checker, and the residual adjudication that follows
+`HoleFree`.
 
 ### Shared sweep step
 
-`src/cli/q/sweep.rs` is the per-program step all three measurements share — it sits with the drivers rather than in the `quantum` pillar (measurement plumbing, not engine surface; see `src/quantum/mod.rs`'s module doc) —
-the operator census and both dyadicity sectors — with the mass-conservation
-battery inside it, so no sweep can drop the check the others keep.
+`src/cli/q/sweep.rs` is the per-program step that all three measurements
+share (the operator census and both dyadicity sectors), with the
+mass-conservation battery inside it, so no sweep can drop the check the
+others keep. It sits with the drivers rather than in the `quantum` pillar
+because it is measurement plumbing, not engine surface.
 `src/quantum/sig.rs` is the frozen order's single home and supplies the hole
 application and the Object-B Church numeral, so the census skeleton column and
 the trusted checker cannot drift into adjudicating different terms.
@@ -208,10 +216,11 @@ All quantum drivers are subcommands of the single `blam` binary, under `q`.
 - `blam q run BITS`: one program, one line per leaf, exact masses;
 - `blam q census [MIN] MAX`: exhaustive successful-output census and sector
   operators (Object A; `--cond-k K` switches to the Object-B `G_k`
-  approximant, `--skeleton CAP` adds the classical skeleton column);
+  approximant). `--terms-file FILE` re-adjudicates a list of programs instead,
+  and there `--skeleton CAP` adds the classical skeleton column;
 - `blam q skeleton FILE`: the trusted-checker sweep over a terms file;
-- `blam q selfint [MAX_N] [PHASE]`: effect-trace comparison for the classical
-  self-interpreter;
+- `blam q selfint [MAX_N] [PHASE]`: effect-trace comparison between direct
+  runs and runs through the classical self-interpreter (`bisimulation.md`);
 - `blam q galois idiom|complement`: the dyadicity campaign — exact aggregate
   masses and their `√2` coefficients, phase 1 over the `λ⁵` signature idiom
   and phase 2 over its complement; and
@@ -267,7 +276,8 @@ language. None contributes to the successful-output operator.
 
 Every quantum engine change must satisfy:
 
-1. `cargo test --release`;
+1. `cargo test --release --all-features` and `cargo test --release` (the
+   odd-sector and dyadicity instruments are lab-gated);
 2. exhaustive `quantum::machine`/`quantum::reference` lockstep over the
    configured closed-term range;
 3. equality of every leaf's fate, normal form, store, exact mass, and
@@ -292,29 +302,12 @@ a search.
 
 ## 6. Measured characteristics
 
-The canonical operator census covers every closed program from 4 through 41
-bits in about 30 minutes on the reference workstation. Its exact successful
-mass is
-
-```text
-Ω_success,≤41 = 3424188513 / 2^40.
-```
-
-The one-qubit operator is positive definite, so both computational-basis
-states receive finite measured complexity bounds. The first entangled
-successful output occurs at 41 bits. Three distinct thresholds must remain
-separate: the 34-bit shortest success from an arbitrary closed term, the
-45-bit shortest odd leaf mass from a five-lambda gate-signature idiom, and
-the 53-bit shortest known non-dyadic total successful mass.
-
-The exact complement census has zero aggregate `√2` coefficient through 51
-bits. This is evidence of structured cancellation, not a proof that the
-coefficient always vanishes. The classical self-interpreter wrapper is 176
-bits and has passed effect-trace comparison; its general bisimulation theorem
-remains open.
-
-The complete current matrices, rankings, frontier counts, and odd-sector
-search bounds are maintained in `../STATUS.md` and `../../data/quantum/`.
+The canonical operator census, its exact successful mass, the operator
+rankings, the skeleton-adjudicated frontier, the three irrationality
+thresholds (34, 45, and 53 bits, which must stay distinct), and the
+odd-sector search bounds are maintained in `../STATUS.md` and
+`../../data/quantum/`. The one-qubit operator is positive definite, so both
+computational-basis states receive finite measured complexity bounds.
 
 ## 7. Design decisions
 
@@ -356,7 +349,9 @@ arbitrarily many sectors.
 - Classical counterpart: `../classical/architecture.md`
 - Effect-trace theorem and proof obligations: `bisimulation.md`
 - Conditional Gács construction `G_k`: §1 above ("Conditional family"), with
-  its open docket in `../STATUS.md` ("Conditional family `G_k`")
+  its open docket in `../STATUS.md` ("Self-interpretation and conditional
+  operators")
+- Divergence adjudication of the census frontier: `escalation.md`
 - Dyadicity theorem program and Galois algebra: `galois.md`
 - Odd-sector abstract interpreter: `oddmin.md`
 - Moving measurements and docket: `../STATUS.md`

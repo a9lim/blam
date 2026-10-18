@@ -1,28 +1,23 @@
 # qALC machine — token-transport design
 
-**Status: Gates 1 and 2 closed and implemented.** The §4 kernel is registered
-in `kernel.md`; the complete proof records and executable reference live in
-`../../qalc/`, and the Rust implementation lives in `../../src/qalc/`. The
-qALC machine is IAM-lineage token transport
+**Status: Gates 1 and 2 closed and implemented.** The kernel's transition
+register is `kernel.md`; the complete proof records and executable reference
+live in `../../qalc/`, and the Rust implementation lives in
+`../../src/qalc/`. The qALC machine is IAM-lineage token transport
 (architecture §8): the invocation term is immutable and read-only, the
 runtime basis is token configurations, and gate arguments reach δs by
-routing, never by copying. The rationale: the Interaction Abstract
-Machine (Danos–Regnier) is **bideterministic — natively reversible** —
-so orthonormal columns can come from the dynamics instead of being
-engineered onto them; there is no substitution, no closure
-construction, no environment erasure; and the exponential context does
-reversibly what irreversible content tags cannot. Quantum prior art:
-Hasuo–Hoshino (quantum GoI),
-Dal Lago–Faggian–Valiron–Yoshimizu (multitoken machines) —
-typed/linear settings. Gate 2 uses a native two-port CNOT with persistent
-reusable outputs. Its buffered SSA compiler has
-an unbounded actual-machine refinement to the ideal H/T/CNOT circuit column,
-including common reachable inputs, literal terminal garbage, full-NF output,
-arbitrary superpositions, and no earlier halt. Clean Bell, derived Toffoli,
-nonlinear-reuse carriers, and a 917-state Python/Lean differential remain the
-independent executable evidence.
-This document contains the guardrails (§1), exact classical substrate (§2),
-accepted quantum-control extensions (§3), and current state register (§4).
+routing, never by copying. The rationale: the Interaction Abstract Machine
+(Danos–Regnier) is **bideterministic — natively reversible** — so
+orthonormal columns can come from the dynamics instead of being engineered
+onto them; there is no substitution, no closure construction, no environment
+erasure; and the exponential context does reversibly what irreversible
+content tags cannot. Quantum prior art: Hasuo–Hoshino (quantum GoI),
+Dal Lago–Faggian–Valiron–Yoshimizu (multitoken machines), both in
+typed/linear settings.
+
+This document contains the guardrails (§1), the exact classical substrate
+(§2), the accepted quantum-control extensions (§3), and the state register
+(§4).
 
 ## 1. Guardrails
 
@@ -193,10 +188,11 @@ foreign ticket, conflicting bit, dead-key refire, and bad routing shape enters
 a typed source-retaining error sector.
 
 The runtime key `(gate, instance)` reconstructs the complete fixed-shell gate
-copy address. Raw agreeing-frame recall is not injective on arbitrary WF
-states, so admission separately checks reachable-recall injectivity on the
-complete finite carrier. The concrete Lean replay proves that predicate for
-all 17 canonical typed sectors.
+copy address. Recall targets carry the predecessor epoch, so the recall row is
+injective on every canonical source; admission additionally checks the
+stronger source-projection reachable-recall injectivity (RRI) on the complete
+finite carrier, which the concrete Lean replay proves for all 17 canonical
+typed sectors.
 
 ### 3.2 Full-normal-form readback and terminal sectors
 
@@ -255,9 +251,9 @@ composed proof is `../../qalc/GATE1.md`.
 | Item | Current status |
 |---|---|
 | Architecture Gate 1 | **Closed.** Thirty admitted finite operational cores cover 7,507 states and 7,417 exact columns; generated Lean checks literal ranges, predecessor inversion, and exact Gram identity. |
-| Kernel | **v1.43.** The current validation adds mandatory Gram-independent reachable-recall checking without changing transitions, frozen certificates, or accepted canonical programs. |
+| Kernel | **v1.44** (`kernel.md`): the epoch-bearing H/T table with live T rows; admission adds the Gram-independent complete-carrier RRI check. |
 | Transport and transparency | **Closed for admitted finite sectors.** Gate values move by token routing, encoded-fibre erasure is certificate-controlled, and rejection selects the conservative source-history representation. |
-| Instance identity | **Closed at the required boundary.** `(g,i)` identifies fixed-shell gate copies; complete-carrier RRI is checked before admission and replayed in Lean on all 17 canonical typed sectors. Raw-WF recall is noninjective, so no stronger raw theorem is claimed. |
+| Instance identity | **Closed at the required boundary.** `(g,i)` identifies fixed-shell gate copies; complete-carrier RRI is checked before admission and replayed in Lean on all 17 canonical typed sectors. The epoch-bearing recall row is injective; no uniform RRI theorem from typing or W0–W9 is claimed. |
 | Readback and scalars | **Closed.** The internal zipper reads complete normal forms; bare and variable-headed `h`/`t` applications remain neutral; `t` uses exact `diag(1,omega)` arithmetic over `Z[omega]/sqrt(2)^k`. |
 | Terminal and semantic objects | **Closed.** Typed error/halt entry and unilateral ticks are forward invariant. Static sector selection defines exact `U`, `mu_p`, `rho_p`, finite `M`, and `Omega_qALC` approximants for every finite closed program. |
 | Time register | **Kernel theorem.** The coloring, branch-offset law, and mark-free fire-free conservation theorem explain why step-encoded classical selection decoheres and identify the permitted escape mechanisms. |

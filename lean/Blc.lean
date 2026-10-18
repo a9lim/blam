@@ -11,5 +11,6 @@ import Blc.Ratchet
 import Blc.HeadTower
 import Blc.Selector
 import Blc.Rigid
+import Blc.NormalOrder
 import Blc.Wire
 import Blc.Selfint

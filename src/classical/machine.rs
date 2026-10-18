@@ -105,6 +105,10 @@ impl Pool {
     /// decoder in [`wire`], building into this arena). Returns the
     /// root index.
     pub fn decode(&mut self, bits: &mut impl Iterator<Item = bool>) -> Option<u32> {
+        self.decode_bits(bits)
+    }
+
+    fn decode_bits(&mut self, bits: &mut impl wire::Bits) -> Option<u32> {
         // The build stack is taken out for the duration and put back
         // whole, so an early EOF return cannot leak the buffer.
         let mut work = std::mem::take(&mut self.dwork);
@@ -127,7 +131,7 @@ impl Pool {
     }
 
     pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {
-        self.decode(&mut (0..len).rev().map(|j| (enc >> j) & 1 == 1))
+        self.decode_bits(&mut wire::Packed::new(enc, len))
     }
 
     /// Decode a '0'/'1' string (whitespace ignored) that must encode
@@ -160,20 +164,40 @@ impl Pool {
         root
     }
 
-    /// Import a reference-side term (for tests / differential runs).
+    /// Import a reference-side term. Iterative, so a term as deep as a
+    /// long input list imports without touching the call stack.
     pub fn from_term(&mut self, t: &Term) -> u32 {
-        match t {
-            Term::Var(n) => self.push(Node::Var(*n)),
-            Term::Lam(b) => {
-                let b = self.from_term(b);
-                self.push(Node::Lam(b))
-            }
-            Term::App(f, a) => {
-                let f = self.from_term(f);
-                let a = self.from_term(a);
-                self.push(Node::App(f, a))
+        enum W<'a> {
+            T(&'a Term),
+            Lam,
+            App,
+        }
+        let mut work = vec![W::T(t)];
+        let mut done: Vec<u32> = Vec::new();
+        while let Some(w) = work.pop() {
+            match w {
+                W::T(Term::Var(n)) => done.push(self.push(Node::Var(*n))),
+                W::T(Term::Lam(b)) => {
+                    work.push(W::Lam);
+                    work.push(W::T(b));
+                }
+                W::T(Term::App(f, a)) => {
+                    work.push(W::App);
+                    work.push(W::T(a));
+                    work.push(W::T(f));
+                }
+                W::Lam => {
+                    let b = done.pop().expect("a lambda's body precedes it");
+                    done.push(self.push(Node::Lam(b)));
+                }
+                W::App => {
+                    let a = done.pop().expect("an argument precedes its application");
+                    let f = done.pop().expect("a function precedes its argument");
+                    done.push(self.push(Node::App(f, a)));
+                }
             }
         }
+        done.pop().expect("one term in, one root out")
     }
 
     /// BLC bit-size of the subterm at `id`.
@@ -262,6 +286,11 @@ pub trait Sink {
     fn aborted(&self) -> bool {
         false
     }
+
+    /// The machine is about to wait on something outside itself (its
+    /// input, in [`super::lazy::Lazy::normalize_input`]): a sink holding
+    /// output should deliver it now. The default does nothing.
+    fn idle(&self) {}
 }
 
 /// Counts bits only — the BBλ metric, no materialization.
@@ -300,32 +329,87 @@ impl Sink for StringSink {
 
 /// Marks an env cell as a rigid level rather than a closure. Steals bit
 /// 31 of the cell's FIRST word, which carries exactly two things: a Pool
-/// node index (`push_clo`, fenced by the per-run pool-size assert in
+/// node index (a closure push, fenced by the per-run pool-size assert in
 /// `normalize_inner`) or the
-/// binder `depth` (`push_lvl`, bounded through the transition clamp in
+/// binder `depth` (a level push, bounded through the transition clamp in
 /// `normalize_inner`). Env-cell indices are untagged plain u32 in the
 /// second word and in `parents`; the tag places no constraint on them —
 /// their `as u32` truncation cliff at 2³² sits exactly where it always
 /// did, behind the same transition clamp.
 const LVL_TAG: u32 = 1 << 31;
 
-#[derive(Debug, Clone, Copy)]
-enum Frame {
-    /// Pending application argument (eval phase).
-    Arg(u32, u32),
-    /// Passed under a binder; pop decrements depth.
-    LamEnd,
-    /// Spine argument awaiting its own normalization (readback phase).
-    Norm(u32, u32),
+/// One packed continuation word. Pool node ids are fenced below 2^31 before
+/// evaluation, leaving the high bit of the term half free to distinguish a
+/// normalization job from an application argument. `u64::MAX` is LamEnd.
+/// This keeps each frame at 8 bytes instead of the enum layout's 12.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Frame(u64);
+
+const _: () = assert!(std::mem::size_of::<Frame>() == 8);
+
+impl Frame {
+    const NORM_TAG: u32 = 1 << 31;
+    const LAM_END: Frame = Frame(u64::MAX);
+
+    #[inline]
+    fn arg(term: u32, env: u32) -> Frame {
+        debug_assert_eq!(term & Self::NORM_TAG, 0);
+        Frame((u64::from(env) << 32) | u64::from(term))
+    }
+
+    #[inline]
+    fn norm(term: u32, env: u32) -> Frame {
+        debug_assert_eq!(term & Self::NORM_TAG, 0);
+        Frame((u64::from(env) << 32) | u64::from(term | Self::NORM_TAG))
+    }
+
+    #[inline]
+    fn as_arg(self) -> Option<(u32, u32)> {
+        let term = self.0 as u32;
+        (self != Self::LAM_END && term & Self::NORM_TAG == 0)
+            .then_some((term, (self.0 >> 32) as u32))
+    }
+
+    #[inline]
+    fn as_norm(self) -> Option<(u32, u32)> {
+        let term = self.0 as u32;
+        (self != Self::LAM_END && term & Self::NORM_TAG != 0)
+            .then_some((term & !Self::NORM_TAG, (self.0 >> 32) as u32))
+    }
 }
 
-const NIL: u32 = u32::MAX;
+/// The empty environment. Bit 31 is clear so that a closure's env word
+/// never carries [`HOP_TAG`]; every real cell index sits below it (cells
+/// are fewer than transitions, and transitions are clamped to
+/// [`Machine::MAX_TRANS`] = 2³¹ − 1).
+const NIL: u32 = 0x7FFF_FFFF;
+
+/// Marks a compressed var→var chain in a closure cell's SECOND word. A
+/// closure whose term is a bare `Var` is pure indirection: entering it
+/// spends one transition re-reading another cell, and call-by-name builds
+/// such chains hundreds of cells deep (82% of all rescue transitions on
+/// the 36..37-bit frontier). Cells are immutable and every hop lands on
+/// a strictly older cell, so the chain from a cell to its first non-`Var`
+/// closure or rigid level — the cell it *resolves* to — is a pure
+/// function of the cell. Once walked, each cell on the chain is
+/// rewritten to `(final cell, hops | HOP_TAG)`: a later entry jumps
+/// straight to the final cell and charges the hops it skipped, so the
+/// transition count, every fuel death, and the readback are exactly the
+/// uncompressed machine's (see `normalize_inner`).
+///
+/// The tag is free on closures because their env word is a cell index
+/// or [`NIL`], both below 2³¹, and on levels because their second word
+/// is 0. The hop count is below 2³¹ because each hop strictly decreases
+/// the cell index.
+const HOP_TAG: u32 = 1 << 31;
 
 /// The machine. Reused across terms; arenas reset per `normalize` call.
 #[derive(Debug, Default)]
 pub struct Machine {
     /// Env cell payloads: `(term, env)` for an unevaluated closure,
-    /// `(LVL_TAG | level, 0)` for a rigid de Bruijn level. Split from
+    /// `(LVL_TAG | level, 0)` for a rigid de Bruijn level, and
+    /// `(final cell, hops | HOP_TAG)` for a closure whose var→var chain
+    /// has been walked ([`HOP_TAG`]). Split from
     /// `parents` so a cell is 12 B across the two vectors instead of the
     /// 16 B of the old `(Val, u32)` tuple — the de Bruijn walk chases
     /// 4-byte hops through a dense array, and the discriminant is a bit
@@ -334,6 +418,9 @@ pub struct Machine {
     /// Per env cell: the enclosing cell's index (the walk's linked list).
     parents: Vec<u32>,
     stack: Vec<Frame>,
+    /// Scratch for the var→var chain being compressed (cells in walk
+    /// order). Carries no state between transitions.
+    chain: Vec<u32>,
     /// Transitions consumed by the most recent `normalize*` call
     /// (telemetry: measures real transition/β ratios so budget caps can
     /// be set from data instead of the blanket 64× heuristic).
@@ -366,22 +453,6 @@ impl Machine {
 
     pub fn new() -> Self {
         Self::default()
-    }
-
-    #[inline(always)]
-    fn push_clo(&mut self, t: u32, e: u32, parent: u32) -> u32 {
-        debug_assert!(t & LVL_TAG == 0, "arena index reached the tag bit");
-        self.envs.push((t, e));
-        self.parents.push(parent);
-        (self.envs.len() - 1) as u32
-    }
-
-    #[inline(always)]
-    fn push_lvl(&mut self, k: u32, parent: u32) -> u32 {
-        debug_assert!(k & LVL_TAG == 0, "level reached the tag bit");
-        self.envs.push((k | LVL_TAG, 0));
-        self.parents.push(parent);
-        (self.envs.len() - 1) as u32
     }
 
     /// Normalize `root`, streaming the normal form's bits into `sink`.
@@ -443,6 +514,9 @@ impl Machine {
         if self.stack.capacity() > KEEP {
             self.stack = Vec::with_capacity(KEEP);
         }
+        if self.chain.capacity() > KEEP {
+            self.chain = Vec::with_capacity(KEEP);
+        }
         r
     }
 
@@ -464,7 +538,7 @@ impl Machine {
             "term arena exceeds 2^31 nodes"
         );
         // Each transition pushes at most one env cell, and `depth` only
-        // grows with a push_lvl, so clamping the cap under LVL_TAG makes
+        // grows with a level push, so clamping the cap under LVL_TAG makes
         // "`depth` never reaches the tag bit" (and "env indices stay in
         // u32") structural rather than assumed — with no check in the
         // hot loop. A caller asking for more transitions than that gets
@@ -472,9 +546,16 @@ impl Machine {
         // rescue configs whose product exceeds [`Machine::MAX_TRANS`]
         // up front, so no driver run is silently downgraded.
         let trans_limit = trans_limit.min(Machine::MAX_TRANS);
-        self.envs.clear();
-        self.parents.clear();
-        self.stack.clear();
+        // The arenas live in locals for the run, so their pointers and
+        // lengths stay in registers instead of being reloaded through
+        // `self` around every push.
+        let mut envs = std::mem::take(&mut self.envs);
+        let mut parents = std::mem::take(&mut self.parents);
+        let mut stack = std::mem::take(&mut self.stack);
+        let mut chain = std::mem::take(&mut self.chain);
+        envs.clear();
+        parents.clear();
+        stack.clear();
         let mut steps = 0u64;
         let mut depth = 0u32;
         let mut t = root;
@@ -487,34 +568,31 @@ impl Machine {
         // frame, it bounds memory too (up to ~12 B × trans_limit per
         // worker — release oversized buffers on exit, below).
         let mut trans = 0u64;
-        'eval: loop {
+        let (r, last_trans, last_steps) = 'run: loop {
             trans += 1;
             if trans > trans_limit {
-                self.last_trans = trans;
-                self.last_steps = steps;
-                return Err(OutOfFuel::Transitions);
+                break 'run (Err(OutOfFuel::Transitions), trans, steps);
             }
             if S::CAN_ABORT && sink.aborted() {
-                self.last_trans = trans;
-                self.last_steps = steps;
-                return Err(OutOfFuel::Aborted);
+                break 'run (Err(OutOfFuel::Aborted), trans, steps);
             }
             match pool.nodes[t as usize] {
                 Node::App(f, a) => {
-                    self.stack.push(Frame::Arg(a, env));
+                    stack.push(Frame::arg(a, env));
                     t = f;
                 }
                 Node::Lam(b) => {
-                    if let Some(&Frame::Arg(at, ae)) = self.stack.last() {
+                    if let Some((at, ae)) = stack.last().and_then(|frame| frame.as_arg()) {
                         // β-contraction: bind the argument closure, enter body.
-                        self.stack.pop();
+                        stack.pop();
                         steps += 1;
                         if steps > limit {
-                            self.last_trans = trans;
-                            self.last_steps = steps;
-                            return Err(OutOfFuel::Beta);
+                            break 'run (Err(OutOfFuel::Beta), trans, steps);
                         }
-                        env = self.push_clo(at, ae, env);
+                        debug_assert!(at & LVL_TAG == 0, "arena index reached the tag bit");
+                        envs.push((at, ae));
+                        parents.push(env);
+                        env = (envs.len() - 1) as u32;
                         t = b;
                     } else {
                         // Unapplied abstraction in normal-form position:
@@ -522,17 +600,85 @@ impl Machine {
                         sink.zero();
                         sink.zero();
                         depth += 1;
-                        env = self.push_lvl(depth, env);
-                        self.stack.push(Frame::LamEnd);
+                        debug_assert!(depth & LVL_TAG == 0, "level reached the tag bit");
+                        envs.push((depth | LVL_TAG, 0));
+                        parents.push(env);
+                        env = (envs.len() - 1) as u32;
+                        stack.push(Frame::LAM_END);
                         t = b;
                     }
                 }
                 Node::Var(i) => {
                     let mut e = env;
                     for _ in 1..i {
-                        e = self.parents[e as usize];
+                        e = parents[e as usize];
                     }
-                    let (w0, w1) = self.envs[e as usize];
+                    let (mut w0, mut w1) = envs[e as usize];
+                    // Var→var indirection ([`HOP_TAG`]). The uncompressed
+                    // machine reads this cell now, at transition `trans`,
+                    // and then spends one transition per hop until it
+                    // reads the chain's final cell; nothing else moves in
+                    // between — no β, no push, no emission, so `steps`,
+                    // the stack, `depth`, and the sink (hence
+                    // `sink.aborted()`, which only emission can flip) are
+                    // the values they hold now. So the final cell is read
+                    // at `trans + hops`, and a transition cap falling
+                    // inside the chain is a death at exactly
+                    // `trans_limit + 1` with the current `steps`.
+                    let hops = if w1 & HOP_TAG != 0 {
+                        let hops = w1 & !HOP_TAG;
+                        (w0, w1) = envs[w0 as usize];
+                        hops
+                    } else if w0 & LVL_TAG == 0 && matches!(pool.nodes[w0 as usize], Node::Var(_)) {
+                        // First walk of this chain: follow it to its final
+                        // cell, then rewrite every cell on it to jump there.
+                        chain.clear();
+                        let (mut c, mut cw0, mut cw1) = (e, w0, w1);
+                        let (fin, tail) = loop {
+                            chain.push(c);
+                            if trans + chain.len() as u64 > trans_limit {
+                                break 'run (Err(OutOfFuel::Transitions), trans_limit + 1, steps);
+                            }
+                            let Node::Var(j) = pool.nodes[cw0 as usize] else {
+                                unreachable!("chain cells hold Var closures")
+                            };
+                            let mut n = cw1;
+                            for _ in 1..j {
+                                n = parents[n as usize];
+                            }
+                            let (n0, n1) = envs[n as usize];
+                            if n1 & HOP_TAG != 0 {
+                                // An already-compressed suffix.
+                                break (n0, n1 & !HOP_TAG);
+                            }
+                            if n0 & LVL_TAG == 0 && matches!(pool.nodes[n0 as usize], Node::Var(_))
+                            {
+                                (c, cw0, cw1) = (n, n0, n1);
+                                continue;
+                            }
+                            break (n, 0);
+                        };
+                        let m = chain.len() as u32;
+                        for (k, &ck) in chain.iter().enumerate() {
+                            let d = m - k as u32 + tail;
+                            debug_assert!(d & HOP_TAG == 0 && fin < ck);
+                            envs[ck as usize] = (fin, d | HOP_TAG);
+                        }
+                        (w0, w1) = envs[fin as usize];
+                        m + tail
+                    } else {
+                        0
+                    };
+                    if hops != 0 {
+                        trans += u64::from(hops);
+                        if trans > trans_limit {
+                            break 'run (Err(OutOfFuel::Transitions), trans_limit + 1, steps);
+                        }
+                    }
+                    debug_assert!(
+                        w1 & HOP_TAG == 0,
+                        "a chain's final cell is never compressed"
+                    );
                     if w0 & LVL_TAG == 0 {
                         // Call-by-name: enter the stored closure.
                         t = w0;
@@ -545,9 +691,11 @@ impl Machine {
                         // to Norm frames — top of stack is the innermost
                         // argument, which preorder wants first.
                         let mut run = 0usize;
-                        while run < self.stack.len()
-                            && matches!(self.stack[self.stack.len() - 1 - run], Frame::Arg(..))
-                        {
+                        for frame in stack.iter_mut().rev() {
+                            let Some((term, env)) = frame.as_arg() else {
+                                break;
+                            };
+                            *frame = Frame::norm(term, env);
                             run += 1;
                         }
                         for _ in 0..run {
@@ -555,33 +703,130 @@ impl Machine {
                             sink.one();
                         }
                         sink.var(depth - k + 1);
-                        let base = self.stack.len() - run;
-                        for f in self.stack[base..].iter_mut() {
-                            if let Frame::Arg(a, e) = *f {
-                                *f = Frame::Norm(a, e);
-                            }
-                        }
                         // Readback: pull the next pending job.
                         loop {
                             trans += 1;
                             if trans > trans_limit {
-                                self.last_trans = trans;
-                                self.last_steps = steps;
-                                return Err(OutOfFuel::Transitions);
+                                break 'run (Err(OutOfFuel::Transitions), trans, steps);
                             }
-                            match self.stack.pop() {
+                            match stack.pop() {
                                 None => {
-                                    self.last_trans = trans;
-                                    self.last_steps = steps;
-                                    return Ok(steps);
+                                    break 'run (Ok(steps), trans, steps);
                                 }
-                                Some(Frame::LamEnd) => depth -= 1,
-                                Some(Frame::Norm(nt, ne)) => {
+                                Some(Frame::LAM_END) => depth -= 1,
+                                Some(frame) if frame.as_norm().is_some() => {
+                                    let (nt, ne) = frame.as_norm().expect("matched norm frame");
                                     t = nt;
                                     env = ne;
+                                    continue 'run;
+                                }
+                                Some(_) => unreachable!(),
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        self.envs = envs;
+        self.parents = parents;
+        self.stack = stack;
+        self.chain = chain;
+        self.last_trans = last_trans;
+        self.last_steps = last_steps;
+        r
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The machine as it was before [`HOP_TAG`] compression, transition
+    /// for transition: the oracle for the compressed loop. Returns what
+    /// `normalize_capped` returns plus `(last_trans, last_steps)`.
+    fn uncompressed<S: Sink>(
+        pool: &Pool,
+        root: u32,
+        limit: u64,
+        trans_limit: u64,
+        sink: &mut S,
+    ) -> (Result<u64, OutOfFuel>, u64, u64) {
+        let trans_limit = trans_limit.min(Machine::MAX_TRANS);
+        let mut envs: Vec<(u32, u32)> = Vec::new();
+        let mut parents: Vec<u32> = Vec::new();
+        let mut stack: Vec<Frame> = Vec::new();
+        let (mut steps, mut depth, mut t, mut env, mut trans) = (0u64, 0u32, root, NIL, 0u64);
+        'eval: loop {
+            trans += 1;
+            if trans > trans_limit {
+                return (Err(OutOfFuel::Transitions), trans, steps);
+            }
+            if S::CAN_ABORT && sink.aborted() {
+                return (Err(OutOfFuel::Aborted), trans, steps);
+            }
+            match pool.nodes[t as usize] {
+                Node::App(f, a) => {
+                    stack.push(Frame::arg(a, env));
+                    t = f;
+                }
+                Node::Lam(b) => {
+                    if let Some((at, ae)) = stack.last().and_then(|f| f.as_arg()) {
+                        stack.pop();
+                        steps += 1;
+                        if steps > limit {
+                            return (Err(OutOfFuel::Beta), trans, steps);
+                        }
+                        envs.push((at, ae));
+                        parents.push(env);
+                        env = (envs.len() - 1) as u32;
+                        t = b;
+                    } else {
+                        sink.zero();
+                        sink.zero();
+                        depth += 1;
+                        envs.push((depth | LVL_TAG, 0));
+                        parents.push(env);
+                        env = (envs.len() - 1) as u32;
+                        stack.push(Frame::LAM_END);
+                        t = b;
+                    }
+                }
+                Node::Var(i) => {
+                    let mut e = env;
+                    for _ in 1..i {
+                        e = parents[e as usize];
+                    }
+                    let (w0, w1) = envs[e as usize];
+                    if w0 & LVL_TAG == 0 {
+                        t = w0;
+                        env = w1;
+                    } else {
+                        let k = w0 & !LVL_TAG;
+                        let mut run = 0usize;
+                        for frame in stack.iter_mut().rev() {
+                            let Some((term, env)) = frame.as_arg() else {
+                                break;
+                            };
+                            *frame = Frame::norm(term, env);
+                            run += 1;
+                        }
+                        for _ in 0..run {
+                            sink.zero();
+                            sink.one();
+                        }
+                        sink.var(depth - k + 1);
+                        loop {
+                            trans += 1;
+                            if trans > trans_limit {
+                                return (Err(OutOfFuel::Transitions), trans, steps);
+                            }
+                            match stack.pop() {
+                                None => return (Ok(steps), trans, steps),
+                                Some(Frame::LAM_END) => depth -= 1,
+                                Some(frame) => {
+                                    (t, env) = frame.as_norm().expect("norm frame");
                                     continue 'eval;
                                 }
-                                Some(Frame::Arg(..)) => unreachable!(),
                             }
                         }
                     }
@@ -589,11 +834,121 @@ impl Machine {
             }
         }
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+    /// Run both machines on one (term, β cap, transition cap) and demand
+    /// identical results, fuel counters, and emitted bits.
+    fn agree(vm: &mut Machine, pool: &Pool, root: u32, limit: u64, cap: u64) {
+        let mut a = StringSink::default();
+        let got = vm.normalize_capped(pool, root, limit, cap, &mut a);
+        let mut b = StringSink::default();
+        let want = uncompressed(pool, root, limit, cap, &mut b);
+        assert_eq!(
+            (got, vm.last_trans, vm.last_steps),
+            want,
+            "result/last_trans/last_steps at β {limit}, transitions {cap}"
+        );
+        assert_eq!(a.0, b.0, "emitted bits at β {limit}, transitions {cap}");
+    }
+
+    /// Hop compression is invisible: every closed term to 24 bits, under
+    /// β and transition caps from starved to ample, gives the old
+    /// machine's verdict, β count, transition count, fuel-death counters,
+    /// and normal-form bits.
+    #[test]
+    fn hop_compression_matches_the_uncompressed_machine_exhaustively() {
+        let mut pool = Pool::new();
+        let mut vm = Machine::new();
+        let mut n_terms = 0u64;
+        for n in 4..=24 {
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                pool.clear();
+                let root = pool.decode_u64(enc, len).expect("valid term");
+                for (limit, cap) in [
+                    (0, 1 << 20),
+                    (3, 1 << 20),
+                    (64, 4096),
+                    (4096, 4096 * 64),
+                    (1 << 20, 1),
+                    (1 << 20, 7),
+                    (1 << 20, 40),
+                    (1 << 20, 300),
+                ] {
+                    agree(&mut vm, &pool, root, limit, cap);
+                }
+                n_terms += 1;
+            });
+        }
+        assert_eq!(n_terms, 19048);
+    }
+
+    /// Deep var→var chains, with the transition cap swept so that it
+    /// lands inside a first walk, inside a compressed jump, at its last
+    /// hop, and just past it. The terms are 36..38-bit frontier
+    /// programs whose rescue runs are >99% var→var transitions.
+    #[test]
+    fn hop_compression_is_exact_at_every_cap_inside_deep_chains() {
+        let mut vm = Machine::new();
+        for bits in [
+            "010001101000011001100000011100110110",
+            "010001101000011001100000011001111010",
+            "010001101000011001100000011100111010",
+            "000100010110110100000011100101101010",
+        ] {
+            let mut pool = Pool::new();
+            let root = pool.decode_str(bits).expect("closed");
+            for cap in 1..=6000 {
+                agree(&mut vm, &pool, root, 1 << 20, cap);
+            }
+            for cap in (6000..400_000).step_by(997) {
+                agree(&mut vm, &pool, root, 1 << 20, cap);
+            }
+            // And the β cap binding first, deep in.
+            for limit in [10, 100, 1000, 5000] {
+                agree(&mut vm, &pool, root, limit, 1 << 24);
+            }
+        }
+    }
+
+    /// An aborting sink still stops at the same transition: no hop can
+    /// skip the poll that would have fired, because only emission flips
+    /// `aborted`.
+    #[test]
+    fn hop_compression_preserves_abort_points() {
+        #[derive(Default)]
+        struct Budget(String, usize);
+        impl Sink for Budget {
+            const CAN_ABORT: bool = true;
+            fn zero(&mut self) {
+                self.0.push('0');
+            }
+            fn one(&mut self) {
+                self.0.push('1');
+            }
+            fn var(&mut self, n: u32) {
+                self.0.extend(std::iter::repeat_n('1', n as usize));
+                self.0.push('0');
+            }
+            fn aborted(&self) -> bool {
+                self.0.len() >= self.1
+            }
+        }
+        let mut pool = Pool::new();
+        let mut vm = Machine::new();
+        for n in 12..=22 {
+            crate::blc::enumerate::for_each_closed(n, &mut |enc, len| {
+                pool.clear();
+                let root = pool.decode_u64(enc, len).expect("valid term");
+                for stop in [1, 5, 17] {
+                    let mut a = Budget(String::new(), stop);
+                    let got = vm.normalize_capped(&pool, root, 1 << 16, 1 << 20, &mut a);
+                    let mut b = Budget(String::new(), stop);
+                    let want = uncompressed(&pool, root, 1 << 16, 1 << 20, &mut b);
+                    assert_eq!((got, vm.last_trans, vm.last_steps), want, "enc {enc:#x}");
+                    assert_eq!(a.0, b.0);
+                }
+            });
+        }
+    }
 
     /// The pre-scan question answered the slow, obvious way, with no
     /// cache in the path — the oracle for everything below.

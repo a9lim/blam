@@ -1,5 +1,5 @@
 /-
-The SelectorRatchet (v3) assembly: SPEC.md §6, derived by Codex in
+The SelectorRatchet (v3) assembly: docs/classical/certificates/specification.md §6, derived by Codex in
 round nine from the 35-bit forcing exemplar. The wrapper is a
 *selector* — FAN hands control to the fresh argument carrying a
 second unary pattern `P[Z]`, and SELECT reduces one wrapper layer

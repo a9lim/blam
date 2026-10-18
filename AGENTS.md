@@ -4,40 +4,65 @@ Rust engine for binary lambda calculus / AIT experiments, verified against
 Tromp's Haskell. The root `README.md` is the public story and repository map.
 `docs/STATUS.md` is the single authority for current measurements and the open
 docket. Durable classical and quantum architecture, proof plans, and research
-notes live under `docs/`. Canonical measurement outputs live in `data/`;
+records live under `docs/`. Canonical measurement outputs live in `data/`;
 standing protocols are runnable from `scripts/`.
 
 This file carries the conventions and operational facts that must be in hand
 before changing the project. Read `docs/STATUS.md` before research or docket
-work; do not duplicate its moving state here.
+work; moving numbers live there, not here.
 
 ## Ground rules
 
 - `ref/AIT` is a submodule pinned to the a9lim/AIT fork: upstream tromp/AIT
   plus additive commits only (currently one, `uni.rs` at the root; CI enforces
-  additivity). Treat it read-only here; fork changes
-  happen in their own clone, land on the fork's master, then a deliberate pin
-  bump. Initialize with `git submodule update --init`.
-  `contrib/ait-uni/verify.sh` is the only thing in the tree that reads it —
-  `tests/tromp_vectors.rs` inlines its vectors, so the whole test suite
-  passes without the clone.
+  additivity). Treat it read-only here; fork changes happen in their own
+  clone, land on the fork's master, then a deliberate pin bump. Initialize with
+  `git submodule update --init`. Nothing in CI reads it beyond the additivity
+  check, and `tests/tromp_vectors.rs` inlines its vectors, so the whole test
+  suite passes without the clone. `tools/golf/sweep.py` reads its `.lam`
+  corpus locally. `contrib/PR_KIT.md` holds the drafts for the upstream PRs
+  (the fork's `uni-rs` and `golf` branches); a9 sends them.
 - The verification bar for any engine change is `cargo test --release
   --all-features` *and* a plain `cargo test --release` (the no-lab dispatcher
   arms only exist under default features), then a census spot-check
-  (`scripts/spot-check.sh`) whose halt counts are
-  bit-identical to `data/classical/census_table.txt` at the sizes touched.
-  Canonical halt counts are invariants; treat drift as a bug in the change,
-  not a discovery.
+  (`scripts/spot-check.sh`) whose rows are bit-identical to
+  `data/classical/census_table.txt` in every column but timing, at the sizes
+  touched. Canonical census rows are invariants; treat drift as a bug in the
+  change, not a discovery. CI runs only on `main` and pull requests into it,
+  so on `dev` the bar is local.
 - `data/` holds results, not scratch, and only canonical generations live in
-  the tree. The classical census, frontier, and Ω/K outputs are in
-  `data/classical/`; the operator census is in `data/quantum/`; certificate
-  evidence and self-interpreter logs have their own subdirectories. Filenames
-  are unversioned where a bound can advance: the covered range is stated in
-  the file and `docs/STATUS.md`, superseded generations live in git history,
-  and a bound bump regenerates in place. Regenerate rather than hand-edit via
-  `scripts/census-regen.sh`, `scripts/solomonoff-regen.sh`, and
-  `scripts/qalc-census-extend.sh`. The qALC finite-clock convergence record is
-  in `data/qalc/`.
+  the tree: `data/classical/` (census, frontier, Solomonoff/speed, Ω, coding),
+  `data/quantum/` (operator census, skeleton manifest), `data/qalc/`
+  (finite-clock convergence record), `data/certificates/`,
+  `data/self-interpreter/`, and `data/golf/`. Filenames are unversioned where
+  a bound can advance: the covered range is stated in the file and
+  `docs/STATUS.md`, superseded generations live in git history, and a bound
+  bump regenerates in place. Regenerate rather than hand-edit via
+  `scripts/census-regen.sh`, `scripts/solomonoff-regen.sh`,
+  `scripts/omega-regen.sh`, `scripts/coding-regen.sh`, `scripts/bb-regen.sh`,
+  and `scripts/qalc-census-extend.sh`.
+- **Certified adjudications.** Direct BB exclusions are seeded in
+  `data/certificates/bb_seeds.tsv` and exact halting outputs in
+  `bb_halt_seeds.tsv`; `scripts/bb-regen.sh` kernel-checks them and every
+  census lambda wrap, regenerates `bb_kills.tsv` and `bb_halts.tsv`, and
+  refreshes the frontier and exact bounds. Certified halters add mass to both
+  finite-Ω endpoints while leaving the frontier; without certified clocks they
+  keep their raw speed upper floors. Their mass must also enter both true-Ω
+  endpoints; raw census and leaf counts stay fixed.
+- **The frontier.** `census-regen.sh --frontier-only` reuses the complete raw
+  unknown inventory in `speed_floors.txt`, checked against census counts and
+  all existing frontier/certificate entries; the final
+  frontier/diverger/halter partition must match exactly. The census table
+  prints only 16 unknowns per size: never reconstruct the frontier from its
+  printed examples.
+- **The true Ω.** `data/classical/omega.txt` reads the census table and
+  frontier plus `bb_halts.tsv`, so rerun `scripts/omega-regen.sh` whenever any
+  of them moves (`--reuse-leaves` after a certificate-only trim). Its leaf
+  table comes from `blam omega leaves 41`, which judges each open term once,
+  through its minimal closure; `tools/omega/bound.py`'s leaf/structural
+  subtraction needs that depth-independent predicate, so never reintroduce
+  per-closure judgements. `scripts/omega-estimate.sh` is a statistical
+  estimate, not a certificate.
 
 ## Conventions that will bite you
 
@@ -52,15 +77,20 @@ work; do not duplicate its moving state here.
   packed).
 - I/O polarity is inverted from intuition: `0` → true = λx.λy.x.
 - Checked-in `.blc` goldens in `ref/AIT` are post-beam-search
-  (`optimize 57 2 1`). Byte-exact targets need that pass;
-  `bin/take1k.blc` is a stale golden, so do not target it.
+  (`optimize 57 2 1`). Byte-exact targets need that pass; `bin/take1k.blc` is
+  a stale golden, so do not target it.
 - `tools/blcc.py` is the encoder oracle (reproduces eight repo goldens
-  byte-exactly, no GHC needed). `ref/AIT`'s `uni.py`, `uni.rb`, and siblings
-  work as execution oracles. Two standalone analyzers sit beside it, wired
+  byte-exactly, no GHC needed); `blc::notation::compile` is the Rust
+  compiler it checks. `ref/AIT`'s `uni.py`, `uni.rb`, and siblings work as
+  execution oracles, and `tools/ait/build_blc.sh` builds Tromp's own `blc`
+  from the corpus when GHC is available. Two standalone analyzers sit beside it, wired
   into no script: `tools/bbtxt.py` (cross-match Tromp's `BB.txt` fail traces
   against our census unknowns) and `tools/frontier.py` (group an adjudication
   run's unknowns by λ-wrap seed and flag verdict disagreement within a
   chain).
+- A self-interpreter or universal-machine candidate is a hypothesis until
+  `tools/self-interpreter/battery.py` passes it; the battery compares
+  β-normal forms, so η-only-correct interpreters fail it by design.
 
 ## The engines
 
@@ -70,174 +100,245 @@ binary dispatches through `src/cli/`. Lab-gated subcommands are recognised
 without the feature and explain how to enable themselves; do not delete those
 dispatcher arms.
 
-qALC is quantum *control*: a storeless machine whose runtime states lie in
-ℓ² over token configurations. `docs/quantum-algebraic/architecture.md` is the
-semantic contract, `token.md` fixes token identity, `kernel.md` is the current
-v1.43 rule register, and `rust-pillar.md` maps the live Rust implementation.
-`src/qalc/` contains the exact amplitude domain, wire codec, kernel and
-full-normal-form machine, linear-SSA compiler, native-CNOT shadow, structural
-admission, finite checker, and total public semantics. The default-built
-`blam qalc` group exposes `run`, `gram`, `compile`, `fixtures`, and the separate
-measured `census` layer over ordinary prefix-free `p h t` invocations.
-The census's 1,000-state admission preflight is one-sided: success is a
-complete checked admission, but failure is only a scheduling signal and must
-retry the canonical 300,000-state selector. Retries run in a separate pool
-(`--retry-threads`, auto-capped at eight); never turn preflight failure
-into a conservative verdict. Selection/evolution phase timings are stderr-only
-and deliberately absent from deterministic reports and checkpoints.
-
-The Python/Lean reference, batteries, proof records, and fixture exporters live
-in `qalc/`. Generated kernel fixtures, composed Gate-1 cores, the mixed Gate-2
-carrier, and the embedded admission selector are regenerated only through their
-four named exporters. The Rust differential tests regenerate the fixtures
-byte-identically and check the 7,507-state Gate-1 carrier and 917-state Gate-2
-carrier, including predecessor inverses and totalization probes. Error arms not
-reached by those carriers remain review-pinned rather than theorem-backed.
-Gate 1 supplies exact H/T scattering, full-NF readback, typed terminal sectors,
-validated finite admission, and the algorithmic-information objects. Gate 2
-supplies the unbounded arbitrary-circuit H/T/CNOT refinement from a common
-reachable input cut to exact ideal columns. The stronger ambient lifecycle
-theorem remains optional, and raw-WF recall is noninjective. qALC work must
-leave classical and qBLC rows bit-identical.
-
-`gate1_check.py` and `gate2_check.py` are explicit local runtime/Python gates.
-The qALC CI workflow runs neither those exhaustive batteries nor Lean: it owns
-only fixture determinism, while the ordinary CI release suites own the Rust
-differentials. Run `gate1_lean_check.py` and `gate2_lean_check.py` manually only
-when the Lean/generated-proof surface or its exporters intentionally move; do
-not rerun them for Rust-only changes.
+### Classical
 
 `classical::ladder` owns the halting ladder, and every classical driver
-(`census`, `adjudicate`, `solomonoff`) adjudicates through it: prescan →
-oracle prefilter → KN at budget1 (transitions budget1×64) → KN at budget2
-(transitions budget2×64) → escalation engine (`classical::escalation`, cap
-2M) → KN rescue at 10⁷ β, transitions 32×β (`--rescue-trans-mult`). Every
-field of `LadderCfg::default()` is the value the canonical census table was
-generated at, with the measurement that fixed it in the field doc. `adjudicate`
-is `adjudicate_fast` (rungs 1–3) followed on a survivor by `adjudicate_slow`
-(rungs 4–6), so a scheduler that runs the cheap half of a size class before
-the expensive half gets identical verdicts by construction rather than by
-parallel maintenance. Rescue β stays 10⁷ through n=41, but the margin
-is thin: the max successful rescue is 9,457,564 β, only 1.06× headroom. Raise
-`--rescue` before running n=42. The 32× transition multiplier has a 1.88×
-margin over the worst measured successful ratio (17.0×, the n=38 champion:
-9.45M β via 160.4M transitions). The rung-2 64× cap reroutes exactly one term
-in 4..40 (n=39) through escalation to the same halt. Both trims are
-verdict-identical on full sweeps. Budget for ~6 min wall and ~33 min CPU for
-census 4..40 on the M5 Max: user time is the stable number, wall tracks
-ambient load (the measurements and the scheduler A/B are in STATUS).
+(`census`, `adjudicate`, `solomonoff`, `omega leaves`) adjudicates through it:
+prescan → oracle prefilter → KN at budget1 (transitions budget1×64) → KN at
+budget2 (transitions budget2×64) → escalation engine
+(`classical::escalation`, cap 2M) → KN rescue at 10⁷ β, transitions 32×β
+(`--rescue-trans-mult`). Every field of `LadderCfg::default()` is the value
+the canonical census table was generated at, with the measurement that fixed
+it in the field doc. `adjudicate` is `adjudicate_fast` (prescan through the
+first KN rung) followed on a survivor by `adjudicate_slow` (the rest), so a
+scheduler that runs the cheap half of a size class before the expensive half
+gets identical verdicts by construction rather than by parallel maintenance.
+The rescue cap's headroom over the largest successful rescue is thin (STATUS
+has the numbers): raise `--rescue` before running n=42. The second KN rung's
+64× transition cap reroutes exactly one term in 4..40 (n=39) through
+escalation to the same halt; both transition trims are verdict-identical on
+full sweeps. A census 4..40 takes about 21 s wall and 5.3 CPU-minutes on
+the M5 Max; user time is the stable number, wall tracks ambient load.
 
 - `classical::machine` (KN machine): every `Sink` implementation must supply
   `var` with an O(1) body — it is a required method, not a defaulted one,
   because the O(n) default in an uncharged n once cost a 5× slowdown.
-  `normalize_capped` takes explicit β and transition budgets;
-  plain `normalize` applies the transition floor `1 << 22`.
-- `classical::escalation`: the escalation engine charges one shared work meter
-  on every primitive operation (`EngineCfg::work_mult` × cap, default 16;
-  `--work-mult 2` bounds live memory to ~4 GB/worker for big adjudications
-  and has never lost a verdict).
-  The self-feedback certificate (`redloop`) fires on syntactic
-  self-applications. Probes run at `probe_fuel` β (default 4096; verified
-  insensitive through 65,536 on the whole frontier). Verdicts are typed:
-  `NoNf::Diverge { head_chain }` versus `NoNf::Unknown(Why::{Capacity,
-  WorkMeter})`.
+  `normalize_capped` takes explicit β and transition budgets; plain
+  `normalize` applies the transition floor `1 << 22`.
+- `classical::escalation`: the escalation engine charges one shared work
+  meter on every primitive operation (`EngineCfg::work_mult` × cap, default
+  16; `--work-mult 2` bounds live memory to ~4 GB/worker for big
+  adjudications and has never lost a verdict). The self-feedback certificate
+  (`redloop`) fires on syntactic self-applications. Probes run at
+  `probe_fuel` β (default 4096; verified insensitive through 65,536 on the
+  whole frontier). Verdicts are typed: `NoNf::Diverge { head_chain }` versus
+  `NoNf::Unknown(Why::{Capacity, WorkMeter})`.
 - Engine config is data, not ambient: the library reads no environment at
   all. Every driver resolves the tunables at the CLI layer —
   `args::engine_cfg` takes flag → environment (`BLC_WORK_MULT` /
   `BLC_PROBE_FUEL`, kept as documented fallbacks) → measured default and
   passes an `EngineCfg` down, and the engine's only public entry points
-  (`escalation::normal_form`, `normal_form_spine`) take it as an
-  argument. `census`, `adjudicate`, `solomonoff`, `q census`, and
-  `q skeleton` expose `--work-mult` / `--probe-fuel`; `blam slots` has no
-  knob flags and resolves the environment alone, once, through a private
-  `OnceLock` in `src/cli/slots.rs`. `cert search` has no engine knobs — its
-  budgets are the `head_step` steps / nodes / lemma-steps triple, not the
-  work meter.
-- `blc::enumerate`: tasks are bit-reversal-interleaved on purpose.
-  Expensive terms cluster by enumeration prefix and rayon splits by index
-  range; do not simplify the order back.
+  (`escalation::normal_form`, `normal_form_spine`) take it as an argument.
+  `census`, `adjudicate`, `solomonoff`, `q census`, and `q skeleton` expose
+  `--work-mult` / `--probe-fuel`; `blam slots` has no knob flags and resolves
+  the environment alone, once, through a private `OnceLock` in
+  `src/cli/slots.rs`. `cert search` has no engine knobs — its budgets are the
+  `head_step` steps / nodes / lemma-steps triple, not the work meter.
+- `blc::enumerate`: tasks are bit-reversal-interleaved on purpose. Expensive
+  terms cluster by enumeration prefix and rayon splits by index range; do not
+  simplify the order back.
 - The `solomonoff` driver also owns the speed-prior (Levin) surface
   (`docs/classical/speed.md` is the contract). Two unit grids coexist in its
   outputs: m/Ω masses are 2⁻⁶⁴ units, speed masses are 2⁻¹²⁸ units with
   directed rounding — do not mix them when post-processing. Unknowns are
   charged on the upper side only, at t-floors read from the machine's
   fuel-death counters (`Machine::last_steps`; on a β death the counter
-  includes the contraction it could not fund). `data/classical/speed_floors.txt`
-  is part of the certificate-trim protocol, not a diagnostic.
-- The census memos live in the census driver, deliberately outside the ladder:
-  they reuse one term's fate for a *different* term, which is a fact about an
-  enumeration rather than about a term. Keeping them out is what lets
+  includes the contraction it could not fund).
+  `data/classical/speed_floors.txt` is part of the certificate-trim protocol,
+  not a diagnostic.
+
+### Census memos and scheduling
+
+- The census memos live in the census driver, deliberately outside the
+  ladder: they reuse one term's fate for a *different* term, which is a fact
+  about an enumeration rather than about a term. Keeping them out is what lets
   `adjudicate` and `solomonoff` share the ladder without inheriting a sweep's
   accumulated state.
-- The census λ-wrap memo reuses a body's escalation-tier verdict for
-  Halt/Diverge only. A hit proves the body closed via prefix-freeness; nf+2,
-  same steps, chains propagate. Unknown is a resource outcome, not a fate,
-  so seed-Unknown wraps run the ordinary ladder. Do not extend the memo to
-  Unknowns; that reuse was built and deliberately removed.
-- The census no-whnf head memo kills App-rooted terms whose head is a
+- The λ-wrap memo reuses a body's escalation-tier verdict for Halt/Diverge
+  only. A hit proves the body closed via prefix-freeness; nf+2, same steps,
+  chains propagate. Unknown is a resource outcome, not a fate, so seed-Unknown
+  wraps run the ordinary ladder. Do not extend the memo to Unknowns; that
+  reuse was built and deliberately removed.
+- The no-whnf head memo kills App-rooted terms whose head is a
   spine-certified no-whnf diverger (the escalation engine threads a spine
   flag; history and redloop fires on the root's own head chain qualify,
   oracle fires never do). Sound because no-whnf — unlike no-nf — transfers
-  through application heads. Fates measured bit-identical across 4..40; only
-  the escal path distribution moves.
-- Census scheduling is two-phase within each group: phase A fuses generation
-  with the ladder's cheap rungs across a range-split `par_iter`, phase B feeds
-  the ~0.3% of survivors through an atomic work queue at single-term
-  granularity. Groups run sequentially; the unit of parallelism for an
-  expensive term is that term, not the enumeration subtree it came from.
-- `census --checkpoint FILE --groups K` gives kill-safe group-level
-  resume (config-pinned header, torn tails discarded); `--memo-out` /
-  `--memo-in` persist the λ-wrap and no-whnf memos across runs. The format is
-  `blamckpt v4` and the memo files use a shared tag-first codec: **files
-  written by any earlier format are invalid and must be regenerated** —
-  nothing in `data/` uses either format, so this costs only recompute. The
-  checkpoint module is CLI-internal (`src/cli/ckpt.rs`), shared by `census`
-  and `q census`; each driver owns the proof that its accumulator merges
-  order-independently. A cold delta run
-  (`census n n`) is halt-identical to the monolithic row but
-  needs `--memo-in` for fate-identical Unknown/Diverge attribution at
-  App-rooted compositions and for the escal column — memo files are part
-  of the delta protocol, not a speedup.
+  through application heads. Fates are bit-identical across 4..40; only the
+  escal path distribution moves.
+- Scheduling is two-phase within each group: phase A fuses generation with
+  the ladder's cheap half across a range-split `par_iter`, phase B feeds the
+  ~0.3% of survivors through an atomic work queue at single-term granularity.
+  Groups run sequentially; the unit of parallelism for an expensive term is
+  that term, not the enumeration subtree it came from. The A/B measurements
+  are in `docs/classical/architecture.md` §7. Without `--checkpoint`, two
+  sizes run in flight (size n needs only size n−2's λ-wrap memo and the
+  no-whnf facts of sizes ≤ n−6, so n+1 starts while n finishes); per-size
+  `time_s` is then each size's own elapsed time and no longer sums to the
+  wall time.
+- `census --checkpoint FILE --groups K` gives kill-safe group-level resume
+  (config-pinned header, torn tails discarded); `--memo-out` / `--memo-in`
+  persist the λ-wrap and no-whnf memos across runs. The format is
+  `blamckpt v5` and the memo files use a shared tag-first codec: files written
+  by any earlier format are invalid and must be regenerated. The checkpoint
+  module is CLI-internal (`src/cli/ckpt.rs`), shared by `census`, `q census`,
+  and `qalc census`; each driver owns the proof that its accumulator merges
+  order-independently. A cold delta run (`census n n`) is halt-identical to
+  the monolithic row but needs `--memo-in` for fate-identical
+  Unknown/Diverge attribution at App-rooted compositions and for the escal
+  column — memo files are part of the delta protocol, not a speedup.
 - The census's trailing `# redloop:` line reads process-global atomics, so a
   *resumed* run counts only the fires it recomputed. Compare that line between
   monolithic runs only.
-- `escalation::normal_form_spine` is the oracle-free adjudicator for
-  generic-argument questions (`p x⃗` with rigid placeholders): every
-  Diverge is history/redloop and spine-attributable. Targeted
-  adjudication only, never enumeration throughput. The quantum escalation
-  ladder built on it lives in `docs/quantum/escalation.md`; its drivers are
-  `blam q skeleton FILE` (`--sig`, whose *length* sets the hole count, plus
-  `--steps` / `--size`) and `blam q census` (`--dump-unknowns`,
-  `--terms-file`, `--skeleton CAP`, and `--sig` for alternate signature
-  universes — canonical data stays on the frozen five).
-- `quantum::certificate` is the trusted skeleton checker. `adjudicate` returns
-  `Result<SkelVerdict, OpenProgram>` — a typed error, never a silent hole
-  reinterpretation — and `CapOut` carries `reason: Steps | Size`, `steps`, and
-  `high_water_bits`, which is the telemetry the escalation docket's stratified
-  sample needs. `blam q skeleton` prints an additive
-  `capout split: steps-bound N  size-bound M` line on stderr.
-- `classical::certificate` is the trusted checker layer for v1.2 Ratchet, v2
-  HeadTowerRatchet, v3 SelectorRatchet, and v4 PassengerDiagonalRatchet. Discovery is
+
+### Running programs
+
+`blam blc` (Tromp's `blc`, action for action) and `blam uni` (his universal
+machine) are specified in `docs/classical/programs.md`; keep that contract
+and the code in step.
+
+- They run on `classical::lazy`, the call-by-need machine, never on KN: KN is
+  call-by-name and keeps its whole environment history, so a program that
+  leans on sharing (Tromp's `bf.lam`) produces nothing on it. Conversely,
+  `lazy`'s β-counts count shared redexes once and must never feed a census,
+  Solomonoff, or speed-prior number. `blam normalize` stays on KN.
+- `lazy`'s memory cap is checked where objects are born (`born()`), and
+  machine-stack and readback entries are counted the same way
+  (`push_frame`, `push_job`). Any new allocation or push site must go
+  through the counted paths, or the cap stops being hard.
+- Standard input is read lazily (`Lazy::normalize_input`, `src/cli/feed.rs`):
+  the run's root is `λI. body`, and an input thunk asks for one byte when a
+  cell is first demanded. Never read stdin to its end up front: a program
+  that ignores its input (`primes.lam`) must not wait for it.
+- `classical::io::Reader` must stay O(1) memory per output cell (an endless
+  list is the normal case); it tracks depth with a cell counter, not a frame
+  stack.
+- `uni` decodes output by application through `classical::io::uni_decoder`,
+  not by matching normal-form syntax: `λx.λy.λz.x z` is the bit 0 to uni.
+  The decoder rebuilds the output from four marker binders (cons, end, and
+  the two bits), which no program can forge, so broken output is an error
+  rather than a misreading. The contract is against `uni.rs`: its success
+  means blam's identical output, its failure blam's failure. Where the
+  output breaks uni's protocol the reference interpreters disagree with
+  one another; do not chase one of them there.
+- A change here reruns the external differentials on a frozen binary:
+  `tools/ait/actions.py` and `runs.py` against a `build_blc.sh` build, and
+  `uni_diff.py` against `uni.py`. They share `tools/ait/pairs.py` (memory
+  caps, a short first limit, a long retry only where one side finished).
+  The counts go in STATUS.
+
+### Certificates
+
+- `classical::certificate` is the trusted checker layer for the Ratchet,
+  HeadTowerRatchet, SelectorRatchet, and PassengerDiagonalRatchet classes
+  (`docs/classical/certificates/specification.md`). Discovery is
   `classical::certificate::search` — untrusted rayon search including HNF
   descent into closed spine arguments for `-ARG` kills, public only under
   `lab` but compiled for tests via `cfg(any(test, feature = "lab"))`.
   `try_kill` is the one four-rung sweep that both `blam cert search` and the
-  soundness battery run. Sweep defaults (`CertBudgets::SWEEP`) are 1000
-  steps / 100k nodes / 4096 lemma steps, measured kill-equivalent to the
-  battery's 2000/200k (`::THOROUGH`). A complete four-rung frontier sweep
-  (v1 + HTR + selector + PDR) measured 981.3 s wall / 6,630 s user at
-  `--threads 8` on the M5 Max over the 4,235-term frontier that produced the
-  eight canonical PDR kills — 1.84 core-hours, with a tail-bound wall time.
-  For a new kill, append to
-  `data/certificates/ratchet_kills.tsv`, run `scripts/recert-kills.sh`,
-  regenerate the frontier with `scripts/census-regen.sh`, trim Ω by exact
-  fraction arithmetic, and update `docs/STATUS.md`. The soundness battery is a crate unit
-  test at `src/classical/certificate/battery.rs` — inside the crate so it runs
-  under plain `cargo test` while discovery stays off the default public
-  surface: 196,848 provable halters ≤28 bits through the exact sweep
-  ladder, zero fires, under a second at release. `blam cert diag` writes the
-  maps described in `docs/classical/certificates/frontier.md`; its buckets
-  are abort fingerprints under one candidate triple, not class boundaries.
+  soundness battery run. Sweep defaults (`CertBudgets::SWEEP`) are 1000 steps
+  / 100k nodes / 4096 lemma steps, measured kill-equivalent to the battery's
+  2000/200k (`::THOROUGH`). A complete sweep over the 4,109-term frontier
+  takes about 4 s wall and 63 CPU-seconds on the M5 Max; substitution shares
+  unchanged subtrees and shifts the argument once per occurrence depth, and
+  the rebuild-everything form it replaced took 1.8 core-hours.
+- **New kills.** Append to `data/certificates/ratchet_kills.tsv`, run
+  `scripts/recert-kills.sh`, regenerate the frontier with
+  `scripts/census-regen.sh --frontier-only`, refresh Ω with
+  `scripts/omega-regen.sh --reuse-leaves`, and update `docs/STATUS.md`.
+  Direct Lean proofs belong in the separate BB seed ledger; `lake build Certs
+  BusyBeaver` checks both proof surfaces. Exact finite Ω and speed trims live
+  in `data/classical/certificate_bounds.txt`, regenerated by
+  `tools/certificates/bounds.py`, never hand-edited.
+- The soundness battery is a crate unit test at
+  `src/classical/certificate/battery.rs` — inside the crate so it runs under
+  plain `cargo test` while discovery stays off the default public surface:
+  196,848 provable halters ≤28 bits through the exact sweep ladder, zero
+  fires, under a second at release. `blam cert diag` writes the maps described
+  in `docs/classical/certificates/frontier.md`; its buckets are abort
+  fingerprints under one candidate triple, not class boundaries.
+
+### Quantum (qBLC)
+
+- `escalation::normal_form_spine` is the oracle-free adjudicator for
+  generic-argument questions (`p x⃗` with rigid placeholders): every Diverge
+  is history/redloop and spine-attributable. Targeted adjudication only,
+  never enumeration throughput. The quantum escalation ladder built on it
+  lives in `docs/quantum/escalation.md`; its drivers are `blam q skeleton FILE`
+  (`--sig`, whose *length* sets the hole count, plus `--steps` / `--size`)
+  and `blam q census` (`--dump-unknowns`, `--terms-file`, `--skeleton CAP`
+  with `--terms-file`, and `--sig` for alternate signature universes —
+  canonical data stays on the frozen five).
+- `quantum::certificate` is the trusted skeleton checker. `adjudicate`
+  returns `Result<SkelVerdict, OpenProgram>` — a typed error, never a silent
+  hole reinterpretation — and `CapOut` carries `reason: Steps | Size`,
+  `steps`, and `high_water_bits`, the telemetry the rung-3 stratification
+  reads. `blam q skeleton` prints an additive
+  `capout split: steps-bound N  size-bound M` line on stderr.
+
+### qALC
+
+qALC is quantum *control*: a storeless machine whose runtime states lie in
+ℓ² over token configurations. `docs/quantum-algebraic/architecture.md` is the
+semantic contract, `token.md` the machine design, `kernel.md` the transition
+register, and `rust-pillar.md` the map of the Rust implementation.
+`src/qalc/` contains the exact amplitude domain, wire codec, kernel and
+full-normal-form machine, linear-SSA compiler, native-CNOT shadow,
+structural admission, finite checker, and total public semantics. The
+default-built `blam qalc` group exposes `run`, `gram`, `compile`, `fixtures`,
+and the separate measured `census` layer over ordinary prefix-free `p h t`
+invocations. The census always accumulates the exact halt-arrival spectrum
+and open floors (checkpoint config `qalc-census-v1`); `--speed FILE` renders
+the speed prior of `docs/quantum-algebraic/speed.md` from them without
+touching the deterministic report, whose digests the convergence record
+pins.
+
+- The census's 1,000-state admission preflight is one-sided: success is a
+  complete checked admission, but failure is only a scheduling signal and
+  must retry the canonical 300,000-state selector. Retries run in a separate
+  pool (`--retry-threads`, default every thread), queued longest-probe-first
+  behind every size's probe phase; never turn preflight failure into a
+  conservative verdict. Selection/evolution phase timings are
+  stderr-only and deliberately absent from deterministic reports and
+  checkpoints.
+- The Python/Lean reference, batteries, proof records, and fixture exporters
+  live in `qalc/`. Generated kernel fixtures, composed Gate-1 cores, the mixed
+  Gate-2 carrier, and the embedded admission selector are regenerated only
+  through their four named exporters. The Rust differential tests regenerate
+  the fixtures byte-identically and check the 30 Gate-1 carriers (7,507
+  states in all) and the 917-state Gate-2 carrier, including predecessor
+  inverses and totalization probes. Error arms not reached by those carriers
+  remain review-pinned rather than theorem-backed. qALC work must leave
+  classical and qBLC rows bit-identical.
+- `gate1_check.py` and `gate2_check.py` are explicit local runtime/Python
+  gates. The qALC CI workflow runs neither those batteries nor Lean: it owns
+  only fixture determinism, while the ordinary CI release suites own the Rust
+  differentials. Run `gate1_lean_check.py` and `gate2_lean_check.py` manually
+  only when the Lean/generated-proof surface or its exporters intentionally
+  move; do not rerun them for Rust-only changes.
+
+## Documentation
+
+- `docs/STATUS.md` is the only home for moving numbers and the ordered
+  docket. Other documents state contracts and established results and point
+  to STATUS for anything that will move.
+- Documents are current-only and organized by topic. Fold a new finding into
+  the section it belongs to and rewrite what it supersedes; never append a
+  dated narrative section, keep a corrected value beside its correction, or
+  narrate how a result was reached. Git history is the archive.
+- Credit ideas where they appear (for example "Codex's design"); give
+  measurements with their evidence path (`data/…`, a log, a test name).
+- When a document is renamed, update the comments in `src/`, `tools/`,
+  `scripts/`, and `lean/` that cite it.
 
 ## Ops lessons
 
@@ -248,24 +349,42 @@ ambient load (the measurements and the scheduler A/B are in STATUS).
   declaring them done; anything slower than seconds is a problem to fix now.
   Runtime estimates have been wrong in both directions, so measure first.
 - The work meter bounds allocations, not live graph size. For big
-  adjudications, stream verdicts (`--terms-file` emits one line per result),
-  use few threads, pass `--work-mult 2`, and run a RAM watchdog.
+  adjudications, stream verdicts (`adjudicate --file` and
+  `q census --terms-file` emit one line per result), use few threads, pass
+  `--work-mult 2`, and run a RAM watchdog.
 - Watchdogs must hold the exact child PID (`$!`). Never use
-  `pgrep -f | head -1`; it matches the shell wrapper.
+  `pgrep -f | head -1`; it matches the shell wrapper, and a
+  `ps | grep pattern | xargs kill` inside a shell whose own command line
+  contains the pattern kills that shell.
 - When parsing prose-adjacent data such as `BB.txt` TODO lines, hard-cut at
   the first non-term character and assert variable indices <64 before unary
   encoding. Prose digits once became three ~200 GB strings. `tools/bbtxt.py`
   is the version that gets this right.
+- Run a long sweep (such as `tools/golf/sweep.py`) on a frozen copy of the
+  binary (`BLAM=...`): rebuilding `target/release/blam` mid-run fails every
+  later step. Make the copy a fresh file (`rm -f` it first): on macOS, `cp`
+  over an executable that has already run invalidates its cached code
+  signature, and every later launch dies with SIGKILL (exit 137) — which a
+  harness reads as a blam error.
+- Reference tools run unbounded: Tromp's Haskell `blc` grows its heap until
+  it is killed, about 10 GB in 20 s on a non-terminating `nf`. The
+  `tools/ait/` harnesses cap it (`+RTS -M`, so build it with
+  `tools/ait/build_blc.sh`, which passes `-rtsopts`) and cap blam with
+  `--live`; keep both caps on any new harness.
 - Profile the size where the problem lives; the n=40 tail is invisible at
   n=37.
 - This is a9's daily driver. Leave RAM headroom, kill strays when done, and
   check `ps aux | grep blam` before declaring the machine clean.
+- Never time a frontier term with `blam normalize` at a large `--beta`: its
+  sink materializes the normal form, and a readback-heavy term's grows without
+  bound (one 10⁷-β run reached 95 GB). Time engines through a counting sink
+  (`SizeSink`, as the ladder does) or `blam adjudicate`.
 
 ## Collaboration
 
 Claude and Codex are co-equal here; handoffs run over the `gaslamp` CLI.
 Use the other seat for a genuinely independent read, adversarial pressure, or
-verification. Whoever owns the task owns the synthesis. Send raw evidence—
-encodings, diffs, measurements, and exact claims—not a softened summary.
+verification. Whoever owns the task owns the synthesis. Send raw evidence —
+encodings, diffs, measurements, and exact claims — not a softened summary.
 When independence matters, open a fresh context instead of reviving one that
 already contains the design argument.

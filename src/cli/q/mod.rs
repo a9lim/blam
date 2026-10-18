@@ -12,7 +12,7 @@ use crate::args::R;
 
 mod census;
 mod run;
-mod selfint;
+pub(crate) mod selfint;
 mod skeleton;
 mod sweep;
 

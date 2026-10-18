@@ -1,0 +1,160 @@
+{
+ "name": "var",
+ "ambient": 7,
+ "holes": [],
+ "required": [
+  0,
+  4
+ ],
+ "max_cost": 22,
+ "all": 56703,
+ "tested": 2750,
+ "unknown": 0,
+ "cycles": 0,
+ "hits": [
+  {
+   "cost": 22,
+   "bits_with_holes": "0101111110100101101010"
+  }
+ ],
+ "rows": [
+  {
+   "cost": 0,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 1,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 2,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 3,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 4,
+   "all": 2,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 5,
+   "all": 2,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 6,
+   "all": 4,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 7,
+   "all": 5,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 8,
+   "all": 10,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 9,
+   "all": 13,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 10,
+   "all": 26,
+   "tested": 2,
+   "hits": 0
+  },
+  {
+   "cost": 11,
+   "all": 40,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 12,
+   "all": 76,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 13,
+   "all": 122,
+   "tested": 4,
+   "hits": 0
+  },
+  {
+   "cost": 14,
+   "all": 231,
+   "tested": 8,
+   "hits": 0
+  },
+  {
+   "cost": 15,
+   "all": 388,
+   "tested": 12,
+   "hits": 0
+  },
+  {
+   "cost": 16,
+   "all": 726,
+   "tested": 30,
+   "hits": 0
+  },
+  {
+   "cost": 17,
+   "all": 1257,
+   "tested": 42,
+   "hits": 0
+  },
+  {
+   "cost": 18,
+   "all": 2342,
+   "tested": 94,
+   "hits": 0
+  },
+  {
+   "cost": 19,
+   "all": 4143,
+   "tested": 178,
+   "hits": 0
+  },
+  {
+   "cost": 20,
+   "all": 7706,
+   "tested": 366,
+   "hits": 0
+  },
+  {
+   "cost": 21,
+   "all": 13851,
+   "tested": 672,
+   "hits": 0
+  },
+  {
+   "cost": 22,
+   "all": 25757,
+   "tested": 1342,
+   "hits": 1
+  }
+ ]
+}

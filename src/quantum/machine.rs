@@ -58,6 +58,11 @@ const FALSE_NODE: u32 = 5;
 #[derive(Debug)]
 pub struct Pool {
     nodes: Vec<Node>,
+    /// `decode_u64`'s build stack. Every closed non-variable term pushes at
+    /// least one pending constructor, so keeping this allocation beside the
+    /// arena removes one malloc/free pair from every census program. It is
+    /// scratch only and deliberately survives [`Pool::clear`].
+    dwork: Vec<wire::Pending<u32>>,
 }
 
 /// `Default` must go through `new`: a bare empty arena is missing the
@@ -87,7 +92,10 @@ impl wire::Build for Pool {
 
 impl Pool {
     pub fn new() -> Pool {
-        let mut p = Pool { nodes: Vec::new() };
+        let mut p = Pool {
+            nodes: Vec::new(),
+            dwork: Vec::new(),
+        };
         p.clear();
         p
     }
@@ -123,8 +131,13 @@ impl Pool {
     /// Decode one BLC term off a packed (bits, length) pair — the one
     /// wire-grammar decoder in [`wire`], no string round-trip.
     pub fn decode_u64(&mut self, enc: u64, len: u8) -> Option<u32> {
-        let mut bits = (0..len).rev().map(|j| (enc >> j) & 1 == 1);
-        wire::decode(&mut bits, &mut Vec::new(), self)
+        let mut bits = wire::Packed::new(enc, len);
+        // Take/restore rather than borrowing both fields through `self`, and
+        // restore after an early-EOF `None` exactly like the classical pool.
+        let mut work = std::mem::take(&mut self.dwork);
+        let root = wire::decode(&mut bits, &mut work, self);
+        self.dwork = work;
+        root
     }
 
     /// Import a tree-side term (tests).
@@ -174,6 +187,18 @@ enum Val {
     Clo(u32, u32),
     /// Bound by an unapplied binder in the normal form: rigid.
     Rigid,
+    /// A walked var→var chain: `(final cell, hops)`. A closure whose term
+    /// is a bare `Var` is pure indirection, and every β of a divergent
+    /// `Ω`-shaped program binds one more such alias, so forcing the k-th
+    /// costs k transitions and a β-4096 Unknown spends ~8.4M transitions
+    /// on hops. Cells are immutable (the arena is append-only and shared
+    /// by every branch of the run) and each hop lands on a strictly older
+    /// cell, so a cell's chain — and the first non-alias cell it resolves
+    /// to — is a pure function of the cell. The first walk rewrites each
+    /// cell on the chain to jump to that final cell and charge the hops it
+    /// skipped, exactly as the classical machine's `HOP_TAG` does:
+    /// transition counts, `max_trans`, and every leaf are unchanged.
+    Hop(u32, u32),
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -191,6 +216,23 @@ enum Frame {
     Cnot2(u32, u32),
     /// Neutralized primitive frame (readback no-op).
     Skip,
+}
+
+/// Charge `hops` skipped transitions ([`Val::Hop`]) to a branch at
+/// `trans ≤ cap`: the new count, or — when the uncompressed machine would
+/// have died inside the skipped stretch — the count it dies at, `cap + 1`.
+/// Compared against the remaining budget rather than summed, because the
+/// qBLC transition budget is an unrestricted `u64` and a jump, unlike a
+/// single step, can carry the sum past `u64::MAX` (a pool that shares
+/// subtrees can reach a count near the cap in few cells — Codex's
+/// counterexample).
+fn hop_charge(trans: u64, hops: u64, cap: u64) -> Result<u64, u64> {
+    debug_assert!(trans <= cap);
+    if hops > cap - trans {
+        Err(cap.saturating_add(1))
+    } else {
+        Ok(trans + hops)
+    }
 }
 
 const NIL: u32 = u32::MAX;
@@ -213,6 +255,8 @@ pub struct Machine {
     envs: Vec<(Val, u32)>,
     stack: Vec<Frame>,
     work: Vec<Branch>,
+    /// Scratch for the var→var chain being compressed ([`Val::Hop`]).
+    chain: Vec<u32>,
     /// Max transitions consumed by any branch path of the most recent run
     /// (telemetry: measures real trans/β headroom so sweep caps are set
     /// from data, not the blanket heuristic).
@@ -260,6 +304,19 @@ impl Machine {
     /// engines call and which spells out why zero is outside the contract
     /// rather than a tighter one.
     pub fn run_into(
+        &mut self,
+        pool: &mut Pool,
+        root: u32,
+        budget: &Budget,
+        leaves: &mut Vec<Leaf>,
+    ) {
+        self.run_into_impl::<true>(pool, root, budget, leaves);
+    }
+
+    /// [`Machine::run_into`], with var→var hop compression ([`Val::Hop`])
+    /// switchable so the tests can hold the compressed machine to the
+    /// uncompressed one transition for transition.
+    fn run_into_impl<const HOPS: bool>(
         &mut self,
         pool: &mut Pool,
         root: u32,
@@ -353,7 +410,79 @@ impl Machine {
                         for _ in 1..i {
                             e = self.envs[e as usize].1;
                         }
-                        match self.envs[e as usize].0 {
+                        let mut v = self.envs[e as usize].0;
+                        if HOPS {
+                            // The uncompressed machine reads this cell now,
+                            // at transition `trans`, then spends one
+                            // transition per alias hop before it reads the
+                            // final cell; nothing else moves in between, so
+                            // the final cell is read at `trans + hops` and
+                            // a cap inside the chain is a death at exactly
+                            // `budget.trans + 1`.
+                            let hops = match v {
+                                Val::Hop(fin, hops) => {
+                                    v = self.envs[fin as usize].0;
+                                    hops
+                                }
+                                Val::Clo(ct, _) if matches!(pool.node(ct), Node::Var(_)) => {
+                                    let mut chain = std::mem::take(&mut self.chain);
+                                    chain.clear();
+                                    let (mut c, mut cv) = (e, v);
+                                    let walked = loop {
+                                        chain.push(c);
+                                        if hop_charge(trans, chain.len() as u64, budget.trans)
+                                            .is_err()
+                                        {
+                                            break None;
+                                        }
+                                        let Val::Clo(ct, ce) = cv else {
+                                            unreachable!("chain cells hold Var closures")
+                                        };
+                                        let Node::Var(j) = pool.node(ct) else {
+                                            unreachable!("chain cells hold Var closures")
+                                        };
+                                        let mut n = ce;
+                                        for _ in 1..j {
+                                            n = self.envs[n as usize].1;
+                                        }
+                                        let nv = self.envs[n as usize].0;
+                                        match nv {
+                                            // An already-compressed suffix.
+                                            Val::Hop(fin, tail) => break Some((fin, tail)),
+                                            Val::Clo(nt, _)
+                                                if matches!(pool.node(nt), Node::Var(_)) =>
+                                            {
+                                                (c, cv) = (n, nv);
+                                            }
+                                            _ => break Some((n, 0)),
+                                        }
+                                    };
+                                    let Some((fin, tail)) = walked else {
+                                        self.chain = chain;
+                                        trans = budget.trans.saturating_add(1);
+                                        break 'run Some(Fate::Unknown);
+                                    };
+                                    let m = chain.len() as u32;
+                                    for (k, &ck) in chain.iter().enumerate() {
+                                        debug_assert!(fin < ck);
+                                        self.envs[ck as usize].0 =
+                                            Val::Hop(fin, m - k as u32 + tail);
+                                    }
+                                    self.chain = chain;
+                                    v = self.envs[fin as usize].0;
+                                    m + tail
+                                }
+                                _ => 0,
+                            };
+                            match hop_charge(trans, u64::from(hops), budget.trans) {
+                                Ok(t) => trans = t,
+                                Err(dead) => {
+                                    trans = dead;
+                                    break 'run Some(Fate::Unknown);
+                                }
+                            }
+                        }
+                        match v {
                             Val::Clo(ct, ce) => {
                                 t = ct;
                                 env = ce;
@@ -361,6 +490,9 @@ impl Machine {
                             Val::Rigid => {
                                 self.convert_run();
                                 reading = true;
+                            }
+                            Val::Hop(..) => {
+                                unreachable!("a chain's final cell is never compressed")
                             }
                         }
                     }
@@ -574,6 +706,9 @@ impl Machine {
         if self.stack.capacity() > KEEP {
             self.stack = Vec::with_capacity(KEEP);
         }
+        if self.chain.capacity() > KEEP {
+            self.chain = Vec::with_capacity(KEEP);
+        }
     }
 
     /// Decode + apply signature + run: the sweep entry point.
@@ -661,14 +796,13 @@ fn is_canonical(enc: u64, len: u8) -> bool {
             }
             i -= 2;
         } else {
-            // `1ⁿ0`
-            while i > 0 && (enc >> (i - 1)) & 1 == 1 {
-                i -= 1;
-            }
-            if i == 0 {
+            // `1ⁿ0`: the unread bits left-aligned (i ≥ 2 here), so the
+            // run cannot count past the end of the word.
+            let ones = (enc << (64 - u32::from(i))).leading_ones();
+            if ones >= u32::from(i) {
                 return false; // ran out before the terminating 0
             }
-            i -= 1;
+            i -= ones as u8 + 1;
             pending -= 1;
         }
     }
@@ -816,6 +950,227 @@ mod tests {
                 assert_eq!(got, expect, "program {src}");
             },
         );
+    }
+
+    /// A jump is charged against the remaining budget, so a count near
+    /// `u64::MAX` dies exactly where single steps would instead of
+    /// wrapping past the cap.
+    #[test]
+    fn hop_charge_never_wraps_past_the_cap() {
+        assert_eq!(hop_charge(5, 3, 10), Ok(8));
+        assert_eq!(hop_charge(5, 5, 10), Ok(10));
+        assert_eq!(hop_charge(5, 6, 10), Err(11));
+        assert_eq!(hop_charge(u64::MAX - 1, 3, u64::MAX - 1), Err(u64::MAX));
+        assert_eq!(hop_charge(u64::MAX - 4, 3, u64::MAX - 1), Ok(u64::MAX - 1));
+        assert_eq!(hop_charge(u64::MAX - 1, 1, u64::MAX), Ok(u64::MAX));
+        assert_eq!(hop_charge(u64::MAX, 1, u64::MAX), Err(u64::MAX));
+        assert_eq!(
+            hop_charge(0, u64::from(u32::MAX), u64::MAX),
+            Ok(u64::from(u32::MAX))
+        );
+    }
+
+    /// `is_canonical`'s one-instruction unary read agrees with the bit
+    /// loop it replaced on every closed term to 22 bits (with every
+    /// truncation and extension) and a dense low-word sweep.
+    #[test]
+    fn is_canonical_matches_the_bit_loop() {
+        fn bit_loop(enc: u64, len: u8) -> bool {
+            if len < 64 && enc >> len != 0 {
+                return false;
+            }
+            let (mut i, mut pending) = (len, 1u32);
+            while pending > 0 {
+                if i < 2 {
+                    return false;
+                }
+                if (enc >> (i - 1)) & 1 == 0 {
+                    if (enc >> (i - 2)) & 1 == 1 {
+                        pending += 1;
+                    }
+                    i -= 2;
+                } else {
+                    while i > 0 && (enc >> (i - 1)) & 1 == 1 {
+                        i -= 1;
+                    }
+                    if i == 0 {
+                        return false;
+                    }
+                    i -= 1;
+                    pending -= 1;
+                }
+            }
+            i == 0
+        }
+        for n in 4..=22 {
+            for_each_closed(n, &mut |enc, len| {
+                assert!(is_canonical(enc, len));
+                for cut in 0..len {
+                    let (e, l) = (enc >> (len - cut), cut);
+                    assert_eq!(is_canonical(e, l), bit_loop(e, l));
+                }
+                for (e, l) in [
+                    (enc << 1, len + 1),
+                    (enc << 2 | 3, len + 2),
+                    (enc | 1 << 40, len),
+                ] {
+                    assert_eq!(is_canonical(e, l), bit_loop(e, l), "{e:#x}/{l}");
+                }
+            });
+        }
+        for enc in 0..1u64 << 16 {
+            for len in [1u8, 2, 9, 16, 17, 33, 63, 64] {
+                assert_eq!(is_canonical(enc, len), bit_loop(enc, len));
+                assert_eq!(is_canonical(!enc, len), bit_loop(!enc, len));
+            }
+        }
+    }
+
+    /// Run `prog` through the compressed and the uncompressed machine and
+    /// demand identical leaves and `max_trans`.
+    fn hops_agree(pool: &mut Pool, m: &mut Machine, prog: &QProgram, budget: &Budget) -> u64 {
+        let mut run = |pool: &mut Pool, hops: bool| {
+            pool.clear();
+            let root = pool.decode_u64(prog.enc, prog.len).expect("canonical");
+            let sig = pool.apply_signature(root, prog.order);
+            let mut leaves = Vec::new();
+            if hops {
+                m.run_into_impl::<true>(pool, sig, budget, &mut leaves);
+            } else {
+                m.run_into_impl::<false>(pool, sig, budget, &mut leaves);
+            }
+            (leaves, m.max_trans)
+        };
+        let got = run(pool, true);
+        let want = run(pool, false);
+        assert_eq!(
+            got, want,
+            "program {:#x}/{} at {budget:?}",
+            prog.enc, prog.len
+        );
+        got.1
+    }
+
+    /// Hop compression is invisible: every closed program to 22 bits,
+    /// with the transition cap from starved to ample, gives the
+    /// uncompressed machine's leaves and `max_trans`.
+    #[test]
+    fn hop_compression_matches_the_uncompressed_machine() {
+        let mut programs: Vec<(u64, u8)> = Vec::new();
+        for n in 4..=22 {
+            for_each_closed(n, &mut |enc, len| programs.push((enc, len)));
+        }
+        programs.par_iter().for_each_init(
+            || (Pool::new(), Machine::new()),
+            |(pool, m), &(enc, len)| {
+                let prog = QProgram::new(enc, len, None, &FROZEN).expect("valid");
+                for trans in [1, 2, 7, 50, 777, 4099, 1 << 20, 1 << 26] {
+                    let budget = Budget {
+                        trans,
+                        ..Budget::default()
+                    };
+                    hops_agree(pool, m, &prog, &budget);
+                }
+            },
+        );
+    }
+
+    /// Branches share the env arena, so a chain one branch compresses is
+    /// re-entered compressed by its sibling. `λh m n c t. (λx. (λy₁. …
+    /// (λy_k. B) y_{k−1} …) x) I` binds an alias chain and B forks on a
+    /// measurement, then forces the chain in both branches — once through
+    /// a fresh selector cell (`meas (new I) y_k y_k`: the sibling meets
+    /// the compressed suffix mid-walk) and once by looking `y_k` up
+    /// directly (`meas (new I) (λq. y_k) (λq. y_k) I`: the sibling's first
+    /// read is the compressed cell). Every transition cap through the
+    /// whole run, both machines.
+    #[test]
+    fn hop_compression_is_exact_across_measurement_branches() {
+        use crate::blc::{app, lam, var};
+        let mut pool = Pool::new();
+        let mut m = Machine::new();
+        for (k, direct) in [1u32, 2, 5, 9]
+            .into_iter()
+            .flat_map(|k| [(k, false), (k, true)])
+        {
+            let d = 1 + k; // binders between the signature and the body
+            let meas = var(4 + d);
+            let new = var(3 + d);
+            let coin = app(meas, app(new, lam(var(1))));
+            let mut t = if direct {
+                let f = || lam(var(2));
+                app(app(app(coin, f()), f()), lam(var(1)))
+            } else {
+                app(app(coin, var(1)), var(1))
+            };
+            for _ in 0..k {
+                t = app(lam(t), var(1));
+            }
+            t = app(lam(t), lam(var(1)));
+            for _ in 0..5 {
+                t = lam(t);
+            }
+            let run = |pool: &mut Pool, m: &mut Machine, budget: &Budget, hops: bool| {
+                pool.clear();
+                let root = pool.from_term(&t);
+                let sig = pool.apply_signature(root, &FROZEN);
+                let mut leaves = Vec::new();
+                if hops {
+                    m.run_into_impl::<true>(pool, sig, budget, &mut leaves);
+                } else {
+                    m.run_into_impl::<false>(pool, sig, budget, &mut leaves);
+                }
+                (leaves, m.max_trans)
+            };
+            let full = run(&mut pool, &mut m, &Budget::default(), false);
+            assert_eq!(full.0.len(), 2, "k={k}: the measurement forks");
+            assert!(
+                full.0.iter().all(|l| matches!(l.fate, Fate::Halt(_))),
+                "k={k}"
+            );
+            for trans in 1..=full.1 + 2 {
+                let budget = Budget {
+                    trans,
+                    ..Budget::default()
+                };
+                assert_eq!(
+                    run(&mut pool, &mut m, &budget, true),
+                    run(&mut pool, &mut m, &budget, false),
+                    "k={k} direct={direct} trans={trans}"
+                );
+            }
+        }
+    }
+
+    /// The 18- and 20-bit census Unknowns are Ω-shaped alias builders:
+    /// at β 4096 the k-th β forces a k-deep chain. Pin the canonical
+    /// transition count, then sweep the cap through first walks, jumps,
+    /// and chain ends.
+    #[test]
+    fn hop_compression_is_exact_at_every_cap_inside_alias_chains() {
+        let mut pool = Pool::new();
+        let mut m = Machine::new();
+        for bits in ["010001101000011010", "00010001101000011010"] {
+            let enc = u64::from_str_radix(bits, 2).unwrap();
+            let prog = QProgram::new(enc, bits.len() as u8, None, &FROZEN).expect("valid");
+            let census = Budget {
+                trans: 1 << 26,
+                ..Budget::default()
+            };
+            let full = hops_agree(&mut pool, &mut m, &prog, &census);
+            assert!(full > 8_000_000, "{bits}: {full} transitions");
+            for trans in (1..20_000).chain((20_000..2_000_000).step_by(9973)) {
+                let budget = Budget {
+                    trans,
+                    ..Budget::default()
+                };
+                hops_agree(&mut pool, &mut m, &prog, &budget);
+            }
+            for beta in [2, 10, 100, 1000] {
+                let budget = Budget { beta, ..census };
+                hops_agree(&mut pool, &mut m, &prog, &budget);
+            }
+        }
     }
 
     #[test]

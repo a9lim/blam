@@ -29,6 +29,7 @@ use super::state::{
     BinderIdentity, BinderMark, ErrorGarbage, ErrorKind, KState, Kind, Nf, NfRun, NfState,
     NfTerminal, Residue, RunCore, ScopeResidue, TerminalCarrier, TerminalGarbage, Vb, Vert, Zipper,
 };
+use std::borrow::Cow;
 use std::sync::Arc;
 
 use super::term::{Dir, GateName, Path, Term};
@@ -220,7 +221,7 @@ fn p_lp_body(t: &mut Toks) -> R<Lp> {
     }
     t.close()?;
     t.close()?;
-    Ok(Lp { occ, slice })
+    Ok(Lp::new(occ, slice))
 }
 
 fn p_lp(t: &mut Toks) -> R<Lp> {
@@ -254,9 +255,9 @@ fn p_log_entry(t: &mut Toks) -> R<LogEntry> {
             t.close()?;
             Ok(LogEntry::Gam(g))
         }
-        "cg" => Ok(LogEntry::Cgam(p_cgam_body(t)?)),
-        "al" => Ok(LogEntry::Alpha(p_alpha_body(t)?)),
-        "rbl" => Ok(LogEntry::Rbl(p_rbl_body(t)?)),
+        "cg" => Ok(LogEntry::Cgam(p_cgam_body(t)?.into())),
+        "al" => Ok(LogEntry::Alpha(p_alpha_body(t)?.into())),
+        "rbl" => Ok(LogEntry::Rbl(p_rbl_body(t)?.into())),
         x => Err(format!("bad log entry tag '{x}'")),
     }
 }
@@ -341,7 +342,7 @@ fn p_tape_entry(t: &mut Toks) -> R<TapeEntry> {
             t.close()?;
             Ok(TapeEntry::Mu(g))
         }
-        "cg" => Ok(TapeEntry::Cgam(p_cgam_body(t)?)),
+        "cg" => Ok(TapeEntry::Cgam(p_cgam_body(t)?.into())),
         "cm" => {
             let port = p_cport(t)?;
             let invoked = p_lp(t)?;
@@ -354,9 +355,9 @@ fn p_tape_entry(t: &mut Toks) -> R<TapeEntry> {
             t.close()?;
             Ok(TapeEntry::Ans(g, b))
         }
-        "al" => Ok(TapeEntry::Alpha(p_alpha_body(t)?)),
-        "rb" => Ok(TapeEntry::Rb(p_rb_body(t)?)),
-        "rbl" => Ok(TapeEntry::Rbl(p_rbl_body(t)?)),
+        "al" => Ok(TapeEntry::Alpha(p_alpha_body(t)?.into())),
+        "rb" => Ok(TapeEntry::Rb(p_rb_body(t)?.into())),
+        "rbl" => Ok(TapeEntry::Rbl(p_rbl_body(t)?.into())),
         x => Err(format!("bad tape entry tag '{x}'")),
     }
 }
@@ -597,8 +598,8 @@ fn p_run_body(t: &mut Toks) -> R<RunCore> {
         log,
         tape,
         vb,
-        rs,
-        ks,
+        rs: rs.into(),
+        ks: ks.into(),
     })
 }
 
@@ -622,7 +623,12 @@ fn p_residue(t: &mut Toks) -> R<Residue> {
             let rs = p_seq(t, p_frame)?;
             let ks = p_seq(t, p_ks_head)?;
             t.close()?;
-            Ok(Residue::Root { log, tape, rs, ks })
+            Ok(Residue::Root {
+                log,
+                tape,
+                rs: rs.into(),
+                ks: ks.into(),
+            })
         }
         x => Err(format!("bad residue tag '{x}'")),
     }
@@ -809,10 +815,10 @@ fn p_terminal_garbage(t: &mut Toks) -> R<TerminalGarbage> {
             t.close()?;
             Ok(TerminalGarbage {
                 carrier,
-                frames,
-                storage,
-                binders,
-                residues,
+                frames: frames.into(),
+                storage: storage.into(),
+                binders: binders.into(),
+                residues: residues.into(),
             })
         }
         x => Err(format!("expected tg found '{x}'")),
@@ -836,8 +842,8 @@ fn p_zipper(t: &mut Toks) -> R<Zipper> {
             Ok(Zipper {
                 tree,
                 cursor,
-                binders,
-                residues,
+                binders: binders.into(),
+                residues: residues.into(),
             })
         }
         x => Err(format!("expected zp found '{x}'")),
@@ -876,7 +882,7 @@ fn p_error_garbage(t: &mut Toks) -> R<ErrorGarbage> {
                 x => return Err(format!("expected run found '{x}'")),
             }
             let token = p_run_body(t)?;
-            let zipper = p_zipper(t)?;
+            let zipper = p_zipper(t)?.into();
             ErrorGarbage::Composed { token, zipper }
         }
         "egk" => {
@@ -886,7 +892,7 @@ fn p_error_garbage(t: &mut Toks) -> R<ErrorGarbage> {
                 x => return Err(format!("expected run found '{x}'")),
             }
             let token = p_run_body(t)?;
-            let zipper = p_zipper(t)?;
+            let zipper = p_zipper(t)?.into();
             let residue = p_residue(t)?;
             ErrorGarbage::Kernel {
                 token,
@@ -901,7 +907,7 @@ fn p_error_garbage(t: &mut Toks) -> R<ErrorGarbage> {
                 x => return Err(format!("expected run found '{x}'")),
             }
             let token = p_run_body(t)?;
-            let zipper = p_zipper(t)?;
+            let zipper = p_zipper(t)?.into();
             let target = Box::new(p_state(t)?);
             ErrorGarbage::InvalidKernelTarget {
                 token,
@@ -948,7 +954,7 @@ fn p_nf_state(t: &mut Toks) -> R<NfState> {
                 x => return Err(format!("expected run found '{x}'")),
             }
             let token = p_run_body(t)?;
-            let zipper = p_zipper(t)?;
+            let zipper = p_zipper(t)?.into();
             NfState::Run(NfRun { token, zipper })
         }
         "nrd" => NfState::RunDone(p_nf_terminal(t)?),
@@ -1006,7 +1012,7 @@ fn p_amp(t: &mut Toks) -> R<Amp> {
     }
 }
 
-fn p_rule(t: &mut Toks) -> R<String> {
+fn p_rule(t: &mut Toks) -> R<Rule> {
     let x = t.next()?;
     if x.is_empty()
         || !x
@@ -1015,7 +1021,7 @@ fn p_rule(t: &mut Toks) -> R<String> {
     {
         return Err(format!("bad rule token '{x}'"));
     }
-    Ok(x.to_string())
+    Ok(Cow::Owned(x.to_string()))
 }
 
 // ---------------------------------------------------------------------------
@@ -1738,8 +1744,11 @@ pub struct CorpusPair {
 
 /// A parsed certificate: `(position, popkeys)` entries.
 pub type CertEntries = Vec<(Path, Vec<KdKey>)>;
+/// Transition label. Runtime tables use borrowed static spellings; parsed
+/// fixtures own their tokens. The wire value remains the exact same text.
+pub type Rule = Cow<'static, str>;
 /// One unmerged column row: `(coefficient, rule, target id)`.
-pub type ColRow = (Amp, String, usize);
+pub type ColRow = (Amp, Rule, usize);
 /// One source's exact ordered rows, unmerged: `(source id, rows)`.
 pub type Column = (usize, Vec<ColRow>);
 
@@ -1766,7 +1775,7 @@ pub struct ProgramFixture {
 
 /// One probe row: exact coefficient, rule, and full target state
 /// (probe targets may be off-carrier, so no id indirection).
-pub type ProbeRow = (Amp, String, NfState);
+pub type ProbeRow = (Amp, Rule, NfState);
 
 /// One composed core's phase-2 pins: the same shape as
 /// [`ProgramFixture`] over composed states, plus totalization/inverse
@@ -1895,7 +1904,7 @@ pub fn parse_term(text: &str) -> Result<Term, WireError> {
 type Lines<'a> = std::iter::Enumerate<std::str::Lines<'a>>;
 
 /// One parsed probe over states of type `S`.
-type Probe<S> = (S, Vec<(Amp, String, S)>);
+type Probe<S> = (S, Vec<(Amp, Rule, S)>);
 
 /// The section fields shared by kernel and composed program blocks,
 /// generic over the state parser so the two grammars cannot drift.

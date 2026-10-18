@@ -15,7 +15,11 @@ from __future__ import annotations
 
 from collections import defaultdict, deque
 
-from kernel import BULLET, Done, FRAME, Run, init, is_alpha, step
+from kernel import BULLET, Done, Run, init, is_alpha, step
+
+
+def _is_frame(entry):
+    return isinstance(entry, tuple) and len(entry) == 5 and entry[0] == "R"
 
 
 def successors(term, state, cert):
@@ -26,9 +30,12 @@ def successors(term, state, cert):
 def recall_view(state):
     """Return ``(full key, phase, erased projection)``, or ``None``.
 
-    A valid state has at most one matching frame because ``rs`` is a set.  We
-    nevertheless reject multiplicity here and delete exactly one frame, so the
-    direct checker does not borrow that fact from WF or Gram.
+    This is the Lean ``recallView?``.  The matching frame is the frame with
+    the ticket's gate, instance, and bit, of ANY epoch: after a replay return
+    the frame carries ``EP(e, e_old)``, and a first-epoch-only match would
+    read that present source as absent with its frame left in the projection.
+    A same-key frame with the other bit, or a second matching frame, has no
+    view; the direct checker does not borrow W2/W3 from WF or Gram.
     """
     if not isinstance(state, Run) or state.vb is not None:
         return None
@@ -39,13 +46,13 @@ def recall_view(state):
         return None
     alpha = state.tape[j]
     full_key = (alpha[1], alpha[2], alpha[3])
-    frame = FRAME(*full_key)
-    frame_indices = [index for index, item in enumerate(state.rs)
-                     if item == frame]
-    if len(frame_indices) > 1:
-        raise ValueError("matching-frame-multiplicity")
-    if frame_indices:
-        index = frame_indices[0]
+    same_key = [index for index, frame in enumerate(state.rs)
+                if _is_frame(frame) and frame[1:3] == full_key[:2]]
+    if (len(same_key) > 1
+            or any(state.rs[index][3] != full_key[2] for index in same_key)):
+        return None
+    if same_key:
+        index = same_key[0]
         reduced_rs = state.rs[:index] + state.rs[index + 1:]
     else:
         reduced_rs = state.rs
@@ -53,41 +60,32 @@ def recall_view(state):
         state.path, state.d, state.log, state.tape, state.vb,
         reduced_rs, state.ks,
     )
-    return full_key, bool(frame_indices), projection
+    return full_key, bool(same_key), projection
 
 
-def projected_collision_count(sources):
-    """Count mixed absent/present phases in ``(key, projection)`` buckets."""
-    buckets = defaultdict(set)
-    collisions = 0
-    for source in sources:
-        view = recall_view(source)
-        if view is None:
-            continue
-        key, present, projection = view
-        bucket = buckets[(key, projection)]
-        collisions += bool(bucket and present not in bucket)
-        bucket.add(present)
-    return collisions, len(buckets)
+def rri_facts(entries):
+    """Source-projection and actual-target RRI over ``(view, target)`` pairs.
 
-
-def recall_target_facts(entries):
-    """Check actual target buckets and the target-to-projection factorization."""
-    buckets = defaultdict(lambda: {"phases": set(), "projections": set()})
-    projection_targets = defaultdict(set)
-    for _source, view, target in entries:
-        key, present, projection = view
-        bucket = buckets[(key, target)]
-        bucket["phases"].add(present)
-        bucket["projections"].add(projection)
-        projection_targets[(key, projection)].add(target)
-    phase_collisions = sum(len(bucket["phases"]) > 1
-                           for bucket in buckets.values())
-    factorization_failures = (
-        sum(len(bucket["projections"]) > 1 for bucket in buckets.values())
-        + sum(len(targets) > 1 for targets in projection_targets.values())
+    The two Lean forms, ``RRIOn`` and ``RecallTargetRRIOn``: no
+    ``(key, projection)`` bucket mixes phases, and no ``(key, target)``
+    bucket mixes phases or projections.  Returns ``(projection witnesses,
+    target phase witnesses, target projection failures, projection buckets,
+    target buckets)``.
+    """
+    projected = defaultdict(set)
+    targets = defaultdict(lambda: (set(), set()))
+    for (key, present, projection), target in entries:
+        projected[(key, projection)].add(present)
+        phases, projections = targets[(key, target)]
+        phases.add(present)
+        projections.add(projection)
+    return (
+        sum(len(phases) > 1 for phases in projected.values()),
+        sum(len(phases) > 1 for phases, _ in targets.values()),
+        sum(len(projections) > 1 for _, projections in targets.values()),
+        len(projected),
+        len(targets),
     )
-    return phase_collisions, factorization_failures, len(buckets)
 
 
 def direct_certificate(term, cert, state_cap=100_000):
@@ -126,17 +124,10 @@ def direct_certificate(term, cert, state_cap=100_000):
                     "reason": "ambiguous-recall-domain",
                     "states": len(states),
                 }
-            try:
-                view = recall_view(source)
-            except ValueError as exc:
-                return {
-                    "certified": False,
-                    "reason": str(exc),
-                    "states": len(states),
-                }
+            view = recall_view(source)
             if view is None:
                 return {"certified": False, "reason": "bad-recall-view"}
-            recall_rows.append((source, view, recall_rows_here[0][3]))
+            recall_rows.append((view, recall_rows_here[0][3]))
 
         for _sign, _denominator, _rule, target in rows:
             if isinstance(target, Done):
@@ -162,10 +153,8 @@ def direct_certificate(term, cert, state_cap=100_000):
             if not isinstance(target, Done) and target not in states:
                 closure_failures.append((source, rule, target))
 
-    witness_count, bucket_count = projected_collision_count(
-        source for source, _view, _target in recall_rows)
-    target_witnesses, factorization_failures, target_bucket_count = \
-        recall_target_facts(recall_rows)
+    (witness_count, target_witnesses, factorization_failures,
+     bucket_count, target_bucket_count) = rri_facts(recall_rows)
 
     passed = (not closure_failures and witness_count == 0
               and target_witnesses == 0 and factorization_failures == 0)

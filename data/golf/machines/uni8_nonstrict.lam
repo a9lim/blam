@@ -1,0 +1,37 @@
+-- BLC8 universal machine for closed programs, non-strict: 300 bits (38 bytes).
+-- The IOCCC 2012 uni8.Blc is 344 bits (43 bytes); tromp/AIT's uni8.lam
+-- compiles to 355. Same contract: read <M> from the bits of the leading
+-- bytes, discard the rest of the last byte touched, return M applied to the
+-- remaining bytes. Non-strict: the final continuation is the identity, so
+-- cont exp bits bytes = exp bits bytes, which is M bytes for closed M (the
+-- leftover bits of the last byte serve as its unused environment; the idea
+-- is Codex's, from uni28). A free variable in M is not caught.
+--
+-- The design reads every bit through one reader, get (Codex, 2026-10-12),
+-- instead of two inline reads with their own refills. A refill moves to the
+-- next byte, and a byte always has eight bits, so the refilled read can never
+-- meet nil again: get needs no recursion (Claude). The variable parse is the
+-- old one: Scott-pair environment, re-entering int8 with the second bit
+-- pushed back. Verified against the 344 by `blam golf check --io bytes`
+-- (every closed program to 18 bits, with and without a data byte, plus random
+-- bytes: 0 differ on every closed program, and on every
+-- truncated one agrees with the 344 exactly) and by nested
+-- self-interpretation; see docs/classical/golf.md.
+--
+-- test with
+-- cat id.Blc id.lam | ./blc run8 uni8.lam
+\bytes.bytes (
+let dbl = \x.x x
+in
+  (dbl (\self.
+    (\get\int8\cont.get (\b.get (\c\tail.b
+      (int8 (\exp.c
+        (cont (\args\arg.exp (\z.z arg args)))
+        (int8 (\exp2.cont (\args.exp args (exp2 args))))) tail)
+      (c (cont (\args.args c) tail)
+         (int8 (\var.cont (\args.var (args c)))
+               (\f.f c tail))))))
+    -- get k bits = k bit tail, reading the next byte when bits is nil
+    (\k. (\h\bits. bits h (\bytes.bytes (\byte. byte h byte))) (\b\tail\ignored.k b tail))
+    (self self))
+    (\x.x)))

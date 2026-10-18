@@ -1,5 +1,5 @@
 /-
-The PassengerDiagonalRatchet (v4) assembly: SPEC.md §8.1, forced by
+The PassengerDiagonalRatchet (v4) assembly: docs/classical/certificates/specification.md §7, forced by
 the 36-bit exemplar. OPEN opens to `Z (Z P[Z]) W[Z]` — an interleaved
 spine argument `Z P[Z]`, metavariable-bearing and consumed by the
 tower head, *controls* the descent. The rank step is UNWRAP at the

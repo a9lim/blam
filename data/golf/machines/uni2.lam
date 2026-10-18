@@ -1,0 +1,41 @@
+-- BLC2 universal machine (tromp/AIT uni2.lam), strict: this is Tromp's
+-- source, unchanged; it compiles to 340 bits. uni2.blc (333 bits) is
+-- beta-convertible to it: the exact let search (blam golf letopt) gives 334
+-- and a beta-only descent 333, and blam golf check finds the 333 reducing
+-- to the 340 in three steps. See docs/classical/golf.md.
+-- universal machine for levenshtein binary lambda calculus (BLC2)
+let
+ id = \x.x;
+ true = \x\y.x;
+
+ -- readbit f cont n (bit->blob) = cont (n . n . if bit then f else id) blob
+ readbit = \f\cont\n\blob.blob (\bit.cont (\x. n (n (bit x (f x)))));
+
+ -- delimit f cont (levenstein_code_for_n ++ blob) = cont (f^n) blob
+ delimit = \f\cont\blob.blob (\bit.bit (cont id)
+   (delimit (readbit f) (\n. n cont f)));
+
+  -- binary LC interpreter
+  -- int2 cont bits = cont (\free.parsed) unparsed_bits
+  int2 = \cont\blob.blob (\bit0. bit0        -- 314 bits
+    (\blob1.blob1 (\bit1.
+       int2 (\exp.bit1 (cont (\args\arg.exp (\z.z arg args)))
+                       (int2 (\exp2.cont (\args.exp args (exp2 args)))))))
+    (delimit (\l.l bit0) (\n. cont (\args. n args true)))
+    );
+  
+  -- blob cont = cont bytes nextbit nextblob
+  blob = \bits\bytes\cont. let go = \bs\bit\bits1\z. cont bytes bit (blob bits1 bs)
+                         in bits (go bytes)
+      (bytes (\byte\bytes1. byte (go bytes1) bytes1));
+ 
+
+  -- loop
+  omega = omega;             -- 18 bits
+
+  -- binary LC universal machine for closed programs
+  uni2 = int2 (\z.z omega);  -- 340 bits
+  -- save some bits by assuming closed programs
+  -- uni2 = int2 (\z. z z);  -- 324 bits
+
+in uni2

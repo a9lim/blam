@@ -1,0 +1,124 @@
+{
+ "name": "dispatch_packed",
+ "ambient": 3,
+ "holes": [
+  [
+   "VAR",
+   0
+  ]
+ ],
+ "required": [
+  0,
+  1,
+  2
+ ],
+ "max_cost": 15,
+ "all": 3192,
+ "tested": 120,
+ "unknown": 0,
+ "cycles": 0,
+ "hits": [
+  {
+   "cost": 15,
+   "bits_with_holes": "010111001101110[VAR]"
+  }
+ ],
+ "rows": [
+  {
+   "cost": 0,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 1,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 2,
+   "all": 1,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 3,
+   "all": 0,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 4,
+   "all": 3,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 5,
+   "all": 2,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 6,
+   "all": 9,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 7,
+   "all": 6,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 8,
+   "all": 25,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 9,
+   "all": 28,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 10,
+   "all": 81,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 11,
+   "all": 102,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 12,
+   "all": 263,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 13,
+   "all": 380,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 14,
+   "all": 889,
+   "tested": 0,
+   "hits": 0
+  },
+  {
+   "cost": 15,
+   "all": 1402,
+   "tested": 120,
+   "hits": 1
+  }
+ ]
+}

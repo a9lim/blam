@@ -12,6 +12,7 @@
 //! sealed so there is exactly one definition site and no third path.
 
 pub mod enumerate;
+pub mod notation;
 pub(crate) mod reduction;
 pub(crate) mod term;
 pub mod wire;

@@ -26,6 +26,7 @@
 
 use std::sync::Arc;
 
+use super::shared::{Shared, SharedMut};
 use super::term::{Dir, GateName, Path};
 
 /// Dynamic gate identity stored in frames, tickets, virtual booleans, and
@@ -71,10 +72,54 @@ impl GateName {
 /// A logged position `('L', occ, slice)`: a dynamic subterm copy. The
 /// slice is a captured log segment, so its entries are log-alphabet
 /// values (lp-like only; W0 excludes bullets from the log).
+///
+/// One logged position is copied into tapes, logs, frames, tickets,
+/// storage heads, and binder identities, and `var` nests captured
+/// segments inside one another, so it is [`Shared`]: a copy is a pointer,
+/// and its hash is the cached content hash. Equality and hashing stay
+/// structural.
+#[derive(Clone, PartialEq, Eq, Hash)]
+pub struct Lp(Shared<LpNode>);
+
+/// The contents of a logged position.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct Lp {
+pub struct LpNode {
     pub occ: Path,
     pub slice: Vec<LogEntry>,
+}
+
+impl Lp {
+    pub fn new(occ: Path, slice: Vec<LogEntry>) -> Self {
+        Self(Shared::new(LpNode { occ, slice }))
+    }
+
+    /// Copy-on-write access to the contents (rehashed when the guard drops).
+    pub fn make_mut(&mut self) -> SharedMut<'_, LpNode> {
+        self.0.make_mut()
+    }
+
+    /// The owned contents, cloned only if still shared.
+    pub fn into_node(self) -> LpNode {
+        self.0.into_inner()
+    }
+}
+
+impl std::ops::Deref for Lp {
+    type Target = LpNode;
+
+    #[inline]
+    fn deref(&self) -> &LpNode {
+        &self.0
+    }
+}
+
+impl std::fmt::Debug for Lp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Lp")
+            .field("occ", &self.occ)
+            .field("slice", &self.slice)
+            .finish()
+    }
 }
 
 /// Log-alphabet entry: `lp | γ_g | α | RBL` — what `arg`/`bt1`
@@ -88,9 +133,9 @@ pub struct Lp {
 pub enum LogEntry {
     Lp(Lp),
     Gam(GateName),
-    Cgam(CGam),
-    Alpha(Alpha),
-    Rbl(Rbl),
+    Cgam(Shared<CGam>),
+    Alpha(Shared<Alpha>),
+    Rbl(Shared<Rbl>),
 }
 
 /// One native-CNOT port.
@@ -199,12 +244,12 @@ pub enum TapeEntry {
     Lp(Lp),
     Gam(GateName),
     Mu(GateName),
-    Cgam(CGam),
+    Cgam(Shared<CGam>),
     Cmu { port: CPort, invoked: Lp },
     Ans(GateName, u8),
-    Alpha(Alpha),
-    Rb(Rb),
-    Rbl(Rbl),
+    Alpha(Shared<Alpha>),
+    Rb(Shared<Rb>),
+    Rbl(Shared<Rbl>),
 }
 
 /// One inert storage head; every fire appends exactly one for
@@ -472,10 +517,7 @@ mod tests {
         // repr(('R', 'h', ('L', ('f', 'a'), ()), 0, ('EA', ('F',))))
         let f = Frame {
             gate: GateTag::H,
-            instance: Lp {
-                occ: vec![Dir::F, Dir::A],
-                slice: vec![],
-            },
+            instance: Lp::new(vec![Dir::F, Dir::A], vec![]),
             bit: 0,
             epoch: Epoch::Recall(Arc::new(Epoch::Fresh)),
         };
@@ -486,10 +528,7 @@ mod tests {
         // Singleton path and singleton slice both carry the trailing comma.
         let k = KdKey {
             gate: GateTag::T,
-            instance: Lp {
-                occ: vec![Dir::B],
-                slice: vec![LogEntry::Gam(GateName::H)],
-            },
+            instance: Lp::new(vec![Dir::B], vec![LogEntry::Gam(GateName::H)]),
         };
         assert_eq!(kd_key_repr(&k), "('t', ('L', ('b',), (('G', 'h'),)))");
         // A composed-stratum frame whose instance captured an RBL:
@@ -497,14 +536,17 @@ mod tests {
         //       0, ('F',))) — verified against the Python reference.
         let f = Frame {
             gate: GateTag::H,
-            instance: Lp {
-                occ: vec![Dir::A],
-                slice: vec![LogEntry::Rbl(Rbl {
-                    parent: vec![Dir::F],
-                    output: vec![],
-                    code: vec![Dir::B],
-                })],
-            },
+            instance: Lp::new(
+                vec![Dir::A],
+                vec![LogEntry::Rbl(
+                    Rbl {
+                        parent: vec![Dir::F],
+                        output: vec![],
+                        code: vec![Dir::B],
+                    }
+                    .into(),
+                )],
+            ),
             bit: 0,
             epoch: Epoch::Fresh,
         };
@@ -515,25 +557,31 @@ mod tests {
         // RBL nested through an alpha instance, all three path fields
         // distinct (field-order swaps would misrender), singleton slice
         // commas at both nesting levels — verified against Python.
-        let inner = Lp {
-            occ: vec![],
-            slice: vec![LogEntry::Rbl(Rbl {
-                parent: vec![],
-                output: vec![Dir::B],
-                code: vec![Dir::F, Dir::A],
-            })],
-        };
+        let inner = Lp::new(
+            vec![],
+            vec![LogEntry::Rbl(
+                Rbl {
+                    parent: vec![],
+                    output: vec![Dir::B],
+                    code: vec![Dir::F, Dir::A],
+                }
+                .into(),
+            )],
+        );
         let f = Frame {
             gate: GateTag::T,
-            instance: Lp {
-                occ: vec![Dir::F],
-                slice: vec![LogEntry::Alpha(Alpha {
-                    gate: GateTag::T,
-                    instance: inner,
-                    bit: 1,
-                    epoch: Epoch::Fresh,
-                })],
-            },
+            instance: Lp::new(
+                vec![Dir::F],
+                vec![LogEntry::Alpha(
+                    Alpha {
+                        gate: GateTag::T,
+                        instance: inner,
+                        bit: 1,
+                        epoch: Epoch::Fresh,
+                    }
+                    .into(),
+                )],
+            ),
             bit: 1,
             epoch: Epoch::Fresh,
         };
@@ -544,14 +592,17 @@ mod tests {
         );
         let k = KdKey {
             gate: GateTag::H,
-            instance: Lp {
-                occ: vec![Dir::A, Dir::B],
-                slice: vec![LogEntry::Rbl(Rbl {
-                    parent: vec![Dir::A],
-                    output: vec![Dir::B, Dir::F],
-                    code: vec![],
-                })],
-            },
+            instance: Lp::new(
+                vec![Dir::A, Dir::B],
+                vec![LogEntry::Rbl(
+                    Rbl {
+                        parent: vec![Dir::A],
+                        output: vec![Dir::B, Dir::F],
+                        code: vec![],
+                    }
+                    .into(),
+                )],
+            ),
         };
         assert_eq!(
             kd_key_repr(&k),
@@ -570,15 +621,9 @@ mod tests {
         for _ in 0..DEPTH {
             epoch = Epoch::Recall(Arc::new(epoch));
         }
-        let mut lp = Lp {
-            occ: vec![],
-            slice: vec![],
-        };
+        let mut lp = Lp::new(vec![], vec![]);
         for _ in 0..DEPTH {
-            lp = Lp {
-                occ: vec![],
-                slice: vec![LogEntry::Lp(lp)],
-            };
+            lp = Lp::new(vec![], vec![LogEntry::Lp(lp)]);
         }
         let f = Frame {
             gate: GateTag::H,
@@ -600,7 +645,7 @@ mod tests {
         while let Epoch::Recall(inner) = epoch {
             epoch = Arc::try_unwrap(inner).expect("unshared chain");
         }
-        while let Some(LogEntry::Lp(inner)) = lp.slice.pop() {
+        while let Some(LogEntry::Lp(inner)) = lp.into_node().slice.pop() {
             lp = inner;
         }
     }

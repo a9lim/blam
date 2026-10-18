@@ -3,26 +3,29 @@
 **Architecture status:** Gates 1 and 2 are closed. The proof records are
 `../../qalc/GATE1.md` and `../../qalc/GATE2.md`; the Rust reference pillar is
 implemented in `../../src/qalc/`.
-The native-CNOT rows extend this v1.43 base in the proved Gate-2 compiler
+The native-CNOT rows extend this kernel inside the proved Gate-2 compiler
 sector rather than changing the accepted Gate-1 kernel.
 
-**Kernel status: v1.43.** The validation layer adds complete finite nonterminal
-carrier closure and a Gram-independent reachable-recall certificate as an
-unconditional admission check. It changes no transition, WF predicate, frozen
-certificate, physics row, or accepted canonical program. The concrete Lean
-mirror rechecks every exported row and proves source-projection and
-actual-target RRI on all 17 canonical typed sectors, including certified-H
-reconvergence. Raw-WF recall remains noninjective; no ambient uniform lifecycle
-theorem is claimed.
+**Kernel status: v1.44.** This register is the contract for the transition
+table of `../../qalc/kernel.py`, the authoritative executable reference;
+`../../src/qalc/kernel.rs` ports it rule for rule and
+`../../qalc/QalcConcreteKernel.lean` mirrors it. The kernel is an exact H/T
+lambda-IAM superposition evolver with instance-keyed, epoch-bearing replay
+records, certificate-controlled erasure, and typed guards. Admission
+(`machine_coverage`, §5) checks complete finite nonterminal carrier closure
+and a Gram-independent reachable-recall certificate. The concrete Lean mirror
+rechecks every exported row and proves source-projection and actual-target RRI
+on all 17 canonical typed sectors, including certified-H reconvergence. The
+`v1.42` label in comments of `RecallEpoch.lean` and `QalcConcreteKernel.lean`
+names the predecessor table (idempotent recall, no T row); it does not
+describe this machine.
 
-The kernel is an exact `h`-only lambda-IAM superposition evolver with
-instance-keyed replay records, certificate-controlled erasure, typed guards,
-and exact amplitudes in `ℤ[1/√2]`. The accepted Gate-1 layer composes it
-with live `t`, full-normal-form zipper readback, exact predecessor fibres,
-typed halt/error sectors, a conservative source-history fallback, and the
-semantic objects `U`, `μ_p`, `ρ_p`, `M`, and `Ω_qALC`.
+The accepted Gate-1 layer composes the kernel with full-normal-form zipper
+readback, exact predecessor fibres, typed halt/error sectors, a conservative
+source-history fallback, and the semantic objects `U`, `μ_p`, `ρ_p`, `M`, and
+`Ω_qALC`.
 
-This file states the current machine and verification boundary. The accepted
+This file states the current machine and verification boundary. The
 executable reference and proofs live in `../../qalc/`; `token.md` is the
 active design.
 
@@ -32,34 +35,41 @@ The kernel machine answers a single **root output question** about
 the invocation `p h t`: initial state
 `(root, ↓, log ε, tape •·•·ρ)`, output alphabet **{`0̂`, `1̂`, `I`}**
 with typed halting sectors for each, an absorbing error sector for
-species/guard errors, and root arrivals outside the alphabet also
+guard and species errors, and root arrivals outside the alphabet also
 entering the error sector — a kernel-scope limitation flagged as
 such: the architecture permits arbitrary normal-form outputs, and
 recognizing them is the readback controller's job, not smuggled in
 here. `I` is in the alphabet because the negative witness's output
 is a *valid closed normal form*. Terminal entry is the normative
 two-step `RunDone(nf, res) → Halt(nf, res, 0) → tick`, each a
-separate `U` application. The ring in this kernel is `ℤ[1/√2]` — `h`
-only. The Gate-1 composed machine exercises `t` as the same table with
-`Q_t = diag(1, ω)` over `ℤ[ω]/√2^d` and its own tags; that extension lives in
-the Gate-1 proof surface rather than versioning this kernel. Classical
-substrate: the eight λIAM rules exactly as pinned in `token.md` §2.
+separate `U` application. Classical substrate: the eight λIAM rules
+exactly as pinned in `token.md` §2.
+
+**Scalars.** Every row is `(sign, dk, rule, target)`; its coefficient is
+`sign · 2^(−dk/2)`, multiplied by `ω = e^{iπ/4}` on `fire-t1`. `fire-h` rows
+have `dk = 1`; every other row has `dk = 0`. `dw_machine.py` (and the Rust
+`Amp`) evaluates the coefficients exactly in `ℤ[ω]/√2^k`. `kernel.evolve` and
+the §5 validation instruments use the real `ℚ[√2]` evaluator, which omits the
+`ω` factor and is therefore exact only on sectors in which no T row fires —
+the reason the accepted claim of §9 is h-only.
 
 ## 2. State space
 
 ```text
 Run     ::= (pos, d, log, tape, VB, RS, KS)
 VB      ::= ∅ | (g, b′, k)   k ∈ {0,1,2} — virtual-boolean phase
-RS      ::= canonically sorted set of replay RECORDS R_g(i, b′)
-          — one per (gate, instance); transport-inert; recall's
-          push is idempotent, replay reads it wherever it sits
+RS      ::= canonically sorted set of replay frames R_g(i, b′, e)
+            — at most one per (gate, instance) (W2); transport-inert;
+            recall replaces the key's frame, replay reads it
+            wherever it sits
 KS      ::= stack of storage heads — inert history; EVERY fire
             appends EXACTLY ONE, so incoming KS is the tail after
             stripping one head:
             ('K', g, i)      one decoded ticket (fire's α-decode)
             ('KD', {keys})   certified erasure's tagged bundle —
                              emitted on EVERY certified fire,
-                             empty if no key died bare
+                             empty if no key died bare; keys
+                             emitted in canonical order
             ('K', l)         a retained-whole which-path spectator
             ('KA', g, i)     suppressed decode's history head —
                              NOT a dead record: the key's
@@ -70,24 +80,41 @@ KS      ::= stack of storage heads — inert history; EVERY fire
                              W8, W4-storage stay blind)
 RunDone ::= RunDone(nf, residue)            nf ∈ {0̂, 1̂, I, err}
 Halt    ::= Halt(nf, residue, tick)
-residue = the COMPLETE pre-entry state (injectivity of terminals)
+residue = the frozen pre-entry source (injectivity of terminals):
+          all seven Run registers, except the root rows (rootdone,
+          rooterr), which freeze (log, tape, RS, KS) because the
+          row fixes position, direction, and VB
 
 tape/log entries: • | logged position l | γ_g | μ_g | A_g(b′)
-                  | α_g(i, b′) | ρ
+                  | α_g(i, b′, e) | ρ
+epochs:           e ::= F | EA(e) | EP(e, e′)
 ```
 
 `γ_g` (gate boundary marker), `μ_g` (probe frame), `A_g(b′)` (fired
-answer token), `α_g(i, b′)` (answer ticket, instance-tagged), `ρ`
+answer token), `α_g(i, b′, e)` (answer ticket: producing gate,
+instance, bit, epoch), and `ρ` (root frame, the tape bottom).
+
+**Epochs.** `vvar` mints tickets with the fresh epoch `F`. Recall of a
+ticket with epoch `e` writes the frame epoch `EA(e)` when the key has no
+frame and `EP(e, e_old)` when it replaces a frame with epoch `e_old`;
+replay re-emits the frame's epoch on its ticket. A frame epoch is never `F`.
+The epoch is the exact recall predecessor-fibre coordinate
+(`../../qalc/RecallEpoch.lean`), unbounded as a tree; the runtime tuples are
+`('AL', g, i, b′, e)` and `('R', g, i, b′, e)` with `F = ('F',)`,
+`EA(e) = ('EA', e)`, and `EP(e, e′) = ('EP', e, e′)`.
+
 **State language (enforced by W0).** Validation checks exact host types before
 hashing or structural scans: the five registers contain only exact tuples,
 strings, and integers; bits are exact integers in `{0,1}`; gate kinds and
-tuple arities are fixed. Logged positions are recursive wherever they occur,
-use paths over `{f,a,b}`, resolve to bound variables of the closed 1-indexed
-term, and satisfy the lambda-IAM slice equation
-`len(slice) = level(occurrence) - level(binder)`. The log is a separate
-lp-like sort; retained `K(l)` cargo must be an arrival logged position.
-Direction, path, and virtual-boolean phase are also validated. W0 defines the
-host-safe state grammar; W1-W9 enforce machine-phase placement and coherence.
+tuple arities are fixed; epochs follow the recursive grammar above. Logged
+positions are recursive wherever they occur, use paths over `{f,a,b}`, resolve
+to bound variables of the closed 1-indexed term, and satisfy the lambda-IAM
+slice equation `len(slice) = level(occurrence) - level(binder)`. The log is a
+separate lp-like sort; retained `K(l)` cargo must be an arrival logged
+position. Direction, path, and virtual-boolean phase are also validated. W0
+defines the host-safe state grammar; W1-W9 enforce machine-phase placement and
+coherence.
+
 **Instance** `i` = the invoking occurrence's logged
 position — always at log head when the token stands at the gate
 leaf (arg-entry is structurally forced); a logged position names a
@@ -99,21 +126,48 @@ arrival classifiers accept `l | α` as the answer position, never
 
 ## 3. The transition table
 
-Classical rules `•1 •2 •3 •4 var arg bt2` are unchanged from
-`token.md` §2. `bt1` is restricted to non-`γ` log heads; the
-`γ`-head case belongs to the gate boundary (arrive/retrace below).
-Every error entry freezes the complete source state as residue.
+Rows are selected in this order: terminal rows (`halt`, `tick`); the VB
+automaton; gate-leaf rows (`↓` at a gate leaf); the gate boundary (`↑` at an
+`a`-position with a `γ` log head); root arrivals (`↑` at the root); classical
+rows. Every error row enters `RunDone(err, res)` with the residue of §2.
 
-**At the gate leaf (↓, bullet head), in guard order:**
+Classical rules `b1`–`b4` (`•1`–`•4`), `var`, `arg`, `bt1`, and `bt2` are the
+λIAM rules of `token.md` §2, with `arg` transporting any lp-like tape head to
+the log and `bt1` restricted to non-`γ` log heads; the `γ`-head case belongs
+to the gate boundary (fire/retrace below). `bt2` matches only a real logged
+position whose binder is the current λ.
+
+**Virtual-boolean automaton (`VB ≠ ∅`, position = the gate leaf):**
 
 ```text
-              i := log-head lp; no lp at log head → no-instance.
-              bitfree := (g, i) keys of K/KD records (bit
-              discarded); dead := bitfree ∪ keys of tickets buried
-              in retained-whole K(l) cargo (bit present but
-              unreachable — ks is inert).
+vb2          (g, VB(g,b′,k<2), L, •·T) → (g, VB(g,b′,k+1), L, T)
+rootval      (g, VB(g,b′,k<2), L, ρ·T) → RunDone(b̂′, res)
+             [the partially-applied answer boolean IS the output;
+             REACHABLE — dup reaches two such states]
+verr         (g, VB(g,b′,k<2), L, μ·T) → RunDone(err, res)
+             [a probed bare boolean value — typed]
+stuck-vb     (g, VB(g,b′,k<2), L, T), T empty or headed by any other
+             entry → RunDone(err, res)
+no-instance  (g, VB(g,b′,2), L, T) with no lp at log head
+vvar         (g, VB(g,b′,2), L, T) → (g, ↑, L, •^(b′+1)·α_g(i,b′,F)·T)
+             one bullet pays the gate application, the rest encode
+             the slot; the ticket carries the instance and the fresh
+             epoch.
+```
 
-(head ticket) tape = •^j · α_g(i′, b′) · T:
+**At the gate leaf (`↓`, VB = ∅), in guard order:**
+
+```text
+tape = •·T′:
+              i := log-head lp; no lp at log head → no-instance.
+              j := length of the leading bullet run; x := the entry
+              after it.
+              bitfree := (g, i) keys of K/KD records (bit
+              discarded); dead := bitfree ∪ keys of live tickets
+              buried in retained-whole K(l) cargo (bit present but
+              unreachable — KS is inert).
+
+(head ticket) x = α_g(i′, b′, e) with g the leaf's own gate:
    i′ ≠ i                    → alien-ticket        [foreign copy]
    (g, i) ∈ bitfree          → key-alias           [a live
                                 representation must never shadow a
@@ -121,42 +175,56 @@ Every error entry freezes the complete source state as residue.
                                 the bit that would detect divergent
                                 aliasing; bit-carrying burials are
                                 adjudicated by deep W3 instead]
-   same-key records with a different bit
+   j = b′+1:
+     a same-key frame with bit ≠ b′, or two same-key frames
                              → frame-conflict
-   j = b′+1  → recall: consume bullets+ticket, emit •·•·•·T,
-              record R_g(i, b′) — IDEMPOTENT (the record is a
-              function of the instance; a re-seek cycle's
-              re-recording is a no-op)
-   other j                   → recall-err
+     else → recall: tape •^j·x·T ↦ (g, ↑, L, •·•·•·T) with the
+              key's frame replaced by R_g(i, b′, EA(e)) (no old
+              frame) or R_g(i, b′, EP(e, e_old)) (old frame epoch
+              e_old); KS unchanged
+   j ≠ b′+1                  → recall-err
+   (x = a ticket of the other gate falls through to the frame and
+   fresh arms)
 
-(frame)      R_g(i, b′) anywhere in RS (deep keyed lookup — LIFO
-             position was never semantic):
+(frame)      otherwise, a same-key frame R_g(i, b′, e_R) anywhere in
+             RS (deep keyed lookup — LIFO position is not semantic):
    (g, i) ∈ bitfree          → key-alias
-   conflicting bits          → frame-conflict
-   j ≥ 3     → replay: emit •^(b′+1) · α_g(i, b′) · tape[3:]
+   two same-key frames       → frame-conflict
+   j ≥ 3     → replay: emit •^(b′+1) · α_g(i, b′, e_R) · tape[3:]
    j < 3                     → replay-err
 
 (fresh)      neither ticket nor frame:
    (g, i) ∈ dead             → refire              [the selection
-                                was erased bit-free; a fresh call
-                                would fire the same copy twice —
-                                one-fire-per-instance is a MACHINE
-                                INVARIANT, enforced here]
-   else      → call: (g, ↑, L, γ_g·•·•·μ_g·T)
+                                was erased bit-free or buried; a
+                                fresh call would fire the same copy
+                                twice — one-fire-per-instance is a
+                                MACHINE INVARIANT, enforced here]
+   else      → call: (g, ↑, L, γ_g·•·•·μ_g·T′)
+
+tape = γ·A·T (anshead):
+             leaf, γ, and A gate kinds must all agree, tuple arities
+             exact, answer bit ∈ {0, 1} — the answer arriving at a
+             leaf is that leaf's own gate's answer — else
+             → species-ans. All four checks precede VB entry.
+             (g, ↓, L, γ_g·A_g(b′)·T) → (g, VB(g, b′, 0), L, T)
+             A second γ/A pair deeper in the tail is accepted
+             here and typed `stuck-vb` one step later.
+tape = ρ·T                   → rootneutral   [unapplied constant
+                                is the output]
+tape = μ·T                   → species-neutral [unapplied constant
+                                meets a probe]
+any other nonempty tape      → species-leaf  [A, α, l, or γ
+                                without its classifier shape]
+empty tape                   → no row (bare final)
 ```
 
-**At a certified/gate boundary (`↑` at an 'a'-position, γ log
-head):**
+**At a gate boundary (`↑` at an `a`-position, `γ_g` log head):**
 
 ```text
-arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
-   μ's gate kind ≠ γ's       → species-mu
-   cargo is a ticket of a FOREIGN gate (α with kind ≠ γ's, either
-   bit polarity)             → alien-gate  [the decode subscript is
-                                load-bearing; every detectable foreign
-                                ticket is typed]
-   any (g, i) with two bits among cargo-nested α and RS frames
-                             → key-alias  [deep bit coherence at
+arrive/fire  tape = P_b · μ · T,  P_0 = l·  P_1 = •·l·  (l ∈ lp | α)
+   μ's gate kind ≠ g         → species-mu
+   any key with two bits among cargo-nested α (deep through
+   slices) and RS frames     → key-alias  [deep bit coherence at
                                 the boundary: a fire must never
                                 erase or bury a disagreement]
    CERTIFIED boundary (pos ∈ certificate, INSTANCE-DIRECTED):
@@ -182,78 +250,76 @@ arrive/fire  tape = P_b · μ_g · T,  P_0 = l·  P_1 = •·l·
        consults burials via the dead-key set). An empty bundle is
        EMITTED, never omitted. [sound under fibre conditions
        (a)–(f) plus the always-emit discipline, §5/§7.4]
-   else, l = α_g(i, b) with bit = slot (DECODE):
-       retain ('K', g, i) — bit-free, branch-equal — UNLESS a
+   else, l = α_g′(i, b, e) with bit = slot (DECODE, any producer g′):
+       retain ('K', g′, i) — bit-free, branch-equal — UNLESS a
        same-key frame exists (the ticket was replay-re-emitted;
        the frame remains the answerable representation) or a
        same-key burial exists (the buried ticket remains the
        bit-carrying dead record); in the suppressed case no DEAD
        RECORD is created (W8 exclusivity by construction) but
-       the arm still appends its one history head ('KA', g, i).
+       the arm still appends its one history head ('KA', g′, i).
        The key distinguishes suppressed decodes from retain-whole
        fires and from one another. KA feeds no guard: ks_dead_keys and
        ks_bitfree_keys exclude it, so a replay off the surviving
        frame stays legal
    else (RETAIN-WHOLE): keep ('K', l) — same-slot arrivals with
        different which-path data stay orthogonal
-   then fire: targets (pos, ↑, γ_g·L, A_g(b′)·T′), amplitudes the
-   Q_g row for input b; Q_h = H. g = t → t-unimplemented, a
-   typed SCOPE FENCE: h-only is a program claim, while the kernel
-   remains total on WF. Other shapes → species.
+   then fire: targets (pos, ↑, γ_g·L, A_g(b′)·T, rs′, ks′),
+   coefficients the Q_g row for input b:
+       g = h (fire-h, dk = 1): b = 0 → (+1, +1), b = 1 → (+1, −1)
+                               over b′ = 0, 1
+       g = t (dk = 0):         b = 0 → A_t(0), coefficient 1 (fire-t0)
+                               b = 1 → A_t(1), coefficient ω (fire-t1)
 
-retrace      (pos, ↑, γ_g·L, A_g(b′)·T) → (parent+'f', ↓, L,
-             γ_g·A_g(b′)·T)      [bt1's action on the γ head]
-
-anshead      (g, ↓, L, γ·A·T): leaf, γ, and A gate kinds must all
-             agree, tuple arities exact, answer bit ∈ {0, 1} —
-             the answer arriving at a leaf is that leaf's own
-             gate's answer — else → species-ans. The leaf kind,
-             marker kinds, arities, and bit range are all checked
-             before entering VB.
-             A second γ/A pair deeper in the tail is accepted
-             here and typed `stuck-vb` one step later.
-             (g, ↓, L, γ_g·A_g(b′)·T) → (g, VB(g, b′, 0), L, T)
-vb2          (g, VB(g,b′,k<2), L, •·T) → (g, VB(g,b′,k+1), L, T)
-rootval      (g, VB(g,b′,k<2), L, ρ·T) → RunDone(b̂′, res)
-             [the partially-applied answer boolean IS the output;
-             REACHABLE — dup reaches two such states]
-verr         (g, VB(g,b′,k<2), L, μ·T) → RunDone(err, res)
-             [a probed bare boolean value — typed]
-vvar         (g, VB(g,b′,2), L, T) → (g, ↑, L, •^(b′+1)·α_g(i,b′)·T)
-             one bullet pays the gate application, the rest encode
-             the slot; the ticket carries the instance.
-
-root         (root, ↑, ε, P_b·ρ)  → RunDone(b̂, res)
-             (root, ↑, ε, l·•·ρ)  → RunDone(I, res)
-             other ρ arrivals     → RunDone(err, res)
-halt/ticks   RunDone → Halt(nf, res, 0) → tick → …
-errors       VB with a non-• non-classifier tape top; ↓-stuck on
-             μ/ρ; neutral constants under μ/ρ; γ/A/α meeting a binder
-             → species-binder (foreign-lp and empty-tape finals
-             stay classical finals — typing them would diverge
-             from the λIAM substrate); A/α/l meeting the gate
-             leaf without its classifier shape → species-leaf;
-             μ/ρ/A unmatched at an f-transport position →
-             species-transport — all typed, complete residue.
+retrace      bt1g: (pos, ↑, γ_g·L, A·T) → (parent+'f', ↓, L,
+             γ_g·A·T)      [bt1's action on the γ head]
+species      any other tape at a gate boundary → RunDone(err, res)
 ```
 
-The guard family — `no-instance`, `alien-ticket`, `alien-gate`,
-`frame-conflict`, `recall-err`, `replay-err`, `pop-err`,
-`species-mu`, `species-ans`, `species-binder`, `species-leaf`,
-`species-transport`, `t-unimplemented`, `refire`,
-`key-alias` — is the machine's whole answer to aliasing
-and misuse: **every detectable manifestation is a typed error,
-never a silent reinterpretation.**
+A ticket's gate tag names its PRODUCER, not the consuming gate: decode keys
+the record by the producer, and the consumer is carried by `A_g(b′)` and the
+boundary's `γ_g`. Cross-gate composition (T after H and conversely) therefore
+decodes like same-gate composition; a foreign-producer guard would make
+Clifford+T composition impossible (wf.py's cross-gate regression).
+
+**Root and classical error rows:**
+
+```text
+rootdone     (root, ↑, ε, P_b·ρ)  → RunDone(b̂, res)
+             (root, ↑, ε, l·•·ρ)  → RunDone(I, res)     (l ∈ lp | α)
+rooterr      any other root arrival → RunDone(err, res)
+shape-err    λ (↓) with μ or ρ at the tape head — too many head
+             lambdas for the question
+species-binder  λ (↓) with γ, A, or α at the tape head (foreign-lp
+             and empty-tape finals stay classical finals — typing
+             them would diverge from the λIAM substrate)
+species-transport  ↑ at an f-position with μ, ρ, or A at the tape
+             head
+halt/ticks   halt: RunDone → Halt(nf, res, 0); tick: Halt(…, t) →
+             Halt(…, t+1)
+```
+
+The guard family — `no-instance`, `alien-ticket`, `frame-conflict`,
+`recall-err`, `replay-err`, `pop-err`, `species-mu`, `species-ans`,
+`species-binder`, `species-leaf`, `species-transport`, `refire`, `key-alias`
+(`suite.GUARD_RULES`, the set the battery reports as structurally reached
+guards) — is the machine's answer to aliasing and misuse. Seven further rows
+type outputs and shapes outside the boolean protocol: `verr`, `stuck-vb`,
+`rootneutral`, `species-neutral`, `species`, `shape-err`, and `rooterr`. All
+twenty enter the err sector with a source-retaining residue: **every
+detectable manifestation is a typed error, never a silent reinterpretation.**
+The dynamic side of §5 requires zero err amplitude at every step, so any of
+them fails admission once it carries amplitude.
 
 ## 4. Instance identity and the selection lifecycle
 
-One `vvar` emits one ticket per fire. The ticket then rests in
-exactly one of FOUR places: consumed by **recall** (→ replay
-frame, bit kept), consumed by **decode** (→ bit-free `K` record,
-dead), erased by **certified erasure** (→ `KD` bundle, dead), or
+One `vvar` emits one fresh-epoch ticket per interrogation. The ticket then
+rests in exactly one of FOUR places: consumed by **recall** (→ the key's
+replay frame, bit kept, epoch extended), consumed by **decode** (→ bit-free
+`K` record, dead), erased by **certified erasure** (→ `KD` bundle, dead), or
 **buried whole** inside a retained `K(l)` record (bit present but
 unreachable — dead for recall/replay, adjudicated by deep W3).
-Replay re-emits fresh tickets off the frame; a re-emitted ticket
+Replay re-emits a ticket carrying the frame's epoch; a re-emitted ticket
 that decodes leaves no record while its frame lives. The key-state algebra:
 
     answerable + bit-free dead        → typed (key-alias)
@@ -278,8 +344,8 @@ answerable beside the fresh bit-free record — the algebra is
 therefore complete over W9-clean states, and W9 makes that
 hypothesis checkable rather than assumed. The duplicate-ticket
 configuration is the agreeing-alias gap's ticket-dimension face;
-it has never been reached in any sweep or fuzz run, consistent
-with lp-uniqueness (§9).
+no reachable state of the twenty-program battery or of the thirty
+composed Gate-1 sectors exhibits it.
 
 A bit-carrying burial blocks a fresh call conservatively. An explicit burial
 decoder could widen admission, but is not part of the current machine.
@@ -350,11 +416,11 @@ machine is an isometry"):
    pass over the pool accepting nothing — greedy, NOT complete
    over subsets of the pool. (Measured: on all nineteen
    certificate-bearing programs the pool equals the final
-   domain, and no phase-2 candidate is ever rejected anywhere;
-   `dupcall`'s three-position pool is correctly discarded whole
+   domain, and every phase-2 candidate is accepted;
+   `dupcall`'s three-position phase-1 pool is discarded whole
    by validation — its plain run carries typed err mass. The
-   pool completion is behavior-identical on the suite; it exists
-   to make this sentence exact.) A None result IS the
+   pool completion is behavior-identical on the suite; it makes
+   the three-way None statement exact.) A None result IS the
    fallback (the plain reading); its coverage verdict is
    `validate(term, None)`, which runs the same reachable-WF sweep
    with an empty certified domain (W7 and disjointness vacuous,
@@ -370,23 +436,25 @@ leave admissible boundaries unexplored. What is claimed: every spectator and res
 passed full validation at acceptance, NO certificate is ever
 returned without the assembled map passing full validation, the
 map is a deterministic function of the program, and the frozen
-values reproduce bit-for-bit. Minimal and maximal canonical certificates are
-outside the current claim.
+values reproduce bit-for-bit.
 
-**Validation** (`validate`) separates two obligations:
-the STRUCTURAL side — totality, Gram orthonormality on the
-structural reachable basis, unconditional transparency, reachable
-⊆ WF∧W7∧W8∧W9, mechanized disjointness, and NON-VACUITY at both
-levels — a certified position must be reached and every popkey must occur in
-an arrival frame there. `machine_coverage` refuses vacuous maps, and
-`settle()` recomputes keys from reached arrivals — is mandatory and
-isometry-bearing (orbit-norm preservation alone is NOT isometry:
-`T|0⟩ = T|1⟩ = |1⟩` holds norm 1 forever from `|0⟩` while
+**Validation** (`validate`) separates two obligations.
+The STRUCTURAL side — totality (no structural stuck state), the
+complete-carrier direct RRI certificate (§7.5), Gram orthonormality
+on the structural reachable basis, unconditional transparency at
+certified positions, no reachable `pop-err`, no per-state `(g, i)`
+bit aliasing, reachable ⊆ WF (W0–W9) ∧ W7, mechanized disjointness,
+and NON-VACUITY at both levels (a certified position must be reached
+and every popkey must occur in an arrival frame there;
+`machine_coverage` refuses vacuous maps, and `settle()` recomputes
+keys from reached arrivals) — is mandatory and isometry-bearing
+(orbit-norm preservation alone is NOT isometry: a map `V` with
+`V|0⟩ = V|1⟩ = |1⟩` holds norm 1 forever from `|0⟩` while
 collapsing columns). The DYNAMIC side — exact evolution of the
 frozen candidate with **zero guard/err amplitude at every step**
 (residue-injectivity prevents cancellation masking a guard fire),
-termination, zero final err mass — decides run success and no
-longer lets zero-amplitude structural branches veto
+termination, zero final err mass — decides run success, so
+zero-amplitude structural branches cannot veto
 coherence-restoring certificates (the `B` witness).
 `machine_coverage` is the conjunction; it claims machine soundness
 and clean execution, **never** agreement with an external ideal
@@ -400,7 +468,7 @@ certification proves
 is: **every admitted erasure has a checked reversible decoding
 from the retained coordinate and spectator state, and the
 resulting columns remain orthonormal** — not that the certificate
-found the maximally coherent placement (§9).
+found the maximally coherent placement.
 
 **Measured facts that pin the design**: the certificate is
 semantically load-bearing for HNH (certified `{halt0: 1}` = the
@@ -410,14 +478,15 @@ amplitude exactly zero — verified per-step, all refire sources at
 exact amplitude 0 — canonical `{halt1: 1}` for both). Nineteen of
 the twenty programs freeze exact canonical dicts reproduced
 bit-for-bit by `discover_total`; `dupcall` canonically returns
-None (its plain run carries typed err mass, so no certificate can
-reach `machine_coverage` — the refusal working as designed) and
-runs the plain reading. In the frozen maps most certified
-boundaries pop nothing (cargo-only certification, every frame
-retained); the q family, `B`, and `W` pop inner-coin instances;
-`palpha` certifies via the greedy rescue, guard-silent, basis
-474 → 275 with its marginal unchanged. No identity between the
-unrestricted pop-everything reading and the canonical dicts is claimed.
+None (its plain run carries typed err mass `1/2` through
+`alien-ticket`, so no certificate can reach `machine_coverage` —
+the refusal working as designed) and runs the plain reading. In
+the frozen maps most certified boundaries pop nothing (cargo-only
+certification, every frame retained); `q`, `qprime`, `q2`, `B`,
+and `W` pop inner-coin instances; `palpha` certifies via the
+greedy rescue, guard-silent, basis 474 → 275 with its marginal
+unchanged. No identity between the unrestricted pop-everything
+reading and the canonical dicts is claimed.
 
 ## 6. The invariant catalog (WF, the well-formed subtype)
 
@@ -426,11 +495,13 @@ the machine's unitarity claims quantify over the subtype:
 
 - **W0** (total state grammar): exact built-in node and tuple types only;
   bits are exact integers in range; gates are in `{h,t}`; tuple arities are
-  exact; every logged position resolves to a bound variable of the closed,
-  1-indexed source term and satisfies
-  `len(slice) = level(occurrence) - level(binder)`. Logs, tapes, replay
-  frames, storage heads, VB phases, directions, and positions must match the
-  grammar of §2, with RS and KD entries in canonical order. Validation is
+  exact (tickets and frames are 5-tuples); ticket epochs follow
+  `F | EA(e) | EP(e, e′)` and frame epochs exclude `F`; every logged position
+  — standalone, in slices, and as a ticket, frame, or storage instance —
+  resolves to a bound variable of the closed, 1-indexed source term and
+  satisfies `len(slice) = level(occurrence) - level(binder)`. Logs, tapes,
+  replay frames, storage heads, VB phases, directions, and positions must
+  match the grammar of §2 (RS order is W2's clause). Validation is
   iterative, hash-free until purity is established, cycle-safe, and
   representation-linear on finite stable object graphs. A W0 failure returns
   immediately, so W1-W9 never index malformed values. After W0, the checker
@@ -455,7 +526,7 @@ the machine's unitarity claims quantify over the subtype:
   (`W4-storage`), and no same-key burial with a CONFLICTING bit
   (`W4-burial`); an AGREEING burial is admissible — its `vvar` target is
   WF. The four exclusions close `vvar` preservation **by
-  enumeration**: the emitted ticket `α_g(i,b′)` can only violate
+  enumeration**: the emitted ticket `α_g(i,b′,F)` can only violate
   W3, W8, or W9 in the target, and each violating partner class
   is excluded at the source (frame or conflicting ticket/burial
   → W3; bit-free record → W8; second live ticket → W9); `vb2`
@@ -465,9 +536,8 @@ the machine's unitarity claims quantify over the subtype:
   `vvar`, and re-interrogation of a dead key is refire-typed —
   and raw-entry closure is deliberately NOT claimed: W4 encodes
   a reachability fact (first interrogation), strictly stronger
-  than raw-state closure at the region's entry. Zero states of
-  the twenty programs excluded; zero W4-storage/W4-burial hits
-  over 218,546 states of 300 generated programs.
+  than raw-state closure at the region's entry. W4 excludes no
+  reachable state of the twenty programs.
 - **W5** (probe pairing): deep-counted γ (through lp slices and
   retained `K(l)` records; instance KEYS are frozen names, never
   counted) = #μ(tape) + #A(tape) — every in-flight probe's γ is
@@ -497,9 +567,9 @@ the machine's unitarity claims quantify over the subtype:
   agreeing live tickets pass W3 and W8 yet are an alias state —
   the agreeing-alias gap's ticket-dimension face, made checkable.
   Zero violations on every reachable state of the twenty-program
-  battery and all fuzz sweeps (empirical lp-uniqueness);
-  ticket+frame (replay re-emission) and ticket+burial remain
-  legitimate, adjudicated by W2/W3/W8.
+  battery and of the thirty composed Gate-1 sectors (projected
+  carrier); ticket+frame (replay re-emission) and ticket+burial
+  remain legitimate, adjudicated by W2/W3/W8.
 
 ## 7. Theorems
 
@@ -523,7 +593,7 @@ parametrized form is `1 − w(l) − F·w(R)` with `F` the popped
 frame count; `w(R) = 0` in the pinned gauge). Proof is per-row
 algebra; the load-bearing case is `var`/`bt2` (the teleport's
 distance is absorbed by the lp carrying it as weight).
-Mechanically verified on every reachable Run→Run edge of the
+`polarity.py` verifies it on every reachable Run→Run edge of the
 battery, zero violations. The separating witnesses are `Ccoll`'s two reachable
 conservative fires have `w(l) = 1` and delta 1 — an ordinary
 flip, not a `1 − w(l)` defect — and the Σ w(KS) term decides six
@@ -537,10 +607,10 @@ consequence. The KA pinning requires a DISCLOSED instrument: KA
 never occurs on a reachable edge (the suppressed arm is
 reachably dead code), so the reachable sweep alone leaves it
 free (8/1024, measured and printed); one raw suppressed-decode
-fire (wf.py regression twenty's frame-skip fixture — WF,
-uncertified, reachably unmintable) joins the edge set and pins
-it (4/1024). Both readings print, and the verdict gates on
-both.
+fire (the frame-skip fixture of wf.py's fire prefix-freeness
+regression — WF, uncertified, reachably unmintable) adds its two
+edges and pins it (4/1024). Both readings print, and the verdict
+gates on both.
 
 ### 7.2 The branch-offset law
 
@@ -585,15 +655,18 @@ Mark-free geometric readback of classical data therefore has odd
 branch offset — **intrinsic decoherence; coherent routing is
 exactly gate-mediated**.
 
-**Mechanization.** The ledger invariant is asserted after every
-step of every run in lockstep conformance with the uninstrumented
-stepper. Exhaustive: all closed pure terms ≤ size 11 (41,272),
-k ∈ {1,2,3} probes — 14,452 surfacings at ≤10 (10,180 terms),
-55,727 at ≤11, zero failures. Battery cross-check: zero
-mark-free arrivals violate `w ≡ slot`; marked arrivals split both
-ways as virtual ancestry predicts.
+**Mechanization.** `conservation.py` asserts the ledger invariant
+after every step of every run in lockstep conformance with the
+uninstrumented stepper, over every closed pure term up to its size
+bound with k ∈ {1,2,3} probes (probes exceeding 4,096 steps count as
+timeouts, not surfacings). The Gate-1 battery runs bound 10: 10,180
+terms, 14,452 surfacings, three timeouts per k, zero failures.
+`python conservation.py 11` covers 41,272 terms: 55,727 surfacings,
+zero failures. Battery cross-check: zero mark-free arrivals violate
+`w ≡ slot`; marked arrivals split both ways as virtual ancestry
+predicts.
 
-### 7.4 Range disjointness (on WF∧W7, corrected statement)
+### 7.4 Range disjointness (on WF∧W7)
 
 **Storage-history discipline:** every fire arm
 appends EXACTLY ONE storage head, and the head species names the
@@ -620,7 +693,7 @@ different retained spectator (pos, log, T, incoming KS, retained Q)
       coordinate verbatim. For incoming KS the embedding is
       new-bundle · incoming with the bundle ALWAYS present:
       equal targets force equal bundle heads (branch-
-      equal by condition (e)) and hence equal incoming tails.
+      equal by condition (e)) and hence equal incoming tails;
       always emitting the bundle separates a fresh decode from a
       carried-in record;
 same spectator, same slot
@@ -632,7 +705,7 @@ same spectator, opposite slots
       the interference mechanism, not a defect.
 ```
 
-Mechanized for real: the checker collects reachable sources with
+Mechanized: `wf.cert_disjointness` collects reachable sources with
 full state, constructs their fire targets via the step function,
 compares decode bundles cross-slot (bundles computed with the §3
 subtraction — the bundle actually left), and computes column inner
@@ -645,7 +718,7 @@ the retained-Q collision (two WF, transparent, same-slot sources
 differing only in a retained frame's bit — zero shared targets,
 true Gram entry 0).
 
-### 7.5 Gate-copy identity and the reachable lifecycle gap
+### 7.5 Gate-copy identity, recall injectivity, and the reachable lifecycle boundary
 
 The fixed invocation shell gives the needed localized theorem: at
 either gate leaf, W1 forces the complete log to be `(i)`, and the
@@ -655,33 +728,95 @@ addresses cannot alias one key. General logged-position uniqueness
 is false and is not claimed. The proof and its exact scope are in
 `instance-identity.md`.
 
-The alternative blanket local theorem is also false. In canonical
-`negative`, a reachable frame-free `recall` source and its raw-WF
-clone with the agreeing frame both pass WF/W7 and map to the same
-target because frame insertion is idempotent. The clone is not
-reachable. The exact reachable statement is therefore
-**reachable-recall injectivity**: no reachable first-return and
-replay-return sources may agree in every coordinate after deleting
-only the matching frame. A two-class provenance rule is not locally invariant:
-certified fire may pop the matching frame while its replay-emitted
-ticket survives in the tape tail or log, exactly the WF-clean
-`popped-frame/riding-ticket` regression. Even assuming frame survival,
-W0--W9 admit a raw `vvar`/`replay` pair with the same frame-erased
-landing control. The remaining proof therefore factors through a
-reachable no-rider lemma, unique alpha ancestry, and a cross-phase
-separation lemma stable under Hadamard/certified-fibre reconvergence.
-Simple typing and strong normalization do not supply the last lemma.
-Registered exhaustive attacks found no reachable pair, but no uniform
-lifecycle proof is known. The local live/dead H case is now reduced exactly:
-inside one retained fibre, an opposite-answer child pair can change liveness
-asymmetrically only if its earlier routing to the Boolean arrival slot is
-non-injective (`RRIParentReturnInterface.lean`). Converting the first such
-routing merge into an earlier reachable separator/RFS remains the global gap.
-The current validator makes a complete direct check of this predicate mandatory on
-every finite carrier admitted by `machine_coverage`.
-The local theorem remains useful if an unbounded semantic acceptance theorem
-is later wanted; it is no longer an assumption of the current finite-sector
-coverage claim. Every detectable divergent manifestation remains typed.
+**Recall injectivity is structural.** A recall target stores `EA(e)` or
+`EP(e, e_old)` — exactly the predecessor coordinate (ticket epoch, optional
+old-frame epoch) — and every other source coordinate is either transported
+verbatim or fixed by the row: the leaf fixes the gate, the log head the
+instance, the frame the bit, and `j = b′ + 1` the bullet run. The recall row is
+therefore injective on every source with canonical RS (W2), with no
+reachability premise. `RecallEpoch.lean` mechanizes the abstract row
+(`recallTarget_injective`, `decode_recall_epoch`, `recall_epoch_fibre_exact`);
+its instantiation by the concrete row is the coordinate argument above. The
+same coordinate separates the three landing pairs that frame-idempotent
+insertion would merge:
+
+- frame-absent versus agreeing-frame recall: canonical `negative` has a
+  reachable frame-free recall source whose raw clone with the agreeing frame
+  `R_h(i, b′, EA(F))` is WF∧W7 and unreachable; their targets differ
+  (`instance_identity.raw_recall_boundary`; `raw_recall_targets_disjoint` in
+  `QalcConcreteCertificateAudit.lean`);
+- the certified-pop rider: a certified fire may pop a frame while its
+  replay-emitted ticket survives in the tape tail or log (the WF-clean
+  `popped-frame/riding-ticket` regression); the rider's recall writes `EA(e)`
+  and the framed recall `EP(e, ·)` (`rider_and_framed_targets_disjoint`);
+- `vvar` versus `replay` landings: `vvar` emits epoch `F`, replay a frame
+  epoch, which is never `F` (`vvar_replay_ranges_disjoint`).
+
+**Complete-carrier RRI is an admission condition.** One predicate is checked
+everywhere: `rri_direct.recall_view` and `rri_facts` in Python,
+`recall_view` and `rri_violations` in `../../src/qalc/admission.rs`, and
+`recallView?` with `certificateBool` in Lean. A recall source's view is its full
+key `(g, i, b′)`, its phase — whether the matching frame, the same-gate,
+same-instance, same-bit frame of *any* epoch, is present — and its
+projection, the source with exactly that frame erased. A replay return writes
+`EP(e, e_old)`, so the match cannot be restricted to the first-recall epoch
+`EA(F)`. A same-key frame with the other bit, a second matching frame, or a
+recall row beside another row has no view and rejects. The predicate is
+
+- (i) source-projection RRI: no `(key, projection)` bucket mixes phases;
+- (ii) actual-target RRI: no `(key, target)` bucket mixes phases or
+  projections.
+
+(ii) follows from row injectivity; (i) is strictly stronger and is the binding
+condition. The converse of (ii) — a common projection forcing a common target —
+is not part of the predicate: it would require the erased frame epochs to
+agree.
+
+It is checked on three carriers:
+
+- **Gate-1 admission** (`../../qalc/readback_certify.py` `validate_nf`, hence
+  `admit_nf_total` for an erasure candidate and for the no-erasure fallback
+  alike; `admission.rs` `validate`) checks (i) and (ii) on the complete
+  composed carrier it has already closed. The view reads the BA-adapted kernel
+  token, and the projection keeps the zipper, so it is the exact composed
+  source with its matching frame erased. Some recall sources exist only on the
+  composed carrier: `dup` and `stress-beta-H` have two each and none on their
+  kernel carriers.
+- **Kernel `machine_coverage`** (`certify.validate`) runs
+  `rri_direct.direct_certificate` on the complete kernel ρ-root carrier. The
+  cap is 100,000 states, and hitting it is rejection. That run recomputes
+  closure, and every certificate `discover_total` returns has passed it.
+- **The concrete Lean replay** proves (i) and (ii) (`RRIOn`,
+  `RecallTargetRRIOn`) on the kernel carriers of the 17 canonical typed
+  sectors (`../../qalc/QalcConcreteCertificate.md`). Its executable target
+  check is exactly (ii), so hash fingerprints only filter comparisons.
+
+Later-epoch matching frames are reachable. On the twenty-program kernel suite,
+the 163 recall sources are 55 frame-absent, 53 present at `EA(F)`, and 55
+present at a replay epoch `EP(·,·)`. Every source there is alone in its
+projection bucket, so the suite alone cannot tell the any-epoch view from a
+first-epoch match. Raw controls built from `negative`'s reachable frame-absent
+source pin the difference:
+
+- its clone with a replay-epoch matching frame is a phase witness for (i)
+  (`rri.py`, the composed liveness check in `readback_certify.py`, and
+  `replay_epoch_frame_is_present`);
+- two clones differing only in the erased epoch are not a witness, and they
+  land on distinct targets (`rri.py`, and
+  `recall_view_erases_a_matching_frame_of_any_epoch` in `admission.rs`);
+- two such epochs share one Lean hash (Codex's witness: `hashEpoch` is affine
+  in its children), and the exact target check accepts them
+  (`hash_equal_epochs_check_exactly` in `QalcConcreteCertificateAudit.lean`).
+
+**Open and optional.** No theorem derives (i) from typing or W0–W9 on an
+arbitrary unbounded reachable graph; a uniform proof would factor through a
+reachable no-rider lemma, unique α ancestry, and a cross-phase separation
+lemma stable under Hadamard/certified-fibre reconvergence. `rri.py` is a
+finite falsification instrument only: on the twenty-program suite (6,392
+states; 55 frame-absent and 108 frame-present recall sources) it finds zero
+projected collisions and zero rider fires. Neither architecture gate depends
+on the uniform theorem; the finite predecessor, range, and Gram assembly does
+not consume RRI. Every detectable divergent manifestation remains typed.
 
 ## 8. The typed fragment
 
@@ -697,12 +832,12 @@ is free (haltI-sector programs are function-typed). **h-only**
 additionally requires no occurrence resolve to the `t` binder.
 
 Fragment table (twenty-program suite): **17 typable h-only**
-(including `B` and `W`). Outside: `dup` (self-application —
-deliberately, the untyped copy regression), `q` (E = λz.Iz vs N
-branch types ununifiable — the wire imbalance `qprime` was built
-to repair; `qprime` types clean), `dupcall` (NOT′/EP ununifiable).
-All escapes — `h h`, gate literals in bodies, swapped or doubled
-shell arguments — rejected.
+(including `B` and `W`). Outside, each rejected by the occurs check:
+`dup` (self-application — deliberately, the untyped copy regression),
+`q` (its `E = λz.Iz` and `N` branches do not unify — the wire imbalance
+`qprime` was built to repair; `qprime` types clean), and `dupcall`
+(`NOT′`/`EP` do not unify). All escapes — `h h`, gate literals in bodies,
+swapped or doubled shell arguments — are rejected.
 
 ## 9. Accepted claim and optional stronger theorem
 
@@ -711,8 +846,12 @@ and whose canonical pipeline reports `machine_coverage`, the kernel is total
 and Gram-clean on the complete structural reachable basis. Every admitted
 erasure is reversibly decodable from its retained fibre coordinate; the frozen
 run carries zero guard/error amplitude; every rejected or malformed case is
-typed and visible. Reachable-recall injectivity is an independent admission
-condition, not a consequence of Gram cleanliness.
+typed and visible; the complete carrier passes the direct RRI certificate,
+an independent admission condition, not a consequence of Gram cleanliness.
+The h-only scope matches the instruments: `validate` evaluates real
+coefficients, exact precisely when no T row fires. T-bearing sectors are
+evaluated exactly by `dw_machine.py` and admitted at the composed Gate-1 layer
+(`../../qalc/GATE1.md`).
 
 `machine_coverage` is a machine theorem, not automatic agreement with an
 ideal circuit reading for an arbitrary lambda term. Physics claims are pinned
@@ -720,54 +859,81 @@ program by program. Gate 2 supplies the separate clean-compilation theorem for
 the typed H/T/CNOT compiler image.
 
 The fixed-shell gate-copy theorem proves that `(gate, instance)` identifies a
-complete dynamic gate-copy address. Raw agreeing-frame recall remains
-noninjective over arbitrary WF states, so admission checks RRI directly over each
-complete finite carrier. Concrete Lean replay closes both source-projection
-and actual-target RRI for all 17 canonical typed sectors. A uniform derivation
-from typing or W0-W9 remains optional and is not a premise of either
-architecture gate.
+complete dynamic gate-copy address. The epoch-bearing recall row is injective
+on every W2-canonical source. Kernel `machine_coverage` additionally checks
+the stronger source-projection RRI predicate on the complete kernel carrier,
+and Gate-1 admission checks it on the complete composed carrier (§7.5). The
+concrete Lean replay closes source-projection and actual-target RRI for all 17
+canonical typed sectors. A uniform derivation from typing or W0-W9
+remains optional and is not a premise of either architecture gate.
 
-Standing typed fences are literal gate application, open bodies, unsupported
-kernel outputs, and every transition-table guard. The composed Gate-1 machine
-adds live T, arbitrary full-normal-form output, and exact terminal adapters
-outside this h-only kernel scope.
+Standing typed fences: gate literals in a program body and malformed shells
+lie outside the typed fragment (§8); open terms fail W0; kernel outputs outside
+`{0̂, 1̂, I}` and every transition-table guard enter the err sector. The
+composed Gate-1 machine adds arbitrary full-normal-form output and exact
+terminal adapters beyond this kernel's root-output scope.
 
 ## 10. Verification state
 
-The current kernel battery has one authoritative interpretation:
+`../../qalc/gate1_check.py` runs the kernel instruments below inside the
+Gate-1 runtime battery; its durable log is `../../qalc/out_gate1_runtime.txt`.
 
-- all twenty frozen kernel programs are total, exact-Gram clean, and match the
-  written-first physics table;
-- canonical discovery returns nineteen exact certificate dictionaries and the
-  validated no-erasure result for `dupcall`; `h Omega` rejects admission;
-- W0--W9, range separation, guard typing, certificate nonvacuity, conservation,
-  and the all-arms one-storage-head discipline are executable gates;
-- thirty-two permanent regression predicates and both declared coverage-boundary
-  witnesses remain in the battery. These fixtures pin the stated predicates and
-  known coarse mutant classes, not arbitrary implementation strategy;
-- the complete-carrier RRI gate passes all 17 canonical typed sectors and all 73
-  deterministic Boolean-100 sectors. Collision, multiplicity, factorization,
-  dispatch, cap, initialization, certified-H, and incomplete-carrier controls
-  reject as intended;
-- the generated concrete Lean replay covers 5,220 nonterminal `Run` states,
-  5,279 rows, 142 recall sources, 53 certified-H sources, and 18 exact
-  H-reconvergent targets. The exporter is untrusted; Lean rechecks row equality,
-  closure, and both RRI formulations.
+- `suite.py`: all twenty frozen kernel programs are total (no stuck state),
+  exact-Gram clean, and match the written-first physics table (nineteen
+  hand-derived rows; `dupcall` machine-measured). Its negative controls reach
+  `pop-err` (`pstar` under a wrong certificate) and `refire` with all-err
+  dynamics (`dupcall` under a deliberately invalid `ffbbaaa` certificate);
+- `certify.py`: `discover_total` reproduces the nineteen frozen certificate
+  dictionaries and returns `None` for `dupcall`; `h Ω` is conservatively
+  rejected. Nineteen programs reach `machine_coverage`, and all twenty pass the
+  direct RRI certificate;
+- `wf.py`: reachable ⊆ WF on all twenty programs under both the plain and the
+  certified reading; reachable ⊆ WF∧W7 and mechanized range disjointness on
+  the nineteen certified graphs; thirty-two permanent regression predicates
+  (two raw-state collision pairs and thirty named fixtures). These fixtures
+  pin the stated predicates and known coarse mutant classes, not arbitrary
+  implementation strategy;
+- `polarity.py` (uniform flip, branch-offset law, gauge pinning, terminal-chain
+  degrees), `conservation.py` (§7.3), and `typecheck.py` (§8);
+- `rri.py` (§7.5); `instance_identity.py`: gate-copy reconstruction on the
+  canonical suite (6,392 states, 1,196 keyed gate states, 58 keys) and on all
+  41,272 closed pure programs through size 11 — one fresh call per key, zero
+  guard hits, zero nonorthogonal one-step columns, ten programs truncated at
+  the 30,000-state cap, none of them with a call — plus the raw-recall
+  distinct-target control;
+- `dw_machine.py`: exact `ℤ[ω]/√2^k` Gram on all twenty programs, and exact
+  `T0`, `T1`, and `HTH0` amplitudes;
+- the generated concrete Lean replay covers the 17 canonical typed sectors:
+  5,220 nonterminal `Run` states, 5,279 rows, 142 recall sources, 59 H-fire
+  sources (53 certified), and 18 exact H-reconvergent targets. The exporter is
+  untrusted; Lean rechecks row equality, closure, and both RRI formulations.
+  `QalcConcreteCertificateAudit.lean` proves the raw `negative` pair's recall
+  targets disjoint, the any-epoch phase witness and the hash-equal-epoch target
+  control of §7.5, rejects an initial prefix as nonclosed, and pins `qprime`'s
+  certified-H reconvergence with both arms;
+- the Rust port is pinned by the complete-carrier column fixtures and trace
+  digests under `../../tests/qalc/` and by `../../tests/qalc_kernel.rs`,
+  including the HH trace of §11.
 
 The transition/WF battery and the composed Gate-1 battery cover distinct
-surfaces. Neither proves the optional ambient lifecycle theorem.
+surfaces. Neither proves the optional uniform RRI theorem.
 
 ## 11. Reference HH step-indexed trace
 
-Every post-fire state also carries the explicit empty `KD` bundle in KS; it is
-omitted below because it does not change the tape shapes or timing. The
-suppressed-decode `KA` head is absent from this canonical trace.
+HH's certificate is `{ffbbaa: ∅}`. The inner fire (t=22) is certified
+cargo-only and leaves `KD()`; the outer fire (t=33) is an uncertified decode
+that appends `K(h, i₁)`, identically on both branches, where `i₁` is the
+inner occurrence's logged position `L(ffbbaf|1)` (slice `γ_h`). KS is
+omitted from the lines below. HH never recalls, so RS stays empty, and every
+ticket carries the fresh epoch `F`; the suppressed-decode `KA` head is
+absent.
 
 Notation: `b` = bullet, `L(path|n)` = logged position (slice length
-n), `gh/mh` = `γ_h`/`μ_h`, `Ahb′` = `A_h(b′)`, `ahb′` = `α_h(b′)`,
-`R` = ρ. Amplitude `m/r2^k` = `m·2^(−k/2)`. Term paths: wrapper
-`(λh.λt. h (h 0̂)) h t`; `fa` = the h leaf, `ffbbf`/`ffbbaf` = outer/
-inner `h` occurrences, `ffbba` = `h 0̂`, `ffbbaa` = `0̂`.
+n), `gh/mh` = `γ_h`/`μ_h`, `Ahb′` = `A_h(b′)`, `ahb′` = `α_h(·, b′, F)`
+(instance elided), `R` = ρ. Amplitude `m/r2^k` = `m·2^(−k/2)`. Term paths:
+wrapper `(λh.λt. h (h 0̂)) h t`; `fa` = the h leaf, `ffbbf`/`ffbbaf` = outer/
+inner `h` occurrences, `ffbba` = `h 0̂`, `ffbbaa` = `0̂`. HH enters the halt
+sector at t=49; t=50 shows the first tick.
 
 ```text
 t=  1 b1      1       f     D  log[]            tape[b b b R]
@@ -794,7 +960,7 @@ t= 21 var     1       ffbbaa U log[gh gh]       tape[L(ffbbaabb|0) mh b b mh b b
 t= 22 fire-h  ————— inner δ: slot-1 arrival at the inner γ boundary —————
         1/r2  ffbbaa U log[gh gh] tape[Ah0 b b mh b b R]
         1/r2  ffbbaa U log[gh gh] tape[Ah1 b b mh b b R]
-t= 23 retrace (both branches, lockstep)   ffbbaf D  tape[gh Ahb′ …]
+t= 23 bt1g    (both branches, lockstep)   ffbbaf D  tape[gh Ahb′ …]
 t= 24 var     both    ff    U  …
 t= 25 arg     both    fa    D  log[L(ffbbaf|1)] tape[gh Ahb′ b b mh b b R]
 t= 26 anshead both    fa VB(h,b′,0)             tape[b b mh b b R]
@@ -805,10 +971,11 @@ t= 30 bt1     both    ff    D  …
 t= 31 bt2     both    ffbbaf U …
 t= 32 b3      both    ffbba U  b′=0: tape[ah0 mh b b R]; b′=1: tape[b ah1 mh b b R]
 t= 33 fire-h  ————— outer δ: branches arrive as a clean fibre (equal
-              log, position, T, time; slots differ) — H fires, the
-              A_h(1) amplitudes cancel exactly, support returns to 1:
+              log, position, T, KS, time; slots differ; both decode to
+              K(h, i₁)) — H fires, the A_h(1) amplitudes cancel
+              exactly, support returns to 1:
         1     ffbba  U log[gh] tape[Ah0 b b R]
-t= 34 retrace 1       ffbbf  D …
+t= 34 bt1g    1       ffbbf  D …
 t= 35 var     1       ff     U …
 t= 36 arg     1       fa     D  tape[gh Ah0 b b R]
 t= 37 anshead 1       fa VB(h,0,0)  tape[b b R]
@@ -822,7 +989,7 @@ t= 44 b4      1       ffb    U  log[]  tape[b ah0 R]
 t= 45 b4      1       ff     U  log[]  tape[b b ah0 R]
 t= 46 b3      1       f      U  log[]  tape[b ah0 R]
 t= 47 b3      1       root   U  log[]  tape[ah0 R]
-t= 48 rootdone 1      RunDone(0̂, residue (ah0·R))
+t= 48 rootdone 1      RunDone(0̂, residue (ε, ah0·R, ∅, K(h,i₁)·KD()))
 t= 49 halt     1      Halt(0̂, residue, 0)     [separate U step]
 t= 50 tick     1      Halt(0̂, residue, 1) …
       Mass 1 on 0̂, amplitude 2/√2² = 1 exactly.

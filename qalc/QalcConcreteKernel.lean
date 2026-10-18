@@ -640,8 +640,9 @@ def stepRun (term : Term) (source : Run)
                 let matching := sameKeyFrames source.frames key
                 if !matching.isEmpty && bitfree.contains key then err "key-alias"
                 else if !matching.isEmpty then
-                  if matching.any (fun left =>
-                      matching.any (fun right => left.bit != right.bit)) then
+                  -- As in `kernel.py`: any same-key multiplicity, not only
+                  -- a bit disagreement, is typed rather than replayed off one.
+                  if 1 < matching.length then
                     err "frame-conflict"
                   else if 3 ≤ bulletCount then
                     let replayBit := matching.head!.bit
@@ -661,8 +662,7 @@ def stepRun (term : Term) (source : Run)
               let matching := sameKeyFrames source.frames key
               if !matching.isEmpty && bitfree.contains key then err "key-alias"
               else if !matching.isEmpty then
-                if matching.any (fun left =>
-                    matching.any (fun right => left.bit != right.bit)) then
+                if 1 < matching.length then
                   err "frame-conflict"
                 else if 3 ≤ bulletCount then
                   let replayBit := matching.head!.bit

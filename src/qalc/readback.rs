@@ -26,12 +26,14 @@
 //! where the reference silently slices. All are unreachable on the
 //! pinned carriers.
 
-use std::collections::{hash_map::Entry, HashMap};
+use super::fasthash::HashMap;
+use std::borrow::Cow;
 use std::sync::Arc;
 
 use super::amp::Amp;
 use super::kernel::{instance, step};
 use super::mark::{Alpha, Epoch, GateTag, LogEntry, Lp, Rb, Rbl, TapeEntry};
+use super::shared::Shared;
 use super::state::{
     BinderIdentity, BinderMark, ErrorGarbage, ErrorKind, Kind, Nf, NfRun, NfState, NfTerminal,
     RunCore, ScopeResidue, TerminalCarrier, TerminalGarbage, Vert, Zipper,
@@ -45,7 +47,7 @@ use super::wire::CertEntries;
 pub struct NfRow {
     pub sign: i8,
     pub dk: u8,
-    pub rule: String,
+    pub rule: super::wire::Rule,
     pub state: NfState,
 }
 
@@ -88,11 +90,11 @@ impl From<super::kernel::Defect> for ComposedDefect {
     }
 }
 
-fn det(rule: &str, s: NfState) -> Vec<NfRow> {
+fn det(rule: &'static str, s: NfState) -> Vec<NfRow> {
     vec![NfRow {
         sign: 1,
         dk: 0,
-        rule: rule.to_string(),
+        rule: Cow::Borrowed(rule),
         state: s,
     }]
 }
@@ -104,16 +106,73 @@ fn det(rule: &str, s: NfState) -> Vec<NfRow> {
 pub(super) fn kernel_token(t: &RunCore) -> RunCore {
     let mut out = t.clone();
     for e in &mut out.tape {
-        if *e == TapeEntry::BulletBa {
+        if matches!(e, TapeEntry::BulletBa) {
             *e = TapeEntry::Bullet;
         }
     }
     out
 }
 
+/// Run `f` on the plain-bullet kernel state of `t` — `KState::Run(
+/// kernel_token(t))` — built in a per-thread scratch state whose vectors
+/// keep their capacity between steps, so the adapter allocates nothing.
+/// The scratch is overwritten field by field from `t` before every use.
+fn with_kernel_state<R>(t: &RunCore, f: impl FnOnce(&super::state::KState) -> R) -> R {
+    use super::state::KState;
+    use std::cell::RefCell;
+
+    type Empty = (
+        Shared<Vec<super::mark::Frame>>,
+        Shared<Vec<super::mark::KsHead>>,
+    );
+    thread_local! {
+        static SCRATCH: RefCell<(KState, Empty)> = RefCell::new({
+            let empty: Empty = (Vec::new().into(), Vec::new().into());
+            let state = KState::Run(RunCore {
+                path: Vec::new(),
+                d: Vert::D,
+                log: Vec::new(),
+                tape: Vec::new(),
+                vb: None,
+                rs: empty.0.clone(),
+                ks: empty.1.clone(),
+            });
+            (state, empty)
+        });
+    }
+    SCRATCH.with(|cell| {
+        let mut scratch = cell.borrow_mut();
+        let (slot, empty) = &mut *scratch;
+        let KState::Run(core) = slot else {
+            unreachable!("the scratch kernel state is always a run");
+        };
+        core.path.clone_from(&t.path);
+        core.d = t.d;
+        core.log.clone_from(&t.log);
+        core.tape.clear();
+        core.tape.extend(t.tape.iter().map(|e| match e {
+            TapeEntry::BulletBa => TapeEntry::Bullet,
+            e => e.clone(),
+        }));
+        core.vb = t.vb;
+        core.rs = t.rs.clone();
+        core.ks = t.ks.clone();
+        let out = f(slot);
+        // Release the borrowed entries now (capacity stays) rather than
+        // holding them, and the shared registers, until the next step.
+        if let KState::Run(core) = slot {
+            core.log.clear();
+            core.tape.clear();
+            core.rs = empty.0.clone();
+            core.ks = empty.1.clone();
+        }
+        out
+    })
+}
+
 pub(super) fn composed_token(mut t: RunCore) -> RunCore {
     for e in &mut t.tape {
-        if *e == TapeEntry::Bullet {
+        if matches!(e, TapeEntry::Bullet) {
             *e = TapeEntry::BulletBa;
         }
     }
@@ -189,6 +248,24 @@ fn holes(tree: &Nf) -> Vec<Path> {
     out
 }
 
+/// Does `tree` contain an open hole? `!holes(tree).is_empty()` without
+/// building the address list.
+fn has_hole(tree: &Nf) -> bool {
+    let mut stack = vec![tree];
+    while let Some(node) = stack.pop() {
+        match node {
+            Nf::Hole { .. } => return true,
+            Nf::Lam(b) => stack.push(b),
+            Nf::App(f, a) => {
+                stack.push(a);
+                stack.push(f);
+            }
+            Nf::Var(_) | Nf::Gate(_) => {}
+        }
+    }
+    false
+}
+
 fn leading_lambdas(tree: &Nf) -> usize {
     let mut n = 0;
     let mut cur = tree;
@@ -218,8 +295,28 @@ pub fn canonical_boolean(tree: &Nf) -> Option<u8> {
 // ---------------------------------------------------------------------------
 // Zipper operations.
 
+/// The first open hole in preorder — `holes(tree).first()` — found by a
+/// preorder walk that stops there and builds only that one address.
 fn next_cursor(tree: &Nf) -> Option<Path> {
-    holes(tree).into_iter().next()
+    // (node, depth of its address, direction taken into it)
+    let mut stack: Vec<(&Nf, usize, Option<Dir>)> = vec![(tree, 0, None)];
+    let mut path: Path = Vec::new();
+    while let Some((node, depth, dir)) = stack.pop() {
+        path.truncate(depth.saturating_sub(1));
+        if let Some(d) = dir {
+            path.push(d);
+        }
+        match node {
+            Nf::Hole { .. } => return Some(path),
+            Nf::Lam(b) => stack.push((b, depth + 1, Some(Dir::B))),
+            Nf::App(f, a) => {
+                stack.push((a, depth + 1, Some(Dir::A)));
+                stack.push((f, depth + 1, Some(Dir::F)));
+            }
+            Nf::Var(_) | Nf::Gate(_) => {}
+        }
+    }
+    None
 }
 
 fn fill(z: &Zipper, value: Nf) -> Result<Zipper, ComposedDefect> {
@@ -279,7 +376,7 @@ fn emit_lambda(z: &Zipper, identity: BinderIdentity) -> Result<Zipper, ComposedD
     let mut body_cursor = cursor.clone();
     body_cursor.push(Dir::B);
     let mut binders = updated.binders;
-    binders.push(BinderMark {
+    binders.make_mut().push(BinderMark {
         output: cursor,
         identity,
     });
@@ -319,8 +416,8 @@ fn replace_rb(entries: &[TapeEntry], old: &Rb, new: Rb) -> Result<Vec<TapeEntry>
     let mut out = Vec::with_capacity(entries.len());
     let mut replaced = false;
     for e in entries {
-        if !replaced && matches!(e, TapeEntry::Rb(r) if r == old) {
-            out.push(TapeEntry::Rb(new.clone()));
+        if !replaced && matches!(e, TapeEntry::Rb(r) if **r == *old) {
+            out.push(TapeEntry::Rb(new.clone().into()));
             replaced = true;
         } else {
             out.push(e.clone());
@@ -449,9 +546,11 @@ fn scope_residue(
     prefix: &[TapeEntry],
     rb: &Rb,
     z: &Zipper,
-) -> Result<(ScopeResidue, Vec<BinderMark>), ComposedDefect> {
+) -> Result<(ScopeResidue, Shared<Vec<BinderMark>>), ComposedDefect> {
     let output = at(&z.tree, &rb.output)?;
-    if prefix.iter().all(|e| *e == TapeEntry::BulletBa) && prefix.len() == leading_lambdas(output) {
+    if prefix.iter().all(|e| matches!(e, TapeEntry::BulletBa))
+        && prefix.len() == leading_lambdas(output)
+    {
         return Ok((
             ScopeResidue::Pure {
                 output: rb.output.clone(),
@@ -474,7 +573,7 @@ fn scope_residue(
                     instance: invoked.clone(),
                     epoch: epoch.clone(),
                 },
-                remaining,
+                remaining.into(),
             ))
         }
         _ => Ok((
@@ -491,7 +590,7 @@ fn scope_residue(
 fn terminal_garbage(token: &RunCore, rb: &Rb, prefix: &[TapeEntry], z: &Zipper) -> TerminalGarbage {
     match virtual_prefix_code(prefix, &z.tree, &rb.output, &rb.code, &z.binders) {
         None => {
-            let output_determines_prefix = prefix.iter().all(|e| *e == TapeEntry::BulletBa)
+            let output_determines_prefix = prefix.iter().all(|e| matches!(e, TapeEntry::BulletBa))
                 && prefix.len() == leading_lambdas(&z.tree);
             let carrier = if output_determines_prefix {
                 None
@@ -535,7 +634,7 @@ fn terminal_garbage(token: &RunCore, rb: &Rb, prefix: &[TapeEntry], z: &Zipper) 
                 }),
                 frames: token.rs.clone(),
                 storage: token.ks.clone(),
-                binders: remaining,
+                binders: remaining.into(),
                 residues: z.residues.clone(),
             }
         }
@@ -557,7 +656,7 @@ fn first_rb(tape: &[TapeEntry]) -> Option<(&[TapeEntry], &Rb, &[TapeEntry])> {
 /// Nearest scope delimiter after the complete leading BA prefix.
 fn rb_after_output_bullets(tape: &[TapeEntry]) -> Option<(usize, &Rb, &[TapeEntry])> {
     let mut count = 0;
-    while count < tape.len() && tape[count] == TapeEntry::BulletBa {
+    while count < tape.len() && matches!(tape[count], TapeEntry::BulletBa) {
         count += 1;
     }
     match tape.get(count) {
@@ -575,7 +674,7 @@ fn enter_shape<'a>(
 ) -> Result<Option<(&'a Rb, Path, Path, Path)>, ComposedDefect> {
     if token.d != Vert::U
         || token.path.last() != Some(&Dir::F)
-        || token.tape.first() != Some(&TapeEntry::BulletBa)
+        || !matches!(token.tape.first(), Some(TapeEntry::BulletBa))
     {
         return Ok(None);
     }
@@ -605,14 +704,14 @@ fn enter_shape<'a>(
 fn head_shape<'a>(term: &Term, token: &'a RunCore) -> Option<(usize, &'a Lp, usize, &'a Rb)> {
     let tape = &token.tape;
     let mut leading = 0;
-    while leading < tape.len() && tape[leading] == TapeEntry::BulletBa {
+    while leading < tape.len() && matches!(tape[leading], TapeEntry::BulletBa) {
         leading += 1;
     }
     let Some(TapeEntry::Lp(lp)) = tape.get(leading) else {
         return None;
     };
     let mut arity_end = leading + 1;
-    while arity_end < tape.len() && tape[arity_end] == TapeEntry::BulletBa {
+    while arity_end < tape.len() && matches!(tape[arity_end], TapeEntry::BulletBa) {
         arity_end += 1;
     }
     let Some(TapeEntry::Rb(rb)) = tape.get(arity_end) else {
@@ -644,7 +743,7 @@ fn neutral_probe_shape<'a>(
     let TapeEntry::Lp(lp) = &tape[0] else {
         return Ok(None);
     };
-    if tape[1] != TapeEntry::BulletBa || tape[2] != TapeEntry::BulletBa {
+    if !matches!(tape[1], TapeEntry::BulletBa) || !matches!(tape[2], TapeEntry::BulletBa) {
         return Ok(None);
     }
     let TapeEntry::Mu(gate) = &tape[3] else {
@@ -667,7 +766,7 @@ fn neutral_probe_shape<'a>(
         return Ok(None);
     };
     let mut extra_end = 4;
-    while extra_end < tape.len() && tape[extra_end] == TapeEntry::BulletBa {
+    while extra_end < tape.len() && matches!(tape[extra_end], TapeEntry::BulletBa) {
         extra_end += 1;
     }
     let Some(TapeEntry::Rb(rb)) = tape.get(extra_end) else {
@@ -688,11 +787,11 @@ fn neutral_probe_shape<'a>(
 // ---------------------------------------------------------------------------
 // Error landings.
 
-fn error_row(rule: &str, token: &RunCore, z: &Zipper) -> Vec<NfRow> {
+fn error_row(rule: &'static str, token: &RunCore, z: &Shared<Zipper>) -> Vec<NfRow> {
     vec![NfRow {
         sign: 1,
         dk: 0,
-        rule: format!("error-{rule}"),
+        rule: Cow::Owned(format!("error-{rule}")),
         state: NfState::RunDone(NfTerminal::Error {
             kind: ErrorKind::Typed(rule.to_string()),
             garbage: ErrorGarbage::Composed {
@@ -714,22 +813,26 @@ pub fn nf_init() -> NfState {
             path: Vec::new(),
             d: Vert::D,
             log: Vec::new(),
-            tape: vec![TapeEntry::Rb(Rb {
-                depth: 0,
-                output: Vec::new(),
-                code: Vec::new(),
-                pending: Vec::new(),
-            })],
+            tape: vec![TapeEntry::Rb(
+                Rb {
+                    depth: 0,
+                    output: Vec::new(),
+                    code: Vec::new(),
+                    pending: Vec::new(),
+                }
+                .into(),
+            )],
             vb: None,
-            rs: Vec::new(),
-            ks: Vec::new(),
+            rs: Vec::new().into(),
+            ks: Vec::new().into(),
         },
         zipper: Zipper {
             tree: Nf::Hole { armed: false },
             cursor: Some(Vec::new()),
-            binders: Vec::new(),
-            residues: Vec::new(),
-        },
+            binders: Vec::new().into(),
+            residues: Vec::new().into(),
+        }
+        .into(),
     })
 }
 
@@ -782,7 +885,7 @@ fn nf_step_partial(
                 out.push(NfRow {
                     sign: row.sign,
                     dk: row.dk,
-                    rule: row.rule.to_string(),
+                    rule: Cow::Borrowed(row.rule),
                     state: NfState::Run(NfRun {
                         token: composed_token(target),
                         zipper: zipper.clone(),
@@ -817,7 +920,7 @@ fn nf_step_partial(
                     code: rb.code.clone(),
                     pending: rb.pending.clone(),
                 };
-                let mut tape = vec![TapeEntry::Rb(rb2)];
+                let mut tape = vec![TapeEntry::Rb(rb2.into())];
                 tape.extend_from_slice(&token.tape[1..]);
                 let token2 = RunCore {
                     path: token.path.clone(),
@@ -836,7 +939,7 @@ fn nf_step_partial(
                     "vlam",
                     NfState::Run(NfRun {
                         token: token2,
-                        zipper: zipper2,
+                        zipper: zipper2.into(),
                     }),
                 ));
             }
@@ -861,12 +964,15 @@ fn nf_step_partial(
                     let zipper2 = fill(zipper, Nf::Var(selected_index))?;
                     let mut tape: Vec<TapeEntry> =
                         std::iter::repeat_n(TapeEntry::BulletBa, usize::from(vb.bit) + 1).collect();
-                    tape.push(TapeEntry::Alpha(Alpha {
-                        gate: vb.gate,
-                        instance: invoked.clone(),
-                        bit: vb.bit,
-                        epoch: Epoch::Fresh,
-                    }));
+                    tape.push(TapeEntry::Alpha(
+                        Alpha {
+                            gate: vb.gate,
+                            instance: invoked.clone(),
+                            bit: vb.bit,
+                            epoch: Epoch::Fresh,
+                        }
+                        .into(),
+                    ));
                     tape.extend_from_slice(&token.tape);
                     let token2 = RunCore {
                         path: token.path.clone(),
@@ -881,7 +987,7 @@ fn nf_step_partial(
                         "vvar",
                         NfState::Run(NfRun {
                             token: token2,
-                            zipper: zipper2,
+                            zipper: zipper2.into(),
                         }),
                     ));
                 }
@@ -908,7 +1014,7 @@ fn nf_step_partial(
                 code: rb.code.clone(),
                 pending: rb.pending.clone(),
             };
-            let mut tape = vec![TapeEntry::Rb(rb2)];
+            let mut tape = vec![TapeEntry::Rb(rb2.into())];
             tape.extend_from_slice(&token.tape[1..]);
             let mut path = token.path.clone();
             path.push(Dir::B);
@@ -925,7 +1031,7 @@ fn nf_step_partial(
                 "vlam",
                 NfState::Run(NfRun {
                     token: token2,
-                    zipper: zipper2,
+                    zipper: zipper2.into(),
                 }),
             ));
         }
@@ -950,7 +1056,7 @@ fn nf_step_partial(
                     "head-gate",
                     NfState::Run(NfRun {
                         token: token2,
-                        zipper: zipper2,
+                        zipper: zipper2.into(),
                     }),
                 ));
             }
@@ -1000,19 +1106,19 @@ fn nf_step_partial(
                     logged_argument: lp.clone(),
                 };
                 let mut residues = zipper2.residues.clone();
-                residues.push(residue);
+                residues.make_mut().push(residue);
                 let zipper2 = Zipper {
                     tree: zipper2.tree,
                     cursor: zipper2.cursor,
                     binders: zipper2.binders,
                     residues,
                 };
-                let mut tape = vec![TapeEntry::Rb(child_rb), TapeEntry::BulletBa];
+                let mut tape = vec![TapeEntry::Rb(child_rb.into()), TapeEntry::BulletBa];
                 tape.extend(after_mu);
                 let token2 = RunCore {
                     path: occurrence,
                     d: Vert::D,
-                    log: vec![LogEntry::Rbl(address)],
+                    log: vec![LogEntry::Rbl(address.into())],
                     tape,
                     vb: token.vb,
                     rs: token.rs.clone(),
@@ -1022,7 +1128,7 @@ fn nf_step_partial(
                     "head-neutral-gate",
                     NfState::Run(NfRun {
                         token: token2,
-                        zipper: zipper2,
+                        zipper: zipper2.into(),
                     }),
                 ));
             }
@@ -1064,7 +1170,7 @@ fn nf_step_partial(
                     "head",
                     NfState::Run(NfRun {
                         token: token2,
-                        zipper: zipper2,
+                        zipper: zipper2.into(),
                     }),
                 ));
             }
@@ -1098,7 +1204,7 @@ fn nf_step_partial(
 
     if token.d == Vert::D
         && matches!(code, Term::Lam(_))
-        && token.tape.first() == Some(&TapeEntry::BulletBa)
+        && matches!(token.tape.first(), Some(TapeEntry::BulletBa))
     {
         let mut path = token.path.clone();
         path.push(Dir::B);
@@ -1146,9 +1252,9 @@ fn nf_step_partial(
         };
         let parent_rb = parent_rb.clone();
         let parent_tail = replace_rb(&token.tape[1..], &parent_rb, parent_rb2)?;
-        let mut log = vec![LogEntry::Rbl(address)];
+        let mut log = vec![LogEntry::Rbl(address.into())];
         log.extend_from_slice(&token.log);
-        let mut tape = vec![TapeEntry::Rb(child_rb), TapeEntry::BulletBa];
+        let mut tape = vec![TapeEntry::Rb(child_rb.into()), TapeEntry::BulletBa];
         tape.extend(parent_tail);
         let token2 = RunCore {
             path: argument_path,
@@ -1163,7 +1269,7 @@ fn nf_step_partial(
             "enter",
             NfState::Run(NfRun {
                 token: token2,
-                zipper: zipper2,
+                zipper: zipper2.into(),
             }),
         ));
     }
@@ -1194,7 +1300,7 @@ fn nf_step_partial(
 
     if token.d == Vert::U
         && token.path.last() == Some(&Dir::F)
-        && token.tape.first() == Some(&TapeEntry::BulletBa)
+        && matches!(token.tape.first(), Some(TapeEntry::BulletBa))
     {
         let token2 = RunCore {
             path: token.path[..token.path.len() - 1].to_vec(),
@@ -1216,8 +1322,8 @@ fn nf_step_partial(
 
     // A completed child returns forward.
     if let Some((prefix, rb, tail)) = first_rb(&token.tape) {
-        let subtree_closed = holes(at(&zipper.tree, &rb.output)?).is_empty();
-        let lambdas_match = !prefix.iter().all(|e| *e == TapeEntry::BulletBa)
+        let subtree_closed = !has_hole(at(&zipper.tree, &rb.output)?);
+        let lambdas_match = !prefix.iter().all(|e| matches!(e, TapeEntry::BulletBa))
             || leading_lambdas(at(&zipper.tree, &rb.output)?) == prefix.len();
         let at_scope_root = token.d == Vert::U && token.path == rb.code;
         if at_scope_root && subtree_closed && lambdas_match && rb.pending.is_empty() {
@@ -1243,11 +1349,10 @@ fn nf_step_partial(
     }
 
     // Kernel steps see exactly their audited plain-bullet alphabet.
-    let kernel_state = super::state::KState::Run(kernel_token(token));
-    let rows = match machine {
-        MachineKind::Gate1 => step(term, &kernel_state, cert),
-        MachineKind::Gate2 => super::shadow::step(term, &kernel_state, cert),
-    }?;
+    let rows = with_kernel_state(token, |kernel_state| match machine {
+        MachineKind::Gate1 => step(term, kernel_state, cert),
+        MachineKind::Gate2 => super::shadow::step(term, kernel_state, cert),
+    })?;
     if rows.is_empty() {
         return Ok(error_row("stuck", token, zipper));
     }
@@ -1257,7 +1362,7 @@ fn nf_step_partial(
             super::state::KState::Run(target) => out.push(NfRow {
                 sign: r.sign,
                 dk: r.dk,
-                rule: r.rule.to_string(),
+                rule: Cow::Borrowed(r.rule),
                 state: NfState::Run(NfRun {
                     token: composed_token(target),
                     zipper: zipper.clone(),
@@ -1272,7 +1377,7 @@ fn nf_step_partial(
                 out.push(NfRow {
                     sign: r.sign,
                     dk: r.dk,
-                    rule: format!("error-{}", r.rule),
+                    rule: Cow::Owned(format!("error-{}", r.rule)),
                     state: NfState::RunDone(NfTerminal::Error {
                         kind: ErrorKind::Typed(kind_str),
                         garbage: ErrorGarbage::Kernel {
@@ -1286,7 +1391,7 @@ fn nf_step_partial(
             target @ super::state::KState::Done { .. } => out.push(NfRow {
                 sign: r.sign,
                 dk: r.dk,
-                rule: "error-invalid-kernel-target".to_string(),
+                rule: Cow::Borrowed("error-invalid-kernel-target"),
                 state: NfState::RunDone(NfTerminal::Error {
                     kind: ErrorKind::Typed("invalid-kernel-target".to_string()),
                     garbage: ErrorGarbage::InvalidKernelTarget {
@@ -1306,8 +1411,8 @@ fn return_successor(token: &RunCore, zipper: &Zipper) -> Result<Option<NfRun>, C
     let Some((prefix, rb, tail)) = first_rb(&token.tape) else {
         return Ok(None);
     };
-    let subtree_closed = holes(at(&zipper.tree, &rb.output)?).is_empty();
-    let lambdas_match = !prefix.iter().all(|e| *e == TapeEntry::BulletBa)
+    let subtree_closed = !has_hole(at(&zipper.tree, &rb.output)?);
+    let lambdas_match = !prefix.iter().all(|e| matches!(e, TapeEntry::BulletBa))
         || leading_lambdas(at(&zipper.tree, &rb.output)?) == prefix.len();
     let at_scope_root = token.d == Vert::U && token.path == rb.code;
     let Some(LogEntry::Rbl(address)) = token.log.first() else {
@@ -1318,7 +1423,7 @@ fn return_successor(token: &RunCore, zipper: &Zipper) -> Result<Option<NfRun>, C
         && lambdas_match
         && address.output == rb.output
         && address.code == rb.code
-        && tail.first() == Some(&TapeEntry::BulletBa))
+        && matches!(tail.first(), Some(TapeEntry::BulletBa)))
     {
         return Ok(None);
     }
@@ -1329,7 +1434,7 @@ fn return_successor(token: &RunCore, zipper: &Zipper) -> Result<Option<NfRun>, C
     let parent_path = parent_function[..parent_function.len() - 1].to_vec();
     let (residue, binders) = scope_residue(prefix, rb, zipper)?;
     let mut residues = zipper.residues.clone();
-    residues.push(residue);
+    residues.make_mut().push(residue);
     let zipper2 = Zipper {
         tree: zipper.tree.clone(),
         cursor: zipper.cursor.clone(),
@@ -1347,7 +1452,7 @@ fn return_successor(token: &RunCore, zipper: &Zipper) -> Result<Option<NfRun>, C
     };
     Ok(Some(NfRun {
         token: token2,
-        zipper: zipper2,
+        zipper: zipper2.into(),
     }))
 }
 
@@ -1368,12 +1473,15 @@ fn virtual_carrier_inverse(
     remaining_binders: &[BinderMark],
 ) -> Result<(Vec<TapeEntry>, Vec<BinderMark>), ComposedDefect> {
     let bit = canonical_boolean(output).ok_or(ComposedDefect::Inverse)?;
-    let alpha = TapeEntry::Alpha(Alpha {
-        gate,
-        instance: instance.clone(),
-        bit,
-        epoch: epoch.clone(),
-    });
+    let alpha = TapeEntry::Alpha(
+        Alpha {
+            gate,
+            instance: instance.clone(),
+            bit,
+            epoch: epoch.clone(),
+        }
+        .into(),
+    );
     let prefix = if bit == 0 {
         vec![alpha]
     } else {
@@ -1415,7 +1523,7 @@ pub fn terminal_predecessor(
     let (prefix, binders) = match &garbage.carrier {
         None => (
             vec![TapeEntry::BulletBa; leading_lambdas(output)],
-            garbage.binders.clone(),
+            (*garbage.binders).clone(),
         ),
         Some(TerminalCarrier::Exact {
             output: carrier_output,
@@ -1424,7 +1532,7 @@ pub fn terminal_predecessor(
             if !carrier_output.is_empty() {
                 return Err(ComposedDefect::Inverse);
             }
-            (prefix.clone(), garbage.binders.clone())
+            (prefix.clone(), (*garbage.binders).clone())
         }
         Some(TerminalCarrier::Virtual {
             output: carrier_output,
@@ -1439,12 +1547,15 @@ pub fn terminal_predecessor(
         }
     };
     let mut tape = prefix;
-    tape.push(TapeEntry::Rb(Rb {
-        depth: leading_lambdas(output) as u64,
-        output: Vec::new(),
-        code: Vec::new(),
-        pending: Vec::new(),
-    }));
+    tape.push(TapeEntry::Rb(
+        Rb {
+            depth: leading_lambdas(output) as u64,
+            output: Vec::new(),
+            code: Vec::new(),
+            pending: Vec::new(),
+        }
+        .into(),
+    ));
     Ok(NfRun {
         token: RunCore {
             path: Vec::new(),
@@ -1458,9 +1569,10 @@ pub fn terminal_predecessor(
         zipper: Zipper {
             tree: output.clone(),
             cursor: None,
-            binders,
+            binders: binders.into(),
             residues: garbage.residues.clone(),
-        },
+        }
+        .into(),
     })
 }
 
@@ -1478,10 +1590,10 @@ pub fn return_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compos
         ScopeResidue::Pure { output } => (
             output.clone(),
             vec![TapeEntry::BulletBa; leading_lambdas(at(&zipper.tree, output)?)],
-            zipper.binders.clone(),
+            (*zipper.binders).clone(),
         ),
         ScopeResidue::Exact { output, prefix } => {
-            (output.clone(), prefix.clone(), zipper.binders.clone())
+            (output.clone(), prefix.clone(), (*zipper.binders).clone())
         }
         ScopeResidue::Virtual {
             output,
@@ -1524,10 +1636,10 @@ pub fn return_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compos
         output: output_path,
         code: child_path.clone(),
     };
-    let mut log = vec![LogEntry::Rbl(address)];
+    let mut log = vec![LogEntry::Rbl(address.into())];
     log.extend_from_slice(&token.log);
     let mut tape = prefix;
-    tape.push(TapeEntry::Rb(delimiter));
+    tape.push(TapeEntry::Rb(delimiter.into()));
     tape.push(TapeEntry::BulletBa);
     tape.extend_from_slice(&token.tape);
     let source_token = RunCore {
@@ -1542,8 +1654,8 @@ pub fn return_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compos
     let source_zipper = Zipper {
         tree: zipper.tree.clone(),
         cursor: zipper.cursor.clone(),
-        binders,
-        residues: zipper.residues[..zipper.residues.len() - 1].to_vec(),
+        binders: binders.into(),
+        residues: zipper.residues[..zipper.residues.len() - 1].to_vec().into(),
     };
     // The structural child path must still belong to the immutable term.
     if !matches!(subterm(term, &token.path), Some(Term::App(..))) {
@@ -1554,7 +1666,7 @@ pub fn return_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compos
     }
     Ok(NfRun {
         token: source_token,
-        zipper: source_zipper,
+        zipper: source_zipper.into(),
     })
 }
 
@@ -1563,7 +1675,7 @@ pub fn enter_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compose
     let NfState::Run(NfRun { token, zipper }) = target else {
         return Err(ComposedDefect::Inverse);
     };
-    if token.d != Vert::D || token.tape.len() < 2 || token.tape[1] != TapeEntry::BulletBa {
+    if token.d != Vert::D || token.tape.len() < 2 || !matches!(token.tape[1], TapeEntry::BulletBa) {
         return Err(ComposedDefect::Inverse);
     }
     let Some(LogEntry::Rbl(address)) = token.log.first() else {
@@ -1629,7 +1741,7 @@ pub fn enter_predecessor(term: &Term, target: &NfState) -> Result<NfRun, Compose
     }
     Ok(NfRun {
         token: source_token,
-        zipper: source_zipper,
+        zipper: source_zipper.into(),
     })
 }
 
@@ -1660,7 +1772,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
         || token.vb.is_some()
         || token.log.len() != 1
         || token.tape.len() < 3
-        || token.tape[1] != TapeEntry::BulletBa
+        || !matches!(token.tape[1], TapeEntry::BulletBa)
     {
         return Err(ComposedDefect::Inverse);
     }
@@ -1681,7 +1793,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
         output: first_output.clone(),
         code: occurrence.clone(),
     };
-    if token.log.first() != Some(&LogEntry::Rbl(address))
+    if token.log.first() != Some(&LogEntry::Rbl(address.into()))
         || child_rb.output != first_output
         || child_rb.code != *occurrence
     {
@@ -1692,7 +1804,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
     // the gate spine arity: first argument is the current unarmed
     // cursor, all later arguments remain armed.
     let mut arity = 1;
-    while 1 + arity < token.tape.len() && token.tape[1 + arity] == TapeEntry::BulletBa {
+    while 1 + arity < token.tape.len() && matches!(token.tape[1 + arity], TapeEntry::BulletBa) {
         arity += 1;
     }
     let mut suffix = vec![Dir::F; arity - 1];
@@ -1723,7 +1835,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
         tree: source_tree,
         cursor: Some(output_root),
         binders: zipper.binders.clone(),
-        residues: zipper.residues[..zipper.residues.len() - 1].to_vec(),
+        residues: zipper.residues[..zipper.residues.len() - 1].to_vec().into(),
     };
     let after_mu = &token.tape[2..];
     let Some(parent_rb) = after_mu.iter().find_map(|e| match e {
@@ -1758,7 +1870,7 @@ pub fn neutral_probe_predecessor(term: &Term, target: &NfState) -> Result<NfRun,
     };
     Ok(NfRun {
         token: source_token,
-        zipper: source_zipper,
+        zipper: source_zipper.into(),
     })
 }
 
@@ -1781,7 +1893,7 @@ pub fn nf_step_with(
         Err(_defect) => vec![NfRow {
             sign: 1,
             dk: 0,
-            rule: "error-machine-exception".to_string(),
+            rule: Cow::Borrowed("error-machine-exception"),
             state: NfState::RunDone(NfTerminal::Error {
                 kind: ErrorKind::Fault("host-fault".to_string()),
                 garbage: ErrorGarbage::Fault {
@@ -1825,7 +1937,7 @@ fn nf_step_amp(
     term: &Term,
     s: &NfState,
     cert: Option<&CertEntries>,
-) -> Result<Vec<(Amp, String, NfState)>, NfError> {
+) -> Result<Vec<(Amp, super::wire::Rule, NfState)>, NfError> {
     nf_step_with(machine, term, s, cert)
         .into_iter()
         .map(|r| {
@@ -1834,6 +1946,29 @@ fn nf_step_amp(
             Ok((a, r.rule, r.state))
         })
         .collect()
+}
+
+/// [`nf_step_amp`] for the carrier walks, without re-collecting the rows:
+/// every coefficient is computed first, so a Capacity refusal still
+/// precedes any row being consumed, and the caller then reads each row's
+/// coefficient with [`row_coefficient`].
+fn nf_step_checked(
+    machine: MachineKind,
+    term: &Term,
+    s: &NfState,
+    cert: Option<&CertEntries>,
+) -> Result<Vec<NfRow>, NfError> {
+    let rows = nf_step_with(machine, term, s, cert);
+    for r in &rows {
+        super::kernel::edge_coefficient(r.sign, r.dk, &r.rule).ok_or(NfError::Capacity)?;
+    }
+    Ok(rows)
+}
+
+/// The edge coefficient of a row [`nf_step_checked`] already accepted.
+fn row_coefficient(r: &NfRow) -> Amp {
+    super::kernel::edge_coefficient(r.sign, r.dk, &r.rule)
+        .expect("nf_step_checked computed this coefficient")
 }
 
 /// A sparse composed superposition in deterministic first-touch order.
@@ -1863,7 +1998,7 @@ pub fn evolve_nf_trace_with(
             return Ok(maps);
         }
         let mut out: NfPsi = Vec::new();
-        let mut index: HashMap<NfState, usize> = HashMap::new();
+        let mut index: HashMap<NfState, usize> = HashMap::default();
         for (s, amp) in &psi {
             for (coefficient, _rule, target) in nf_step_amp(machine, term, s, cert)? {
                 let contribution = amp.mul(coefficient).ok_or(NfError::Capacity)?;
@@ -1927,7 +2062,7 @@ impl GramAccumulator {
     }
 
     fn finish(self, basis: usize) -> Result<super::kernel::GramReport, NfError> {
-        let mut dots: HashMap<(usize, usize), Amp> = HashMap::new();
+        let mut dots: HashMap<(usize, usize), Amp> = HashMap::default();
         for columns in self.incoming.values() {
             for (left_at, (left, left_coefficient)) in columns.iter().enumerate() {
                 for (right, right_coefficient) in &columns[left_at + 1..] {
@@ -1952,19 +2087,26 @@ impl GramAccumulator {
     }
 }
 
-fn intern_state(
-    ids: &mut HashMap<Arc<NfState>, usize>,
-    order: &mut Vec<Arc<NfState>>,
-    target: NfState,
-) -> usize {
-    match ids.entry(Arc::new(target)) {
-        Entry::Occupied(entry) => *entry.get(),
-        Entry::Vacant(entry) => {
-            let id = order.len();
-            let target = Arc::clone(entry.key());
-            entry.insert(id);
-            order.push(target);
-            id
+/// The carrier walk's discovery index: carrier ids in first-touch order
+/// over the ordered carrier itself, each state hashed once
+/// ([`HashIndex`](super::fasthash::HashIndex)).
+struct CarrierIndex(super::fasthash::HashIndex);
+
+impl CarrierIndex {
+    fn new() -> Self {
+        Self(super::fasthash::HashIndex::new())
+    }
+
+    /// The id of `target`, appending it to `order` on first touch.
+    fn intern(&mut self, order: &mut Vec<NfState>, target: NfState) -> usize {
+        debug_assert_eq!(order.len(), self.0.len());
+        let hash = super::fasthash::hash_one(&target);
+        match self.0.find_or_insert(hash, |id| order[id] == target) {
+            Ok(id) => id,
+            Err(id) => {
+                order.push(target);
+                id
+            }
         }
     }
 }
@@ -1976,7 +2118,7 @@ pub fn nf_gram_from_carrier(carrier: &NfCarrier) -> Result<super::kernel::GramRe
     let mut gram = GramAccumulator::default();
     for (source, rows) in &carrier.columns {
         let mut column: Vec<(usize, Amp)> = Vec::new();
-        let mut col_index: HashMap<usize, usize> = HashMap::new();
+        let mut col_index: HashMap<usize, usize> = HashMap::default();
         for (coefficient, _rule, target) in rows {
             if let Some(&at) = col_index.get(target) {
                 column[at].1 = column[at].1.add(*coefficient).ok_or(NfError::Capacity)?;
@@ -2006,32 +2148,41 @@ pub fn nf_carrier_and_columns_with(
     tick_depth: u64,
     state_cap: usize,
 ) -> Result<NfCarrier, NfError> {
-    // The discovery index and ordered carrier share each immutable state, so
-    // every token, zipper, and residue is stored once. Drop the index and
-    // unwrap the unique ordered owners before returning the public carrier.
-    let start = Arc::new(nf_init());
-    let mut ids: HashMap<Arc<NfState>, usize> = HashMap::new();
-    ids.insert(Arc::clone(&start), 0);
-    let mut order = vec![start];
+    // The ordered carrier owns every state; the discovery index holds only
+    // ids and stored hashes.
+    let mut index = CarrierIndex::new();
+    let mut order = Vec::new();
+    index.intern(&mut order, nf_init());
     let mut columns: Vec<super::wire::Column> = Vec::new();
     let mut at = 0;
     while at < order.len() {
-        let s = Arc::clone(&order[at]);
+        let src = at;
         at += 1;
-        if let NfState::Done { tick, .. } = s.as_ref() {
+        if let NfState::Done { tick, .. } = &order[src] {
             if *tick >= tick_depth {
                 continue;
             }
         }
-        let rows = nf_step_amp(machine, term, s.as_ref(), cert)?;
+        let rows = nf_step_checked(machine, term, &order[src], cert)?;
         let mut col: Vec<super::wire::ColRow> = Vec::with_capacity(rows.len());
         let mut norm = Amp::ZERO;
-        for (coefficient, rule, target) in rows {
-            check_inverse(machine, term, &rule, s.as_ref(), &target)?;
-            let id = intern_state(&mut ids, &mut order, target);
-            norm = norm
-                .add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
-                .ok_or(NfError::Capacity)?;
+        for row in rows {
+            let coefficient = row_coefficient(&row);
+            let NfRow {
+                rule,
+                state: target,
+                ..
+            } = row;
+            check_inverse(machine, term, &rule, &order[src], &target)?;
+            let id = index.intern(&mut order, target);
+            // A deterministic row's unit coefficient is the common case:
+            // 0 + |1|^2 is 1 exactly, without the ring arithmetic.
+            norm = if norm == Amp::ZERO && coefficient == Amp::ONE {
+                Amp::ONE
+            } else {
+                norm.add(coefficient.norm_sq().ok_or(NfError::Capacity)?)
+                    .ok_or(NfError::Capacity)?
+            };
             col.push((coefficient, rule, id));
         }
         if norm != Amp::ONE {
@@ -2040,13 +2191,8 @@ pub fn nf_carrier_and_columns_with(
         if order.len() > state_cap {
             return Err(NfError::StateCap);
         }
-        columns.push((at - 1, col));
+        columns.push((src, col));
     }
-    drop(ids);
-    let order = order
-        .into_iter()
-        .map(|state| Arc::try_unwrap(state).expect("carrier index was dropped"))
-        .collect();
     Ok(NfCarrier { order, columns })
 }
 
@@ -2100,26 +2246,25 @@ pub fn nf_gram_with(
     tick_depth: u64,
     state_cap: usize,
 ) -> Result<super::kernel::GramReport, NfError> {
-    let start = Arc::new(nf_init());
-    let mut ids: HashMap<Arc<NfState>, usize> = HashMap::new();
-    ids.insert(Arc::clone(&start), 0);
-    let mut order = vec![start];
+    let mut index = CarrierIndex::new();
+    let mut order = Vec::new();
+    index.intern(&mut order, nf_init());
     let mut gram = GramAccumulator::default();
     let mut at = 0;
     while at < order.len() {
-        let s = Arc::clone(&order[at]);
         let src = at;
         at += 1;
-        if let NfState::Done { tick, .. } = s.as_ref() {
+        if let NfState::Done { tick, .. } = &order[src] {
             if *tick >= tick_depth {
                 continue;
             }
         }
-        let rows = nf_step_amp(machine, term, s.as_ref(), cert)?;
+        let rows = nf_step_checked(machine, term, &order[src], cert)?;
         let mut column: Vec<(usize, Amp)> = Vec::new();
-        let mut col_index: HashMap<usize, usize> = HashMap::new();
-        for (coefficient, _rule, target) in rows {
-            let id = intern_state(&mut ids, &mut order, target);
+        let mut col_index: HashMap<usize, usize> = HashMap::default();
+        for row in rows {
+            let coefficient = row_coefficient(&row);
+            let id = index.intern(&mut order, row.state);
             if let Some(&k) = col_index.get(&id) {
                 column[k].1 = column[k].1.add(coefficient).ok_or(NfError::Capacity)?;
             } else {

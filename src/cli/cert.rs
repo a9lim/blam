@@ -114,7 +114,7 @@ mod search {
         (depth, cur, args)
     }
 
-    /// The library sweep plus this tool's hnf descent: run the three-rung
+    /// The library sweep plus this tool's hnf descent: run the four-rung
     /// ladder on `t`, and on failure recurse into the closed spine
     /// arguments of its hnf. Returns the kill and the spine path it sits
     /// at (empty = the term itself).
@@ -508,7 +508,7 @@ untrusted: the Lean kernel replays every obligation.";
                     at_path = v;
                 }
             }
-            let outer = parse_term("term", bits).map_err(&at)?;
+            let outer = parse_term("term", bits).map_err(at)?;
 
             // `-ARG` kills: the certificate applies to a closed spine
             // argument of the outer term's head normal form. Replay the
@@ -548,9 +548,9 @@ untrusted: the Lean kernel replays every obligation.";
             } else {
                 (outer.clone(), None)
             };
-            let a = parse_term("head", head).map_err(&at)?;
-            let c0t = parse_term("c0", c0).map_err(&at)?;
-            let wp = parse_pterm(w).map_err(&at)?;
+            let a = parse_term("head", head).map_err(at)?;
+            let c0t = parse_term("c0", c0).map_err(at)?;
+            let wp = parse_pterm(w).map_err(at)?;
 
             // Re-verify with the matching trusted checker; collect the
             // obligation counts and the INIT step count.
@@ -575,7 +575,7 @@ untrusted: the Lean kernel replays every obligation.";
                 let sel = SelectorRatchet {
                     a: a.clone(),
                     w: wp.clone(),
-                    p: parse_pterm(selp).map_err(&at)?,
+                    p: parse_pterm(selp).map_err(at)?,
                     c0: c0t.clone(),
                 };
                 let rep = verify_selector(&t, &sel, &RECHECK)
@@ -590,7 +590,7 @@ untrusted: the Lean kernel replays every obligation.";
                 let pdr = PassengerDiagonalRatchet {
                     a: a.clone(),
                     w: wp.clone(),
-                    p: parse_pterm(selp).map_err(&at)?,
+                    p: parse_pterm(selp).map_err(at)?,
                     c0: c0t.clone(),
                 };
                 let rep = verify_pdr(&t, &pdr, &RECHECK)
@@ -606,7 +606,7 @@ untrusted: the Lean kernel replays every obligation.";
                     a: a.clone(),
                     w: wp.clone(),
                     c0: c0t.clone(),
-                    i: parse_term("i", eraser).map_err(&at)?,
+                    i: parse_term("i", eraser).map_err(at)?,
                 };
                 let rep = verify_htr(&t, &htr, &RECHECK)
                     .unwrap_or_else(|e| panic!("htr re-verify failed on {bits}: {e:?}"));
@@ -657,11 +657,11 @@ untrusted: the Lean kernel replays every obligation.";
             lean_term(&c0t, &mut blk);
             if kind == "HTRCert" {
                 blk.push_str("\n  E := ");
-                lean_term(&parse_term("i", eraser).map_err(&at)?, &mut blk);
+                lean_term(&parse_term("i", eraser).map_err(at)?, &mut blk);
             }
             if kind == "SelCert" || kind == "PdrCert" {
                 blk.push_str("\n  P := ");
-                lean_pterm(&parse_pterm(selp).map_err(&at)?, &mut blk);
+                lean_pterm(&parse_pterm(selp).map_err(at)?, &mut blk);
             }
             blk.push('\n');
             for (name, val) in &counts {

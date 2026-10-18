@@ -73,7 +73,7 @@ fn step_paths(
             let coefficient = edge_coefficient(row.sign, row.dk, &row.rule).unwrap();
             let contribution = amplitude.mul(coefficient).unwrap();
             let mut history = rows.clone();
-            history.push(row.rule);
+            history.push(row.rule.into_owned());
             merge(&mut out, (row.state, history), contribution);
         }
     }
@@ -82,7 +82,7 @@ fn step_paths(
 }
 
 fn mask_lp(lp: &mut Lp) {
-    for entry in &mut lp.slice {
+    for entry in &mut lp.make_mut().slice {
         mask_log(entry);
     }
 }
@@ -95,8 +95,8 @@ fn mask_alpha(alpha: &mut Alpha) {
 fn mask_log(entry: &mut LogEntry) {
     match entry {
         LogEntry::Lp(lp) => mask_lp(lp),
-        LogEntry::Cgam(marker) => mask_lp(&mut marker.invoked),
-        LogEntry::Alpha(alpha) => mask_alpha(alpha),
+        LogEntry::Cgam(marker) => mask_lp(&mut marker.make_mut().invoked),
+        LogEntry::Alpha(alpha) => mask_alpha(&mut alpha.make_mut()),
         LogEntry::Gam(_) | LogEntry::Rbl(_) => {}
     }
 }
@@ -126,10 +126,10 @@ fn mask_key(key: &mut KdKey) {
 fn mask_tape(entry: &mut TapeEntry) {
     match entry {
         TapeEntry::Lp(lp) => mask_lp(lp),
-        TapeEntry::Cgam(marker) => mask_lp(&mut marker.invoked),
+        TapeEntry::Cgam(marker) => mask_lp(&mut marker.make_mut().invoked),
         TapeEntry::Cmu { invoked, .. } => mask_lp(invoked),
         TapeEntry::Ans(_, bit) => *bit = 0,
-        TapeEntry::Alpha(alpha) => mask_alpha(alpha),
+        TapeEntry::Alpha(alpha) => mask_alpha(&mut alpha.make_mut()),
         TapeEntry::Bullet
         | TapeEntry::BulletBa
         | TapeEntry::Rho
@@ -209,12 +209,12 @@ fn logical_skeleton(state: &NfState) -> String {
         if let Some(vb) = &mut run.token.vb {
             vb.bit = 0;
         }
-        for frame in &mut run.token.rs {
+        for frame in run.token.rs.make_mut().iter_mut() {
             frame.bit = 0;
             mask_lp(&mut frame.instance);
         }
-        run.token.ks.iter_mut().for_each(mask_storage);
-        mask_nf(&mut run.zipper.tree);
+        run.token.ks.make_mut().iter_mut().for_each(mask_storage);
+        mask_nf(&mut run.zipper.make_mut().tree);
     }
     nf_state_bytes(&state)
 }
@@ -248,7 +248,7 @@ fn macro_events(
                 &state,
                 Some(certificate),
             );
-            let rules: HashSet<&str> = rows.iter().map(|row| row.rule.as_str()).collect();
+            let rules: HashSet<&str> = rows.iter().map(|row| row.rule.as_ref()).collect();
             let local = if rules == HashSet::from(["fire-h"]) {
                 Some(Kind::H)
             } else if !rules.is_empty()
@@ -369,7 +369,7 @@ fn input_cut(
         );
         let mut masked = state;
         if let NfState::Run(run) = &mut masked {
-            for frame in &mut run.token.rs {
+            for frame in run.token.rs.make_mut().iter_mut() {
                 if frame.gate == GateTag::C2
                     && compiled.prep_occurrences.contains(&frame.instance.occ)
                 {
@@ -657,8 +657,8 @@ fn virtual_boolean_dispatch_precedes_the_shortened_var_extension() {
             bit: 0,
             k: 0,
         }),
-        rs: Vec::new(),
-        ks: Vec::new(),
+        rs: Vec::new().into(),
+        ks: Vec::new().into(),
     });
     let KState::Run(core) = &state else {
         unreachable!()
@@ -682,11 +682,14 @@ fn projected_probe_balance_and_complete_frame_harvest_are_load_bearing() {
     let NfState::Run(run) = &mut scaffold_imbalance else {
         unreachable!()
     };
-    run.token.log.push(LogEntry::Rbl(Rbl {
-        parent: Vec::new(),
-        output: Vec::new(),
-        code: Vec::new(),
-    }));
+    run.token.log.push(LogEntry::Rbl(
+        Rbl {
+            parent: Vec::new(),
+            output: Vec::new(),
+            code: Vec::new(),
+        }
+        .into(),
+    ));
     assert!(
         gate2check::shadow_wf(&compiled, &scaffold_imbalance)
             .contains(&ShadowViolation::ProbeBalance),
@@ -700,7 +703,7 @@ fn projected_probe_balance_and_complete_frame_harvest_are_load_bearing() {
     assert!(run.token.rs.len() >= 2);
     let first = run.token.rs[0].clone();
     let last = run.token.rs.last().unwrap().clone();
-    run.token.rs = vec![first.clone(), first, last.clone()];
+    run.token.rs = vec![first.clone(), first, last.clone()].into();
     run.token.log.insert(0, LogEntry::Lp(last.instance.clone()));
     run.token.vb = Some(Vb {
         gate: last.gate,

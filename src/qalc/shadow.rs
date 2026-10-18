@@ -103,7 +103,7 @@ pub(super) fn split_rows(rows: Vec<Row>) -> Vec<Row> {
                 return row;
             };
             if let KState::Run(mut target) = row.state {
-                target.ks.insert(0, KsHead::CnotStage(stage));
+                target.ks.make_mut().insert(0, KsHead::CnotStage(stage));
                 row.rule = first_rule;
                 row.state = KState::Run(target);
             }
@@ -117,7 +117,7 @@ pub(super) fn finish_stage(state: &RunCore) -> Option<Vec<Row>> {
         return None;
     };
     let mut target = state.clone();
-    target.ks.remove(0);
+    target.ks.make_mut().remove(0);
     Some(det(stage_finish(*stage), KState::Run(target)))
 }
 
@@ -131,7 +131,7 @@ impl ArrivalHead {
     fn tape(self) -> TapeEntry {
         match self {
             ArrivalHead::Lp(lp) => TapeEntry::Lp(lp),
-            ArrivalHead::Alpha(a) => TapeEntry::Alpha(a),
+            ArrivalHead::Alpha(a) => TapeEntry::Alpha(a.into()),
         }
     }
 }
@@ -145,7 +145,7 @@ struct Arrival {
 fn arrival_head(e: &TapeEntry) -> Option<ArrivalHead> {
     match e {
         TapeEntry::Lp(lp) => Some(ArrivalHead::Lp(lp.clone())),
-        TapeEntry::Alpha(a) => Some(ArrivalHead::Alpha(a.clone())),
+        TapeEntry::Alpha(a) => Some(ArrivalHead::Alpha((**a).clone())),
         _ => None,
     }
 }
@@ -246,7 +246,7 @@ fn fresh_c_call(term: &Term, state: &RunCore) -> Vec<Row> {
         &continuation,
     );
     let mut tape = vec![
-        TapeEntry::Cgam(marker),
+        TapeEntry::Cgam(marker.into()),
         TapeEntry::Bullet,
         TapeEntry::Bullet,
         TapeEntry::Cmu {
@@ -301,7 +301,7 @@ fn park_first(state: &RunCore, arrival: Arrival) -> Vec<Row> {
         },
     ];
     tape.extend_from_slice(&arrival.tail[1..]);
-    let mut log = vec![LogEntry::Cgam(marker2)];
+    let mut log = vec![LogEntry::Cgam(marker2.into())];
     log.extend_from_slice(&state.log[1..]);
     let mut ks = vec![parked];
     ks.extend_from_slice(&state.ks);
@@ -313,8 +313,8 @@ fn park_first(state: &RunCore, arrival: Arrival) -> Vec<Row> {
             log,
             tape,
             vb: None,
-            rs: retained,
-            ks,
+            rs: retained.into(),
+            ks: ks.into(),
         }),
     )
 }
@@ -397,7 +397,7 @@ fn fire_second(term: &Term, state: &RunCore, arrival: Arrival) -> Vec<Row> {
         continuation: marker.continuation.clone(),
     };
     let mut storage = state.ks.clone();
-    storage[parked_at] = history;
+    storage.make_mut()[parked_at] = history;
     let mut tape = vec![TapeEntry::Bullet, TapeEntry::Bullet];
     tape.extend_from_slice(&arrival.tail[1..]);
     det(
@@ -408,7 +408,7 @@ fn fire_second(term: &Term, state: &RunCore, arrival: Arrival) -> Vec<Row> {
             log: state.log[1..].to_vec(),
             tape,
             vb: None,
-            rs: records,
+            rs: records.into(),
             ks: storage,
         }),
     )
@@ -465,12 +465,15 @@ pub(super) fn deliver_port(term: &Term, state: &RunCore) -> Option<Vec<Row>> {
         && state.tape[2] == TapeEntry::Bullet
     {
         let mut emitted = vec![TapeEntry::Bullet; frame.bit as usize];
-        emitted.push(TapeEntry::Alpha(Alpha {
-            gate: port.tag(),
-            instance: invoked.clone(),
-            bit: frame.bit,
-            epoch: frame.epoch.clone(),
-        }));
+        emitted.push(TapeEntry::Alpha(
+            Alpha {
+                gate: port.tag(),
+                instance: invoked.clone(),
+                bit: frame.bit,
+                epoch: frame.epoch.clone(),
+            }
+            .into(),
+        ));
         emitted.extend_from_slice(&state.tape[3..]);
         let mut log = logged.slice.clone();
         log.extend_from_slice(&state.log);
@@ -489,12 +492,12 @@ pub(super) fn deliver_port(term: &Term, state: &RunCore) -> Option<Vec<Row>> {
                 tape: emitted,
                 vb: None,
                 rs: state.rs.clone(),
-                ks: storage,
+                ks: storage.into(),
             }),
         ));
     }
     if matches!(state.tape.get(1), Some(TapeEntry::Rb(_))) {
-        let retained = state.rs.iter().filter(|f| *f != frame).cloned().collect();
+        let retained: Vec<Frame> = state.rs.iter().filter(|f| *f != frame).cloned().collect();
         let mut storage = vec![KsHead::CnotDead {
             port,
             invoked: invoked.clone(),
@@ -518,8 +521,8 @@ pub(super) fn deliver_port(term: &Term, state: &RunCore) -> Option<Vec<Row>> {
                     bit: frame.bit,
                     k: 0,
                 }),
-                rs: retained,
-                ks: storage,
+                rs: retained.into(),
+                ks: storage.into(),
             }),
         ));
     }
@@ -573,7 +576,7 @@ fn close_virtual_port(state: &RunCore) -> Option<Vec<Row>> {
                 return Some(err("c-answer-record", state));
             }
             let mut target = state.clone();
-            if let KsHead::CnotDead { answered, .. } = &mut target.ks[dead[0]] {
+            if let KsHead::CnotDead { answered, .. } = &mut target.ks.make_mut()[dead[0]] {
                 *answered = true;
             }
             target.log.remove(0);
@@ -664,10 +667,7 @@ pub fn step(term: &Term, state: &KState, cert: Option<&CertEntries>) -> Result<V
         let binder = binder_path(term, &core.path).ok_or(Defect::UnboundVar)?;
         let needed = level(&core.path) - level(&binder);
         if core.log.len() < needed {
-            let lp = Lp {
-                occ: core.path.clone(),
-                slice: core.log.clone(),
-            };
+            let lp = Lp::new(core.path.clone(), core.log.clone());
             let mut tape = vec![TapeEntry::Lp(lp)];
             tape.extend_from_slice(&core.tape);
             let mut target = core.clone();
@@ -741,7 +741,7 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
             _ => return Err(()),
         };
         let mut source = target.clone();
-        source.ks.insert(0, KsHead::CnotStage(stage));
+        source.ks.make_mut().insert(0, KsHead::CnotStage(stage));
         return Ok(source);
     }
     let mut target = target.clone();
@@ -749,7 +749,7 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
         if target.ks.first() != Some(&KsHead::CnotStage(stage)) {
             return Err(());
         }
-        target.ks.remove(0);
+        target.ks.make_mut().remove(0);
     }
     match base {
         "call-c" => {
@@ -804,15 +804,15 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
                 &marker.second,
                 &marker.continuation,
             );
-            let mut log = vec![LogEntry::Cgam(marker1)];
+            let mut log = vec![LogEntry::Cgam(marker1.into())];
             log.extend_from_slice(&target.log[1..]);
             let mut source = target;
-            source.path = marker.first;
+            source.path = marker.first.clone();
             source.d = Vert::U;
             source.log = log;
             source.tape = tape;
-            source.rs = restore_frames(bit, &frames, source.rs);
-            source.ks.remove(0);
+            source.rs = restore_frames(bit, &frames, source.rs.into_inner()).into();
+            source.ks.make_mut().remove(0);
             Ok(source)
         }
         "fire-c" => {
@@ -887,7 +887,7 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
                 continuation: continuation.clone(),
             };
             let mut storage = target.ks.clone();
-            storage[at] = parked;
+            storage.make_mut()[at] = parked;
             let (first_path, second_path, _) = c_arguments(term, &occurrence).map_err(|_| ())?;
             let marker = cgam(
                 CPort::Second,
@@ -905,7 +905,7 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
             });
             tape.push(TapeEntry::Bullet);
             tape.extend_from_slice(&target.tape[2..]);
-            let mut log = vec![LogEntry::Cgam(marker)];
+            let mut log = vec![LogEntry::Cgam(marker.into())];
             log.extend_from_slice(&target.log);
             Ok(RunCore {
                 path: second_path,
@@ -913,7 +913,7 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
                 log,
                 tape,
                 vb: target.vb,
-                rs: records,
+                rs: records.into(),
                 ks: storage,
             })
         }
@@ -938,12 +938,15 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
             if target.tape.len() <= bit
                 || target.tape[..bit].iter().any(|e| *e != TapeEntry::Bullet)
                 || target.tape[bit]
-                    != TapeEntry::Alpha(Alpha {
-                        gate: port.tag(),
-                        instance: invoked.clone(),
-                        bit: bit as u8,
-                        epoch: frames[0].epoch.clone(),
-                    })
+                    != TapeEntry::Alpha(
+                        Alpha {
+                            gate: port.tag(),
+                            instance: invoked.clone(),
+                            bit: bit as u8,
+                            epoch: frames[0].epoch.clone(),
+                        }
+                        .into(),
+                    )
                 || !target.log.starts_with(&logged.slice)
             {
                 return Err(());
@@ -960,7 +963,7 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
             source.d = Vert::U;
             source.log = source.log[logged.slice.len()..].to_vec();
             source.tape = tape;
-            source.ks.remove(0);
+            source.ks.make_mut().remove(0);
             Ok(source)
         }
         "deliver-c-output" => {
@@ -992,15 +995,16 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
             source.tape.insert(0, TapeEntry::Lp(logged));
             source.vb = None;
             source.rs = rs_insert(
-                source.rs,
+                source.rs.into_inner(),
                 Frame {
                     gate: port.tag(),
                     instance: invoked,
                     bit: vb.bit,
                     epoch,
                 },
-            );
-            source.ks.remove(0);
+            )
+            .into();
+            source.ks.make_mut().remove(0);
             Ok(source)
         }
         "answer-c-port" => {
@@ -1036,7 +1040,7 @@ fn token_predecessor(term: &Term, rule: &str, target: &RunCore) -> Result<RunCor
             }
             let alpha_instance = alpha.instance.clone();
             let mut source = target;
-            if let KsHead::CnotDead { answered, .. } = &mut source.ks[dead[0]] {
+            if let KsHead::CnotDead { answered, .. } = &mut source.ks.make_mut()[dead[0]] {
                 *answered = false;
             }
             source.log.insert(0, LogEntry::Lp(alpha_instance));

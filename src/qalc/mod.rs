@@ -9,8 +9,9 @@
 //! evidence enter as pinned fixture data under `tests/qalc/`, never as
 //! re-derived output.
 //!
-//! **Isolation statement.** This pillar reads `quantum::scalar::Dw` and
-//! `crate::hash` and touches nothing else outside its tree: no trait
+//! **Isolation statement.** This pillar reads `quantum::scalar` (`Dw`,
+//! `ExactSum`, the `K_CAP` limits), `crate::hash`, and `blc::Term` (for
+//! `term::from_blc`) and touches nothing else outside its tree: no trait
 //! impls on `Dw`, no shared mutable configuration, no classical or qBLC
 //! code path. Classical census rows and qBLC operator rows are
 //! bit-identical with this module present or deleted; the per-phase
@@ -20,19 +21,22 @@
 //! [`mark`], [`state`], [`amp`], and [`wire`] define identity and
 //! interchange; [`kernel`] and [`readback`] define Gate-1 evolution;
 //! [`compiler`], [`shadow`], and [`gate2check`] define the clean circuit
-//! sector; [`admission`], [`wf`], and [`semantics`] make selection and the
-//! public semantic objects total.
+//! sector; [`admission`] (over the crate-private well-formedness checker
+//! `wf`) and [`semantics`] make selection and the public semantic objects
+//! total.
 
 pub mod admission;
 pub mod amp;
 pub mod compiler;
+pub(crate) mod fasthash;
 pub mod gate2check;
 pub mod kernel;
 pub mod mark;
 pub mod readback;
 pub mod semantics;
 pub mod shadow;
+pub mod shared;
 pub mod state;
 pub mod term;
-pub mod wf;
+pub(crate) mod wf;
 pub mod wire;

@@ -52,41 +52,87 @@ fn church_bool(outcome_zero: bool) -> QTerm {
 }
 
 // ---------------------------------------------------------------------------
-// shift / subst / beta — the `blc::reduction` kernel transplanted to QTerm
-// (Prim/Handle are closed constants, so they pass through untouched).
+// shift / beta — the `blc::reduction` kernel transplanted to QTerm
+// (Prim/Handle are closed constants, so they pass through untouched), in
+// its single-pass form. `blc::reduction::beta` is the three-pass
+// `shift(subst(body, 1, shift(arg, 1, 1)), -1, 1)`, which rebuilds every
+// node of the body and of every argument copy on each contraction:
+// `subst` re-shifts the argument at each binder it crosses, and the final
+// shift walks the whole result again. Here the argument is shifted once per
+// occurrence by the depth it lands at (not at all when closed), and every
+// subtree the contraction leaves unchanged keeps its `Rc`. The result is
+// the same term, pinned against the three-pass form by
+// `beta_matches_three_pass_kernel`.
 
-fn shift(t: &QTerm, d: i64, cutoff: u32) -> QTerm {
+/// Rebuild `App(f, a)` from optional rewrites of its children, sharing
+/// whichever child is unchanged; `None` when neither changed.
+fn rebuild_app(
+    f: &Rc<QTerm>,
+    a: &Rc<QTerm>,
+    nf: Option<QTerm>,
+    na: Option<QTerm>,
+) -> Option<QTerm> {
+    if nf.is_none() && na.is_none() {
+        return None;
+    }
+    Some(QTerm::App(
+        nf.map_or_else(|| f.clone(), Rc::new),
+        na.map_or_else(|| a.clone(), Rc::new),
+    ))
+}
+
+/// Add `d` to every variable `≥ cutoff`; `None` when no such variable
+/// occurs, i.e. the shift is the identity on `t`.
+fn shifted(t: &QTerm, d: i64, cutoff: u32) -> Option<QTerm> {
     match t {
-        QTerm::Var(n) => {
-            if *n >= cutoff {
-                QTerm::Var((*n as i64 + d) as u32)
-            } else {
-                QTerm::Var(*n)
-            }
-        }
-        QTerm::Lam(b) => QTerm::Lam(Rc::new(shift(b, d, cutoff + 1))),
-        QTerm::App(f, a) => QTerm::App(Rc::new(shift(f, d, cutoff)), Rc::new(shift(a, d, cutoff))),
-        leaf => leaf.clone(),
+        QTerm::Var(n) if *n >= cutoff && d != 0 => Some(QTerm::Var((*n as i64 + d) as u32)),
+        QTerm::Lam(b) => shifted(b, d, cutoff + 1).map(|nb| QTerm::Lam(Rc::new(nb))),
+        QTerm::App(f, a) => rebuild_app(f, a, shifted(f, d, cutoff), shifted(a, d, cutoff)),
+        _ => None,
     }
 }
 
-fn subst(t: &QTerm, j: u32, s: &QTerm) -> QTerm {
+/// Does `t` mention a variable free beyond `depth` binders? The closedness
+/// test `instantiate` caches, without building a shifted copy to ask.
+fn has_free(t: &QTerm, depth: u32) -> bool {
     match t {
-        QTerm::Var(n) => {
-            if *n == j {
-                s.clone()
+        QTerm::Var(n) => *n > depth,
+        QTerm::Lam(b) => has_free(b, depth + 1),
+        QTerm::App(f, a) => has_free(f, depth) || has_free(a, depth),
+        _ => false,
+    }
+}
+
+/// `body` with variable `depth + 1` (the λ being contracted, seen from
+/// `depth` binders inside the body) replaced by `arg` shifted up by
+/// `depth`, and the body's variables free beyond it lowered by one. `None`
+/// when the subtree mentions neither, so it is its own result. `closed`
+/// caches whether `arg` has free variables, so a closed argument — every
+/// argument of a root-spine redex in a closed program — is shared at every
+/// occurrence instead of re-traversed.
+fn instantiate(body: &QTerm, arg: &QTerm, depth: u32, closed: &mut Option<bool>) -> Option<QTerm> {
+    match body {
+        QTerm::Var(n) if *n == depth + 1 => {
+            if depth == 0 || *closed.get_or_insert_with(|| !has_free(arg, 0)) {
+                Some(arg.clone())
             } else {
-                QTerm::Var(*n)
+                Some(shifted(arg, depth as i64, 1).unwrap_or_else(|| arg.clone()))
             }
         }
-        QTerm::Lam(b) => QTerm::Lam(Rc::new(subst(b, j + 1, &shift(s, 1, 1)))),
-        QTerm::App(f, a) => QTerm::App(Rc::new(subst(f, j, s)), Rc::new(subst(a, j, s))),
-        leaf => leaf.clone(),
+        QTerm::Var(n) if *n > depth + 1 => Some(QTerm::Var(n - 1)),
+        QTerm::Lam(b) => instantiate(b, arg, depth + 1, closed).map(|nb| QTerm::Lam(Rc::new(nb))),
+        QTerm::App(f, a) => rebuild_app(
+            f,
+            a,
+            instantiate(f, arg, depth, closed),
+            instantiate(a, arg, depth, closed),
+        ),
+        _ => None,
     }
 }
 
 fn beta(body: &QTerm, arg: &QTerm) -> QTerm {
-    shift(&subst(body, 1, &shift(arg, 1, 1)), -1, 1)
+    instantiate(body, arg, 0, &mut None).unwrap_or_else(|| body.clone())
 }
 
 /// The trace event for a unary gate firing.
@@ -571,6 +617,95 @@ mod tests {
                 }
             });
         }
+    }
+
+    /// The three-pass kernel `beta` replaced, kept verbatim as its oracle.
+    fn beta_three_pass(body: &QTerm, arg: &QTerm) -> QTerm {
+        fn shift(t: &QTerm, d: i64, cutoff: u32) -> QTerm {
+            match t {
+                QTerm::Var(n) => {
+                    if *n >= cutoff {
+                        QTerm::Var((*n as i64 + d) as u32)
+                    } else {
+                        QTerm::Var(*n)
+                    }
+                }
+                QTerm::Lam(b) => QTerm::Lam(Rc::new(shift(b, d, cutoff + 1))),
+                QTerm::App(f, a) => {
+                    QTerm::App(Rc::new(shift(f, d, cutoff)), Rc::new(shift(a, d, cutoff)))
+                }
+                leaf => leaf.clone(),
+            }
+        }
+        fn subst(t: &QTerm, j: u32, s: &QTerm) -> QTerm {
+            match t {
+                QTerm::Var(n) => {
+                    if *n == j {
+                        s.clone()
+                    } else {
+                        QTerm::Var(*n)
+                    }
+                }
+                QTerm::Lam(b) => QTerm::Lam(Rc::new(subst(b, j + 1, &shift(s, 1, 1)))),
+                QTerm::App(f, a) => QTerm::App(Rc::new(subst(f, j, s)), Rc::new(subst(a, j, s))),
+                leaf => leaf.clone(),
+            }
+        }
+        shift(&subst(body, 1, &shift(arg, 1, 1)), -1, 1)
+    }
+
+    /// Every (λ-body, argument) pair over the subterms — open ones
+    /// included, so arguments land at every depth with free variables —
+    /// of all closed terms through 18 bits, plus primitive and handle
+    /// leaves: the single-pass `beta` equals the three-pass kernel.
+    #[test]
+    fn beta_matches_three_pass_kernel() {
+        use crate::blc::enumerate::for_each_closed;
+        use std::collections::BTreeSet;
+        fn collect(t: &QTerm, out: &mut BTreeSet<String>, all: &mut Vec<QTerm>) {
+            if out.insert(format!("{t:?}")) {
+                all.push(t.clone());
+            }
+            match t {
+                QTerm::Lam(b) => collect(b, out, all),
+                QTerm::App(f, a) => {
+                    collect(f, out, all);
+                    collect(a, out, all);
+                }
+                _ => {}
+            }
+        }
+        let (mut seen, mut subterms) = (BTreeSet::new(), Vec::new());
+        for n in 4..=18 {
+            for_each_closed(n, &mut |enc, len| {
+                let t = qt_of_term(&parse_all(&enc_to_string(enc, len)).unwrap());
+                collect(&t, &mut seen, &mut subterms);
+            });
+        }
+        let h = Rc::new(QTerm::Prim(Prim::H));
+        for extra in [
+            QTerm::Prim(Prim::Cnot),
+            QTerm::Handle(3, 1),
+            QTerm::App(h.clone(), Rc::new(QTerm::Var(2))),
+            QTerm::Lam(Rc::new(QTerm::App(h, Rc::new(QTerm::Var(3))))),
+        ] {
+            collect(&extra, &mut seen, &mut subterms);
+        }
+        let bodies: Vec<&QTerm> = subterms
+            .iter()
+            .filter_map(|t| match t {
+                QTerm::Lam(b) => Some(&**b),
+                _ => None,
+            })
+            .collect();
+        let mut checked = 0u64;
+        for b in &bodies {
+            for a in &subterms {
+                assert_eq!(beta(b, a), beta_three_pass(b, a), "{b:?} ← {a:?}");
+                checked += 1;
+            }
+        }
+        assert!(checked > 100_000, "{checked}");
     }
 
     fn run_to_nf(mut t: QTerm) -> Option<QTerm> {

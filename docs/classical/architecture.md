@@ -9,16 +9,19 @@ The classical pillar turns binary lambda calculus into an exact experimental
 machine for algorithmic information theory. Its principal outputs are:
 
 - the exhaustive halt/diverge/unknown census of closed BLC terms by wire size;
-- BBλ lower bounds from the largest computed normal forms;
-- exact finite-range Solomonoff mass, prefix complexity, and Ω brackets;
+- BBλ values and lower bounds from the largest computed normal forms, exact
+  where checked adjudications close a size (`certificates/busy-beaver.md`);
+- exact finite-range Solomonoff mass, prefix complexity, and Ω brackets, and
+  certified bounds on the true Ω over all sizes (`omega.md`);
 - the speed-prior (Levin) surface: S(x), Kt(x), depth⁰(x), certified
   Ω_speed brackets, and per-gauge time spectra (`speed.md`);
 - a mechanically checked frontier of unresolved programs; and
-- reusable divergence certificates whose accepted instances are replayed in
-  Lean.
+- reusable divergence certificates and direct proofs whose accepted
+  instances are replayed in Lean.
 
 The workload determines the architecture. There are 526,039,969 closed terms
-through 41 bits and the population grows by about 1.96× per bit. Roughly 99.7%
+through 41 bits, and the population grows by about 1.85× per bit at the top
+of that range (tending to about 1.96×). Roughly 99.7%
 of short closed terms normalize, usually in one β-step; deep reduction is
 concentrated in a tiny busy-beaver and self-interpreter tail. Enumeration
 therefore cares first about fixed per-term overhead and only second about peak
@@ -38,7 +41,7 @@ BLC uses the prefix code
 
 Variables are 1-indexed de Bruijn indices: `Var(1)` is bound by the nearest
 enclosing lambda. For a closed term with L lambdas, A applications, and
-X = Σ indices,
+X = Σ (index − 1) over variable occurrences,
 
 ```text
 |M| = 2L + 4A + 2 + X.
@@ -67,9 +70,13 @@ the ION iterations reported by `uni.c`.
   MSB-first bit lists.
 - The program prefix parses greedily; byte mode discards the remainder of the
   current byte before program input begins.
-- Checked-in optimized programs are produced through `tools/blcc.py` using
-  Tromp's `optimize 57 2 1` convention. The tool is an independent compiler
-  oracle validated against eight repository goldens.
+- Checked-in optimized programs are produced with Tromp's `optimize 57 2 1`
+  convention, which `blc::notation::compile` implements; `tools/blcc.py` is
+  the independent compiler oracle.
+
+How `blam blc` and `blam uni` run programs under these conventions — input
+lists, Tromp's `bshow` reading of the output, uni's reading by application —
+is `programs.md`.
 
 ## 3. Engine stack
 
@@ -92,7 +99,11 @@ for differential tests, not exhaustive sweeps.
 ### Enumeration and fast normalization
 
 `src/blc/enumerate.rs` generates closed terms directly as `(u64, length)`
-pairs. Subtree tasks are bit-reversal-interleaved because expensive terms
+pairs. The enumeration splits into subtree tasks by exact term count — a
+task is expanded while it holds more than `⌊total / target⌋` terms, from a
+DP over the grammar's subtree sizes — so no prefix family (the `0000…`
+λ-tower held half of n=41 under a level-wise split) can outweigh a worker's
+share. Tasks are then bit-reversal-interleaved because expensive terms
 cluster by enumeration prefix; interleaving prevents long-tail worker
 starvation.
 
@@ -102,17 +113,35 @@ starvation.
 - terms live in a reusable flat `Pool` of `Node`s addressed by `u32` indices;
 - the environment and control stacks are explicit, so evaluation does not
   depend on the native call stack;
-- the pool is cleared and reused between terms; and
+- the pool is cleared and reused between terms;
 - normal-form bits stream into a `Sink`, allowing size measurement without
   materializing large outputs. `Sink::var` is a required method, never
   defaulted: a default that spelled `1ⁿ0` out through `one`/`zero` would
-  cost O(n) per variable in an n nothing charges for.
+  cost O(n) per variable in an n nothing charges for; and
+- var→var indirection is skipped, not stepped: a closure whose term is a bare
+  `Var` only re-reads another, strictly older, immutable cell, so the first
+  entry walks the chain to its first non-`Var` closure or rigid level and
+  rewrites every cell on it to jump there, charging the skipped transitions
+  exactly. Verdicts, β and transition counts, fuel-death counters, abort
+  points, and readback are the plain machine's, which stays in the tests as
+  the oracle. The qBLC machine does the same over its shared branch arena.
 
 The KN machine is equivalent to normalization by evaluation under
 defunctionalization and preserves leftmost-outermost β-counts. Its measured
 contraction rate is a moving number and lives in `../STATUS.md`; census
 throughput is in any case usually limited by enumeration overhead rather than
 by contraction rate.
+
+### Running programs
+
+`src/classical/lazy.rs` is a second strong normalizer, for running programs
+rather than measuring terms: a call-by-need lazy Krivine machine with
+reference-counted environments and streaming readback into the same `Sink`
+trait. It shares what normal order repeats, so its β-counts are not the
+census metric, and its memory is the live data under a hard cap. Its normal
+forms are the KN machine's, which the tests check exhaustively.
+`src/classical/io.rs` holds Tromp's I/O conventions and the streaming output
+reader. Both are specified in `programs.md`.
 
 ### The adjudication ladder
 
@@ -172,6 +201,13 @@ discovery stays off the default public surface. Accepted candidates are
 rechecked by the trusted layer and then emitted as Lean data by
 `blam cert lean`. The certificate contract is `certificates/specification.md`.
 
+Direct Lean proofs form a second, separate ledger: seed terms in
+`data/certificates/bb_seeds.tsv` (divergent) and `bb_halt_seeds.tsv` (exact
+halting outputs), which `scripts/bb-regen.sh` kernel-checks, extends to every
+census lambda wrap, and installs as `bb_kills.tsv` and `bb_halts.tsv`. The
+certified frontier is the raw census unknown set minus both kill ledgers and
+the certified halters; the census rows themselves never change.
+
 ### Drivers
 
 There is one binary, `blam` (`src/cli/`), whose command table is grouped by
@@ -179,12 +215,18 @@ epistemic tier rather than by typing depth:
 
 - engines: `blam normalize` (KN on a named term), `blam adjudicate` (the full
   ladder, verbosely or streamed over a file);
+- programs: `blam blc` (Tromp's `blc` tool, action for action), `blam uni`
+  (his universal machine), `blam golf` (size optimizers for BLC programs);
 - measurements: `blam census` (exhaustive behavioral census and BBλ),
-  `blam solomonoff` (exact finite-range m, K, and Ω accounting);
+  `blam solomonoff` (exact finite-range m, K, Ω, and speed-prior
+  accounting), `blam omega leaves` (leaf tables for the true-Ω bounds);
 - certificates: `blam cert search` (discovery), `blam cert lean` (Lean
   generation), `blam cert diag` (where discovery drops a term);
 - instruments: `blam trace` (reduction-shape classification), `blam slots`
-  (self-interpreter slot search).
+  and `blam selfint` (self-interpreter and universal-machine searches).
+
+Every term argument takes wire bits, a `.lam` / `.blc` / `.blc8` file, or
+λ-notation (`programs.md` §1).
 
 Research instruments and the untrusted discovery surface live behind the
 non-default `lab` feature; a binary built without it still *recognises* their
@@ -281,7 +323,7 @@ parallelism changes instead. Each group runs in two phases:
 - **Phase A** fuses generation with the memo lookups and the ladder's cheap
   half, so a task's cost is roughly proportional to how many terms it emits —
   which is what a range split balances well. It returns the ~0.3% of terms
-  that survive rung 1.
+  that survive the cheap half.
 - **Phase B** re-schedules those survivors one at a time through an atomic
   counter, each worker holding one pool and machine for its whole run of the
   queue, so the longest single term costs its group its own runtime and
@@ -295,15 +337,33 @@ of the ladder on a freshly decoded term reproduces the single pass exactly,
 transition counts included. Only the order of the per-group record vectors
 changes, and every consumer of those sorts or set-collects.
 
+### Overlapped sizes
+
+Phase B still ends on its single slowest term, a one-to-ten-second escalation
+or rescue during which the rest of the pool idles. Without `--checkpoint` the
+census hides that tail behind the next size: size n depends on exactly two
+earlier results — size n−2's λ-wrap memo and the no-whnf facts of sizes
+≤ n−6, since a head of a closed n-bit application has at most n−6 bits — so
+size n+1 can start as soon as size n−1 is final, while size n is still
+running. The census keeps two sizes in flight — it starts n+1, then waits for
+and reports n — so every size sees exactly the facts the sequential sweep
+would let it use, rows are identical, and the main thread prints them in size
+order. Sizes run on plain scoped threads feeding the shared pool, so
+`--threads 1` cannot deadlock, and `tests/census_overlap.rs` holds the overlapped
+path to the sequential one under a watchdog. A checkpointed
+run keeps sizes strictly sequential, so its file stays a single ordered log.
+Per-size `time_s` is then each size's own elapsed time, and overlapping sizes'
+times sum to more than the run's wall time.
+
 ### Checkpointing and delta runs
 
 `--checkpoint FILE` splits each size into K sequential groups (`--groups`,
 default 64) and appends each group's full accumulator to the file as it
 completes; rerunning the same command resumes after the last complete group.
-The format is `blamckpt v4`:
+The format is `blamckpt v5`:
 
 ```text
-blamckpt v4 <driver config ...> target=N groups=K
+blamckpt v5 <driver config ...> target=N groups=K
 G <n> <gi> <secs>
 <record body lines, driver-owned tags — G/E reserved>
 E <n> <gi>
@@ -318,7 +378,9 @@ tie-break at tied |nf|, so the reported champion does not depend on the
 partition.
 
 The header is the fence. It pins everything that can change what a group
-record *means*: the ladder budgets, the record-format version, the engine
+record *means*: the ladder budgets, the record-format version (which also
+pins the task-split algorithm, since a group is a slice of the split's task
+list by index), the engine
 tunables that change verdicts (work multiplier, probe fuel), and the SHA-256
 fingerprint of the *contents* of any seeded memo file. A mismatch refuses the
 resume loudly rather than merging two different measurements into one table
@@ -349,30 +411,34 @@ Every engine change must satisfy:
 1. `cargo test --release`, plus `cargo test --release --all-features` so the
    `lab` surface (instruments and untrusted discovery) is tested too;
 2. differential agreement between `classical::reference` and
-   `classical::machine` on output bits and β-counts;
+   `classical::machine` on output bits and β-counts, and between
+   `classical::machine` and `classical::lazy` on normal forms;
 3. conformance against Tromp's corpus and published BLC counts
    (`tests/tromp_vectors.rs`, whose bit strings are inlined so the suite runs
    without the `ref/AIT` clone);
 4. the relevant `scripts/spot-check.sh` census rows, with halt counts
    bit-identical to `data/classical/census_table.txt`; and
-5. certificate recertification (`scripts/recert-kills.sh`) and
-   `lake build Certs` when certificate paths or data change.
+5. certificate recertification (`scripts/recert-kills.sh`, `scripts/bb-regen.sh`)
+   and `lake build Certs BusyBeaver` when certificate paths or data change.
 
 The fast machine is exhaustively lockstep-tested against the reference over
 all closed terms through 18 bits plus targeted deep vectors, and the two-phase
 scheduler is pinned against an unsplit one-pass sweep, size by size, through
 28 bits. The certificate soundness battery passes 196,848 provable halters
-through the exact discovery ladder and requires zero certificate fires. All
-305 canonical kills are additionally kernel-checked in Lean with wire-identity
-theorems.
+through the exact discovery ladder and requires zero certificate fires. Every
+certificate kill and direct BB proof is kernel-checked in Lean with a
+wire-identity theorem.
 
 Independent Python tools remain deliberately separate where shared
 implementation would weaken the evidence:
 
 - `tools/blcc.py` checks compilation;
 - `tools/certificates/loop32_trace.py` checks the foundational growing loop;
-- `tools/self-interpreter/harness.py` (with `lc.py`, `db.py`) checks the
-  published 170-bit term, and `search_fix.py` runs the knot search;
+- `tools/self-interpreter/` (`harness.py` with `lc.py` and `db.py`,
+  `battery.py`, `search_fix.py`, `beta_search.py`, `module_bound.py`) checks
+  interpreter candidates and reproduces the self-interpreter searches
+  (`self-interpreter/interpreter.md`);
+- `tools/omega/` checks the true-Ω DP by brute force (`omega.md` §4);
 - `tools/bbtxt.py` cross-matches Tromp's `BB.txt` `-- TODO:` fail traces —
   the terms his own BB run could not adjudicate — against our census
   unknowns, encoding his de Bruijn notation to BLC bits and reporting, per
@@ -412,7 +478,8 @@ classes, not larger instances of the same bounded reducer.
 
 - **KN rather than graph reduction:** it preserves the chosen β metric,
   supports explicit budgets, streams readback, and behaves predictably on
-  arbitrary untyped terms.
+  arbitrary untyped terms. Running programs is the one job that wants
+  sharing instead, and it has its own machine (`programs.md` §6).
 - **No HVM/Lamping fast path:** the available oracle-free fragments exclude
   patterns central to this workload, and their interaction counts are not the
   chosen semantic metric.
@@ -433,11 +500,15 @@ The durable engine contract ends here. Moving measurements and work ordering
 belong in `../STATUS.md`.
 
 - Speed-prior (Levin) surface contract: `speed.md`
+- Certified bounds on the true Ω: `omega.md`
+- The coding theorem measured on the census: `coding.md`
 - Certificate classes and their proof obligations:
   `certificates/specification.md`
 - Frontier classification evidence: `certificates/frontier.md`
-- Classical self-interpreter theory and exhaustive search:
-  `self-interpreter/`
+- Direct BB(33/34/35) proofs: `certificates/busy-beaver.md`
+- The self-interpreter and universal machine: `self-interpreter/`
+- Running programs, and Tromp's `blc` and `uni`: `programs.md`
+- Size optimization of Tromp's AIT programs: `golf.md`
 - Quantum counterpart: `../quantum/architecture.md`
 - Formal proofs: `../../lean/README.md`
 - Canonical classical evidence: `../../data/classical/`

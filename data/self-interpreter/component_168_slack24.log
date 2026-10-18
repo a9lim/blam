@@ -1,0 +1,43 @@
+start 168 bits, slack 24 (limit 192), au=true eta=true contextual=false, 18 threads
+  layer 1: +209 new, 210 total, 0.0s
+  layer 2: +21718 new, 21928 total, 0.0s
+  layer 3: +743337 new, 765265 total, 0.6s
+  layer 4: +797998 new, 1563263 total, 32.4s
+  layer 5: +2889354 new, 4452617 total, 49.9s
+  layer 6: +3069388 new, 7522005 total, 109.9s
+  layer 7: +5479917 new, 13001922 total, 182.8s
+  layer 8: +4378635 new, 17380557 total, 279.7s
+  layer 9: +4647989 new, 22028546 total, 347.9s
+  layer 10: +2182082 new, 24210628 total, 414.1s
+  layer 11: +1120322 new, 25330950 total, 447.4s
+  layer 12: +53237 new, 25384187 total, 464.0s
+  layer 13: +5997 new, 25390184 total, 464.7s
+  layer 14: +4018 new, 25394202 total, 464.8s
+  layer 15: +4428 new, 25398630 total, 464.9s
+  layer 16: +2784 new, 25401414 total, 465.0s
+  layer 17: +3793 new, 25405207 total, 465.0s
+  layer 18: +353 new, 25405560 total, 465.1s
+  layer 19: +96 new, 25405656 total, 465.1s
+  layer 20: +236 new, 25405892 total, 465.1s
+  layer 21: +10 new, 25405902 total, 465.1s
+  layer 22: +0 new, 25405902 total, 465.1s
+component under the limit: 25405902 terms; size histogram (delta:count) 0:1 2:2 3:4 4:3 5:8 6:97 7:89 8:249 9:560 10:715 11:1272 12:5858 13:9626 14:19828 15:42935 16:68516 17:114550 18:239351 19:585587 20:1032690 21:2071108 22:3871790 23:6395017 24:10946046
+0 term(s) below 168, 0 tie(s)
+     1960.38 real      7327.84 user        30.51 sys
+          6261571584  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              633391  page reclaims
+                  59  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                5069  voluntary context switches
+             5925919  involuntary context switches
+     100571892645479  instructions retired
+      25581136182863  cycles elapsed
+          4509619504  peak memory footprint

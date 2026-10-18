@@ -11,11 +11,29 @@
 
 /// One path segment: `f` = application function, `a` = application
 /// argument, `b` = lambda body.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Dir {
     F,
     A,
     B,
+}
+
+/// One byte per segment, and a path packs 32 segments per word: paths are
+/// the most-hashed values in every state, and the derived impl spent one
+/// 8-byte hasher write per segment. Consistent with the derived `Eq`.
+impl std::hash::Hash for Dir {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        state.write_u8(*self as u8);
+    }
+
+    fn hash_slice<H: std::hash::Hasher>(data: &[Self], state: &mut H) {
+        // The slice impl has already written the length, so base-4 packing
+        // without a terminator is injective.
+        for chunk in data.chunks(32) {
+            let word = chunk.iter().fold(0u64, |word, d| (word << 2) | *d as u64);
+            state.write_u64(word);
+        }
+    }
 }
 
 impl Dir {
@@ -169,24 +187,31 @@ pub fn level(path: &[Dir]) -> usize {
 /// `lam_iam.binder_path`. `None` when `occ` is not a bound `Var`
 /// occurrence of the closed term.
 pub fn binder_path(term: &Term, occ: &[Dir]) -> Option<Path> {
-    let Term::Var(i) = subterm(term, occ)? else {
+    // One walk down `occ`, recording where it enters a lambda body; the
+    // binder of `Var(i)` is the i-th such entry counted from the
+    // occurrence. (On a path that stays in the term, every `b` step enters
+    // a lambda, which is the reference's per-prefix check.)
+    let mut node = term;
+    let mut bodies: Vec<usize> = Vec::new();
+    for (depth, &d) in occ.iter().enumerate() {
+        node = match (d, node) {
+            (Dir::B, Term::Lam(body)) => {
+                bodies.push(depth);
+                body
+            }
+            (Dir::F, Term::App(function, _)) => function,
+            (Dir::A, Term::App(_, argument)) => argument,
+            _ => return None,
+        };
+    }
+    let Term::Var(i) = node else {
         return None;
     };
-    let i = *i;
-    if i == 0 {
+    let i = usize::try_from(*i).ok()?;
+    if i == 0 || i > bodies.len() {
         return None;
     }
-    let mut p = occ.to_vec();
-    let mut seen = 0u32;
-    while let Some(last) = p.pop() {
-        if last == Dir::B && matches!(subterm(term, &p), Some(Term::Lam(_))) {
-            seen += 1;
-            if seen == i {
-                return Some(p);
-            }
-        }
-    }
-    None
+    Some(occ[..bodies[bodies.len() - i]].to_vec())
 }
 
 #[cfg(test)]
@@ -219,6 +244,67 @@ mod tests {
         assert!(subterm(&p, &[Dir::A, Dir::A]).is_none());
         assert!(is_closed(&p));
         assert!(!is_closed(&Term::Var(1)));
+    }
+
+    /// The reference's per-prefix formulation, kept as the oracle.
+    fn binder_path_by_prefixes(term: &Term, occ: &[Dir]) -> Option<Path> {
+        let Term::Var(i) = subterm(term, occ)? else {
+            return None;
+        };
+        let i = *i;
+        if i == 0 {
+            return None;
+        }
+        let mut p = occ.to_vec();
+        let mut seen = 0u32;
+        while let Some(last) = p.pop() {
+            if last == Dir::B && matches!(subterm(term, &p), Some(Term::Lam(_))) {
+                seen += 1;
+                if seen == i {
+                    return Some(p);
+                }
+            }
+        }
+        None
+    }
+
+    #[test]
+    fn binder_path_matches_the_per_prefix_oracle() {
+        // Every position (and every one-step extension, on or off the
+        // term) of open and closed terms with shadowing and free indices.
+        let samples = [
+            app(
+                lam(app(Term::Var(1), lam(app(Term::Var(2), Term::Var(1))))),
+                lam(lam(app(Term::Var(3), Term::Var(0)))),
+            ),
+            lam(lam(lam(app(app(Term::Var(3), Term::Var(1)), Term::Var(2))))),
+            invoke_ht(lam(lam(app(Term::Var(2), app(Term::Var(2), Term::Var(1)))))),
+            Term::Var(1),
+        ];
+        let mut checked = 0;
+        for term in &samples {
+            let mut stack: Vec<Path> = vec![Vec::new()];
+            while let Some(path) = stack.pop() {
+                for d in [Dir::F, Dir::A, Dir::B] {
+                    let mut next = path.clone();
+                    next.push(d);
+                    assert_eq!(
+                        binder_path(term, &next),
+                        binder_path_by_prefixes(term, &next),
+                        "{next:?}"
+                    );
+                    checked += 1;
+                    if subterm(term, &next).is_some() {
+                        stack.push(next);
+                    }
+                }
+                assert_eq!(
+                    binder_path(term, &path),
+                    binder_path_by_prefixes(term, &path)
+                );
+            }
+        }
+        assert!(checked > 60, "{checked}");
     }
 
     #[test]
