@@ -241,13 +241,13 @@ fn from_stdin(stdin: &mut Stdin, bitmode: bool) -> R<Term> {
     };
     let mut cur = 0u8;
     let mut left = 0u32;
-    let mut none = || {};
+    let mut go_on = || true;
     let mut bits = std::iter::from_fn(|| {
         if bitmode {
-            return stdin.byte(&mut none).map(|c| c & 1 == 1);
+            return stdin.byte(&mut go_on).ok()?.map(|c| c & 1 == 1);
         }
         if left == 0 {
-            cur = stdin.byte(&mut none)?;
+            cur = stdin.byte(&mut go_on).ok()??;
             left = 8;
         }
         left -= 1;

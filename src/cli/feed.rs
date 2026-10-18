@@ -28,18 +28,21 @@ impl Stdin {
         }
     }
 
-    /// The next byte, or `None` at the end. `idle` runs before a read that
-    /// may block. A read error ends the input.
-    pub fn byte(&mut self, idle: &mut dyn FnMut()) -> Option<u8> {
+    /// The next byte, `Ok(None)` at the end, or `Err(())` when `idle` —
+    /// run before a read that may block — says the run is over. A read
+    /// error ends the input.
+    pub fn byte(&mut self, idle: &mut dyn FnMut() -> bool) -> Result<Option<u8>, ()> {
         if self.at < self.prefix.len() {
             self.at += 1;
-            return Some(self.prefix[self.at - 1]);
+            return Ok(Some(self.prefix[self.at - 1]));
         }
         if self.pos == self.buf.len() {
             if self.eof {
-                return None;
+                return Ok(None);
             }
-            idle();
+            if !idle() {
+                return Err(());
+            }
             self.buf.resize(1 << 16, 0);
             let n = loop {
                 match std::io::stdin().lock().read(&mut self.buf) {
@@ -52,11 +55,11 @@ impl Stdin {
             self.pos = 0;
             if n == 0 {
                 self.eof = true;
-                return None;
+                return Ok(None);
             }
         }
         self.pos += 1;
-        Some(self.buf[self.pos - 1])
+        Ok(Some(self.buf[self.pos - 1]))
     }
 }
 
@@ -69,10 +72,10 @@ pub struct Feed<F: FnMut(u8) -> Item> {
 }
 
 impl<F: FnMut(u8) -> Item> Input for Feed<F> {
-    fn next(&mut self, idle: &mut dyn FnMut()) -> Next {
-        match self.stdin.byte(idle) {
+    fn next(&mut self, idle: &mut dyn FnMut() -> bool) -> Option<Next> {
+        Some(match self.stdin.byte(idle).ok()? {
             Some(b) => Next::Cell((self.item)(b)),
             None => Next::End(self.end),
-        }
+        })
     }
 }

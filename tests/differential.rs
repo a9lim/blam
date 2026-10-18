@@ -314,12 +314,12 @@ fn lazy_input_matches_an_eager_list() {
     use blam::classical::machine::Node;
     struct Bits(Vec<u32>, u32);
     impl Input for Bits {
-        fn next(&mut self, _: &mut dyn FnMut()) -> Next {
-            if self.0.is_empty() {
+        fn next(&mut self, _: &mut dyn FnMut() -> bool) -> Option<Next> {
+            Some(if self.0.is_empty() {
                 Next::End(Item::Term(self.1))
             } else {
                 Next::Cell(Item::Term(self.0.remove(0)))
-            }
+            })
         }
     }
     let input = [false, true, true, false];
@@ -371,4 +371,70 @@ fn lazy_input_matches_an_eager_list() {
         });
     }
     assert_eq!(checked, 658);
+}
+
+/// Budgets are independent: a small outer run whose sink starts a large
+/// inner one is charged none of the inner run's objects (Codex's round-3
+/// counterexample charged them after the fact).
+#[test]
+fn lazy_machine_nested_budgets_are_independent() {
+    struct Big(bool);
+    impl blam::classical::machine::Sink for Big {
+        fn zero(&mut self) {
+            if !self.0 {
+                self.0 = true;
+                // λx. (λy.y) x x … x: a 1,000-argument spine.
+                let mut body = app(lam(var(1)), var(1));
+                for _ in 0..1_000 {
+                    body = app(body, var(1));
+                }
+                let mut pool = Pool::new();
+                let root = pool.from_term(&lam(body));
+                let inner =
+                    Lazy::new().normalize(&pool, root, Limits::default(), &mut SizeSink::default());
+                assert!(inner.unwrap().peak_live > 1_000);
+            }
+        }
+        fn one(&mut self) {}
+        fn var(&mut self, _: u32) {}
+    }
+    let mut pool = Pool::new();
+    let root = pool.from_term(&app(lam(var(1)), lam(lam(var(2)))));
+    let small = Limits {
+        live: 10,
+        ..Limits::default()
+    };
+    let r = Lazy::new().normalize(&pool, root, small, &mut Big(false));
+    assert!(r.is_ok(), "{r:?}");
+}
+
+/// Input may bring in pool nodes pushed after the root (here the cell
+/// template and nil come last): the closed-normal-form scan covers them.
+#[test]
+fn lazy_input_nodes_may_follow_the_root() {
+    use blam::classical::lazy::{Input, Item, Next};
+    use blam::classical::machine::Node;
+    struct Empty(u32);
+    impl Input for Empty {
+        fn next(&mut self, _: &mut dyn FnMut() -> bool) -> Option<Next> {
+            Some(Next::End(Item::Term(self.0)))
+        }
+    }
+    let mut pool = Pool::new();
+    let i = pool.push(Node::Var(1));
+    let root = pool.push(Node::Lam(i));
+    let z = pool.push(Node::Var(1));
+    let h = pool.push(Node::Var(2));
+    let t = pool.push(Node::Var(3));
+    let a = pool.push(Node::App(z, h));
+    let a = pool.push(Node::App(a, t));
+    let cell = pool.push(Node::Lam(a));
+    let y = pool.push(Node::Var(1));
+    let l = pool.push(Node::Lam(y));
+    let nil = pool.push(Node::Lam(l));
+    let mut out = StringSink::default();
+    Lazy::new()
+        .normalize_input(&pool, root, cell, 0, &mut Empty(nil), Limits::default(), &mut out)
+        .unwrap();
+    assert_eq!(out.0, "000010");
 }

@@ -142,10 +142,12 @@ enum Frame {
     Upd(Rc<Thunk>),
 }
 
-/// A readback job: a value already in weak head normal form, or a thunk.
+/// A readback job: a value already in weak head normal form, a thunk, or
+/// a node of a closed normal form in the pool, emitted as it stands.
 enum Job {
     Val(Value),
     Force(Rc<Thunk>),
+    Pool(u32),
 }
 
 /// This thread's accounting: heap objects alive; the absolute count at
@@ -325,12 +327,13 @@ fn lookup(env: &Env, n: u32) -> Rc<Thunk> {
     c.val.clone().expect("live cells hold their value")
 }
 
-/// For every node up to `root`: is it a closed normal form (a term with no
+/// For every node of the pool: is it a closed normal form (a term with no
 /// free variable and no redex, which is its own normal form)? Children
 /// precede parents in a pool, so one forward pass settles it. Also says
-/// whether `root` itself is closed.
+/// whether `root` is closed. (The whole pool, not just `root`'s prefix:
+/// input can bring in nodes pushed after the root.)
 fn scan(pool: &Pool, root: u32) -> (Vec<bool>, bool) {
-    let n = root as usize + 1;
+    let n = pool.len();
     let mut free = vec![0u32; n];
     let mut nf = vec![false; n];
     for i in 0..n {
@@ -348,30 +351,6 @@ fn scan(pool: &Pool, root: u32) -> (Vec<bool>, bool) {
     let closed = free[root as usize] == 0;
     let cnf = (0..n).map(|i| nf[i] && free[i] == 0).collect();
     (cnf, closed)
-}
-
-/// Emit the bits of the pool subterm at `id` as it stands.
-fn emit_pool<S: Sink>(pool: &Pool, id: u32, sink: &mut S) -> u64 {
-    let mut work = vec![id];
-    let mut nodes = 0;
-    while let Some(id) = work.pop() {
-        nodes += 1;
-        match pool.node(id) {
-            Node::Var(n) => sink.var(n),
-            Node::Lam(b) => {
-                sink.zero();
-                sink.zero();
-                work.push(b);
-            }
-            Node::App(f, a) => {
-                sink.zero();
-                sink.one();
-                work.push(a);
-                work.push(f);
-            }
-        }
-    }
-    nodes
 }
 
 /// An input element, or what an input list ends in: a closed term of the
@@ -395,15 +374,16 @@ pub enum Next {
 pub trait Input {
     /// The next step, asked for in order, once per cell, and never again
     /// after an `End`. Call `idle` before blocking (on a terminal or a
-    /// pipe), so a sink holding output can deliver it first.
-    fn next(&mut self, idle: &mut dyn FnMut()) -> Next;
+    /// pipe): a sink holding output delivers it, and if `idle` returns
+    /// `false` the run is over — return `None` without reading.
+    fn next(&mut self, idle: &mut dyn FnMut() -> bool) -> Option<Next>;
 }
 
 /// The input of a run without one.
 struct NoInput;
 
 impl Input for NoInput {
-    fn next(&mut self, _: &mut dyn FnMut()) -> Next {
+    fn next(&mut self, _: &mut dyn FnMut() -> bool) -> Option<Next> {
         unreachable!("a run without input never reads it")
     }
 }
@@ -461,12 +441,14 @@ impl Lazy {
     /// as the program first demands each one, so a program that never
     /// reads its input never waits for it, and input need not fit in
     /// memory. `cell` is a pool node for the cell template `λz. z 2 3`
-    /// (its free variables are a cell's head and tail). `markers` is the
-    /// number of marker binders `body`'s normal form opens with
-    /// ([`super::io::Reader`]); input items may use them.
+    /// (its free variables are a cell's head and tail). `body` must open
+    /// with `markers` lambdas, the marker binders of
+    /// [`super::io::Reader`]; input items may name them. Input nodes may
+    /// sit anywhere in the pool.
     ///
     /// # Panics
-    /// If `root` is not a closed lambda.
+    /// If `root` is not a closed lambda whose body opens with `markers`
+    /// lambdas.
     #[allow(clippy::too_many_arguments)]
     pub fn normalize_input<S: Sink, I: Input>(
         &mut self,
@@ -481,6 +463,15 @@ impl Lazy {
         let Node::Lam(body) = pool.node(root) else {
             panic!("an input run's root binds the input: λI. body")
         };
+        // Marker items name the binders readback meets first, so they must
+        // open the body itself, before any input can be demanded.
+        let mut t = body;
+        for _ in 0..markers {
+            match pool.node(t) {
+                Node::Lam(b) => t = b,
+                _ => panic!("an input run's body opens with its {markers} marker binders"),
+            }
+        }
         self.cell = cell;
         self.markers = markers;
         let env = cons(Thunk::new(State::Input), None);
@@ -528,15 +519,18 @@ impl Lazy {
             match job {
                 Job::Val(v) => bury_value(v),
                 Job::Force(t) => bury(Grave::T(t)),
+                Job::Pool(_) => {}
             }
         }
+        // Budgets are independent: a nested run's transient objects are
+        // its own, gone before the outer run looks again, so the outer
+        // accounting comes back exactly as it was.
         let peak = ACCT.with(|a| {
             let peak = a.peak.get();
             let (cap, outer_peak, outer_over) = outer;
-            let top = peak.max(outer_peak);
             a.cap.set(cap);
-            a.peak.set(top);
-            a.over.set(outer_over || top > cap);
+            a.peak.set(outer_peak);
+            a.over.set(outer_over);
             peak
         });
         self.stats.peak_live = peak - self.base;
@@ -601,13 +595,33 @@ impl Lazy {
             let v = match job {
                 Job::Val(v) => v,
                 Job::Force(t) => self.force(pool, &t, inp, sink)?,
+                // One node of a closed normal form: a step like any other,
+                // under the same budgets, polls and memory count.
+                Job::Pool(id) => {
+                    self.tick(sink)?;
+                    match pool.node(id) {
+                        Node::Var(n) => sink.var(n),
+                        Node::Lam(b) => {
+                            sink.zero();
+                            sink.zero();
+                            self.push_job((Job::Pool(b), depth + 1));
+                        }
+                        Node::App(f, a) => {
+                            sink.zero();
+                            sink.one();
+                            self.push_job((Job::Pool(a), depth));
+                            self.push_job((Job::Pool(f), depth));
+                        }
+                    }
+                    continue;
+                }
             };
             match v {
                 // A closed normal form is its own normal form: no
                 // evaluation, no allocation (input passing through a
                 // program is the common case).
                 Value::Clo(lam, _) if self.cnf[lam as usize] => {
-                    self.stats.work += emit_pool(pool, lam, sink);
+                    self.push_job((Job::Pool(lam), depth));
                 }
                 Value::Clo(lam, env) => {
                     sink.zero();
@@ -688,7 +702,7 @@ impl Lazy {
                 Ok(v)
             }
             State::Input => {
-                let v = self.pull(inp, sink);
+                let v = self.pull(inp, sink)?;
                 t.set(v.clone());
                 Ok(v)
             }
@@ -697,13 +711,21 @@ impl Lazy {
     }
 
     /// Read the input list's next cell: `λz. z head rest`, with `rest` the
-    /// unread remainder, or the list's end.
-    fn pull<S: Sink, I: Input>(&mut self, inp: &mut I, sink: &S) -> Value {
+    /// unread remainder, or the list's end. A run the sink has given up on
+    /// stops here rather than block on a read.
+    fn pull<S: Sink, I: Input>(&mut self, inp: &mut I, sink: &S) -> Result<Value, Stop> {
+        if S::CAN_ABORT && sink.aborted() {
+            return Err(Stop::Aborted);
+        }
         let item = |me: &Self, it: Item| match it {
             Item::Term(id) => Thunk::new(State::Done(Value::Clo(id, None))),
             Item::Marker(level) => me.marker_rigids[level as usize - 1].clone(),
         };
-        match inp.next(&mut || sink.idle()) {
+        let mut idle = || {
+            sink.idle();
+            !(S::CAN_ABORT && sink.aborted())
+        };
+        Ok(match inp.next(&mut idle).ok_or(Stop::Aborted)? {
             Next::End(Item::Term(id)) => Value::Clo(id, None),
             Next::End(Item::Marker(level)) => Value::Neu(level, None),
             Next::Cell(it) => {
@@ -711,7 +733,7 @@ impl Lazy {
                 let rest = Thunk::new(State::Input);
                 Value::Clo(self.cell, cons(head, cons(rest, None)))
             }
-        }
+        })
     }
 
     /// The thunk an argument becomes: a variable's own thunk (no
@@ -763,10 +785,13 @@ impl Lazy {
                     let th = lookup(&env, n);
                     let state = std::mem::replace(&mut *th.0.borrow_mut(), State::Busy);
                     let state = match state {
-                        State::Input => {
-                            let v = self.pull(inp, sink);
-                            State::Done(v)
-                        }
+                        State::Input => match self.pull(inp, sink) {
+                            Ok(v) => State::Done(v),
+                            Err(e) => {
+                                *th.0.borrow_mut() = State::Input;
+                                return Err(e);
+                            }
+                        },
                         s => s,
                     };
                     match state {
