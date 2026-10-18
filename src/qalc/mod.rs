@@ -21,8 +21,9 @@
 //! [`mark`], [`state`], [`amp`], and [`wire`] define identity and
 //! interchange; [`kernel`] and [`readback`] define Gate-1 evolution;
 //! [`compiler`], [`shadow`], and [`gate2check`] define the clean circuit
-//! sector; [`admission`], [`wf`], and [`semantics`] make selection and the
-//! public semantic objects total.
+//! sector; [`admission`] (over the crate-private well-formedness checker
+//! `wf`) and [`semantics`] make selection and the public semantic objects
+//! total.
 
 pub mod admission;
 pub mod amp;
@@ -37,5 +38,5 @@ pub mod shadow;
 pub mod shared;
 pub mod state;
 pub mod term;
-pub mod wf;
+pub(crate) mod wf;
 pub mod wire;

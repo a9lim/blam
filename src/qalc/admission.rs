@@ -890,8 +890,7 @@ pub fn try_admit_with_cap_profiled(
 
 /// Population-driver variant that omits the local wire digest. The selector
 /// verdict and certificate are identical to [`try_admit_with_cap_profiled`].
-#[doc(hidden)]
-pub fn try_admit_with_cap_profiled_without_digest(
+pub(crate) fn try_admit_with_cap_profiled_without_digest(
     term: &Term,
     state_cap: usize,
 ) -> (Option<Gate1Admission>, AdmissionTelemetry) {
@@ -951,8 +950,7 @@ pub fn try_admit_probe_with_cap_profiled(
 }
 
 /// Population-driver probe variant that omits the local wire digest.
-#[doc(hidden)]
-pub fn try_admit_probe_with_cap_profiled_without_digest(
+pub(crate) fn try_admit_probe_with_cap_profiled_without_digest(
     term: &Term,
     state_cap: usize,
 ) -> (Option<Gate1Admission>, AdmissionTelemetry) {

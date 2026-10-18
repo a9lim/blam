@@ -61,7 +61,7 @@ pub enum LTerm {
 }
 
 /// A λ node. Fields are private: the body is reachable only through the
-/// engine's own traversals and [`emit_bits`], so no caller can build an
+/// engine's own traversals and its bit emitter, so no caller can build an
 /// `LTerm` whose cached (private) `Meta` disagrees with its shape.
 #[derive(Debug)]
 pub struct LamN {
@@ -206,7 +206,7 @@ impl LTerm {
 ///
 /// Panics on ⊥: every call site holds either a normal form or a closed
 /// probe subject, both ⊥-free by construction.
-pub fn emit_bits<S: crate::classical::machine::Sink>(t: &LTerm, sink: &mut S) {
+pub(crate) fn emit_bits<S: crate::classical::machine::Sink>(t: &LTerm, sink: &mut S) {
     match t {
         Var(n) => sink.var(*n),
         Lam(x) => {
@@ -263,7 +263,7 @@ fn charge(n: u64) {
     spend_work_n(i64::try_from(n).unwrap_or(i64::MAX));
 }
 
-pub fn lam(t: LTerm) -> LTerm {
+pub(crate) fn lam(t: LTerm) -> LTerm {
     spend_work();
     let (l, a) = t.counts();
     let m = Meta {
@@ -277,7 +277,7 @@ pub fn lam(t: LTerm) -> LTerm {
     Lam(Rc::new(LamN { b: t, m }))
 }
 
-pub fn app(f: LTerm, a: LTerm) -> LTerm {
+pub(crate) fn app(f: LTerm, a: LTerm) -> LTerm {
     spend_work();
     let (fl, fa) = f.counts();
     let (al, aa) = a.counts();
