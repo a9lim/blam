@@ -164,20 +164,40 @@ impl Pool {
         root
     }
 
-    /// Import a reference-side term (for tests / differential runs).
+    /// Import a reference-side term. Iterative, so a term as deep as a
+    /// long input list imports without touching the call stack.
     pub fn from_term(&mut self, t: &Term) -> u32 {
-        match t {
-            Term::Var(n) => self.push(Node::Var(*n)),
-            Term::Lam(b) => {
-                let b = self.from_term(b);
-                self.push(Node::Lam(b))
-            }
-            Term::App(f, a) => {
-                let f = self.from_term(f);
-                let a = self.from_term(a);
-                self.push(Node::App(f, a))
+        enum W<'a> {
+            T(&'a Term),
+            Lam,
+            App,
+        }
+        let mut work = vec![W::T(t)];
+        let mut done: Vec<u32> = Vec::new();
+        while let Some(w) = work.pop() {
+            match w {
+                W::T(Term::Var(n)) => done.push(self.push(Node::Var(*n))),
+                W::T(Term::Lam(b)) => {
+                    work.push(W::Lam);
+                    work.push(W::T(b));
+                }
+                W::T(Term::App(f, a)) => {
+                    work.push(W::App);
+                    work.push(W::T(a));
+                    work.push(W::T(f));
+                }
+                W::Lam => {
+                    let b = done.pop().expect("a lambda's body precedes it");
+                    done.push(self.push(Node::Lam(b)));
+                }
+                W::App => {
+                    let a = done.pop().expect("an argument precedes its application");
+                    let f = done.pop().expect("a function precedes its argument");
+                    done.push(self.push(Node::App(f, a)));
+                }
             }
         }
+        done.pop().expect("one term in, one root out")
     }
 
     /// BLC bit-size of the subterm at `id`.
@@ -266,6 +286,11 @@ pub trait Sink {
     fn aborted(&self) -> bool {
         false
     }
+
+    /// The machine is about to wait on something outside itself (its
+    /// input, in [`super::lazy::Lazy::normalize_input`]): a sink holding
+    /// output should deliver it now. The default does nothing.
+    fn idle(&self) {}
 }
 
 /// Counts bits only — the BBλ metric, no materialization.

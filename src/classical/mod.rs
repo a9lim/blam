@@ -9,7 +9,9 @@
 
 pub mod certificate;
 pub mod escalation;
+pub mod io;
 pub mod ladder;
+pub mod lazy;
 pub mod machine;
 pub mod oracle;
 pub mod reference;
