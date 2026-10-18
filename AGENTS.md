@@ -80,8 +80,10 @@ work; moving numbers live there, not here.
   (`optimize 57 2 1`). Byte-exact targets need that pass; `bin/take1k.blc` is
   a stale golden, so do not target it.
 - `tools/blcc.py` is the encoder oracle (reproduces eight repo goldens
-  byte-exactly, no GHC needed). `ref/AIT`'s `uni.py`, `uni.rb`, and siblings
-  work as execution oracles. Two standalone analyzers sit beside it, wired
+  byte-exactly, no GHC needed); `blc::notation::compile` is the Rust
+  compiler it checks. `ref/AIT`'s `uni.py`, `uni.rb`, and siblings work as
+  execution oracles, and `tools/ait/build_blc.sh` builds Tromp's own `blc`
+  from the corpus when GHC is available. Two standalone analyzers sit beside it, wired
   into no script: `tools/bbtxt.py` (cross-match Tromp's `BB.txt` fail traces
   against our census unknowns) and `tools/frontier.py` (group an adjudication
   run's unknowns by λ-wrap seed and flag verdict disagreement within a
@@ -197,6 +199,38 @@ the M5 Max; user time is the stable number, wall tracks ambient load.
 - The census's trailing `# redloop:` line reads process-global atomics, so a
   *resumed* run counts only the fires it recomputed. Compare that line between
   monolithic runs only.
+
+### Running programs
+
+`blam blc` (Tromp's `blc`, action for action) and `blam uni` (his universal
+machine) are specified in `docs/classical/programs.md`; keep that contract
+and the code in step.
+
+- They run on `classical::lazy`, the call-by-need machine, never on KN: KN is
+  call-by-name and keeps its whole environment history, so a program that
+  leans on sharing (Tromp's `bf.lam`) produces nothing on it. Conversely,
+  `lazy`'s β-counts count shared redexes once and must never feed a census,
+  Solomonoff, or speed-prior number. `blam normalize` stays on KN.
+- `lazy`'s memory cap is checked where objects are born (`born()`), and
+  machine-stack and readback entries are counted the same way
+  (`push_frame`, `push_job`). Any new allocation or push site must go
+  through the counted paths, or the cap stops being hard.
+- Standard input is read lazily (`Lazy::normalize_input`, `src/cli/feed.rs`):
+  the run's root is `λI. body`, and an input thunk asks for one byte when a
+  cell is first demanded. Never read stdin to its end up front: a program
+  that ignores its input (`primes.lam`) must not wait for it.
+- `classical::io::Reader` must stay O(1) memory per output cell (an endless
+  list is the normal case); it tracks depth with a cell counter, not a frame
+  stack.
+- `uni` decodes output by application through the canonicalizer term in
+  `src/cli/uni.rs`, not by matching normal-form syntax: `λx.λy.λz.x z` is the
+  bit 0 to uni. The list's end value is a marker binder `E`, so an output
+  that uses the end value other than to end a list is an error. On output
+  that breaks uni's protocol the reference interpreters disagree with one
+  another; do not chase one of them there.
+- A change here reruns the external differentials on a frozen binary:
+  `tools/ait/actions.py` and `runs.py` against a `build_blc.sh` build, and
+  `uni_diff.py` against `uni.py`. The counts go in STATUS.
 
 ### Certificates
 

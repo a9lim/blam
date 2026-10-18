@@ -11,6 +11,8 @@ bullet points for a9 to write up in their own voice.
 - Open each PR from its branch into `tromp/AIT` `master`. Both branches are
   three commits behind the fork's master (upstream moved since they were
   cut), so rebase each onto current upstream first.
+- Cut the blam 3.0.0 release first, and point every link in the PRs and the
+  letter at the `v3.0.0` tag (stable permalinks), not at `dev`.
 - The fork's `master` is unchanged: upstream plus `uni.rs`. blam's `ref/AIT`
   pins it, and blam's CI checks that it only *adds* files over upstream.
   - `golf` modifies upstream files, so it must not land on the fork's master.
@@ -34,7 +36,8 @@ bullet points for a9 to write up in their own voice.
   - `int4`, `ko2kp`, `nf`: Claude, porting the `int.lam` parser.
   - The pairup programs: Codex (keep the old loop only to record `ps`).
   - The size-search tools and the verification behind every number: Claude,
-    in blam (`blam golf`, `docs/classical/golf.md`).
+    in blam (`blam golf`, `docs/classical/golf.md`). Since 3.0.0 a plain
+    `cargo install blam` includes `blam golf` (no `--features lab`).
 
 ## PR 1: `uni-rs`
 
@@ -135,6 +138,16 @@ programs
   the work.
 - **The two PRs.**
   - `uni.rs`: byte-identical with uni.py, about 18× faster.
+- **His tools in blam (3.0.0).** `blam blc ACTION FILE` is his `blc`, all
+  31 actions, without GHC; `blam uni` is his universal machine.
+  - Checked byte for byte against his own `blc`, built from AIT with GHC
+    (`tools/ait/`): every action on every `.lam` in his repo, and the run
+    family on every closed program up to 20 bits plus thousands of larger
+    ones, partial output before an input error included. Counts in STATUS.
+  - It runs his programs on a call-by-need machine (bf.lam's Hello World is
+    instant), streams endless output (`primes.lam | head`), and
+    `blam blc blc` reproduces every checked-in `.blc`.
+  - Maybe useful to him: a GHC-free `blc` for people trying the repo.
   - The golf sources: the BLC8 machine is down to 41 bytes, and int.lam's
     parser is now in ko2kp, nf, int4 and the pairup programs.
 - **The 168 (Palmer's self-interpreter): nothing smaller found.**

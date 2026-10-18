@@ -70,9 +70,13 @@ the ION iterations reported by `uni.c`.
   MSB-first bit lists.
 - The program prefix parses greedily; byte mode discards the remainder of the
   current byte before program input begins.
-- Checked-in optimized programs are produced through `tools/blcc.py` using
-  Tromp's `optimize 57 2 1` convention. The tool is an independent compiler
-  oracle validated against eight repository goldens.
+- Checked-in optimized programs are produced with Tromp's `optimize 57 2 1`
+  convention, which `blc::notation::compile` implements; `tools/blcc.py` is
+  the independent compiler oracle.
+
+How `blam blc` and `blam uni` run programs under these conventions — input
+lists, Tromp's `bshow` reading of the output, uni's reading by application —
+is `programs.md`.
 
 ## 3. Engine stack
 
@@ -127,6 +131,17 @@ defunctionalization and preserves leftmost-outermost β-counts. Its measured
 contraction rate is a moving number and lives in `../STATUS.md`; census
 throughput is in any case usually limited by enumeration overhead rather than
 by contraction rate.
+
+### Running programs
+
+`src/classical/lazy.rs` is a second strong normalizer, for running programs
+rather than measuring terms: a call-by-need lazy Krivine machine with
+reference-counted environments and streaming readback into the same `Sink`
+trait. It shares what normal order repeats, so its β-counts are not the
+census metric, and its memory is the live data under a hard cap. Its normal
+forms are the KN machine's, which the tests check exhaustively.
+`src/classical/io.rs` holds Tromp's I/O conventions and the streaming output
+reader. Both are specified in `programs.md`.
 
 ### The adjudication ladder
 
@@ -200,14 +215,18 @@ epistemic tier rather than by typing depth:
 
 - engines: `blam normalize` (KN on a named term), `blam adjudicate` (the full
   ladder, verbosely or streamed over a file);
+- programs: `blam blc` (Tromp's `blc` tool, action for action), `blam uni`
+  (his universal machine), `blam golf` (size optimizers for BLC programs);
 - measurements: `blam census` (exhaustive behavioral census and BBλ),
   `blam solomonoff` (exact finite-range m, K, Ω, and speed-prior
   accounting), `blam omega leaves` (leaf tables for the true-Ω bounds);
 - certificates: `blam cert search` (discovery), `blam cert lean` (Lean
   generation), `blam cert diag` (where discovery drops a term);
 - instruments: `blam trace` (reduction-shape classification), `blam slots`
-  and `blam selfint` (self-interpreter and universal-machine searches),
-  `blam golf` (size optimizers for BLC programs).
+  and `blam selfint` (self-interpreter and universal-machine searches).
+
+Every term argument takes wire bits, a `.lam` / `.blc` / `.blc8` file, or
+λ-notation (`programs.md` §1).
 
 Research instruments and the untrusted discovery surface live behind the
 non-default `lab` feature; a binary built without it still *recognises* their
@@ -392,7 +411,8 @@ Every engine change must satisfy:
 1. `cargo test --release`, plus `cargo test --release --all-features` so the
    `lab` surface (instruments and untrusted discovery) is tested too;
 2. differential agreement between `classical::reference` and
-   `classical::machine` on output bits and β-counts;
+   `classical::machine` on output bits and β-counts, and between
+   `classical::machine` and `classical::lazy` on normal forms;
 3. conformance against Tromp's corpus and published BLC counts
    (`tests/tromp_vectors.rs`, whose bit strings are inlined so the suite runs
    without the `ref/AIT` clone);
@@ -458,7 +478,8 @@ classes, not larger instances of the same bounded reducer.
 
 - **KN rather than graph reduction:** it preserves the chosen β metric,
   supports explicit budgets, streams readback, and behaves predictably on
-  arbitrary untyped terms.
+  arbitrary untyped terms. Running programs is the one job that wants
+  sharing instead, and it has its own machine (`programs.md` §6).
 - **No HVM/Lamping fast path:** the available oracle-free fragments exclude
   patterns central to this workload, and their interaction counts are not the
   chosen semantic metric.
@@ -486,6 +507,7 @@ belong in `../STATUS.md`.
 - Frontier classification evidence: `certificates/frontier.md`
 - Direct BB(33/34/35) proofs: `certificates/busy-beaver.md`
 - The self-interpreter and universal machine: `self-interpreter/`
+- Running programs, and Tromp's `blc` and `uni`: `programs.md`
 - Size optimization of Tromp's AIT programs: `golf.md`
 - Quantum counterpart: `../quantum/architecture.md`
 - Formal proofs: `../../lean/README.md`
