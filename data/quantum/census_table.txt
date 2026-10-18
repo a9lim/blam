@@ -1,4 +1,4 @@
-# qcensus S2 — M^(1) operator census, spec v0 (output = live store at Halt)
+# qcensus [M_Fock] — operator census, spec v0 (output = live store at Halt)
 # sizes 4..=41  order [h meas new cnot t]  beta=4096 trans=67108864 qubits=12 branches=4096
 # exact values are (a,b,c,d,k): (a + b*w + c*w^2 + d*w^3)/sqrt(2)^k, w = e^(i pi/4)
 #
