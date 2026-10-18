@@ -434,7 +434,22 @@ fn lazy_input_nodes_may_follow_the_root() {
     let nil = pool.push(Node::Lam(l));
     let mut out = StringSink::default();
     Lazy::new()
-        .normalize_input(&pool, root, cell, 0, &mut Empty(nil), Limits::default(), &mut out)
+        .normalize_input(
+            &pool,
+            root,
+            cell,
+            0,
+            &mut Empty(nil),
+            Limits::default(),
+            &mut out,
+        )
         .unwrap();
     assert_eq!(out.0, "000010");
+    // The input binding is allocated inside the run's budget.
+    let none = Limits {
+        live: 0,
+        ..Limits::default()
+    };
+    let r = Lazy::new().normalize_input(&pool, root, cell, 0, &mut Empty(nil), none, &mut out);
+    assert_eq!(r, Err(Stop::Memory));
 }

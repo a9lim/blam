@@ -142,12 +142,10 @@ enum Frame {
     Upd(Rc<Thunk>),
 }
 
-/// A readback job: a value already in weak head normal form, a thunk, or
-/// a node of a closed normal form in the pool, emitted as it stands.
+/// A readback job: a value already in weak head normal form, or a thunk.
 enum Job {
     Val(Value),
     Force(Rc<Thunk>),
-    Pool(u32),
 }
 
 /// This thread's accounting: heap objects alive; the absolute count at
@@ -393,8 +391,10 @@ impl Input for NoInput {
 pub struct Lazy {
     stack: Vec<Frame>,
     jobs: Vec<(Job, u32)>,
-    // Per pool node: a closed normal form, read back by emitting it.
+    // Per pool node: a closed normal form, read back by emitting it; and
+    // the stack that emission walks it with.
     cnf: Vec<bool>,
+    emit: Vec<u32>,
     // Input runs: the cell template `λz. z 2 3`, how many marker binders
     // the output opens with, and the rigid variables readback gave them.
     cell: u32,
@@ -432,7 +432,7 @@ impl Lazy {
         sink: &mut S,
     ) -> Result<Stats, Stop> {
         self.markers = 0;
-        self.start(pool, root, None, &mut NoInput, limits, sink)
+        self.start(pool, root, false, &mut NoInput, limits, sink)
     }
 
     /// Normalize `body` with its input list read lazily from `input`, where
@@ -474,24 +474,20 @@ impl Lazy {
         }
         self.cell = cell;
         self.markers = markers;
-        let env = cons(Thunk::new(State::Input), None);
-        self.start(pool, body, env, input, limits, sink)
+        self.start(pool, body, true, input, limits, sink)
     }
 
     fn start<S: Sink, I: Input>(
         &mut self,
         pool: &Pool,
         root: u32,
-        env: Env,
+        with_input: bool,
         input: &mut I,
         limits: Limits,
         sink: &mut S,
     ) -> Result<Stats, Stop> {
         let (cnf, closed) = scan(pool, root);
-        assert!(
-            closed || env.is_some(),
-            "the lazy machine runs closed terms"
-        );
+        assert!(closed || with_input, "the lazy machine runs closed terms");
         self.cnf = cnf;
         self.marker_rigids.clear();
         self.limits = limits;
@@ -506,6 +502,11 @@ impl Lazy {
             a.over.set(false);
             saved
         });
+        // The input binding is the run's first allocation, inside its
+        // budget.
+        let env = with_input
+            .then(|| cons(Thunk::new(State::Input), None))
+            .flatten();
         let r = self.run(pool, root, env, input, sink);
         self.marker_rigids.clear();
         // A failed run leaves frames and jobs behind; they go the
@@ -519,7 +520,6 @@ impl Lazy {
             match job {
                 Job::Val(v) => bury_value(v),
                 Job::Force(t) => bury(Grave::T(t)),
-                Job::Pool(_) => {}
             }
         }
         // Budgets are independent: a nested run's transient objects are
@@ -595,33 +595,13 @@ impl Lazy {
             let v = match job {
                 Job::Val(v) => v,
                 Job::Force(t) => self.force(pool, &t, inp, sink)?,
-                // One node of a closed normal form: a step like any other,
-                // under the same budgets, polls and memory count.
-                Job::Pool(id) => {
-                    self.tick(sink)?;
-                    match pool.node(id) {
-                        Node::Var(n) => sink.var(n),
-                        Node::Lam(b) => {
-                            sink.zero();
-                            sink.zero();
-                            self.push_job((Job::Pool(b), depth + 1));
-                        }
-                        Node::App(f, a) => {
-                            sink.zero();
-                            sink.one();
-                            self.push_job((Job::Pool(a), depth));
-                            self.push_job((Job::Pool(f), depth));
-                        }
-                    }
-                    continue;
-                }
             };
             match v {
                 // A closed normal form is its own normal form: no
                 // evaluation, no allocation (input passing through a
                 // program is the common case).
                 Value::Clo(lam, _) if self.cnf[lam as usize] => {
-                    self.push_job((Job::Pool(lam), depth));
+                    self.emit_closed(pool, lam, sink)?;
                 }
                 Value::Clo(lam, env) => {
                     sink.zero();
@@ -662,6 +642,55 @@ impl Lazy {
             }
         }
         Ok(())
+    }
+
+    /// Emit the closed normal form at pool node `id` as it stands: one
+    /// step of work per node, abort polls as for any step, and its
+    /// traversal stack held to the memory cap. Nothing else allocates
+    /// meanwhile, so the live count is read once.
+    fn emit_closed<S: Sink>(&mut self, pool: &Pool, id: u32, sink: &mut S) -> Result<(), Stop> {
+        let (live0, cap) = ACCT.with(|a| (a.live.get(), a.cap.get()));
+        let mut stack = std::mem::take(&mut self.emit);
+        stack.clear();
+        stack.push(id);
+        let mut most = 1u64;
+        let r = loop {
+            let Some(id) = stack.pop() else { break Ok(()) };
+            self.stats.work += 1;
+            if self.stats.work > self.limits.work {
+                break Err(Stop::Work);
+            }
+            if S::CAN_ABORT && self.stats.work & 0xFF == 0 && sink.aborted() {
+                break Err(Stop::Aborted);
+            }
+            match pool.node(id) {
+                Node::Var(n) => sink.var(n),
+                Node::Lam(b) => {
+                    sink.zero();
+                    sink.zero();
+                    stack.push(b);
+                }
+                Node::App(f, a) => {
+                    sink.zero();
+                    sink.one();
+                    stack.push(a);
+                    stack.push(f);
+                }
+            }
+            if stack.len() as u64 > most {
+                most = stack.len() as u64;
+                if live0 + most > cap {
+                    break Err(Stop::Memory);
+                }
+            }
+        };
+        ACCT.with(|a| {
+            if live0 + most > a.peak.get() {
+                a.peak.set(live0 + most);
+            }
+        });
+        self.emit = stack;
+        r
     }
 
     #[inline]

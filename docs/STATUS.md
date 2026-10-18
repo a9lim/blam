@@ -135,8 +135,8 @@ certificates, and their wire identities; the Lean development has no sorries
 or mathlib, and its axioms are `propext` and `Quot.sound`.
 `scripts/bb-regen.sh` audits the BB registry's axioms, refreshes the
 frontier, and recomputes the exact bounds. A fresh census 4..40 is
-bit-identical to every canonical row. Both release suites pass: 366 tests
-with all features (three opt-in tests ignored) and 326 with default features.
+bit-identical to every canonical row. Both release suites pass: 368 tests
+with all features (three opt-in tests ignored) and 328 with default features.
 
 ### Self-interpreter and universal machine
 

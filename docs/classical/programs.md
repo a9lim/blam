@@ -84,7 +84,9 @@ pattern completes; a pair's first component is read by a nested reader as
 it arrives; the tail of a list streams. So an endless output such as
 `characteristic_sequences/primes.lam` prints as it is computed. The reader
 does constant work per token and keeps O(1) memory per output cell (nested
-pairs cost one small frame each), and a closed pipe ends the run quietly.
+pairs cost one small frame each). A closed pipe ends the run quietly, at
+the next write or before the next input read (a read already blocked on a
+terminal or pipe waits for it, as in Tromp's tools).
 `runf` prints the whole normal form; `runO` ends the input with an error
 instead of nil.
 
