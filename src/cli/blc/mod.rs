@@ -266,7 +266,6 @@ pub fn normal_form(t: &Term, budget: Budget, cmd: &str) -> R<Term> {
 enum Marker {
     BadChar,
     PastEnd,
-    UniEnd,
 }
 
 impl Marker {
@@ -274,10 +273,6 @@ impl Marker {
         match self {
             Marker::BadChar => "the program read an input character that is not 0 or 1",
             Marker::PastEnd => "the program read past the end of its input (runO's Omega)",
-            Marker::UniEnd => {
-                "the output is not a list as uni reads one: it used the list's end value \
-                 other than to end the list"
-            }
         }
     }
 }
@@ -647,8 +642,9 @@ pub fn run_uni<F: FnMut(u8) -> LazyItem>(
     } else {
         Dialect::UniBits
     };
-    // One marker binder: the canonicalizer's end value (`src/cli/uni.rs`).
-    let mut reader = Reader::new(dialect, 1, std::io::stdout().lock());
-    let r = Lazy::new().normalize_input(pool, root, cell, 1, feed, budget.0, &mut reader);
-    finish_read(cmd, reader, r, budget, &[Marker::UniEnd], false)
+    // Four marker binders: the canonicalizer's constructors E, C, T, F
+    // (`src/cli/uni.rs`), which the uni dialects read as the output itself.
+    let mut reader = Reader::new(dialect, 4, std::io::stdout().lock());
+    let r = Lazy::new().normalize_input(pool, root, cell, 4, feed, budget.0, &mut reader);
+    finish_read(cmd, reader, r, budget, &[], false)
 }

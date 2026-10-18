@@ -222,15 +222,19 @@ and the code in step.
 - `classical::io::Reader` must stay O(1) memory per output cell (an endless
   list is the normal case); it tracks depth with a cell counter, not a frame
   stack.
-- `uni` decodes output by application through the canonicalizer term in
-  `src/cli/uni.rs`, not by matching normal-form syntax: `λx.λy.λz.x z` is the
-  bit 0 to uni. The list's end value is a marker binder `E`, so an output
-  that uses the end value other than to end a list is an error. On output
-  that breaks uni's protocol the reference interpreters disagree with one
-  another; do not chase one of them there.
+- `uni` decodes output by application through `classical::io::uni_decoder`,
+  not by matching normal-form syntax: `λx.λy.λz.x z` is the bit 0 to uni.
+  The decoder rebuilds the output from four marker binders (cons, end, and
+  the two bits), which no program can forge, so broken output is an error
+  rather than a misreading. The contract is against `uni.rs`: its success
+  means blam's identical output, its failure blam's failure. Where the
+  output breaks uni's protocol the reference interpreters disagree with
+  one another; do not chase one of them there.
 - A change here reruns the external differentials on a frozen binary:
   `tools/ait/actions.py` and `runs.py` against a `build_blc.sh` build, and
-  `uni_diff.py` against `uni.py`. The counts go in STATUS.
+  `uni_diff.py` against `uni.py`. They share `tools/ait/pairs.py` (memory
+  caps, a short first limit, a long retry only where one side finished).
+  The counts go in STATUS.
 
 ### Certificates
 
@@ -358,7 +362,15 @@ pins.
   is the version that gets this right.
 - Run a long sweep (such as `tools/golf/sweep.py`) on a frozen copy of the
   binary (`BLAM=...`): rebuilding `target/release/blam` mid-run fails every
-  later step.
+  later step. Make the copy a fresh file (`rm -f` it first): on macOS, `cp`
+  over an executable that has already run invalidates its cached code
+  signature, and every later launch dies with SIGKILL (exit 137) — which a
+  harness reads as a blam error.
+- Reference tools run unbounded: Tromp's Haskell `blc` grows its heap until
+  it is killed, about 10 GB in 20 s on a non-terminating `nf`. The
+  `tools/ait/` harnesses cap it (`+RTS -M`, so build it with
+  `tools/ait/build_blc.sh`, which passes `-rtsopts`) and cap blam with
+  `--live`; keep both caps on any new harness.
 - Profile the size where the problem lives; the n=40 tail is invisible at
   n=37.
 - This is a9's daily driver. Leave RAM headroom, kill strays when done, and

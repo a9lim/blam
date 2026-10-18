@@ -7,14 +7,17 @@
 //! skipped; in bit mode (`-b`) each byte is one bit, its lowest. The bytes
 //! (or, in bit mode, the bits) that follow are the program's input list.
 //! The output is read the way uni reads it: by application. A list is
-//! anything that, given a handler and an end value, calls the handler on
-//! a head and a tail or returns the end; a bit is anything that, given
-//! two values and a dummy, picks one; a byte is a list of bits. So
-//! `λx.λy.λz.x z` is the bit 0, as it is to uni, though its normal form
-//! is not `λx.λy.x`. The machine normalizes the output under a
-//! canonicalizer term that performs exactly those applications, lazily,
-//! and the result is written raw. A byte worth more than 255 is an error,
-//! as in uni.py and uni.rs (uni.c keeps its low eight bits).
+//! anything that, given a handler and an end value, calls the handler on a
+//! head, a tail and the end value, or returns the end value; a bit is
+//! anything that, given two values and a dummy, returns one of them or the
+//! dummy (uni's dummy is its 0); a byte is a list of bits. So
+//! `λx.λy.λz.x z` is the bit 0, as it is to uni, though its normal form is
+//! not `λx.λy.x`. The machine normalizes the output under
+//! `classical::io::uni_decoder`, which performs exactly those applications,
+//! lazily, and rebuilds the output from marker constructors no program can
+//! forge, so output that breaks the protocol is an error. A byte worth more
+//! than 255 is an error too, as in uni.py and uni.rs (uni.c keeps its low
+//! eight bits). `docs/classical/programs.md` §3 has the contract.
 //!
 //! PROGRAM arguments name the program instead, as files or, as uni.c
 //! does, as `$BLCPATH/NAME.blc8` (`NAME.blc` under `-b`); several compose
@@ -31,7 +34,7 @@ use crate::args::{self, R};
 use crate::blc::{self, Budget};
 use crate::feed::{Feed, Stdin};
 use crate::program::{self, unpack};
-use blam::blc::{app, lam, var, Term};
+use blam::blc::Term;
 use blam::classical::io;
 use blam::classical::lazy::Item;
 use blam::classical::machine::{Node, Pool};
@@ -108,22 +111,24 @@ pub fn run(argv: &[String]) -> R<()> {
         stdin = Stdin::new(prefix);
     }
     let mut pool = Pool::new();
-    let canon = pool.from_term(&canonicalizer(bitmode));
+    let canon = pool.from_term(&io::uni_decoder(!bitmode));
     let progs: Vec<u32> = progs.iter().map(|p| pool.from_term(p)).collect();
     let mut lists = blc::Lists::new(&mut pool);
     let nil = lists.nil();
     let bits = [lists.bit(false), lists.bit(true)];
     let bytes: Vec<u32> = (0..=255).map(|c| lists.byte(c)).collect();
     let cell = lists.template();
-    // `λI. λE. canon (pₙ (… (p₁ I)))`: the programs are closed, `canon`
-    // refers to `E`, and `I` is the lazily read input.
-    let i = lists.push(Node::Var(2));
+    // `λI. λE.λC.λT.λF. canon (pₙ (… (p₁ I)))`: the programs are closed,
+    // `canon` refers to the markers, and `I` is the lazily read input.
+    let i = lists.push(Node::Var(5));
     let out = progs
         .into_iter()
         .fold(i, |acc, p| lists.push(Node::App(p, acc)));
-    let body = lists.push(Node::App(canon, out));
-    let under_e = lists.push(Node::Lam(body));
-    let root = lists.push(Node::Lam(under_e));
+    let mut t = lists.push(Node::App(canon, out));
+    for _ in 0..4 {
+        t = lists.push(Node::Lam(t));
+    }
+    let root = lists.push(Node::Lam(t));
     let mut feed = Feed {
         stdin,
         item: move |c: u8| {
@@ -136,45 +141,6 @@ pub fn run(argv: &[String]) -> R<()> {
         end: Item::Term(nil),
     };
     blc::run_uni("uni", &pool, root, cell, &mut feed, !bitmode, budget)
-}
-
-/// `Y`.
-fn y() -> Term {
-    let w = lam(app(var(2), app(var(1), var(1))));
-    lam(app(w.clone(), w))
-}
-
-/// `clist e`, for use under the end-marker binder `E`: rebuild a list the
-/// way uni walks one, applying it to a handler and the end value, with `e`
-/// applied to each head: `Y (λrec.λl. l (λh.λt.λ_. cons (e h) (rec t)) E)`.
-/// `depth` is the number of binders between this term and `E`.
-fn clist(e: Term, depth: u32) -> Term {
-    // Inside the cell `λz. z (e h) (rec t)`: z=1, _=2, t=3, h=4, l=5, rec=6.
-    let cell = lam(app(app(var(1), app(e, var(4))), app(var(6), var(3))));
-    let handler = lam(lam(lam(cell)));
-    // Inside `λrec.λl`, E sits two binders further out.
-    let body = lam(lam(app(app(var(1), handler), var(depth + 3))));
-    app(y(), body)
-}
-
-/// uni's output decoder as a term, to be applied to the output under one
-/// end-marker binder: `λh. h (K true) (K false) I` for each bit, inside
-/// one `clist` for bit mode and two for byte mode. A list ends where it
-/// returns the end value, so the canonical output ends with the marker;
-/// an output that uses the end value any other way broke the protocol.
-pub fn canonicalizer(bitmode: bool) -> Term {
-    let k = |t: Term| app(lam(lam(var(2))), t);
-    let bit = lam(app(
-        app(app(var(1), k(io::tru())), k(io::nil())),
-        lam(var(1)),
-    ));
-    if bitmode {
-        clist(bit, 0)
-    } else {
-        // The inner list sits under the outer one's six binders (rec, l,
-        // h, t, _, z).
-        clist(clist(bit, 6), 0)
-    }
 }
 
 /// A PROGRAM argument — a file, or uni.c's `$BLCPATH/NAME.blc[8]` — and

@@ -26,5 +26,5 @@ instance Semigroup (DList a) where (<>) = append
 instance Monoid (DList a) where mempty = DL id
 HS
 mkdir -p "$out"
-(cd "$src" && "$ghc" -O2 --make Main.lhs -o "$(cd "$out" && pwd)/blc" > /dev/null)
+(cd "$src" && "$ghc" -O2 -rtsopts --make Main.lhs -o "$(cd "$out" && pwd)/blc" > /dev/null)
 echo "built $out/blc"

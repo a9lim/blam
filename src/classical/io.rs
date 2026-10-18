@@ -14,9 +14,10 @@
 //!   pair as `<x,y>`, and anything else as `(term)` in de Bruijn notation.
 //! - [`Reader`] is a [`Sink`] that performs a reading *while* the machine
 //!   streams the normal form, so an endless output list prints as it is
-//!   produced. It speaks `blc run`'s reading ([`Dialect::Tromp`]) and the
-//!   stricter readings of `uni`'s bit and byte modes, where output that is
-//!   not a list of bits (or of bytes) is an error.
+//!   produced. It speaks `blc run`'s reading ([`Dialect::Tromp`]) and
+//!   `uni`'s bit and byte modes, which read the output by application,
+//!   through [`uni_decoder`]: output that does not follow uni's protocol is
+//!   an error.
 
 use crate::blc::{app, lam, var, Term};
 use crate::classical::machine::Sink;
@@ -78,6 +79,58 @@ pub fn bits(bits: &[bool], end: Term) -> Term {
 /// `bytestoLC end`: one eight-bit list per byte.
 pub fn bytes(bytes: &[u8], end: Term) -> Term {
     list(bytes.iter().map(|&c| byte(c)), end)
+}
+
+/// `Y`.
+fn y() -> Term {
+    let w = lam(app(var(2), app(var(1), var(1))));
+    lam(app(w.clone(), w))
+}
+
+/// `clist e`: rebuild a list the way uni walks one — apply it to a handler
+/// and the end value, `e` applied to each head — in marker constructors:
+/// `Y (λrec.λl. l (λh.λt.λ_. C (e h) (rec t)) E)`, `d` binders inside the
+/// markers' scope.
+fn clist(e: Term, d: u32) -> Term {
+    // In the handler's body: _=1, t=2, h=3, l=4, rec=5, then F, T, C, E.
+    let cell = app(app(var(8 + d), app(e, var(3))), app(var(5), var(2)));
+    let handler = lam(lam(lam(cell)));
+    // In `λrec.λl`: l=1, rec=2, then F, T, C, E (E = 6).
+    let body = lam(lam(app(app(var(1), handler), var(6 + d))));
+    app(y(), body)
+}
+
+/// A bit by application, `λh. h (K T) (K F) T`, `d` binders inside the
+/// markers' scope. The dummy is `T` because uni's is its integer 0, the
+/// same value as the bit 0: an element that returns its third argument is
+/// the bit 0 to uni.py and uni.rs.
+fn uni_bit(d: u32) -> Term {
+    let k = |t: Term| app(lam(lam(var(2))), t);
+    // In `λh`: h=1, F=2, T=3.
+    lam(app(
+        app(app(var(1), k(var(3 + d))), k(var(2 + d))),
+        var(3 + d),
+    ))
+}
+
+/// uni's output decoder as a term, open in four marker binders: inside
+/// `λE.λC.λT.λF`, `uni_decoder(bytes) out` normalizes to `out` rebuilt from
+/// the markers alone — a list as `C head tail` or `E`, a bit as `T` (0) or
+/// `F` (1), in byte mode each element a list of bits — exactly when `out`
+/// follows uni's protocol: a list applied to a handler and an end value
+/// calls the handler on a head, a tail and the end value, or returns the end
+/// value; a bit applied to two values and a dummy returns one of them, or
+/// the dummy (uni's dummy, and its end value, are its integer 0, which is
+/// the bit 0). No program can produce a marker itself, so any other normal
+/// form means the output broke the protocol. Read it with
+/// [`Dialect::UniBits`] or [`Dialect::UniBytes`] and four markers.
+pub fn uni_decoder(bytes: bool) -> Term {
+    // A clist's `e` sits five binders in (rec, l, h, t, _).
+    if bytes {
+        clist(clist(uni_bit(10), 5), 0)
+    } else {
+        clist(uni_bit(5), 0)
+    }
 }
 
 /// Free variables of `t` move out by `by` (closed terms come back as is).
@@ -220,11 +273,12 @@ fn bshow_into(t: &Term, out: &mut Vec<u8>) -> Result<(), ReadError> {
 pub enum Dialect {
     /// `blc run`'s [`bshow`]: never fails.
     Tromp,
-    /// `uni`'s bit mode: the output must be a list of bits, written as the
-    /// ASCII characters `0` and `1`.
+    /// `uni`'s bit mode, on the normal form of [`uni_decoder`]`(false)`
+    /// applied to the output, under its four marker binders: a list of
+    /// bits, written as the ASCII characters `0` and `1`.
     UniBits,
-    /// `uni`'s byte mode: the output must be a list of bit lists, each
-    /// worth at most 255, written as raw bytes.
+    /// `uni`'s byte mode, on [`uni_decoder`]`(true)`'s: a list of bit
+    /// lists, each worth at most 255, written as raw bytes.
     UniBytes,
 }
 
@@ -235,7 +289,7 @@ pub enum ReadError {
     Io(io::Error),
     /// The normal form used marker binder `k` (1-based, outermost first).
     Marker(u32),
-    /// Under a `uni` dialect: the output is not a list.
+    /// Under a `uni` dialect: the output is not a list as uni reads one.
     NotAList,
     /// Under [`Dialect::UniBits`]: a list element is not a bit.
     NotABit,
@@ -327,8 +381,6 @@ enum Mode {
     /// A cell's head under [`Dialect::Tromp`], as a position in `bshow`'s
     /// patterns.
     Head(Pat),
-    /// A cell's head under a `uni` dialect, as a position in uni's shape.
-    UniHead(UniPat),
     /// A subterm that is not a list, kept whole to print (its `(` is out).
     Rest(Builder),
     /// Waiting while the frame above reads this cell's head as the first
@@ -365,7 +417,6 @@ impl Frame {
                     .filter(|&&t| t == Tok::Lam)
                     .count() as u32,
                 Mode::Head(p) => p.depth(),
-                Mode::UniHead(p) => p.depth(),
                 Mode::Rest(b) => b.lams,
                 Mode::Pair => 0,
             }
@@ -495,104 +546,18 @@ impl Pat {
     }
 }
 
-/// A cell's head against uni's shape: a bit `λλ1` / `λλ2`, or (bytes) a
-/// list of bits, which the canonicalizer ends with the end marker (or
-/// nil). `c` cells passed, `o` tokens into the current one, `x` the value.
-#[derive(Clone, Copy)]
-struct UniPat {
-    bytes: bool,
-    c: u32,
-    o: u8,
-    /// On the nil path (`λ λ 1`) of a byte, rather than a cell.
-    nil: bool,
-    x: u64,
-}
-
-enum UniMatched {
-    More(UniPat),
-    Done(u8),
-    Bad,
-}
-
-impl UniPat {
-    fn new(bytes: bool) -> UniPat {
-        UniPat {
-            bytes,
-            c: 0,
-            o: 0,
-            nil: false,
-            x: 0,
-        }
-    }
-
-    fn depth(&self) -> u32 {
-        if !self.bytes {
-            return u32::from(self.o);
-        }
-        if self.nil {
-            return self.c + u32::from(self.o);
-        }
-        self.c + u32::from(self.o > 0) + u32::from(self.o > 4) + u32::from(self.o > 5)
-    }
-
-    /// Is the cursor where a byte's list may end?
-    fn at_boundary(&self) -> bool {
-        self.bytes && self.o == 0
-    }
-
-    fn end(self) -> UniMatched {
-        UniMatched::Done(self.x as u8)
-    }
-
-    fn push(mut self, tok: Tok) -> UniMatched {
-        use Tok::*;
-        if !self.bytes {
-            return match (self.o, tok) {
-                (0 | 1, Lam) => {
-                    self.o += 1;
-                    UniMatched::More(self)
-                }
-                (2, Var(1)) => UniMatched::Done(b'1'),
-                (2, Var(2)) => UniMatched::Done(b'0'),
-                _ => UniMatched::Bad,
-            };
-        }
-        if self.nil {
-            return match (self.o, tok) {
-                (1, Lam) => {
-                    self.o = 2;
-                    UniMatched::More(self)
-                }
-                (2, Var(1)) => self.end(),
-                _ => UniMatched::Bad,
-            };
-        }
-        match (self.o, tok) {
-            (0, Lam) | (4, Lam) | (5, Lam) | (2, App) | (3, Var(1)) => {
-                self.o += 1;
-                UniMatched::More(self)
-            }
-            (1, App) => {
-                self.o = 2;
-                UniMatched::More(self)
-            }
-            (1, Lam) => {
-                self.nil = true;
-                self.o = 2;
-                UniMatched::More(self)
-            }
-            (6, Var(k @ (1 | 2))) => {
-                self.x = 2 * self.x + u64::from(k == 1);
-                if self.x > 255 {
-                    return UniMatched::Bad;
-                }
-                self.c += 1;
-                self.o = 0;
-                UniMatched::More(self)
-            }
-            _ => UniMatched::Bad,
-        }
-    }
+/// Where a `uni` dialect's reader stands in the canonical output.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Uni {
+    /// At a list: `E` or `C head tail`.
+    List,
+    /// At a list element.
+    Elem,
+    /// Inside a byte's bit list, its value so far: at a bit, or at the
+    /// rest of the list.
+    Bit(u64),
+    Bits(u64),
+    Done,
 }
 
 /// Where the output goes, buffered, with a clock for the periodic flush.
@@ -646,6 +611,8 @@ pub struct Reader<W: Write> {
     // Cells of every frame below the top one: with the top frame's own
     // depth, the λ depth at the cursor, kept in O(1).
     below: u32,
+    // Where a `uni` reading stands.
+    uni_at: Uni,
     done: bool,
     out: RefCell<Out<W>>,
     polls: Cell<u32>,
@@ -664,6 +631,7 @@ impl<W: Write> Reader<W> {
             apps: 0,
             frames: vec![Frame::new()],
             below: 0,
+            uni_at: Uni::List,
             done: false,
             out: RefCell::new(Out {
                 w,
@@ -732,6 +700,14 @@ impl<W: Write> Reader<W> {
         if self.failed.get() || self.done {
             return;
         }
+        if self.dialect != Dialect::Tromp {
+            if tok == Tok::Lam && self.skip > 0 {
+                self.skip -= 1;
+            } else {
+                self.uni(tok);
+            }
+            return;
+        }
         match tok {
             Tok::Lam if self.skip > 0 => self.skip -= 1,
             Tok::App => self.apps += 1,
@@ -757,25 +733,66 @@ impl<W: Write> Reader<W> {
         }
     }
 
-    /// A marker at the cursor. Under `blc run` it is the error. Under a
-    /// `uni` dialect the one marker is the canonicalizer's end value: in
-    /// the place of a list's end it ends that list, and anywhere else the
-    /// output broke the protocol.
+    /// A marker at the cursor, under `blc run`: the error.
     fn marker(&mut self, level: u32) {
-        if self.dialect != Dialect::Tromp && self.apps == 0 {
-            match self.top().mode {
-                Mode::Start(_, 0) => return self.end_frame(),
-                Mode::UniHead(p) if p.at_boundary() => {
-                    self.top().mode = Mode::Start([Tok::Lam; 4], 0);
-                    let UniMatched::Done(c) = p.end() else {
-                        unreachable!("a byte ends at a boundary")
-                    };
-                    return self.emit(&[c]);
-                }
-                _ => {}
-            }
-        }
         self.fail(ReadError::Marker(level));
+    }
+
+    /// A token of a `uni` reading. The canonical output sits under the four
+    /// markers `λE.λC.λT.λF` and is built from them alone, so it has no
+    /// lambda and every variable is a marker: a list is `C head tail` (two
+    /// pending applications, then `C`) or `E`; a bit `T` (0) or `F` (1), or
+    /// `E`, which is uni's integer 0 and so the bit 0.
+    fn uni(&mut self, tok: Tok) {
+        const E: u32 = 1;
+        const C: u32 = 2;
+        const T: u32 = 3;
+        const F: u32 = 4;
+        let bytes = self.dialect == Dialect::UniBytes;
+        let bad = match self.uni_at {
+            Uni::List => ReadError::NotAList,
+            Uni::Elem if !bytes => ReadError::NotABit,
+            _ => ReadError::NotAByte,
+        };
+        let (level, k) = match tok {
+            Tok::App => {
+                self.apps += 1;
+                return;
+            }
+            Tok::Var(n) if n <= self.markers => {
+                (self.markers - n + 1, std::mem::take(&mut self.apps))
+            }
+            _ => return self.fail(bad),
+        };
+        self.uni_at = match (self.uni_at, level, k) {
+            (Uni::List, E, 0) => {
+                self.done = true;
+                Uni::Done
+            }
+            (Uni::List, C, 2) => Uni::Elem,
+            (Uni::Elem, T | E | F, 0) if !bytes => {
+                self.emit(if level == F { b"1" } else { b"0" });
+                Uni::List
+            }
+            (Uni::Elem, E, 0) => {
+                self.emit(&[0]);
+                Uni::List
+            }
+            (Uni::Elem, C, 2) => Uni::Bit(0),
+            (Uni::Bit(x), T | E | F, 0) => {
+                let x = 2 * x + u64::from(level == F);
+                if x > 255 {
+                    return self.fail(ReadError::NotAByte);
+                }
+                Uni::Bits(x)
+            }
+            (Uni::Bits(x), E, 0) => {
+                self.emit(&[x as u8]);
+                Uni::List
+            }
+            (Uni::Bits(x), C, 2) => Uni::Bit(x),
+            _ => return self.fail(bad),
+        };
     }
 
     /// Hand one token to the top frame.
@@ -783,7 +800,6 @@ impl<W: Write> Reader<W> {
         if self.failed.get() || self.done {
             return;
         }
-        let dialect = self.dialect;
         let top = self.top();
         match std::mem::replace(&mut top.mode, Mode::Pair) {
             Mode::Start(mut seen, n) => {
@@ -797,13 +813,8 @@ impl<W: Write> Reader<W> {
                     [Lam, Lam, Var(1)] => self.end_frame(),
                     [Lam, App, App, Var(1)] => {
                         top.cells += 1;
-                        top.mode = match dialect {
-                            Dialect::Tromp => Mode::Head(Pat::new()),
-                            Dialect::UniBits => Mode::UniHead(UniPat::new(false)),
-                            Dialect::UniBytes => Mode::UniHead(UniPat::new(true)),
-                        };
+                        top.mode = Mode::Head(Pat::new());
                     }
-                    _ if dialect != Dialect::Tromp => self.fail(ReadError::NotAList),
                     seen => {
                         // Neither nil nor a cell: `bshow`'s last equation,
                         // which writes its `(` before it looks further.
@@ -841,18 +852,6 @@ impl<W: Write> Reader<W> {
                         self.dispatch(t);
                     }
                 }
-            },
-            Mode::UniHead(p) => match p.push(tok) {
-                UniMatched::More(p) => top.mode = Mode::UniHead(p),
-                UniMatched::Done(c) => {
-                    top.mode = Mode::Start([Tok::Lam; 4], 0);
-                    self.emit(&[c]);
-                }
-                UniMatched::Bad => self.fail(if dialect == Dialect::UniBits {
-                    ReadError::NotABit
-                } else {
-                    ReadError::NotAByte
-                }),
             },
             Mode::Rest(mut b) => match b.push(tok) {
                 None => top.mode = Mode::Rest(b),
@@ -1066,28 +1065,55 @@ mod tests {
     }
 
     #[test]
-    fn uni_dialects_are_strict() {
-        let b = bits(&[false, true], nil());
-        assert_eq!(stream(&b, Dialect::UniBits, 0).unwrap(), b"01");
+    fn uni_dialects_read_by_application() {
+        use crate::classical::lazy::{Lazy, Limits};
+        use crate::classical::machine::Pool;
+        // `out` under λE.λC.λT.λF, through the decoder, on the lazy machine.
+        let decode = |out: Term, bytes: bool| {
+            let mut t = app(uni_decoder(bytes), out);
+            for _ in 0..4 {
+                t = lam(t);
+            }
+            let mut pool = Pool::new();
+            let root = pool.from_term(&t);
+            let dialect = if bytes {
+                Dialect::UniBytes
+            } else {
+                Dialect::UniBits
+            };
+            let mut r = Reader::new(dialect, 4, Vec::new());
+            let limits = Limits {
+                work: 1_000_000,
+                ..Limits::default()
+            };
+            let _ = Lazy::new().normalize(&pool, root, limits, &mut r);
+            r.finish()
+        };
+        assert_eq!(decode(bits(&[false, true], nil()), false).unwrap(), b"01");
+        // An eta-expanded true is the bit 0, as it is to uni.
+        let eta = lam(lam(lam(app(var(3), var(1)))));
+        assert_eq!(decode(list([eta], nil()), false).unwrap(), b"0");
+        assert_eq!(decode(bytes(b"ok", nil()), true).unwrap(), b"ok");
+        // A short bit list is a small byte; one worth more than 255 is not.
+        let short = list([bits(&[true, false, true], nil())], nil());
+        assert_eq!(decode(short, true).unwrap(), [5]);
+        let long = list([bits(&[true; 9], nil())], nil());
+        assert!(matches!(decode(long, true), Err(ReadError::NotAByte)));
+        // Not lists, not bits: a boolean as the whole output, a byte list
+        // as a bit, an output that applies the end value (λc.λe. e F F),
+        // and one that hands back a list it built itself (λc.λe. 0 0).
+        assert!(matches!(decode(tru(), false), Err(ReadError::NotAList)));
         assert!(matches!(
-            stream(&tru(), Dialect::UniBits, 0),
-            Err(ReadError::NotAList)
-        ));
-        let by = bytes(b"ok", nil());
-        assert_eq!(stream(&by, Dialect::UniBytes, 0).unwrap(), b"ok");
-        assert!(matches!(
-            stream(&by, Dialect::UniBits, 0),
+            decode(bytes(b"ok", nil()), false),
             Err(ReadError::NotABit)
         ));
-        // uni reads a short bit list as a small byte, a long one only if
-        // its value fits.
-        let short = list([bits(&[true, false, true], nil())], nil());
-        assert_eq!(stream(&short, Dialect::UniBytes, 0).unwrap(), [5]);
-        let long = list([bits(&[true; 9], nil())], nil());
+        let end_applied = lam(lam(app(app(var(1), nil()), nil())));
         assert!(matches!(
-            stream(&long, Dialect::UniBytes, 0),
-            Err(ReadError::NotAByte)
+            decode(end_applied, false),
+            Err(ReadError::NotAList)
         ));
+        let forged = lam(lam(bits(&[false], nil())));
+        assert!(matches!(decode(forged, false), Err(ReadError::NotAList)));
     }
 
     /// The output written before a marker stops the read is exactly

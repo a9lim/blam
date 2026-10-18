@@ -163,36 +163,42 @@ bits, all of it the program. Standard input is read lazily, as uni does.
 **Output is read the way uni reads it: by application.** A list is anything
 that, applied to a handler and an end value, calls the handler on a head, a
 tail and the end value, or returns the end value. A bit is anything that,
-applied to two values and a dummy, returns one of them. A byte is a list of
-bits. So `λx.λy.λz.x z` is the bit `0`, as it is to uni, even though its
-normal form is not `λx.λy.x`. blam normalizes the output under a
-canonicalizer term that performs exactly those applications, lazily, with
-the end value `E` a marker binder:
+applied to two values and a dummy, returns one of them, or the dummy: uni's
+dummy and end value are its integer 0, which is also the bit 0. A byte is a
+list of bits. So `λx.λy.λz.x z` is the bit `0`, as it is to uni, even
+though its normal form is not `λx.λy.x`. blam normalizes the output under a
+decoder term (`classical::io::uni_decoder`) that performs exactly those
+applications, lazily, and rebuilds the output from four marker binders —
+`C` for cons, `E` for the end, `T` and `F` for the bits:
 
 ```text
-canon   = λE. clist …   (clist bit in bit mode, clist (clist bit) in byte mode)
-clist e = Y (λrec.λl. l (λh.λt.λ_. cons (e h) (rec t)) E)
-bit     = λh. h (K true) (K false) I
+clist e = Y (λrec.λl. l (λh.λt.λ_. C (e h) (rec t)) E)
+bit     = λh. h (K T) (K F) T
+decoder = clist bit (bit mode), clist (clist bit) (byte mode), under λE.λC.λT.λF
 ```
 
-The result's normal form is read strictly as canonical bits or bytes ending
-in `E`, and streamed; `E` anywhere else means the output used the end value
-for something else. So on every output that follows this protocol, blam
-writes what uni.py and uni.rs write, and what uni.c writes for bytes of
-exactly eight bits. Where uni.c differs, blam follows uni.py and uni.rs:
+No program can produce a marker itself, so the decoded normal form is
+built from the markers alone exactly when the output follows the protocol,
+and the reader accepts nothing else: a lambda, a variable of the program's
+own, or a marker applied where it should not be means the output broke
+the protocol, and blam reports an error.
 
-- a byte is the number its bits spell, whatever their count, so `[1]` is
-  `0x01` and `[]` is `0x00` (uni.c keeps the previous byte's bits in its
-  accumulator, so a short byte inherits them);
-- a byte worth more than 255 is an error (uni.c keeps the low eight bits).
+The contract, against Tromp's Rust `uni.rs` (which panics on broken
+output): where uni.rs prints and exits, blam prints the same bytes and
+exits; where uni.rs fails, blam fails, having written no more than uni.rs
+did (uni.rs writes a bit as soon as its handler receives it, blam once the
+cell is sure). `uni.py` agrees with uni.rs on every protocol-following
+output. uni.c differs from both in two ways blam does not follow:
 
-On output that breaks the protocol, the three references disagree with one
-another. On programs whose output applies the end value, passes the
-handler too few arguments, or makes a bit of something that picks neither
-value, they print different things and exit three different ways. blam
-reports an error, and may write less before it than they do. For example,
-all three write the head of a cell whose handler never gets its third
-argument, because they print a bit as soon as the handler receives it.
+- a short byte inherits bits from the previous byte in uni.c's
+  accumulator, where blam reads `[1]` as `0x01` and `[]` as `0x00`;
+- a byte worth more than 255 keeps its low eight bits in uni.c, and is an
+  error in blam (as in uni.py and uni.rs).
+
+On output that breaks the protocol the three references disagree with one
+another (uni.py prints whatever its host values happen to allow, uni.rs
+panics, uni.c may loop or print), so there blam's error is the only
+contract.
 
 uni.c's debugging and memory flags (`-g`, `-l`, `-p`, `-q`, `-s`, `-x`) are
 not supported.
@@ -268,8 +274,8 @@ The design:
     tromp/AIT byte for byte;
   - `runs.py` compares the run family on every closed term through 20 bits
     plus a random sample of larger ones, each on ten inputs;
-  - `uni_diff.py` compares `blam uni` with `uni.py` in both modes; uni.c
-    and uni.rs serve as further references by hand.
+  - `uni_diff.py` checks `blam uni` against `uni.rs` in both modes, by the
+    contract above; uni.py and uni.c serve as further references by hand.
 
   Their latest counts are in `../STATUS.md`.
 
@@ -283,11 +289,12 @@ The design:
   protocol. `blc run` is defined as `bshow . nf`, so this reproduces it by
   construction, and streaming readback recovers the laziness that matters
   for endless output.
-- **uni's decoding as a term**, not as a third evaluator. The canonicalizer
-  turns "decode by application" into "read a canonical normal form", so one
-  machine and one reader serve both tools. The price is the protocol
-  boundary above: a term cannot print a bit halfway through a broken cell
-  the way an effectful host decoder does.
+- **uni's decoding as a term**, not as a third evaluator. The decoder turns
+  "decode by application" into "read a normal form built from markers", so
+  one machine and one reader serve both tools, and the markers make broken
+  output detectable rather than misread. The price: a term cannot print a
+  bit halfway through a broken cell the way an effectful host decoder
+  does, which is why blam may write less before an error than uni.rs.
 - **Markers instead of an error construct.** A marker binder needs nothing
   new in any engine and turns a laziness question into a syntactic one about
   the normal form.

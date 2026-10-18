@@ -176,22 +176,27 @@ Artifacts are in `data/golf/machines/`.
 `classical/programs.md` is the contract. `blam blc` reimplements Tromp's
 `blc`, all 31 actions, and `blam uni` his `uni`; both run on the
 call-by-need machine with lazily read stdin. Evidence, from `tools/ait/` on a
-frozen binary against Tromp's tools built from the pinned corpus (GHC 9.10.3
-for `blc`; `uni.c` with `cc -O3`; `uni.py`):
+frozen binary against Tromp's tools built from the pinned corpus (`blc` with
+GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
 
-- **Actions** (`actions.py`): every non-run action on every `.lam` in
-  tromp/AIT. ⟨ACTIONS⟩
+- **Actions** (`actions.py`, 117 programs × 26 actions): 2,791 pairs
+  byte-identical, 0 different; 247 finish on neither side (normal forms of
+  fast-growing programs, under 1 GB heap caps and adaptive limits), and 4
+  only on blam's.
 - **Run family** (`runs.py`): every closed program through 20 bits plus
   2,500 random larger ones, each on ten inputs (bit and byte modes, a bad
-  input byte, `runO`, `runf`). ⟨RUNS⟩
-- **uni** (`uni_diff.py`, against `uni.py`): ⟨UNI⟩ Programs whose output
-  breaks uni's protocol are outside the contract: there `uni.py`, `uni.rs`
-  and `uni.c` disagree with one another (Codex's five probes give three
-  different behaviours), and blam reports an error.
+  input byte, `runO`, `runf`): 38,382 successful and 5,408 erroring pairs
+  byte-identical, the output written before an input error included; 930
+  finish on neither side; none differs.
+- **uni** (`uni_diff.py`, 20,804 runs in both modes, against `uni.rs`):
+  where uni.rs prints, blam prints the same bytes (6,201); where uni.rs
+  fails, blam fails with a prefix of its output (14,379); 224 finish on
+  neither side. Beyond uni's protocol, uni.py, uni.rs and uni.c disagree
+  with one another (Codex's probes give three different behaviours).
 - **Compiler**: `blc::notation::compile` matches `tools/blcc.py` on all 117
   programs, in 0.97 s for the corpus against blcc.py's 5 s.
 - **Speed** (M5 Max, 100 KB identity programs): `blam blc run8` 0.10 s
-  against Tromp's `blc` 0.51 s; `blam uni` 0.77 s against `uni.c` 0.19 s.
+  against Tromp's `blc` 0.51 s; `blam uni` 0.67 s against `uni.c` 0.19 s.
   Tromp's `bf.lam` on `hw.bf` prints `Hello World!` in 0.03 s and 5 MB, where
   the call-by-name KN machine prints nothing in 2³⁰ transitions (4.9 s,
   1.6 GB). The `uni` gap is allocation (malloc/free and the allocator's own
