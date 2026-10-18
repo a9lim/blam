@@ -48,7 +48,7 @@ use std::time::Instant;
 const USAGE: &str = "\
 blam golf letopt — exact enumeration of let structures over a core
 
-usage: blam golf letopt --bits BITS [--max-cuts K] [--report-le S]
+usage: blam golf letopt --bits TERM [--max-cuts K] [--report-le S]
                         [--no-inline] [--threads N]
 
   --bits BITS     the program's wire bits
@@ -778,6 +778,8 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     p.at_most(0)?;
     let bits = bits.ok_or("blam golf letopt: --bits is required")?;
+    // Any TERM notation: wire bits, a program file, or λ-notation.
+    let bits = crate::program::term_arg("golf letopt", &bits)?.to_bits();
     if let Some(m) = around {
         return run_around(&bits, m, report_le, threads);
     }

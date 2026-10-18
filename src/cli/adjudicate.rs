@@ -23,7 +23,7 @@ use std::time::Instant;
 const USAGE: &str = "\
 blam adjudicate — run the halting ladder on named terms
 
-usage: blam adjudicate BITS [flags]          verbose single-term report
+usage: blam adjudicate TERM [flags]          verbose single-term report
        blam adjudicate --file FILE [flags]   one streamed verdict per line
 
 ladder (defaults are the census ladder's)
@@ -36,6 +36,8 @@ ladder (defaults are the census ladder's)
   --no-oracle            skip the divergence-oracle prefilter
   --work-mult N          escalation work meter per capacity bit (default 16)
   --probe-fuel N         redloop probe beta budget (default 4096)
+
+TERM is wire bits, a .lam / .blc / .blc8 file, or λ-notation.
 
 run
   --file FILE            terms to adjudicate, one bit string per line
@@ -167,10 +169,11 @@ fn rung_name(r: Rung) -> &'static str {
 /// One-term adjudication: run the ladder verbosely on given bits.
 fn single(cfg: &LadderCfg, bits: &str) -> R<()> {
     // An open term used to be reported as a HALT here, and a term with
-    // trailing bits as a verdict about a DIFFERENT (shorter) program.
-    args::parse_program("adjudicate", bits)?;
+    // trailing bits as a verdict about a DIFFERENT (shorter) program;
+    // `term_arg` refuses both, whatever notation the term came in.
+    let bits = crate::program::term_arg("adjudicate", bits)?.to_bits();
     let mut pool = Pool::new();
-    let root = pool.decode_str(bits).expect("validated above");
+    let root = pool.decode_str(&bits).expect("validated above");
     println!(
         "term: {} bits, redex: {}",
         pool.bit_size(root),

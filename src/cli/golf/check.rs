@@ -33,7 +33,7 @@ use rayon::prelude::*;
 const USAGE: &str = "\
 blam golf check — β-certificate and normal-form differential of two terms
 
-usage: blam golf check ORIG_BITS CAND_BITS
+usage: blam golf check ORIG CAND
                        [--io none|bits|progs|pairs|bytes]
                        [--max-bits N] [--beta B] [--threads N]
        blam golf check --path FILE
@@ -452,13 +452,15 @@ pub fn run(argv: &[String]) -> R<()> {
     let pos = p.positional();
     if pos.len() != 2 {
         return Err(format!(
-            "blam golf check: expected ORIG_BITS CAND_BITS\n{}",
+            "blam golf check: expected ORIG CAND\n{}",
             args::hint("golf check")
         ));
     }
     args::build_pool(threads)?;
-    let orig = T::parse(pos[0]).ok_or("blam golf check: ORIG_BITS is not a closed BLC term")?;
-    let cand = T::parse(pos[1]).ok_or("blam golf check: CAND_BITS is not a closed BLC term")?;
+    let orig = crate::program::term_arg("golf check", pos[0])?.to_bits();
+    let cand = crate::program::term_arg("golf check", pos[1])?.to_bits();
+    let orig = T::parse(&orig).ok_or("blam golf check: ORIG is not a closed BLC term")?;
+    let cand = T::parse(&cand).ok_or("blam golf check: CAND is not a closed BLC term")?;
     println!("orig {} bits, cand {} bits", orig.size(), cand.size());
     match certify(&orig, &cand) {
         Some(why) => println!("beta: {why}: beta-convertible"),

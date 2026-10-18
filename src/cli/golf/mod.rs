@@ -1,4 +1,4 @@
-//! Size optimizers for BLC programs (lab).
+//! Size optimizers for BLC programs.
 //!
 //! Every move these instruments make is a β-expansion or β-reduction unless
 //! a flag says otherwise, so a smaller term they report is β-convertible to
@@ -16,7 +16,7 @@ pub(crate) mod term;
 use crate::args::{self, R};
 
 const USAGE: &str = "\
-blam golf — size optimizers for BLC programs (lab)
+blam golf — size optimizers for BLC programs
 
 usage: blam golf <tool> [flags]   (`blam golf <tool> --help`)
 

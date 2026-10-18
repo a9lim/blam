@@ -39,7 +39,7 @@ use std::time::Instant;
 const USAGE: &str = "\
 blam golf component — βη component search under a size ceiling
 
-usage: blam golf component --bits BITS [--slack S] [--threads N]
+usage: blam golf component --bits TERM [--slack S] [--threads N]
                            [--no-au] [--no-eta] [--contextual]
                            [--descend] [--max-states N]
 
@@ -996,6 +996,8 @@ pub fn run(argv: &[String]) -> R<()> {
     }
     p.at_most(0)?;
     let bits = bits.ok_or("blam golf component: --bits is required")?;
+    // Any TERM notation: wire bits, a program file, or λ-notation.
+    let bits = crate::program::term_arg("golf component", &bits)?.to_bits();
     if bits.is_empty() || !bits.bytes().all(|c| c == b'0' || c == b'1') {
         return Err("blam golf component: --bits must be ASCII 0/1".into());
     }
