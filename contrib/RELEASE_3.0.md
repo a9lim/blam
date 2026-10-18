@@ -19,14 +19,23 @@ Delete this file after the release.
   - Byte-identical to Tromp's own `blc` (built from the corpus) on every
     pair that both finish: all non-run actions × all 117 `.lam` programs in
     tromp/AIT, and the run family on every closed program ≤20 bits plus a
-    random sample of larger ones (STATUS has the counts).
+    random sample of larger ones, including the output written before an
+    input error (STATUS has the counts).
+  - stdin is read lazily, as `blc`'s `getContents` reads it: `primes.lam`
+    prints in a terminal at once, interactive programs see their output
+    before they block.
 - **`blam uni [-b] [PROGRAM...]`** — Tromp's universal machine:
   - bit and byte modes;
   - `$BLCPATH` names and left-to-right composition, as in uni.c;
-  - embedded input after a single program;
-  - output decoded by application, as uni does;
-  - checked against `uni.py`.
-- **A call-by-need machine** (`classical::lazy`) runs programs:
+  - embedded input after a single program, files read as uni.c reads them;
+  - output decoded by application, as uni does (`λx.λy.λz.x z` is a 0);
+  - lazy stdin;
+  - checked against `uni.py`; the contract is output that follows uni's
+    protocol — beyond it uni.py, uni.rs and uni.c disagree with one
+    another, and blam reports an error. Two uni.c quirks not followed:
+    short bytes inherit the previous byte's bits; bytes over 255 wrap.
+- **A call-by-need machine** (`classical::lazy`, public API, with lazily
+  read input streams) runs programs:
   - shared work, as in Tromp's Haskell evaluator. His brainfuck interpreter
     prints `Hello World!` at once, where the call-by-name KN machine prints
     nothing in 2³⁰ transitions;
@@ -81,6 +90,8 @@ Delete this file after the release.
   directed and reviewed.
   - The `blc`/`uni` reimplementation, the call-by-need machine, and the
     differential harnesses: Claude.
-  - The adversarial review of the machine, the I/O semantics and uni
-    compatibility (memory-cap hole, uni's decoding by application, embedded
-    input, `runf` markers): Codex.
+  - Four rounds of adversarial review of the machine, the I/O semantics and
+    uni compatibility, each finding real defects with reproducers (memory-cap
+    holes, uni's decoding by application, embedded input, `runf` markers,
+    blocking reads after cancellation, the reference interpreters'
+    disagreements): Codex.
