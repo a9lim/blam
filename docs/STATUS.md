@@ -466,12 +466,11 @@ halt-rounding slack equals the number of inexact divisions (96 units at
 
 ## Repository and release
 
-- The crate is 3.0.0 on `dev`, not yet released: one `blam` binary over a
-  `blc` substrate, the classical, quantum, and qALC pillars, and lab-gated
-  research instruments. 3.0 is a major release because `qalc`'s public types
-  changed (`contrib/RELEASE_3.0.md` lists every break) and a few internal
-  helpers became crate-private. The release-note draft is
-  `contrib/RELEASE_3.0.md`; tagging and the crates.io publish are a9's.
+- The crate is 3.0.0: one `blam` binary over a `blc` substrate, the
+  classical, quantum, and qALC pillars, and lab-gated research instruments.
+  3.0 is a major release because `qalc`'s public types changed and a few
+  internal helpers became crate-private; the GitHub release v3.0.0 lists
+  every break.
 - Checkpoints are `blamckpt v5`, and memo files use the shared tag-first
   codec; older cache files are invalid. Nothing in `data/` uses either.
 - CI runs on pushes to `main` and pull requests into it, not on `dev`. It

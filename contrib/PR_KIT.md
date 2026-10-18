@@ -1,7 +1,8 @@
 # Upstream PR kit for tromp/AIT
 
-a9 sends; nothing here is submitted automatically. Everything below is
-bullet points for a9 to write up in their own voice.
+a9 sends; nothing here is submitted automatically. The letter is bullet
+points for a9 to write in their own voice; the PR descriptions are
+instrumental, so they can be written out in full when the PRs go up.
 
 ## Where things are
 
@@ -11,8 +12,8 @@ bullet points for a9 to write up in their own voice.
 - Open each PR from its branch into `tromp/AIT` `master`. Both branches are
   three commits behind the fork's master (upstream moved since they were
   cut), so rebase each onto current upstream first.
-- Cut the blam 3.0.0 release first, and point every link in the PRs and the
-  letter at the `v3.0.0` tag (stable permalinks), not at `dev`.
+- blam 3.0.0 is released: point every link in the PRs and the letter at the
+  `v3.0.0` tag (stable permalinks), not at `dev`.
 - The fork's `master` is unchanged: upstream plus `uni.rs`. blam's `ref/AIT`
   pins it, and blam's CI checks that it only *adds* files over upstream.
   - `golf` modifies upstream files, so it must not land on the fork's master.
