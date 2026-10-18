@@ -135,8 +135,8 @@ certificates, and their wire identities; the Lean development has no sorries
 or mathlib, and its axioms are `propext` and `Quot.sound`.
 `scripts/bb-regen.sh` audits the BB registry's axioms, refreshes the
 frontier, and recomputes the exact bounds. A fresh census 4..40 is
-bit-identical to every canonical row. Both release suites pass: 347 tests
-with all features (three opt-in tests ignored) and 298 with default features.
+bit-identical to every canonical row. Both release suites pass: 366 tests
+with all features (three opt-in tests ignored) and 326 with default features.
 
 ### Self-interpreter and universal machine
 
@@ -171,6 +171,32 @@ shrink `int4` 189 → 178, `ko2kp` 615 → 557, `nf` 600 → 541, and the pairup
 programs (771, 651, 1325; the last two on contract-valid inputs only).
 Artifacts are in `data/golf/machines/`.
 
+### Running programs: blc and uni
+
+`classical/programs.md` is the contract. `blam blc` reimplements Tromp's
+`blc`, all 31 actions, and `blam uni` his `uni`; both run on the
+call-by-need machine with lazily read stdin. Evidence, from `tools/ait/` on a
+frozen binary against Tromp's tools built from the pinned corpus (GHC 9.10.3
+for `blc`; `uni.c` with `cc -O3`; `uni.py`):
+
+- **Actions** (`actions.py`): every non-run action on every `.lam` in
+  tromp/AIT. ⟨ACTIONS⟩
+- **Run family** (`runs.py`): every closed program through 20 bits plus
+  2,500 random larger ones, each on ten inputs (bit and byte modes, a bad
+  input byte, `runO`, `runf`). ⟨RUNS⟩
+- **uni** (`uni_diff.py`, against `uni.py`): ⟨UNI⟩ Programs whose output
+  breaks uni's protocol are outside the contract: there `uni.py`, `uni.rs`
+  and `uni.c` disagree with one another (Codex's five probes give three
+  different behaviours), and blam reports an error.
+- **Compiler**: `blc::notation::compile` matches `tools/blcc.py` on all 117
+  programs, in 0.97 s for the corpus against blcc.py's 5 s.
+- **Speed** (M5 Max, 100 KB identity programs): `blam blc run8` 0.10 s
+  against Tromp's `blc` 0.51 s; `blam uni` 0.77 s against `uni.c` 0.19 s.
+  Tromp's `bf.lam` on `hw.bf` prints `Hello World!` in 0.03 s and 5 MB, where
+  the call-by-name KN machine prints nothing in 2³⁰ transitions (4.9 s,
+  1.6 GB). The `uni` gap is allocation (malloc/free and the allocator's own
+  clock are a third of its profile, with thread-local accounting next).
+
 ### Classical docket
 
 1. **BB(36).** n=36 has 30 open programs. The direct-proof machinery
@@ -198,6 +224,10 @@ Artifacts are in `data/golf/machines/`.
 8. **Discrete Solomonoff induction:** measure Church bit-list decode coverage
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
+9. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
+   lever is allocation: a slab with index-based reference counts (or the
+   open global-allocator decision) would remove most of malloc/free and the
+   thread-local accounting from the lazy machine's hot path.
 
 ## Quantum (qBLC)
 
@@ -205,8 +235,7 @@ Artifacts are in `data/golf/machines/`.
 
 - `data/quantum/census_table.txt` covers the full 4..41 population at β 4,096,
   transitions 2²⁶, 12 live qubits, and 4,096 branches, in 12 s wall and
-  200 s user; a regeneration matches the file in every byte but its header's
-  title line, which predates the operator's `M_Fock` name.
+  200 s user; a regeneration matches the file byte for byte.
   `Omega_success,<=41 = 3424188513 / 2^40` exactly.
 - The one-qubit operator is positive definite, with named-state ranking
   `|0> >> |+> > T|+> > |-> >> |1>`. The first entangled successful outputs
@@ -432,8 +461,12 @@ halt-rounding slack equals the number of inexact divisions (96 units at
 
 ## Repository and release
 
-- The crate is 2.1.0: one `blam` binary over a `blc` substrate, the
-  classical, quantum, and qALC pillars, and lab-gated research instruments.
+- The crate is 3.0.0 on `dev`, not yet released: one `blam` binary over a
+  `blc` substrate, the classical, quantum, and qALC pillars, and lab-gated
+  research instruments. 3.0 is a major release because `qalc`'s public types
+  changed (`contrib/RELEASE_3.0.md` lists every break) and a few internal
+  helpers became crate-private. The release-note draft is
+  `contrib/RELEASE_3.0.md`; tagging and the crates.io publish are a9's.
 - Checkpoints are `blamckpt v5`, and memo files use the shared tag-first
   codec; older cache files are invalid. Nothing in `data/` uses either.
 - CI runs on pushes to `main` and pull requests into it, not on `dev`. It

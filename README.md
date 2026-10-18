@@ -7,13 +7,15 @@
 A fast Rust engine for [John Tromp's binary lambda
 calculus](https://tromp.github.io/cl/Binary_lambda_calculus.html) and
 algorithmic information theory. It runs Tromp's programs and reimplements
-his two tools, `blc` and `uni`, verified byte for byte against the
-originals. It also measures: exhaustive censuses of every closed term through
-41 bits, busy-beaver values proved exact to BBλ(35), certified bits of the
-halting probability Ω, exact Solomonoff and speed-prior masses, and
-divergence certificates checked in Lean. Two quantum pillars with exact
-Clifford+T semantics sit beside the classical one: **qBLC** (quantum data
-under classical control) and **qALC** (storeless quantum control).
+his two tools, `blc` and `uni`, checked byte for byte against the originals
+(the few deliberate differences are listed in
+[programs](docs/classical/programs.md)). It also measures: exhaustive
+censuses of every closed term through 41 bits, busy-beaver values proved
+exact to BBλ(35), certified bits of the halting probability Ω, exact
+Solomonoff and speed-prior masses, and divergence certificates checked in
+Lean. Two quantum pillars with exact Clifford+T semantics sit beside the
+classical one: **qBLC** (quantum data under classical control) and **qALC**
+(storeless quantum control).
 
 Design principles throughout: every fast path is differential-tested
 against a naive executable spec; every engine is total (fuel

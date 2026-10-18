@@ -176,9 +176,13 @@ bit     = λh. h (K true) (K false) I
 The result's normal form is read strictly as canonical bits or bytes ending
 in `E`, and streamed; `E` anywhere else means the output used the end value
 for something else. So on every output that follows this protocol, blam
-writes what uni.c, uni.py and uni.rs write, with one choice where they
-differ: a byte worth more than 255 is an error, as in uni.py and uni.rs
-(uni.c keeps the low eight bits).
+writes what uni.py and uni.rs write, and what uni.c writes for bytes of
+exactly eight bits. Where uni.c differs, blam follows uni.py and uni.rs:
+
+- a byte is the number its bits spell, whatever their count, so `[1]` is
+  `0x01` and `[]` is `0x00` (uni.c keeps the previous byte's bits in its
+  accumulator, so a short byte inherits them);
+- a byte worth more than 255 is an error (uni.c keeps the low eight bits).
 
 On output that breaks the protocol, the three references disagree with one
 another. On programs whose output applies the end value, passes the
@@ -212,13 +216,16 @@ The design:
 - **Strong normalization** is readback. A closure is entered under a fresh
   rigid level. A neutral term's head is emitted, then its arguments are
   forced and read back in order. A closure over a closed normal form of the
-  program or input (data passing through) is emitted as it stands, without
-  evaluation. Bits stream into a `Sink`, the same trait the KN machine
+  program or input (data passing through) is emitted as it stands, node by
+  node, without evaluation but under the same budgets and polls as any
+  other step. Bits stream into a `Sink`, the same trait the KN machine
   feeds, so every KN sink works here too.
 - **Input** can be a lazy stream (`Lazy::normalize_input`): the root binds
   the input, and the input's rest is a thunk that, when first forced, asks
   an `Input` for one more element and builds one cell. Before it blocks,
-  the input calls the sink's `idle`, so pending output goes out first.
+  the input calls the sink's `idle`, so pending output goes out first; a
+  run whose sink has stopped (an error found, a closed pipe) ends there
+  instead of reading.
 - **Memory** is reference-counted, so a run holds its live data, not its
   history. Teardown goes through an iterative graveyard, because a long
   input list is a long chain of cells and dropping it recursively would
@@ -226,8 +233,9 @@ The design:
   does every machine-stack and readback entry, where it happens. The run
   stops at the first check after the count crosses the cap: within a few
   objects, since a machine step allocates a bounded number and the loops
-  that allocate more check as they go. A run started from inside another
-  run's sink keeps its own budget.
+  that allocate more check as they go. Budgets are independent: a run
+  started from inside another run's sink is charged its own objects, and
+  the outer run's accounting is restored exactly when it returns.
 - **Verdicts** are typed (`Stop`): budgets (`Beta`, `Work`, `Memory`), a
   sink abort, and `Loop`, raised when a thunk is demanded while it is
   already being evaluated. For pure closed terms the heap stays acyclic, so
