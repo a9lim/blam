@@ -396,8 +396,8 @@ extension.
 - `blam blc` and `blam uni` are checked against Tromp's own tools, built
   from the corpus: every action on every `.lam` program in tromp/AIT, the
   run family on every closed program ≤20 bits and thousands of larger
-  ones, and `uni` against `uni.py` in both modes (`tools/ait/`; the counts
-  are in STATUS). `blam blc blc` reproduces every checked-in `.blc` golden.
+  ones, and `uni` against Tromp's `uni.rs` in both modes (`tools/ait/`; the
+  counts are in STATUS). `blam blc blc` reproduces every checked-in `.blc` golden.
 - Conformance vectors from Tromp's corpus are inlined in
   `tests/tromp_vectors.rs`, so the suite needs no clone; every
   published A114852 count and BBλ value in range is reproduced

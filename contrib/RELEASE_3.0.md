@@ -30,10 +30,13 @@ Delete this file after the release.
   - embedded input after a single program, files read as uni.c reads them;
   - output decoded by application, as uni does (`λx.λy.λz.x z` is a 0);
   - lazy stdin;
-  - checked against `uni.py`; the contract is output that follows uni's
-    protocol — beyond it uni.py, uni.rs and uni.c disagree with one
-    another, and blam reports an error. Two uni.c quirks not followed:
-    short bytes inherit the previous byte's bits; bytes over 255 wrap.
+  - output rebuilt from unforgeable marker constructors, so broken output
+    is an error rather than a misreading;
+  - contract checked against `uni.rs` on 20,804 runs: identical output
+    where uni.rs succeeds, failure (with a prefix of its output) where it
+    fails. Beyond uni's protocol uni.py, uni.rs and uni.c disagree with one
+    another. Two uni.c quirks not followed: short bytes inherit the
+    previous byte's bits; bytes over 255 wrap.
 - **A call-by-need machine** (`classical::lazy`, public API, with lazily
   read input streams) runs programs:
   - shared work, as in Tromp's Haskell evaluator. His brainfuck interpreter
@@ -95,3 +98,6 @@ Delete this file after the release.
     holes, uni's decoding by application, embedded input, `runf` markers,
     blocking reads after cancellation, the reference interpreters'
     disagreements): Codex.
+  - The differential harnesses (`tools/ait/`), made memory-safe and about
+    6× faster after the Haskell `blc` was seen at 11 GB per process:
+    Claude.
