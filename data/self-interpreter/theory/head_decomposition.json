@@ -1,0 +1,54 @@
+{
+  "affine_examples": [
+    {
+      "n": 0,
+      "source_bits": 17,
+      "head_form_bits": 11,
+      "affine": true
+    },
+    {
+      "n": 7,
+      "source_bits": 38,
+      "head_form_bits": 39,
+      "affine": true
+    }
+  ],
+  "int165": {
+    "source_bits": 165,
+    "head_form_bits": 755,
+    "head_contractions": 4,
+    "leading_lambdas": 2,
+    "head": "stream",
+    "head_arguments": 2,
+    "source_redex_costs": [
+      {
+        "path": "root",
+        "occurrences": 2,
+        "total_depth": 0,
+        "argument_free_leaves": 0,
+        "outer_body_leaves": 0,
+        "argument_bits": 155,
+        "delta_bits": 147
+      },
+      {
+        "path": "root.argument.body",
+        "occurrences": 2,
+        "total_depth": 5,
+        "argument_free_leaves": 2,
+        "outer_body_leaves": 0,
+        "argument_bits": 6,
+        "delta_bits": 3
+      },
+      {
+        "path": "root.argument.body.function.body.body",
+        "occurrences": 1,
+        "total_depth": 4,
+        "argument_free_leaves": 4,
+        "outer_body_leaves": 1,
+        "argument_bits": 92,
+        "delta_bits": 5
+      }
+    ]
+  },
+  "seconds": 0.0073
+}

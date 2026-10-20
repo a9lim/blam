@@ -142,6 +142,26 @@ for source in tag_return_shapes:
         app(lc.subst(0, one_stream, term), lc.FALSE, terminal, n)
     ) == app(c, j)
 
+# The three-lambda floor for beta-normal cheap-tail handlers is attained.
+# These are two explicit constructions, not a search for their minimum sizes.
+cheap_tail_witnesses = [
+    ("self-application operand", r"\b\r\t. b (r j) (c r (t t))",
+     45, (3, 6, 13), True),
+    ("whole-stream operand", r"\b\r\t. b (r j) (c r (t t t))",
+     49, (3, 7, 13), False),
+]
+for name, source, size, stats, thunk in cheap_tail_witnesses:
+    term = handler(source)
+    assert counts(term) == stats and lc.size(term) == size
+    zero_operand = app(lc.TRUE, r) if thunk else zero_stream
+    assert normal(app(term, lc.TRUE, r, zero_operand)) == app(r, j)
+    for unary_length in (1, 2, 4):
+        tail = lc.bitlist("1" * (unary_length - 1) + "0", n)
+        stream = lc.pair(lc.FALSE, tail)
+        operand = app(lc.TRUE, n) if thunk else stream
+        assert normal(app(term, lc.FALSE, tail, operand)) == app(c, tail, n)
+    print(f"{name}: {size} bits; L,A,X={stats}; fixed correlated laws pass")
+
 print("whole-stream proof audit: nine callback sizes/equations, six data equations, "
       "two tag-return shapes pass")
-print("PASS: five explicit witnesses and fixed proof equations; no enumeration")
+print("PASS: seven explicit witnesses and fixed proof equations; no enumeration")

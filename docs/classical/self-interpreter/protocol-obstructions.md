@@ -299,6 +299,20 @@ cases, a nonhomomorphic control projection, or a bootstrap targeting a
 continuation-specific internal state instead of `E` remain outside this
 obstruction.
 
+The pointwise metadata construction below gives another precise distinction.
+Write `F = lambda e.I`, so `S(F,F) =beta F`, and place an arbitrary
+parser `P` in the remainder field of `G = B_P(F)`. Its application and
+projection equations give
+
+```text
+G G =beta G,             G K F ->* P.
+```
+
+Thus an idempotent value can store a parser without satisfying the excluded
+equation `G G =beta P`. This does not bootstrap the parser: the definition
+of `G` already contains `P`. It supplies no smaller interpreter or saving
+in the recursion code by itself.
+
 
 ## Closed-source correctness already forces closed internal values
 

@@ -301,7 +301,21 @@ forces it to equal `N`, but `⌜M⌝ ++ N ≠β N`. So `n = 2`; head `c` forces
 exactly two arguments, and head `s` needs one to consume the stream's outer λ.
 Both shapes occur: the 165 and 168 are `s`-headed; parsing twice,
 `λc s. c (E (λv r. v) s) (E (λv r. r) s)`, is a correct `c`-headed
-interpreter.
+interpreter. In the continuation-headed case, replacing every occurrence of
+`c` inside `A,B` by `s` preserves the contract and saves one bit per
+occurrence. Thus a minimum such head form has separate value and remainder
+projections independent of its continuation. This is a bound on the head
+form, not the original source: even fully affine head reduction can increase
+BLC size. `head-decomposition.md` gives the detailed proof and the exact
+index-movement example; STATUS records the literal 165's head expansion.
+`Blc/SelfintWireCost.lean` proves the exact beta size balance and its
+consequences for global minimum interpreters: no erasing source redex,
+and every linear source redex must save enough index bits to offset
+the contraction's removed syntax.
+`remainder.md` gives a separate exact syntactic remainder extractor,
+with its all-source contract proved in `Blc/SelfintRemainder.lean`.
+It calibrates that projection without supplying an additive lower bound
+or reconstructing the source value; STATUS records its size and checks.
 
 **Duplication.** At least two syntactic binders of `E` occur at least twice.
 Lean proves that every term with at most one such binder weakly normalizes;
@@ -379,8 +393,14 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   not exclude the cheaper `T=s` family or the productive thunk `T=s s`.
   `cheap-tail-bound.md` proves that both families require at least two
   explicit lambdas in `H`, even with arbitrary whole-stream use and beta
-  redexes. It also excludes a consecutive two-lambda block for either
-  improving budget and exactly three leading lambdas for `T=s`.
+  redexes. Every beta-normal handler needs at least three lambdas,
+  regardless of size; explicit three-lambda constructions show this
+  count is sharp. Exactly three leading lambdas are excluded at the
+  improving `T=s` budget.
+  For `T=s s`, every possible 30-bit improvement has a beta-normal
+  minimum representative: affine contractions preserve its budget, and
+  the remaining nonlinear source-redex cases are excluded. It must
+  have at least three lambdas and exactly four applications.
   It does not yet exclude their complete numerical handler budgets.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,

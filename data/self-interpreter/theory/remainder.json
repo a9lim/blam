@@ -1,0 +1,20 @@
+{
+  "bits": 93,
+  "explicit_variants": {
+    "shared_body": 97,
+    "factored_inline": 93
+  },
+  "symbolic_head_clause_steps": {
+    "knot": 1,
+    "unfold": 3,
+    "variable": 6,
+    "zero": 6,
+    "abstraction_head": 3,
+    "application_head": 3,
+    "abstraction_argument": 2,
+    "application_argument": 2
+  },
+  "formal_contract": "forall M N, rem93 (streamOf (blcCode M) N) ->* N",
+  "source_restrictions": "none: open and divergent source syntax included",
+  "seconds": 0.0069
+}

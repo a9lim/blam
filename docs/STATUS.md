@@ -170,12 +170,19 @@ with all features (three opt-in tests ignored) and 328 with default features.
   are dominated by `s`, saving 5 and 6 bits. A separate handwritten
   theorem proves that handlers for `T=s` and `T=s s` need at least two
   explicit lambdas, even with whole-stream access and beta redexes.
-  Further reviewed shape exclusions rule out a consecutive two-lambda
-  block for either improving budget and exactly three leading lambdas
-  for `T=s`. For `T=s s`, affine reductions preserve the 30-bit budget;
-  a minimum successful handler with at most four applications would have
-  to be beta-normal. The five-application compression cases and complete
-  numerical thresholds remain open
+  The strengthened theorem rules out every beta-normal handler with at
+  most two lambdas for either operand, regardless of size. Explicit
+  beta-normal three-lambda handlers cost 49 and 45 bits respectively;
+  `handler_bound.py` checks their zero laws and fixed variable instances.
+  Exactly three leading lambdas are excluded at the improving `T=s`
+  budget. For `T=s s`, affine reductions preserve the 30-bit budget;
+  the reviewed nonlinear-redex classification now also excludes the
+  five-application compressed cases, including proper argument contexts.
+  Any 30-bit improvement therefore has a beta-normal minimum
+  representative with at least three lambdas and exactly four
+  applications. The remaining normal forms and complete numerical
+  thresholds remain open; the further affine and four-application
+  arguments in the proof record are explicitly provisional
   (`classical/self-interpreter/cheap-tail-bound.md`,
   `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
@@ -203,6 +210,35 @@ with all features (three opt-in tests ignored) and 328 with default features.
   one original binder, so distinct output roles do not force distinct
   origins without a size-sensitive argument. These results do not yet give
   an additive size decomposition.
+- **Head decomposition** (`classical/self-interpreter/head-decomposition.md`):
+  the unconditional head-normal-form dichotomy has exactly two leading
+  lambdas, headed by either the continuation or the stream. In the former
+  case, continuation occurrences inside the two payloads can be replaced
+  by the stream, preserving the full contract and saving one bit each.
+  These are handwritten results. Head normalization is not size-monotone
+  even for fully affine terms. The literal 165 expands to a 755-bit head
+  form in four contractions; its two lambdas, stream head, and two
+  arguments are checked by `tools/self-interpreter/theory/head_decomposition.py`
+  with two fixed affine examples, in 0.007 seconds
+  (`data/self-interpreter/theory/head_decomposition.json`).
+  Lean's `SelfintWireCost` proves the exact local beta size balance,
+  including copied code and index movement, and applies it to every
+  redex of a globally minimum interpreter. Such a minimum has no
+  erasing redex; a linear redex needs at least two free argument
+  occurrences and sufficient index savings to offset its six removed
+  bits plus outer-reference decrements. These conditions give no
+  numerical minimum yet. The literal 165's three existing redexes
+  increase size by 147, 3, and 5 bits when contracted individually;
+  the same fixed check validates each charge.
+  The separate syntactic remainder task has a 93-bit construction
+  (`rem93`, `classical/self-interpreter/remainder.md`): Lean proves exact
+  suffix extraction for every source term, including open and divergent
+  sources, and every suffix. The fixed source/wire and symbolic-clause
+  check takes 0.007 seconds (`data/self-interpreter/theory/remainder.json`).
+  This is an unrestricted upper bound for a parser projection, not a
+  self-interpreter or a beta-normal remainder bound. The same note
+  records an unproved infinite-zero-prefix route to a nonlinear-binder
+  lower bound, with its missing obligations explicit.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
   `typed-normal.md`): the β-normal interpreter is 204 bits
   (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,
@@ -244,7 +280,7 @@ with all features (three opt-in tests ignored) and 328 with default features.
   wrappers (`data/self-interpreter/theory/applicative_retraction.json`).
   A complete parser carrying the remainder in applicative metadata costs
   303 bits. Its four rigid equations, 667/1/0 battery, and Ω / λa.Ω suffix
-  probes pass in 1.8 seconds (`data/self-interpreter/theory/metadata_parser.json`).
+  probes pass in 1.92 seconds (`data/self-interpreter/theory/metadata_parser.json`).
   Eliminating its boxes against the public consumer recovers the 165's
   CPS interface without a further saving. Except for the unconditional
   non-idempotence and its generator corollary, these are protocol-specific

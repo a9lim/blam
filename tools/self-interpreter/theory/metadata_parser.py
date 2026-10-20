@@ -72,6 +72,13 @@ def main():
         ("abstraction_keeps_remainder",
          rf"\n\x.({BOX} x n) {ABS_HANDLER}",
          rf"\n\x.{BOX} (\env\arg.x (\b\r.b arg (r env))) n"),
+        ("identity_closure_is_pointwise_idempotent",
+         rf"\e.{F} e ({F} e)", F),
+        ("parser_metadata_box_is_idempotent",
+         rf"\p.({BOX} {F} p) ({BOX} {F} p)",
+         rf"\p.{BOX} {F} p"),
+        ("parser_metadata_box_projects_parser",
+         rf"\p.({BOX} {F} p) {K} {F}", r"\p.p"),
     ]
     sources = [source for _, left, right in cases for source in (left, right)]
     with ThreadPoolExecutor(max_workers=2) as pool:
