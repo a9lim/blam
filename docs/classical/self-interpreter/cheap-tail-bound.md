@@ -1,13 +1,15 @@
-# Constraints on the cheap reader operands
+# Cheap-reader lambda floors and the self-application bound
 
 This is Codex's handwritten proof record. It concerns the reader `s H T` in
 the ambient frame `[s,j,c,p,x]`, with `j,c,p,x` independent rigid variables.
 The handler may use every ambient variable and arbitrary beta redexes.
 The two operands considered here are `T=s` and `T=s s`.
 
-The sections explicitly marked **Provisional argument** have not completed
-independent review. They are retained as proposed extensions and are not
-used by the established boundary stated at the end.
+For `T=s s`, the argument excludes every handler of at most 30 bits
+that satisfies both reader laws. It allows arbitrary source beta
+redexes, whole-stream access through `s`, and every variable in the
+ambient frame. The proof is handwritten, not a Lean formalization.
+The corresponding 34-bit threshold for `T=s` remains open.
 
 Write
 
@@ -31,9 +33,10 @@ Correctness on all variable streams alone forces **at least two explicit
 lambdas in H**, and **at least three when H is beta-normal**. The
 zero-stream law is not needed for these floors.
 
-This does not settle either joint size threshold. A reader improvement
-requires `|H|≤34` with `T=s`, or `|H|≤30` with `T=s s`; two lambdas
-alone do not exclude those budgets.
+A reader improvement requires `|H|≤34` with `T=s`, or `|H|≤30`
+with `T=s s`. The lambda floors alone do not exclude those budgets;
+the compression and shape arguments below complete the exclusion for
+`T=s s`.
 
 ## The application-only data algebra
 
@@ -269,10 +272,6 @@ size budget.
 
 ## Affine source lambdas and pending arguments
 
-**Provisional argument.** The generalization below still needs review of
-the macro-application bound and the treatment of nested opaque closures.
-The preceding three-lambda floor does not depend on this generalization.
-
 A source term is affine here when every source binder has at most one
 bound occurrence. This condition is preserved by beta reduction: an
 affine source binder cannot copy its argument, and every data binder
@@ -281,9 +280,10 @@ lambda moved inside another closure remains a single occurrence.
 
 The preceding opaque-marker argument extends to any affine source
 term. Suppose it contains `k` source lambdas and has `n≥k+1`
-safe external arguments still pending, with final argument `T` equal
-to the original `Pₘ` or `Q`. For a sufficiently long variable
-prefix, it cannot yield `c Pₘ₋₁ N`.
+external data atoms still pending, chosen from `F,I,Q,Pₘ,Pₘ₋₁`,
+with final argument `T` equal to the original `Pₘ` or `Q`.
+For a sufficiently long variable prefix, it cannot yield
+`c Pₘ₋₁ N`.
 
 To make the long-prefix choice explicit, let `A` count the initial
 macro applications, including those inside source lambda bodies,
@@ -297,8 +297,11 @@ m > 2^(k+1) (A+2).
 Normalize the outer application context while treating its outermost
 source-lambda blocks as distinct rigid markers. The data-algebra
 table applies with these additional markers. In one normalization
-phase the macro application count at most doubles: each table row
-adds at most two applications for an original application. A source
+phase the macro application count at most doubles. Normalize both
+children first and inspect the table: a Scott value applied to a
+marker-headed neutral is the largest case, replacing its one
+application by two; the other rows add no more. Untouched lambda
+bodies retain their original application nodes. A source
 lambda contraction cannot increase the macro application count,
 since its argument is used at most once. Across at most `k` source
 activations, the successive counts are therefore bounded by
@@ -314,7 +317,10 @@ inside an ordinary rigid neutral, but they remain trapped there and
 cannot become functional values or standalone arguments of a source
 callback. Consequently no source activation receives bare terminal
 `K`. Its first argument is safe data, a marker-bearing expression,
-or an ordinary rigid neutral.
+or an ordinary rigid neutral. Restore every source block when
+contracting one of them. The term may no longer be beta-normal;
+the induction permits arbitrary affine terms and counts all
+remaining source lambdas, including those moved into a closure.
 
 Now induct on `k`. A functional data result has no `c`; an ordinary
 rigid result retains the pending arguments and therefore retains final
@@ -769,8 +775,9 @@ Thus five-application nonlinear compression is also impossible.
 
 Since `A≥6` would cost at least `2·2+4·6+2+3=33` bits,
 these results prove that **if a successful `T=s s` handler of size
-at most 30 exists, one of minimum size is beta-normal**. This does
-not assert that all such normal forms have been excluded.
+at most 30 exists, one of minimum size is beta-normal**. The
+remaining sections exclude every possible shape of that normal
+minimum.
 
 ## Normal handlers with at most three applications
 
@@ -918,14 +925,27 @@ after consuming the Scott `K,R`. In either case at least five
 source lambdas have been consumed, with both `j,c` beneath them.
 Thus `L≥5`, `X≥6+7=13`, and the size is at least 37.
 
-These cases exhaust the three-application normal shapes. Every
-possible 30-bit improvement therefore has exactly four applications.
+These cases exhaust the three-application normal shapes. Five or
+more applications would cost at least `2·3+4·5+2+3=31` bits,
+using the three-lambda floor and mandatory `j,c`. Every possible
+30-bit improvement therefore has exactly four applications.
+
+For these remaining candidates, let `k` again count the leading
+lambdas. The size identity and mandatory rigid leaves give
+
+```
+2L+X≤12,             X≥2k+3,             hence L+k≤4.
+```
+
+Together with `L≥3`, this leaves only `L=3,k=0`, `L=4,k=0`,
+and `L=3,k=1`. A nonleading normal candidate must have free `s`
+as its body head; every other available head is rigid. Among its
+five leaves, `s,j,c` are mandatory, leaving zero, one, or two
+bound occurrences. Zero was excluded by the all-vacuous argument.
+The next two sections handle one and two, and the final section
+handles the single leading lambda.
 
 ## One bound leaf in a nonleading four-application handler
-
-**Provisional argument.** This proposed exclusion depends on the affine
-pending-argument generalization above and its remaining shape analysis.
-It is not counted as an established exclusion.
 
 Consider a beta-normal, application-headed handler with `A=4`
 and exactly one bound-variable leaf `v`. Its other four leaves
@@ -990,11 +1010,6 @@ having exactly one bound-variable leaf.
 
 ## Two bound leaves in a nonleading four-application handler
 
-**Provisional argument.** The proposed ordered-spine proof below still
-needs independent review, particularly its bound on useful `K`
-contractions and its treatment of duplicated vacuous closures.
-It is not counted as an established exclusion.
-
 Consider the other nonleading case: the five leaves are exactly
 `s,j,c,v,w`, where `v,w` are bound occurrences, possibly of the same
 binder. There is only one free `s`. The size constraint gives either
@@ -1043,16 +1058,47 @@ a live bound occurrence. The final useful live occurrence on a
 successful zero path must therefore expose an input `R`, or expose
 `Q` and apply it to fixed source arguments to obtain `R j`.
 
-There are at most two such live source occurrences on the path.
-For distinct affine binders, neither source nor data reduction copies
-them. If a binder is nonlinear, its two occurrences already use both
-bound leaves. An argument copied by its contraction cannot contain
-another live source binder: that would require a third bound leaf.
-Nor can that argument contain the contracting binder itself: the
-normal source has only its single occurrence as a lambda subterm,
-and the Scott inputs and external inputs contain no source code.
-Copied source closures are therefore vacuous. They do not create
-additional live source occurrences.
+### Repeated occurrences of one binder
+
+First suppose both bound leaves belong to the same binder `v`.
+Before that binder is activated, only vacuous source lambdas can
+consume the ordered input list: there is no other live binder that
+could expose a supplied `K` or forward a supplied source closure.
+Since `n≥5` and `L≤4`, `v` cannot receive the final `Q`.
+Its argument is therefore `K`, `R`, or a common source argument
+containing only rigid `j/c` leaves and vacuous lambdas.
+
+An argument of the last kind eventually exposes a `j/c` head or
+leaves a lambda; copying it cannot introduce an `R` head. Giving
+`v` the rigid `R` exposes that head before the final input edge
+has been consumed. The remaining source lambdas are vacuous, and
+there are fewer of them than remaining input edges, so that rigid
+head retains a nonempty suffix ending in `Q`.
+
+If `v` receives `K`, all subsequent reductions select or erase
+subtrees: the only live functional binders are those of copies of
+`K`, and every remaining source lambda is vacuous. These reductions
+preserve the order of surviving rigid leaves. If `j` lies inside
+`D`, it precedes every still-available `R`, so the result cannot
+be `R j`.
+
+If `j` lies in a common argument `A_i`, every original input edge
+must still disappear by the ordered-suffix invariant. A fixed source
+application inside `D` contains no `j`, while a fixed application
+inside `A_i` contains no `R`. Selector and eraser reductions cannot
+insert a received input into either fixed application: `K` returns
+its selected argument whole, and a vacuous lambda discards its
+argument. Thus joining a pending input `R` to that common `j`
+would have to retain an original input edge, which is impossible.
+This excludes the repeated-binder case without counting how many
+vacuous lambdas its contraction might copy.
+
+### Distinct affine binders
+
+Now suppose the two bound leaves belong to distinct binders. All
+source binders are affine, so neither source nor data reduction
+copies any source lambda. There are at most `L` source-lambda
+contractions and two live source occurrences on the head path.
 
 Before the final useful occurrence, the other occurrence can expose
 at most one useful `K` head. Forwarding a common argument containing
@@ -1067,9 +1113,6 @@ capture of `R`. If selection reaches the pending inputs, selecting
 the earlier cell `R` retains a suffix ending in `Q`; selecting the
 last external `K` gives `K R Q→R`, with no source `j` after it.
 Vacuous wrappers only discard inputs and do not change this order.
-This also excludes the two `K` residuals of a duplicated input `K`:
-the second residual is precisely this unsuccessful final-`K` case.
-
 Thus at most one useful `K` contraction precedes a successful
 `R j`. A source lambda consumes at most one original input edge,
 and that `K` consumes at most two. The ordered-spine invariant gives
@@ -1116,17 +1159,148 @@ more. This contradicts `X≤4`.
 
 Hence the two-bound-leaf case also cannot meet the 30-bit budget.
 
-## Remaining boundary
+## One leading lambda in a four-application handler
 
-The general results here are lambda-count obstructions for two specified
-operands, together with the scoped three-leading-lambda exclusion for
-`T=s`. For `T=s s`, the compression lemmas and the beta-normal
-lambda floor reduce every possible 30-bit improvement to a beta-normal
-minimum candidate with `L≥3` and `A=4`. The proposed four-application
-exclusions above remain provisional, and the remaining beta-normal
-shapes have not all been excluded. Neither improving
-budget is fully excluded, and these results are not a global
-optimality theorem.
+The only remaining normal shape has `A=4,L=3` and exactly one
+leading lambda:
+
+```
+H = λb.B,                  X≤6.
+```
+
+Mandatory occurrences of `j,c` contribute `2+3=5` index units,
+leaving at most one extra unit. Each occurs exactly once; an
+additional occurrence would itself exceed that allowance. Higher
+ambient variables are also excluded. Let `V=Pₘ₋₁(N)` and `Q=K N`
+on a sufficiently long variable stream. The variable law becomes
+
+```
+B[F/b] V Q =β c V N.
+```
+
+### A free stream occurrence
+
+If free `s` occurs, its index one spends the entire remaining unit.
+Thus `j,c,s` have no inner lambda above them, every bound-variable
+leaf has index zero, and there is only one `s`. The two inner
+lambdas contain only their own bound leaves. The five-leaf budget
+leaves exactly these possibilities:
+
+* two separate identities `I,I`;
+* `F=λa d.d`, with the other bound leaf an exterior occurrence of `b`;
+* `J=λa.a I`;
+* `G=λa d.d d`.
+
+These exhaust the closed normal blocks with two lambdas and at most
+two variable leaves whose indices are all zero. The remaining
+syntax is application-only over those blocks, the stream, the
+possible exterior `b`, and rigid `j,c`.
+
+After substituting `b=F`, the first two possibilities belong to the
+safe data algebra. Functional results contain no `c`, while a
+rigid result retains both pending arguments and ends in `Q`.
+Neither can produce `c V N`.
+
+Each of `J,G` uses both remaining bound leaves, so there is no
+exterior `b` in these cases. Before any source activation, the
+application context has only `S=Pₘ`, rigid `j,c`, and its unique
+opaque source block. The earlier literal-`s D` argument applies:
+if an activation occurs, a first one can be chosen at a literal
+source subterm `s J` or `s G`. If none occurs, the data or rigid
+result already fails with both external arguments pending. The
+two possible local activations give
+
+```
+S J →* F I V → V,
+S G →* (λd.d d) V → V V →* Q.
+```
+
+Both eliminate all inner source lambdas and leave only safe data
+before the pending `V,Q`. The data-algebra obstruction completes
+the free-`s` case using the variable law alone.
+
+### No free stream occurrence
+
+Without `s`, all three leaves besides `j,c` are bound occurrences.
+First-input dependence and beta-normality force the body head `b`:
+
+```
+B = b A₁ ... A_q,             1≤q≤4.
+```
+
+For `q=1`, the variable input `F` erases the only argument and
+therefore erases the sole source of `c`. For `q=4`, every argument
+is a lambda chain over one leaf. The zero branch uses only
+projections, constant chains, and supplied copies of `K`. These
+select or erase subtrees while preserving the order of surviving
+rigid leaves. Every source `j` precedes every external `R`, so
+they cannot give `R j`.
+
+For `q=2`, zero selects `A₁ R (K R)` and the variable branch
+selects `A₂ V Q`. The unique `j` must lie in `A₁`, and the
+unique `c` in `A₂`. Each branch also needs a bound-variable
+leaf: without one the first is a vacuous `j` chain, and the
+second is a vacuous `c` chain whose nonempty final argument
+suffix ends in `Q`. Thus each branch has exactly two leaves and
+one internal application.
+
+The single spare index unit permits at most one inner lambda
+above `j`. The only useful normal forms for the first branch,
+up to placement of lambdas elsewhere, are
+
+```
+b j,                b (λu.j),                λu.u j.
+```
+
+On the zero input their results after `R,K R` are respectively
+`j (K R)`, `j`, and `R j (K R)`, all wrong. Every other
+placement has rigid head `j`, puts `j` beneath two inner
+lambdas, contains a source beta redex, or captures outer `b`
+beneath a lambda also containing `j`. That last placement costs
+two spare index units, one for `b` and one for `j`, exceeding
+the available one.
+
+For `q=3`, exactly one application lies inside the arguments.
+If it lies in `A₂`, the zero branch `A₁ A₃ R (K R)` uses
+only projection and constant chains. The same rigid-leaf order
+obstruction excludes it.
+
+Otherwise `A₂` is a lambda chain over one leaf. If it is bare,
+that leaf is `j`, `c`, or outer `b`. The first two give a wrong
+rigid head or retain the wrong final argument. The last becomes
+`F`, and `F A₃ V Q→*V Q` has no `c`. If `A₂` begins with
+a lambda, contract `A₂ A₃` internally on the variable branch.
+Its one-leaf body is affine, so at most one source lambda remains,
+with both `V,Q` still pending. The affine pending-argument lemma
+then excludes the required result.
+
+The only way that this residual could instead be nonlinear is
+for `A₃` to contain both remaining bound leaves under its sole
+lambda. In that case the other two leaves `j,c` lie separately
+in `A₁,A₂`; zero correctness puts `j` in `A₁`. That first
+branch is a vacuous rigid-`j` chain and already fails the zero
+law. Thus the affine argument covers every remaining case.
+
+This excludes the one-leading-lambda shape at the 30-bit budget.
+
+## Established bound and remaining scope
+
+Combining the compression lemmas, the beta-normal three-lambda floor,
+and the exhaustive shape arguments proves:
+
+> In the ambient frame `[s,j,c,p,x]`, with `j,c,p,x` independent
+> and rigid, no handler `H` of BLC size at most 30 satisfies both
+> `T=s s` reader laws. This includes handlers with arbitrary source
+> beta redexes and arbitrary whole-stream use of `s`.
+
+Thus the self-application operand cannot improve the reader within
+this joint-handler interface. The whole-stream operand `T=s` at
+`|H|≤34` remains open; only the stated lambda floors and the
+three-leading-lambda special case have been excluded there.
+Neither the independence assumptions on the ambient continuations
+nor the specified reader interface have been removed. This is not
+a global optimality theorem for the 165-bit interpreter.
+
 The standard-skip handler bounds, including whole-stream access, live
 in `handler-bound.md`; neutral-operand domination is in
 `protocol-obstructions.md`.

@@ -180,11 +180,14 @@ with all features (three opt-in tests ignored) and 328 with default features.
   budget. For `T=s s`, affine reductions preserve the 30-bit budget;
   the reviewed nonlinear-redex classification now also excludes the
   five-application compressed cases, including proper argument contexts.
-  Any 30-bit improvement therefore has a beta-normal minimum
-  representative with at least three lambdas and exactly four
-  applications. The remaining normal forms and complete numerical
-  thresholds remain open; the further affine and four-application
-  arguments in the proof record are explicitly provisional
+  Every remaining beta-normal four-application shape is also excluded,
+  completing the handwritten `T=s s` threshold: every successful
+  handler costs at least 31 bits, and its reader at least 43. This
+  includes the full ambient frame, whole-stream access, and arbitrary
+  source redexes. The proof extends the safe-data argument to affine
+  callbacks, then separates affine input-edge accounting from the
+  case that can copy vacuous closures. The improving `T=s`, `|H|≤34`
+  budget remains open
   (`classical/self-interpreter/cheap-tail-bound.md`,
   `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
@@ -217,7 +220,13 @@ with all features (three opt-in tests ignored) and 328 with default features.
   lambdas, headed by either the continuation or the stream. In the former
   case, continuation occurrences inside the two payloads can be replaced
   by the stream, preserving the full contract and saving one bit each.
-  These are handwritten results. Head normalization is not size-monotone
+  These are handwritten results. `SelfintProjections` kernel-checks
+  rigid-spine projection of the contract, including divergent decoded
+  values. Each payload of a literal continuation-headed interpreter
+  needs at least two nonlinear binders and a stream occurrence. Such a
+  head form therefore has at least five nonlinear binders in total and
+  costs at least 55 bits. This prices the displayed form only;
+  head normalization is not size-monotone
   even for fully affine terms. The literal 165 expands to a 755-bit head
   form in four contractions; its two lambdas, stream head, and two
   arguments are checked by `tools/self-interpreter/theory/head_decomposition.py`
@@ -238,9 +247,16 @@ with all features (three opt-in tests ignored) and 328 with default features.
   sources, and every suffix. The fixed source/wire and symbolic-clause
   check takes 0.007 seconds (`data/self-interpreter/theory/remainder.json`).
   This is an unrestricted upper bound for a parser projection, not a
-  self-interpreter or a beta-normal remainder bound. The same note
-  records an unproved infinite-zero-prefix route to a nonlinear-binder
-  lower bound, with its missing obligations explicit.
+  self-interpreter or a beta-normal remainder bound. `SelfintZero`
+  proves that every exact remainder extractor needs two nonlinear
+  binders, including two inside the body of an explicit stream lambda.
+  Only closed-source, closed-suffix beta-join correctness is needed.
+  The proof normalizes source terms with at most one nonlinear binder
+  over a labelled infinite zero stream, then simulates the finite trace
+  on a closed source `λⁿ.I` followed by `Ω` to contradict exact extraction.
+  Integrated `lake build Blc` passes all 33 jobs; an eleven-theorem
+  audit across `SelfintZero` and `SelfintProjections` uses only
+  `propext` and `Quot.sound`.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
   `typed-normal.md`): the β-normal interpreter is 204 bits
   (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,

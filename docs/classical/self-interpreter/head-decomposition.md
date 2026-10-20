@@ -143,9 +143,54 @@ only at the displayed root. Variable-for-variable replacement also
 preserves beta normality, so the same conclusion holds within the
 beta-normal fragment.
 
-These are two semantic projections, not a lower bound obtained by adding
-two independent implementation costs. They can contain copies descended
-from shared code in the original `E`.
+The two semantic projections can contain copies descended from shared code
+in the original `E`. The following bound prices their syntax only when
+the interpreter is already in the displayed form.
+
+## A continuation-headed interpreter needs five nonlinear binders
+
+`Blc.SelfintProjections` kernel-checks the rigid projections above without
+assuming that either payload normalizes. It then proves, for any exact
+interpreter literally of the form `H=λc s.c A B`,
+
+```
+nonlinear(A) ≥ 2,       nonlinear(B) ≥ 2,
+occ_s(A) ≥ 1,          occ_s(B) ≥ 1,
+nonlinear(H) ≥ 5,      |H|_BLC ≥ 55.
+```
+
+The two interior bounds have different witnesses. For the value payload,
+use the closed source `Ω` and a rigid suffix. Its Scott quotation is
+binder-affine. Substituting that quotation cannot increase the payload's
+nonlinear-binder count. A payload with at most one nonlinear binder would
+therefore normalize, by `one_nonlinear_normalizes`, whereas its required
+value `λz.Ω` has no normal form.
+
+For the remainder payload, first fix the continuation to the closed
+affine identity. This leaves its nonlinear count unchanged and gives a
+body whose only possible free variable is the stream. The theorem
+`SelfintZero.remainder_body_two_nonlinear` then applies. Its infinite-zero
+argument uses only closed sources `λⁿ.I` and a closed suffix `Ω`;
+`remainder.md` gives the proof and its finite-prefix simulation.
+
+Each payload must use the stream variable. Otherwise its instantiated
+term is independent of the supplied stream: the value projection could
+not distinguish sources `I,K`, or the remainder projection could not
+distinguish two rigid suffixes. Both occurrences belong to the same
+displayed stream binder, making it a fifth nonlinear binder beyond the
+four inside the payloads. Hence an exact interpreter with at most four
+nonlinear binders that is itself in head normal form must be stream-headed.
+
+Finally, the established wire inequality for an arbitrary open term `T`
+is `10 nonlinear(T) + 4 freeLeaves(T) ≤ |T|+2`. Each payload has at
+least two nonlinear binders and one free stream occurrence, so each costs
+at least 22 bits. The two interface lambdas, two root applications, and
+the continuation variable cost 11 bits, giving `22+22+11=55`.
+
+These bounds allow arbitrary internal redexes, continuation uses, and
+whole-stream access in `A,B`. They do not apply to the syntax of an
+arbitrary source `E` that reduces to `H`: shared nonlinear code can be
+copied into both payloads during that reduction.
 
 ## Stream-headed forms retain unrestricted control
 

@@ -314,8 +314,14 @@ and every linear source redex must save enough index bits to offset
 the contraction's removed syntax.
 `remainder.md` gives a separate exact syntactic remainder extractor,
 with its all-source contract proved in `Blc/SelfintRemainder.lean`.
-It calibrates that projection without supplying an additive lower bound
-or reconstructing the source value; STATUS records its size and checks.
+`Blc/SelfintZero.lean` proves that an exact remainder body needs two
+nonlinear binders, excluding its stream binder. Together with the
+value projection's independent two-binder requirement,
+`Blc/SelfintProjections.lean` proves that a literal continuation-headed
+interpreter has four nonlinear binders inside its payloads and a fifth
+at its public stream binder. The corresponding wire floor is 55 bits.
+This prices that displayed head form, not the source that expands into it;
+STATUS records the construction's size and current checks.
 
 **Duplication.** At least two syntactic binders of `E` occur at least twice.
 Lean proves that every term with at most one such binder weakly normalizes;
@@ -390,7 +396,8 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   successful readers with `T=s next` or `T=s cont` also work with `T=s`,
   saving 5 or 6 bits. The proof in `protocol-obstructions.md` tracks an
   inert marked operand that every successful reduction must erase. It does
-  not exclude the cheaper `T=s` family or the productive thunk `T=s s`.
+  does not by itself exclude the cheaper `T=s` family or the productive
+  thunk `T=s s`.
   `cheap-tail-bound.md` proves that both families require at least two
   explicit lambdas in `H`, even with arbitrary whole-stream use and beta
   redexes. Every beta-normal handler needs at least three lambdas,
@@ -399,9 +406,11 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   improving `T=s` budget.
   For `T=s s`, every possible 30-bit improvement has a beta-normal
   minimum representative: affine contractions preserve its budget, and
-  the remaining nonlinear source-redex cases are excluded. It must
-  have at least three lambdas and exactly four applications.
-  It does not yet exclude their complete numerical handler budgets.
+  the remaining nonlinear source-redex cases are excluded. Its last
+  possible normal shapes, with at least three lambdas and exactly four
+  applications, are also excluded. Thus every successful `T=s s`
+  handler costs at least 31 bits, keeping the reader at least 43.
+  The `T=s`, `|H|≤34` threshold remains open.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,
   `Z R R = R next` forces the normal form `λu v. u next` (15) or
@@ -619,5 +628,5 @@ Open:
 | `tools/self-interpreter/search_fix.py` | the knot search |
 | `tools/self-interpreter/beta_search.py` | the Python βη component reference |
 | `tools/self-interpreter/theory/` | bounded checks for explicit structural witnesses and protocol equations; no candidate search |
-| `lake build` in `lean/` | the 165/168, normal, simply typed and two-nonlinear witnesses; unconditional normalization, capture and origin theorems |
+| `lake build` in `lean/` | interpreter and remainder witnesses; normalization, capture, origin, beta-cost, zero-stream and head-projection theorems |
 | `data/self-interpreter/searches_165.json` | commands and totals of the joint searches of §3 |

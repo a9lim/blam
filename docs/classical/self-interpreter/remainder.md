@@ -94,43 +94,80 @@ A source that is itself continuation-headed has disjoint value and
 remainder payloads; a smaller term may instead share code before reaching
 that head form, or fuse both tasks in a stream-headed handler.
 
-## Open lower-bound route: an infinite zero prefix
+## Two nonlinear binders are necessary
 
-The following is a proposed argument, not an established theorem or a
-Lean result. Introduce a formal infinite zero-stream constant `Z` with
-the rewrite rule
-
-```
-Z A → A K Z.
-```
-
-Application-only expressions over `K,Z` and opaque source closures appear
-to admit a terminating data-normalization phase. The candidate normal
-forms are iterated partial applications of `K` around `K`, `Z`, or an
-opaque-headed expression. The useful equations include
+`Blc.SelfintZero.remainder_two_nonlinear` proves that every closed exact
+remainder extractor contains at least two nonlinear binders. The stronger
+`remainder_body_two_nonlinear` counts only the interior of an explicit
+`λs.B` interface: if `B` has no free variables except `s` and
 
 ```
-Z K →* K,          Z Z →* K Z,
-Z (K A) →* A Z,    Z (K (K A)) →* A.
+B[s := stream(M,N)] =β N
 ```
 
-If that phase and its interaction with source closures can be proved,
-an affine closed source should weak-head normalize on `Z`: every source
-contraction consumes a source lambda. The same argument may extend to a
-source with at most one nonlinear binder, because its first nonlinear
-weak-head contraction would leave affine source code. Weak-head reduction
-is essential here; reducing under lambdas can move nonlinearity to an
-enclosing binder.
+for every closed source `M` and every closed suffix `N`, then `B` itself
+contains at least two nonlinear binders. The outer stream binder does not
+count toward this bound. Beta-join correctness suffices; directed reduction
+to the suffix is not assumed. The proof uses only closed beta-normal sources
+of the form `λⁿ.I` and the single divergent suffix `Ω`.
 
-A finite reduction on `Z` inspects only a bounded zero prefix. A rigorous
-simulation by sufficiently long finite encodings of `λⁿ.I` would then
-give a lambda-headed result, contradicting exact extraction of a rigid
-suffix. This would force at least two nonlinear binders in a remainder
-extractor, and two inside the body of an explicit `λs.B` interface.
+The mechanism is a labelled infinite zero stream. The extended syntax keeps
+program lambdas explicit and introduces two affine data constants with rules
 
-The missing obligations are termination of the extended data algebra,
-preservation of the source-binder accounting, and finite-prefix
-simulation. No nonlinear-binder lower bound for remainder extraction is
-claimed here. In particular, absence of a strict increase in the number
-of source lambdas is insufficient: copying can recycle code with zero
-net growth.
+```
+K A B → A,
+Zᵢ A  → A K Zᵢ₊₁.
+```
+
+The label records how many zero cells have been exposed along that stream
+occurrence. It has no control effect. Treat each program lambda and variable
+as an opaque head during a data phase. Canonical data values are `K`, `Zᵢ`,
+`K V`, and opaque-headed spines with canonical arguments. Application of two
+canonical values has a finite closed table:
+
+| Function and argument | Canonical result |
+| --- | --- |
+| `K V` | `K V` |
+| `(K U) V` | `U` |
+| `(h A⃗) V` | `h A⃗ V` |
+| `Zᵢ K` | `K` |
+| `Zᵢ Zⱼ` | `K Zᵢ₊₁` |
+| `Zᵢ (K K)` | `K Zᵢ₊₁` |
+| `Zᵢ (K Zⱼ)` | `K Zⱼ₊₁` |
+| `Zᵢ (K (K A))` | `A` |
+| `Zᵢ (K (h A⃗))` | `h A⃗ Zᵢ₊₁` |
+| `Zᵢ (h A⃗)` | `h A⃗ K Zᵢ₊₁` |
+
+Here `h` is opaque. The first row records formation of a partial application,
+not a reduction. Each other row is justified by a fixed finite reduction.
+Bottom-up evaluation of the finite application tree therefore completes a
+data phase. It neither copies program lambdas nor increases the number of
+nonlinear program binders.
+
+For a closed extended term, the canonical result either denotes a lambda
+(`K`, `Zᵢ`, `K V`, or an unapplied program lambda), or exposes a program
+beta redex on the global function spine. An affine program contraction
+strictly decreases the number of program lambdas. If there is at most one
+nonlinear program binder, contracting it leaves entirely affine program
+code. Alternating data phases and these head contractions must therefore
+terminate at a lambda-like result. No reduction is performed underneath a
+program lambda: allowing that would invalidate the nonlinear-binder
+accounting by moving nonlinearity to an enclosing binder.
+
+The simulation is finite and uniform in the suffix. For any finite extended
+trace, choose `m` larger than every stream label it demands and interpret
+`Zᵢ` as `m−i` zero cells followed by an arbitrary closed tail `T`. Each
+extended step becomes an ordinary finite beta reduction. The terminal
+lambda-like result becomes an actual lambda. Choose an even `m=2n` and
+`T=stream(I,Ω)`. The initial input is exactly `stream(λⁿ.I,Ω)`, so a putative
+extractor with at most one nonlinear program binder reduces to a lambda.
+Correctness also makes it beta-join `Ω`. Confluence makes this impossible:
+every beta reduct of `Ω` is `Ω`, whereas every reduct of a lambda remains
+a lambda.
+
+`Blc/SelfintZero.lean` mechanizes the application table, both binder-count
+invariants, termination, labelled simulation, and the contradiction.
+Its two public lower-bound theorems use only `propext` and `Quot.sound`,
+with no custom axioms or admitted proofs. This establishes a structural
+obstruction, not a sharp bit-length lower bound for remainder extraction
+or an additive lower bound for arbitrary self-interpreters.
