@@ -97,9 +97,9 @@ instrumental, so they can be written out in full when the PRs go up.
 a9 opened it with the title "165 bit self-interpreter" and a two-line body.
 The commit messages carry each change's design note and verification, so
 the body can stay short; the comment below summarizes the whole branch for
-the review. Posting it is a9's call.
+the review. a9 posted an edited version on 2026-10-20.
 
-**Draft comment for #13:**
+**Draft comment for #13 (as drafted):**
 
 > While you're away I've added forty more commits on the same terms: one
 > program per commit, each with its design note and how it was checked, so
