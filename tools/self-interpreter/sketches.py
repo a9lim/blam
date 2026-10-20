@@ -147,6 +147,23 @@ SKETCHES.update({
 })
 
 
+def interp165(zero=r"\unused r. r next", skip="list list list", handler=None):
+    """The 165 with part of its reader replaced (NEXT is the 168's)."""
+    handler = handler or rf"\bit0. bit0 ({zero}) cont"
+    nexth = (r"\bit1. intL (\exp. bit1 (cont (\args arg. exp (\zx zy. zx arg (zy args))))"
+             r" (intL (\exp2. cont (\args. exp args (exp2 args)))))")
+    return (rf"(\x.x x)(\x.(\intL. \cont. (\next. \list. list ({handler}) ({skip}))"
+            rf" ({nexth}))(x x))")
+
+
+# The 165's reader slots (interpreter.md §4, "The reader").
+SKETCHES.update({
+    "165 zero arm": (interp165(zero="_"), "--max-size 14"),
+    "165 skip": (interp165(skip="_"), "--max-size 10"),
+    "165 handler": (interp165(handler="_"), "--max-size 24"),
+})
+
+
 def run(name, src, flags):
     t = parse(src)
     b = bits(t)
