@@ -90,4 +90,58 @@ for k in (0, 1, 2):
     )
 print("whole-stream audit: 40 bits; L=1, A=7, X=8; correlated laws pass")
 
-print("PASS: five explicit witnesses; no enumeration")
+# These are the nine displayed callback equations in the whole-stream proof.
+# The list is fixed: it checks no other syntax and proves no quantified bound.
+j = ("V", 1)
+c = ("V", 2)
+identity = handler(r"\i. i")
+delta = handler(r"\v. v v")
+constant_k = handler(r"\u.\a.\b. a")
+callback_equations = [
+    ("a I j", r"\a. a (\i.i) j", 16, r),
+    ("a j I", r"\a. a j (\i.i)", 16, app(j, r)),
+    ("a (j I)", r"\a. a (j (\i.i))", 16, app(j, identity)),
+    ("j (a I)", r"\a. j (a (\i.i))", 16,
+     app(j, app(lc.TRUE, identity), r)),
+    ("j a I", r"\a. j a (\i.i)", 16, app(j, lc.TRUE, identity, r)),
+    ("j I a", r"\a. j (\i.i) a", 16, app(j, identity, lc.TRUE, r)),
+    ("constant delta", r"\u.\v. v v", 10, app(r, r)),
+    ("nested constant", r"\v. v (\u.v)", 11, constant_k),
+    ("constant j delta", r"\u. j (\v.v v)", 16, app(j, delta, r)),
+]
+for name, source, size, expected in callback_equations:
+    term = handler(source)
+    l, a, x = counts(term)
+    assert lc.size(term) == size == 2 * l + 4 * a + 2 + x, name
+    assert normal(app(zero_stream, term)) == normal(expected), name
+
+# The head-value relation uses precisely this first variable stream.
+terminal = lc.pair(lc.TRUE, n)
+one_stream = lc.pair(lc.FALSE, terminal)
+data_equations = [
+    ("P P", app(zero_stream, zero_stream), app(lc.TRUE, r)),
+    ("Q Q", app(one_stream, one_stream), app(lc.TRUE, n)),
+    ("P R", app(zero_stream, r), app(r, lc.TRUE, r)),
+    ("Q T", app(one_stream, terminal), app(n, terminal)),
+    ("P delta", app(zero_stream, delta), lc.TRUE),
+    # A compound pending j/c argument leaves bare K in the nonlinear case.
+    ("K K R R", app(lc.TRUE, lc.TRUE, r, r), app(lc.TRUE, r)),
+]
+for name, term, expected in data_equations:
+    assert normal(term) == normal(expected), name
+
+# These are the two exact zero-compatible A=3 tag-return shapes.
+tag_return_shapes = [
+    r"\a.\b.\d. s (\u.u) c j",
+    r"\a.\b.\d. s (\u.a) c j",
+]
+for source in tag_return_shapes:
+    term = handler(source)
+    assert normal(app(lc.subst(0, zero_stream, term), lc.TRUE, r, r)) == app(r, j)
+    assert normal(
+        app(lc.subst(0, one_stream, term), lc.FALSE, terminal, n)
+    ) == app(c, j)
+
+print("whole-stream proof audit: nine callback sizes/equations, six data equations, "
+      "two tag-return shapes pass")
+print("PASS: five explicit witnesses and fixed proof equations; no enumeration")

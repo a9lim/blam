@@ -160,14 +160,19 @@ with all features (three opt-in tests ignored) and 328 with default features.
   reader bound now permits arbitrary handlers: independent rigid laws force
   `|H| ≥ 27`, so `s H S` still costs at least 43 and the unchanged surrounding
   interpreter at least 165 (`classical/self-interpreter/handler-bound.md`).
-  A second handwritten theorem allows actual unary-selector/suffix
-  correlations and proves the same handler minimum when its only free
-  variables are NEXT and the continuation. Whole-stream access remains open;
-  a checked 40-bit correlated handler with only one explicit lambda shows why
-  the independent proof's structural lemmas cannot all transfer.
+  The strengthened handwritten theorem also permits the actual stream,
+  tag, selector, and suffix correlations, including whole-stream access
+  inside `H`, with the skip fixed to `s s s` and other ambient parameters
+  independent and rigid. Its minimum is still 27. A checked 40-bit
+  correlated handler with only one explicit lambda shows why the proof
+  must price applications rather than transfer every independent-case lemma.
   For arbitrary correlated handlers, neutral operands `s next` and `s cont`
-  are dominated by `s`, saving 5 and 6 bits; this leaves `s` and the thunk
-  `s s` open (`classical/self-interpreter/protocol-obstructions.md`).
+  are dominated by `s`, saving 5 and 6 bits. A separate handwritten
+  theorem proves that handlers for `T=s` and `T=s s` need at least two
+  explicit lambdas, even with whole-stream access and beta redexes.
+  Their numerical thresholds remain open
+  (`classical/self-interpreter/cheap-tail-bound.md`,
+  `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
   exclusions remain as specified in §5.
 - **Unconditional structure** (`classical/self-interpreter/structural-bounds.md`):
@@ -324,9 +329,9 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
 9. **The self-interpreter below 165** (`classical/self-interpreter/interpreter.md`
-   §7): correlated readers outside the independent rigid laws, a changed
-   NEXT protocol that can use the reader's diagonal, and the capped fills of
-   the reader searches. Look for another shared computation of the kind the
+   §7): joint reader/skip changes, exploitation of actual NEXT/parser
+   behaviour, a changed NEXT protocol that can use the reader's diagonal,
+   and the capped fills of the reader searches. Look for another shared computation of the kind the
    reader is, by reasoning first. The two-nonlinear count is sharp even
    though the current witness is large; a stronger lower bound must price
    connections, captures, and protected quotation origins. Upstreaming the 165, 175 and 187
