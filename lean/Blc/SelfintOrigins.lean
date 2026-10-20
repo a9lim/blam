@@ -8,6 +8,7 @@ not a global 165-bit size bound.
 import Blc.SelfintProof
 import Blc.Par
 import Blc.Confluence
+import Blc.SelfintLowerBound
 
 namespace Blc.QuoteOrigins
 open Blc Term
@@ -781,6 +782,278 @@ theorem selfInterpreter_normal_frozen {E M : Term} (hE : IsSelfInterpreter E)
   have heq := normalForm_betas_eq (fun _ hb => nft_no_beta hnft hb) hm
   subst u
   exact quotation_origins_frozen E (blcCode M) hu
+
+/-- Number of residual interpreter-origin abstractions, counting copies. -/
+def redCount : Marked → Nat
+  | .var _ => 0
+  | .lam q b => redCount b + if q then 0 else 1
+  | .app f a => redCount f + redCount a
+
+theorem redCount_shift (t : Marked) (c : Nat) :
+    redCount (shift c t) = redCount t := by
+  induction t generalizing c with
+  | var n => simp only [shift]; split <;> rfl
+  | lam q b ih => simp [shift, redCount, ih]
+  | app f a ihf iha => simp [shift, redCount, ihf, iha]
+
+/-- The exact red-abstraction accounting identity for capture-avoiding substitution. -/
+theorem redCount_subst (t s : Marked) (j : Nat) :
+    redCount (subst j s t) = redCount t + occ j (erase t) * redCount s := by
+  induction t generalizing s j with
+  | var n =>
+      simp only [subst, redCount, erase, occ]
+      split
+      · simp_all
+      · split <;> simp_all [redCount]
+  | lam q b ih =>
+      simp only [subst, redCount, erase, occ, ih, redCount_shift]
+      omega
+  | app f a ihf iha =>
+      simp only [subst, redCount, erase, occ, ihf, iha, Nat.add_mul]
+      omega
+
+/-- Balanced natural-number form of the exact red-contraction change:
+`new - old = (occurrences - 1) * argument_red_count - 1`. -/
+theorem red_beta_balance (b a : Marked) :
+    redCount (subst 0 a b) + redCount a + 1 =
+      redCount (.app (.lam false b) a) + occ 0 (erase b) * redCount a := by
+  simp only [redCount_subst, redCount, Bool.false_eq_true, ↓reduceIte]
+  omega
+
+/-- The selected contraction duplicates a red-containing argument at a
+nonlinear red binder. The context constructors retain the selected redex.
+This condition is necessary for red-count growth, but need not itself cause
+growth: consuming the red contractor also removes one red abstraction. -/
+inductive CodeDup : Marked → Marked → Prop where
+  | beta {b a : Marked} (nonlinear : 1 < occ 0 (erase b))
+      (redArgument : 0 < redCount a) :
+      CodeDup (.app (.lam false b) a) (subst 0 a b)
+  | appL {f f' : Marked} (a : Marked) :
+      CodeDup f f' → CodeDup (.app f a) (.app f' a)
+  | appR (f : Marked) {a a' : Marked} :
+      CodeDup a a' → CodeDup (.app f a) (.app f a')
+  | lam (q : Bool) {b b' : Marked} :
+      CodeDup b b' → CodeDup (.lam q b) (.lam q b')
+
+theorem codeDup_step {t u : Marked} (h : CodeDup t u) : Step t u := by
+  induction h with
+  | beta hn hr => exact .beta _ _ _
+  | appL a h ih => exact .appL a ih
+  | appR f h ih => exact .appR f ih
+  | lam q h ih => exact .lam q ih
+
+theorem step_redCount_le_or_codeDup {t u : Marked}
+    (h : Step t u) (ht : Good t) :
+    redCount u ≤ redCount t ∨ CodeDup t u := by
+  induction h with
+  | beta q b a =>
+      have haff : q = true → occ 0 (erase b) ≤ 1 :=
+        (good_blueAffine ht).1.2
+      cases q with
+      | false =>
+          by_cases hn : 1 < occ 0 (erase b)
+          · by_cases hr : redCount a = 0
+            · left
+              simp [redCount_subst, redCount, hr]
+            · exact Or.inr (.beta hn (by omega))
+          · left
+            have hz : occ 0 (erase b) = 0 ∨ occ 0 (erase b) = 1 := by omega
+            rcases hz with hz | hz <;> simp [redCount_subst, redCount, hz] <;> omega
+      | true =>
+          left
+          have ho := haff rfl
+          have hz : occ 0 (erase b) = 0 ∨ occ 0 (erase b) = 1 := by omega
+          rcases hz with hz | hz <;> simp [redCount_subst, redCount, hz]
+  | appL a h ih =>
+      rcases ih ht.1 with hn | hd
+      · left; simp only [redCount]; omega
+      · exact Or.inr (.appL a hd)
+  | appR f h ih =>
+      rcases ih ht.2 with hn | hd
+      · left; simp only [redCount]; omega
+      · exact Or.inr (.appR f hd)
+  | lam q h ih =>
+      rcases ih ht.1 with hn | hd
+      · left; simp only [redCount]; omega
+      · exact Or.inr (.lam q hd)
+
+theorem step_redCount_growth_codeDup {t u : Marked}
+    (h : Step t u) (ht : Good t) (hg : redCount t < redCount u) :
+    CodeDup t u := by
+  rcases step_redCount_le_or_codeDup h ht with hn | hd
+  · exact (Nat.not_lt_of_ge hn hg).elim
+  · exact hd
+
+/-- A finite trace that ends with more red abstractions contains an actual
+growth step, necessarily copying interpreter-origin code. Prefix and suffix
+reductions locate the selected step on the supplied trace. -/
+theorem steps_redCount_growth {t u : Marked}
+    (h : Steps t u) (ht : Good t) (hg : redCount t < redCount u) :
+    ∃ a b, Steps t a ∧ Step a b ∧ CodeDup a b ∧ Steps b u ∧
+      redCount a < redCount b := by
+  induction h with
+  | refl t => exact (Nat.lt_irrefl _ hg).elim
+  | @step t v u hs htail ih =>
+      by_cases hlocal : redCount t < redCount v
+      · exact ⟨t, v, .refl _, hs,
+          step_redCount_growth_codeDup hs ht hlocal, htail, hlocal⟩
+      · obtain ⟨a, b, hpre, hab, hdup, hpost, hinc⟩ :=
+          ih (good_step hs ht) (by omega)
+        exact ⟨a, b, .step hs hpre, hab, hdup, hpost, hinc⟩
+
+/-- A trace explicitly excluding code-copying contractions. -/
+inductive NoCodeDupSteps : Marked → Marked → Prop where
+  | refl (t : Marked) : NoCodeDupSteps t t
+  | step {t u v : Marked} : Step t u → ¬ CodeDup t u →
+      NoCodeDupSteps u v → NoCodeDupSteps t v
+
+theorem noCodeDupSteps_redCount {t u : Marked}
+    (h : NoCodeDupSteps t u) (ht : Good t) : redCount u ≤ redCount t := by
+  induction h with
+  | refl t => exact Nat.le_refl _
+  | @step t v u hs hn htail ih =>
+      have hstep : redCount v ≤ redCount t := by
+        rcases step_redCount_le_or_codeDup hs ht with hle | hd
+        · exact hle
+        · exact (hn hd).elim
+      exact Nat.le_trans (ih (good_step hs ht)) hstep
+
+/-- Each nonlinear residual binder must be red. -/
+theorem nonlinear_le_redCount {t : Marked} (h : BlueAffine t) :
+    SelfintLowerBound.nonlinear (erase t) ≤ redCount t := by
+  induction t with
+  | var n => simp [erase, SelfintLowerBound.nonlinear, redCount]
+  | app f a ihf iha =>
+      have hf := ihf h.1
+      have ha := iha h.2
+      simp only [erase, SelfintLowerBound.nonlinear, redCount]
+      omega
+  | lam q b ih =>
+      have hb := ih h.1
+      cases q with
+      | true =>
+          have ho := h.2 rfl
+          simp only [erase, SelfintLowerBound.nonlinear, redCount,
+            ↓reduceIte, Nat.add_zero]
+          rw [if_neg (by omega)]
+          omega
+      | false =>
+          simp only [erase, SelfintLowerBound.nonlinear, redCount,
+            Bool.false_eq_true, ↓reduceIte]
+          split <;> omega
+
+theorem redCount_pair (a r : Marked) :
+    redCount (pair a r) = redCount a + redCount r := by
+  simp [pair, redCount, redCount_shift]
+
+theorem redCount_bit (b : Bool) : redCount (bit b) = 0 := by
+  cases b <;> rfl
+
+theorem redCount_stream (bs : List Bool) (r : Marked) :
+    redCount (stream bs r) = redCount r := by
+  induction bs with
+  | nil => rfl
+  | cons b bs ih =>
+      change redCount (pair (bit b) (stream bs r)) = redCount r
+      rw [redCount_pair, redCount_bit, ih, Nat.zero_add]
+
+theorem redCount_source (E : Term) (bs : List Bool) :
+    redCount (source E bs) = redCount (red E) := by
+  simp [source, redCount, redCount_stream]
+
+/-- A closed beta-normal family with exactly n nonlinear binders.
+Each new binder occurs twice at a rigid head; the smaller closed family is
+an inert argument, so the construction introduces no beta redex. -/
+def manyNonlinear : Nat → Term
+  | 0 => .lam (.var 0)
+  | n + 1 => .lam (.app (.app (.var 0) (.var 0)) (manyNonlinear n))
+
+theorem manyNonlinear_closed (n : Nat) : Closed (manyNonlinear n) := by
+  induction n with
+  | zero => decide
+  | succ n ih =>
+      exact ⟨⟨by decide, by decide⟩, freeUnder_mono (by omega) ih⟩
+
+theorem manyNonlinear_nft (n : Nat) : NFt (manyNonlinear n) := by
+  induction n with
+  | zero => trivial
+  | succ n ih =>
+      exact ⟨(fun h => h), ⟨(fun h => h), trivial, trivial⟩, ih⟩
+
+theorem manyNonlinear_occ (n j : Nat) : occ j (manyNonlinear n) = 0 := by
+  induction n generalizing j with
+  | zero =>
+      simp only [manyNonlinear, occ, if_neg (Nat.zero_ne_add_one j)]
+  | succ n ih =>
+      simp only [manyNonlinear, occ, if_neg (Nat.zero_ne_add_one j), ih,
+        Nat.zero_add]
+
+theorem manyNonlinear_count (n : Nat) :
+    SelfintLowerBound.nonlinear (manyNonlinear n) = n := by
+  induction n with
+  | zero => decide
+  | succ n ih =>
+      simp [manyNonlinear, SelfintLowerBound.nonlinear, occ, manyNonlinear_occ, ih]
+
+/-- Every trace producing a target with more nonlinear binders than the
+initial interpreter has lambdas must duplicate interpreter-origin code. -/
+theorem every_large_output_trace_copies_code (E M : Term) {u : Marked}
+    (hsize : redCount (red E) < SelfintLowerBound.nonlinear M)
+    (h : Steps (source E (blcCode M)) u)
+    (he : erase u = .app (.app (.var 0) (.lam M)) (.var 1)) :
+    ∃ a b, Steps (source E (blcCode M)) a ∧ Step a b ∧ CodeDup a b ∧
+      Steps b u ∧ redCount a < redCount b := by
+  have hu : Good u := good_steps h (source_good E _)
+  have hbound := nonlinear_le_redCount (good_blueAffine hu)
+  have htarget : SelfintLowerBound.nonlinear M ≤
+      SelfintLowerBound.nonlinear (erase u) := by
+    rw [he]
+    simp only [SelfintLowerBound.nonlinear, Nat.zero_add, Nat.add_zero]
+    omega
+  apply steps_redCount_growth h (source_good E _)
+  rw [redCount_source]
+  omega
+
+/-- Every self-interpreter must copy interpreter-origin code on a suitable
+closed normal source. The displayed strict growth step consumes a nonlinear
+red binder and duplicates an argument containing a red lambda. -/
+theorem selfInterpreter_must_copy_code {E : Term} (hE : IsSelfInterpreter E) :
+    ∃ M a b u, Closed M ∧ NFt M ∧
+      Steps (source E (blcCode M)) a ∧ Step a b ∧ CodeDup a b ∧ Steps b u ∧
+      erase u = .app (.app (.var 0) (.lam M)) (.var 1) ∧
+      redCount a < redCount b := by
+  let M := manyNonlinear (redCount (red E) + 1)
+  have hc : Closed M := manyNonlinear_closed _
+  have hn : NFt M := manyNonlinear_nft _
+  obtain ⟨u, hu, he, _⟩ := selfInterpreter_normal_origins hE hc hn
+  have hsize : redCount (red E) < SelfintLowerBound.nonlinear M := by
+    simp only [M, manyNonlinear_count]
+    omega
+  obtain ⟨a, b, hpre, hab, hdup, hpost, hinc⟩ :=
+    every_large_output_trace_copies_code E M hsize hu he
+  exact ⟨M, a, b, u, hc, hn, hpre, hab, hdup, hpost, he, hinc⟩
+
+/-- There is a closed normal forcing source for every interpreter, and
+every origin-preserving trace to its required output contains a code-copying
+growth step. Existence of a successful trace is included, avoiding vacuity. -/
+theorem selfInterpreter_every_trace_copies_code {E : Term}
+    (hE : IsSelfInterpreter E) :
+    ∃ M, Closed M ∧ NFt M ∧
+      (∃ u, Steps (source E (blcCode M)) u ∧
+        erase u = .app (.app (.var 0) (.lam M)) (.var 1)) ∧
+      ∀ u, Steps (source E (blcCode M)) u →
+        erase u = .app (.app (.var 0) (.lam M)) (.var 1) →
+        ∃ a b, Steps (source E (blcCode M)) a ∧ Step a b ∧ CodeDup a b ∧
+          Steps b u ∧ redCount a < redCount b := by
+  let M := manyNonlinear (redCount (red E) + 1)
+  have hc : Closed M := manyNonlinear_closed _
+  have hn : NFt M := manyNonlinear_nft _
+  obtain ⟨u, hu, he, _⟩ := selfInterpreter_normal_origins hE hc hn
+  refine ⟨M, hc, hn, ⟨u, hu, he⟩, ?_⟩
+  intro v hv hev
+  apply every_large_output_trace_copies_code E M ?_ hv hev
+  simp only [M, manyNonlinear_count]
+  omega
 
 end Marked
 end Blc.QuoteOrigins

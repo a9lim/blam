@@ -9,6 +9,7 @@ the literal 165-bit interpreter applied to its original input.
 Source and certificates: tools/self-interpreter/theory/typed_normal.py.
 -/
 import Blc.SelfintSharp
+import Blc.SelfintControl
 
 namespace Blc.SelfintTyped
 open Term
@@ -71,24 +72,6 @@ theorem check_sound {t : Annotated} {Γ : List Ty} {τ : Ty}
                     exact .app (ihf hf) (iha ha)
                   · simp [check, hf, ha, he] at h
 
-theorem betas_subst {t u : Term} (h : Betas t u) (j : Nat) (s : Term) :
-    Betas (substDec j s t) (substDec j s u) := by
-  induction h with
-  | refl t => exact .refl _
-  | head hb hs ih =>
-      obtain ⟨n, hp⟩ := beta_par hb
-      exact betas_trans (parN_betas (parN_substDec hp (parN_refl s) j)) ih
-
-theorem betas_inst : ∀ (as : List Term) (j : Nat) {t u : Term},
-    Betas t u → Betas (instN as j t) (instN as j u) := by
-  intro as
-  induction as with
-  | nil => intro j t u h; exact h
-  | cons a as ih =>
-      intro j t u h
-      exact betas_subst (ih (j + 1) h) j _
-
-
 def intL672 : Term := (.lam (.lam (.app (.var 0) (.lam (.lam (.app (.app (.app (.var 1) (.lam (.app (.app (.var 0) (.lam (.var 0))) (.lam (.var 0))))) (.var 0)) (.lam (.lam (.app (.app (.var 1) (.app (.app (.var 1) (.app (.app (.var 1) (.app (.var 0) (.lam (.app (.app (.var 2) (.var 0)) (.var 0))))) (.app (.var 0) (.lam (.app (.app (.var 2) (.app (.var 1) (.lam (.app (.var 2) (.lam (.app (.app (.var 4) (.app (.var 3) (.lam (.app (.var 4) (.lam (.app (.app (.var 6) (.app (.app (.var 6) (.var 0)) (.app (.var 5) (.lam (.app (.app (.var 7) (.app (.app (.var 7) (.var 0)) (.app (.var 6) (.lam (.app (.var 7) (.lam (.app (.app (.var 9) (.var 0)) (.var 4)))))))) (.var 3)))))) (.app (.app (.var 6) (.app (.app (.var 6) (.var 0)) (.var 0))) (.var 0)))))))) (.app (.var 3) (.lam (.app (.app (.var 5) (.var 2)) (.app (.var 4) (.lam (.app (.app (.var 6) (.app (.app (.var 6) (.var 1)) (.app (.app (.var 6) (.var 2)) (.app (.var 5) (.lam (.app (.var 6) (.lam (.app (.app (.var 8) (.var 2)) (.app (.var 7) (.lam (.app (.var 8) (.lam (.app (.app (.var 10) (.app (.app (.var 10) (.var 1)) (.var 2))) (.app (.app (.var 10) (.var 0)) (.var 3))))))))))))))) (.app (.app (.var 6) (.var 3)) (.app (.var 5) (.lam (.app (.app (.var 7) (.var 3)) (.app (.var 6) (.lam (.app (.app (.var 8) (.app (.app (.var 8) (.var 2)) (.var 0))) (.app (.app (.var 8) (.var 1)) (.var 0))))))))))))))))))))) (.app (.app (.var 2) (.var 0)) (.var 0))))))) (.var 5))) (.app (.var 0) (.lam (.app (.app (.var 2) (.app (.app (.var 2) (.var 0)) (.app (.var 1) (.lam (.app (.var 2) (.lam (.var 1))))))) (.var 3)))))))))))))
 
 def annotated672 : Annotated := (.lam .base (.lam (.arr (.arr (.arr (.arr (.arr (.arr .base .base) (.arr (.arr .base .base) .base)) .base) (.arr .base (.arr (.arr (.arr .base (.arr .base .base)) (.arr (.arr (.arr .base .base) .base) .base)) .base))) (.arr .base .base)) .base) (.app (.var 0) (.lam (.arr (.arr (.arr (.arr .base .base) (.arr (.arr .base .base) .base)) .base) (.arr .base (.arr (.arr (.arr .base (.arr .base .base)) (.arr (.arr (.arr .base .base) .base) .base)) .base))) (.lam .base (.app (.app (.app (.var 1) (.lam (.arr (.arr .base .base) (.arr (.arr .base .base) .base)) (.app (.app (.var 0) (.lam .base (.var 0))) (.lam .base (.var 0))))) (.var 0)) (.lam (.arr .base (.arr .base .base)) (.lam (.arr (.arr .base .base) .base) (.app (.app (.var 1) (.app (.app (.var 1) (.app (.app (.var 1) (.app (.var 0) (.lam .base (.app (.app (.var 2) (.var 0)) (.var 0))))) (.app (.var 0) (.lam .base (.app (.app (.var 2) (.app (.var 1) (.lam .base (.app (.var 2) (.lam .base (.app (.app (.var 4) (.app (.var 3) (.lam .base (.app (.var 4) (.lam .base (.app (.app (.var 6) (.app (.app (.var 6) (.var 0)) (.app (.var 5) (.lam .base (.app (.app (.var 7) (.app (.app (.var 7) (.var 0)) (.app (.var 6) (.lam .base (.app (.var 7) (.lam .base (.app (.app (.var 9) (.var 0)) (.var 4)))))))) (.var 3)))))) (.app (.app (.var 6) (.app (.app (.var 6) (.var 0)) (.var 0))) (.var 0)))))))) (.app (.var 3) (.lam .base (.app (.app (.var 5) (.var 2)) (.app (.var 4) (.lam .base (.app (.app (.var 6) (.app (.app (.var 6) (.var 1)) (.app (.app (.var 6) (.var 2)) (.app (.var 5) (.lam .base (.app (.var 6) (.lam .base (.app (.app (.var 8) (.var 2)) (.app (.var 7) (.lam .base (.app (.var 8) (.lam .base (.app (.app (.var 10) (.app (.app (.var 10) (.var 1)) (.var 2))) (.app (.app (.var 10) (.var 0)) (.var 3))))))))))))))) (.app (.app (.var 6) (.var 3)) (.app (.var 5) (.lam .base (.app (.app (.var 7) (.var 3)) (.app (.var 6) (.lam .base (.app (.app (.var 8) (.app (.app (.var 8) (.var 2)) (.var 0))) (.app (.app (.var 8) (.var 1)) (.var 0))))))))))))))))))))) (.app (.app (.var 2) (.var 0)) (.var 0))))))) (.var 5))) (.app (.var 0) (.lam .base (.app (.app (.var 2) (.app (.app (.var 2) (.var 0)) (.app (.var 1) (.lam .base (.app (.var 2) (.lam .base (.var 1))))))) (.var 3)))))))))))))
@@ -128,7 +111,7 @@ theorem substDec_intL165' (j : Nat) (s : Term) : substDec j s intL165 = intL165 
 theorem root672 (C R : Term) :
     Betas (.app (.app intL672 C) (pairT churchTrue R))
       (.app (.app intL165 C) (pairT churchTrue R)) := by
-  have h := betas_inst [C, R] 0 (SelfintSharp.replay_sound run_root672)
+  have h := SelfintControl.betas_inst [C, R] 0 (SelfintSharp.replay_sound run_root672)
   simpa [instN, pairT, substDec, shift, substDec_intL672, substDec_intL165',
     shift_churchTrue, substDec_churchTrue, shift_shift0, substDec_shift0, shift_zero] using h
 

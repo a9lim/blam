@@ -150,6 +150,158 @@ This provenance statement is stronger than saying the initial quotation
 is affine. Affineness alone does not identify the origin of a binder
 after unrestricted interpreter reductions.
 
+## Decoding must copy interpreter-origin code
+
+The quotation can control computation, but duplicating only quotation
+syntax cannot supply arbitrary output structure. `Blc.SelfintOrigins`
+proves this as a property of reduction traces.
+
+Let `redCount(t)` count interpreter-origin abstractions. Substitution has
+the exact accounting law
+
+```text
+redCount(B[x := A]) = redCount(B) + occurrences(x,B) redCount(A).
+```
+
+A red contraction consumes its own abstraction, so with `k` occurrences
+and `r` red abstractions in the argument, its change in red count is
+`(k - 1) r - 1`, interpreted over integers. A blue contraction cannot
+increase the count, because its binder is affine. Consequently any strict
+increase must contract a nonlinear red binder and duplicate an argument
+containing a red abstraction. `CodeDup` identifies such a contraction,
+including beneath arbitrary application and abstraction contexts.
+
+For each `n`, use the closed normal source
+
+```text
+M_0     = λx.x
+M_(n+1) = λx.(x x) M_n.
+```
+
+It has exactly `n` nonlinear binders. All of them must be red in the
+interpreter's exact output. Choose `n` one greater than the number of
+abstractions in `E`: the initial colored invocation has only that many
+red abstractions, while its output has at least `n`.
+
+`selfInterpreter_every_trace_copies_code` proves that a successful trace
+exists and **every** colored trace to this source's exact output contains
+a strict red-count growth step. The theorem supplies the prefix, selected
+contraction, and suffix, with `CodeDup` and the strict count inequality.
+Its existential corollary is `selfInterpreter_must_copy_code`.
+
+This excludes a decoder whose contractions duplicate only quotation-only
+arguments. It does not require a separate fixed-point combinator: a
+semantic operation may perform the necessary code copying. Nor does it
+assign that operation an independent bit cost.
+
+## Different output roles need not have different origins
+
+The frozen-quotation theorem does not turn different output binding roles
+into distinct abstraction occurrences in the interpreter. A single original
+binder can supply every abstraction in an arbitrary reconstructed lambda term,
+including binders with different multiplicities and capture relations.
+The following is Codex's handwritten construction, not a separate Lean result.
+
+Let
+
+```text
+S = λf g x.f x (g x)
+K = λa b.a
+I = S K K.
+```
+
+Mark the final `x` binder in one syntactic copy of `S` with origin `α`.
+Treat `S,K` as constant symbols when constructing combinatory expressions.
+Use this modified bracket abstraction, in the displayed case order:
+
+```text
+[x]x       = I
+[x]T       = S (K (K T)) I              when x is absent from T
+[x](U V)   = S ([x]U) ([x]V)           otherwise.
+```
+
+For every combinatory expression `T`, expanding the constants gives a finite
+beta reduction
+
+```text
+[x]T →* λx.T
+```
+
+whose displayed surviving abstraction comes from `S`'s final binder.
+This is beta equality, with no eta rule:
+
+* `S K K →* λx.x`.
+* `S (K (K T)) I →* λx.(K T) (I x) →* λx.T`.
+* `S ([x]U) ([x]V)` first becomes
+  `λx.([x]U) x (([x]V) x)`. The two induction hypotheses turn its
+  subapplications into `U` and `V`; their intermediate abstraction binders
+  are contracted.
+
+In each case the selected outer `S` receives both its first arguments, so
+its `f,g` binders are consumed. The auxiliary `K` and `I` binders used by
+that abstraction step are consumed or erased. Copies of constants inside
+`T` are left intact for subsequent steps. All variable names can first be
+chosen distinct from the constant symbols and administrative binders.
+Capture avoidance preserves the free variables of `T`; the application
+case passes the surviving bound `x` to the two recursive expressions.
+Thus the construction creates the required binding edges by substitution
+and application, without accidental capture.
+
+Compile a source term structurally:
+
+```text
+C(x)       = x
+C(M N)     = C(M) C(N)
+C(λx.M)    = [x]C(M).
+```
+
+A second induction gives `C(M) →* M`. In an abstraction case first perform
+the bracket reduction to `λx.C(M)`, then the source induction beneath that
+lambda. In an application case reduce its two operands independently.
+These reductions need not contract any redex belonging to the reconstructed
+source: the result holds for non-normal and divergent `M` too. Every
+source abstraction reconstructed by this path has the marked origin.
+
+To make this one *original* occurrence rather than repeated copies of the
+same definition, share the constants:
+
+```text
+T_M = (λs k. C(M)[S := s, K := k]) S K.
+```
+
+The two sharing binders are contracted first. The resulting copies of `S`
+all inherit the same original `α`, so every abstraction in the final `M`
+is a residual of that one syntactic binder. A small example already
+separates affine and nonlinear capturing roles:
+
+```text
+(λs k. s s (k (s k k))) S K
+  →* S S (K I)
+  →* λf. S f I
+  →* λf x. f x x.
+```
+
+Both final binders descend from the original `S.x`. The final `f` is
+affine, whereas `x` is nonlinear and captures `f`.
+
+Apply the general construction to the literal 165-bit interpreter.
+`T_int165` first beta-reduces to that exact interpreter, with every one of
+its abstractions descended from `α`. It therefore satisfies the same
+self-interpreter contract. Composing this path with the existing interpreter
+reduction shows that all interpreter-origin output binders can descend
+from `α` for every closed source. Quotation-origin output binders may still
+remain; the frozen theorem continues to constrain those independently.
+
+Consequently no finite source binding or capture graph alone forces several
+distinct interpreter origins for its complex output binders. This does not
+exclude a size-sensitive argument: the combinatory code can be much larger
+than 165 bits, and the structure encoded by that code still has a cost.
+The counterexample rules out unqualified origin-counting arguments, not
+lower bounds that account for how much syntax is needed to reuse an origin.
+It supplies a chosen reduction path, not a classification of all paths.
+The sharing and combinator machinery still contains other binders; this
+does not contradict the two-nonlinear-binder lower bound.
+
 ## Exact evidence boundary
 
 The three structural modules are kernel-checked, use no `sorry` or

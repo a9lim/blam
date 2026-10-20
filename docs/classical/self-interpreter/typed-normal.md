@@ -13,6 +13,14 @@ particular, **simple typability of the interpreter alone cannot be an
 unconditional exclusion**. Actual applications to quotations need not admit
 the interpreter's inferred type.
 
+Two-parameter delayed interpretation is an established technique:
+[Tromp's paper, introduction](https://tromp.github.io/cl/LC.pdf) credits
+Mogensen's encoding with the decoder `λm.m I I`, citing
+*Linear-Time Self-Interpretation of the Pure Lambda Calculus* (2000).
+The construction here uses this approach inside a first-bit-activated BLC
+wrapper; its ordinary simple typing and exact BLC contract are checked
+separately below.
+
 Let `E0` be any closed correct interpreter, `I = λx.x`, and
 
 ```text

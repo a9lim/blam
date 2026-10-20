@@ -21,4 +21,5 @@ import Blc.SelfintNormal
 import Blc.SelfintCapture
 import Blc.SelfintOrigins
 import Blc.SelfintSharp
+import Blc.SelfintControl
 import Blc.SelfintTyped

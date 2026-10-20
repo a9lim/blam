@@ -177,8 +177,15 @@ with all features (three opt-in tests ignored) and 328 with default features.
   A colored reduction theorem proves that quotation-origin binders remain
   affine, retain one of three protected head shapes, and cannot acquire a
   live capture; live quotation bodies stay normal and contain only
-  quotation-origin abstractions. These results do not yet give an additive
-  size decomposition.
+  quotation-origin abstractions. Lean also proves that every interpreter
+  has a closed normal source for which every successful colored reduction
+  trace contains a strict increase in interpreter-origin abstractions:
+  a nonlinear interpreter-origin binder must copy an argument containing
+  interpreter-origin code. A handwritten modified SK abstraction
+  construction shows that all interpreter-origin output binders can share
+  one original binder, so distinct output roles do not force distinct
+  origins without a size-sensitive argument. These results do not yet give
+  an additive size decomposition.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
   `typed-normal.md`): the β-normal interpreter is 204 bits
   (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,
@@ -201,7 +208,10 @@ with all features (three opt-in tests ignored) and 328 with default features.
   the erased skip operand can return the continuation, parser, or generator
   off the input domain, producing correct 167-, 168-, and 169-bit variants.
   The unchanged NEXT diagonal fails for every skip function under its
-  handler protocol. Root transparency and context independence already
+  handler protocol. Lean proves `E E` cannot be β-equal to `E` for any
+  exact interpreter, excluding an idempotent control response whose
+  self-application would supply the full parser. Root transparency and
+  context independence already
   force canonical closed internal values, sharpening the cell/APP collision.
   A representation that erases β distinctions cannot have an exact decoder
   using only that representation; closed two-sided β-inverse coercions are
@@ -209,7 +219,8 @@ with all features (three opt-in tests ignored) and 328 with default features.
   196 bits with shared self-application, 206 without; both pass the
   667/1/0 battery and Ω suffix check in 3.5 seconds combined
   (`data/self-interpreter/theory/stream_handler.json`). The adapters still
-  cost more than the 165's parser interface. These are protocol-specific
+  cost more than the 165's parser interface. Except for the unconditional
+  non-idempotence and its generator corollary, these are protocol-specific
   handwritten proofs.
 - **The universal machine** (`classical/self-interpreter/universal.md`):
   Tromp's wirings around the 165's body give 175 (non-strict) and 187

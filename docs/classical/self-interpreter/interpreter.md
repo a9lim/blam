@@ -321,6 +321,9 @@ preserved by β-reduction and holds for the quotation, while the normal
 output for `λa b.a b` violates it. A separate colored reduction theorem
 tracks quotation-origin binders through unrestricted interpreter
 reductions: they remain affine with a protected head occurrence.
+For a suitable closed normal source, every successful colored trace must
+also copy interpreter-origin code at a nonlinear interpreter-origin binder.
+Copying quotation-only arguments cannot create the required output.
 These are global constraints, not separately additive module costs
 (`structural-bounds.md`, `Blc/SelfintCapture.lean`,
 `Blc/SelfintOrigins.lean`).
@@ -385,6 +388,10 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   each requires `A c (λz.I) N` to equal `c (λz.I) R`; but they leave different
   remainders `R` after the misread variable.
 - **`E E = E` is impossible:** the identity program refutes it.
+  `Blc/SelfintControl.lean` proves this from the exact contract, and excludes
+  an idempotent control response whose self-application is `E`. The APP
+  control-seed consequence and its suffix assumptions are in
+  `protocol-obstructions.md`.
 - **A contract-preserving continuation that is also its own knot driver is
   impossible:** M = Ω refutes it.
 - **A shared head cannot carry the only tag dependence.** If
@@ -560,6 +567,8 @@ Open:
   so counting more such binders cannot close the gap. A quantitative theorem
   must account for their connections, live captures, and quotation-origin
   restrictions without incorrectly adding costs of computations that share.
+  Code copying is necessary, but different output binding roles can all
+  descend from one original binder (`structural-bounds.md`).
 
 ## 8. Reproduce
 

@@ -198,6 +198,35 @@ Self-interpretation:
   `selfint_open165`, `parserStatement165`, `isSelfInterpreter_intL165`, and
   `not_selfintSizeBound_166` (the upper-bound half of optimality; the lower
   bound `SelfintSizeBound 165` is stated, open).
+- `Blc/SelfintLowerBound.lean` — every term with at most one syntactically
+  nonlinear binder weakly normalizes. Consequently every self-interpreter
+  has at least two, and an explicit `λc s.B` has two inside `B`. A syntax
+  inequality gives `SelfintSizeBound 18`, without assuming a parser design.
+- `Blc/SelfintCapture.lean` — absence of live capture of enclosing local
+  variables is preserved by substitution and β-reduction. The interpreter
+  contract forces such a capture in the interpreter's source.
+- `Blc/SelfintOrigins.lean` — colored reduction tracks quotation-origin
+  abstractions through every ordinary reduction. They remain affine, and
+  live ones retain protected head shapes, no local capture, and normal
+  bodies containing only quotation-origin abstractions. A red-abstraction
+  accounting theorem proves that every interpreter must duplicate
+  interpreter-origin code along every successful trace for a suitable
+  closed normal source.
+- `Blc/SelfintNormal.lean` — the 204-bit β-normal interpreter, including its
+  exact wire and directed contract for every closed source and arbitrary
+  continuation and suffix.
+- `Blc/SelfintSharp.lean` — a sound checker for explicit contextual β traces;
+  a 584-bit interpreter with exactly two nonlinear binders, both closed in
+  isolation; and a 742-bit β-normal interpreter with the same property.
+  The first reduces to the literal 165; the second has a β-joinability
+  contract. Thus the nonlinear count is sharp even among normal interpreters.
+- `Blc/SelfintTyped.lean` — the 672-bit β-normal, simply typed interpreter.
+  A proved annotation checker supplies an ordinary STLC judgment. A finite
+  cast-erasure trace transfers the 165's directed contract. Its applications
+  to quotations need not be simply typable.
+- `Blc/SelfintControl.lean` — arbitrary continuation/suffix instances of the
+  β-joinability contract and the unconditional theorem that `E E` cannot
+  be β-equal to an exact self-interpreter `E`.
 
 Generated:
 

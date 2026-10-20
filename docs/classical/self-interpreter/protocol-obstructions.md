@@ -157,6 +157,77 @@ return instruction, and that instruction performs an already-required
 semantic operation. An explicit adapter that merely recovers the current
 parser repays the hoped-for saving. A smaller protocol of this kind remains open.
 
+## APP cannot supply the full parser through an idempotent control response
+
+The semantic application `lambda e.f e (g e)` already duplicates an
+environment. A proposed reuse makes a special environment `q` expose a
+recursion generator from each parsed value, so that this same APP operation
+performs the generator's self-application. The following obstruction uses
+actual source values, not independent rigid operands.
+
+First, **no interpreter satisfying the exact contract is idempotent**:
+`E E` cannot be beta-equal to `E`. Write
+
+```text
+I = lambda x.x
+F = lambda z.I
+Q(N) = quote(I) ++ N
+     = cons K (cons K (cons F (cons K N))).
+```
+
+For a fresh rigid `r`, two uses of the interpreter contract give
+
+```text
+E E Q(Q(r)) =beta E F Q(r) =beta F F r =beta r.
+```
+
+If `E E =beta E`, this forces `E Q(Q(r)) =beta r`. Apply both sides to
+`Q(F)` and use the contract once more:
+
+```text
+r Q(F) =beta E Q(Q(r)) Q(F)
+       =beta Q(Q(r)) F F
+       =beta cons F (cons K (Q(r))).
+```
+
+The left side is beta-normal with rigid head `r`; the right side is
+beta-normal with an outer lambda. Church–Rosser excludes their equality.
+`Blc.SelfintControl.selfInterpreter_not_idempotent` kernel-checks this
+argument from `IsSelfInterpreter`, deriving arbitrary continuation and
+suffix instances from its rigid-placeholder formulation. It assumes no
+parser architecture.
+
+Now let `V(M,N)` be a context-independent internal value for source `M`
+followed by suffix `N`, allowing a changed representation and a separate
+public decoder. Fix a control seed `q` and write `H(M,N) = V(M,N) q`.
+Assume APP remains pointwise application at this seed:
+
+```text
+H(M L,N) =beta H(M,quote(L) ++ N) H(L,N).
+```
+
+For just one suffix `R`, suppose the three actual control responses agree:
+
+```text
+H(I,R) =beta H(I,Q(R)) =beta H(I I,R) =beta G.
+```
+
+The APP equation at `(I,I)` then gives `G =beta G G`. Therefore `G G`
+cannot be the full exact interpreter `E`: that additional equation would
+give `G =beta E` and hence `E E =beta E`, contradicting the proof above.
+This last implication is also kernel-checked as
+`selfInterpreter_not_idempotent_generator`; the stated APP protocol
+reduction to its hypotheses is the handwritten argument above.
+
+A common generator response for every source and suffix implies these
+hypotheses, but is stronger than necessary. Suffix independence on `I`
+and invariance of the control response under `I I -> I` already suffice.
+Correctness after a public decoder does **not** imply either property of
+the internal values. Source-dependent responses that distinguish these
+cases, a nonhomomorphic control projection, or a bootstrap targeting a
+continuation-specific internal state instead of `E` remain outside this
+obstruction.
+
 
 ## Closed-source correctness already forces closed internal values
 
