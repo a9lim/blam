@@ -12,8 +12,13 @@ n stay rigid, so equal normal forms prove the contract for that M, not merely
 agreement on a marker.  Programs: every closed term of 4..MAXBITS bits plus a
 few deep-index extras.
 
-    battery.py FILE.lam... [--uni] [--int4] [--max-bits N]
-    battery.py --bits BITS [--uni] [--int4] [--max-bits N]
+    battery.py FILE.lam... [--uni [--strict]] [--int4] [--max-bits N]
+    battery.py --bits BITS [--uni [--strict]] [--int4] [--max-bits N]
+
+--strict (universal machines) also runs Tromp's strict filter: U applied to
+each open program in STRICT, terminated by nil, must have no normal form
+within 2^16 beta.  Like `blam selfint wiring --strict`, it is a filter, not a
+proof of strictness.
 
 --int4 encodes the programs in int4.lam's four-primitive code (00 lambda,
 01 application, 10 variable zero, 11 successor) instead of BLC.
@@ -46,6 +51,13 @@ EXTRA = [
     "\\\\\\\\\\\\\\\\\\9", "(\\\\2 (2 1)) (\\\\2 (2 (2 1)))",
     "\\1 (\\\\\\\\\\\\6) (\\\\2 3)",
 ]
+
+# Open programs whose free variable is used: `1`, `2`, `\2`, `1 1`, `1 1`
+# followed by the data bits 10, `\\4`, and `1 (\\2) (\\1)`.  The last is
+# Codex's witness against machines whose base environment applies the parser:
+# they pass the other six and still halt on it.
+STRICT = ["10", "110", "00110", "011010", "01101010", "000011110",
+          "0101100000110000010"]
 
 
 def enc(t):
@@ -140,6 +152,14 @@ def check(E, uni=False, max_bits=18, threads=10, code=enc):
     return sum(r == "ok" for r in res), sum(r == "skip" for r in res), bad
 
 
+def strict_halts(E, threads=7):
+    """The STRICT programs on which universal machine E halts within 2^16 beta."""
+    def halts(c):
+        return normalize(enc(("A", E, bitlist(c, FALSE))), 1 << 16) is not None
+    with ThreadPoolExecutor(threads) as ex:
+        return [c for c, h in zip(STRICT, ex.map(halts, STRICT)) if h]
+
+
 def main():
     args = sys.argv[1:]
     uni = "--uni" in args
@@ -149,7 +169,8 @@ def main():
         i = args.index("--max-bits")
         max_bits = int(args[i + 1])
         del args[i:i + 2]
-    targets = [a for a in args if a not in ("--uni", "--int4")]
+    strict = "--strict" in args
+    targets = [a for a in args if a not in ("--uni", "--int4", "--strict")]
     if targets and targets[0] == "--bits":
         from lc import decode
         targets = [("bits", decode(b, 0)[0]) for b in targets[1:]]
@@ -160,6 +181,10 @@ def main():
         print(f"{len(enc(E)):5d} bits  ok={ok} skip={skip} fail={len(bad)}  {path}")
         for b in bad[:5]:
             print("        ", *b)
+        if strict:
+            halts = strict_halts(E)
+            print("        strict filter:",
+                  "halts on " + " ".join(halts) if halts else "no normal form on all")
 
 
 if __name__ == "__main__":

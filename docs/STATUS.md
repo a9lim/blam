@@ -159,7 +159,12 @@ with all features (three opt-in tests ignored) and 328 with default features.
   every interpreter has head normal form `λc s. c A B` or `λc s. s A⃗` and a
   duplicated binder, and a β-normal correct interpreter exists, so no knot is
   forced; a proof at 165 bits needs a decomposition theorem that does not yet
-  exist.
+  exist. Within the 165's own reader shape (`s H S`, handler `λb r⃗. b A B`)
+  Codex proved the 165 minimal, with the zero arm ≥ 14 and the APP lift ≥ 19
+  bits, and excluded reader/handler knot trees and the cell/APP alias at every
+  size (§5, handwritten proofs with checks in
+  `data/self-interpreter/reasoning_165/`); its seventeen correct
+  constructions measure 166 to 234, and a 158 and a 167 fail (`merges.py`).
 - **The universal machine** (`classical/self-interpreter/universal.md`):
   Tromp's wirings around the 165's body give 175 (non-strict) and 187
   (strict), against 178 and 190 around the 168's. Wirings around the new body
@@ -169,8 +174,11 @@ with all features (three opt-in tests ignored) and 328 with default features.
   2,375,084 capped contexts. Joint U-specific searches around the old body
   screened 2,207,444,203 assignments below 178 with no survivor and 1,462,818
   caps (`data/self-interpreter/universal.json`). The partially applied parser
-  is no longer a universal continuation with the 165's reader. Unsearched: the
-  strict contexts of 39..43 bits around either body.
+  is no longer a universal continuation with the 165's reader. The strict
+  filter has seven probes: Codex's `1 K F` shows that 186- and 188-bit
+  machines around the 165 passing the first six are not strict, and excludes
+  parser-applying base environments at every size. Unsearched: the strict
+  contexts of 39..43 bits around either body.
 
 ### AIT golf
 
@@ -242,8 +250,9 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
 9. **The self-interpreter below 165** (`classical/self-interpreter/interpreter.md`
-   §7): readers not of the `list H S` shape, knots entangled with the reader,
-   and the capped fills of the reader searches. Look for another shared
+   §7): readers outside the shape bounded in §5, the reader's own diagonal
+   `R Z →* next next` as the knot's generator, and the capped fills of the
+   reader searches. Look for another shared
    computation of the kind the reader is, by reasoning first; an unconditional
    lower bound needs a decomposition theorem. Upstreaming the 165, 175 and 187
    to tromp/AIT is a9's call (`contrib/PR_KIT.md`).

@@ -1,0 +1,4 @@
+191 bits  ok=667 skip=1 fail=0  return_stream.lam  wall=2.551s
+207 bits  ok=667 skip=1 fail=0  return_stream_shared_cont.lam  wall=2.449s
+181 bits  ok=667 skip=1 fail=0  late_zero_discard.lam  wall=2.397s
+199 bits  ok=667 skip=1 fail=0  reader_diagonal_knot.lam  wall=2.381s

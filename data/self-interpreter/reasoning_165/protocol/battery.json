@@ -1,0 +1,22 @@
+[
+  {
+    "name": "reparse_selected",
+    "bits": 225,
+    "ok": 667,
+    "skip": 1,
+    "fail": 0,
+    "failures": [],
+    "seconds": 2.3138279580161907,
+    "line": "  225 bits  ok=667 skip=1 fail=0  reparse_selected.lam"
+  },
+  {
+    "name": "reparse_shared",
+    "bits": 234,
+    "ok": 667,
+    "skip": 1,
+    "fail": 0,
+    "failures": [],
+    "seconds": 2.3664639170165174,
+    "line": "  234 bits  ok=667 skip=1 fail=0  reparse_shared.lam"
+  }
+]

@@ -388,19 +388,29 @@ fn setup(n_programs: usize, strict: bool) -> Setup {
     // Open programs whose free variable is applied or returned, terminated
     // by nil (Tromp's KS convention): a strict machine has no normal form on
     // them. A symbolic tail is not enough: a machine that re-parses leftover
-    // input on a free variable gets stuck on it and only looks strict.
+    // input on a free variable gets stuck on it and only looks strict. The
+    // last, `1 (\\2) (\\1)`, is Codex's witness against base environments
+    // that apply the parser; battery.py --strict runs the same seven.
     let open_probes: Vec<Probe> = if strict {
-        ["10", "110", "00110", "011010", "01101010", "000011110"]
-            .iter()
-            .map(|m| {
-                let mut p = Probe::new_uni(m);
-                p.head = vec![false, true]; // U S, no outer binder
-                let n = p.tail.len();
-                p.tail.truncate(n - (2 + m.len())); // drop the rigid tail variable
-                super::ctx::push_bits(&mut p.tail, "000010"); // nil
-                p
-            })
-            .collect()
+        [
+            "10",
+            "110",
+            "00110",
+            "011010",
+            "01101010",
+            "000011110",
+            "0101100000110000010",
+        ]
+        .iter()
+        .map(|m| {
+            let mut p = Probe::new_uni(m);
+            p.head = vec![false, true]; // U S, no outer binder
+            let n = p.tail.len();
+            p.tail.truncate(n - (2 + m.len())); // drop the rigid tail variable
+            super::ctx::push_bits(&mut p.tail, "000010"); // nil
+            p
+        })
+        .collect()
     } else {
         Vec::new()
     };

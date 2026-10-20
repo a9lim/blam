@@ -1,0 +1,42 @@
+[
+  {
+    "candidate": "tag_after_parse",
+    "program": "Omega",
+    "result": "tail returned exactly"
+  },
+  {
+    "candidate": "tag_after_parse",
+    "program": "lambda_Omega",
+    "result": "tail returned exactly"
+  },
+  {
+    "candidate": "tag_after_parse_hoisted",
+    "program": "Omega",
+    "result": "tail returned exactly"
+  },
+  {
+    "candidate": "tag_after_parse_hoisted",
+    "program": "lambda_Omega",
+    "result": "tail returned exactly"
+  },
+  {
+    "candidate": "tag_after_parse_handler",
+    "program": "Omega",
+    "result": "tail returned exactly"
+  },
+  {
+    "candidate": "tag_after_parse_handler",
+    "program": "lambda_Omega",
+    "result": "tail returned exactly"
+  },
+  {
+    "candidate": "independent_projections",
+    "program": "Omega",
+    "result": "tail returned exactly"
+  },
+  {
+    "candidate": "independent_projections",
+    "program": "lambda_Omega",
+    "result": "tail returned exactly"
+  }
+]

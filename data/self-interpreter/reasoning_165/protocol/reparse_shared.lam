@@ -1,0 +1,7 @@
+(\x.x x) (\x.(\intL.\cont.
+ (\next.\list.list (\bit0.bit0 (\r.r next) cont) (list list list))
+ (\bit1\tail\orig.
+   (\other.bit1
+     (cont (\args\arg.(orig intL) (\zx\zy.zx arg (zy args))) other)
+     (intL (\exp2.cont (\args.other args (exp2 args))) (orig intL)))
+   (intL (bit1 (\u\v.v) (\u\v.u)) tail))) (x x))

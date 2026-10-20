@@ -118,6 +118,19 @@ Dropping it through `bit0`, which is `K` in that arm, costs one bit more
 `C`, and re-dispatching it through `H` runs into the uniform-handler
 impossibility of §5.
 
+**Identities of the reader** (Codex). Write `R = \s. s H (s s s)` for the
+reader with `next` and `cont` fixed, `H = \b. b Z cont` and `Z = \u r. r next`.
+Off genuine streams the reader still computes: `R K = H`, `R F = F`,
+`R I = \r. r next`, and `R (K a) = a (a (K a))`, so a constant stream is a
+return instruction, `R (K (K X)) = X`. It also diagonalizes its own zero arm:
+`R Z →* next next`, and in general `R Z_t →* t t` for `Z_t = \u r. r t`
+whatever `next` and `cont` are, while `H R →* next next cont`. On streams,
+`s (\x. x x)` is a conditional predecessor (`K` after a 0, the tail after a
+1), two cells cross-apply as `cons b r (cons d t) = b d t r`, and unary codes
+`U_k(N) = 1^k 0 ++ N` satisfy `U_{i+1}(N) U_{j+1}(M) = U_j(M) U_i(N)`. Proofs
+and rigid-variable checks are in `data/self-interpreter/reasoning_165/`
+(`fresh/`, `knot/`, `algebra/`, `reader/`).
+
 ### The NEXT region
 
 From `next` inward the 165 is the 168, at the same binder stack
@@ -317,6 +330,34 @@ semantic slots. A proof at this size therefore needs a decomposition theorem —
 a way to localize the interpreter's roles in separately priced subterms — and
 the 165 shows that the natural decomposition is false.
 
+### Bounds within the 165's reader shape
+
+These are Codex's handwritten proofs, with targeted reduction checks in
+`data/self-interpreter/reasoning_165/bounds/` (`proof_check.py`); none is in
+Lean.
+
+- **The reader.** In the frame `[s, next, cont, intL, x]`, take readers
+  `s H S` where `S` satisfies the stop-at-first-zero law and
+  `H = λb r1 … rm. b A B` with arbitrary `A`, `B` (redexes and further uses
+  of `b` allowed) and no common arguments after `b A B`, satisfying
+  `H K R R = R next` and `H F R T = cont R T` for rigid neighbours. The
+  cheapest handler costs 27, 33 or 40 bits with 0, 1 or 2 tails bound before
+  the dispatch; three or more leave an outer λ. The skip costs at least 10 and
+  the two applications with `s` 6, so the reader costs at least 43, and with
+  the other 122 bits unchanged the minimum is the 165. The class does not
+  cover other reader heads, arguments shared across the dispatch, or use of
+  the correlation between a variable's selector and its suffix.
+- **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
+  zero cell available to borrow. With `R` absent and the neighbours rigid,
+  `Z R R = R next` forces the normal form `λu v. u next` (15) or
+  `λu v. v next` (14), and every term below 14 that uses the known tag or cell
+  fails. So reusing the duplicated zero cell cannot buy the missing bit while
+  `next` and the recursion stay rigid.
+- **The APP lift costs at least 19 bits** under `V E = f E (g E)` with
+  independent rigid variables, with no syntax restriction: its unique normal
+  form costs 19, and a non-normal representative needs two λs, three
+  applications and one index bit for `f`.
+
 ### Exclusions at every size
 
 - **One handler for both tag bits is impossible.** Using `H c` for the first
@@ -333,25 +374,57 @@ the 165 shows that the natural decomposition is false.
   `b`, take `R = ⌜I⌝ ++ N` and `S = ⌜I⌝ ++ R`: the ABS program `λx.I` with tail
   `R` and the APP program `I I` with tail `N` reach the same payload `H0`, ABS
   forces `H0 = K (K I)`, and APP then returns `I` instead of `C (K I) N`.
-- **A mode-free ABS/APP value builder is impossible:** a `W` with
-  `W f K e = λa. f (cell a e)` and `W f g e = f e (g e)` for every value `g`
-  meets `f = K (K I)`, `g = K Ω`: APP requires `I`, ABS `K (K I)`, and the
-  genericity lemma forbids telling the unsolvable `K Ω` apart from `K`.
+- **A mode-free ABS/APP value builder is impossible, whatever its marker:** a
+  `W` with `W f q0 e = λa. f (cell a e)` and `W f g e = f e (g e)` for every
+  value `g` meets `f = K (K I)`, `g = K Ω`, `e = I`: APP requires `I`, ABS
+  `K (K I)`, and by the genericity lemma the unsolvable `K Ω` can be replaced
+  by any `q0`, even one chosen from `f` and `e` (Codex). Giving the optional
+  value a solvable wrapper, `None = K` and `Some g = λn s. s g`, escapes it, at
+  203 bits (§6).
+- **The cell/APP alias fails with every cell.** With raw variable values
+  `X1 = cons K R`, `X(n+1) = cons F Xn`, every environment satisfies
+  `e (K I) Xn = Xn+1 e`, so the lift `λe. e f g` compiles `I (var n)` as
+  `var (n+1)`, and `λa b. I b` and `λa b. a` collide. No cell of any size
+  repairs this while bare variable values, canonical closed values and the ABS
+  interface stay as they are (Codex).
 - **A destructured rest cannot reach the root:** a protocol whose
   continuations receive the rest as `k v b r` needs an adapter at the root,
   because the contract's final rest is the rigid `N`, which no term
   destructures; without one it fails every program.
-- **Handler-only knots stay `C`-headed:** `H H → C next C`, and every
-  application tree of two or more copies of the 165's handler reduces to a
-  `C`-headed term, so replicating the handler alone cannot make an internal
-  parser while `C` is public and rigid.
+- **Reader and handler knots stay `C`-headed:** `H H → C next C`, and every
+  application tree with at least two leaves drawn from the 165's handlers and
+  readers `H_Ci`, `R_Ci` (rigid continuations `Ci`) head-reduces to some `Ci`
+  with at least two arguments; trees of readers alone get at least four
+  (`R R →* C n C (C n C H) (R R R)`). So no such tree is a parser while the
+  continuation is public and rigid (Codex). Bare `next`, new λs and
+  transformed streams are outside this.
+- **A full parser cannot be the zero arm's carrier:** for any
+  `P = λc s. s H_c (s s s)`, `P P P` reproduces itself at the head with more
+  arguments and has no head normal form, and `R_i P` reduces to it. The
+  current `next` diagonal cannot replace `E C` either: `next next` on quoted
+  `I` leaves five arguments at the rigid `C`. (Codex.)
+- **Readers of the bare-`cont` shape have outer arity one:** any
+  `λs. s (λb. b Z C) A1 … Ak` returns `C r A1 … Ak` on a variable, so `k = 1`
+  whatever the zero arm; and no application-only body over `s`, `next`, `C`
+  (no λ, `next` opaque) is a reader at any size. (Codex.)
+- **No continuation adapter makes the 165 accept a thunked stream:**
+  `R_C (K a) = a (a (K a))` whatever `C` is, so `E (A C) (K s)` never mentions
+  `C`. The input path itself has to change. (Codex.)
+- **The fields NEXT can recompute from `q = cons bit1 rest` lose
+  information.** `q P`, `q q` and `q K` drop the variable index `n` of the
+  next operand (`λa b. b b` and `λa b. a b` meet the same fields); `q P`
+  together with the raw tail `q F` can still lose the tag (with the periodic
+  suffix `R → 10:R`, `λx y z. y` and `λx y. x y` agree on both); and using `q`
+  as the first parse's continuation makes `P q t` head-divergent on Ω, which
+  the contract forbids. Likewise a selected parse result `r P = bit value rest`
+  plus any iterate of the skip loses the first operand's index. (Codex.)
 
 ## 6. Protocol changes
 
 A protocol change alters what an operation passes or expects, so it leaves the
 βη class and every search of §4. Over a hundred have been built and measured
 against the 168; none goes below it, and those confined to NEXT keep their
-size change on the 165 (§2).
+size change on the 165 (§2). Nineteen more, built on the 165, close the section.
 
 ### Operation merges
 
@@ -387,7 +460,7 @@ Unless marked, each passes the battery and is larger than the 168.
 | Indices parsed into Scott selectors by `intL` | 222 | zero/successor parsing and accessors |
 | Absolute de Bruijn levels | 449 | depth state and runtime append |
 | Values that also return their code suffix | 273 | cell 24 → 36, APP value 19 → 52 |
-| Cell/APP alias: APP's value `\args. args exp exp2`, since `cell a e (K M) (K P) = M P` | 164, *fails* | fails 577 programs: at the root the environment is the contract's arbitrary `z`, and inside an environment `λz.I` equals the input bit `1`; no cell up to 27 bits repairs it |
+| Cell/APP alias: APP's value `\args. args exp exp2`, since `cell a e (K M) (K P) = M P` | 164, *fails* | fails 577 programs: at the root the environment is the contract's arbitrary `z`, and inside an environment `λz.I` equals the input bit `1`; no cell of any size repairs it (§5) |
 | **Control and calling convention** | | |
 | `next` inside `\list` | 170 | +2 of depth |
 | Parser takes the stream first | 201–208 | recursive calls lose η over the stream |
@@ -404,6 +477,30 @@ Unless marked, each passes the battery and is larger than the 168.
 | A cell holding F performs the knot: `cell(a,e) cell(a,e) = λk. a a (k e e)` | 199 | the continuation receives two extra arguments |
 | Both recursive call heads replaced, with the knot removed | — | 221,930,567 pairs (34 free bits): no survivor |
 
+### Variants of the 165
+
+Codex's constructions, each written from a derivation rather than found by
+search; sources and proofs are in `data/self-interpreter/reasoning_165/`, and
+`merges.py` re-measures every one. Each passes the battery unless marked.
+
+| idea | bits | note |
+|---|---:|---|
+| Skip `list list next` | 166 | the erased argument changes only off-stream behaviour |
+| Arity switch `s (s K)` dispatching constructor against variable | 167, *fails* | the variable arm returns `λc. I` on `I` |
+| Balanced skip `(s s) (s s)` | 169 | `s s = K N`, so both forms reduce to `N` |
+| `Δ = λx. x x` shared between the knot and `s s` | 176 | the let costs 11 |
+| Zero arm replaced by its bit, `next` as a third outer argument | 158, *fails* | variables return `C r N next`, three arguments at `C` |
+| The same, with the variable arm discarding the extra argument | 178 | the 165's reader equations in both arms |
+| Duplicate tail discarded after the second cell elimination | 181 | |
+| Tag replayed after the first parse, `bit0`'s `K` discarding `bit1` | 188 / 189 / 199 | the redundant tag costs more than the hoist saves |
+| Constant stream as ABS's return instruction, `R (K (K X)) = X` | 191 / 207 | capturing the real remainder |
+| Reader-carried knot `W = λx. x I x Z_x`: the only self-application is the skip's | 192 | +27 for the carrier; `R Z_t → t t` drives it |
+| ABS constructor shared with the recursion driver | 193 | β-equivalent to the 165; the sharing costs 28 |
+| Reader diagonal `Q g g (λu r. r g)` as the outer knot | 199 | reconstructs `G G`; the helper costs 34 |
+| Optional second value in a solvable wrapper | 203 | the escape from the mode-free builder exclusion |
+| Root shortcut with continuation-last NEXT | 214 | every closed program starts with 0 |
+| Reparse the component that `r intL` discards | 225 / 234 | the selected-component obstruction (§5) forces a second parse |
+
 ## 7. Boundaries
 
 The 165 is pinned locally from every direction searched: its let structure, βη
@@ -416,11 +513,16 @@ argument.
 
 Open:
 
-- readers under the current `next` protocol that are not of the `list H S`
-  shape, and readers with a different `next` protocol beyond the handful
-  priced in §3;
-- knots entangled with the 165's reader (the stream's own `list list list`, the
-  handler diagonal `H H → C next C`);
+- readers outside the shape bounded in §5: other reader heads, arguments
+  shared across the dispatch, the correlation between a variable's selector
+  and its suffix, and readers with a different `next` protocol beyond those
+  priced in §3 and §6;
+- the reader's diagonal `R Z →* next next` (§2): the 165 already contains the
+  self-application a knot needs, and a sub-165 along this line would have
+  `next`'s zero arm serve as the knot's generator. Built with a separate
+  carrier it works at 192 and 199 bits; making `next` do both while keeping
+  its Boolean cases is unsolved, and the exclusions of §5 rule out the
+  current `next` and parser doing it unchanged;
 - the capped fills of §3 (4,052,176 in the joint reader search, 7,790 in the
   handler, 218 in whole APP) and of §4;
 - an unconditional lower bound beyond small sizes: §5 states the structure
@@ -431,8 +533,9 @@ Open:
 
 | instrument | what it runs |
 |---|---|
-| `tools/self-interpreter/battery.py` | the exact contract on 668 programs (`--max-bits`, `--uni`) |
-| `tools/self-interpreter/merges.py` | the 165, its nearest variants, and the 168's protocol variants |
+| `tools/self-interpreter/battery.py` | the exact contract on 668 programs (`--max-bits`, `--uni`, `--strict`) |
+| `tools/self-interpreter/merges.py` | the 165, its nearest variants, the 168's protocol variants, and the variants of §6 |
+| `data/self-interpreter/reasoning_165/` | the proofs and checks behind §2's identities, §5's shape bounds and exclusions, and §6's variants |
 | `blam golf letopt`, `blam golf component` (lab) | let structure and βη component (`--contextual`) |
 | `blam selfint hole` (lab), `tools/self-interpreter/sketches.py` | one- and two-hole searches, including the 165's reader slots |
 | `blam selfint ctx` (lab) | contextual slot searches in the 168 |

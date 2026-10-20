@@ -1,0 +1,17 @@
+PASS Python/Rust: classify K
+PASS Python/Rust: classify F
+PASS Python/Rust: classify 0-cell, rigid tail
+PASS Python/Rust: classify 1-cell, rigid tail
+PASS Python/Rust: classify 0-cell, divergent tail
+PASS Python/Rust: classify 1-cell, divergent tail
+PASS Python/Rust: APP alias = unary successor
+PASS Python/Rust: tagged W none
+PASS Python/Rust: tagged W some
+PASS Python/Rust: tagged NEXT, ABS bit
+PASS Python/Rust: tagged NEXT, APP bit
+PASS exact AST, 7 head beta steps: E c -> B c E
+PASS Python/Rust: 193 and 165 knot generators have identical beta normal forms
+Boolean/Scott-cell classifier: 37 bits unoptimized
+Shared-K classifier: 36 bits unoptimized
+PASS Rust: abs_driver discards divergent value and returns rigid suffix
+PASS Rust: tagged_optional discards divergent value and returns rigid suffix

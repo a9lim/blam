@@ -1,0 +1,218 @@
+RESULT: no sub-165 interpreter found.
+
+All artifacts are in this directory. No repository files were modified.
+No enumeration or hole search was run. The two batteries used exactly two
+workers, a frozen copy of blam, and unoptimized compilation. Their measured
+wall times were 2.787 s and 2.474 s. Small symbolic identity checks used both
+the Python beta normalizer and Rust KN; proofs below distinguish these checks
+from the all-input arguments. There is no new Lean proof.
+
+COMPLETE INTERPRETERS BUILT
+
+193 bits  ok=667 skip=1 fail=0  abs_driver.lam
+  Share the abstraction constructor between ABS and the recursion driver.
+  This is beta-convertible to the 165; the sharing costs 28 bits overall.
+
+203 bits  ok=667 skip=1 fail=0  tagged_optional.lam
+  Package an optional second parse as a solvable Scott option. Its value
+  builder can then dispense with the original tag bit. This validates a
+  precise escape from the mode-free-builder obstruction, at excessive cost.
+
+Each .lam has a matching .blc and .battery.txt. Both also pass the divergent
+Omega suffix probe E (lambda value rest. rest) (<Omega> ++ N) = N with rigid
+N. identities.txt records all checks; check.py and identities.py reproduce
+them. The 203 is a packing variant of the already-recorded optional-parse
+family, not evidence that the known bare optional-parser route was missed.
+
+NOTATION
+
+K = lambda x y. x, F = lambda x y. y, I = lambda x. x.
+cell(a,e) = lambda b r. b a (r e).
+X_1^R = cons K R; X_(n+1)^R = cons F (X_n^R).
+Thus X_n^R is precisely the current raw value for variable n.
+
+1. AN ALL-SIZE OBSTRUCTION TO THE CELL/APP ALIAS
+
+For every environment term e, n >= 1 and suffix R:
+
+    e (K I) X_n^R =beta e F X_n^R =beta X_(n+1)^R e.
+
+The first equality is K I =beta F. The second is the definition of cons.
+Consequently the proposed lift
+
+    lift_alias f g = lambda e. e f g
+
+satisfies the exact identity
+
+    lift_alias (K I) X_n^R =beta X_(n+1)^R.
+
+The final equality is beta equality, not an eta assumption: X_(n+1)^R is
+literally lambda h. h F X_n^R, so expanding it establishes the equality.
+
+If the recursive parser has the public raw-value ABI, its closed I result
+must be K I =beta F, for every suffix. Therefore this lift compiles I (var n)
+as var (n+1). In particular the two closed source terms
+
+    lambda a b. I b
+    lambda a b. a
+
+receive beta-equal body values and therefore beta-equal outputs through any
+common ABS constructor of the current interface. Their required outputs are
+C (lambda z a b. b) N and C (lambda z a b. a) N, distinct beta normal forms.
+Church-Rosser gives a contradiction.
+
+This removes the size cap on repairing that particular APP alias by changing
+only the environment cell. It assumes bare-variable values, canonical closed
+values, and the current ABS interface. A new internal parser ABI or a public
+decoder can escape those assumptions; it is not an unrestricted lower bound.
+The core identity was also checked with rigid e and R by Python and Rust.
+
+2. THE MODE-FREE BUILDER OBSTRUCTION DOES NOT DEPEND ON MARKER K
+
+Suppose W must satisfy, for some arbitrary ABS marker q0,
+
+    W f q0 e =beta lambda a. f (cell(a,e))
+    W f g  e =beta f e (g e)                 for all raw parsed values g.
+
+Take f0 = K (K I), the raw closure of lambda x. I, and g = K Omega, the raw
+closure of the closed divergent program Omega. Set e = I. The APP equation
+requires
+
+    W f0 (K Omega) I =beta I.
+
+K Omega has no head normal form: its initial lambda does not make it
+solvable. By the standard genericity lemma, since the displayed context has
+normal form I, replacing that entire unsolvable argument by any q gives the
+same normal form I. In particular W f0 q0 I =beta I. But the ABS equation
+requires
+
+    W f0 q0 I =beta lambda a. K I = K (K I),
+
+a different normal form. This contradicts Church-Rosser. The marker can even
+depend on f/e: instantiate it after choosing f0 and I. Changing K to I,
+another normal marker, or another unsolvable marker does not help. Nor does
+merely eta-expanding the divergent raw closure.
+
+This is a handwritten proof using the standard genericity lemma already
+used in the repository record. It is not newly kernel checked.
+
+The exact escape is to make the discriminated object solvable independently
+of its value. Define
+
+    None = K
+    Some(g) = lambda none some. some g
+    W f q e = q (lambda a. f (cell(a,e)))
+                  (lambda g. f e (g e)).
+
+Then W f None e and W f (Some(g)) e have the desired ABS/APP reductions.
+Some(K Omega) has head normal form lambda none some. some (K Omega), so the
+genericity argument cannot replace it by an arbitrary marker. It does not
+have a full normal form; head solvability is the relevant distinction.
+
+The 203 implements precisely this escape. For b = K its optional parser
+lambda k. k b returns None without consuming the stream. For b = F it invokes
+the ordinary parser and returns Some(g). The outer value continuation is
+lambda q. cont (lambda e. W exp q e). Substituting either tag reduces NEXT
+to the original ABS or APP continuation with the same remaining stream.
+Both equalities were verified with rigid p, cont and operand parameters in
+Python/Rust. Together with the unchanged reader, the usual structural parser
+induction proves the contract, including divergent source terms: the parser
+never needs to normalize a constructed operand value.
+
+3. A SUFFIX-INDEPENDENT BOOLEAN / SCOTT-BIT-CELL DISCRIMINATOR
+
+    T = lambda t. t K K K I
+
+satisfies
+
+    T K =beta K
+    T F =beta K
+    T (cons b r) =beta F      for b in {K,F}, arbitrary r.
+
+Proof: the first two applications reduce to K K I = K. For a cell:
+
+    cons b r K K K I
+      -> K b r K K I
+      -> b K K I
+      -> K I
+      -> F.
+
+No reduction in r is used. Python/Rust checks include rigid tails and Omega
+tails for both bit choices. This is a genuine type separation available on
+the promised input domains; it is not a discriminator for arbitrary parsed
+closures, which can be unsolvable or equal F.
+
+bit_or_cell.lam is 37 bits. Sharing K explicitly gives 36 bits:
+
+    (lambda k t. t k k k I) K
+
+in bit_or_cell_shared.lam. These are helper terms, not self-interpreters.
+
+A small conditional lower bound explains the cost. In the unshared template
+lambda t. t K A B C with closed A,B,C and these exact K/F outputs, the K input
+forces B =beta K. The one-cell input headed by F forces B C =beta F, hence
+C =beta I. The other equations require A I =beta F and A K I =beta K. Neither
+closed term below 7 bits (I or F) meets them, so |A| >= 7; also |B| >= 7 and
+|C| >= 4. Including the first K and syntax gives at least 37 bits, achieved
+by A=B=K,C=I. The 36-bit shared form deliberately leaves that template. This
+is not a lower bound for arbitrary classifiers or for an interpreter reader.
+
+4. ABS CONSTRUCTOR AS A RECURSION DRIVER
+
+Let
+
+    A f e a = f (cell(a,e))
+    delta = lambda h. h h
+    B c p = the 165 reader/NEXT body with cont=c, intL=p,
+            and its ABS value written A exp
+    H = A (lambda env. env B delta)
+    E = delta H.
+
+Then the following is an exact finite beta reduction:
+
+    E c = H H c
+        -> (lambda env. env B delta) (cell(c,H))
+        -> cell(c,H) B delta
+        -> B c (delta H)
+         = B c E.
+
+The check counted seven head beta contractions with B rigid and found the
+expected AST exactly. This makes the environment cell supply both the public
+continuation and the recursive parser. The same A is used by genuine ABS
+nodes, so the helper is shared rather than copied into the driver.
+
+There is also a direct proof transferring the 165's full contract. Removing
+the outer A let from abs_driver.lam leaves delta H. Expanding the finite
+generator H and expanding the 165's finite knot generator give identical
+beta normal forms. Both Python and Rust checked that equality; the common
+bits are in common_generator_nf.blc. By congruence, the two entire closed
+interpreters are beta-convertible. This construction adds no new semantics
+and is too large at 193 bits.
+
+WHERE A SUB-165 COULD STILL HIDE
+
+The cheap APP alias has an all-size collision, not merely a small-cell
+failure. A marker substitution cannot rescue a tagless ABS/APP builder. These
+two observations make the current raw-value interface an especially narrow
+place to seek another local saving.
+
+A genuinely different internal representation can evade both arguments.
+It must retain a visible control head even when its semantic payload is
+Omega, or alter which object the operation discriminates. A surrounding
+Scott continuation/option has that property. If the same E is recursively
+called with its public interface, however, every closed subprogram still
+returns K M; an internally tagged representation needs a distinct entry or
+a control carrier that the public continuation never receives as its value.
+
+The concrete remaining prospect is to obtain that carrier from applications
+already present in the reader or recursion driver, so packing/decoding is
+not paid separately. The boolean/cell identity is a possible ingredient if
+its K arguments are already supplied by control flow. Its standalone cost
+is far larger than the four-bit APP-lift saving. The 203 shows that allocating
+the carrier explicitly does not pay, and the 193 shows that explicitly
+sharing the current ABS constructor with the knot does not pay either.
+
+I have no sub-165 candidate, no unconditional interpreter lower bound, and
+no justified new local enumeration to recommend. The surviving direction
+is a control/value fusion that supplies a solvable carrier implicitly;
+this remains a hypothesis, not a construction.

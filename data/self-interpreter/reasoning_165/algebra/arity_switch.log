@@ -1,0 +1,6 @@
+167 bits: exact I-program counterexample, rigid C; N = lambda a b c d. I
+got normal form: lambda c. I
+required normal form: lambda c. c (lambda z. I) N
+got bits: 000010
+required bits: 00010110000010000000000010
+No full battery was run on this refuted candidate.

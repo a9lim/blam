@@ -1,0 +1,182 @@
+READER-SHAPE CONSULT: NO SUB-165 RESULT
+
+Scope and evidence
+------------------
+Read the current interpreter.md and STATUS.md before designing candidates.
+No repository files changed. No enumeration, no new agents, no external
+consults. check.py uses the existing unoptimized compiler and battery with
+threads=2; its temporary files stay in this directory. Two complete terms
+were written, both reported below. All identities and exclusions below have
+hand proofs; the small rigid probes are supplementary checks, not proofs.
+
+Notation: K = lambda x y.x (bit 0), F = lambda x y.y (bit 1),
+cons b r = lambda f.f b r, D = lambda x.x x. Juxtaposition associates left.
+P denotes the current next callback; C and N are rigid. A parametric reader
+must send 0:b:t to P b t and 1^n:0:N to C (1^(n-1):0:N) N.
+
+COMPLETE CANDIDATES
+-------------------
+1. spine3_bare.lam, 158 bits.
+
+   Reader: lambda s. s (lambda b. b b C) (s s s) P
+
+   Idea: use bit 0 itself as the zero branch, and place next on the outer
+   application spine. This removes the original two-lambda zero arm.
+
+   158 bits  ok=0 skip=1 fail=667  spine3_bare.lam
+
+   All listed failures were fuel outcomes. They are independently refuted,
+   not unresolved: the zero cases work, but the variable case returns
+   C r N P, with a third argument at the rigid continuation head. On the
+   closed identity program I, the complete term reduces to
+
+       C (lambda z.I) N J
+
+   for a residual next callback J. Its three-argument rigid C head cannot
+   become the required two-argument C head by beta conversion.
+
+2. spine3_repaired.lam, 178 bits.
+
+   Reader: lambda s. s
+       (lambda b. b b (lambda v r unused. C v r)) (s s s) P
+
+   Idea: same three-argument spine, with the extra-argument erasure moved
+   into the variable arm.
+
+   178 bits  ok=667 skip=1 fail=0  spine3_repaired.lam
+
+   Let Cbar = lambda v r unused.C v r. For s=cons K r, s s s -> r,
+   and K K Cbar -> K, so the reader reduces to K r r P -> r P.
+   For s=1^n:0:N, s s s -> N, and F F Cbar -> Cbar, so it reduces to
+   Cbar r N P -> C r N. These are the same recursive reader equations as
+   the 165, with the entire NEXT region unchanged. Thus the usual structural
+   parser proof transfers, including source terms without normal forms;
+   this transfer was reasoned by hand, not checked in Lean.
+
+   The explicit variable adapter costs 25 bits at its capture frame, versus
+   the bare C's 5: 158 + 20 = 178. This is a measured repair cost, not a lower
+   bound on all possible repairs.
+
+Both readers were additionally tested with rigid P,C,N on zero prefixes 00
+and 01 and variables 1^n0 for n=1,2,3,9,31. The 158 passed only the zero
+cases. The 178 passed all seven. The full battery skipped its usual one
+non-normalizing expected result.
+
+EXACT IDENTITIES
+----------------
+1. The stream diagonal exposes a useful conditional predecessor:
+
+       (cons b r) D -> b b r
+       (cons K r) D -> K
+       (cons F r) D -> r.
+
+   Proof: (cons b r) D -> D b r -> b b r. K K r -> K, whereas
+   F F r -> r. No assumption on r is needed.
+
+2. A conditional suffix thunk, and its force:
+
+       D (s D) = (s D) (s D)
+          -> K K       if s begins with 0,
+          -> K N       if s = 1^n 0 ++ N, n >= 1.
+
+   Hence, for every dummy X,
+
+       D (s D) X -> K   on a zero tag,
+       D (s D) X -> N   on a variable.
+
+   Proof: in the zero case identity 1 gives s D -> K. In the variable
+   case it gives s D -> r = 1^(n-1)0 ++ N. For any unary prefix u=1^k0++N,
+   u u -> K N: at k=0, (cons K N)(cons K N) -> K N; at k+1 the two
+   leading F operations reduce to the corresponding tail self-application.
+   Thus r r -> K N. Applying either K thunk to X proves the last display.
+
+   The equivalent triple (s D)(s D)(s D) is K on zero and N on variables.
+   Inlining D, the more compact D (s D) s costs 26 bits in the reader body,
+   versus 10 for s s s. This is not a saving as a standalone skip. It might
+   be useful only if D is shared with the knot or its conditional predecessor
+   role replaces other work. No such saving was obtained in this pass.
+
+   Rigid Rust normalization checked identity 1 for both bits and the suffix
+   identities at n=1,2,3,9,31, plus the zero case. Every check passed.
+
+ALL-SIZE EXCLUSIONS FOR EXPLICITLY LIMITED READER FAMILIES
+--------------------------------------------------------
+1. No abstraction-free application body over s,P,C is a parametric reader.
+
+   This covers every application tree, every number of stream copies and
+   arbitrary repetitions of P or C, not just a fixed spine. The reader may
+   have its outer lambda s; the exclusion is that its body contains only
+   application and the three parameters, with no further abstractions.
+
+   Proof: specialize the input to variable 1. Put
+
+       R = cons K N, S = cons F R, T = lambda u.N = K N.
+
+   Every expression made by application from S,P,C normalizes. All the
+   substituted lambda terms are affine, so a beta contraction strictly
+   decreases size. Induction on the application expression proves that its
+   normal form is either S, T, or q A1 ... Ak for q in {P,C,N}.
+   The only nontrivial cases when applying such normal forms are
+
+       S S -> T;             S T -> N R;
+       S (q A1 ... Ak) -> q A1 ... Ak F R;
+       T X -> N.
+
+   A rigid-headed left operand merely appends the right operand. In
+   particular, no expression's normal form is R.
+
+   Simultaneously, whenever the normal form is C-headed and has arguments,
+   its first argument is not R. If it already had an argument, induction
+   preserves it. If application supplies the first argument, that argument
+   is either the normal form of a smaller expression (never R), or F in
+   the S(q ...) case. F is not R. But the required variable result is
+   C R N, whose first argument IS R. Uniqueness of normal forms contradicts
+   correctness.
+
+   Scope: P is opaque/rigid here. This does not exclude exploiting the
+   concrete nontrivial implementation of next as an extra computational
+   primitive. Nor does it exclude a beta-compressed body containing lambdas.
+
+2. Starting the reader's head spine with s s is impossible.
+
+   For a variable stream, s s -> K N. Therefore
+   (s s) A1 ... Ak has a lambda head if k=0, reduces to N if k=1, and
+   has rigid head N with k-1 arguments if k>=2. None has head C. This holds
+   irrespective of what the Ai contain or whether they normalize. A
+   skip-first reader cannot resume dispatch by only appending arguments to
+   that raw self-application.
+
+3. Retaining a bare-C variable branch forces exactly the existing arity.
+
+   Consider any reader of shape
+
+       lambda s. s (lambda b. b Z C) A1 ... Ak.
+
+   On s=cons F r it reduces to C r A1 ... Ak. The required result has
+   exactly two arguments at rigid C. Therefore k=1, and the sole A1 must
+   be beta-equal to N on variable streams. No change to Z repairs k=0 or
+   k>=2. The 158-bit candidate is precisely a k=2 violation.
+
+   This is not an exclusion of arbitrary three-argument readers: the
+   passing 178 explicitly changes the variable arm and escapes the premise.
+
+ASSESSMENT
+----------
+No improvement on 165. The promising-looking way to delete the zero arm's
+discard and place next on a longer spine only moves the discard into the
+variable branch, where the explicit repair is substantially dearer.
+
+A genuinely different small parametric reader must contain local
+abstractions and cannot use raw s s as its final head path. If it retains
+the current bare C arm, adding or removing outer arguments cannot help.
+The remaining live places are a different handler that uses its branch
+arguments jointly, a small beta-compressed construction whose exposed
+spine is larger, or treating concrete next / the knot as computational
+resources. The D identity supplies a specific conditional-predecessor
+operation for that last possibility; it is not evidence of a smaller
+complete interpreter. No unconditional bound at 165 was proved.
+
+Reproduce all candidates and probes:
+  PYTHONDONTWRITEBYTECODE=1 RAYON_NUM_THREADS=2 python3 check.py
+Identity checks only:
+  PYTHONDONTWRITEBYTECODE=1 RAYON_NUM_THREADS=2 python3 check.py --identities-only

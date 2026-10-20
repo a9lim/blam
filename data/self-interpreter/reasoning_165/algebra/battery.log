@@ -1,0 +1,2 @@
+  169 bits  ok=667 skip=1 fail=0  algebra/balanced_skip.lam  2.447s
+  176 bits  ok=667 skip=1 fail=0  algebra/shared_delta.lam  2.512s

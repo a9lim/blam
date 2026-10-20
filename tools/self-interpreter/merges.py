@@ -14,6 +14,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from battery import check, compile_lam, enc
 
+FLEET = Path(__file__).resolve().parents[2] / "data/self-interpreter/reasoning_165"
 ABS = r"(cont (\args\arg.exp (\zx\zy. zx arg (zy args))))"
 APP = r"(intL (\exp2.cont (\args.exp args (exp2 args))))"
 VAR = r"(cont list1 (list1 list1 list1))"
@@ -138,6 +139,35 @@ VARIANTS = [
                           (intL (\exp2.cont (\args.exp args (exp2 args))))))"""),
      False, 177, True),
 ]
+
+# interpreter.md §6 and universal.md §3: complete constructions from Codex's
+# reasoning consults on the 165 (data/self-interpreter/reasoning_165/).
+# (file, universal-machine contract?, expected bits, should pass)
+FLEET_VARIANTS = [
+    ("universal/int166_skip_next.lam", False, 166, True),
+    ("algebra/balanced_skip.lam", False, 169, True),
+    ("algebra/shared_delta.lam", False, 176, True),
+    ("algebra/arity_switch_failed.lam", False, 167, False),
+    ("reader/spine3_bare.lam", False, 158, False),
+    ("reader/spine3_repaired.lam", False, 178, True),
+    ("fresh/late_zero_discard.lam", False, 181, True),
+    ("fresh/return_stream.lam", False, 191, True),
+    ("fresh/return_stream_shared_cont.lam", False, 207, True),
+    ("fresh/reader_diagonal_knot.lam", False, 199, True),
+    ("knot/reader_knot.lam", False, 192, True),
+    ("knot/root_next.lam", False, 214, True),
+    ("nextfuse/tag_after_parse_hoisted.lam", False, 188, True),
+    ("nextfuse/tag_after_parse.lam", False, 189, True),
+    ("nextfuse/tag_after_parse_handler.lam", False, 199, True),
+    ("values/abs_driver.lam", False, 193, True),
+    ("values/tagged_optional.lam", False, 203, True),
+    ("protocol/reparse_selected.lam", False, 225, True),
+    ("protocol/reparse_shared.lam", False, 234, True),
+    ("universal/uni186_skip_next_Kparser.lam", True, 186, True),
+    ("universal/uni188_skip_next_parser_parser.lam", True, 188, True),
+]
+VARIANTS += [(f"fleet: {f}", (FLEET / f).read_text(), uni, want, ok)
+             for f, uni, want, ok in FLEET_VARIANTS]
 
 
 def main():

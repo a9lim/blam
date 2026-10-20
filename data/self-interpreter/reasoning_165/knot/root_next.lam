@@ -1,0 +1,12 @@
+-- Continuation-last NEXT; the root consumes its known leading zero directly.
+-- The shared reader inside NEXT uses the whole-stream skip.
+(\q. \cont \list. list (\unused \r. r q) cont)
+((\x. x x)
+ (\x.
+  (\parse. \bit \list \cont.
+    parse (\exp. bit
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (parse (\exp2. cont (\args. exp args (exp2 args))))) list)
+  (\cont \list.
+    list (\bit. bit (\unused \r. r (x x) cont) cont)
+      (list list list))))

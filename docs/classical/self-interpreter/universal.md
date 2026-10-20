@@ -72,8 +72,11 @@ They are why "no machine of this shape below 178" is conditional on these
 3,961 diverging.
 
 **Strict.** `--strict` adds Tromp's convention: no normal form within 2¹⁶ β
-on six open programs that use their free variable (`1`, `2`, `\2`, `1 1`,
-`1 1` followed by the data bits `10`, and `\\4`), each terminated by `nil`.
+on seven open programs that use their free variable (`1`, `2`, `\2`, `1 1`,
+`1 1` followed by the data bits `10`, `\\4`, and `1 (\\2) (\\1)`), each
+terminated by `nil`. The seventh is Codex's (below); the searches of this
+section ran with the first six, and a further probe only removes survivors, so
+their exclusions stand. `battery.py --uni --strict` runs the same seven.
 The tail must be concrete. With a symbolic tail,
 `intL (intL intL)` at 182 bits passes: its base environment is the parser's
 own dispatch handler, so a free variable re-parses the leftover input, and
@@ -93,17 +96,30 @@ cheap alternatives (`dbl`, `F`, the parser's own handler) all return values
 or re-read input; Ω via a shared `dbl` (`\b. b (a a)`, 12 bits over the 178)
 is the cheapest found. An environment with no normal form can still fail
 strictness after object-level application: free indices alone diverge, but
-`1 1` normalizes. Head divergence avoids that trap, and the 190 passes all six
+`1 1` normalizes. Head divergence avoids that trap, and the 190 passes all seven
 nil-terminated probes.
 
 Logs: `wiring_uni.log`, `wiring_uni_strict.log`.
 
-The six probes are a filter, not a proof of strictness: a machine whose base
+The probes are a filter, not a proof of strictness: a machine whose base
 environment has no normal form can still return garbage on an open program
 whose nil tail discharges the apparent recursion. The 187 and the 190 owe their
 strictness to their base environment Ω, supplied by the top continuation
 `λv. v Ω`: a free index looks itself up in Ω and diverges at the head. The
 probes only corroborate it.
+
+The seventh probe exists because the first six were not enough. Codex built
+two machines around the 165 with the skip `list list next`:
+`(\e. e (\v. v (\b. e))) P` at 186 bits (base environment `K P`) and
+`(\e. e (\v. v (e e))) P` at 188 (base environment `P P`). Both meet the
+contract and are capped on all six probes, but on `M = 1 K F` the variable
+returns the selector `cons K R` with `R = ⌜K⌝ ++ ⌜F⌝ ++ N`, so
+`U (⌜M⌝ ++ N) →* P R K F N →* R N`, a finite stream when `N` is nil. The 186
+halts with a 183-bit normal form, the 188 with `I`. The argument uses only the
+ordinary variable and APP values, so no skip expression makes a base
+environment `K P_Q` strict, and for the 165's own parser no base environment
+`P a` is strict either (open `2` reduces to `N`). Proofs and checks are in
+`data/self-interpreter/reasoning_165/universal/`.
 
 ## 2. βη and let structure
 
@@ -261,7 +277,8 @@ Open:
 - the 282 capped fills in the arbitrary-context-around-`G` family, and the
   capped assignments of §4;
 - the 51,873 unexcluded caps among the wirings around the 165's body, and the
-  strict wirings around it beyond Tromp's;
+  strict wirings around it beyond Tromp's and the parser-applying base
+  environments excluded in §1;
 - a coordinated representation that exploits reachable relationships between
   control and values. The experiments above narrow several specific
   implementations of that idea; they do not prove 175 minimal.

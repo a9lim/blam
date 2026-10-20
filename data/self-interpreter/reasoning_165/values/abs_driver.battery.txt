@@ -1,0 +1,2 @@
+193 bits  ok=667 skip=1 fail=0  abs_driver.lam
+[]

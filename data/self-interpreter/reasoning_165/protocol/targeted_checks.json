@@ -1,0 +1,70 @@
+[
+  {
+    "candidate": "reparse_selected",
+    "test": "omega",
+    "suffix_nf": "0010"
+  },
+  {
+    "candidate": "reparse_selected",
+    "test": "abs_omega",
+    "suffix_nf": "0010"
+  },
+  {
+    "candidate": "reparse_selected",
+    "test": "omega_i",
+    "suffix_nf": "0010"
+  },
+  {
+    "candidate": "reparse_selected",
+    "test": "i_omega",
+    "suffix_nf": "0010"
+  },
+  {
+    "candidate": "reparse_shared",
+    "test": "omega",
+    "suffix_nf": "0010"
+  },
+  {
+    "candidate": "reparse_shared",
+    "test": "abs_omega",
+    "suffix_nf": "0010"
+  },
+  {
+    "candidate": "reparse_shared",
+    "test": "omega_i",
+    "suffix_nf": "0010"
+  },
+  {
+    "candidate": "reparse_shared",
+    "test": "i_omega",
+    "suffix_nf": "0010"
+  },
+  {
+    "variable": 1,
+    "test": "selected",
+    "nf": "00000101100000100001011000001101110"
+  },
+  {
+    "variable": 1,
+    "test": "skipped",
+    "nf": "00000101100000100001011000001101110"
+  },
+  {
+    "variable": 2,
+    "test": "selected",
+    "nf": "00000101100000100001011000001101110"
+  },
+  {
+    "variable": 2,
+    "test": "skipped",
+    "nf": "00000101100000100001011000001101110"
+  },
+  {
+    "target_source": "\\a\\b.b b",
+    "nf": "0000011010"
+  },
+  {
+    "target_source": "\\a\\b.a b",
+    "nf": "00000111010"
+  }
+]

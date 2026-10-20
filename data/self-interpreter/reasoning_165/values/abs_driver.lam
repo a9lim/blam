@@ -1,0 +1,12 @@
+(\abs.
+  (\h. h h)
+    (abs (\env. env
+      (\cont \intL.
+        (\next \list.
+          list (\bit0. bit0 (\unused \r. r next) cont)
+               (list list list))
+        (\bit1. intL (\exp. bit1
+          (cont (abs exp))
+          (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+      (\h. h h))))
+  (\body \env \arg. body (\b \r. b arg (r env)))
