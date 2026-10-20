@@ -329,7 +329,8 @@ These are global constraints, not separately additive module costs
 be β-normal; `normal.md` gives a compact construction with a kernel-checked
 contract. It can even be both β-normal and simply typable:
 `typed-normal.md` gives an explicit 672-bit construction and a general
-syntactic correctness proof. The actual application to the quotation need
+kernel-checked correctness proof, including its ordinary STLC typing
+judgment (`Blc/SelfintTyped.lean`). The actual application to the quotation need
 not share that simple typing. Thus neither a β redex nor untypability of
 `E` follows from correctness alone.
 
@@ -462,9 +463,11 @@ size change on the 165 (§2). Nineteen more, built on the 165, close the section
 | Parse under the binder: direct values | large in APP/VAR | Threading the environment and reparsing ABS bodies cost more (226 as a universal machine against 178). |
 | Share one combinator between the cell and APP (skeleton `a b (c d)`) | 5 | The let plus a four-λ definition costs ~32. |
 
-The binding constraint is the contract, twice over: λ-values must be genuine
-functions, which rules out every cheaper cell, and `C` must receive the real
-`N`, which rules out the thunk.
+With the current transparent value interface, λ-values must be genuine
+functions and `C` must receive the real `N`; the cheaper cells and thunked
+remainders above violate these requirements. A changed representation can
+use a one-sided retraction and a public decoder, but its costs must include
+those operations (`protocol-obstructions.md`).
 
 ### Measured protocol variants
 
@@ -573,5 +576,5 @@ Open:
 | `tools/self-interpreter/search_fix.py` | the knot search |
 | `tools/self-interpreter/beta_search.py` | the Python βη component reference |
 | `tools/self-interpreter/theory/` | bounded checks for explicit structural witnesses and protocol equations; no candidate search |
-| `lake build` in `lean/` | the 165/168, normal and two-nonlinear witnesses; unconditional normalization, capture and origin theorems |
+| `lake build` in `lean/` | the 165/168, normal, simply typed and two-nonlinear witnesses; unconditional normalization, capture and origin theorems |
 | `data/self-interpreter/searches_165.json` | commands and totals of the joint searches of §3 |

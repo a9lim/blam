@@ -184,8 +184,10 @@ with all features (three opt-in tests ignored) and 328 with default features.
   (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,
   normality, and directed contract for every closed source and arbitrary
   continuation and suffix. A separate 672-bit construction is both
-  β-normal and simply typable, with a general handwritten reduction proof;
-  application to its quotation need not be simply typable. The 204, 584,
+  β-normal and simply typable: Lean proves its ordinary STLC judgment
+  through a sound annotation checker and its directed contract through
+  a 59-step cast-erasure trace to the literal 165. Application to its
+  quotation need not be simply typable. The 204, 584,
   672, 742, and four erased-skip variants each pass the existing bounded
   battery (667 pass, one divergent expected result skipped, zero failures).
   Targeted divergent-source suffix checks also pass. Sources are in

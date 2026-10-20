@@ -324,6 +324,68 @@ D v = v I,
 for which `D (J x) ->* x` but `J (D z)` does not reduce to `z`. It also
 permits inverses restricted to a chosen representation domain.
 
+## One-sided retractions and the leaky cell
+
+A one-sided retraction can support an exact value representation. Let `A`
+and `D` be closed terms satisfying `D (A x) =beta x` for an arbitrary fresh
+variable `x`. Keep the parser's control and raw unary variable selectors,
+but require environment lookup to return `A a` for the corresponding source
+argument `a`. The compositional value constructors can then be
+
+```text
+V_n(e)       = X_n e
+V_lambda.M(e) = A (lambda a. D (V_M (Cell_A(a,e))))
+V_MN(e)      = A (D (V_M e) (D (V_N e))).
+```
+
+Here `Cell_A(a,e)` extends the environment with `A a`. Induction on the
+source term gives `V_M e =beta A (M[rho])` whenever `e` represents the
+substitution `rho`. In particular, if `P_A` is the parser returning these
+values and the unchanged remainder, its public adapter is
+
+```text
+E_A C s = P_A (lambda v. C (lambda z. D (v z))) s.
+```
+
+For closed `M`, the arbitrary base environment `z` is unused, and this gives
+`E_A C (quote(M) ++ N) =beta C (lambda z.M) N`. The argument uses finite
+structural induction and beta congruence, not normalization of `M`, so it
+includes divergent source terms. No two-sided inverse is needed.
+
+This construction does not make the existing leaky cell cheaper. Define
+
+```text
+cons b r = lambda h. h b r
+X_1(N) = cons K N
+X_(n+1)(N) = cons F (X_n(N))
+L(h,e) = lambda b. b h (lambda r. r e).
+```
+
+The raw selectors satisfy
+
+```text
+X_1(N) L(h,e)     ->* h N
+X_(n+1)(N) L(h,e) ->* X_n(N) e.
+```
+
+Under the compositional scheme above, the first result must be `A a`,
+including for arbitrary rigid `N`. Taking `A = K`, with decoder
+`D = lambda v.v I`, the head can be stored as `K (K a)`:
+
+```text
+X_1(N) L(K (K a),e) ->* K (K a) N -> K a
+L(K (K a),e) =beta lambda b. b (lambda u v.a) (lambda r.r e).
+```
+
+In the original cell's capture layout `[a,e,...]`, this explicit cell costs
+28 bits, against 24 for `lambda b r.b a (r e)`. Both have three applications
+and index excess six; the retracted leaky cell has four lambdas instead of
+two. APP and the public adapter also perform decoding. Thus this particular
+`K`-retraction construction does not recover the leaky cell's apparent
+saving. This is an accounting result for the stated raw-selector and
+compositional protocol, not a lower bound on arbitrary retractions or a
+claim that `K` is the shortest possible wrapper.
+
 ## Swapping a closure's two arguments is not an exact involution
 
 A tempting wrapper swaps a closure's environment and source-argument

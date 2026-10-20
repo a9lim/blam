@@ -17,6 +17,7 @@ MACHINES = ROOT / "data/self-interpreter/machines"
 RESULTS = ROOT / "data/self-interpreter/theory"
 sys.path.insert(0, str(ROOT / "tools/self-interpreter"))
 import battery as b
+import affine_basis as certificate
 
 
 def app(*ts):
@@ -70,6 +71,7 @@ class Types:
     def __init__(self):
         self.next_id = 0
         self.assignments = {}
+        self.annotations = {}
 
     def fresh(self):
         out = self.next_id
@@ -101,14 +103,15 @@ class Types:
             self.unify(left[0], right[0])
             self.unify(left[1], right[1])
 
-    def infer(self, term, context=()):
+    def infer(self, term, context=(), path=()):
         if term[0] == "V":
             return context[term[1]]
         if term[0] == "L":
             arg = self.fresh()
-            return (arg, self.infer(term[1], (arg,) + context))
-        fn = self.infer(term[1], context)
-        arg = self.infer(term[2], context)
+            self.annotations[path] = arg
+            return (arg, self.infer(term[1], (arg,) + context, path + (0,)))
+        fn = self.infer(term[1], context, path + (1,))
+        arg = self.infer(term[2], context, path + (2,))
         result = self.fresh()
         self.unify(fn, (arg, result))
         return result
@@ -122,6 +125,23 @@ class Types:
             return names[t]
         return f"({self.render(t[0], names)} -> {self.render(t[1], names)})"
 
+    def lean_type(self, t):
+        """Instantiate every remaining type variable with one ground base type."""
+        t = self.prune(t)
+        if isinstance(t, int):
+            return ".base"
+        return f"(.arr {self.lean_type(t[0])} {self.lean_type(t[1])})"
+
+    def lean_annotated(self, term, path=()):
+        if term[0] == "V":
+            return f"(.var {term[1]})"
+        if term[0] == "L":
+            domain = self.lean_type(self.annotations[path])
+            body = self.lean_annotated(term[1], path + (0,))
+            return f"(.lam {domain} {body})"
+        return (f"(.app {self.lean_annotated(term[1], path + (1,))} "
+                f"{self.lean_annotated(term[2], path + (2,))})")
+
 
 def named_source(t, context=(), counter=None):
     counter = [0] if counter is None else counter
@@ -134,17 +154,60 @@ def named_source(t, context=(), counter=None):
     return f"({named_source(t[1], context, counter)} {named_source(t[2], context, counter)})"
 
 
-def main():
-    start = time.monotonic()
+def build():
     e0 = b.compile_lam((ROOT / "data/self-interpreter/machines/int165.lam").read_text())
     # At the T construction site the outer context is [rest, bit, stream, C].
     source_call = app(e0, v(3), cons(K, v(0)))
     translated = lam(lam(cast_translation(source_call)))
     handler = lam(lam(app(v(1), PACKET, v(0), translated)))
     interpreter = lam(lam(app(v(0), handler)))
+    return interpreter, e0
+
+
+def reduction_trace(interpreter, e0):
+    """Remove only generated gate/cast redexes, preserving original source redexes."""
+    def ml(t):
+        return ("L", t, True)
+
+    def cast(t, depth=0):
+        if t[0] == "V":
+            return v(t[1] if t[1] < depth else t[1] + 2)
+        if t[0] == "A":
+            return app(v(depth + 1), cast(t[1], depth), cast(t[2], depth))
+        return app(v(depth), ("L", cast(t[1], depth + 1), False))
+
+    source_call = app(e0, v(3), cons(K, v(0)))
+    identity = ml(v(0))
+    packet = ml(app(v(0), identity, identity))
+    translated = ml(ml(cast(source_call)))
+    handler = ml(ml(app(v(1), packet, v(0), translated)))
+    marked = ml(ml(app(v(0), handler)))
+    assert certificate.plain(marked) == interpreter
+    first_bit = ml(ml(v(1)))
+    stream = ml(app(v(0), certificate.shift(first_bit, 1), v(2)))
+    result = app(marked, v(0), stream)
+    trace = []
+    while (step := certificate.admin_step(result)) is not None:
+        path, result = step
+        trace.append(path)
+        assert len(trace) < 1000
+    assert certificate.plain(result) == app(e0, v(0), cons(K, v(1)))
+    return trace
+
+
+def main():
+    start = time.monotonic()
+    interpreter, e0 = build()
     assert is_normal(interpreter)
     types = Types()
-    principal = types.render(types.infer(interpreter))
+    inferred = types.infer(interpreter)
+    principal = types.render(inferred)
+    trace = reduction_trace(interpreter, e0)
+    proof = (ROOT / "lean/Blc/SelfintTyped.lean").read_text()
+    assert f"def intL672 : Term := {certificate.lean_term(interpreter)}\n" in proof
+    assert f"def annotated672 : Annotated := {types.lean_annotated(interpreter)}\n" in proof
+    assert f"def type672 : Ty := {types.lean_type(inferred)}\n" in proof
+    assert f"def trace672 : List (List SelfintSharp.Direction) := {certificate.lean_trace(trace)}\n" in proof
     bits = b.enc(interpreter)
     (MACHINES / "int672_typed_normal.lam").write_text(named_source(interpreter) + "\n")
     (MACHINES / "int672_typed_normal.blc").write_text(bits + "\n")
@@ -160,6 +223,8 @@ def main():
         "simply_typable": True,
         "principal_type": principal,
         "two_cast_witness_type": witness_type,
+        "kernel_certificates": "lean/Blc/SelfintTyped.lean",
+        "cast_erasure_beta_steps": len(trace),
         "search_performed": False,
     }
     if "--battery" in sys.argv:

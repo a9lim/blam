@@ -1,11 +1,12 @@
 # A simply typed beta-normal self-interpreter
 
-
-The complete construction is `data/self-interpreter/machines/int672_typed_normal.lam`, **672 bits**. It is
-syntactically beta-normal and passes ordinary simple-type inference with an
-occurs check. Current finite verification results are in `docs/STATUS.md` and
-`data/self-interpreter/theory/typed_normal.json`. The general contract is
-the syntactic reduction argument below, rather than a finite observation.
+The complete construction is
+`data/self-interpreter/machines/int672_typed_normal.lam`, **672 bits**.
+`lean/Blc/SelfintTyped.lean` proves its exact wire length, beta-normality,
+ordinary simple typing, and directed interpreter contract for every closed
+source and arbitrary continuation and suffix. Current finite verification
+results are in `docs/STATUS.md` and
+`data/self-interpreter/theory/typed_normal.json`.
 
 The important result is the construction, rather than its size. In
 particular, **simple typability of the interpreter alone cannot be an
@@ -87,9 +88,20 @@ simple type for `E_typed`. The actual bit `K` does not fit this assigned type;
 that is precisely where the evaluated application leaves the simply typed
 fragment. All subterms of `E_typed` remain beta-normal.
 
-`tools/self-interpreter/theory/typed_normal.py` constructs the AST directly, round-trips its named source,
-checks syntactic normality, infers a simple type, and optionally runs the
-bounded battery:
+The Lean proof uses a syntax-directed checker for annotated lambda terms,
+proved sound for the ordinary simply typed lambda-calculus judgment
+`HasType`. The checked annotation establishes
+`HasType [] intL672 type672`; Python inference is only an untrusted
+certificate producer. A checked 59-step beta trace removes the gate and
+casts to reach the literal 165-bit interpreter on its original input.
+Substitution lifts that trace to arbitrary `C,R`, and the existing 165
+contract supplies `selfint_contract672`. This proof does not normalize the
+source program or require it to halt.
+
+`tools/self-interpreter/theory/typed_normal.py` constructs the AST directly,
+round-trips its named source, checks syntactic normality, infers a simple
+type, and checks that the Lean term, annotation, type, and reduction trace
+match the generated certificates. It optionally runs the bounded battery:
 
 ```text
 python tools/self-interpreter/theory/typed_normal.py --battery
