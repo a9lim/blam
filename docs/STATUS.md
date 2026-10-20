@@ -226,7 +226,17 @@ with all features (three opt-in tests ignored) and 328 with default features.
   196 bits with shared self-application, 206 without; both pass the
   667/1/0 battery and Ω suffix check in 3.5 seconds combined
   (`data/self-interpreter/theory/stream_handler.json`). The adapters still
-  cost more than the 165's parser interface. Except for the unconditional
+  cost more than the 165's parser interface.
+  A proper one-sided applicative retraction preserves application exactly:
+  `D(A x) →* x` and `(A x)(A y) →* A(x y)`. Its seven rigid equations and
+  two distinct-normal-form checks pass; a scoped missing-variable argument
+  still excludes the raw-selector cell/APP alias with context-independent
+  wrappers (`data/self-interpreter/theory/applicative_retraction.json`).
+  A complete parser carrying the remainder in applicative metadata costs
+  303 bits. Its four rigid equations, 667/1/0 battery, and Ω / λa.Ω suffix
+  probes pass in 1.8 seconds (`data/self-interpreter/theory/metadata_parser.json`).
+  Eliminating its boxes against the public consumer recovers the 165's
+  CPS interface without a further saving. Except for the unconditional
   non-idempotence and its generator corollary, these are protocol-specific
   handwritten proofs.
 - **The universal machine** (`classical/self-interpreter/universal.md`):

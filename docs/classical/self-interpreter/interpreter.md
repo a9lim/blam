@@ -503,6 +503,7 @@ Unless marked, each passes the battery and is larger than the 168.
 | Indices parsed into Scott selectors by `intL` | 222 | zero/successor parsing and accessors |
 | Absolute de Bruijn levels | 449 | depth state and runtime append |
 | Values that also return their code suffix | 273 | cell 24 → 36, APP value 19 → 52 |
+| Applicative boxes carrying the remainder | 303 | direct boxed application keeps the right remainder; tag and boxing costs exceed the saved APP plumbing (`protocol-obstructions.md`) |
 | Cell/APP alias: APP's value `\args. args exp exp2`, since `cell a e (K M) (K P) = M P` | 164, *fails* | fails 577 programs: at the root the environment is the contract's arbitrary `z`, and inside an environment `λz.I` equals the input bit `1`; no cell of any size repairs it (§5) |
 | **Control and calling convention** | | |
 | `next` inside `\list` | 170 | +2 of depth |

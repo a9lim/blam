@@ -528,6 +528,194 @@ saving. This is an accounting result for the stated raw-selector and
 compositional protocol, not a lower bound on arbitrary retractions or a
 claim that `K` is the shortest possible wrapper.
 
+## A proper applicative retraction
+
+One-sided representations can preserve application exactly. Codex's explicit
+construction is
+
+```text
+F   = lambda a b.b
+t   = lambda r y x h.h r (x y)
+A x = lambda h.h t x
+D v = v F.
+```
+
+The projection gives `D (A x) ->* x`, while
+
+```text
+(A x) (A y)
+  ->* (A y) t x
+  ->* t t y x
+  ->* lambda h.h t (x y)
+  = A (x y).
+```
+
+These are finite reductions with `x,y` rigid, so substitution extends them
+to arbitrary terms, including divergent ones. The closed `A` is a proper
+representation: its beta-normal form differs from `I`. Its image of `I` is
+idempotent under application and is not `F`. Thus the earlier transparent
+collision `V(I) = F` does not apply to this representation. In particular,
+application preservation plus a one-sided decoder does not force the
+representation to be the identity.
+
+The explicit closed terms cost 28 bits for `t`, 41 for `A` with `t` inlined,
+and 12 for `D`. These are construction sizes, not minimum claims. The
+targeted script `tools/self-interpreter/theory/applicative_retraction.py`
+checks these sizes and all displayed equations with rigid parameters;
+its report is `data/self-interpreter/theory/applicative_retraction.json`.
+This supplies a representation, not a complete smaller interpreter.
+
+### The ordinary wrapped environment still loses information
+
+The retraction does not repair the cell/APP alias while the ordinary
+extension protocol remains. This has a representation-independent
+obstruction. Let `A,D` be any closed terms with `D (A x) =beta x`; no
+application-preservation assumption is needed. Retain raw variable values
+and the usual extension with represented heads:
+
+```text
+X1(N)       = cons K N
+X(n+1)(N)   = cons F (Xn(N))
+Cell(a,e)   = lambda b r.b (A a) (r e)
+APP(f,g)    = lambda e.e f g.
+```
+
+The selectors satisfy `X1(N) Cell(a,e) ->* A a` and
+`X(n+1)(N) Cell(a,e) ->* Xn(N) e`. Require the compositional value
+interpretation `V(M) e =beta A(M[rho])` under the represented environment.
+
+Take fresh rigid variables `a,b,c,z,N`, set
+
+```text
+e = Cell(c, Cell(b, Cell(a,z)))
+R = quote(var 2) ++ N = cons F (cons F (cons K N)),
+```
+
+and consider the source application `var 1 var 2`. Its left parsed value is
+`X1(R)`, and its right value is `X2(N)`. Keeping this actual suffix
+correlation, the alias reduces as follows:
+
+```text
+e X1(R) X2(N)
+  ->* X1(R) (A c) (X2(N) (Cell(b, Cell(a,z))))
+  ->* (A c) K R (A a).
+```
+
+The final term contains no `b`, whatever the closed representation `A`.
+Neither applying the closed decoder `D` nor beta reduction can introduce a
+fresh free `b`. Correctness instead requires its decoded result to be
+`c b`, a beta-normal term containing `b`. Church–Rosser gives a
+contradiction.
+
+Thus no one-sided retraction, including an applicative one, makes this
+alias correct with raw selectors and this extension interface. The script
+checks the information-losing equation with `A` itself rigid. This argument
+uses the stated compositional interpretation for open terms; it is not a
+new unconditional theorem about the closed-source interpreter contract.
+An environment-dependent wrapper carrying additional context, a different
+extension operation, or extra source information remains outside it.
+
+### A complete parser with applicative remainder metadata
+
+An explicit construction uses the box tag to carry the source remainder.
+Application combines ordinary closure payloads pointwise and propagates
+the right operand's remainder:
+
+```text
+S(x,y) = lambda e.x e (y e)
+G      = lambda g n u y x h.h (lambda r.r g n) (S(x,y))
+t_N    = lambda r.r G N
+B_N(x) = lambda h.h t_N x.
+```
+
+The unused `u` absorbs the extra metadata supplied by self-application.
+For arbitrary, independently chosen `M,N,x,y`,
+
+```text
+t_N F                 ->* N
+B_N(x) F              ->* x
+B_M(x) K F            ->* M
+B_M(x) B_N(y)         ->* B_N(S(x,y)).
+```
+
+For the last equation, `t_M t_N y x` reduces to `G G N M y x`.
+Thus the tag retains the right remainder even when the two input tags
+differ. This exactly matches parsing an application: the left operand's
+remainder begins with the right operand, and the right operand's remainder
+is the result's remainder.
+
+The abstraction map preserves the existing tag:
+
+```text
+Abs = lambda tag body h.
+        h tag (lambda env arg.body (lambda b r.b arg (r env))).
+
+B_N(f) Abs ->* B_N(lambda env arg.f (Cell(arg,env))).
+```
+
+Here `Cell` is the original unwrapped environment cell. Define a
+continuation-free parser `P` by the following recursive equations:
+
+```text
+P (1^n 0 ++ N)          ->* B_N(Xn(N))
+P (00 ++ code(M) ++ N)  ->* (P (code(M) ++ N)) Abs
+P (01 ++ code(M) ++ code(L) ++ N)
+  ->* v (P (v K F)),    where v = P (code(M) ++ code(L) ++ N).
+```
+
+In the application equation, if `R = code(L) ++ N`, the first parse
+returns `v = B_R(f)`, so `v K F`
+returns the correct second-parse stream `R`. The final application returns
+`B_N(S(f,g))`.
+
+The implementation uses the 165's whole-stream reader with
+`Box = lambda v n h.h (lambda r.r G n) v` as its variable continuation.
+Its second-tag handler factors the first boxed value across both branches:
+
+```text
+Next bit rest =
+  (lambda v.v (bit Abs (P (v K bit)))) (P rest).
+```
+
+On APP, the actual `bit` is `F` and supplies the second suffix projection;
+on ABS, that entire expression is erased. The public boundary is
+
+```text
+E C s = P s (lambda tag value.C value (tag F)).
+```
+
+Structural induction on the source gives the same closure semantics as the
+165, with the remainder stored in the box. The public boundary consequently
+reduces to `C (lambda z.M) N` for every closed source `M`. This handwritten
+argument does not normalize `M`; it includes divergent source terms.
+
+The complete interpreter costs **303 bits**: its closed parser is 259,
+the public adapter is 42, and their application costs two. Nested within
+the parser, `G` costs 62, the closed variable-box constructor 90, and `Abs`
+51; these nested sizes are not an additional sum. The separate tag and
+boxing code outweigh the saved application plumbing. A smaller construction
+would need to share those operations with the parser itself.
+
+`tools/self-interpreter/theory/metadata_parser.py` generates
+`data/self-interpreter/machines/int303_metadata.{lam,blc}` and checks the
+rigid projection, application, and abstraction equations. The complete
+interpreter passes the standard battery, and tail-projecting probes return
+the exact rigid suffix on both `Omega` and `lambda a.Omega`. The report is
+`data/self-interpreter/theory/metadata_parser.json`; current measurements
+belong in `docs/STATUS.md`. No candidate enumeration is involved.
+
+Pushing the public consumer
+`lambda tag value.C value (tag F)` into the recursive productions removes
+the boxes and their tags. On genuine source encodings, the resulting clauses
+are exactly `C Xn N`, `C (ABS f) N`, and `C (S(f,g)) N`: the ordinary CPS
+interface of the 165. In particular, the separate `G` disappears because
+its rebuilt tag is immediately projected to the remainder. This fusion
+removes the added representation overhead but leaves no concrete bit saving
+over the 165. A further saving would require the tag operation to perform
+another necessary control task before consumption. These source-domain
+equations do not assert beta equality of the two complete parsers on
+arbitrary inputs.
+
 ## Swapping a closure's two arguments is not an exact involution
 
 A tempting wrapper swaps a closure's environment and source-argument

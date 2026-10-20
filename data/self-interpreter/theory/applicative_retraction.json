@@ -1,0 +1,31 @@
+{
+  "search_performed": false,
+  "helpers": {
+    "tag": {
+      "bits": 28,
+      "wire": "0000000001011011110011101110"
+    },
+    "box": {
+      "bits": 41,
+      "wire": "00000101100000000001011011110011101110110"
+    },
+    "decode": {
+      "bits": 12,
+      "wire": "000110000010"
+    }
+  },
+  "rigid_equations": [
+    "retraction",
+    "application",
+    "identity_image_is_idempotent",
+    "lookup_preserves_first_variable",
+    "lookup_preserves_middle_variable",
+    "lookup_preserves_third_variable",
+    "alias_loses_middle_variable"
+  ],
+  "distinct_normal_forms": [
+    "box_is_not_identity",
+    "identity_image_is_not_false"
+  ],
+  "elapsed_seconds": 0.032
+}
