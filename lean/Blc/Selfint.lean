@@ -6,7 +6,9 @@ this layer).
 
 PROVED here, zero sorries: the artifact pins — intL's wire identity
 (`wire_intL`, the kernel vouches the constant IS Palmer's 168-bit
-interpreter) and |E_q| = |intL I| = 174 — and the quote-size identity
+interpreter), |E_q| = |intL I| = 174, and the same pin for the 165-bit
+interpreter `intL165` (`wire_intL165`; its self-interpreter proof is
+`Blc/Selfint165.lean`, and qBLC stays on `intL`) — and the quote-size identity
 |stream(M,R)| = 14·|M| + zeros(M) + |R| (`streamOf_length`): the
 measured quote linearity, now kernel-checked.
 
@@ -90,6 +92,15 @@ def intL : Term := .app (.lam (.app (.var 0) (.var 0))) (.lam (.app (.lam (.lam 
 
 def intLWire : List Bool := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, false, false, false, false, true, false, false, false, false, false, true, true, false, false, false, false, false, false, true, false, true, true, true, false, false, true, true, false, true, true, true, true, false, false, true, false, true, true, true, true, true, true, false, true, false, false, true, false, true, true, false, true, false, true, false, false, false, false, true, true, true, true, false, false, false, false, true, false, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, true, false, true, true, true, false, true, true, true, false, false, true, true, false, true, true, true, true, false, false, true, true, true, true, true, false, false, false, false, true, true, true, true, true, false, false, false, false, true, false, true, true, true, true, false, true, false, false, true, true, true, false, true, false, false, true, true, false, true, false]
 
+/-- The 165-bit self-interpreter: Palmer's 168 with a shorter reader
+(`\list. list (\bit0. bit0 (\unused \r. r next) cont) (list list list)`
+in place of `\list. list (\bit0 \list1. bit0 (list1 next) (cont list1
+(list1 list1 list1)))`), 0-indexed de Bruijn. `wire_intL165` pins it to its
+wire; `Blc/Selfint165.lean` proves it a self-interpreter. -/
+def intL165 : Term := .app (.lam (.app (.var 0) (.var 0))) (.lam (.app (.lam (.lam (.app (.lam (.lam (.app (.app (.var 0) (.lam (.app (.app (.var 0) (.lam (.lam (.app (.var 0) (.var 4))))) (.var 3)))) (.app (.app (.var 0) (.var 0)) (.var 0))))) (.lam (.app (.var 2) (.lam (.app (.app (.var 1) (.app (.var 2) (.lam (.lam (.app (.var 2) (.lam (.lam (.app (.app (.var 1) (.var 2)) (.app (.var 0) (.var 3)))))))))) (.app (.var 3) (.lam (.app (.var 3) (.lam (.app (.app (.var 2) (.var 0)) (.app (.var 1) (.var 0)))))))))))))) (.app (.var 0) (.var 0))))
+
+def intL165Wire : List Bool := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, false, false, false, false, true, false, false, false, false, false, true, false, true, true, false, false, false, false, true, false, true, true, false, false, false, false, false, false, true, true, false, true, true, true, true, true, false, true, true, true, true, false, false, true, false, true, true, false, true, false, true, false, false, false, false, true, true, true, true, false, false, false, false, true, false, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, true, false, true, true, true, false, true, true, true, false, false, true, true, false, true, true, true, true, false, false, true, true, true, true, true, false, false, false, false, true, true, true, true, true, false, false, false, false, true, false, true, true, true, true, false, true, false, false, true, true, true, false, true, false, false, true, true, false, true, false]
+
 /-- `E_q = intL I`: the measured 174-bit qBLC self-interpreter. -/
 def intLI : Term := .app intL (.lam (.var 0))
 
@@ -105,6 +116,11 @@ theorem intL_size : intLWire.length = 168 := by decide
 
 /-- |E_q| = 174 — the self-interpretation constant, kernel-checked. -/
 theorem intLI_size : (blcCode intLI).length = 174 := by decide
+
+/-- The 165's transcription, vouched for by the kernel. -/
+theorem wire_intL165 : blcCode intL165 = intL165Wire := by decide
+
+theorem intL165_size : intL165Wire.length = 165 := by decide
 
 -- ---------------------------------------------------------------------------
 -- Closedness plumbing for the size identity.

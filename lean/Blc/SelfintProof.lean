@@ -37,6 +37,13 @@ chains on terms whose free variables stand for the continuation, the
 stream tail and the parsed closures, lifted to arbitrary terms because
 head steps are stable under substitution (`spineReds_instN`).
 
+The corollaries run through `Parses E` (end of §7), the parse's
+conclusion stated for an arbitrary interpreter `E`: `contract_of_parses`,
+`l1_beta_of_parses`, `open_of_parses`, and `isSelfInterpreter_of_parses`
+need nothing else. `Blc/Selfint165.lean` proves `Parses intL165` for the
+165-bit interpreter on top of §0–§6 and the runs here that do not name
+the parser.
+
 No `sorry`; the axioms are `propext` and `Quot.sound`.
 -/
 
@@ -904,14 +911,26 @@ theorem intL_parse (M R : Term) : ∃ B U,
     (spineReds_appL _ (spineReds_appL _ (spineReds_of_spineSteps _ run_knot))) ?_
   exact spineReds_trans (spine_unfold C _) (hK C)
 
+/-- `Parses E`: what `intL_parse` provides, for any interpreter `E` —
+for every term `M` and tail `R`, one closure `λ.B` that denotes and
+implements `M`, one residual `U` spine-reducing to `R`, and, for every
+continuation `C`, `E C (⌜M⌝ ++ R)` spine-reducing to `C (λ.B) U`. The
+corollaries below (`*_of_parses`) need nothing else, so they serve the
+165-bit interpreter of `Blc/Selfint165.lean` as well. -/
+def Parses (E : Term) : Prop :=
+  ∀ M R : Term, ∃ B U, Den M B ∧ Implements (.lam B) M ∧ SpineReds U R ∧
+    ∀ C, SpineReds (.app (.app E C) (streamOf (blcCode M) R)) (.app (.app C (.lam B)) U)
+
+theorem parses_intL : Parses intL := intL_parse
+
 -- ---------------------------------------------------------------------------
 -- §8. The contract, and the obligations of Blc/Selfint.lean.
 
-/-- **The self-interpreter contract.** For every closed `M` and any
-terms `C`, `N`: `intL C (⌜M⌝ ++ N) →β* C (λz. M) N`. -/
-theorem selfint_contract (M : Term) (hM : Closed M) (C N : Term) :
-    Betas (.app (.app intL C) (streamOf (blcCode M) N)) (.app (.app C (.lam M)) N) := by
-  obtain ⟨B, U, hD, _, hU, hK⟩ := intL_parse M N
+/-- The contract from a parse: `E C (⌜M⌝ ++ N) →β* C (λz. M) N` for every
+closed `M`. -/
+theorem contract_of_parses {E : Term} (hE : Parses E) (M : Term) (hM : Closed M) (C N : Term) :
+    Betas (.app (.app E C) (streamOf (blcCode M) N)) (.app (.app C (.lam M)) N) := by
+  obtain ⟨B, U, hD, _, hU, hK⟩ := hE M N
   have hB : Betas B M := by
     have h := hD 0 1 [] (.var 0) Term.var hM (fun i hi => absurd hi (Nat.not_lt_zero i))
     have e : substDec 0 (envList [] (.var 0)) (shift 1 1 B) = B := substDec_var_shift B 0
@@ -919,6 +938,33 @@ theorem selfint_contract (M : Term) (hM : Closed M) (C N : Term) :
     exact h
   exact betas_trans (betas_of_spineReds (hK C))
     (betas_app (betas_appR C (betas_lam hB)) (betas_of_spineReds hU))
+
+/-- L1 from a parse, the residual reduced in argument position. -/
+theorem l1_beta_of_parses {E : Term} (hE : Parses E) (M R C : Term) : ∃ Q, Implements Q M ∧
+    Betas (.app (.app E C) (streamOf (blcCode M) R)) (.app (.app C Q) R) := by
+  obtain ⟨B, U, _, hI, hU, hK⟩ := hE M R
+  exact ⟨.lam B, hI, betas_trans (betas_of_spineReds (hK C)) (betas_appR _ (betas_of_spineReds hU))⟩
+
+/-- The open-program contract from a parse. -/
+theorem open_of_parses {E : Term} (hE : Parses E) (M : Term) (d : Nat) (hM : FreeUnder d M)
+    (C N : Term) :
+    ∃ Q U, Betas (.app (.app E C) (streamOf (blcCode M) N)) (.app (.app C Q) U) ∧
+      Betas U N ∧
+      ∀ (env : List Term) (R : Term) (σ : Nat → Term),
+        (∀ i, i < d → env[i]? = some (σ i)) →
+          Betas (.app Q (envList env R)) (inst σ M) := by
+  obtain ⟨B, U, hD, _, hU, hK⟩ := hE M N
+  refine ⟨.lam B, U, betas_of_spineReds (hK C), betas_of_spineReds hU, ?_⟩
+  intro env R σ hagree
+  have h := hD d 0 env R σ hM hagree
+  rw [shift_zero] at h
+  exact Betas.head (Beta.beta _ _) h
+
+/-- **The self-interpreter contract.** For every closed `M` and any
+terms `C`, `N`: `intL C (⌜M⌝ ++ N) →β* C (λz. M) N`. -/
+theorem selfint_contract (M : Term) (hM : Closed M) (C N : Term) :
+    Betas (.app (.app intL C) (streamOf (blcCode M) N)) (.app (.app C (.lam M)) N) :=
+  contract_of_parses parses_intL M hM C N
 
 /-- The contract on quoted programs, `⌜M⌝ = stream(M, FALSE)`. -/
 theorem selfint_quote (M : Term) (hM : Closed M) (C : Term) :
@@ -955,9 +1001,8 @@ theorem l2Statement : L2Statement := fun i R => parserStatement (.var i) R
 reduced in argument position: `intL C stream(M,R) →β* C Q R` for an
 implementing closure `Q ⊨ P[M]`, every term `M`, every tail `R`. -/
 theorem l1_beta (M R C : Term) : ∃ Q, Implements Q M ∧
-    Betas (.app (.app intL C) (streamOf (blcCode M) R)) (.app (.app C Q) R) := by
-  obtain ⟨B, U, _, hI, hU, hK⟩ := intL_parse M R
-  exact ⟨.lam B, hI, betas_trans (betas_of_spineReds (hK C)) (betas_appR _ (betas_of_spineReds hU))⟩
+    Betas (.app (.app intL C) (streamOf (blcCode M) R)) (.app (.app C Q) R) :=
+  l1_beta_of_parses parses_intL M R C
 
 /-- The contract for open programs: `intL C (⌜M⌝ ++ N) →β* C Q U` with
 `U →β* N`, where `Q` applied to any cons' environment covering M's free
@@ -967,13 +1012,8 @@ theorem selfint_open (M : Term) (d : Nat) (hM : FreeUnder d M) (C N : Term) :
       Betas U N ∧
       ∀ (env : List Term) (R : Term) (σ : Nat → Term),
         (∀ i, i < d → env[i]? = some (σ i)) →
-          Betas (.app Q (envList env R)) (inst σ M) := by
-  obtain ⟨B, U, hD, _, hU, hK⟩ := intL_parse M N
-  refine ⟨.lam B, U, betas_of_spineReds (hK C), betas_of_spineReds hU, ?_⟩
-  intro env R σ hagree
-  have h := hD d 0 env R σ hM hagree
-  rw [shift_zero] at h
-  exact Betas.head (Beta.beta _ _) h
+          Betas (.app Q (envList env R)) (inst σ M) :=
+  open_of_parses parses_intL M d hM C N
 
 -- ---------------------------------------------------------------------------
 -- §9. The contract as a predicate, and the size question it poses.
@@ -992,17 +1032,22 @@ def IsSelfInterpreter (E : Term) : Prop :=
     BetaJoin (.app (.app E (.var 0)) (streamOf (blcCode M) (.var 1)))
       (.app (.app (.var 0) (.lam M)) (.var 1))
 
+theorem isSelfInterpreter_of_parses {E : Term} (hc : Closed E) (hE : Parses E) :
+    IsSelfInterpreter E :=
+  ⟨hc, fun M hM => ⟨_, contract_of_parses hE M hM (.var 0) (.var 1), Betas.refl _⟩⟩
+
 /-- Palmer's 168 meets the contract. -/
 theorem isSelfInterpreter_intL : IsSelfInterpreter intL :=
-  ⟨by decide, fun M hM =>
-    ⟨_, selfint_contract M hM (.var 0) (.var 1), Betas.refl _⟩⟩
+  isSelfInterpreter_of_parses (by decide) parses_intL
 
 theorem intL_length : (blcCode intL).length = 168 := by
   rw [wire_intL]; exact intL_size
 
 /-- `SelfintSizeBound n`: every self-interpreter has at least `n` bits.
-Optimality of Palmer's interpreter is `SelfintSizeBound 168` (open);
-the bound cannot go higher. -/
+The 168 refutes every bound above 168 (`not_selfintSizeBound_169`); the
+165-bit `intL165` refutes every bound above 165
+(`not_selfintSizeBound_166`, `Blc/Selfint165.lean`), so optimality is
+`SelfintSizeBound 165` (open). -/
 def SelfintSizeBound (n : Nat) : Prop :=
   ∀ E : Term, IsSelfInterpreter E → n ≤ (blcCode E).length
 
