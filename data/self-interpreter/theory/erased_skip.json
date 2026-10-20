@@ -1,0 +1,70 @@
+{
+  "equations": [
+    {
+      "name": "R_a F = a",
+      "equal_normal_form_bits": 8
+    },
+    {
+      "name": "R_a Z_t = a t t",
+      "equal_normal_form_bits": 19
+    },
+    {
+      "name": "R_a K = H",
+      "equal_normal_form_bits": 33
+    },
+    {
+      "name": "R_a I = a Z_q c",
+      "equal_normal_form_bits": 29
+    },
+    {
+      "name": "skip-erasure on a leading zero",
+      "equal_normal_form_bits": 7
+    },
+    {
+      "name": "skip-erasure through two leading ones",
+      "equal_normal_form_bits": 7
+    }
+  ],
+  "variants": [
+    {
+      "variant": "next",
+      "bits": 166,
+      "battery": {
+        "ok": 667,
+        "skipped": 1,
+        "failures": []
+      }
+    },
+    {
+      "variant": "continuation",
+      "bits": 167,
+      "off_domain": "E C F -> C",
+      "battery": {
+        "ok": 667,
+        "skipped": 1,
+        "failures": []
+      }
+    },
+    {
+      "variant": "parser",
+      "bits": 168,
+      "off_domain": "E C F -> E (paper); checked on I",
+      "battery": {
+        "ok": 667,
+        "skipped": 1,
+        "failures": []
+      }
+    },
+    {
+      "variant": "generator",
+      "bits": 169,
+      "battery": {
+        "ok": 667,
+        "skipped": 1,
+        "failures": []
+      }
+    }
+  ],
+  "elapsed_seconds": 7.039,
+  "search_performed": false
+}

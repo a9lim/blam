@@ -16,3 +16,8 @@ import Blc.Wire
 import Blc.Selfint
 import Blc.SelfintProof
 import Blc.Selfint165
+import Blc.SelfintLowerBound
+import Blc.SelfintNormal
+import Blc.SelfintCapture
+import Blc.SelfintOrigins
+import Blc.SelfintSharp

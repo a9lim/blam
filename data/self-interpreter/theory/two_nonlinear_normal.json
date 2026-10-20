@@ -1,0 +1,43 @@
+{
+  "bits": 742,
+  "beta_normal": true,
+  "nonlinear": [
+    {
+      "path": [
+        0,
+        0,
+        2,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        2
+      ],
+      "uses": 10,
+      "captures": []
+    },
+    {
+      "path": [
+        0,
+        0,
+        2,
+        0,
+        0,
+        1,
+        1,
+        2
+      ],
+      "uses": 2,
+      "captures": []
+    }
+  ],
+  "affine_normalization_steps": 13,
+  "battery": {
+    "ok": 667,
+    "skipped": 1,
+    "failures": 0
+  },
+  "seconds": 1.8064
+}

@@ -5,7 +5,7 @@ boundaries, and ordered next work. `README.md` is the public map, the domain
 documents under `docs/` state durable contracts and research records, and
 canonical outputs live in `data/`. Superseded state lives in Git history.
 
-Last updated: 2026-10-17.
+Last updated: 2026-10-20.
 
 ## Classical
 
@@ -132,7 +132,7 @@ two seeds.
 
 `lake build Certs BusyBeaver` checks all 415 exclusions, the eight halting
 certificates, and their wire identities; `lake build` also checks the
-self-interpreter proofs (`Blc/Selfint165.lean`, `Blc/SelfintProof.lean`). The
+self-interpreter proofs and structural theorems (`Blc/Selfint*.lean`). The
 Lean development has no sorries or mathlib, and its axioms are `propext` and
 `Quot.sound`.
 `scripts/bb-regen.sh` audits the BB registry's axioms, refreshes the
@@ -148,23 +148,62 @@ with all features (three opt-in tests ignored) and 328 with default features.
   stream, where it is right for both dispatch arms, and lets the Scott list
   hand `list1` to the variable arm, which becomes `cont` itself (L 17, A 25,
   X 29). Lean proves it, and the 168, correct for every closed program as a
-  β-reduction (`selfint_contract165`, `selfint_contract`). Nothing below 165
-  in its neighbourhood: let structure to three cuts (unique minimum), βη
-  component to +20 (2,183,051 terms) and contextual to +16, every reader slot
+  β-reduction (`selfint_contract165`, `selfint_contract`). No verified
+  sub-165 has been found in the tested neighbourhoods: let structure to
+  three cuts (unique minimum), βη component to +20 (2,183,051 terms) and
+  contextual to +16, every reader slot
   singly and handler × skip jointly through 164-bit interpreters (32,366,372
   pairs, no survivor, 4,052,176 capped), whole APP ≤ 34 bits, and the 168's
   near misses rebuilt on it (≥ 166; `merges.py`). The 168's module bound
   (minima summing to 168) is conditional on opaque modules, the clause the 165
-  breaks; it still bounds the NEXT region the two share. Unconditionally,
-  every interpreter has head normal form `λc s. c A B` or `λc s. s A⃗` and a
-  duplicated binder, and a β-normal correct interpreter exists, so no knot is
-  forced; a proof at 165 bits needs a decomposition theorem that does not yet
-  exist. Within the 165's own reader shape (`s H S`, handler `λb r⃗. b A B`)
-  Codex proved the 165 minimal, with the zero arm ≥ 14 and the APP lift ≥ 19
-  bits, and excluded reader/handler knot trees and the cell/APP alias at every
-  size (§5, handwritten proofs with checks in
-  `data/self-interpreter/reasoning_165/`); its seventeen correct
-  constructions measure 166 to 234, and a 158 and a 167 fail (`merges.py`).
+  breaks; it still bounds the NEXT region the two share. The handwritten
+  reader bound now permits arbitrary handlers: independent rigid laws force
+  `|H| ≥ 27`, so `s H S` still costs at least 43 and the unchanged surrounding
+  interpreter at least 165 (`classical/self-interpreter/handler-bound.md`).
+  Actual stream/selector/suffix correlations remain outside that theorem.
+  The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
+  exclusions remain as specified in §5.
+- **Unconditional structure** (`classical/self-interpreter/structural-bounds.md`):
+  Lean proves that every interpreter has at least two syntactically
+  nonlinear binders, and that an explicit `λc s.B` needs two inside `B`.
+  The normalization argument gives the small numerical floor 18, not a
+  165-bit bound. A 584-bit witness has exactly two nonlinear binders, both
+  closed in isolation; a kernel-replayed 71-step reduction reaches the
+  literal 165. A 742-bit β-normal witness also has exactly two closed
+  nonlinear binders, with its contract kernel-checked as β-joinability.
+  Thus the minimum count two is attained even among β-normal interpreters.
+  Every interpreter must also contain a live abstraction capturing an
+  enclosing local variable.
+  A colored reduction theorem proves that quotation-origin binders remain
+  affine, retain one of three protected head shapes, and cannot acquire a
+  live capture; live quotation bodies stay normal and contain only
+  quotation-origin abstractions. These results do not yet give an additive
+  size decomposition.
+- **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
+  `typed-normal.md`): the β-normal interpreter is 204 bits
+  (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,
+  normality, and directed contract for every closed source and arbitrary
+  continuation and suffix. A separate 672-bit construction is both
+  β-normal and simply typable, with a general handwritten reduction proof;
+  application to its quotation need not be simply typable. The 204, 584,
+  672, 742, and four erased-skip variants each pass the existing bounded
+  battery (667 pass, one divergent expected result skipped, zero failures).
+  Targeted divergent-source suffix checks also pass. Sources are in
+  `data/self-interpreter/machines/`, reports in
+  `data/self-interpreter/theory/`, and reproducible checks in
+  `tools/self-interpreter/theory/`. No candidate enumeration is part of
+  these checks. The integrated Lean build passes, with the main theorem
+  axioms limited to `propext` and `Quot.sound`; the five focused Python
+  checks took 14.4 seconds together.
+- **Protocol constraints** (`classical/self-interpreter/protocol-obstructions.md`):
+  the erased skip operand can return the continuation, parser, or generator
+  off the input domain, producing correct 167-, 168-, and 169-bit variants.
+  The unchanged NEXT diagonal fails for every skip function under its
+  handler protocol. Root transparency and context independence already
+  force canonical closed internal values, sharpening the cell/APP collision.
+  A representation that erases β distinctions cannot have an exact decoder
+  using only that representation; closed two-sided β-inverse coercions are
+  necessarily identities. These are protocol-specific handwritten proofs.
 - **The universal machine** (`classical/self-interpreter/universal.md`):
   Tromp's wirings around the 165's body give 175 (non-strict) and 187
   (strict), against 178 and 190 around the 168's. Wirings around the new body
@@ -250,11 +289,12 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
 9. **The self-interpreter below 165** (`classical/self-interpreter/interpreter.md`
-   §7): readers outside the shape bounded in §5, the reader's own diagonal
-   `R Z →* next next` as the knot's generator, and the capped fills of the
-   reader searches. Look for another shared
-   computation of the kind the reader is, by reasoning first; an unconditional
-   lower bound needs a decomposition theorem. Upstreaming the 165, 175 and 187
+   §7): correlated readers outside the independent rigid laws, a changed
+   NEXT protocol that can use the reader's diagonal, and the capped fills of
+   the reader searches. Look for another shared computation of the kind the
+   reader is, by reasoning first. The two-nonlinear count is sharp even
+   though the current witness is large; a stronger lower bound must price
+   connections, captures, and protected quotation origins. Upstreaming the 165, 175 and 187
    to tromp/AIT is a9's call (`contrib/PR_KIT.md`).
 10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the

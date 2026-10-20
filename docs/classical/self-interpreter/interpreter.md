@@ -303,19 +303,35 @@ Both shapes occur: the 165 and 168 are `s`-headed; parsing twice,
 `λc s. c (E (λv r. v) s) (E (λv r. r) s)`, is a correct `c`-headed
 interpreter.
 
-**Duplication.** Some binder of `E` occurs at least twice. *Proof:* the stream
-cells and both booleans are affine, and β preserves affineness, so an affine
-`E` would make `E C ⌜λx. x x⌝N` affine, while its required β-normal form
-`C (λz. λx. x x) N` is not.
+**Duplication.** At least two syntactic binders of `E` occur at least twice.
+Lean proves that every term with at most one such binder weakly normalizes;
+the interpreter contract on Ω contradicts that conclusion. If `E = λc s.B`,
+at least two are inside `B`: the public interface binders cannot supply
+them. The count is sharp: a correct 584-bit interpreter uses exactly two,
+both closed in isolation, by sharing one `λx.x x` across an affine
+translation of the 165. Its reduction to the literal 165 is kernel-checked.
+The minimum count two is attained even by a β-normal 742-bit witness,
+whose contract is kernel-checked as β-joinability.
+See `structural-bounds.md`, `Blc/SelfintLowerBound.lean`, and
+`Blc/SelfintSharp.lean`.
 
-**No knot is forced.** A correct interpreter can be β-normal. Mark every
-application of a correct `E0` with a fresh `b`, `(U V)ᵇ = b Uᵇ b Vᵇ`, so `E0ᵇ`
-is normal and `E0ᵇ[b := K] →* E0`; then `λc s. s (λb r. b E0ᵇ b c s)` is
-β-normal and correct, because every closed program's first bit is 0 (`K`).
-Built on the 165 it is 712 bits (on the 168, 753), and both pass the battery. So any argument that a
-small interpreter must contain a fixed-point combinator, a syntactic `x x`, or
-an infinite Böhm tree needs a quantitative step; correctness alone does not
-supply one.
+**Capture and provenance.** Some live abstraction of `E` captures an
+enclosing local variable. Lean proves that absence of this property is
+preserved by β-reduction and holds for the quotation, while the normal
+output for `λa b.a b` violates it. A separate colored reduction theorem
+tracks quotation-origin binders through unrestricted interpreter
+reductions: they remain affine with a protected head occurrence.
+These are global constraints, not separately additive module costs
+(`structural-bounds.md`, `Blc/SelfintCapture.lean`,
+`Blc/SelfintOrigins.lean`).
+
+**No syntactic knot or untypability is forced.** A correct interpreter can
+be β-normal; `normal.md` gives a compact construction with a kernel-checked
+contract. It can even be both β-normal and simply typable:
+`typed-normal.md` gives an explicit 672-bit construction and a general
+syntactic correctness proof. The actual application to the quotation need
+not share that simple typing. Thus neither a β redex nor untypability of
+`E` follows from correctness alone.
 
 **Search cost.** There are about `1.02 × 10^44` closed terms of 167 bits. The
 property "is a self-interpreter" is Π⁰₂-complete in general, so no total
@@ -333,20 +349,21 @@ the 165 shows that the natural decomposition is false.
 ### Bounds within the 165's reader shape
 
 These are Codex's handwritten proofs, with targeted reduction checks in
-`data/self-interpreter/reasoning_165/bounds/` (`proof_check.py`); none is in
-Lean.
+`data/self-interpreter/reasoning_165/bounds/` (`proof_check.py`) and
+`tools/self-interpreter/theory/handler_bound.py`; none is in Lean.
 
 - **The reader.** In the frame `[s, next, cont, intL, x]`, take readers
-  `s H S` where `S` satisfies the stop-at-first-zero law and
-  `H = λb r1 … rm. b A B` with arbitrary `A`, `B` (redexes and further uses
-  of `b` allowed) and no common arguments after `b A B`, satisfying
-  `H K R R = R next` and `H F R T = cont R T` for rigid neighbours. The
-  cheapest handler costs 27, 33 or 40 bits with 0, 1 or 2 tails bound before
-  the dispatch; three or more leave an outer λ. The skip costs at least 10 and
-  the two applications with `s` 6, so the reader costs at least 43, and with
-  the other 122 bits unchanged the minimum is the 165. The class does not
-  cover other reader heads, arguments shared across the dispatch, or use of
-  the correlation between a variable's selector and its suffix.
+  `s H S` where `S` satisfies the stop-at-first-zero law and arbitrary `H`
+  satisfies `H K R R = R next` and `H F R T = cont R T` for independent
+  rigid neighbours. The handler costs at least 27, without assuming its
+  syntax, normality, dispatch shape, or absence of common arguments.
+  `handler-bound.md` gives the complete small-budget case proof. The skip
+  costs at least 10 and the two applications with `s` 6, so the reader costs
+  at least 43; with the other 122 bits unchanged the minimum is 165.
+  This does not cover other reader heads or handlers exploiting actual
+  stream/selector/suffix correlations. `normal.md` gives an explicit
+  correlated handler satisfying the actual-stream laws but not these
+  independent rigid laws.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,
   `Z R R = R next` forces the normal form `λu v. u next` (15) or
@@ -402,7 +419,9 @@ Lean.
   `P = λc s. s H_c (s s s)`, `P P P` reproduces itself at the head with more
   arguments and has no head normal form, and `R_i P` reduces to it. The
   current `next` diagonal cannot replace `E C` either: `next next` on quoted
-  `I` leaves five arguments at the rigid `C`. (Codex.)
+  `I` leaves five arguments at the rigid `C`. This latter obstruction holds
+  for every choice of skip function with the same handler and NEXT protocol,
+  not only `s s s` (`protocol-obstructions.md`). (Codex.)
 - **Readers of the bare-`cont` shape have outer arity one:** any
   `λs. s (λb. b Z C) A1 … Ak` returns `C r A1 … Ak` on a variable, so `k = 1`
   whatever the zero arm; and no application-only body over `s`, `next`, `C`
@@ -418,6 +437,12 @@ Lean.
   as the first parse's continuation makes `P q t` head-divergent on Ω, which
   the contract forbids. Likewise a selected parse result `r P = bit value rest`
   plus any iterate of the skip loses the first operand's index. (Codex.)
+- **A uniform decoder cannot repair an η-collapsed representation.** If
+  two source programs have β-equal internal representations but distinct
+  required β-normal outputs, every decoder depending only on that
+  representation produces β-equal results for both. In particular, erasing
+  the difference between `I` and `λf x.f x` cannot be repaired at the public
+  boundary without additional information (`protocol-obstructions.md`).
 
 ## 6. Protocol changes
 
@@ -486,6 +511,7 @@ search; sources and proofs are in `data/self-interpreter/reasoning_165/`, and
 | idea | bits | note |
 |---|---:|---|
 | Skip `list list next` | 166 | the erased argument changes only off-stream behaviour |
+| Skip `list list cont`, `list list intL`, or `list list x` | 167 / 168 / 169 | on the off-domain input F, returns the continuation, parser, or generator; `protocol-obstructions.md` |
 | Arity switch `s (s K)` dispatching constructor against variable | 167, *fails* | the variable arm returns `λc. I` on `I` |
 | Balanced skip `(s s) (s s)` | 169 | `s s = K N`, so both forms reduce to `N` |
 | `Δ = λx. x x` shared between the knot and `s s` | 176 | the let costs 11 |
@@ -503,18 +529,19 @@ search; sources and proofs are in `data/self-interpreter/reasoning_165/`, and
 
 ## 7. Boundaries
 
-The 165 is pinned locally from every direction searched: its let structure, βη
-and contextual components, every slot of its reader singly and the handler and
-skip jointly through interpreters of 164 bits, and the NEXT region it shares
-with the 168. A sub-165 would need another fusion of the kind the reader is:
+No verified sub-165 has been found in the tested neighbourhoods: its let
+structure, βη and contextual components, every slot of its reader singly and
+the handler and skip jointly through interpreters of 164 bits, and the NEXT
+region it shares with the 168. Capped candidates remain unresolved. Another
+fusion of the kind the reader uses is a promising constructive route:
 work that two parts of the interpreter need, computed once where its value is
 right for both, or a Scott structure whose own application supplies an
 argument.
 
 Open:
 
-- readers outside the shape bounded in §5: other reader heads, arguments
-  shared across the dispatch, the correlation between a variable's selector
+- readers outside the parametric class bounded in §5: other reader heads,
+  the correlation between a variable's selector
   and its suffix, and readers with a different `next` protocol beyond those
   priced in §3 and §6;
 - the reader's diagonal `R Z →* next next` (§2): the 165 already contains the
@@ -526,8 +553,10 @@ Open:
 - the capped fills of §3 (4,052,176 in the joint reader search, 7,790 in the
   handler, 218 in whole APP) and of §4;
 - an unconditional lower bound beyond small sizes: §5 states the structure
-  every interpreter has, and why a proof at this size needs a decomposition
-  theorem that does not yet exist.
+  every interpreter has. The minimum nonlinear-binder count two is attained,
+  so counting more such binders cannot close the gap. A quantitative theorem
+  must account for their connections, live captures, and quotation-origin
+  restrictions without incorrectly adding costs of computations that share.
 
 ## 8. Reproduce
 
@@ -543,5 +572,6 @@ Open:
 | `tools/self-interpreter/module_bound.py` | the 168's module grammar (`assemble`, `audit`) |
 | `tools/self-interpreter/search_fix.py` | the knot search |
 | `tools/self-interpreter/beta_search.py` | the Python βη component reference |
-| `lake build` in `lean/` | `Blc/Selfint165.lean`, `Blc/SelfintProof.lean` |
+| `tools/self-interpreter/theory/` | bounded checks for explicit structural witnesses and protocol equations; no candidate search |
+| `lake build` in `lean/` | the 165/168, normal and two-nonlinear witnesses; unconditional normalization, capture and origin theorems |
 | `data/self-interpreter/searches_165.json` | commands and totals of the joint searches of §3 |

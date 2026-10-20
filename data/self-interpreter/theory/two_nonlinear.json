@@ -1,0 +1,27 @@
+{
+  "bits": 584,
+  "nonlinear": [
+    {
+      "path": [
+        1
+      ],
+      "uses": 10,
+      "captures": []
+    },
+    {
+      "path": [
+        2
+      ],
+      "uses": 2,
+      "captures": []
+    }
+  ],
+  "administrative_beta_steps": 71,
+  "reduces_to": "literal int165",
+  "battery": {
+    "ok": 667,
+    "skipped": 1,
+    "failures": 0
+  },
+  "seconds": 1.7848
+}

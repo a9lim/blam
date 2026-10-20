@@ -1,0 +1,15 @@
+{
+  "bits": 672,
+  "beta_normal": true,
+  "simply_typable": true,
+  "principal_type": "(a0 -> (((((((a1 -> a1) -> ((a2 -> a2) -> a3)) -> a3) -> (a0 -> (((a0 -> (a0 -> a0)) -> (((a0 -> a0) -> a0) -> a0)) -> a4))) -> (a0 -> a4)) -> a5) -> a5))",
+  "two_cast_witness_type": "((a0 -> (a0 -> a1)) -> (((a0 -> a1) -> a0) -> a1))",
+  "search_performed": false,
+  "battery": {
+    "ok": 667,
+    "skipped": 1,
+    "failures": []
+  },
+  "divergent_source_suffix": true,
+  "elapsed_seconds": 1.761
+}
