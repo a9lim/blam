@@ -1,10 +1,11 @@
 # An unrestricted parametric handler bound
 
-This is Codex's handwritten proof, independently reviewed by two subagents.
-It is not a global 165-bit optimality theorem. It removes the syntactic restriction on the
-handler in the existing reader bound while retaining the independent,
-rigid-neighbour laws. In particular it does not identify a variable selector
-with the stream that contains its remainder.
+These are Codex's handwritten proofs; both bounds were independently
+reviewed. They are not a global 165-bit optimality theorem. The first
+theorem removes the syntactic restriction on
+the handler while retaining independent, rigid-neighbour laws. The second
+allows the actual correlation between a unary selector and its remainder,
+but restricts the handler's free variables to `j,c`.
 
 ## Statement
 
@@ -189,17 +190,188 @@ For `A≥5`, the elementary bounds `L≥1`, `X≥3` already give
 
 Together the cases prove the claim.
 
-## What this does not prove
+## Correlated selectors without ambient stream access
 
-The stream `s` is still an independent rigid ambient variable in the two
-handler laws. The selector `R` and suffix `T` are independently varied.
-A real unary selector contains its suffix, and a real stream contains its
-tag and tail. A handler exploiting those correlations is outside the
-theorem. The reader itself is still `s H S`, and the rest of the
-interpreter is fixed. No conclusion about arbitrary sub-165 programs
-follows without further decomposition or a different global invariant.
+Keep the ambient frame `[s,j,c,p,x]`, but now require that the only free
+variables occurring in `H` are `j,c`. Internal bound variables and arbitrary
+beta redexes are permitted. Define the Scott cells and unary selectors by
 
-The four explicit witnesses and the arithmetic are checked by
-`tools/self-interpreter/theory/handler_bound.py`. That script does not
-enumerate terms or prove the quantified lower bound; the proof is the case
-analysis above.
+```
+cons b t = λh. h b t,
+X₀(N) = cons K N,
+Xₙ₊₁(N) = cons F Xₙ(N).
+```
+
+For fresh rigid variables `R,N`, suppose
+
+```
+H K R R =β R j,
+H F Xₙ(N) N =β c Xₙ(N) N       for every n ≥ 0.
+```
+
+Then again `|H| ≥ 27`, with equality attained by
+`λb. b (λu v. v j) c`. The second law is the actual selector/remainder
+correlation; it does not assert the stronger independent law `H F R T =β
+c R T`.
+
+### Dependence on the first argument
+
+Both `j,c` must occur freely, so `X≥3` remains necessary. The zero law
+also retains the single-abstraction obstruction above, giving `L≥2`.
+
+The handler must use its first argument. To see this without assuming
+independent tails, suppose its first exposed abstraction were vacuous,
+so `H =β λb.G` with `b` absent from `G`. The zero law gives
+`G R R →* R j`. Label the two supplied occurrences of the fresh rigid
+variable differently, as `r,t`. Identifying rigid variables cannot create
+a beta redex, so the same reduction sequence lifts to either
+
+```
+G r t →* r j,     or     G r t →* t j.
+```
+
+After substituting `r := Xₙ(N)` and `t := N`, these become respectively
+`j Bₙ Tₙ` or `N j`, where `Xₙ(N)=cons Bₙ Tₙ`. Their rigid heads differ
+from the required `c`. Thus at least one original bound-variable leaf
+is needed to receive the first argument non-vacuously.
+
+The head normal form has at most three leading abstractions: more would
+leave a lambda after the three supplied arguments. Its head cannot be
+an ambient variable, by the zero law, or the third argument, by the
+variable law. Besides the Boolean head `b`, there is now a genuinely new
+possibility: the second argument `r`.
+
+If a beta-normal handler has that head, the zero law forces all three
+inputs to be bound. With only `λb r` at the front, the final external
+`R` would remain as the last argument of the rigid head `R`, whereas the
+required last argument is `j`. Therefore this case has the form
+
+```
+λb r t. r A
+```
+
+in head normal form. Its distinct leaves for `j,c,b,r` imply `A≥3`;
+the three leading binders give `L≥3`, and these four occurrences
+contribute at least `4+5+2+1=12` to `X`. Every beta-normal handler
+with this head consequently costs at least 32 bits. This possibility
+must be excluded by cost, not by treating the selector as rigid.
+
+### At most three applications, including compressed terms
+
+With at most two applications there are at most three leaves, already
+needed for `j,c` and the first-argument binder. There is no live tail
+binder and no repeated binder. Internal reductions are affine and cannot
+increase the application count. The resulting head must be Boolean.
+Fewer than two internal Boolean arguments fail: on the `F` branch they
+leave either a lambda, the rigid `N`, or `Xₙ(N) N → N Bₙ Tₙ`.
+Two internal arguments spend both available applications, leaving no
+application in the zero arm that could produce `R j`. Thus `A≤2`
+is impossible.
+
+For `A=3`, an affine internal beta contraction reduces the application
+count to at most two and is impossible by the preceding paragraph.
+A nonlinear contraction uses at least two of the four leaves for its
+own binder, and the other two are required by `j,c`. All other
+abstractions are therefore vacuous. Contracting that binder cannot
+leave any non-vacuous abstraction to receive a future argument:
+capture-avoiding substitution does not make a vacuous binder live.
+This also fails the zero law. Hence a successful three-application
+handler is beta-normal.
+
+Its second-argument head costs at least 32, as just shown. For a Boolean
+head, the zero-law classification in the parametric proof still applies.
+Three internal Boolean arguments leave only lambda chains ending in one
+variable as arguments. To obtain `R j`, both tails must already be bound,
+the selected zero arm must be `r` or `t`, and the common third argument
+must be `j`. The selected `F` arm is then a one-leaf lambda chain applied
+only to `j`. A rigid `c` leaf gives just `c j`; a selector leaf gives
+`Xₙ(N) j → j Bₙ Tₙ`; other leaves and chains also cannot give
+`c Xₙ(N) N`.
+
+With two internal Boolean arguments, one application remains:
+
+* If neither tail is bound, the zero arm needs that application. The
+  `F` arm is a one-leaf lambda chain applied to `Xₙ(N),N`; its law
+  forces the chain to be `c`. The zero arm is therefore
+  `λu v.u j` or `λu v.v j`, whose smaller total handler costs 27.
+* If one tail is bound, the `F` arm needs an application to retain both
+  output arguments. A one-leaf lambda chain cannot manufacture `c
+  Xₙ(N) N`: a `c` leaf has only the one remaining external argument,
+  while a selector leaf applied to `N` exposes head `N`. The zero arm
+  is then a chain with no applications and cannot produce `R j`.
+* If both tails are bound, the `F` arm has at most one application.
+  A normal chain alone cannot have the required output. For an
+  application `v D`, `D` is a one-leaf lambda chain. Head `c` gives
+  only one argument; heads `j,N` are wrong; head `F` leaves a lambda.
+  The new possibility is `v=r`, giving
+  `Xₙ(N) D → D Bₙ Tₙ`. For this to expose `c` with two arguments,
+  the chain must be exactly `D=c`, yielding `c Bₙ Tₙ`. Already
+  at `n=0`, its first argument `K` differs from the required Scott
+  cell `X₀(N)`. Any lambda in a chain ending in `c` consumes at least
+  one of those two arguments and leaves too few.
+
+This closes the only application-budget case in which the correlated
+selector could replace an independently rigid tail.
+
+### Four or more applications
+
+The compressed four-application case also survives the change of laws;
+it needs the zero law, the presence of `j,c`, and a live input binder,
+not independent variable-arm tails. Here are the details.
+
+Under `A=4` and `|H|≤26`, the bounds `L≥2`, `X≥3` give `L=2`,
+`X≤4`. The handler cannot begin with a lambda, because its free `j,c`
+would then alone contribute at least five to `X`. Head reduction must
+consume an abstraction before exposing the required leading lambda.
+An affine contraction leaves at most one explicit abstraction and fails
+the zero-law obstruction. A nonlinear contraction must duplicate an
+argument containing the other abstraction; otherwise it too leaves at
+most one abstraction.
+
+Of the five leaves, two are occurrences of the contracted binder and
+two are `j,c`. The fifth must be a live occurrence of the remaining
+binder. Thus the duplicated argument has exactly one affine abstraction.
+It can expose a lambda only if it already begins with that abstraction:
+consuming its sole lambda leaves only applications and rigid variables.
+Write the argument as `D=λb.V`. If `V` has a rigid head, applying a
+copy of `D` exposes that rigid head. Otherwise
+
+```
+D = λb. b W₁ ... Wq,
+```
+
+where all `Wi` are application-only over rigid variables. For `q>0`,
+any nontrivial application tree of copies of `D` and rigid variables
+becomes rigid-headed: a copy pushes its fixed nonempty rigid spine onto
+its argument, and a second copy consumes a rigid argument from that
+spine. For `q=0`, `D=I`, and applications of identities cannot discard
+the required rigid `j,c` leaves to expose a lambda. After the nonlinear
+contraction, the surrounding body contains at least two copies of `D`
+and no other abstractions, so these cases exhaust it. It cannot expose
+the required input-receiving lambda.
+
+Finally `A≥5`, `L≥1`, `X≥3` already imply `|H|≥27`. Together these
+cases prove the correlated-selector bound.
+
+## What these bounds do not prove
+
+The parametric theorem permits arbitrary uses of ambient variables but
+requires independent rigid neighbours. The correlated-selector theorem
+uses the real unary selector and its remainder, but permits only `j,c`
+as free variables. In particular it excludes access to the whole stream
+`s`, whose tag and tail correlate with the arguments subsequently supplied
+to the handler. The full `s`-dependent correlated handler problem remains
+outside both theorems.
+
+The reader itself is still `s H S`, and the rest of the interpreter is
+fixed. These handler bounds do not settle arbitrary skip operands or
+arbitrary sub-165 programs without further decomposition or a different
+global invariant.
+
+The five explicit witnesses and the arithmetic are checked by
+`tools/self-interpreter/theory/handler_bound.py`, including the 40-bit
+whole-stream handler with only one lambda explained in `normal.md`.
+That witness shows why the single-abstraction obstruction does not extend
+unchanged to ambient-stream access. The script does not enumerate terms
+or prove the quantified lower bounds; the proofs are the case analyses
+above.

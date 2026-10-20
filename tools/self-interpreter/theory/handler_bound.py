@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Check the explicit witnesses in docs/classical/self-interpreter/handler-bound.md.
+"""Check explicit witnesses in the handler-bound and normal-interpreter notes.
 
 This is not a term search or a mechanical proof of the universal bound.
-The reductions are small open terms with independent rigid neighbours.
+The reductions use small open terms with independent rigid neighbours or
+the explicitly stated stream correlations.
 """
 from pathlib import Path
 import sys
@@ -67,4 +68,26 @@ for name, source, size, wanted in examples:
     assert got == wanted, (name, got, wanted)
     print(f"{name}: {size} bits; L={l}, A={a}, X={x}; laws={got}")
 
-print("PASS: four explicit witnesses; no enumeration")
+# Access to the whole stream invalidates the independent-law proof's L >= 2
+# lemma. This explicit 40-bit handler has one lambda; it is not competitive
+# with 27 bits. The zero equation below is symbolic in its arbitrary tail.
+# Its F arm reduces to c for arbitrary other operands, covering every unary
+# selector; the three small concrete selectors additionally check substitution.
+correlated = handler(r"\b. b (b (b (s s s j))) c")
+assert counts(correlated) == (1, 7, 8)
+assert lc.size(correlated) == 40
+assert laws(correlated) == (False, True)
+r, n = ("V", 5), ("V", 6)
+zero_stream = lc.pair(lc.TRUE, r)
+assert normal(app(lc.subst(0, zero_stream, correlated), lc.TRUE, r, r)) == app(
+    r, ("V", 1)
+)
+for k in (0, 1, 2):
+    tail = lc.bitlist("1" * k + "0", n)
+    stream = lc.pair(lc.FALSE, tail)
+    assert normal(app(lc.subst(0, stream, correlated), lc.FALSE, tail, n)) == app(
+        ("V", 2), tail, n
+    )
+print("whole-stream audit: 40 bits; L=1, A=7, X=8; correlated laws pass")
+
+print("PASS: five explicit witnesses; no enumeration")

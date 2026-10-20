@@ -160,7 +160,14 @@ with all features (three opt-in tests ignored) and 328 with default features.
   reader bound now permits arbitrary handlers: independent rigid laws force
   `|H| ≥ 27`, so `s H S` still costs at least 43 and the unchanged surrounding
   interpreter at least 165 (`classical/self-interpreter/handler-bound.md`).
-  Actual stream/selector/suffix correlations remain outside that theorem.
+  A second handwritten theorem allows actual unary-selector/suffix
+  correlations and proves the same handler minimum when its only free
+  variables are NEXT and the continuation. Whole-stream access remains open;
+  a checked 40-bit correlated handler with only one explicit lambda shows why
+  the independent proof's structural lemmas cannot all transfer.
+  For arbitrary correlated handlers, neutral operands `s next` and `s cont`
+  are dominated by `s`, saving 5 and 6 bits; this leaves `s` and the thunk
+  `s s` open (`classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
   exclusions remain as specified in §5.
 - **Unconditional structure** (`classical/self-interpreter/structural-bounds.md`):

@@ -114,11 +114,34 @@ H = lambda b r. b (lambda t.t j) (c (lambda h.r h))
 has the correct actual-stream zero and variable laws but fails the rigid
 variable law: it returns `c (lambda h.R h) N` instead of `c R N`.
 Its exact cost in `[s,j,c,p,x]` is 40 bits, well above 27. This is a scope
-counterexample, not a promising small construction.
+counterexample, not a promising small construction. The separate correlated
+selector theorem in `handler-bound.md` nevertheless proves the same 27-bit
+minimum when `H` has no free variables except `j,c`.
+
+Access to the whole stream changes the structural constraints further.
+For example,
+
+```text
+H = lambda b. b (b (b (s s s j))) c
+```
+
+has only one explicit lambda. On a zero stream `s = cons K R`, its zero
+branch gives
+
+```text
+H K R R ->* K (K (s s s j)) R R ->* s s s j ->* R j.
+```
+
+On a one stream the outer `F` selects `c`, so `H F X_n(N) N ->* c X_n(N) N`
+for every unary selector. Its counts are `L=1,A=7,X=8`, again 40 bits.
+Thus the independent-law proof's two-lambda necessity cannot be transferred
+to whole-stream handlers, even though this witness is too large to improve
+the reader. `tools/self-interpreter/theory/handler_bound.py` checks its size,
+symbolic zero law, and unrestricted `F`-branch law.
 
 The original bare-C selector shape cannot exploit this correlation: the
 existing strengthened 14-bit zero-arm theorem already permits using the
 whole zero cell, and C is already the cheapest possible variable arm.
-A useful smaller correlated reader would therefore have to change the
-handler's head/argument sharing or use concrete NEXT behavior. No such
-sub-27 handler was found by the reasoning here.
+A useful smaller correlated reader would therefore have to use the whole
+stream or other parser state, or change the reader's outer shape.
+No such sub-27 handler was found by the reasoning here.

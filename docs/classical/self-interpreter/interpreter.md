@@ -364,10 +364,18 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   `handler-bound.md` gives the complete small-budget case proof. The skip
   costs at least 10 and the two applications with `s` 6, so the reader costs
   at least 43; with the other 122 bits unchanged the minimum is 165.
-  This does not cover other reader heads or handlers exploiting actual
-  stream/selector/suffix correlations. `normal.md` gives an explicit
-  correlated handler satisfying the actual-stream laws but not these
-  independent rigid laws.
+  A second theorem in that note allows the actual unary-selector/suffix
+  correlation and retains the 27-bit handler minimum when the only free
+  variables in `H` are `next,cont`. Other reader heads, access to the whole
+  stream or parser state, and arbitrary joint skip choices remain outside
+  these bounds. `normal.md` gives two 40-bit correlated handlers satisfying
+  the actual-stream laws but not the independent rigid laws; one has just
+  one explicit lambda.
+- **Neutral skip operands are dominated.** For arbitrary correlated `H`,
+  successful readers with `T=s next` or `T=s cont` also work with `T=s`,
+  saving 5 or 6 bits. The proof in `protocol-obstructions.md` tracks an
+  inert marked operand that every successful reduction must erase. It does
+  not exclude the cheaper `T=s` family or the productive thunk `T=s s`.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,
   `Z R R = R next` forces the normal form `λu v. u next` (15) or

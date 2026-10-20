@@ -63,6 +63,77 @@ These are complete interpreter constructions, all larger than 165. The reset ide
 168-bit variant follows by finitely unfolding its existing knot once;
 the script additionally checks the reset followed by parsing `I`.
 
+## Neutral operands in a joint handler/skip reader are dominated
+
+Consider the ambient frame `[s,j,c,p,x]`, innermost first, with `j` the
+rigid NEXT continuation and `c` the rigid result continuation. Let `H`
+be any term in this frame, including one that depends on `s`; impose no
+normal-form or independent-handler assumption. The required reader laws are
+
+```text
+s = cons K R:                  s H T =β R j
+s = 1^n 0 ++ N, n >= 1:        s H T =β c (tail s) N.
+```
+
+**Domination theorem.** If `T = s j` satisfies these laws, replacing that
+operand by `T = s`, without changing `H`, also satisfies them and saves
+5 bits. The same conclusion holds for `T = s c`, saving 6 bits.
+
+More generally, `s a` is dominated this way when `a` is a rigid ambient
+variable absent from the required outputs. In the stated frame this gives:
+
+| Original operand | Operand bits | Replacement | Bits saved |
+|---|---:|---|---:|
+| `s j` | 7 | `s` | 5 |
+| `s c` | 8 | `s` | 6 |
+| `s p`, with `p` rigid | 9 | `s` | 7 |
+| `s x`, with `x` rigid | 10 | `s` | 8 |
+
+The last two rows require rigidity. They do not classify operands that
+actually invoke a recursive parser or generator in those slots.
+
+Here is the proof for arbitrary correlated `H`. First take `R` and `N`
+to be fresh rigid variables. The required outputs are then beta-normal.
+Normalize just the selected third operand, using
+
+```text
+(cons b r) a → a b r.
+```
+
+Confluence ensures that the reader can still reduce to the same required
+normal output after this preliminary step. Mark the resulting occurrence
+of `a b r` as an opaque box. It is beta-normal, has a rigid head, and
+mentions no enclosing local variables. A beta reduction outside it can
+copy or erase the box, but cannot split it or change its contents.
+Applying it to further arguments also retains the whole box as a subterm.
+
+No marked box can occur in the required output:
+
+* With `a = j`, the zero output `R j` contains `j` only as a bare leaf;
+  the variable output `c r N` contains no `j`.
+* With `a = c`, the zero output contains no `c`. The variable output has
+  only one `c`-headed subterm with two arguments, namely `c r N`, whereas
+  the box is `c F r`. These differ because `r` is a nonempty Scott cell,
+  not `F`: its lambda body is an application, while `F`'s lambda body is
+  another lambda.
+* A different rigid ambient head absent from the outputs cannot occur
+  in either output at all.
+
+Thus every marked copy is erased by the successful reduction. Replace the
+initial box by `s` and replay the same contractions outside its residuals.
+Those contractions remain valid and erase every replacement copy, giving
+the same output. Other occurrences of `s` inside `H` are untouched. Finally,
+stability of beta reduction under capture-avoiding substitution replaces
+the fresh rigid `R,N` by arbitrary suffixes, so this is a symbolic result
+for every unary length and suffix.
+
+This is a handwritten domination proof, independently checked by two
+Codex instances. It neither identifies the operands as beta-equal nor proves
+a minimum reader size. It rules out these more expensive neutral operands
+as a source of a new record relative to the still-open `T = s` family.
+The productive thunk `T = s s` also remains open. No conclusion about
+arbitrary sub-165 interpreters follows.
+
 ## The raw NEXT diagonal still fails for every skip function
 
 The existing five-argument obstruction is stronger than its original
