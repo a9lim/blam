@@ -114,9 +114,9 @@ H = lambda b r. b (lambda t.t j) (c (lambda h.r h))
 has the correct actual-stream zero and variable laws but fails the rigid
 variable law: it returns `c (lambda h.R h) N` instead of `c R N`.
 Its exact cost in `[s,j,c,p,x]` is 40 bits, well above 27. This is a scope
-counterexample, not a promising small construction. The separate correlated
-selector theorem in `handler-bound.md` nevertheless proves the same 27-bit
-minimum when `H` has no free variables except `j,c`.
+counterexample, not a promising small construction. The correlated proofs
+in `handler-bound.md` establish the same 27-bit minimum, including when
+`H` can inspect the whole stream.
 
 Access to the whole stream changes the structural constraints further.
 For example,
@@ -142,6 +142,7 @@ symbolic zero law, and unrestricted `F`-branch law.
 The original bare-C selector shape cannot exploit this correlation: the
 existing strengthened 14-bit zero-arm theorem already permits using the
 whole zero cell, and C is already the cheapest possible variable arm.
-A useful smaller correlated reader would therefore have to use the whole
-stream or other parser state, or change the reader's outer shape.
-No such sub-27 handler was found by the reasoning here.
+The whole-stream handler bound now excludes a saving from stream access
+alone under the standard skip and rigid ambient-parameter laws. A smaller
+reader must change the skip or outer shape, or exploit the actual behaviour
+of other parser state beyond those laws.

@@ -379,7 +379,9 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   not exclude the cheaper `T=s` family or the productive thunk `T=s s`.
   `cheap-tail-bound.md` proves that both families require at least two
   explicit lambdas in `H`, even with arbitrary whole-stream use and beta
-  redexes; it does not yet exclude their numerical handler budgets.
+  redexes. It also excludes a consecutive two-lambda block for either
+  improving budget and exactly three leading lambdas for `T=s`.
+  It does not yet exclude their complete numerical handler budgets.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,
   `Z R R = R next` forces the normal form `λu v. u next` (15) or
@@ -563,10 +565,9 @@ argument.
 
 Open:
 
-- readers outside the parametric class bounded in §5: other reader heads,
-  the correlation between a variable's selector
-  and its suffix, and readers with a different `next` protocol beyond those
-  priced in §3 and §6;
+- readers outside the classes bounded in §5: other reader heads, joint
+  handler/skip changes, exploitation of actual NEXT/parser behaviour, and
+  readers with a different `next` protocol beyond those priced in §3 and §6;
 - the reader's diagonal `R Z →* next next` (§2): the 165 already contains the
   self-application a knot needs, and a sub-165 along this line would have
   `next`'s zero arm serve as the knot's generator. Built with a separate

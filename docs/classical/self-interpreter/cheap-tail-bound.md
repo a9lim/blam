@@ -1,4 +1,4 @@
-# A two-lambda floor for the cheap reader operands
+# Constraints on the cheap reader operands
 
 This is Codex's handwritten proof. It concerns the reader `s H T` in
 the ambient frame `[s,j,c,p,x]`, with `j,c,p,x` independent rigid variables.
@@ -165,11 +165,417 @@ at a terminal `P₀` can receive bare `K`, after which it could construct
 constant functions carrying arbitrary code. The index invariant excludes
 that activation for the chosen stream rather than assuming it impossible.
 
+## A nonleading consecutive two-lambda block is too expensive
+
+There is a further exclusion for a beta-normal, application-headed
+handler whose two source lambdas form one consecutive block
+
+```
+D = λa b.B.
+```
+
+There are exactly two source lambdas in the entire handler, so `B` and
+the surrounding context are application-only. The block need not be the
+initial argument of `s`. This shape cannot fit either improving budget:
+`|H|≤34` for `T=s`, or `|H|≤30` for `T=s s`.
+
+For this size bound, higher ambient variables `p,x` can first be replaced
+by `j`. Their absence from the required outputs makes the replacement
+law-preserving, and their indices are higher than `j`'s. It suffices to
+consider free variables `s,j,c`.
+
+Use the zero stream `P=cons K R`, with `R` rigid and independent of
+`j,c`. A valid application-headed handler has head `s`; the other free
+heads are rigid and retain the three external arguments. A source block
+in function position would be a beta redex, so `D` occurs as an
+application argument. Its function subtree is application-only.
+Such a subtree normalizes to `P`, `K R`, or a rigid neutral. The last
+two cases respectively erase the block or trap it under a rigid head;
+a successful handler must activate it through `P`. An application-only
+subtree over `P` and rigids can normalize to `P` only when it is the
+literal source `s`. Thus there is a direct source subterm `s D`.
+
+Reduce this local subterm first. Both source lambdas consume the cell's
+`K,R`, before the three external arguments. The resulting value occurs
+once in the surrounding application-only context. The remaining
+reductions have macro rules
+
+```
+P U → U K R,             K U V → U.
+```
+
+The functional normal forms are `P`, `K`, and `K U`; the other normal
+forms have a rigid head. A `K U` is a constant function whose body `U`
+has a normal form in the same grammar. All remaining abstractions are
+affine, so these reductions terminate.
+
+For either final operand `T=P` or `T=K R`, inspection of these heads gives
+
+```
+H[P] K R T →* R j    implies    H[P] →* K (K (K (R j))).
+```
+
+Indeed, exposing `P` with three remaining external arguments gives `R`;
+with two it gives `R K R T`; and with one it gives `K R` or `R R`.
+Exposing bare `K` gives a remaining lambda or bare `R`. A rigid head
+cannot discard the remaining arguments. The only successful possibility
+is therefore three consecutive constant functions followed by `R j`.
+
+Mark all application nodes originating in the source `H`. The four
+displayed applications whose right subtree contains `j` must descend from
+four distinct marked nodes: the Scott rule only introduces applications
+with right operands `K,R`, and the two source lambda substitutions insert
+only those same `j`-free values. No source application is copied.
+Activating the source subterm `s D` consumes a fifth marked application.
+
+The mandatory `c` must also be erased. This Scott contraction
+preserves its callback, and the callback's two lambda contractions receive
+only `c`-free arguments. A later erasure of `c` by `K` must therefore
+discard a `c`-bearing right argument at another marked application.
+This sixth node is distinct from the callback activation and the four
+surviving nodes. Hence this shape requires at least six applications.
+
+If either `j` or `c` occurs in `B`, its occurrence lies under both source
+lambdas. Their mandatory contribution to the index sum is consequently at
+least five. The size identity then gives
+
+```
+|H| = 2L + 4A + 2 + X ≥ 4 + 24 + 2 + 5 = 35.
+```
+
+If both `j,c` are outside the block, the zero law is impossible
+regardless of size. To see this, normalize
+`V=B[K/a,R/b,s:=P]`. It is `j,c`-free and belongs to the larger macro
+grammar above. The surrounding context uses only `P,j,c` and contains
+this value once. Expressions not containing it have normal forms in
+the smaller, application-closed grammar
+
+```
+P, K R, or a rigid-headed neutral.
+```
+
+Call these values safe; arguments inside a rigid neutral may have
+arbitrary normal forms. A context containing one `V` has one of three
+kinds of normal form: a `j,c`-free macro value, a safe value, or `K A`
+with `A` safe. This invariant is preserved whichever child of an
+application contains `V`. In function position a `j,c`-free `K U`
+discards the safe argument, bare `K` adds one wrapper, and a safe
+function stays safe; an existing `K A` returns `A`. In argument position,
+the only non-rigid safe functions are `P` and `K R`. The latter erases
+the argument. For `P`, a `j,c`-free argument stays `j,c`-free after
+receiving `K,R`, a safe argument stays safe, and
+`P(K A)→A R` is safe. None of the three kinds is the required
+three constant wrappers around `R j`.
+
+These two cases complete the exclusion for this specified block shape.
+They do not classify other placements of two source lambdas.
+
+## Three leading lambdas do not fit the whole-stream operand
+
+For `T=s`, a beta-normal handler with exactly three source lambdas,
+all leading, cannot satisfy both reader laws at size at most 34:
+
+```
+H = λb r t.B,             B application-only.
+```
+
+As above, higher ambient variables can be replaced by `j` without
+increasing size. Both required rigid variables `j,c` must occur.
+
+First suppose `b` is absent. This case fails regardless of size.
+For the zero law, split the two origins of the remainder: substitute a
+rigid `R₀` for the direct argument `r`, and substitute
+`P=cons K R₁` for both `s,t`, with `R₁` independently rigid.
+Application-only expressions over `P` and rigid variables normalize to
+`P`, `K R₁`, or a rigid neutral. Identifying `R₀,R₁` with `R`
+does not create beta redexes, so the zero law's normal form `R j`
+must lift to either `R₀ j` or `R₁ j`.
+
+The first alternative forces the literal source body `B=r j`. A
+rigid function gains one argument when applied, a cell applied to a
+neutral adds two arguments, and `K R₁` erases its argument. None
+forwards a neutral unchanged. Thus a normal form headed by `R₀`
+with the single argument `j` can only come from the direct application
+`r j`; the same argument shows that bare `j` cannot be produced by a
+nontrivial application-only expression. This body lacks the mandatory
+`c`.
+
+For the second alternative, compare the zero cell `P` to the variable
+stream `Q=Pₘ(N)`, keeping `r=R₀` rigid for now. Pair functional values
+`P` with `Q` and `K R₁` with `K N`; pair rigid neutrals by their
+heads, mapping `R₁` to `N` and fixing `R₀,j,c`. The relevant
+application rules are
+
+```
+P P       →* K R₁,           Q Q       →* K N,
+P(K R₁)   →* R₁ R₁,         Q(K N)    →* N Pₘ₋₁(N).
+```
+
+Cells applied to rigid neutrals preserve their heads, and constant
+functions discard their arguments. These cases prove the head relation
+by structural induction. A zero result headed by `R₁` therefore becomes
+rigidly `N`-headed on the variable stream. Finally substituting
+`R₀=Pₘ₋₁(N)` cannot change that `N` head. It cannot yield the
+required `c` head. This completes the `b`-absent obstruction.
+
+Now suppose `b` occurs. Under the three leading lambdas, mandatory
+occurrences of `b,j,c` contribute at least `2+4+5=11` to the
+zero-based index sum. Four applications would therefore cost at least
+`6+16+2+11=35` bits. Hence an improving handler has at most three
+applications and four leaves.
+
+Besides `b,j,c`, a fourth leaf `r,t`, or free `s` is necessary to
+supply the rigid `R` in the zero result. With `r`, the zero body is
+an application tree over one occurrence each of `K,R,j,c`. The
+single `K` contraction must erase precisely `c` while preserving the
+application `R j`. There are exactly three ways to place this erasure:
+
+| Source body | Variable-stream result |
+| --- | --- |
+| `b r c j` | `c j` |
+| `b (r j) c` | `c` |
+| `r (b j c)` | `c bitₘ₋₁ tailₘ₋₁` |
+
+The first two have the wrong argument count. For the last, already
+`m=1` gives `c K N`, whose first argument is not `P₀(N)`.
+
+With `t` or free `s` as the fourth leaf, the zero body has one
+occurrence each of `P,K,j,c`. It cannot expose the payload `R`
+as its head. A bare `K` callback gives `P K→K`; a partial callback
+`K Z` gives `P(K Z)→Z R`, with `Z` headed by `j` or `c`;
+and a rigid callback preserves its `j/c` head. The single `P`
+cannot be copied, and there is no other source of an `R` head.
+Thus these cases also fail.
+
+This proves the stated 34-bit exclusion for exactly three leading
+lambdas. It does not cover a fourth lambda in the body, nor does it
+transfer the three displayed zero-compatible bodies to `T=s s`.
+
+## Affine reductions preserve the 30-bit budget
+
+The following compression results concern `T=s s` and require both laws:
+
+```
+H[cons K R] K R (K R) =β R j,
+H[Pₘ(N)] F Pₘ₋₁(N) (K N) =β c Pₘ₋₁(N) N       for every m≥1.
+```
+
+All remainder variables are fresh and rigid, as are `j,c,p,x`. In
+particular, both `j,c` occur freely in every successful handler and
+every beta-equivalent reduct of it.
+
+Suppose `|H|≤30` and a source redex `(λu.B) D` uses `u` exactly
+once, at depth `d` inside `B`. Let `f` count the free-variable
+occurrences of `D`, relative to `D` itself, and let `r` count the
+other occurrences in `B` whose indices decrease when the binder `u`
+is removed. The exact change in BLC size on contraction is
+
+```
+Δ = d(f−1) − 6 − r.
+```
+
+The contraction removes the variable encoding of size `d+2`, removes
+four bits for the redex's application and lambda, shifts each of `D`'s
+`f` free occurrences under `d` binders, and decreases the other `r`
+indices by one. These are precisely the four contributions above.
+
+Let `L,A,X` be the source lambda count, application count, and zero-based
+index sum. The path to the bound occurrence gives `L≥d+1`; the
+argument's leaves and the redex application give `A≥f`; and the bound
+occurrence together with mandatory `j,c` gives `X≥d+3`. Consequently
+
+```
+30 ≥ |H| = 2L+4A+2+X ≥ 3d+4f+7.
+```
+
+For nonnegative integers satisfying this inequality,
+`d(f−1)≤6`: for `f=0,1` the product is nonpositive or zero, and
+for `f=2,3,4,5` its maxima are respectively `5,6,6,4`.
+Larger `f` is impossible. Thus the contraction cannot increase size.
+It also strictly decreases the number of source AST nodes. A vacuous
+contraction strictly decreases both size and node count, since its
+argument is erased and the remaining free indices only decrease.
+
+Therefore, if a successful handler of size at most 30 exists, choose one
+minimizing `(BLC size, AST node count)` lexicographically. It has no
+affine beta redex. This is a reduction of the remaining search space,
+not an exclusion of all compressed handlers: the smaller reduct may
+still be a successful handler whose shape has not been priced.
+
+## All-vacuous handlers fail the self-application operand
+
+This obstruction has no size restriction. A source abstraction is
+*vacuous* when its bound variable does not occur in its body. Suppose
+every source abstraction in `H` is vacuous, while free occurrences of
+`s,j,c,p,x` and arbitrary applications are allowed.
+
+Compare the zero stream with the shortest variable stream:
+
+```
+P = cons K R,             U = cons K N,             Q = cons F U.
+```
+
+For expressions made from these source operations, pair their head
+values at `s=P` and `s=Q` as follows:
+
+* `P` corresponds to `Q`;
+* constant functions correspond when their bodies have related head
+  values;
+* rigid-headed values correspond by their heads, mapping `R` to `N`
+  and fixing `j,c,p,x`; their argument spines need not agree.
+
+The relation is closed under application. Constants discard their
+arguments, and rigid heads persist. The nontrivial cell cases are
+
+```
+P P →* K R,                       Q Q →* K N,
+P (λ_.V) →* V R,                 Q (λ_.W) →* W U.
+```
+
+In the second line, related constant bodies again discard their
+arguments, and related rigid bodies retain their heads. Related cell
+bodies give `P R→R K R` and `Q U→*N U`, which have the related
+rigid heads `R,N`. A cell applied to a rigid-headed value preserves
+that value's head. These cases establish the relation by structural
+induction. All source and data binders in these expressions are affine,
+so the head evaluations terminate.
+
+Now supply external arguments `K,R,K R` on the zero side. If the
+head `P` is exposed with three, two, or one argument still pending,
+the results are respectively
+
+```
+P K R (K R) →* R,
+P R (K R)   →* R K R (K R),
+P (K R)     →* R R.
+```
+
+None is `R j`. A rigid head exposed before the arguments are exhausted
+retains the final functional argument `K R`, so it cannot become
+`R j` either. The zero law therefore forces three successive
+constant-function heads, discarding all three arguments, followed by a
+rigid head `R`.
+
+The related variable evaluation discards `F,U,K N` through three
+corresponding constant functions and ends at rigid head `N`. This
+contradicts its required head `c`. Thus an all-vacuous handler cannot
+satisfy both laws for `T=s s`.
+
+## Nonlinear redexes with at most four applications
+
+Continue with the two `T=s s` laws above. In a minimum handler of
+size at most 30, the affine-reduction lemma removes all affine source
+redexes from consideration. A remaining source redex must bind its
+variable at least twice. Such a redex is impossible when the handler
+has at most four applications.
+
+First record a consequence of having no free `s`. Any successful
+handler with this restriction must use its first input non-vacuously.
+Its zero behavior forces a leading lambda after head reduction. If
+that first lambda were vacuous, write the handler as `λb.G`; the
+zero law would give
+
+```
+G R (K R) →* R j.
+```
+
+Split the two sources of `R` into independently rigid `R₀,R₁`.
+Identifying rigid variables creates no beta redexes, so the same
+reduction lifts to either
+
+```
+G R₀ (K R₁) →* R₀ j,       or       G R₀ (K R₁) →* R₁ j.
+```
+
+Substituting `R₀:=Pₘ₋₁(N)` and `R₁:=N` gives respectively
+a `j`-headed or an `N`-headed result, not the required `c` head.
+This proves the first-input dependence.
+
+It also excludes a no-`s` handler with at most one live source
+binder, even if that binder has several occurrences and additional
+vacuous binders are allowed. Its unique live binder must survive to
+receive the first input `K`. After this substitution the only live
+functional code is copied `K`; all other source lambdas are vacuous.
+Their reductions merely select or erase subtrees and preserve the
+left-to-right order of surviving rigid leaves. Every source `j`
+precedes every `R` in the remaining external arguments `R,K R`,
+whereas the required output `R j` reverses this order.
+
+A handler with `A` applications has `A+1` variable leaves. At `A≤2`,
+the two occurrences of a nonlinear binder and the mandatory `j,c`
+already exceed that count. At `A=3`, these four leaves exhaust it;
+after the nonlinear contraction every remaining source binder is
+vacuous, contradicting the preceding obstruction.
+
+At `A=4`, there is only one further leaf. If it is another occurrence
+of the nonlinear binder or any ambient variable, all remaining source
+binders are again vacuous after contraction. The only case left has
+exactly the leaves
+
+```
+u, u, j, c, v,
+```
+
+where `v` is the sole occurrence bound by another live binder. In
+particular, there is no free `s`.
+
+Unless the argument of the nonlinear redex contains both that live
+binder and its occurrence, contraction leaves at most one live binder.
+It may now have repeated occurrences, but the no-`s` obstruction just
+proved still applies. Otherwise call the copied argument `D`.
+It contains one live binder, used once, and all its other binders are
+vacuous. Its only possible free leaves are `j,c`. The absence of
+affine source redexes makes `D` beta-normal.
+
+If `D` has no rigid leaves, it is a pure projection: a chain of lambdas
+ending in its one bound-variable leaf. After copying it, the remaining
+source consists only of projections, vacuous lambdas, applications,
+and rigid variables. Including the supplied `K`, all reductions still
+select or erase subtrees and preserve surviving rigid-leaf order.
+They cannot move an external `R` before a source `j`.
+
+Suppose instead that `D` contains a rigid `j/c` leaf. A live binder
+capable of receiving an external argument must lie in `D`'s leading
+lambda chain. Otherwise a rigid head guards it permanently: for
+example, the live binder in `λw.j (λv.v)` cannot become the
+head function. Merely containing a rigid leaf is therefore not enough;
+this accessibility qualification is essential.
+
+For an accessible live binder `v`, all rigid leaves of `D` occur
+in its body. After any remaining leading vacuous lambdas, that body's
+beta-normal head is either rigid or has the form
+
+```
+v A₁ ... A_q,             q>0.
+```
+
+The case `q=0` would leave no place for a rigid leaf. Each `A_i`
+contains only rigid `j/c` leaves and vacuous lambdas, since the sole
+occurrence of `v` is already the head. Giving this live binder `K`
+therefore produces either a rigid `j/c` head or selects `A₁`,
+which can only expose a rigid `j/c` head or leave a lambda. It cannot
+produce head `R`.
+
+This property persists for every copied residual of the accessible
+binder. Its preceding binders are vacuous, and there is no other free
+bound-variable occurrence through which surrounding reductions could
+insert a different body. First-input dependence requires the external
+`K` to enter one of these live residuals, contradicting the zero law.
+This completes the nonlinear-redex exclusion at `A≤4`.
+
+Consequently a minimum successful handler of size at most 30, if one
+exists, is beta-normal whenever it has at most four applications.
+Five-application nonlinear compression is not covered by this argument.
+
 ## Remaining boundary
 
-This is a lambda-count obstruction for two specified operands, not a
-27-bit handler bound or a 37-bit joint handler/operand bound. Handlers
-with two or more lambdas, including compressed terms and whole-stream
-control, remain to be priced. The original independent-neighbour and
-restricted correlated-selector bounds live in `handler-bound.md`;
-neutral-operand domination is in `protocol-obstructions.md`.
+The general result here is a lambda-count obstruction for two specified
+operands, with the two explicitly scoped shape exclusions above. For
+`T=s s`, the compression lemmas additionally reduce a minimum
+30-bit candidate with at most four applications to beta-normal syntax.
+They do not exclude every such normal form or settle the
+five-application nonlinear cases. Neither improving budget is fully
+excluded, and these results are not a global optimality theorem.
+The standard-skip handler bounds, including whole-stream access, live
+in `handler-bound.md`; neutral-operand domination is in
+`protocol-obstructions.md`.

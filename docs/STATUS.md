@@ -170,7 +170,12 @@ with all features (three opt-in tests ignored) and 328 with default features.
   are dominated by `s`, saving 5 and 6 bits. A separate handwritten
   theorem proves that handlers for `T=s` and `T=s s` need at least two
   explicit lambdas, even with whole-stream access and beta redexes.
-  Their numerical thresholds remain open
+  Further reviewed shape exclusions rule out a consecutive two-lambda
+  block for either improving budget and exactly three leading lambdas
+  for `T=s`. For `T=s s`, affine reductions preserve the 30-bit budget;
+  a minimum successful handler with at most four applications would have
+  to be beta-normal. The five-application compression cases and complete
+  numerical thresholds remain open
   (`classical/self-interpreter/cheap-tail-bound.md`,
   `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
