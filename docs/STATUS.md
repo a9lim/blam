@@ -24,14 +24,16 @@ Last updated: 2026-10-20.
   transitions on the 36..37-bit frontier), so transition-bound rescues run
   10-13× faster than plain stepping.
 - **BBλ(33) = 1,812**, **BBλ(34) = 327,686**, and
-  **BBλ(35) = 38,127,987,424,941** normal-form bits, exact by the exhaustive
-  Rust census plus kernel-checked adjudications of every program the census
-  left open at those sizes (the census itself is not formalized). The eighteen
-  open 35-bit programs are sixteen divergers and two halters with outputs of
+  **BBλ(35) = 38,127,987,424,941** normal-form bits: Tromp's published values
+  (OEIS A333479), confirmed independently by the exhaustive Rust census plus
+  kernel-checked adjudications of every program the census left open at those
+  sizes (the census itself is not formalized). The eighteen open 35-bit
+  programs are sixteen divergers and two halters with outputs of
   4,186,155,666 and 38,127,987,424,941 bits; the latter is the Church numeral
   3^27, proved symbolically. Tromp's hand notes identify the same behaviours
-  (`classical/certificates/busy-beaver.md`). Lambda wrapping gives
-  **BBλ(41) ≥ 38,127,987,424,947**.
+  (`classical/certificates/busy-beaver.md`). A333479 also lists
+  a(36) = 5·2²⁵⁶ + 6 (the Church numeral 2^2^2^3), which this project has not
+  yet checked; its terms end there, so a(37) would be the first new value.
 - `data/classical/unknowns.txt` is the certified frontier: 4,109 terms
   (36: 30, 37: 70, 38: 182, 39: 438, 40: 1,063, 41: 2,326). Regeneration checks
   the exact partition
@@ -344,7 +346,9 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
 
 ### Classical docket
 
-1. **BB(36).** n=36 has 30 open programs. The direct-proof machinery
+1. **BB(36), then BB(37).** Checking Tromp's a(36) = 5·2²⁵⁶ + 6 means
+   adjudicating all 30 open programs at n=36; a(37), 70 open programs, is
+   not yet published anywhere. The direct-proof machinery
    (open-payload head cycles, productive descent, growing spines, confluence,
    symbolic normal forms) is the starting point; the BB(35) pass adjudicated
    only its eighteen seeds and their lambda wraps.

@@ -23,10 +23,12 @@ census's own adjudications, and the maximum-output measurements rely on the
 Rust census. This is the same boundary as the established BBλ(32) result; it
 is not an end-to-end formalization of the census.
 
-**Attribution.** Tromp's checked-in `ref/AIT/BB/BB.txt`, around lines 65–258,
-already gives hand arguments for these programs. The contribution here is
-their formalization, reusable proof machinery, and integration into the
-project's certificate accounting, rather than new busy-beaver values.
+**Attribution.** The three values are Tromp's, published in OEIS
+[A333479](https://oeis.org/A333479), which also lists a(36) = 5·2²⁵⁶ + 6.
+His checked-in `ref/AIT/BB/BB.txt`, around lines 65–258, already gives hand
+arguments for these programs. The contribution here is their formalization,
+reusable proof machinery, and integration into the project's certificate
+accounting, rather than new busy-beaver values.
 
 ## The eleven 33/34-bit seeds
 

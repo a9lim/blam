@@ -81,13 +81,14 @@ tools.
 ## Results
 
 The classical census covers all 526,039,969 closed terms through 41 bits.
-With kernel-checked adjudications of every program it leaves open at those
-sizes, it establishes **BBλ(33) = 1,812**, **BBλ(34) = 327,686**, and
-**BBλ(35) = 38,127,987,424,941 normal-form bits**, the last a symbolically
-proved Church numeral 3^27; the exhaustive census itself remains a Rust
-computation ([proof record](docs/classical/certificates/busy-beaver.md),
-formalizing Tromp's hand arguments). It also gives
-BBλ(41) ≥ 38,127,987,424,947 and the finite-range halting mass
+With kernel-checked adjudications of every program it leaves open at 33–35
+bits, it independently confirms Tromp's busy-beaver values
+**BBλ(33) = 1,812**, **BBλ(34) = 327,686**, and
+**BBλ(35) = 38,127,987,424,941 normal-form bits**
+([OEIS A333479](https://oeis.org/A333479)), the last a symbolically proved
+Church numeral 3^27; the exhaustive census itself remains a Rust computation
+([proof record](docs/classical/certificates/busy-beaver.md), formalizing
+Tromp's hand arguments). It also gives the finite-range halting mass
 
 ```text
 Omega|<=41 in [0.124105086841, 0.124105091271]

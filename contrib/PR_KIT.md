@@ -205,16 +205,19 @@ int4, ko2kp, nf and the pairup programs
   - Pointer: `docs/classical/self-interpreter/interpreter.md` (and
     `universal.md` for the 175/187).
 - **Busy-beaver and Ω results** (if still worth mentioning):
-  - BBλ(33) = 1,812, BBλ(34) = 327,686, BBλ(35) = 38,127,987,424,941: his
-    BB.txt hand arguments for the programs the census leaves open, formalized
-    as kernel-checked Lean proofs (the 35-bit champion is Church 3^27, proved
-    symbolically). The exhaustive census itself is Rust, not Lean.
+  - His A333479 values BBλ(33) = 1,812, BBλ(34) = 327,686,
+    BBλ(35) = 38,127,987,424,941, independently confirmed: his BB.txt hand
+    arguments for the programs the census leaves open, formalized as
+    kernel-checked Lean proofs (the 35-bit champion is Church 3^27, proved
+    symbolically). The exhaustive census itself is Rust, not Lean. The values
+    are his; the news is the machine checking.
+  - His a(36) = 5·2²⁵⁶ + 6 is not checked here yet (30 open programs).
+    Don't quote a census lower bound past 35: anything the census can
+    reach sits far below his a(36).
   - The 32-bit loop term the ledger excludes by hand has a machine-checked
     divergence proof, a "ratchet" certificate; 305 frontier kills across four
     certificate classes are each a kernel-checked Lean theorem (no `sorry`,
     no mathlib).
-  - The census covers every closed term of 4..41 bits:
-    BBλ(41) ≥ 38,127,987,424,947 bits.
   - Ω restricted to programs of at most 41 bits lies in
     [0.124105086841, 0.124105091271]; over all sizes, the closed-term Ω
     (normalizing terms, not his universal-machine Ω) is pinned to nine
