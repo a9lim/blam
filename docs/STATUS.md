@@ -179,7 +179,7 @@ programs by 470 bits in all (`data/golf/sweep.tsv`; e.g. `tweet` 2230 → 2168,
 `uniK` 903 → 854). Hand redesigns take the IOCCC BLC8 machine from 344 bits
 (43 bytes) to 321 strict (41 bytes) and 300 non-strict (38 bytes), and
 `uni28` from 500 to 399 strict and 382 non-strict. Ports of the 2025-12 parser
-shrink `int4` 189 → 178, `ko2kp` 615 → 557, `nf` 600 → 541, and the pairup
+shrink `int4` 189 → 175 (with the 165's reader), `ko2kp` 615 → 557, `nf` 600 → 541, and the pairup
 programs (771, 651, 1325; the last two on contract-valid inputs only).
 Artifacts are in `data/golf/machines/`.
 

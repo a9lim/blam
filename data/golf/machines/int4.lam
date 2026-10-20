@@ -1,6 +1,7 @@
 -- Self-interpreter for binary LC with four primitives (tromp/AIT int4.lam:
 -- 00 = lambda, 01 = application, 10 = variable zero, 11 = successor),
--- rebuilt on the 2025-12 design of int.lam: 189 -> 178 bits.
+-- rebuilt on the design of int.lam: 189 -> 175 bits (178 with the 168's
+-- reader; 175 with the 165's, which applies skipvar to the whole stream).
 -- intL cont bits = cont (\free.parsed) unparsed_bits, as before.
 -- A variable's code after its tag bit reads 1^(2n-2) 0, so skipvar
 -- (\l. l l l, which skips every 1 and the first 0) carries over unchanged;
@@ -19,6 +20,5 @@ let
        let next = (\bit1.intL (\exp.bit1
              (cont (\args\arg.exp (cons4 arg args)))
              (intL (\exp2.cont (\args.exp args (exp2 args))))))
-       in \list.list (\bit0\list1.bit0 (list1 next)
-            (cont list1 (skipvar list1))));
+       in \list.list (\bit0.bit0 (\list1\rest. rest next) cont) (skipvar list));
 in intL

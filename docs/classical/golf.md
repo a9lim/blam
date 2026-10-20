@@ -78,7 +78,7 @@ packed `.blc8`.
 | `uni8` (BLC8 machine) | 344 (IOCCC; 355 compiled) | **321** | **300** |
 | `uni28` (BLC2 over bytes) | 500 | **399** | **382** |
 | `uni2` (BLC2 machine) | 340 | **333** | **321** (from 324) |
-| `int4` (self-interpreter, 4-primitive code) | 189 | **178** | |
+| `int4` (self-interpreter, 4-primitive code) | 189 | **175** | |
 | `ko2kp` (KP ≤ KO + c) | 615 | **557** | |
 | `nf` (normal-form printer) | 600 | **541** | |
 | `pairupKP` (symmetry of information) | 778 | **771** | |
@@ -202,10 +202,14 @@ They read plain bit streams, so the redesign drops in. ABS builds
 stream itself, does the lookup in any environment. The HOAS constructors
 (`abs`/`app` in `ko2kp`, `L`/`A` in `nf`) are untouched.
 
-| program | original | port | after β-descent |
-|---|---:|---:|---:|
-| `ko2kp` | 615 | 569 | **557** |
-| `nf` | 600 | 562 | **541** |
+| program | original | port | with the 165's reader | after β-descent of the port |
+|---|---:|---:|---:|---:|
+| `ko2kp` | 615 | 569 | 566 | **557** |
+| `nf` | 600 | 562 | 559 | **541** |
+
+The 165's reader (`self-interpreter/interpreter.md`) drops in as well: the
+whole-stream skip `xs xs xs` serves both dispatch arms, 3 bits each. The
+β-descents started from the ports before that change.
 
 `int4.lam` is Tromp's self-interpreter for a four-primitive code: `00` λ, `01`
 application, `10` variable zero, `11` successor. After its tag bit, a
@@ -216,10 +220,11 @@ variable's code reads `1^(2n-2) 0`, unary with every other bit a tag.
 - **Lookup.** The lookup carries over once each environment cell also
   swallows the tag bit that follows a 1: `\zx \zy. zx x (zy (\_ \l. l xs))`.
 
-The rest is the 168 verbatim, and the result is 178 bits, against 189.
-`battery.py --int4` checks the exact self-interpreter contract on every
-closed term of 4..16 bits plus deep-index extras: 236 of 236 for both the
-original and the port. As a negative control, `int.lam` under `--int4` fails
+With the rest of the 168 verbatim the result is 178 bits, against 189; with
+the 165's reader, 175, since `l l l` on the whole stream still stops right
+after a variable. `battery.py --int4` checks the exact self-interpreter
+contract on every closed term of 4..16 bits plus deep-index extras: 236 of
+236 for the original, the 178 and the 175. As a negative control, `int.lam` under `--int4` fails
 19 of the 40 programs of the 4..12-bit battery.
 
 `golf check --io progs` compares normal forms on every closed program,
@@ -246,6 +251,10 @@ by certified β-descent:
 | `pairupKP` | 778 | 775 | 774 | **771** |
 | `pairupK_p` | 657 | 655 | 653 | **651** |
 | `pairup_Kp` | 1402 | 1372 | 1360 | **1325** |
+
+`pairup_Kp` also takes the 165's reader, 1360 → 1357 before descent; against
+the 1360 it differs on 24 of 182 raw pairs, each starting with a first
+program β- or η-equal to `λx. x`, which is not a valid description.
 
 Verification:
 
@@ -348,4 +357,4 @@ Demos (excluded):
 - `rosetta/forloops.lam` (139 → 129): applies the artifact to sample data
 - `rosetta/variadicY.lam` (256 → 249): applies the artifact to sample data
 
-No gain from β-golf: `BB/BB40.lam`, `BB/BB_Xi.lam`, `Sample.lam`, `ait/Aint.lam`, `ait/Y.lam`, `ait/allA.lam`, `ait/bcl.lam`, `ait/beavers.lam`, `ait/blc.lam`, `ait/decoders.lam`, `ait/delimit2.lam`, `ait/int.lam`, `ait/int4.lam` (by hand: 178), `ait/mlatu.lam`, `ait/quine.lam`, `ait/readlen.lam`, `ait/uni.lam`, `ait/vararg.lam`, `ait/wtf.lam`, `ait/zot.lam`, `characteristic_sequences/all.lam`, `characteristic_sequences/even.lam`, `characteristic_sequences/none.lam`, `characteristic_sequences/odd.lam`, `characteristic_sequences/primes.lam`, `characteristic_sequences/thue-morse.lam`, `fast_growing_and_conjectures/BBE0.lam`, `fast_growing_and_conjectures/BO.lam`, `fast_growing_and_conjectures/E0.lam`, `fast_growing_and_conjectures/ackermann.lam`, `fast_growing_and_conjectures/bms.lam`, `fast_growing_and_conjectures/collatz.lam`, `fast_growing_and_conjectures/gAckerman.lam`, `fast_growing_and_conjectures/goldbach.lam`, `fast_growing_and_conjectures/goodstein.lam`, `fast_growing_and_conjectures/graham.lam`, `fast_growing_and_conjectures/laver0.lam`, `fast_growing_and_conjectures/melo.lam`, `fast_growing_and_conjectures/oddperfect.lam`, `fast_growing_and_conjectures/perfect.lam`, `fast_growing_and_conjectures/w1CK.lam`, `fast_growing_and_conjectures/w218.lam`, `fast_growing_and_conjectures/wCubed.lam`, `lists/cat.lam`, `lists/fold.lam`, `lists/length.lam`, `lists/map.lam`, `lists/reverse.lam`, `misc/id.lam`, `misc/truth.lam`, `numerals/div.lam`, `numerals/divides.lam`, `numerals/eq.lam`, `numerals/fac.lam`, `numerals/fib.lam`, `numerals/gcd.lam`, `numerals/half.lam`, `numerals/leq.lam`, `numerals/lt.lam`, `numerals/mod.lam`, `numerals/tri.lam`, `rosetta/catstrings.lam`, `rosetta/mutrec.lam`, `rosetta/swap.lam`.
+No gain from β-golf: `BB/BB40.lam`, `BB/BB_Xi.lam`, `Sample.lam`, `ait/Aint.lam`, `ait/Y.lam`, `ait/allA.lam`, `ait/bcl.lam`, `ait/beavers.lam`, `ait/blc.lam`, `ait/decoders.lam`, `ait/delimit2.lam`, `ait/int.lam` (by hand: 165), `ait/int4.lam` (by hand: 175), `ait/mlatu.lam`, `ait/quine.lam`, `ait/readlen.lam`, `ait/uni.lam` (by hand: 187 strict / 175 non-strict), `ait/vararg.lam`, `ait/wtf.lam`, `ait/zot.lam`, `characteristic_sequences/all.lam`, `characteristic_sequences/even.lam`, `characteristic_sequences/none.lam`, `characteristic_sequences/odd.lam`, `characteristic_sequences/primes.lam`, `characteristic_sequences/thue-morse.lam`, `fast_growing_and_conjectures/BBE0.lam`, `fast_growing_and_conjectures/BO.lam`, `fast_growing_and_conjectures/E0.lam`, `fast_growing_and_conjectures/ackermann.lam`, `fast_growing_and_conjectures/bms.lam`, `fast_growing_and_conjectures/collatz.lam`, `fast_growing_and_conjectures/gAckerman.lam`, `fast_growing_and_conjectures/goldbach.lam`, `fast_growing_and_conjectures/goodstein.lam`, `fast_growing_and_conjectures/graham.lam`, `fast_growing_and_conjectures/laver0.lam`, `fast_growing_and_conjectures/melo.lam`, `fast_growing_and_conjectures/oddperfect.lam`, `fast_growing_and_conjectures/perfect.lam`, `fast_growing_and_conjectures/w1CK.lam`, `fast_growing_and_conjectures/w218.lam`, `fast_growing_and_conjectures/wCubed.lam`, `lists/cat.lam`, `lists/fold.lam`, `lists/length.lam`, `lists/map.lam`, `lists/reverse.lam`, `misc/id.lam`, `misc/truth.lam`, `numerals/div.lam`, `numerals/divides.lam`, `numerals/eq.lam`, `numerals/fac.lam`, `numerals/fib.lam`, `numerals/gcd.lam`, `numerals/half.lam`, `numerals/leq.lam`, `numerals/lt.lam`, `numerals/mod.lam`, `numerals/tri.lam`, `rosetta/catstrings.lam`, `rosetta/mutrec.lam`, `rosetta/swap.lam`.

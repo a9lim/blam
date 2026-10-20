@@ -22,7 +22,9 @@ STATED = {
 MACHINES = {
     "ait/uni8.lam": "321 strict / 300 non-strict (vs the IOCCC 344)",
     "ait/uni28.lam": "399 / 382",
-    "ait/int4.lam": "178",
+    "ait/int.lam": "165",
+    "ait/uni.lam": "187 strict / 175 non-strict",
+    "ait/int4.lam": "175",
     "ait/ko2kp.lam": "557",
     "ait/nf.lam": "541",
     "ait/pairupKP.lam": "771",
