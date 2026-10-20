@@ -728,8 +728,9 @@ rigid parameters and fixes the skip to `s s s`. Exploiting the actual
 behaviour of NEXT or the recursive parser is outside its hypotheses.
 Other reader heads, arbitrary skip operands, and arbitrary sub-165 programs
 remain open without further decomposition or a different global invariant.
-`cheap-tail-bound.md` proves a separate two-lambda floor for `T=s` and
-`T=s s`, but not their numerical handler thresholds.
+`cheap-tail-bound.md` proves separate lambda floors for `T=s` and
+`T=s s`, and excludes every `T=s s` handler below 31 bits, keeping
+that reader at least 43 bits. The improving `T=s` threshold remains open.
 
 The five explicit witnesses and the arithmetic are checked by
 `tools/self-interpreter/theory/handler_bound.py`, including the 40-bit

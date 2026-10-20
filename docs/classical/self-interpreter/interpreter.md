@@ -395,9 +395,14 @@ These are Codex's handwritten proofs, with targeted reduction checks in
 - **Neutral skip operands are dominated.** For arbitrary correlated `H`,
   successful readers with `T=s next` or `T=s cont` also work with `T=s`,
   saving 5 or 6 bits. The proof in `protocol-obstructions.md` tracks an
-  inert marked operand that every successful reduction must erase. It does
+  inert marked operand that every successful reduction must erase. It
   does not by itself exclude the cheaper `T=s` family or the productive
   thunk `T=s s`.
+  The same argument dominates `s (s s)` and the cheap rigid-headed
+  operands. Through ten bits, application-only operands reduce to
+  `s,j,c,s s,(s s) s`; bare `j,c` remain substantive separate cases.
+  `Blc/SelfintInert.lean` kernel-checks the common replacement principle;
+  the specific operand equations and absence checks are handwritten.
   `cheap-tail-bound.md` proves that both families require at least two
   explicit lambdas in `H`, even with arbitrary whole-stream use and beta
   redexes. Every beta-normal handler needs at least three lambdas,
@@ -410,7 +415,10 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   possible normal shapes, with at least three lambdas and exactly four
   applications, are also excluded. Thus every successful `T=s s`
   handler costs at least 31 bits, keeping the reader at least 43.
-  The `T=s`, `|H|≤34` threshold remains open.
+  At `T=s`, `|H|≤34`, every successful handler has at least three
+  source lambdas even before normalization. A minimum successful handler
+  has no affine source redex and exactly four or five applications.
+  The remaining shapes and nonlinear compression cases stay open.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,
   `Z R R = R next` forces the normal form `λu v. u next` (15) or

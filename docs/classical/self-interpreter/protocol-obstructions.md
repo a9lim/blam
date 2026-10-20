@@ -63,7 +63,7 @@ These are complete interpreter constructions, all larger than 165. The reset ide
 168-bit variant follows by finitely unfolding its existing knot once;
 the script additionally checks the reset followed by parsing `I`.
 
-## Neutral operands in a joint handler/skip reader are dominated
+## Cheap application-only third operands
 
 Consider the ambient frame `[s,j,c,p,x]`, innermost first, with `j` the
 rigid NEXT continuation and `c` the rigid result continuation. Let `H`
@@ -127,12 +127,117 @@ stability of beta reduction under capture-avoiding substitution replaces
 the fresh rigid `R,N` by arbitrary suffixes, so this is a symbolic result
 for every unary length and suffix.
 
-This is a handwritten domination proof, independently checked by two
-Codex instances. It neither identifies the operands as beta-equal nor proves
-a minimum reader size. It rules out these more expensive neutral operands
-as a source of a new record relative to the still-open `T = s` family.
-The productive thunk `T = s s` also remains open. No conclusion about
-arbitrary sub-165 interpreters follows.
+### Kernel-checked replacement principle
+
+`Blc.SelfintInert` proves the shared mechanism independently of the
+reader architecture. Substitution by a rigid beta-normal term cannot
+create a beta redex: every step after substitution reflects to a step
+before it. The module lifts this reflection to finite reductions.
+
+Its predicate `Avoid a n` means that `n` contains no copy of `a`,
+with the appropriate free-variable shift beneath each enclosing lambda.
+If substituting `a` for a marked variable reaches such an output, the
+reflected reduction ends with zero occurrences of that variable. The
+same source reduction therefore works with any replacement.
+
+In the final-argument form, if `a` is rigid and beta-normal, `n` is
+normal, `Avoid a n`, and `f a =β n`, then
+
+```
+∀ b, f b →* n.
+```
+
+Only the selected argument is replaced; `f` may contain other copies
+of `a` or the stream. The directed version does not require a normal
+target. Normality in the beta-join version supplies a directed reduction
+to that target. The specific operand equations and absence checks in
+this section remain handwritten applications of this kernel-checked
+principle.
+
+### Right-associated self-application is also dominated
+
+The other 10-bit all-`s` application tree is `s (s s)`. Its exact equations
+are
+
+```text
+s = cons K R:                 s (s s) →* R R,
+s = 1^n 0 ++ N, n >= 1:       s (s s) →* N (tail s).
+```
+
+For the first equation, `s s →* K R`, followed by
+`s (K R) →* (K R) K R →* R R`. For the second, write `X=tail s`;
+then `s s →* K N` and `s (K N) →* (K N) F X →* N X`.
+
+For fresh rigid `R,N`, both results are beta-normal rigid boxes. The box
+`R R` cannot occur in the required `R j`, since `R,j` are independent.
+The box `N X` cannot occur in `c X N`: throughout the finite Scott term
+`X`, and in the outer result, every occurrence of `N` is a bare leaf.
+The preceding residual-box argument therefore applies unchanged. Any
+correct reader using `T=s (s s)` stays correct after replacing only that
+operand by `s`, saving eight bits. The handler may retain other occurrences
+of the whole stream and arbitrary beta redexes.
+
+### Classification through ten bits
+
+An application-only operand in the fixed frame has leaf costs
+`|s|=2`, `|j|=3`, `|c|=4`, `|p|=5`, and `|x|=6`, with two bits per
+application. At ten bits it has at most two applications. If it has two,
+all three leaves must be `s`, so the only shapes are `(s s) s` and
+`s (s s)`. With one application it is `a b` for ambient variables
+`a,b` whose costs sum to at most eight.
+
+Every such one-application operand with a rigid head is dominated by `s`:
+
+* A `j`-headed application cannot survive in either target: the only
+  target occurrence of `j` is a bare zero-branch leaf.
+* The only allowed `c`-headed applications are `c s`, `c j`, and `c c`.
+  The zero target contains no `c`. On a variable stream, the one-argument
+  `c` prefix in the target is `c X`. None of `s,j,c` equals `X`: `s`
+  has one more Scott cell, and the other two are independent rigid
+  variables. Hence the marked application cannot occur in that target.
+* A `p`- or `x`-headed application cannot survive, because those rigid
+  variables are absent from both targets.
+
+The same absence argument dominates the bare operands `p` and `x`.
+All boxes here are already normal after replacing `s` by the normal
+Scott stream; the same copy-or-erase proof and substitution lifting apply.
+Together with the `s a` and right-associated arguments above, this leaves
+exactly the following representatives that these domination results do
+not remove:
+
+| Operand | Bits |
+|---|---:|
+| `s` | 2 |
+| `j` | 3 |
+| `c` | 4 |
+| `s s` | 6 |
+| `(s s) s` | 10 |
+
+The bare `j,c` exceptions are substantive. Same-handler replacement by
+`s` is not valid in general. For example,
+
+```text
+H_j = λb r. b r (λt. c r (r r t)),       T = j,
+H_c = λb r t. b (r j) (t r (r r t)),     T = c
+```
+
+both satisfy the two reader laws. On the variable branch, the unary tail
+`r` obeys `r r t →* N` for either supplied operand. Replacing `j` by `s`
+in the first reader instead gives `R s` on the zero branch. Replacing `c`
+by `s` in the second instead gives `s X N` on the variable branch, which
+has no free `c` and cannot yield `c X N`. Thus those two operand families
+need their own handler analysis; a handler may obtain the corresponding
+required output leaf from the operand itself.
+
+The per-operand domination proofs and the complete classification were
+independently reviewed. They neither identify the
+operands as beta-equal nor prove a minimum reader size. They reduce the
+application-only operand classification through
+ten bits to the five displayed families. The `T=s`, `T=j`, and `T=c`
+families remain open at the budgets needed for a reader improvement.
+The separate proof in `cheap-tail-bound.md` excludes every productive-thunk
+`T = s s` handler below 31 bits, keeping that reader at least 43 bits.
+No conclusion about arbitrary sub-165 interpreters follows.
 
 ## The raw NEXT diagonal still fails for every skip function
 

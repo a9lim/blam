@@ -169,7 +169,14 @@ with all features (three opt-in tests ignored) and 328 with default features.
   correlated handler with only one explicit lambda shows why the proof
   must price applications rather than transfer every independent-case lemma.
   For arbitrary correlated handlers, neutral operands `s next` and `s cont`
-  are dominated by `s`, saving 5 and 6 bits. A separate handwritten
+  are dominated by `s`, saving 5 and 6 bits. The right-associated
+  operand `s (s s)` is also dominated, saving eight bits. An algebraic
+  classification of all application-only operands through ten bits
+  leaves only `s,j,c,s s,(s s) s`; bare `j,c` have explicit handlers
+  showing why same-handler replacement by `s` fails. The common
+  inert-operand replacement principle is kernel-checked in `SelfintInert`;
+  the per-operand equation and absence checks are handwritten.
+  A separate handwritten
   theorem proves that handlers for `T=s` and `T=s s` need at least two
   explicit lambdas, even with whole-stream access and beta redexes.
   The strengthened theorem rules out every beta-normal handler with at
@@ -186,8 +193,12 @@ with all features (three opt-in tests ignored) and 328 with default features.
   includes the full ambient frame, whole-stream access, and arbitrary
   source redexes. The proof extends the safe-data argument to affine
   callbacks, then separates affine input-edge accounting from the
-  case that can copy vacuous closures. The improving `T=s`, `|H|≤34`
-  budget remains open
+  case that can copy vacuous closures. At the improving `T=s`, `|H|≤34`
+  budget, every successful handler has at least three source lambdas,
+  including before beta-normalization. A minimum successful handler has
+  no affine source redex and exactly four or five applications: the
+  three-application normal cases and nonlinear compression at that
+  application count are excluded. The remaining `T=s` cases stay open
   (`classical/self-interpreter/cheap-tail-bound.md`,
   `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
@@ -230,8 +241,13 @@ with all features (three opt-in tests ignored) and 328 with default features.
   even for fully affine terms. The literal 165 expands to a 755-bit head
   form in four contractions; its two lambdas, stream head, and two
   arguments are checked by `tools/self-interpreter/theory/head_decomposition.py`
-  with two fixed affine examples, in 0.007 seconds
+  with two fixed affine examples and a sharing counterexample, in 0.002 seconds
   (`data/self-interpreter/theory/head_decomposition.json`).
+  The latter is a 43-bit non-interpreter with two nonlinear binders;
+  two head contractions create a 125-bit continuation-headed form with
+  two nonlinear binders in each payload and six overall. Its value
+  projection has the wrong rigid head. This demonstrates why the
+  payload counts alone do not price independent source modules.
   Lean's `SelfintWireCost` proves the exact local beta size balance,
   including copied code and index movement, and applies it to every
   redex of a globally minimum interpreter. Such a minimum has no
@@ -254,8 +270,8 @@ with all features (three opt-in tests ignored) and 328 with default features.
   The proof normalizes source terms with at most one nonlinear binder
   over a labelled infinite zero stream, then simulates the finite trace
   on a closed source `λⁿ.I` followed by `Ω` to contradict exact extraction.
-  Integrated `lake build Blc` passes all 33 jobs; an eleven-theorem
-  audit across `SelfintZero` and `SelfintProjections` uses only
+  Integrated `lake build Blc` passes all 34 jobs; a seventeen-theorem
+  audit across `SelfintZero`, `SelfintProjections`, and `SelfintInert` uses only
   `propext` and `Quot.sound`.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
   `typed-normal.md`): the β-normal interpreter is 204 bits

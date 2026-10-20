@@ -243,6 +243,29 @@ literal source expands substantially when reduced only to head normal
 form. The fixed symbolic check and measured sizes are recorded in
 `docs/STATUS.md`.
 
+Even the four-interior-binder requirement can arise from very little
+shared syntax. Define, in the frame containing `c,s`,
+
+```
+A = λy.c (y s) (y I),
+E = λc s.(λx.x (x x)) A.
+```
+
+There are only two nonlinear source binders, the ternary `x` and binary
+`y`. Two head contractions give
+
+```
+λc s.c ((A A) s) ((A A) I),
+```
+
+with two nonlinear binders in each payload and six overall. The fixed
+checker measures the source and its expansion in STATUS. This term is
+**not an interpreter**: its value payload exposes the rigid head `c`,
+so it cannot equal the required abstraction. It shows why counting the
+four residual nonlinear binders cannot itself price four independent
+pieces of source code. A useful stronger bound must also constrain how
+the shared code satisfies both semantic projections.
+
 ## Exact beta wire costs
 
 `Blc.SelfintWireCost` formalizes the local accounting needed to distinguish

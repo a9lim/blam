@@ -2,7 +2,7 @@
 """Fixed head-reduction accounting checks; no candidate enumeration.
 
 The universal head-decomposition argument is handwritten. These checks only
-verify its two explicit affine examples and the existing 165's head form.
+verify explicit compression examples and the existing 165's head form.
 """
 from pathlib import Path
 import json
@@ -43,6 +43,14 @@ def affine(term):
     if term[0] == "L":
         return occurrences(term[1]) <= 1 and affine(term[1])
     return affine(term[1]) and affine(term[2])
+
+
+def nonlinear(term):
+    if term[0] == "V":
+        return 0
+    if term[0] == "L":
+        return int(occurrences(term[1]) > 1) + nonlinear(term[1])
+    return nonlinear(term[1]) + nonlinear(term[2])
 
 
 def free_leaves(term, cutoff=0):
@@ -98,6 +106,30 @@ def main():
         examples.append(dict(n=n, source_bits=lc.size(source),
                              head_form_bits=lc.size(result), affine=True))
 
+    # A syntax counterexample to pricing residual nonlinear binders as
+    # independent source code. This term is explicitly NOT an interpreter.
+    shared = "\\y.c (y s) (y (\\z.z))"
+    sharing_source = battery.compile_lam(
+        "\\c\\s.(\\x.x (x x)) (" + shared + ")")
+    sharing_head = head_step(head_step(sharing_source))
+    expected = battery.compile_lam(
+        "\\c\\s.c (((" + shared + ") (" + shared + ")) s) "
+        "(((" + shared + ") (" + shared + ")) (\\z.z))")
+    assert sharing_head == expected and head_step(sharing_head) is None
+    assert lc.size(sharing_source) == 43 and lc.size(sharing_head) == 125
+    assert nonlinear(sharing_source) == 2 and nonlinear(sharing_head) == 6
+    sharing_body = sharing_head[1][1]
+    left, right = sharing_body[1][2], sharing_body[2]
+    assert nonlinear(left) == nonlinear(right) == 2
+    # The value payload retains a rigid continuation head after one more
+    # head step, whereas a decoded value must be an abstraction.
+    value_head = head_step(left)
+    assert value_head is not None and head_step(value_head) is None
+    spine = value_head
+    while spine[0] == "A":
+        spine = spine[1]
+    assert spine == ("V", 1)
+
     source = battery.compile_lam(
         (ROOT / "data/self-interpreter/machines/int165.lam").read_text())
     assert lc.enc(source) == (
@@ -128,6 +160,10 @@ def main():
     assert (leading, body, arguments) == (2, ("V", 0), 2)
     report = dict(
         affine_examples=examples,
+        sharing_counterexample=dict(
+            source_bits=43, head_form_bits=125, head_contractions=2,
+            source_nonlinear=2, head_form_nonlinear=6,
+            payload_nonlinear=[2, 2], is_interpreter=False),
         int165=dict(source_bits=165, head_form_bits=755,
                     head_contractions=contractions, leading_lambdas=leading,
                     head="stream", head_arguments=arguments,

@@ -1283,6 +1283,446 @@ law. Thus the affine argument covers every remaining case.
 
 This excludes the one-leading-lambda shape at the 30-bit budget.
 
+## Compression constraints for the whole-stream operand
+
+The following results concern `T=s` at its improving budget `|H|≤34`.
+They do not assume that the first input is used: unlike `K R`, the
+third input `s` itself still carries the branch bit.
+
+### All-vacuous handlers still fail
+
+The earlier head relation between `P=cons K R` and
+`W=cons F (cons K N)` applies without change to source expressions
+made from application, rigid ambient variables, and vacuous lambdas.
+Only the external-argument calculation changes. An exposed `P` with
+three, two, or one of the inputs `K,R,P` still pending gives
+
+```
+P K R P →* R,        P R P →* R K R P,        P P →* K R.
+```
+
+None is `R j`. A rigid head exposed while inputs remain retains the
+last `P`, which is not beta-equal to `j`. Thus the zero law again
+requires three successive constant-function heads, discarding the
+three inputs, followed by rigid head `R`. The related variable
+evaluation discards `F,cons K N,W` through the corresponding
+constant functions and ends with rigid head `N`, rather than `c`.
+This excludes all-vacuous handlers for `T=s` without a size bound.
+
+### A growing affine contraction cannot belong to a successful handler
+
+The exact affine size change remains
+
+```
+Δ = d(f−1) − 6 − r,
+```
+
+where `d` is the depth of the sole bound occurrence in the redex
+body, `f` counts free leaves of its argument, and `r≥0` counts the
+other body references whose indices decrease. Unlike at 30 bits,
+this quantity can be positive at 34 bits. However, the same source
+budget gives
+
+```
+3d+4f+7 ≤ 34.
+```
+
+Together with `d(f−1)>6+r`, this leaves only
+
+| `d` | `f` | Lower bound `3d+4f+7` |
+|---:|---:|---:|
+| 4 | 3 | 31 |
+| 5 | 3 | 34 |
+| 3 | 4 | 32 |
+| 2 | 5 | 33 |
+
+Every row forces `A=f`: an additional application would add four
+bits to a lower bound already at least 31. The `A+1=f+1` source
+leaves are therefore exactly the sole bound occurrence `u` and
+the argument's `f` free leaves. The redex body is `λ^d.u`, and
+every lambda inside its argument `D` is vacuous. Both mandatory
+rigid leaves `j,c` lie in `D`.
+
+There is no surrounding application, since the redex and `D`
+already use all `f` applications. There is no surrounding lambda
+either: one would add two lambda bits and at least two index bits
+for `j,c`, raising the lower bound to at least 35. Thus the whole
+handler is the redex, and its contraction leaves only vacuous
+source lambdas. The preceding obstruction excludes that reduct
+and hence the original handler.
+
+Consequently every affine contraction in a successful handler of
+size at most 34 is nonincreasing in wire size. An affine contraction
+also strictly decreases AST node count. Choosing a successful
+handler minimal in `(wire size, AST node count)` therefore removes
+every affine source redex, despite the failure of unrestricted
+34-bit affine size monotonicity.
+
+### Two source lambdas cannot fit the 34-bit budget
+
+This exclusion does not require minimality. A normal handler with
+two source lambdas already fails the variable law. In a nonnormal
+one, an affine source contraction leaves at most one source lambda,
+which also fails. Any source redex must therefore copy an argument
+containing the other source lambda. Write the whole handler as
+
+```
+E[(λu.B) C[D]],             D=λv.W,
+```
+
+where `B,C,E,W` are application-only and `C` has one hole. Set
+`k=#u in B≥2` and `r=#v in W`. The argument `C[D]` is
+source-beta-normal: contracting a redex headed by `D` there would
+leave at most the outer source lambda, because that redex's argument
+contains no lambda.
+
+The wire budget gives `A≤6`, hence at most seven variable leaves.
+The two source lambdas are disjoint, so their bound occurrences
+have index zero. If `r=0`, contracting the outer redex leaves only
+vacuous source lambdas and is impossible. If `r=1,k=2`, that
+contraction leaves affine source code with at most two lambdas.
+Its ordinary beta-normalization cannot increase the lambda count,
+so the normal three-lambda floor excludes it, irrespective of the
+normal form's wire size.
+
+First suppose no free `s` occurs. If `D=I`, the remaining source
+reduces through the application algebra of `I` and rigid variables.
+Otherwise `W` either has a rigid head or has head `v` with at least
+one argument. In an application tree over copies of `D` and rigid
+variables, a head contraction of an applied `D` then either exposes
+a rigid head or produces another applied `D`. It cannot expose a
+bare lambda: substituting the argument at the head occurrence of
+`v` retains at least one body argument. Thus a nontrivial such tree
+has a rigid head or no head normal form. A proper normal `C[D]`
+is already rigid-headed; a bare `C[D]=D` yields a nontrivial tree
+because `k≥2`. The surrounding application-only context cannot
+repair either outcome. A rigid head retains all three external
+arguments, while an exposed divergent head cannot yield the required
+normal output. This handles the no-`s` cases.
+
+Now suppose `s` occurs. The mandatory `j,c,s` leaves give
+`k+r≤4`. After the preceding cases, only `(k,r)=(3,1)` and
+`(2,2)` remain. Both use all seven leaves, so
+
+```
+A=6,             X≤4.
+```
+
+There is exactly one occurrence of each ambient variable `j,c,s`.
+Since their base index contribution is three, at most one ambient
+leaf lies beneath either source lambda.
+
+For `(k,r)=(3,1)`, if `D=I`, substitution reduces to the safe
+application-only data algebra. Otherwise the sole ambient leaf
+beneath a lambda lies in `D`, which is one of
+
+```
+R_a=λv.v a,                 L_a=λv.a v,          a∈{s,j,c}.
+```
+
+Then `B` is a pure three-leaf tree of `u`. The extended data
+algebra for `R_a,L_a` proved above reduces `C[D]` to base data,
+to a rigid neutral, or to `D` itself. Only the last case needs an
+additional check. For `a=s`, `D D→*Q=K N`, and either three-copy
+tree is `N`-headed. For rigid `a`, `D D` and either three-copy
+tree have head `a`. All outcomes therefore return to the base
+data or rigid-head obstruction.
+
+For `(k,r)=(2,2)`, choose an arbitrarily large **odd** prefix
+length `m≥3` and write
+
+```
+S=Pₘ,       V=Pₘ₋₁,       U=Pₘ₋₂,       Q=K N.
+```
+
+The adjacent-pair identities on this subsequence are
+
+```
+S V →* N P₀,                 U V →* N P₀.
+```
+
+They follow by applying the recursive pair/pair row twice, reducing
+both indices by two, until `P₁ P₀→N P₀`. Parity is essential:
+the corresponding adjacent products at even `m` are `I`.
+
+If `s` is inside `B`, then `D=Δ=λv.v v`. For a bare argument
+`C[D]=D`, the six possible three-leaf bodies give
+
+| Body `B` | Result after `u:=Δ,s:=S` |
+|---|---|
+| `u (u s)` | `N` |
+| `u (s u)` | `Q` |
+| `s (u u)` | no head normal form |
+| `(u u) s` | no head normal form |
+| `(u s) u` | `N` |
+| `(s u) u` | `U` |
+
+A proper `C[D]` has only rigid ambient heads in this case and
+already fails by the same data argument. Thus this placement cannot
+satisfy the variable law.
+
+If `s` is inside `D`, then `B=u u`; a proper `C[D]` is again
+rigid-headed. For the bare argument, the six bodies of `D` give
+
+| Body `W` | Head behavior of `D D` at odd `m≥3` |
+|---|---|
+| `v (v s)` | `N`-headed |
+| `v (s v)` | `N`-headed |
+| `s (v v)` | no head normal form |
+| `(v v) s` | no head normal form |
+| `(v s) v` | `N`-headed |
+| `(s v) v` | `N`-headed |
+
+For the second row, `S D→*V`, so `D D→*V (S V)`.
+For the last row, `S D→*U V`, so the adjacent-pair identity
+gives its rigid `N` head. The two divergent rows respectively
+return to `D D` with two or one further arguments. These are head
+loops, independent of reductions inside their arguments.
+
+Finally suppose `s` lies outside both lambdas. Then `D` is `Δ`
+or has one rigid leaf `a∈{j,c}` in addition to its two `v`
+leaves. The alternative placement of that rigid leaf in `B` leaves
+`D=Δ`. With `D` opaque, any first source activation inside
+`C[D]` must occur at a literal `s D`, by the earlier first-activation
+argument. For `Δ`, this gives `S Δ→*V`. For the six bodies
+`v(v a),v(a v),a(v v),(v v)a,(v a)v,(a v)v`, respectively,
+the results of `S D` are
+
+```
+V,       V,       a-headed,       a-headed,       I,       a-headed.
+```
+
+Thus a proper `C[D]` reduces to safe data or a rigid neutral.
+Substitution into `B` preserves the base algebra. If `C[D]` is
+bare `D`, the nontrivial tree `B[D/u]` uses only `D` and rigid
+variables, and the applied-`D` invariant above gives a rigid head
+or head divergence. The remaining application context may erase
+such a term, but doing so leaves base data or an ordinary rigid
+head; retaining it as the head preserves divergence. None produces
+the required two-argument `c` spine after all three external inputs.
+
+These cases exhaust the two-lambda source shapes. Therefore every
+successful `T=s` handler of size at most 34 has **at least three
+source lambdas, even before beta-normalization**. Its size identity
+then forces **at most five applications**. This does not yet remove
+nonlinear redexes from handlers with three or more source lambdas.
+
+## Normal whole-stream handlers with at most three applications
+
+Write `P=cons K R` on the zero input and `S=Pₘ(N)`,
+`V=Pₘ₋₁(N)` on a variable input. The laws are
+
+```
+H[P/s] K R P =β R j,
+H[S/s] F V S =β c V N.
+```
+
+The handler in this section is beta-normal. Let `k` count its
+leading lambdas. Zero correctness gives `k≤3`. A rigid body head
+cannot work. The established normal floor gives `L≥3`, and the
+earlier whole-stream theorem already excludes `L=k=3` at this
+budget. These facts will be used throughout the case split.
+
+### No stream access and at most one live binder
+
+First suppose `s` is absent and only one source binder is live,
+possibly at more than one occurrence. Its body head must be a
+variable bound by that binder, and the binder must be leading.
+Otherwise the normal head is rigid. Every other source lambda is
+vacuous.
+
+If the live binder receives the first input `K`, only selectors
+and vacuous erasers remain. Distinguish the remaining ordered input
+edges carrying `R,P` from fixed applications in source bodies.
+Selectors return an argument whole, and vacuous binders discard an
+argument; neither inserts a received input inside a fixed source
+application. The direct `R` cannot acquire the earlier source `j`
+after the final `P` edge has been consumed. Before that edge is
+consumed, an exposed rigid `R` retains `P`, so is not `R j`.
+The final `P` can only be selected as a whole after the earlier
+input edges have disappeared; there is then no later input or fixed
+source argument to activate it. It remains a lambda. These cases
+exclude the zero law.
+
+If the live binder receives the second input `R`, two leading
+lambdas leave final `P` attached to the rigid head. With three
+leading lambdas, substituting rigid `R` creates no redex: all other
+binders are vacuous and the source was normal. The normal result
+still contains mandatory `c`, so cannot be `R j`.
+
+If it receives the third input, all three leading lambdas have
+been consumed. The remaining source expression uses only its
+stream argument, rigid ambient variables, applications, and
+vacuous lambdas. The all-vacuous head relation pairs the zero
+stream `P` with a variable stream. A zero head `R` consequently
+becomes head `N`, contradicting the variable head `c`.
+
+Thus a normal no-`s` handler with at most one live source binder
+fails, regardless of the number of that binder's occurrences.
+
+### Zero, one, or two applications
+
+With `A≤1`, the mandatory rigid leaves `j,c` leave no live
+binder or stream occurrence, so all source lambdas are vacuous.
+With `A=2`, the third leaf is either an ambient variable, again
+giving only vacuous binders, or the sole occurrence of one live
+binder with no `s`. Both cases have just been excluded.
+
+### Three applications without free s
+
+There are four leaves. The preceding one-live-binder argument
+handles repetitions of the same bound variable and extra rigid
+ambient leaves. The only case left has exactly
+
+```
+j,c,v,w,
+```
+
+with `v,w` bound by distinct live binders. Every source binder
+is affine. The normal body head is one of the leading inputs.
+
+If its head is the first input `b`, write the body as
+`b A₁ ... A_q`, where `1≤q≤3`. For `q=1`, the variable
+branch erases the source of `c`. For `q=2`, zero needs `j`
+in `A₁` and variable output needs `c` in `A₂`. Only one
+further bound leaf remains. If it lies in `A₂`, the first branch
+is a vacuous `j` chain and cannot give head `R`. If it lies in
+`A₁`, the second branch is a vacuous `c` chain. Its nonempty
+argument suffix ends in `S`, and therefore cannot end in `N`.
+
+For `q=3`, each argument is a lambda chain over one leaf. The
+zero branch must contain the other bound leaf, with `j` in the
+shared third argument and `c` in the second branch. The variable
+branch is consequently a vacuous `c` chain applied to that
+`j` chain and any pending external inputs. Its last argument is
+either the `j` chain or `S`, never `N`; erasing them all gives
+bare `c`. Thus a first-input head fails.
+
+If the head is the second input `r`, `k=2` retains final `P`,
+so `k=3`. To give `R j`, its body must have exactly one
+argument that reduces to bare `j`.
+
+* If the other live leaf is outer `b`, the base index sum is
+  `2+1+4+5=12`. Three lambdas already cost 32 bits, and every
+  additional vacuous lambda adds at least three. Only `L=k=3`
+  fits, which was excluded earlier.
+* If the other live leaf is outer `t`, the base size is 30 bits;
+  at most one additional vacuous lambda fits. The sole argument
+  is a normal term with one occurrence each of `t,j,c` and two
+  applications. A rigid head cannot erase `c`. If its head is
+  `t=P`, its callback has either one rigid leaf, or the rigid
+  application of `j,c`. With at most one vacuous lambda, the
+  callback cannot erase both Scott arguments and the remaining
+  rigid leaf. It cannot reduce to bare `j`.
+* If the other binder is inside that argument, the argument is
+  already beta-normal over `j,c` and its own bound variable.
+  The substitution at the outer head `r` does not change it.
+  It still contains `c` and is not bare `j`.
+
+Finally suppose the head is the third input `t`, so `k=3`.
+The mandatory `j,c` contribute nine index units, giving `L≤5`.
+Write the body `t A₁ ... A_q`.
+
+For `q=1`, the callback contains both rigid leaves and the sole
+other bound leaf. Its only possible useful head is that bound
+leaf. It can receive `K` or `R`, either from the Scott cell or
+from an outer leading binder. A `K` head selects a fixed rigid
+block and cannot put the later `R` before its `j`; an `R` head
+cannot erase the other rigid leaf `c`. Hence zero fails.
+
+For `q=2`, if the sole inner application is in `A₂`, that
+argument contains `j,c` and can never become bare `j`.
+Otherwise `A₁` has the form of a lambda chain over `w J`,
+where `J` is a chain over one rigid leaf and `A₂` contains
+the other. The only possible zero output is obtained when
+`w=R` and `J=j`. Before exposing that rigid head, the callback
+must consume the cell's `K,R` and the common argument `A₂`.
+This needs three callback lambdas in addition to the leading
+three, contradicting `L≤5`.
+
+For `q=3`, all three arguments are one-leaf chains. To obtain
+`R j`, the last must be bare `j` and the other rigid chain
+must contain `c`. At most two inner lambdas fit. If the live
+leaf is bound inside the first callback, the possibilities are
+`I`, `K`, and `F`. Only `I` gives `R j`; `K` gives the
+second rigid chain, while `F` leaves two arguments on `R`.
+The other zero-compatible possibility is `λa.b`, returning
+the outer first input after consuming the Scott bit. A bare
+outer `b`, or a chain returning outer `r`, does not give
+`R j`. In the two compatible cases, the variable branch is
+the `c` chain applied only to `j`. It gives `c j`, bare `c`,
+or a remaining lambda, never `c V N`.
+
+This exhausts the no-`s` four-leaf cases.
+
+### Three applications with free s
+
+The only nonvacuous leaf pattern is now exactly `j,c,s,v`,
+with one occurrence of a live bound variable `v`. If the normal
+body head is a leading input and `k=3`, its base size is at
+least 32 bits. Any additional lambda lies above an ambient leaf
+and adds at least three bits. Only `L=k=3` can fit, already
+excluded. A second-input head with `k=2` retains final `P`.
+Thus the remaining bound-head cases have first-input head `b`
+and `k=1,2`.
+
+One Boolean argument erases `c` on the variable branch. With
+two arguments, the zero branch must contain `s,j`, leaving a
+vacuous `c` chain for the variable branch. With three arguments,
+the zero branch must be the `s` chain, `j` must be shared, and
+the variable branch is again a vacuous `c` chain. In each case
+its nonempty final argument suffix ends in `S`, not `N`.
+
+It remains to consider free `s` as the normal body head:
+
+```
+H = λ^k.s A₁ ... A_q.
+```
+
+For `q=1`, the callback contains `v,j,c` with two applications.
+Its useful head must be `v`. The value supplied to `v` can be
+`K`, `R`, or `P`. A `K` selects a fixed rigid block; an `R`
+cannot erase `c`; and a `P` applied to a rigid or vacuous
+rigid callback has that callback's `j/c` head. None gives
+`R j`.
+
+For `q=2`, placing the one inner application in `A₂` traps
+`j,c` in the same rigid block, which cannot become bare `j`.
+Otherwise the first callback is a chain over `v J` and the
+other argument contains the other rigid leaf. Only `v=R` and
+`J=j` can give `R j`. The callback must then consume all
+`6−k` arguments supplied by the Scott cell, the common argument,
+and the pending external inputs. Thus `L≥6`; the deeply bound
+`j` contributes at least seven index units and `c` at least
+two. The wire size is at least `12+12+2+9=35`, beyond the
+budget.
+
+For `q=3`, every argument is a one-leaf chain. If `k<3`, the
+last ordered input is `P`. Retaining a common `j` application
+edge would also retain that final input edge. Consuming all input
+edges leaves no fixed source application from which to construct
+`R j`: projections and constants return a selected argument
+whole. Selecting the final `P` leaves it unapplied. Thus `k=3`.
+The case `L=k=3` has already been excluded. For a remaining
+candidate the mandatory ambient index sum is twelve, so the
+34-bit budget forces `L=4,X=12`. The sole callback is therefore
+`I`, with all other arguments bare. The unique zero-compatible
+arrangement is
+
+```
+λb r t.s I c j.
+```
+
+Its variable result is `S I c j→*c j`, not `c V N`.
+This excludes the last four-leaf shape.
+
+Consequently no beta-normal `T=s` handler of size at most 34
+can have at most three applications. Combined with the compression
+results, the same holds for a minimum successful handler: at
+`A≤3`, a nonlinear source redex uses both leaves remaining after
+`j,c`, so contracting it leaves only vacuous source binders.
+Affine redexes are already absent in such a minimum.
+
 ## Established bound and remaining scope
 
 Combining the compression lemmas, the beta-normal three-lambda floor,
@@ -1295,8 +1735,11 @@ and the exhaustive shape arguments proves:
 
 Thus the self-application operand cannot improve the reader within
 this joint-handler interface. The whole-stream operand `T=s` at
-`|H|≤34` remains open; only the stated lambda floors and the
-three-leading-lambda special case have been excluded there.
+`|H|≤34` remains open. At that budget a minimum successful handler
+would have no affine source redex, at least three source lambdas,
+and exactly four or five applications. The three-leading-lambda
+special case is also excluded, but nonlinear compression at three
+or more source lambdas and the other normal shapes remain open.
 Neither the independence assumptions on the ambient continuations
 nor the specified reader interface have been removed. This is not
 a global optimality theorem for the 165-bit interpreter.
