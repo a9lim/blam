@@ -41,6 +41,7 @@ BLAM = os.environ.get("BLAM", str(ROOT / "target" / "release" / "blam"))
 DEMOS = {
     "numerals/SK_numerals.lam": "applies the artifact to sample data",
     "numerals/tuple_numerals.lam": "applies the artifact to sample data",
+    "numerals/scott_numerals.lam": "applies the artifact to sample data",
     "rosetta/exp00.lam": "applies the artifact to sample data",
     "rosetta/facY.lam": "applies the artifact to sample data",
     "rosetta/forloops.lam": "applies the artifact to sample data",

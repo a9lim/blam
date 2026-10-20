@@ -125,11 +125,12 @@ proven.
   share. The same reader gives universal machines of 175 (non-strict) and 187
   (strict) bits, against Tromp's 178 and 190
   ([universal](docs/classical/self-interpreter/universal.md)).
-- **The rest of tromp/AIT** ([golf](docs/classical/golf.md)): the IOCCC
-  BLC8 universal machine shrinks from 43 bytes to 41 (strict) and 38
-  (non-strict), the bytewise BLC2 machine from 500 to 399 bits, the programs
-  behind the KP ≤ KO + c and symmetry-of-information constants by up to 77
-  bits, and 45 programs under certified β-golf alone.
+- **The rest of tromp/AIT** ([golf](docs/classical/golf.md), sent upstream as
+  [tromp/AIT#13](https://github.com/tromp/AIT/pull/13)): 40 programs shrink by
+  1,143 bits in all. The IOCCC BLC8 universal machine goes from 43 bytes to 38
+  (strict) and 36 (non-strict), the bytewise BLC2 machine from 500 to 390
+  bits, KP(x) ≤ KO(x) + c from c = 615 to 541, the symmetry-of-information
+  constants by up to 129 bits, and Loader's number fits in 1781 bits.
 
 The qBLC operator census covers the same population. Its successful mass is
 `3424188513 / 2^40`; entangled successful outputs first occur at 41 bits.

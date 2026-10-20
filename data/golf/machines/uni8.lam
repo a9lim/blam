@@ -1,33 +1,37 @@
--- BLC8 universal machine for closed programs, strict: 321 bits (41 bytes).
--- The IOCCC 2012 uni8.Blc is 344 bits (43 bytes); tromp/AIT's uni8.lam
--- compiles to 355. Same contract: read <M> from the bits of the leading
--- bytes, discard the rest of the last byte touched, return M applied to the
--- remaining bytes; a free variable in M diverges (base environment omega).
---
--- The design reads every bit through one reader, get (Codex, 2026-10-12),
--- instead of two inline reads with their own refills. A refill moves to the
--- next byte, and a byte always has eight bits, so the refilled read can never
--- meet nil again: get needs no recursion (Claude). The variable parse is the
--- old one: Scott-pair environment, re-entering int8 with the second bit
--- pushed back. Verified against the 344 by `blam golf check --io bytes`
--- (every closed program to 18 bits, with and without a data byte, plus random
--- bytes: 0 differ, 0 halting on one side only) and by nested
--- self-interpretation; see docs/classical/golf.md.
---
--- test with
--- cat id.Blc id.lam | ./blc run8 uni8.lam
+-- BLC8 universal machine for closed programs: 304 bits (38 bytes)
+-- a9lim reduced it from 355 bits (344 for the IOCCC uni8.Blc):
+-- every bit is read through one reader, get, which refills from the next
+-- byte when the current one runs out. A refill always lands on a fresh byte
+-- of eight bits, so get never needs to refill twice and is not recursive.
+-- The parser branches on a code's first bit before reading the second, and
+-- step takes that first bit as an argument: after a variable's tag 11, the
+-- second 1 is also the first bit of the rest of its code, so step re-enters
+-- with it instead of pushing it back onto the stream.
+-- Variables keep the Scott-pair environment.
 \bytes.bytes (
-let dbl = \x.x x
-in
-  (dbl (\self.
-    (\get\int8\cont.get (\b.get (\c\tail.b
+let
+  -- get k bits = k bit bits', reading the next byte when bits is nil
+  get = \k.(\h\bits.bits h (\bytes.bytes (\byte.byte h byte)))
+              (\b\tail\ignored.k b tail);
+  -- step cont b bits parses a term whose first bit b is already read
+  step =
+    let int8 = \cont.get (step cont)
+    in \cont\b.get (\c.b
       (int8 (\exp.c
         (cont (\args\arg.exp (\z.z arg args)))
-        (int8 (\exp2.cont (\args.exp args (exp2 args))))) tail)
-      (c (cont (\args.args c) tail)
-         (int8 (\var.cont (\args.var (args c)))
-               (\f.f c tail))))))
-    -- get k bits = k bit tail, reading the next byte when bits is nil
-    (\k. (\h\bits. bits h (\bytes.bytes (\byte. byte h byte))) (\b\tail\ignored.k b tail))
-    (self self))
-    (\exp\bits.exp (dbl dbl))))
+        (int8 (\exp2.cont (\args.exp args (exp2 args))))))
+      (c (cont (\args.args c))
+         (step (\var.cont (\args.var (args c))) c)))
+in
+  -- free variables diverge in the base environment get get get, which
+  -- has no head normal form: it reduces to ever more leading lambdas and
+  -- never to a head variable, so like (\x.x x) (\x.x x) it gives every
+  -- program the same normal form, or none.
+  -- (\x.x) instead gives a non-strict machine of 283 bits (36 bytes):
+  -- cont exp bits bytes = exp bits bytes = M bytes for closed M
+  get (step (\exp\bits.exp (get get get))))
+
+-- test with
+-- cat id.Blc id.lam | ./blc run8 uni8.lam
+-- which should output
+-- \x.x

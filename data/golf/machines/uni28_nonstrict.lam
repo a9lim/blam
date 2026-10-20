@@ -1,24 +1,34 @@
--- BLC2 universal machine over BLC8 bytes (tromp/AIT uni28.lam), non-strict.
--- tromp/AIT's uni28.lam compiles to 500 bits. This source compiles to 393;
--- uni28_nonstrict.blc (382 bits) is its beta-only descent (blam golf
--- component --descend --no-eta), certified step by step with blam golf
--- check --path. Design (Codex, 2026-10-12): one bit reader `get` serves the
--- parser, the Levenshtein delimiter and the digit accumulator, with its
--- continuation held outside the reader's fixpoint; the final continuation
--- is the identity, so cont exp bits bytes = M bytes for closed M.
--- Verified against the 500 by `blam golf check --io bytes --max-bits 18`
--- (0 differ; the inputs that halt here only are complete open programs)
--- and by direct-evaluation tests through index 255 and three-level
--- self-interpretation; see docs/classical/golf.md.
+-- universal machine for Levenshtein binary lambda calculus (BLC2): 390 bits
+-- a9lim reduced it from 500 bits: one bit reader, get, serves the parser,
+-- the Levenshtein delimiter and the digit accumulator. A fresh byte always
+-- has a first bit, so get reads it directly and needs no recursion.
+-- One self-application, delta, serves the parser's and the delimiter's
+-- fixpoints and the loop.
+\bytes.bytes (
 let
- id = \x.x;
- true = \x\y.x;
- get = \k.let loop = \bits.bits (\b\tail\ignored.k b tail) (\bytes.bytes loop) in loop;
- readbit = \f\cont\n.get (\bit.cont (\x.n (n (bit x (f x)))));
- delimit = \f\cont.get (\bit.bit (cont id) (delimit (readbit f) (\n.n cont f)));
- int = \cont.get (\bit0.bit0
-   (get (\bit1.int (\exp.bit1 (cont (\args\arg.exp (\z.z arg args)))
-        (int (\exp2.cont (\args.exp args (exp2 args)))))))
-   (delimit (\l.l bit0) (\n.cont (\args.n args true))));
- omega = omega
-in \bytes.bytes (int id)
+ delta = \x.x x;
+ build = \int\cont.
+   let
+    -- get k (bit:bits) = k bit bits, reading the next byte when bits is nil
+    get = \k\bits.bits (\b\tail\ignored.k b tail) (\bytes.bytes (\byte.byte k));
+
+    -- readbit f cont n input = cont (n . n . if next_input_bit then f else id) input'
+    readbit = \f\cont\n.get (\bit.cont (\x.n (n (bit x (f x)))));
+
+    -- delimit f cont (levenstein_code_for_n_on_input) = cont (f^n) input'
+    delimit = delta (\self\f\cont.get (\bit.bit
+      (cont (\x.x))
+      (self self (readbit f) (\n.n cont f))))
+   in
+    -- binary LC interpreter
+    -- int cont input = cont (\free.parsed) input'
+    get (\bit0.bit0
+     (get (\bit1.int (\exp.bit1
+       (cont (\args\arg.exp (\z.z arg args)))
+       (int (\exp2.cont (\args.exp args (exp2 args)))))))
+     (delimit (\l.l bit0) (\n.cont (\args.n args (\x\y.x)))))
+in
+ -- binary LC universal machine for closed programs; free variables loop
+ -- assuming closed programs, (\x.x) for the last argument gives a
+ -- non-strict machine of 370 bits
+ delta (\self.build (self self)) (\x.x))

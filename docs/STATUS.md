@@ -304,14 +304,18 @@ with all features (three opt-in tests ignored) and 328 with default features.
 
 ### AIT golf
 
-`classical/golf.md`: certified β-golf shrinks 45 of the 117 tromp/AIT
-programs by 470 bits in all (`data/golf/sweep.tsv`; e.g. `tweet` 2230 → 2168,
-`uniK` 903 → 854). Hand redesigns take the IOCCC BLC8 machine from 344 bits
-(43 bytes) to 321 strict (41 bytes) and 300 non-strict (38 bytes), and
-`uni28` from 500 to 399 strict and 382 non-strict. Ports of the 2025-12 parser
-shrink `int4` 189 → 175 (with the 165's reader), `ko2kp` 615 → 557, `nf` 600 → 541, and the pairup
-programs (771, 651, 1325; the last two on contract-valid inputs only).
-Artifacts are in `data/golf/machines/`.
+`classical/golf.md`: certified β-golf shrinks 44 of the 117 tromp/AIT
+programs by 463 bits in all (`data/golf/sweep.tsv`). The upstream branch,
+[tromp/AIT#13](https://github.com/tromp/AIT/pull/13), changes 40 programs by
+1,143 bits, every one as a readable source: 36 of the β-golf gains, several
+beyond the sweep (`tweet` 2230 → 2134, `loader` 1797 → 1781,
+`pairup_Kp` 1402 → 1273), and hand redesigns. The IOCCC BLC8 machine goes from
+344 bits (43 bytes) to 304 strict (38 bytes) and 283 non-strict (36 bytes),
+`uni28` from 500 to 390 / 370, `uni2` to 332, `blc.lam` 195 → 186, and `uniK`
+903 → 826 (599 with eager weakening). The parser ports give `int4` 175,
+`ko2kp` 541 (so KP(x) ≤ KO(x) + 541), `nf` 538, and the pairup programs 756,
+651 and 1273 (the last two on contract-valid inputs only). Artifacts are in
+`data/golf/machines/`.
 
 ### Running programs: blc and uni
 
@@ -366,10 +370,12 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    `lean/Blc/Wire.lean`, then derive machine-checked K upper bounds.
 6. **Coding theorem:** rerun the report on the K ≤ 35 cohort; an explicit
    Kraft–Chaitin decoder would upper-bound c.
-7. **AIT golf:** the strict BLC8 machine is one bit over 40 bytes; its whole
-   β-component at slack 16 (1.5M states) has nothing smaller, so 320 needs a
-   structural idea. `uniK` and `blc.lam` still carry pre-redesign variable
-   handling. Upstreaming is a9's call (`contrib/PR_KIT.md`).
+7. **AIT golf:** tromp/AIT#13 awaits Tromp's review (end of October). Terms
+   that Tromp's compiler will not keep as sources: `tree_ordinals` 715
+   against its 726 source, and `loader` 1779 / `tweet` 2130 against 1781 /
+   2134, which need two names bound side by side. Finishers from
+   `pairup_Kp` 1273 and `bf` 806 did not complete. The next BLC8 byte
+   boundaries, 296 strict and 280 non-strict, need another structural step.
 8. **Discrete Solomonoff induction:** measure Church bit-list decode coverage
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
@@ -638,8 +644,8 @@ halt-rounding slack equals the number of inexact divisions (96 units at
   determinism. The exhaustive qALC Python batteries and Lean proof checks are
   explicit local commands.
 - `ref/AIT` is pinned to the additive a9lim/AIT fork at `47b51dd`. The fork's
-  `uni-rs` and `golf` branches carry the upstream PRs drafted in
-  `contrib/PR_KIT.md`; both are three commits behind the fork's master.
+  `golf` branch is tromp/AIT#13, rebased on upstream master; `uni-rs` carries
+  the drafted `uni.rs` PR (`contrib/PR_KIT.md`), not yet opened.
 
 ### Accepted operational risks
 

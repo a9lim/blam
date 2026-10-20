@@ -1,22 +1,15 @@
--- tromp/AIT nf.lam with its parser `parseval` replaced by the 2025-12 design
--- (cons' environment cells, the variable's own code as its lookup,
--- skipvar = \l. l l l, the `next` let): 600 -> 562 bits. nf.blc (541 bits)
--- is the beta-only descent of this source, certified step by step by
--- blam golf check --path nf.path. Verified against tromp/AIT's nf by
--- `blam golf check --io progs --max-bits 16`: every closed program through
--- 16 bits followed by up to three data bits, 3,390 inputs, all identical.
 -- nf outputs the normal form of the input blc term
 let
+  -- one fixpoint combinator shared by both recursive functions
+  Y = \f. (\x. x x) (\x. f (x x));
+
   id    = \x.x;
   true  = \t\f.t;
   false = \t\f.f;
   nil   = false;
   cons  = \x\y\z. z x y;
-  cons0 = cons true;
   cons1 = cons false;
   compose = \f\g\x. f (g x);
-  cons00 = compose cons0 cons0;
-  cons01 = compose cons0 cons1;
   tail = \l. l false;
   succ = \n\f\x.f (n f x);
   zero = false;
@@ -30,21 +23,30 @@ let
   A = \t1\t2. \l\a\v. a t1 t2;
   V = \d.     \l\a\v. v d;
 
-  parseval = (\x. x x) (\x. (\parseval. \cont.
-      (\next. \xs. xs (\b0\ys. b0 (ys next) (cont ys (ys ys ys))))
+  -- apply t to u: beta reduce if t is a Lam, else build an App;
+  -- A1 drops V's field, and under one more \_ both of A's
+  appT = \t. let A1 = \_. A t in caseT t id (\_. A1) A1;
+
+  -- parser after int.lam (cons' cells, the variable's code as its lookup,
+  -- skipvar), ported by a9lim
+  parseval = Y (\parseval. \cont.
+      (\next. \xs. xs (\b0. b0 (\ys\rest. rest next) cont) (xs xs xs))
       (\b1. parseval (\t1. b1
          (cont (\ctx. L (\v. t1 (\zx\zy. zx v (zy ctx)))))
-         (parseval (\t2. cont (\ctx. let tc1 = t1 ctx; A1 = A tc1
-           in tc1 (\f. f) (\_\_. A1) (\_. A1) (t2 ctx)))))))
-    (x x));
+         (parseval (\t2. cont (\ctx. appT (t1 ctx) (t2 ctx)))))));
 
-  ser = \t\lvl. caseT t
+  -- cons0 is bound inside ser, where its de Bruijn index is small
+  ser = Y (\ser. \t. let
+      cons0  = cons true;
+      cons00 = compose cons0 cons0;
+      cons01 = compose cons0 cons1
+    in \lvl. caseT t
     -- Lambda: apply to a free variable to further reduce whnf
     (\f.     compose cons00 (ser (f (V lvl)) (succ lvl)))
     -- Application
     (\t1\t2. compose cons01 (compose (ser t1 lvl) (ser t2 lvl)))
     -- Variable
-    (\v.     compose (v tail) (compose (lvl cons1) cons0));
+    (\v.     compose (v tail) (compose (lvl cons1) cons0)));
 
   nf = parseval (\t. ser (t t) zero)
 in nf
