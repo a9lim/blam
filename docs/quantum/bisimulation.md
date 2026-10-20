@@ -294,8 +294,8 @@ why census-ladder equivalence is deliberately NOT claimed.
 
 | id  | statement                                   | status |
 | --- | ------------------------------------------- | ------ |
-| L1  | parser correctness, extensional form (§2)   | open   |
-| L2  | selector / poisoned-seed contract (§3)      | open   |
+| L1  | parser correctness, extensional form (§2)   | proved, pure fragment |
+| L2  | selector / poisoned-seed contract (§3)      | proved, pure fragment |
 | L3  | weak-head / ArgView preservation (§5)       | open   |
 | L4  | readback collapse for ℛ_k (§6)              | open   |
 | B1–B5 | the exhibited ℛ is a bisimulation (§4–§5) | open   |
@@ -303,8 +303,10 @@ why census-ladder equivalence is deliberately NOT claimed.
 
 Falsifier: any effect-order, label, mass, or fate mismatch between
 `p σ⃗` and `E_q ⌜p⌝ σ⃗` on any program — none observed at any size
-swept. L1 and L2 are the first mechanization target (pure λ-calculus, no
-store); the quantum clauses ride on them. `lean/Blc/Selfint.lean`
+swept. L1 and L2 are proved over pure λ-terms (no store) in
+`lean/Blc/SelfintProof.lean` (`l1Statement`, `l2Statement`,
+`parserStatement`, from one structural induction `parse`); the quantum
+clauses L3, L4 and B1–B5 ride on them and remain open. `lean/Blc/Selfint.lean`
 kernel-pins `intL` by wire identity, checks `|E_q| = 174` and the §2 size
 identities, and defines `Implements` under head reduction. Its machine-level
 parser target is `ParserResult M R Q U`: `int.lam`'s VAR branch passes
@@ -314,15 +316,14 @@ statement therefore exposes the residual tail `U ⇒ R`, with the continuation
 quantified inside. The τ*-forms above (KN, which does normalize the
 residual) are unchanged. Over pure terms the mechanized statement is
 the β-non-forcing theorem; the effectful poisoned-seed remains its
-qBLC lifting. Proof order: L2 by induction on
-the unary selector, then `ParserStatement` by structural induction,
-closed L1 as corollary.
+qBLC lifting.
 
 ## 8. The parked sub-174 lane
 
 With the 168-bit `intL` opaque, sub-174 is impossible: any closed invocation
-pays the six-bit `App + I`, and nothing below 168 is known for the interpreter
-itself (`../classical/self-interpreter/interpreter.md`). Below that, a winner
+pays the six-bit `App + I`. The classical self-interpreter is 165 bits
+(`../classical/self-interpreter/interpreter.md`), so `intL165 I` is a 171-bit
+candidate; it has not been checked against the qBLC contract. Below that, a winner
 must reorganize the recursive knot and root entry jointly. The narrow lane,
 parked until the theorem contract is stable: freeze `cons'` and the three
 certified recursive branch meanings; one generic recursive entry + one

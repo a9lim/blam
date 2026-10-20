@@ -116,13 +116,14 @@ proven.
   and time spectra, with post-certificate open mass below 3.19×10⁻¹² on the β
   clock.
 - **The self-interpreter** ([interpreter](docs/classical/self-interpreter/interpreter.md)):
-  nothing below Sean Palmer's 168 bits in any searched space — exact let
-  structure, the βη component to +24, parametric and contextual slot
-  searches, joint two-hole searches, and over a hundred protocol changes —
-  and a conditional lower bound: each of its seven modules is the unique
-  minimum of its own law, and the minima sum to exactly 168. The universal
-  machine has nothing below Tromp's 178 (non-strict) and 190 (strict) in the
-  searched wirings ([universal](docs/classical/self-interpreter/universal.md)).
+  165 bits, three below Sean Palmer's 168, by computing the variable skip once
+  on the whole stream, where it is right for both dispatch arms. Lean proves
+  it, and the 168, a self-interpreter for every closed program. Nothing smaller
+  appears in its let structure, βη and contextual components, or any slot of
+  its reader, and the 168's modular lower bound still pins the part the two
+  share. The same reader gives universal machines of 175 (non-strict) and 187
+  (strict) bits, against Tromp's 178 and 190
+  ([universal](docs/classical/self-interpreter/universal.md)).
 - **The rest of tromp/AIT** ([golf](docs/classical/golf.md)): the IOCCC
   BLC8 universal machine shrinks from 43 bytes to 41 (strict) and 38
   (non-strict), the bytewise BLC2 machine from 500 to 399 bits, the programs
@@ -353,7 +354,7 @@ says how to get them rather than pretending they do not exist.
 | `qalc run` / `gram` / `compile` / `fixtures` | exact qALC evolution, Gram audits, the H/T/CNOT circuit compiler, and fixture regeneration |
 | `qalc census` | exact finite-clock `p h t` census with Ω brackets, optional sparse `M` output, and the `--speed` arrival spectrum with certified Ω_speed brackets |
 | `slots` *(lab)* | exhaustive self-interpreter slot searches |
-| `selfint ctx` / `hole` / `wiring` *(lab)* | searches below the 168 and the universal machine: contextual slots, one- or two-hole sketches of any interpreter, every wiring around the parser |
+| `selfint ctx` / `hole` / `wiring` *(lab)* | searches below the self-interpreter and the universal machine: contextual slots, one- or two-hole sketches of any interpreter, every wiring around the parser |
 
 ```bash
 cargo build --release                 # everything not marked (lab)
@@ -430,7 +431,7 @@ guarantees, and records of what the measurements and searches establish.
 | classical engine | [architecture](docs/classical/architecture.md), [running programs: notation, blc, uni](docs/classical/programs.md), [speed prior](docs/classical/speed.md) |
 | classical results | [bits of Ω](docs/classical/omega.md), [coding theorem](docs/classical/coding.md), [AIT golf](docs/classical/golf.md) |
 | certificates | [specification](docs/classical/certificates/specification.md), [frontier maps](docs/classical/certificates/frontier.md), [BB(33/34/35)](docs/classical/certificates/busy-beaver.md), [Lean](lean/README.md) |
-| self-interpreter | [the 168](docs/classical/self-interpreter/interpreter.md), [universal machine](docs/classical/self-interpreter/universal.md), [slot searches](docs/classical/self-interpreter/slots.md) |
+| self-interpreter | [the 165](docs/classical/self-interpreter/interpreter.md), [universal machine](docs/classical/self-interpreter/universal.md), [slot searches](docs/classical/self-interpreter/slots.md) |
 | qBLC | [architecture](docs/quantum/architecture.md), [frontier adjudication](docs/quantum/escalation.md), [Galois structure](docs/quantum/galois.md), [odd-sector search](docs/quantum/oddmin.md), [bisimulation](docs/quantum/bisimulation.md) |
 | qALC | [architecture](docs/quantum-algebraic/architecture.md), [token machine](docs/quantum-algebraic/token.md), [kernel register](docs/quantum-algebraic/kernel.md), [instance identity](docs/quantum-algebraic/instance-identity.md), [objects](docs/quantum-algebraic/objects.md), [speed prior](docs/quantum-algebraic/speed.md), [Rust pillar](docs/quantum-algebraic/rust-pillar.md), [reference and proof records](qalc/README.md) |
 

@@ -131,8 +131,10 @@ closures, and `bb_halts.tsv` eight halters with exact normal-form sizes, from
 two seeds.
 
 `lake build Certs BusyBeaver` checks all 415 exclusions, the eight halting
-certificates, and their wire identities; the Lean development has no sorries
-or mathlib, and its axioms are `propext` and `Quot.sound`.
+certificates, and their wire identities; `lake build` also checks the
+self-interpreter proofs (`Blc/Selfint165.lean`, `Blc/SelfintProof.lean`). The
+Lean development has no sorries or mathlib, and its axioms are `propext` and
+`Quot.sound`.
 `scripts/bb-regen.sh` audits the BB registry's axioms, refreshes the
 frontier, and recomputes the exact bounds. A fresh census 4..40 is
 bit-identical to every canonical row. Both release suites pass: 368 tests
@@ -140,25 +142,35 @@ with all features (three opt-in tests ignored) and 328 with default features.
 
 ### Self-interpreter and universal machine
 
-- **The 168** (Sean Palmer's `int.lam`, one let-float of Tromp's 170) has
-  nothing below it in any searched space: exact let structure to four cuts,
-  βη component to +24 and contextual moves to +18, parametric and contextual
-  slot searches, joint two-hole searches, a module lower bound whose unique
-  per-module minima sum to exactly 168, and over a hundred measured protocol
-  changes (`classical/self-interpreter/interpreter.md`). The module bound is
-  conditional on its grammar; a smaller interpreter must fuse control across
-  modules, share work, change the capture layout (worth at most 8 bits), or
-  entangle the knot with the body. Unsearched: the dispatch handler without a
-  direct `cont` at 36–41 bits.
+- **The 165** (`classical/self-interpreter/interpreter.md`,
+  `data/self-interpreter/machines/int165.lam`), Codex's design: Palmer's 168
+  with a reader that computes the skip `list list list` once on the whole
+  stream, where it is right for both dispatch arms, and lets the Scott list
+  hand `list1` to the variable arm, which becomes `cont` itself (L 17, A 25,
+  X 29). Lean proves it, and the 168, correct for every closed program as a
+  β-reduction (`selfint_contract165`, `selfint_contract`). Nothing below 165
+  in its neighbourhood: let structure to three cuts (unique minimum), βη
+  component to +20 (2,183,051 terms) and contextual to +16, every reader slot
+  singly and handler × skip jointly through 164-bit interpreters (32,366,372
+  pairs, no survivor, 4,052,176 capped), whole APP ≤ 34 bits, and the 168's
+  near misses rebuilt on it (≥ 166; `merges.py`). The 168's module bound
+  (minima summing to 168) is conditional on opaque modules, the clause the 165
+  breaks; it still bounds the NEXT region the two share. Unconditionally,
+  every interpreter has head normal form `λc s. c A B` or `λc s. s A⃗` and a
+  duplicated binder, and a β-normal correct interpreter exists, so no knot is
+  forced; a proof at 165 bits needs a decomposition theorem that does not yet
+  exist.
 - **The universal machine** (`classical/self-interpreter/universal.md`):
-  Tromp's 178 (non-strict) and 190 (strict) stand. Every wiring around the
-  168's parser body gives no non-strict machine below 178 (four 178s tie, one
-  new) and no strict one below 185, conditional on 3,961 and 2,375,084 capped
-  contexts respectively. A 179-bit alternating parser and a 180-bit
-  partially-applied-parser machine are correct; joint U-specific searches
+  Tromp's wirings around the 165's body give 175 (non-strict) and 187
+  (strict), against 178 and 190 around the 168's. Wirings around the new body
+  give no non-strict machine below 175 (14,856,126 contexts, 68,017 capped,
+  16,144 of those certified divergent); around the old body no non-strict
+  machine below 178 and no strict one below 185, conditional on 3,961 and
+  2,375,084 capped contexts. Joint U-specific searches around the old body
   screened 2,207,444,203 assignments below 178 with no survivor and 1,462,818
-  caps (`data/self-interpreter/universal.json`). Unsearched: the strict
-  contexts of 39..43 bits (about 31 billion).
+  caps (`data/self-interpreter/universal.json`). The partially applied parser
+  is no longer a universal continuation with the 165's reader. Unsearched: the
+  strict contexts of 39..43 bits around either body.
 
 ### AIT golf
 
@@ -229,7 +241,13 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
 8. **Discrete Solomonoff induction:** measure Church bit-list decode coverage
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
-9. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
+9. **The self-interpreter below 165** (`classical/self-interpreter/interpreter.md`
+   §7): readers not of the `list H S` shape, knots entangled with the reader,
+   and the capped fills of the reader searches. Look for another shared
+   computation of the kind the reader is, by reasoning first; an unconditional
+   lower bound needs a decomposition theorem. Upstreaming the 165, 175 and 187
+   to tromp/AIT is a9's call (`contrib/PR_KIT.md`).
+10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the
    open global-allocator decision) would remove most of malloc/free and the
    thread-local accounting from the lazy machine's hot path.
@@ -307,8 +325,10 @@ weight-30 slice, so pruning must reduce mid-ladder states.
 agree at the complete effect-tree level through 24 bits (`blam q selfint 24`:
 19,014 programs verified, 34 skipped as unresolved, 0 trace or pure-NF
 mismatches; witness45 and the poisoned-seed canary pass), and Lean pins the
-wire identities and quote linearity; the bisimulation obligations are open
-(`quantum/bisimulation.md`). The ≤24 sweep takes 1.5 s wall and 18 CPU-seconds
+wire identities and quote linearity and proves the pure-fragment obligations
+L1 and L2; the quantum obligations L3, L4 and B1–B5 are open
+(`quantum/bisimulation.md`). The 165 would give a 171-bit `intL165 I`, not yet
+checked against the qBLC contract. The ≤24 sweep takes 1.5 s wall and 18 CPU-seconds
 on the M5 Max.
 
 `blam q census --cond-k K` implements the conditional family `G_k`, but no
@@ -327,7 +347,9 @@ designated-output convention, derive explicit comparison constants with
    counterpart is measured, and `quantum::scalar::speed_units` is the shared
    rounding.
 4. Complete the complement sweep at sizes 52 and 53.
-5. Continue the odd-sector pruning program (α-normalize `BindId`, stronger
+5. Check the 171-bit `intL165 I` against the qBLC self-interpretation contract
+   (`blam q selfint`).
+6. Continue the odd-sector pruning program (α-normalize `BindId`, stronger
    ε/canonical-port quotienting, a simulation-preorder antichain, the
    component-scoped post-fixpoint with a trusted checker, then the ladder to
    44) and the bisimulation proof. CNOT belongs to the separate Pauli-string
