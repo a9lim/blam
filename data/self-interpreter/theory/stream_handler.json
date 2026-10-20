@@ -1,0 +1,26 @@
+{
+  "search_performed": false,
+  "variants": [
+    {
+      "name": "int206_stream_handler",
+      "bits": 206,
+      "battery": {
+        "ok": 667,
+        "skipped": 1,
+        "failures": []
+      },
+      "divergent_source_suffix": true
+    },
+    {
+      "name": "int196_stream_handler",
+      "bits": 196,
+      "battery": {
+        "ok": 667,
+        "skipped": 1,
+        "failures": []
+      },
+      "divergent_source_suffix": true
+    }
+  ],
+  "elapsed_seconds": 3.52
+}

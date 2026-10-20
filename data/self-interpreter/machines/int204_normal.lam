@@ -1,1 +1,15 @@
-\a\b.b (\c.c (\d\e.e e) c) (\d\e\f.f (\g.g (\h\i\j.j (\k.h (\l.k (e (\m\n.l (\o\p.o n (p m)))) (h (\m.e (\n.l n (m n))))))) (\h.e) (d d)) (f f f)) a b
+-- Beta-normal entry gate; the first K activates the shared parser.
+\cont\list.
+  list (\bit0.bit0 (\unused\x.x x) bit0)
+    (\x\cont\list.
+      list
+        (\bit0.bit0
+          (\intL\unused\r.r
+            (\bit1.intL
+              (\exp.bit1
+                (cont (\args\arg.exp (\zx\zy.zx arg (zy args))))
+                (intL (\exp2.cont (\args.exp args (exp2 args)))))))
+          (\unused.cont)
+          (x x))
+        (list list list))
+    cont list

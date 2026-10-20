@@ -352,6 +352,112 @@ closures do not satisfy this restriction: evaluation can return an arbitrary
 runtime argument. Enforcing such a domain therefore requires a changed
 value representation and a beta-exact root decoder.
 
+## Recursion entered through Scott handlers
+
+Two explicit constructions move recursive entry to the input stream's
+Scott eliminator. The direct form costs 206 bits; sharing the self-application
+inside its generator gives 196. Both have handwritten correctness derivations
+and pass the bounded battery and divergent-source suffix probe. Their
+canonical sources are `data/self-interpreter/machines/int196_stream_handler`
+and `int206_stream_handler`, each with `.lam` and `.blc` encodings. The
+reproducer is `tools/self-interpreter/theory/stream_handler.py`, and current
+results are in `data/self-interpreter/theory/stream_handler.json` and
+`docs/STATUS.md`.
+
+### Equations
+
+
+Use the current semantic constructors:
+
+```
+A(e)   = lambda env arg. e (lambda x y. x arg (y env))
+B(e,f) = lambda env. e env (f env).
+```
+
+Define a generator whose two final inputs are an already-exposed bit and tail:
+
+```
+H = lambda h c b r.
+      b
+        (r (lambda d s.
+          s (h h (lambda e.
+            d (c A(e))
+              (lambda t. t (h h (lambda f. c B(e,f))))))))
+        (c r (r r r)).
+
+E = (lambda h c s. s (h h c)) H.
+```
+
+The direct source is precisely this term. The shared source replaces the body
+of `lambda h` in `H` by a let `p = h h`, then uses `p` at both recursive entry
+sites. That ordinary beta expansion reduces the wire size by 10 bits.
+
+For the argument, write
+
+```
+P_c = lambda s. s (H H c).
+```
+
+Then unfolding the generator on a Scott cell gives
+
+```
+P_c (cons b r)
+  ->* b
+        (r (lambda d.
+          P_(lambda e. d (c A(e)) P_(lambda f. c B(e,f)))))
+        (c r (r r r)).
+```
+
+This is the ordinary 168-bit parser recurrence, with the Scott elimination
+performed at the call site:
+
+* A variable has `b = F`. Its closure is the raw unary tail `r`, and
+  `r r r` reduces to the remainder after the variable's terminating zero.
+* A constructor has `b = K`. Reading `r` exposes its second tag `d` and the
+  first subterm stream. That subterm is parsed with the displayed
+  continuation.
+* For `d = K`, the continuation returns `A(e)` and the first parse's remainder.
+* For `d = F`, it parses the second subterm at that remainder, then returns
+  `B(e,f)` and the second remainder.
+
+The existing closure denotation induction therefore applies unchanged.
+This is a handwritten correctness derivation and a finite battery result;
+these two terms do not have separate Lean proofs.
+
+### Cost and limitation
+
+The input supplies the next tag and tail, but it does not supply the recursive
+handler. The control cycle is `h h`. A recursive parse now needs the adapter
+
+```
+lambda stream. stream (h h continuation)
+```
+
+at every boundary where the old parser could be applied directly to the
+continuation. Sharing `h h` helps, but those adapters remain. This route
+changes the placement of recursion rather than removing its control cost,
+and neither term improves the 165-bit record.
+
+The elementary cross-application identity explains why unary skipping is
+cheaper:
+
+```
+(cons b r) (cons d t) ->* b d t r
+s s ->* b b r r.
+```
+
+On `b = F`, the second equation continues as `r r`; on `b = K`, it stops at
+`K r`. This loop needs no evolving constructor continuation. A general
+parser must carry that continuation as well as the handler that acts on the
+next stream.
+
+Hoisting the skip through this distributed protocol does not recover the
+165's saving. The root adapter and both recursive adapters each need a
+whole-stream skip. The directly derived formula costs 220 bits; no search
+is needed to see that this arrangement is larger. The surviving design
+question is whether an adapter can perform a required semantic operation
+while carrying its control.
+
 ## Reproduction
 
 `python tools/self-interpreter/theory/erased_skip.py --battery` checks the

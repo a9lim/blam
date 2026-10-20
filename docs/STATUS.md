@@ -203,7 +203,12 @@ with all features (three opt-in tests ignored) and 328 with default features.
   force canonical closed internal values, sharpening the cell/APP collision.
   A representation that erases β distinctions cannot have an exact decoder
   using only that representation; closed two-sided β-inverse coercions are
-  necessarily identities. These are protocol-specific handwritten proofs.
+  necessarily identities. A Scott-handler recursion arrangement costs
+  196 bits with shared self-application, 206 without; both pass the
+  667/1/0 battery and Ω suffix check in 3.5 seconds combined
+  (`data/self-interpreter/theory/stream_handler.json`). The adapters still
+  cost more than the 165's parser interface. These are protocol-specific
+  handwritten proofs.
 - **The universal machine** (`classical/self-interpreter/universal.md`):
   Tromp's wirings around the 165's body give 175 (non-strict) and 187
   (strict), against 178 and 190 around the 168's. Wirings around the new body
