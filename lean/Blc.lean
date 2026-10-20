@@ -14,3 +14,4 @@ import Blc.Rigid
 import Blc.NormalOrder
 import Blc.Wire
 import Blc.Selfint
+import Blc.SelfintProof

@@ -14,10 +14,15 @@ theorem RatchetCert.noNormalForm :
 theorem argKill : headSteps k t = some s → headStep s = none →
     hnfArgB a s = true → ¬ HasNormalForm a →
     ¬ HasNormalForm t                                    -- propext, Quot.sound
+theorem selfint_contract : Closed M →
+    Betas (intL C (streamOf (blcCode M) N)) (C (λ M) N)  -- propext, Quot.sound
+theorem parserStatement : ParserStatement               -- propext, Quot.sound
 ```
 
 The 32-bit term that the reference busy-beaver ledger excludes by hand has no
-normal form under arbitrary β-reduction. The **general bridge** holds for
+normal form under arbitrary β-reduction. Palmer's 168-bit `intL` (pinned to its
+wire by `wire_intL`) is a self-interpreter: for every closed `M` and any terms
+`C`, `N`, `intL C (⌜M⌝ ++ N)` β-reduces to `C (λz. M) N`. The **general bridge** holds for
 every term, so any head-divergence certificate concludes no-normal-form with
 no side conditions. The **class assemblies** turn certificate *data* into that
 conclusion mechanically, and the **rigid-head argument bridge** lifts a spine
@@ -156,8 +161,23 @@ qBLC self-interpretation:
 - `Blc/Selfint.lean` — the pure fragment of `docs/quantum/bisimulation.md`:
   proves `intL`'s wire identity, `|E_q| = |intL I| = 174`, and the quote-size
   identity `|stream(M,R)| = 14·|M| + zeros(M) + |R|`; states the translation
-  contract `Implements` and the parser obligations as named `Prop`s, which
-  remain open.
+  contract `Implements` and the parser obligations (`ParserStatement`, L1, L2)
+  as named `Prop`s.
+- `Blc/SelfintProof.lean` — proves them, and the classical contract.
+  `parse` is one induction on the source term (open or closed): the stream
+  applied to the parser's handler spine-reduces (head reduction through
+  application states only) to `K (λ.B) U` for every continuation `K`, where
+  `λ.B` denotes `M` under β (`Den`: any cons' environment, under any number of
+  binders, yields `M` instantiated) and implements it under head reduction
+  (`Implements`), and the residual `U` reduces to the tail. The VAR engine is
+  induction on the unary selector (`engine`), skipvar is `l l l → rest`
+  (`skip`), and sixteen machine runs of the 168's control are kernel replays
+  of head-step chains on placeholder terms, instantiated because head steps
+  are stable under substitution. Corollaries: `selfint_contract` (β-reduction
+  for closed `M`, any `C`, `N`), `selfint_open`, `l1_beta`, `parserStatement`,
+  `l1Statement`, `l2Statement`, and `isSelfInterpreter_intL` with
+  `not_selfintSizeBound_169` (the upper-bound half of optimality; the lower
+  bound `SelfintSizeBound 168` is stated, open).
 
 Generated:
 

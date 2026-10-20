@@ -11,8 +11,10 @@ interpreter) and |E_q| = |intL I| = 174 — and the quote-size identity
 measured quote linearity, now kernel-checked.
 
 STATED here as named Props (round-4-ratified statements, thread
-`qblc-selfint`, job cx-20260804-155021-14ee; obligations open, per
-SPEC-BISIM §7): the extensional translation contract `Implements` —
+`qblc-selfint`, job cx-20260804-155021-14ee) and PROVED in
+`Blc/SelfintProof.lean` (`parserStatement`, `l1Statement`,
+`l2Statement`, beside the β-contract `selfint_contract`): the
+extensional translation contract `Implements` —
 P[·] is a CLASS of implementing closures, not a syntax function
 [Codex r3], with the dead-suffix/seed non-inspection captured
 extensionally by the ∀-tail quantification in the VAR clause — and
@@ -157,8 +159,8 @@ theorem quote_length (p : Term) :
   simpa [quote, h] using this
 
 -- ---------------------------------------------------------------------------
--- The translation contract and the L1/L2 statements (v0 drafts —
--- obligations, not theorems; SPEC-BISIM §7).
+-- The translation contract and the L1/L2 statements (SPEC-BISIM §7;
+-- proved in Blc/SelfintProof.lean).
 
 /-- `ρ_R(Δ̂)` (SPEC-BISIM §3): environments as cons'-lists, list head =
 innermost binder (wire index 1, our `var 0`). -/
@@ -202,19 +204,19 @@ def ParserResult (M R Q U : Term) : Prop :=
 
 /-- The induction motor: every finite term's wire parses — no
 closedness hypothesis; environment adequacy lives in `Implements`.
-Open obligation (SPEC-BISIM §7, L1's general form). -/
+Proved: `parserStatement` (Blc/SelfintProof.lean). -/
 def ParserStatement : Prop :=
   ∀ (M R : Term), ∃ Q U, ParserResult M R Q U
 
 /-- L1 (parser correctness — SPEC-BISIM §2): the closed public
-corollary of `ParserStatement`. Open obligation. -/
+corollary of `ParserStatement`. Proved: `l1Statement`. -/
 def L1Statement : Prop :=
   ∀ (M : Term), FreeUnder 0 M → ∀ (R : Term), ∃ Q U, ParserResult M R Q U
 
 /-- L2 (selector / formal poisoned-seed — SPEC-BISIM §3): the VAR
-engine, proved separately by induction on the unary selector, then
-used to discharge C-VAR inside `ParserStatement`'s induction. Open
-obligation. -/
+engine as a parse. Proved: `l2Statement`; the engine itself is
+`engine` (induction on the unary selector), which discharges C-VAR
+inside `parse`'s induction (Blc/SelfintProof.lean). -/
 def L2Statement : Prop :=
   ∀ (i : Nat) (R : Term), ∃ Q U, ParserResult (.var i) R Q U
 
