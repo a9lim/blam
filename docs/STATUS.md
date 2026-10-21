@@ -160,8 +160,9 @@ with all features (three opt-in tests ignored) and 328 with default features.
   (minima summing to 168) is conditional on opaque modules, the clause the 165
   breaks; it still bounds the NEXT region the two share. The handwritten
   reader bound now permits arbitrary handlers: independent rigid laws force
-  `|H| ≥ 27`, so `s H S` still costs at least 43 and the unchanged surrounding
-  interpreter at least 165 (`classical/self-interpreter/handler-bound.md`).
+  `|H| ≥ 27`, so `s H S` costs at least 43 and the unchanged surrounding
+  interpreter at least 165 within that independent rigid interface
+  (`classical/self-interpreter/handler-bound.md`).
   The strengthened handwritten theorem also permits the actual stream,
   tag, selector, and suffix correlations, including whole-stream access
   inside `H`, with the skip fixed to `s s s` and other ambient parameters
@@ -176,46 +177,23 @@ with all features (three opt-in tests ignored) and 328 with default features.
   showing why same-handler replacement by `s` fails. The common
   inert-operand replacement principle is kernel-checked in `SelfintInert`;
   the per-operand equation and absence checks are handwritten.
-  A separate handwritten
-  theorem proves that handlers for `T=s` and `T=s s` need at least two
-  explicit lambdas, even with whole-stream access and beta redexes.
-  The strengthened theorem rules out every beta-normal handler with at
-  most two lambdas for either operand, regardless of size. Explicit
-  beta-normal three-lambda handlers cost 49 and 45 bits respectively;
-  `handler_bound.py` checks their zero laws and fixed variable instances.
-  Exactly three leading lambdas are excluded at the improving `T=s`
-  budget. For `T=s s`, affine reductions preserve the 30-bit budget;
-  the reviewed nonlinear-redex classification now also excludes the
-  five-application compressed cases, including proper argument contexts.
-  Every remaining beta-normal four-application shape is also excluded,
-  completing the handwritten `T=s s` threshold: every successful
-  handler costs at least 31 bits, and its reader at least 43. This
-  includes the full ambient frame, whole-stream access, and arbitrary
-  source redexes. The proof extends the safe-data argument to affine
-  callbacks, then separates affine input-edge accounting from the
-  case that can copy vacuous closures. At the improving `T=s`, `|H|≤34`
-  budget, every successful handler has at least three source lambdas,
-  including before beta-normalization. A minimum successful handler has
-  no affine source redex and exactly four or five applications: the
-  three-application normal cases and all nonlinear compression through
-  four applications are excluded. A four-application minimum must be
-  beta-normal, use the whole stream, and have at most one leading lambda:
-  all normal four-application cases without `s`, and all with two leading
-  lambdas, are excluded. With one leading lambda, only three or four
-  source lambdas remain; with no leading lambda, a candidate must be
-  affine and have at least four source lambdas. Without free stream access, every
-  affine handler fails the variable law once `m>A(H)+2L(H)+5`; a
-  separate live-binder-antichain obstruction also allows nonaffine redexes.
-  These exclude all five-application nonlinear compression without free
-  `s`. An index-tax classification excludes the remaining compressed
-  four-lambda cases, including proper copied-argument contexts. The only
-  remaining compressed allocation is `u,u,j,c,s,v` with three source
-  lambdas and `X≤6`, where `u` is the contracted nonlinear binder and
-  `v` belongs to one affine source binder. Every remaining normal
-  five-application candidate is stream-headed with no leading lambda:
-  either three lambdas with `X≤6`, or four with `X≤4`. The exclusions use
-  closed-helper classifications, guarded functional-index arguments,
-  and the zero-branch leaf budget. These remaining shapes are open
+  The complete handwritten cheap-reader bounds are `|H|≥35` for `T=s`
+  and `|H|≥31` for `T=s s`. Together with `|H|≥27` for `T=s s s`,
+  they make 43 bits the exact minimum across these three operand families.
+  With the other 122 bits fixed, 165 is minimal within these three operand
+  families under the stated independent rigid reader laws. The bounds permit
+  every ambient variable, arbitrary whole-stream access, and source beta
+  redexes. The proof excludes every source-compression case, then all
+  remaining normal shapes. Its continuation-ancestry argument counts
+  lambda bodies containing `c`: the original external application edges
+  must consume enough such lambdas, while small index budgets restrict
+  their number even under binary copying. The proof has independent
+  reviews but no Lean formalization. Both cheap operands require at least
+  two explicit source lambdas, or three in beta-normal code; explicit
+  three-lambda handlers cost 49 and 45 bits, with fixed equations checked
+  by `handler_bound.py`. Bare operands `j,c`, lambda-containing operands,
+  other reader heads, actual NEXT/parser behavior, and arbitrary complete
+  interpreters remain outside the bound
   (`classical/self-interpreter/cheap-tail-bound.md`,
   `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP

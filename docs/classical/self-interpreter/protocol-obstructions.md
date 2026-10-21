@@ -233,10 +233,12 @@ The per-operand domination proofs and the complete classification were
 independently reviewed. They neither identify the
 operands as beta-equal nor prove a minimum reader size. They reduce the
 application-only operand classification through
-ten bits to the five displayed families. The `T=s`, `T=j`, and `T=c`
-families remain open at the budgets needed for a reader improvement.
-The separate proof in `cheap-tail-bound.md` excludes every productive-thunk
-`T = s s` handler below 31 bits, keeping that reader at least 43 bits.
+ten bits to the five displayed families. The `T=j` and `T=c` families
+remain open at the budgets needed for a reader improvement.
+The separate proof in `cheap-tail-bound.md` excludes every `T=s` handler
+below 35 bits and every productive-thunk `T=s s` handler below 31 bits.
+With the standard-skip bound, the existing 43-bit reader is minimal
+across the other three operand families.
 No conclusion about arbitrary sub-165 interpreters follows.
 
 ## The raw NEXT diagonal still fails for every skip function

@@ -394,7 +394,8 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   syntax, normality, dispatch shape, or absence of common arguments.
   `handler-bound.md` gives the complete small-budget case proof. The skip
   costs at least 10 and the two applications with `s` 6, so the reader costs
-  at least 43; with the other 122 bits unchanged the minimum is 165.
+  at least 43; with the other 122 bits unchanged the minimum is 165
+  within that independent rigid interface.
   The stronger theorem in that note retains the 27-bit minimum under
   actual stream/tag/selector/suffix correlations, including whole-stream
   access inside `H`, for the fixed skip `s s s`. Other ambient parameters
@@ -414,33 +415,22 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   `s,j,c,s s,(s s) s`; bare `j,c` remain substantive separate cases.
   `Blc/SelfintInert.lean` kernel-checks the common replacement principle;
   the specific operand equations and absence checks are handwritten.
-  `cheap-tail-bound.md` proves that both families require at least two
-  explicit lambdas in `H`, even with arbitrary whole-stream use and beta
-  redexes. Every beta-normal handler needs at least three lambdas,
-  regardless of size; explicit three-lambda constructions show this
-  count is sharp. Exactly three leading lambdas are excluded at the
-  improving `T=s` budget.
-  For `T=s s`, every possible 30-bit improvement has a beta-normal
-  minimum representative: affine contractions preserve its budget, and
-  the remaining nonlinear source-redex cases are excluded. Its last
-  possible normal shapes, with at least three lambdas and exactly four
-  applications, are also excluded. Thus every successful `T=s s`
-  handler costs at least 31 bits, keeping the reader at least 43.
-  At `T=s`, `|H|≤34`, every successful handler has at least three
-  source lambdas even before normalization. A minimum successful handler
-  has no affine source redex and exactly four or five applications.
-  At four applications it must be beta-normal, use `s`, and have at most
-  one leading lambda; the no-stream and two-leading-lambda cases are excluded.
-  With one leading lambda, only three or four source lambdas remain.
-  With no leading lambda, it must be affine and have at least four.
-  Without free `s`, every affine handler fails its variable law, and a
-  live-binder-antichain theorem also excludes nonaffine handlers. These
-  close every five-application compressed case without free `s`.
-  The remaining four-lambda compressed cases are excluded by the index
-  budget, leaving only three lambdas, `X≤6`, and leaves `u,u,j,c,s,v`.
-  Every remaining normal five-application candidate is stream-headed with
-  no leading lambda, with either three source lambdas and `X≤6` or four
-  and `X≤4`. Those normal shapes stay open.
+  `cheap-tail-bound.md` gives the complete handwritten exclusions:
+  every handler costs at least 35 bits for `T=s`, or 31 bits for `T=s s`.
+  Both readers therefore cost at least 43 bits. With the standard-skip
+  bound, 43 is the exact minimum across these three operand families.
+  With the surrounding 122 bits fixed, 165 is minimal within these three
+  operand families under the stated independent rigid reader laws.
+  The proof allows arbitrary source beta redexes and whole-stream access.
+  It excludes affine and nonlinear source-compression cases before
+  exhausting the normal shapes. In particular, the index tax limits how
+  many source lambdas can contain the surviving continuation `c`, while
+  the original external applications require distinct such contractions.
+  This remains a handwritten, independently reviewed proof rather than
+  a Lean theorem. Both cheap operands require at least two source lambdas,
+  or three in beta-normal code; explicit three-lambda constructions show
+  the normal lambda count is sharp. The bare `j,c` families, operands
+  containing lambdas, and other reader architectures remain open.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,
   `Z R R = R next` forces the normal form `λu v. u next` (15) or
