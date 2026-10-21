@@ -795,11 +795,12 @@ halt-rounding slack equals the number of inexact divisions (96 units at
 
 ## Repository and release
 
-- The crate is 3.0.0: one `blam` binary over a `blc` substrate, the
+- The crate is 3.0.1: one `blam` binary over a `blc` substrate, the
   classical, quantum, and qALC pillars, and lab-gated research instruments.
   3.0 is a major release because `qalc`'s public types changed and a few
   internal helpers became crate-private; the GitHub release v3.0.0 lists
-  every break.
+  every break. 3.0.1 changes no interface: it republishes the README with
+  the 162-bit self-interpreter and the busy-beaver values credited to Tromp.
 - Checkpoints are `blamckpt v5`, and memo files use the shared tag-first
   codec; older cache files are invalid. Nothing in `data/` uses either.
 - CI runs on pushes to `main` and pull requests into it, not on `dev`. It

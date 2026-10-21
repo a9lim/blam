@@ -16,9 +16,9 @@ instrumental, so they can be written out in full when the PRs go up.
     same day, and on 2026-10-21 the 162's reader in the same six programs
     (int.lam, uni.lam, int4, ko2kp, nf, pairup_Kp) plus a comment fix in
     ko2kp. The branch now changes 40 programs and saves 1,159 bits.
-- blam 3.0.0 is released: point links at the `v3.0.0` tag where the content
-  predates it, and at a `dev` commit permalink for the 165's record, the Lean
-  self-interpreter proofs, and the golf record (`docs/classical/golf.md`).
+- blam 3.0.1 is released: point links at the `v3.0.1` tag, which carries the
+  162's record, the Lean self-interpreter proofs, and the golf record
+  (`docs/classical/golf.md`).
 - The fork's `master` is unchanged: upstream plus `uni.rs`. blam's `ref/AIT`
   pins it, and blam's CI checks that it only *adds* files over upstream.
   - `golf` modifies upstream files, so it must not land on the fork's master.
