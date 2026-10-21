@@ -1504,8 +1504,78 @@ the required two-argument `c` spine after all three external inputs.
 These cases exhaust the two-lambda source shapes. Therefore every
 successful `T=s` handler of size at most 34 has **at least three
 source lambdas, even before beta-normalization**. Its size identity
-then forces **at most five applications**. This does not yet remove
-nonlinear redexes from handlers with three or more source lambdas.
+then forces **at most five applications**.
+
+### Four-application nonlinear compression
+
+Choose a successful handler minimal in `(wire size, AST node count)`.
+It has no affine source redex by the preceding size argument. Suppose
+it has a nonlinear source redex and at most four applications.
+At three applications the mandatory `j,c` and two occurrences of the
+redex binder exhaust the four leaves. Contracting that binder leaves
+only vacuous source lambdas, which cannot satisfy both laws. Fewer
+applications cannot contain all four mandatory leaves.
+
+At four applications there is only one further leaf. Unless it is
+the occurrence of another live source binder, contraction again
+leaves only vacuous binders. The only case to consider therefore
+has exactly the leaves
+
+```
+u, u, j, c, v,
+```
+
+where `u` is bound by the chosen nonlinear redex and `v` is the
+sole occurrence of a distinct live binder. In particular `s` is
+absent. If the redex argument does not contain both the binder of
+`v` and its occurrence, contraction leaves at most one live source
+binder. All other source binders are vacuous. Such source code has
+a beta-normal form: a contraction of its only live binder leaves
+all-vacuous code, while vacuous contractions strictly remove syntax.
+Its normal form still has at most one live binder. The no-`s`,
+one-live-binder obstruction proved in the following normal-handler
+section excludes this normal form, regardless of its wire size.
+
+Otherwise let `D` be the entire copied argument. It has one live
+binder, used once, and every other binder inside it is vacuous.
+Its only possible free variables are `j,c`. Since every binder
+inside `D` is affine and the minimum handler has no affine source
+redex, `D` is source-beta-normal.
+
+Contract the `u` redex. There are now exactly two copies of `D`,
+and all remaining source binders are affine. Normalize this source
+term before supplying any reader inputs. Affine beta reduction
+terminates and cannot increase the number of live binders. If one
+of the two live binders contracts, loses its sole occurrence, or is
+erased with a surrounding subtree, the resulting normal form has
+at most one live binder and is excluded as above.
+
+Suppose both live binders survive. No live contraction occurred;
+every source contraction was vacuous. Mark each surviving live
+binder together with its body as an island. Initially the two
+islands are disjoint copies inside the two occurrences of `D`.
+Vacuous contractions only remove an argument and expose an already
+present body: they cannot insert either island inside the other.
+The source-normality of `D` also prevents an internal redex from
+altering an island. Removing a vacuous prefix of a copy does not
+change the island rooted at its live binder. The two surviving
+islands therefore remain disjoint in the full source normal form.
+
+A beta-normal term without `s` has a rigid head or a head variable
+bound by one of its leading lambdas. A rigid head cannot give the
+zero output `R j`. A bound head would make its binder live, so
+that binder must be one of the two surviving islands. Being on the
+leading lambda chain, its body contains the rest of the normal
+term, including the other surviving live binder, unless that
+other binder is earlier on the leading chain. In the latter case
+the reverse containment holds. Either case nests the two islands,
+contradicting their disjointness. If `D` was originally headed by
+rigid `j/c` instead, that rigid head already guards its live binder
+and cannot provide a leading bound head.
+
+Thus the normal form fails in every case. A minimum successful
+whole-stream handler with four applications must be beta-normal;
+only five-application nonlinear compression remains at this budget.
 
 ## Normal whole-stream handlers with at most three applications
 
@@ -1723,6 +1793,57 @@ results, the same holds for a minimum successful handler: at
 `j,c`, so contracting it leaves only vacuous source binders.
 Affine redexes are already absent in such a minimum.
 
+## Four applications with four lambdas and two leading lambdas
+
+One further normal `T=s` shape is excluded at 34 bits:
+
+```
+A=4,             L=4,             H=λb r.B.
+```
+
+The budget gives `X≤8`. Mandatory `j,c` beneath the leading
+pair contribute seven index units. A free `s` would contribute
+two more and cannot occur. A body headed by `r` would retain
+the final zero input `P`, so its head must be `b`. That head's
+index one spends the remaining unit.
+
+Consequently `j,c` lie outside both inner lambdas, every inner
+bound occurrence has index zero, and every occurrence of outer
+`r` lies outside the inner lambdas. Of the five source leaves,
+three are already `b,j,c`. The two inner lambdas therefore have
+exactly the same closed-block possibilities as in the earlier
+one-leading-lambda classification:
+
+```
+I,I;       F plus one exterior r;       J=λa.a I;       G=λa d.d d.
+```
+
+Substitute the variable inputs `b=F,r=V=Pₘ₋₁`, leaving only
+the final `S=Pₘ` pending. The `I/F` cases belong to the base
+safe algebra. A functional result contains no `c`, and a rigid
+result retains final `S`, so both fail.
+
+The `J/G` cases use both remaining leaves and have no exterior
+`r`. For `J`, the internal algebra contains only `F,I,J` and
+rigid neutrals. The rules `J U→U I`, `J J→I`, `J F→I`,
+`J I→I`, `F J→I`, and `I J→J` close it. Again, its
+functional values contain no `c`, and its rigid values retain
+final `S`.
+
+For unique `G`, first normalize its context with `G` opaque.
+The `F/I` data cannot copy it. If `G` has an internal argument,
+its vacuous outer lambda discards that argument and exposes the
+unique `Δ=λd.d d`. An internal argument of `Δ` can contain
+neither `G` nor another source lambda: it normalizes to `F`,
+`I`, or a rigid neutral. The first two give `Δ F→I` and
+`Δ I→I`; the last preserves its rigid head and final `S`.
+If `Δ` is returned bare, the final input gives `S S→*K N`,
+which contains no `c`. If `G` is returned bare instead, its
+single final input leaves `Δ`, also without `c`. These cases
+exhaust the remaining block.
+
+Thus `(A,L,k)=(4,4,2)` cannot satisfy the whole-stream reader laws.
+
 ## Established bound and remaining scope
 
 Combining the compression lemmas, the beta-normal three-lambda floor,
@@ -1737,9 +1858,10 @@ Thus the self-application operand cannot improve the reader within
 this joint-handler interface. The whole-stream operand `T=s` at
 `|H|≤34` remains open. At that budget a minimum successful handler
 would have no affine source redex, at least three source lambdas,
-and exactly four or five applications. The three-leading-lambda
-special case is also excluded, but nonlinear compression at three
-or more source lambdas and the other normal shapes remain open.
+and exactly four or five applications. At four applications it
+must be beta-normal. The three-leading-lambda special case and
+the normal shape `(A,L,k)=(4,4,2)` are also excluded. The remaining
+normal shapes and five-application nonlinear compression are open.
 Neither the independence assumptions on the ambient continuations
 nor the specified reader interface have been removed. This is not
 a global optimality theorem for the 165-bit interpreter.

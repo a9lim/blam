@@ -197,8 +197,11 @@ with all features (three opt-in tests ignored) and 328 with default features.
   budget, every successful handler has at least three source lambdas,
   including before beta-normalization. A minimum successful handler has
   no affine source redex and exactly four or five applications: the
-  three-application normal cases and nonlinear compression at that
-  application count are excluded. The remaining `T=s` cases stay open
+  three-application normal cases and all nonlinear compression through
+  four applications are excluded. A four-application minimum must be
+  beta-normal; the normal `(A,L,k)=(4,4,2)` shape is also excluded,
+  where `k` counts leading lambdas. Other normal shapes and nonlinear
+  five-application compression remain open
   (`classical/self-interpreter/cheap-tail-bound.md`,
   `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
@@ -270,9 +273,21 @@ with all features (three opt-in tests ignored) and 328 with default features.
   The proof normalizes source terms with at most one nonlinear binder
   over a labelled infinite zero stream, then simulates the finite trace
   on a closed source `λⁿ.I` followed by `Ω` to contradict exact extraction.
-  Integrated `lake build Blc` passes all 34 jobs; a seventeen-theorem
+  A separately reviewed handwritten theorem proves that every exact
+  remainder extractor has some valid source `λⁿ.I`, with suffix `I`,
+  whose ordinary weak-head trace strictly increases interpreter-origin
+  lambda count. The proof shows that a constant-count infinite-zero
+  execution eventually recycles one flat code template without carrying
+  an advancing tail; a uniform label bound then contradicts finite-prefix
+  correctness. It gives neither an explicit `n` nor a bit-size bound,
+  and does not quantify over every successful trace.
+  `WeakHeadClock` kernel-checks the supporting bound on head contractions
+  interspersed with arbitrary beta reductions; the full growth theorem
+  remains handwritten.
+  Integrated `lake build Blc` passes all 35 jobs; a seventeen-theorem
   audit across `SelfintZero`, `SelfintProjections`, and `SelfintInert` uses only
-  `propext` and `Quot.sound`.
+  `propext` and `Quot.sound`, as does a separate four-theorem
+  `WeakHeadClock` audit.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
   `typed-normal.md`): the β-normal interpreter is 204 bits
   (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,

@@ -323,6 +323,14 @@ at its public stream binder. The corresponding wire floor is 55 bits.
 This prices that displayed head form, not the source that expands into it;
 STATUS records the construction's size and current checks.
 
+The independently reviewed handwritten theorem in `remainder.md` also
+forces strict interpreter-code growth on some ordinary weak-head trace
+of every exact remainder extractor, using a valid source `λⁿ.I` and
+suffix `I`. The proof bounds the labels accessible to a constant-count
+infinite-zero execution. `Blc/WeakHeadClock.lean` mechanizes its supporting
+head-clock argument; the growth theorem itself remains handwritten and
+gives no numerical size bound.
+
 **Duplication.** At least two syntactic binders of `E` occur at least twice.
 Lean proves that every term with at most one such binder weakly normalizes;
 the interpreter contract on Ω contradicts that conclusion. If `E = λc s.B`,
@@ -418,7 +426,9 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   At `T=s`, `|H|≤34`, every successful handler has at least three
   source lambdas even before normalization. A minimum successful handler
   has no affine source redex and exactly four or five applications.
-  The remaining shapes and nonlinear compression cases stay open.
+  At four applications it must be beta-normal; the `(A,L,k)=(4,4,2)`
+  normal shape is also excluded, with `k` the number of leading lambdas.
+  Other normal shapes and five-application nonlinear compression stay open.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,
   `Z R R = R next` forces the normal form `λu v. u next` (15) or

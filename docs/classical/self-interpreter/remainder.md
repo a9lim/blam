@@ -171,3 +171,299 @@ Its two public lower-bound theorems use only `propext` and `Quot.sound`,
 with no custom axioms or admitted proofs. This establishes a structural
 obstruction, not a sharp bit-length lower bound for remainder extraction
 or an additive lower bound for arbitrary self-interpreters.
+
+
+## Source code must grow on a head trace
+
+**Handwritten theorem.** Let `R` be closed and suppose
+
+```
+R (stream(M,N)) =β N
+```
+
+for every closed source `M` and every closed suffix `N`. Mark precisely the
+lambdas originally belonging to `R`, and propagate those marks through beta
+reduction. For some `n`, ordinary deterministic weak-head evaluation of
+
+```
+R (stream(λⁿ.I,I))
+```
+
+contains a contraction that strictly increases the number of marked
+lambdas. Weak-head evaluation here follows the global function spine and
+stops at an outer lambda or a rigid variable head. The theorem concerns this
+specific evaluation strategy; it does not assert growth on every successful
+beta trace.
+
+Codex's argument below has independent written review. The growth theorem
+is not mechanized. In particular, it is stronger than the preceding
+kernel-checked two-nonlinear-binder theorem: a nonlinear contraction can
+recycle code without increasing its count, as `Δ Δ → Δ Δ` demonstrates.
+There is no numerical bound on `n`, on the time of the growth step, or on
+an extractor's wire length.
+
+### Head contractions cannot continue after normalization
+
+Use the following head-clock fact. If the deterministic weak-head trace of
+`t` terminates after `h` contractions, every beta reduct `u` of `t` has
+weak-head length at most `h`. A global weak-head contraction decreases
+that length by exactly one.
+
+To prove the first assertion, write a nonterminal term as
+
+```
+(λx.B) A A₂ … Aₖ.
+```
+
+A beta contraction other than the displayed head contraction lies inside
+`B`, `A`, or one of the later arguments. Taking it first leaves the same
+head lambda and application. After one head contraction, the result is
+reachable from the original head reduct by contracting the finitely many
+residuals of that other contraction. Strong induction on `h`, with an inner
+induction on the length of an arbitrary beta trace, proves the assertion.
+The base case holds because beta reduction preserves an outer lambda or a
+rigid variable head. Consequently a weak-head-normalizing term cannot
+admit infinitely many global head contractions, even with arbitrary beta
+contractions between them.
+
+`Blc/WeakHeadClock.lean` mechanizes this supporting fact. Its
+`count_reduct` theorem proves monotonicity under arbitrary beta reduction,
+and `interleaved_bound` bounds any selected head contractions interspersed
+with unrestricted beta steps by the initial finite head clock. This does
+not mechanize the growth theorem's data-flow and finite-transient arguments.
+
+We will use both suffixes `Ω` and `I`. The former prevents the infinite-zero
+execution from terminating. The latter makes a finite-prefix execution
+weak-head normalizing and supplies the eventual contradiction.
+
+### Comparing the head trace with data normalization
+
+Use the extended constants `K,Zᵢ` and their data rules from the preceding
+proof, with every explicit lambda representing a marked program lambda.
+Start the extended weak-head execution at `R Z₀`.
+
+This execution cannot terminate. A closed extended weak-head answer is a
+program lambda, `K`, `K V`, or `Zᵢ`. Any finite computation to such an answer
+can be simulated on sufficiently long finite zero prefixes, where the
+answer becomes an actual outer lambda. Choose an even prefix length `2n`
+and tail `stream(I,Ω)`. The input is `stream(λⁿ.I,Ω)`. Correctness makes its
+result beta-join `Ω`, but a lambda cannot beta-join `Ω`: the latter's only
+beta reduct is itself, and beta reduction preserves an outer lambda.
+
+The data rules admit a finite full normalizer. Recursively normalize the
+bodies of program lambdas, treat those lambdas and free variables as opaque
+heads, and evaluate each application with the displayed finite table. Write
+`B(t)` for this full data normal form. These are only data contractions
+under a program lambda; no program contraction is performed there. The
+data rewrite system is orthogonal, so its normal form is unique and data
+reduction commutes with substitution up to this normal form. Data reduction
+never duplicates a program lambda or a variable occurrence.
+
+An infinite weak-head execution cannot consist eventually of data steps
+alone. The finite data normalizer supplies a trace to data normal form.
+Each data head rule is affine, so commuting an earlier non-head data step
+past it leaves at most one residual step. A finite trace to a head-normal
+form must eventually contract the persistent head redex. Move that
+contraction to the front and induct on the shortened finite trace. This
+proves termination of the deterministic data head strategy, without
+asserting that mere weak normalization would terminate an arbitrary
+reduction strategy.
+
+Now suppose, for contradiction, that the infinite-zero head execution
+never increases the program-lambda count. Its infinitely many program
+head contractions induce an auxiliary execution on full data normal forms.
+If an actual program step contracts a binder with `k` occurrences and an
+argument with `a` program lambdas, the count changes by
+
+```
+(k−1)a − 1.
+```
+
+In the data normal form, the corresponding binder and argument have
+`k′≤k` occurrences and `a′≤a` program lambdas. The corresponding global
+program head contraction still exists. Data normalization of its result
+is `B(u)`, where `u` is the actual reduct: normalize the body and argument,
+use stability of data reduction under substitution, then use uniqueness
+of the data normal form. If `(k−1)a≤1`, then `(k′−1)a′≤1` as well; when
+`k′=0` the new contraction is strictly decreasing. Subsequent data
+normalization can only decrease the count further. Actual data steps do
+not change `B(t)`.
+
+Thus the auxiliary execution has infinitely many global program head
+contractions and a nonincreasing program-lambda count. After a finite
+prefix that natural-number count is constant. Every subsequent program
+contraction has exactly
+
+```
+k=2,  a=1.
+```
+
+Every individual data step in this phase also preserves the count. In
+particular, no `K` or Scott projection can erase a program-bearing argument.
+
+### The finite transient in a constant-count phase
+
+Mark all program lambdas present at the start of this phase as old. A copy
+created by a subsequent program contraction is new. Every copied argument
+contains exactly one program lambda and is closed, because the contraction
+is on the global head of a closed term. Its sole lambda `D` is therefore
+closed when considered in isolation and has an application-only body. Call
+such a lambda flat. Its body is already in full data normal form.
+
+Every new lambda is consequently a closed flat template. While it survives,
+its body cannot change: an outside substitution does not affect a closed
+term, its body has no program lambda or data redex, and contracting its own
+binder consumes it. Only old lambdas can be nonflat or refer to an enclosing
+program binder. Each old head contractor is consumed once. Copying an old
+lambda produces new copies, so it does not replenish the old population.
+After finitely many further steps, no old lambda is ever a head contractor.
+
+Every closed data-normal value with exactly one program lambda has one of
+the forms
+
+```
+Kⁿ D,
+Kⁿ(D A₁ … Aₖ),  k≥1,
+```
+
+where `D` is closed and flat and all `Aᵢ` are closed and program-free.
+Here `Kⁿ V` means `n` nested constant-function wrappers around `V`.
+
+In the second form, mark the occurrence of `D` as blocked. More precisely,
+a block is a closed connected subterm `D A₁` with `A₁` program-free. Do not
+mark an application to an open outer-bound variable under an old lambda;
+that variable could later acquire a program-bearing argument.
+
+A blocked occurrence cannot lose its first argument without contracting
+`D` or erasing the whole occurrence. Outside substitution preserves the
+closed connected subterm. Data rules can move it, wrap it, or append
+arguments, but cannot remove that first argument. Contracting `D` with its
+program-free first argument strictly decreases the program-lambda count;
+erasing it does so as well. Neither is possible in this phase. The mark is
+therefore permanent, including when the blocked subterm is copied.
+
+Count blocked lambda occurrences. This count is nondecreasing and bounded
+by the constant total program-lambda count. Copying a blocked one-lambda
+operand consumes an unblocked head lambda and creates two blocked copies
+in place of the previous one, increasing the blocked count by one. Marking
+a new closed block also increases it. After finitely many further steps,
+there are no blocked-operand copies and no new blocks.
+
+At the end of this finite transient every head contractor is a closed flat
+template, and every copied argument has form `Kⁿ D`. Old or blocked
+lambdas may remain farther down the pending spine, but cannot become the
+active contractor or copied operand.
+
+### The stable transition does not carry an advancing tail
+
+Consider a stable contraction whose flat contractor is `C=λx.A` and whose
+argument is `Kⁿ D`. The application-only body `A` contains exactly two
+occurrences of `x`. Its substitution instance therefore contains exactly
+two copies of `D`, fixed data syntax from `A`, and `n` wrappers around each
+copy. It contains no other program lambda.
+
+Data normalization preserves both copies. Every closed program-bearing
+data-normal value is a wrapper chain around a program-headed spine, so
+the normalized substituted body has form
+
+```
+Kᵐ(D V₁ … Vᵣ).
+```
+
+The head `D` itself has no program lambda in its body, so the other copy
+must occur in one of the `Vᵢ`; in particular `r≥1`. The first argument
+`V₁` cannot be program-free, since that would create a new closed block.
+Thus `V₁` contains the other copy of `D`. It cannot be a blocked one-lambda
+value, since the next head contraction would copy that blocked operand.
+Therefore `V₁=Kᑫ D`, and every later `Vᵢ` is program-free.
+
+Applying the normalized body to the previous pending spine erases exactly
+the arguments consumed by its `m` wrappers. Those arguments must be
+program-free. If there were too few arguments, the execution would stop at
+a partial constant function, contrary to its infinitude. Once the head is
+exposed, the state is
+
+```
+D (Kᑫ D) (new program-free arguments) (unconsumed old spine).
+```
+
+After this single transition the active template is `D` forever. Its
+wrapper counter may grow without bound. The old pending arguments can
+only be erased by wrappers or remain after the internally supplied
+recursive argument; they never become the argument substituted into a new
+`D` body.
+
+The direct interaction with an advancing zero cell makes this restriction
+explicit:
+
+```
+Zᵢ D       →* D K Zᵢ₊₁,        a new block;
+Zᵢ (K D)   →* D Zᵢ₊₁,          a new block;
+Zᵢ (Kⁿ D)  →* Kⁿ⁻² D, n≥2,    the advancing tail is discarded.
+```
+
+A zero cell can instead act on a two-code value such as `D(KᑫD)…`,
+appending `K,Zᵢ₊₁` after its recursive argument. This only pushes
+program-free values onto the pending spine. It does not transfer a new
+tail into either template.
+
+### A uniform label bound, independent of the wrappers
+
+Write the stabilized template as `D=λx.A`. Evaluate its fixed finite body
+`A`, treating the canonical value `Kᑫ D` substituted for `x` as one leaf.
+The data application table increases the largest label by at most two per
+table call, including its intermediate reductions. The factor two matters:
+`Zᵢ(K Zⱼ)` passes through `Zⱼ Zᵢ₊₁` and creates a discarded `Zᵢ₊₂` before
+reaching `K Zⱼ₊₁`.
+
+The recursive evaluation follows the fixed syntax of `A`. Its variable
+leaf may have any number of `K` wrappers, but those wrappers carry no
+labels and normalizing their applications creates no new label. The copies
+of `D` also have their fixed, already-normalized bodies. Hence a bound
+consisting of the largest fixed label plus twice the number of application
+nodes in `A`, enlarged by a fixed table margin, covers every intermediate
+label in every stable body evaluation. It is independent of the wrapper
+counter.
+
+Every newly pushed program-free value satisfies that bound. The old
+pending spine is finite at the start of the stable phase and already data
+normal. Its values are only retained or erased; they are never evaluated
+as a new state or substituted into `D`. Enlarge the bound to cover those
+values and every label in the finite transient. There is therefore one
+finite `L` bounding all labels used in the entire infinite auxiliary
+execution, despite its possibly unbounded wrappers and pending spine.
+
+### Returning to a finite valid source
+
+Choose even `2n>L` and interpret `Zᵢ` as the corresponding tail of
+
+```
+zeros₂ₙ (stream(I,I)) = stream(λⁿ.I,I).
+```
+
+Every data and program step of the entire infinite auxiliary execution
+is reproduced by ordinary beta reduction. Every program head contraction
+remains a global ordinary head contraction. We obtain infinitely many head
+contractions interspersed with finite data reductions from a reduct of
+`R(stream(λⁿ.I,I))`.
+
+Exact remainder correctness makes this term beta-join normal `I`, hence
+normalize to `I` and have a finite weak-head clock. The head-clock fact
+rules out the displayed infinite execution. This contradicts the assumed
+absence of growth in the infinite-zero head trace.
+
+The infinite-zero ordinary head trace must therefore contain a strict
+program-lambda growth step. That step occurs in a finite trace prefix.
+Simulate that prefix on a sufficiently long even finite zero prefix with
+tail `stream(I,I)`. The actual ordinary weak-head trace follows the same
+steps, and the program-lambda counts agree, giving the claimed valid-source
+witness.
+
+At a growth step, either a binary binder copies an argument containing at
+least two program lambdas, or a binder with at least three occurrences
+copies an argument containing program code. Remainder extraction therefore
+needs an actual increase of code during some head computation even though
+its required output contributes no new program lambda. This is a
+qualitative computational obstruction; it supplies neither a sharp bit
+bound for remainder extraction nor an additive price for the two
+self-interpreter projections.
