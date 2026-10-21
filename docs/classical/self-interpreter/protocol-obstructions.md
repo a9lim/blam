@@ -335,6 +335,61 @@ return instruction, and that instruction performs an already-required
 semantic operation. An explicit adapter that merely recovers the current
 parser repays the hoped-for saving. A smaller protocol of this kind remains open.
 
+## Whole-stream skips and the zero arm's duplicate
+
+Let a reader `s H S` have an application-only operand `S` over `s` alone
+that equals the rigid remainder `N` on every variable stream `1ⁿ0 ++ N`.
+Then `S` is syntactically `(s s) X` for some application-only `X`, so on a
+constructor stream `s = cons K q` it reduces to `q`, and the zero arm
+receives the tag-less stream twice. Proof at unary length one: with
+`u = cons F (cons K N)` and `w = cons K N`, every application tree over `u`
+reduces to `u`, `K N`, or an `N`-headed spine, by
+
+```
+u u →* K N,   u (K N) →* N w,   u (N Q⃗) →* N Q⃗ F w,
+(K N) Q →* N,   (N Q⃗) Q →* N Q⃗ Q,
+```
+
+and bare `N` arises only at a root application whose left subtree is
+exactly `u u`. The duplicate is therefore a property of every
+application-only whole-stream skip, not of `s s s`. (The dispatch lane's
+lemma, with the induction supplied by an independent review.)
+
+Under the 165's NEXT/ABS/APP protocol, a reader `s H S T₁ … Tₖ` with
+`k ≥ 1` fails for every `H` that keeps the bare variable arm: on `λx.x` the
+root ABS continuation receives the variable's return with `k` surplus
+arguments, giving `C (A r) S T₁ … Tₖ`, `2 + k` arguments at the rigid `C`.
+The surplus must be consumed on the variable path itself. This does not
+price that repair. Nor do the actual-stream equations force the handler's
+independent rigid laws: `H = λb r t. b (t next) (c r (r r t))` meets the
+parser clauses on every genuine input while `H F R T = c R (R R T)` for
+rigid `R, T`.
+
+## Both tag bits through one re-entrant reader
+
+A natural fusion reads the second tag bit with the same reader, carrying
+the decoding state in the continuation: `P k ([0] t) =β P (T k) t`. Codex's
+handwritten proof, from an independent review of the dispatch lane, shows
+that no closed `T` meets this together with the closed-source contract. With
+`M_n = λⁿ.1` and `V_n = λⁿ⁺¹.1`, re-entry twice gives
+
+```
+T (T C) V_n R  =β  C V_(n+1) R          for every n ≥ 1.        (*)
+```
+
+Write the head normal form of `T k` as `λx₁ … x_a. h Q₁ … Q_b`. A head
+among the binders leaves a leading lambda or an `R` head for large `n`, so
+`h = k`; arity at `C` forces `T k = λt. k A` or `T k = λt j. k A B`. In the
+first, `A`'s head must be `t` and projection erasure gives
+`A[C, A'] =β λ^(n+1+2(q−p)).1`, which needs `2(q−p) = 1`. In the second the
+same parity kills head `t`; head `j` forces `B`'s head normal form to be
+`j` (then the value is `R`-headed) or `t` with `A =β λ^q.j`, which returns
+`V_n` instead of `V_(n+1)`. Every head form fails, so the second bit's
+state needs a separate object (the 165's `next`, a selector pair, or an
+explicit mode flag). The proof covers this uniform, β-exact re-entry
+equation with the transparent contract, not every design with different
+internal values and a public adapter.
+
 ## APP cannot supply the full parser through an idempotent control response
 
 The semantic application `lambda e.f e (g e)` already duplicates an

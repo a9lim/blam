@@ -38,7 +38,8 @@ realization (§2.2–2.3); the case analysis that remains is over four
 application is the stream's own node — is where the 165 lives and is
 priced exactly (`41 + 2d`, so 43 at depth 1); the other shapes are ≥ 46.
 Part 3 lists the steps whose rigour is weakest; the least formal is the
-self-passing-walker bound (Lemma 2.3(c)), which has a ≥ 20-bit margin.
+self-passing-walker bound (Lemma 2.3(c)), now a two-case split giving
+≥ 47 for any reader with a lambda walk (cheapest construction 85).
 
 ### 1. Complete interpreters built
 
@@ -306,12 +307,24 @@ So in case (i) every reader body contains, on its head path, a cell step
 (an `s`-leaf or `S`-valued leaf, 2 bits, plus its application node, 2),
 a dispatch lambda `λb` (2), its leaf `b` (2), and the two selection nodes
 (4; 2 when one is created). Call this the **dispatch**, cost ≥ 12 (≥ 10
-in the created-node shapes). Case (ii) is priced separately in §2.4. The depth `d ≥ 1` of the
-selection node is the number of lambdas of `B` enclosing it; every lambda
-on the head path encloses it (the handler binders `λb`, `λr`, `λt`, chain
-binders, and let binders), so `d` equals the number of head-path λ-steps on
-original lambdas, and every free leaf `s, next, cont` inside the arms pays
-`d` extra bits.
+in the created-node shapes). Case (ii) is priced separately in §2.4.
+
+**Depth [repaired after review 1].** Let `d` be the number of lambdas of
+`B` that enclose the selection node and are contracted on the head path;
+`λb` is one of them, so `d ≥ 1`, and every free leaf `s, next, cont` inside
+the arms pays `d` extra bits. A head-path λ-step `(λy.M) Q` whose
+abstraction does *not* enclose the selection is a let with the selection
+inside `Q`: the head then continues through `y` at the head of `M`'s hnf
+(`M = λz₁ … z_D. y A⃗`, the `λz` binding `D` operands first), and T10 forces
+`fl(Q) ≥ 2` and `(fl(Q)−1)·D ≥ 6 + f(M)` when `y` occurs once (so `D ≥ 1`,
+and the scaffolding `λy`, its node, the `λz`'s and the leaf `y` costs
+`6 + 3D ≥ 9`, with `D ≥ 3` whenever `fl(Q) ≤ 3`, i.e. ≥ 15), or
+`|Q| + (fl(Q)−1)·D ≥ 8 + f(M)` when `y` occurs twice (scaffolding ≥ 8). Such
+a let contributes nothing to the arms' depth and is additive to every
+cost below (its `Q` is the handler, whose dispatch and arms are charged
+as usual, and its `A⃗` are operands); it therefore only raises the bounds.
+Below, "operand" means a head-path argument subterm not containing the
+selection, and `Z, V` lie in the bodies of all `d` enclosing lambdas.
 
 **Definition (arms, operands, environment).** `Z` (zero arm) and `V`
 (variable arm) are the subterms of `B` at the two argument positions of
@@ -419,32 +432,71 @@ steps of the surviving copy that are not cell–cell meetings are each
 caused by a contraction of a lambda of `B` (an `F`, a `K`, or a receiver
 of the cell), and we are in case (c).
 
-*(c) Lambda walk.* If no cell–cell meeting occurs on the surviving path,
-each of its `n+1` cell contractions is caused by a lambda of `B` (directly,
-or through an `F` it produced), and `F`-values are at most `2L + c` in
-number, so for `n > 3|B|` some lambda `λ*` of `B` is contracted at least
-three times in `ρ_v`, hence copied at least twice. Copies arise only from
-nonlinear binders of `B`; following the copying relation among the
-finitely many lambdas of `B` yields a *walker*: a lambda `Λ` of `B`
-contracted on cells of two different indices, whose body applies the
-received tail to a copy of a cycle lambda through a leaf `f` bound by a
-nonlinear binder (an affine `f` could pass the copy along only once, and
-a syntactic copy inside `Λ` is impossible). Its necessary original syntax:
-a lambda receiving the bit (2), one binding the tail (2), the nonlinear
-`λf` (2) with two leaves `f` (4), the node applying the tail (2) with its
-leaf `r` (2) and the node passing `f` (2), and — since `P_0 Λ → Λ K N`
-must return the bare `N` while higher levels continue — a test of the bit
-(`b`, 2; two nodes, 4) returning the tail (2): **≥ 24**, all consumed or
-erased, none of it the `cont` leaf. If the walker's bit test is the
-reader's own dispatch, its two arms must behave differently at the top
-level (produce `R next`, `cont P_{n-1} N`) and at the bottom (`N`,
-continue), so each needs an extra flag argument and test (≥ 4 each); then
-`|B| ≥ 4 + 24 + 4 + 3 + 4 + 8 ≥ 47`. Otherwise `|B| ≥ 24 + 12 + 4 + 3 ≥
-43` from the walker, the dispatch, `cont` and `next` alone. Either way no
-reader with a lambda walk is below 43, and this case never attains 10 for
-the N-source. The same accounting shows that making the last node of `P_0`
-the output node `n_N` (which needs a walker carrying `P_{n-1}`) costs
-≥ 24. ∎
+*(c) Lambda walk* **[repaired after review 1]**. If no cell–cell meeting
+occurs on the surviving path, each of its `n+1` cell contractions is caused
+by a lambda of `B` (directly, or through an `F` it produced), and `F`-values
+are at most `2L + c` in number, so for `n > 3|B|` some lambda of `B` is
+contracted at least three times in `ρ_v`, hence copied at least twice; the
+copies come from a nonlinear binder of `B`, and following the copying
+relation among the finitely many lambdas of `B` gives a lambda whose copies
+receive cells of different indices — a *walker*.
+
+Two facts hold at every level `i ≥ 1` of such a walk. First, the tail
+`P_{i-1}` must itself be opened (T7), so it is the *function* of some
+redex; its node cannot be a created node (a created node's function is
+`(Y' β')` or `Y'`, and `Y' →* P_{i-1}` or `Y' β' →* P_{i-1}` would make
+that node a cell applied to a bit or to a tail, i.e. a cell–cell step,
+excluded here), so **the tail is bound by a lambda `λr` of `B` and applied
+at a node of `B` whose function is a leaf `r` of that lambda** (`λr` 2,
+`r` 2, node 2). Second, the bit must be tested: at `P_0` the walker
+receives `K` and must return the bare `N`, at `P_i` it receives `F` and must
+continue; a term that does not select on the bit either returns the tail
+unapplied (no recursion) or applies `N` (a rigid head, fatal). The
+selection is `b Z C` with `b` a leaf of a `λb` of `B` and **two** nodes of
+`B`: the second cannot be a created node, because then the zero arm would
+receive the tail as its argument and have to *be* `N` (it is syntax of `B`
+with no access to `N` unless a `λr` bound it, which is the other case).
+Third, the walker refers to itself: at least two leaves of a nonlinear
+binder (one applied or passed, one passed on) and a node (`λf` 2, `f f` 6).
+The cases are distinguished by where `λr` sits:
+
+* **(A) the walker takes `(β, τ)`**, `Y = λb r. b Z C`, and `C` applies
+  `r` to the next copy: `C = r f f`-like. Zero arm `Z = r` (the leaf, 2)
+  is the cheapest term returning `N` at the bottom. Pieces: `λb λr λf` (6),
+  `b`, `r`, `r`, `f`, `f` (10), four nodes — two selection nodes, `(r f)`,
+  `((r f) f)` — (8): **24**, and the forced binder order `b, r, f` (the
+  cell supplies `β` then `τ`, the copy comes third) puts `b` at index 2 and
+  both `r` at index 1: **≥ 28 with indices**. `Y = λb r f. b r (r f f)`
+  attains 28 and walks (checked: `(λf. P_n f f) Y →* N`, `n ≤ 5`).
+* **(B) the walker takes the cell**, `W W = λr. r H`, and the cell's own
+  second created node applies the selection result to the tail, so
+  `H = λb. b Z (w w)`; at the bottom `K Z (W W) N → Z N` forces `Z N →* N`
+  with `Z` syntax of `B` not binding `N`: `Z = I` (4) is the cheapest.
+  Pieces: `λw λr λb` (6), `r`, `b`, `w`, `w` (8), nodes `(r H)`, two
+  selection nodes, `(w w)` (8), `I` (4): **26**, and `w` under `λr λb`
+  carries index 2 twice: **≥ 30 with indices**. `W = λw r. r (λb. b I (w w))`
+  attains 30 and walks (checked: `W W P_n →* N`, `n ≤ 5`). The 22-bit
+  `λw b. b I (w w)` is not a walker: `P_i (W W) →* (W W) P_{i-1}` hands the
+  tail to `W W` as an argument, and `W W P_{i-1} →* W W` loses it
+  (checked).
+
+So **every walker costs ≥ 28 bits of original syntax**, consumed or erased
+in `ρ_v`, none of it a frame leaf. A walker must also be *started*: its
+first copy is referenced from outside itself, so `B` contains a second
+syntactic copy (≥ 28) or a nonlinear let `(λg. … g … g …) W` (`λg`, its
+node, two leaves: ≥ 8) — in case (B) the let's `g g` is the only way to
+form `W W` once. The dispatch cell's `s`-leaf (2; in case (B) its node may
+be the walker's `(r H)` node, in case (A) the node `(s g)` is separate), the
+`cont` leaf (4), the `next` leaf (3) and the output node `n_N` (2; the only
+created node with argument `N` is `P_0`'s, whose function would have to be
+`cont P_{n-1}`, i.e. the walker would carry `P_{n-1}` and `cont` down the
+walk, ≥ 8 more) are disjoint from all of this. Hence a reader containing a
+lambda walk has
+
+    |B| ≥ 28 + 8 + 2 + 4 + 3 + 2 = 47,
+
+and the N-source in this case is ≥ 36, never 10. (The cheapest walker reader
+I can write is 85 bits.) ∎
 
 **Lemma 2.4 (zero-R-source).** Realizations of **z-R** and their costs:
 (i) a bound leaf (2) whose binder is a head-path `λr` contracted on `τ`
@@ -660,14 +712,51 @@ gives `|Z| ≥ 2` (a bound `R`-leaf, `d ≥ 2`) or `|Z| ≥ 4` (`λu. u`).
 
 (Row 1: `V` binds `τ`, so `e_V = 1`, `κ_v` costs 6, plus `λr` 2, `r` 2,
 N-source 10, `n_P n_N` 4. Row 3: `V` binds `τ` and `next`, `e_V = 2`.
-Row 4: `V` binds `next`.) Any other operand `O` (`cont`, `s s`, `s F`,
-`s K`, a second `next`, …) can serve as an output argument in neither arm
-except `cont` for `V` — and `cont` as an operand costs `2 + 4` plus its
-consumption by `Z` (2) and binding in `V` (2 + 2) against the `4 + d`
-it replaces: a net increase — so it adds at least `2 + |O| + 2 ≥ 8` for
-`|O| ≥ 4` over the rows above. A head-path depth `d ≥ 3` adds 2 per extra
+Row 4: `V` binds `next`.) A head-path depth `d ≥ 3` adds 2 per extra
 lambda and one bit on `b` and on each free leaf of the arms (≥ 4 per
-lambda). Hence (γ1) gives `|B| ≥ 46`.
+lambda).
+
+**Other operands [repaired after review 1].** An operand `O` that is
+neither `N`-valued nor `next` must be bound by a lambda — on the head path
+(`d` grows by 1: `+1` on `b`, on `κ_v`, and on `ν_z` or its substitute) or
+inside the arm that uses it (`+2` for the lambda, `+1` on that arm's free
+leaves), and the other arm must consume `O` too (`≥ 2`) unless it also uses
+it. Against this, `O` can replace syntax inside the arms. Case by case,
+over the four rows above (base ≥ 46):
+
+* `O = s s` (spine `2 + 6 = 8`; values `K R`, `K N`). Inside `V` the
+  N-source becomes `q X` (node, `q`, `X`: 6 instead of 10, saving 4); in
+  `Z` the value `K R` can at best replace the `R`-leaf by `q u` (`q`, `u`
+  and a node, 6 instead of 2: a loss), so `Z` just consumes it (`+2`) or
+  pays a depth bit. Net `≥ 8 + 2 + 2 − 4 = +8`: `|B| ≥ 54`. Cheapest
+  construction: `s (λb r q. b (r next) (cont r (q r))) (s s)`, 58 bits
+  (checked).
+* `O = s` (spine 4; values `Z_R`, `P_n`). It supplies one more cell-valued
+  leaf `t` at 2 bits, but the rows already price every cell-valued leaf of
+  the N-source at 2 (`r r X` with `r` at index 0), so nothing is saved;
+  net `≥ 4 + 2 + 2 = +8`: `|B| ≥ 54`
+  (`s (λb r t. b (r next) (cont r (t t t))) s`, 57 bits, checked).
+* `O = s F` (spine 12; values `R`, `P_{n-1}`). It can replace the tail
+  leaf `r` in `V` and the `R`-leaf in `Z` (each 2, each already at its
+  minimum), so it saves ≤ 4 at the price of 12 + 2: net `≥ +10`:
+  `|B| ≥ 56` (`s (λb r t. b (t next) (cont t (r r r))) (s F)`, 66 bits,
+  checked).
+* `O = s K` (spine 12; values `K`, `F`): a second bit, which no role
+  needs; net `≥ +14`.
+* `O = cont` (spine 6): `V` may use the bound `t` (2 + index) instead of
+  `κ_v` (`4 + d + e_V`), saving at most `2 + d + e_V`, which is ≤ 6 in
+  every configuration below 50 bits (`d + e_V ≤ 4`); the price is
+  `6 + 2 + 2`: net `≥ +4`: `|B| ≥ 50`
+  (`s (λb r t. b (r next) (t r (r r t))) cont`, 56 bits, checked).
+* a second `next` (spine 5): can only serve as a consumer leaf `X`
+  (already charged 2): net `≥ +5`.
+* any `O` with a lambda, or any compound not listed, costs `≥ 2 + |O| + 2
+  ≥ 10` and supplies at most one `R`-, tail-, or `N`-valued leaf (its
+  value is one term), replacing at most 2 bits in each arm — the dual
+  (zero/variable) operands of Lemma 2.4/2.5 (iv) cost ≥ 10 themselves:
+  net `≥ +6`.
+
+Hence (γ1) gives `|B| ≥ 46`, operands included.
 
 **(γ2) An N-valued operand `T`** (`2 + |T| ≥ 12`). If `n_N` is `T`'s
 spine node, `V[envⁱ]` applied to `τ` (if unbound) reduces to
@@ -752,10 +841,10 @@ whose rigour is weakest.
 | T10 (minimum has no shrinking redex; Δ formula) | the formula is Lean (`wire_beta_delta`), re-checked on 3000 random redexes; the minimality argument is one line |
 | §2.1 decomposition, Lemma 2.1 (selection leaf) | handwritten residual tracing |
 | Lemma 2.3 (N-source ≥ 10), cases (a), (b) | handwritten, tight |
-| Lemma 2.3 (c) (self-passing walker ≥ 24) | handwritten and coarse (a count of necessary pieces, see 3.2) — the weakest step |
+| Lemma 2.3 (c) (self-passing walker: ≥ 28 per walker, reader ≥ 47) | handwritten two-case split, repaired after review 1 (see 3.2); the two attaining walkers checked — still the least formal step |
 | Lemmas 2.4–2.6 (R-source, tail, stream-node shortcuts) | handwritten exhaustive lists of realizations |
 | Lemma 2.7 (copies) | handwritten; relies on T10 and on the distinct signatures of the roles |
-| §2.4 shapes (α), (β), (β′), (δ), (γ) and extras | handwritten arithmetic; every valid construction measured (`tools/menu.py` and inline checks) is ≥ its shape's bound |
+| §2.4 shapes (α), (β), (β′), (δ), (γ) and extras | handwritten arithmetic; the (γ1) operand cases written out per operand after review 1; every valid construction measured (`tools/menu.py` and inline checks) is ≥ its shape's bound |
 | §2.5 τ-case ≥ 52 | handwritten, coarse |
 
 No Lean was written in this lane: the statements pinned down enough to
@@ -773,23 +862,30 @@ does not exist in `lean/Blc`.
    to produce `R`, `P_{n-1}` or `N` from stream material in a way the
    tables do not cover; the `P_n`-only closure check and the table are the
    evidence that there is none, but the general claim is handwritten.
-2. **The walker bound (Lemma 2.3 (c)).** A lambda of `B` contracted on
-   cells of two different indices must be copied, and the copying binder
-   must be nonlinear; I price the receiver's binders (bit, tail), the
-   application of the tail to a copy, the nonlinear binder with two
-   leaves, and the bit test with the return of `N`: `2+2+2+2+2+2+2+2+4+2
-   = 24`, so even with the dispatch shared (the walker's bit test being
-   the reader's dispatch) the reader is ≥ `12 + (24 − 8) + 4 + 3 + 2 ≥
-   43`. This is a count of necessary pieces, not a case analysis; it has
-   a 20-bit margin over the cheapest walker I can write (85-bit reader),
-   but it is the step most likely to contain an unexamined realization.
+2. **The walker bound (Lemma 2.3 (c)) [repaired after review 1].** The
+   first review found that the original piece count (24) was not tight
+   for the pieces it named: `λw b. b I (w w)` has 22 bits and the right
+   first step, but it is not a walker (it loses the tail at the next
+   level). The repaired lemma proves two facts for every level of a lambda
+   walk — the tail is bound by a lambda of `B` and applied at a node of
+   `B`, and the bit is tested with two nodes of `B` — and splits on where
+   the tail binder sits: (A) `λb r. b r (r f f)`-shaped, ≥ 24 pieces and
+   ≥ 28 with the forced indices; (B) `λw r. r (λb. b I (w w))`-shaped,
+   ≥ 26 pieces and ≥ 30 with indices. Both attaining walkers were checked
+   to walk. With the starter (≥ 8), the `s`-leaf, `cont`, `next` and
+   `n_N`, any walker reader is ≥ 47. This is still a count of necessary
+   pieces rather than a case analysis of all syntax; a reviewer should
+   check that no walker can test the bit with the created node *and* still
+   recover `N` at the bottom (the lemma argues it cannot, since the zero
+   arm would then have to be `N` without a binder for it).
 3. **Lemma 2.7 (ii)** uses that copies of a let argument have β-equal
    values. This is true for copies produced by substitution of one
    argument; for copies produced inside a walker (different arguments at
    each level) it is not, which is why walkers are priced separately. A
    reader mixing a walker with cheap arms would have to be re-examined
-   against both arguments at once; I believe the 24-bit walker cost
-   closes it, but have not written that case out.
+   against both arguments at once; the repaired 28-bit walker cost and
+   the 47-bit reader bound of Lemma 2.3(c) close it with margin, but I
+   have not written that mixed case out separately.
 4. **Depth taxes.** The arms' free leaves are charged `+1` per lambda
    above them. The Remark in §2.4 shows that a let cannot lift a leaf
    above an arm's consumption lambdas in the minimum. Data consumers
@@ -797,13 +893,14 @@ does not exist in `lean/Blc`.
    to save at most one depth bit per free leaf; the arms in the tables
    have at most two free leaves, so this is safe, but shape (γ) rows with
    several consumptions deserve a re-count.
-5. **Shape (γ1) "other operands" and `d ≥ 3`.** These are one-line
-   dominance arguments (each extra costs more than anything it can
-   replace). They are correct for the roles as priced, but they are the
-   kind of step where a clever double use (an operand that is at once a
-   tail source for `V` and an `R`-source for `Z`, e.g. `s F`) must be
-   checked: `s F` costs 10 and replaces `r` (2 + binder) in both arms, a
-   net loss; I checked `s F`, `s s`, `s K`, `next`, `cont`.
+5. **Shape (γ1) "other operands" [repaired after review 1].** The first
+   review found that `O = s s` is half of an N-source (the bound `q = K N`
+   completes it as `q X`, saving 4 inside `V`), so the one-line dominance
+   was wrong as written. §2.4 now prices `s s`, `s`, `s F`, `s K`, `cont`,
+   a second `next`, and arbitrary other operands individually (all
+   ≥ +4 over the rows, `s s` giving ≥ 54 with a 58-bit construction).
+   The precision note on `d` (a head-path let whose argument contains
+   the selection does not enclose it) is closed in §2.1 by T10 pricing.
 
 ## 3.3 Residual cases
 
@@ -817,10 +914,11 @@ in an identified family of terms. The honest summary:
 * **Fully covered with tight arithmetic:** shape (α) — every reader whose
   variable output node `cont P_{n-1}` is the stream's own node (this is
   the 165's mechanism; the 165 is the unique minimum there).
-* **Covered with margin ≥ 3:** shapes (β), (γ), the τ-case, chains, lets,
-  data dispatch.
-* **Covered with large margin but coarse reasoning:** self-passing
-  walkers (Lemma 2.3 (c)), rebuilt cells (Lemma 2.5 (iv)).
+* **Covered with margin ≥ 3:** shapes (β), (γ) including its operand
+  cases, the τ-case, chains, lets, data dispatch.
+* **Covered with large margin but coarser reasoning:** self-passing
+  walkers (Lemma 2.3 (c), ≥ 47 by a two-case piece count), rebuilt cells
+  (Lemma 2.5 (iv)).
 
 ## 3.4 Relation to the earlier bounds
 

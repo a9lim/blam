@@ -18,9 +18,9 @@ No lane found an interpreter below 165. What the record keeps:
 | knot | opaque fixed points cost ≥ 20 bits, so the 165's 31 bits of recursion overhead are minimal (Lean); the generic diagonal carrier ≥ 12; two reset bootstraps at 192 | `interpreter.md` §4, §6; `lean/Blc/SelfintKnot.lean` |
 | lean-floor | kernel-checked `SelfintSizeBound 27` (from 18) | `structural-bounds.md`; `lean/Blc/SelfintFloor*.lean` |
 | env | cell ≥ 24 and lift ≥ 19 with borrowed raw data, then under only the Boolean lookup laws (handwritten, unreviewed); a 171 with a curried cell | `interpreter.md` §5, §6 |
-| reader-proof | handwritten theorem: with the 165's knot and NEXT fixed, every reader body costs ≥ 43, uniquely attained (under review when archived) | `reader-proof/REPORT.md` |
-| nextfuse | a catalogue of second-bit dispatch placements (166–188) and a decomposition argument that NEXT is 92 under the 165's interfaces | `nextfuse/REPORT.md` |
-| dispatch | forcing lemmas for the reader and a theorem that the second bit's state cannot ride in the continuation; a 176 without a `next` let | `dispatch/REPORT.md` |
+| reader-proof | handwritten theorem: with the 165's knot and NEXT fixed, every reader body costs ≥ 43, uniquely attained; a Gemini review found two local gaps, repaired in the report (a Codex review was pending when archived) | `reader-proof/REPORT.md`, `verify/vreader_gemini.md` |
+| nextfuse | a catalogue of second-bit dispatch placements (166–188); its "NEXT is 92" is a measured construction and heuristic, and its shared-argument lemma was refuted by review | `interpreter.md` §6, `verify/vdispatch_codex.md` |
+| dispatch | the zero arm's duplicate is forced for every application-only whole-stream skip; surplus reader arguments reach the rigid continuation; one re-entrant reader cannot read both tag bits (proof replaced by the reviewer's stronger one); a 176 without a `next` let | `protocol-obstructions.md`, `interpreter.md` §6, `verify/vdispatch_codex.md` |
 | grok | a correct 168 passing NEXT as the reader's third operand (proposed as 164; miscounted) | `interpreter.md` §6 |
 | blind, scratch, gemini | rediscoveries 166–214; an independent from-scratch design at 220 | `interpreter.md` §6 |
 

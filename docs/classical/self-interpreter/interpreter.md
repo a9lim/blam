@@ -648,6 +648,8 @@ their optimal let structure (`blam golf letopt`, at most three cuts).
 | Duplicate tail discarded after the second cell elimination | 181 | |
 | Tag replayed after the first parse, `bit0`'s `K` discarding `bit1` | 186 / 188 / 194 | the redundant tag costs more than the hoist saves |
 | Curried cell borrowing ABS's tag, `\b. b (bit1 arg) (\r. r args)` | 171 | `bit1 = K` in ABS; +6 over the canonical cell |
+| No `next` let: the zero arm keeps both copies of the stream, parses from one and re-reads the tag from the other through `bit0 = K` | 176 | the smallest interpreter without a `next` binding; NEXT's five references pay four binders of depth |
+| Second-tag dispatch elsewhere in NEXT: a shared argument of both arms (three forms), or before the first parse | 169 / 169 / 170 / 172 | a shared argument costs a dummy binder, a second dispatch, or a packing pair |
 | Constant stream as ABS's return instruction, `R (K (K X)) = X` | 191 / 207 | capturing the real remainder |
 | Reader-carried knot `W = λx. x I x Z_x`: the only self-application is the skip's | 192 | +27 for the carrier; `R Z_t → t t` drives it. With the carrier's diagonal law, `Z_t` (12 bits) is the unique minimum, so this template is exactly 192 |
 | Reset bootstraps: skip `s s c` with driver `λx. x I x F x`, or `s s x` with `λx. x x x F x` | 192 / 192 | the input `F` resets the provisional recursion; the cheaper driver is paid back by the deeper erased operand |
