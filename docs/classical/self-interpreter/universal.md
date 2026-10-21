@@ -21,7 +21,11 @@ twice. Around the 162's body (140 bits, `interpreter.md`) they are **172** and
 pass the battery, the 184 all seven strictness probes, and `blam golf letopt`
 finds no smaller rendering of either); around the 165's body (143 bits) they
 are 175 and 187 (`uni175.lam`, `uni187.lam`), and around the 168's (146 bits)
-Tromp's 178 and 190. *Strict* means, in BLC.tex's words, that "any attempt to
+Tromp's 178 and 190. Each wiring is a corollary of its interpreter's
+contract, `E dbl (⌜M⌝ ++ N) →β* dbl (λz. M) N →β M N` and, since the strict
+wiring β-reduces to `E (λb. b Ω)`, `→β* (λb. b Ω) (λz. M) N →β* M N`; Lean
+proves all six universal this way, each pinned to its wire
+(`lean/Blc/Universal.lean`). *Strict* means, in BLC.tex's words, that "any attempt to
 apply free indices diverges", so the machine forces closed programs; the
 strict wiring gets this from an Ω base environment, which the 162's and the
 165's readers leave untouched, since they change only how the code is read.

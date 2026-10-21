@@ -126,7 +126,7 @@ proven.
   bits by a reviewed handwritten proof, and at least 27 kernel-checked in Lean
   ([global floor](docs/classical/self-interpreter/global-floor.md)). The same
   reader gives universal machines of 172 (non-strict) and 184 (strict) bits,
-  against Tromp's 178 and 190
+  against Tromp's 178 and 190, and Lean proves all four universal
   ([universal](docs/classical/self-interpreter/universal.md)).
 - **The rest of tromp/AIT** ([golf](docs/classical/golf.md), sent upstream as
   [tromp/AIT#13](https://github.com/tromp/AIT/pull/13)): 40 programs shrink by

@@ -445,7 +445,11 @@ with all features (three opt-in tests ignored) and 328 with default features.
 - **The universal machine** (`classical/self-interpreter/universal.md`):
   Tromp's wirings around the 162's body give 172 (non-strict) and 184
   (strict; all seven strictness probes), around the 165's 175 and 187, and
-  around the 168's 178 and 190 (`machines/uni172.lam`, `uni184.lam`); letopt
+  around the 168's 178 and 190 (`machines/uni172.lam`, `uni184.lam`). Lean
+  proves all six universal for every closed program, each pinned to its wire
+  (`Blc/Universal.lean`: `isUniversal_uni172` … `uni190`, Tromp's 190 as his
+  compiler emits `uni.lam`, `not_uniSizeBound_173`); strictness stays a
+  seven-probe check. Letopt
   finds no smaller rendering of 172 or 184, and no wiring search has run
   around the 162's body yet. Wirings around the 165's body
   give no non-strict machine below 175 (14,856,126 contexts, 68,017 capped,

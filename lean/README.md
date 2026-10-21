@@ -28,6 +28,8 @@ theorem selfint_contract162 : Closed M →
                                                          -- propext, Quot.sound
 theorem not_selfintSizeBound_163 : ¬ SelfintSizeBound 163
                                                          -- propext, Quot.sound
+theorem isUniversal_uni172 : IsUniversal uni172          -- propext, Quot.sound
+theorem not_uniSizeBound_173 : ¬ UniSizeBound 173        -- propext, Quot.sound
 theorem selfintSizeBound_27 : SelfintSizeBound 27
                                     -- propext, Classical.choice, Quot.sound
 ```
@@ -37,7 +39,11 @@ normal form under arbitrary β-reduction. Palmer's 168-bit `intL` (pinned to its
 wire by `wire_intL`) is a self-interpreter: for every closed `M` and any terms
 `C`, `N`, `intL C (⌜M⌝ ++ N)` β-reduces to `C (λz. M) N`. So are the 165-bit
 `intL165` (`wire_intL165`) and the 162-bit `intL162` (`wire_intL162`), so no
-self-interpreter size bound above 162 holds. The **general bridge** holds for
+self-interpreter size bound above 162 holds. Each gives universal machines,
+`U (⌜M⌝ ++ N) →β* M N` for every closed `M`, in both of Tromp's wirings: the
+162 the 172 and the strict 184, the 165 the 175 and 187, and the 168 Tromp's
+own 178 and 190 (`IsUniversal`, each pinned to its wire), so no universal
+machine size bound above 172 holds. The **general bridge** holds for
 every term, so any head-divergence certificate concludes no-normal-form with
 no side conditions. The **class assemblies** turn certificate *data* into that
 conclusion mechanically, and the **rigid-head argument bridge** lifts a spine
@@ -214,6 +220,15 @@ Self-interpretation:
   `selfint_contract162`, `isSelfInterpreter_intL162` and
   `not_selfintSizeBound_163` (the upper-bound half of optimality; the lower
   bound `SelfintSizeBound 162` is stated, open).
+- `Blc/Universal.lean` — the universal machines as corollaries of the
+  interpreter contracts. `E dbl` and `(λa. a F (λb. b (a a))) dbl` with
+  `E = dbl F` reduce to `dbl (λz. M) N` and `(λb. b Ω) (λz. M) N`, both
+  `M N` (`uni_nonstrict_of_contract`, `uni_strict_of_contract`). Instantiated
+  at the 162, 165 and 168: `isUniversal_uni172`, `uni184`, `uni175`,
+  `uni187`, `uni178`, `uni190`, with `wire_uni*` pinning the first four to
+  `data/self-interpreter/machines/` and the 190 to Tromp's compiled
+  `uni.lam`, and `not_uniSizeBound_173`. Strictness on open programs is not
+  proved; the battery's seven probes check it.
 - `Blc/SelfintLowerBound.lean` — every term with at most one syntactically
   nonlinear binder weakly normalizes. Consequently every self-interpreter
   has at least two, and an explicit `λc s.B` has two inside `B`. A syntax
