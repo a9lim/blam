@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Re-measure the protocol variants recorded in
-docs/classical/self-interpreter/interpreter.md §5.
+"""Re-measure the interpreters and protocol variants recorded in
+docs/classical/self-interpreter/interpreter.md.
 
 Each variant is written out in full, compiled without the optimizer, sized,
 and run through battery.py's exact contract check.  A negative control (APP
@@ -14,6 +14,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from battery import check, compile_lam, enc
 
+FLEET = Path(__file__).resolve().parents[2] / "data/self-interpreter/reasoning_165"
 ABS = r"(cont (\args\arg.exp (\zx\zy. zx arg (zy args))))"
 APP = r"(intL (\exp2.cont (\args.exp args (exp2 args))))"
 VAR = r"(cont list1 (list1 list1 list1))"
@@ -27,7 +28,85 @@ INT168 = knot(rf"""\cont.
    (\next. \list.list (\bit0\list1.bit0 (list1 next) {VAR}))
    (\bit1.intL (\exp.bit1 {ABS} {APP}))""")
 
+
+def body165(reader):
+    return rf"""\cont.
+   (\next. \list. list {reader} (list list list))
+   (\bit1.intL (\exp.bit1 {ABS} {APP}))"""
+
+
+def int165(reader):
+    return knot(body165(reader))
+
+
+READER165 = r"(\bit0. bit0 (\unused \r. r next) cont)"
+INT165 = int165(READER165)
+GEN165 = rf"(\x. (\intL. {body165(READER165)}) (x x))"
+NEXT = rf"(\bit1.intL (\exp.bit1 {ABS} {APP}))"
+READER162 = r"(\a. a) (\u. list (\q. cont) (list list u))"
+BODY162 = rf"\cont. \list. list {READER162} {NEXT}"
+INT162 = knot(BODY162)
+GEN162 = rf"(\x. (\intL. {BODY162}) (x x))"
+
 VARIANTS = [
+    # interpreter.md §1–§2: the 162, how its reader arises, its universal
+    # machines.
+    ("162 (stream-selected reader, NEXT as its last operand)", INT162, False,
+     162, True),
+    ("162's reader with NEXT let-bound", knot(rf"""\cont.
+   (\next. \list. list {READER162} next) {NEXT}"""), False, 166, True),
+    ("NEXT as the reader's last operand, lambda handler", knot(rf"""\cont.
+   \list. list (\bit0 \r. bit0 r (\t. cont r (r r t))) {NEXT}"""),
+     False, 168, True),
+    ("universal machine 172, non-strict (intL dbl around the 162)",
+     f"({INT162}) (\\x. x x)", True, 172, True),
+    ("universal machine 184, strict wiring around the 162",
+     rf"(\a. a {GEN162} (\b. b (a a))) (\a. a a)", True, 184, True),
+    # interpreter.md §1–§3: the 165 and its nearest variants.
+    ("165 (whole-stream skip)", INT165, False, 165, True),
+    ("control: 165 zero arm with one binder", int165(r"(\bit0. bit0 (\r. r next) cont)"),
+     False, 162, False),
+    ("165 with an explicit list1 binder", int165(
+        r"(\bit0 \list1. bit0 (\r. r next) (cont list1))"), False, 171, True),
+    ("165 zero arm built from bit0 (= K there)", int165(
+        r"(\bit0. bit0 (bit0 (\r. r next)) cont)"), False, 166, True),
+    ("165 zero arm reading the first tail", int165(
+        r"(\bit0. bit0 (\r \unused. r next) cont)"), False, 166, True),
+    ("165 + select-first", knot(rf"""\cont.
+   (\next. \list. list {READER165} (list list list))
+   (\bit1.intL (bit1 (\exp. {ABS}) (\exp. {APP})))"""), False, 166, True),
+    ("165 + K-repair cell", int165(READER165).replace(
+        r"\zx\zy. zx arg (zy args)", r"\zx. zx (\u. arg) (\zy. zy args)"),
+     False, 166, True),
+    ("165, next inlined", knot(rf"""\cont. \list. list
+   (\bit0. bit0 (\unused \r. r (\bit1.intL (\exp.bit1 {ABS} {APP}))) cont)
+   (list list list)"""), False, 170, True),
+    ("165, next inside \\list", knot(rf"""\cont. \list.
+   (\next. list {READER165} (list list list))
+   (\bit1.intL (\exp.bit1 {ABS} {APP}))"""), False, 172, True),
+    ("165, next takes list1: next = \\l. l B, zero arm \\u. next", knot(rf"""\cont.
+   (\next. \list. list (\bit0. bit0 (\u. next) cont) (list list list))
+   (\l. l (\bit1.intL (\exp.bit1 {ABS} {APP})))"""), False, 168, True),
+    ("165, next takes both copies: next = \\u \\r. r B", knot(rf"""\cont.
+   (\next. \list. list (\bit0. bit0 next cont) (list list list))
+   (\u \r. r (\bit1.intL (\exp.bit1 {ABS} {APP})))"""), False, 171, True),
+    ("165 + optional second parse, no-input parser \\k. k k", knot(r"""\cont.
+   (\next. \list. list (\bit0. bit0 (\unused \r. r next) cont) (list list list))
+   (\bit1.intL (\exp. bit1 (\k. k k) intL (\exp2. cont (\args. bit1
+      (\arg. exp (\zx\zy. zx arg (zy args))) (exp args (exp2 args))))))"""),
+     False, 175, True),
+    ("165 + function environment, variable value \\e. e list1", knot(r"""\cont.
+   (\next. \list. list (\bit0. bit0 (\unused \r. r next) (\l. cont (\e. e l)))
+                       (list list list))
+   (\bit1.intL (\exp.bit1 (cont (\args\arg.exp (\s. s (\b. b (\u. arg) args))))
+                          (intL (\exp2.cont (\args.exp args (exp2 args))))))"""),
+     False, 181, True),
+    ("universal machine 175, non-strict (intL dbl around the 165)",
+     f"({INT165}) (\\x. x x)", True, 175, True),
+    ("universal machine 187, strict wiring around the 165",
+     rf"(\a. a {GEN165} (\b. b (a a))) (\a. a a)", True, 187, True),
+    ("control: partially applied 165 parser as universal continuation",
+     rf"(\x. x x (x x x)) {GEN165}", True, 177, False),
     # name, source, universal-machine contract?, expected bits, should pass
     ("168 (tromp/AIT 2cfa384)", INT168, False, 168, True),
     ("control: APP operands swapped", INT168.replace("exp args (exp2 args)",
@@ -78,6 +157,35 @@ VARIANTS = [
                           (intL (\exp2.cont (\args.exp args (exp2 args))))))"""),
      False, 177, True),
 ]
+
+# interpreter.md §6 and universal.md §3: complete constructions from Codex's
+# reasoning consults on the 165 (data/self-interpreter/reasoning_165/).
+# (file, universal-machine contract?, expected bits, should pass)
+FLEET_VARIANTS = [
+    ("universal/int166_skip_next.lam", False, 166, True),
+    ("algebra/balanced_skip.lam", False, 169, True),
+    ("algebra/shared_delta.lam", False, 176, True),
+    ("algebra/arity_switch_failed.lam", False, 167, False),
+    ("reader/spine3_bare.lam", False, 158, False),
+    ("reader/spine3_repaired.lam", False, 178, True),
+    ("fresh/late_zero_discard.lam", False, 181, True),
+    ("fresh/return_stream.lam", False, 191, True),
+    ("fresh/return_stream_shared_cont.lam", False, 207, True),
+    ("fresh/reader_diagonal_knot.lam", False, 199, True),
+    ("knot/reader_knot.lam", False, 192, True),
+    ("knot/root_next.lam", False, 214, True),
+    ("nextfuse/tag_after_parse_hoisted.lam", False, 188, True),
+    ("nextfuse/tag_after_parse.lam", False, 189, True),
+    ("nextfuse/tag_after_parse_handler.lam", False, 199, True),
+    ("values/abs_driver.lam", False, 193, True),
+    ("values/tagged_optional.lam", False, 203, True),
+    ("protocol/reparse_selected.lam", False, 225, True),
+    ("protocol/reparse_shared.lam", False, 234, True),
+    ("universal/uni186_skip_next_Kparser.lam", True, 186, True),
+    ("universal/uni188_skip_next_parser_parser.lam", True, 188, True),
+]
+VARIANTS += [(f"fleet: {f}", (FLEET / f).read_text(), uni, want, ok)
+             for f, uni, want, ok in FLEET_VARIANTS]
 
 
 def main():

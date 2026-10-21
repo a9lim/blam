@@ -1,0 +1,81 @@
+[
+  {
+    "bits": 2,
+    "count": 1,
+    "rejected_absent_t": 0,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 3,
+    "count": 0,
+    "rejected_absent_t": 0,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 4,
+    "count": 1,
+    "rejected_absent_t": 1,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 5,
+    "count": 1,
+    "rejected_absent_t": 0,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 6,
+    "count": 2,
+    "rejected_absent_t": 1,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 7,
+    "count": 1,
+    "rejected_absent_t": 1,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 8,
+    "count": 5,
+    "rejected_absent_t": 2,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 9,
+    "count": 5,
+    "rejected_absent_t": 1,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 10,
+    "count": 11,
+    "rejected_absent_t": 6,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 11,
+    "count": 12,
+    "rejected_absent_t": 5,
+    "winners": [],
+    "capped": []
+  },
+  {
+    "bits": 12,
+    "count": 32,
+    "rejected_absent_t": 13,
+    "winners": [
+      "\\b\\c.c t"
+    ],
+    "capped": []
+  }
+]

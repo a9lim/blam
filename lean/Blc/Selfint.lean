@@ -6,13 +6,17 @@ this layer).
 
 PROVED here, zero sorries: the artifact pins — intL's wire identity
 (`wire_intL`, the kernel vouches the constant IS Palmer's 168-bit
-interpreter) and |E_q| = |intL I| = 174 — and the quote-size identity
+interpreter), |E_q| = |intL I| = 174, and the same pin for the 165-bit
+interpreter `intL165` (`wire_intL165`; its self-interpreter proof is
+`Blc/Selfint165.lean`, and qBLC stays on `intL`) — and the quote-size identity
 |stream(M,R)| = 14·|M| + zeros(M) + |R| (`streamOf_length`): the
 measured quote linearity, now kernel-checked.
 
 STATED here as named Props (round-4-ratified statements, thread
-`qblc-selfint`, job cx-20260804-155021-14ee; obligations open, per
-SPEC-BISIM §7): the extensional translation contract `Implements` —
+`qblc-selfint`, job cx-20260804-155021-14ee) and PROVED in
+`Blc/SelfintProof.lean` (`parserStatement`, `l1Statement`,
+`l2Statement`, beside the β-contract `selfint_contract`): the
+extensional translation contract `Implements` —
 P[·] is a CLASS of implementing closures, not a syntax function
 [Codex r3], with the dead-suffix/seed non-inspection captured
 extensionally by the ∀-tail quantification in the VAR clause — and
@@ -88,6 +92,15 @@ def intL : Term := .app (.lam (.app (.var 0) (.var 0))) (.lam (.app (.lam (.lam 
 
 def intLWire : List Bool := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, false, false, false, false, true, false, false, false, false, false, true, true, false, false, false, false, false, false, true, false, true, true, true, false, false, true, true, false, true, true, true, true, false, false, true, false, true, true, true, true, true, true, false, true, false, false, true, false, true, true, false, true, false, true, false, false, false, false, true, true, true, true, false, false, false, false, true, false, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, true, false, true, true, true, false, true, true, true, false, false, true, true, false, true, true, true, true, false, false, true, true, true, true, true, false, false, false, false, true, true, true, true, true, false, false, false, false, true, false, true, true, true, true, false, true, false, false, true, true, true, false, true, false, false, true, true, false, true, false]
 
+/-- The 165-bit self-interpreter: Palmer's 168 with a shorter reader
+(`\list. list (\bit0. bit0 (\unused \r. r next) cont) (list list list)`
+in place of `\list. list (\bit0 \list1. bit0 (list1 next) (cont list1
+(list1 list1 list1)))`), 0-indexed de Bruijn. `wire_intL165` pins it to its
+wire; `Blc/Selfint165.lean` proves it a self-interpreter. -/
+def intL165 : Term := .app (.lam (.app (.var 0) (.var 0))) (.lam (.app (.lam (.lam (.app (.lam (.lam (.app (.app (.var 0) (.lam (.app (.app (.var 0) (.lam (.lam (.app (.var 0) (.var 4))))) (.var 3)))) (.app (.app (.var 0) (.var 0)) (.var 0))))) (.lam (.app (.var 2) (.lam (.app (.app (.var 1) (.app (.var 2) (.lam (.lam (.app (.var 2) (.lam (.lam (.app (.app (.var 1) (.var 2)) (.app (.var 0) (.var 3)))))))))) (.app (.var 3) (.lam (.app (.var 3) (.lam (.app (.app (.var 2) (.var 0)) (.app (.var 1) (.var 0)))))))))))))) (.app (.var 0) (.var 0))))
+
+def intL165Wire : List Bool := [false, true, false, false, false, true, true, false, true, false, false, false, false, true, false, false, false, false, false, true, false, false, false, false, false, true, false, true, true, false, false, false, false, true, false, true, true, false, false, false, false, false, false, true, true, false, true, true, true, true, true, false, true, true, true, true, false, false, true, false, true, true, false, true, false, true, false, false, false, false, true, true, true, true, false, false, false, false, true, false, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, true, false, true, true, true, false, true, true, true, false, false, true, true, false, true, true, true, true, false, false, true, true, true, true, true, false, false, false, false, true, true, true, true, true, false, false, false, false, true, false, true, true, true, true, false, true, false, false, true, true, true, false, true, false, false, true, true, false, true, false]
+
 /-- `E_q = intL I`: the measured 174-bit qBLC self-interpreter. -/
 def intLI : Term := .app intL (.lam (.var 0))
 
@@ -103,6 +116,11 @@ theorem intL_size : intLWire.length = 168 := by decide
 
 /-- |E_q| = 174 — the self-interpretation constant, kernel-checked. -/
 theorem intLI_size : (blcCode intLI).length = 174 := by decide
+
+/-- The 165's transcription, vouched for by the kernel. -/
+theorem wire_intL165 : blcCode intL165 = intL165Wire := by decide
+
+theorem intL165_size : intL165Wire.length = 165 := by decide
 
 -- ---------------------------------------------------------------------------
 -- Closedness plumbing for the size identity.
@@ -157,8 +175,8 @@ theorem quote_length (p : Term) :
   simpa [quote, h] using this
 
 -- ---------------------------------------------------------------------------
--- The translation contract and the L1/L2 statements (v0 drafts —
--- obligations, not theorems; SPEC-BISIM §7).
+-- The translation contract and the L1/L2 statements (SPEC-BISIM §7;
+-- proved in Blc/SelfintProof.lean).
 
 /-- `ρ_R(Δ̂)` (SPEC-BISIM §3): environments as cons'-lists, list head =
 innermost binder (wire index 1, our `var 0`). -/
@@ -202,19 +220,19 @@ def ParserResult (M R Q U : Term) : Prop :=
 
 /-- The induction motor: every finite term's wire parses — no
 closedness hypothesis; environment adequacy lives in `Implements`.
-Open obligation (SPEC-BISIM §7, L1's general form). -/
+Proved: `parserStatement` (Blc/SelfintProof.lean). -/
 def ParserStatement : Prop :=
   ∀ (M R : Term), ∃ Q U, ParserResult M R Q U
 
 /-- L1 (parser correctness — SPEC-BISIM §2): the closed public
-corollary of `ParserStatement`. Open obligation. -/
+corollary of `ParserStatement`. Proved: `l1Statement`. -/
 def L1Statement : Prop :=
   ∀ (M : Term), FreeUnder 0 M → ∀ (R : Term), ∃ Q U, ParserResult M R Q U
 
 /-- L2 (selector / formal poisoned-seed — SPEC-BISIM §3): the VAR
-engine, proved separately by induction on the unary selector, then
-used to discharge C-VAR inside `ParserStatement`'s induction. Open
-obligation. -/
+engine as a parse. Proved: `l2Statement`; the engine itself is
+`engine` (induction on the unary selector), which discharges C-VAR
+inside `parse`'s induction (Blc/SelfintProof.lean). -/
 def L2Statement : Prop :=
   ∀ (i : Nat) (R : Term), ∃ Q U, ParserResult (.var i) R Q U
 

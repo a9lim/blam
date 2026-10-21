@@ -5,7 +5,7 @@ boundaries, and ordered next work. `README.md` is the public map, the domain
 documents under `docs/` state durable contracts and research records, and
 canonical outputs live in `data/`. Superseded state lives in Git history.
 
-Last updated: 2026-10-17.
+Last updated: 2026-10-20.
 
 ## Classical
 
@@ -24,14 +24,16 @@ Last updated: 2026-10-17.
   transitions on the 36..37-bit frontier), so transition-bound rescues run
   10-13× faster than plain stepping.
 - **BBλ(33) = 1,812**, **BBλ(34) = 327,686**, and
-  **BBλ(35) = 38,127,987,424,941** normal-form bits, exact by the exhaustive
-  Rust census plus kernel-checked adjudications of every program the census
-  left open at those sizes (the census itself is not formalized). The eighteen
-  open 35-bit programs are sixteen divergers and two halters with outputs of
+  **BBλ(35) = 38,127,987,424,941** normal-form bits: Tromp's published values
+  (OEIS A333479), confirmed independently by the exhaustive Rust census plus
+  kernel-checked adjudications of every program the census left open at those
+  sizes (the census itself is not formalized). The eighteen open 35-bit
+  programs are sixteen divergers and two halters with outputs of
   4,186,155,666 and 38,127,987,424,941 bits; the latter is the Church numeral
   3^27, proved symbolically. Tromp's hand notes identify the same behaviours
-  (`classical/certificates/busy-beaver.md`). Lambda wrapping gives
-  **BBλ(41) ≥ 38,127,987,424,947**.
+  (`classical/certificates/busy-beaver.md`). A333479 also lists
+  a(36) = 5·2²⁵⁶ + 6 (the Church numeral 2^2^2^3), which this project has not
+  yet checked; its terms end there, so a(37) would be the first new value.
 - `data/classical/unknowns.txt` is the certified frontier: 4,109 terms
   (36: 30, 37: 70, 38: 182, 39: 438, 40: 1,063, 41: 2,326). Regeneration checks
   the exact partition
@@ -131,8 +133,10 @@ closures, and `bb_halts.tsv` eight halters with exact normal-form sizes, from
 two seeds.
 
 `lake build Certs BusyBeaver` checks all 415 exclusions, the eight halting
-certificates, and their wire identities; the Lean development has no sorries
-or mathlib, and its axioms are `propext` and `Quot.sound`.
+certificates, and their wire identities; `lake build` also checks the
+self-interpreter proofs and structural theorems (`Blc/Selfint*.lean`). The
+Lean development has no sorries or mathlib, and its axioms are `propext` and
+`Quot.sound`.
 `scripts/bb-regen.sh` audits the BB registry's axioms, refreshes the
 frontier, and recomputes the exact bounds. A fresh census 4..40 is
 bit-identical to every canonical row. Both release suites pass: 368 tests
@@ -140,36 +144,341 @@ with all features (three opt-in tests ignored) and 328 with default features.
 
 ### Self-interpreter and universal machine
 
-- **The 168** (Sean Palmer's `int.lam`, one let-float of Tromp's 170) has
-  nothing below it in any searched space: exact let structure to four cuts,
-  βη component to +24 and contextual moves to +18, parametric and contextual
-  slot searches, joint two-hole searches, a module lower bound whose unique
-  per-module minima sum to exactly 168, and over a hundred measured protocol
-  changes (`classical/self-interpreter/interpreter.md`). The module bound is
-  conditional on its grammar; a smaller interpreter must fuse control across
-  modules, share work, change the capture layout (worth at most 8 bits), or
-  entangle the knot with the body. Unsearched: the dispatch handler without a
-  direct `cont` at 36–41 bits.
+- **The 162** (`classical/self-interpreter/interpreter.md`,
+  `data/self-interpreter/machines/int162.lam`): the 165's knot and NEXT
+  around a new reader `list I V NEXT` (L 16, A 24, X 32). `list I` makes the
+  first cell its own selection, so on a 0-tag the zero arm is the tail itself
+  applied to NEXT, the reader's last operand; on a variable
+  `V = λu. list (λq. cont) (list list u)` reopens the stream, hands the tail
+  to `cont`, and erases NEXT as the skip's junk operand. The `next` let goes
+  and the reader drops from 43 bits to 40, against +4 for NEXT one binder
+  deeper. The 44-bit reader is Codex's, built while refuting a
+  reader-optimality proof; NEXT as a reader operand is Grok's idea; `blam golf
+  letopt` inlined NEXT into the operand slot of the resulting 166. Lean
+  proves it correct for every closed program (`selfint_contract162`,
+  `isSelfInterpreter_intL162`, `not_selfintSizeBound_163`); its variable
+  residual names the continuation, so the parser statement is per
+  continuation (`not_parses_intL162`). An independent adversarial review
+  re-derived the contract and the size. Battery 667/1/0, and 3,341/2/0
+  through 21 bits; exact suffixes on divergent sources. Its let structure is
+  the unique minimum to three cuts, and its βη component to slack 24
+  (12,024,847 terms) and contextual component to slack 18 hold nothing
+  smaller (`data/self-interpreter/letopt_162.log`, `component_162_*.log`).
+  The 165's reader-shape searches and conditional bounds below do not reach
+  the 162's reader: as a two-operand reader its last operand is the bare
+  `next`, a family they left open.
+- **The 165**, the previous record (`classical/self-interpreter/interpreter.md`,
+  `data/self-interpreter/machines/int165.lam`), Codex's design: Palmer's 168
+  with a reader that computes the skip `list list list` once on the whole
+  stream, where it is right for both dispatch arms, and lets the Scott list
+  hand `list1` to the variable arm, which becomes `cont` itself (L 17, A 25,
+  X 29). Lean proves it, and the 168, correct for every closed program as a
+  β-reduction (`selfint_contract165`, `selfint_contract`). Nothing smaller
+  appears in its tested neighbourhoods: let structure to
+  three cuts (unique minimum), βη component to +20 (2,183,051 terms) and
+  contextual to +16, every reader slot
+  singly and handler × skip jointly through 164-bit interpreters (32,366,372
+  pairs, no survivor, 4,052,176 capped), whole APP ≤ 34 bits, and the 168's
+  near misses rebuilt on it (≥ 166; `merges.py`). The 168's module bound
+  (minima summing to 168) is conditional on opaque modules, the clause the 165
+  breaks; it still bounds the NEXT region the two share. The handwritten
+  reader bound now permits arbitrary handlers: independent rigid laws force
+  `|H| ≥ 27`, so `s H S` costs at least 43 and the unchanged surrounding
+  interpreter at least 165 within that independent rigid interface
+  (`classical/self-interpreter/handler-bound.md`).
+  The strengthened handwritten theorem also permits the actual stream,
+  tag, selector, and suffix correlations, including whole-stream access
+  inside `H`, with the skip fixed to `s s s` and other ambient parameters
+  independent and rigid. Its minimum is still 27. A checked 40-bit
+  correlated handler with only one explicit lambda shows why the proof
+  must price applications rather than transfer every independent-case lemma.
+  For arbitrary correlated handlers, neutral operands `s next` and `s cont`
+  are dominated by `s`, saving 5 and 6 bits. The right-associated
+  operand `s (s s)` is also dominated, saving eight bits. An algebraic
+  classification of all application-only operands through ten bits
+  leaves only `s,j,c,s s,(s s) s`; bare `j,c` have explicit handlers
+  showing why same-handler replacement by `s` fails. The common
+  inert-operand replacement principle is kernel-checked in `SelfintInert`;
+  the per-operand equation and absence checks are handwritten.
+  The complete handwritten cheap-reader bounds are `|H|≥35` for `T=s`
+  and `|H|≥31` for `T=s s`. Together with `|H|≥27` for `T=s s s`,
+  they make 43 bits the exact minimum across these three operand families.
+  With the other 122 bits fixed, 165 is minimal within these three operand
+  families under the stated independent rigid reader laws. The bounds permit
+  every ambient variable, arbitrary whole-stream access, and source beta
+  redexes. The proof excludes every source-compression case, then all
+  remaining normal shapes. Its continuation-ancestry argument counts
+  lambda bodies containing `c`: the original external application edges
+  must consume enough such lambdas, while small index budgets restrict
+  their number even under binary copying. The proof has independent
+  reviews but no Lean formalization. Both cheap operands require at least
+  two explicit source lambdas, or three in beta-normal code; explicit
+  three-lambda handlers cost 49 and 45 bits, with fixed equations checked
+  by `handler_bound.py`. Bare operands `j,c`, lambda-containing operands,
+  other reader heads, actual NEXT/parser behavior, and arbitrary complete
+  interpreters remain outside the bound
+  (`classical/self-interpreter/cheap-tail-bound.md`,
+  `classical/self-interpreter/protocol-obstructions.md`).
+  The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
+  exclusions remain as specified in §5. `SelfintKnot` kernel-checks that
+  an opaque fixed point costs at least `18 + 2k` bits, so the 165's 31 bits
+  of recursion overhead (knot, parser binder, two calls at depths 2 and 3)
+  are minimal in its frame. Codex's handwritten proofs keep the cell at 24
+  bits under only the two Boolean lookup laws and the lift at 19 on actual
+  values, with raw quotation data borrowable (not yet independently
+  reviewed). The reasoning consults in
+  `data/self-interpreter/reasoning_floor/` built about forty further
+  correct interpreters of 166–220 bits besides the 162 and the 166 it was
+  polished from; letopt also shrinks recorded variants (the spine3 repair
+  178→174, tag replay 189→186 and 199→194).
+- **Unconditional structure** (`classical/self-interpreter/structural-bounds.md`):
+  Lean proves that every interpreter has at least two syntactically
+  nonlinear binders, and that an explicit `λc s.B` needs two inside `B`.
+  The normalization argument gives the small numerical floor 18; the
+  `SelfintFloor*` modules raise the kernel-checked floor to 27 without
+  Statman's theorem (`selfintSizeBound_27`, using `Classical.choice`):
+  three live binders, an argument with two free variables, an abstraction
+  body that is not an application, and a classification of minimal
+  application-rooted interpreters below 27 bits. A 584-bit witness has exactly two nonlinear binders, both
+  closed in isolation; a kernel-replayed 71-step reduction reaches the
+  literal 165. A 742-bit β-normal witness also has exactly two closed
+  nonlinear binders, with its contract kernel-checked as β-joinability.
+  Thus the minimum count two is attained even among β-normal interpreters.
+  `SelfintNonlinearChain` kernel-checks a stronger requirement: two
+  nonlinear binders must lie in incomparable branches of the source tree,
+  including wholly inside the body of a literal two-argument interface.
+  A single ancestor chain is preserved by beta reduction and cannot
+  produce the required two-branch Ω output from an affine quotation.
+  Statman's published width obstruction, combined with a handwritten
+  interface argument, strengthens the capture requirement: every interpreter
+  has a subterm with three distinct free variables and at least two live
+  capturing abstractions. A literal two-argument interface, including every
+  beta-normal interpreter, needs three such internal variables and two
+  internal captures, plus the public stream binder's capture of the
+  continuation. Together with the incomparable-binder theorem these give
+  handwritten bit floors 34 globally and 46 for literal interfaces.
+  The three live binders on the width
+  witness's ancestor chain cannot contain the incomparable pair, so a
+  fourth live binder is necessary. This gives a preliminary global floor
+  of 33; analytical exclusion of its equality cases raises it to 34, and
+  `classical/self-interpreter/global-floor.md` excludes 34–36 the same way:
+  **every interpreter has at least 37 bits**. This is Codex's handwritten
+  proof; two independent adversarial reviews (a fresh Codex consult and
+  Gemini) found it correct, the Codex review replaying all 102 finite
+  refutations with its own reducer. `Blc/SelfintFloor37.lean` kernel-checks
+  its 144 fixed reduction clauses; `tools/self-interpreter/theory/floor37/`
+  regenerates them and checks the 108 residual layouts in 0.05 seconds
+  (`data/self-interpreter/theory/floor37.json`).
+  A shared-S construction attains width three, two nonlinear binders,
+  and the required capture counts simultaneously, even
+  in the beta-normal fragment with every zero-based index at most two.
+  It is an existential structural construction, not a compact measured
+  interpreter or an additive decomposition
+  (`classical/self-interpreter/capture-width.md`).
+  A colored reduction theorem proves that quotation-origin binders remain
+  affine, retain one of three protected head shapes, and cannot acquire a
+  live capture; live quotation bodies stay normal and contain only
+  quotation-origin abstractions. Lean also proves that every interpreter
+  has a closed normal source for which every successful colored reduction
+  trace contains a strict increase in interpreter-origin abstractions:
+  a nonlinear interpreter-origin binder must copy an argument containing
+  interpreter-origin code. A handwritten modified SK abstraction
+  construction shows that all interpreter-origin output binders can share
+  one original binder, so distinct output roles do not force distinct
+  origins without a size-sensitive argument. These results do not yet give
+  an additive size decomposition.
+- **Head decomposition** (`classical/self-interpreter/head-decomposition.md`):
+  the unconditional head-normal-form dichotomy has exactly two leading
+  lambdas, headed by either the continuation or the stream. In the former
+  case, continuation occurrences inside the two payloads can be replaced
+  by the stream, preserving the full contract and saving one bit each.
+  These are handwritten results. `SelfintProjections` kernel-checks
+  rigid-spine projection of the contract, including divergent decoded
+  values. Each payload of a literal continuation-headed interpreter
+  needs at least two nonlinear binders and a stream occurrence. Such a
+  head form therefore has at least five nonlinear binders in total and
+  costs at least 55 bits. Codex's handwritten argument, independently
+  reviewed, prices the payloads further: the value payload holds the
+  width-three witness and the incomparable pair internally (at least 37
+  bits), and substituting the stream for the continuation turns the
+  remainder payload into an extractor (at least `25 + q` bits for `q`
+  continuation occurrences), so a literal continuation-headed source costs
+  at least 73. This prices the displayed form only;
+  head normalization is not size-monotone
+  even for fully affine terms. The literal 165 expands to a 755-bit head
+  form in four contractions; its two lambdas, stream head, and two
+  arguments are checked by `tools/self-interpreter/theory/head_decomposition.py`
+  with two fixed affine examples and a sharing counterexample, in 0.002 seconds
+  (`data/self-interpreter/theory/head_decomposition.json`).
+  The latter is a 43-bit non-interpreter with two nonlinear binders;
+  two head contractions create a 125-bit continuation-headed form with
+  two nonlinear binders in each payload and six overall. Its value
+  projection has the wrong rigid head. This demonstrates why the
+  payload counts alone do not price independent source modules.
+  Lean's `SelfintWireCost` proves the exact local beta size balance,
+  including copied code and index movement, and applies it to every
+  redex of a globally minimum interpreter. Such a minimum has no
+  erasing redex; a linear redex needs at least two free argument
+  occurrences and sufficient index savings to offset its six removed
+  bits plus outer-reference decrements. These conditions give no
+  numerical minimum yet. The literal 165's three existing redexes
+  increase size by 147, 3, and 5 bits when contracted individually;
+  the same fixed check validates each charge.
+  The separate syntactic remainder task has a 70-bit construction
+  (`rem70`, `classical/self-interpreter/remainder.md`): Lean proves exact
+  suffix extraction for every source term, including open and divergent
+  sources, and every suffix. The fixed source/wire and symbolic-clause
+  check takes 0.004 seconds (`data/self-interpreter/theory/remainder.json`).
+  This is an unrestricted upper bound for a parser projection, not a
+  self-interpreter or a beta-normal remainder bound. Every closed-source
+  exact extractor has at least 27 bits (Codex's handwritten proof,
+  independently reviewed), so the minimum lies in 27..70.
+  `SelfintRemainderChain` kernel-checks that an extractor's nonlinear
+  binders lie in incomparable branches and the transfer `|E| ≥ Rmin − 8`,
+  worth at most 62 because rem70 exists; `SelfintTower45` gives a 45-bit
+  reader for every λ-tower and index that meets every zero-stream
+  obligation the known proofs use. After an application's left child the
+  residual must distinguish one pending source from none and every pending
+  depth from every other (`SelfintResidualControl`), but a 647-bit
+  extractor with exactly two nonlinear binders, two live captures and one
+  width-three subterm (`SelfintSharedS647`) shows that this obligation
+  forces no further such count in the original source. `SelfintZero`
+  proves that every exact remainder extractor needs two nonlinear
+  binders, including two inside the body of an explicit stream lambda.
+  Only closed-source, closed-suffix beta-join correctness is needed.
+  The proof normalizes source terms with at most one nonlinear binder
+  over a labelled infinite zero stream, then simulates the finite trace
+  on a closed source `λⁿ.I` followed by `Ω` to contradict exact extraction.
+  A separately reviewed, fully kernel-checked theorem proves that every
+  exact remainder extractor strictly increases its own residual-origin
+  lambda count during ordinary weak-head evaluation on every sufficiently
+  long valid source `λⁿ.I`, with any closed suffix. The infinite-zero
+  execution has growth events arbitrarily late: an eventually nongrowing
+  execution would stabilize to one flat code template without carrying
+  an advancing tail, and a uniform label bound would contradict
+  finite-prefix correctness. The result gives neither an explicit input
+  threshold nor a bit-size bound, and does not quantify over every
+  successful beta trace.
+  `WeakHeadClock` kernel-checks the supporting bound on head contractions
+  interspersed with arbitrary beta reductions. The thirteen `SelfintGrowth`
+  modules additionally check data normalization and nongrowth transport,
+  bounded blocked-copy and nonflat-head events, the stable two-copy
+  value classification, uniform fixed-body label bounds, and finite-prefix
+  simulation with a head-clock bound. An exact data-normalizer cost proves
+  strong normalization of every data-reduction order; the extended head
+  machine, counter stabilization, canonical event selection, and full
+  infinite-execution synthesis are checked. The colored ordinary-term
+  realization counts precisely residual copies of the original reader,
+  including on divergent suffixes; input lambdas are excluded.
+  A seventeen-theorem audit across `SelfintZero`, `SelfintProjections`, and `SelfintInert` uses only
+  `propext` and `Quot.sound`, as does a separate four-theorem
+  `WeakHeadClock` audit. The twenty-two growth-support theorems use at most
+  those axioms after constructive event extraction. A fourteen-theorem
+  final synthesis/transfer audit has nine using at most those axioms and
+  five additionally using `Classical.choice` for counter stabilization and
+  classical event selection; the final valid-source theorem is among them.
+  Integrated `lake build Blc` passes all 62 jobs. The floor, knot and
+  remainder-control modules' headline theorems use only
+  `propext` and `Quot.sound`, except `selfintSizeBound_27` and its
+  supporting floor lemmas, which also use `Classical.choice`.
+- **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
+  `typed-normal.md`): the β-normal interpreter is 204 bits
+  (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,
+  normality, and directed contract for every closed source and arbitrary
+  continuation and suffix. A separate 672-bit construction is both
+  β-normal and simply typable: Lean proves its ordinary STLC judgment
+  through a sound annotation checker and its directed contract through
+  a 59-step cast-erasure trace to the literal 165. Application to its
+  quotation need not be simply typable. The 204, 584,
+  672, 742, and four erased-skip variants each pass the existing bounded
+  battery (667 pass, one divergent expected result skipped, zero failures).
+  Targeted divergent-source suffix checks also pass. Sources are in
+  `data/self-interpreter/machines/`, reports in
+  `data/self-interpreter/theory/`, and reproducible checks in
+  `tools/self-interpreter/theory/`. No candidate enumeration is part of
+  these checks. The integrated Lean build passes, with the main theorem
+  axioms limited to `propext` and `Quot.sound`; the five focused Python
+  checks took 14.4 seconds together.
+- **Protocol constraints** (`classical/self-interpreter/protocol-obstructions.md`):
+  the erased skip operand can return the continuation, parser, or generator
+  off the input domain, producing correct 167-, 168-, and 169-bit variants.
+  The unchanged NEXT diagonal fails for every skip function under its
+  handler protocol. Lean proves `E E` cannot be β-equal to `E` for any
+  exact interpreter, excluding an idempotent control response whose
+  self-application would supply the full parser. Root transparency and
+  context independence already force canonical closed internal values,
+  sharpening the cell/APP collision. A continuation-specific handler whose
+  variable projection returns `C v (v v k)` cannot also return every exact
+  constructor value: the closed source `K` forces `v v k =β λy.k`, which
+  cannot be a rigid suffix for any `k`. This excludes that projection,
+  not all handler factories.
+  A representation that erases β distinctions cannot have an exact decoder
+  using only that representation; closed two-sided β-inverse coercions are
+  necessarily identities. A Scott-handler recursion arrangement costs
+  196 bits with shared self-application, 206 without; both pass the
+  667/1/0 battery and Ω suffix check in 3.5 seconds combined
+  (`data/self-interpreter/theory/stream_handler.json`). The adapters still
+  cost more than the 165's parser interface. A self-passed context removes
+  the explicit fixed-point wrapper and costs 191 bits. Its eight fixed
+  parser equations, 667/1/0 battery, and Ω / λa.Ω suffix probes pass in
+  6.189 seconds (`data/self-interpreter/theory/selfpassed.json`); the full
+  structural correctness derivation is handwritten. The context costs
+  166 bits and the public interface and sharing application add 25.
+  A proper one-sided applicative retraction preserves application exactly:
+  `D(A x) →* x` and `(A x)(A y) →* A(x y)`. Its seven rigid equations and
+  two distinct-normal-form checks pass; a scoped missing-variable argument
+  still excludes the raw-selector cell/APP alias with context-independent
+  wrappers (`data/self-interpreter/theory/applicative_retraction.json`).
+  A complete parser carrying the remainder in applicative metadata costs
+  303 bits. Its four rigid equations, 667/1/0 battery, and Ω / λa.Ω suffix
+  probes pass in 1.92 seconds (`data/self-interpreter/theory/metadata_parser.json`).
+  Eliminating its boxes against the public consumer recovers the 165's
+  CPS interface without a further saving. A separate 323-bit construction
+  uses the actual parser generator as each value's application control:
+  `v v` reparses the left value's remainder and combines the next value.
+  Its five rigid equations, 667/1/0 battery, and Ω / λa.Ω exact suffix
+  probes pass in 1.788 seconds (`data/self-interpreter/theory/shared_tag.json`).
+  The handwritten structural proof includes divergent sources. The shared
+  generator costs 262 bits and its public adapter 59; triple boxes and
+  maps outweigh the sharing. Except for the unconditional non-idempotence
+  and its generator corollary, these are protocol-specific handwritten proofs.
 - **The universal machine** (`classical/self-interpreter/universal.md`):
-  Tromp's 178 (non-strict) and 190 (strict) stand. Every wiring around the
-  168's parser body gives no non-strict machine below 178 (four 178s tie, one
-  new) and no strict one below 185, conditional on 3,961 and 2,375,084 capped
-  contexts respectively. A 179-bit alternating parser and a 180-bit
-  partially-applied-parser machine are correct; joint U-specific searches
+  Tromp's wirings around the 162's body give 172 (non-strict) and 184
+  (strict; all seven strictness probes), around the 165's 175 and 187, and
+  around the 168's 178 and 190 (`machines/uni172.lam`, `uni184.lam`). Lean
+  proves all six universal for every closed program, each pinned to its wire
+  (`Blc/Universal.lean`: `isUniversal_uni172` … `uni190`, Tromp's 190 as his
+  compiler emits `uni.lam`, `not_uniSizeBound_173`); strictness stays a
+  seven-probe check. Letopt
+  finds no smaller rendering of 172 or 184, and no wiring search has run
+  around the 162's body yet. Wirings around the 165's body
+  give no non-strict machine below 175 (14,856,126 contexts, 68,017 capped,
+  16,144 of those certified divergent); around the old body no non-strict
+  machine below 178 and no strict one below 185, conditional on 3,961 and
+  2,375,084 capped contexts. Joint U-specific searches around the old body
   screened 2,207,444,203 assignments below 178 with no survivor and 1,462,818
-  caps (`data/self-interpreter/universal.json`). Unsearched: the strict
-  contexts of 39..43 bits (about 31 billion).
+  caps (`data/self-interpreter/universal.json`). The partially applied parser
+  is no longer a universal continuation with the 165's reader. The strict
+  filter has seven probes: Codex's `1 K F` shows that 186- and 188-bit
+  machines around the 165 passing the first six are not strict, and excludes
+  parser-applying base environments at every size. Unsearched: the strict
+  contexts of 39..43 bits around either body.
 
 ### AIT golf
 
-`classical/golf.md`: certified β-golf shrinks 45 of the 117 tromp/AIT
-programs by 470 bits in all (`data/golf/sweep.tsv`; e.g. `tweet` 2230 → 2168,
-`uniK` 903 → 854). Hand redesigns take the IOCCC BLC8 machine from 344 bits
-(43 bytes) to 321 strict (41 bytes) and 300 non-strict (38 bytes), and
-`uni28` from 500 to 399 strict and 382 non-strict. Ports of the 2025-12 parser
-shrink `int4` 189 → 178, `ko2kp` 615 → 557, `nf` 600 → 541, and the pairup
-programs (771, 651, 1325; the last two on contract-valid inputs only).
-Artifacts are in `data/golf/machines/`.
+`classical/golf.md`: certified β-golf shrinks 44 of the 117 tromp/AIT
+programs by 463 bits in all (`data/golf/sweep.tsv`). The upstream branch,
+[tromp/AIT#13](https://github.com/tromp/AIT/pull/13), changes 40 programs by
+1,159 bits, every one as a readable source: 36 of the β-golf gains, several
+beyond the sweep (`tweet` 2230 → 2134, `loader` 1797 → 1781,
+`pairup_Kp` 1402 → 1270), and hand redesigns. The IOCCC BLC8 machine goes from
+344 bits (43 bytes) to 304 strict (38 bytes) and 283 non-strict (36 bytes),
+`uni28` from 500 to 390 / 370, `uni2` to 332, `blc.lam` 195 → 186, and `uniK`
+903 → 826 (599 with eager weakening). The parser ports, now with the 162's
+reader, give `int4` 172, `ko2kp` 540 (so KP(x) ≤ KO(x) + 540), `nf` 535, and
+the pairup programs 756, 651 and 1270 (the last two on contract-valid inputs
+only); `int.lam` is 162 and `uni.lam` 184 strict, 172 non-strict. Artifacts are in
+`data/golf/machines/`.
 
 ### Running programs: blc and uni
 
@@ -204,7 +513,9 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
 
 ### Classical docket
 
-1. **BB(36).** n=36 has 30 open programs. The direct-proof machinery
+1. **BB(36), then BB(37).** Checking Tromp's a(36) = 5·2²⁵⁶ + 6 means
+   adjudicating all 30 open programs at n=36; a(37), 70 open programs, is
+   not yet published anywhere. The direct-proof machinery
    (open-payload head cycles, productive descent, growing spines, confluence,
    symbolic normal forms) is the starting point; the BB(35) pass adjudicated
    only its eighteen seeds and their lambda wraps.
@@ -222,14 +533,32 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    `lean/Blc/Wire.lean`, then derive machine-checked K upper bounds.
 6. **Coding theorem:** rerun the report on the K ≤ 35 cohort; an explicit
    Kraft–Chaitin decoder would upper-bound c.
-7. **AIT golf:** the strict BLC8 machine is one bit over 40 bytes; its whole
-   β-component at slack 16 (1.5M states) has nothing smaller, so 320 needs a
-   structural idea. `uniK` and `blc.lam` still carry pre-redesign variable
-   handling. Upstreaming is a9's call (`contrib/PR_KIT.md`).
+7. **AIT golf:** tromp/AIT#13 awaits Tromp's review (end of October). Terms
+   that Tromp's compiler will not keep as sources: `tree_ordinals` 715
+   against its 726 source, and `loader` 1779 / `tweet` 2130 against 1781 /
+   2134, which need two names bound side by side. Finishers from
+   `pairup_Kp` 1273 and `bf` 806 did not complete. The next BLC8 byte
+   boundaries, 296 strict and 280 non-strict, need another structural step.
 8. **Discrete Solomonoff induction:** measure Church bit-list decode coverage
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
-9. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
+9. **The self-interpreter below 162** (`classical/self-interpreter/interpreter.md`
+   §7). Constructive: the 162's own architecture is new and its
+   neighbourhood beyond letopt and the βη components is unexplored; readers with the bare `next` operand
+   and other heads, the knot × NEXT coupling through the reader's diagonal,
+   and wiring searches for U around the 162's body. NEXT-internal fusions and
+   second-bit dispatch placements are catalogued and lose; NEXT optimality
+   alone is as hard as a 48-bit global floor (any interpreter embeds into
+   the NEXT slot at +44 bits). Look for another shared computation of the
+   kind the readers are, by reasoning first. Proof: the floor is 37
+   handwritten and 27 kernel-checked; the next steps are an
+   application-sensitive charge for residual control (`remainder.md`), which
+   no structural count supplies, and a formalization of residual tracing.
+   The 162's reader is on the fork's golf branch (tromp/AIT#13): `int.lam`
+   162, `uni.lam` 184 / 172, `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp`
+   1270, each verified against its previous version (`classical/golf.md`);
+   the PR's title and a summary comment carry the new table.
+10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the
    open global-allocator decision) would remove most of malloc/free and the
    thread-local accounting from the lazy machine's hot path.
@@ -307,8 +636,10 @@ weight-30 slice, so pruning must reduce mid-ladder states.
 agree at the complete effect-tree level through 24 bits (`blam q selfint 24`:
 19,014 programs verified, 34 skipped as unresolved, 0 trace or pure-NF
 mismatches; witness45 and the poisoned-seed canary pass), and Lean pins the
-wire identities and quote linearity; the bisimulation obligations are open
-(`quantum/bisimulation.md`). The ≤24 sweep takes 1.5 s wall and 18 CPU-seconds
+wire identities and quote linearity and proves the pure-fragment obligations
+L1 and L2; the quantum obligations L3, L4 and B1–B5 are open
+(`quantum/bisimulation.md`). The 162 would give a 168-bit `intL162 I`, not yet
+checked against the qBLC contract. The ≤24 sweep takes 1.5 s wall and 18 CPU-seconds
 on the M5 Max.
 
 `blam q census --cond-k K` implements the conditional family `G_k`, but no
@@ -327,7 +658,9 @@ designated-output convention, derive explicit comparison constants with
    counterpart is measured, and `quantum::scalar::speed_units` is the shared
    rounding.
 4. Complete the complement sweep at sizes 52 and 53.
-5. Continue the odd-sector pruning program (α-normalize `BindId`, stronger
+5. Check the 168-bit `intL162 I` against the qBLC self-interpretation contract
+   (`blam q selfint`).
+6. Continue the odd-sector pruning program (α-normalize `BindId`, stronger
    ε/canonical-port quotienting, a simulation-preorder antichain, the
    component-scoped post-fixpoint with a trusted checker, then the ladder to
    44) and the bisimulation proof. CNOT belongs to the separate Pauli-string
@@ -466,11 +799,12 @@ halt-rounding slack equals the number of inexact divisions (96 units at
 
 ## Repository and release
 
-- The crate is 3.0.0: one `blam` binary over a `blc` substrate, the
+- The crate is 3.0.1: one `blam` binary over a `blc` substrate, the
   classical, quantum, and qALC pillars, and lab-gated research instruments.
   3.0 is a major release because `qalc`'s public types changed and a few
   internal helpers became crate-private; the GitHub release v3.0.0 lists
-  every break.
+  every break. 3.0.1 changes no interface: it republishes the README with
+  the 162-bit self-interpreter and the busy-beaver values credited to Tromp.
 - Checkpoints are `blamckpt v5`, and memo files use the shared tag-first
   codec; older cache files are invalid. Nothing in `data/` uses either.
 - CI runs on pushes to `main` and pull requests into it, not on `dev`. It
@@ -482,8 +816,8 @@ halt-rounding slack equals the number of inexact divisions (96 units at
   determinism. The exhaustive qALC Python batteries and Lean proof checks are
   explicit local commands.
 - `ref/AIT` is pinned to the additive a9lim/AIT fork at `47b51dd`. The fork's
-  `uni-rs` and `golf` branches carry the upstream PRs drafted in
-  `contrib/PR_KIT.md`; both are three commits behind the fork's master.
+  `golf` branch is tromp/AIT#13, rebased on upstream master; `uni-rs` carries
+  the drafted `uni.rs` PR (`contrib/PR_KIT.md`), not yet opened.
 
 ### Accepted operational risks
 

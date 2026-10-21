@@ -1,0 +1,162 @@
+PROTOCOL CO-DESIGN RESULT
+
+No sub-165 interpreter found. No enumeration was performed. Two complete
+hand-derived interpreters were constructed and tested, with two battery
+workers. The repository was not modified. The 165 record was read first;
+the constructions below repair the recorded failing r intL idea rather than
+propose that known failure as a candidate. Their purpose is to determine
+whether the reader's duplicated second-bit stream can supply useful work.
+
+COMPLETE CONSTRUCTIONS
+
+225 bits  ok=667 skip=1 fail=0  reparse_selected.lam
+234 bits  ok=667 skip=1 fail=0  reparse_shared.lam
+
+Unoptimized source and exact wire encodings are saved as matching .lam/.blc
+files. The counts (L,A,X) are (21,32,53) and (22,33,56), respectively. These
+give 225 and 234 using 2L+4A+2+X. Battery times were 2.314 s and 2.366 s.
+Each also passes four tail-extraction probes on Omega, lambda.Omega,
+Omega I, and I Omega: E (lambda v r.r) (quote(M) ++ n) normalizes to n.
+These probes cover a demand boundary omitted by the normal-form battery;
+they are not a substitute for a proof on all divergent programs.
+
+The 225 uses the zero arm (lambda r.r next), deliberately retaining the
+extra application that makes the recorded 162-bit near-miss fail. For a
+constructor, the reader now calls next b t r, where r = cons b t is the
+duplicated stream beginning with the second tag bit. Thus r P = P b t.
+This yields the first parsed value in ABS, and its remainder in APP.
+A complementary parse obtains the missing component. The 234 computes
+the complementary component once with P (b F K) t and binds it as other;
+the extra selector, let, and binder depths make this nine bits larger.
+
+These are not proposed improvements. Relative to 165, the 225 has four
+more lambdas, seven more applications, and 24 more index-excess bits:
+8 + 28 + 24 = 60. The experiment identifies a correct use of the extra
+reader argument, but obtaining its missing information is too expensive
+in these constructions. No minimality of these repairs is claimed.
+
+EXACT IDENTITIES AND CORRECTNESS PROOF
+
+Notation: K = lambda x y.x (bit 0); F = lambda x y.y (bit 1);
+delta(s) = s s s; cell(a,e) = lambda x y.x a (y e).
+Write A(f) = lambda e a.f(cell(a,e)), B(f,g) = lambda e.f e (g e).
+P is a parser with the usual value/remainder interface, including on open
+syntax. Its recursive syntactic value V(M,R) is:
+
+  V(var n,R) = the stream 1^(n-1)0 ++ R;
+  V(lambda M,R) = A(V(M,R));
+  V(M N,R) = B(V(M,quote(N)++R), V(N,R)).
+
+The standard property is P k (quote(M)++R) =beta k V(M,R) R.
+
+1. Selected parsing from the duplicated stream.
+
+For r = cons b (quote(M)++R), set f=V(M,R). Then
+
+  r P =beta P b (quote(M)++R) =beta b f R.
+
+Consequently r P =beta f when b=K and =beta R when b=F.
+The complementary call P (b F K) (quote(M)++R) is R in the
+first case and f in the second. Proof: expand the Scott cons, use the
+parser law, and reduce K/F. This identity does not evaluate f.
+
+2. The 225's constructor law.
+
+The outer reader is s (lambda b0.b0 (lambda r.r next) c) delta(s).
+For first bit 0, s=cons K r and delta(s)=r, so this reduces to
+r next r = next b t r. Its next body is exactly
+
+  b [c (A(r P)) (P F t)]
+    [P (lambda g.c (B(P K t,g))) (r P)].
+
+When b=K and t=quote(M)++R, identity 1 makes this c (A(f)) R.
+When b=F and t=quote(M)++quote(N)++R, identity 1 supplies the second
+operand's input stream, P K t supplies f, and the second parse produces
+c (B(f,g)) R. The variable case is unchanged: first bit F selects c,
+and the Scott stream supplies the unary value and delta(s)=R.
+
+This is an induction on source syntax. Every recursive parse used by a
+constructor parses a proper subterm; duplicating a parse does not change
+that induction measure. It proves precisely the standard P k law above,
+with the same V as the 165. Therefore the existing environment-denotation
+argument yields the exact closed-program contract, divergent syntax
+included. This is a paper proof, not a new Lean formalization.
+
+For the 234, name other = P (b F K) t. Its two branches are
+c (A(r P)) other and P (lambda g.c (B(other,g))) (r P).
+Identity 1 gives the same induction immediately.
+
+INTERFACE IMPOSSIBILITY RESULTS
+
+3. Selecting just one parse component cannot be repaired downstream
+without retaining input-dependent information about the discarded one.
+
+Assume a fixed postprocessor receives b and x=P b (quote(M)++R),
+along with c and P, but has no other dependence on the input stream.
+For ABS, choose the closed body I and two distinct rigid final tails.
+x=P K (quote(I)++R)=beta K I is independent of R, but the required
+outputs c (A(K I)) R have different rigid tails. Church-Rosser rules out
+a common result. For APP, use first operands I and K, the same second
+operand I, and the same final tail. Both selected inputs equal
+quote(I)++R, but the required results contain I versus K I, distinct
+beta-normal forms. Thus no such postprocessor exists at any size.
+
+This proves an obstruction for the already-recorded r P failure. It does
+not prohibit retaining r (as the two constructions do), retaining the
+first value, or changing the value/remainder protocol.
+
+4. Supplying the skipped original stream as well still loses variable
+indices in APP. This also holds for every positive iterate of skip.
+
+Assume the ordinary open-term parser law. Let the first APP operand be
+var n, let R be the second-operand stream, and let
+
+  t_n = 1^n 0 ++ R,       r_n = 1^(n+1) 0 ++ R.
+
+The available selected result is P F t_n =beta R. Also
+delta(r_n)=beta R by the unary skip law, so for every j>=1,
+delta^j(r_n)=beta delta^(j-1)(R). All these fields are independent of n.
+Hence a postprocessor whose only stream-dependent inputs are the
+selected result and any collection of these positive skipped residuals
+cannot recover which first variable was parsed.
+
+This is a contradiction within the closed-program contract, not merely
+an open-term disagreement: place the APP under two lambdas and let its
+second operand be var 1. The two closed programs are
+
+  lambda a b.b b       and       lambda a b.a b.
+
+At the APP boundary their fixed preceding context is identical and all
+the proposed fields coincide, but their required values have different
+beta-normal forms. Their BLC normal forms are 0000011010 and
+00000111010. targeted_checks.json records a normalizer check that both
+the selected fields and delta(r_n) coincide for n=1,2; the general proof
+is the unary reduction above. The result applies only to the stated
+interface. A different VAR return, an unskipped pointer, or an extra
+index-bearing field escapes it.
+
+READ OF THE REMAINING OPPORTUNITY
+
+The extra zero-branch argument can carry useful syntax/control state;
+it is not intrinsically disposable. But using its native r P projection
+splits the exact pair the constructor needs. Combining that projection
+with one or more skipped pointers does not restore the missing value
+when APP's first operand is a variable. Reparsing restores it, at the
+measured cost above.
+
+A smaller design along this route would have to preserve the raw unary
+suffix or another index-bearing value while using the stream's own
+application to supply the continuation arguments. Merely moving skip
+later or taking more skipped residuals cannot do that in this interface.
+I do not have a lower-cost carrier satisfying those requirements, nor a
+lower bound ruling one out. This leaves the sub-165 problem open.
+
+REPRODUCTION
+
+python3 -B check.py
+
+The script uses the existing repository normalizer and battery, forces
+two battery workers, redirects temporary compilation files into this
+directory, and suppresses bytecode writes. battery.json records the
+original measured runs; targeted_checks.json records the additional
+divergence and collision probes.

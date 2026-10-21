@@ -1,0 +1,74 @@
+[
+  {
+    "file": "reference165.lam",
+    "bits": 165,
+    "LAX": [
+      17,
+      25,
+      29
+    ],
+    "ok": 667,
+    "skip": 1,
+    "fail": 0,
+    "failures": [],
+    "elapsed_seconds": 1.9286193750012899,
+    "divergent_suffix_probes": [
+      "Omega: ok",
+      "lambda.Omega: ok"
+    ]
+  },
+  {
+    "file": "reference192.lam",
+    "bits": 192,
+    "LAX": [
+      21,
+      29,
+      32
+    ],
+    "ok": 667,
+    "skip": 1,
+    "fail": 0,
+    "failures": [],
+    "elapsed_seconds": 1.9341274999969755,
+    "divergent_suffix_probes": [
+      "Omega: ok",
+      "lambda.Omega: ok"
+    ]
+  },
+  {
+    "file": "reset_cont192.lam",
+    "bits": 192,
+    "LAX": [
+      21,
+      29,
+      32
+    ],
+    "ok": 667,
+    "skip": 1,
+    "fail": 0,
+    "failures": [],
+    "elapsed_seconds": 1.929413249999925,
+    "divergent_suffix_probes": [
+      "Omega: ok",
+      "lambda.Omega: ok"
+    ]
+  },
+  {
+    "file": "reset_generator192.lam",
+    "bits": 192,
+    "LAX": [
+      20,
+      29,
+      34
+    ],
+    "ok": 667,
+    "skip": 1,
+    "fail": 0,
+    "failures": [],
+    "elapsed_seconds": 1.8824390000008862,
+    "divergent_suffix_probes": [
+      "Omega: ok",
+      "lambda.Omega: ok"
+    ]
+  }
+]

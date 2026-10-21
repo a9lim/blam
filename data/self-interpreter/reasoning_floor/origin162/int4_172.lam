@@ -1,0 +1,10 @@
+-- int4 (four-primitive code: 00 lambda, 01 application, 10 variable zero,
+-- 11 successor) with the 162's reader: 172 bits, against 175 on the fork's
+-- golf branch. battery.py --int4: 172 bits ok=667 skip=1 fail=0; letopt to
+-- three cuts finds nothing smaller.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy (\tag \l. l args)))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

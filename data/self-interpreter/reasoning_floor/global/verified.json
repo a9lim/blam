@@ -1,0 +1,851 @@
+{
+  "layouts": [
+    {
+      "group": 34,
+      "body": "(a b) c",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 6
+    },
+    {
+      "group": 34,
+      "body": "a (b c)",
+      "kind": "at_least_three_lambdas",
+      "steps": 5
+    },
+    {
+      "group": 34,
+      "body": "(a c) b",
+      "kind": "handwritten_growth_invariant",
+      "family": "(a c) b"
+    },
+    {
+      "group": 34,
+      "body": "a (c b)",
+      "kind": "at_least_three_lambdas",
+      "steps": 5
+    },
+    {
+      "group": 34,
+      "body": "(b a) c",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a\\b.a (\\c.b a c)",
+      "steps": 6
+    },
+    {
+      "group": 34,
+      "body": "b (a c)",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": 34,
+      "body": "(b c) a",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a.a (\\b\\c.b) (\\b.b (\\c\\d.c) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.e) #4))) (\\b.#3 b (\\c\\d.c (\\e.d e c)))",
+      "steps": 6
+    },
+    {
+      "group": 34,
+      "body": "b (c a)",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": 34,
+      "body": "(c a) b",
+      "kind": "handwritten_growth_invariant",
+      "family": "(c a) b"
+    },
+    {
+      "group": 34,
+      "body": "c (a b)",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 7
+    },
+    {
+      "group": 34,
+      "body": "(c b) a",
+      "kind": "wrong_continuation_spine",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "group": 34,
+      "body": "c (b a)",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a\\b.a (\\c.c (b a))",
+      "steps": 7
+    },
+    {
+      "group": 35,
+      "body": "(a (a (b c)))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "(a ((a b) c))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "((a a) (b c))",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "((a (a b)) c)",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "(((a a) b) c)",
+      "kind": "exact_head_cycle",
+      "prefix": 2,
+      "period": 3
+    },
+    {
+      "group": 35,
+      "body": "(a (a (c b)))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "(a ((a c) b))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "((a a) (c b))",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "((a (a c)) b)",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "(((a a) c) b)",
+      "kind": "exact_head_cycle",
+      "prefix": 2,
+      "period": 6
+    },
+    {
+      "group": 35,
+      "body": "(a (b (a c)))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "(a ((b a) c))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "((a b) (a c))",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "((a (b a)) c)",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "(((a b) a) c)",
+      "kind": "wrong_continuation_spine",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "group": 35,
+      "body": "(a (b (c a)))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "(a ((b c) a))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "((a b) (c a))",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "((a (b c)) a)",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "(((a b) c) a)",
+      "kind": "wrong_continuation_spine",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "group": 35,
+      "body": "(a (c (a b)))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "(a ((c a) b))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "((a c) (a b))",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "((a (c a)) b)",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "(((a c) a) b)",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 4,
+      "steps": 8
+    },
+    {
+      "group": 35,
+      "body": "(a (c (b a)))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "(a ((c b) a))",
+      "kind": "at_least_three_lambdas",
+      "steps": 3
+    },
+    {
+      "group": 35,
+      "body": "((a c) (b a))",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "((a (c b)) a)",
+      "kind": "at_least_three_lambdas",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "(((a c) b) a)",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a\\b.a",
+      "steps": 13
+    },
+    {
+      "group": 35,
+      "body": "(b (a (a c)))",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "group": 35,
+      "body": "(b ((a a) c))",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "group": 35,
+      "body": "((b a) (a c))",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a\\b\\c.b a (a c)",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "((b (a a)) c)",
+      "kind": "identity_wrong_payload",
+      "payload": 1,
+      "normal_form": "\\a.a (\\b\\c.b) (\\b.b (\\c\\d.c) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.e) #4)))",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "(((b a) a) c)",
+      "kind": "wrong_continuation_spine",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "group": 35,
+      "body": "(b (a (c a)))",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "group": 35,
+      "body": "(b ((a c) a))",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "group": 35,
+      "body": "((b a) (c a))",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a\\b\\c.b a (c a)",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "((b (a c)) a)",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a\\b.a (b (\\c\\d.c) (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.f) #5)))) (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) #6))))",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "(((b a) c) a)",
+      "kind": "wrong_continuation_spine",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "group": 35,
+      "body": "(b (c (a a)))",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "group": 35,
+      "body": "(b ((c a) a))",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "group": 35,
+      "body": "((b c) (a a))",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a.a (\\b\\c.b) (\\b.b (\\c\\d.c) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.e) #4)))",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "((b (c a)) a)",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a.a (\\b\\c.b) (\\b\\c.b) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.d) #3)) (\\b\\c.b)",
+      "steps": 4
+    },
+    {
+      "group": 35,
+      "body": "(((b c) a) a)",
+      "kind": "wrong_continuation_spine",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "group": 35,
+      "body": "(c (a (a b)))",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 1,
+      "steps": 14
+    },
+    {
+      "group": 35,
+      "body": "(c ((a a) b))",
+      "kind": "identity_extra_lambda",
+      "steps": 12
+    },
+    {
+      "group": 35,
+      "body": "((c a) (a b))",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 3,
+      "steps": 14
+    },
+    {
+      "group": 35,
+      "body": "((c (a a)) b)",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 0)",
+      "arity": 6,
+      "steps": 20
+    },
+    {
+      "group": 35,
+      "body": "(((c a) a) b)",
+      "kind": "identity_extra_lambda",
+      "steps": 17
+    },
+    {
+      "group": 35,
+      "body": "(c (a (b a)))",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 4,
+      "steps": 9
+    },
+    {
+      "group": 35,
+      "body": "(c ((a b) a))",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a\\b\\c.c (a b a)",
+      "steps": 10
+    },
+    {
+      "group": 35,
+      "body": "((c a) (b a))",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 3,
+      "steps": 8
+    },
+    {
+      "group": 35,
+      "body": "((c (a b)) a)",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 5,
+      "steps": 9
+    },
+    {
+      "group": 35,
+      "body": "(((c a) b) a)",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 4,
+      "steps": 8
+    },
+    {
+      "group": 35,
+      "body": "(c (b (a a)))",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "group": 35,
+      "body": "(c ((b a) a))",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 4,
+      "steps": 5
+    },
+    {
+      "group": 35,
+      "body": "((c b) (a a))",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "group": 35,
+      "body": "((c (b a)) a)",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 4,
+      "steps": 5
+    },
+    {
+      "group": 35,
+      "body": "(((c b) a) a)",
+      "kind": "identity_wrong_spine",
+      "binders": 2,
+      "head": "('V', 1)",
+      "arity": 4,
+      "steps": 5
+    },
+    {
+      "group": 36,
+      "body": "(a (\\u.b)) c",
+      "kind": "wrong_continuation_spine",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "group": 36,
+      "body": "(a b) (\\u.c)",
+      "kind": "handwritten_growth_invariant",
+      "family": "(a b) (\\u.c)"
+    },
+    {
+      "group": 36,
+      "body": "a (b (\\u.c))",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a\\b.b (\\c\\d.c) (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.f) #5)))",
+      "steps": 12
+    },
+    {
+      "group": 36,
+      "body": "(a c) (\\u.b)",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    {
+      "group": 36,
+      "body": "(a (\\u.c)) b",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 6
+    },
+    {
+      "group": 36,
+      "body": "a (c (\\u.b))",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    {
+      "group": 36,
+      "body": "(b (\\u.a)) c",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 8
+    },
+    {
+      "group": 36,
+      "body": "(b a) (\\u.c)",
+      "kind": "handwritten_growth_invariant",
+      "family": "(b a) (\\u.c)"
+    },
+    {
+      "group": 36,
+      "body": "b (a (\\u.c))",
+      "kind": "wrong_continuation_spine",
+      "arity": 1,
+      "steps": 7
+    },
+    {
+      "group": 36,
+      "body": "(b c) (\\u.a)",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 6
+    },
+    {
+      "group": 36,
+      "body": "(b (\\u.c)) a",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 7
+    },
+    {
+      "group": 36,
+      "body": "b (c (\\u.a))",
+      "kind": "identity_wrong_payload",
+      "payload": 0,
+      "normal_form": "\\a\\b.b (\\c\\d.c (d (\\e.b)))",
+      "steps": 7
+    },
+    {
+      "group": 36,
+      "body": "(c (\\u.a)) b",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": 36,
+      "body": "(c a) (\\u.b)",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": 36,
+      "body": "c (a (\\u.b))",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": 36,
+      "body": "(c b) (\\u.a)",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": 36,
+      "body": "(c (\\u.b)) a",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": 36,
+      "body": "c (b (\\u.a))",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": "36open",
+      "body": "(a (\\u.b)) c",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": "36open",
+      "body": "(a b) (\\u.c)",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": "36open",
+      "body": "a (b (\\u.c))",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": "36open",
+      "body": "(a c) (\\u.b)",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": "36open",
+      "body": "(a (\\u.c)) b",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": "36open",
+      "body": "a (c (\\u.b))",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    {
+      "group": "36open",
+      "body": "(b (\\u.a)) c",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 6
+    },
+    {
+      "group": "36open",
+      "body": "(b a) (\\u.c)",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    {
+      "group": "36open",
+      "body": "b (a (\\u.c))",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    {
+      "group": "36open",
+      "body": "(b c) (\\u.a)",
+      "kind": "handwritten_growth_invariant",
+      "family": "(b c) (\\u.a)"
+    },
+    {
+      "group": "36open",
+      "body": "(b (\\u.c)) a",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 11
+    },
+    {
+      "group": "36open",
+      "body": "b (c (\\u.a))",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 9
+    },
+    {
+      "group": "36open",
+      "body": "(c (\\u.a)) b",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 6
+    },
+    {
+      "group": "36open",
+      "body": "(c a) (\\u.b)",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    {
+      "group": "36open",
+      "body": "c (a (\\u.b))",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    {
+      "group": "36open",
+      "body": "(c b) (\\u.a)",
+      "kind": "handwritten_growth_invariant",
+      "family": "(c b) (\\u.a)"
+    },
+    {
+      "group": "36open",
+      "body": "(c (\\u.b)) a",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 7
+    },
+    {
+      "group": "36open",
+      "body": "c (b (\\u.a))",
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 7
+    }
+  ],
+  "reference_checks": [
+    {
+      "name": "int165",
+      "bits": 165,
+      "lambdas": 17,
+      "leaves": 26,
+      "index_sum": 29,
+      "width": 4,
+      "nonlinear": 7,
+      "normal": false,
+      "incomparable_nonlinear": true
+    },
+    {
+      "name": "int204",
+      "bits": 204,
+      "lambdas": 21,
+      "leaves": 30,
+      "index_sum": 44,
+      "width": 4,
+      "nonlinear": 9,
+      "normal": true,
+      "incomparable_nonlinear": true
+    },
+    {
+      "name": "int584",
+      "bits": 584,
+      "lambdas": 69,
+      "leaves": 68,
+      "index_sum": 176,
+      "width": 7,
+      "nonlinear": 2,
+      "normal": false,
+      "incomparable_nonlinear": true
+    },
+    {
+      "name": "int672",
+      "bits": 672,
+      "lambdas": 29,
+      "leaves": 85,
+      "index_sum": 276,
+      "width": 6,
+      "nonlinear": 10,
+      "normal": true,
+      "incomparable_nonlinear": true
+    },
+    {
+      "name": "int742",
+      "bits": 742,
+      "lambdas": 64,
+      "leaves": 62,
+      "index_sum": 368,
+      "width": 10,
+      "nonlinear": 2,
+      "normal": true,
+      "incomparable_nonlinear": true
+    },
+    {
+      "name": "int168",
+      "bits": 168,
+      "lambdas": 16,
+      "leaves": 27,
+      "index_sum": 30,
+      "width": 4,
+      "nonlinear": 7,
+      "normal": false,
+      "incomparable_nonlinear": true
+    },
+    {
+      "name": "int170",
+      "bits": 170,
+      "lambdas": 16,
+      "leaves": 25,
+      "index_sum": 40,
+      "width": 4,
+      "nonlinear": 7,
+      "normal": false,
+      "incomparable_nonlinear": true
+    }
+  ],
+  "remainder_checks": {
+    "near_miss_bits": 24,
+    "identity_suffix_I_nf": "\\a\\b.b b",
+    "finite_clauses": 8
+  },
+  "lean_clauses": 152,
+  "seconds": 0.026
+}

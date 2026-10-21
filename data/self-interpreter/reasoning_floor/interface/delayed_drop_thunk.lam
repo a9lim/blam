@@ -1,0 +1,1 @@
+(\p0. \c. p0 (\v\t. c v (t t))) ((\x. x x) (\x. (\p. \c. (\j. \s. s (\b. b (\r. r j) c) (s s)) (\d. p (\f\t\q. d (c (\e\a. f (\b\r. b a (r e))) t) (p (\g. c (\e. f e (g e))) (t q))))) (x x)))

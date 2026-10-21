@@ -10,13 +10,21 @@ expansion; the self-interpreter and the universal machine have their own
 records (`self-interpreter/`). This document covers the rest of tromp/AIT:
 
 - a sweep of every program in tromp/AIT with expansion-capable optimizers:
-  45 programs shrink, 470 bits in all;
-- hand redesigns of the BLC8 and BLC2 universal machines:
-  - IOCCC `uni8` 344 → 321 strict and 300 non-strict;
-  - `uni28` 500 → 399;
+  44 programs shrink, 463 bits in all;
+- readable sources for 36 of them, sent upstream as
+  [tromp/AIT#13](https://github.com/tromp/AIT/pull/13), several smaller than
+  the sweep's terms;
+- redesigns of the universal machines:
+  - IOCCC `uni8` 344 (43 bytes) → 304 strict (38 bytes) and 283 non-strict
+    (36 bytes);
+  - `uni28` 500 → 390 strict and 370 non-strict;
+  - `uni2` 340 → 332;
+- redesigns of two more interpreters: the curried-bit `blc.lam` 195 → 186,
+  and the Kiselyov machine `uniK` 903 → 826 (same algorithm) and 599 (eager
+  weakening);
 - ports of the 2025-12 parser design into the programs that still embed the
   old one: `int4`, `ko2kp`, `nf` and the `pairup` programs, whose sizes are
-  constants in Tromp's AIT theorems.
+  constants in Tromp's AIT theorems (KP(x) ≤ KO(x) + 540).
 
 The machines were designed with Codex through independent consults. Who
 contributed which idea is marked where it appears.
@@ -65,30 +73,39 @@ Results are in `data/golf/sweep.tsv`. A long sweep should run a frozen copy of
 the binary (`BLAM=...`), because rebuilding `target/release/blam` mid-run fails
 every later step.
 
+A descent's result is a term, not a source. Each of its moves maps to a
+source change: a let for a shared subterm, a helper taking an argument for an
+anti-unification, a binding moved past a lambda that does not use it, a
+reordered parameter list, or a knot written out as `(\x.x x) (\self. ...)`
+when the self-application itself is worth sharing. Turning the sweep's terms
+into such sources, and descending again from the sources, often goes further
+than the sweep did, and Tromp's compiler sometimes η-reduces a source below
+the term the η-free descent found.
+
 ## Artifacts
 
 `data/golf/machines/` holds each redesigned or ported program. The `.lam` is
-the readable source. The `.blc` is the best bits, either the source compiled
-or a β-only descent of it, in which case the `.path` file is the move path
-that `blam golf check --path` certifies step by step. BLC8 machines also ship
-packed `.blc8`.
+the readable source, as on the upstream branch, and the `.blc` is its
+compiled bits. BLC8 machines also ship packed `.blc8`.
 
 | program | tromp/AIT | best strict | best non-strict |
 |---|---:|---:|---:|
-| `uni8` (BLC8 machine) | 344 (IOCCC; 355 compiled) | **321** | **300** |
-| `uni28` (BLC2 over bytes) | 500 | **399** | **382** |
-| `uni2` (BLC2 machine) | 340 | **333** | **321** (from 324) |
-| `int4` (self-interpreter, 4-primitive code) | 189 | **178** | |
-| `ko2kp` (KP ≤ KO + c) | 615 | **557** | |
-| `nf` (normal-form printer) | 600 | **541** | |
-| `pairupKP` (symmetry of information) | 778 | **771** | |
+| `uni8` (BLC8 machine) | 344 (IOCCC; 355 compiled) | **304** | **283** |
+| `uni28` (BLC2 over bytes) | 500 | **390** | **370** |
+| `uni2` (BLC2 machine) | 340 | **332** | **321** (from 324) |
+| `blc` (curried-bit interpreter) | 195 | **186** | |
+| `uniK` (Kiselyov machine) | 903 | **826**; **599** eager (`uniK_lazy`, `uniK`) | |
+| `int4` (self-interpreter, 4-primitive code) | 189 | **172** | |
+| `ko2kp` (KP ≤ KO + c) | 615 | **540** | |
+| `nf` (normal-form printer) | 600 | **535** | |
+| `pairupKP` (symmetry of information) | 778 | **756** | |
 | `pairupK_p` | 657 | 651 † | |
-| `pairup_Kp` | 1402 | 1325 † | |
+| `pairup_Kp` | 1402 | 1270 † | |
 
 † Verified on contract-valid inputs only. On invalid ones these differ from
 the originals; see below.
 
-## The BLC8 universal machine: 344 → 321 strict, 300 non-strict
+## The BLC8 universal machine: 344 → 304 strict, 283 non-strict
 
 `uni8` reads a program from the bits of a byte stream. Each byte is a
 nil-terminated list of eight bits. The machine discards the rest of the last
@@ -103,44 +120,56 @@ Code's Universal Lambda Machine page). It is the same machine as tromp/AIT's
 | IOCCC `uni8.Blc` | 344 | 43 | published |
 | β-golfed 344 | 334 | 42 | `letopt`, two cuts: `K` floated over the bit handler's ignored binder (−8), `\x. x x` shared between the knot and Ω (−2) |
 | shared reader | 325 | 41 | Codex: one reader `get` replaces the two inline reads and their two refill paths |
-| non-recursive reader | **321** | **41** | a refill lands on a fresh byte, which always has eight bits, so `get` needs no knot |
-| the same, non-strict, base environment `exp` | 308 | 39 | as in tromp/AIT's 178-bit `uni_non_strict` |
-| non-strict, identity continuation | **300** | **38** | Codex's trick from `uni28`: `cont exp bits bytes = exp bits bytes`, which is `M bytes` for closed `M` |
+| non-recursive reader | 321 | 41 | a refill lands on a fresh byte, which always has eight bits, so `get` needs no knot |
+| split read | 319 | 40 | Codex: branch on a code's first bit before reading the second; the abstraction/application path drops a tail binder |
+| the parser takes the read bit | 306 | 39 | Codex: `int8 cont = get (step cont)`; after a variable's tag 11 the second 1 is the first bit of the rest of its code, so `step` re-enters with it and the pushback cell goes |
+| a reader-made bottom | **304** | **38** | Codex: the base environment `get get get` replaces Ω (below) |
+| non-strict, identity continuation | **283** | **36** | Codex's trick from `uni28`: `cont exp bits bytes = exp bits bytes`, which is `M bytes` for closed `M` (300 on the 321) |
 
 The sources are `data/golf/machines/uni8.lam` and `uni8_nonstrict.lam`, with
-`.blc` (ASCII) and `.blc8` (packed) beside them. The reader is
+`.blc` (ASCII) and `.blc8` (packed) beside them. The reader and parser are
 
 ```text
 get k bits = bits h (\bytes. bytes (\byte. byte h byte))
   where h = \b \tail \ignored. k b tail
+step cont b = get (\c. b
+  (int8 (\exp. c (cont ABS) (int8 (\exp2. cont APP))))
+  (c (cont (\args. args c)) (step (\var. cont (\args. var (args c))) c)))
+  where int8 cont = get (step cont)
 ```
 
-The parser reads its two tag bits through `get`. On the variable path it
-pushes the second bit back (`\f. f c tail`) and re-enters itself, as
-`uni8.lam` always has. The Scott-pair environment is unchanged.
+with the Scott-pair environment unchanged, and the machine is
+`get (step (\exp\bits. exp (get get get)))`.
 
-Verification:
+**The bottom.** A strict machine's base environment only has to lack a head
+normal form. With `G = get`, `H k x y z = k x y`, `T h x = x h x`,
+`R h x = x (T h)`, `A_n = H^n G` and `E_n = G A_n (R A_n)`, `G G G` reduces to
+`E_1`, and `E_n` to `L^(3n). E_(n+2)`, where `L^m` stands for `m` leading
+lambdas whose arguments are unused. So `get get get` reduces to ever more
+unused lambdas and never to a head variable, even under arguments: it is
+unsolvable. By the genericity lemma (Barendregt 14.3.24), replacing one
+unsolvable term by another leaves every context's normal form, or its absence,
+unchanged, so the swap is exact under the normal-form contract. Codex's proof
+also checks the recurrence algebraically for `n = 1..12` and β-certifies the
+reader against the definitions above.
 
-- **Differential.** `golf check --io bytes --max-bits 18` against the 344
-  covers every closed program through 18 bits, with and without a trailing data
-  byte, plus random bytes. The 321 gives identical normal forms on all 1,593
-  inputs where either halts. On the other 1,979, both machines exceed the
-  budget; none halts on one machine only. The 300 matches on every closed
-  program and halts on open ones where the strict 344 does not, as intended.
-- **Truncated input.** On 2,801 nil-terminated inputs (every closed program
-  through 18 bits, cut at every byte, plus random bytes), the 321 agrees with
-  the 344 exactly. The non-recursive reader changes nothing here, because
-  running out of bytes gives `nil X = I` either way. Codex measured that the
-  analogous change in `uni28` does alter two incomplete programs, so it was
-  not used there. The 300 agrees with the 344 on every closed and every
-  truncated input; it differs only on open programs, which the 344 refuses.
-- **Nested self-interpretation.** Each of 344, 321 and 308 runs each of
-  them on six programs, including closed variables whose codes cross byte
-  boundaries. All 54 combinations agree.
-- **Tromp's C interpreter.** Under `ref/AIT/uni.c` in byte mode, all three
-  new binaries print `Ni hao` for the IOCCC smoke test. They also reproduce
-  `bin/take256.blc8` on 1,000 random bytes byte-identically, directly, and
-  with the 321 running the 321.
+Verification, each new machine against its predecessor and so back to the
+344:
+
+- **Differential.** `golf check --io bytes --max-bits 20` covers every closed
+  program through 20 bits, with and without a trailing data byte, plus single
+  and random bytes: 6,200 inputs. Strict 304 against 321: 4,222 identical,
+  1,978 over budget on both, 0 different, none halting on one side only.
+  Non-strict 283 against 300: 5,898 identical, 302 over budget on both.
+- **Truncated input.** On 1,777 nil-terminated inputs (every closed program
+  through 18 bits cut at every byte, and nested runs of each machine running
+  the other on small programs), each new machine agrees with its predecessor
+  exactly. The non-recursive reader changes nothing here, because running out
+  of bytes gives `nil X = I` either way.
+- **Tromp's C interpreter.** Under `ref/AIT/uni.c` in byte mode, the 304, the
+  306 and the 283 reproduce `bin/take256.blc8` on 1,000 random bytes
+  byte-identically: directly, running themselves, and as 304 running 304
+  running 283.
 
 ### Why the bit machine's redesign does not port
 
@@ -158,35 +187,94 @@ standard two-component cells the boundary cannot be observed: any marker cell
 is η-equal to the next cell. Cells that carry the remaining bytes as a third
 component can observe it. But then every reader must absorb that component,
 `next` loses its η, `l l l` breaks, and the boundary-tracking flattener
-alone costs about 100 bits. Estimated total: about 358 strict, against 321
-(estimate, not built). Codex independently reached the same conclusion and
-measured a separate-first-bit handler at 348.
+alone costs about 100 bits. Estimated total: about 358 strict (estimate, not
+built), well above the Scott-pair machine. Codex independently reached the
+same conclusion and measured a separate-first-bit handler at 348.
 
 ## The BLC2 machines
 
 BLC2 codes de Bruijn indices in Levenshtein code, so the unary pun behind the
-bit machine's redesign has no direct analogue. Codex's independent attempt
-gives the following.
+bit machine's redesign has no direct analogue. Codex's independent attempts
+give the following.
 
-- **`uni28` (500 → 399 / 382).** One bit reader serves the parser, the
-  Levenshtein delimiter and the digit accumulator. Its continuation is held
-  outside the reader's fixpoint:
-  `get k = let r = \bits. bits (\b\t\_. k b t) (\bytes. bytes r) in r`.
-  The source compiles to 416, and a certified β-descent takes it to 399. The
-  non-strict version ends in the identity continuation: 393, then 382.
-- **`uni2` (340 → 333).** Nothing structural survives: a Church-numeral
-  decoder, reversed environment fields and a closed `false` for the known tag
-  all lose. The 333 is β-golf of Tromp's source, found by the exact let
-  search. Non-strict: 324 → 321.
+- **`uni28` (500 → 390 / 370).** One bit reader serves the parser, the
+  Levenshtein delimiter and the digit accumulator (416). A fresh byte always
+  has a first bit, so the refill applies the byte straight to the
+  continuation and the reader needs no recursion:
+  `get = \k\bits. bits (\b\tail\ignored. k b tail) (\bytes. bytes (\byte. byte k))`
+  (404). On any stream of non-empty bytes it agrees with the recursive reader:
+  `get k (b:t) bs = k b t bs`, `get k [] ((b:t):bs) = k b t bs`, and both give
+  `\x.x` at the end of input. One self-application `delta = \x.x x` then
+  serves both fixpoints and the loop, with the parser's helpers bound inside
+  it (390). The non-strict version ends in the identity continuation: 370.
+- **`uni2` (340 → 332).** Nothing structural survives in the parser: a
+  Church-numeral decoder, reversed environment fields and a closed `false` for
+  the known tag all lose, as does reusing the tag bit as the first Levenshtein
+  bit (the two are independent). One fixpoint combinator
+  `fix = \f.(\x.x x) (\x.f (x x))` serves `delimit` and `int2` (334), the
+  abstraction/application parse moves into a helper (333), and Ω becomes
+  `fix fix` (332): with `F = \x. fix (x x)`, `U = F F` and
+  `W = (\x. U (x x)) (\x. U (x x))`, `fix fix` reduces to `U`, which
+  head-reduces to `U W`, so it is unsolvable. The closed-program variant
+  `int2 (\z. z z)`: 324 → 321.
 
-Codex verified the decoders with deeper tests through index 255 and
-three-level self-interpretation, as well as the differentials, which were
-also re-run independently:
+Verification:
 
-- `uni2`: every bit stream through 14 bits;
-- `uni28`: byte inputs through 18-bit programs.
+- `uni28`: every closed BLC2 program through 18 bits (594), padded with zeros
+  and with ones, with and without a trailing data byte: 2,376 inputs, 2,372
+  identical, 4 over budget on both (Ω), 0 different, for strict and
+  non-strict alike; and every such program cut at every byte (818 inputs),
+  all identical. `golf check --io bytes` (unary-coded programs, mostly
+  garbage to BLC2) gives 0 different, and its inputs that finish on one side
+  only (2 strict, 32 non-strict) are budget effects of its call-by-name
+  evaluator: under call-by-need both machines give `\1` on them.
+- `uni2`: every bit stream through 14 bits, 32,767 inputs: 0 different, none
+  halting on one side only.
+- Codex also verified the decoders with deeper tests through index 255 and
+  three-level self-interpretation.
 
-Both: 0 differ, and 0 halting on one side only for the strict machines.
+## Two more interpreters: `blc.lam` and `uniK`
+
+- **`blc.lam` (195 → 186).** Tromp's interpreter takes the code's bits as
+  separate curried arguments. Every code starts with two bits, so Codex's
+  version takes the second as a parameter instead of binding it in each arm of
+  the first-bit dispatch (−1), and abstraction and application, which both
+  begin by parsing a subterm, share that parse before the second-bit choice
+  (−8). Both steps hold whenever the bits are booleans, so this is held to
+  exact normal forms: every closed program through 20 bits fed bit by bit and
+  compared with the program itself, trailing arguments, `2 (3 2)`, and three
+  levels of self-interpretation: 2,070 inputs, 2,068 identical, 2 over budget
+  on both, 0 different. A `cons'` environment (200), shared variable recursion
+  (198) and separate head/tail arguments (203) all lose.
+- **`uniK` (903 → 826 → 599).** Tromp's universal machine through Kiselyov's
+  bracket abstraction with lazy weakening. Codex's 826 is the same algorithm:
+  one self-application for both fixpoints and the loop, the composition's
+  continuations factored into two helpers (record a needs flag, keep a
+  needs-list) passed together so the compiler keeps them shared, and the
+  variable cases' continuation shared. It is β-convertible to the 903
+  (`data/golf/machines/uniK_lazy.lam`). The 599 replaces the boolean
+  needs-lists with unary depths and eager weakening: a term is a pair
+  `(n, d)`, with `d` abstracting over all `n` surrounding variables, used or
+  not; a variable is a projection (`I`, then `B K` for each further 1),
+  composition aligns depths with `S`, `R` and `B`, and a positive final depth
+  still forces the loop. Every step is a β identity, but the generated
+  combinator terms differ, so the 599 is held to the differential:
+  `golf check --io progs --max-bits 18`, 9,870 inputs, 9,855 identical, 15
+  over budget on both, 0 different, none halting on one side only.
+
+## Cheaper bottoms
+
+A strict machine needs a base term with no head normal form, not Ω itself.
+By the genericity lemma any unsolvable term does the same job exactly, so an
+unsolvable built from bindings already in scope can be cheaper than
+`(\x.x x) (\x.x x)`. It pays twice: `uni8`'s `get get get` (−2) and `uni2`'s
+`fix fix` (−1). Elsewhere Codex's proved alternatives lose: `uni.lam`'s best,
+`intL intL intL`, is 192 against 187; strict `int4` 202 against 197;
+`uni28`'s `get get get` 396 against 390; `uniK`'s `fix fix` 607 against 599;
+`ko2kp`'s clean `Y Y` 566 against 563. These were measured with the 165's
+reader; the 162's lowers both sides of each comparison equally (`uni.lam`
+189 against 184, `ko2kp` clean 566 against 562). `pairup_Kp` has no strict
+bottom: it accepts open programs.
 
 ## Porting the redesign into programs that embed the old parser
 
@@ -202,10 +290,30 @@ They read plain bit streams, so the redesign drops in. ABS builds
 stream itself, does the lookup in any environment. The HOAS constructors
 (`abs`/`app` in `ko2kp`, `L`/`A` in `nf`) are untouched.
 
-| program | original | port | after β-descent |
-|---|---:|---:|---:|
-| `ko2kp` | 615 | 569 | **557** |
-| `nf` | 600 | 562 | **541** |
+| program | original | port | with the 165's reader | source | with the 162's reader |
+|---|---:|---:|---:|---:|---:|
+| `ko2kp` | 615 | 569 | 566 | 541 | **540** |
+| `nf` | 600 | 562 | 559 | 538 | **535** |
+
+The 165's reader (`self-interpreter/interpreter.md`) drops in as well: the
+whole-stream skip `xs xs xs` serves both dispatch arms, 3 bits each. So does
+the 162's, in which the stream selects its own tail and the second-tag stage
+becomes the reader's last operand: 3 bits in `nf`, but 1 in `ko2kp`, whose
+second-tag stage also refers to `abs` and `app` and pays an index bit for
+each under the stream binder. The sources take certified β-moves of the
+ports:
+
+- `ko2kp`: the KP-side definitions (T's case analysis, `nfT`, `appT`,
+  `boolT`, `consT`, `rest`) are scoped to the argument of `p` that uses them
+  (−17); `withT = \b. b A appT` hands T's constructors to builders generic in
+  both, as `uni` is (−5); one `Y` serves `uni`, `nfT` and `go` (−3). Its clean
+  configuration (`IF_DIRTY = false`, with `omega = Y id`) goes from 598 to
+  563, 562 with the 162's reader.
+- `nf`: `cons0`, `cons00` and `cons01` are bound inside `ser`, where their
+  indices are small (−12); `appT` applies a HOAS value, β-reducing a `Lam` and
+  building an `App` otherwise (−7); one `Y` serves `parseval` and `ser` (−2).
+
+Both are certified β-convertible to the ports in every configuration.
 
 `int4.lam` is Tromp's self-interpreter for a four-primitive code: `00` λ, `01`
 application, `10` variable zero, `11` successor. After its tag bit, a
@@ -216,11 +324,14 @@ variable's code reads `1^(2n-2) 0`, unary with every other bit a tag.
 - **Lookup.** The lookup carries over once each environment cell also
   swallows the tag bit that follows a 1: `\zx \zy. zx x (zy (\_ \l. l xs))`.
 
-The rest is the 168 verbatim, and the result is 178 bits, against 189.
+With the rest of the 168 verbatim the result is 178 bits, against 189; with
+the 165's reader, 175, since `l l l` on the whole stream still stops right
+after a variable; with the 162's, 172, since `list list next` does too.
 `battery.py --int4` checks the exact self-interpreter contract on every
-closed term of 4..16 bits plus deep-index extras: 236 of 236 for both the
-original and the port. As a negative control, `int.lam` under `--int4` fails
-19 of the 40 programs of the 4..12-bit battery.
+closed term of 4..16 bits plus deep-index extras: 236 of 236 for the
+original, the 178 and the 175; the 172 passes 667 of 667 through 18 bits.
+As a negative control, `int.lam` under `--int4` fails 19 of the 40 programs
+of the 4..12-bit battery.
 
 `golf check --io progs` compares normal forms on every closed program,
 followed by up to three data bits:
@@ -230,6 +341,11 @@ followed by up to three data bits:
   the remainder by rerunning the program, which exhausts the budget often.
 - `nf` (through 16 bits): all 3,390 inputs identical.
 
+These were run on the ports; the sources are β-convertible to them. With
+the 162's reader, against the 165-reader sources: `ko2kp` through 13 bits,
+332 identical, 0 differ, 328 over budget on both, none on one side only;
+`nf` through 16 bits, all 3,390 identical.
+
 Open programs fall outside both contracts, and the old and new base
 environments give them different garbage.
 
@@ -238,14 +354,32 @@ their parser, and `l l l` skips without recording. The port keeps the old
 bit-by-bit variable loop *only* to record `ps`. It switches the environment
 to `cons'` cells, and returns as the variable's value the stream captured
 before the loop, which looks itself up. `pairup_Kp` has a separate
-prefix-capture layer and takes the whole `cons'`/skipvar interpreter. Polished
-by certified β-descent:
+prefix-capture layer and takes the whole `cons'`/skipvar interpreter.
 
-| program | original | β-golf only | port | after descent |
+| program | original | β-golf only | port | source |
 |---|---:|---:|---:|---:|
-| `pairupKP` | 778 | 775 | 774 | **771** |
+| `pairupKP` | 778 | 775 | 774 | **756** |
 | `pairupK_p` | 657 | 655 | 653 | **651** |
-| `pairup_Kp` | 1402 | 1372 | 1360 | **1325** |
+| `pairup_Kp` | 1402 | 1372 | 1360, 1357 with the 165's reader | 1273, **1270** with the 162's |
+
+The sources take certified β-moves of the ports:
+
+- `pairupKP`: `consBitT` builds `consT (boolT x) xs` with one shared `absT`
+  (−12); `uni` binds the recursion past a unary 1 outside the two arguments
+  it ignores (−2); the T datatype moves ahead of `uni` and the input is
+  applied outside the definitions (−3); the small `appT` is passed into
+  `uni`'s scope from outside (−1). Clean: 813 → 795.
+- `pairupK_p`: the same recursion binding (−2), in all four configurations
+  (CPS 712, clean 777, clean CPS 791).
+- `pairup_Kp`: `uniL1` is defined after `program`, so the compiler keeps one
+  shared `intL (\x.x x)` (−15); `program` becomes closed over its helpers
+  (−9); `readc`'s prefix builder becomes `cont01` (−33); `appsym m b` builds
+  the application of `m` to bit `b`'s term once, outside the node's binders
+  (−17), with three smaller placements (−10).
+
+Against the 1360, the 1357 differs on 24 of 182 raw pairs, each starting with
+a first program β- or η-equal to `λx. x`, which is not a valid description;
+the sources are β-convertible to the 1357 and to the 774 and 653.
 
 Verification:
 
@@ -278,8 +412,10 @@ The sweep covers all 117 `.lam` files of tromp/AIT as pinned (`ref/AIT` at
 - a certificate for every reported term.
 
 The reference is `blcc.py`'s size, which is Tromp's toolchain at its default
-slack. The note column marks the two results that only tie a size the source
-already states, and the programs that were also redesigned by hand.
+slack. The source column gives the size of the readable source on the
+upstream branch (§Upstream), which may also carry a hand redesign; the note
+column marks the two results that only tie a size the source already states,
+and the gains kept out of the branch.
 
 Every gain was audited against its source. Records whose `in` term is the
 record itself count: the fast-growing terms, `hydra`, `loader`, `tweet`. A
@@ -287,65 +423,74 @@ smaller β-convertible term has the same normal form, so it holds the same
 record in fewer bits. Smaller numbers stated in comments turned out to be
 component sizes, except the two ties noted.
 
-| program | tromp/AIT | β-golf | saved | found by | certificate | note |
-|---|---:|---:|---:|---|---|---|
-| `fast_growing_and_conjectures/tweet.lam` | 2230 | **2168** | 62 | descend | beta |  |
-| `ait/uniK.lam` | 903 | **854** | 49 | descend | beta |  |
-| `characteristic_sequences/primes256.lam` | 286 | **252** | 34 | descend | beta |  |
-| `ait/pairup_Kp.lam` | 1402 | **1372** | 30 | descend | beta | by hand: 1325 (valid inputs) |
-| `ait/uni28.lam` | 500 | **474** | 26 | descend | beta | by hand: 399 / 382 |
-| `fast_growing_and_conjectures/tree_ordinals.lam` | 752 | **728** | 24 | descend | beta |  |
-| `lists/sort2.lam` | 435 | **415** | 20 | descend | beta |  |
-| `ait/mpi.lam` | 473 | **454** | 19 | descend | beta |  |
-| `ait/nf.lam` | 600 | **581** | 19 | descend | beta | by hand: 541 |
-| `ait/bf.lam` | 830 | **812** | 18 | descend | beta |  |
-| `characteristic_sequences/squares.lam` | 325 | **308** | 17 | descend | beta |  |
-| `numerals/binary_numerals.lam` | 433 | **416** | 17 | descend | beta |  |
-| `ait/uni8.lam` | 355 | **341** | 14 | descend | beta | by hand: 321 strict / 300 non-strict (vs the IOCCC 344) |
-| `lists/sort.lam` | 300 | **290** | 10 | letopt | beta |  |
-| `lists/take4k.lam` | 100 | **90** | 10 | descend | beta-path |  |
-| `ait/pi.lam` | 401 | **392** | 9 | descend | beta |  |
-| `ait/SKint.lam` | 144 | **136** | 8 | descend | beta-path |  |
-| `fast_growing_and_conjectures/hydra.lam` | 179 | **171** | 8 | letopt | beta |  |
-| `ait/uni2.lam` | 340 | **333** | 7 | letopt | beta |  |
-| `fast_growing_and_conjectures/patcail.lam` | 421 | **414** | 7 | descend | beta |  |
-| `numerals/scott_numerals.lam` | 482 | **475** | 7 | letopt | beta |  |
-| `fast_growing_and_conjectures/laver1.lam` | 268 | **262** | 6 | descend | beta |  |
-| `fast_growing_and_conjectures/loader.lam` | 1797 | **1791** | 6 | descend | beta |  |
-| `ait/bf2.lam` | 1009 | **1005** | 4 | letopt | beta |  |
-| `ait/delimito.lam` | 216 | **212** | 4 | letopt | beta |  |
-| `fast_growing_and_conjectures/laver2.lam` | 212 | **208** | 4 | descend | beta |  |
-| `ait/pairupKP.lam` | 778 | **775** | 3 | descend | beta | by hand: 771 |
-| `ait/triage.lam` | 269 | **266** | 3 | descend | beta |  |
-| `numerals/min.lam` | 52 | **49** | 3 | descend | beta |  |
-| `ait/ko2kp.lam` | 615 | **613** | 2 | descend | beta | by hand: 557 |
-| `ait/pairupK_p.lam` | 657 | **655** | 2 | letopt | beta | by hand: 651 (valid inputs) |
-| `fast_growing_and_conjectures/erdos.lam` | 289 | **287** | 2 | descend | beta |  |
-| `fast_growing_and_conjectures/laver.lam` | 203 | **201** | 2 | letopt | beta | ties the stated 201 with slack 6 |
-| `numerals/church_minimal.lam` | 39 | **37** | 2 | descend | beta | ties the stated 37 with blc -O6 |
-| `numerals/sqrt.lam` | 118 | **116** | 2 | descend | beta |  |
-| `ait/delimit.lam` | 326 | **325** | 1 | letopt | beta |  |
-| `ait/pairlen.lam` | 285 | **284** | 1 | letopt | beta |  |
-| `ait/tree.lam` | 223 | **222** | 1 | descend | beta |  |
-| `characteristic_sequences/primes2.lam` | 217 | **216** | 1 | descend | beta |  |
-| `lists/cycle.lam` | 83 | **82** | 1 | descend | beta |  |
-| `lists/take16k.lam` | 110 | **109** | 1 | descend | beta-path |  |
-| `lists/take1k.lam` | 105 | **104** | 1 | descend | beta |  |
-| `lists/take256.lam` | 81 | **80** | 1 | descend | beta |  |
-| `lists/take64k.lam` | 81 | **80** | 1 | descend | beta-path |  |
-| `numerals/church.lam` | 30 | **29** | 1 | letopt | beta |  |
+| program | tromp/AIT | β-golf | saved | found by | certificate | source | note |
+|---|---:|---:|---:|---|---|---:|---|
+| `fast_growing_and_conjectures/tweet.lam` | 2230 | **2168** | 62 | descend | beta | 2134 |  |
+| `ait/uniK.lam` | 903 | **854** | 49 | descend | beta | 826; 599 with eager weakening |  |
+| `characteristic_sequences/primes256.lam` | 286 | **252** | 34 | descend | beta | 252 |  |
+| `ait/pairup_Kp.lam` | 1402 | **1372** | 30 | descend | beta | 1270 (valid inputs) |  |
+| `ait/uni28.lam` | 500 | **474** | 26 | descend | beta | 390 / 370 |  |
+| `fast_growing_and_conjectures/tree_ordinals.lam` | 752 | **728** | 24 | descend | beta | 726 |  |
+| `lists/sort2.lam` | 435 | **415** | 20 | descend | beta | 415 |  |
+| `ait/mpi.lam` | 473 | **454** | 19 | descend | beta | 454 |  |
+| `ait/nf.lam` | 600 | **581** | 19 | descend | beta | 535 |  |
+| `ait/bf.lam` | 830 | **812** | 18 | descend | beta | 806 |  |
+| `characteristic_sequences/squares.lam` | 325 | **308** | 17 | descend | beta | 301 |  |
+| `numerals/binary_numerals.lam` | 433 | **416** | 17 | descend | beta |  | kept out: the 416 inlines the library into fac |
+| `ait/uni8.lam` | 355 | **341** | 14 | descend | beta | 304 strict / 283 non-strict |  |
+| `lists/sort.lam` | 300 | **290** | 10 | letopt | beta | 290 |  |
+| `lists/take4k.lam` | 100 | **90** | 10 | descend | beta-path |  | kept out: bin/ holds its compiled golden |
+| `ait/pi.lam` | 401 | **392** | 9 | descend | beta | 392 |  |
+| `ait/SKint.lam` | 144 | **136** | 8 | descend | beta-path | 136 |  |
+| `fast_growing_and_conjectures/hydra.lam` | 179 | **171** | 8 | letopt | beta | 171 |  |
+| `ait/uni2.lam` | 340 | **333** | 7 | letopt | beta | 332 / 321 |  |
+| `fast_growing_and_conjectures/patcail.lam` | 421 | **414** | 7 | descend | beta | 414 |  |
+| `fast_growing_and_conjectures/laver1.lam` | 268 | **262** | 6 | descend | beta | 262 |  |
+| `fast_growing_and_conjectures/loader.lam` | 1797 | **1791** | 6 | descend | beta | 1781 |  |
+| `ait/bf2.lam` | 1009 | **1005** | 4 | letopt | beta | 999 |  |
+| `ait/delimito.lam` | 216 | **212** | 4 | letopt | beta | 212 |  |
+| `fast_growing_and_conjectures/laver2.lam` | 212 | **208** | 4 | descend | beta | 208 |  |
+| `ait/pairupKP.lam` | 778 | **775** | 3 | descend | beta | 756 |  |
+| `ait/triage.lam` | 269 | **266** | 3 | descend | beta | 259 |  |
+| `numerals/min.lam` | 52 | **49** | 3 | descend | beta | 49 |  |
+| `ait/ko2kp.lam` | 615 | **613** | 2 | descend | beta | 540 |  |
+| `ait/pairupK_p.lam` | 657 | **655** | 2 | letopt | beta | 651 (valid inputs) |  |
+| `fast_growing_and_conjectures/erdos.lam` | 289 | **287** | 2 | descend | beta | 287 |  |
+| `fast_growing_and_conjectures/laver.lam` | 203 | **201** | 2 | letopt | beta |  | ties the stated 201 with slack 6 |
+| `numerals/church_minimal.lam` | 39 | **37** | 2 | descend | beta |  | ties the stated 37 with blc -O6 |
+| `numerals/sqrt.lam` | 118 | **116** | 2 | descend | beta | 116 |  |
+| `ait/delimit.lam` | 326 | **325** | 1 | letopt | beta | 325 |  |
+| `ait/pairlen.lam` | 285 | **284** | 1 | letopt | beta | 284 |  |
+| `ait/tree.lam` | 223 | **222** | 1 | descend | beta | 222 |  |
+| `characteristic_sequences/primes2.lam` | 217 | **216** | 1 | descend | beta | 216 |  |
+| `lists/cycle.lam` | 83 | **82** | 1 | descend | beta | 82 |  |
+| `lists/take16k.lam` | 110 | **109** | 1 | descend | beta-path |  | kept out: bin/ holds its compiled golden |
+| `lists/take1k.lam` | 105 | **104** | 1 | descend | beta |  | kept out: bin/ holds its compiled golden |
+| `lists/take256.lam` | 81 | **80** | 1 | descend | beta |  | kept out: bin/ holds its compiled golden |
+| `lists/take64k.lam` | 81 | **80** | 1 | descend | beta-path |  | kept out: bin/ holds its compiled golden |
+| `numerals/church.lam` | 30 | **29** | 1 | letopt | beta | 29 |  |
 
-45 programs shrink under β-golf alone, by 470 bits in all; 43 of them below every size their source states. 64 do not shrink; 8 demos are excluded.
+44 programs shrink under β-golf alone, by 463 bits in all; 42 of them below every size their source states. 64 do not shrink; 9 demos are excluded.
 
 Demos (excluded):
 
 - `ait/binary_better.lam` (862 → 192): an example term for the BLC2 size comparison
 - `ait/minbase.lam` (92 → 23): computes S from a smaller base
 - `numerals/SK_numerals.lam` (110 → 31): applies the artifact to sample data
+- `numerals/scott_numerals.lam` (482 → 475): applies the artifact to sample data
 - `numerals/tuple_numerals.lam` (7 → 7): applies the artifact to sample data
 - `rosetta/exp00.lam` (31 → 31): applies the artifact to sample data
 - `rosetta/facY.lam` (160 → 160): applies the artifact to sample data
 - `rosetta/forloops.lam` (139 → 129): applies the artifact to sample data
 - `rosetta/variadicY.lam` (256 → 249): applies the artifact to sample data
 
-No gain from β-golf: `BB/BB40.lam`, `BB/BB_Xi.lam`, `Sample.lam`, `ait/Aint.lam`, `ait/Y.lam`, `ait/allA.lam`, `ait/bcl.lam`, `ait/beavers.lam`, `ait/blc.lam`, `ait/decoders.lam`, `ait/delimit2.lam`, `ait/int.lam`, `ait/int4.lam` (by hand: 178), `ait/mlatu.lam`, `ait/quine.lam`, `ait/readlen.lam`, `ait/uni.lam`, `ait/vararg.lam`, `ait/wtf.lam`, `ait/zot.lam`, `characteristic_sequences/all.lam`, `characteristic_sequences/even.lam`, `characteristic_sequences/none.lam`, `characteristic_sequences/odd.lam`, `characteristic_sequences/primes.lam`, `characteristic_sequences/thue-morse.lam`, `fast_growing_and_conjectures/BBE0.lam`, `fast_growing_and_conjectures/BO.lam`, `fast_growing_and_conjectures/E0.lam`, `fast_growing_and_conjectures/ackermann.lam`, `fast_growing_and_conjectures/bms.lam`, `fast_growing_and_conjectures/collatz.lam`, `fast_growing_and_conjectures/gAckerman.lam`, `fast_growing_and_conjectures/goldbach.lam`, `fast_growing_and_conjectures/goodstein.lam`, `fast_growing_and_conjectures/graham.lam`, `fast_growing_and_conjectures/laver0.lam`, `fast_growing_and_conjectures/melo.lam`, `fast_growing_and_conjectures/oddperfect.lam`, `fast_growing_and_conjectures/perfect.lam`, `fast_growing_and_conjectures/w1CK.lam`, `fast_growing_and_conjectures/w218.lam`, `fast_growing_and_conjectures/wCubed.lam`, `lists/cat.lam`, `lists/fold.lam`, `lists/length.lam`, `lists/map.lam`, `lists/reverse.lam`, `misc/id.lam`, `misc/truth.lam`, `numerals/div.lam`, `numerals/divides.lam`, `numerals/eq.lam`, `numerals/fac.lam`, `numerals/fib.lam`, `numerals/gcd.lam`, `numerals/half.lam`, `numerals/leq.lam`, `numerals/lt.lam`, `numerals/mod.lam`, `numerals/tri.lam`, `rosetta/catstrings.lam`, `rosetta/mutrec.lam`, `rosetta/swap.lam`.
+No gain from β-golf: `BB/BB40.lam`, `BB/BB_Xi.lam`, `Sample.lam`, `ait/Aint.lam`, `ait/Y.lam`, `ait/allA.lam`, `ait/bcl.lam`, `ait/beavers.lam`, `ait/blc.lam` (source: 186), `ait/decoders.lam`, `ait/delimit2.lam`, `ait/int.lam` (source: 162), `ait/int4.lam` (source: 172), `ait/mlatu.lam`, `ait/quine.lam`, `ait/readlen.lam`, `ait/uni.lam` (source: 184 strict / 172 non-strict), `ait/vararg.lam`, `ait/wtf.lam`, `ait/zot.lam`, `characteristic_sequences/all.lam`, `characteristic_sequences/even.lam`, `characteristic_sequences/none.lam`, `characteristic_sequences/odd.lam`, `characteristic_sequences/primes.lam`, `characteristic_sequences/thue-morse.lam`, `fast_growing_and_conjectures/BBE0.lam`, `fast_growing_and_conjectures/BO.lam`, `fast_growing_and_conjectures/E0.lam`, `fast_growing_and_conjectures/ackermann.lam`, `fast_growing_and_conjectures/bms.lam`, `fast_growing_and_conjectures/collatz.lam`, `fast_growing_and_conjectures/gAckerman.lam`, `fast_growing_and_conjectures/goldbach.lam`, `fast_growing_and_conjectures/goodstein.lam`, `fast_growing_and_conjectures/graham.lam`, `fast_growing_and_conjectures/laver0.lam`, `fast_growing_and_conjectures/melo.lam`, `fast_growing_and_conjectures/oddperfect.lam`, `fast_growing_and_conjectures/perfect.lam`, `fast_growing_and_conjectures/w1CK.lam`, `fast_growing_and_conjectures/w218.lam`, `fast_growing_and_conjectures/wCubed.lam`, `lists/cat.lam`, `lists/fold.lam`, `lists/length.lam`, `lists/map.lam`, `lists/reverse.lam`, `misc/id.lam`, `misc/truth.lam`, `numerals/div.lam`, `numerals/divides.lam`, `numerals/eq.lam`, `numerals/fac.lam`, `numerals/fib.lam`, `numerals/gcd.lam`, `numerals/half.lam`, `numerals/leq.lam`, `numerals/lt.lam`, `numerals/mod.lam`, `numerals/tri.lam`, `rosetta/catstrings.lam`, `rosetta/mutrec.lam`, `rosetta/swap.lam`.
+
+## Upstream
+
+The sources go to Tromp as [tromp/AIT#13](https://github.com/tromp/AIT/pull/13),
+from the `golf` branch of the a9lim/AIT fork: one commit per program and
+change, each with its design note and verification, so any subset can be
+taken. Against upstream the branch changes 40 programs and saves 1,159 bits
+in all. `ref/AIT` here stays pinned to the fork's additive `master`; the
+`golf` branch modifies upstream files and never lands there.

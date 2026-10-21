@@ -1,6 +1,6 @@
 [package]
 name = "blam"
-version = "3.0.0"
+version = "3.0.1"
 edition = "2021"
 rust-version = "1.87"
 description = "Binary lambda calculus engine for algorithmic information theory: John Tromp's blc and uni, exhaustive term censuses, busy-beaver frontiers, exact Solomonoff/Kolmogorov measurements"

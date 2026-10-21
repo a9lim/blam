@@ -1,0 +1,2 @@
+c_direct_pair.lam: exit=2 seconds=0.238
+blam golf letopt: inlining the lets does not finish; try --no-inline

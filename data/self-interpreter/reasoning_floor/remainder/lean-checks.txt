@@ -1,0 +1,11 @@
+RemainderChain.lean: exit=0 elapsed=0.293s
+'Blc.RemainderLane.remainder_not_chain' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderLane.literal_remainder_body_not_chain' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderLane.projection_remainder' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderLane.remainder_bound_transfers' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderLane.remainder_bound_eighteen' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderLane.remainder_bound_at_most_seventy' depends on axioms: [propext, Quot.sound]
+
+Tower45.lean: exit=0 elapsed=0.178s
+'Blc.RemainderTower45.reader_zeros_variable' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderTower45.reader_towers' depends on axioms: [propext, Quot.sound]

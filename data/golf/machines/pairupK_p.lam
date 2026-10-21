@@ -1,20 +1,3 @@
--- tromp/AIT pairupK_p.lam (657 bits) with the 2025-12 parser design ported in.
--- Port (Codex, 2026-10-12): environment cells become cons' cells and the
--- variable's value is the stream after its leading 1, which looks itself up;
--- the old bit-by-bit variable loop stays, only to record the consumed bits
--- `ps`, which skipvar would not.
--- This source compiles to 653; pairupK_p.blc (651 bits) is its beta-only
--- descent, certified step by step by blam golf check --path pairupK_p.path.
--- Verified on 60 contract-valid inputs (payload indices to 12, nesting,
--- consumed data), whose normal forms match the original and an
--- independently constructed expected result. It differs from the original
--- on 24 of the 182 raw `golf check --io pairs` inputs, all outside the
--- contract: the first program is not a valid description (p = \x.x hands
--- back the rest of the input instead of a pair), so the second parse
--- starts inside the second program and meets an open term, where the old
--- dirty base environment and the new one give different garbage. With
--- divergent base environments in both, the raw differences vanish.
--- See docs/classical/golf.md.
 -- pairup operator for Kp.
 -- pairup (ps ++ pi ++ qs ++ qi) evaluates to <<po, qo>, rs>, provided that
 -- 1) ps and qs represent the lambda calculus programs p and q, respectively,
@@ -27,8 +10,8 @@ let
   nil = false;
 
   -- Enabling IFDIRTY replaces some omegas by suitable variables to save space.
-  -- IFDIRTY,  !CPS: 657 bits / CPS: 718
-  -- !IFDIRTY, !CPS: 787 bits / CPS: 787
+  -- IFDIRTY,  !CPS: 651 bits / CPS: 712
+  -- !IFDIRTY, !CPS: 777 bits / CPS: 791
   IFDIRTY = true;
   IFCPS = false;
 
@@ -42,9 +25,11 @@ let
   --
   -- In the continuation, ps contains the consumed bits as a difference list.
 
-  -- cons' lookup: the original ys stream is the variable's value.
+  -- cons' lookup (after int.lam, ported by a9lim): the original ys stream
+  -- is the variable's value.
   -- Keep the old bit-recording recursion for ps; discard its variable value.
   -- The initial ys captured by cnt stays intact across every unary step.
+  -- The recursion past a unary 1 is bound outside the two arguments it ignores.
   uni = \abs\app.let uni0 = \cnt\ps\xs.
     xs (\b0.let ps0 = \ts.ps (\p.p b0 ts) in
       \ys\uni0\cnt.ys (\b1.
@@ -52,7 +37,7 @@ let
           b0 (uni0 (\v1.(b1 (cnt (\ctx.abs (\v2.v1 (\zx\zy.zx v2 (zy ctx)))))
                            (uni0 (\v2.cnt (\ctx.app (v1 ctx) (v2 ctx)))))))
              (b1 (cnt ys)
-                 (\d\d.uni0 (\v.cnt ys) ps0 ys)) ps1)) uni0 cnt
+                 (let more = uni0 (\v.cnt ys) ps0 ys in \d\d.more)) ps1)) uni0 cnt
   in uni0;
 
   ----------------------------------------------------------------------------

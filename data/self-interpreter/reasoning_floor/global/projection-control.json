@@ -1,0 +1,9 @@
+{
+  "idea": "Literal continuation-headed decoder with two projections of int165",
+  "value_bits": 178,
+  "remainder_bits": 177,
+  "source_bits": 366,
+  "battery": "366 bits  ok=667 skip=1 fail=0",
+  "value_nonlinear": 7,
+  "remainder_nonlinear": 7
+}

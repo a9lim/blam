@@ -1,0 +1,1 @@
+(\x.x x) (\x.(\p\s.s (\b\r.b (r (\t\u.p (t u (p u)))) (r r r))) (x x))

@@ -1,0 +1,253 @@
+KNOT ENTANGLEMENT CONSULT — NO SUB-165 RESULT
+
+The live interpreter record and STATUS were read before constructing anything.
+No enumerations or component searches were run. All writes are in this directory.
+There are two complete, battery-passing interpreters, both larger than 165.
+The exact identities below are paper proofs, with small Rust-normalizer checks
+where stated; no new Lean proof is claimed.
+
+COMPLETE INTERPRETERS
+
+192 bits  ok=667 skip=1 fail=0  reader_knot.lam
+elapsed=2.395s threads=2
+L=21, A=29, X=32.
+Idea: the existing reader applied to an encoded generator manufactures the
+recursive self-application. The source has no syntactic self-application except
+the one list list inside the skip. This is a working reader-carried knot, at
+27 bits of overhead relative to the 165.
+
+214 bits  ok=667 skip=1 fail=0  root_next.lam
+elapsed=2.428s threads=2
+L=23, A=30, X=46.
+Idea: NEXT receives continuation last; the root uses its known initial zero to
+call NEXT directly, with the Scott cell supplying the continuation application.
+This prices a specific root shortcut, not a new recommendation of the already
+recorded self-passing-NEXT architecture. It is uncompetitive.
+
+Both also passed the specific divergent-source suffix probe
+  E (lambda value rest. rest) (quote(Omega) ++ N) ->* N.
+The normal-form batteries skip one divergent expected value. Correctness beyond
+the battery follows from the paper unfolding/structural-parser arguments below,
+not from treating those finite tests as a universal certificate.
+
+ADDITIONAL ATTEMPT
+
+189 bits, one_binder_carrier.lam: replace the carrier Z_x by T_x = lambda r.r x
+in the 192. The I probe exhausted the battery's 2^20 beta budget (verdict fuel).
+This is NOT a refutation and is NOT a correct-interpreter claim. No full battery
+was run on it. Its altered reduction law is given below.
+
+NOTATION
+
+  K = lambda x y.x                  F = lambda x y.y
+  I = lambda x.x
+  T_q = lambda r.r q
+  Z_q = lambda u r.r q
+  H(q,c) = lambda b.b Z_q c
+  R(q,c) = lambda s.s H(q,c) (s s s)
+
+Let B p c be the 165's body, with recursive parser p supplied as a parameter.
+Thus B p c = R(Q(p,c), c), where
+
+  A(f)   = lambda env arg.f (lambda zx zy.zx arg (zy env))
+  V(f,g) = lambda env.f env (g env)
+  a(c,f) = lambda g.c V(f,g)
+  Q(p,c) = lambda b.p (lambda f.b (c A(f)) (p a(c,f))).
+
+For the original interpreter E, write q_c=Q(E,c), H_c=H(q_c,c), R_c=E c.
+
+EXACT READER/CARRIER IDENTITIES
+
+1. R(q,c) Z_t ->* t t, for completely arbitrary q,c,t.
+
+   R(q,c) Z_t
+   -> Z_t H(q,c) (Z_t Z_t Z_t)
+   -> T_t T_t
+   -> t t.
+
+   The middle step uses Z_t H -> T_t and
+   Z_t Z_t Z_t -> T_t Z_t -> Z_t t -> T_t.
+   Neither q nor c is evaluated. In fact the first argument H(q,c) can be
+   replaced by any A(s): (lambda s.s A(s) (s s s)) Z_t ->* t t, because
+   Z_t discards it. This is stronger than the special t=q case.
+   A Rust normal-form check with q,c,t bound rigidly passed.
+
+2. H(q_i,c_i) R(q_j,c_j) ->* q_i q_i c_i.
+
+   H_i R_j -> R_j Z_(q_i) c_i -> q_i q_i c_i by identity 1.
+   A rigid-variable normal-form check passed for the same-i,j specialization.
+
+3. For any Scott cell s=cons b r, H(q,c) s ->* r q c.
+
+   H s -> s Z_q c -> Z_q b r c -> r q c.
+
+   In particular, for s=cons K r,
+     s (s H(q,c)) ->* q.
+   Indeed s H -> Z_q r -> T_q, hence s(sH) -> T_q K r -> K q r -> q.
+   This extraction fails as a uniform parser operation on leading-one cells:
+   for s=cons F r it instead gives c r F r.
+   The zero-cell extraction passed a rigid-variable normal-form check.
+
+4. With i,j denoting arbitrary pairs (q_i,c_i), (q_j,c_j),
+
+   H_i H_j ->* c_j q_i c_i.
+
+   Proof: H_i H_j -> H_j Z_i c_i -> Z_i Z_j c_j c_i
+          -> c_j q_i c_i.
+   A rigid-variable normal-form check passed.
+
+5. Consequently,
+
+   R_i R_j ->*
+     c_j q_i c_i (c_i q_i c_i H_i) (R_j R_j R_j).
+
+   Proof:
+     R_i R_j -> R_j H_i (R_j R_j R_j)
+       -> H_i H_j (H_i H_i H_i) (R_j R_j R_j),
+   then apply identity 4 to the two H-pairs.
+
+   The full right side need not have a normal form. A normal-form check used
+   c_j = lambda q c u v.marker q c; it discards the two latter arguments and
+   returned marker q_i c_i exactly. The displayed unrestricted identity is
+   justified by the explicit reductions, not by that single observation.
+
+READER-MEDIATED FIXED POINT: THE 192
+
+Define
+  W = lambda x.x I x Z_x                 (28 bits)
+  G = lambda x.B (W x)
+  E_star = W G.
+
+Then there is a finite beta-reduction
+
+  E_star = W G
+    -> G I G Z_G
+    -> B (W I) G Z_G
+    -> R(Q(W I,G),G) Z_G
+    -> G G
+    -> B (W G)
+     = B E_star.
+
+The fourth step is identity 1: the provisional recursive parser W I is never
+called. This establishes the same unfolding equation used by the 165's parser.
+The ordinary induction on source syntax therefore gives the same parse,
+environment/closure, and remainder laws, including finite parsing of sources
+without normal forms. No assertion that arbitrary fixed points are beta-equal
+is being made; the transfer is by that structural parser induction.
+
+reader_knot.lam writes the above once each using explicit redexes. Its only
+equal-child application node is the list list inside list list list, checked
+directly on the unoptimized de Bruijn AST. In particular neither the root nor
+the recursive intL binding contains x x. The interpreter really does obtain
+its recursive diagonal from the reader's existing self-application.
+
+The source cost is (L,A,X)=(21,29,32), versus (17,25,29) for the 165:
+  +4 lambdas, +4 applications, +3 index bits = +27 bits.
+This construction proves that the entanglement exists, not that it saves size.
+
+WHY THE RAW PARSER/NEXT CANNOT BE THE CARRIER
+
+Take any term with the exact reader shape
+  P = lambda c s.s H_c (s s s),
+where H_c is arbitrary and may depend on c. Put T=P P P. Then
+
+  T ->* P H_P T ->* T H_(H_P) (T T T).
+
+These are head reductions and the recursive copy of T is again at the head.
+Repeating them gives an infinite head-reduction sequence, with two more spine
+arguments each time. By head standardization T has no head normal form.
+
+Furthermore, for any fixed R_i,
+  R_i P -> P H_i (P P P)
+        -> T H_(H_i) (T T T),
+so R_i P also has no head normal form.
+
+This rules out feeding a full parser directly into the reader to replace the
+encoded carrier Z_t. It also rules out feeding the 165's current NEXT directly:
+after unfolding E, q_c has this same two-lambda reader shape, with its first
+parameter the tag bit. The result is conditional on this exact reader/skip
+interface, not a lower bound for arbitrary interpreters.
+
+WHY THE CURRENT NEXT DIAGONAL DOES NOT REPLACE E c
+
+Let q=q_c. Define
+  k(f) = q (c A(f)) (E a(c,f)).
+Then q q = E k.
+
+For a fixed f, set
+  d_f = lambda g.c A(f) (c A(g)) (E a(c,g)).
+Expanding q gives
+  k(f) = E d_f (E a(c,f)).
+
+Apply identity 5 with i corresponding to d_f and j to a(c,f). With
+q_d=Q(E,d_f), H_d=H(q_d,d_f), R_a=E a(c,f), this yields
+
+  k(f) ->*
+    c V(f,q_d) d_f (d_f q_d d_f H_d) (R_a R_a R_a).
+
+On quote(I) ++ N, the correct first parse supplies v=lambda z.I, so
+
+  q q (quote(I) ++ N) ->*
+    c V(v,q_d) d_v (d_v q_d d_v H_d) (R_a R_a R_a) N.
+
+There are FIVE arguments at the rigid c head, whereas the required c v N has
+TWO. Beta-reduction cannot remove arguments from that rigid head. Thus q q
+cannot replace E c under the fixed NEXT protocol.
+
+A closed observational check sets c=lambda a b c d e.e. With N bound rigidly,
+  lambda N.q q (quote(I) ++ N) normalizes to 0010         (lambda N.N),
+  lambda N.E c (quote(I) ++ N) normalizes to 0000000010   (lambda N a b c.c).
+Both normal forms were checked by the Rust machine.
+
+Likewise, H(q,c) R(q,c) = q q c = E k c is c-headed immediately; applying an
+ordinary input gives c H_k (c c c) input, with three c-head arguments. Thus
+the tempting H R expression does not already implement the desired parser.
+
+THE ONE-BINDER CARRIER ATTEMPT
+
+For T_t=lambda r.r t, the exact law differs from identity 1:
+
+  R(q,c) T_t
+    -> T_t H(q,c) (T_t T_t T_t)
+    -> H(q,c) t (t t T_t)
+    -> t Z_q c (t t T_t).
+
+It does not erase the active handler. Replacing Z_x by T_x in W gives the
+189-bit candidate, but no fixed-point equation follows. For this W_T,
+  W_T I -> T_I,
+  W_T D -> D D, where D=lambda x.x x.
+The latter follows from
+  D I D T_D -> I I D T_D -> D T_D -> T_D T_D -> D D.
+This is an obstruction in the bootstrap calculation, not a proof that the
+complete 189-bit candidate diverges. Its only measured verdict is the I-probe
+fuel exhaustion stated above.
+
+ROOT-NEXT CONSTRUCTION
+
+The 214 uses a continuation-last NEXT Q and the shared parser
+  P_Q c s = s (lambda b.b (lambda u r.r Q c) c) (s s s).
+Its fixed-point equation is
+  Q b s c = P_Q (lambda f.b (c A(f)) (P_Q a(c,f))) s.
+The root is
+  E_root c s = s (lambda u r.r Q) c.
+Every closed source begins with a zero tag. For s=cons K r, both E_root c s
+and P_Q c s reduce to r Q c. The same syntax induction proves P_Q correct.
+The boundary shortcut is sound, but the continuation-last plumbing and binding
+depth dominate its savings.
+
+WHERE A SMALLER TERM COULD HIDE
+
+The new positive seam is the unrestricted R_i Z_t -> t t identity. It avoids
+the handler-only C-headed exclusion by mixing the reader and the zero-arm
+constructor. The 192 realizes this seam without a separate syntactic knot.
+
+To improve 165, the encoded-generator adapter would have to share a real
+semantic role. The natural candidate is to make the existing Z_next also be
+Z_generator, so that NEXT carries its own recursive generator. The raw parser
+and current NEXT are excluded as direct carriers by the head-divergence result,
+and current NEXT self-application is excluded by the rigid-head arity proof.
+Such a design must therefore change NEXT's behavior on non-Boolean arguments
+and how continuations are carried, while retaining its two Boolean cases.
+That is an open construction problem here, not a claim of a near solution.
+
+No global or sub-165 optimality conclusion follows from this consult.

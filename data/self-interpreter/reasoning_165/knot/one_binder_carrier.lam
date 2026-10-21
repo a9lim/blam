@@ -1,0 +1,11 @@
+-- Targeted attempted shrink of reader_knot: use T_x = \r. r x instead of Z_x.
+-- Its mixed-reader behavior is not the Z identity; tested only on I first.
+(\w.
+  w (\x. (\intL. \cont.
+    (\next. \list.
+      list (\bit0. bit0 (\unused \r. r next) cont) (list list list))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+    (w x)))
+(\x. x (\u. u) x (\r. r x))

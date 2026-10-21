@@ -7,20 +7,33 @@ machine rather than the self-interpreter:
 U (⌜M⌝ ++ N) =β M N        for closed M
 ```
 
-Tromp gives two (`ref/AIT/ait/uni.lam`):
+Tromp's two wirings (`ref/AIT/ait/uni.lam`) are
 
 ```text
-178, non-strict:  (\x. x x) F (\x. x x)            = intL dbl
-190, strict:      (\a. a F (\b. b (a a))) (\a. a a) = intL (\z. z Ω)
+non-strict:  (\x. x x) F (\x. x x)            = intL dbl
+strict:      (\a. a F (\b. b (a a))) (\a. a a) = intL (\z. z Ω)
 F = \x. (\intL. B) (x x)
 ```
 
-`B` is the 168's parser body `\cont. …` (146 bits), whose only free variable
-is `intL`, used twice. *Strict* means, in BLC.tex's words, that "any attempt
-to apply free indices diverges", so the machine forces closed programs; the
-190 gets this from an Ω base environment. **No machine below 178, and no
-strict machine below 190, is known.** This record states what has been
-searched; the self-interpreter's own record is `interpreter.md`.
+where `B` is a parser body `\cont. …` whose only free variable is `intL`, used
+twice. Around the 162's body (140 bits, `interpreter.md`) they are **172** and
+**184** bits (`data/self-interpreter/machines/uni172.lam`, `uni184.lam`; both
+pass the battery, the 184 all seven strictness probes, and `blam golf letopt`
+finds no smaller rendering of either); around the 165's body (143 bits) they
+are 175 and 187 (`uni175.lam`, `uni187.lam`), and around the 168's (146 bits)
+Tromp's 178 and 190. Each wiring is a corollary of its interpreter's
+contract, `E dbl (⌜M⌝ ++ N) →β* dbl (λz. M) N →β M N` and, since the strict
+wiring β-reduces to `E (λb. b Ω)`, `→β* (λb. b Ω) (λz. M) N →β* M N`; Lean
+proves all six universal this way, each pinned to its wire
+(`lean/Blc/Universal.lean`). *Strict* means, in BLC.tex's words, that "any attempt to
+apply free indices diverges", so the machine forces closed programs; the
+strict wiring gets this from an Ω base environment, which the 162's and the
+165's readers leave untouched, since they change only how the code is read.
+**No machine below 172, and no strict machine below 184, is known.** This
+record states what has been searched; the self-interpreter's own record is
+`interpreter.md`. Most of the searches below were run around the 168's body,
+so their bounds are 178 and 190, and the rest around the 165's; §1 and §2 say
+which. None has yet been run around the 162's body.
 
 U's contract leaves the output boundary to the machine: there is no `λz` and
 no external `C`. So a protocol that lost for the self-interpreter only at
@@ -35,7 +48,14 @@ base environment, and any sharing. `wiring` holds `B` fixed and enumerates
 every closed context `C[·]` with one hole. The hole's `intL` may be bound to
 any enclosing binder, the k-th costing 2k bits. Each `C[B]` must meet
 `\n. C[B] (⌜M⌝ ++ n) = \n. M n` on 91 programs, with the reference's normal
-forms as goldens. The 178 is a 32-bit context.
+forms as goldens. The 178 is a 32-bit context. Unless marked, the counts below
+are around the 168's body.
+
+**Around the 165's body.** Every context giving a machine of at most 174 bits,
+14,856,126 in all, fails or is capped (68,017 capped, of which 16,144 are
+certified divergent), so no non-strict machine of this shape is below 175
+conditional on the remaining caps (`searches_165.json`). The four 32-bit
+wirings below survive with the new body as four 175-bit ties.
 
 **Non-strict.** All 28,373,474 contexts of at most 32 bits were searched. None
 of at most 31 bits survives (14.9 million contexts, with the capped ones
@@ -60,8 +80,11 @@ They are why "no machine of this shape below 178" is conditional on these
 3,961 diverging.
 
 **Strict.** `--strict` adds Tromp's convention: no normal form within 2¹⁶ β
-on six open programs that use their free variable (`1`, `2`, `\2`, `1 1`,
-`1 1` followed by the data bits `10`, and `\\4`), each terminated by `nil`.
+on seven open programs that use their free variable (`1`, `2`, `\2`, `1 1`,
+`1 1` followed by the data bits `10`, `\\4`, and `1 (\\2) (\\1)`), each
+terminated by `nil`. The seventh is Codex's (below); the searches of this
+section ran with the first six, and a further probe only removes survivors, so
+their exclusions stand. `battery.py --uni --strict` runs the same seven.
 The tail must be concrete. With a symbolic tail,
 `intL (intL intL)` at 182 bits passes: its base environment is the parser's
 own dispatch handler, so a free variable re-parses the leftover input, and
@@ -81,10 +104,30 @@ cheap alternatives (`dbl`, `F`, the parser's own handler) all return values
 or re-read input; Ω via a shared `dbl` (`\b. b (a a)`, 12 bits over the 178)
 is the cheapest found. An environment with no normal form can still fail
 strictness after object-level application: free indices alone diverge, but
-`1 1` normalizes. Head divergence avoids that trap, and the 190 passes all six
+`1 1` normalizes. Head divergence avoids that trap, and the 190 passes all seven
 nil-terminated probes.
 
 Logs: `wiring_uni.log`, `wiring_uni_strict.log`.
+
+The probes are a filter, not a proof of strictness: a machine whose base
+environment has no normal form can still return garbage on an open program
+whose nil tail discharges the apparent recursion. The 187 and the 190 owe their
+strictness to their base environment Ω, supplied by the top continuation
+`λv. v Ω`: a free index looks itself up in Ω and diverges at the head. The
+probes only corroborate it.
+
+The seventh probe exists because the first six were not enough. Codex built
+two machines around the 165 with the skip `list list next`:
+`(\e. e (\v. v (\b. e))) P` at 186 bits (base environment `K P`) and
+`(\e. e (\v. v (e e))) P` at 188 (base environment `P P`). Both meet the
+contract and are capped on all six probes, but on `M = 1 K F` the variable
+returns the selector `cons K R` with `R = ⌜K⌝ ++ ⌜F⌝ ++ N`, so
+`U (⌜M⌝ ++ N) →* P R K F N →* R N`, a finite stream when `N` is nil. The 186
+halts with a 183-bit normal form, the 188 with `I`. The argument uses only the
+ordinary variable and APP values, so no skip expression makes a base
+environment `K P_Q` strict, and for the 165's own parser no base environment
+`P a` is strict either (open `2` reduces to `N`). Proofs and checks are in
+`data/self-interpreter/reasoning_165/universal/`.
 
 ## 2. βη and let structure
 
@@ -95,12 +138,15 @@ candidate cuts) the best size is 180, 178, 178 at one, two, and three cuts:
 190 (528 candidate cuts) it is 196, 192, 190, with the 190 itself at three
 cuts. `component` to slack 20 has 8,527,620 terms from the 178, nothing
 below it and the two sharing forms as its only ties, and 5,563,972 terms from
-the 190, nothing below it and no tie (`component_uni.log`).
+the 190, nothing below it and no tie (`component_uni.log`). Around the 165's
+body the 175's let structure through three cuts has minimum 175, and its
+component at slack 16 has nothing below 175 and two ties
+(`searches_165.json`).
 
 ## 3. Protocol constructions
 
-Every construction below is a complete machine, measured against the exact
-contract. None goes below 178.
+Every construction below is a complete machine around the 168's body,
+measured against the exact contract. None goes below 178.
 
 | construction | bits | result |
 |---|---:|---|
@@ -119,7 +165,11 @@ contract. None goes below 178.
 
 The 180 works because every partially applied parser is a universal
 continuation: `F y c (λz.M) N = M N`, since a value applied to the handler
-gives M.
+gives M. The 165's reader breaks this: it applies the stream to the handler and
+then to `s s s`, so a value read as a stream gives `P c (λz.M) = M (M (λz.M))`,
+and `(\x. x x (x x x)) F` around the 165's body (177 bits) fails 648 of 667
+programs (`merges.py`). Constructions that feed a value to the parser as its
+input do not carry over to the new body.
 
 **The alternating parser.** Let `B p` denote the parser body with recursive
 entry `p`, and define
@@ -234,6 +284,9 @@ Open:
 - the strict contexts of 39..43 bits around `B` (30,967,305,647);
 - the 282 capped fills in the arbitrary-context-around-`G` family, and the
   capped assignments of §4;
+- the 51,873 unexcluded caps among the wirings around the 165's body, and the
+  strict wirings around it beyond Tromp's and the parser-applying base
+  environments excluded in §1;
 - a coordinated representation that exploits reachable relationships between
   control and values. The experiments above narrow several specific
-  implementations of that idea; they do not prove 178 minimal.
+  implementations of that idea; they do not prove 175 minimal.

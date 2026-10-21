@@ -1,0 +1,5 @@
+Command: /Users/a9lim/.elan/bin/lean -j 1 /Users/a9lim/Work/blam/tmp/overnight/global/FiniteChecks.lean
+'Blc.Global37Checks.macro34_pair_pump' depends on axioms: [propext]
+'Blc.Global37Checks.macro36_reverse_pump' depends on axioms: [propext]
+Exit: 0
+Seconds: 1.218

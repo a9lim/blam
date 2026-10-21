@@ -1,0 +1,1 @@
+(\x. x x) (\x. (\intL. \cont. (\next. \list. list (\bit0. bit0 (\unused \r. r next) cont) (list list list)) (\bit1. intL (\exp \rest. intL (\exp2. cont (\args. exp args (exp2 args))) (bit1 (\u \v. cont (\args \arg. exp (\zx \zy. zx arg (zy args))) rest) rest)))) (x x))

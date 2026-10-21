@@ -1,0 +1,134 @@
+[
+  {
+    "tree": "(a b) c",
+    "n": "\\a\\b.a (\\c.(a b) c)",
+    "source_bits": "0100011010000001110000101111011010",
+    "head_status": "hnf",
+    "head_steps": 6,
+    "head_result": "\\a\\b.a (\\c.a (\\d.(\\e.(\\f\\g.f (\\h.f g h)) a e) b d) c)",
+    "I_status": "hnf",
+    "I_steps": 8,
+    "I_result": "\\a\\b.a (\\c.a (\\d.(\\e.(\\f\\g.f (\\h.f g h)) a e) (\\e.e (\\f\\g.f) (\\f.f (\\g\\h.g) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.i) b)))) d) c)"
+  },
+  {
+    "tree": "a (b c)",
+    "n": "\\a\\b.a (\\c.a (b c))",
+    "source_bits": "0100011010000001110000111100111010",
+    "head_status": "hnf",
+    "head_steps": 5,
+    "head_result": "\\a\\b\\c.a (\\d.(\\e.(\\f\\g.f (\\h.f (g h))) (a e)) (b d)) (\\d.a (\\e.(\\f.(\\g\\h.g (\\i.g (h i))) (a f)) (b e)) (c d))",
+    "I_status": "hnf",
+    "I_steps": 7,
+    "I_result": "\\a\\b\\c.a (\\d.(\\e.(\\f\\g.f (\\h.f (g h))) (a e)) ((\\e.e (\\f\\g.f) (\\f.f (\\g\\h.g) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.i) b)))) d)) (\\d.a (\\e.(\\f.(\\g\\h.g (\\i.g (h i))) (a f)) ((\\f.f (\\g\\h.g) (\\g.g (\\h\\i.h) (\\h.h (\\i\\j.j) (\\i.i (\\j\\k.j) b)))) e)) (c d))"
+  },
+  {
+    "tree": "(a c) b",
+    "n": "\\a\\b.a (\\c.(a c) b)",
+    "source_bits": "0100011010000001110000101111010110",
+    "head_status": "cap",
+    "head_steps": 100,
+    "head_result": "\\a\\b.(\\c.(\\d.(\\e.(\\f\\g.f (\\h.f h g)) e a) d b) c a) (\\c.(\\d.(\\e.(\\f.(\\g.(\\h.(\\i.(\\j.(\\k.(\\l.(\\m.(\\n.(\\o.(\\p\\q.p (\\r.p r q)) o a) n b) m a) l a) k a) j a) i a) h a) g a) f a) e a) d a) c a) a a a a a a a a a b a a a a a a a a a b a a a a a a a a b a a a a a a a b a a a a a a b a a a a a b a a a a b a a a b a a b a b",
+    "I_status": "cap",
+    "I_steps": 100,
+    "I_result": "\\a\\b.(\\c.(\\d.(\\e.(\\f.(\\g.(\\h\\i.h (\\j.h j i)) g a) f (\\g.g (\\h\\i.h) (\\h.h (\\i\\j.i) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.k) b))))) e a) d a) c a) (\\c.(\\d.(\\e.(\\f.(\\g.(\\h.(\\i.(\\j.(\\k.(\\l.(\\m.(\\n.(\\o.(\\p\\q.p (\\r.p r q)) o a) n (\\o.o (\\p\\q.p) (\\p.p (\\q\\r.q) (\\q.q (\\r\\s.s) (\\r.r (\\s\\t.s) b))))) m a) l a) k a) j a) i a) h a) g a) f a) e a) d a) c a) a a a a a a a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) a a a a a a a a a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) a a a a a a a a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) a a a a a a a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) a a a a a a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) a a a a a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) a a a a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) a a a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) a a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e"
+  },
+  {
+    "tree": "a (c b)",
+    "n": "\\a\\b.a (\\c.a (c b))",
+    "source_bits": "0100011010000001110000111100110110",
+    "head_status": "hnf",
+    "head_steps": 9,
+    "head_result": "\\a\\b\\c.a b a (\\d.a b a (d (\\e.(\\f.(\\g.(\\h\\i.h (\\j.h (j i))) (g a)) (f b)) a (e c))))",
+    "I_status": "hnf",
+    "I_steps": 11,
+    "I_result": "\\a\\b\\c.a (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.f) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.h) b)))) a (\\d.a (\\e.e (\\f\\g.f) (\\f.f (\\g\\h.g) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.i) b)))) a (d (\\e.(\\f.(\\g.(\\h\\i.h (\\j.h (j i))) (g a)) (f (\\g.g (\\h\\i.h) (\\h.h (\\i\\j.i) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.k) b)))))) a (e c))))"
+  },
+  {
+    "tree": "(b a) c",
+    "n": "\\a\\b.a (\\c.(b a) c)",
+    "source_bits": "0100011010000001110000101110111010",
+    "head_status": "hnf",
+    "head_steps": 4,
+    "head_result": "\\a\\b.a (\\c\\d.c (\\e.d c e)) (\\c.b (\\d.a (\\e\\f.e (\\g.f e g)) d) c)",
+    "I_status": "hnf",
+    "I_steps": 6,
+    "I_result": "\\a\\b.a (\\c\\d.c (\\e.d c e)) (\\c.(\\d.d (\\e\\f.e) (\\e.e (\\f\\g.f) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.h) b)))) (\\d.a (\\e\\f.e (\\g.f e g)) d) c)"
+  },
+  {
+    "tree": "b (a c)",
+    "n": "\\a\\b.a (\\c.b (a c))",
+    "source_bits": "0100011010000001110000111001111010",
+    "head_status": "hnf",
+    "head_steps": 4,
+    "head_result": "\\a\\b.a ((\\c\\d.c (\\e.d (c e))) (\\c.b ((\\d.a ((\\e\\f.e (\\g.f (e g))) d)) c)))",
+    "I_status": "hnf",
+    "I_steps": 6,
+    "I_result": "\\a\\b.a ((\\c\\d.c (\\e.d (c e))) (\\c.(\\d.d (\\e\\f.e) (\\e.e (\\f\\g.f) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.h) b)))) ((\\d.a ((\\e\\f.e (\\g.f (e g))) d)) c)))"
+  },
+  {
+    "tree": "(b c) a",
+    "n": "\\a\\b.a (\\c.(b c) a)",
+    "source_bits": "0100011010000001110000101110101110",
+    "head_status": "hnf",
+    "head_steps": 4,
+    "head_result": "\\a\\b.a (\\c.b c (\\d.a d (\\e\\f.e (\\g.f g e)))) (\\c\\d.c (\\e.d e c))",
+    "I_status": "hnf",
+    "I_steps": 6,
+    "I_result": "\\a\\b.a (\\c.(\\d.d (\\e\\f.e) (\\e.e (\\f\\g.f) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.h) b)))) c (\\d.a d (\\e\\f.e (\\g.f g e)))) (\\c\\d.c (\\e.d e c))"
+  },
+  {
+    "tree": "b (c a)",
+    "n": "\\a\\b.a (\\c.b (c a))",
+    "source_bits": "0100011010000001110000111001101110",
+    "head_status": "hnf",
+    "head_steps": 4,
+    "head_result": "\\a\\b.a ((\\c.b (c (\\d.a (d (\\e\\f.e (\\g.f (g e))))))) (\\c\\d.c (\\e.d (e c))))",
+    "I_status": "hnf",
+    "I_steps": 6,
+    "I_result": "\\a\\b.a ((\\c.(\\d.d (\\e\\f.e) (\\e.e (\\f\\g.f) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.h) b)))) (c (\\d.a (d (\\e\\f.e (\\g.f (g e))))))) (\\c\\d.c (\\e.d (e c))))"
+  },
+  {
+    "tree": "(c a) b",
+    "n": "\\a\\b.a (\\c.(c a) b)",
+    "source_bits": "0100011010000001110000101101110110",
+    "head_status": "cap",
+    "head_steps": 100,
+    "head_result": "\\a\\b.(\\c.c (\\d.d (\\e\\f.e (\\g.g e f)) a) b) (\\c\\d.c (\\e.e c d)) a a a a a a a a a a a a a a a a a a a a a a a a a",
+    "I_status": "cap",
+    "I_steps": 100,
+    "I_result": "\\a\\b.(\\c.(\\d.d (\\e\\f.e (\\g.g e f)) a) (\\d.d (\\e.e (\\f\\g.f (\\h.h f g)) a) c)) (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) a a a a a a a a a a a a a a a a a a a a a a a a"
+  },
+  {
+    "tree": "c (a b)",
+    "n": "\\a\\b.a (\\c.c (a b))",
+    "source_bits": "0100011010000001110000110011110110",
+    "head_status": "hnf",
+    "head_steps": 7,
+    "head_result": "\\a\\b.a (\\c.c (a ((\\d.d ((\\e\\f.e (\\g.g (e f))) a)) b)))",
+    "I_status": "hnf",
+    "I_steps": 9,
+    "I_result": "\\a\\b.a (\\c.c (a ((\\d.d ((\\e\\f.e (\\g.g (e f))) a)) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.f) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.h) b)))))))"
+  },
+  {
+    "tree": "(c b) a",
+    "n": "\\a\\b.a (\\c.(c b) a)",
+    "source_bits": "0100011010000001110000101101101110",
+    "head_status": "hnf",
+    "head_steps": 5,
+    "head_result": "\\a\\b.a b (\\c.c a (\\d\\e.d (\\f.f e d))) (\\c\\d.c (\\e.e d c))",
+    "I_status": "hnf",
+    "I_steps": 7,
+    "I_result": "\\a\\b.a (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) (\\c.c a (\\d\\e.d (\\f.f e d))) (\\c\\d.c (\\e.e d c))"
+  },
+  {
+    "tree": "c (b a)",
+    "n": "\\a\\b.a (\\c.c (b a))",
+    "source_bits": "0100011010000001110000110011101110",
+    "head_status": "hnf",
+    "head_steps": 5,
+    "head_result": "\\a\\b.a (\\c\\d.c (\\e.e (d c))) (b (\\c.c (a (\\d\\e.d (\\f.f (e d))))))",
+    "I_status": "hnf",
+    "I_steps": 7,
+    "I_result": "\\a\\b.a (\\c\\d.c (\\e.e (d c))) ((\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.g) b)))) (\\c.c (a (\\d\\e.d (\\f.f (e d))))))"
+  }
+]

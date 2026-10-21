@@ -1,0 +1,8 @@
+(\x. x x) (\x. (\intL. \cont.
+  (\next. \list.
+    list (\bit0. bit0 (\unused. next) cont) (list list list))
+  (\tagtail.
+     (\source.
+       (\exp. tagtail (\a \b. a) (cont (\args \arg. exp (\zx \zy. zx arg (zy args)))) (intL (\exp2. cont (\args. exp args (exp2 args)))) (intL (\a \b. b) source))
+       (intL (\a \b. a) source))
+     (tagtail (\a \b. b)))) (x x))

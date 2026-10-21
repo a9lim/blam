@@ -1,0 +1,70 @@
+[
+  {
+    "label": "q_1 P = R",
+    "normal_form": "0010"
+  },
+  {
+    "label": "q_1 q_1 = K R",
+    "normal_form": "0000110"
+  },
+  {
+    "label": "q_1 K = F",
+    "normal_form": "00000010"
+  },
+  {
+    "label": "q_2 P = R",
+    "normal_form": "0010"
+  },
+  {
+    "label": "q_2 q_2 = K R",
+    "normal_form": "0000110"
+  },
+  {
+    "label": "q_2 K = F",
+    "normal_form": "00000010"
+  },
+  {
+    "label": "q_5 P = R",
+    "normal_form": "0010"
+  },
+  {
+    "label": "q_5 q_5 = K R",
+    "normal_form": "0000110"
+  },
+  {
+    "label": "q_5 K = F",
+    "normal_form": "00000010"
+  },
+  {
+    "label": "q0 P = 10:R",
+    "normal_form": "00000101100000100001011000001101110"
+  },
+  {
+    "label": "q1 P = 10:R",
+    "normal_form": "00000101100000100001011000001101110"
+  },
+  {
+    "label": "q0 F = 110:R",
+    "normal_form": "00000101100000100001011000001000010110000011011110"
+  },
+  {
+    "label": "q1 F = 11010:R",
+    "normal_form": "000001011000001000010110000010000101100000110000101100000100001011000001101111110"
+  },
+  {
+    "label": "M0 with periodic suffix returns its correct value",
+    "normal_form": "00000000110"
+  },
+  {
+    "label": "M1 with periodic suffix returns its correct value",
+    "normal_form": "0000000111010"
+  },
+  {
+    "label": "reader F = F",
+    "normal_form": "0000000010"
+  },
+  {
+    "label": "reader K = first-bit handler",
+    "normal_form": "0000000101100000011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010110"
+  }
+]

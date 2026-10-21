@@ -1,0 +1,52 @@
+{
+  "search_performed": false,
+  "battery_threads": 2,
+  "candidates": [
+    {
+      "name": "reference165",
+      "bits": 165,
+      "L_A_X": [
+        17,
+        25,
+        29
+      ],
+      "battery_line": "165 bits  ok=667 skip=1 fail=0  reference165.lam",
+      "failures": [],
+      "seconds": 2.152
+    },
+    {
+      "name": "borrow_abs_tag",
+      "bits": 171,
+      "L_A_X": [
+        17,
+        26,
+        31
+      ],
+      "battery_line": "171 bits  ok=667 skip=1 fail=0  borrow_abs_tag.lam",
+      "failures": [],
+      "seconds": 2.14
+    }
+  ],
+  "equations": [
+    "borrowed_K_cell_head",
+    "borrowed_K_cell_tail",
+    "literal_ABS_tag",
+    "head_lookup",
+    "tail_lookup",
+    "diagonal_cell_gives_lift",
+    "cross_cell"
+  ],
+  "distinct_normal_forms": [
+    "borrowed_cell_vs_canonical_cell"
+  ],
+  "module_bits": {
+    "cell": 24,
+    "lift": 19,
+    "borrowed_tag_cell": 30
+  },
+  "suffix_checks": [
+    "Omega",
+    "lambda_Omega"
+  ],
+  "seconds": 4.352
+}

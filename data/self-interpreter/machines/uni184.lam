@@ -1,0 +1,8 @@
+-- 184-bit strict universal machine: Tromp's strict wiring (base environment
+-- Omega, so applying a free index diverges) around the 162's parser.
+(\a. a (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x)) (\b. b (a a))) (\a. a a)

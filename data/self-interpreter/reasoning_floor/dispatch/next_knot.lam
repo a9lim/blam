@@ -1,0 +1,9 @@
+-- The knot produces NEXT (continuation, then second tag bit); the parser is
+-- let-bound inside it with recursive calls `x x c`.  The root uses the fact
+-- that every closed program starts with 0: E C s = r (NEXT_C).
+\c \s. s (\b \r. r ((\x. x x) (\x. \cont. \bit1.
+   (\intL. intL (\exp. bit1
+        (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+        (intL (\exp2. cont (\args. exp args (exp2 args))))))
+   (\c2 \s2. s2 (\b2. b2 (\u \r2. r2 (x x c2)) c2) (s2 s2 s2)))
+  c))

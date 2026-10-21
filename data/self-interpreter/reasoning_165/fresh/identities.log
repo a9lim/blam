@@ -1,0 +1,5 @@
+constant_return: PASS
+zero_arm_diagonal: PASS
+identity_input: PASS
+handler_reader_diagonal: PASS
+reader_self_application: exact finite head reduction; full normal form does not exist (see report proof)

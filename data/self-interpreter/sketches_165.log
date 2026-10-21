@@ -1,0 +1,16 @@
+165 zero arm
+    `_` frame [bit0 list next cont intL x]
+    151 fixed bits; --max-size 14
+    total 522 fills in 0.3s: 1 survivors, 8 unknown
+    SURVIVOR 14 bits  00000110111110
+      interpreter 165 bits
+165 skip
+    `_` frame [list next cont intL x]
+    155 fixed bits; --max-size 10
+    total 61 fills in 0.0s: 1 survivors, 0 unknown
+    SURVIVOR 10 bits  0101101010
+      interpreter 165 bits
+165 handler
+    `_` frame [list next cont intL x]
+    138 fixed bits; --max-size 24
+    total 177555 fills in 212.0s: 0 survivors, 7790 unknown

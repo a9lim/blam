@@ -1,0 +1,109 @@
+{
+  "scope": "Finite count inequality only; origin lemmas are handwritten.",
+  "cases": [
+    {
+      "body_apps": 0,
+      "argument_apps": 0,
+      "uses": 0,
+      "change": -1
+    },
+    {
+      "body_apps": 0,
+      "argument_apps": 0,
+      "uses": 1,
+      "change": -1
+    },
+    {
+      "body_apps": 0,
+      "argument_apps": 1,
+      "uses": 0,
+      "change": -2
+    },
+    {
+      "body_apps": 0,
+      "argument_apps": 1,
+      "uses": 1,
+      "change": -1
+    },
+    {
+      "body_apps": 0,
+      "argument_apps": 2,
+      "uses": 0,
+      "change": -3
+    },
+    {
+      "body_apps": 0,
+      "argument_apps": 2,
+      "uses": 1,
+      "change": -1
+    },
+    {
+      "body_apps": 1,
+      "argument_apps": 0,
+      "uses": 0,
+      "change": -1
+    },
+    {
+      "body_apps": 1,
+      "argument_apps": 0,
+      "uses": 1,
+      "change": -1
+    },
+    {
+      "body_apps": 1,
+      "argument_apps": 0,
+      "uses": 2,
+      "change": -1
+    },
+    {
+      "body_apps": 1,
+      "argument_apps": 1,
+      "uses": 0,
+      "change": -2
+    },
+    {
+      "body_apps": 1,
+      "argument_apps": 1,
+      "uses": 1,
+      "change": -1
+    },
+    {
+      "body_apps": 1,
+      "argument_apps": 1,
+      "uses": 2,
+      "change": 0
+    },
+    {
+      "body_apps": 2,
+      "argument_apps": 0,
+      "uses": 0,
+      "change": -1
+    },
+    {
+      "body_apps": 2,
+      "argument_apps": 0,
+      "uses": 1,
+      "change": -1
+    },
+    {
+      "body_apps": 2,
+      "argument_apps": 0,
+      "uses": 2,
+      "change": -1
+    },
+    {
+      "body_apps": 2,
+      "argument_apps": 0,
+      "uses": 3,
+      "change": -1
+    }
+  ],
+  "zero_change_cases": [
+    {
+      "body_apps": 1,
+      "argument_apps": 1,
+      "uses": 2,
+      "change": 0
+    }
+  ]
+}

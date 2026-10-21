@@ -1,0 +1,16 @@
+186 bits ok=667 skip=1 fail=0 uni186_skip_next_Kparser.lam seconds=2.46
+ strict-filter code=10 nf=CAPPED
+ strict-filter code=110 nf=CAPPED
+ strict-filter code=00110 nf=CAPPED
+ strict-filter code=011010 nf=CAPPED
+ strict-filter code=01101010 nf=CAPPED
+ strict-filter code=000011110 nf=CAPPED
+ strict-filter code=0101100000110000010 nf=000101100000110000101100000110000101100000110000101100000100001011000001000010110000011000010110000011000010110000011000010110000011000010110000011000010110000010000101100000110000010
+188 bits ok=667 skip=1 fail=0 uni188_skip_next_parser_parser.lam seconds=2.55
+ strict-filter code=10 nf=CAPPED
+ strict-filter code=110 nf=CAPPED
+ strict-filter code=00110 nf=CAPPED
+ strict-filter code=011010 nf=CAPPED
+ strict-filter code=01101010 nf=CAPPED
+ strict-filter code=000011110 nf=CAPPED
+ strict-filter code=0101100000110000010 nf=0010

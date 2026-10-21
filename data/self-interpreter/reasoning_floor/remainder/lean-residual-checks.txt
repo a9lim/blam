@@ -1,0 +1,21 @@
+ResidualControl.lean: exit=0 elapsed=0.241s
+'Blc.RemainderResidual.pending_ne_done' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderResidual.pending_depths_distinct' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderResidual.clean_cut_body_two_nonlinear' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderResidual.clean_cut_body_not_chain' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderResidual.marked_pending_has_code' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderResidual.tower45_app_zero' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderResidual.rem592_contract' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderResidual.rem592_two_nonlinear' does not depend on any axioms
+
+SharedS647.lean: exit=0 elapsed=1.066s
+'Blc.RemainderSharedS.reader_contract' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderSharedS.reader_two_nonlinear' does not depend on any axioms
+'Blc.RemainderSharedS.reader_two_live_captures' does not depend on any axioms
+'Blc.RemainderSharedS.reader_one_width_three_subterm' does not depend on any axioms
+
+FixedResiduals.lean: exit=0 elapsed=0.308s
+'Blc.RemainderFailures.tower_not_remainder' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderFailures.near66_not_remainder' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderFailures.tail65_not_remainder' depends on axioms: [propext, Quot.sound]
+'Blc.RemainderFailures.handler65_not_remainder' depends on axioms: [propext, Quot.sound]

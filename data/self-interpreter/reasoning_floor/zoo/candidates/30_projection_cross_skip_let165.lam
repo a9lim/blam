@@ -1,0 +1,1 @@
+(\x.x x) (\x.(\intL.\c.(\next.\s.(s (\a \b.a)) ((s (\a \b.b)) next) (s (\q.c) (s (s (\a.a) s) next))) (\bit1.intL (\exp.bit1 (c (\args \arg.exp (\zx \zy.zx arg (zy args)))) (intL (\exp2.c (\args.exp args (exp2 args))))))) (x x))

@@ -1,0 +1,18 @@
+Observed reference battery run, two workers, frozen release binary:
+
+int165: 165 bits  ok=667 skip=1 fail=0
+int168 (exact Lean-pinned wire): 168 bits  ok=667 skip=1 fail=0
+int170 (existing inlined-NEXT variant): 170 bits  ok=667 skip=1 fail=0
+int204: 204 bits  ok=667 skip=1 fail=0
+int584: 584 bits  ok=667 skip=1 fail=0
+int672: 672 bits  ok=667 skip=1 fail=0
+int742: 742 bits  ok=667 skip=1 fail=0
+
+The seven-reference run took 15.949 seconds including fixed checks.
+
+Separate literal continuation-headed control:
+control366: 366 bits  ok=667 skip=1 fail=0
+
+These finite batteries are supplementary checks. They do not prove the
+all-source contracts or any lower bound. The single skipped source is not
+used to infer success on divergent programs.

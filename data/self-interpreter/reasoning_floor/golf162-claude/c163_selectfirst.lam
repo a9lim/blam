@@ -1,0 +1,7 @@
+-- 163 (predicted): the 162 with select-first NEXT, intL (bit1 KA KB).
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (bit1
+      (\exp. cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (\exp. intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

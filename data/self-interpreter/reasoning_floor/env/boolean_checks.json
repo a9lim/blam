@@ -1,0 +1,37 @@
+{
+  "enumeration_performed": false,
+  "machine_checked_lower_bound": false,
+  "module_bits": {
+    "canonical_cell": 24,
+    "curried_cell": 25,
+    "post_applied_cell": 27,
+    "nonuniform_parsed_helper_cell": 17,
+    "actual_frame_lift": 19
+  },
+  "fixed_beta_equalities": [
+    "canonical_K",
+    "canonical_F",
+    "curried_K",
+    "curried_F",
+    "post_applied_K",
+    "post_applied_F",
+    "reader_on_K",
+    "reader_on_F",
+    "reader_on_I",
+    "reader_on_constant_stream",
+    "raw_cells_cross_apply",
+    "nonuniform_parsed_helper_K",
+    "nonuniform_parsed_helper_F",
+    "actual_variable_APP_witness",
+    "actual_G_on_F"
+  ],
+  "fixed_beta_inequalities": [
+    "nonuniform_parsed_helper_fails_other_body",
+    "head_f_unwrapped_g",
+    "head_f_wrapped_g",
+    "head_g_unwrapped_f",
+    "head_g_wrapped_f",
+    "curried_vs_canonical"
+  ],
+  "seconds": 0.122
+}

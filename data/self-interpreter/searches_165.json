@@ -1,0 +1,85 @@
+{
+ "interpreter": "data/self-interpreter/machines/int165.lam",
+ "probes": "91 (blam selfint hole default), exact contract",
+ "searches": [
+  {
+   "scope": "reader: handler H x skip S jointly, |H|+|S| <= 36 (H must mention next, cont; S must mention list); interpreters <= 164 bits",
+   "by": "Codex",
+   "result": "total 6348020 fill pairs in 19.4s: 0 survivors, 738854 unknown",
+   "parts": [
+    {
+     "log": "joint.log",
+     "scope": "H<=28,S<=12",
+     "pairs": 6348020,
+     "seconds": 19.4,
+     "survivors": 0,
+     "unknown": 738854
+    },
+    {
+     "log": "joint_large_handler.log",
+     "scope": "29<=H<=34,S<=7",
+     "pairs": 18051790,
+     "seconds": 89.7,
+     "survivors": 0,
+     "unknown": 2504627
+    },
+    {
+     "log": "joint_large_skip.log",
+     "scope": "13<=S<=27,H<=23",
+     "pairs": 7966562,
+     "seconds": 88.2,
+     "survivors": 0,
+     "unknown": 808695
+    }
+   ],
+   "note": "--escalate 0; a candidate stops after three capped probes, so 'unknown' is not a refutation"
+  },
+  {
+   "scope": "cell <= 23 bits in the 165, unrestricted frame",
+   "by": "Codex",
+   "result": "total 103547 fills in 0.1s: 0 survivors, 0 unknown"
+  },
+  {
+   "scope": "APP lift <= 18 bits in the 165, unrestricted frame",
+   "by": "Codex",
+   "result": "total 5131 fills in 0.1s: 0 survivors, 0 unknown"
+  },
+  {
+   "scope": "joint cell (<= 26, must arg) x APP value body (<= 19, must exp, exp2), sum <= 40",
+   "by": "Codex",
+   "result": "total 47303158 fill pairs in 106.8s: 0 survivors, 0 unknown",
+   "command": "blam selfint hole 0100011010000100000100000101100001011000000110111110111100101101010000111100001011100111100000011110_011111000011111000~011010 --max-size 26 --must 1 --max2 19 --must2 2,3 --max-sum 40 --threads 2"
+  },
+  {
+   "scope": "whole APP <= 34 bits in the 165 (must exp, cont); 5 caps refuted by I I",
+   "by": "Codex",
+   "result": "total 21555108 fills in 321.9s: 0 survivors, 218 unknown"
+  },
+  {
+   "scope": "contextual component of the 165 without eta, slack 16",
+   "by": "Codex",
+   "result": "0 term(s) below 165, 0 tie(s)"
+  },
+  {
+   "scope": "contextual component of the 165 without eta, slack 18",
+   "by": "Codex",
+   "result": "0 term(s) below 165, 0 tie(s)"
+  },
+  {
+   "scope": "universal machine: wirings around the 165's 143-bit body, machines <= 174 bits",
+   "by": "Codex",
+   "result": "TOTAL 14856126 survivors 0 unknown 68017",
+   "note": "16,144 caps certified divergent; 51,873 remain unexcluded (uni/REPORT.md)"
+  },
+  {
+   "scope": "universal machine U175: let structure through three cuts",
+   "by": "Codex",
+   "result": "smallest rendering over 0..=3 cuts: 175 bits"
+  },
+  {
+   "scope": "universal machine U175: beta-eta component, slack 16",
+   "by": "Codex",
+   "result": "0 term(s) below 175, 2 tie(s)"
+  }
+ ]
+}

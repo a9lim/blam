@@ -1,0 +1,83 @@
+[
+  {
+    "name": "tag_after_parse",
+    "bits": 189,
+    "counts": [
+      20,
+      27,
+      39
+    ],
+    "ok": 667,
+    "skip": 1,
+    "failures": [],
+    "seconds": 2.391082375019323,
+    "idea": "Carry the redundant second-tag stream through the first parse and re-read its tag afterward.",
+    "line": "  189 bits  ok=667 skip=1 fail=0  nextfuse/tag_after_parse.lam"
+  },
+  {
+    "name": "tag_after_parse_hoisted",
+    "bits": 188,
+    "counts": [
+      19,
+      28,
+      36
+    ],
+    "ok": 667,
+    "skip": 1,
+    "failures": [],
+    "seconds": 2.411460333969444,
+    "idea": "Use the known first-tag K to hoist the first-parse partial application out of the ignored-bit binder.",
+    "line": "  188 bits  ok=667 skip=1 fail=0  nextfuse/tag_after_parse_hoisted.lam"
+  },
+  {
+    "name": "tag_after_parse_handler",
+    "bits": 199,
+    "counts": [
+      20,
+      27,
+      49
+    ],
+    "ok": 667,
+    "skip": 1,
+    "failures": [],
+    "seconds": 2.454805333050899,
+    "idea": "Replay the second tag with a Scott handler instead of the literal K projection.",
+    "line": "  199 bits  ok=667 skip=1 fail=0  nextfuse/tag_after_parse_handler.lam"
+  },
+  {
+    "name": "independent_projections",
+    "bits": 220,
+    "counts": [
+      25,
+      32,
+      40
+    ],
+    "ok": 662,
+    "skip": 1,
+    "failures": [
+      [
+        "00000000000101010110110111011110111110",
+        "fuel"
+      ],
+      [
+        "00000000000101010111111011110111011010",
+        "fuel"
+      ],
+      [
+        "00010000000101111010011101010",
+        "fuel"
+      ],
+      [
+        "010000011100111010000001110011100111010",
+        "fuel"
+      ],
+      [
+        "0001011000000000000011111100000011101110",
+        "fuel"
+      ]
+    ],
+    "seconds": 2.479693917033728,
+    "idea": "Preserve the second tag and reconstruct value and remainder with separate first-parse projections.",
+    "line": "  220 bits  ok=662 skip=1 fail=5  nextfuse/independent_projections.lam"
+  }
+]

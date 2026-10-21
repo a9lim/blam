@@ -1,0 +1,267 @@
+VERDICT
+
+No sub-165 interpreter found. Two complete, correct constructions were built:
+169-bit balanced skip and 176-bit shared diagonal. A different reader shape
+at 167 bits was constructed and refuted on the identity program. The main
+new exclusion is for application trees mixing the current reader partials
+and handlers, extending the record's handler-only exclusion. This is a
+paper proof, not a new Lean theorem or a global size lower bound.
+
+All files are in this directory. No repository files were edited. All
+computation was targeted: two 667-case batteries (two workers, about 2.5 s
+each), 38 symbolic normal-form equalities (0.23 s), and one explicit negative
+witness. No enumeration or hole search was run.
+
+NOTATION
+
+K = lambda x y. x; F = lambda x y. y; I = lambda x. x.
+[a,r] = lambda f. f a r.
+U_n(N) = [F,[F,...[F,[K,N]]...]], with n leading F cells.
+E denotes the current 165, P_C = E C. Define
+
+  Q_C = lambda b. E (lambda f.
+           b (C (lambda e a. f (lambda x y. x a (y e))))
+             (E (lambda g. C (lambda e. f e (g e)))))
+  V_C = lambda r. r Q_C
+  Z_C = lambda u r. r Q_C = K V_C
+  H_C = lambda b. b Z_C C
+  R_C = lambda s. s H_C (s s s).
+
+One unfolding of E gives P_C ->* R_C. All displayed equalities below are
+beta equalities; the reductions establishing them never use eta. Statements
+with rigid C or D keep them rigid throughout.
+
+1. CROSS-APPLICATION OF STREAMS
+
+For arbitrary b,d,r,t:
+
+  [b,r] [d,t] ->* b d t r.
+
+Proof: [b,r] [d,t] -> [d,t] b r -> b d t r.
+Consequently
+
+  [K,r] [K,t] = K r,
+  [K,r] [F,t] = I,
+  [F,r] [d,t] = t r.
+
+In particular, if s=[b,r], then
+
+  s K = b;  s F = r;
+  s (s K) = b b r = K if b=K, r if b=F.
+
+If s=[K,[d,t]] and r=[d,t], then
+
+  s (s F) = d r = K r for tag 00, I for tag 01.
+
+This is an actual arity switch: 00 gives a constant function retaining the
+second-bit stream; 01 gives identity. It does not directly provide the
+semantic ABS/APP selector: applying K r selects the stream r, not an
+arbitrary ABS payload. Reading the second bit is still required to turn r
+into the desired computation.
+
+2. COMPLETE CROSS-UNARY LAW
+
+The cross-stream identity gives
+
+  U_(i+1)(N) U_(j+1)(M) = U_j(M) U_i(N).
+
+Repeatedly apply this swap-and-decrement rule. Its three boundary cases are
+
+  U_0(N) U_0(M) = K N;
+  U_0(N) U_(j+1)(M) = I;
+  U_(i+1)(N) U_0(M) = M U_i(N).
+
+Therefore the exact general answer is
+
+  i=j: K N if i is even, K M if i is odd;
+  i<j: I if i is even, N U_(j-i-1)(M) if i is odd;
+  i>j: M U_(i-j-1)(N) if j is even, I if j is odd.
+
+These cases, together with the recurrence, are an induction proof for all
+natural i,j and arbitrary tails. In particular, equal-depth unary streams
+with distinct tails give a parity-controlled constant. This extends the
+known same-stream skip identity; it does not give a usable new skip by
+itself, because the interpreter has only one cheaply available stream of
+the required depth.
+
+3. TWO VALID COMPLETE CONSTRUCTIONS
+
+Taking N=M in the preceding law gives s s = K N, hence
+
+  (s s) (s s) ->* N
+  Delta (s s) ->* N, where Delta = lambda x. x x.
+
+The first replacement changes only the 165's skip from (s s s) to
+((s s) (s s)). The second binds one Delta outside the whole interpreter and
+uses it both as the existing knot driver and to force the skip thunk.
+
+  169 bits  ok=667 skip=1 fail=0  balanced_skip.lam  2.447s
+  176 bits  ok=667 skip=1 fail=0  shared_delta.lam   2.512s
+
+Full output is battery.log. The exact unoptimized wire encodings are in
+balanced_skip.blc and shared_delta.blc; check.py reproduces both batteries
+with threads=2. These are the only complete interpreters constructed here.
+The skipped battery program is the standard non-normalizing case, not a
+passing divergence test.
+
+Correctness beyond the battery follows on paper from the 165's parser
+invariant: every parser input starts with a finite run of F cells followed
+by K, whether the represented source normalizes or diverges. All three skip
+expressions reduce to the identical tail on that input. The shared-Delta
+term beta-reduces to the balanced-skip term after inlining Delta and reducing
+its uses on skip thunks.
+
+Cost: balanced skip is 14 bits versus 10 (+4). In the shared construction,
+Delta is index 6 inside the reader, so Delta (s s) is 15 bits (+5); binding
+Delta outside the knot adds another 6. Thus sharing two mathematically
+identical diagonal operations loses 11 bits against the current 165. This
+is a concrete test of a knot/reader fusion, not a claim of optimality for
+all possible fusions.
+
+4. CROSS-APPLICATION OF CONS-PRIME ENVIRONMENT CELLS
+
+Write B(a,e) = lambda x y. x a (y e). Then
+
+  B(a,e) B(b,d) = lambda k. a b (k e d).
+
+Proof:
+  B(a,e) B(b,d)
+    -> lambda k. B(b,d) a (k e)
+    -> lambda k. a b ((k e) d).
+
+The known self-application formula is its diagonal a=b, e=d. The cross
+version simultaneously applies the heads and passes the two environments
+to k. This is potentially useful only with a different denotation protocol:
+it produces a b, whereas the current APP requires f e (g e). Substituting
+it directly does not implement APP. No interpreter claiming otherwise was
+built.
+
+5. PARSER PARTIALS ON NON-STREAM ARGUMENTS
+
+Directly from R_C s = s H_C (s s s):
+
+  R_C K = H_C;
+  R_C F = F;
+  R_C I = V_C;
+  R_C (K a) = a (a (K a)).
+
+Proofs:
+  K K K=K, so R_C K=K H_C K=H_C.
+  F F F=F, so R_C F=F H_C F=F.
+  I I I=I, so R_C I=H_C I=Z_C C=V_C.
+  With t=K a, t H_C=a and t t t=a t, so
+  R_C t=a (a t).
+
+Derived projections are R_C K F=C and R_C I I=Q_C. These projections
+identify stored components, but replacing a component's own definition by
+its projection from R_C would be circular rather than a finite definition.
+
+The last law gives an exact impossibility at every adapter size:
+NO continuation-only adapter A can make the unchanged 165 accept a thunked
+input K s. E (A C) (K s) ->* s (s (K s)), independent of C and even of the
+entire NEXT definition. Fix a source stream s without C and a normalizing
+closed source M. The required C (K M) N has a normal form containing rigid
+C, whereas the C-free result cannot reduce to it. Forcing or otherwise
+changing the input path is necessary. This exclusion concerns the fixed
+165 reader, not every possible thunk protocol.
+
+6. MIXED READER/HANDLER APPLICATION TREES CANNOT SUPPLY A KNOT
+
+For arbitrary component payloads Q_C and Q_D, direct beta calculation gives
+
+  H_C H_D = D Q_C C;
+  R_C H_D = C Q_D D (D Q_D D H_D);
+  H_C R_D = Q_C Q_C C;
+  R_C R_D = D Q_C C (C Q_C C H_C) (R_D R_D R_D).
+
+Proofs:
+  H_C H_D = H_D Z_C C = Z_C Z_D D C = D Q_C C.
+  R_C H_D = H_D H_C (H_D H_D H_D); use the previous law twice.
+  H_C R_D = R_D Z_C C.
+    Z_C H_D=V_C and Z_C Z_C Z_C=V_C, hence
+    R_D Z_C=V_C V_C=Q_C Q_C.
+  R_C R_D = R_D H_C (R_D R_D R_D); use the reader/handler law
+    with C and D interchanged.
+
+The only right side not visibly headed by C or D is Q_C Q_C C. For the
+ACTUAL NEXT, Q_C b = E J_(C,b), so
+
+  Q_C Q_C C ->* E J_(C,Q_C) C
+            ->* C H_J (C C C).
+
+Thus it too has rigid head C. This step requires the actual NEXT protocol;
+it would be false for arbitrary rigid Q_C.
+
+Theorem. Let C_i be rigid continuations, and form any binary application
+tree with leaves chosen from H_(C_i), R_(C_i). If it has at least two leaves,
+it head-reduces to some C_i applied to at least two arguments.
+
+Proof by induction on the tree. The two-leaf cases are exactly the four
+identities above plus the NEXT unfolding. If the left subtree has at least
+two leaves, its rigid head persists when an argument is appended. Otherwise
+the left subtree is H_C or R_C. If the right subtree B has at least two
+leaves, it has a rigid continuation head by induction; H_C B = B Z_C C and
+R_C B = B H_C (B B B) preserve that head. The case of two leaves was already
+settled. The minimum arity is preserved in every case.
+
+Consequences: such a tree cannot be beta-convertible to a parser or NEXT
+partial (which has an outer lambda), and applying it to an input stream
+adds a third or later rigid-continuation argument rather than starting a
+parse. This extends the record's handler-only obstruction to arbitrary
+mixed trees of handlers and reader partials, including mixtures with
+different rigid continuations. It does not cover new lambdas, bare Q_C
+leaves, non-rigid continuations, or reader transformations.
+
+7. A DIFFERENT READER SHAPE, CONSTRUCTED AND REFUTED
+
+The arity switch s(s K) suggests removing the ordinary bit handler:
+
+  R'_C(s) = (s (s K)) (lambda r. r Q'_C) C (s s s),
+
+where Q'_C is the unchanged NEXT formula, with recursive calls to E'. This
+is arity_switch_failed.lam, 167 bits. It has the correct zero case:
+with s=[K,r], s(s K)=K and s s s=r, so R'_C(s)=r Q'_C.
+The variable case is wrong.
+
+Exact counterexample: take M=I, any rigid C, and
+
+  N = lambda a b c d. I.
+
+The outer 00 branch is correct and recursively parses variable 1 under
+some continuation D. Put u=[K,N], t=[F,u]. Then
+
+  R'_D(t) = u (lambda r. r Q'_D) D N
+          = Q'_D D N
+          = E' J N
+          = N (N K) (lambda r. r Q'_J) J (N N N)
+          -> I.
+
+The exact choice of J is irrelevant; N discards all four supplied arguments.
+The required answer is C (K I) N, whose normal form has rigid head C.
+arity_switch.py checked this exact counterexample on the Rust normalizer:
+
+  got:      lambda c. I                         bits 000010
+  required: lambda c. c (lambda z. I) N
+
+See arity_switch.log for both normal-form wire strings. No expensive full
+battery was run on an already refuted candidate.
+
+8. WHERE A SUB-165 COULD STILL HIDE
+
+The cross-cell identity is the most interesting positive algebraic fact:
+application of two cons-prime cells combines both payloads and environments.
+To save bits it would need a denotation protocol designed for that operation,
+not a replacement within the already-exhausted cell/APP slots. I have no
+complete small construction for such a protocol.
+
+For the reader, s(s F) distinguishes 00/01 by arity while retaining a tail.
+A useful construction would have to consume that retained second-bit stream
+in a semantic operation already required elsewhere. The simple arity-switch
+reader is refuted; turning K r into an arbitrary ABS value merely reinstates
+an adapter. I have not proved every such fusion impossible.
+
+The mixed-tree theorem closes a concrete family of proposed knot fusions.
+It leaves fusions involving the NEXT object itself, a transformed stream,
+or non-rigid internal continuations. Those are meaningful remaining scope,
+not evidence that any of them is smaller. There is no new unconditional
+lower bound and no sub-165 claim.

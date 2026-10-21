@@ -1,0 +1,8 @@
+-- 176-bit complete interpreter; exact derivation in REPORT.txt and battery in battery.log.
+(\diag. diag (\x. (\intL. \cont.
+  (\next. \list.
+    list (\bit0. bit0 (\unused \r. r next) cont) (diag (list list)))
+  (\bit1. intL (\exp. bit1
+    (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+    (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))) (\x. x x)

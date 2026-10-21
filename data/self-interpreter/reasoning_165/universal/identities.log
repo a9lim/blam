@@ -1,0 +1,12 @@
+B_list p c F = F: exact beta normal forms agree
+B_list p c K F = c: exact beta normal forms agree
+B_next p c F = next: exact beta normal forms agree
+B_next p c K F = c: exact beta normal forms agree
+B_cont p c F = cont: exact beta normal forms agree
+B_cont p c K F = c: exact beta normal forms agree
+B_intL p c F = intL: exact beta normal forms agree
+B_intL p c K F = c: exact beta normal forms agree
+166 bits ok=667 skip=1 fail=0 int166_skip_next.lam
+strictness witness M code=0101100000110000010
+U_186 (code(M) ++ F) = (code(K) ++ code(F) ++ F) F: exact beta normal forms agree; normal-form size=183
+strictness witness identity also verified with arbitrary rigid N

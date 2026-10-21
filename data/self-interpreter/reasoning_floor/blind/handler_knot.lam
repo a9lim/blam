@@ -1,0 +1,8 @@
+(\h. \c \s. s (h h c) (s s s))
+(\h \c \b. b
+  (\unused \r. r (\b.
+    (\p. p (\a. b
+      (c (\e \v. a (\d \r. d v (r e))))
+      (p (\f. c (\e. a e (f e))))))
+    (\c \s. s (h h c) (s s s))))
+  c)

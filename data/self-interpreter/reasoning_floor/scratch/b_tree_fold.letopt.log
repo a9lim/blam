@@ -1,0 +1,2 @@
+b_tree_fold.lam: exit=2 seconds=1.018
+blam golf letopt: inlining the lets does not finish; try --no-inline

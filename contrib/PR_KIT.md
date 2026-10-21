@@ -6,14 +6,19 @@ instrumental, so they can be written out in full when the PRs go up.
 
 ## Where things are
 
-- Two branches on the a9lim/AIT fork, each cut from upstream master:
-  - `uni-rs`: one commit, `uni.rs` at the repo root.
-  - `golf`: eight commits, one program each, so Tromp can take any subset.
-- Open each PR from its branch into `tromp/AIT` `master`. Both branches are
-  three commits behind the fork's master (upstream moved since they were
-  cut), so rebase each onto current upstream first.
-- blam 3.0.0 is released: point every link in the PRs and the letter at the
-  `v3.0.0` tag (stable permalinks), not at `dev`.
+- Two branches on the a9lim/AIT fork, each rebased on upstream master:
+  - `uni-rs`: one commit, `uni.rs` at the repo root. Not opened yet.
+  - `golf`: [tromp/AIT#13](https://github.com/tromp/AIT/pull/13), opened
+    2026-10-20 with a short body; Tromp is travelling and will review at the
+    end of October. 61 commits, one per program and change, so Tromp can take
+    any subset: the original fourteen (uni8, uni28, int4, ko2kp, nf, the
+    pairups, then the 165's reader in six programs), forty more pushed the
+    same day, and on 2026-10-21 the 162's reader in the same six programs
+    (int.lam, uni.lam, int4, ko2kp, nf, pairup_Kp) plus a comment fix in
+    ko2kp. The branch now changes 40 programs and saves 1,159 bits.
+- blam 3.0.1 is released: point links at the `v3.0.1` tag, which carries the
+  162's record, the Lean self-interpreter proofs, and the golf record
+  (`docs/classical/golf.md`).
 - The fork's `master` is unchanged: upstream plus `uni.rs`. blam's `ref/AIT`
   pins it, and blam's CI checks that it only *adds* files over upstream.
   - `golf` modifies upstream files, so it must not land on the fork's master.
@@ -35,7 +40,32 @@ instrumental, so they can be written out in full when the PRs go up.
     - the identity continuation behind the non-strict variant is Codex's.
   - `uni28`: Codex (one reader for the parser, the delimiter and the digits).
   - `int4`, `ko2kp`, `nf`: Claude, porting the `int.lam` parser.
+  - The 165-bit `int.lam` reader (skip the whole stream before dispatch):
+    Codex, in a fresh-context consult. Carrying it into `uni.lam`, `int4`,
+    `ko2kp`, `nf` and `pairup_Kp`, the verification, and the Lean proofs that
+    the 168 and the 165 are self-interpreters: Claude.
+  - The 162-bit reader (the stream selects its own tail; the second-tag
+    stage becomes the reader's last operand), found 2026-10-21 by combining
+    three agents' work:
+    - the 44-bit reader itself: Codex, which built it as a counterexample
+      while reviewing a reader-optimality proof of Claude's;
+    - passing the second-tag stage as a reader operand: Grok (xAI);
+    - splicing the reader into the 165 and letting blam's let optimizer
+      find the 162, carrying it into the other five programs, the
+      verification, and the Lean proof: Claude;
+    - an independent adversarial review of the 162: Codex.
   - The pairup programs: Codex (keep the old loop only to record `ps`).
+  - The second round (2026-10-20), by part:
+    - `uni8` 321 → 304 / 283, `uni28` 416 → 390 / 370, `blc.lam` 195 → 186,
+      `uniK` 903 → 826 → 599, and the cheaper bottoms (`get get get` in
+      uni8, `fix fix` in uni2, with the unsolvability proofs): Codex, in
+      design consults.
+    - The readable sources for every certified β-descent (nf, ko2kp, the
+      pairups, uni2, loader, tweet, tree_ordinals and the other BB records,
+      the list, numeral and sequence programs, bf, mpi, pi, and the rest):
+      Claude agents.
+    - Independent re-verification of every result, the BLC2 and truncated
+      batteries, and the integration: Claude.
   - The size-search tools and the verification behind every number: Claude,
     in blam (`blam golf`, `docs/classical/golf.md`). Since 3.0.0 a plain
     `cargo install blam` includes `blam golf` (no `--features lab`).
@@ -74,71 +104,80 @@ instrumental, so they can be written out in full when the PRs go up.
   `(cat hilbert; echo '12') | ./uni`, if Tromp wants it.
 - **Credit:** see above.
 
-## PR 2: `golf`
+## PR 2: `golf` (tromp/AIT#13, open)
 
-**Title:** Smaller sources for uni8, uni28, int4, ko2kp, nf and the pairup
-programs
+a9 opened it with a two-line body and has since retitled it
+"162 bit self-interpreter". The commit messages carry each change's design
+note and verification, so the body can stay short. a9 posted a summary
+comment with a size table on 2026-10-20, and a second one on 2026-10-21 with
+the six rows the 162's reader changed (`int.lam` 162, `uni.lam` 184 /
+non-strict 172, `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp` 1270). The
+draft the first was edited from is kept below.
 
-- **Shape of the PR.**
-  - Eight independent commits, one per program; each commit message carries
-    its own design note and verification.
-  - Every size is what the current `blc` toolchain gives the new source.
+**Draft comment for #13 (as drafted):**
 
-  | program | before | after |
-  |---|---:|---:|
-  | `uni8` (BLC8 universal machine) | 355 (IOCCC uni8.Blc: 344) | 321 (41 bytes); non-strict 300 (38 bytes) |
-  | `uni28` (BLC2 universal machine) | 500 | 416; non-strict 393 |
-  | `int4` | 189 | 178 |
-  | `ko2kp` | 615 | 569, so KP(x) ≤ KO(x) + 569 |
-  | `nf` | 600 | 562 |
-  | `pairupKP` | 778 | 774 |
-  | `pairupK_p` | 657 | 653 |
-  | `pairup_Kp` | 1402 | 1360 |
-
-- **The two universal machines.** One bit reader, `get`, serves every read.
-  In uni8 a refill always lands on a fresh 8-bit byte, so the reader needs
-  no recursion.
-- **The ports.**
-  - `int4` is rebuilt on `int.lam`'s design. Its cells also swallow the
-    successor tag bit that follows a 1, and skipvar carries over unchanged.
-  - `ko2kp`, `nf` and the pairup programs get `int.lam`'s cons'/skipvar
-    parser in their embedded evaluators.
-  - The pairup programs keep the old loop only to record the consumed bits.
-- **Verification.** Exact normal-form comparison against the originals:
-  - the universal machines: every closed program up to 18 bits followed by
-    data;
-  - ko2kp and nf: every closed program up to 13 bits plus data bits;
-  - pairup: 60 contract-valid inputs in every IF_DIRTY/IFCPS setting;
-    pairupKP also on raw pairs of closed programs;
-  - int4: the exact self-interpreter contract on 236 programs.
-
-  No differences, and no input halting on only one side.
-- **Caveat.** `pairupK_p` and `pairup_Kp` agree with the originals on every
-  contract-valid input, but differ when the first program is not a valid
-  description. For example, `p = \x. x` returns the rest of the input
-  instead of a pair. The second parse then meets an open term, where the two
-  dirty base environments give different garbage. With `!IFDIRTY` the
-  differences vanish.
-- **More if wanted.**
-  - A β-only search (let-floating and sharing, which the beam-search
-    optimizer never does) finds smaller β-convertible terms for 45
-    programs in the repo, 470 bits in all. Examples outside this PR: `tweet`
-    2230 → 2168, `uniK` 903 → 854, `primes256` 286 → 252.
-  - The β-only descents of six of this PR's programs go further still: nf
-    541, ko2kp 557, uni28 399 (non-strict 382), pairupKP 771, pairupK_p 651,
-    pairup_Kp 1325.
-  - These exist only as terms so far. Offer to turn any of them into source.
-- **Credit:** see above.
+> While you're away I've added forty more commits on the same terms: one
+> program per commit, each with its design note and how it was checked, so
+> you can take any subset. Every size is what your compiler gives the new
+> source. Altogether the branch now changes 40 programs and saves 1,143 bits.
+>
+> | program | before | after |
+> |---|---:|---:|
+> | `uni8` (BLC8 universal machine) | 355 (IOCCC uni8.Blc: 344, 43 bytes) | 304 (38 bytes); non-strict 283 (36 bytes) |
+> | `uni28` (BLC2 over bytes) | 500 | 390; non-strict 370 |
+> | `uni2` | 340 | 332; closed-program variant 321 |
+> | `int.lam` (self-interpreter) | 168 | 165 |
+> | `uni.lam` | 190; non-strict 178 | 187; non-strict 175 |
+> | `int4` | 189 | 175 |
+> | `blc.lam` | 195 | 186 |
+> | `uniK` | 903 | 826 (same algorithm); 599 with eager weakening |
+> | `ko2kp` | 615 | 541, so KP(x) ≤ KO(x) + 541 |
+> | `nf` | 600 | 538 |
+> | `pairupKP` | 778 | 756 |
+> | `pairupK_p` | 657 | 651 |
+> | `pairup_Kp` | 1402 | 1273 |
+> | `loader` | 1797 | 1781 |
+> | `tweet` | 2230 | 2134 |
+> | `tree_ordinals` | 752 | 726 |
+> | 24 more (bf, mpi, pi, SKint, hydra, patcail, primes256, squares, sort, sort2, …) | | 1–34 bits each |
+>
+> Most of these are β-convertible to your versions: a certified local search
+> over let-floating, λ-lifting, sharing and anti-unification (moves your
+> beam search, which only reduces, can't make), then written back as
+> source. Those have the same normal form, or none, under every input, which
+> is what the records need. The machine redesigns (uni8, uni28, blc.lam,
+> uniK's eager weakening) aren't β-convertible and were checked by exact
+> normal forms instead: every closed program up to 18–20 bits with data, and
+> for the byte machines also truncated input, nested self-interpretation,
+> and uni.c reproducing take256.blc8 byte for byte.
+>
+> Two of the machine steps use an unsolvable term as the strict bottom in
+> place of Ω: `get get get` in uni8 and `fix fix` in uni2. Each commit
+> message has the reduction showing it has no head normal form; by the
+> genericity lemma that leaves every program's normal form, or its absence,
+> unchanged.
+>
+> The uniK eager-weakening commit changes the algorithm (the generated
+> combinator terms differ, the results don't), so drop it if you'd rather
+> keep Kiselyov's lazy weakening at 826. The pairupK_p and pairup_Kp
+> caveat from the first commits still applies: they agree on every
+> contract-valid input but differ when the first program isn't a valid
+> description.
+>
+> Found with Claude and Codex, as before; the record is
+> https://github.com/a9lim/blam/blob/dev/docs/classical/golf.md
 
 ## Letter to John
 
-**Subject:** two PRs, and what we learned trying to beat the 168
+**Subject:** two PRs, including a 162-bit self-interpreter
 
 - **Who:** a9, building a Rust engine for BLC/AIT experiments
   (github.com/a9lim/blam); say up front that Claude and Codex did most of
   the work.
 - **The two PRs.**
   - `uni.rs`: byte-identical with uni.py, about 18× faster.
+  - `golf` (#13, already open): int.lam 168 → 162, uni.lam 190 → 184
+    (non-strict 178 → 172), and 38 more programs, 1,159 bits in all.
 - **His tools in blam (3.0.0).** `blam blc ACTION FILE` is his `blc`, all
   31 actions, without GHC; `blam uni` is his universal machine.
   - Checked byte for byte against his own `blc`, built from AIT with GHC
@@ -149,40 +188,60 @@ programs
     instant), streams endless output (`primes.lam | head`), and
     `blam blc blc` reproduces every checked-in `.blc`.
   - Maybe useful to him: a GHC-free `blc` for people trying the repo.
-  - The golf sources: the BLC8 machine is down to 41 bytes, and int.lam's
-    parser is now in ko2kp, nf, int4 and the pairup programs.
-- **The 168 (Palmer's self-interpreter): nothing smaller found.**
-  - What was searched:
-    - every let structure up to four cuts;
-    - βη rewrites to +24 bits;
-    - every single slot, and joint pairs of slots, exhaustively;
-    - over a hundred hand-designed protocol changes.
-  - A conditional theorem: split the 168 into seven modules and each one is
-    the unique smallest term satisfying its own law. The minima reassemble
-    into the 168 bit for bit, so a smaller interpreter has to fuse control,
-    share work across modules, change the binder layout, or entangle the
-    knot with the body.
+  - The golf sources: the IOCCC BLC8 machine is down from 43 bytes to 38
+    (36 non-strict), KP(x) ≤ KO(x) + 540, pairup_Kp 1402 → 1270, Loader's
+    number in 1781 bits, and int.lam's parser is now in ko2kp, nf, int4 and
+    the pairup programs.
+- **The self-interpreter: 162 bits** (165 when the PR was opened).
+  - The 162's reader: `list I` makes the first cell its own selection, so
+    the zero branch is the tail itself, and the second-tag stage is passed
+    as the reader's last operand, which the variable branch erases inside
+    its skip. Found by combining a counterexample Codex built while
+    reviewing a proof of Claude's, Grok's idea of passing that stage as an
+    operand, and blam's let optimizer. Lean-proved; independently reviewed.
+  - Universal machines 184 strict / 172 non-strict; int4 172.
+  - Lower bounds from the same night: every self-interpreter has at least
+    37 bits (handwritten, reviewed twice) and 27 kernel-checked in Lean.
+- **The 165, the step before:**
+  - Palmer's 168 with one change to the reader: skipvar applied to the whole
+    stream before the tag is read is right for both cases (the stream past a
+    0-tag; the rest past a variable), and `list H (skipvar list)` hands
+    `list1` to the variable case, which becomes `cont` itself. 3 bits.
+  - Found by Codex in a fresh-context consult. Before that, a long search had
+    found nothing below the 168 and produced a conditional theorem: split the
+    168 into seven modules, each the unique smallest term meeting its law,
+    minima summing to exactly 168. The 165 fuses three of those modules
+    (dispatch, variable, skip), the one assumption the theorem flagged.
+  - The same reader: uni.lam 187 strict / 175 non-strict, int4 175, and 3
+    bits off ko2kp, nf and pairup_Kp.
+  - Kernel-checked in Lean: both the 168 and the 165 are self-interpreters,
+    as a β-reduction E C (⌜M⌝ ++ N) →β* C (λz.M) N for every closed M.
+  - Nothing smaller around the 165: its let structure, βη and contextual
+    rewrites, every slot of the new reader, and joint searches through
+    164-bit interpreters.
   - **A uniform handler is impossible.** "One handler for both tag bits" is
     ruled out at any size. `I I` and `(K I) I` normalize to the same thing
     but leave the input in different places.
-  - **Near misses:**
-    - a 180-bit universal machine that uses the parser as its own
-      continuation;
-    - a 164-bit candidate that fails, because the identity's value
-      `λz.I` is the same six bits as the input symbol `1`.
+  - **Near misses:** a 164-bit candidate that fails, because the identity's
+    value `λz.I` is the same six bits as the input symbol `1`; the 168's
+    parser as its own continuation gave a 180-bit universal machine (it no
+    longer works with the new reader).
   - Pointer: `docs/classical/self-interpreter/interpreter.md` (and
-    `universal.md` for the 178/190).
+    `universal.md` for the 175/187).
 - **Busy-beaver and Ω results** (if still worth mentioning):
-  - BBλ(33) = 1,812, BBλ(34) = 327,686, BBλ(35) = 38,127,987,424,941: his
-    BB.txt hand arguments for the programs the census leaves open, formalized
-    as kernel-checked Lean proofs (the 35-bit champion is Church 3^27, proved
-    symbolically). The exhaustive census itself is Rust, not Lean.
+  - His A333479 values BBλ(33) = 1,812, BBλ(34) = 327,686,
+    BBλ(35) = 38,127,987,424,941, independently confirmed: his BB.txt hand
+    arguments for the programs the census leaves open, formalized as
+    kernel-checked Lean proofs (the 35-bit champion is Church 3^27, proved
+    symbolically). The exhaustive census itself is Rust, not Lean. The values
+    are his; the news is the machine checking.
+  - His a(36) = 5·2²⁵⁶ + 6 is not checked here yet (30 open programs).
+    Don't quote a census lower bound past 35: anything the census can
+    reach sits far below his a(36).
   - The 32-bit loop term the ledger excludes by hand has a machine-checked
     divergence proof, a "ratchet" certificate; 305 frontier kills across four
     certificate classes are each a kernel-checked Lean theorem (no `sorry`,
     no mathlib).
-  - The census covers every closed term of 4..41 bits:
-    BBλ(41) ≥ 38,127,987,424,947 bits.
   - Ω restricted to programs of at most 41 bits lies in
     [0.124105086841, 0.124105091271]; over all sizes, the closed-term Ω
     (normalizing terms, not his universal-machine Ω) is pinned to nine
