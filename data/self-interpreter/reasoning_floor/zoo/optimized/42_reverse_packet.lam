@@ -1,0 +1,1 @@
+(\a.a a) (\a.(\b\c\d.d (\e\f\g.e (f (g (\h\i.i))) (g (\h\i.h) f (f f g))) (\e.e c (\f.b (\g.f (c (\h\i.g (\j\k.j i (k h)))) (b (\h.c (\i.g i (h i)))))))) (a a))

@@ -1,0 +1,1126 @@
+[
+  {
+    "name": "01_reference165",
+    "family": "control",
+    "body": "s (\\b.b (\\u \\r.r next) c) (s s s)",
+    "expanded_body": "s (\\b.b (\\u \\r.r next) c) (s s s)",
+    "argument": "The shared suffix is R at zero and N at a variable; K drops the duplicate tail, F selects c.",
+    "isolated_bits": 43,
+    "beta_normal_bits": 43,
+    "beta_normal_hash": "73d752d604dbbfd04fb43356309be8f6616b3785e8fa365fd6ebf828c45bb039",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.104,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/01_reference165_let165.lam",
+        "bits": 165,
+        "wire": "010001101000010000010000010110000101100000011011111011110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/01_reference165_inline162.lam",
+        "bits": 170,
+        "wire": "01000110100001000000010110000101100000011000011111111000010111001111111100000011110000001011101110011011110011111111100001111111110000101111010011101011100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "02_reference162",
+    "family": "control",
+    "body": "s I (\\u.s (\\q.c) (s s u)) next",
+    "expanded_body": "s (\\a.a) (\\u.s (\\q.c) (s s u)) next",
+    "argument": "s I is K R at zero and I at a variable. V next reopens s for c r and forces the diagonal with next.",
+    "isolated_bits": 44,
+    "beta_normal_bits": 44,
+    "beta_normal_hash": "9032704949db8fa384459b87ce1ad3b0c64cafbc9f9d3f2cdec198800eb316a3",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.1,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/02_reference162_let165.lam",
+        "bits": 166,
+        "wire": "0100011010000100000100000101011000100001011100011111001011101101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/02_reference162_inline162.lam",
+        "bits": 162,
+        "wire": "010001101000010000000101011000100001011100011110010111011010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "03_reference164",
+    "family": "control",
+    "body": "s (\\b.b F c) (s I (s s) next)",
+    "expanded_body": "s (\\b.b (\\a \\b.b) c) (s (\\a.a) (s s) next)",
+    "argument": "The dual operand is R next at zero and N at a variable. The outer K branch uses F to discard the tail.",
+    "isolated_bits": 46,
+    "beta_normal_bits": 46,
+    "beta_normal_hash": "2d19043ed48b667bbc5a53e2fbb4a2ea5d515b121b83400a0e36981883b0a7ba",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.1,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/03_reference164_let165.lam",
+        "bits": 168,
+        "wire": "010001101000010000010000010110000101100000101111001010110001001101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/03_reference164_inline162.lam",
+        "bits": 164,
+        "wire": "01000110100001000000010110000101100000101110010101100010011010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "04_shared_return",
+    "family": "shared suffix",
+    "body": "s (\\b \\r.b (\\t.t next) (c r)) (s s s)",
+    "expanded_body": "s (\\b \\r.b (\\t.t next) (c r)) (s s s)",
+    "argument": "Select a function of the shared suffix: application to next at zero, and c r at a variable.",
+    "isolated_bits": 49,
+    "beta_normal_bits": 49,
+    "beta_normal_hash": "c54a78db80d3fbca8afb03b0132e012f0fb138d85aef06af8de7d33d0e959a44",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.1,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/04_shared_return_let165.lam",
+        "bits": 171,
+        "wire": "010001101000010000010000010110000001011100001101111100111111010010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/04_shared_return_inline162.lam",
+        "bits": 176,
+        "wire": "01000110100001000000010110000001011100001100001111111100001011100111111110000001111000000101110111001101111001111111110000111111111000010111101001110100111110100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "05_bound_suffix",
+    "family": "shared suffix",
+    "body": "s (\\b \\r \\t.b (t next) (c r t)) (s s s)",
+    "expanded_body": "s (\\b \\r \\t.b (t next) (c r t)) (s s s)",
+    "argument": "Bind the common suffix once and use it either as the second-tag stream or the return remainder.",
+    "isolated_bits": 56,
+    "beta_normal_bits": 56,
+    "beta_normal_hash": "a4086622051170c4be2aa9bf492e32e0d7fd3a1ef1e6f52fbaba6f187b4d6c1f",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.118,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/05_bound_suffix_let165.lam",
+        "bits": 178,
+        "wire": "0100011010000100000100000101100000000101111001101111100101111111011010010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/05_bound_suffix_inline162.lam",
+        "bits": 183,
+        "wire": "010001101000010000000101100000000101111001100001111111100001011100111111110000001111000000101110111001101111001111111110000111111111000010111101001110100101111110110100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "06_bit_force",
+    "family": "branch-local diagonal",
+    "body": "s (\\b \\r.b (r next) (c r (s s b)))",
+    "expanded_body": "s (\\b \\r.b (r next) (c r (s s b)))",
+    "argument": "Direct Boolean dispatch; the first bit itself is the erased force of the whole-stream diagonal.",
+    "isolated_bits": 51,
+    "beta_normal_bits": 51,
+    "beta_normal_hash": "da9aaa5eb9f88b711282299b06126484ed28cc985a97039fb1c6fc9db0f07dbd",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.123,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/06_bit_force_let165.lam",
+        "bits": 173,
+        "wire": "01000110100001000001000001100000010111001101111001011111101001011110111011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/06_bit_force_inline162.lam",
+        "bits": 175,
+        "wire": "0100011010000100000001100000010111001100001111111000010111001111111000000111100000010111011100110111100111111110000111111110000101111010011101001011111010010111101110110011010"
+      }
+    }
+  },
+  {
+    "name": "07_cell_owned_return",
+    "family": "branch-local diagonal",
+    "body": "s (\\b \\r.b (r next) (s (\\q.c) (r r b)))",
+    "expanded_body": "s (\\b \\r.b (r next) (s (\\q.c) (r r b)))",
+    "argument": "The first cell supplies c with r; the separately bound r supplies the diagonal suffix, forced by b.",
+    "isolated_bits": 52,
+    "beta_normal_bits": 52,
+    "beta_normal_hash": "0d88c90430aed4bf9b55d079450a73be171151d08631a1545cfd5fb87fedbb15",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.106,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/07_cell_owned_return_let165.lam",
+        "bits": 174,
+        "wire": "010001101000010000010000011000000101110011011110010111100011111100101101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/07_cell_owned_return_inline162.lam",
+        "bits": 176,
+        "wire": "01000110100001000000011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010010111100011111001011010110011010"
+      }
+    }
+  },
+  {
+    "name": "08_split_tail_handlers",
+    "family": "split tail handlers",
+    "body": "s (\\b.b (\\r.r next) (\\r.c r (r r r)))",
+    "expanded_body": "s (\\b.b (\\r.r next) (\\r.c r (r r r)))",
+    "argument": "Dispatch before binding the tail. Each selected handler then receives r from the stream cell.",
+    "isolated_bits": 47,
+    "beta_normal_bits": 47,
+    "beta_normal_hash": "f000fd79fef11d6b249771d953d8aeea42baf41eaa6430d04549ee661b4bf360",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.094,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/08_split_tail_handlers_let165.lam",
+        "bits": 169,
+        "wire": "0100011010000100000100000110000101100001101111000010111111010010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/08_split_tail_handlers_inline162.lam",
+        "bits": 171,
+        "wire": "010001101000010000000110000101100001100001111111000010111001111111000000111100000010111011100110111100111111110000111111110000101111010011101000010111110100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "09_tail_opens_return",
+    "family": "input-owned return",
+    "body": "s (\\b \\r.b (r next) (r (\\q \\t.c r) (r r r)))",
+    "expanded_body": "s (\\b \\r.b (r next) (r (\\q \\t.c r) (r r r)))",
+    "argument": "A variable tail is always a cell. Its two fields are discarded to expose c r before the suffix is supplied.",
+    "isolated_bits": 58,
+    "beta_normal_bits": 58,
+    "beta_normal_hash": "b96cdb2578048ab4df1df6c849a86f69caf838f11f79317e13c73031e0dd8688",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.105,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/09_tail_opens_return_let165.lam",
+        "bits": 180,
+        "wire": "010001101000010000010000011000000101110011011110010110000001111111101110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/09_tail_opens_return_inline162.lam",
+        "bits": 182,
+        "wire": "01000110100001000000011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010010110000001111111011100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "10_whole_reopen",
+    "family": "input-owned return",
+    "body": "s (\\b \\r.b (r next) (s (\\q.c) (s s s)))",
+    "expanded_body": "s (\\b \\r.b (r next) (s (\\q.c) (s s s)))",
+    "argument": "The outer opening supplies only the zero tail; both variable output positions are recovered from another whole-stream opening.",
+    "isolated_bits": 57,
+    "beta_normal_bits": 57,
+    "beta_normal_hash": "ce730e1199d892fe483eda2f79709cdda8bcf10edd41a823b9ea024b6769b6f3",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.147,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/10_whole_reopen_let165.lam",
+        "bits": 179,
+        "wire": "01000110100001000001000001100000010111001101111001011110001111110010111101110111000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/10_whole_reopen_inline162.lam",
+        "bits": 181,
+        "wire": "0100011010000100000001100000010111001100001111111000010111001111111000000111100000010111011100110111100111111110000111111110000101111010011101001011110001111100101111011101110011010"
+      }
+    }
+  },
+  {
+    "name": "11_tail_thunk",
+    "family": "NEXT last",
+    "body": "s (\\b \\r.b r (\\u.c r (r r u))) next",
+    "expanded_body": "s (\\b \\r.b r (\\u.c r (r r u))) next",
+    "argument": "The zero branch is r itself. The variable branch receives next as the erased diagonal force; this is the known 168 witness.",
+    "isolated_bits": 50,
+    "beta_normal_bits": 50,
+    "beta_normal_hash": "3632fa2ed73fa63eabd9f74eadd3ad6e2f92e3553c4b0756c2d28fd0255c62cd",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.095,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/11_tail_thunk_let165.lam",
+        "bits": 172,
+        "wire": "0100011010000100000100000101100000010111010000101111111011001011101101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/11_tail_thunk_inline162.lam",
+        "bits": 168,
+        "wire": "010001101000010000000101100000010111010000101111110110010111011010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "12_whole_thunk",
+    "family": "NEXT last",
+    "body": "s (\\b \\r.b r (\\u.s (\\q.c) (s s u))) next",
+    "expanded_body": "s (\\b \\r.b r (\\u.s (\\q.c) (s s u))) next",
+    "argument": "Use an explicit bit/tail dispatcher but reopen the whole stream inside the selected variable thunk.",
+    "isolated_bits": 59,
+    "beta_normal_bits": 59,
+    "beta_normal_hash": "b221505a919d7117ddc96e25fd7eca3f6e14b45ed3ccb0860d877ba9b68dc7d9",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.136,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/12_whole_thunk_let165.lam",
+        "bits": 181,
+        "wire": "0100011010000100000100000101100000010111010000101111100011111110010111110111101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/12_whole_thunk_inline162.lam",
+        "bits": 177,
+        "wire": "010001101000010000000101100000010111010000101111100011111100101111101111010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "13_thunk_rebind_tail",
+    "family": "NEXT last",
+    "body": "s I (\\u.s (\\b \\r.c r (r r u))) next",
+    "expanded_body": "s (\\a.a) (\\u.s (\\b \\r.c r (r r u))) next",
+    "argument": "The variable thunk opens s and binds r once for both its returned index and its skip diagonal.",
+    "isolated_bits": 51,
+    "beta_normal_bits": 51,
+    "beta_normal_hash": "28158f6cda250d24fc21869a4390f7eb9bfd7b15ef0f700b34e131478d6eaad2",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.093,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/13_thunk_rebind_tail_let165.lam",
+        "bits": 173,
+        "wire": "01000110100001000001000001010110001000011100000010111111101001011010111011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/13_thunk_rebind_tail_inline162.lam",
+        "bits": 169,
+        "wire": "0100011010000100000001010110001000011100000010111111010010110101110000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "14_projected_diagonal",
+    "family": "NEXT last",
+    "body": "s I (\\u.s (\\q.c) ((s F) (s F) u)) next",
+    "expanded_body": "s (\\a.a) (\\u.s (\\q.c) ((s (\\a \\b.b)) (s (\\a \\b.b)) u)) next",
+    "argument": "The variable thunk computes the suffix by diagonalizing two independently projected tails.",
+    "isolated_bits": 60,
+    "beta_normal_bits": 60,
+    "beta_normal_hash": "0f7aab487baa61b6f81201a0b4887375f3fac8f8575a06975fb2aeadcbc7c845",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.094,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/14_projected_diagonal_let165.lam",
+        "bits": 182,
+        "wire": "01000110100001000001000001010110001000010111000111110010101110000010011100000101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/14_projected_diagonal_inline162.lam",
+        "bits": 178,
+        "wire": "0100011010000100000001010110001000010111000111100101011100000100111000001010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "15_predecessor_return",
+    "family": "NEXT last",
+    "body": "s I (\\u.(s D) (\\q \\r.s (\\a.c)) (s s u)) next",
+    "expanded_body": "s (\\a.a) (\\u.(s (\\a.a a)) (\\q \\r.s (\\a.c)) (s s u)) next",
+    "argument": "In the selected variable branch, s D is r. Opening that cell with a constant handler yields c r.",
+    "isolated_bits": 67,
+    "beta_normal_bits": 67,
+    "beta_normal_hash": "b092bfaad9ef6e3ef44728a3ab1e355534c61cd0631a820c9d6e3fce91d1f4f0",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.111,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/15_predecessor_return_let165.lam",
+        "bits": 189,
+        "wire": "010001101000010000010000010101100010000101011100001101000000111110001111111001011101101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/15_predecessor_return_inline162.lam",
+        "bits": 185,
+        "wire": "01000110100001000000010101100010000101011100001101000000111110001111110010111011010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "16_selected_cross",
+    "family": "cross application",
+    "body": "s I (\\u.s (\\q.c) (s (s I s) u)) next",
+    "expanded_body": "s (\\a.a) (\\u.s (\\q.c) (s (s (\\a.a) s) u)) next",
+    "argument": "s I s equals s on variables and R on zero. The variable-only cross application therefore diagonalizes equal whole streams.",
+    "isolated_bits": 55,
+    "beta_normal_bits": 55,
+    "beta_normal_hash": "0667480d8d6f4152b13fb01afcdf076502b9b9e3c8c1e747591ce3967b360d8c",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.106,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/16_selected_cross_let165.lam",
+        "bits": 177,
+        "wire": "010001101000010000010000010101100010000101110001111100101110010111000101101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/16_selected_cross_inline162.lam",
+        "bits": 173,
+        "wire": "01000110100001000000010101100010000101110001111001011100101110001011010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "17_tail_dual",
+    "family": "dual operand",
+    "body": "s (\\b.b F c) (s (\\b \\r.b r (r r)) next)",
+    "expanded_body": "s (\\b.b (\\a \\b.b) c) (s (\\b \\r.b r (r r)) next)",
+    "argument": "The dual operand chooses R or the tail diagonal before receiving next, giving R next or N.",
+    "isolated_bits": 53,
+    "beta_normal_bits": 53,
+    "beta_normal_hash": "51582783cea78132310529717d834b0d1ce2169bad651d23fca09d36ac3467d4",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.093,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/17_tail_dual_let165.lam",
+        "bits": 175,
+        "wire": "0100011010000100000100000101100001011000001011110010110000001011101001101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/17_tail_dual_inline162.lam",
+        "bits": 171,
+        "wire": "010001101000010000000101100001011000001011100101100000010111010011010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "18_split_force_dual",
+    "family": "dual operand",
+    "body": "s (\\b.b F c) (s (\\b \\r.b (r next) (r r next)))",
+    "expanded_body": "s (\\b.b (\\a \\b.b) c) (s (\\b \\r.b (r next) (r r next)))",
+    "argument": "Both arms of the dual operand consume next: the zero arm retains it, the variable arm erases it.",
+    "isolated_bits": 62,
+    "beta_normal_bits": 62,
+    "beta_normal_hash": "914c2ccfa1f6c75eaca19732e73a2ad3b20f1cdb6b24d6073ba5fce19aca519a",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.094,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/18_split_force_dual_let165.lam",
+        "bits": 184,
+        "wire": "0100011010000100000100000101100001011000001011110011000000101110011011110010110101111000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "19_bit_force_dual",
+    "family": "dual operand",
+    "body": "s (\\b.b F c) (s (\\b \\r.b (r next) (s s b)))",
+    "expanded_body": "s (\\b.b (\\a \\b.b) c) (s (\\b \\r.b (r next) (s s b)))",
+    "argument": "The dual operand dispatches directly and uses its locally bound first bit to force the whole-stream skip.",
+    "isolated_bits": 64,
+    "beta_normal_bits": 64,
+    "beta_normal_hash": "6fa52aa476ab7494880b548cc2ce243eb3ce10ab79b0c41f9372f2c0e70d27df",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.123,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/19_bit_force_dual_let165.lam",
+        "bits": 186,
+        "wire": "010001101000010000010000010110000101100000101111001100000010111001101111001011110111011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/19_bit_force_dual_inline162.lam",
+        "bits": 188,
+        "wire": "01000110100001000000010110000101100000101110011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010010111101110110011010"
+      }
+    }
+  },
+  {
+    "name": "20_projected_dual",
+    "family": "dual operand",
+    "body": "s (\\b.b F c) ((s K) ((s F) next) (s s next))",
+    "expanded_body": "s (\\b.b (\\a \\b.b) c) ((s (\\a \\b.a)) ((s (\\a \\b.b)) next) (s s next))",
+    "argument": "A projected Boolean selects between tail application and diagonal forcing; neither arm binds the tail.",
+    "isolated_bits": 66,
+    "beta_normal_bits": 66,
+    "beta_normal_hash": "7bbb743af024fac2e02ad25b82ad95490b27b0d4582916fcac26af2aac39e4f4",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.101,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/20_projected_dual_let165.lam",
+        "bits": 188,
+        "wire": "01000110100001000001000001011000010110000010111100101011000001100101100000101100101101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "21_predecessor_dual",
+    "family": "conditional predecessor",
+    "body": "s (\\b.b F c) (s I ((s D) (s D)) next)",
+    "expanded_body": "s (\\b.b (\\a \\b.b) c) (s (\\a.a) ((s (\\a.a a)) (s (\\a.a a))) next)",
+    "argument": "Only in the variable branch, both conditional predecessors equal r; their diagonal is K N. The zero branch erases them.",
+    "isolated_bits": 66,
+    "beta_normal_bits": 66,
+    "beta_normal_hash": "6b9e714b38fe3c83b3257b6f17706b668d70aa2e2514a7cb0e365818c32c2eaa",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.095,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/21_predecessor_dual_let165.lam",
+        "bits": 188,
+        "wire": "01000110100001000001000001011000010110000010111100101011000100101100001101001100001101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/21_predecessor_dual_inline162.lam",
+        "bits": 184,
+        "wire": "0100011010000100000001011000010110000010111001010110001001011000011010011000011010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "22_pred_adaptive_handler",
+    "family": "conditional predecessor",
+    "body": "s D (s (\\b \\r.b (r next) (\\q \\t.c r))) (s s s)",
+    "expanded_body": "s (\\a.a a) (s (\\b \\r.b (r next) (\\q \\t.c r))) (s s s)",
+    "argument": "s D is K at zero and r at a variable. The adaptive operand is R next or a two-field constant returning c r.",
+    "isolated_bits": 68,
+    "beta_normal_bits": 68,
+    "beta_normal_hash": "a84bfdeaf4a1c69f1fb18537c30e932b674e500e09b1185b1494df3bbf700ce1",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.112,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/22_pred_adaptive_handler_let165.lam",
+        "bits": 190,
+        "wire": "0100011010000100000100000101011000011010011000000101110011011110000001111111101110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/22_pred_adaptive_handler_inline162.lam",
+        "bits": 192,
+        "wire": "010001101000010000000101011000011010011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010000001111111011100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "23_false_pred",
+    "family": "conditional predecessor",
+    "body": "s (\\b.b F) (\\q \\t.s (\\a.c)) (s I (s s) next)",
+    "expanded_body": "s (\\b.b (\\a \\b.b)) (\\q \\t.s (\\a.c)) (s (\\a.a) (s s) next)",
+    "argument": "The head is F at zero and r at a variable. F keeps the dual operand; r opens the constant handler to produce c r.",
+    "isolated_bits": 60,
+    "beta_normal_bits": 60,
+    "beta_normal_hash": "2beb89471db000c7263f85e633b5ce9cc4e99b771d33f4667d5f6b7a726e50d1",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.111,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/23_false_pred_let165.lam",
+        "bits": 182,
+        "wire": "01000110100001000001000001010110000110000010000001111000111111001010110001001101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/23_false_pred_inline162.lam",
+        "bits": 178,
+        "wire": "0100011010000100000001010110000110000010000001111000111110010101100010011010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "24_reference57",
+    "family": "cell-borrowed dispatch",
+    "body": "s (\\b.b (\\u \\r.r next)) (\\q \\t.s (\\a.c)) (s s s)",
+    "expanded_body": "s (\\b.b (\\u \\r.r next)) (\\q \\t.s (\\a.c)) (s s s)",
+    "argument": "The known beta-prime witness: zero selects the drop-and-apply handler; the variable tail opens a constant handler.",
+    "isolated_bits": 57,
+    "beta_normal_bits": 57,
+    "beta_normal_hash": "8108d8614e9367581daf0fbf49213835afb48f7082d46817f63e8b1feb4fa51e",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.11,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/24_reference57_let165.lam",
+        "bits": 179,
+        "wire": "01000110100001000001000001010110000110000001101111100000011110001111110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/24_reference57_inline162.lam",
+        "bits": 184,
+        "wire": "0100011010000100000001010110000110000001100001111111100001011100111111110000001111000000101110111001101111001111111110000111111111000010111101001110100000011110001111100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "25_reference65",
+    "family": "cell-borrowed dispatch",
+    "body": "s (\\b \\r.s b (b (r next) (\\q \\t.c r))) (s s s)",
+    "expanded_body": "s (\\b \\r.s b (b (r next) (\\q \\t.c r))) (s s s)",
+    "argument": "The known delta witness: s b is K or r, while a separate opening retains the original tail.",
+    "isolated_bits": 65,
+    "beta_normal_bits": 65,
+    "beta_normal_hash": "74f2eb3e2c10d53151b4b701fea60aaccbec2dc121b416a5960466a032a57929",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.13,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/25_reference65_let165.lam",
+        "bits": 187,
+        "wire": "0100011010000100000100000101100000010111101100101110011011110000001111111101110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/25_reference65_inline162.lam",
+        "bits": 189,
+        "wire": "010001101000010000000101100000010111101100101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010000001111111011100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "26_projected_pred",
+    "family": "cell-borrowed dispatch",
+    "body": "s (s K) (s (\\b \\r.b (r next) (\\q \\t.c r))) (s s s)",
+    "expanded_body": "s (s (\\a \\b.a)) (s (\\b \\r.b (r next) (\\q \\t.c r))) (s s s)",
+    "argument": "s (s K) is K at zero and r at a variable. It controls the same adaptive result/handler interface without a source diagonal lambda.",
+    "isolated_bits": 71,
+    "beta_normal_bits": 71,
+    "beta_normal_hash": "c0235f7581dd7478a464155e342e6ff4b16cc104710db70d1c1b2048486b4647",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.118,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/26_projected_pred_let165.lam",
+        "bits": 193,
+        "wire": "0100011010000100000100000101011001100000110011000000101110011011110000001111111101110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/26_projected_pred_inline162.lam",
+        "bits": 195,
+        "wire": "010001101000010000000101011001100000110011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010000001111111011100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "27_projection_dispatch",
+    "family": "projected Boolean",
+    "body": "(s K) ((s F) next) (s (\\q.c) (s s s))",
+    "expanded_body": "(s (\\a \\b.a)) ((s (\\a \\b.b)) next) (s (\\q.c) (s s s))",
+    "argument": "Project the first bit to choose the two complete computations; the variable return uses stream-owned applications.",
+    "isolated_bits": 53,
+    "beta_normal_bits": 53,
+    "beta_normal_hash": "12d762a72f52253399ef15ca69181336e2abb708af405abe6f71da57fc60535a",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.1,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/27_projection_dispatch_let165.lam",
+        "bits": 175,
+        "wire": "0100011010000100000100000101011000001100101100000101100101100011110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/27_projection_dispatch_inline162.lam",
+        "bits": 171,
+        "wire": "010001101000010000000101011000001100101100000100001111100001011100111110000001111000000101110111001101111001111110000111111000010111101001110100101100011100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "28_projection_tail_return",
+    "family": "projected Boolean",
+    "body": "(s K) ((s F) next) ((s F) (\\b \\r.c (s F)) (s s s))",
+    "expanded_body": "(s (\\a \\b.a)) ((s (\\a \\b.b)) next) ((s (\\a \\b.b)) (\\b \\r.c (s (\\a \\b.b))) (s s s))",
+    "argument": "Under the variable selection, the projected tail is a cell whose fields can be discarded to produce c of another tail projection.",
+    "isolated_bits": 78,
+    "beta_normal_bits": 78,
+    "beta_normal_hash": "d41e03f207ec70b622ad65a00434507735acb199621a3ef1f6d756e59793ddd1",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.113,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/28_projection_tail_return_let165.lam",
+        "bits": 200,
+        "wire": "01000110100001000001000001010110000011001011000001011001010110000010000001111110011110000010010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/28_projection_tail_return_inline162.lam",
+        "bits": 196,
+        "wire": "0100011010000100000001010110000011001011000001000011111000010111001111100000011110000001011101110011011110011111100001111110000101111010011101001010110000010000001111100111100000100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "29_projection_pred_skip",
+    "family": "projected Boolean",
+    "body": "(s K) ((s F) next) (s (\\q.c) ((s D) (s D) s))",
+    "expanded_body": "(s (\\a \\b.a)) ((s (\\a \\b.b)) next) (s (\\q.c) ((s (\\a.a a)) (s (\\a.a a)) s))",
+    "argument": "Only the selected variable arm diagonalizes conditional predecessors; the whole stream is its erased force.",
+    "isolated_bits": 73,
+    "beta_normal_bits": 73,
+    "beta_normal_hash": "d8c3fe043aa562914e309498436264bb53eb01f2fbd1ac30fddba46eb3155e3b",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.095,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/29_projection_pred_skip_let165.lam",
+        "bits": 195,
+        "wire": "010001101000010000010000010101100000110010110000010110010110001111001010110000110100110000110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/29_projection_pred_skip_inline162.lam",
+        "bits": 191,
+        "wire": "01000110100001000000010101100000110010110000010000111110000101110011111000000111100000010111011100110111100111111000011111100001011110100111010010110001110010101100001101001100001101010011010"
+      }
+    }
+  },
+  {
+    "name": "30_projection_cross_skip",
+    "family": "cross application",
+    "body": "(s K) ((s F) next) (s (\\q.c) (s (s I s) next))",
+    "expanded_body": "(s (\\a \\b.a)) ((s (\\a \\b.b)) next) (s (\\q.c) (s (s (\\a.a) s) next))",
+    "argument": "The variable arm cross-applies s to the conditional R-or-s object, which equals s there; next is erased there.",
+    "isolated_bits": 64,
+    "beta_normal_bits": 64,
+    "beta_normal_hash": "2e18e2d8bc1d701dc549dce33f5712fbf34e7f09bb8072e4a6ba91bee36632fb",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.107,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/30_projection_cross_skip_let165.lam",
+        "bits": 186,
+        "wire": "010001101000010000010000010101100000110010110000010110010110001111001011001011000101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "31_reboxed_tail",
+    "family": "rebuilt tail",
+    "body": "s (\\b \\r.b (r next) (c (\\h.s (\\q \\t.t h)) (r r r)))",
+    "expanded_body": "s (\\b \\r.b (r next) (c (\\h.s (\\q \\t.t h)) (r r r)))",
+    "argument": "The returned tail is rebuilt by opening s inside a fresh handler lambda. On a variable r is a Scott cell, so the reconstruction beta-reduces to r.",
+    "isolated_bits": 65,
+    "beta_normal_bits": 65,
+    "beta_normal_hash": "23720bc5ee22564e242829ae63cc2cf398b502eb92a1fa2805f3a7635d4d76d1",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.106,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/31_reboxed_tail_let165.lam",
+        "bits": 187,
+        "wire": "0100011010000100000100000110000001011100110111100101111110000111110000001101110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/31_reboxed_tail_inline162.lam",
+        "bits": 189,
+        "wire": "010001101000010000000110000001011100110000111111100001011100111111100000011110000001011101110011011110011111111000011111111000010111101001110100101111100001111100000011011100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "32_projected_rebox",
+    "family": "rebuilt tail",
+    "body": "s (\\b \\r.b (r next) (c (s (\\q \\t.\\h.h (t K) (t F))) (r r r)))",
+    "expanded_body": "s (\\b \\r.b (r next) (c (s (\\q \\t.\\h.h (t (\\a \\b.a)) (t (\\a \\b.b)))) (r r r)))",
+    "argument": "A variable tail is a cell; independently projecting its bit and remainder rebuilds that exact cell, including at index one.",
+    "isolated_bits": 85,
+    "beta_normal_bits": 85,
+    "beta_normal_hash": "0550a039a1e2b3c99f2f05b9d60fa4fff842198b833bfad1842c496cd3a56018",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.109,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/32_projected_rebox_let165.lam",
+        "bits": 207,
+        "wire": "010001101000010000010000011000000101110011011110010111111001111000000001011001110000011001110000010010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/32_projected_rebox_inline162.lam",
+        "bits": 209,
+        "wire": "01000110100001000000011000000101110011000011111110000101110011111110000001111000000101110111001101111001111111100001111111100001011110100111010010111110011110000000010110011100000110011100000100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "33_function_operand",
+    "family": "callback operand",
+    "body": "s (\\b \\r \\f.b (r next) (f r)) (\\r.c r (r r r))",
+    "expanded_body": "s (\\b \\r \\f.b (r next) (f r)) (\\r.c r (r r r))",
+    "argument": "Pass the entire variable action as a final operand. The selected Boolean decides whether to apply it to the original tail.",
+    "isolated_bits": 61,
+    "beta_normal_bits": 61,
+    "beta_normal_hash": "82427124d87ef250971535303ac688a85bf6b91c59ef274a4071f317cc6f6dc6",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.095,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/33_function_operand_let165.lam",
+        "bits": 183,
+        "wire": "010001101000010000010000010110000000010111100111011111001101100001011111010010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/33_function_operand_inline162.lam",
+        "bits": 188,
+        "wire": "01000110100001000000010110000000010111100111000011111111000010111001111111100000011110000001011101110011011110011111111100001111111110000101111010011101001101100001011110100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "34_callable_suffix",
+    "family": "callback operand",
+    "body": "s (\\b \\r \\f.b ((f s) next) (c r (f s))) (s s)",
+    "expanded_body": "s (\\b \\r \\f.b ((f s) next) (c r (f s))) (s s)",
+    "argument": "The operand is a constant suffix function K R or K N; force it with s at either use.",
+    "isolated_bits": 66,
+    "beta_normal_bits": 66,
+    "beta_normal_hash": "00f57e25ca179f0020c2accb89d7a220c83b3f54a5e95eb48eaf6f49ee6e00ef",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.159,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/34_callable_suffix_let165.lam",
+        "bits": 188,
+        "wire": "01000110100001000001000001011000000001011110010110111101111100101111111011001101111001101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/34_callable_suffix_inline162.lam",
+        "bits": 193,
+        "wire": "0100011010000100000001011000000001011110010110111100001111111100001011100111111110000001111000000101110111001101111001111111110000111111111000010111101001110100101111110110011011110011010011010"
+      }
+    }
+  },
+  {
+    "name": "35_cps_suffix",
+    "family": "CPS operand",
+    "body": "s (\\b \\r \\f.b (f (\\t.t next)) (f (c r))) (\\k.k (s s s))",
+    "expanded_body": "s (\\b \\r \\f.b (f (\\t.t next)) (f (c r))) (\\k.k (s s s))",
+    "argument": "A CPS suffix receives application-to-next at zero, or the partially applied return continuation at a variable.",
+    "isolated_bits": 72,
+    "beta_normal_bits": 72,
+    "beta_normal_hash": "df80fd5ab32cb66260ea91676b45cb881f9ecd68cad3bf7088991d832544853f",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.138,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/35_cps_suffix_let165.lam",
+        "bits": 194,
+        "wire": "01000110100001000001000001011000000001011110011000011011111100110011111110110000110010111011011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/35_cps_suffix_inline162.lam",
+        "bits": 202,
+        "wire": "0100011010000100000001011000000001011110011000011000011111111100001011100111111111000000111100000010111011100110111100111111111100001111111111000010111101001110100110011111101100001100101110110110011010"
+      }
+    }
+  },
+  {
+    "name": "36_pair_operand",
+    "family": "pair operand",
+    "body": "s (\\b \\r \\p.b (p (\\a \\t.a next)) (p c)) (\\f.f (s F) (s s s))",
+    "expanded_body": "s (\\b \\r \\p.b (p (\\a \\t.a next)) (p c)) (\\f.f (s (\\a \\b.b)) (s s s))",
+    "argument": "The operand packages tail and skip. The zero callback ignores the skip; c consumes both in the variable branch.",
+    "isolated_bits": 84,
+    "beta_normal_bits": 84,
+    "beta_normal_hash": "ebb980ef870830b6e2fff58d6460c58bd923559ea489095127dc51a5f09237c4",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.104,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/36_pair_operand_let165.lam",
+        "bits": 206,
+        "wire": "01000110100001000001000001011000000001011110011000000111011111110011011111100001011001110000010010111011011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/36_pair_operand_inline162.lam",
+        "bits": 217,
+        "wire": "0100011010000100000001011000000001011110011000000111000011111111110000101110011111111110000001111000000101110111001101111001111111111100001111111111100001011110100111010011011111000010110011100000100101110110110011010"
+      }
+    }
+  },
+  {
+    "name": "37_diagonal_callback",
+    "family": "callback operand",
+    "body": "s (\\b \\r \\f.b (r next) (f f r)) (\\f \\r.c r (r r f))",
+    "expanded_body": "s (\\b \\r \\f.b (r next) (f f r)) (\\f \\r.c r (r r f))",
+    "argument": "Self-apply the variable callback, using the callback itself only as the erased force of r r.",
+    "isolated_bits": 69,
+    "beta_normal_bits": 69,
+    "beta_normal_hash": "71c74e1adc3c904e8affdd11aca96750497f16a049f5b2ab182c727971738cfe",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.095,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/37_diagonal_callback_let165.lam",
+        "bits": 191,
+        "wire": "01000110100001000001000001011000000001011110011101111100101101011000000101111110100101101011000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/37_diagonal_callback_inline162.lam",
+        "bits": 196,
+        "wire": "0100011010000100000001011000000001011110011100001111111100001011100111111110000001111000000101110111001101111001111111110000111111111000010111101001110100101101011000000101111101001011010110011010"
+      }
+    }
+  },
+  {
+    "name": "38_tail_supplied_force",
+    "family": "input-owned callback",
+    "body": "s (\\b \\r \\f.b (r next) (r f r)) (\\d \\t \\r.c r (r r d))",
+    "expanded_body": "s (\\b \\r \\f.b (r next) (r f r)) (\\d \\t \\r.c r (r r d))",
+    "argument": "The variable tail supplies its own bit d and suffix t to the callback; the final operand restores the whole original tail, and d forces its diagonal.",
+    "isolated_bits": 74,
+    "beta_normal_bits": 74,
+    "beta_normal_hash": "f57c3421601a5129f21497bda0c8b701e12fa69cfcfb8e2fedd107555515ee08",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.097,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/38_tail_supplied_force_let165.lam",
+        "bits": 196,
+        "wire": "0100011010000100000100000101100000000101111001110111110010111010110000000010111111101001011010111000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/38_tail_supplied_force_inline162.lam",
+        "bits": 201,
+        "wire": "010001101000010000000101100000000101111001110000111111110000101110011111111000000111100000010111011100110111100111111111000011111111100001011110100111010010111010110000000010111111010010110101110011010"
+      }
+    }
+  },
+  {
+    "name": "39_selector_packet",
+    "family": "second-stage packet",
+    "body": "s (\\b \\r \\t.b (r (t b)) (t b r (r r t))) (\\b.b next c)",
+    "expanded_body": "s (\\b \\r \\t.b (r (t b)) (t b r (r r t))) (\\b.b next c)",
+    "argument": "The packet maps the first bit to next or c. The zero branch uses it as a tag reader and the variable branch as the return continuation.",
+    "isolated_bits": 77,
+    "beta_normal_bits": 77,
+    "beta_normal_hash": "3bb842b76d722e038eabbef7a9f5e53ae5228e8ed108ee5a16e56b5ec95f895b",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.097,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/39_selector_packet_let165.lam",
+        "bits": 199,
+        "wire": "0100011010000100000100000101100000000101111001110011011100101011011101100101110110100001011011101111000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/39_selector_packet_inline162.lam",
+        "bits": 198,
+        "wire": "010001101000010000000101100000000101111001110011011100101011011101100101110110100001011000011111100001011100111111000000111100000010111011100110111100111111100001111111000010111101001110101110011010"
+      }
+    }
+  },
+  {
+    "name": "40_action_packet",
+    "family": "second-stage packet",
+    "body": "s (\\b \\r \\t.b (t b r) (t b r (r r t))) (\\b.b (\\r.r next) c)",
+    "expanded_body": "s (\\b \\r \\t.b (t b r) (t b r (r r t))) (\\b.b (\\r.r next) c)",
+    "argument": "The packet stores zero action lambda r.r next and variable action c. Its selected action consumes the same original tail in either branch.",
+    "isolated_bits": 84,
+    "beta_normal_bits": 84,
+    "beta_normal_hash": "33bebaac3db906d65d5c364327a27f486f513e62121646d0493e0bd3771c8468",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.097,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/40_action_packet_let165.lam",
+        "bits": 206,
+        "wire": "01000110100001000001000001011000000001011110010110111011001010110111011001011101101000010110000110111101111000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/40_action_packet_inline162.lam",
+        "bits": 208,
+        "wire": "0100011010000100000001011000000001011110010110111011001010110111011001011101101000010110000110000111111100001011100111111100000011110000001011101110011011110011111111000011111111000010111101001110101110011010"
+      }
+    }
+  },
+  {
+    "name": "41_cps_packet",
+    "family": "second-stage packet",
+    "body": "s (\\b \\r \\t.t b (b (\\u.r u) (\\u.u r (r r b)))) (\\b \\f.f (b next c))",
+    "expanded_body": "s (\\b \\r \\t.t b (b (\\u.r u) (\\u.u r (r r b)))) (\\b \\f.f (b next c))",
+    "argument": "The packet receives both the tag and a selected consumer; it supplies next or c to that consumer, using b as the variable skip force.",
+    "isolated_bits": 95,
+    "beta_normal_bits": 95,
+    "beta_normal_hash": "ab29744925e3eef355bde43b90ecdb822acf7c7474d2a3b3b6b64a72a4a91444",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.099,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/41_cps_packet_let165.lam",
+        "bits": 217,
+        "wire": "0100011010000100000100000101100000000101101110010111100001111010000101101110010111101110111100000011001011101111011111000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/41_cps_packet_inline162.lam",
+        "bits": 219,
+        "wire": "010001101000010000000101100000000101101110010111100001111010000101101110010111101110111100000011001011100001111111000010111001111111000000111100000010111011100110111100111111110000111111110000101111010011101011110011010"
+      }
+    }
+  },
+  {
+    "name": "42_reverse_packet",
+    "family": "second-stage packet",
+    "body": "s (\\b \\r \\t.b (r (t F)) (t K r (r r t))) (\\a.a c next)",
+    "expanded_body": "s (\\b \\r \\t.b (r (t (\\a \\b.b))) (t (\\a \\b.a) r (r r t))) (\\a.a c next)",
+    "argument": "A reversed Church pair stores c before next; explicit selectors extract the requested component in the two branches.",
+    "isolated_bits": 82,
+    "beta_normal_bits": 82,
+    "beta_normal_hash": "f0dfd39881d61c69ffad5dec1b62d5608477dd9879e880fa62ce37dc27322045",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.096,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/42_reverse_packet_let165.lam",
+        "bits": 204,
+        "wire": "010001101000010000010000010110000000010111100111001100000100101011000001101100101110110100001011011110111000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/42_reverse_packet_inline162.lam",
+        "bits": 203,
+        "wire": "01000110100001000000010110000000010111100111001100000100101011000001101100101110110100001011011100001111110000101110011111100000011110000001011101110011011110011111110000111111100001011110100111010011010"
+      }
+    }
+  },
+  {
+    "name": "43_constant_var_return",
+    "family": "constant-stream instruction",
+    "body": "(\\read.read (s (\\b \\r.b s (\\u \\v.c r (r r r))))) RDR",
+    "expanded_body": "(\\read.read (s (\\b \\r.b s (\\u \\v.c r (r r r))))) (\\t.t (\\b.b (\\u \\r.r next) c) (t t t))",
+    "argument": "Preprocess variables into K(K(c r N)) and leave zero streams intact. The 165 reader sends double constants to their stored result.",
+    "isolated_bits": 113,
+    "beta_normal_bits": 255,
+    "beta_normal_hash": "bacb67d2dd7cf3f6e7d84e0a31021fee469b0532804792045499cbc29b12d24a",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.268,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/43_constant_var_return_let165.lam",
+        "bits": 235,
+        "wire": "0100011010000100000100000100011001110000001011101111000000101111111110111001011110111011100001011000010110000001101111110111110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      },
+      "inline162": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/43_constant_var_return_inline162.lam",
+        "bits": 242,
+        "wire": "01000110100001000000010001100111000000101110111100000010111111110111001011110111011100001011000010110000001100001111111110000101110011111111100000011110000001011101110011011110011111111110000111111111100001011110100111010111100101101010011010"
+      }
+    }
+  },
+  {
+    "name": "44_constant_zero_return",
+    "family": "constant-stream instruction",
+    "body": "(\\read.read (s (\\b \\r.b (\\u \\v.r next) s))) RDR",
+    "expanded_body": "(\\read.read (s (\\b \\r.b (\\u \\v.r next) s))) (\\t.t (\\b.b (\\u \\r.r next) c) (t t t))",
+    "argument": "Preprocess zero streams into K(K(R next)) and leave variable streams intact. The reader constant-stream identity supplies the other branch.",
+    "isolated_bits": 94,
+    "beta_normal_bits": 179,
+    "beta_normal_hash": "13a9786e16dce0751ada6fcb36d3989cd5b621b411bdc2935724ec06c0f6bb1d",
+    "duplicate": null,
+    "probes": 19,
+    "failures": [],
+    "check_seconds": 0.147,
+    "frames": {
+      "let165": {
+        "path": "/Users/a9lim/Work/blam/tmp/overnight/zoo/candidates/44_constant_zero_return_let165.lam",
+        "bits": 216,
+        "wire": "010001101000010000010000010001100111000000101110000001111011111110111100001011000010110000001101111110111110010110101000011110000101110011110000001111000000101110111001101111001111100001111100001011110100111010011010"
+      }
+    }
+  }
+]

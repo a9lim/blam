@@ -54,3 +54,8 @@ forced to `λy λa. e W` and the lift to `λz. e Y₀ (e₂ Y₁)` (≥ 19), via
 extraction lemma that uses Ω to pin output shapes; NEXT ≥ 92 on the 165's
 skeleton under normality and the uniform cell interface; dispatch-first
 ≥ 99; an exact residual list.
+`zoo` (Codex): 44 hand-reasoned reader bodies in 18 families (shared
+suffixes, dual operands, conditional predecessors, projected Booleans,
+callback and packet operands, constant-stream returns), 836 reader-law
+probes, 84 complete splices into the 165 and 162 frames, all correct; best
+renderings 162 and 164 (the known ones), the rest 165–229.
