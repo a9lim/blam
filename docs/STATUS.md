@@ -199,14 +199,23 @@ with all features (three opt-in tests ignored) and 328 with default features.
   no affine source redex and exactly four or five applications: the
   three-application normal cases and all nonlinear compression through
   four applications are excluded. A four-application minimum must be
-  beta-normal; the normal `(A,L,k)=(4,4,2)` shape is also excluded,
-  where `k` counts leading lambdas. Without free stream access, every
+  beta-normal, use the whole stream, and have at most one leading lambda:
+  all normal four-application cases without `s`, and all with two leading
+  lambdas, are excluded. With one leading lambda, only three or four
+  source lambdas remain; with no leading lambda, a candidate must be
+  affine and have at least four source lambdas. Without free stream access, every
   affine handler fails the variable law once `m>A(H)+2L(H)+5`; a
   separate live-binder-antichain obstruction also allows nonaffine redexes.
   These exclude all five-application nonlinear compression without free
-  `s`. The only remaining compressed leaf allocation is `u,u,j,c,s,v`,
-  where `u` is the contracted nonlinear binder and `v` belongs to one
-  affine source binder. Other normal shapes remain open
+  `s`. An index-tax classification excludes the remaining compressed
+  four-lambda cases, including proper copied-argument contexts. The only
+  remaining compressed allocation is `u,u,j,c,s,v` with three source
+  lambdas and `X≤6`, where `u` is the contracted nonlinear binder and
+  `v` belongs to one affine source binder. Every remaining normal
+  five-application candidate is stream-headed with no leading lambda:
+  either three lambdas with `X≤6`, or four with `X≤4`. The exclusions use
+  closed-helper classifications, guarded functional-index arguments,
+  and the zero-branch leaf budget. These remaining shapes are open
   (`classical/self-interpreter/cheap-tail-bound.md`,
   `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP

@@ -429,13 +429,18 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   At `T=s`, `|H|≤34`, every successful handler has at least three
   source lambdas even before normalization. A minimum successful handler
   has no affine source redex and exactly four or five applications.
-  At four applications it must be beta-normal; the `(A,L,k)=(4,4,2)`
-  normal shape is also excluded, with `k` the number of leading lambdas.
+  At four applications it must be beta-normal, use `s`, and have at most
+  one leading lambda; the no-stream and two-leading-lambda cases are excluded.
+  With one leading lambda, only three or four source lambdas remain.
+  With no leading lambda, it must be affine and have at least four.
   Without free `s`, every affine handler fails its variable law, and a
   live-binder-antichain theorem also excludes nonaffine handlers. These
-  close every five-application compressed case without free `s`; only
-  the leaf allocation `u,u,j,c,s,v` remains in the compressed case.
-  Other normal shapes stay open.
+  close every five-application compressed case without free `s`.
+  The remaining four-lambda compressed cases are excluded by the index
+  budget, leaving only three lambdas, `X≤6`, and leaves `u,u,j,c,s,v`.
+  Every remaining normal five-application candidate is stream-headed with
+  no leading lambda, with either three source lambdas and `X≤6` or four
+  and `X≤4`. Those normal shapes stay open.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,
   `Z R R = R next` forces the normal form `λu v. u next` (15) or

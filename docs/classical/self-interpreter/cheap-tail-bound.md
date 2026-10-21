@@ -1813,6 +1813,238 @@ Thus all no-`s` five-application nonlinear compression is excluded.
 The only remaining compressed allocation at the improving budget
 is `u,u,j,c,s,v`, with `v` bound by one affine source lambda.
 
+### Four lambdas cannot fit the remaining compressed allocation
+
+The following handwritten exclusion has been independently reviewed. It
+uses the same rigid ambient frame and reader laws. Write `P=cons K R` on
+the zero branch, whose target is `H K R P =β R j`; the variable target
+remains `H F V S =β c V N`.
+
+Assume a minimum successful handler at at most 34 bits has A=5, L=4 and
+the sole remaining leaf allocation
+
+    u,u,j,c,s,v.
+
+The chosen redex is (lambda u.B) D, u occurs twice, and v is the sole
+occurrence of a distinct live binder. The other two source binders are
+vacuous. There is no affine source redex. In particular D is beta-normal.
+Write d for the number of lambdas in D.
+
+#### The index budget as a sum of taxes
+
+The mandatory ambient indices contribute 1+2=3. For a source lambda l,
+let its tax count every variable leaf in its body whose binder lies outside
+l, including ambient leaves, but excluding leaves bound by l itself or by
+an inner lambda. Then
+
+    X-3 = sum_l tax(l) <= 1.
+
+Thus at most one source lambda has positive tax, and that tax is one.
+A vacuous lambda with tax zero must enclose a live source binder: otherwise
+its nonempty body would have a free leaf. Only u and v are live. If such a
+lambda encloses u, it also encloses the argument D, since u is already an
+applied source lambda. If it encloses v inside D while itself lying outside
+D, it encloses all of D.
+
+Consequently, if D is nonclosed and contains the binder v, every vacuous
+lambda outside D has positive tax. Also, no initial leading lambda is
+possible: j,c beneath it would already contribute X>=5. A leading lambda
+in B is impossible too, because both u occurrences would cross it and
+consume two extra index units.
+
+For use with singleton arguments, the exact wire change when contracting
+u is
+
+    Delta = |D| + (f-1)(d1+d2) - 8 - r,
+
+where f counts free leaves of D, di is the depth of the i-th u occurrence
+below its binder, and r counts other body references whose index drops.
+For a singleton lambda-free D, f=1 and |D|<=5, so the contraction strictly
+reduces size. Closed I and F arguments similarly give a strict decrease.
+
+#### d=0
+
+A singleton D is excluded by the strict wire decrease. Suppose D has at
+least two leaves. If it contains free v, the binder v encloses D and at
+least one ambient leaf, so tax(v)>=1. Both vacuous lambdas must then have
+tax zero. Neither can enclose v, since that would also enclose the ambient
+leaf. Neither can enclose u without v, since its body then contains both
+the free v and that ambient leaf in D. There is no other live binder for
+a zero-tax vacuous lambda to enclose. This is impossible.
+
+Thus D contains only ambient leaves. If j is in D, its zero specialization
+has j permanently guarded in a rigid j/c-headed neutral. Indeed D is an
+application-only expression with distinct leaves from s,j,c and at most
+one s. A head j/c stays rigid; a head P receives a j/c-headed callback and
+also becomes rigid. Every j is beneath an application headed by j or c.
+Neither duplication nor application can extract a bare j from this normal
+neutral, whereas the zero target requires precisely a bare j.
+
+Otherwise D is exactly s c or c s, and becomes c-headed on the zero input.
+All s occurrences are in D. Following the source's left spine, a rigid j
+head fails immediately, while a lambda head must be the u redex: there
+is no initial leading lambda and no affine source redex. B has no leading
+lambda, and its head is u or a rigid j. A free enclosing v would place both
+ambient leaves of D beneath v and cost two tax units. Hence after u
+contracts the zero head is c or j, never R.
+
+#### d=1, with v bound inside D
+
+If D is closed, it is I and its contraction strictly reduces size.
+If D is nonclosed, both remaining vacuous lambdas lie outside D and each
+has positive tax by the index observation. This exceeds the sole spare unit.
+
+#### d=1, with the lambda of D vacuous
+
+The vacuous lambda in D has positive tax. If D contains free v and any
+ambient leaf, tax(v) is positive as well, impossible. With no ambient leaf,
+D is lambda q.v, whose size is at most five and f=1; contracting u strictly
+reduces size.
+
+Otherwise D contains no v. Its vacuous lambda must be exactly lambda q.a
+for one ambient a; placing a second free leaf beneath it would already
+cost two units. The remaining vacuous lambda has tax zero and must enclose
+v in a closed block. That block is F=lambda q v.v: putting its vacuous
+lambda below the live v would add a second tax unit. It cannot enclose u,
+because D is nonclosed. The F block is disjoint from D.
+
+If D is just lambda q.a, its size is at most seven, f=1, and contraction
+strictly reduces size. Otherwise D is an application-only normal context
+over ambient leaves and lambda q.a. The latter cannot be in function
+position. Its zero specialization is therefore j/c-headed: a head P either
+receives lambda q.a and yields a R, with a=j or c, or receives an already
+rigid callback.
+
+If j occurs in D, it is guarded and cannot supply the bare target j.
+Otherwise D uses s,c and becomes c-headed. All code outside its two copies
+is application-only over F,j and those c-headed neutrals. The functional
+normal forms of this little algebra are only F and I; every other result
+is rigid-headed. The final K,R,P give F K R P -> R P and I K R P -> R.
+A rigid result keeps its final P. None gives R j.
+
+#### d=2, with v bound inside D
+
+If D is closed, its two lambdas form F or K. F has strict negative wire
+delta. K spends the spare index unit, so no ambient can lie in B and both
+u occurrences have depth zero. Thus B=u u, and contracting the core gives
+K K. The outside vacuous lambda must have tax zero. It cannot sit inside
+B above a u, nor above any ambient leaf. It therefore surrounds the whole
+closed redex, giving the one closed block
+
+    Z = lambda q.((lambda u.u u) K) ->* lambda q.K K.
+
+All three ambient leaves lie outside Z. Since the original handler has no
+affine source redex, Z occurs only in argument position. Its only possible
+activation on zero is a callback use P Z, and
+
+    P Z -> Z K R -> K.
+
+Otherwise the head is already j/c. Replacing that activation by K leaves
+an applicative expression over K,j,c with exactly one occurrence of each.
+Its normal form has a j/c head, possibly below the one vacuous lambda of
+K applied to a j/c-headed argument. The external K,R,P cannot change that
+head to R. This excludes the closed K argument as well.
+
+If D is nonclosed, the sole remaining vacuous lambda outside D has positive
+tax and spends the entire allowance. Every lambda inside D has tax zero.
+They therefore form the closed F block, and D is a normal application-only
+context over that single F and ambient leaves. Also tax(u)=0, so B has no
+ambient leaf; only the two u occurrences and possibly the outside vacuum
+occur there.
+
+On zero, a head P with first argument F yields R, possibly followed by
+rigid arguments. Any other first argument is j/c-headed. Consequently D
+becomes an R- or j/c-headed neutral; it never becomes a functional value.
+If s occurs in D, all remaining syntax is application-only over these
+rigid neutrals and j,c, with one vacuous lambda. At most one of the three
+external inputs can be consumed by that lambda, and every exposed rigid
+head retains a suffix ending in P. This cannot give R j.
+
+If s does not occur in D, its normal j/c-headed value is independent of
+the branch. It is a normal application containing j/c and the closed F
+block, but no R or N. It cannot equal a subterm of R j: it is neither R,
+j, nor R j. It also cannot equal a subterm of c V N. The target's neutral
+c-headed prefixes contain N, while its remaining subterms are bare c/N,
+the closed Booleans, or N-containing Scott subterms; none is this fixed
+j/c-containing application. Outside reduction cannot dismantle D's rigid
+head or alter its arguments. Thus every copy would have to be erased in
+both successful target reductions. But D contains at least one of the
+unique mandatory j/c leaves. Erasing all its copies removes every origin
+of that free name. The zero target requires j and the variable target
+requires c, so the corresponding branch is then impossible.
+
+If both lambdas of D were vacuous and v lay outside, each would have
+positive tax: no live binder is available inside D to make either body
+closed. This directly exceeds the budget.
+
+#### d=3: all remaining lambdas are in D
+
+The normal lambda-block classification has three possibilities:
+
+1. One closed three-argument projection P3, selecting the last argument
+   (tax zero) or the middle argument (tax one). Selecting the first costs
+   two units and is excluded.
+2. Disjoint closed F and lambda q.a, where a is the sole ambient below a
+   lambda. The latter vacuum has tax one.
+3. One block lambda q.a F, where a is the sole ambient below a lambda.
+   The outer vacuum has tax one; the inner closed F has tax zero.
+
+Here is why these are exhaustive. A zero-tax vacuous lambda in D must
+enclose v. If both vacua have tax zero, both enclose v and give the last
+projection. A positive tax at live v would put an ambient beneath v and
+therefore also beneath both zero-tax vacua, impossible. If one vacuum has
+tax one because it encloses a free v, the other zero-tax vacuum surrounds
+v and gives the middle projection. If it instead encloses an ambient a,
+the zero-tax vacuum and v form F. This F is either outside that vacuum,
+giving case 2, or inside its body. In the latter case source normality
+forces the body a F, giving case 3. F a would be an affine source redex.
+
+In cases 2 and 3, tax(u)=0 and there are no lambdas outside D, so B=u u.
+In case 2 the two functional blocks can occur only as arguments to a
+free head. A zero head P yields R followed by arguments if its first
+argument is F, or a R followed by arguments if its first argument is
+lambda q.a. Other callbacks are already j/c-headed. Thus D becomes a
+rigid neutral, and D D remains rigid with an additional argument.
+If D contains s, the outer context contains only j,c and cannot remove
+that argument or the final external P. If it does not contain s, its
+j/c head also guards it when the outer P uses it as a callback.
+
+In case 3, a bare block with a=s becomes K R, and its self-product is R.
+A bare block with a=j or c has a rigid self-product. A proper normal
+application context has a free head. If that head is s, then a is j/c
+and the callback gives a F R, still rigid; a j/c head is immediate.
+Thus D D and its outside context again have a rigid head and cannot give
+R j after all three external inputs.
+
+For the last-argument P3 of case 1, a closed D has wire delta -r. If r>0,
+contraction strictly decreases size. Otherwise B=u u, and D D reduces to
+F; the resulting whole source has at most two lambdas and is excluded
+by the normal two-lambda floor after affine normalization.
+For the middle-argument P3, its tax already spends the extra unit,
+so again B=u u. Its self-product is K, and the same two-lambda argument
+excludes a closed D.
+
+For a proper normal context around P3, its only possible functional zero
+result comes from s P3. With the last projection this gives I, and adding
+a further rigid argument makes the result rigid. With the middle
+projection it gives K R, and any further argument exposes rigid R.
+A head s with any other callback becomes j/c-headed; all other heads
+are j/c from the start.
+
+For the middle projection B=u u, so D D becomes R or a rigid neutral;
+the outside context cannot give R j after K,R,P. For the last projection,
+D is either already j/c-headed or is exactly s P3 and becomes I. In the
+first case a remaining s, if outside D, receives only rigid callbacks and
+also becomes rigid. In the second, s has been used inside D. Substitution
+leaves an application-only expression over I,j,c. If the spare unit puts
+one rigid a in B, that body's two I copies expose head a; otherwise
+the I self-product is I. The remaining j,c context is rigid-headed.
+This also fails the zero law.
+
+Consequently five-application nonlinear compression at the improving
+budget remains only with **three source lambdas**, `X≤6`, and the leaf
+allocation `u,u,j,c,s,v`.
+
 ## Normal whole-stream handlers with at most three applications
 
 Write `P=cons K R` on the zero input and `S=Pₘ(N)`,
@@ -2128,6 +2360,612 @@ exhaust the remaining block.
 
 Thus `(A,L,k)=(4,4,2)` cannot satisfy the whole-stream reader laws.
 
+## Normal four-application handlers without whole-stream access
+
+Suppose `H` is beta-normal, has `A=4`, has size at most 34, and contains no
+free `s`. The previous results allow us to assume that `H` has at least
+three lambdas, has nonaffine nested live binders, and is neither a three-
+leading-lambda handler nor the shape `(A,L,k)=(4,4,2)`.
+
+Its five leaves must therefore be exactly `j,c,u,u,v`, with `u` bound twice
+by one binder and `v` bound once by another. Otherwise it is affine, has
+only one live binder, or has a live-binder antichain, all already excluded.
+If `k` is the number of leading lambdas, a rigid normal body head fails.
+There is no stream head available. A second-input head at `k=2` retains
+final `P` on the zero branch; a third-input head has `k=3`, already
+excluded. Thus its normal form is
+
+```
+H = λ^k. b A₁ ... A_q,
+```
+
+where `b` is the first leading binder and `q≥1`. All leading-lambda counts
+permitted by the size bound remain in scope; in particular `L=5,k=1` is not
+discarded.
+
+If `b` is the duplicated binder `u`, substitute the closed affine Boolean
+`F` for it. All remaining source binders are affine, including every
+inserted copy of `F`. Thus `H′ = λignored. H F` is an affine handler without
+free `s`, and
+
+```
+H′ F V S =β H F V S.
+```
+
+The arbitrary-size affine no-stream theorem uses only the variable law, so
+excludes this possibility. No zero law for `H′` is asserted.
+
+Now let `b=v` be affine. The sole other live binder is `u`, used twice. If
+`u` is not leading, its binder and both occurrences belong to one of the
+arguments `A_i`: a binder enclosing the head `b` would itself be leading.
+For `q=1`, the variable Boolean erases `A₁`, including the mandatory `c`, so
+this case fails.
+
+For `q≥2`, the zero Boolean selects `A₁` and the variable Boolean selects
+`A₂`, followed by the common arguments `A₃,...,A_q` and any unconsumed
+external inputs.
+
+* If the `u` island is in `A₁`, the variable branch erases the only
+  remaining live binder. Every surviving source lambda is vacuous, and the
+  source code contains only rigid `j/c` leaves. A normal term made from
+  those leaves and vacuous lambdas, applied to source arguments and the
+  remaining external `V,S`, can only erase successive arguments until
+  exposing its fixed rigid head. It cannot activate a received argument:
+  none of its binders uses that argument. Thus its final rigid spine either
+  retains the original last input `S`, or all inputs have been erased and
+  only fixed `j/c` syntax remains. Neither gives `c V N`.
+* If the `u` island is in `A₂`, the zero branch similarly erases it. The
+  surviving normal code consists only of rigid `j/c` and vacuous lambdas. It
+  cannot return or activate the later received `R`, so cannot produce head
+  `R`.
+* If the island is in a common argument, then `q≥3`. Its two `u` leaves need
+  at least one application inside that argument. At `A=4`, this forces
+  `q=3`; `A₁` and `A₂` each have one leaf, namely `j` and `c` in some order,
+  under vacuous lambda chains. The zero-selected `A₁` has a fixed rigid
+  `j/c` head and cannot produce `R`. At `q=4`, all arguments have one leaf,
+  so the island cannot fit.
+
+It remains that `u` is the second leading binder `r`. Here `k≥2`; the
+already excluded three-leading case leaves `k=2`. The mandatory `j,c`
+contribute seven index units, so `L≤4`; the existing `(L,k)=(4,2)` result
+leaves exactly `L=3`. The third lambda is vacuous. Again `q=1` erases `c` on
+the variable branch.
+
+For `q≥3`, zero selects `A₁` and leaves at least two ordered arguments
+attached to it, ending in `P`. After substituting rigid `r=R`, the selected
+source argument is normal and has only the one possible vacuous lambda. It
+can consume at most one of those arguments before exposing a rigid head. A
+head `R` therefore still has final argument `P`, and cannot be `R j`.
+
+For `q=2`, zero needs `r,j` in `A₁`; variable output needs `c` in `A₂`. If
+both occurrences of `r` were in `A₁`, the variable branch would again be
+only a vacuous `c` chain, incapable of `c V N`. Thus the branch leaves are
+exactly `r,j` and `r,c`, with one application in each branch. To give zero
+output `R j`, the single vacuous lambda must wrap `A₁` and consume final
+`P`; otherwise that final edge remains on the rigid output. Consequently
+`A₂` is exactly `r c` or `c r`. The variable outputs are respectively
+
+```
+c F Pₘ₋₂ S,           c V S
+```
+
+for `m≥2`. Neither equals `c V N`.
+
+This exhausts normal no-stream handlers with four applications and size at
+most 34.
+
+## Four applications, stream access, and two leading lambdas
+
+Suppose a beta-normal whole-stream handler of size at most 34 bits has
+`A=4`, contains `s`, and has exactly two leading lambdas, `H=λb r.B`. The
+mandatory j,c,s contribute at least `7+2=9` index units. Since L≥3 and 2L+X≤16,
+this forces L=3 and X≤10. There is exactly one inner source lambda D.
+
+A rigid body head fails. A body headed by r retains final P on the zero
+branch. Thus the body head is b or s.
+
+If it is b, the index-one head spends the final unit. The occurrences of
+j,c,s must all lie outside D, and no outer binder can occur inside D. The
+fifth source leaf must therefore be D's own bound leaf, so D=I. There is no
+r occurrence. On the variable branch the body is application-only over F,S,I
+and rigid j,c, and final S remains pending. The safe algebra excludes the
+desired c V N.
+
+Now let the body head be s. On the variable branch substitute b=F,r=V,
+leaving final S pending, and abstract the sole inner lambda D by a rigid
+marker d. Choose m sufficiently large that every first invocation of d by a
+functional Scott value supplies F rather than terminal K, as in the one-
+marker index lemma. The syntax outside D is application-only safe data.
+
+If the mandatory c is outside D, an opaque result with functional head or
+head d has no way to acquire that outside c as its own head after the final
+S is appended unless d has already been invoked internally. An opaque result
+headed c retains final S. More directly, if d is invoked internally,
+contracting its unique source lambda replaces its bound occurrences by safe
+arguments and leaves entirely safe applicative code; if it is never invoked,
+the functional or rigid-head alternatives fail, except potentially a bare d
+returned to receive the final S. That bare-d alternative can yield c only if
+c is inside D.
+
+It therefore suffices to exclude a bare opaque result d when c is inside D.
+This placement spends the one index unit remaining after j,c,s, so j is
+outside D and b is absent. Every exterior bound occurrence is the leading r
+outside D, hence substitutes to V. The opaque context is consequently
+application-only over S,V,d,j (and any other rigid leaves), with at least
+one occurrence of j.
+
+For this restricted basis, a functional normal form is S, V, I, or Q, with
+possible duplicate identical Scott values. Pair/pair interactions return
+I,Q, or an N-headed neutral; identity forwards its argument; Q returns N;
+and a Scott value applied to a neutral preserves its head and adds two
+arguments. In particular, a functional normal form can only come from
+subexpressions containing no opaque rigid leaves: in the application table,
+every row returning a functional value has functional children. The row I A
+forwards a neutral unchanged but its function subtree has no opaque rigid
+leaves.
+
+Inductively, a normal form equal to bare d can therefore come only from a
+context whose sole opaque rigid leaf is that occurrence of d. Every step
+forwarding bare d is an identity step; a Scott invocation adds arguments,
+and Q changes its head to N. Since the actual context also contains j, it
+cannot return bare d.
+
+Thus D is either lost or trapped under another rigid head, or is invoked
+internally with a safe argument. In the last case its body is application-
+only, so the result lies in the safe algebra before final S is appended. Its
+functional results contain no c and its c-headed results retain final S,
+which is not N. This excludes the s-headed case and hence every normal
+s-present A4 handler with two leading lambdas at the improving budget.
+
+## Five applications, one leading lambda, and stream access
+
+Suppose a beta-normal handler has five applications, three lambdas, one
+leading lambda, at most 34 bits, and a free occurrence of `s`. Write
+`H = λb.B`. The variable-stream law would require
+
+```
+B[b:=F,s:=P_m] P_(m-1) P_m =β c P_(m-1) N,
+```
+
+for every `m≥1`, where `P_0 = cons K N`, `P_(i+1)=cons F P_i`, and
+`N` is rigid. The claim below excludes this case using a sufficiently
+large `m`.
+
+### Tight syntax inventory
+
+The wire identity gives `X≤6`. The required occurrences of `j,c` have
+indices at least 2 and 3 under the leading binder. The required `s`
+has index at least 1. They exhaust the index budget. Hence there is
+exactly one occurrence of each, all outside the two inner lambdas, and
+the other three leaves have index zero. Every inner lambda block is
+therefore closed. An index-zero leaf outside the inner blocks is `b`.
+
+With two inner lambdas and at most three leaves, their complete
+beta-normal placement inventory is as follows. Omitted leaves are
+exterior occurrences of `b`.
+
+* Two separate blocks: `I,I`, or `I,Δ`, where `I=λa.a` and
+  `Δ=λa.a a`.
+* A nested block with consecutive lambdas: `F=λa d.d`,
+  `G₂=λa d.d d`, or `G₃=λa d.d d d`.
+* A nested block with the inner lambda as an argument:
+  `J=λa.a I`, `Jleft=λa.a a I`, `Jright=λa.a(a I)`,
+  `Jmid=λa.a I a`, or `JΔ=λa.a Δ`.
+
+Here application associates to the left. The list follows by distributing
+one, two, or three bound leaves among the two lambdas. Consecutive
+binders can use only the inner one. In the nonconsecutive case, the
+inner block must occur as an argument because the whole term is normal;
+with two remaining outer leaves, the three listed placements are all
+binary application trees with outer head `a` and one inner-`I` leaf.
+
+### Functional data and opaque helper markers
+
+After substituting `b=F`, treat each not-yet-activated closed block as
+an opaque marker. Normalize the surrounding application-only expression
+bottom-up using the data algebra. Its functional data values are
+
+```
+P_i, F, I, Q=K N,
+```
+
+and every other result is headed by a rigid variable or a helper marker.
+In particular, no base functional value contains `c`.
+
+The pair/pair cases are important:
+
+```
+P_0 P_0             →* Q,
+P_0 P_(j+1)         →* I,
+P_(i+1) P_0         →* N P_i,
+P_(i+1) P_(j+1)     →* P_j P_i.
+```
+
+Their recursion decreases `i+j` and ends in `I`, `Q`, or an
+`N`-headed neutral. It never returns a Scott cell as its functional
+normal form. This recursion may traverse the entire prefix; the
+argument does not bound its number of beta steps.
+
+When a functional Scott cell is applied to a helper-headed neutral,
+it passes its bit and tail to that helper. We must ensure that this
+cell has positive index, so that its passed bit is `F`, not bare `K`.
+Without this guard the proof is false: `JΔ P_0 →* K`.
+
+An exposed functional Scott value here means a Scott-valued result that
+can still become a function or a first helper argument in this evaluation.
+Scott cells or bare `K` values permanently buried in an ordinary rigid
+`N`, `j`, or `c` argument spine are excluded: a helper can forward that
+whole neutral or apply it to more arguments, but cannot project one of
+its arguments. Their indices can be arbitrarily low after pair/pair
+cancellation without affecting the guard.
+
+For a finite data phase, regard each already available `P_i`, `F`,
+`I`, and `Q` as one macro leaf. If the phase starts with at most `M`
+macro applications and all exposed functional Scott leaves have index
+at least `h`, every functional Scott normal form obtained in the phase
+has index at least `h-M`. This is induction on the application tree:
+`P_i F → P_(i-1)` spends an application; identity forwards an existing
+value; pair/pair never produces a Scott functional normal form; other
+table cases produce no new functional Scott value. The tail exposed
+along a helper-headed neutral has the same bound with one additional
+unit of margin.
+
+The resulting macro tree has at most `2M` applications. In the table,
+the only growth is a Scott cell applied to a neutral, which replaces
+one application by two appended spine slots. Bare `K` values buried
+in an ordinary rigid neutral never become functional values. The
+positive-index guard ensures that they are not instead exposed as
+helper arguments.
+
+### Activating the closed helpers
+
+The actions of the possible blocks are
+
+```
+I U          → U,
+Δ U          → U U,
+F U          → I,
+G₂ U         → Δ,
+G₃ U         → D₃,       D₃ = λd.d d d,
+J U          → U I,
+Jleft U      → U U I,
+Jright U     → U (U I),
+Jmid U       → U I U,
+JΔ U         → U Δ.
+```
+
+Thus an activated helper either discards its input and returns a fixed
+closed block, or exposes its input as a function, applied only to
+itself or fixed closed blocks. If the input is `c`-headed, the result
+is immediately `c`-headed. If it is another rigid neutral, that head
+also persists. If it is functional data, all results remain `c`-free.
+In particular these helpers never build a functional closure that
+retains `c`.
+
+No complex helper can receive an argument containing itself. There is
+one occurrence of a complex helper, except for the separate pair
+`I,Δ`, and all other initial reducers are affine. Before that helper
+is activated, its unique occurrence is neither duplicated nor placed
+inside its own argument. In the separate pair, eliminate affine `I`
+first. The helper may duplicate a base-data or neutral argument, but
+not complex code. `G₂`, `G₃`, and `JΔ` can expose their pre-existing
+inner `Δ` or `D₃`; this gives at most two complex activations in all.
+The other helper blocks are affine, and their fixed identity outputs
+can be included in the base algebra.
+
+For completeness, a uniform prefix guard can be chosen before any
+evaluation. Start with `M≤5`. Normalize one data phase, then activate
+a complex helper. Its body has at most two applications and uses its
+argument at most three times, so the next macro expression has at
+most `6M+2` applications. Across at most two such activations, the
+successive phase bounds are `5,32,194`. Their total is 231; the
+tail-delivery margins and two helper-internal application margins are
+less than 10. Taking, for example, `m>600` therefore makes every
+Scott cell that supplies a bit to an active helper positive. This
+bounds exposed functional-index ancestry, not total data reduction
+steps: the unbounded pair/pair cancellation just described is allowed.
+
+After all helpers have been processed, the normal form of
+`B[F,P_m]` is therefore either a `c`-free functional value, or a
+rigid-headed neutral. Any remaining closed helper value is also
+`c`-free and can only be applied to the `c`-free pending arguments.
+
+### The output contradiction
+
+A `c`-free functional normal form cannot acquire head `c` by application
+to the two pending `c`-free arguments `P_(m-1),P_m`. A rigid-headed
+normal form keeps its head. If the head is `c`, applying those two
+pending arguments appends them to its spine. To match the required
+two-argument normal form `c P_(m-1) N`, the already normalized body
+must be exactly `c`, and the final argument would then be `P_m`, not
+`N`. Both are normal and distinct. Every case contradicts the
+variable-stream law.
+
+The exclusion uses only the variable law. It applies exactly to the
+normal `(A,L,k)=(5,3,1)` shape with free `s`, not to the other normal
+five-application placements.
+
+## Five applications and one leading lambda without stream access
+
+Suppose `H=λb.B` is beta-normal, has five applications and three
+lambdas, and contains no free `s`. The wire identity gives `X≤6`.
+Mandatory `j,c` already contribute `2+3=5` under the leading binder.
+Thus each occurs once, at most one can lie under one further lambda,
+and only one other positive index unit is available.
+
+A rigid body head cannot satisfy the zero law. Hence
+
+```
+B = b A₁ ... A_q,       q≥1.
+```
+
+For `q=1`, the variable input `F` erases all source arguments, including
+`c`, so this fails. For `q≥2`, `K` selects `A₁` and `F` selects `A₂`,
+followed by the common arguments `A₃,...,A_q` and the two external
+arguments `R,P` or `V,S`.
+
+### Only three nonlinear leaf patterns remain
+
+If both inner binders are affine, the source term
+`λignored.B[b:=F]` is an affine handler without free `s` and satisfies
+the required variable law. The already established arbitrary-size affine
+no-stream theorem excludes it. Thus an inner binder `u` must occur at
+least twice. It is nonleading, so its binder and all its bound occurrences
+belong to one argument `A_i`.
+
+There are only six leaves, including mandatory `j,c`, the head `b`, and
+two `u` leaves. The remaining leaf is exactly one of:
+
+* another `b`, with the other inner lambda vacuous;
+* a third `u`, with the other inner lambda vacuous;
+* one occurrence `v` of the other inner binder.
+
+Another rigid ambient leaf or a repeated `j/c` would exceed the index
+budget. Both inner binders cannot be nonlinear because that would need
+at least seven leaves including the head and `j,c`.
+
+### A selected branch containing u
+
+If the `u` island lies in `A₁`, the variable selector erases it. The
+surviving variable branch is affine, even if the source had another
+occurrence of `b`, because all surviving `b` occurrences are closed
+copies of affine `F`. The affine no-stream variable-law theorem again
+excludes it.
+
+If the `u` island lies in `A₂`, the zero selector erases it. In the
+extra-`b` or extra-`u` leaf patterns, every remaining source binder is
+vacuous; only `K` selectors and vacuous erasers remain. The ordered-input
+argument already used for one live first-input binder excludes `R j`:
+selectors forward arguments whole and erasers discard them, but neither
+can insert a later received rigid `R` into a fixed source application
+with the earlier `j`. Exposing `R` before the last input is consumed
+retains final `P`; exposing or returning `P` after that input edge is
+consumed leaves no later argument with which to activate it.
+
+In the extra-`v` pattern, `b` occurs only once. After zero selects `A₁`,
+there is no internal Boolean `K` and no `s` occurrence in the remaining
+source. At most one source lambda remains, the affine `v` binder.
+All other source terms before the external `R,P` are rigid expressions.
+If that lambda is internally activated, it consumes a rigid source
+argument and leaves no source lambda. If it is reached as a bare
+function, its first supplied argument is either such a rigid source
+argument or `R`; it cannot first receive `P` while the earlier `R`
+input is still pending. In either case an exposed `R` still has final
+`P` attached. Thus this zero branch cannot be `R j` either.
+
+### A shared argument containing u
+
+It remains that the `u` island is in `A_i` for `i≥3`. Its two bound
+leaves require an internal application, so `q≤4`.
+
+#### Four head arguments
+
+For `q=4`, the one remaining application is inside the `u` island.
+That argument has exactly its two `u` leaves; the other three arguments
+are one-leaf chains over `j,c` and the extra `b` or `v`. A third `u`
+cannot fit. The `u` island has no rigid `j/c` leaf.
+
+Zero correctness rules out `A₁` being a chain over `j` or `c`: such
+a vacuous chain can only expose its fixed rigid head. Hence `A₁` is
+the `b` or `v` chain. Variable correctness then rules out a `j` chain
+as `A₂`, so `A₂` must be the `c` chain. After selection, it receives
+four ordered arguments, `A₃,A₄,V,S`. The `u` binder is in a shared
+argument, so at most the other inner lambda can wrap this `c` chain.
+It can erase at most one of the four arguments before exposing `c`.
+At least three arguments remain on the rigid output, whereas the target
+`c V N` has exactly two. This excludes `q=4`.
+
+#### Three head arguments
+
+For `q=3`, the shared `u` island is `A₃`. There are exactly two
+applications inside the three arguments.
+
+If `A₃` has three leaves, it uses both applications, and `A₁,A₂`
+are one-leaf chains. Its third leaf is one of `u,b,v,j,c`.
+
+* If it is `u,b`, or `v`, both rigid leaves are in the selected
+  one-leaf branches. The zero-selected branch has a fixed rigid head
+  and cannot produce `R`.
+* If it is `j`, the remaining branches have `c` and `b` or `v`.
+  Zero correctness forces the nonrigid branch to be `A₁`, leaving
+  `A₂=c`. The `j` inside the `u` island spends the only extra index
+  unit, so `c` is under no inner lambda. Variable selection therefore
+  produces `c A₃ V S`, with three arguments rather than two.
+* If it is `c`, the analogous head requirement for the variable branch
+  forces the nonrigid branch to be `A₂`, leaving `A₁=j` with no
+  inner lambda, so the zero branch has the wrong head.
+
+If `A₃` has exactly its two `u` leaves, it uses one application.
+One selected branch therefore has two leaves and the other has one.
+Since `j` must survive zero and `c` must survive the variable branch,
+`j` belongs to `A₁` and `c` to `A₂`.
+
+In the extra-`v` pattern, the branch containing `v` also contains its
+sole live binder. If it is `A₂`, the zero-selected `A₁` is bare `j`
+and fails. If it is `A₁`, all inner lambdas are already in `A₁,A₃`,
+so `A₂` is bare `c`, and variable output is `c A₃ V S`, again
+with three arguments.
+
+In the extra-`b` pattern, a one-leaf zero branch over `j` fails. Thus
+`A₁` contains `b,j` and `A₂` contains `c`. A `j`-headed application
+cannot give head `R`, leaving only `A₁=b J`, where `J` is `j` or a
+vacuous chain over `j`. Zero selects `K J`; applying shared `A₃`
+returns `J`, after which only `R,P` remain. It has fixed head `j`,
+so cannot give `R j`. A vacuous lambda around all of `b J` would
+raise both the `b` and `j` indices, spending two units when only one
+is available. Wrapping its head alone would be a source beta redex,
+contrary to normality. These cover placements affecting `A₁`; a
+lambda outside `A₁`, including in `A₂` or around the `u` island,
+cannot change this zero computation. The extra-`u` pattern cannot have only two `u` leaves
+inside its unique binding island.
+
+This exhausts the common-argument cases and therefore excludes the
+normal `(A,L,k)=(5,3,1)` shape without free `s`.
+
+## Five lambdas and one leading lambda with stream access
+
+Let a beta-normal whole-stream handler have `A=4, L=5`, exactly one leading lambda,
+and size at most 34 bits. Suppose it contains `s`. Write `H=λb.B`. The wire
+budget is `X≤6`. Mandatory `j,c,s` under `b` contribute exactly `2+3+1=6`, so they
+occur exactly once, all outside the four inner lambdas. Every other leaf has
+index zero. Every inner lambda block is therefore closed; an index-zero
+occurrence outside those blocks is b.
+
+There are only two bound leaves in all. Write F_h=λ a1...ah.ah for the
+h-argument last projection, with F₁=I and F₂=F. The complete normal block
+inventory is:
+
+* One block F₄, and one exterior b leaf.
+* Two separate blocks F_h,F_l, with h+l=4.
+* One consecutive block λ a b c d.d d, namely three vacuous lambdas followed by
+  Δ=λ d.d d.
+* One nonconsecutive block J_(h,l)=λ a1...ah.ah F_l, with h+l=4 and h,l≥1.
+
+To see completeness, with one leaf all lambdas form a last-projection chain. With
+two leaves in separate blocks each is such a chain. With two leaves in one
+block, either both refer to the innermost binder on one consecutive chain,
+or the inner block is an argument to the outer bound head. Normality
+excludes an inner lambda in function position, and index zero excludes capturing
+an outer binder inside the inner block. There is exactly one inner
+application in either of these two-leaf single-block cases.
+
+Substitute b=F and s=Pₘ. Extend the safe functional algebra by all last
+projections F_h. Their application rules are
+
+    F₁ U =β U,
+    F_(h+1) U =β F_h,
+    P_i F₁ =β I (i>0), or Q (i=0),
+    P_i F₂ =β tail_i,
+    P_i F_(h+2) =β F_h  (h≥1).
+
+Together with the original safe table, these rules close the application-
+only algebra over P_i,Q,F_h and rigid neutrals. A functional result contains
+no c; applying a functional Scott cell to a neutral preserves the neutral
+head. No bare K is introduced, even at i=0.
+
+For either of the two-leaf single-block cases, both bound leaves are inside
+that block. There is no exterior b and no other source lambda block. The normal
+exterior therefore contains only the sole s, this block D, and rigid j,c.
+Its head must be s. If its first callback is rigid-headed, that rigid head
+receives the Scott bit and tail and later the external V,S, so fails.
+Otherwise its first callback is the literal block D: source normality
+excludes applying D in the callback's own syntax. Thus the only potentially
+successful activation starts with S D.
+
+For J_(h,l), h+l=4, the three possibilities on S=Pₘ, m≥1, are
+
+    S J_(1,3) =β V,
+    S J_(2,2) =β V F =β tail_(m-1),
+    S J_(3,1) =β J_(1,1) = λ z.z I.
+
+The first two are safe data, and the last receives only rigid j/c source
+arguments before the pending V,S. It either remains a closed c-free helper
+or preserves the head of the rigid argument on which it is activated. These
+computations also explain why no terminal-K assumption is hidden: if the
+initial stream were P₀, the h=1 callback gives K F_l N =β F_l; h≥2 discards
+the terminal K in a vacuous binder.
+
+For D=λ a b c.Δ, its first two vacuous binders discard the stream bit and
+tail:
+
+    S D =β λ c.Δ.
+
+The sole internal Scott source has now disappeared. There is no exterior b
+or other block. Before the pending V,S, the remaining arguments are made
+only from rigid j,c. Consequently the result is either a closed c-free
+remainder of D/Δ, or a rigid-headed neutral. In particular bare Δ cannot be
+re-invoked as a Scott callback internally. This point is necessary: P₀ Δ =β
+K would not be safe in an unrestricted helper algebra.
+
+Thus the fully processed body B[F,Pₘ] is either a c-free functional value or
+a rigid neutral. Appending the two pending c-free arguments V=Pₘ₋₁ and S=Pₘ
+cannot create c in the functional case. In the rigid case, head c retains
+both arguments; equality with c V N would require the body to be bare c and
+S=N, which is false. This excludes the variable law and hence every such
+A4,L5,k1 handler.
+
+## Nonleading nonlinear four-application handlers with stream access
+
+Suppose H is beta-normal, has A=4, has no leading lambda, contains s, and
+has size at most 34 bits. Assume it is nonaffine. Its five leaves must be
+exactly j,c,s,u,u: u is the sole live source binder, occurring twice, and
+both other ambient letters and the stream occur once. Every other source
+binder is vacuous. The size identity gives 2L+X≤16.
+
+A rigid head fails the zero law, so write
+
+    H = s A₁ ... A_q,     q≥1.
+
+The first callback A₁ has no s and no free bound variables. If it is
+application-headed, its normal head is rigid j/c, and P A₁ preserves that
+head. Therefore it must be a leading lambda block D. Its normal body head
+must be the sole live binder u; a rigid body head could never give zero head
+R. Thus u lies on D's leading lambda chain. Let d be that chain's length.
+Other lambdas inside D or its common arguments are vacuous.
+
+After expanding the zero cell P=cons K R, D receives the ordered list
+
+    K,R,A₂,...,A_q,K,R,P.
+
+This list has n=q+4≥5 entries. A successful zero computation cannot leave
+any of D's d leading lambdas unapplied. Consider the argument received by
+the unique live binder u.
+
+If it is a source common argument A_i, that argument contains only rigid j/c
+and vacuous lambdas: u's binding scope is inside A₁, and the unique s has
+already been used at the outer head. Such a normal argument can only discard
+arguments before exposing a fixed rigid j/c head, or remain a lambda if
+insufficiently applied. Its copies cannot yield head R.
+
+If u receives K, all earlier leading binders were vacuous, so any earlier
+direct R was discarded. After substituting K for the two u occurrences, only
+selectors and vacuous erasers remain. The ordered-input argument from the
+one-live first-input case applies: selectors return an argument whole and
+vacuous binders discard it; neither inserts a later received R into a fixed
+source application with the earlier j. Exposing R before the last input is
+consumed retains final P. Selecting final P only after earlier input edges
+have disappeared leaves it with no later argument. Neither case yields R j.
+
+If u receives a direct R, substituting this rigid value creates no redex in
+D's normal body. Once the d leading binders have been consumed, the rigid R
+head retains every remaining ordered argument. Thus zero correctness
+requires d≥n, so that final P has already been consumed. If u receives the
+final P itself, its position on the leading chain likewise requires d≥n.
+
+In either last case, every common argument containing the unique j has been
+discarded by a vacuous binder: the only live binder receives R or P.
+Consequently the surviving j must occur inside D's body, beneath all d
+leading lambdas. Its index contributes at least d+1, and mandatory c
+contributes at least 2. With L≥d, the wire budget would require
+
+    16 ≥ 2L+X ≥ 2d+(d+1)+2 = 3d+3 ≥ 18,
+
+a contradiction.
+
+These are every possible input to u. Hence no nonlinear, nonleading,
+s-present normal A4 handler fits the improving budget. The remaining
+nonleading normal A4 handlers are affine and have at most two live binders.
+
 ## Established bound and remaining scope
 
 Combining the compression lemmas, the beta-normal three-lambda floor,
@@ -2144,11 +2982,21 @@ this joint-handler interface. The whole-stream operand `T=s` at
 would have no affine source redex, at least three source lambdas,
 and exactly four or five applications. At four applications it
 must be beta-normal. The three-leading-lambda special case and
-the normal shape `(A,L,k)=(4,4,2)` are also excluded. The remaining
-normal shapes must either use `s` or have nonaffine, nested live
-binders. Five-application nonlinear compression remains only with
-the leaf allocation `u,u,j,c,s,v`, where `u` binds the nonlinear
-redex and `v` is the sole occurrence of one other live binder.
+the normal shape `(A,L,k)=(4,4,2)` are also excluded. Every remaining
+normal four-application shape
+uses `s` and has zero or one leading lambda; with one leading
+lambda it has three or four source lambdas. A remaining nonleading
+four-application handler is affine; the existing affine floor then
+requires at least four source lambdas.
+Every remaining normal five-application shape has zero leading lambdas,
+uses `s`, and has either three lambdas with `X≤6` or four lambdas with
+`X≤4`. Indeed, the mandatory `j,c` under one leading lambda would already
+cost five index units, excluding the four-lambda case; the leading-case
+proofs exclude the three-lambda case with one leading lambda.
+Five-application nonlinear compression remains only with three source
+lambdas, `X≤6`, and the leaf allocation `u,u,j,c,s,v`, where `u`
+binds the nonlinear redex and `v` is the sole occurrence of one other
+live binder.
 Neither the independence assumptions on the ambient continuations
 nor the specified reader interface have been removed. This is not
 a global optimality theorem for the 165-bit interpreter.
