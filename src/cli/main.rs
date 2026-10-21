@@ -68,7 +68,7 @@ INSTRUMENTS
   trace scan|single|dump|verify-loop32   reduction-shape classifier
                                                                  (lab feature)
   slots var|abs|app            self-interpreter slot search       (lab feature)
-  selfint ctx|hole|wiring      searches below the 168             (lab feature)
+  selfint ctx|hole|wiring      self-interpreter searches          (lab feature)
   q galois idiom|complement    the dyadicity campaign             (lab feature)
   q oddmin [W]                 gated reference DP for the CNOT-free lane
                                                                  (lab feature)

@@ -1186,7 +1186,7 @@ lambda stream. stream (h h continuation)
 at every boundary where the old parser could be applied directly to the
 continuation. Sharing `h h` helps, but those adapters remain. This route
 changes the placement of recursion rather than removing its control cost,
-and neither term improves the 165-bit record.
+and neither term goes below the 165.
 
 The elementary cross-application identity explains why unary skipping is
 cheaper:

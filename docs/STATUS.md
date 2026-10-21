@@ -552,9 +552,8 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    no structural count supplies, and a formalization of residual tracing.
    The 162's reader is on the fork's golf branch (tromp/AIT#13): `int.lam`
    162, `uni.lam` 184 / 172, `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp`
-   1270, each verified against its previous version (`classical/golf.md`).
-   The PR's title and summary comment still say 165; the replacement text
-   is in `contrib/PR_KIT.md` for a9 to post.
+   1270, each verified against its previous version (`classical/golf.md`);
+   the PR's title and a summary comment carry the new table.
 10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the
    open global-allocator decision) would remove most of malloc/free and the
@@ -635,7 +634,7 @@ agree at the complete effect-tree level through 24 bits (`blam q selfint 24`:
 mismatches; witness45 and the poisoned-seed canary pass), and Lean pins the
 wire identities and quote linearity and proves the pure-fragment obligations
 L1 and L2; the quantum obligations L3, L4 and B1–B5 are open
-(`quantum/bisimulation.md`). The 165 would give a 171-bit `intL165 I`, not yet
+(`quantum/bisimulation.md`). The 162 would give a 168-bit `intL162 I`, not yet
 checked against the qBLC contract. The ≤24 sweep takes 1.5 s wall and 18 CPU-seconds
 on the M5 Max.
 
@@ -655,7 +654,7 @@ designated-output convention, derive explicit comparison constants with
    counterpart is measured, and `quantum::scalar::speed_units` is the shared
    rounding.
 4. Complete the complement sweep at sizes 52 and 53.
-5. Check the 171-bit `intL165 I` against the qBLC self-interpretation contract
+5. Check the 168-bit `intL162 I` against the qBLC self-interpretation contract
    (`blam q selfint`).
 6. Continue the odd-sector pruning program (α-normalize `BindId`, stronger
    ε/canonical-port quotienting, a simulation-preorder antichain, the

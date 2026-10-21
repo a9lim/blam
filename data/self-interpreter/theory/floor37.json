@@ -764,6 +764,17 @@
   ],
   "reference_checks": [
     {
+      "name": "int162",
+      "bits": 162,
+      "lambdas": 16,
+      "leaves": 25,
+      "index_sum": 32,
+      "width": 4,
+      "nonlinear": 7,
+      "normal": false,
+      "incomparable_nonlinear": true
+    },
+    {
       "name": "int165",
       "bits": 165,
       "lambdas": 17,
@@ -847,5 +858,5 @@
     "finite_clauses": 8
   },
   "lean_clauses": 152,
-  "seconds": 0.023
+  "seconds": 0.024
 }

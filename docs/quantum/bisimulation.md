@@ -321,9 +321,10 @@ qBLC lifting.
 ## 8. The parked sub-174 lane
 
 With the 168-bit `intL` opaque, sub-174 is impossible: any closed invocation
-pays the six-bit `App + I`. The classical self-interpreter is 165 bits
-(`../classical/self-interpreter/interpreter.md`), so `intL165 I` is a 171-bit
-candidate; it has not been checked against the qBLC contract. Below that, a winner
+pays the six-bit `App + I`. The classical self-interpreter is 162 bits
+(`../classical/self-interpreter/interpreter.md`), so `intL162 I` is a 168-bit
+candidate (and the 165's `intL165 I` a 171-bit one); neither has been checked
+against the qBLC contract. Below that, a winner
 must reorganize the recursive knot and root entry jointly. The narrow lane,
 parked until the theorem contract is stable: freeze `cons'` and the three
 certified recursive branch meanings; one generic recursive entry + one

@@ -1,4 +1,4 @@
-//! Searches below the 168-bit BLC self-interpreter (lab).
+//! Searches around the BLC self-interpreter and universal machine (lab).
 //!
 //! `docs/classical/self-interpreter/interpreter.md` and `universal.md`
 //! record what these searches establish. These instruments are the searches that only make sense for
@@ -13,7 +13,7 @@ mod wiring;
 use crate::args::{self, R};
 
 const USAGE: &str = "\
-blam selfint — searches below the 168-bit self-interpreter (lab)
+blam selfint — self-interpreter and universal-machine searches (lab)
 
 usage: blam selfint <search> [flags]   (`blam selfint <search> --help`)
 

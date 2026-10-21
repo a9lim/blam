@@ -271,6 +271,7 @@ def write_lean():
 def references(run_battery=False):
     import merges
     srcs={
+        'int162':ROOT/'data/self-interpreter/machines/int162.lam',
         'int165':ROOT/'data/self-interpreter/machines/int165.lam',
         'int204':ROOT/'data/self-interpreter/machines/int204_normal.lam',
         'int584':ROOT/'data/self-interpreter/machines/int584_two_nonlinear.lam',

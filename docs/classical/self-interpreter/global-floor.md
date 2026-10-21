@@ -532,7 +532,7 @@ completing the vacuous-lambda case split.
 
 Every minimum interpreter of at most 36 bits would have one of the two
 inventories in section 2. Sections 3 and 4 exclude both. Since the known
-165 supplies existence, well-ordering gives a minimum; therefore every
+162 supplies existence, well-ordering gives a minimum; therefore every
 interpreter has at least **37 bits**.
 
 `verify.py` checks exactly 108 residual layouts (12+60+18+18), and never
@@ -542,7 +542,7 @@ parametric invariants above; their fixed macro clauses are additionally
 checked in Python and Lean. The global syntax classification, width
 argument, and infinitary invariants remain handwritten.
 
-The live 165, exact pinned 168, 170 inlined-NEXT variant, 204 normal,
+The live 162 and 165, exact pinned 168, 170 inlined-NEXT variant, 204 normal,
 584 two-nonlinear, 672 typed-normal, and 742 two-nonlinear-normal
 references satisfy the used structural constraints (`floor37.json`;
 `verify.py --battery` also reruns their batteries); no syntactic-redex or
@@ -553,7 +553,7 @@ support a third nonlinear binder, or allow the off-chain nonlinear binder
 to capture a variable whose other occurrence lies in the width witness.
 The closed width-one operand argument above then stops applying. This
 proof establishes 37, not a claim that a few more leaf counts will bridge
-the gap to 165.
+the gap to 162.
 
 Source for the external theorem: Rick Statman, *Two Variables Are Not
 Enough*, ICTCS 2005, printed pp. 406-409,

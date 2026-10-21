@@ -106,40 +106,13 @@ instrumental, so they can be written out in full when the PRs go up.
 
 ## PR 2: `golf` (tromp/AIT#13, open)
 
-a9 opened it with the title "165 bit self-interpreter" and a two-line body.
-The commit messages carry each change's design note and verification, so
-the body can stay short. a9 posted a summary comment with a size table on
-2026-10-20; the draft it was edited from is kept below.
-
-**Suggested edits after the 162 (2026-10-21; a9 makes them):**
-
-- Title: `162 bit self-interpreter`.
-- Body, second line, if Grok should be credited there too:
-  `Found with the help of Claude, Codex and Grok.`
-- In the 2026-10-20 summary comment, six rows of the table change:
-
-  | program | before | after |
-  |---|---:|---:|
-  | `int.lam` | 168 | 162 |
-  | `uni.lam` | 190; non-strict 178 | 184; non-strict 172 |
-  | `int4` | 189 | 172 |
-  | `ko2kp` | 615 | 540 |
-  | `nf` | 600 | 535 |
-  | `pairup_Kp` | 1402 | 1270 |
-- A short new comment announcing the push (draft):
-
-  > Pushed seven more commits: a new reader for the self-interpreter,
-  > 165 → 162 bits, carried into the five programs that share it (uni.lam
-  > 184 strict / 172 non-strict, int4 172, ko2kp 540, nf 535, pairup_Kp
-  > 1270). The reader is `list I V next`: `list I` makes the first cell its
-  > own selection, so after a 0 tag the zero branch is the tail itself,
-  > applied to `next`, which is now the reader's last operand instead of a
-  > let; after a 1, `V` reopens the stream, hands the tail to `cont`, and
-  > skips with `next` as the erased third operand of `list list`. Each
-  > commit has its check; the 162 also has a Lean proof that it is a
-  > self-interpreter for every closed program:
-  > https://github.com/a9lim/blam/blob/94c692c58cfe0f9d9c640051bff62f70d6ab9bce/lean/Blc/Selfint162.lean
-  > The branch now saves 1,159 bits across the same 40 programs.
+a9 opened it with a two-line body and has since retitled it
+"162 bit self-interpreter". The commit messages carry each change's design
+note and verification, so the body can stay short. a9 posted a summary
+comment with a size table on 2026-10-20, and a second one on 2026-10-21 with
+the six rows the 162's reader changed (`int.lam` 162, `uni.lam` 184 /
+non-strict 172, `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp` 1270). The
+draft the first was edited from is kept below.
 
 **Draft comment for #13 (as drafted):**
 
