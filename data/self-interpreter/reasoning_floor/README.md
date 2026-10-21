@@ -48,3 +48,9 @@ which is where the 162's reader came from.
 Golf lanes on the 162 (`golf162`, Codex; `golf162-claude`): no sub-162;
 variants 163–196, refuted 157/161 attempts, the `s I` family's operand
 forcing and a conditional minimality map (now in `interpreter.md` §3).
+`next-proof` (Claude, not independently reviewed): from the contract alone,
+with the 165's knot and reader and the body parsed first, the λ-value is
+forced to `λy λa. e W` and the lift to `λz. e Y₀ (e₂ Y₁)` (≥ 19), via an
+extraction lemma that uses Ω to pin output shapes; NEXT ≥ 92 on the 165's
+skeleton under normality and the uniform cell interface; dispatch-first
+≥ 99; an exact residual list.
