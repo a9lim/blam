@@ -549,9 +549,13 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    handwritten and 27 kernel-checked; the next steps are an
    application-sensitive charge for residual control (`remainder.md`), which
    no structural count supplies, and a formalization of residual tracing.
-   Carrying the 162's reader into int4, ko2kp, nf and pairup_Kp on the
-   fork's golf branch, and upstreaming the 162, 172 and 184 to tromp/AIT,
-   are a9's call (`contrib/PR_KIT.md` still describes the 165).
+   The 162's reader carries to int4 unchanged (175 → 172, battery `--int4`
+   667/1/0, letopt-minimal; `reasoning_floor/origin162/int4_172.lam`). In
+   ko2kp, nf and pairup_Kp NEXT also references the outer `abs`/`app`, so
+   moving it under the stream binder pays two more index bits and the
+   saving shrinks to about one bit each; those need `blam golf check`.
+   Updating the fork's golf branch (and with it tromp/AIT#13) and the PR kit,
+   which still describes the 165, are a9's call.
 10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the
    open global-allocator decision) would remove most of malloc/free and the
