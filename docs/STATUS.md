@@ -337,9 +337,15 @@ with all features (three opt-in tests ignored) and 328 with default features.
   303 bits. Its four rigid equations, 667/1/0 battery, and Ω / λa.Ω suffix
   probes pass in 1.92 seconds (`data/self-interpreter/theory/metadata_parser.json`).
   Eliminating its boxes against the public consumer recovers the 165's
-  CPS interface without a further saving. Except for the unconditional
-  non-idempotence and its generator corollary, these are protocol-specific
-  handwritten proofs.
+  CPS interface without a further saving. A separate 323-bit construction
+  uses the actual parser generator as each value's application control:
+  `v v` reparses the left value's remainder and combines the next value.
+  Its five rigid equations, 667/1/0 battery, and Ω / λa.Ω exact suffix
+  probes pass in 1.788 seconds (`data/self-interpreter/theory/shared_tag.json`).
+  The handwritten structural proof includes divergent sources. The shared
+  generator costs 262 bits and its public adapter 59; triple boxes and
+  maps outweigh the sharing. Except for the unconditional non-idempotence
+  and its generator corollary, these are protocol-specific handwritten proofs.
 - **The universal machine** (`classical/self-interpreter/universal.md`):
   Tromp's wirings around the 165's body give 175 (non-strict) and 187
   (strict), against 178 and 190 around the 168's. Wirings around the new body

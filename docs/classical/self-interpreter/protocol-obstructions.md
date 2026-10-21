@@ -837,6 +837,122 @@ another necessary control task before consumption. These source-domain
 equations do not assert beta equality of the two complete parsers on
 arbitrary inputs.
 
+### A shared parser and application generator
+
+Codex's explicit 323-bit construction makes the value's application control
+the parser generator itself. It establishes that this sharing is possible;
+the added representation still costs more than the 165. Write
+
+```text
+F             = lambda e x.x
+S(f,h)        = lambda e.f e (h e)
+Cell(a,e)     = lambda b r.b a (r e)
+A(f)          = lambda e a.f (Cell(a,e))
+V_g(f,N)      = lambda k.k g f N
+Abs           = lambda g f n.V_g(A(f),n)
+Map_f         = lambda g h n.V_g(S(f,h),n)
+Box_g         = lambda value tail.V_g(value,tail)
+
+P_g(r)        = g g r r F r
+Next_g        = lambda bit rest.
+                  (lambda v.bit (v Abs) (v v)) (P_g(rest))
+Read_g(r)     = (lambda next.
+                  r (lambda bit.bit (lambda unused tail.tail next) Box_g)
+                    (r r r)) Next_g
+
+G             = lambda g u v f r.Read_g(r) Map_f
+E             = (lambda g C s.
+                  (g g s s F s) (lambda q f n.C f n)) G.
+```
+
+The `u,v` arguments of `G` are unused. Initial and first-child calls fill
+their positions with the already-bound stream variable. For independently
+rigid `g,f,R,h,N`, the box application equation is
+
+```text
+V_g(f,R) V_g(h,N) ->* g g h N f R.
+```
+
+In particular, if `v=V_G(f,R)`, then `v v ->* G G f R f R`. This enters
+the same `G` used by `P_G`: after consuming the two unused arguments, it
+parses `R` with accumulator `f`. There is no separate application tag
+generator. The right box's two fields are ignored; when `R` is the actual
+stream beginning with the right operand, that operand is parsed from `R`.
+The other box equations are
+
+```text
+V_g(f,N) Abs   ->* V_g(A(f),N)
+V_g(h,N) Map_f ->* V_g(S(f,h),N)
+V_g(f,N) (lambda q value tail.C value tail) ->* C f N.
+```
+
+For correctness, retain the ordinary variable closures `X_n(N)` and define
+the canonical closure with its actual source suffix by
+
+```text
+D(var n,N)    = X_n(N)
+D(lambda M,N) = A(D(M,N))
+D(M L,N)      = S(D(M,quote(L) ++ N), D(L,N)).
+```
+
+Each `D(M,N)` is syntactically a lambda abstraction. Therefore
+`S(F,D(M,N)) ->* D(M,N)` by beta reduction: `S(F,h)` reduces to
+`lambda e.h e`, which beta-reduces to `h` when `h` is lambda-headed. This
+last equality is not asserted for an arbitrary rigid `h`.
+
+For arbitrary terms `f,N`, structural induction on the source proves
+
+```text
+Q_f(quote(M) ++ N) ->* V_G(S(f,D(M,N)),N),
+where Q_f(s) = G G s s f s.
+```
+
+The two unused fields can be changed freely. In particular `P_G=Q_F`, so
+the lambda-headed observation gives
+`P_G(quote(M) ++ N) ->* V_G(D(M,N),N)`.
+
+For a variable, the whole-stream reader returns `V_G(X_n(N),N)` and
+`Map_f` gives the result. For an abstraction, the induction hypothesis on
+its body gives `v=V_G(D(M,N),N)`; the second tag selects `v Abs`, and the
+common `Map_f` finishes the recurrence. For an application `M L`, put
+`R=quote(L) ++ N`. The first parse gives `v=V_G(D(M,R),R)`, and the
+second tag selects
+
+```text
+v v ->* G G D(M,R) R D(M,R) R
+    ->* V_G(S(D(M,R),D(L,N)),N).
+```
+
+The last reduction uses the induction hypothesis on `L`, after ignoring
+the two unused fields. The common `Map_f` finishes the outer recurrence.
+The public consumer returns `C D(M,N) N`; the ordinary closure/environment
+induction gives `D(M,N) ->* lambda z.M` for closed `M`, using the same
+`X_n`, `Cell`, `A`, and `S` semantics as the 165. This handwritten proof
+establishes the exact contract without normalizing the source program and
+therefore includes divergent sources.
+
+The application equation is source-correlated: it does not preserve
+pointwise semantic application for independently chosen boxes, nor does the
+projection extracting the constant `G` field preserve application. Thus it
+does not meet the constant-control obstruction's hypotheses. The full
+internal values depend on payload and remainder, and `G G` is the
+accumulator parser, not the complete public interpreter `E`.
+
+The closed generator costs 262 bits, the public adapter 59, and their
+application two, totaling **323**. In the generator's actual binding frame,
+its five binders cost 10, the `next` let four, the reader 73, NEXT 124,
+and the common map plus its application 51. These sizes sum to 262.
+The explicit triple boxes, their consumers, and the accumulator map
+outweigh the eliminated separate tag operation. This is a construction
+demonstrating sharing, not a size lower bound or a smaller interpreter.
+
+`tools/self-interpreter/theory/shared_tag.py` generates
+`data/self-interpreter/machines/int323_shared_tag.{lam,blc}` and checks the
+rigid box equations, the standard battery, and exact suffix extraction on
+`Omega` and `lambda a.Omega`. Its report is
+`data/self-interpreter/theory/shared_tag.json`; current measurements belong
+in `docs/STATUS.md`. No candidate enumeration is involved.
+
 ## Swapping a closure's two arguments is not an exact involution
 
 A tempting wrapper swaps a closure's environment and source-argument
@@ -967,9 +1083,10 @@ next stream.
 Hoisting the skip through this distributed protocol does not recover the
 165's saving. The root adapter and both recursive adapters each need a
 whole-stream skip. The directly derived formula costs 220 bits; no search
-is needed to see that this arrangement is larger. The surviving design
-question is whether an adapter can perform a required semantic operation
-while carrying its control.
+is needed to see that this arrangement is larger. The shared-generator
+construction above does combine semantic application and parser entry,
+using a larger boxed interface. A protocol that makes such sharing cheaper
+than the 165 remains open.
 
 ## Reproduction
 

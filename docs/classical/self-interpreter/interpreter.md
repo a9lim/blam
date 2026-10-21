@@ -572,6 +572,7 @@ Unless marked, each passes the battery and is larger than the 168.
 | **Recursion** | | |
 | Self-passing `next` with a shared parser, best of 72 orders | 182 | carrier plumbing exceeds the knot |
 | Recursion inside the bit handler | 196 / 206 | shared/unshared self-application; recursive entry needs a Scott adapter (`protocol-obstructions.md`) |
+| One generator for parsing and value-driven APP | 323 | `v v` enters the actual parser on the left remainder; triple boxes, maps, and the public adapter dominate (`protocol-obstructions.md`) |
 | Recursor passed through continuations | 204 / 206 | callback arguments plus a public adapter |
 | A cell holding F performs the knot: `cell(a,e) cell(a,e) = λk. a a (k e e)` | 199 | the continuation receives two extra arguments |
 | Both recursive call heads replaced, with the knot removed | — | 221,930,567 pairs (34 free bits): no survivor |

@@ -4569,7 +4569,7 @@ by leading-lambda count, stream multiplicity, and bound-leaf allocation.
 The size identity for the reader is `|s H T|=6+|H|+|T|` in the stated
 frame. The two bounds give `6+35+2=43` and `6+31+6=43`. The standard-skip
 bound in `handler-bound.md` gives `6+27+10=43`, attained by the existing
-reader. Thus **43 bits is the minimum across these three operand families**,
+reader. Thus **43 bits is the minimum across these three operand families**.
 With the other 122 bits fixed, **165 is minimal within these three operand
 families under the stated independent rigid reader laws**.
 
