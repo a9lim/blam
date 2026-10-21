@@ -178,17 +178,19 @@ theorem closed_terminal {t : Q} (hc : ClosedQ t) (hn : next t = none) : Done t :
 after each position: data steps alone cannot form an infinite suffix. -/
 theorem infinite_red (f : Nat → Q) (h : ∀ n, Head (f n) (f (n + 1))) (n : Nat) :
     ∃ k, n ≤ k ∧ RedHead (f k) (f (k + 1)) := by
-  classical
-  apply Classical.byContradiction
-  intro hn
-  have hd : ∀ k, DataStep (f (n + k)) (f (n + k + 1)) := by
-    intro k
-    cases h (n + k) with
-    | red hr => exact (hn ⟨n + k, by omega, hr⟩).elim
-    | data hd => exact hd.data
-  exact no_infinite_data (fun k => f (n + k)) (by
-    intro k
-    simpa only [Nat.add_assoc] using hd k)
+  have aux : ∀ c, ∀ n, cost (f n) = c →
+      ∃ k, n ≤ k ∧ RedHead (f k) (f (k + 1)) := by
+    intro c
+    induction c using Nat.strongRecOn with
+    | ind c ih =>
+      intro n hn
+      cases h n with
+      | red hr => exact ⟨n, Nat.le_refl _, hr⟩
+      | data hd =>
+        obtain ⟨k, hk, hr⟩ := ih (cost (f (n + 1)))
+          (hn ▸ data_cost_lt hd.data) (n + 1) rfl
+        exact ⟨k, by omega, hr⟩
+  exact aux (cost (f n)) n rfl
 
 /-- Full data normalization stutters at data heads and preserves every
 nongrowing program head as one nongrowing program head followed by data. -/

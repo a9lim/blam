@@ -323,15 +323,16 @@ at its public stream binder. The corresponding wire floor is 55 bits.
 This prices that displayed head form, not the source that expands into it;
 STATUS records the construction's size and current checks.
 
-The independently reviewed handwritten theorem in `remainder.md` also
-forces strict interpreter-code growth on some ordinary weak-head trace
-of every exact remainder extractor, using a valid source `λⁿ.I` and
-suffix `I`. The proof bounds the labels accessible to a constant-count
-infinite-zero execution. `Blc/WeakHeadClock.lean` and the `SelfintGrowth`
-modules mechanize the head clock, data normalization, both finite-event
-counters, stable value forms, fixed-body label bounds, and finite-prefix
-simulation. Their synthesis into the full growth theorem remains
-handwritten and gives no numerical size bound.
+The independently reviewed Lean theorem in `remainder.md` also forces
+strict reader-origin code growth during ordinary weak-head evaluation
+of every exact remainder extractor on every sufficiently long valid
+source `λⁿ.I`, with any closed suffix. The proof bounds the labels
+accessible to an eventually nongrowing infinite-zero execution.
+`Blc/WeakHeadClock.lean` and the `SelfintGrowth` modules mechanize the full
+argument, including residual-origin colors and ordinary weak-head
+simulation. This supplies no numerical size bound. Applying the result to
+the projection `E F` counts the adapter's lambdas as part of that reader;
+it does not by itself isolate growth belonging only to `E`.
 
 **Duplication.** At least two syntactic binders of `E` occur at least twice.
 Lean proves that every term with at most one such binder weakly normalizes;

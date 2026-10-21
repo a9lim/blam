@@ -278,29 +278,35 @@ with all features (three opt-in tests ignored) and 328 with default features.
   The proof normalizes source terms with at most one nonlinear binder
   over a labelled infinite zero stream, then simulates the finite trace
   on a closed source `λⁿ.I` followed by `Ω` to contradict exact extraction.
-  A separately reviewed handwritten theorem proves that every exact
-  remainder extractor has some valid source `λⁿ.I`, with suffix `I`,
-  whose ordinary weak-head trace strictly increases interpreter-origin
-  lambda count. The proof shows that a constant-count infinite-zero
-  execution eventually recycles one flat code template without carrying
-  an advancing tail; a uniform label bound then contradicts finite-prefix
-  correctness. It gives neither an explicit `n` nor a bit-size bound,
-  and does not quantify over every successful trace.
+  A separately reviewed, fully kernel-checked theorem proves that every
+  exact remainder extractor strictly increases its own residual-origin
+  lambda count during ordinary weak-head evaluation on every sufficiently
+  long valid source `λⁿ.I`, with any closed suffix. The infinite-zero
+  execution has growth events arbitrarily late: an eventually nongrowing
+  execution would stabilize to one flat code template without carrying
+  an advancing tail, and a uniform label bound would contradict
+  finite-prefix correctness. The result gives neither an explicit input
+  threshold nor a bit-size bound, and does not quantify over every
+  successful beta trace.
   `WeakHeadClock` kernel-checks the supporting bound on head contractions
-  interspersed with arbitrary beta reductions. The seven `SelfintGrowth`
+  interspersed with arbitrary beta reductions. The thirteen `SelfintGrowth`
   modules additionally check data normalization and nongrowth transport,
   bounded blocked-copy and nonflat-head events, the stable two-copy
   value classification, uniform fixed-body label bounds, and finite-prefix
   simulation with a head-clock bound. An exact data-normalizer cost proves
   strong normalization of every data-reduction order; the extended head
-  machine and exact-remainder nontermination are also checked. The complete
-  infinite-execution synthesis remains handwritten.
-  Integrated `lake build Blc` passes all 42 jobs; a seventeen-theorem
+  machine, counter stabilization, canonical event selection, and full
+  infinite-execution synthesis are checked. The colored ordinary-term
+  realization counts precisely residual copies of the original reader,
+  including on divergent suffixes; input lambdas are excluded.
+  Integrated `lake build Blc` passes all 48 jobs; a seventeen-theorem
   audit across `SelfintZero`, `SelfintProjections`, and `SelfintInert` uses only
   `propext` and `Quot.sound`, as does a separate four-theorem
-  `WeakHeadClock` audit. Of twenty-two audited growth-support theorems,
-  twenty-one use at most those axioms; the infinite-execution event
-  extraction additionally uses `Classical.choice`.
+  `WeakHeadClock` audit. The twenty-two growth-support theorems use at most
+  those axioms after constructive event extraction. A fourteen-theorem
+  final synthesis/transfer audit has nine using at most those axioms and
+  five additionally using `Classical.choice` for counter stabilization and
+  classical event selection; the final valid-source theorem is among them.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
   `typed-normal.md`): the β-normal interpreter is 204 bits
   (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,

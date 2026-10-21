@@ -183,10 +183,11 @@ R (stream(M,N)) =β N
 
 for every closed source `M` and every closed suffix `N`. Mark precisely the
 lambdas originally belonging to `R`, and propagate those marks through beta
-reduction. For some `n`, ordinary deterministic weak-head evaluation of
+reduction. There is a bound `B` such that, for every `n≥B` and every closed
+suffix `N`, ordinary deterministic weak-head evaluation of
 
 ```
-R (stream(λⁿ.I,I))
+R (stream(λⁿ.I,N))
 ```
 
 contains a contraction that strictly increases the number of marked
@@ -195,9 +196,13 @@ stops at an outer lambda or a rigid variable head. The theorem concerns this
 specific evaluation strategy; it does not assert growth on every successful
 beta trace.
 
-Codex's argument below has independent written review. The complete growth
-theorem is not mechanized; the kernel-checked components are listed below.
-In particular, it is stronger than the preceding
+Codex's argument below has independent written review and a complete Lean
+proof, including the transfer to ordinary lambda terms with residual-origin
+colors. `SelfintGrowthColored.remainder_grows_on_towers` is the final
+valid-source theorem. `SelfintGrowth.remainder_execution_grows_after`
+also proves that growth events occur arbitrarily far along the
+infinite-zero execution; a finite initial expansion cannot supply a
+permanently nongrowing reader. In particular, this is stronger than the preceding
 kernel-checked two-nonlinear-binder theorem: a nonlinear contraction can
 recycle code without increasing its count, as `Δ Δ → Δ Δ` demonstrates.
 There is no numerical bound on `n`, on the time of the growth step, or on
@@ -230,8 +235,8 @@ contractions between them.
 `Blc/WeakHeadClock.lean` mechanizes this supporting fact. Its
 `count_reduct` theorem proves monotonicity under arbitrary beta reduction,
 and `interleaved_bound` bounds any selected head contractions interspersed
-with unrestricted beta steps by the initial finite head clock. This does
-not mechanize the growth theorem's data-flow and finite-transient arguments.
+with unrestricted beta steps by the initial finite head clock. The
+`SelfintGrowth` modules supply the data-flow and finite-transient arguments.
 
 We will use both suffixes `Ω` and `I`. The former prevents the infinite-zero
 execution from terminating. The latter makes a finite-prefix execution
@@ -272,9 +277,11 @@ therefore decreases the natural number `cost(t)`, even under program
 lambdas. In particular, an infinite weak-head execution cannot consist
 eventually of data steps alone. `SelfintGrowthHead` checks this cost argument.
 
-Now suppose, for contradiction, that the infinite-zero head execution
-never increases the program-lambda count. Its infinitely many program
-head contractions induce an auxiliary execution on full data normal forms.
+Now suppose, for contradiction, that the infinite-zero head execution has
+no growth after some finite position. Discard that finite prefix for the
+counter argument, retaining its actual head trace for the later finite
+realization. The remaining infinitely many program head contractions
+induce an auxiliary execution on full data normal forms.
 If an actual program step contracts a binder with `k` occurrences and an
 argument with `a` program lambdas, the count changes by
 
@@ -452,14 +459,19 @@ contractions interspersed with finite data reductions from a reduct of
 Exact remainder correctness makes this term beta-join normal `I`, hence
 normalize to `I` and have a finite weak-head clock. The head-clock fact
 rules out the displayed infinite execution. This contradicts the assumed
-absence of growth in the infinite-zero head trace.
+eventual absence of growth in the infinite-zero head trace.
 
-The infinite-zero ordinary head trace must therefore contain a strict
-program-lambda growth step. That step occurs in a finite trace prefix.
-Simulate that prefix on a sufficiently long even finite zero prefix with
-tail `stream(I,I)`. The actual ordinary weak-head trace follows the same
-steps, and the program-lambda counts agree, giving the claimed valid-source
-witness.
+The infinite-zero ordinary head trace must therefore contain strict
+program-lambda growth steps arbitrarily far along the execution. Each
+such step occurs in a finite trace prefix. Simulate that prefix on every
+sufficiently long even finite zero prefix, with tail `stream(I,N)` for
+any closed `N`. Mark the original `R` lambdas red and the entire input
+blue. The colored interpretation commutes with substitution, every data
+head becomes one or two blue ordinary head contractions, and every
+program head becomes one red ordinary head contraction. The red counts
+agree exactly with the extended program-lambda counts. Erasing colors
+gives the actual deterministic ordinary weak-head trace, proving the
+valid-source statement without counting any input lambda as program code.
 
 At a growth step, either a binary binder copies an argument containing at
 least two program lambdas, or a binder with at least three occurrences
@@ -470,7 +482,7 @@ qualitative computational obstruction; it supplies neither a sharp bit
 bound for remainder extraction nor an additive price for the two
 self-interpreter projections.
 
-### Kernel-checked components and remaining synthesis
+### Kernel-checked proof
 
 The `SelfintGrowth` modules check the following components against the same
 labelled syntax used by `SelfintZero`:
@@ -484,8 +496,16 @@ labelled syntax used by `SelfintZero`:
 | `SelfintGrowthStable` | Closed one-code operands and block-free two-copy values have the stated wrapper/spine forms; flat-body transitions and their label bounds follow. |
 | `SelfintGrowthSimulation` | A uniformly bounded-label trace realizes on a finite zero prefix, and its selected program head steps are bounded by that realization's weak-head clock. |
 | `SelfintGrowthHead` | Strict data-cost descent, deterministic extended head execution, finite realization by actual weak-head steps, and infinite-zero nontermination from the exact suffix contract. |
+| `SelfintGrowthTrace` | Every finite prefix of a stable fixed-template execution has one uniform label bound, including wrapper erasures and pending arguments. |
+| `SelfintGrowthSpine` | Canonical closed head decomposition and extraction of a wrapped flat operand from a clean constant-count event. |
+| `SelfintGrowthCounters` | Eventual stabilization of all three counters and exclusion of nonflat contractors and blocked operands after stabilization. |
+| `SelfintGrowthSequence` | Selection of infinitely many clean canonical program events, preserving finite actual-prefix links. |
+| `SelfintGrowth` | Full synthesis: an exact remainder reader has strict program-lambda growth arbitrarily late in its infinite-zero head execution. |
+| `SelfintGrowthColored` | Exact source-origin colors and ordinary weak-head simulation, giving growth on every sufficiently long valid tower and every closed suffix. |
 
-These are supporting theorems, not a packaged proof of remainder growth.
-The synthesis from an arbitrary nongrowing infinite head execution to a
-uniformly bounded stable execution remains to be mechanized. Current build
-and axiom-audit results are recorded in `docs/STATUS.md`.
+The final theorem requires only closedness and the closed-source,
+closed-suffix beta-join contract stated above. It assumes no parser
+architecture, normal form, typing discipline, or bound on source size.
+Natural-counter stabilization and event selection use ordinary classical
+reasoning. Current build and axiom-audit results are recorded in
+`docs/STATUS.md`.
