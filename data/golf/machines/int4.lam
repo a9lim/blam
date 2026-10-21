@@ -1,24 +1,26 @@
--- Self-interpreter for binary LC with four primitives (tromp/AIT int4.lam:
--- 00 = lambda, 01 = application, 10 = variable zero, 11 = successor),
--- rebuilt on the design of int.lam: 189 -> 175 bits (178 with the 168's
--- reader; 175 with the 165's, which applies skipvar to the whole stream).
--- intL cont bits = cont (\free.parsed) unparsed_bits, as before.
--- A variable's code after its tag bit reads 1^(2n-2) 0, so skipvar
--- (\l. l l l, which skips every 1 and the first 0) carries over unchanged;
--- the lookup carries over with one change: each environment cell also
--- swallows the successor tag bit that follows a 1. Verified with the exact
--- self-interpreter contract E c (<M> ++ n) = c (\z.M) n on every closed
--- term of 4..16 bits plus deep-index extras, 4-primitive-encoded (236
--- programs, all exact; the original passes the same battery):
--- tools/self-interpreter/battery.py data/golf/machines/int4.lam --int4 --max-bits 16.
+-- self-interpreter for binary LC with four primitives
+-- (00 = lambda, 01 = application, 10 = variable zero, 11 = successor): 172 bits
+-- a9lim rebuilt it from 189 bits on the design of int.lam. After its tag bit
+-- a variable's code reads 1^(2n-2) 0, so the unary skip (list list, which
+-- skips every 1 and the first 0) carries over unchanged, and so does the
+-- lookup by the variable's own code, once each environment cell also swallows
+-- the successor tag bit that follows a 1. The reader is int.lam's: the stream
+-- selects its own tail as the zero branch, and the variable branch reopens
+-- the stream, hands its tail to cont, and skips with next as the erased third
+-- operand of list list.
 let
   -- cells skip the succ tag bit that follows each 1 in a variable's code
   cons4 = \x\y\zx\zy. zx x (zy (\tag\l. l y));
-  skipvar = \l. l l l;
   intL = (\x. x x) (\x. let intL = x x in
-     \cont.
-       let next = (\bit1.intL (\exp.bit1
+     \cont. \list. list (\a. a) (\next. list (\_. cont) (list list next))
+       (\bit1.intL (\exp.bit1
              (cont (\args\arg.exp (cons4 arg args)))
-             (intL (\exp2.cont (\args.exp args (exp2 args))))))
-       in \list.list (\bit0.bit0 (\list1\rest. rest next) cont) (skipvar list));
+             (intL (\exp2.cont (\args.exp args (exp2 args)))))));
+
+  -- loop
+  omega = omega;
+
+  -- binary LC universal machine for closed programs
+  uni = intL (\z.z omega);
+
 in intL

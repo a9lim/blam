@@ -9,13 +9,12 @@ let
   zero = \cont.cont id;
   -- binary LC interpreter
   -- parser after int.lam (cons' cells, the variable's code as its lookup,
-  -- skipvar), ported by a9lim
+  -- the stream selecting its own tail), ported by a9lim
   intL = (\x. x x) (\x. let intL = x x in
-     \cont.
-       let next = (\bit1.intL (\exp.bit1
+     \cont. \list. list (\a. a) (\next. list (\_. cont) (list list next))
+       (\bit1.intL (\exp.bit1
              (cont (\args\arg.exp (\zx\zy. zx arg (zy args))))
-             (intL (\exp2.cont (\args.exp args (exp2 args))))))
-       in \list.list (\bit0.bit0 (\list1\rest. rest next) cont) (list list list));
+             (intL (\exp2.cont (\args.exp args (exp2 args)))))));
   -- program list returns the program at the start of binary stream list
   -- its helpers are local to it, which makes it a closed term
   program = let

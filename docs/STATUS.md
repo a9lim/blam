@@ -465,14 +465,15 @@ with all features (three opt-in tests ignored) and 328 with default features.
 `classical/golf.md`: certified β-golf shrinks 44 of the 117 tromp/AIT
 programs by 463 bits in all (`data/golf/sweep.tsv`). The upstream branch,
 [tromp/AIT#13](https://github.com/tromp/AIT/pull/13), changes 40 programs by
-1,143 bits, every one as a readable source: 36 of the β-golf gains, several
+1,159 bits, every one as a readable source: 36 of the β-golf gains, several
 beyond the sweep (`tweet` 2230 → 2134, `loader` 1797 → 1781,
-`pairup_Kp` 1402 → 1273), and hand redesigns. The IOCCC BLC8 machine goes from
+`pairup_Kp` 1402 → 1270), and hand redesigns. The IOCCC BLC8 machine goes from
 344 bits (43 bytes) to 304 strict (38 bytes) and 283 non-strict (36 bytes),
 `uni28` from 500 to 390 / 370, `uni2` to 332, `blc.lam` 195 → 186, and `uniK`
-903 → 826 (599 with eager weakening). The parser ports give `int4` 175,
-`ko2kp` 541 (so KP(x) ≤ KO(x) + 541), `nf` 538, and the pairup programs 756,
-651 and 1273 (the last two on contract-valid inputs only). Artifacts are in
+903 → 826 (599 with eager weakening). The parser ports, now with the 162's
+reader, give `int4` 172, `ko2kp` 540 (so KP(x) ≤ KO(x) + 540), `nf` 535, and
+the pairup programs 756, 651 and 1270 (the last two on contract-valid inputs
+only); `int.lam` is 162 and `uni.lam` 184 strict, 172 non-strict. Artifacts are in
 `data/golf/machines/`.
 
 ### Running programs: blc and uni
@@ -549,13 +550,11 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    handwritten and 27 kernel-checked; the next steps are an
    application-sensitive charge for residual control (`remainder.md`), which
    no structural count supplies, and a formalization of residual tracing.
-   The 162's reader carries to int4 unchanged (175 → 172, battery `--int4`
-   667/1/0, letopt-minimal; `reasoning_floor/origin162/int4_172.lam`). In
-   ko2kp, nf and pairup_Kp NEXT also references the outer `abs`/`app`, so
-   moving it under the stream binder pays two more index bits and the
-   saving shrinks to about one bit each; those need `blam golf check`.
-   Updating the fork's golf branch (and with it tromp/AIT#13) and the PR kit,
-   which still describes the 165, are a9's call.
+   The 162's reader is on the fork's golf branch (tromp/AIT#13): `int.lam`
+   162, `uni.lam` 184 / 172, `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp`
+   1270, each verified against its previous version (`classical/golf.md`).
+   The PR's title and summary comment still say 165; the replacement text
+   is in `contrib/PR_KIT.md` for a9 to post.
 10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the
    open global-allocator decision) would remove most of malloc/free and the

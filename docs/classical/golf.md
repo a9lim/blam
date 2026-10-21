@@ -24,7 +24,7 @@ records (`self-interpreter/`). This document covers the rest of tromp/AIT:
   weakening);
 - ports of the 2025-12 parser design into the programs that still embed the
   old one: `int4`, `ko2kp`, `nf` and the `pairup` programs, whose sizes are
-  constants in Tromp's AIT theorems (KP(x) ≤ KO(x) + 541).
+  constants in Tromp's AIT theorems (KP(x) ≤ KO(x) + 540).
 
 The machines were designed with Codex through independent consults. Who
 contributed which idea is marked where it appears.
@@ -95,12 +95,12 @@ compiled bits. BLC8 machines also ship packed `.blc8`.
 | `uni2` (BLC2 machine) | 340 | **332** | **321** (from 324) |
 | `blc` (curried-bit interpreter) | 195 | **186** | |
 | `uniK` (Kiselyov machine) | 903 | **826**; **599** eager (`uniK_lazy`, `uniK`) | |
-| `int4` (self-interpreter, 4-primitive code) | 189 | **175** | |
-| `ko2kp` (KP ≤ KO + c) | 615 | **541** | |
-| `nf` (normal-form printer) | 600 | **538** | |
+| `int4` (self-interpreter, 4-primitive code) | 189 | **172** | |
+| `ko2kp` (KP ≤ KO + c) | 615 | **540** | |
+| `nf` (normal-form printer) | 600 | **535** | |
 | `pairupKP` (symmetry of information) | 778 | **756** | |
 | `pairupK_p` | 657 | 651 † | |
-| `pairup_Kp` | 1402 | 1273 † | |
+| `pairup_Kp` | 1402 | 1270 † | |
 
 † Verified on contract-valid inputs only. On invalid ones these differ from
 the originals; see below.
@@ -271,8 +271,10 @@ unsolvable built from bindings already in scope can be cheaper than
 `fix fix` (−1). Elsewhere Codex's proved alternatives lose: `uni.lam`'s best,
 `intL intL intL`, is 192 against 187; strict `int4` 202 against 197;
 `uni28`'s `get get get` 396 against 390; `uniK`'s `fix fix` 607 against 599;
-`ko2kp`'s clean `Y Y` 566 against 563. `pairup_Kp` has no strict bottom: it
-accepts open programs.
+`ko2kp`'s clean `Y Y` 566 against 563. These were measured with the 165's
+reader; the 162's lowers both sides of each comparison equally (`uni.lam`
+189 against 184, `ko2kp` clean 566 against 562). `pairup_Kp` has no strict
+bottom: it accepts open programs.
 
 ## Porting the redesign into programs that embed the old parser
 
@@ -288,21 +290,25 @@ They read plain bit streams, so the redesign drops in. ABS builds
 stream itself, does the lookup in any environment. The HOAS constructors
 (`abs`/`app` in `ko2kp`, `L`/`A` in `nf`) are untouched.
 
-| program | original | port | with the 165's reader | source |
-|---|---:|---:|---:|---:|
-| `ko2kp` | 615 | 569 | 566 | **541** |
-| `nf` | 600 | 562 | 559 | **538** |
+| program | original | port | with the 165's reader | source | with the 162's reader |
+|---|---:|---:|---:|---:|---:|
+| `ko2kp` | 615 | 569 | 566 | 541 | **540** |
+| `nf` | 600 | 562 | 559 | 538 | **535** |
 
 The 165's reader (`self-interpreter/interpreter.md`) drops in as well: the
-whole-stream skip `xs xs xs` serves both dispatch arms, 3 bits each. The
-sources then take certified β-moves of the ports:
+whole-stream skip `xs xs xs` serves both dispatch arms, 3 bits each. So does
+the 162's, in which the stream selects its own tail and the second-tag stage
+becomes the reader's last operand: 3 bits in `nf`, but 1 in `ko2kp`, whose
+second-tag stage also refers to `abs` and `app` and pays an index bit for
+each under the stream binder. The sources take certified β-moves of the
+ports:
 
 - `ko2kp`: the KP-side definitions (T's case analysis, `nfT`, `appT`,
   `boolT`, `consT`, `rest`) are scoped to the argument of `p` that uses them
   (−17); `withT = \b. b A appT` hands T's constructors to builders generic in
   both, as `uni` is (−5); one `Y` serves `uni`, `nfT` and `go` (−3). Its clean
   configuration (`IF_DIRTY = false`, with `omega = Y id`) goes from 598 to
-  563.
+  563, 562 with the 162's reader.
 - `nf`: `cons0`, `cons00` and `cons01` are bound inside `ser`, where their
   indices are small (−12); `appT` applies a HOAS value, β-reducing a `Lam` and
   building an `App` otherwise (−7); one `Y` serves `parseval` and `ser` (−2).
@@ -320,10 +326,12 @@ variable's code reads `1^(2n-2) 0`, unary with every other bit a tag.
 
 With the rest of the 168 verbatim the result is 178 bits, against 189; with
 the 165's reader, 175, since `l l l` on the whole stream still stops right
-after a variable. `battery.py --int4` checks the exact self-interpreter
-contract on every closed term of 4..16 bits plus deep-index extras: 236 of
-236 for the original, the 178 and the 175. As a negative control, `int.lam` under `--int4` fails
-19 of the 40 programs of the 4..12-bit battery.
+after a variable; with the 162's, 172, since `list list next` does too.
+`battery.py --int4` checks the exact self-interpreter contract on every
+closed term of 4..16 bits plus deep-index extras: 236 of 236 for the
+original, the 178 and the 175; the 172 passes 667 of 667 through 18 bits.
+As a negative control, `int.lam` under `--int4` fails 19 of the 40 programs
+of the 4..12-bit battery.
 
 `golf check --io progs` compares normal forms on every closed program,
 followed by up to three data bits:
@@ -333,7 +341,10 @@ followed by up to three data bits:
   the remainder by rerunning the program, which exhausts the budget often.
 - `nf` (through 16 bits): all 3,390 inputs identical.
 
-These were run on the ports; the sources are β-convertible to them.
+These were run on the ports; the sources are β-convertible to them. With
+the 162's reader, against the 165-reader sources: `ko2kp` through 13 bits,
+332 identical, 0 differ, 328 over budget on both, none on one side only;
+`nf` through 16 bits, all 3,390 identical.
 
 Open programs fall outside both contracts, and the old and new base
 environments give them different garbage.
@@ -349,7 +360,7 @@ prefix-capture layer and takes the whole `cons'`/skipvar interpreter.
 |---|---:|---:|---:|---:|
 | `pairupKP` | 778 | 775 | 774 | **756** |
 | `pairupK_p` | 657 | 655 | 653 | **651** |
-| `pairup_Kp` | 1402 | 1372 | 1360, 1357 with the 165's reader | **1273** |
+| `pairup_Kp` | 1402 | 1372 | 1360, 1357 with the 165's reader | 1273, **1270** with the 162's |
 
 The sources take certified β-moves of the ports:
 
@@ -417,12 +428,12 @@ component sizes, except the two ties noted.
 | `fast_growing_and_conjectures/tweet.lam` | 2230 | **2168** | 62 | descend | beta | 2134 |  |
 | `ait/uniK.lam` | 903 | **854** | 49 | descend | beta | 826; 599 with eager weakening |  |
 | `characteristic_sequences/primes256.lam` | 286 | **252** | 34 | descend | beta | 252 |  |
-| `ait/pairup_Kp.lam` | 1402 | **1372** | 30 | descend | beta | 1273 (valid inputs) |  |
+| `ait/pairup_Kp.lam` | 1402 | **1372** | 30 | descend | beta | 1270 (valid inputs) |  |
 | `ait/uni28.lam` | 500 | **474** | 26 | descend | beta | 390 / 370 |  |
 | `fast_growing_and_conjectures/tree_ordinals.lam` | 752 | **728** | 24 | descend | beta | 726 |  |
 | `lists/sort2.lam` | 435 | **415** | 20 | descend | beta | 415 |  |
 | `ait/mpi.lam` | 473 | **454** | 19 | descend | beta | 454 |  |
-| `ait/nf.lam` | 600 | **581** | 19 | descend | beta | 538 |  |
+| `ait/nf.lam` | 600 | **581** | 19 | descend | beta | 535 |  |
 | `ait/bf.lam` | 830 | **812** | 18 | descend | beta | 806 |  |
 | `characteristic_sequences/squares.lam` | 325 | **308** | 17 | descend | beta | 301 |  |
 | `numerals/binary_numerals.lam` | 433 | **416** | 17 | descend | beta |  | kept out: the 416 inlines the library into fac |
@@ -442,7 +453,7 @@ component sizes, except the two ties noted.
 | `ait/pairupKP.lam` | 778 | **775** | 3 | descend | beta | 756 |  |
 | `ait/triage.lam` | 269 | **266** | 3 | descend | beta | 259 |  |
 | `numerals/min.lam` | 52 | **49** | 3 | descend | beta | 49 |  |
-| `ait/ko2kp.lam` | 615 | **613** | 2 | descend | beta | 541 |  |
+| `ait/ko2kp.lam` | 615 | **613** | 2 | descend | beta | 540 |  |
 | `ait/pairupK_p.lam` | 657 | **655** | 2 | letopt | beta | 651 (valid inputs) |  |
 | `fast_growing_and_conjectures/erdos.lam` | 289 | **287** | 2 | descend | beta | 287 |  |
 | `fast_growing_and_conjectures/laver.lam` | 203 | **201** | 2 | letopt | beta |  | ties the stated 201 with slack 6 |
@@ -473,13 +484,13 @@ Demos (excluded):
 - `rosetta/forloops.lam` (139 → 129): applies the artifact to sample data
 - `rosetta/variadicY.lam` (256 → 249): applies the artifact to sample data
 
-No gain from β-golf: `BB/BB40.lam`, `BB/BB_Xi.lam`, `Sample.lam`, `ait/Aint.lam`, `ait/Y.lam`, `ait/allA.lam`, `ait/bcl.lam`, `ait/beavers.lam`, `ait/blc.lam` (source: 186), `ait/decoders.lam`, `ait/delimit2.lam`, `ait/int.lam` (source: 165), `ait/int4.lam` (source: 175), `ait/mlatu.lam`, `ait/quine.lam`, `ait/readlen.lam`, `ait/uni.lam` (source: 187 strict / 175 non-strict), `ait/vararg.lam`, `ait/wtf.lam`, `ait/zot.lam`, `characteristic_sequences/all.lam`, `characteristic_sequences/even.lam`, `characteristic_sequences/none.lam`, `characteristic_sequences/odd.lam`, `characteristic_sequences/primes.lam`, `characteristic_sequences/thue-morse.lam`, `fast_growing_and_conjectures/BBE0.lam`, `fast_growing_and_conjectures/BO.lam`, `fast_growing_and_conjectures/E0.lam`, `fast_growing_and_conjectures/ackermann.lam`, `fast_growing_and_conjectures/bms.lam`, `fast_growing_and_conjectures/collatz.lam`, `fast_growing_and_conjectures/gAckerman.lam`, `fast_growing_and_conjectures/goldbach.lam`, `fast_growing_and_conjectures/goodstein.lam`, `fast_growing_and_conjectures/graham.lam`, `fast_growing_and_conjectures/laver0.lam`, `fast_growing_and_conjectures/melo.lam`, `fast_growing_and_conjectures/oddperfect.lam`, `fast_growing_and_conjectures/perfect.lam`, `fast_growing_and_conjectures/w1CK.lam`, `fast_growing_and_conjectures/w218.lam`, `fast_growing_and_conjectures/wCubed.lam`, `lists/cat.lam`, `lists/fold.lam`, `lists/length.lam`, `lists/map.lam`, `lists/reverse.lam`, `misc/id.lam`, `misc/truth.lam`, `numerals/div.lam`, `numerals/divides.lam`, `numerals/eq.lam`, `numerals/fac.lam`, `numerals/fib.lam`, `numerals/gcd.lam`, `numerals/half.lam`, `numerals/leq.lam`, `numerals/lt.lam`, `numerals/mod.lam`, `numerals/tri.lam`, `rosetta/catstrings.lam`, `rosetta/mutrec.lam`, `rosetta/swap.lam`.
+No gain from β-golf: `BB/BB40.lam`, `BB/BB_Xi.lam`, `Sample.lam`, `ait/Aint.lam`, `ait/Y.lam`, `ait/allA.lam`, `ait/bcl.lam`, `ait/beavers.lam`, `ait/blc.lam` (source: 186), `ait/decoders.lam`, `ait/delimit2.lam`, `ait/int.lam` (source: 162), `ait/int4.lam` (source: 172), `ait/mlatu.lam`, `ait/quine.lam`, `ait/readlen.lam`, `ait/uni.lam` (source: 184 strict / 172 non-strict), `ait/vararg.lam`, `ait/wtf.lam`, `ait/zot.lam`, `characteristic_sequences/all.lam`, `characteristic_sequences/even.lam`, `characteristic_sequences/none.lam`, `characteristic_sequences/odd.lam`, `characteristic_sequences/primes.lam`, `characteristic_sequences/thue-morse.lam`, `fast_growing_and_conjectures/BBE0.lam`, `fast_growing_and_conjectures/BO.lam`, `fast_growing_and_conjectures/E0.lam`, `fast_growing_and_conjectures/ackermann.lam`, `fast_growing_and_conjectures/bms.lam`, `fast_growing_and_conjectures/collatz.lam`, `fast_growing_and_conjectures/gAckerman.lam`, `fast_growing_and_conjectures/goldbach.lam`, `fast_growing_and_conjectures/goodstein.lam`, `fast_growing_and_conjectures/graham.lam`, `fast_growing_and_conjectures/laver0.lam`, `fast_growing_and_conjectures/melo.lam`, `fast_growing_and_conjectures/oddperfect.lam`, `fast_growing_and_conjectures/perfect.lam`, `fast_growing_and_conjectures/w1CK.lam`, `fast_growing_and_conjectures/w218.lam`, `fast_growing_and_conjectures/wCubed.lam`, `lists/cat.lam`, `lists/fold.lam`, `lists/length.lam`, `lists/map.lam`, `lists/reverse.lam`, `misc/id.lam`, `misc/truth.lam`, `numerals/div.lam`, `numerals/divides.lam`, `numerals/eq.lam`, `numerals/fac.lam`, `numerals/fib.lam`, `numerals/gcd.lam`, `numerals/half.lam`, `numerals/leq.lam`, `numerals/lt.lam`, `numerals/mod.lam`, `numerals/tri.lam`, `rosetta/catstrings.lam`, `rosetta/mutrec.lam`, `rosetta/swap.lam`.
 
 ## Upstream
 
 The sources go to Tromp as [tromp/AIT#13](https://github.com/tromp/AIT/pull/13),
 from the `golf` branch of the a9lim/AIT fork: one commit per program and
 change, each with its design note and verification, so any subset can be
-taken. Against upstream the branch changes 40 programs and saves 1,143 bits
+taken. Against upstream the branch changes 40 programs and saves 1,159 bits
 in all. `ref/AIT` here stays pinned to the fork's additive `master`; the
 `golf` branch modifies upstream files and never lands there.

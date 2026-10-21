@@ -10,10 +10,12 @@ instrumental, so they can be written out in full when the PRs go up.
   - `uni-rs`: one commit, `uni.rs` at the repo root. Not opened yet.
   - `golf`: [tromp/AIT#13](https://github.com/tromp/AIT/pull/13), opened
     2026-10-20 with a short body; Tromp is travelling and will review at the
-    end of October. 54 commits, one per program and change, so Tromp can take
+    end of October. 61 commits, one per program and change, so Tromp can take
     any subset: the original fourteen (uni8, uni28, int4, ko2kp, nf, the
-    pairups, then the 165's reader in six programs) and forty more pushed
-    the same day (below).
+    pairups, then the 165's reader in six programs), forty more pushed the
+    same day, and on 2026-10-21 the 162's reader in the same six programs
+    (int.lam, uni.lam, int4, ko2kp, nf, pairup_Kp) plus a comment fix in
+    ko2kp. The branch now changes 40 programs and saves 1,159 bits.
 - blam 3.0.0 is released: point links at the `v3.0.0` tag where the content
   predates it, and at a `dev` commit permalink for the 165's record, the Lean
   self-interpreter proofs, and the golf record (`docs/classical/golf.md`).
@@ -42,6 +44,16 @@ instrumental, so they can be written out in full when the PRs go up.
     Codex, in a fresh-context consult. Carrying it into `uni.lam`, `int4`,
     `ko2kp`, `nf` and `pairup_Kp`, the verification, and the Lean proofs that
     the 168 and the 165 are self-interpreters: Claude.
+  - The 162-bit reader (the stream selects its own tail; the second-tag
+    stage becomes the reader's last operand), found 2026-10-21 by combining
+    three agents' work:
+    - the 44-bit reader itself: Codex, which built it as a counterexample
+      while reviewing a reader-optimality proof of Claude's;
+    - passing the second-tag stage as a reader operand: Grok (xAI);
+    - splicing the reader into the 165 and letting blam's let optimizer
+      find the 162, carrying it into the other five programs, the
+      verification, and the Lean proof: Claude;
+    - an independent adversarial review of the 162: Codex.
   - The pairup programs: Codex (keep the old loop only to record `ps`).
   - The second round (2026-10-20), by part:
     - `uni8` 321 → 304 / 283, `uni28` 416 → 390 / 370, `blc.lam` 195 → 186,
@@ -96,8 +108,38 @@ instrumental, so they can be written out in full when the PRs go up.
 
 a9 opened it with the title "165 bit self-interpreter" and a two-line body.
 The commit messages carry each change's design note and verification, so
-the body can stay short; the comment below summarizes the whole branch for
-the review. a9 posted an edited version on 2026-10-20.
+the body can stay short. a9 posted a summary comment with a size table on
+2026-10-20; the draft it was edited from is kept below.
+
+**Suggested edits after the 162 (2026-10-21; a9 makes them):**
+
+- Title: `162 bit self-interpreter`.
+- Body, second line, if Grok should be credited there too:
+  `Found with the help of Claude, Codex and Grok.`
+- In the 2026-10-20 summary comment, six rows of the table change:
+
+  | program | before | after |
+  |---|---:|---:|
+  | `int.lam` | 168 | 162 |
+  | `uni.lam` | 190; non-strict 178 | 184; non-strict 172 |
+  | `int4` | 189 | 172 |
+  | `ko2kp` | 615 | 540 |
+  | `nf` | 600 | 535 |
+  | `pairup_Kp` | 1402 | 1270 |
+- A short new comment announcing the push (draft):
+
+  > Pushed seven more commits: a new reader for the self-interpreter,
+  > 165 → 162 bits, carried into the five programs that share it (uni.lam
+  > 184 strict / 172 non-strict, int4 172, ko2kp 540, nf 535, pairup_Kp
+  > 1270). The reader is `list I V next`: `list I` makes the first cell its
+  > own selection, so after a 0 tag the zero branch is the tail itself,
+  > applied to `next`, which is now the reader's last operand instead of a
+  > let; after a 1, `V` reopens the stream, hands the tail to `cont`, and
+  > skips with `next` as the erased third operand of `list list`. Each
+  > commit has its check; the 162 also has a Lean proof that it is a
+  > self-interpreter for every closed program:
+  > https://github.com/a9lim/blam/blob/94c692c58cfe0f9d9c640051bff62f70d6ab9bce/lean/Blc/Selfint162.lean
+  > The branch now saves 1,159 bits across the same 40 programs.
 
 **Draft comment for #13 (as drafted):**
 
@@ -154,15 +196,15 @@ the review. a9 posted an edited version on 2026-10-20.
 
 ## Letter to John
 
-**Subject:** two PRs, including a 165-bit self-interpreter
+**Subject:** two PRs, including a 162-bit self-interpreter
 
 - **Who:** a9, building a Rust engine for BLC/AIT experiments
   (github.com/a9lim/blam); say up front that Claude and Codex did most of
   the work.
 - **The two PRs.**
   - `uni.rs`: byte-identical with uni.py, about 18× faster.
-  - `golf` (#13, already open): int.lam 168 → 165, uni.lam 190 → 187
-    (non-strict 178 → 175), and 38 more programs, 1,143 bits in all.
+  - `golf` (#13, already open): int.lam 168 → 162, uni.lam 190 → 184
+    (non-strict 178 → 172), and 38 more programs, 1,159 bits in all.
 - **His tools in blam (3.0.0).** `blam blc ACTION FILE` is his `blc`, all
   31 actions, without GHC; `blam uni` is his universal machine.
   - Checked byte for byte against his own `blc`, built from AIT with GHC
@@ -174,10 +216,20 @@ the review. a9 posted an edited version on 2026-10-20.
     `blam blc blc` reproduces every checked-in `.blc`.
   - Maybe useful to him: a GHC-free `blc` for people trying the repo.
   - The golf sources: the IOCCC BLC8 machine is down from 43 bytes to 38
-    (36 non-strict), KP(x) ≤ KO(x) + 541, pairup_Kp 1402 → 1273, Loader's
+    (36 non-strict), KP(x) ≤ KO(x) + 540, pairup_Kp 1402 → 1270, Loader's
     number in 1781 bits, and int.lam's parser is now in ko2kp, nf, int4 and
     the pairup programs.
-- **The self-interpreter: 165 bits.**
+- **The self-interpreter: 162 bits** (165 when the PR was opened).
+  - The 162's reader: `list I` makes the first cell its own selection, so
+    the zero branch is the tail itself, and the second-tag stage is passed
+    as the reader's last operand, which the variable branch erases inside
+    its skip. Found by combining a counterexample Codex built while
+    reviewing a proof of Claude's, Grok's idea of passing that stage as an
+    operand, and blam's let optimizer. Lean-proved; independently reviewed.
+  - Universal machines 184 strict / 172 non-strict; int4 172.
+  - Lower bounds from the same night: every self-interpreter has at least
+    37 bits (handwritten, reviewed twice) and 27 kernel-checked in Lean.
+- **The 165, the step before:**
   - Palmer's 168 with one change to the reader: skipvar applied to the whole
     stream before the tag is read is right for both cases (the stream past a
     0-tag; the rest past a variable), and `list H (skipvar list)` hands

@@ -1,4 +1,4 @@
--- showing KP(x) <= KO(x) + 541
+-- showing KP(x) <= KO(x) + 540
 
 \io\p. let
   -- one fixpoint combinator shared by the three recursive functions
@@ -10,7 +10,7 @@
 
   -- replace `omega` used as the initial variable context by the closest
   -- variable; this is fine for closed terms as required by KP.
-  -- (IF_DIRTY = false gives 563 bits)
+  -- (IF_DIRTY = false gives 562 bits)
   IF_DIRTY = true;
 
   -- generic evaluator -- really just parser + translation to HOAS
@@ -24,9 +24,9 @@
   --
   -- (the returned program takes a context defining its free variables)
   -- parser after int.lam (cons' cells, the variable's code as its lookup,
-  -- skipvar), ported by a9lim
-  uni = \abs\app. Y (\uni0. \cnt.
-      (\next. \xs. xs (\b0. b0 (\ys\rest. rest next) cnt) (xs xs xs))
+  -- the stream selecting its own tail), ported by a9lim
+  uni = \abs\app. Y (\uni0. \cnt. \xs.
+      xs (\a. a) (\next. xs (\_. cnt) (xs xs next))
       (\b1. uni0 (\v1. b1
           (cnt (\ctx. abs (\v2. v1 (\zx\zy. zx v2 (zy ctx)))))
           (uni0 (\v2. cnt (\ctx. app (v1 ctx) (v2 ctx)))))));

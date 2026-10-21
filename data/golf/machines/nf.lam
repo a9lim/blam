@@ -28,9 +28,9 @@ let
   appT = \t. let A1 = \_. A t in caseT t id (\_. A1) A1;
 
   -- parser after int.lam (cons' cells, the variable's code as its lookup,
-  -- skipvar), ported by a9lim
-  parseval = Y (\parseval. \cont.
-      (\next. \xs. xs (\b0. b0 (\ys\rest. rest next) cont) (xs xs xs))
+  -- the stream selecting its own tail), ported by a9lim
+  parseval = Y (\parseval. \cont. \xs.
+      xs (\a. a) (\next. xs (\_. cont) (xs xs next))
       (\b1. parseval (\t1. b1
          (cont (\ctx. L (\v. t1 (\zx\zy. zx v (zy ctx)))))
          (parseval (\t2. cont (\ctx. appT (t1 ctx) (t2 ctx)))))));
