@@ -346,8 +346,20 @@ whose contract is kernel-checked as β-joinability.
 See `structural-bounds.md`, `Blc/SelfintLowerBound.lean`, and
 `Blc/SelfintSharp.lean`.
 
-**Capture and provenance.** Some live abstraction of `E` captures an
-enclosing local variable. Lean proves that absence of this property is
+**Capture and provenance.** Statman's published width obstruction implies
+that some subterm of `E` has three distinct free variables, forcing two
+live capturing abstractions. For a literal `λc s.B`, three variables of
+such a witness must be internal to `B`; the two internal captures and the
+public stream binder's capture give three in total. Combined with the
+nonlinear theorem, these give handwritten wire floors of 27 globally and
+40 for literal interfaces, including beta-normal interpreters.
+`capture-width.md` states the published result and the interface proof,
+and gives a shared-S construction attaining these structural minima
+simultaneously, including in the beta-normal fragment with all zero-based
+indices at most two. The floors are sharp only for the necessary syntax
+constraints, not for interpretation.
+
+Lean separately proves that absence of any live capturing abstraction is
 preserved by β-reduction and holds for the quotation, while the normal
 output for `λa b.a b` violates it. A separate colored reduction theorem
 tracks quotation-origin binders through unrestricted interpreter

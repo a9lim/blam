@@ -12,80 +12,90 @@ This task recognizes syntax; it does not evaluate the encoded source.
 It is one of the independent projections supplied by a continuation-headed
 self-interpreter in `head-decomposition.md`.
 
-Codex's construction `rem93` satisfies this contract in 93 bits. Its
+Codex's construction `rem70` satisfies this contract in 70 bits. Its
 named source and exact wire are
-`data/self-interpreter/machines/rem93.lam` and `rem93.blc`.
+`data/self-interpreter/machines/rem70.lam` and `rem70.blc`.
 This is an upper bound, not an optimality result for remainder extraction.
-The term contains beta redexes, so it does not give this upper bound for
+The term contains a beta redex, so it does not give this upper bound for
 the beta-normal fragment.
 
 ## Construction
 
-Write `P` for the recursive parser and define
+The input stream activates a shared context that passes itself to its
+recursive calls:
 
 ```
-NEXT = λt u.P (t u (P u)),
-H    = λb.b (λu r.r NEXT) b,
-P s  = s H (s s s).
+Q = λt u d.t u (u d d) d d,
+D = λb r.r (b Q r),
+P(s) = s D D,
+R = λs.(λd.s d d) D.
 ```
 
-The actual finite term ties the recursion with self-application, sharing
-`p=x x` and inlining `NEXT` inside the reader:
+Here `P(s)` is notation for the displayed term, not an extra source
+binding. The actual finite source is
 
 ```
-(λx.x x) (λx.(λp s.
-  s (λb.b (λu r.r (λt u.p (t u (p u)))) b) (s s s))
-  (x x)).
+λs.(λd.s d d) (λb r.r (b (λt u d.t u (u d d) d d) r)).
 ```
 
-The bit polarity is `0=K=λa b.a`, `1=F=λa b.b`. The reader uses the
-first bit itself as its variable-branch continuation. With a first bit
-`F`, it returns the third argument directly. With a first bit `K`, it
-applies that argument to `NEXT`:
+The bit polarity is `0=K=λa b.a`, `1=F=λa b.b`. A stream cell
+`cons b r` reduces `P(cons b r)` to `D b r D`. For a variable's
+first bit, `b=F`, the context selects
 
 ```
-(cons F r) H S →* S,
-(cons K r) H S →* S NEXT.
+D F r D →* r r D.
 ```
 
-The existing skip identity gives `s s s →* N` when the stream starts
-with a variable's unary index `1ⁿ0`, and `s s s →* r` when
-`s=cons K r`. Thus a variable returns its suffix immediately. For an
-abstraction or application, the remaining second tag selects
+The immediate tail is `r=1ⁱ0 ++ N`. The existing unary-skip identity
+`r r →* λ_.N` erases the supplied context and returns `N`. Thus the
+same copy of `D` that supplies recursion in the constructor branch is
+the variable branch's discarded skip operand.
+
+For a constructor's first bit, `b=K`, the context selects
 
 ```
-NEXT K u →* P u,
-NEXT F u →* P (P u).
+D K r D →* r Q D.
+```
+
+The second tag and the remaining stream enter `Q` before the pending
+context `D`, keeping its four bound occurrences innermost. They give
+
+```
+P(cons K (cons K u)) →* u D D       = P(u),
+P(cons K (cons F u)) →* (u D D) D D = P(P(u)).
 ```
 
 An abstraction discards one recursively encoded body. An application
 discards its first child and then its second child. Uniformity in the
 suffix permits the second child's entire encoding to be the first
-child's suffix.
+child's suffix. The reader `Q` costs 36 bits and the whole context `D`
+costs 53; the surrounding binders and applications cost 17. The complete
+source has `L=7`, `A=12`, and `X=6`, so `2L + 4A + 2 + X = 70`.
 
 ## Kernel proof and fixed checks
 
-`Blc.SelfintRemainder.rem93_contract` proves
+`Blc.SelfintRemainder.rem70_contract` proves
 
 ```
-∀ M N, Betas (rem93 (streamOf (blcCode M) N)) N.
+∀ M N, Betas (rem70 (streamOf (blcCode M) N)) N.
 ```
 
-The proof first checks symbolic head-reduction clauses for the knot,
-unfolding, the two first-bit branches, and the two second-bit prefixes.
-The latter reach `P (K u (P u))` and `P (F u (P u))`; two contextual
-beta steps inside the outer argument then select `P u` or `P (P u)`.
-It lifts them to arbitrary terms with the existing substitution theorem,
-then uses structural induction on `M`. The application case reduces the
-inner parse under an application context before the outer parse.
-The proof imposes no source closedness, normality, or suffix restriction.
+The proof checks five symbolic head-reduction clauses: the public
+adapter, the first-bit variable and constructor branches, and the two
+second-bit branches. The first-bit clauses also use two Boolean
+reductions inside the selected argument to `r`. It lifts the clauses to
+arbitrary terms with the existing substitution theorem, then uses
+structural induction on `M`. The
+variable case uses the unary skip theorem and its final erasing beta
+step. The application case reduces the first parse under two application
+contexts before the second parse. The proof imposes no source closedness,
+normality, or suffix restriction.
 
-The kernel also checks closedness, the literal 93-bit length, and the
+The kernel also checks closedness, the literal 70-bit length, and the
 exact wire. `tools/self-interpreter/theory/remainder.py` pins the named
-source to that wire and replays the same fixed symbolic clauses. It
-compares only two explicit constructions: the displayed inlined factored
-form and a shared `λt u.(t I P)(P u)`, which gives a 97-bit complete extractor.
-`data/self-interpreter/theory/remainder.json` records those checks.
+source to that wire and replays those five head clauses and the two fixed
+Boolean argument clauses. `data/self-interpreter/theory/remainder.json`
+records those checks.
 No source census or candidate search is involved.
 
 This construction separates the remainder task from value reconstruction

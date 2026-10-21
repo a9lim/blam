@@ -1,6 +1,0 @@
--- 93-bit exact remainder extractor, for arbitrary well-formed BLC syntax.
--- R (<M> ++ N) ->* N, including open and divergent source M.
--- Factor the common recursive call across the second-tag alternatives.
-(\x.x x) (\x.(\p.\s.
-  s (\b.b (\u\r.r (\t\u.p (t u (p u)))) b) (s s s))
-  (x x))

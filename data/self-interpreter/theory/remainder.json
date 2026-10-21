@@ -1,20 +1,23 @@
 {
-  "bits": 93,
-  "explicit_variants": {
-    "shared_body": 97,
-    "factored_inline": 93
+  "bits": 70,
+  "source_counts": {
+    "lambdas": 7,
+    "applications": 12,
+    "index_tax": 6
   },
+  "context_bits": 53,
+  "next_bits": 36,
+  "adapter_and_application_bits": 17,
   "symbolic_head_clause_steps": {
-    "knot": 1,
-    "unfold": 3,
-    "variable": 6,
-    "zero": 6,
-    "abstraction_head": 3,
-    "application_head": 3,
-    "abstraction_argument": 2,
-    "application_argument": 2
+    "unfold": 2,
+    "variable_head": 3,
+    "zero_head": 3,
+    "variable_argument": 2,
+    "zero_argument": 2,
+    "abstraction": 6,
+    "application": 6
   },
-  "formal_contract": "forall M N, rem93 (streamOf (blcCode M) N) ->* N",
+  "formal_contract": "forall M N, rem70 (streamOf (blcCode M) N) ->* N",
   "source_restrictions": "none: open and divergent source syntax included",
-  "seconds": 0.0069
+  "seconds": 0.0044
 }

@@ -112,6 +112,17 @@ The formal conclusions are:
 These are source-syntax constraints. They do not say that the captured
 binder must itself be nonlinear.
 
+The handwritten argument in `capture-width.md` strengthens this to two
+live capturing abstractions, or three for a literal two-argument interface
+and hence for a beta-normal interpreter. It applies Statman's published
+obstruction to a width-two term representing `S`: the closed quotation and
+interface arguments have width one, so the necessary width-three subterm
+must come from the interpreter. Combining that requirement with the
+nonlinear theorem gives 27- and 40-bit floors, respectively. The same
+document proves simultaneous sharpness of the width, capture, and nonlinear
+counts by a shared-S construction. These additions are handwritten; they
+do not strengthen the kernel-checked numerical theorem above.
+
 ## Quotation-origin binders cannot provide arbitrary binding structure
 
 `Blc.SelfintOrigins` colors abstractions by origin: interpreter syntax is

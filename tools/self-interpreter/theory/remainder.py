@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Two explicit remainder parsers and fixed symbolic head clauses.
+"""The 70-bit remainder parser and five fixed symbolic head clauses.
 
 No source or candidate enumeration. Lean proves the all-syntax contract;
 this script pins the named source/wire and checks its defining clauses.
@@ -42,49 +42,64 @@ def check_clause(source, target, expected_steps):
     return expected_steps
 
 
+def counts(term):
+    if term[0] == "V":
+        return 0, 0, term[1]
+    if term[0] == "L":
+        lambdas, apps, tax = counts(term[1])
+        return lambdas + 1, apps, tax
+    left, right = counts(term[1]), counts(term[2])
+    return left[0] + right[0], left[1] + right[1] + 1, left[2] + right[2]
+
+
 def main():
     start = time.monotonic()
-    named = (ROOT / "data/self-interpreter/machines/rem93.lam").read_text()
+    named = (ROOT / "data/self-interpreter/machines/rem70.lam").read_text()
     source = battery.compile_lam(named)
     bits = lc.enc(source)
-    assert bits == (ROOT / "data/self-interpreter/machines/rem93.blc").read_text().strip()
-    assert len(bits) == 93
+    assert bits == (ROOT / "data/self-interpreter/machines/rem70.blc").read_text().strip()
+    assert len(bits) == 70
 
     proof = (ROOT / "lean/Blc/SelfintRemainder.lean").read_text()
-    literal = re.search(r"def rem93Wire : List Bool := \[([^]]+)\]", proof)[1]
+    literal = re.search(r"def rem70Wire : List Bool := \[([^]]+)\]", proof)[1]
     proof_bits = "".join("1" if b.strip() == "true" else "0" for b in literal.split(","))
     assert bits == proof_bits
 
-    reader = r"(\n.\s.s(\b.b(\u\r.r n)b)(s s s))"
-    shared_body = battery.compile_lam(
-        r"(\x.x x)(\x.(\p." + reader + r"(\t\u.(t (\i.i) p)(p u)))(x x))")
-    factored_inline = battery.compile_lam(
-        r"(\x.x x)(\x.(\p.\s.s(\b.b(\u\r.r(\t\u.p(t u(p u))))b)(s s s))(x x))")
-    assert factored_inline == source
-    variants = {"shared_body": lc.size(shared_body), "factored_inline": lc.size(factored_inline)}
-    assert variants == {"shared_body": 97, "factored_inline": 93}
+    context = battery.compile_lam(r"\b\r.r (b (\t\u\d.t u (u d d) d d) r)")
+    adapter = battery.compile_lam(r"\s\d.s d d")
+    assert source == ("L", app(adapter[1], context))
+    assert lc.size(context) == 53
+    assert lc.size(adapter) + 2 == 17
+    next_term = battery.compile_lam(r"\t\u\d.t u (u d d) d d")
+    assert lc.size(next_term) == 36
 
-    parser = app(source[2], source[2])
-    next_term = lc.beta(battery.compile_lam(r"\p.\t\u.p(t u(p u))"), parser)
-    handler = lc.beta(battery.compile_lam(r"\n.\b.b(\u\r.r n)b"), next_term)
-    r, suffix = ("V", 0), ("V", 1)
+    def parse(stream):
+        return app(app(stream, context), context)
+
+    r = ("V", 0)
+    false_selection = app(app(lc.FALSE, next_term), r)
+    true_selection = app(app(lc.TRUE, next_term), r)
     clauses = {
-        "knot": check_clause(source, parser, 1),
-        "unfold": check_clause(app(parser, r), app(app(r, handler), app(app(r, r), r)), 3),
-        "variable": check_clause(app(app(lc.pair(lc.FALSE, r), handler), suffix), suffix, 6),
-        "zero": check_clause(app(app(lc.pair(lc.TRUE, r), handler), suffix), app(suffix, next_term), 6),
-        "abstraction_head": check_clause(app(lc.pair(lc.TRUE, r), next_term),
-                                          app(parser, app(app(lc.TRUE, r), app(parser, r))), 3),
-        "application_head": check_clause(app(lc.pair(lc.FALSE, r), next_term),
-                                          app(parser, app(app(lc.FALSE, r), app(parser, r))), 3),
-        "abstraction_argument": check_clause(app(app(lc.TRUE, r), app(parser, r)), r, 2),
-        "application_argument": check_clause(app(app(lc.FALSE, r), app(parser, r)), app(parser, r), 2),
+        "unfold": check_clause(app(source, r), parse(r), 2),
+        "variable_head": check_clause(parse(lc.pair(lc.FALSE, r)),
+                                      app(app(r, false_selection), context), 3),
+        "zero_head": check_clause(parse(lc.pair(lc.TRUE, r)),
+                                  app(app(r, true_selection), context), 3),
+        "variable_argument": check_clause(false_selection, r, 2),
+        "zero_argument": check_clause(true_selection, next_term, 2),
+        "abstraction": check_clause(app(app(lc.pair(lc.TRUE, r), next_term), context), parse(r), 6),
+        "application": check_clause(app(app(lc.pair(lc.FALSE, r), next_term), context), parse(parse(r)), 6),
     }
+    lambdas, apps, tax = counts(source)
+    assert 2 * lambdas + 4 * apps + 2 + tax == len(bits)
     report = {
         "bits": len(bits),
-        "explicit_variants": variants,
+        "source_counts": {"lambdas": lambdas, "applications": apps, "index_tax": tax},
+        "context_bits": lc.size(context),
+        "next_bits": lc.size(next_term),
+        "adapter_and_application_bits": lc.size(adapter) + 2,
         "symbolic_head_clause_steps": clauses,
-        "formal_contract": "forall M N, rem93 (streamOf (blcCode M) N) ->* N",
+        "formal_contract": "forall M N, rem70 (streamOf (blcCode M) N) ->* N",
         "source_restrictions": "none: open and divergent source syntax included",
         "seconds": round(time.monotonic() - start, 4),
     }

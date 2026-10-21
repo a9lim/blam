@@ -207,8 +207,20 @@ with all features (three opt-in tests ignored) and 328 with default features.
   literal 165. A 742-bit β-normal witness also has exactly two closed
   nonlinear binders, with its contract kernel-checked as β-joinability.
   Thus the minimum count two is attained even among β-normal interpreters.
-  Every interpreter must also contain a live abstraction capturing an
-  enclosing local variable.
+  Statman's published width obstruction, combined with a handwritten
+  interface argument, strengthens the capture requirement: every interpreter
+  has a subterm with three distinct free variables and at least two live
+  capturing abstractions. A literal two-argument interface, including every
+  beta-normal interpreter, needs three such internal variables and two
+  internal captures, plus the public stream binder's capture of the
+  continuation. Together with the nonlinear theorem these give handwritten
+  bit floors 27 globally and 40 for literal interfaces; the Lean numerical
+  floor remains 18. A shared-S construction attains width three, two
+  nonlinear binders, and the required capture counts simultaneously, even
+  in the beta-normal fragment with every zero-based index at most two.
+  It is an existential structural construction, not a compact measured
+  interpreter or an additive decomposition
+  (`classical/self-interpreter/capture-width.md`).
   A colored reduction theorem proves that quotation-origin binders remain
   affine, retain one of three protected head shapes, and cannot acquire a
   live capture; live quotation bodies stay normal and contain only
@@ -252,11 +264,11 @@ with all features (three opt-in tests ignored) and 328 with default features.
   numerical minimum yet. The literal 165's three existing redexes
   increase size by 147, 3, and 5 bits when contracted individually;
   the same fixed check validates each charge.
-  The separate syntactic remainder task has a 93-bit construction
-  (`rem93`, `classical/self-interpreter/remainder.md`): Lean proves exact
+  The separate syntactic remainder task has a 70-bit construction
+  (`rem70`, `classical/self-interpreter/remainder.md`): Lean proves exact
   suffix extraction for every source term, including open and divergent
   sources, and every suffix. The fixed source/wire and symbolic-clause
-  check takes 0.007 seconds (`data/self-interpreter/theory/remainder.json`).
+  check takes 0.004 seconds (`data/self-interpreter/theory/remainder.json`).
   This is an unrestricted upper bound for a parser projection, not a
   self-interpreter or a beta-normal remainder bound. `SelfintZero`
   proves that every exact remainder extractor needs two nonlinear
