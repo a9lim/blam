@@ -350,4 +350,4 @@ theorems use only `propext` and `Quot.sound`. The head decomposition and
 continuation-independence arguments above remain handwritten. Charging
 index movement and shared-code copying across an entire decoding trace
 still has not yielded a useful global numerical lower bound; none of
-these results establishes 165-bit optimality.
+these results establishes 162-bit optimality.

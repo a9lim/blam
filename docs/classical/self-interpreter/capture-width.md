@@ -12,7 +12,7 @@ obstruction is kernel-checked; the numerical counting and exclusion
 arguments and the sharpness constructions are handwritten. Together they
 give 34 bits globally and 46 for literal or beta-normal interpreters;
 `global-floor.md` extends the global count to 37. None of this establishes
-165-bit optimality.
+162-bit optimality.
 
 ## The source measure
 
@@ -663,4 +663,4 @@ This attains all three minima simultaneously within the beta-normal
 fragment and rules out any necessary occurrence of index three or
 higher, even within that fragment. It is an existential structural
 construction, not a new measured compact interpreter or a proof of
-165-bit optimality.
+162-bit optimality.

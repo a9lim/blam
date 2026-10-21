@@ -22,7 +22,7 @@ The counting argument of `capture-width.md` gives 33 and excludes it. This
 proof excludes 34, 35 and 36 using semantic consequences of the exact
 contract (head arity, internal width, internal nonlinearity, and exact
 identity-source outputs). It is not an additive parser-module argument and
-does not approach a proof of 165-bit optimality.
+does not approach a proof of 162-bit optimality.
 
 ## 1. Dependencies and conventions
 

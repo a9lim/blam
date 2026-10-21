@@ -1,0 +1,1 @@
+(\n0. \c\s. s (\zero\q. q (n0 (\v\t. c v (t t))))) ((\x. x x) (\x. (\n. (\p. \c\d. p (\f. d (c (\e\a. f (\b\r. b a (r e)))) (\t. p (\g. c (\e. f e (g e))) (t t)))) (\k\s. s (\b\r. b r (\u. k r (r r))) (n k))) (x x)))

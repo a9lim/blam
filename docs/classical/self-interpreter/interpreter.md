@@ -1,8 +1,8 @@
-# The 165-bit self-interpreter
+# The 162-bit self-interpreter
 
 This is the record of what is known about the size of BLC's
 self-interpreter: its anatomy, its formal proofs, every search run against it
-and its predecessor, and the exact boundary of what those searches prove. The
+and its predecessors, and the exact boundary of what those searches prove. The
 universal machine, whose contract differs, has its own record in
 `universal.md`; the parametric slot searches are specified in `slots.md`.
 Logs are in `data/self-interpreter/`, the interpreters themselves in
@@ -17,7 +17,115 @@ E C (⌜M⌝ ++ N) = C (λz. M) N
 ```
 
 for closed `M`, a rigid continuation `C`, and a rigid remainder `N`. The
-current minimum is 165 bits (`machines/int165.lam`), Codex's design:
+current minimum is 162 bits (`machines/int162.lam`):
+
+```text
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))
+```
+
+It is the 165 (`machines/int165.lam`, §2) with a new reader; everything from
+`\bit1` inward is the 165's, which is Sean Palmer's 168 (tromp/AIT
+`2cfa384`) with Codex's reader, and the 168 is one β-expansion of Tromp's
+170. The 162's reader is a 44-bit reader that Codex built while refuting a
+step of a reader-optimality proof (`data/self-interpreter/reasoning_floor/`),
+placed in the 165 with NEXT as the reader's last operand, Grok's idea; that
+interpreter measures 166 with a `next` let, and `blam golf letopt` renders it
+at 162 by inlining NEXT into the operand slot. In the size identity
+`|M| = 2L + 4A + 2 + X` the four interpreters read `(16, 24, 32)`,
+`(17, 25, 29)`, `(16, 26, 30)` and `(15, 25, 38)`.
+
+**All four are proved correct.** `lean/Blc/Selfint162.lean`,
+`Selfint165.lean` and `SelfintProof.lean` prove in Lean, for the 162, the 165
+and the 168 pinned to their wire bits, that `E C (⌜M⌝ ++ N)` β-*reduces* to
+`C (λz. M) N` for every closed `M` and any terms `C`, `N`
+(`selfint_contract162`, `selfint_contract165`, `selfint_contract`), divergent
+programs included, together with head-reduction parser statements for every
+term, open or closed, and `¬ SelfintSizeBound 163`. The axioms are `propext`
+and `Quot.sound`. One induction on the source term carries everything: the
+parsed closure denotes the term under any cons' environment (`Den`),
+implements it under head reduction (`Implements`), and leaves a residual that
+spine-reduces to the tail; the variable engine is an induction on the unary
+index, and the control is a set of kernel-replayed machine runs on placeholder
+terms, lifted because head steps are stable under substitution. The 162's
+variable residual `s s NEXT` names the continuation, through NEXT, so its
+parser statement quantifies the residual inside the continuation:
+`not_parses_intL162` proves that the 165's continuation-uniform statement
+fails for it. An independent adversarial review re-derived the contract by
+hand and recounted the size (`reasoning_floor/verify/v162_codex.md`).
+
+**Nothing below 162 is known.** §3 lists everything searched around it and its
+predecessors, §5 the lower bounds. None is an unconditional optimality proof;
+§7 says what remains.
+
+`tools/self-interpreter/battery.py` is the exact contract check used for every
+measured size: rigid continuation and tail, every closed program through 18
+bits plus deep-index extras. Of its 668 programs, the one whose expected
+result has no normal form is skipped and 667 must pass. It compares β-normal
+forms, so an interpreter correct only up to η fails it (one with arguments
+before environments measures 237 and passes a separate βη audit). The 162 and
+the 165 also pass 3,341 programs through 21 bits, and their suffix extraction
+`E (λv r. r) (⌜M⌝ ++ n)` normalizes to `n` on divergent `M`.
+`tools/self-interpreter/merges.py` re-measures the 162, the 165, their nearest
+variants, and the 168's protocol variants of §6.
+
+## 2. Anatomy
+
+| part | bits |
+|---|---:|
+| knot and `intL = x x` let | 22 |
+| `\cont`, `\list` | 4 |
+| reader `list I V NEXT`: three applications and `list` | 8 |
+| `I = \a. a` | 4 |
+| variable arm `V = \u. list (\q. cont) (list list u)` | 28 |
+| NEXT header `\bit1. intL (\exp. bit1 · ·)` | 18 |
+| ABS (the `cons'` cell alone is 24) | 41 |
+| APP | 37 |
+
+The 24 applications: knot 3 and the `intL` let 1; the reader 3; the variable
+arm 4 (`list` applied twice, the skip's two); the first parse 1 and the
+dispatch on `bit1` 2; ABS 5 (return, enter the body, build the cell 3); APP 5
+(second parse, return, `exp args (exp2 args)` 3). The 16 λs: the knot's two,
+`intL`, `cont` and `list`, `I`'s, the variable arm's `u` and `q`, `bit1` and
+`exp`, the λ-value's `args` and `arg`, the cell's `zx` and `zy`, and APP's
+`exp2` and `args`.
+
+### The reader
+
+With `s = cons b r` the whole input stream and `NEXT` the reader's last
+operand,
+
+```text
+s I V NEXT  =  b r V NEXT.
+```
+
+`s I` turns the first cell into its own selection.
+
+- **0-tag:** `K r V NEXT = r NEXT = NEXT b2 r2` for `r = cons b2 r2`, the
+  165's zero branch `r next`. The zero arm is the tail itself: there is no
+  handler, no zero-arm λs, and no duplicate stream copy to drop.
+- **Variable** `1ⁿ0 ++ N`: `F r V NEXT = V NEXT`, and `V` reopens the whole
+  stream: `s (\q. cont) = cont r` hands the tail to `cont`, and
+  `s s NEXT = r r NEXT = N` is the skip, with NEXT as its erased third
+  operand (`U_m U_m = K N` for every unary code). So `V NEXT = cont r N`,
+  the 165's variable law.
+
+Against the 165 the `next` let goes (4 bits) and the reader shrinks from 43
+bits to 40; NEXT, now under `\list`, pays one more index bit on each of its
+four references to `cont` and `intL` (header 18, ABS 41, APP 37: +4). On genuine
+streams the parser equations are exactly the 165's, which is why its proof
+transfers; off them they differ, and the variable residual carries NEXT.
+The reader lies outside every reader class of §5: it has three operands, and
+written as a two-operand reader `s H NEXT` (`H = λb r. b r V`) its last
+operand is the bare `next`, a family the record had left open.
+
+### The 165's reader
+
+The 165 is
 
 ```text
 (\x. x x) (\x. (\intL. \cont.
@@ -29,65 +137,10 @@ current minimum is 165 bits (`machines/int165.lam`), Codex's design:
   (x x))
 ```
 
-It is Sean Palmer's 168-bit `int.lam` (tromp/AIT `2cfa384`) with a new
-reader; everything from `next` inward is the 168's. The 168 is itself one
-β-expansion of Tromp's 170: the zero-branch continuation `\bit1. …` is
-let-floated out from under `\list \bit0 \list1` to sit just inside `\cont`.
-In the size identity `|M| = 2L + 4A + 2 + X` the three read `(17, 25, 29)`,
-`(16, 26, 30)` and `(15, 25, 38)`.
-
-**Both are proved correct.** `lean/Blc/Selfint165.lean` and
-`lean/Blc/SelfintProof.lean` prove in Lean, for the 165 and the 168 pinned to
-their wire bits, that `E C (⌜M⌝ ++ N)` β-*reduces* to `C (λz. M) N` for every
-closed `M` and any terms `C`, `N` (`selfint_contract165`, `selfint_contract`),
-divergent programs included, together with the head-reduction parser
-statements of `Blc/Selfint.lean` for every term, open or closed. The axioms are
-`propext` and `Quot.sound`. One induction on the source term carries
-everything: the parsed closure denotes the term under any cons' environment
-(`Den`), implements it under head reduction (`Implements`), and leaves a
-residual that spine-reduces to the tail; the variable engine is an induction on
-the unary index, and the control is a set of kernel-replayed machine runs on
-placeholder terms, lifted because head steps are stable under substitution.
-
-**Nothing below 165 is known.** §3 lists everything searched around it, §5 the
-lower bounds. None is an unconditional optimality proof; §7 says what remains.
-
-`tools/self-interpreter/battery.py` is the exact contract check used for every
-measured size: rigid continuation and tail, every closed program through 18
-bits plus deep-index extras. Of its 668 programs, the one whose expected
-result has no normal form is skipped and 667 must pass. It compares β-normal
-forms, so an interpreter correct only up to η fails it (one with arguments
-before environments measures 237 and passes a separate βη audit). The 165
-also passes 3,341 programs through 21 bits, and its suffix extraction
-`E (λv r. r) (⌜M⌝ ++ n)` normalizes to `n` on divergent `M`.
-`tools/self-interpreter/merges.py` re-measures the 165, its nearest variants,
-and the 168's protocol variants of §6.
-
-## 2. Anatomy
-
-| part | bits |
-|---|---:|
-| knot and `intL = x x` let | 22 |
-| `\cont`, the `next` let, `\list` | 8 |
-| reader `list H S`: two applications and `list` | 6 |
-| handler `\bit0. bit0 Z cont` around its zero arm | 13 |
-| zero arm `Z = \unused \r. r next` | 14 |
-| skip `S = list list list` | 10 |
-| NEXT header `\bit1. intL (\exp. bit1 · ·)` | 17 |
-| ABS (the `cons'` cell alone is 24) | 40 |
-| APP | 35 |
-
-The 25 applications: knot 3 and the `intL` let 1; the `next` let 1; the reader
-2, its skip 2, the handler's dispatch 2, the zero arm's read of the second bit
-1; the first parse 1 and the dispatch on `bit1` 2; ABS 5 (return, enter the
-body, build the cell 3); APP 5 (second parse, return, `exp args (exp2 args)`
-3). The 17 λs: the knot's two, the two lets, `cont` and `list`, `bit0`, the
-zero arm's two, `bit1` and `exp`, the λ-value's `args` and `arg`, the cell's
-`zx` and `zy`, and APP's `exp2` and `args`.
-
-### The reader
-
-With `s = cons b r` the whole input stream,
+with anatomy knot 22; `\cont`, the `next` let, `\list` 8; reader
+`list H S` 6; handler `\bit0. bit0 Z cont` 13; zero arm
+`Z = \unused \r. r next` 14; skip `S = list list list` 10; NEXT header 17;
+ABS 40; APP 35. With `s = cons b r`,
 
 ```text
 s H S  =  H b r S            S = s s s
@@ -103,48 +156,64 @@ leading 1, `s s = r r`, and by induction a unary code `1^k 0 ++ N` gives
 - **Variable** `1^n 0 ++ N`: `S = N`, and `H F r S = cont r S = cont r N`,
   the 168's `cont list1 (list1 list1 list1)`.
 
-Two moves make this pay. The skip is *hoisted*: the 168 computed it inside the
-variable arm from `list1`; the 165 computes it once on the whole stream,
-where its value happens to be what both arms need. And the Scott list's own
-application `H b r S` *supplies* `list1` to the variable arm, so that arm is
-`cont` itself and its return application disappears. Against the 168 this is
-one λ more, one application fewer, and one bit less of index: `+2 − 4 − 1`.
-The 168's module bound (§5) kept dispatch, VAR and skip in separate opaque
-modules, which is exactly the boundary this crosses.
+Two moves made this pay against the 168. The skip is *hoisted*: the 168
+computed it inside the variable arm from `list1`; the 165 computes it once on
+the whole stream, where its value happens to be what both arms need. And the
+Scott list's own application `H b r S` *supplies* `list1` to the variable arm,
+so that arm is `cont` itself and its return application disappears. Against
+the 168 this is one λ more, one application fewer, and one bit less of index:
+`+2 − 4 − 1`. The 168's module bound (§5) kept dispatch, VAR and skip in
+separate opaque modules, which is exactly the boundary this crosses.
 
-The zero arm receives `list1` twice and must drop a copy; that is the extra λ.
-Dropping it through `bit0`, which is `K` in that arm, costs one bit more
-(166). Applying the copy to anything leaves an argument that reaches the rigid
-`C`, and re-dispatching it through `H` runs into the uniform-handler
-impossibility of §5.
+The zero arm receives `list1` twice and must drop a copy; that is the extra λ,
+and the duplicate is forced for every application-only whole-stream skip
+(`protocol-obstructions.md`). Dropping it through `bit0`, which is `K` in that
+arm, costs one bit more (166). Applying the copy to anything leaves an
+argument that reaches the rigid `C`, and re-dispatching it through `H` runs
+into the uniform-handler impossibility of §5. The 162 removes the drop by not
+computing the skip in the zero arm at all.
 
-**Identities of the reader** (Codex). Write `R = \s. s H (s s s)` for the
-reader with `next` and `cont` fixed, `H = \b. b Z cont` and `Z = \u r. r next`.
-Off genuine streams the reader still computes: `R K = H`, `R F = F`,
-`R I = \r. r next`, and `R (K a) = a (a (K a))`, so a constant stream is a
-return instruction, `R (K (K X)) = X`. It also diagonalizes its own zero arm:
-`R Z →* next next`, and in general `R Z_t →* t t` for `Z_t = \u r. r t`
-whatever `next` and `cont` are, while `H R →* next next cont`. On streams,
-`s (\x. x x)` is a conditional predecessor (`K` after a 0, the tail after a
-1), two cells cross-apply as `cons b r (cons d t) = b d t r`, and unary codes
-`U_k(N) = 1^k 0 ++ N` satisfy `U_{i+1}(N) U_{j+1}(M) = U_j(M) U_i(N)`. Proofs
-and rigid-variable checks are in `data/self-interpreter/reasoning_165/`
+**Identities of the 165's reader** (Codex). Write `R = \s. s H (s s s)` for
+the reader with `next` and `cont` fixed, `H = \b. b Z cont` and
+`Z = \u r. r next`. Off genuine streams the reader still computes: `R K = H`,
+`R F = F`, `R I = \r. r next`, and `R (K a) = a (a (K a))`, so a constant
+stream is a return instruction, `R (K (K X)) = X`. It also diagonalizes its
+own zero arm: `R Z →* next next`, and in general `R Z_t →* t t` for
+`Z_t = \u r. r t` whatever `next` and `cont` are, while `H R →* next next cont`.
+On streams, `s (\x. x x)` is a conditional predecessor (`K` after a 0, the
+tail after a 1), two cells cross-apply as `cons b r (cons d t) = b d t r`, and
+unary codes `U_k(N) = 1^k 0 ++ N` satisfy `U_{i+1}(N) U_{j+1}(M) = U_j(M) U_i(N)`.
+Proofs and rigid-variable checks are in `data/self-interpreter/reasoning_165/`
 (`fresh/`, `knot/`, `algebra/`, `reader/`).
 
 ### The NEXT region
 
-From `next` inward the 165 is the 168, at the same binder stack
-`[cont, intL, x]`, and on genuine streams both readers satisfy the same parser
-law. So a change confined to NEXT has the same size change and the same
-battery outcome on both interpreters (select-first and the K-repair cell are
-+1 on each in `merges.py`), and the 168's slot and module results for the
-header, ABS, APP, the cell and the lift (§4, `slots.md`) bound the 165's NEXT
-region too.
+From `\bit1` inward the 162, the 165 and the 168 are the same term, one binder
+deeper in the 162; on genuine streams all three readers satisfy the same
+parser law. So a change confined to NEXT has the same size change and the
+same battery outcome on all three (select-first and the K-repair cell are +1
+on each in `merges.py`), and the 168's slot and module results for the header,
+ABS, APP, the cell and the lift (§4, `slots.md`) bound the NEXT region of the
+others too.
 
-## 3. Searches around the 165
+## 3. Searches around the 162 and the 165
 
 Every search here is exact against the contract; "capped" means a candidate
 exhausted its budget without failing a probe, which is not a refutation.
+
+Around the 162:
+
+| search | scope | result | evidence |
+|---|---|---|---|
+| let structure (`blam golf letopt`) | 167-bit core, 342 cuts, 0–3 cuts: 342 / 50,693 / 4,543,789 configurations | 162 unique minimum (one cut, the `intL` let); two cuts ≥ 166; three ≥ 172 | `letopt_162.log` |
+| βη component | slack 16 / 20 / 24: 58,042 / 1,135,418 / 12,024,847 terms | none below 162, no tie | `component_162_slack24.log` |
+| contextual component | slack 18: 575,104 distinct terms | none below 162, no tie | `component_162_contextual18.log` |
+
+The 162's reader with NEXT let-bound measures 166, and NEXT as the last
+operand of a λ-handler `\b \r. b r (\t. cont r (r r t))` measures 168
+(`merges.py`).
+
+Around the 165:
 
 | search | scope | result | evidence |
 |---|---|---|---|
@@ -307,7 +376,7 @@ two arguments leaves an outer λ, which no reduct of `C (λz.M) N` has; with
 `n = 1` the head is `c`, the supplied stream is its last argument and arity
 forces it to equal `N`, but `⌜M⌝ ++ N ≠β N`. So `n = 2`; head `c` forces
 exactly two arguments, and head `s` needs one to consume the stream's outer λ.
-Both shapes occur: the 165 and 168 are `s`-headed; parsing twice,
+Both shapes occur: the 162, 165 and 168 are `s`-headed; parsing twice,
 `λc s. c (E (λv r. v) s) (E (λv r. r) s)`, is a correct `c`-headed
 interpreter. In the continuation-headed case, replacing every occurrence of
 `c` inside `A,B` by `s` preserves the contract and saves one bit per
@@ -422,6 +491,13 @@ a way to localize the interpreter's roles in separately priced subterms — and
 the 165 shows that the natural decomposition is false.
 
 ### Bounds within the 165's reader shape
+
+These bound readers of the 165's shape with its `next` protocol. The 162's
+reader lies outside them: it has three operands, and as a two-operand reader
+its last operand is the bare `next`, a family they leave open. A
+residual-tracing attempt to extend them to every reader shape was refuted
+step by step in review, without a reader below 43 being found
+(`data/self-interpreter/reasoning_floor/reader-proof/`, `verify/`).
 
 These are Codex's handwritten proofs, with targeted reduction checks in
 `data/self-interpreter/reasoning_165/bounds/` (`proof_check.py`) and
@@ -661,23 +737,24 @@ their optimal let structure (`blam golf letopt`, at most three cuts).
 
 ## 7. Boundaries
 
-No verified sub-165 has been found in the tested neighbourhoods: its let
-structure, βη and contextual components, every slot of its reader singly and
-the handler and skip jointly through interpreters of 164 bits, and the NEXT
-region it shares with the 168. Capped candidates remain unresolved. Another
-fusion of the kind the reader uses is a promising constructive route:
-work that two parts of the interpreter need, computed once where its value is
-right for both, or a Scott structure whose own application supplies an
-argument.
+No verified sub-162 has been found: its let structure is minimal to three
+cuts and its βη components to slack 24 hold nothing smaller (§3); the
+searches around the 165 bound that reader shape. The 162 came from the move
+that produced the 165, a Scott structure's own application doing a branch's
+work (here `s I` makes the cell's selection deliver the tail as the zero
+arm), combined with an operand that one branch uses and the other erases
+(NEXT, the skip's junk on variables). Moves of that kind remain the
+promising constructive route.
 
 Open:
 
 - readers outside the classes bounded in §5: other reader heads, joint
   handler/skip changes, exploitation of actual NEXT/parser behaviour, and
   readers with a different `next` protocol beyond those priced in §3 and §6;
+  the 162's reader shows this family is live;
 - the reader's diagonal `R Z →* next next` (§2): the 165 already contains the
-  self-application a knot needs, and a sub-165 along this line would have
-  `next`'s zero arm serve as the knot's generator. Built with a separate
+  self-application a knot needs, and a smaller interpreter along this line
+  would have `next`'s zero arm serve as the knot's generator. Built with a separate
   carrier it works at 192 and 199 bits; making `next` do both while keeping
   its Boolean cases is unsolved, and the exclusions of §5 rule out the
   current `next` and parser doing it unchanged;

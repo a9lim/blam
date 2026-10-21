@@ -16,6 +16,7 @@ import Blc.Wire
 import Blc.Selfint
 import Blc.SelfintProof
 import Blc.Selfint165
+import Blc.Selfint162
 import Blc.SelfintLowerBound
 import Blc.SelfintNonlinearChain
 import Blc.SelfintNormal

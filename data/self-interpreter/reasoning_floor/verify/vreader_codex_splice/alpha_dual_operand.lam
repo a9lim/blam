@@ -1,0 +1,13 @@
+-- 165-bit BLC self-interpreter:  E C (<M> ++ N) = C (\z. M) N  for closed M.
+-- Palmer's 168 with one reader change. `list list list` is the rest after
+-- the first 0 of the whole stream: list1 after a 0-tag, the remainder N after
+-- a variable 1^n 0, so one skip computed before the dispatch serves both
+-- arms; and `list H S = H bit0 list1 S` hands list1 to the variable arm,
+-- which is then `cont` itself.
+(\x. x x) (\x. (\intL. \cont.
+  (\next. \list.
+    ((list (\b. ((b (\fa. (\fb. fb))) cont))) (list (\b. (\r. ((b (r next)) ((r r) r)))))))
+  (\bit1. intL (\exp. bit1
+    (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+    (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

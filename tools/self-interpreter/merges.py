@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Re-measure the protocol variants recorded in
-docs/classical/self-interpreter/interpreter.md §5.
+"""Re-measure the interpreters and protocol variants recorded in
+docs/classical/self-interpreter/interpreter.md.
 
 Each variant is written out in full, compiled without the optimizer, sized,
 and run through battery.py's exact contract check.  A negative control (APP
@@ -42,8 +42,26 @@ def int165(reader):
 READER165 = r"(\bit0. bit0 (\unused \r. r next) cont)"
 INT165 = int165(READER165)
 GEN165 = rf"(\x. (\intL. {body165(READER165)}) (x x))"
+NEXT = rf"(\bit1.intL (\exp.bit1 {ABS} {APP}))"
+READER162 = r"(\a. a) (\u. list (\q. cont) (list list u))"
+BODY162 = rf"\cont. \list. list {READER162} {NEXT}"
+INT162 = knot(BODY162)
+GEN162 = rf"(\x. (\intL. {BODY162}) (x x))"
 
 VARIANTS = [
+    # interpreter.md §1–§2: the 162, how its reader arises, its universal
+    # machines.
+    ("162 (stream-selected reader, NEXT as its last operand)", INT162, False,
+     162, True),
+    ("162's reader with NEXT let-bound", knot(rf"""\cont.
+   (\next. \list. list {READER162} next) {NEXT}"""), False, 166, True),
+    ("NEXT as the reader's last operand, lambda handler", knot(rf"""\cont.
+   \list. list (\bit0 \r. bit0 r (\t. cont r (r r t))) {NEXT}"""),
+     False, 168, True),
+    ("universal machine 172, non-strict (intL dbl around the 162)",
+     f"({INT162}) (\\x. x x)", True, 172, True),
+    ("universal machine 184, strict wiring around the 162",
+     rf"(\a. a {GEN162} (\b. b (a a))) (\a. a a)", True, 184, True),
     # interpreter.md §1–§3: the 165 and its nearest variants.
     ("165 (whole-stream skip)", INT165, False, 165, True),
     ("control: 165 zero arm with one binder", int165(r"(\bit0. bit0 (\r. r next) cont)"),

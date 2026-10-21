@@ -390,6 +390,33 @@ explicit mode flag). The proof covers this uniform, β-exact re-entry
 equation with the transparent contract, not every design with different
 internal values and a public adapter.
 
+## The NEXT region
+
+Codex's handwritten results on NEXT with the 165's knot and reader fixed,
+found correct by an independent review
+(`data/self-interpreter/reasoning_floor/verify/vnext_codex.md`):
+
+- **Optimality of NEXT alone is a global problem.** Any closed
+  self-interpreter `Q` fills the NEXT slot as
+  `N_Q = λb t. Q c (λh. h K (λj. j b t))`, which rebuilds the two cells the
+  reader consumed and calls `Q` on the original stream, at exactly
+  `|Q| + 44` bits. So "every correct NEXT has at least 92 bits" would imply
+  a 48-bit floor for every interpreter. (With the 165, 282 bits; battery
+  passes.)
+- **A conditional 92.** If NEXT meets the rigid canonical branch laws
+  `N K t = intL (λf. c (Abs f)) t` and `N F t = intL (λf. intL (λg. c (App f g))) t`
+  with `intL` rigid, is β-normal, and uses the tag only as `b U V`, then it
+  has at least 92 bits, uniquely the 165's: specializing repeated tests
+  never grows the term, and every remaining tree is one of nine forms of
+  92–116 bits. The rigid laws are not forced by the contract: a 184-bit
+  interpreter whose ABS returns through the actual parser,
+  `intL f (λu v. c (Abs f))`, meets the contract but not the rigid law.
+- **A shared argument with one bare branch head is erased.** With normal
+  adapters and a tag-free shared argument, a bare `c` (or `intL`) head forces
+  the other adapter to discard it (96 and 97 bits); a shared pair
+  `λh. h (Abs f) (App f)` projected by both adapters escapes this at 132 bits
+  of NEXT (205 overall).
+
 ## APP cannot supply the full parser through an idempotent control response
 
 The semantic application `lambda e.f e (g e)` already duplicates an

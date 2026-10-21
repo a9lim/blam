@@ -117,16 +117,16 @@ proven.
   and time spectra, with post-certificate open mass below 3.19×10⁻¹² on the β
   clock.
 - **The self-interpreter** ([interpreter](docs/classical/self-interpreter/interpreter.md)):
-  165 bits, three below Sean Palmer's 168, by computing the variable skip once
-  on the whole stream, where it is right for both dispatch arms. Lean proves
-  it, and the 168, a self-interpreter for every closed program. Nothing smaller
-  appears in its let structure, βη and contextual components, or any slot of
-  its reader, and the 168's modular lower bound still pins the part the two
-  share. Every self-interpreter has at least 37 bits by a reviewed handwritten
-  proof, and at least 27 kernel-checked in Lean
+  162 bits, six below Sean Palmer's 168. Its reader applies the input stream
+  to the identity, so the first cell selects its own tail as the zero branch,
+  and passes the parser's second-bit stage as an operand that the variable
+  branch erases. Lean proves it, the previous record's 165 and the 168
+  self-interpreters for every closed program. Nothing smaller appears in its
+  let structure or its βη components. Every self-interpreter has at least 37
+  bits by a reviewed handwritten proof, and at least 27 kernel-checked in Lean
   ([global floor](docs/classical/self-interpreter/global-floor.md)). The same
-  reader gives universal machines of 175 (non-strict) and 187
-  (strict) bits, against Tromp's 178 and 190
+  reader gives universal machines of 172 (non-strict) and 184 (strict) bits,
+  against Tromp's 178 and 190
   ([universal](docs/classical/self-interpreter/universal.md)).
 - **The rest of tromp/AIT** ([golf](docs/classical/golf.md), sent upstream as
   [tromp/AIT#13](https://github.com/tromp/AIT/pull/13)): 40 programs shrink by

@@ -1,0 +1,28 @@
+raw variable / I-variable collision n=1 equal
+raw variable / I-variable collision n=2 equal
+raw variable / I-variable collision n=5 equal
+same parent continuation, variable equal
+same parent continuation, I-variable equal
+trailing argument cannot disappear distinct
+thunked tail is not the tail at rigid C distinct
+arbitrary forcing operand equal
+third-operand reader variable n=1 equal
+delayed-drop thunk reader variable n=1 equal
+third-operand reader variable n=2 equal
+delayed-drop thunk reader variable n=2 equal
+third-operand reader variable n=5 equal
+delayed-drop thunk reader variable n=5 equal
+third-operand reader abs equal
+delayed-drop reader abs equal
+delayed-drop thunk reader abs equal
+root NEXT entry abs equal
+third-operand reader app equal
+delayed-drop reader app equal
+delayed-drop thunk reader app equal
+root NEXT entry app equal
+function environment lookup zero equal
+function environment lookup successor equal
+force erases a carried mode equal
+same parsed child does not determine the constructor distinct
+module costs {'third_variable_force': 27, 'third_variable_thunk': 23, 'thunk_return_adapter': 21, 'ordinary_second_parse': 37, 'thunk_second_parse': 50}
+26 identity/counterexample checks; 18 suffix checks; all passed

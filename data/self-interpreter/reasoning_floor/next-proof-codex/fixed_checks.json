@@ -1,0 +1,282 @@
+{
+  "normal_fragment_forms": {
+    "00_root": {
+      "bits": 99,
+      "LAX": [
+        9,
+        14,
+        23
+      ]
+    },
+    "00_continuation": {
+      "bits": 93,
+      "LAX": [
+        9,
+        13,
+        21
+      ]
+    },
+    "00_after_first_parse": {
+      "bits": 92,
+      "LAX": [
+        8,
+        13,
+        22
+      ]
+    },
+    "01_root": {
+      "bits": 108,
+      "LAX": [
+        10,
+        15,
+        26
+      ]
+    },
+    "10_root": {
+      "bits": 107,
+      "LAX": [
+        10,
+        15,
+        25
+      ]
+    },
+    "11_root": {
+      "bits": 116,
+      "LAX": [
+        11,
+        16,
+        28
+      ]
+    },
+    "11_after_tail_binder": {
+      "bits": 115,
+      "LAX": [
+        10,
+        16,
+        29
+      ]
+    },
+    "11_continuation": {
+      "bits": 104,
+      "LAX": [
+        10,
+        14,
+        26
+      ]
+    },
+    "11_after_first_parse": {
+      "bits": 103,
+      "LAX": [
+        9,
+        14,
+        27
+      ]
+    }
+  },
+  "batteries": {},
+  "bare_head_shared_argument_sizes": {
+    "bare_c": 97,
+    "bare_p": 96
+  },
+  "equations": [
+    {
+      "label": "00_root K",
+      "equal": true
+    },
+    {
+      "label": "00_root F",
+      "equal": true
+    },
+    {
+      "label": "00_continuation K",
+      "equal": true
+    },
+    {
+      "label": "00_continuation F",
+      "equal": true
+    },
+    {
+      "label": "00_after_first_parse K",
+      "equal": true
+    },
+    {
+      "label": "00_after_first_parse F",
+      "equal": true
+    },
+    {
+      "label": "01_root K",
+      "equal": true
+    },
+    {
+      "label": "01_root F",
+      "equal": true
+    },
+    {
+      "label": "10_root K",
+      "equal": true
+    },
+    {
+      "label": "10_root F",
+      "equal": true
+    },
+    {
+      "label": "11_root K",
+      "equal": true
+    },
+    {
+      "label": "11_root F",
+      "equal": true
+    },
+    {
+      "label": "11_after_tail_binder K",
+      "equal": true
+    },
+    {
+      "label": "11_after_tail_binder F",
+      "equal": true
+    },
+    {
+      "label": "11_continuation K",
+      "equal": true
+    },
+    {
+      "label": "11_continuation F",
+      "equal": true
+    },
+    {
+      "label": "11_after_first_parse K",
+      "equal": true
+    },
+    {
+      "label": "11_after_first_parse F",
+      "equal": true
+    },
+    {
+      "label": "raw variable n=1",
+      "equal": true
+    },
+    {
+      "label": "raw variable n=2",
+      "equal": true
+    },
+    {
+      "label": "raw variable n=4",
+      "equal": true
+    },
+    {
+      "label": "constructor handoff (\\u v.u)",
+      "equal": true
+    },
+    {
+      "label": "constructor handoff (\\u v.v)",
+      "equal": true
+    },
+    {
+      "label": "constructor handoff b",
+      "equal": true
+    },
+    {
+      "label": "constant-stream return, arbitrary NEXT",
+      "equal": true
+    },
+    {
+      "label": "reader on K",
+      "equal": true
+    },
+    {
+      "label": "reader on F",
+      "equal": true
+    },
+    {
+      "label": "reader on I",
+      "equal": true
+    },
+    {
+      "label": "packet K",
+      "equal": true
+    },
+    {
+      "label": "packet F",
+      "equal": true
+    },
+    {
+      "label": "bare_c K",
+      "equal": true
+    },
+    {
+      "label": "bare_c F",
+      "equal": true
+    },
+    {
+      "label": "bare_p K",
+      "equal": true
+    },
+    {
+      "label": "bare_p F",
+      "equal": true
+    },
+    {
+      "label": "actual return fails rigid-p K law",
+      "equal": false
+    },
+    {
+      "label": "actual modified parser returns constants",
+      "equal": true
+    },
+    {
+      "label": "embedded interpreter forwarding K",
+      "equal": true
+    },
+    {
+      "label": "embedded interpreter forwarding F",
+      "equal": true
+    },
+    {
+      "label": "reference165 suffix Omega",
+      "equal": true
+    },
+    {
+      "label": "reference165 suffix lambda Omega",
+      "equal": true
+    },
+    {
+      "label": "pair_packet suffix Omega",
+      "equal": true
+    },
+    {
+      "label": "pair_packet suffix lambda Omega",
+      "equal": true
+    },
+    {
+      "label": "actual_parser_return suffix Omega",
+      "equal": true
+    },
+    {
+      "label": "actual_parser_return suffix lambda Omega",
+      "equal": true
+    },
+    {
+      "label": "embedded_reference suffix Omega",
+      "equal": true
+    },
+    {
+      "label": "embedded_reference suffix lambda Omega",
+      "equal": true
+    },
+    {
+      "label": "size-growing affine contraction",
+      "equal": true
+    }
+  ],
+  "seconds": 16.15280391700071,
+  "actual_NEXT_head": {
+    "lambdas": 2,
+    "head_index": 0,
+    "arguments": 2
+  },
+  "affine_growth_sizes": [
+    59,
+    61
+  ],
+  "status": "Finite identities and measurements only; no general lower bound machine-checked."
+}

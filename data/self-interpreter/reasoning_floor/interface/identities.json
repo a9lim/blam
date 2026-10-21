@@ -1,0 +1,311 @@
+{
+  "checks": [
+    {
+      "name": "raw variable / I-variable collision n=1",
+      "equal": true,
+      "left": "\\N.(\\e.((\\u.(\\a.a)) e) (((\\h.h ((\\a\\b.a)) (N))) e))",
+      "right": "\\N.(\\h.h ((\\a\\b.a)) (N))",
+      "left_nf": "00000101100000110110",
+      "right_nf": "00000101100000110110"
+    },
+    {
+      "name": "raw variable / I-variable collision n=2",
+      "equal": true,
+      "left": "\\N.(\\e.((\\u.(\\a.a)) e) (((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N))))) e))",
+      "right": "\\N.(\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N))))",
+      "left_nf": "00000101100000100001011000001101110",
+      "right_nf": "00000101100000100001011000001101110"
+    },
+    {
+      "name": "raw variable / I-variable collision n=5",
+      "equal": true,
+      "left": "\\N.(\\e.((\\u.(\\a.a)) e) (((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N))))))))))) e))",
+      "right": "\\N.(\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N))))))))))",
+      "left_nf": "00000101100000100001011000001000010110000010000101100000100001011000001101111110",
+      "right_nf": "00000101100000100001011000001000010110000010000101100000100001011000001101111110"
+    },
+    {
+      "name": "same parent continuation, variable",
+      "equal": true,
+      "left": "\\C\\N.(\\v.C (\\e\\a.(v) (\\b\\r.b a (r e)))) ((\\h.h ((\\a\\b.a)) (N))) N",
+      "right": "\\C\\N.C (\\z.(\\a.a)) N",
+      "left_nf": "0000010111000001010",
+      "right_nf": "0000010111000001010"
+    },
+    {
+      "name": "same parent continuation, I-variable",
+      "equal": true,
+      "left": "\\C\\N.(\\v.C (\\e\\a.(v) (\\b\\r.b a (r e)))) (\\e.((\\u.(\\a.a)) e) (((\\h.h ((\\a\\b.a)) (N))) e)) N",
+      "right": "\\C\\N.C (\\z.(\\a.a)) N",
+      "left_nf": "0000010111000001010",
+      "right_nf": "0000010111000001010"
+    },
+    {
+      "name": "trailing argument cannot disappear",
+      "equal": false,
+      "left": "\\C\\N\\T.(\\v.C (\\e\\a.(v) (\\b\\r.b a (r e)))) ((\\h.h ((\\a\\b.a)) (N))) N T",
+      "right": "\\C\\N\\T.C (\\z.(\\a.a)) N",
+      "left_nf": "000000010101111000001011010",
+      "right_nf": "00000001011110000010110"
+    },
+    {
+      "name": "thunked tail is not the tail at rigid C",
+      "equal": false,
+      "left": "\\C\\N.C (\\z.(\\a.a)) (\\u.N)",
+      "right": "\\C\\N.C (\\z.(\\a.a)) N",
+      "left_nf": "0000010111000001000110",
+      "right_nf": "0000010111000001010"
+    },
+    {
+      "name": "arbitrary forcing operand",
+      "equal": true,
+      "left": "\\N\\Q.(\\u.N) Q",
+      "right": "\\N\\Q.N",
+      "left_nf": "0000110",
+      "right_nf": "0000110"
+    },
+    {
+      "name": "third-operand reader variable n=1",
+      "equal": true,
+      "left": "\\c\\j\\N.(\\s.s (\\b\\r.b r (\\u.c r (r r))) j) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N)))))",
+      "right": "\\c\\j\\N.c ((\\h.h ((\\a\\b.a)) (N))) (\\u.N)",
+      "left_nf": "0000000101111000010110000011011000110",
+      "right_nf": "0000000101111000010110000011011000110"
+    },
+    {
+      "name": "delayed-drop thunk reader variable n=1",
+      "equal": true,
+      "left": "\\c\\j\\N.(\\s.s (\\b.b (\\r.r j) c) (s s)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N)))))",
+      "right": "\\c\\j\\N.c ((\\h.h ((\\a\\b.a)) (N))) (\\u.N)",
+      "left_nf": "0000000101111000010110000011011000110",
+      "right_nf": "0000000101111000010110000011011000110"
+    },
+    {
+      "name": "third-operand reader variable n=2",
+      "equal": true,
+      "left": "\\c\\j\\N.(\\s.s (\\b\\r.b r (\\u.c r (r r))) j) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N)))))))",
+      "right": "\\c\\j\\N.c ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N))))) (\\u.N)",
+      "left_nf": "0000000101111000010110000010000101100000110111000110",
+      "right_nf": "0000000101111000010110000010000101100000110111000110"
+    },
+    {
+      "name": "delayed-drop thunk reader variable n=2",
+      "equal": true,
+      "left": "\\c\\j\\N.(\\s.s (\\b.b (\\r.r j) c) (s s)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N)))))))",
+      "right": "\\c\\j\\N.c ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N))))) (\\u.N)",
+      "left_nf": "0000000101111000010110000010000101100000110111000110",
+      "right_nf": "0000000101111000010110000010000101100000110111000110"
+    },
+    {
+      "name": "third-operand reader variable n=5",
+      "equal": true,
+      "left": "\\c\\j\\N.(\\s.s (\\b\\r.b r (\\u.c r (r r))) j) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N)))))))))))))",
+      "right": "\\c\\j\\N.c ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N))))))))))) (\\u.N)",
+      "left_nf": "0000000101111000010110000010000101100000100001011000001000010110000010000101100000110111111000110",
+      "right_nf": "0000000101111000010110000010000101100000100001011000001000010110000010000101100000110111111000110"
+    },
+    {
+      "name": "delayed-drop thunk reader variable n=5",
+      "equal": true,
+      "left": "\\c\\j\\N.(\\s.s (\\b.b (\\r.r j) c) (s s)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N)))))))))))))",
+      "right": "\\c\\j\\N.c ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N))))))))))) (\\u.N)",
+      "left_nf": "0000000101111000010110000010000101100000100001011000001000010110000010000101100000110111111000110",
+      "right_nf": "0000000101111000010110000010000101100000100001011000001000010110000010000101100000110111111000110"
+    },
+    {
+      "name": "third-operand reader abs",
+      "equal": true,
+      "left": "\\c\\j\\t.(\\s.s (\\b\\r.b r (\\u.c r (r r))) j) ((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.a)) (t)))))",
+      "right": "\\c\\j\\t.j (\\a\\b.a) t",
+      "left_nf": "0000000101110000011010",
+      "right_nf": "0000000101110000011010"
+    },
+    {
+      "name": "delayed-drop reader abs",
+      "equal": true,
+      "left": "\\c\\j\\t.(\\s.s (\\b.b (\\r.r j) c) (s s s)) ((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.a)) (t)))))",
+      "right": "\\c\\j\\t.j (\\a\\b.a) t ((\\h.h ((\\a\\b.a)) (t)))",
+      "left_nf": "000000010101110000011010000101100000110110",
+      "right_nf": "000000010101110000011010000101100000110110"
+    },
+    {
+      "name": "delayed-drop thunk reader abs",
+      "equal": true,
+      "left": "\\c\\j\\t.(\\s.s (\\b.b (\\r.r j) c) (s s)) ((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.a)) (t)))))",
+      "right": "\\c\\j\\t.j (\\a\\b.a) t (\\u.((\\h.h ((\\a\\b.a)) (t))))",
+      "left_nf": "000000010101110000011010000001011000001101110",
+      "right_nf": "000000010101110000011010000001011000001101110"
+    },
+    {
+      "name": "root NEXT entry abs",
+      "equal": true,
+      "left": "\\j\\t.((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.a)) (t))))) (\\zero\\q.q j)",
+      "right": "\\j\\t.j (\\a\\b.a) t",
+      "left_nf": "00000101110000011010",
+      "right_nf": "00000101110000011010"
+    },
+    {
+      "name": "third-operand reader app",
+      "equal": true,
+      "left": "\\c\\j\\t.(\\s.s (\\b\\r.b r (\\u.c r (r r))) j) ((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.b)) (t)))))",
+      "right": "\\c\\j\\t.j (\\a\\b.b) t",
+      "left_nf": "000000010111000001010",
+      "right_nf": "000000010111000001010"
+    },
+    {
+      "name": "delayed-drop reader app",
+      "equal": true,
+      "left": "\\c\\j\\t.(\\s.s (\\b.b (\\r.r j) c) (s s s)) ((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.b)) (t)))))",
+      "right": "\\c\\j\\t.j (\\a\\b.b) t ((\\h.h ((\\a\\b.b)) (t)))",
+      "left_nf": "0000000101011100000101000010110000010110",
+      "right_nf": "0000000101011100000101000010110000010110"
+    },
+    {
+      "name": "delayed-drop thunk reader app",
+      "equal": true,
+      "left": "\\c\\j\\t.(\\s.s (\\b.b (\\r.r j) c) (s s)) ((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.b)) (t)))))",
+      "right": "\\c\\j\\t.j (\\a\\b.b) t (\\u.((\\h.h ((\\a\\b.b)) (t))))",
+      "left_nf": "0000000101011100000101000000101100000101110",
+      "right_nf": "0000000101011100000101000000101100000101110"
+    },
+    {
+      "name": "root NEXT entry app",
+      "equal": true,
+      "left": "\\j\\t.((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.b)) (t))))) (\\zero\\q.q j)",
+      "right": "\\j\\t.j (\\a\\b.b) t",
+      "left_nf": "0000010111000001010",
+      "right_nf": "0000010111000001010"
+    },
+    {
+      "name": "function environment lookup zero",
+      "equal": true,
+      "left": "\\a\\e\\N.(\\s.s (\\b.b (\\u.a) e)) ((\\h.h ((\\a\\b.a)) (N)))",
+      "right": "\\a\\e\\N.a",
+      "left_nf": "0000001110",
+      "right_nf": "0000001110"
+    },
+    {
+      "name": "function environment lookup successor",
+      "equal": true,
+      "left": "\\a\\e\\r.(\\s.s (\\b.b (\\u.a) e)) ((\\h.h ((\\a\\b.b)) (r)))",
+      "right": "\\a\\e\\r.e r",
+      "left_nf": "0000000111010",
+      "right_nf": "0000000111010"
+    },
+    {
+      "name": "force erases a carried mode",
+      "equal": true,
+      "left": "\\R\\Q1\\Q2.(\\u.R) Q1",
+      "right": "\\R\\Q1\\Q2.(\\u.R) Q2",
+      "left_nf": "0000001110",
+      "right_nf": "0000001110"
+    },
+    {
+      "name": "same parsed child does not determine the constructor",
+      "equal": false,
+      "left": "\\C\\N.C (\\z\\x.(\\a.a)) ((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.a)) ((\\h.h ((\\a\\b.b)) ((\\h.h ((\\a\\b.a)) (N)))))))))",
+      "right": "\\C\\N.C (\\z.(\\a.a)) N",
+      "left_nf": "000001011100000001000010110000011000010110000011000010110000010000101100000110111110",
+      "right_nf": "0000010111000001010"
+    }
+  ],
+  "module_costs": {
+    "third_variable_force": 27,
+    "third_variable_thunk": 23,
+    "thunk_return_adapter": 21,
+    "ordinary_second_parse": 37,
+    "thunk_second_parse": 50
+  },
+  "suffix_checks": [
+    {
+      "name": "delayed_drop",
+      "program": "omega",
+      "exact_tail": true
+    },
+    {
+      "name": "delayed_drop",
+      "program": "lambda_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "delayed_drop",
+      "program": "omega_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "third_operand_thunk",
+      "program": "omega",
+      "exact_tail": true
+    },
+    {
+      "name": "third_operand_thunk",
+      "program": "lambda_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "third_operand_thunk",
+      "program": "omega_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "delayed_drop_thunk",
+      "program": "omega",
+      "exact_tail": true
+    },
+    {
+      "name": "delayed_drop_thunk",
+      "program": "lambda_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "delayed_drop_thunk",
+      "program": "omega_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "thunk_input_output",
+      "program": "omega",
+      "exact_tail": true
+    },
+    {
+      "name": "thunk_input_output",
+      "program": "lambda_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "thunk_input_output",
+      "program": "omega_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "delayed_drop_function_env",
+      "program": "omega",
+      "exact_tail": true
+    },
+    {
+      "name": "delayed_drop_function_env",
+      "program": "lambda_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "delayed_drop_function_env",
+      "program": "omega_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "root_next_thunk",
+      "program": "omega",
+      "exact_tail": true
+    },
+    {
+      "name": "root_next_thunk",
+      "program": "lambda_omega",
+      "exact_tail": true
+    },
+    {
+      "name": "root_next_thunk",
+      "program": "omega_omega",
+      "exact_tail": true
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 These results concern the repository's actual closed-source, beta-exact
 contract. They do not assume a parser architecture, an environment
 representation, or correctness on open source programs. They do not prove
-165-bit optimality. The constructions in `normal.md` and `typed-normal.md`
+162-bit optimality. The constructions in `normal.md` and `typed-normal.md`
 also show why several plausible qualitative restrictions are false.
 
 ## At least two nonlinear binders
@@ -77,7 +77,7 @@ not an application; abstraction-rooted interpreters then need four
 abstractions (27 bits), and minimal application-rooted ones below 27 bits
 are classified and refuted by finite head reduction. The proof uses
 `Classical.choice`. A literal `λc s.B` costs at least 31 there. These are
-small numeric consequences, not approximations to a 165-bit bound; the
+small numeric consequences, not approximations to a 162-bit bound; the
 handwritten floor is 37 (`global-floor.md`).
 
 The nonlinear count is sharp, even among beta-normal interpreters.

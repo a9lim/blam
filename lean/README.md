@@ -23,6 +23,11 @@ theorem selfint_contract165 : Closed M →
                                                          -- propext, Quot.sound
 theorem not_selfintSizeBound_166 : ¬ SelfintSizeBound 166
                                                          -- propext, Quot.sound
+theorem selfint_contract162 : Closed M →
+    Betas (intL162 C (streamOf (blcCode M) N)) (C (λ M) N)
+                                                         -- propext, Quot.sound
+theorem not_selfintSizeBound_163 : ¬ SelfintSizeBound 163
+                                                         -- propext, Quot.sound
 theorem selfintSizeBound_27 : SelfintSizeBound 27
                                     -- propext, Classical.choice, Quot.sound
 ```
@@ -30,9 +35,9 @@ theorem selfintSizeBound_27 : SelfintSizeBound 27
 The 32-bit term that the reference busy-beaver ledger excludes by hand has no
 normal form under arbitrary β-reduction. Palmer's 168-bit `intL` (pinned to its
 wire by `wire_intL`) is a self-interpreter: for every closed `M` and any terms
-`C`, `N`, `intL C (⌜M⌝ ++ N)` β-reduces to `C (λz. M) N`. So is the 165-bit
-`intL165` (`wire_intL165`), so no self-interpreter size bound above 165
-holds. The **general bridge** holds for
+`C`, `N`, `intL C (⌜M⌝ ++ N)` β-reduces to `C (λz. M) N`. So are the 165-bit
+`intL165` (`wire_intL165`) and the 162-bit `intL162` (`wire_intL162`), so no
+self-interpreter size bound above 162 holds. The **general bridge** holds for
 every term, so any head-divergence certificate concludes no-normal-form with
 no side conditions. The **class assemblies** turn certificate *data* into that
 conclusion mechanically, and the **rigid-head argument bridge** lifts a spine
@@ -199,8 +204,16 @@ Self-interpretation:
   and every run that does not name the parser are the 168's; eight runs are
   new. It proves `Parses intL165`, hence `selfint_contract165`,
   `selfint_open165`, `parserStatement165`, `isSelfInterpreter_intL165`, and
-  `not_selfintSizeBound_166` (the upper-bound half of optimality; the lower
-  bound `SelfintSizeBound 165` is stated, open).
+  `not_selfintSizeBound_166`.
+- `Blc/Selfint162.lean` — the 162-bit interpreter: the 165's knot and NEXT
+  around the reader `list I V NEXT`, pinned to its wire (`wire_intL162`).
+  New reader runs; NEXT, ABS and APP reuse the 168's machinery. Its variable
+  residual `s s NEXT` names the continuation, so the parser statement puts
+  the residual inside the continuation quantifier, and
+  `not_parses_intL162` proves the uniform `Parses` fails. It proves
+  `selfint_contract162`, `isSelfInterpreter_intL162` and
+  `not_selfintSizeBound_163` (the upper-bound half of optimality; the lower
+  bound `SelfintSizeBound 162` is stated, open).
 - `Blc/SelfintLowerBound.lean` — every term with at most one syntactically
   nonlinear binder weakly normalizes. Consequently every self-interpreter
   has at least two, and an explicit `λc s.B` has two inside `B`. A syntax

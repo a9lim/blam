@@ -16,16 +16,20 @@ F = \x. (\intL. B) (x x)
 ```
 
 where `B` is a parser body `\cont. …` whose only free variable is `intL`, used
-twice. Around the 165's body (143 bits, `interpreter.md`) they are **175** and
-**187** bits (`data/self-interpreter/machines/uni175.lam`, `uni187.lam`);
-around the 168's body (146 bits) they are Tromp's 178 and 190. *Strict* means,
-in BLC.tex's words, that "any attempt to apply free indices diverges", so the
-machine forces closed programs; the strict wiring gets this from an Ω base
-environment, which the 165's reader leaves untouched, since it changes only how
-the code is read. **No machine below 175, and no strict machine below 187, is
-known.** This record states what has been searched; the self-interpreter's own
-record is `interpreter.md`. Most of the searches below were run around the
-168's body, so their bounds are 178 and 190; §1 and §2 say which.
+twice. Around the 162's body (140 bits, `interpreter.md`) they are **172** and
+**184** bits (`data/self-interpreter/machines/uni172.lam`, `uni184.lam`; both
+pass the battery, the 184 all seven strictness probes, and `blam golf letopt`
+finds no smaller rendering of either); around the 165's body (143 bits) they
+are 175 and 187 (`uni175.lam`, `uni187.lam`), and around the 168's (146 bits)
+Tromp's 178 and 190. *Strict* means, in BLC.tex's words, that "any attempt to
+apply free indices diverges", so the machine forces closed programs; the
+strict wiring gets this from an Ω base environment, which the 162's and the
+165's readers leave untouched, since they change only how the code is read.
+**No machine below 172, and no strict machine below 184, is known.** This
+record states what has been searched; the self-interpreter's own record is
+`interpreter.md`. Most of the searches below were run around the 168's body,
+so their bounds are 178 and 190, and the rest around the 165's; §1 and §2 say
+which. None has yet been run around the 162's body.
 
 U's contract leaves the output boundary to the machine: there is no `λz` and
 no external `C`. So a protocol that lost for the self-interpreter only at

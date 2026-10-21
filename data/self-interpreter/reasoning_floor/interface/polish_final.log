@@ -1,0 +1,18 @@
+/Users/a9lim/Work/blam/tmp/overnight/interface/delayed_drop.lam: 183 bits  ok=667 skip=1 fail=0  /Users/a9lim/Work/blam/tmp/overnight/interface/delayed_drop.lam
+  letopt --max-cuts 2: smallest 181
+181 bits  ok=667 skip=1 fail=0  delayed_drop.best.lam
+/Users/a9lim/Work/blam/tmp/overnight/interface/third_operand_thunk.lam: 209 bits  ok=667 skip=1 fail=0  /Users/a9lim/Work/blam/tmp/overnight/interface/third_operand_thunk.lam
+  letopt --max-cuts 2: smallest 202
+202 bits  ok=667 skip=1 fail=0  third_operand_thunk.best.lam
+/Users/a9lim/Work/blam/tmp/overnight/interface/delayed_drop_thunk.lam: 220 bits  ok=667 skip=1 fail=0  /Users/a9lim/Work/blam/tmp/overnight/interface/delayed_drop_thunk.lam
+  letopt --max-cuts 2: smallest 213
+213 bits  ok=667 skip=1 fail=0  delayed_drop_thunk.best.lam
+/Users/a9lim/Work/blam/tmp/overnight/interface/thunk_input_output.lam: 234 bits  ok=667 skip=1 fail=0  /Users/a9lim/Work/blam/tmp/overnight/interface/thunk_input_output.lam
+  letopt --max-cuts 2: smallest 223
+223 bits  ok=667 skip=1 fail=0  thunk_input_output.best.lam
+/Users/a9lim/Work/blam/tmp/overnight/interface/delayed_drop_function_env.lam: 199 bits  ok=667 skip=1 fail=0  /Users/a9lim/Work/blam/tmp/overnight/interface/delayed_drop_function_env.lam
+  letopt --max-cuts 2: smallest 197
+197 bits  ok=667 skip=1 fail=0  delayed_drop_function_env.best.lam
+/Users/a9lim/Work/blam/tmp/overnight/interface/root_next_thunk.lam: 240 bits  ok=667 skip=1 fail=0  /Users/a9lim/Work/blam/tmp/overnight/interface/root_next_thunk.lam
+  letopt --max-cuts 2: smallest 240
+240 bits  ok=667 skip=1 fail=0  root_next_thunk.best.lam

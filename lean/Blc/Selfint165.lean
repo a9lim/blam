@@ -377,7 +377,7 @@ theorem isSelfInterpreter_intL165 : IsSelfInterpreter intL165 :=
 theorem intL165_length : (blcCode intL165).length = 165 := by
   rw [wire_intL165]; exact intL165_size
 
-/-- No bound above 165 holds: optimality is `SelfintSizeBound 165`. -/
+/-- No bound above 165 holds; `Selfint162` lowers this to 162. -/
 theorem not_selfintSizeBound_166 : ¬ SelfintSizeBound 166 := by
   intro h
   have := h intL165 isSelfInterpreter_intL165

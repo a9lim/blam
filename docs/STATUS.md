@@ -144,14 +144,37 @@ with all features (three opt-in tests ignored) and 328 with default features.
 
 ### Self-interpreter and universal machine
 
-- **The 165** (`classical/self-interpreter/interpreter.md`,
+- **The 162** (`classical/self-interpreter/interpreter.md`,
+  `data/self-interpreter/machines/int162.lam`): the 165's knot and NEXT
+  around a new reader `list I V NEXT` (L 16, A 24, X 32). `list I` makes the
+  first cell its own selection, so on a 0-tag the zero arm is the tail itself
+  applied to NEXT, the reader's last operand; on a variable
+  `V = λu. list (λq. cont) (list list u)` reopens the stream, hands the tail
+  to `cont`, and erases NEXT as the skip's junk operand. The `next` let goes
+  and the reader drops from 43 bits to 40, against +4 for NEXT one binder
+  deeper. The 44-bit reader is Codex's, built while refuting a
+  reader-optimality proof; NEXT as a reader operand is Grok's idea; `blam golf
+  letopt` inlined NEXT into the operand slot of the resulting 166. Lean
+  proves it correct for every closed program (`selfint_contract162`,
+  `isSelfInterpreter_intL162`, `not_selfintSizeBound_163`); its variable
+  residual names the continuation, so the parser statement is per
+  continuation (`not_parses_intL162`). An independent adversarial review
+  re-derived the contract and the size. Battery 667/1/0, and 3,341/2/0
+  through 21 bits; exact suffixes on divergent sources. Its let structure is
+  the unique minimum to three cuts, and its βη component to slack 24
+  (12,024,847 terms) and contextual component to slack 18 hold nothing
+  smaller (`data/self-interpreter/letopt_162.log`, `component_162_*.log`).
+  The 165's reader-shape searches and conditional bounds below do not reach
+  the 162's reader: as a two-operand reader its last operand is the bare
+  `next`, a family they left open.
+- **The 165**, the previous record (`classical/self-interpreter/interpreter.md`,
   `data/self-interpreter/machines/int165.lam`), Codex's design: Palmer's 168
   with a reader that computes the skip `list list list` once on the whole
   stream, where it is right for both dispatch arms, and lets the Scott list
   hand `list1` to the variable arm, which becomes `cont` itself (L 17, A 25,
   X 29). Lean proves it, and the 168, correct for every closed program as a
-  β-reduction (`selfint_contract165`, `selfint_contract`). No verified
-  sub-165 has been found in the tested neighbourhoods: let structure to
+  β-reduction (`selfint_contract165`, `selfint_contract`). Nothing smaller
+  appears in its tested neighbourhoods: let structure to
   three cuts (unique minimum), βη component to +20 (2,183,051 terms) and
   contextual to +16, every reader slot
   singly and handler × skip jointly through 164-bit interpreters (32,366,372
@@ -205,10 +228,9 @@ with all features (three opt-in tests ignored) and 328 with default features.
   values, with raw quotation data borrowable (not yet independently
   reviewed). The reasoning consults in
   `data/self-interpreter/reasoning_floor/` built about forty further
-  correct interpreters of 166–220 bits, the smallest new shape a 168 that
-  passes NEXT as the reader's third operand; none goes below 165 at its
-  optimal let structure, and letopt only shrinks recorded variants (the
-  spine3 repair 178→174, tag replay 189→186 and 199→194).
+  correct interpreters of 166–220 bits besides the 162 and the 166 it was
+  polished from; letopt also shrinks recorded variants (the spine3 repair
+  178→174, tag replay 189→186 and 199→194).
 - **Unconditional structure** (`classical/self-interpreter/structural-bounds.md`):
   Lean proves that every interpreter has at least two syntactically
   nonlinear binders, and that an explicit `λc s.B` needs two inside `B`.
@@ -421,8 +443,11 @@ with all features (three opt-in tests ignored) and 328 with default features.
   maps outweigh the sharing. Except for the unconditional non-idempotence
   and its generator corollary, these are protocol-specific handwritten proofs.
 - **The universal machine** (`classical/self-interpreter/universal.md`):
-  Tromp's wirings around the 165's body give 175 (non-strict) and 187
-  (strict), against 178 and 190 around the 168's. Wirings around the new body
+  Tromp's wirings around the 162's body give 172 (non-strict) and 184
+  (strict; all seven strictness probes), around the 165's 175 and 187, and
+  around the 168's 178 and 190 (`machines/uni172.lam`, `uni184.lam`); letopt
+  finds no smaller rendering of 172 or 184, and no wiring search has run
+  around the 162's body yet. Wirings around the 165's body
   give no non-strict machine below 175 (14,856,126 contexts, 68,017 capped,
   16,144 of those certified divergent); around the old body no non-strict
   machine below 178 and no strict one below 185, conditional on 3,961 and
@@ -512,19 +537,21 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
 8. **Discrete Solomonoff induction:** measure Church bit-list decode coverage
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
-9. **The self-interpreter below 165** (`classical/self-interpreter/interpreter.md`
-   §7). Constructive: a protocol change at an interface NEXT shares with
-   the rest (the `r next` handoff, the value and continuation protocols),
-   the knot × NEXT coupling through the reader's diagonal, and the capped
-   fills of the reader searches; NEXT-internal fusions and second-bit
-   dispatch placements are catalogued and lose. Look for another shared
-   computation of the kind the reader is, by reasoning first. Proof: the
-   floor is 37 handwritten and 27 kernel-checked; the next steps are an
-   application-sensitive charge for residual control (`remainder.md`),
-   which no structural count supplies, and a formalization of residual
-   tracing that would mechanize the conditional reader and NEXT bounds.
-   Upstreaming the 165, 175 and 187 to tromp/AIT is a9's call
-   (`contrib/PR_KIT.md`).
+9. **The self-interpreter below 162** (`classical/self-interpreter/interpreter.md`
+   §7). Constructive: the 162's own architecture is new and its
+   neighbourhood beyond letopt and the βη components is unexplored; readers with the bare `next` operand
+   and other heads, the knot × NEXT coupling through the reader's diagonal,
+   and wiring searches for U around the 162's body. NEXT-internal fusions and
+   second-bit dispatch placements are catalogued and lose; NEXT optimality
+   alone is as hard as a 48-bit global floor (any interpreter embeds into
+   the NEXT slot at +44 bits). Look for another shared computation of the
+   kind the readers are, by reasoning first. Proof: the floor is 37
+   handwritten and 27 kernel-checked; the next steps are an
+   application-sensitive charge for residual control (`remainder.md`), which
+   no structural count supplies, and a formalization of residual tracing.
+   Carrying the 162's reader into int4, ko2kp, nf and pairup_Kp on the
+   fork's golf branch, and upstreaming the 162, 172 and 184 to tromp/AIT,
+   are a9's call (`contrib/PR_KIT.md` still describes the 165).
 10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the
    open global-allocator decision) would remove most of malloc/free and the

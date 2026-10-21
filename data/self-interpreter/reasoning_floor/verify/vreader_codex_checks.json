@@ -1,0 +1,180 @@
+{
+  "standard": {
+    "bits": 43,
+    "LAX": [
+      3,
+      7,
+      7
+    ],
+    "laws": "zero and n=1..64 pass",
+    "source_redex_deltas": [],
+    "n_P_origin": "stream@B.f.f.b",
+    "n_N_origin": "B",
+    "output_origin_also_consumed": false
+  },
+  "second_cell": {
+    "bits": 52,
+    "LAX": [
+      4,
+      8,
+      10
+    ],
+    "laws": "zero and n=1..64 pass",
+    "source_redex_deltas": [],
+    "n_P_origin": "stream@B.a.b.a.b.f.f.b",
+    "n_N_origin": "B.a.b.a.b",
+    "output_origin_also_consumed": false
+  },
+  "copied_app_reader": {
+    "bits": 90,
+    "LAX": [
+      7,
+      13,
+      22
+    ],
+    "laws": "zero and n=1..64 pass",
+    "source_redex_deltas": [
+      [
+        "B",
+        -1
+      ]
+    ],
+    "n_P_origin": "B.a.b.b",
+    "n_N_origin": "B.a.b.b",
+    "output_origin_also_consumed": false
+  },
+  "copied_app_nonshrinking": {
+    "bits": 98,
+    "LAX": [
+      7,
+      15,
+      22
+    ],
+    "laws": "zero and n=1..64 pass",
+    "source_redex_deltas": [
+      [
+        "B",
+        17
+      ]
+    ],
+    "n_P_origin": "B.a.b.b",
+    "n_N_origin": "B.a.b.b",
+    "output_origin_also_consumed": true
+  },
+  "rebuilt_tail": {
+    "bits": 53,
+    "LAX": [
+      3,
+      9,
+      9
+    ],
+    "laws": "zero and n=1..64 pass",
+    "source_redex_deltas": [],
+    "n_P_origin": "B.a.b.b.a.f",
+    "n_N_origin": "B.a.b.b.a",
+    "output_origin_also_consumed": false,
+    "tail_root_origin": "B.a.b.b.a.f.a",
+    "tail_body_application_origins": [
+      "stream@B.f.b.a.b",
+      "stream@B.f.b.a.b.f"
+    ]
+  },
+  "alpha_dual_operand": {
+    "bits": 59,
+    "LAX": [
+      5,
+      10,
+      7
+    ],
+    "laws": "zero and n=1..64 pass",
+    "source_redex_deltas": [],
+    "n_P_origin": "stream@B.f.f.b",
+    "n_N_origin": "B",
+    "output_origin_also_consumed": false
+  },
+  "walker_reader": {
+    "bits": 95,
+    "LAX": [
+      9,
+      15,
+      15
+    ],
+    "laws": "zero and n=1..64 pass",
+    "source_redex_deltas": [],
+    "n_P_origin": "stream@B.f.f.b",
+    "n_N_origin": "B",
+    "output_origin_also_consumed": false
+  },
+  "walker_reader_shared": {
+    "bits": 76,
+    "LAX": [
+      7,
+      12,
+      12
+    ],
+    "laws": "zero and n=1..64 pass",
+    "source_redex_deltas": [
+      [
+        "B.a",
+        19
+      ]
+    ],
+    "n_P_origin": "stream@B.f.f.b",
+    "n_N_origin": "B",
+    "output_origin_also_consumed": false
+  },
+  "copied_app_small": {
+    "bits": 39,
+    "nf_bits": 13,
+    "source_redex_deltas": [
+      [
+        "B",
+        0
+      ]
+    ],
+    "normal_form": "next cont s",
+    "two_output_applications_origin": "B.a.b.b"
+  },
+  "deep_leaf_let": {
+    "bits": 30,
+    "nf_bits": 32,
+    "source_redex_deltas": [
+      [
+        "B.b.b",
+        2
+      ]
+    ],
+    "normal_form": "\\p\\q.s s s s s"
+  },
+  "two_free_hoist": {
+    "bits": 39,
+    "nf_bits": 41,
+    "source_redex_deltas": [
+      [
+        "B",
+        2
+      ]
+    ],
+    "normal_form": "\\p\\q\\r\\s\\t\\u\\v\\w.next cont"
+  },
+  "last_cell_I": {
+    "P0_I_is_K_N": true,
+    "P0_((P1_K)_s)_s_is_N": true
+  },
+  "created_cell_step": {
+    "normal_form": "beta beta tau tau",
+    "redex_origins": [
+      [
+        "stream@B.f.b.f",
+        "stream@B.a"
+      ]
+    ],
+    "source_bits": 6
+  },
+  "dual_operand": {
+    "s_F_bits": 10,
+    "sss_bits": 10,
+    "s_F_zero_R_var_tail": true
+  },
+  "seconds": 9.835
+}

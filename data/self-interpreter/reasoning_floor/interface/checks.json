@@ -1,0 +1,44 @@
+[
+  {
+    "name": "delayed_drop",
+    "source_bits": 183,
+    "best_bits": 181,
+    "best_battery": "181 bits  ok=667 skip=1 fail=0  delayed_drop.best.lam",
+    "seconds": 2.0284241249974
+  },
+  {
+    "name": "third_operand_thunk",
+    "source_bits": 209,
+    "best_bits": 202,
+    "best_battery": "202 bits  ok=667 skip=1 fail=0  third_operand_thunk.best.lam",
+    "seconds": 1.9853833750021295
+  },
+  {
+    "name": "delayed_drop_thunk",
+    "source_bits": 220,
+    "best_bits": 213,
+    "best_battery": "213 bits  ok=667 skip=1 fail=0  delayed_drop_thunk.best.lam",
+    "seconds": 2.1018722079970757
+  },
+  {
+    "name": "thunk_input_output",
+    "source_bits": 234,
+    "best_bits": 223,
+    "best_battery": "223 bits  ok=667 skip=1 fail=0  thunk_input_output.best.lam",
+    "seconds": 2.187083500000881
+  },
+  {
+    "name": "delayed_drop_function_env",
+    "source_bits": 199,
+    "best_bits": 197,
+    "best_battery": "197 bits  ok=667 skip=1 fail=0  delayed_drop_function_env.best.lam",
+    "seconds": 2.031014457999845
+  },
+  {
+    "name": "root_next_thunk",
+    "source_bits": 240,
+    "best_bits": 240,
+    "best_battery": "240 bits  ok=667 skip=1 fail=0  root_next_thunk.best.lam",
+    "seconds": 4.318026042004931
+  }
+]

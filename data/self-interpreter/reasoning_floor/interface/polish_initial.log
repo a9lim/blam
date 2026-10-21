@@ -1,0 +1,12 @@
+tmp/overnight/interface/delayed_drop.lam: 183 bits  ok=667 skip=1 fail=0  tmp/overnight/interface/delayed_drop.lam
+  letopt --max-cuts 2: smallest 181
+tmp/overnight/interface/third_operand_thunk.lam: 211 bits  ok=667 skip=1 fail=0  tmp/overnight/interface/third_operand_thunk.lam
+  letopt --max-cuts 2: smallest 204
+tmp/overnight/interface/delayed_drop_thunk.lam: 221 bits  ok=667 skip=1 fail=0  tmp/overnight/interface/delayed_drop_thunk.lam
+  letopt --max-cuts 2: smallest 214
+tmp/overnight/interface/thunk_input_output.lam: 236 bits  ok=667 skip=1 fail=0  tmp/overnight/interface/thunk_input_output.lam
+  letopt --max-cuts 2: smallest 230
+tmp/overnight/interface/delayed_drop_function_env.lam: 199 bits  ok=667 skip=1 fail=0  tmp/overnight/interface/delayed_drop_function_env.lam
+  letopt --max-cuts 2: smallest 197
+tmp/overnight/interface/root_next_thunk.lam: 242 bits  ok=667 skip=1 fail=0  tmp/overnight/interface/root_next_thunk.lam
+  letopt --max-cuts 2: smallest 242

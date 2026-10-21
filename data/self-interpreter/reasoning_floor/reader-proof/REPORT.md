@@ -1,4 +1,64 @@
-# Lane reader-proof: the 165's reader is optimal for every reader shape
+# Lane reader-proof: the 165's reader is optimal — for stream-linear readers
+
+## Status after review 2 [after review 2]
+
+Two independent adversarial reviews (Gemini: "gap", Codex: "error in the
+proof") found no reader body below 43 bits and no second 43-bit reader
+body, and both confirmed the shape (α) arithmetic. Codex refuted several
+steps of the *general* argument: the residual-distinctness lemma for
+copied nodes (Lemma 2.7(ii)) is false under higher-order sharing; a
+non-dispatch stream cell can supply the output node `cont P_{n-1}` (a
+52-bit reader missing from §2.4); rebuilt tails can borrow stream nodes
+(`λh. r h`); a shape (α) sub-bound of 64 is wrong (59-bit witness); the
+leaf-let and forced-depth claims do not follow from T10; and the walker
+inference from a fixed threshold `n > 3|B|` is invalid (finite
+composition). Each is addressed below: repaired where the step can be
+repaired, conceded where it cannot be rescued tonight.
+
+**What I can defend.** Call a reader body `B` **stream-linear** (Class S)
+when (1) `B` is β-normal, and (2) every binder of `B` that occurs more than
+once in its scope is contracted, in the two law reductions, only on stream
+material created by a cell step (a bit `β` or a tail `τ`). Equivalently:
+no node of `B` is ever duplicated in either reduction. The 165's reader is
+in Class S (all its binders are affine), and so are all the natural
+readers with a nonlinear tail (`r r r`-style skips), including every
+witness the reviewers built except the let/sharing/walker ones.
+
+> **Theorem S.** Every stream-linear reader body has `|B| ≥ 43`, and
+> `|B| = 43` only for `s (λb. b (λu r. r next) cont) (s s s)`.
+
+Its proof is Parts 1–2 with the corrections marked `[after review 2]`:
+in Class S nothing of `B` is copied, so the inventory's distinct-origin
+charging is sound without Lemma 2.7; depths are syntactic; there are no
+lets; no lambda of `B` is contracted twice, so the N-source is a
+cell–cell chain (Lemma 2.3(a)) and no walker case is needed; the new
+shape (α′) covers the non-dispatch cell; the corrected Lemma 2.5(iv) and
+the corrected shape (α) sub-bound are used. It remains handwritten, now
+reviewed twice, with every hole either reviewer found closed inside the
+class.
+
+**What remains a conjecture.** For reader bodies outside Class S — lets
+and hoists (non-shrinking redexes exist, e.g. Δ = +17), higher-order
+sharing of one source node across roles, finite compositions, self-passing
+walkers — the inventory is heuristic evidence only: the cheapest such
+readers known are 55 (let), 76 (walker), 98 (shared application), and no
+reader below 43 was found by three independent efforts. The unconditional
+43-bit bound and its uniqueness clause are **not proved** tonight.
+
+### Repairs and concessions, by finding
+
+| finding (Codex §) | status | what changed |
+|---|---|---|
+| 1. Lemma 2.7(ii): one source node `a b` can realize several output roles with different signatures (98-bit valid reader, Δ = +17) | **conceded** for general `B`; **unnecessary** in Class S | Lemma 2.7 replaced by the no-duplication lemma for Class S; general claim withdrawn |
+| 2. Output node `cont P_{n-1}` from a non-dispatch cell (52-bit `s (λb. b (λr. r next) (λr. s (λq. cont) (r r r)))`) | **repaired** | new shape (α′) in §2.4, bound ≥ 51 (51 attained, checked), ≥ 57 when the cell is in an operand |
+| 3. Rebuilt tails borrow stream nodes (`λh. r h`, 9 bits; 53-bit reader) | **repaired** | Lemma 2.5(iv) now: a rebuilt tail is an η-expansion `λh. r h` of a bound tail (≥ 8 + index) or a literal cell `λh. h F' P'` (≥ 12); T7's last sentence qualified; no shape used the old figure in a way that changes a bound |
+| 4. Shape (α) sub-bound 64 vs 59-bit witness; "depth-0 operands have no binders" | **repaired** | sub-case re-counted with the operand's own dispatch: ≥ 58; depth-0 operand paragraph rewritten (`s F`, `s s s` are 10-bit dual operands; a dual *arm-valued* operand costs ≥ 33) |
+| 5. Leaf lets and forced depths are not consequences of T10 (Δ = +2 examples) | **conceded** for general `B`; **moot** in Class S | Lemma 2.7(i) and the forced-depth remark withdrawn; β-normality makes depths syntactic; lets excluded by hypothesis |
+| 6. Walker inference: three contractions do not force a cycle; `n > 3|B|` too small; shared-dispatch flag claim unproved; 37 ≠ 43 | **conceded** as a general argument; **unnecessary** in Class S | in Class S no lambda of `B` is contracted twice, so the chain case (a) is the only case; the walker analysis is kept as a remark on the conjecture, with "for `n` large enough (the copy graph of a fixed `B` is finite)" in place of the threshold; the 37-sum was already removed |
+| 7. T8 omits `I`; §2.1 cell steps can occur at created nodes (`S S`); T9 parity wording; `|K| = 7` | **repaired** | all four corrected in place |
+| Gemini 1–3 (walker 22-bit core, (γ1) `s s` operand, `d` definition) | repaired in review 1 | unchanged; the walker material is now a remark |
+
+---
 
 Lane directory: `tmp/overnight/reader-proof/`. Everything here is new to
 this lane except where a document in `docs/classical/self-interpreter/` or a
@@ -13,33 +73,32 @@ interpreters), each a few seconds, two threads.
 
 ## Summary
 
-**Theorem (handwritten, with checked finite identities).** With the
-165's knot and NEXT region fixed, every reader body `B` in the frame
-`[s, next, cont, intL, x]` satisfying the two reader laws
+**Theorem S (handwritten, with checked finite identities) [after review 2].**
+With the 165's knot and NEXT region fixed, every *stream-linear* reader body
+`B` in the frame `[s, next, cont, intL, x]` — β-normal, with every
+nonlinear binder contracted only on a bit or a tail — satisfying the two
+reader laws
 
     B[cons K R / s]   →*  R next
     B[1ⁿ0 ++ N / s]   →*  cont (1ⁿ⁻¹0 ++ N) N        (n ≥ 1)
 
-with `next, cont, intL, x, R, N` independent and rigid has `|B| ≥ 43`,
-and `|B| = 43` only for the 165's `s (λb. b (λu r. r next) cont) (s s s)`.
-No restriction on `B` is assumed: any arity, any operands (bare `next`,
-bare `cont`, operands with lambdas), bodies with head redexes or any
-internal redexes, bodies whose head is reached only after reduction, and
-both dispatch heads (bit selection and tail dispatch) are covered.
+with `next, cont, intL, x, R, N` independent and rigid has `|B| ≥ 43`, and
+`|B| = 43` only for the 165's `s (λb. b (λu r. r next) cont) (s s s)`.
+Within the class no restriction on arity, operands, dispatch head or
+nesting is made. The unconditional statement (any `B`) is a conjecture;
+see the status section above.
 
 The proof is uniform in the sense the lane asked for: it is driven by what
 the two laws force every reduction to *do* (a structure theorem, Part 1),
 by a decomposition of any body along the head reduction of the symbolic
 stream `λh. h β τ` into dispatch, zero arm, variable arm and operands
 (§2.1), and by an inventory of roles each priced at its cheapest
-realization (§2.2–2.3); the case analysis that remains is over four
+realization (§2.2–2.3); the case analysis that remains is over the
 *shapes* of how stream-created nodes can stand in for nodes of `B`
 (§2.4), not over reader syntax. Shape (α) — the variable output's first
-application is the stream's own node — is where the 165 lives and is
-priced exactly (`41 + 2d`, so 43 at depth 1); the other shapes are ≥ 46.
-Part 3 lists the steps whose rigour is weakest; the least formal is the
-self-passing-walker bound (Lemma 2.3(c)), now a two-case split giving
-≥ 47 for any reader with a lambda walk (cheapest construction 85).
+application is the dispatch cell's own node — is where the 165 lives and
+is priced exactly (`41 + 2d`, so 43 at depth 1); the other shapes are
+≥ 46 (the new (α′) ≥ 51).
 
 ### 1. Complete interpreters built
 
@@ -74,8 +133,8 @@ and each is at or above the bound its shape receives in §2.4.
   streams); `s K` is the uniform bit.
 * Cell–cell chains alternate roles, `P_i P_j → P_{j-1} P_{i-1}`; they end
   in `K N` iff `i = j`, and otherwise in `I` (suffix erased) or in an
-  `N`-headed neutral, according to the parity of `|i − j|` (T9, checked
-  for `i, j ≤ 6`). Application-only trees over copies of one `P_n` and
+  `N`-headed neutral, according to which side reaches index 0 first (T9,
+  checked for `i, j ≤ 6`; corrected after review 2). Application-only trees over copies of one `P_n` and
   rigid leaves normalize only to `P_n`, `K N`, or rigid-headed neutrals
   (checked exhaustively for ≤ 5 leaves).
 * The exact wire-cost change of a β-step, `Δ = (m−1)|Q| + (fl(Q)−1)·D −
@@ -211,16 +270,19 @@ output of `(V_n)` and follow it backwards. The `n+1` cell lambdas
 `P_n, …, P_0` of its copy of the stream enclose it initially; an enclosing
 lambda disappears only when that lambda is contracted. So every reduction
 realizing `(V_n)` contracts (a descendant of) every one of these `n+1`
-cells. The same holds for the copy whose `P_{n-1}` survives intact: its
-`P_n` is contracted.
+cells. If the output's `P_{n-1}` is a stream residual (it need not be, see
+Lemma 2.5(iv) [after review 2]), the same holds for its copy: its `P_n` is
+contracted.
 
 **T8 (the last cell).** The final cell `P_0 = λh. h K N` on the surviving
 path is contracted on some argument `Y`: `P_0 Y → Y K N`. Checked table:
-`P_0 P_0 → Q`; `P_0 F → N`; `P_0 K → K` (erases `N`); `P_0 P_j → I`
-for `j ≥ 1` (erases `N`); `P_0 (rigid neutral)` traps `N` as an argument
-of that neutral forever. Hence **`Y` is `P_0`, `F`, or a descendant of a
-lambda of `B`**. Since the output has `N` as an argument of `cont`, a
-reduct `N X` (head `N`) is also fatal.
+`P_0 P_0 → Q`; `P_0 F → N`; `P_0 I → Q` [after review 2: `I` was
+omitted; `I` is a lambda of `B` or arises as `F X` from stream material];
+`P_0 K → K` (erases `N`); `P_0 P_j → I` for `j ≥ 1` (erases `N`);
+`P_0 (rigid neutral)` traps `N` as an argument of that neutral forever.
+Hence **`Y` is `P_0`, `F`, `I`, or a descendant of a lambda of `B`**.
+Since the output has `N` as an argument of `cont`, a reduct `N X` (head
+`N`) is also fatal.
 
 **T9 (cell–cell chains).** If two cells meet, `P_i P_j`, the chain is
 forced and the two sides alternate roles:
@@ -228,7 +290,8 @@ forced and the two sides alternate roles:
 bottom `P_0 P_0 → Q`, `P_0 P_j → I` (`j ≥ 1`, `N` erased),
 `P_j P_0 → N P_{j-1}` (`j ≥ 1`, `N` trapped as a rigid head, which no
 reduction can turn into an argument). So a meeting with unequal indices is
-fatal (which of the two deaths occurs depends on the parity of `|i−j|`),
+fatal (which of the two deaths occurs depends on which side reaches index
+0 first — `P_2 P_1 →* I` but `P_1 P_0 →* N P_0` [after review 2] —),
 a cell–cell meeting on the surviving path has **equal indices**, and the
 chain then ends in `Q = K N`, which yields `N` only when applied to one
 more argument. (Checked for all `i, j ≤ 6`, `tools/algebra.py`.)
@@ -265,7 +328,11 @@ when its residual is in the output. The stream's own lambdas (`λh`, `K`,
 Fix a minimum reader body `B` (T10), free variables in `{s, next, cont}`
 (T1), and fix reductions `ρ_z : B[Z_R] →* R next` and
 `ρ_v : B[P_n] →* cont P_{n-1} N` for one `n` larger than three times the
-number of nodes of `B`. "A node of `B`" always means a node of the
+number of nodes of `B` (in Class S this exceeds the number of cell
+openings that lambdas of `B` can cause, see Lemma 2.3; outside Class S
+"large enough" must depend on the finite copy graph of `B` [after review
+2]). **From here on `B` is assumed stream-linear (Class S)** unless a
+remark says otherwise. "A node of `B`" always means a node of the
 original syntax of `B`; the stream copies substituted for the `s`-leaves
 are *stream material*, not nodes of `B`.
 
@@ -276,8 +343,11 @@ Head-reduce `B[S]` (T3). The head steps are of two kinds:
 * a **cell step** `S Y A⃗ → Y β τ A⃗`: the head is a copy of `S`, i.e. the
   residual of a leaf of `B` that is `s` or is a bound variable whose binder
   was contracted on a copy of `S`; the redex node is an application node
-  of `B`. The step creates two new application nodes, `(Y β)` and
-  `((Y β) τ)`, and two new leaves `β, τ` — **stream material**;
+  of `B` *or* a created node (`S S → S β τ → β β τ τ` contracts the second
+  cell at the created node `(h β)` [after review 2]); the *first* cell
+  step's node is the head node of `B`. The step creates two new
+  application nodes, `(Y β)` and `((Y β) τ)`, and two new leaves `β, τ` —
+  **stream material**;
 * a **λ-step** `(λy.M) Q A⃗ → M[Q/y] A⃗`: the abstraction is (a copy of) a
   lambda of `B`; `Q` is `β`, `τ`, a copy of `S`, or a subterm of `B`
   (an *operand* bound by a handler lambda, or the argument of a *let*).
@@ -426,77 +496,37 @@ distinct from `n_N`. Total ≥ 6 + 4 = 10.
 
 *(b) `F`.* `P_0 F → N` needs an `F` *value* at the right moment. `F`
 arises only as a syntactic `λa b.b` of `B` (6 bits, a lambda of `B`) or
-from `P_j K → F`, where `K` is syntactic (6) or the first component of
+from `P_j K → F`, where `K` is syntactic (7) or the first component of
 some `P_0`, delivered to a lambda of `B`. In either case the `n+1` cell
 steps of the surviving copy that are not cell–cell meetings are each
 caused by a contraction of a lambda of `B` (an `F`, a `K`, or a receiver
 of the cell), and we are in case (c).
 
-*(c) Lambda walk* **[repaired after review 1]**. If no cell–cell meeting
-occurs on the surviving path, each of its `n+1` cell contractions is caused
-by a lambda of `B` (directly, or through an `F` it produced), and `F`-values
-are at most `2L + c` in number, so for `n > 3|B|` some lambda of `B` is
-contracted at least three times in `ρ_v`, hence copied at least twice; the
-copies come from a nonlinear binder of `B`, and following the copying
-relation among the finitely many lambdas of `B` gives a lambda whose copies
-receive cells of different indices — a *walker*.
+*(c) Lambda walk — closed in Class S [after review 2].* In Class S no node
+of `B` is ever duplicated (Lemma 2.7), so every lambda of `B` is
+contracted at most once in `ρ_v`, every syntactic `F`, `K`, `I` is used at
+most once, and the `K`'s produced by terminal cells number at most `c`.
+Hence at most `|B| + c` cell openings on the surviving path are caused by
+anything other than a cell–cell meeting, and for our `n` a meeting exists:
+case (a) applies, and the N-source costs ≥ 10 with equality only for
+`s s X`-shaped realizations. ∎
 
-Two facts hold at every level `i ≥ 1` of such a walk. First, the tail
-`P_{i-1}` must itself be opened (T7), so it is the *function* of some
-redex; its node cannot be a created node (a created node's function is
-`(Y' β')` or `Y'`, and `Y' →* P_{i-1}` or `Y' β' →* P_{i-1}` would make
-that node a cell applied to a bit or to a tail, i.e. a cell–cell step,
-excluded here), so **the tail is bound by a lambda `λr` of `B` and applied
-at a node of `B` whose function is a leaf `r` of that lambda** (`λr` 2,
-`r` 2, node 2). Second, the bit must be tested: at `P_0` the walker
-receives `K` and must return the bare `N`, at `P_i` it receives `F` and must
-continue; a term that does not select on the bit either returns the tail
-unapplied (no recursion) or applies `N` (a rigid head, fatal). The
-selection is `b Z C` with `b` a leaf of a `λb` of `B` and **two** nodes of
-`B`: the second cannot be a created node, because then the zero arm would
-receive the tail as its argument and have to *be* `N` (it is syntax of `B`
-with no access to `N` unless a `λr` bound it, which is the other case).
-Third, the walker refers to itself: at least two leaves of a nonlinear
-binder (one applied or passed, one passed on) and a node (`λf` 2, `f f` 6).
-The cases are distinguished by where `λr` sits:
-
-* **(A) the walker takes `(β, τ)`**, `Y = λb r. b Z C`, and `C` applies
-  `r` to the next copy: `C = r f f`-like. Zero arm `Z = r` (the leaf, 2)
-  is the cheapest term returning `N` at the bottom. Pieces: `λb λr λf` (6),
-  `b`, `r`, `r`, `f`, `f` (10), four nodes — two selection nodes, `(r f)`,
-  `((r f) f)` — (8): **24**, and the forced binder order `b, r, f` (the
-  cell supplies `β` then `τ`, the copy comes third) puts `b` at index 2 and
-  both `r` at index 1: **≥ 28 with indices**. `Y = λb r f. b r (r f f)`
-  attains 28 and walks (checked: `(λf. P_n f f) Y →* N`, `n ≤ 5`).
-* **(B) the walker takes the cell**, `W W = λr. r H`, and the cell's own
-  second created node applies the selection result to the tail, so
-  `H = λb. b Z (w w)`; at the bottom `K Z (W W) N → Z N` forces `Z N →* N`
-  with `Z` syntax of `B` not binding `N`: `Z = I` (4) is the cheapest.
-  Pieces: `λw λr λb` (6), `r`, `b`, `w`, `w` (8), nodes `(r H)`, two
-  selection nodes, `(w w)` (8), `I` (4): **26**, and `w` under `λr λb`
-  carries index 2 twice: **≥ 30 with indices**. `W = λw r. r (λb. b I (w w))`
-  attains 30 and walks (checked: `W W P_n →* N`, `n ≤ 5`). The 22-bit
-  `λw b. b I (w w)` is not a walker: `P_i (W W) →* (W W) P_{i-1}` hands the
-  tail to `W W` as an argument, and `W W P_{i-1} →* W W` loses it
-  (checked).
-
-So **every walker costs ≥ 28 bits of original syntax**, consumed or erased
-in `ρ_v`, none of it a frame leaf. A walker must also be *started*: its
-first copy is referenced from outside itself, so `B` contains a second
-syntactic copy (≥ 28) or a nonlinear let `(λg. … g … g …) W` (`λg`, its
-node, two leaves: ≥ 8) — in case (B) the let's `g g` is the only way to
-form `W W` once. The dispatch cell's `s`-leaf (2; in case (B) its node may
-be the walker's `(r H)` node, in case (A) the node `(s g)` is separate), the
-`cont` leaf (4), the `next` leaf (3) and the output node `n_N` (2; the only
-created node with argument `N` is `P_0`'s, whose function would have to be
-`cont P_{n-1}`, i.e. the walker would carry `P_{n-1}` and `cont` down the
-walk, ≥ 8 more) are disjoint from all of this. Hence a reader containing a
-lambda walk has
-
-    |B| ≥ 28 + 8 + 2 + 4 + 3 + 2 = 47,
-
-and the N-source in this case is ≥ 36, never 10. (The cheapest walker reader
-I can write is 85 bits.) ∎
+*Remark (outside Class S; not used in Theorem S).* For a general `B`, if
+no cell–cell meeting occurs on the surviving path then, for `n` large
+enough — the copy graph of a fixed `B` is finite, so without a cycle the
+number of lambda contractions is bounded independently of `n` (a fixed
+threshold such as `n > 3|B|` is *not* enough: finite compositions
+`D^k G` with `D = λf t. f (f t)` give `2^k` openings) — some lambda of `B`
+is applied to a copy of a lambda of its own copying cycle: a *walker*.
+The review-1 case split (A)/(B) prices a walker's original syntax at
+≥ 28 bits (`λb r f. b r (r f f)`, 28; `λw r. r (λb. b I (w w))`, 30; both
+checked to walk; the 22-bit `λw b. b I (w w)` loses the tail), and a
+reader using one appears to cost ≥ 47; but that accounting assumes the
+walker's pieces are distinct from the other charged roles, which the
+refutation of Lemma 2.7(ii) shows is not automatic (a copy of the walker's
+selection node `(b r)` with `b := cont` *is* an output node). The cheapest
+walker readers known are 76 bits (Codex) and 85 bits. This case is
+conjectural.
 
 **Lemma 2.4 (zero-R-source).** Realizations of **z-R** and their costs:
 (i) a bound leaf (2) whose binder is a head-path `λr` contracted on `τ`
@@ -520,21 +550,30 @@ dispatch cell's `τ` through its own second node (`n_P` = stream node),
 cost 0, requiring `V[envⁱ] →* cont`; (ii) a bound leaf `r` (2) bound to
 `τ` on the head path (counted in `d`) or inside `V` (2); (iii) `s F` or
 `s (λu r. r)` (≥ 10) or any other compound contracting a fresh copy of
-the cell with a tail-returning `Y`; (iv) a rebuilt cell `λh. h F' P'`
-with `F' →* F` and `P' →* P_{n-2}`: at least 2 + 4 + 2 + 2 + 2 = 12 bits
-plus a second cell contraction to obtain `P_{n-2}` (≥ 4) — never
-competitive. *Proof.* The output's `P_{n-1}` has a root lambda that is a
-residual of a stream cell (then, the cell body being closed, the whole
-`P_{n-1}` is that cell's residual, i.e. the tail of a contracted `P_n`
-copy), or of a lambda of `B`, which is case (iv). ∎
+the cell with a tail-returning `Y`; (iv) [after review 2] a rebuilt cell:
+a lambda `λh` of `B` whose body reduces to `h F P_{n-2}`, either an
+η-expansion `λh. r h` of a bound tail (`λh`, node, `r`, `h`: ≥ 8 plus the
+index of `r`, and it still needs the bound tail of (ii); the output cell's
+body nodes are then *stream* nodes — `λh. r h →* P_{n-1}`, 53- and 60-bit
+readers checked) or a literal `λh. h F' P'` with `F' →* F`, `P' →* P_{n-2}`
+(≥ 12 plus a second cell opening). Both cost at least 6 more than the
+bound leaf they replace, so no bound below changes. *Proof.* The output's
+`P_{n-1}` has a root lambda that is a residual of a stream cell (then, the
+cell body being closed, the whole `P_{n-1}` is that cell's residual, i.e.
+the tail of a contracted `P_n` copy), or of a lambda of `B`, whose body
+must become `h F P_{n-2}` — by applying a tail to `h` or by spelling the
+cell out. ∎
 
 **Lemma 2.6 (stream-node shortcuts).** A created node has argument a bit
 (`(Y β)`) or a tail (`((Y β) τ)`). The only roles a created node can take
 are:
-(α) `n_P` = the second node of a cell step with `(Y β)ⁱ →* cont` — when
-it is the dispatch cell, `V[envⁱ] →* cont`; then `n_N` is a node of `B`
+(α) `n_P` = the second node of a cell step with `(Y β)ⁱ →* cont`. When it
+is the dispatch cell, `V[envⁱ] →* cont` and `n_N` is a node of `B`
 applying `cont τ` to the N-source, necessarily the spine node of an
-N-valued operand (it cannot lie inside `V`, which is the leaf `cont`);
+N-valued operand (it cannot lie inside `V`, which is the leaf `cont`).
+When it is **another** cell — a fresh `s`-leaf inside `V` or inside an
+operand, applied to a `Y` with `Y β' →* cont` — this is shape (α′) of
+§2.4 [after review 2];
 (β) the first selection node, `((Y β') τ')` with `Y β' →* β`: `Y`'s hnf is
 `λb'. b'` or `λb'. b` (an outer bit); then `Z = τ'`, the zero arm cannot
 contain `next` (so `ν_z` is an operand and `n_R` its spine node), and `V`
@@ -552,38 +591,39 @@ only the last node of `P_0`, Lemma 2.3(c)); as a meeting or consumer node
 it is priced in Lemma 2.3(a). *Proof.* By inspection of the two created
 node shapes and of what their function parts can reduce to (`cont`, `β`,
 `β Z`, a cell, `Q`); `(Y β)` with `Y →* β` or `Y →* S` gives (δ). ∎
-**Lemma 2.7 (copies do not help the inventory).** In the minimum `B`,
-(i) a let on a single leaf, `(λy.M) Q` with `Q ∈ {s, next, cont}` at
-depth `e`, has `Δ = (m−1)(|Q|) − 2m − 4 − f(M)` with `|Q| = 2+e, 3+e,
-4+e`; it is negative for `Q = s` always, and otherwise only non-negative
-when the leaf is used many times (`m ≥ 7` for `next`, `m ≥ 4` for `cont`
-at depth 0). In those cases the let costs `4 + |Q| + 2m` while the
-inventory below charges at most `|Q| + e' + 2(m−1)` for the roles its
-uses can fill (one output leaf and consumer leaves), so the inventory
-remains a lower bound; in all other cases leaves are never copied and
-each charged leaf role is an original leaf.
-(ii) the residuals of one copied application node all have β-equal
-functions and β-equal arguments, since copies of a let argument are
-substituted under the same binders. All roles charged within one
-reduction have pairwise different (function, argument) signatures
-(`n_P`: `(cont, P_{n-1})`; `n_N`: `(cont P_{n-1}, N)`; meeting node:
-`(P_i, P_i)`; consumer: `(K N, X)`; the two selection nodes:
-`(β, Z)`, `(β Z, V)`; the dispatch cell step: `(S, Y)`), so no two of them
-are residuals of one node. Roles in different reductions may share syntax
-only through the head path, operands and lets, which the shapes below
-treat explicitly. The one mechanism that copies lambdas with *different*
-arguments — a self-passing walker — is priced in Lemma 2.3(c). ∎
+**Lemma 2.7 (Class S: nothing of `B` is copied) [after review 2].** In a
+stream-linear `B`, no application node, lambda or leaf of `B` has two
+residuals at any point of `ρ_z` or `ρ_v`; hence every role charged in
+§2.2 is realized by a distinct original node or leaf of `B`, and the
+decomposition of §2.1 is an equality up to erased material. *Proof.* A
+node of `B` is duplicated only when a binder with ≥ 2 occurrences is
+contracted on an argument containing it. Stream lambdas are affine.
+β-normality removes syntactic redexes, so a lambda of `B` is contracted
+either at a created node (its argument is `β` or `τ`, stream material) or
+at a node of `B` whose function is a bound variable holding a copy of a
+lambda; in Class S the nonlinear binders are only ever contracted on `β`
+or `τ`, so nonlinear contractions copy only stream material, and affine
+contractions copy nothing. The leaves of a nonlinear tail binder `r` are
+distinct original leaves. ∎
 
-**Remark (forced depths).** Inside an arm the free leaves sit under all
-the arm's own leading lambdas: an arm applied to `m` arguments it consumes
-with lambdas has head normal form `λu₁ … u_m. body`, and by T10 the
-arm's syntax cannot hide a free leaf above those lambdas through a let
-(a let on a leaf shrinks; a let `(λy. λu⃗. … y …) Q` with `Q ∋ next` needs
-`fl(Q) ≥ 4`, i.e. `|Q| ≥ 14`, far above the savings). Consuming an
-argument by a data value instead of a lambda (`K`, `F`, `b`, `s s`, a cell
-step) costs ≥ 4 instead of 2 and spares at most one bit of depth on each
-free leaf of the arm — never cheaper than the lambda for the arms below,
-whose free leaves number at most two.
+*Withdrawn [after review 2].* The former Lemma 2.7 claimed (i) that lets
+on single leaves always shrink — false: a let on `s` at depth `e` has
+`Δ = (m−1)e − 6 − f(M)`, positive for `m = 5, e = 2` — and (ii) that
+copies of one application node have β-equal signatures — false under
+higher-order sharing: in `(λf. f (f next cont) s) (λa b. a b)` both output
+nodes descend from the one node `a b`, and a 98-bit valid reader realizes
+`n_P`, `n_N` and consumed skip nodes from one source node with its only
+redex at `Δ = +17` (Codex). Neither claim is needed in Class S.
+
+**Remark (depths and consumers).** In a β-normal `B` the free leaves of an
+arm sit syntactically under the arm's leading lambdas, so their depth
+charges are exact; outside Class S a hoist `(λy. λu⃗. … y …) Q` with
+`fl(Q) ≥ 2` can have `Δ > 0` (`(λy. λa…h. y) (next cont)`, Δ = +2), and the
+general case is open. Consuming an argument by a data value instead of a
+lambda (`K`, `F`, `b`, `s s`, a cell step) costs ≥ 4 instead of 2 and
+spares at most one bit of depth on each free leaf of the arm; the data
+variant `Z = b (λu. u next)` is a valid 44-bit reader, one bit above the
+minimum, as this predicts (checked).
 
 ## 2.4 The minimization
 
@@ -613,13 +653,17 @@ argument, so `rest = (τ, T, …)` and `n_N` is the spine node of the operand
 operand**: a third element of `rest` would be a third argument of `cont`.
 
 The zero arm receives exactly `R` and `T⁰`. `n_R` cannot be `T`'s spine
-node (`T⁰` would have to be `next`, but `T` is N-valued and `next`-valued
-only if it contains a selection with its own bit source: ≥ 10 + 8 more
-than a leaf). If `n_R` lay inside `T`, then `T⁰ →* R next` and `Z = λu t.t`
-(6): `T` at depth 0 has no bound variables, so it pays a compound
-`R`-source (≥ 10), `next` and `n_R` (5), the N-source (10) and a selection
-with a bit source (`s K` or a cell with a lambda, ≥ 14): `|B| ≥ 12 + 2 +
-39 + 6 + 5 ≥ 64`. Otherwise `Z` contains `n_R`, `ν_z`, and an `R`-source. `Z`
+node (`T⁰` would have to be `next` while `Tⁱ` is `N`: `T` would contain a
+selection on a bit it opens itself, ≥ 12, plus the N-source, so `|T| ≥ 25`
+and `|B| ≥ 12 + 27 + |Z| + 5 ≥ 55`). If `n_R` lies inside `T` [after
+review 2: corrected], then `T⁰ →* R next` and `Z = λu t. t` (6); `T` is
+then a *dual arm-valued operand*: it opens its own cell (`s`-leaf and node,
+4), tests the bit (`λb`, `b`, two nodes: 8), binds the tail for the
+`R`-source (`λr`, `r`: 4), contains `n_R` (2) and `next` (≥ 5), and an
+N-source (≥ 10): `|T| ≥ 33`, so `|B| ≥ 12 + 2 + 33 + 6 + 5 = 58`
+(Codex's `T = s (λb r. b (r next) (r r r))`, 34 bits, gives a valid 59-bit
+reader; the former claim of ≥ 64 assumed, wrongly, that a depth-0 operand
+has no binders). Otherwise `Z` contains `n_R`, `ν_z`, and an `R`-source. `Z`
 consumes both arguments: two lambdas (4) above `ν_z`, or data consumers
 (≥ 4 each, Remark). So `ν_z` costs `3 + d + 2`, the `R`-source is a bound
 leaf (2; a compound would cost ≥ 10 by Lemma 2.4 (iv)), and
@@ -634,6 +678,30 @@ Altogether
 
 with equality iff `d = 1`, `T = s s s`, `Z = λu r. r next`, `V = cont`:
 **the 165's reader, uniquely**.
+
+### Shape (α′): `n_P` is the second node of a non-dispatch cell [after review 2]
+
+The cell is a fresh `s`-leaf `ℓ'` applied at a node of `B` to a term `Y'`
+with `Y' β' →* cont`; the output's `P_{n-1}` is this cell's tail, and
+`n_N` is a node of `B` applying `cont τ'` to an N-valued term `U` (≥ 10,
+Lemma 2.3). The cheapest `Y'` is `λq. cont` (its `cont` is `κ_v`).
+
+* *The cell lies inside `V`.* `V` consumes the dispatch's `τ` (a lambda,
+  2, or `d = 2`), contains `ℓ'` at depth ≥ 2 (4), its node (2), `λq` (2),
+  `κ_v` at depth ≥ 3 (7), `n_N` (2) and `U` (10):
+  `d = 1`: `|V| ≥ 2 + 4 + 2 + 2 + 7 + 2 + 10 = 29`, `|Z| ≥ 11`,
+  `|B| ≥ 12 + 11 + 29 = 52` (attained: Codex's
+  `s (λb. b (λr. r next) (λr. s (λq. cont) (r r r)))`, 52, checked);
+  `d = 2`: dispatch 15, `|Z| ≥ 9`, `|V| ≥ 4 + 2 + 2 + 7 + 2 + 10 = 27`,
+  `|B| ≥ 51` (attained: `s (λb r. b (r next) (s (λq. cont) (r r r)))`, 51,
+  checked).
+* *The cell lies inside an operand `T`* (depth 0): `|T| ≥ 2 + 2 + 2 + 5 +
+  2 + 10 = 23`; the selection result must return `Tⁱ` on the variable
+  stream (`V = λr t. t`, 6, or `V = t` with `d ≥ 2`), and `Z` consumes
+  `τ` and `T⁰` (≥ 13): `|B| ≥ 12 + 2 + 23 + 13 + 4 ≥ 54` (56 attained by
+  `s (λb r t. b (r next) t) (s (λq. cont) (s s s))`, checked).
+
+So (α′) gives `|B| ≥ 51`.
 
 ### Shape (β): the first selection node is created, `Z` is a cell's tail
 
@@ -686,9 +754,10 @@ different argument lists on the two streams (`A₅⁰ …` against
 `F P_{n-2} A₄ⁱ …`) and must distinguish them, which needs a lambda of `B`
 whose bound leaf heads a selection (≥ 8) — with the zero-side selector
 supplied by an operand (`K`, ≥ 6) or by a tail test — and must consume
-`F` and `P_{n-2}` (≥ 4); the two cell steps cost 8. With `κ_v`, `ν_z`,
-`n_R`, `n_P`, `n_N` (≥ 15) and the N-source (10):
-`|B| ≥ 8 + 8 + 6 + 4 + 10 + 10 + 10 + 15 ≥ 71`.
+`F` and `P_{n-2}` (≥ 4); the two cell steps cost 6 (`s s`: two leaves and
+one node of `B`, the second cell opening at a created node [after review
+2]). With `κ_v`, `ν_z`, `n_R`, `n_P`, `n_N` (≥ 15) and the N-source (10):
+`|B| ≥ 6 + 8 + 6 + 4 + 10 + 10 + 10 + 15 ≥ 69`.
 
 ### Shape (γ): `n_P` and `n_N` are nodes of `B`
 
@@ -771,28 +840,32 @@ itself, and `V` binds `t` or `d ≥ 3`) or has its own N-source and wastes
 `T`: `|V| ≥ (4 + d + e_V) + 2 + 2 + 2 + 2` with `e_V ≥ 1` or `d ≥ 2`;
 with `|Z| ≥ 12` and the operand's 12 and dispatch ≥ 12 this is ≥ 52.
 
-### Depth-0 operands as role carriers
+### Depth-0 operands as role carriers [after review 2: corrected]
 
-An operand at depth 0 sees no bound variable, so any `R`, `P_{n-1}`, `N`
-or bit it supplies is a compound (≥ 10 each, Lemmas 2.3–2.5 and `s K`),
-and an operand serving a zero role and a variable role with different
-values (a *dual* operand) contains a selection with its own bit source
-(≥ 8 + 10). Moving a role out of an arm into such an operand therefore
+An operand at depth 0 is a term over `s, next, cont` with its own binders.
+Its useful values are priced by Lemmas 2.3–2.5: an `R`-, tail- or
+`N`-valued compound costs ≥ 10, and `s F` (`R`, `P_{n-1}`) and `s s s`
+(`R`, `N`) are 10-bit *dual* operands — the skip is the one the 165 uses.
+An operand that is dual **arm-valued** (`R next` on the zero stream and a
+`cont`-headed term, or `N`, on the variable stream) must open a cell and
+test its bit itself: ≥ 12 for that, plus its payloads (≥ 33 in the shape
+(α) sub-case above). Moving a role out of an arm into an operand therefore
 never lowers the bounds above, which already charge the cheapest
-realization of every role.
+realization of every role; the former sentence claiming every dual operand
+needs fresh selection machinery was wrong.
 
 ### Extras
 
-Each additional head-path cell step costs ≥ 4 and its `β', τ'` must be
-bound or consumed (≥ 2); each head-path let costs `≥ 4 + |Q| ≥ 10`
-(T10: a let needs `fl(Q) ≥ 2` or `|Q| ≥ 8`); a data dispatch (`s K …`)
-costs 14 and forfeits the tail; none lowers the minimum realization cost of
+Each additional head-path cell step costs ≥ 2 for its leaf (its node may be
+created, as in `s s` [after review 2]) and its `β', τ'` must be bound or
+consumed (≥ 2); lets do not occur in Class S; a data dispatch (`s K …`)
+costs 15 and forfeits the tail; none lowers the minimum realization cost of
 any role, because every role is priced in leaves and nodes (≥ 2 each) and
-in forced depths. So each extra only adds to the bounds above.
+in syntactic depths. So each extra only adds to the bounds above.
 
-**Conclusion of 2.4.** In the β-case `|B| ≥ 43`, with equality exactly for
-the 165's reader (shape (α), `d = 1`, `T = s s s`, `Z = λu r. r next`,
-`V = cont`).
+**Conclusion of 2.4.** In the β-case, for stream-linear `B`, `|B| ≥ 43`,
+with equality exactly for the 165's reader (shape (α), `d = 1`,
+`T = s s s`, `Z = λu r. r next`, `V = cont`).
 
 ## 2.5 The τ-case
 
@@ -817,41 +890,41 @@ and an N-source (≥ 10). Hence
 
 ## 2.6 Statement
 
-**Theorem.** Every reader body — every term `B` over the frame
-`[s, next, cont, intL, x]` with `B[Z_R/s] →* R next` and
-`B[P_n/s] →* cont P_{n-1} N` for all `n ≥ 1`, with `R, N, next, cont,
-intL, x` rigid — has `|B| ≥ 43`, and `|B| = 43` only for
-`s (λb. b (λu r. r next) cont) (s s s)`.
+**Theorem S [after review 2].** Every stream-linear reader body — every
+β-normal term `B` over the frame `[s, next, cont, intL, x]` whose
+nonlinear binders are contracted only on bits and tails, with
+`B[Z_R/s] →* R next` and `B[P_n/s] →* cont P_{n-1} N` for all `n ≥ 1`,
+with `R, N, next, cont, intL, x` rigid — has `|B| ≥ 43`, and `|B| = 43`
+only for `s (λb. b (λu r. r next) cont) (s s s)`. For arbitrary reader
+bodies the same bound is conjectured.
 
 The proof is the structure theorem (Part 1), the head-path decomposition
-and role inventory (§2.1–2.3, Lemma 2.7), and the minimization
-(§2.4–2.5). It is handwritten; the finite identities it uses are checked
-by the scripts in `tools/`; the exact wire-cost formula it uses is the
-Lean theorem `Blc.SelfintWireCost.wire_beta_delta`. Part 3 lists the steps
-whose rigour is weakest.
+and role inventory (§2.1–2.3, with Lemma 2.7 in its Class-S form), and the
+minimization (§2.4–2.5), under the Class-S hypothesis stated in the status
+section. It is handwritten; the finite identities it uses are checked by
+the scripts in `tools/`; the exact wire-cost formula it uses is the Lean
+theorem `Blc.SelfintWireCost.wire_beta_delta`. Part 3 lists the steps
+whose rigour is weakest and what is only conjectured.
 # Part 3. What is proved, how, and where the argument is thin
 
-## 3.1 Status by component
+## 3.1 Status by component [after review 2]
 
 | component | status |
 |---|---|
-| T1–T4 (free variables, open hnf `s A⃗`, symbolic hnf dichotomy, forced leaves) | handwritten, standard tools (solvability, Church–Rosser); the 165's symbolic hnf checked |
-| T5 (no lambda-free body) | handwritten; the application table and the `P_n`-only closure checked for indices ≤ 6 and trees ≤ 5 leaves |
-| T6–T9 (duplication, every cell opened, last cell, equal-index chains) | handwritten residual arguments; all finite identities checked |
-| T10 (minimum has no shrinking redex; Δ formula) | the formula is Lean (`wire_beta_delta`), re-checked on 3000 random redexes; the minimality argument is one line |
-| §2.1 decomposition, Lemma 2.1 (selection leaf) | handwritten residual tracing |
-| Lemma 2.3 (N-source ≥ 10), cases (a), (b) | handwritten, tight |
-| Lemma 2.3 (c) (self-passing walker: ≥ 28 per walker, reader ≥ 47) | handwritten two-case split, repaired after review 1 (see 3.2); the two attaining walkers checked — still the least formal step |
-| Lemmas 2.4–2.6 (R-source, tail, stream-node shortcuts) | handwritten exhaustive lists of realizations |
-| Lemma 2.7 (copies) | handwritten; relies on T10 and on the distinct signatures of the roles |
-| §2.4 shapes (α), (β), (β′), (δ), (γ) and extras | handwritten arithmetic; the (γ1) operand cases written out per operand after review 1; every valid construction measured (`tools/menu.py` and inline checks) is ≥ its shape's bound |
+| T1–T4 (free variables, open hnf `s A⃗`, symbolic hnf dichotomy, forced leaves) | handwritten, standard tools; unconditional |
+| T5 (no lambda-free body) | handwritten; tables checked for indices ≤ 6, trees ≤ 5 leaves; unconditional |
+| T6–T9 (duplication, every cell opened, last cell incl. `I`, equal-index chains) | handwritten residual arguments; finite identities checked; unconditional (T7's intact-copy sentence qualified) |
+| T10 (minimum has no shrinking redex; Δ formula) | Lean formula; unconditional; its *consequences* claimed in the old Lemma 2.7(i)/Remark are withdrawn |
+| Class S (Lemma 2.7: nothing copied) | handwritten, short; the hypothesis of Theorem S |
+| §2.1 decomposition, Lemma 2.1 | handwritten residual tracing; cell steps may occur at created nodes (corrected) |
+| Lemma 2.3 (a) N-source ≥ 10 | handwritten, tight; in Class S the only case |
+| Lemma 2.3 (c) walkers | **remark only**, conjectural outside Class S |
+| Lemmas 2.4–2.6 (R-source, tail incl. η-rebox, stream-node shortcuts incl. (α′)) | handwritten realization lists; Codex's three structural witnesses now covered |
+| §2.4 shapes (α), (α′), (β), (β′), (δ), (γ) and extras | handwritten arithmetic; every valid construction measured by me and by both reviewers is ≥ its shape's bound |
 | §2.5 τ-case ≥ 52 | handwritten, coarse |
+| Unconditional 43-bit bound | **conjecture**; evidence: three independent efforts found no reader below 43, cheapest non-Class-S readers 55/76/85/98 |
 
-No Lean was written in this lane: the statements pinned down enough to
-formalize (the application tables, T5) are finite-instance checks of
-small value, and the load-bearing steps (residual tracing over all
-reductions, the inventory) would need a formalization of residuals that
-does not exist in `lean/Blc`.
+No Lean was written in this lane.
 
 ## 3.2 Where a reviewer should push
 
@@ -902,23 +975,22 @@ does not exist in `lean/Blc`.
    The precision note on `d` (a head-path let whose argument contains
    the selection does not enclose it) is closed in §2.1 by T10 pricing.
 
-## 3.3 Residual cases
+## 3.3 Residual cases [after review 2]
 
-With the caveats of 3.2, I do not have a residual *class* of reader bodies
-outside the theorem: the decomposition covers every term (compressed or
-not, any arity, any operand, both dispatch heads), because it is driven by
-the head reduction of `B[S]` and by residual tracing rather than by the
-syntax of `B`. The residual risk is in the rigour of the listed steps, not
-in an identified family of terms. The honest summary:
+Inside Class S I do not have a residual *class* of reader bodies outside
+Theorem S; the residual risk is the rigour of the realization lists
+(3.2 item 1) and of the shape arithmetic. Outside Class S, everything is
+residual: readers with a β-redex (lets, hoists), readers whose nonlinear
+binders receive operands or let arguments (higher-order sharing, finite
+composition), and self-passing walkers. For these the inventory gives
+heuristic bounds only (Lemma 2.3's remark, the withdrawn Lemma 2.7), and
+the known constructions are 55, 76, 85 and 98 bits.
 
-* **Fully covered with tight arithmetic:** shape (α) — every reader whose
-  variable output node `cont P_{n-1}` is the stream's own node (this is
-  the 165's mechanism; the 165 is the unique minimum there).
-* **Covered with margin ≥ 3:** shapes (β), (γ) including its operand
-  cases, the τ-case, chains, lets, data dispatch.
-* **Covered with large margin but coarser reasoning:** self-passing
-  walkers (Lemma 2.3 (c), ≥ 47 by a two-case piece count), rebuilt cells
-  (Lemma 2.5 (iv)).
+* **Fully covered with tight arithmetic (Class S):** shape (α) — the 165's
+  mechanism; the 165 is the unique minimum there.
+* **Covered with margin ≥ 3 (Class S):** shapes (α′), (β), (β′), (δ),
+  (γ) with its operand cases, the τ-case, chains, data dispatch.
+* **Conjectural:** every reader body outside Class S.
 
 ## 3.4 Relation to the earlier bounds
 
@@ -931,26 +1003,37 @@ inside `V` (`t X` for `s s`); the neutral-operand domination is the
 lambdas, arities `k ≠ 2`, head redexes, and the tail-headed dispatch — the
 open list in the lane prompt — are the rows of (β), (γ) and §2.5.
 
-## 3.5 Honest read
+## 3.5 Honest read [after review 2]
 
-The reader is optimal because its three mechanisms are each at their
-floor and share everything that can be shared: the stream's own second
-node is the variable output's first application (shape (α) is the only
-way to get an output node for free), the skip `s s s` is the cheapest
-N-source (Lemma 2.3) and its zero value happens to be the tail, so one
-operand serves both arms, and the zero arm then pays exactly for the two
-lambdas that consume what the variable arm uses. Every alternative in the
-inventory pays at least 3 more bits.
+Within stream-linear readers the picture is exactly as before: the reader
+is optimal because its three mechanisms are each at their floor and share
+everything that can be shared — the dispatch cell's own second node is the
+variable output's first application (shape (α) is the only way to get an
+output node for free from the dispatch cell; a second cell costs ≥ 8 more,
+shape (α′)), the skip `s s s` is the cheapest N-source and its zero value
+is the tail, so one operand serves both arms, and the zero arm pays exactly
+for the two lambdas that consume what the variable arm uses. Every
+alternative in the inventory pays at least 3 more bits.
 
-Where a sub-165 could still hide is therefore **not in the reader with
-the 165's knot and NEXT fixed**: it would have to change the laws — a
-different `next` protocol (the zero arm's `r next` is the only place
-`next` is used, and the reader never exploits what `next` does), a reader
-that hands NEXT something other than the raw remaining stream, or a fusion
-of the reader's self-application `s s` with the knot (the reader already
-contains the only self-application the knot needs). The next proof step
-that would make this record-grade is to formalize residual tracing for
-the two reader laws in Lean (origins and fates of nodes, as
-`SelfintOrigins.lean` does for quotation-origin binders) and to discharge
-Lemma 2.3 and Lemma 2.7 from it; the arithmetic of §2.4 would then be a
-finite check over realization patterns.
+The full theorem could not be rescued tonight. Codex's refutations are
+of the *proof*, not of the bound: lets with positive Δ, shared
+higher-order combinators and walkers all exist as valid readers, all far
+above 43, and nobody found anything below. What a proof for them needs is
+a quantitative sharing argument — that a let or a passed lambda, which
+costs its scaffolding (`λ`, node, leaves) and gains copies of a value or
+a function, cannot reduce the total of the role inventory below 43 —
+rather than the signature argument I gave. The right tool is probably
+not residual tracing on source nodes at all but a cost measure on the
+*hnf of `B[S]`* that is monotone along the head reduction and already
+≥ 43 on every hnf satisfying the two laws; I did not find such a measure.
+
+Where a sub-165 could still hide is therefore unchanged in substance:
+**not in a stream-linear reader with the 165's knot and NEXT fixed**, and
+— on the evidence, though not by proof — not in a reader with sharing or
+walkers either. It would have to change the laws: a different `next`
+protocol, a reader that hands NEXT something other than the raw remaining
+stream, or a fusion of the reader's self-application `s s` with the knot.
+The next proof step is the sharing argument above, or a Lean
+formalization of residual tracing for the two reader laws from which the
+Class-S lemmas follow mechanically and the remaining cases become
+explicit.
