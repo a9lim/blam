@@ -211,7 +211,13 @@ Around the 162:
 
 The 162's reader with NEXT let-bound measures 166, and NEXT as the last
 operand of a λ-handler `\b \r. b r (\t. cont r (r r t))` measures 168
-(`merges.py`). Two reasoning lanes on the 162 found nothing smaller; their
+(`merges.py`). The same splice-and-letopt route gives a second architecture
+below the 165: the 165's handler with the zero arm `F`,
+`list (\b. b F cont) (list I (list list) NEXT)`, where the dual operand is
+`r NEXT` on a 0-tag and `N` on a variable, measures 164 (3,341/2/0 through 21
+bits); the other review-witness readers spliced into the 165 measure 167–198
+(`data/self-interpreter/reasoning_floor/origin162/`). Two reasoning lanes on
+the 162 found nothing smaller; their
 correct variants are select-first 163, `cont` as the skip's erased operand
 164, a shared-return NEXT 166, a whole-prefix variable value with an adjusted
 cell 169 (also 3,341/2/0 through 21 bits), the reader `λb. b I W` 169, a
