@@ -343,6 +343,11 @@ both closed in isolation, by sharing one `λx.x x` across an affine
 translation of the 165. Its reduction to the literal 165 is kernel-checked.
 The minimum count two is attained even by a β-normal 742-bit witness,
 whose contract is kernel-checked as β-joinability.
+The two required nonlinear binders must occupy incomparable source
+branches: `Blc/SelfintNonlinearChain.lean` proves that putting all nonlinear
+binders on one ancestor chain is preserved by full beta reduction, whereas
+the required Ω output violates that property. For a literal interface,
+both witnesses are internal.
 See `structural-bounds.md`, `Blc/SelfintLowerBound.lean`, and
 `Blc/SelfintSharp.lean`.
 
@@ -351,13 +356,17 @@ that some subterm of `E` has three distinct free variables, forcing two
 live capturing abstractions. For a literal `λc s.B`, three variables of
 such a witness must be internal to `B`; the two internal captures and the
 public stream binder's capture give three in total. Combined with the
-nonlinear theorem, these give handwritten wire floors of 27 globally and
-40 for literal interfaces, including beta-normal interpreters.
+incomparable-nonlinear theorem, these give handwritten wire floors of
+34 globally and 46 for literal interfaces, including beta-normal
+interpreters. The three binders on the width witness's ancestor chain
+cannot contain the incomparable pair, forcing a fourth live binder and
+a preliminary global floor of 33; analytical exclusion of the equality
+cases raises that floor to 34.
 `capture-width.md` states the published result and the interface proof,
 and gives a shared-S construction attaining these structural minima
 simultaneously, including in the beta-normal fragment with all zero-based
-indices at most two. The floors are sharp only for the necessary syntax
-constraints, not for interpretation.
+indices at most two. The preliminary 33/46 syntax counts are attained;
+these witnesses do not establish optimal interpreter sizes.
 
 Lean separately proves that absence of any live capturing abstraction is
 preserved by β-reduction and holds for the quotation, while the normal
@@ -584,6 +593,7 @@ Unless marked, each passes the battery and is larger than the 168.
 | **Recursion** | | |
 | Self-passing `next` with a shared parser, best of 72 orders | 182 | carrier plumbing exceeds the knot |
 | Recursion inside the bit handler | 196 / 206 | shared/unshared self-application; recursive entry needs a Scott adapter (`protocol-obstructions.md`) |
+| Self-passed context activated by the input stream | 191 | no explicit fixed-point wrapper; the context travels through both recursive parses (`protocol-obstructions.md`) |
 | One generator for parsing and value-driven APP | 323 | `v v` enters the actual parser on the left remainder; triple boxes, maps, and the public adapter dominate (`protocol-obstructions.md`) |
 | Recursor passed through continuations | 204 / 206 | callback arguments plus a public adapter |
 | A cell holding F performs the knot: `cell(a,e) cell(a,e) = λk. a a (k e e)` | 199 | the continuation receives two extra arguments |

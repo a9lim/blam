@@ -6,10 +6,12 @@ its source contains at least two live abstractions that capture an enclosing
 variable. Both bounds are sharp, even simultaneously with the established
 minimum of two nonlinear binders.
 
-The lower bound uses a published theorem of Rick Statman and Codex's
-handwritten interface argument below. The sharpness construction is also
-handwritten. These results are not Lean theorems in this repository and do
-not establish a useful numerical lower bound near 165 bits.
+The width lower bound uses a published theorem of Rick Statman and Codex's
+handwritten interface argument below. The incomparable-nonlinear-binder
+obstruction is kernel-checked; the numerical counting and exclusion
+arguments and the sharpness constructions are handwritten. Together they
+give 34 bits globally and 46 for literal or beta-normal interpreters,
+without establishing 165-bit optimality.
 
 ## The source measure
 
@@ -196,14 +198,77 @@ By the exact-arity argument in `head-decomposition.md`, a beta-normal
 self-interpreter has this literal two-lambda interface. It therefore also
 has at least three live captures.
 
-## Small numerical consequences
+## Two nonlinear binders must be incomparable
 
-Combining width with the two-nonlinear theorem gives the handwritten
-bounds
+The two required nonlinear binders cannot all lie on one ancestor chain.
+Every exact interpreter contains two nonlinear abstraction occurrences
+such that neither is an ancestor of the other.
+
+For a term `T`, let `NS(T)` assert that all its nonlinear binders lie on
+one ancestor chain, allowing the empty chain. Equivalently,
 
 ```text
-|E|_BLC ≥ 27                     for every exact self-interpreter,
-|E|_BLC ≥ 40                     when E is literally λc s.B,
+NS(variable)  = true,
+NS(λx.B)      = NS(B),
+NS(F A)       = NS(F) and NS(A)
+                and (nonlinear(F)=0 or nonlinear(A)=0).
+```
+
+This property is preserved by beta reduction. For a root redex
+`(λx.B) A`, there are two relevant cases:
+
+- If `x` is nonlinear, the application condition forces `A` to have no
+  nonlinear binder. Substitution only inserts affine code, so the
+  remaining nonlinear binders are those of `B`, with their ancestor
+  relations unchanged.
+- If `x` is affine and `A` has a nonlinear binder, the application
+  condition forces `B` to have none. Substitution inserts `A` at most
+  once, preserving its single chain. If `A` also has none, the first
+  argument applies directly.
+
+The context cases require care. An affine term stays affine under beta
+reduction: simultaneous induction proves both zero nonlinear binders
+and nonincrease of every free-variable occurrence count. The latter
+fact preserves an enclosing binder's affineness in the lambda case.
+Thus an application context preserves its required zero-nonlinear side.
+A lambda context imposes no extra condition in the definition of `NS`.
+A reduction may make that enclosing lambda nonlinear, but the new
+nonlinear binder is an ancestor of every nonlinear binder in its body;
+it cannot create an incomparable pair.
+
+Now assume `NS(E)` for an exact interpreter. Apply its contract to the
+closed source
+
+```text
+Δ = λx.x x,
+Ω = Δ Δ,
+```
+
+with rigid independent `C,N`. Quotation cells and bits have no nonlinear
+binders, so `NS(E C (stream(Ω,N)))` holds. Its required output
+`C (λz.Ω) N` has two incomparable nonlinear binders, the two copies of
+`Δ`. Every beta reduct of this output is the identical term: the only
+available contraction is the self-reproducing `Ω` redex. Therefore the
+contract's beta join gives a directed reduction from the invocation to
+this output, contradicting preservation of `NS`.
+
+For a literal `λc s.B`, the incomparable pair lies wholly inside `B`.
+The public binders are ancestors of every internal abstraction and of
+each other, so neither can participate in the pair.
+
+`Blc.SelfintNonlinearChain` kernel-checks the predicate as `Chain`, its
+preservation as `chain_beta` and `chain_betas`, and the interpreter
+consequences as `selfInterpreter_not_chain` and
+`selfInterpreter_body_not_chain`.
+
+## Numerical consequences: 34 and 46 bits
+
+Combining the incomparable-pair theorem with the published width
+obstruction and the 33-bit exclusion below gives
+
+```text
+|E|_BLC ≥ 34                     for every exact self-interpreter,
+|E|_BLC ≥ 46                     when E is literally λc s.B,
                                 hence also when E is beta-normal.
 ```
 
@@ -214,36 +279,201 @@ de Bruijn indices. The BLC size identity is
 |E|_BLC = 2L + 4V - 2 + X.
 ```
 
-Width three requires at least three distinct live binders. Two nonlinear
-binders add at least two occurrences beyond one per live binder, so
-`L ≥ 3` and `V ≥ 5`. For the three free variables of a width witness,
-order their ancestor binders from outermost to innermost and select one
-occurrence of each. Their zero-based indices are at least `2,1,0`,
-respectively, even when additional binders intervene. Thus `X ≥ 3`,
-giving 27.
+A width-three witness supplies three distinct live binders on one
+ancestor chain. The two incomparable nonlinear binders cannot both be
+among those three, so there are at least four live binders in total.
+Each requires a bound occurrence, and the two nonlinear binders require
+at least two further occurrences. Consequently `L ≥ 4` and `V ≥ 6`.
+For the three variables of the width witness, select one occurrence of
+each and order their ancestor binders from outermost to innermost.
+Their indices are at least `2,1,0`, respectively, even if other binders
+intervene. Thus `X ≥ 3`, giving the preliminary global bound
+`2·4 + 4·6 - 2 + 3 = 33`.
 
-For a literal interface, the internal width witness and the two internal
-nonlinear binders instead require at least three internal abstractions
-and five internally bound leaves. The live public variables `c,s` add
-two abstractions and two leaves. Every occurrence of `c` lies beneath
-the `s` binder and therefore adds at least one index unit, on a leaf
-distinct from the three internal witnesses. Hence `L ≥ 5`, `V ≥ 7`,
-and `X ≥ 4`, giving 40. Head normalization can increase BLC size, so
-this second argument does not give a 40-bit bound for arbitrary sources.
+For a literal interface, both the three-binder width witness and the
+incomparable nonlinear pair are internal. They require at least four
+internal live binders and six internally bound leaves. The live public
+variables `c,s` add two abstractions and two leaves. Every occurrence of
+`c` lies beneath `s` and adds at least one index unit, on a leaf distinct
+from the internal width witnesses. Hence `L ≥ 6`, `V ≥ 8`, and `X ≥ 4`,
+giving `2·6 + 4·8 - 2 + 4 = 46`.
 
-These inequalities are sharp for the stated syntax constraints, not for
-self-interpretation. The closed normal term
+Head normalization can increase BLC size. The literal-interface bound
+therefore does not transfer to an arbitrary source merely because its
+head normal form has two leading lambdas.
+
+The counts themselves are attainable. The closed term `Δ S` has 33 bits,
+width three, and two incomparable nonlinear binders; the literal
+`λc s.s (Δ S) c` has 46 bits and meets the internal counting constraints.
+Neither term is an interpreter. These are witnesses for the syntax
+counts, not proofs that either numerical interpreter bound is optimal.
+
+The repository's kernel-checked numerical lower bound remains the weaker
+18-bit theorem in `structural-bounds.md`. The 34- and 46-bit consequences
+also use the published width theorem and handwritten interface, counting,
+and exclusion arguments here.
+
+## Excluding a 33-bit interpreter
+
+The following handwritten argument excludes the equality case of the
+global count bound. It uses the kernel-checked incomparable-pair theorem,
+exact beta wire costs, and the two-nonlinear-binders theorem inside a
+literal interface, together with the head-decomposition result in
+`head-decomposition.md`. No closed-term enumeration is used.
+
+Choose a globally minimum interpreter `E`; existence follows from the
+proved 165-bit witness. Suppose its size is 33. Every beta reduct remains
+an interpreter, so each source redex is nonshrinking. Its head normal form
+exists and has exactly two leading lambdas. The literal-interface bound
+rules out two leading source lambdas. A neutral head under one leading
+lambda would already give the wrong head arity. Hence the head spine
+reaches a source redex after zero or one leading lambdas.
+
+### The head redex has only two possible contexts
+
+Equality in the counting bound gives `L=4,V=6,X=3`. All four binders are
+live, exactly two are nonlinear, each with two occurrences, and the other
+two are affine. A width witness supplies three live binders on one
+ancestor chain `W`. The fourth binder is one of the incomparable
+nonlinear pair; the other nonlinear binder belongs to `W`.
+
+The fourth binder is the literal closed `Δ`. It cannot contain a binder
+from `W`, since both would then be comparable with the nonlinear binder
+of `W`. Any `W` variable it could capture belongs to an affine ancestor
+of that nonlinear binder; its unique occurrence is already required in
+the width witness below that binder, outside the fourth binder's
+subtree. Capture is therefore impossible. Its body has no other binder
+and only its two bound occurrences, so it is `λd.d d`.
+
+If there is a leading source binder `y`, it is affine: a nonlinear root
+would be comparable with every binder, leaving no incomparable pair
+among the two available nonlinear binders. An argument at the selected
+head redex thus has at most one free occurrence, of `y`; without a
+leading lambda it is closed.
+
+Write the redex `(λx.B) A`, and use `k,f,D,g` from the exact wire-cost
+identity in `head-decomposition.md`. If `x` were affine, `k=1` and
+`f≤1` would give `(f-1)D-6-g<0`, contradicting minimality. Thus `x` is
+one of the two nonlinear binders.
+
+If `x` belonged to `W`, the width witness would lie inside `B`. Every
+non-leading `W` binder would also lie there, and a possible leading `y`
+would already spend its sole occurrence in that witness. The argument
+`A` would have no possible free leaf and no possible binder except the
+fourth binder, forcing `A=Δ`. Its exact wire change would then be
+`8-D-8-g=-D-g<0`: the outermost `W` binder has a width occurrence at
+depth at least two, and any other `W` binder has an ancestor reference
+in `B`. This is again impossible.
+
+Therefore the head redex's binder is `Δ`'s binder. All other leaves and
+non-leading binders lie in its argument. A leaf in any pending argument
+or other context could only be a leading `y`, but its sole occurrence
+is already needed in the argument's width witness. The source must be
+one of
 
 ```text
-H = λa.a (λb.b (λx.a b x))
+E = Δ N,
+E = λy.Δ A(y).
 ```
 
-has exactly 27 bits, width three, two nonlinear binders, and two live
-captures. The closed normal `λc s.s H c` has exactly 40 bits, two internal
-nonlinear binders, and three live captures. Neither term is claimed to be
-an interpreter. The repository's kernel-checked numerical lower bound
-remains the weaker 18-bit theorem in `structural-bounds.md`; the new
-27- and 40-bit consequences also depend on the published width theorem.
+Here `N` has three lambdas, four leaves, index sum three, width three,
+and one nonlinear binder. The open `A` has two lambdas, four leaves,
+index sum three, free `y` exactly once, and one internal nonlinear
+binder. Its width witness counts `y` among its three variables.
+
+Both arguments are beta-normal. Their three live variables lie on one
+chain, so an internal redex has no live binder in its argument. If that
+redex binder occurs `k` times, its body contains at least `k+2` leaves
+for the width witness, leaving at most `2-k` argument leaves. The
+nonlinear case `k=2` is impossible; the affine case has at most one
+free argument occurrence and strictly decreases wire size.
+
+### Normal argument shapes
+
+Let `T₃(a,b,c)` be an application tree containing each of `a,b,c` once,
+and let `T₄(a,b,c,c)` have exactly that four-leaf multiset. The width
+witness spends the full index sum `2+1+0`. The remaining occurrence
+must have index zero: before the next live binder or inside the
+innermost binder. Normality forces a variable exposed before a lambda
+block to be its function, since the reverse order would be a redex.
+Consequently `N` has one of exactly these three shapes:
+
+```text
+λa.a (λb c.T₃(a,b,c)),
+λa b.b (λc.T₃(a,b,c)),
+λa b c.T₄(a,b,c,c).
+```
+
+Since `y` is affine, `A(y)` has only the corresponding latter two shapes:
+
+```text
+λb.b (λc.T₃(y,b,c)),
+λb c.T₄(y,b,c,c).
+```
+
+If `A` has the latter shape, the source reduces to
+`λy c.T₄(y,A,c,c)`. Only the one inserted copy of `A` contributes an
+internal nonlinear binder; `y,c` are the public interface. This
+contradicts the two-internal-nonlinear theorem.
+
+For the former shape, every abstraction body in `A` has an application
+at its root. Starting from `A A`, a head contraction substitutes into
+such an application-rooted body and again leaves an application at the
+root. A head step in a function subterm also keeps the root application.
+Thus head reduction cannot expose another leading lambda. The source
+`λy.A A` is unsolvable or has only one leading lambda in head normal
+form, contrary to the exact head decomposition.
+
+For closed `N` with the innermost-duplication shape, `N N` reduces to
+`λb c.T₄(N,b,c,c)`, again with just one internal nonlinear binder.
+For its middle-duplication shape, `N N` reduces to
+`λb.b (λc.T₃(N,b,c))`, a head normal form with only one leading lambda.
+Both are excluded.
+
+### The remaining twelve linear layouts
+
+It remains to consider `N=λa.a (λb c.T₃(a,b,c))`. Define
+
+```text
+J(a) = λb c.T₃(a,b,c),
+N    = λa.a J(a),
+B    = J(J(N)).
+```
+
+Three head contractions give `N N →³ λc.T₃(N,B,c)`. The two binary
+application trees on the three distinct leaves have the following
+exhaustive classification:
+
+- The four `c`-headed layouts already give one leading lambda.
+  The layouts `(a c)b`, `a(c b)`, and `(b c)a` reduce respectively to
+  `λc.c J(c) B`, `λc.c B J(c B)`, and `λc.c N J(N)`.
+  These seven cases all have the wrong head arity.
+- If `T₃=(a b)c`, then `N` eta-reduces to `Δ`, and `N N` eta-reduces
+  to `Ω`. If `T₃=(b a)c`, then `N` eta-reduces to
+  `D=λa.a (λb.b a)`. Write `J₀(X)=λb.b X`. After its first step,
+  `D D` follows the exact head cycle
+  `D J₀(D) → J₀(D) J₀(J₀(D)) → J₀(J₀(D)) D → D J₀(D)`.
+  The cycle terms have no eta redex, and their only beta redex is the
+  displayed head redex. Applying either cycle to rigid `C` and the
+  beta-eta-normal quotation of source `I` leaves those arguments
+  pending forever. Beta-eta confluence rules out the required
+  beta-eta-normal result `C (λe x.x) Ntail`. This uses eta only in an
+  impossibility proof, not to relax the interpreter's beta contract.
+- If `T₃=a(b c)`, eight head contractions from `N N` give
+  `λc z.c J(B c) z J(c J(B c) z)`. Its rigid head has three arguments,
+  whereas the required output has two.
+- If `T₃=b(a c)`, five contractions give
+  `λc z.c J(c) (J(N) z)`, where `J(c)=λp q.p(c q)`.
+  After invocation the first payload is already normal and contains
+  rigid `C`; it cannot equal the closed normal value `λe x.x`
+  required for source `I`.
+- If `T₃=b(c a)`, four contractions give
+  `λc z.c N (z J(N))`. The first payload is the fixed normal `N`,
+  distinct from the required `λe x.x`; source `I` again excludes it.
+
+Every possible 33-bit minimum interpreter is therefore excluded. The
+unrestricted numerical lower bound is 34 bits. This last exclusion is
+handwritten, not a new Lean theorem.
 
 ## Joint sharpness by one shared S
 

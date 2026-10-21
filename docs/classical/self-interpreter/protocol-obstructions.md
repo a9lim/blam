@@ -981,6 +981,45 @@ closures do not satisfy this restriction: evaluation can return an arbitrary
 runtime argument. Enforcing such a domain therefore requires a changed
 value representation and a beta-exact root decoder.
 
+## A diagonal return projection cannot retain exact values
+
+A continuation-specific handler can expose its constructor operation and
+variable return operation as the two fields of a Scott pair. Consider
+Codex's proposed protocol
+
+```text
+h_C = lambda b. b H V_C
+V_C = lambda v k. C v (v v k)
+P_C(s) = s h_C h_C.
+```
+
+Here `H` is independent of `C`, so `h_C K` recovers the shared constructor
+operation and `h_C F` recovers `V_C`. On an actual variable stream
+`s = cons F r`, where `r = 1^(n-1)0 ++ N`, this return is correct:
+`r r ->* K N`, hence `P_C(s) ->* C r N`. This suggests using `h_C F`
+also to return constructor values, avoiding a separate captured `C`.
+
+That projection cannot return every ordinary exact value, even if the
+return code chooses its last operand `k` freely. For the closed source
+`M = lambda x y.x`, the required value is
+
+```text
+v =beta lambda e x y.x,
+v v k =beta lambda y.k.
+```
+
+For a fresh rigid remainder `N`, the latter term cannot be beta-equal to
+`N`: every reduct retains its leading lambda. Consequently
+`V_C v k` cannot equal `C v N` for rigid `C,N`, by Church-Rosser.
+Closed-source correctness and a transparent, context-independent root
+callback already force the displayed exact value, as proved above; no
+open-environment correctness assumption is needed.
+
+This is an obstruction to the stated diagonal return projection, not to
+all handler factories. A changed value representation with a public
+decoder, a different return projection, or an independently recovered
+continuation remains outside it. The argument is handwritten.
+
 ## Recursion entered through Scott handlers
 
 Two explicit constructions move recursive entry to the input stream's
@@ -1087,6 +1126,63 @@ is needed to see that this arrangement is larger. The shared-generator
 construction above does combine semantic application and parser entry,
 using a larger boxed interface. A protocol that makes such sharing cheaper
 than the 165 remains open.
+
+### A self-passed recursive context
+
+Codex's 191-bit construction uses the same mechanism as the exact
+remainder extractor in `remainder.md`: the input activates a context and
+passes another copy to the recursive calls. With `A` and `B` as defined
+above, write
+
+```text
+Q = lambda t u c d.
+      u d (lambda f.
+        t (c A(f))
+          (lambda v. v d (lambda g. c B(f,g)) d)) d,
+D = lambda b r. b (r Q) (lambda c d. c r (r r d)),
+P_c(s) = s D c D,
+E = lambda c s. (lambda d. s d c d) D.
+```
+
+`Q` occurs once inside `D`, and `D` occurs once in the finite source.
+The pending continuation and context arrive after the second input
+cell's tag and tail. There is no explicit fixed-point wrapper.
+
+On a variable stream `cons F r`, the parser returns
+`c r (r r D)`. The unary tail satisfies `r r ->* lambda _.N`, so the
+context is erased and the result is `c r N`. On a constructor stream,
+the equations give
+
+```text
+P_c(cons K (cons t u))
+  ->* P_(lambda f.
+           t (c A(f))
+             (lambda v. P_(lambda g. c B(f,g))(v)))(u).
+```
+
+The abstraction tag returns `A(f)` at the first child's suffix; the
+application tag parses the second child there and returns `B(f,g)`.
+These are the standard open-parser equations, with unchanged raw unary
+variable closures and environment operations. Structural parsing and the
+existing closure-denotation induction therefore give the exact closed
+source contract, including divergent source syntax and arbitrary suffixes.
+This derivation is handwritten; the construction has no separate Lean
+proof.
+
+The complete source has `L=19`, `A=28`, and `X=39`, giving 191 bits.
+`Q` costs 122 bits, its enclosing `D` costs 166, and the public interface
+and sharing application add 25. Thus this reuse improves the displayed
+Scott-handler constructions but remains larger than the 165-bit
+interpreter.
+
+The canonical files are
+`data/self-interpreter/machines/int191_selfpassed.{lam,blc}`.
+`tools/self-interpreter/theory/selfpassed.py` checks eight fixed symbolic
+clauses, the ordinary bounded contract battery, and exact suffix recovery
+for the divergent sources `Omega` and `lambda a.Omega`.
+`data/self-interpreter/theory/selfpassed.json` records the checks; current
+measurements are in `docs/STATUS.md`. The script checks this one explicit
+construction and performs no candidate search.
 
 ## Reproduction
 

@@ -78,6 +78,17 @@ each has exactly two nonlinear binders, both closed in isolation.
 Thus a live capturing binder need not itself be nonlinear, and neither
 normality nor the absence of a nonlinear capture raises this count.
 
+`Blc.SelfintNonlinearChain` strengthens the necessary arrangement: two
+nonlinear binders must be incomparable in the source ancestor order.
+It proves that putting all nonlinear binders on one chain is preserved
+by unrestricted beta reduction. Scott quotations and rigid public
+arguments add no nonlinear binders, while the required output for Ω
+contains two incomparable ones and reduces only to itself. This
+contradicts the exact beta-join contract. The public binders of a literal
+two-argument interface cannot witness incomparability, so the pair lies
+inside its body. `capture-width.md` gives the proof and numerical
+consequences with Statman's width obstruction.
+
 ## A live abstraction must capture an enclosing variable
 
 Call an abstraction *live* when its own bound variable occurs in its body.
@@ -118,8 +129,13 @@ and hence for a beta-normal interpreter. It applies Statman's published
 obstruction to a width-two term representing `S`: the closed quotation and
 interface arguments have width one, so the necessary width-three subterm
 must come from the interpreter. Combining that requirement with the
-nonlinear theorem gives 27- and 40-bit floors, respectively. The same
-document proves simultaneous sharpness of the width, capture, and nonlinear
+incomparable-binder theorem and the 33-bit exclusion gives 34- and 46-bit
+floors, respectively:
+the three live binders on the width witness's ancestor chain cannot
+contain both incomparable nonlinear binders, requiring a fourth live
+binder. The resulting 33-bit global floor rises to 34 by analytically
+excluding its equality cases. The same document proves simultaneous
+sharpness of the width, capture, and nonlinear
 counts by a shared-S construction. These additions are handwritten; they
 do not strengthen the kernel-checked numerical theorem above.
 

@@ -207,16 +207,25 @@ with all features (three opt-in tests ignored) and 328 with default features.
   literal 165. A 742-bit β-normal witness also has exactly two closed
   nonlinear binders, with its contract kernel-checked as β-joinability.
   Thus the minimum count two is attained even among β-normal interpreters.
+  `SelfintNonlinearChain` kernel-checks a stronger requirement: two
+  nonlinear binders must lie in incomparable branches of the source tree,
+  including wholly inside the body of a literal two-argument interface.
+  A single ancestor chain is preserved by beta reduction and cannot
+  produce the required two-branch Ω output from an affine quotation.
   Statman's published width obstruction, combined with a handwritten
   interface argument, strengthens the capture requirement: every interpreter
   has a subterm with three distinct free variables and at least two live
   capturing abstractions. A literal two-argument interface, including every
   beta-normal interpreter, needs three such internal variables and two
   internal captures, plus the public stream binder's capture of the
-  continuation. Together with the nonlinear theorem these give handwritten
-  bit floors 27 globally and 40 for literal interfaces; the Lean numerical
-  floor remains 18. A shared-S construction attains width three, two
-  nonlinear binders, and the required capture counts simultaneously, even
+  continuation. Together with the incomparable-binder theorem these give
+  handwritten bit floors 34 globally and 46 for literal interfaces;
+  the Lean numerical floor remains 18. The three live binders on the width
+  witness's ancestor chain cannot contain the incomparable pair, so a
+  fourth live binder is necessary. This gives a preliminary global floor
+  of 33; analytical exclusion of its equality cases raises it to 34.
+  A shared-S construction attains width three, two nonlinear binders,
+  and the required capture counts simultaneously, even
   in the beta-normal fragment with every zero-based index at most two.
   It is an existential structural construction, not a compact measured
   interpreter or an additive decomposition
@@ -331,15 +340,24 @@ with all features (three opt-in tests ignored) and 328 with default features.
   handler protocol. Lean proves `E E` cannot be β-equal to `E` for any
   exact interpreter, excluding an idempotent control response whose
   self-application would supply the full parser. Root transparency and
-  context independence already
-  force canonical closed internal values, sharpening the cell/APP collision.
+  context independence already force canonical closed internal values,
+  sharpening the cell/APP collision. A continuation-specific handler whose
+  variable projection returns `C v (v v k)` cannot also return every exact
+  constructor value: the closed source `K` forces `v v k =β λy.k`, which
+  cannot be a rigid suffix for any `k`. This excludes that projection,
+  not all handler factories.
   A representation that erases β distinctions cannot have an exact decoder
   using only that representation; closed two-sided β-inverse coercions are
   necessarily identities. A Scott-handler recursion arrangement costs
   196 bits with shared self-application, 206 without; both pass the
   667/1/0 battery and Ω suffix check in 3.5 seconds combined
   (`data/self-interpreter/theory/stream_handler.json`). The adapters still
-  cost more than the 165's parser interface.
+  cost more than the 165's parser interface. A self-passed context removes
+  the explicit fixed-point wrapper and costs 191 bits. Its eight fixed
+  parser equations, 667/1/0 battery, and Ω / λa.Ω suffix probes pass in
+  6.189 seconds (`data/self-interpreter/theory/selfpassed.json`); the full
+  structural correctness derivation is handwritten. The context costs
+  166 bits and the public interface and sharing application add 25.
   A proper one-sided applicative retraction preserves application exactly:
   `D(A x) →* x` and `(A x)(A y) →* A(x y)`. Its seven rigid equations and
   two distinct-normal-form checks pass; a scoped missing-variable argument
