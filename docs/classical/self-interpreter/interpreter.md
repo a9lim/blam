@@ -211,7 +211,17 @@ Around the 162:
 
 The 162's reader with NEXT let-bound measures 166, and NEXT as the last
 operand of a λ-handler `\b \r. b r (\t. cont r (r r t))` measures 168
-(`merges.py`).
+(`merges.py`). Two reasoning lanes on the 162 found nothing smaller; their
+correct variants are select-first 163, `cont` as the skip's erased operand
+164, a shared-return NEXT 166, a whole-prefix variable value with an adjusted
+cell 169 (also 3,341/2/0 through 21 bits), the reader `λb. b I W` 169, a
+dispatch before the first parse 170, and a reader-diagonal knot 196 that is
+β-equivalent to the 162. Within the `s I` family the operands are forced:
+with more than two, the surplus reaches the rigid `C` through a variable's
+return; the second must be NEXT; and the variable arm costs at least 28
+bits by a case analysis whose base is checked on 412 terms through 14 bits,
+though not exhaustively through 27
+(`data/self-interpreter/reasoning_floor/golf162*/`).
 
 Around the 165:
 

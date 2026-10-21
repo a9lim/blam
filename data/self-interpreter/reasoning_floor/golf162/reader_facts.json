@@ -1,0 +1,70 @@
+{
+  "identities": [
+    {
+      "name": "zero_reader",
+      "equal": true
+    },
+    {
+      "name": "unary_one",
+      "equal": true
+    },
+    {
+      "name": "unary_two",
+      "equal": true
+    },
+    {
+      "name": "reader_K",
+      "equal": true
+    },
+    {
+      "name": "reader_F",
+      "equal": true
+    },
+    {
+      "name": "reader_I",
+      "equal": true
+    },
+    {
+      "name": "reader_constant",
+      "equal": true
+    },
+    {
+      "name": "reader_double_constant",
+      "equal": true
+    },
+    {
+      "name": "reader_Z",
+      "equal": true
+    },
+    {
+      "name": "reader_singleton",
+      "equal": true
+    },
+    {
+      "name": "reader_diagonal",
+      "equal": true
+    },
+    {
+      "name": "reset_F",
+      "equal": true
+    }
+  ],
+  "head_obstructions": [
+    {
+      "name": "diag161",
+      "program": "0010",
+      "head": "N",
+      "wanted_head": "C",
+      "arguments": 3,
+      "beta_steps": 48
+    },
+    {
+      "name": "handler157",
+      "program": "0010",
+      "head": "N",
+      "wanted_head": "C",
+      "arguments": 2,
+      "beta_steps": 30
+    }
+  ]
+}

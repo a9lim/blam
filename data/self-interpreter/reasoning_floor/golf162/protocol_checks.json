@@ -1,0 +1,123 @@
+{
+  "cell": [
+    {
+      "name": "shifted_cell_one",
+      "equal": true
+    },
+    {
+      "name": "shifted_cell_two",
+      "equal": true
+    },
+    {
+      "name": "shifted_cell_three",
+      "equal": true
+    }
+  ],
+  "suffix": [
+    {
+      "machine": "int162.lam",
+      "program": "Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "int162.lam",
+      "program": "lambda_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "int162.lam",
+      "program": "Omega_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "reset_cont164.lam",
+      "program": "Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "reset_cont164.lam",
+      "program": "lambda_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "reset_cont164.lam",
+      "program": "Omega_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "shared_return.lam",
+      "program": "Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "shared_return.lam",
+      "program": "lambda_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "shared_return.lam",
+      "program": "Omega_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "direct_dispatch.lam",
+      "program": "Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "direct_dispatch.lam",
+      "program": "lambda_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "direct_dispatch.lam",
+      "program": "Omega_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "whole_prefix.lam",
+      "program": "Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "whole_prefix.lam",
+      "program": "lambda_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "whole_prefix.lam",
+      "program": "Omega_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "continuation_last.lam",
+      "program": "Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "continuation_last.lam",
+      "program": "lambda_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "continuation_last.lam",
+      "program": "Omega_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "constant_stream_knot.lam",
+      "program": "Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "constant_stream_knot.lam",
+      "program": "lambda_Omega",
+      "suffix_exact": true
+    },
+    {
+      "machine": "constant_stream_knot.lam",
+      "program": "Omega_Omega",
+      "suffix_exact": true
+    }
+  ]
+}

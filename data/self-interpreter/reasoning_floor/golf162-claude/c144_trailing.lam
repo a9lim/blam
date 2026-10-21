@@ -1,0 +1,8 @@
+-- 144 bits, FAILS: handler \b. b I cont with NEXT trailing; the variable arm returns cont r NEXT (three
+-- arguments at the rigid continuation on lambda-bodies that are variables).
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\b. b (\a. a) cont)
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

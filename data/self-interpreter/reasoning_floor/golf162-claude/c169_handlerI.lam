@@ -1,0 +1,8 @@
+-- 169 (predicted): handler form with the I zero arm and NEXT as the trailing operand,
+-- variable arm W = \r \u. cont r (r r u) eats NEXT as the skip's forcer.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\b. b (\a. a) (\r \u. cont r (r r u)))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

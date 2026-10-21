@@ -45,3 +45,6 @@ tag uses; reviewed correct, `verify/vnext_codex.md`; now in
 181–240 bits, and a value-collision obstruction). The reader-proof lane's
 narrowed "Theorem S" was also refuted in review (`verify/vreaderS_codex.md`),
 which is where the 162's reader came from.
+Golf lanes on the 162 (`golf162`, Codex; `golf162-claude`): no sub-162;
+variants 163–196, refuted 157/161 attempts, the `s I` family's operand
+forcing and a conditional minimality map (now in `interpreter.md` §3).
