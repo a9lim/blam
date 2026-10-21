@@ -195,8 +195,9 @@ stops at an outer lambda or a rigid variable head. The theorem concerns this
 specific evaluation strategy; it does not assert growth on every successful
 beta trace.
 
-Codex's argument below has independent written review. The growth theorem
-is not mechanized. In particular, it is stronger than the preceding
+Codex's argument below has independent written review. The complete growth
+theorem is not mechanized; the kernel-checked components are listed below.
+In particular, it is stronger than the preceding
 kernel-checked two-nonlinear-binder theorem: a nonlinear contraction can
 recycle code without increasing its count, as `Δ Δ → Δ Δ` demonstrates.
 There is no numerical bound on `n`, on the time of the growth step, or on
@@ -255,19 +256,21 @@ bodies of program lambdas, treat those lambdas and free variables as opaque
 heads, and evaluate each application with the displayed finite table. Write
 `B(t)` for this full data normal form. These are only data contractions
 under a program lambda; no program contraction is performed there. The
-data rewrite system is orthogonal, so its normal form is unique and data
-reduction commutes with substitution up to this normal form. Data reduction
-never duplicates a program lambda or a variable occurrence.
+normalizer is invariant under every data step, and data reduction commutes
+with substitution up to this normal form. These statements follow directly
+from the application table and its reduction traces. Data reduction never
+duplicates a program lambda or a variable occurrence.
 
-An infinite weak-head execution cannot consist eventually of data steps
-alone. The finite data normalizer supplies a trace to data normal form.
-Each data head rule is affine, so commuting an earlier non-head data step
-past it leaves at most one residual step. A finite trace to a head-normal
-form must eventually contract the persistent head redex. Move that
-contraction to the front and induct on the shortened finite trace. This
-proves termination of the deterministic data head strategy, without
-asserting that mere weak normalization would terminate an arbitrary
-reduction strategy.
+In fact every data-reduction order terminates. Assign each application-table
+case its exact contraction count, from zero through five, and let `cost(t)`
+be the total cost of the recursive full normalizer. A K contraction removes
+the erased operand's cost plus one. A Z contraction removes exactly one:
+the table cost equals one plus the costs of its two new applications.
+Under a context, the normal values supplied to the surrounding table calls
+are invariant, so the same strict decrease remains. Every data step
+therefore decreases the natural number `cost(t)`, even under program
+lambdas. In particular, an infinite weak-head execution cannot consist
+eventually of data steps alone. `SelfintGrowthHead` checks this cost argument.
 
 Now suppose, for contradiction, that the infinite-zero head execution
 never increases the program-lambda count. Its infinitely many program
@@ -303,20 +306,22 @@ particular, no `K` or Scott projection can erase a program-bearing argument.
 
 ### The finite transient in a constant-count phase
 
-Mark all program lambdas present at the start of this phase as old. A copy
-created by a subsequent program contraction is new. Every copied argument
-contains exactly one program lambda and is closed, because the contraction
-is on the global head of a closed term. Its sole lambda `D` is therefore
-closed when considered in isolation and has an application-only body. Call
-such a lambda flat. Its body is already in full data normal form.
+Call a program lambda flat when it is closed in isolation and its body
+contains no program lambda. Every copied argument contains exactly one
+program lambda and is closed, because the contraction is on the global
+head of a closed term. Its sole lambda is therefore flat.
 
-Every new lambda is consequently a closed flat template. While it survives,
-its body cannot change: an outside substitution does not affect a closed
-term, its body has no program lambda or data redex, and contracting its own
-binder consumes it. Only old lambdas can be nonflat or refer to an enclosing
-program binder. Each old head contractor is consumed once. Copying an old
-lambda produces new copies, so it does not replenish the old population.
-After finitely many further steps, no old lambda is ever a head contractor.
+Count all nonflat program lambdas. Substitution preserves every existing
+closed flat lambda and copies no nonflat lambda from a closed one-lambda
+operand. Data reduction also preserves flatness. This count is thus
+nonincreasing, and strictly decreases whenever the head contractor is
+nonflat. After finitely many further steps, every head contractor is flat.
+
+The surviving flat templates have bodies already in full data normal form.
+Their bodies cannot change: outside substitution fixes a closed term,
+there is no internal program lambda or data redex, and contracting a
+template's own binder consumes it. The finite-transient assertion needs
+neither a label on every original binder nor an inventory of templates.
 
 Every closed data-normal value with exactly one program lambda has one of
 the forms
@@ -350,7 +355,7 @@ a new closed block also increases it. After finitely many further steps,
 there are no blocked-operand copies and no new blocks.
 
 At the end of this finite transient every head contractor is a closed flat
-template, and every copied argument has form `Kⁿ D`. Old or blocked
+template, and every copied argument has form `Kⁿ D`. Nonflat or blocked
 lambdas may remain farther down the pending spine, but cannot become the
 active contractor or copied operand.
 
@@ -411,19 +416,16 @@ tail into either template.
 
 Write the stabilized template as `D=λx.A`. Evaluate its fixed finite body
 `A`, treating the canonical value `Kᑫ D` substituted for `x` as one leaf.
-The data application table increases the largest label by at most two per
-table call, including its intermediate reductions. The factor two matters:
-`Zᵢ(K Zⱼ)` passes through `Zⱼ Zᵢ₊₁` and creates a discarded `Zᵢ₊₂` before
-reaching `K Zⱼ₊₁`.
+Every data application-table call takes at most five K/Z contractions,
+and every contraction increases the largest label by at most one.
 
-The recursive evaluation follows the fixed syntax of `A`. Its variable
-leaf may have any number of `K` wrappers, but those wrappers carry no
-labels and normalizing their applications creates no new label. The copies
-of `D` also have their fixed, already-normalized bodies. Hence a bound
-consisting of the largest fixed label plus twice the number of application
-nodes in `A`, enlarged by a fixed table margin, covers every intermediate
-label in every stable body evaluation. It is independent of the wrapper
-counter.
+The recursive evaluation follows the fixed syntax of `A`. The substituted
+leaf may have arbitrarily many `K` wrappers, but it is already canonical
+and needs no normalization step. The copies of `D` also have their fixed,
+already-normalized bodies. If `L₀` bounds the labels in `A,D`, every
+intermediate label in this chosen body-normalization trace is at most
+`L₀ + 5 apps(A)`. The bound is independent of the wrapper counter and
+includes labels subsequently erased by a data contraction.
 
 Every newly pushed program-free value satisfies that bound. The old
 pending spine is finite at the start of the stable phase and already data
@@ -467,3 +469,23 @@ its required output contributes no new program lambda. This is a
 qualitative computational obstruction; it supplies neither a sharp bit
 bound for remainder extraction nor an additive price for the two
 self-interpreter projections.
+
+### Kernel-checked components and remaining synthesis
+
+The `SelfintGrowth` modules check the following components against the same
+labelled syntax used by `SelfintZero`:
+
+| Module | Checked result |
+| --- | --- |
+| `SelfintGrowthBlue` | Full data normalization, substitution compatibility, and preservation of an exposed non-growing program head contraction. |
+| `SelfintGrowthBlocks` | Permanent closed blocks survive substitutions; in a constant-count phase, selected blocked-operand copies are bounded by the initial program-lambda count. |
+| `SelfintGrowthOrigins` | The nonflat-lambda counter decreases at each nonflat head contraction, bounding those events in a closed constant-count phase. |
+| `SelfintGrowthLabels` | A fixed application-only body's data evaluation takes at most five steps per application, uniformly in the size of its canonical operand, with every intermediate label bounded. |
+| `SelfintGrowthStable` | Closed one-code operands and block-free two-copy values have the stated wrapper/spine forms; flat-body transitions and their label bounds follow. |
+| `SelfintGrowthSimulation` | A uniformly bounded-label trace realizes on a finite zero prefix, and its selected program head steps are bounded by that realization's weak-head clock. |
+| `SelfintGrowthHead` | Strict data-cost descent, deterministic extended head execution, finite realization by actual weak-head steps, and infinite-zero nontermination from the exact suffix contract. |
+
+These are supporting theorems, not a packaged proof of remainder growth.
+The synthesis from an arbitrary nongrowing infinite head execution to a
+uniformly bounded stable execution remains to be mechanized. Current build
+and axiom-audit results are recorded in `docs/STATUS.md`.

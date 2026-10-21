@@ -327,9 +327,11 @@ The independently reviewed handwritten theorem in `remainder.md` also
 forces strict interpreter-code growth on some ordinary weak-head trace
 of every exact remainder extractor, using a valid source `λⁿ.I` and
 suffix `I`. The proof bounds the labels accessible to a constant-count
-infinite-zero execution. `Blc/WeakHeadClock.lean` mechanizes its supporting
-head-clock argument; the growth theorem itself remains handwritten and
-gives no numerical size bound.
+infinite-zero execution. `Blc/WeakHeadClock.lean` and the `SelfintGrowth`
+modules mechanize the head clock, data normalization, both finite-event
+counters, stable value forms, fixed-body label bounds, and finite-prefix
+simulation. Their synthesis into the full growth theorem remains
+handwritten and gives no numerical size bound.
 
 **Duplication.** At least two syntactic binders of `E` occur at least twice.
 Lean proves that every term with at most one such binder weakly normalizes;
@@ -428,7 +430,11 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   has no affine source redex and exactly four or five applications.
   At four applications it must be beta-normal; the `(A,L,k)=(4,4,2)`
   normal shape is also excluded, with `k` the number of leading lambdas.
-  Other normal shapes and five-application nonlinear compression stay open.
+  Without free `s`, every affine handler fails its variable law, and a
+  live-binder-antichain theorem also excludes nonaffine handlers. These
+  close every five-application compressed case without free `s`; only
+  the leaf allocation `u,u,j,c,s,v` remains in the compressed case.
+  Other normal shapes stay open.
 - **The zero arm costs at least 14 bits**, even with `bit0 := K` and the whole
   zero cell available to borrow. With `R` absent and the neighbours rigid,
   `Z R R = R next` forces the normal form `λu v. u next` (15) or

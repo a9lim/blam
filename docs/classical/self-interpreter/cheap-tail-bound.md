@@ -1283,6 +1283,153 @@ law. Thus the affine argument covers every remaining case.
 
 This excludes the one-leading-lambda shape at the 30-bit budget.
 
+## Affine handlers without whole-stream access
+
+The following handwritten theorem has been independently reviewed; it is not a
+Lean theorem. It uses the `T=s` variable law alone and allows arbitrary affine
+source beta redexes, but requires the handler to have no free `s`.
+
+Let
+
+    F = λa b.b,
+    P₀(N) = λh.h K N,
+    Pᵢ₊₁(N) = λh.h F (Pᵢ(N)).
+
+A term is affine when every lambda binder has at most one occurrence. Count
+every lambda and application in H, including any source redexes, as L and A
+respectively. The free variables of H are fixed rigid ambient variables,
+including c if used; H contains neither the stream variable s nor the fresh
+suffix variable N.
+
+**Theorem.** If H is affine, then for every integer m>A+2L+5,
+
+    H F (Pₘ₋₁(N)) (Pₘ(N)) ≠β c (Pₘ₋₁(N)) N.
+
+Consequently no affine handler without free s satisfies the whole-stream
+variable law for every unary length. No zero-branch law, normal-form
+assumption on H, or wire-size bound is needed.
+
+### One-stream application-edge lemma
+
+Let C[-] be an affine one-hole context with N absent, and place one P_b(N) in
+its hole. Suppose a beta-reduction reaches a normal term containing N as a
+bare leaf outside every residual original Scott cell. Then
+
+    b+1 ≤ A(C),
+
+where applications inside the inserted P_b(N) are excluded from A(C).
+
+Give the initial applications of C persistent marks, and give the applications
+initially inside P_b(N) no marks. Affine beta reduction never copies any
+application node or N occurrence. Since the final term contains N, its sole
+origin is never erased.
+
+Every original Scott cell whose tail contains N must have its own lambda
+contracted before N becomes bare. An uncontracted original cell is a
+beta-normal subterm closed except for rigid N; no outside substitution can
+change its body or extract its tail. Erasing it would erase the sole N.
+
+We claim every such contraction consumes a marked application node. An
+unmarked application belongs to a cell body
+
+    (h bit) tail,
+
+where bit is F or K. Before this cell's lambda contracts, its whole body is
+normal. When that lambda contracts with callback a, the two application nodes
+become
+
+    (a bit) tail.
+
+The unique N remains in tail, so a and bit contain no N. While the outer node
+survives, that N stays in its argument subtree: reductions inside the argument
+keep it there or erase it, reductions outside move the whole node, and a
+substitution into the function cannot supply a second N. To move the argument
+into a callback body, the outer node itself must contract and disappear. Thus
+this outer node cannot ever have an N-containing residual stream as its
+function.
+
+The paired inner node a bit also cannot acquire N in its function. As long as
+the paired outer node survives, N is confined to the other side. Before the
+outer node can contract, its function a bit must become a lambda; this
+requires the inner application node to contract or disappear first. It
+therefore cannot survive that transfer and subsequently become an application
+of an N-containing stream. Erasing the N-bearing tail instead would lose N
+permanently.
+
+There are no application nodes inside the Boolean bodies. These are all
+unmarked origins. Consequently every original Scott-cell contraction consumes
+a distinct initially marked node, proving the bound. This argument tracks
+syntactic residual nodes, not the numerical size of an intermediate reduct.
+
+### A long output spine retains an original cell
+
+Assume the claimed reader equality. The whole application is affine, so it
+beta-normalizes, and by confluence its normal form is the displayed normal
+target.
+
+Distinguish the two initial suffix occurrences as fresh rigid N₁ and N₂.
+Replay the same reduction with those labels. Affinity prevents duplication,
+and the target has two suffix occurrences, so neither origin was erased. The
+labeled target is therefore
+
+    c (Pₘ₋₁(Nα)) Nβ,           {α,β}={1,2}.
+
+Every Scott binder on the outer spine of Pₘ₋₁(Nα) has body headed by its own
+variable with exactly two arguments. At most L such binders can originate in
+H. None can originate in an input Boolean:
+
+* a surviving vacuous Boolean binder stays vacuous under capture-avoiding
+  substitution;
+* the live binder of F has body consisting of that variable alone, even after
+  its vacuous outer binder disappears;
+* the outer live binder of K, while it survives, retains its normal body λb.a;
+  its inner binder is vacuous.
+
+These are syntactic facts about surviving binders. No eta conversion is used,
+and a Boolean merely being extensionally related to some term does not
+suffice.
+
+The output spine has m Scott binders. Since m>L, it contains an original
+input-cell binder. Choose the first one from the outside, after d output
+cells. All d preceding binders must originate in H, so d≤L. This original cell
+is the intact subterm
+
+    Pᵢ(Nα),             i=m−1−d ≥ m−1−L.
+
+It is intact because the original cell was beta-normal and closed except for
+Nα. Outside substitution cannot change it, and contracting its own binder
+would destroy that binder's origin. The original input containing this cell is
+either Pₘ₋₁(Nα) or Pₘ(Nα), so there are at most d+1≤L+1 cells above it there.
+
+### Replace the retained island and apply the edge bound
+
+Replace this original surviving cell by a fresh rigid variable z in the
+initial term. Replay all the previous contractions outside its unique
+residual. None contracted inside the cell, and none erased it; treating it as
+opaque therefore preserves every contraction. Capture-avoiding shifts of z
+follow the same surrounding binders as the replaced cell. The final target is
+the same c-headed term with its retained cell replaced by z, and with Nβ still
+a bare final argument.
+
+The reserved input now has at most L+1 Scott cells, ending in z. The other
+input is still P_b(Nβ), with b=m−1 or b=m, and has at least m cells. All of Nα
+was inside the replaced cell and has disappeared. The remaining context around
+P_b(Nβ) is affine, contains no Nβ, and has at most
+
+    A + 3 + 2(L+1) = A+2L+5
+
+applications: A in H, the three external reader applications, and two for each
+cell of the truncated other input. Boolean bodies add no applications.
+
+The one-stream lemma now requires
+
+    m ≤ b+1 ≤ A+2L+5,
+
+contrary to the chosen m. This proves the theorem. It excludes every affine
+no-`s` handler for `T=s`, including affine reducts of non-affine source
+handlers. It does not exclude handlers that retain a nonlinear binder or use
+the whole stream freely.
+
 ## Compression constraints for the whole-stream operand
 
 The following results concern `T=s` at its improving budget `|H|≤34`.
@@ -1577,6 +1724,95 @@ Thus the normal form fails in every case. A minimum successful
 whole-stream handler with four applications must be beta-normal;
 only five-application nonlinear compression remains at this budget.
 
+### The remaining five-application compression shapes
+
+At `A=5`, the improving budget and the source-lambda floor give
+
+```
+L=3, X≤6,              or              L=4, X≤4.
+```
+
+Choose a nonlinear redex with binder `u`. Its two mandatory bound
+occurrences and the rigid `j,c` use four of the six variable leaves.
+If every other source binder is vacuous, contracting `u` leaves
+all-vacuous code and fails.
+
+When `s` is absent and there is at most one other live binder,
+the live-binder-antichain theorem below excludes the reduct. If
+that binder lies inside the copied argument, its copies are
+disjoint live islands and every other binder is vacuous. Otherwise
+only that one live binder remains, possibly with more occurrences.
+This includes a third occurrence of `u`, a repeated occurrence of
+the other binder, and an additional rigid ambient leaf.
+
+If `s` is present, the only remaining leaf allocation is
+
+```
+u,u,j,c,s,v,
+```
+
+where `v` is the sole occurrence of a distinct live binder. The
+post-contraction code has stream access, so the no-stream theorems
+do not settle this allocation.
+
+If `s` is absent, the only remaining allocation is
+
+```
+u,u,j,c,v,w,
+```
+
+with `v,w` bound by distinct affine binders. After contracting `u`,
+the affine no-stream theorem excludes the reduct whenever it is
+still affine. It can become nonaffine only if the copied argument
+contains a free occurrence of `v` or `w` whose binding lambda lies
+outside that argument. The following argument excludes these last
+enclosing-binder placements as well.
+
+For `L=4`, the bound `X≤4` permits no initial leading lambda:
+the mandatory `j,c` below one would already contribute five.
+Follow the source's left application spine. A rigid head fails the
+zero law. A lambda at its head must bind `u`, since every other
+source binder is affine and the minimum has no affine source
+redex. Thus the `u` redex lies on this application spine, with no
+enclosing lambda. Its argument cannot contain a free occurrence
+bound by another source lambda: such a binder would have to enclose
+the redex. The reduct is therefore affine and already excluded.
+
+For `L=3`, call the copied argument `D`. If it contains no lambda,
+contracting `u` leaves at most two source lambdas. The unrestricted
+no-`s` two-source-lambda corollary below excludes that reduct.
+Otherwise `D` contains one of the other two binders, say `b`, and
+the copied free occurrence is bound by the remaining binder `a`
+outside `D`. Thus `a` encloses the `u` redex and also encloses
+`b`: all three source lambdas lie in this one `a` block.
+
+The `a` block must be the whole handler. If it is applied in
+function position, it gives an affine source redex, forbidden by
+minimality. If it is in argument position, all source lambdas are
+inside that argument and the outside head is rigid `j/c`, which
+cannot satisfy the zero law. Consequently `H=λa.T`.
+
+On the variable branch, first substitute the closed affine Boolean
+`F` for `a`, then contract the source `u` redex. Call the resulting
+term `T_F`. The binder `b` is inside `D`, so its copies remain affine;
+the only formerly free bound occurrence in `D` has become `F`.
+Every lambda in `T_F` is therefore affine, and `T_F` has no free `s`.
+The affine handler
+
+```
+H′ = λignored.T_F
+```
+
+has exactly the same variable behavior as `H`:
+`H′ F Pₘ₋₁ Pₘ =β H F Pₘ₋₁ Pₘ`. The affine no-stream theorem
+excludes this equality for all sufficiently large `m`. No zero law
+for `H′` is needed. This closes the final no-`s` placement without
+requiring a special shape for `D`.
+
+Thus all no-`s` five-application nonlinear compression is excluded.
+The only remaining compressed allocation at the improving budget
+is `u,u,j,c,s,v`, with `v` bound by one affine source lambda.
+
 ## Normal whole-stream handlers with at most three applications
 
 Write `P=cons K R` on the zero input and `S=Pₘ(N)`,
@@ -1629,6 +1865,54 @@ becomes head `N`, contradicting the variable head `c`.
 
 Thus a normal no-`s` handler with at most one live source binder
 fails, regardless of the number of that binder's occurrences.
+
+### A live-binder antichain also fails
+
+This consequence does not assume normality, affinity, or a size
+bound. Call a binder live when it has at least one bound occurrence.
+Suppose `H` contains no free `s`, and no live binder lies in the
+body of another live binder. The condition refers to binding
+identities and their residuals under capture-avoiding substitution,
+not merely to variable names. It restricts all live binders,
+including affine ones.
+
+Beta reduction preserves this antichain condition. A vacuous
+contraction only discards its argument and exposes an existing
+body. At a live redex `(λu.B) D`, the body `B` contains no other
+live binder, and every enclosing binder is vacuous. Substitution
+therefore inserts any copies of the live islands in `D` only
+beneath vacuous binders. It neither nests them inside a surviving
+live binder nor nests them inside each other. Capture avoidance
+prevents a vacuous binder from acquiring a new bound occurrence.
+Erasing a binder's last occurrence can only remove it from the
+live set.
+
+Successful application to `K,R,P` would imply that `H` has a head
+normal form. A rigid head cannot produce the required zero head
+`R`. A head variable bound by a leading lambda makes that binder
+live. Every other surviving live binder would then be inside its
+body or, if earlier on the leading lambda chain, would contain it.
+Both possibilities violate the preserved antichain. Thus this
+head normal form has at most one live binder in its entire syntax.
+
+Every internal redex is consequently vacuous: the only live
+binder is on the unapplied leading chain. These internal reductions
+terminate by strictly deleting syntax, giving a full beta-normal
+form with at most one live binder. The preceding no-`s` obstruction
+excludes it. Hence no handler with a live-binder antichain and no
+free `s` can satisfy both whole-stream reader laws.
+
+### Two source lambdas without s
+
+An arbitrary no-`s` handler with at most two source lambdas also
+fails, with no size or normal-form assumption. The antichain theorem
+handles every case except exactly two nested live binders. In that
+case, the argument of a source redex cannot contain the other
+lambda: the other binder is either an ancestor of the redex or is
+inside its body. Contracting any source redex therefore leaves at
+most one source lambda, which satisfies the antichain condition and
+is excluded. If no source redex exists, the earlier arbitrary-size
+floor for beta-normal handlers with at most two lambdas applies.
 
 ### Zero, one, or two applications
 
@@ -1861,7 +2145,10 @@ would have no affine source redex, at least three source lambdas,
 and exactly four or five applications. At four applications it
 must be beta-normal. The three-leading-lambda special case and
 the normal shape `(A,L,k)=(4,4,2)` are also excluded. The remaining
-normal shapes and five-application nonlinear compression are open.
+normal shapes must either use `s` or have nonaffine, nested live
+binders. Five-application nonlinear compression remains only with
+the leaf allocation `u,u,j,c,s,v`, where `u` binds the nonlinear
+redex and `v` is the sole occurrence of one other live binder.
 Neither the independence assumptions on the ambient continuations
 nor the specified reader interface have been removed. This is not
 a global optimality theorem for the 165-bit interpreter.

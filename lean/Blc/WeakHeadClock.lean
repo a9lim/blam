@@ -129,6 +129,39 @@ theorem head_decreases {t u : Term} {n : Nat} (hc : Count t n)
     subst he
     exact ⟨_, Nat.lt_succ_self _, hd⟩
 
+theorem head_nonlam_weak {t u : Term} (h : HeadStep t u)
+    (hn : ∀ b, t ≠ .lam b) : weakStep t = some u := by
+  induction h with
+  | beta b a => rfl
+  | appL a hnl h ih => exact weak_app (ih hnl) a
+  | under h ih => exact (hn _ rfl).elim
+
+theorem head_stop_weak {t : Term} (h : headStep t = none) : weakStep t = none := by
+  induction t with
+  | var | lam => rfl
+  | app f a ihf iha =>
+    cases f with
+    | var => rfl
+    | lam b => simp only [headStep] at h; cases h
+    | app g b =>
+      simp only [headStep, Option.map_eq_none_iff] at h
+      simp only [weakStep, ihf h, Option.map_none]
+
+/-- Ordinary beta normalization supplies a finite weak-head clock. -/
+theorem hasNormalForm_count {t : Term} (h : HasNormalForm t) : ∃ n, Count t n := by
+  obtain ⟨k, p, hk, hp⟩ := hasNormalForm_headTerminates h
+  have hr := headReds_of_headSteps k hk
+  clear h hk
+  induction hr with
+  | refl t => exact ⟨0, .stop (head_stop_weak hp)⟩
+  | @head t u v n hs ht ih =>
+    cases t with
+    | lam b => exact ⟨0, .stop rfl⟩
+    | var i => cases hs
+    | app f a =>
+      obtain ⟨n, hn⟩ := ih hp
+      exact ⟨n + 1, .step (head_nonlam_weak hs (by intro b h; cases h)) hn⟩
+
 /-- Selected head contractions, interspersed with arbitrary beta steps. -/
 inductive Interleaved : Nat → Term → Term → Prop where
   | refl (t : Term) : Interleaved 0 t t

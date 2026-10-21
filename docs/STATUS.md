@@ -200,8 +200,13 @@ with all features (three opt-in tests ignored) and 328 with default features.
   three-application normal cases and all nonlinear compression through
   four applications are excluded. A four-application minimum must be
   beta-normal; the normal `(A,L,k)=(4,4,2)` shape is also excluded,
-  where `k` counts leading lambdas. Other normal shapes and nonlinear
-  five-application compression remain open
+  where `k` counts leading lambdas. Without free stream access, every
+  affine handler fails the variable law once `m>A(H)+2L(H)+5`; a
+  separate live-binder-antichain obstruction also allows nonaffine redexes.
+  These exclude all five-application nonlinear compression without free
+  `s`. The only remaining compressed leaf allocation is `u,u,j,c,s,v`,
+  where `u` is the contracted nonlinear binder and `v` belongs to one
+  affine source binder. Other normal shapes remain open
   (`classical/self-interpreter/cheap-tail-bound.md`,
   `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
@@ -282,12 +287,20 @@ with all features (three opt-in tests ignored) and 328 with default features.
   correctness. It gives neither an explicit `n` nor a bit-size bound,
   and does not quantify over every successful trace.
   `WeakHeadClock` kernel-checks the supporting bound on head contractions
-  interspersed with arbitrary beta reductions; the full growth theorem
-  remains handwritten.
-  Integrated `lake build Blc` passes all 35 jobs; a seventeen-theorem
+  interspersed with arbitrary beta reductions. The seven `SelfintGrowth`
+  modules additionally check data normalization and nongrowth transport,
+  bounded blocked-copy and nonflat-head events, the stable two-copy
+  value classification, uniform fixed-body label bounds, and finite-prefix
+  simulation with a head-clock bound. An exact data-normalizer cost proves
+  strong normalization of every data-reduction order; the extended head
+  machine and exact-remainder nontermination are also checked. The complete
+  infinite-execution synthesis remains handwritten.
+  Integrated `lake build Blc` passes all 42 jobs; a seventeen-theorem
   audit across `SelfintZero`, `SelfintProjections`, and `SelfintInert` uses only
   `propext` and `Quot.sound`, as does a separate four-theorem
-  `WeakHeadClock` audit.
+  `WeakHeadClock` audit. Of twenty-two audited growth-support theorems,
+  twenty-one use at most those axioms; the infinite-execution event
+  extraction additionally uses `Classical.choice`.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
   `typed-normal.md`): the β-normal interpreter is 204 bits
   (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,

@@ -29,3 +29,10 @@ import Blc.SelfintZero
 import Blc.SelfintProjections
 import Blc.SelfintInert
 import Blc.WeakHeadClock
+import Blc.SelfintGrowthBlue
+import Blc.SelfintGrowthBlocks
+import Blc.SelfintGrowthOrigins
+import Blc.SelfintGrowthLabels
+import Blc.SelfintGrowthStable
+import Blc.SelfintGrowthSimulation
+import Blc.SelfintGrowthHead
