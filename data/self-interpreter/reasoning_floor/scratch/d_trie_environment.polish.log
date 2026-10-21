@@ -1,0 +1,3 @@
+polish d_trie_environment.lam: exit=0 seconds=2.834
+/Users/a9lim/Work/blam/tmp/overnight/scratch/d_trie_environment.lam: 299 bits  ok=667 skip=1 fail=0  /Users/a9lim/Work/blam/tmp/overnight/scratch/d_trie_environment.lam
+  letopt --max-cuts 2: smallest ?

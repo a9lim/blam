@@ -220,9 +220,17 @@ smaller (`component_168_contextual*.log`). The 165 is the η-handler with its
 skip hoisted and both arms η-reduced: the component is blind to it because the
 hoisted skip is not β-equal to the 168's on arbitrary streams.
 
-The knot: with the body opaque, the only weak-head self-reproducing context
-through 20 bits is the 168's own `(\a.a a)(\a.H(a a))`
-(`tools/self-interpreter/search_fix.py`).
+The knot: with the body opaque, every fixed-point context costs at least
+20 bits, and the 168's own `(\a.a a)(\a.H(a a))` attains it.
+`Blc/SelfintKnot.lean` (Codex) proves that any `t =β h t`, with the hole `h`
+priced at zero, has two nonlinear binders and so at least `18 + 2k` bits for
+`k` hole occurrences; adding the parser binder and two recursive calls at
+zero-based depths `d1, d2` costs at least `26 + d1 + d2`, which is 31 at the
+165's depths 2 and 3 and is attained there. Through 20 bits that context is
+the only weak-head self-reproducing one (`tools/self-interpreter/search_fix.py`).
+Sinking the shared `x x` let inward never pays when it has two uses: each
+crossed binder changes the size by `2 − r + m ≥ 0` for `r = 2` uses and `m`
+captured occurrences (`data/self-interpreter/reasoning_floor/knot/`).
 
 ### Slots
 
@@ -315,11 +323,17 @@ the contraction's removed syntax.
 `remainder.md` gives a separate exact syntactic remainder extractor,
 with its all-source contract proved in `Blc/SelfintRemainder.lean`.
 `Blc/SelfintZero.lean` proves that an exact remainder body needs two
-nonlinear binders, excluding its stream binder. Together with the
+nonlinear binders, excluding its stream binder, and
+`Blc/SelfintRemainderChain.lean` that they lie in incomparable branches.
+Exact remainder extractors cost between 27 and 70 bits; since `E (λv r. r)`
+is one, any remainder floor `n` gives `|E| ≥ n − 8` (kernel-checked
+transfer). Together with the
 value projection's independent two-binder requirement,
 `Blc/SelfintProjections.lean` proves that a literal continuation-headed
 interpreter has four nonlinear binders inside its payloads and a fifth
-at its public stream binder. The corresponding wire floor is 55 bits.
+at its public stream binder, a kernel-checked wire floor of 55 bits.
+Pricing the value payload by its internal width and the remainder payload
+by the remainder floor raises it to 73 (`head-decomposition.md`).
 This prices that displayed head form, not the source that expands into it;
 STATUS records the construction's size and current checks.
 
@@ -361,7 +375,12 @@ incomparable-nonlinear theorem, these give handwritten wire floors of
 interpreters. The three binders on the width witness's ancestor chain
 cannot contain the incomparable pair, forcing a fourth live binder and
 a preliminary global floor of 33; analytical exclusion of the equality
-cases raises that floor to 34.
+cases raises that floor to 34. `global-floor.md` excludes 34, 35 and 36 the
+same way: **every interpreter has at least 37 bits** (Codex's handwritten
+proof, found correct by two independent reviews; its 144 fixed reduction
+clauses are kernel-checked in `Blc/SelfintFloor37.lean`). Without Statman's
+theorem the kernel-checked floor is 27 (`selfintSizeBound_27`,
+`structural-bounds.md`).
 `capture-width.md` states the published result and the interface proof,
 and gives a shared-S construction attaining these structural minima
 simultaneously, including in the beta-normal fragment with all zero-based
@@ -462,6 +481,14 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   independent rigid variables, with no syntax restriction: its unique normal
   form costs 19, and a non-normal representative needs two λs, three
   applications and one index bit for `f`.
+- **The cell and the lift keep 24 and 19 bits under weaker laws.** A uniform
+  cell replacement in the actual ABS frame costs at least 24 under only the
+  two lookup laws `C K n = a` and `C F r = r e`, with the actual `intL` and
+  `x` usable and raw quotation data borrowable; the uniformity across parsed
+  bodies is necessary, since a 17-bit term built from one favourable body
+  meets both laws for that body alone. The lift costs at least 19 on the
+  165's actual values and environments. Codex's handwritten proofs, not yet
+  independently reviewed (`data/self-interpreter/reasoning_floor/env/`).
 
 ### Exclusions at every size
 
@@ -575,6 +602,7 @@ Unless marked, each passes the battery and is larger than the 168.
 | **Values and environments** | | |
 | Bare leaky cell | 166, *fails* | `λx.x` alone leaks the rigid `N` |
 | Function environment `\s. s (\b. b (\u.a) e)`, value `\e. e list1` | 177 | no lookup helper needed; the value adapter costs 7 |
+| Designed from scratch without seeing an interpreter: CPS environment functions, input bits reused as environment selectors | 220 | never reaches raw-code variable values or the hoisted skip; trie environments read by their own application 299, a two-state single decoder 251 |
 | Scott cells with a shared lookup (two orders) | 236 / 243 | a 12-bit cheaper cell, a recursive lookup |
 | Indices parsed into Scott selectors by `intL` | 222 | zero/successor parsing and accessors |
 | Absolute de Bruijn levels | 449 | depth state and runtime append |
@@ -601,9 +629,11 @@ Unless marked, each passes the battery and is larger than the 168.
 
 ### Variants of the 165
 
-Codex's constructions, each written from a derivation rather than found by
-search; sources and proofs are in `data/self-interpreter/reasoning_165/`, and
-`merges.py` re-measures every one. Each passes the battery unless marked.
+Constructions written from a derivation rather than found by search, Codex's
+unless credited; sources and proofs are in
+`data/self-interpreter/reasoning_165/` and `reasoning_floor/`, and `merges.py`
+re-measures the former. Each passes the battery unless marked. Sizes are at
+their optimal let structure (`blam golf letopt`, at most three cuts).
 
 | idea | bits | note |
 |---|---:|---|
@@ -613,11 +643,14 @@ search; sources and proofs are in `data/self-interpreter/reasoning_165/`, and
 | Balanced skip `(s s) (s s)` | 169 | `s s = K N`, so both forms reduce to `N` |
 | `Δ = λx. x x` shared between the knot and `s s` | 176 | the let costs 11 |
 | Zero arm replaced by its bit, `next` as a third outer argument | 158, *fails* | variables return `C r N next`, three arguments at `C` |
-| The same, with the variable arm discarding the extra argument | 178 | the 165's reader equations in both arms |
+| The same, with the variable arm discarding the extra argument | 174 | the 165's reader equations in both arms |
+| NEXT as the reader's third operand: `list H NEXT`, `H = \b \r. b r (\t. cont r (r r t))` (Grok) | 168 | the zero arm `r NEXT` is free; the variable arm's force `(r r) t` turns `K N` into `N` and costs the four bits, and NEXT sits one binder deeper |
 | Duplicate tail discarded after the second cell elimination | 181 | |
-| Tag replayed after the first parse, `bit0`'s `K` discarding `bit1` | 188 / 189 / 199 | the redundant tag costs more than the hoist saves |
+| Tag replayed after the first parse, `bit0`'s `K` discarding `bit1` | 186 / 188 / 194 | the redundant tag costs more than the hoist saves |
+| Curried cell borrowing ABS's tag, `\b. b (bit1 arg) (\r. r args)` | 171 | `bit1 = K` in ABS; +6 over the canonical cell |
 | Constant stream as ABS's return instruction, `R (K (K X)) = X` | 191 / 207 | capturing the real remainder |
-| Reader-carried knot `W = λx. x I x Z_x`: the only self-application is the skip's | 192 | +27 for the carrier; `R Z_t → t t` drives it |
+| Reader-carried knot `W = λx. x I x Z_x`: the only self-application is the skip's | 192 | +27 for the carrier; `R Z_t → t t` drives it. With the carrier's diagonal law, `Z_t` (12 bits) is the unique minimum, so this template is exactly 192 |
+| Reset bootstraps: skip `s s c` with driver `λx. x I x F x`, or `s s x` with `λx. x x x F x` | 192 / 192 | the input `F` resets the provisional recursion; the cheaper driver is paid back by the deeper erased operand |
 | ABS constructor shared with the recursion driver | 193 | β-equivalent to the 165; the sharing costs 28 |
 | Reader diagonal `Q g g (λu r. r g)` as the outer knot | 199 | reconstructs `G G`; the helper costs 34 |
 | Optional second value in a solvable wrapper | 203 | the escape from the mode-free builder exclusion |
@@ -648,13 +681,19 @@ Open:
   current `next` and parser doing it unchanged;
 - the capped fills of §3 (4,052,176 in the joint reader search, 7,790 in the
   handler, 218 in whole APP) and of §4;
-- an unconditional lower bound beyond small sizes: §5 states the structure
-  every interpreter has. The minimum nonlinear-binder count two is attained,
-  so counting more such binders cannot close the gap. A quantitative theorem
-  must account for their connections, live captures, and quotation-origin
-  restrictions without incorrectly adding costs of computations that share.
-  Code copying is necessary, but different output binding roles can all
-  descend from one original binder (`structural-bounds.md`).
+- an unconditional lower bound beyond 37 bits (`global-floor.md`). The
+  minimum nonlinear-binder count two is attained, so counting more such
+  binders cannot close the gap, and the 37-bit argument's next inventory
+  (seven leaves) admits a third nonlinear binder or a capture across the
+  width witness. The remainder projection gives at most 62 even if its own
+  minimum were 70, and a 45-bit partial reader meets every zero-stream
+  obligation the known proofs use (`remainder.md`). A quantitative theorem
+  must account for connections, live captures, and quotation-origin
+  restrictions without incorrectly adding costs of computations that share,
+  in particular an application-sensitive charge for the residual control
+  that consumes exactly one more source after a left child. Code copying is
+  necessary, but different output binding roles can all descend from one
+  original binder (`structural-bounds.md`).
 
 ## 8. Reproduce
 
@@ -662,6 +701,9 @@ Open:
 |---|---|
 | `tools/self-interpreter/battery.py` | the exact contract on 668 programs (`--max-bits`, `--uni`, `--strict`) |
 | `tools/self-interpreter/merges.py` | the 165, its nearest variants, the 168's protocol variants, and the variants of §6 |
+| `tools/self-interpreter/polish.py` | battery, then the optimal let structure (`blam golf letopt`) of a candidate; a new algorithm's size is its letopt minimum |
+| `tools/self-interpreter/theory/floor37/verify.py` | the 108 residual layouts and the kernel-checked clauses of `global-floor.md` |
+| `data/self-interpreter/reasoning_floor/` | the second round of reasoning lanes: floors, knot and remainder theorems, and the variants of §6 they built |
 | `data/self-interpreter/reasoning_165/` | the proofs and checks behind §2's identities, §5's shape bounds and exclusions, and §6's variants |
 | `blam golf letopt`, `blam golf component` (lab) | let structure and βη component (`--contextual`) |
 | `blam selfint hole` (lab), `tools/self-interpreter/sketches.py` | one- and two-hole searches, including the 165's reader slots |

@@ -1,0 +1,1 @@
+((\pair. ((\node. ((\abs. ((\p. (\k. (\s. ((((p p) k) s) (\m. (k (\z. m))))))) (\p. (\e. ((node ((node (\w. (abs (\x. (((p p) ((node (pair x)) e)) w))))) (\w. ((((p p) e) w) (\f. (\r. ((((p p) e) r) (\g. (pair (f g)))))))))) e))))) (\f. ((pair (\x. ((f x) (\a. (\b. a))))) ((f f) (\a. (\b. b))))))) (\h. (\t. (\s. (s (\b. ((b h) t)))))))) (\x. (\e. (\h. ((h x) e)))))

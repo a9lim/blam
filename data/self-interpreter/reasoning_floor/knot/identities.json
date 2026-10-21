@@ -1,0 +1,15 @@
+{
+  "rigid_equations": 3,
+  "bootstrap_cont_steps": [
+    11,
+    1
+  ],
+  "bootstrap_generator_steps": [
+    13,
+    2
+  ],
+  "diagonal_carrier_bits": 12,
+  "original_driver_bits": 28,
+  "reset_cont_driver_bits": 26,
+  "reset_generator_driver_bits": 24
+}

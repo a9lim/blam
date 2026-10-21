@@ -67,8 +67,18 @@ The kernel also proves the syntax inequality
 10 nonlinear(t) + 4 freeLeaves(0,t) <= |t|_BLC + 2,
 ```
 
-giving `selfintSizeBound_eighteen : SelfintSizeBound 18`. This is a small
-numeric consequence, not a useful approximation to a 165-bit bound.
+giving `selfintSizeBound_eighteen : SelfintSizeBound 18`. The
+`SelfintFloor*` modules raise the kernel-checked floor to
+`selfintSizeBound_27 : SelfintSizeBound 27` without Statman's theorem: the
+incomparable pair and a live capture give three live binders (25 bits); a
+β-invariant (every application argument mentions at most one free variable)
+fails for interpreters, which must also expose an abstraction body that is
+not an application; abstraction-rooted interpreters then need four
+abstractions (27 bits), and minimal application-rooted ones below 27 bits
+are classified and refuted by finite head reduction. The proof uses
+`Classical.choice`. A literal `λc s.B` costs at least 31 there. These are
+small numeric consequences, not approximations to a 165-bit bound; the
+handwritten floor is 37 (`global-floor.md`).
 
 The nonlinear count is sharp, even among beta-normal interpreters.
 `Blc.SelfintSharp` gives a 584-bit interpreter reducing to the literal 165
@@ -134,10 +144,11 @@ floors, respectively:
 the three live binders on the width witness's ancestor chain cannot
 contain both incomparable nonlinear binders, requiring a fourth live
 binder. The resulting 33-bit global floor rises to 34 by analytically
-excluding its equality cases. The same document proves simultaneous
-sharpness of the width, capture, and nonlinear
-counts by a shared-S construction. These additions are handwritten; they
-do not strengthen the kernel-checked numerical theorem above.
+excluding its equality cases, and `global-floor.md` excludes 34–36 the
+same way, giving 37. The same document proves simultaneous sharpness of
+the width, capture, and nonlinear counts by a shared-S construction. These
+additions are handwritten; they do not strengthen the kernel-checked
+numerical theorem above.
 
 ## Quotation-origin binders cannot provide arbitrary binding structure
 

@@ -1,0 +1,7 @@
+(\x.x x) (\x.(\p.
+\c. (\q. \s. s (\b. b (\unused \r. r q) c) (s s s))
+(\b. p (\a. (b (\k. k a) p)
+  (\f. c (b
+    (\e \v. f (\d \r. d v (r e)))
+    (\e. a e (f e))))))
+)(x x))

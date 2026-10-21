@@ -1,0 +1,266 @@
+{
+  "checks": 52,
+  "passed": 52,
+  "elapsed_s": 0.0009448749988223426,
+  "scope": "Fixed proof equations only; no enumeration.",
+  "records": [
+    {
+      "label": "zero-three-sDD",
+      "steps": 4,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-three-DsD",
+      "steps": 7,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-three-DDs",
+      "steps": 0,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-three-s(DD)",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-three-D(sD)",
+      "strategy": "common-normal-form"
+    },
+    {
+      "label": "zero-three-D(Ds)",
+      "steps": 8,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-sDJ",
+      "steps": 4,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-sJD",
+      "steps": 9,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-DsJ",
+      "steps": 7,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-DJs",
+      "steps": 7,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-JsD",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-JDs",
+      "steps": 6,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-s(DJ)",
+      "steps": 6,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-s(JD)",
+      "steps": 5,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-D(sJ)",
+      "steps": 10,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-D(Js)",
+      "steps": 0,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-J(sD)",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "zero-four-J(Ds)",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "vacuous-wrap-Omega-right",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "vacuous-wrap-Omega-left",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "dependent-x x s",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "dependent-x s x",
+      "steps": 17,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "dependent-s x x",
+      "steps": 8,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "dependent-x (x s)",
+      "steps": 16,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "dependent-x (s x)",
+      "strategy": "common-normal-form"
+    },
+    {
+      "label": "dependent-s (x x)",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "closed-xxy-cycle",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "closed-xyx",
+      "steps": 3,
+      "strategy": "full-leftmost"
+    },
+    {
+      "label": "closed-yxx",
+      "steps": 10,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "closed-x(xy)-two-lambdas",
+      "steps": 2,
+      "strategy": "full-leftmost"
+    },
+    {
+      "label": "closed-x(yx)-two-lambdas",
+      "steps": 2,
+      "strategy": "full-leftmost"
+    },
+    {
+      "label": "closed-y(xx)-return-X",
+      "steps": 7,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "nonleading-contract-\\x.(\\y.x y) x",
+      "steps": 1,
+      "strategy": "full-leftmost"
+    },
+    {
+      "label": "nonleading-contract-\\x.(\\y.y x) x",
+      "steps": 1,
+      "strategy": "full-leftmost"
+    },
+    {
+      "label": "eta-D-entry",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "eta-D-cycle",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "eta-self-growing-0",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "eta-self-growing-1",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "eta-self-growing-3",
+      "steps": 4,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "flip-D",
+      "steps": 4,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "flip-self-entry",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "flip-self-cycle",
+      "steps": 3,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bound24-D(KD)",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bound24-deltaK-D",
+      "steps": 3,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bound24-D-deltaK",
+      "steps": 4,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bound24-V-D",
+      "steps": 1,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bound24-D-V",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bound24-D(K(KD))",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bound24-D(KdeltaK)",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bound24-deltaK(KD)",
+      "steps": 2,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bootstrap-zero",
+      "steps": 12,
+      "strategy": "weak-head"
+    },
+    {
+      "label": "bootstrap-all-Q-prefix",
+      "steps": 13,
+      "strategy": "weak-head"
+    }
+  ]
+}

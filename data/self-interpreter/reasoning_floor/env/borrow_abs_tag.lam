@@ -1,0 +1,8 @@
+-- Borrow ABS's known-zero tag as K.
+(\x. x x) (\x. (\intL. \cont.
+  (\next. \list.
+    list (\bit0. bit0 (\unused \r. r next) cont) (list list list))
+  (\bit1. intL (\exp. bit1
+    (cont (\args \arg. exp (\zx. zx (bit1 arg) (\zy. zy args))))
+    (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

@@ -1,0 +1,12 @@
+-- Reader-mediated fixed point. No syntactic self-application outside list list.
+-- W x = x I x (\unused r. r x).
+-- For G = \x. B (W x), the reader identity yields W G -> G G -> B (W G).
+(\w.
+  w (\x. (\intL. \cont.
+    (\next. \list.
+      list (\bit0. bit0 (\unused \r. r next) cont) (list list list))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+    (w x)))
+(\x. x (\u. u) x (\unused \r. r x))

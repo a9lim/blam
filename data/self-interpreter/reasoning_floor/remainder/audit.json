@@ -1,0 +1,290 @@
+{
+  "checks": [
+    {
+      "label": "24-sDD",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "24-DsD",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "24-D-sD",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "24-D-Ds",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-sDJ",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-sJD",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-DsJ",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-DJs",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-JDs",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-s-DJ",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-s-JD",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-D-sJ",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-J-sD",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-J-Ds",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "25-dependent-xyx",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "25-dependent-yxx",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "25-dependent-xxy",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "25-dependent-xyx-right",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "25-dependent-xxs-loop",
+      "kind": "head-steps",
+      "steps": 1,
+      "pass": true
+    },
+    {
+      "label": "25-dependent-sxx-loop",
+      "kind": "head-steps",
+      "steps": 2,
+      "pass": true
+    },
+    {
+      "label": "26-closed-xxy-loop",
+      "kind": "head-steps",
+      "steps": 2,
+      "pass": true
+    },
+    {
+      "label": "26-closed-xyx-one-internal-nonlinear",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-closed-yxx",
+      "kind": "beta-normal-forms",
+      "pass": true
+    },
+    {
+      "label": "26-closed-yxx-right-returns-reader",
+      "kind": "head-steps",
+      "steps": 7,
+      "pass": true
+    },
+    {
+      "label": "25-Neta-Delta-enters-loop",
+      "kind": "head-steps",
+      "steps": 1,
+      "pass": true
+    },
+    {
+      "label": "25-Neta-Delta-loop",
+      "kind": "head-steps",
+      "steps": 2,
+      "pass": true
+    },
+    {
+      "label": "25-Neta-growing-loop-0",
+      "kind": "head-steps",
+      "steps": 1,
+      "pass": true
+    },
+    {
+      "label": "25-Neta-growing-loop-1",
+      "kind": "head-steps",
+      "steps": 2,
+      "pass": true
+    },
+    {
+      "label": "25-Neta-growing-loop-3",
+      "kind": "head-steps",
+      "steps": 4,
+      "pass": true
+    },
+    {
+      "label": "25-Nflip-Delta-to-Omega",
+      "kind": "head-steps",
+      "steps": 4,
+      "pass": true
+    },
+    {
+      "label": "25-Nflip-self-cycle",
+      "kind": "head-steps",
+      "steps": 3,
+      "pass": true
+    },
+    {
+      "label": "67-triple-first-zero",
+      "kind": "head-steps",
+      "steps": 12,
+      "pass": true
+    },
+    {
+      "label": "67-triple-all-Q-divergent-prefix",
+      "kind": "head-steps",
+      "steps": 13,
+      "pass": true
+    }
+  ],
+  "inventory": {
+    "reference70": {
+      "bits": 70,
+      "LAX": [
+        7,
+        12,
+        6
+      ],
+      "live": 7,
+      "nonlinear": 4,
+      "incomparable_nonlinear": true,
+      "nonlinear_paths": [
+        "bf",
+        "bab",
+        "babbafab",
+        "babbafabb"
+      ]
+    },
+    "int165_projection": {
+      "bits": 173,
+      "LAX": [
+        19,
+        26,
+        29
+      ],
+      "live": 17,
+      "nonlinear": 7,
+      "incomparable_nonlinear": true,
+      "nonlinear_paths": [
+        "ff",
+        "fa",
+        "fabf",
+        "fabfb",
+        "fabfbbfb",
+        "fabfbbaba",
+        "fabfbbababaaba"
+      ]
+    },
+    "tower45": {
+      "bits": 45,
+      "LAX": [
+        5,
+        7,
+        5
+      ],
+      "live": 5,
+      "nonlinear": 3,
+      "incomparable_nonlinear": true,
+      "nonlinear_paths": [
+        "bf",
+        "bab",
+        "babb"
+      ]
+    },
+    "drop_second_skip_failed": {
+      "bits": 66,
+      "LAX": [
+        7,
+        11,
+        6
+      ],
+      "live": 7,
+      "nonlinear": 4,
+      "incomparable_nonlinear": true,
+      "nonlinear_paths": [
+        "bf",
+        "bab",
+        "babbafab",
+        "babbafabb"
+      ]
+    },
+    "diagonal63_failed": {
+      "bits": 63,
+      "LAX": [
+        6,
+        11,
+        5
+      ],
+      "live": 6,
+      "nonlinear": 4,
+      "incomparable_nonlinear": true,
+      "nonlinear_paths": [
+        "f",
+        "ab",
+        "abbafab",
+        "abbafabb"
+      ]
+    },
+    "triple67_capped": {
+      "bits": 67,
+      "LAX": [
+        6,
+        12,
+        5
+      ],
+      "live": 6,
+      "nonlinear": 4,
+      "incomparable_nonlinear": true,
+      "nonlinear_paths": [
+        "f",
+        "ab",
+        "abbafab",
+        "abbafabb"
+      ]
+    }
+  },
+  "elapsed_s": 0.0024955000044428743,
+  "scope": "Fixed handwritten proof equations; no extractor enumeration."
+}

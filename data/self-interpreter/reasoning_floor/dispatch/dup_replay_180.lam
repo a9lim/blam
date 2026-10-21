@@ -1,0 +1,12 @@
+-- 180: no `next` let. The zero arm keeps both copies of the tag-less stream:
+-- one supplies the body stream through `r (\v. ...)` (the Scott application
+-- drops the second tag bit), the other re-reads that bit after the body
+-- parse as `u bit0` (bit0 = K in this arm).  New algorithm, not sub-165.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\bit0. bit0
+          (\u \r. r (\v. intL (\exp. u bit0
+             (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+             (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+          cont)
+       (list list list))
+  (x x))

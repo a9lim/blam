@@ -1,0 +1,162 @@
+[
+  {
+    "body": "(a (\\u.b)) c",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    "hnf": "\\a.a (\\b\\c.c (\\d.a (\\e.c) d)) (\\b.a (\\c\\d.a (\\e\\f.f (\\g.a (\\h.f) g)) d) b)"
+  },
+  {
+    "body": "(a b) (\\u.c)",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    "hnf": "\\a.a (\\b.b (\\c.a b (\\d.c))) (\\b\\c.a (\\d.a (\\e.e (\\f.a e (\\g.f))) (\\e.d)) (\\d.c))"
+  },
+  {
+    "body": "a (b (\\u.c))",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    "hnf": "\\a.a ((\\b.b (\\c.a (b (\\d.c)))) (\\b\\c.a ((\\d.a ((\\e.e (\\f.a (e (\\g.f)))) (\\e.d))) (\\d.c))))"
+  },
+  {
+    "body": "(a c) (\\u.b)",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    "hnf": "\\a.a (\\b.a b (\\c\\d.a d (\\e\\f.f (\\g.a g (\\h.f))))) (\\b\\c.c (\\d.a d (\\e.c)))"
+  },
+  {
+    "body": "(a (\\u.c)) b",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    "hnf": "\\a.a (\\b\\c.a (\\d.c) (\\d.a (\\e.d) (\\e.e (\\f.a (\\g.f) e)))) (\\b.b (\\c.a (\\d.c) b))"
+  },
+  {
+    "body": "a (c (\\u.b))",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 4
+    },
+    "hnf": "\\a.a ((\\b.a (b (\\c\\d.a (d (\\e\\f.f (\\g.a (g (\\h.f)))))))) (\\b\\c.c (\\d.a (d (\\e.c)))))"
+  },
+  {
+    "body": "(b (\\u.a)) c",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 6
+    },
+    "hnf": "\\a.a (\\b.(\\c.(\\d.d (\\e.d (\\f.a) e)) (\\d.a) c) (\\c.a) b)"
+  },
+  {
+    "body": "(b a) (\\u.c)",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    "hnf": "\\a.a (\\b.a a (\\c.b)) (\\b\\c.(\\d.(\\e.e (\\f.e a (\\g.f))) a (\\e.d)) a (\\d.c))"
+  },
+  {
+    "body": "b (a (\\u.c))",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    "hnf": "\\a.a (\\b\\c.(\\d.(\\e.e (\\f.e (a (\\g.f)))) (a (\\e.d))) (a (\\d.c))) (\\b.a (\\c\\d.(\\e.(\\f.f (\\g.f (a (\\h.g)))) (a (\\f.e))) (a (\\e.d))) (a (\\c.b)))"
+  },
+  {
+    "body": "(b c) (\\u.a)",
+    "result": {
+      "kind": "unresolved",
+      "error": "('open36_9', 'needs a handwritten invariant')"
+    },
+    "hnf": "\\a.(\\b.(\\c.(\\d.(\\e.(\\f.(\\g.(\\h.(\\i.(\\j.j (\\k.j k (\\l.a))) i (\\j.a)) h (\\i.a)) g (\\h.a)) f (\\g.a)) e (\\f.a)) d (\\e.a)) c (\\d.a)) b (\\c.a)) (\\b.(\\c.(\\d.(\\e.(\\f.(\\g.(\\h.(\\i.(\\j.(\\k.(\\l.l (\\m.l m (\\n.a))) k (\\l.a)) j (\\k.a)) i (\\j.a)) h (\\i.a)) g (\\h.a)) f (\\g.a)) e (\\f.a)) d (\\e.a)) c (\\d.a)) b (\\c.a)) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a)"
+  },
+  {
+    "body": "(b (\\u.c)) a",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 11
+    },
+    "hnf": "\\a.a a"
+  },
+  {
+    "body": "b (c (\\u.a))",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 9
+    },
+    "hnf": "\\a.a (\\b.a) (\\b.(\\c.a) (\\c.a) (\\c.a) (b (\\c.a))) (\\b.(\\c.(\\d.(\\e.e (\\f.e (f (\\g.a)))) (d (\\e.a))) (c (\\d.a))) (\\c.a) (b (\\c.a)))"
+  },
+  {
+    "body": "(c (\\u.a)) b",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 6
+    },
+    "hnf": "\\a.a (\\b.b (\\c.a) (\\c.c (\\d.d (\\e.a) c))) (\\b.b (\\c.c (\\d.a) b))"
+  },
+  {
+    "body": "(c a) (\\u.b)",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    "hnf": "\\a.a a (\\b\\c.c a (\\d\\e.e (\\f.f a (\\g.e)))) (\\b\\c.c (\\d.d a (\\e.c)))"
+  },
+  {
+    "body": "c (a (\\u.b))",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 5
+    },
+    "hnf": "\\a.a (\\b\\c.c (\\d.d (a (\\e.c)))) (a (\\b\\c.c (a (\\d\\e.e (\\f.f (a (\\g.e)))))))"
+  },
+  {
+    "body": "(c b) (\\u.a)",
+    "result": {
+      "kind": "unresolved",
+      "error": "('open36_15', 'needs a handwritten invariant')"
+    },
+    "hnf": "\\a.(\\b.b (\\c.c (\\d.d c (\\e.a))) (\\c.a)) (\\b.b (\\c.c (\\d.d (\\e.e d (\\f.a))) (\\d.a)) (\\c.a)) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a) (\\b.a)"
+  },
+  {
+    "body": "(c (\\u.b)) a",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 7
+    },
+    "hnf": "\\a.a (\\b.b (\\c.a) a) a"
+  },
+  {
+    "body": "c (b (\\u.a))",
+    "result": {
+      "kind": "wrong_interface_arity",
+      "arity": 1,
+      "steps": 7
+    },
+    "hnf": "\\a.a ((\\b.b ((\\c.c (\\d.d (c (\\e.a)))) (\\c.a))) (\\b.a))"
+  }
+]

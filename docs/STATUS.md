@@ -197,12 +197,27 @@ with all features (three opt-in tests ignored) and 328 with default features.
   (`classical/self-interpreter/cheap-tail-bound.md`,
   `classical/self-interpreter/protocol-obstructions.md`).
   The zero arm ≥ 14, APP lift ≥ 19, reader/handler knot-tree and cell/APP
-  exclusions remain as specified in §5.
+  exclusions remain as specified in §5. `SelfintKnot` kernel-checks that
+  an opaque fixed point costs at least `18 + 2k` bits, so the 165's 31 bits
+  of recursion overhead (knot, parser binder, two calls at depths 2 and 3)
+  are minimal in its frame. Codex's handwritten proofs keep the cell at 24
+  bits under only the two Boolean lookup laws and the lift at 19 on actual
+  values, with raw quotation data borrowable (not yet independently
+  reviewed). The reasoning consults in
+  `data/self-interpreter/reasoning_floor/` built about forty further
+  correct interpreters of 166–220 bits, the smallest new shape a 168 that
+  passes NEXT as the reader's third operand; none goes below 165 at its
+  optimal let structure, and letopt only shrinks recorded variants (the
+  spine3 repair 178→174, tag replay 189→186 and 199→194).
 - **Unconditional structure** (`classical/self-interpreter/structural-bounds.md`):
   Lean proves that every interpreter has at least two syntactically
   nonlinear binders, and that an explicit `λc s.B` needs two inside `B`.
-  The normalization argument gives the small numerical floor 18, not a
-  165-bit bound. A 584-bit witness has exactly two nonlinear binders, both
+  The normalization argument gives the small numerical floor 18; the
+  `SelfintFloor*` modules raise the kernel-checked floor to 27 without
+  Statman's theorem (`selfintSizeBound_27`, using `Classical.choice`):
+  three live binders, an argument with two free variables, an abstraction
+  body that is not an application, and a classification of minimal
+  application-rooted interpreters below 27 bits. A 584-bit witness has exactly two nonlinear binders, both
   closed in isolation; a kernel-replayed 71-step reduction reaches the
   literal 165. A 742-bit β-normal witness also has exactly two closed
   nonlinear binders, with its contract kernel-checked as β-joinability.
@@ -219,11 +234,19 @@ with all features (three opt-in tests ignored) and 328 with default features.
   beta-normal interpreter, needs three such internal variables and two
   internal captures, plus the public stream binder's capture of the
   continuation. Together with the incomparable-binder theorem these give
-  handwritten bit floors 34 globally and 46 for literal interfaces;
-  the Lean numerical floor remains 18. The three live binders on the width
+  handwritten bit floors 34 globally and 46 for literal interfaces.
+  The three live binders on the width
   witness's ancestor chain cannot contain the incomparable pair, so a
   fourth live binder is necessary. This gives a preliminary global floor
-  of 33; analytical exclusion of its equality cases raises it to 34.
+  of 33; analytical exclusion of its equality cases raises it to 34, and
+  `classical/self-interpreter/global-floor.md` excludes 34–36 the same way:
+  **every interpreter has at least 37 bits**. This is Codex's handwritten
+  proof; two independent adversarial reviews (a fresh Codex consult and
+  Gemini) found it correct, the Codex review replaying all 102 finite
+  refutations with its own reducer. `Blc/SelfintFloor37.lean` kernel-checks
+  its 144 fixed reduction clauses; `tools/self-interpreter/theory/floor37/`
+  regenerates them and checks the 108 residual layouts in 0.05 seconds
+  (`data/self-interpreter/theory/floor37.json`).
   A shared-S construction attains width three, two nonlinear binders,
   and the required capture counts simultaneously, even
   in the beta-normal fragment with every zero-based index at most two.
@@ -252,7 +275,13 @@ with all features (three opt-in tests ignored) and 328 with default features.
   values. Each payload of a literal continuation-headed interpreter
   needs at least two nonlinear binders and a stream occurrence. Such a
   head form therefore has at least five nonlinear binders in total and
-  costs at least 55 bits. This prices the displayed form only;
+  costs at least 55 bits. Codex's handwritten argument, independently
+  reviewed, prices the payloads further: the value payload holds the
+  width-three witness and the incomparable pair internally (at least 37
+  bits), and substituting the stream for the continuation turns the
+  remainder payload into an extractor (at least `25 + q` bits for `q`
+  continuation occurrences), so a literal continuation-headed source costs
+  at least 73. This prices the displayed form only;
   head normalization is not size-monotone
   even for fully affine terms. The literal 165 expands to a 755-bit head
   form in four contractions; its two lambdas, stream head, and two
@@ -279,7 +308,19 @@ with all features (three opt-in tests ignored) and 328 with default features.
   sources, and every suffix. The fixed source/wire and symbolic-clause
   check takes 0.004 seconds (`data/self-interpreter/theory/remainder.json`).
   This is an unrestricted upper bound for a parser projection, not a
-  self-interpreter or a beta-normal remainder bound. `SelfintZero`
+  self-interpreter or a beta-normal remainder bound. Every closed-source
+  exact extractor has at least 27 bits (Codex's handwritten proof,
+  independently reviewed), so the minimum lies in 27..70.
+  `SelfintRemainderChain` kernel-checks that an extractor's nonlinear
+  binders lie in incomparable branches and the transfer `|E| ≥ Rmin − 8`,
+  worth at most 62 because rem70 exists; `SelfintTower45` gives a 45-bit
+  reader for every λ-tower and index that meets every zero-stream
+  obligation the known proofs use. After an application's left child the
+  residual must distinguish one pending source from none and every pending
+  depth from every other (`SelfintResidualControl`), but a 647-bit
+  extractor with exactly two nonlinear binders, two live captures and one
+  width-three subterm (`SelfintSharedS647`) shows that this obligation
+  forces no further such count in the original source. `SelfintZero`
   proves that every exact remainder extractor needs two nonlinear
   binders, including two inside the body of an explicit stream lambda.
   Only closed-source, closed-suffix beta-join correctness is needed.
@@ -307,14 +348,17 @@ with all features (three opt-in tests ignored) and 328 with default features.
   infinite-execution synthesis are checked. The colored ordinary-term
   realization counts precisely residual copies of the original reader,
   including on divergent suffixes; input lambdas are excluded.
-  Integrated `lake build Blc` passes all 48 jobs; a seventeen-theorem
-  audit across `SelfintZero`, `SelfintProjections`, and `SelfintInert` uses only
+  A seventeen-theorem audit across `SelfintZero`, `SelfintProjections`, and `SelfintInert` uses only
   `propext` and `Quot.sound`, as does a separate four-theorem
   `WeakHeadClock` audit. The twenty-two growth-support theorems use at most
   those axioms after constructive event extraction. A fourteen-theorem
   final synthesis/transfer audit has nine using at most those axioms and
   five additionally using `Classical.choice` for counter stabilization and
   classical event selection; the final valid-source theorem is among them.
+  Integrated `lake build Blc` passes all 62 jobs. The floor, knot and
+  remainder-control modules' headline theorems use only
+  `propext` and `Quot.sound`, except `selfintSizeBound_27` and its
+  supporting floor lemmas, which also use `Classical.choice`.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
   `typed-normal.md`): the β-normal interpreter is 204 bits
   (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,
@@ -469,13 +513,18 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
 9. **The self-interpreter below 165** (`classical/self-interpreter/interpreter.md`
-   §7): joint reader/skip changes, exploitation of actual NEXT/parser
-   behaviour, a changed NEXT protocol that can use the reader's diagonal,
-   and the capped fills of the reader searches. Look for another shared computation of the kind the
-   reader is, by reasoning first. The two-nonlinear count is sharp even
-   though the current witness is large; a stronger lower bound must price
-   connections, captures, and protected quotation origins. Upstreaming the 165, 175 and 187
-   to tromp/AIT is a9's call (`contrib/PR_KIT.md`).
+   §7). Constructive: a protocol change at an interface NEXT shares with
+   the rest (the `r next` handoff, the value and continuation protocols),
+   the knot × NEXT coupling through the reader's diagonal, and the capped
+   fills of the reader searches; NEXT-internal fusions and second-bit
+   dispatch placements are catalogued and lose. Look for another shared
+   computation of the kind the reader is, by reasoning first. Proof: the
+   floor is 37 handwritten and 27 kernel-checked; the next steps are an
+   application-sensitive charge for residual control (`remainder.md`),
+   which no structural count supplies, and a formalization of residual
+   tracing that would mechanize the conditional reader and NEXT bounds.
+   Upstreaming the 165, 175 and 187 to tromp/AIT is a9's call
+   (`contrib/PR_KIT.md`).
 10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the
    open global-allocator decision) would remove most of malloc/free and the

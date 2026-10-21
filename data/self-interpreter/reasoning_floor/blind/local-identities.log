@@ -1,0 +1,4 @@
+zero-arm hole: checked=412; fuel_exhausted=0; max_bits=14; rigid q and tail; second bit K or F
+  14: \d\e.e q
+skip hole: checked=27; fuel_exhausted=0; max_bits=10; prefixes 1^n0 for n=0..4; rigid tail
+  10: s s s

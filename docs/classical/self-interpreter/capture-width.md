@@ -10,8 +10,9 @@ The width lower bound uses a published theorem of Rick Statman and Codex's
 handwritten interface argument below. The incomparable-nonlinear-binder
 obstruction is kernel-checked; the numerical counting and exclusion
 arguments and the sharpness constructions are handwritten. Together they
-give 34 bits globally and 46 for literal or beta-normal interpreters,
-without establishing 165-bit optimality.
+give 34 bits globally and 46 for literal or beta-normal interpreters;
+`global-floor.md` extends the global count to 37. None of this establishes
+165-bit optimality.
 
 ## The source measure
 
@@ -272,6 +273,9 @@ obstruction and the 33-bit exclusion below gives
                                 hence also when E is beta-normal.
 ```
 
+The global count is the base of `global-floor.md`, which excludes 34–36
+and gives 37.
+
 Let `L,V,X` count abstractions, variable leaves, and the sum of zero-based
 de Bruijn indices. The BLC size identity is
 
@@ -308,7 +312,7 @@ width three, and two incomparable nonlinear binders; the literal
 Neither term is an interpreter. These are witnesses for the syntax
 counts, not proofs that either numerical interpreter bound is optimal.
 
-The repository's kernel-checked numerical lower bound remains the weaker
+The repository's kernel-checked numerical lower bound is the weaker
 18-bit theorem in `structural-bounds.md`. The 34- and 46-bit consequences
 also use the published width theorem and handwritten interface, counting,
 and exclusion arguments here.
@@ -471,9 +475,9 @@ exhaustive classification:
   `λc z.c N (z J(N))`. The first payload is the fixed normal `N`,
   distinct from the required `λe x.x`; source `I` again excludes it.
 
-Every possible 33-bit minimum interpreter is therefore excluded. The
-unrestricted numerical lower bound is 34 bits. This last exclusion is
-handwritten, not a new Lean theorem.
+Every possible 33-bit minimum interpreter is therefore excluded. This
+exclusion is handwritten, not a Lean theorem; `global-floor.md` continues
+the same analysis through 36 bits.
 
 ## Joint sharpness by one shared S
 

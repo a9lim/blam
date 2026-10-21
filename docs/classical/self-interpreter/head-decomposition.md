@@ -147,7 +147,7 @@ The two semantic projections can contain copies descended from shared code
 in the original `E`. The following bound prices their syntax only when
 the interpreter is already in the displayed form.
 
-## A continuation-headed interpreter needs five nonlinear binders
+## A literal continuation-headed interpreter costs at least 73 bits
 
 `Blc.SelfintProjections` kernel-checks the rigid projections above without
 assuming that either payload normalizes. It then proves, for any exact
@@ -185,7 +185,35 @@ Finally, the established wire inequality for an arbitrary open term `T`
 is `10 nonlinear(T) + 4 freeLeaves(T) ≤ |T|+2`. Each payload has at
 least two nonlinear binders and one free stream occurrence, so each costs
 at least 22 bits. The two interface lambdas, two root applications, and
-the continuation variable cost 11 bits, giving `22+22+11=55`.
+the continuation variable cost 11 bits, giving the kernel-checked
+`22+22+11=55`.
+
+Codex's handwritten argument prices each payload further; two independent
+reviews found it correct (`data/self-interpreter/reasoning_floor/`).
+
+- **The value payload costs at least 37.** Its two incomparable nonlinear
+  binders lie in `A` itself: the quotation of `Ω` with a rigid tail is
+  binder-affine, so substituting it for `s` preserves the chain property
+  of `SelfintNonlinearChain`, while the required value `λz.Ω` violates it
+  and reduces only to itself. Statman's width obstruction applies to the
+  unreduced closed term `A[K/c, stream(S,I)/s] I`, which is
+  beta-convertible to `S`: its inserted arguments are closed of width
+  one, so the three free variables of the witness are bound inside `A`.
+  The three width binders form one ancestor chain and cannot hold both
+  members of the incomparable pair, so `A` has four live internal binders,
+  six internally bound leaves and a seventh, distinct stream leaf, and
+  the witness occurrences have indices at least `2,1,0`:
+  `|A| ≥ 2·4 + 4·7 − 2 + 3 = 37`.
+- **The remainder payload costs at least `25 + q`**, where `q` counts the
+  continuation's free occurrences in `B`. The projection law holds for
+  every substituted continuation, in particular for the stream itself, so
+  `λs. B[s/c]` is a closed exact remainder extractor. Each replaced
+  occurrence loses one index bit and nothing else changes, so it has
+  `2 + |B| − q` bits, and the 27-bit remainder floor (`remainder.md`)
+  gives `|B| ≥ 25 + q`.
+
+`A` and `B` are disjoint source subtrees, so a literal continuation-headed
+interpreter has at least `11 + 37 + 25 = 73` bits.
 
 These bounds allow arbitrary internal redexes, continuation uses, and
 whole-stream access in `A,B`. They do not apply to the syntax of an

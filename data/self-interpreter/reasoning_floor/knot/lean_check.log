@@ -1,0 +1,6 @@
+'Blc.OvernightKnot.opaque_knot_twenty' depends on axioms: [propext, Quot.sound]
+'Blc.OvernightKnot.current_frame_thirty_one' depends on axioms: [propext, Quot.sound]
+'Blc.OvernightKnot.knot_unfold' does not depend on any axioms
+exit=0
+elapsed_seconds=0.301355
+threads=2
