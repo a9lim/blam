@@ -1,0 +1,2 @@
+B=46 betanormal=True laws=[1, 2, 0] states=61217 look=0 fails=38412 sols=1 fuel=0 time=5.1s
+SOL (46, '(\\x0. (((x0 (\\x1. x1)) (\\x1. ((x0 (\\x2. c)) ((x0 x0) _)))) j))')

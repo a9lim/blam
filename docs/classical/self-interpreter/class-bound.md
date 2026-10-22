@@ -114,7 +114,10 @@ four, so at deep holes the same reader can assemble one bit cheaper
 
 By §2, **the 162 is optimal in the class if and only if `w(R) ≥ 46` for
 every reader**, and any reader with `w ≤ 45` gives a sub-162 interpreter of
-exactly `116 + w` bits. No such reader has been found: the cheapest readers
+exactly `116 + w` bits. Every β-normal reader has `w ≥ 46` (below, by
+computer-checked search), so such a reader must contain a source redex:
+what is open is the sharing a redex allows between the zero and the unary
+role. No such reader has been found: the cheapest readers
 other than the 162's weigh 47 (`λs. s I (λu. s (λq. c) (s s s)) j`), 48 (the
 164's `λs. s (λb. b F c) (s I (s s) j)`) and 49 (the 165's). The defect a
 cheaper reader has to repair is visible in the near misses (Claude, adv5
@@ -236,13 +239,24 @@ family; the lists are in the round-4 archive. Claude's lanes:
   or two trailing operands; general `λb. B` dispatchers with
   `|B|, |T| ≤ 21`, or `|B| ≤ 9`; every λ-rooted reader whose body is at most
   25 bits;
-- **every β-normal reader with `w ≤ 43`**, and every β-normal reader with
-  `j` at depth ≥ 2 below 46 — with no minimality assumption (Claude, types
-  lane: a complete demand-driven search for typing derivations of the zero
-  law and the unary laws at `n = 1, 2`, 96,933 and 99,562 states, cut-offs
-  refuted by hand or by the frozen engine); among β-normal readers the only
-  core `λs. s A B j` with `w ≤ 46` is the 162's and the only
-  `λs. s A (s B C D)` with `w ≤ 48` the 164's;
+- **every β-normal reader: `w ≥ 46`, sharp at the 162**, with no
+  minimality assumption (Claude, types lane; reviewed adversarially by
+  Codex, who reproduced every run). The search is needed narrowing for the
+  zero law and the unary laws at `n = 1, 2`: each law runs on a normal-order
+  machine against its target, a hole is refined only when a run needs it,
+  and a hole never refined is a 2-bit filler. A β-normal reader satisfying
+  the zero law is an s-spine `λs. s A₁ … A_k`; depth ≥ 2 is one run (99,562
+  states), and depth 1 splits exactly by the root arity `k` into four runs
+  of 45,497, 78,828, 59,550 and 32,810 states, the seven cut-offs all
+  self-applications without a head normal form (by hand or by the frozen
+  engine). Tabling is sound for the joint laws because both force needed
+  source occurrences — the zero run must reach the source `j` and a unary
+  run some source `c` — so a subterm the search has not placed can be
+  replaced by a 2-bit variable without breaking a law (Codex's repair; with
+  a single law the memo loses solutions, so single-law runs are not
+  evidence). The search finds the 162 at 46 and the 164 at 48, and among
+  β-normal readers the only core `λs. s A B j` with `w ≤ 46` is the 162's
+  and the only `λs. s A (s B C D)` with `w ≤ 48` the 164's;
 - **every s-spine reader `λs. s A₁ … A_k` whose first operand reaches the
   first dispatch through stream expansions, λ-bindings and variable heads
   alone** — no β-redex on its head path; the pieces off that path are
@@ -385,21 +399,25 @@ has `|A| ≥ 11` and `|D| ≤ 18`, and `D = u (s s u)` is excluded for every
 at most 53,537 terms after the first pass; the review reproduced the small
 ones, not the full 25-bit cut-off audit.
 
-**Open.** At depth 1, zero-λ parents `Y j` with `Y` an application
-containing `s` or `c`, and the needed-binder case of the 162's family;
-depth-0 readers whose `j` follows a shared top-level let, and
-application-rooted readers with the hole under a non-stream λ, where the
-let's argument hands control on before binding the stream; s-spines whose
-first operand is not a literal λ and has a β-redex on its head path, and
-readers whose stream-λ body is a redex; lets headed by their own
-variable (whose extra uses are needed,
-but not yet tied to the unary output) and nested lets. The record's
-estimate is about 2×10⁹ λ-rooted depth-1 readers at `w ≤ 45`, so these need
-arguments, not larger checks. The productive tools so far are the first
-dispatch, the context-free anchor at `j`'s parent, and the
-closed-specializer algebra.
+**Open.** Only readers with a source redex remain, in three branches of
+the source-head classification: s-spines whose first operand is not a
+literal λ and has a β-redex on its head path; readers whose stream-λ body is
+a let (below 46 a minimum has at most four uses, a λ inside the argument,
+and `j` inside it when linear); and root lets — depth-0 shared top-level
+lets and application-rooted readers whose let argument hands control on
+before binding the stream. Cutting across them are the zero-λ parents
+`Y j` with `Y` an application over `s` or `c`, the needed-binder case of the
+162's family, and lets headed by their own variable, whose extra uses are
+needed but not yet tied to the unary output. Any such reader below 46
+dispatches through at most one site, saving 8 to 15 bits. The space is far
+beyond enumeration (the record's estimate is about 2×10⁹ λ-rooted depth-1
+readers at `w ≤ 45`), so these need arguments, not larger checks. The
+productive tools so far are the first dispatch, the context-free anchor at
+`j`'s parent, the closed-specializer algebra, exact contraction prices
+under minimality, and the β-normal bound: a reader below 46 normalizes to
+one of at least 46, so some redex must pay for itself.
 
-Where `j` dies does not price a reader either (Codex, jerase lane). Every
+Where `j` dies does not price a reader (Codex, jerase lane). Every
 residual of the source `j` is erased by a contraction whose λ comes from
 the reader source, a unary cell's `F` or the terminal `K` (the occurrence
 identity behind this is kernel-checked; the provenance argument is
@@ -412,7 +430,7 @@ two residuals of `j` by both mechanisms in one run, and
 a source `F` that has no `s` or `c` leaves beneath it (all laws for every
 `n` kernel-checked, `reasoning_class/jerase/Witnesses.lean`).
 
-Periodicity of the unary run is not such a tool. A reader's run on `U_n`
+Periodicity of the unary run is not a pricing tool either. A reader's run on `U_n`
 need not settle into a fixed period: `λs. s I (λu. s (λq. c) (G s O)) j`
 with `G = W W`, `W = λg t k. t (λb r. b r (k I (g g r (S k))))` and Church
 `O`, `S` is a correct reader (`w = 221`, both laws for every `n`

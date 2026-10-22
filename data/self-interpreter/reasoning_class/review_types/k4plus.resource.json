@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "tmp/round4/types/narrow3.py",
+    "45",
+    "--betanormal",
+    "--jdepth",
+    "1",
+    "--prefix",
+    "\\s. _",
+    "--minarity",
+    "4"
+  ],
+  "exit": 0,
+  "seconds": 8.776,
+  "peak_rss_bytes": 194002944,
+  "killed": null
+}

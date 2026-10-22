@@ -1,0 +1,13 @@
+{
+  "states": 99562,
+  "sol": [],
+  "fuel": [],
+  "counts": {
+    "certified": 35,
+    "exact_fail": 35,
+    "exact_fuel": 0,
+    "exact_need": 0,
+    "exact_ok": 0
+  },
+  "cases": []
+}

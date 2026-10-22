@@ -1,0 +1,186 @@
+{
+  "budget": 24,
+  "law": 0,
+  "enumerated": 23461,
+  "solutions": 26,
+  "solutions_with_c": 7,
+  "unknown": [],
+  "engines": [
+    {
+      "engine": "narrow",
+      "states": 200,
+      "cores": 2,
+      "fuel": [],
+      "missing_count": 4,
+      "extra_count": 0,
+      "missing_with_c": 0,
+      "missing_examples": [
+        {
+          "term": "(\\x0. ((x0 (\\x1. (\\x2. x2))) j))",
+          "weight": 18,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. ((x0 (\\x1. (x0 x0))) j))",
+          "weight": 22,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. ((x0 (\\x1. (x0 (\\x2. x2)))) j))",
+          "weight": 23,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. ((x0 (\\x1. (x0 (\\x2. x1)))) j))",
+          "weight": 24,
+          "has_c": 0
+        }
+      ],
+      "extra_examples": []
+    },
+    {
+      "engine": "narrow2",
+      "states": 182,
+      "cores": 0,
+      "fuel": [],
+      "missing_count": 26,
+      "extra_count": 0,
+      "missing_with_c": 7,
+      "missing_examples": [
+        {
+          "term": "(\\x0. ((x0 (\\x1. (\\x2. x2))) j))",
+          "weight": 18,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) x0) j))",
+          "weight": 18,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) c) j))",
+          "weight": 19,
+          "has_c": 1
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (\\x1. x1)) j))",
+          "weight": 20,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 (\\x1. x1)) x0) j))",
+          "weight": 20,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (\\x1. x0)) j))",
+          "weight": 21,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 (\\x1. x1)) c) j))",
+          "weight": 21,
+          "has_c": 1
+        },
+        {
+          "term": "(\\x0. ((x0 (\\x1. (x0 x0))) j))",
+          "weight": 22,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (\\x1. (\\x2. x2))) j))",
+          "weight": 22,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (x0 x0)) j))",
+          "weight": 22,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 (\\x1. x1)) (\\x1. x1)) j))",
+          "weight": 22,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (\\x1. c)) j))",
+          "weight": 22,
+          "has_c": 1
+        }
+      ],
+      "extra_examples": []
+    },
+    {
+      "engine": "narrow3",
+      "states": 182,
+      "cores": 0,
+      "fuel": [],
+      "missing_count": 26,
+      "extra_count": 0,
+      "missing_with_c": 7,
+      "missing_examples": [
+        {
+          "term": "(\\x0. ((x0 (\\x1. (\\x2. x2))) j))",
+          "weight": 18,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) x0) j))",
+          "weight": 18,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) c) j))",
+          "weight": 19,
+          "has_c": 1
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (\\x1. x1)) j))",
+          "weight": 20,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 (\\x1. x1)) x0) j))",
+          "weight": 20,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (\\x1. x0)) j))",
+          "weight": 21,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 (\\x1. x1)) c) j))",
+          "weight": 21,
+          "has_c": 1
+        },
+        {
+          "term": "(\\x0. ((x0 (\\x1. (x0 x0))) j))",
+          "weight": 22,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (\\x1. (\\x2. x2))) j))",
+          "weight": 22,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (x0 x0)) j))",
+          "weight": 22,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 (\\x1. x1)) (\\x1. x1)) j))",
+          "weight": 22,
+          "has_c": 0
+        },
+        {
+          "term": "(\\x0. (((x0 x0) (\\x1. c)) j))",
+          "weight": 22,
+          "has_c": 1
+        }
+      ],
+      "extra_examples": []
+    }
+  ]
+}

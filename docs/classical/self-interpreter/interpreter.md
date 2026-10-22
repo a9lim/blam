@@ -66,7 +66,8 @@ opaque fixed-point knot, a separate NEXT that builds the canonical values,
 and any reader — has at least 146 bits (kernel-checked), exactly
 `116 + w(R)` for its reader `R` with the canonical NEXT, so the 162 is
 optimal in that class if and only if every reader has weight at least 46.
-The same equivalence holds with NEXT of any syntax above a price frontier
+Every β-normal reader does (computer-checked), so a cheaper one would need
+a source redex. The same equivalence holds with NEXT of any syntax above a price frontier
 (Lean), and the bound transfers to any value representation with a
 NEXT-free decoder (Lean), any opaque two-port recursion scheme, and the
 continuation-headed analogues, which cost at least 165 outright.
@@ -558,11 +559,12 @@ laws. The 162 and the 165 are its literal assemblies. Every member has
 92-bit NEXT classification, and `Blc/SelfintReader30.lean` the reader weight
 30 with no remaining assumption, so **every member has at least 146 bits**.
 The 162 is optimal in the class if and only if every reader has weight at
-least 46. That bound is settled for two-λ readers, the short serial forms,
-whole sharing contexts over factories and closed specializers (Lean), every
-hole depth other than 1 and part of depth 0, and every depth-1 family that
-reaches the stream's bit through `I`, `K` or a small dispatcher; the open
-families are listed in `class-bound.md` §3. The class widens without
+least 46. Every β-normal reader meets it (a computer-checked search over
+the joint laws, no minimality assumption), so a cheaper reader needs a
+source redex; among those it is settled for whole sharing contexts and
+one-helper sharing (Lean), every hole depth other than 1, every s-spine
+whose dispatch path has no redex, and every minimum reader with a literal λ
+as its first handler; the open families are listed in `class-bound.md` §3. The class widens without
 changing its minimum (§4 there): NEXT of any syntax above a price frontier,
 any variable-value representation with a NEXT-free decoder, any opaque
 two-port recursion, and continuation-headed analogues (at least 165).
@@ -878,11 +880,11 @@ outside them every mechanism priced so far costs at least 170.
 Open:
 
 - the reader weight bound `w(R) ≥ 46` (`class-bound.md` §3), which would make
-  the 162 optimal in the separated class and its widenings: open only where
-  the zero and unary roles share source — zero-λ hole parents, the
-  needed-binder case of the 162's own shape, s-spines whose first operand is
-  not a literal λ and has a β-redex on its head path, readers whose body or root is a let, and
-  application-rooted readers;
+  the 162 optimal in the separated class and its widenings: every β-normal
+  reader meets it, so it is open only for readers with a source redex —
+  s-spines whose first operand is not a literal λ and has a redex on its
+  head path, readers whose stream-λ body is a let, and root lets (with the
+  zero-λ hole parents and the 162's needed-binder case cutting across);
 - NEXT of arbitrary syntax in `32 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
   `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix
   cells, and knotless first heads with two nonlinear binders
