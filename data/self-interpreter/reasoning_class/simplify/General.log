@@ -1,0 +1,34 @@
+/Users/a9lim/Work/blam/tmp/round4/simplify/General.lean:84:26: warning: Variable name `b` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/Users/a9lim/Work/blam/tmp/round4/simplify/General.lean:84:28: warning: Variable name `a` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'Blc.Simplify.paths_sound' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.general_root_price' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.general_root_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.no_minimum_join' depends on axioms: [propext, Quot.sound]
+real 0.26
+user 0.23
+sys 0.08
+           455655424  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               30150  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                1006  involuntary context switches
+          3838183914  instructions retired
+          1332996625  cycles elapsed
+           103289392  peak memory footprint

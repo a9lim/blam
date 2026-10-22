@@ -1,0 +1,25 @@
+'Blc.Simplify.constant_source_join' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.constant_source_price' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.constant_holes' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.constant_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.no_minimum_constant_small' depends on axioms: [propext, Quot.sound]
+real 0.27
+user 0.23
+sys 0.08
+           460734464  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               30466  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                1242  involuntary context switches
+          3655247561  instructions retired
+          1321212087  cycles elapsed
+           108696184  peak memory footprint

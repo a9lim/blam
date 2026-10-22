@@ -1,0 +1,23 @@
+[gaslamp] → codex · job cx-20261022-075334-2ba3 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-075334-2ba3/events.jsonl
+( •̀ᴗ•́ ) Added the extensions and application results to [REPORT.md §5](/Users/a9lim/Work/blam/tmp/round4/simplify/REPORT.md:186), with notes appended.
+
+- **Dependent payloads:** kernel-checked exact specialization, full-law and one-hole transport. This opaque factoring always adds **at least seven bits**, for every application tree; the diagonal case adds 30. It cannot supply the desired uniform descent.
+- **Multiple payloads:** kernel-checked the two-payload diagonal identity with exact price `6 − F(M) − F(N)`. The report derives the general mixed-payload and external-head formulas.
+- **Constant helpers:** kernel-checked strict descent for every two- or three-use pure tree, with arbitrary payload H.
+- **Arbitrary B:** kernel-checked general factorization prices and source-coordinate accounting; the report gives the hygienic reconstruction argument and explicit hole-preservation conditions.
+
+Application results:
+
+| Inventory | Additional NON-MINIMUM | Remaining after these cuts |
+|---|---:|---:|
+| 631 saved sources | **4** | **627** |
+| Ten over-cap cells | **184,628** | **2,343,026** |
+
+The four saved IDs are **408–411**, each **45→39**. They apply the earlier independent-payload theorem, bringing this lane’s certified total to **31/658**. See [NONMINIMUM.tsv](/Users/a9lim/Work/blam/tmp/round4/simplify/NONMINIMUM.tsv) and [COEFFICIENT_CUTS.tsv](/Users/a9lim/Work/blam/tmp/round4/simplify/COEFFICIENT_CUTS.tsv).
+
+All six new Lean files pass. The coefficient counts construct no sources; the largest run took 8.03 seconds and 687 MB.
+
+**The general hand-off exclusion remains open.** These are minimum exclusions, separate from rootcert2’s non-reader certificates.
+
+[gaslamp] job: cx-20261022-075334-2ba3 · session: 01a1635d-fe73-7a70-a9f7-5006106c8ed2 · thread: r5-simplify · resume: gaslamp codex --thread r5-simplify · tok: 9699k→96k
+[lane.sh] done rc=0 tries=1

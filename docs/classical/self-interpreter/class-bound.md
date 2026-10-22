@@ -549,8 +549,12 @@ application tree) keeps both laws and one `j` at the exact price
 when none remains and forces `F(M) ≤ 1` when one does; and for an
 idempotent helper such as `J = λx. x (λy. x)`, `J J →β³ J`, replacing a use
 `x x` by `x` saves `q + 4` bits, which takes 27 of rootnl's listed sources
-out of the minimum. Dependent payloads, helpers with several payloads and
-general root bodies are not covered. Every λ-rooted minimum reader below
+out of the minimum. Extended to dependent payloads (always at least 7 bits
+dearer, so no uniform descent), several payloads (exact price
+`6 − F(M) − F(N)` for two), constant helpers (strict descent for two or
+three uses) and arbitrary bodies (exact factorization prices), they mark
+184,628 sources of rootnl's over-cap cells non-minimum, leaving 2,343,026
+there; the general hand-off is still not covered. Every λ-rooted minimum reader below
 46 is excluded, so the zero-λ parents, needed binders, self-headed lets and
 dispatch-free readers that the depth-1 analysis isolated matter only inside
 a root let's argument. The space of all readers below 46 is far beyond

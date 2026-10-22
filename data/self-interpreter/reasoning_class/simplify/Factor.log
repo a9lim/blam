@@ -1,0 +1,49 @@
+/Users/a9lim/Work/blam/tmp/round4/simplify/Factor.lean:49:68: warning: This simp argument is unused:
+  Nat.reduceAdd
+
+Hint: Omit it from the simp argument list.
+  simp only [̵f̵a̵c̵t̵o̵r̵,̵s̵p̵i̵n̵e̵_̵w̵e̵i̵g̵h̵t̵,̵b̵i̵n̵d̵e̵r̵s̵_̵w̵e̵i̵g̵h̵t̵,̵w̵e̵i̵g̵h̵t̵,̵N̵a̵t̵.̵z̵e̵r̵o̵_̵a̵d̵d̵,̵N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵A̵d̵d̵,̵
+  ̵ ̵ ̵ ̵ ̵I̵n̵t̵.̵n̵a̵t̵C̵a̵s̵t̵_̵a̵d̵d̵,̵I̵n̵t̵.̵n̵a̵t̵C̵a̵s̵t̵_̵m̵u̵l̵]̵[̲f̲a̲c̲t̲o̲r̲,̲ ̲s̲p̲i̲n̲e̲_̲w̲e̲i̲g̲h̲t̲,̲ ̲b̲i̲n̲d̲e̲r̲s̲_̲w̲e̲i̲g̲h̲t̲,̲ ̲w̲e̲i̲g̲h̲t̲,̲ ̲N̲a̲t̲.̲z̲e̲r̲o̲_̲a̲d̲d̲,̲ ̲I̲n̲t̲.̲n̲a̲t̲C̲a̲s̲t̲_̲a̲d̲d̲,̲
+  ̲ ̲ ̲ ̲ ̲I̲n̲t̲.̲n̲a̲t̲C̲a̲s̲t̲_̲m̲u̲l̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/a9lim/Work/blam/tmp/round4/simplify/Factor.lean:91:22: warning: This simp argument is unused:
+  show 0 ≠ j + 1 by omega
+
+Hint: Omit it from the simp argument list.
+  simp [̵d̵e̵p̵e̵n̵d̵e̵n̵t̵,̵o̵c̵c̵,̵s̵h̵o̵w̵ ̵0̵≠̵j̵+̵1̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]̵[̲d̲e̲p̲e̲n̲d̲e̲n̲t̲,̲ ̲o̲c̲c̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/a9lim/Work/blam/tmp/round4/simplify/Factor.lean:94:31: warning: This simp argument is unused:
+  show 0 ≠ j + 1 by omega
+
+Hint: Omit it from the simp argument list.
+  simp [̵d̵e̵p̵e̵n̵d̵e̵n̵t̵,̵o̵c̵c̵D̵e̵p̵t̵h̵,̵o̵c̵c̵,̵s̵h̵o̵w̵ ̵0̵≠̵j̵+̵1̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]̵[̲d̲e̲p̲e̲n̲d̲e̲n̲t̲,̲ ̲o̲c̲c̲D̲e̲p̲t̲h̲,̲ ̲o̲c̲c̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.Simplify.factor_price' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.factor_occ' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.factor_depth' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.factor_minimum_charge' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.dependent_reconstruct' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.dependent_root_price' depends on axioms: [propext, Quot.sound]
+real 0.25
+user 0.22
+sys 0.07
+           457932800  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               30291  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                1169  involuntary context switches
+          3462857023  instructions retired
+          1259864724  cycles elapsed
+           105517616  peak memory footprint

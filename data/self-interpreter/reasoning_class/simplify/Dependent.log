@@ -1,0 +1,26 @@
+'Blc.Simplify.dependent_uniform_overhead' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Simplify.dependent_source_join' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.dependent_source_price' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.dependent_holes' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.dependent_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.dependent_small_positive' depends on axioms: [propext]
+real 0.32
+user 0.31
+sys 0.08
+           462979072  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               30595  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                1455  involuntary context switches
+          4825608669  instructions retired
+          1669248534  cycles elapsed
+           110252664  peak memory footprint
