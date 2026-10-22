@@ -1,0 +1,17 @@
+{
+  "label": "R259",
+  "id": "rootnarrow/work/h63re_7.json:0",
+  "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 x0)) x1)))))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": "deadline",
+    "SFprime": "deadline",
+    "SF2": "deadline"
+  },
+  "legacy": null,
+  "beta_calls": 7058,
+  "seconds": 0.9438587499898858,
+  "peak_rss_bytes": 59736064,
+  "threads": 1
+}

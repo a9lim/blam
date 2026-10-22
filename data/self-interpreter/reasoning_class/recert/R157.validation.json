@@ -1,0 +1,9 @@
+{
+  "label": "R157",
+  "valid": true,
+  "source_matches": true,
+  "states": 153,
+  "sha256": "5dcd8af649d752d7d5751397461941ada267b5e0bc90aa39c5a96fa240252fad",
+  "seconds": 0.00041491599404253066,
+  "peak_rss_bytes": 23986176
+}

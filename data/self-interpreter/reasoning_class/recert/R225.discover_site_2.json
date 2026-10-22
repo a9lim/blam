@@ -1,0 +1,17 @@
+{
+  "label": "R225",
+  "id": "rootnarrow/work/h2_6.json:39",
+  "source": "((\\x0. (x0 (\\x1. (x1 x0)))) (\\x0. (((\\x1. (x1 x1)) (x0 (\\x1. x0))) _)))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 133,
+  "work": 140,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 97,
+  "checked": true,
+  "sha256": "35dc1ab7bcf96adfce1b3b5b34b8f1efec93bfed9ca1d268310fb338e58dadae",
+  "seconds": 0.0014035830099601299,
+  "peak_rss_bytes": 24379392,
+  "threads": 1
+}

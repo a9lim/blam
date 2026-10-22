@@ -1,0 +1,9 @@
+{
+  "label": "R267",
+  "valid": true,
+  "source_matches": true,
+  "states": 122,
+  "sha256": "7c3358d6bb7d8db0a7d07b2a1b3082769e8bc429799a58df6c1d1ebc865e35b0",
+  "seconds": 0.00035104199196211994,
+  "peak_rss_bytes": 24035328
+}

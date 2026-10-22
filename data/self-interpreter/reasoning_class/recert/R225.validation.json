@@ -1,0 +1,9 @@
+{
+  "label": "R225",
+  "valid": true,
+  "source_matches": true,
+  "states": 97,
+  "sha256": "35dc1ab7bcf96adfce1b3b5b34b8f1efec93bfed9ca1d268310fb338e58dadae",
+  "seconds": 0.00030262500513345003,
+  "peak_rss_bytes": 24018944
+}

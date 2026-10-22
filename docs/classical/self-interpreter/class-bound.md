@@ -228,7 +228,12 @@ the 39-bit one.
   self-feeding variant was unsound — `(λx. x x)(λz. z (λa b. b b z) W)`
   passes it, yet with `W = I` its zero probe reaches `r` in 17 steps
   (kernel-checked) — so the one cut-off that only it certified is open
-  again. With pending
+  again. Re-running the general checker over every other self-feeding-style
+  certificate the round used (the shared lane's P1 and P4, the adv6 lane's
+  63 handwritten cases, the narrowing lane's positives: 340 certificates in
+  all) reopened nothing; the original lemma and its first-argument variant
+  are sound as stated, since they protect only the head and the first
+  argument (Codex, recert lane). With pending
   operands `C⃗`, a root let whose body is a literal λ is excluded too
   (Codex, pending lane): exchanging adjacent prefix lets
   `(λx y. D) A C ↦ (λy x. D') C A` costs exactly `uses(y) − uses(x)` and

@@ -1,0 +1,17 @@
+{
+  "label": "A045",
+  "id": "adv6/work/pr_gs_yy___.json:14",
+  "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (((x0 (\\x1. (x1 (x0 x1)))) _) _)))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 113,
+  "work": 138,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 113,
+  "checked": true,
+  "sha256": "f2656619c1ea0eeca5c21e55ef7337ef4979bfc3fecb4e917fec90ea44772f65",
+  "seconds": 0.0012578750029206276,
+  "peak_rss_bytes": 24264704,
+  "threads": 1
+}

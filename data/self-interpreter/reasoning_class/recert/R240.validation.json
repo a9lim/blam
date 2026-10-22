@@ -1,0 +1,9 @@
+{
+  "label": "R240",
+  "valid": true,
+  "source_matches": true,
+  "states": 127,
+  "sha256": "a98f247b20455a0aec2325c1c1f89948d1f6338e63ded6dda3579da6bc81eca4",
+  "seconds": 0.0003415409883018583,
+  "peak_rss_bytes": 24248320
+}

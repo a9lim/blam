@@ -1,0 +1,9 @@
+{
+  "label": "R086",
+  "valid": true,
+  "source_matches": true,
+  "states": 116,
+  "sha256": "f31e9f70e08c59b873b27dc54c02a4327c69ec55a877deacbd98a15bca1b7e9b",
+  "seconds": 0.00033474998781457543,
+  "peak_rss_bytes": 24199168
+}

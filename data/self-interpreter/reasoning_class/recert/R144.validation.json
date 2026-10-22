@@ -1,0 +1,9 @@
+{
+  "label": "R144",
+  "valid": true,
+  "source_matches": true,
+  "states": 199,
+  "sha256": "ce9c9b2159ac01564ba8bcd6158992417875bcdba807743cad8fed23a7085d37",
+  "seconds": 0.0004910829884465784,
+  "peak_rss_bytes": 24199168
+}

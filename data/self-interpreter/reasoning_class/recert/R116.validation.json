@@ -1,0 +1,9 @@
+{
+  "label": "R116",
+  "valid": true,
+  "source_matches": true,
+  "states": 71,
+  "sha256": "b24cdba0961f1811a905b9bc593abe90e299801ffdd4a405f5fa9179af566353",
+  "seconds": 0.00025058299070224166,
+  "peak_rss_bytes": 24002560
+}

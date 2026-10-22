@@ -1,0 +1,17 @@
+{
+  "label": "R255",
+  "id": "rootnarrow/work/h63re_3.json:0",
+  "source": "((\\x0. ((x0 (x0 _)) x0)) (\\x0. (\\x1. (x1 (x1 ((x0 x1) x1))))))",
+  "action": "discover_site_4",
+  "ok": false,
+  "reason": [
+    "opaque",
+    "_1"
+  ],
+  "states": 149,
+  "work": 161,
+  "k": 4,
+  "seconds": 0.0002684170030988753,
+  "peak_rss_bytes": 24412160,
+  "threads": 1
+}

@@ -1,0 +1,17 @@
+{
+  "label": "R214",
+  "id": "rootnarrow/work/h2_6.json:28",
+  "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 (x0 _))) (x0 (\\x1. x0))) _)))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 152,
+  "work": 172,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 75,
+  "checked": true,
+  "sha256": "79d13ed7f1890d83c42a1134e9f911991181ea87a0cf70657ae967ee629838a5",
+  "seconds": 0.001383458002237603,
+  "peak_rss_bytes": 24018944,
+  "threads": 1
+}

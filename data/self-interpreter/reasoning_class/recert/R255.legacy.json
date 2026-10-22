@@ -1,0 +1,17 @@
+{
+  "label": "R255",
+  "id": "rootnarrow/work/h63re_3.json:0",
+  "source": "((\\x0. ((x0 (x0 _)) x0)) (\\x0. (\\x1. (x1 (x1 ((x0 x1) x1))))))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": "deadline",
+    "SR": "deadline",
+    "SFprime": false,
+    "SF2": false
+  },
+  "legacy": null,
+  "beta_calls": 6197,
+  "seconds": 0.6377620410057716,
+  "peak_rss_bytes": 25821184,
+  "threads": 1
+}

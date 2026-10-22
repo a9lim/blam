@@ -1,0 +1,17 @@
+{
+  "label": "A070",
+  "id": "adv6/work/q_94fadb.json:19",
+  "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((x0 (\\x1. (x1 (x0 x1)))) _))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 163,
+  "work": 206,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 163,
+  "checked": true,
+  "sha256": "dfc55bdfc7c6754a17aa7aebf09146b61c5ceba56513e91a517710ca91bc29b6",
+  "seconds": 0.0018207920074928552,
+  "peak_rss_bytes": 24444928,
+  "threads": 1
+}

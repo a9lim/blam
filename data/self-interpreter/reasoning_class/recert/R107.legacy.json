@@ -1,0 +1,15 @@
+{
+  "label": "R107",
+  "id": "rootnarrow/work/h2_3.json:9",
+  "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. ((x2 (x1 x0)) x2))) (x0 _))))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": true
+  },
+  "legacy": "SR",
+  "beta_calls": 85,
+  "seconds": 0.014666167000541463,
+  "peak_rss_bytes": 25624576,
+  "threads": 1
+}

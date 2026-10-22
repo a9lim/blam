@@ -1,0 +1,17 @@
+{
+  "label": "R249",
+  "id": "rootnarrow/work/h4_1.json:0",
+  "source": "((\\x0. (x0 x0)) (\\x0. (((((x0 (\\x1. x0)) (x0 _)) _) _) _)))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": "deadline",
+    "SFprime": false,
+    "SF2": false
+  },
+  "legacy": null,
+  "beta_calls": 10435,
+  "seconds": 0.5732338749803603,
+  "peak_rss_bytes": 24821760,
+  "threads": 1
+}

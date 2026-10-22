@@ -1,0 +1,17 @@
+{
+  "label": "R249",
+  "id": "rootnarrow/work/h4_1.json:0",
+  "source": "((\\x0. (x0 x0)) (\\x0. (((((x0 (\\x1. x0)) (x0 _)) _) _) _)))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 104,
+  "work": 109,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 82,
+  "checked": true,
+  "sha256": "ecb4713a76daac41438a718b77d16acb2c2ee442315c855f1ac7abf323c1c84e",
+  "seconds": 0.0011912499903701246,
+  "peak_rss_bytes": 24150016,
+  "threads": 1
+}

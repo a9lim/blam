@@ -1,0 +1,17 @@
+{
+  "label": "A058",
+  "id": "adv6/work/q_83dd77.json:16",
+  "source": "(((\\x0. (\\x1. (\\x2. (x0 x0)))) (\\x0. (x0 (\\x1. ((x0 x1) _))))) j)",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 132,
+  "work": 160,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 132,
+  "checked": true,
+  "sha256": "968ac1c0afd6b93038d42fc2e3ad1bcd196871fd569c43a0c622b83dc7ef93ad",
+  "seconds": 0.0014548340113833547,
+  "peak_rss_bytes": 24395776,
+  "threads": 1
+}

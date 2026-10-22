@@ -1,0 +1,9 @@
+{
+  "label": "R130",
+  "valid": true,
+  "source_matches": true,
+  "states": 50,
+  "sha256": "904bcef9fadd328f7598309c3be88e7b50b07071ff98820d748d29f95726aed6",
+  "seconds": 0.0002227500081062317,
+  "peak_rss_bytes": 24199168
+}

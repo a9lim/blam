@@ -1,0 +1,9 @@
+{
+  "label": "R232",
+  "valid": true,
+  "source_matches": true,
+  "states": 163,
+  "sha256": "0705295ad58fa773312b33bda2aeedfc0158fc581e1992ac38a7440e97435776",
+  "seconds": 0.00040812502265907824,
+  "peak_rss_bytes": 24068096
+}

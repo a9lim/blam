@@ -1,0 +1,9 @@
+{
+  "label": "R331",
+  "valid": true,
+  "source_matches": true,
+  "states": 48,
+  "sha256": "d0bde6dc9c9aadd3c3385b997ade0c338b1edb2e65fa560c6c119f580a331402",
+  "seconds": 0.0002305000089108944,
+  "peak_rss_bytes": 24068096
+}

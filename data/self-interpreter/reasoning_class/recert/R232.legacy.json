@@ -1,0 +1,16 @@
+{
+  "label": "R232",
+  "id": "rootnarrow/work/h2_6.json:46",
+  "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x0 (\\x2. ((x0 x2) _)))) _) _)))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": "deadline",
+    "SFprime": true
+  },
+  "legacy": "SFprime",
+  "beta_calls": 10755,
+  "seconds": 0.5075153340003453,
+  "peak_rss_bytes": 24641536,
+  "threads": 1
+}

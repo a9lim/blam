@@ -1,0 +1,9 @@
+{
+  "label": "R235",
+  "valid": true,
+  "source_matches": true,
+  "states": 61,
+  "sha256": "28364fbea07eac6ca6337fb1c063449bff6670052d537e0a030c1a57031e0047",
+  "seconds": 0.00023141701240092516,
+  "peak_rss_bytes": 24084480
+}

@@ -1,0 +1,11 @@
+{
+  "label": "A038",
+  "id": "adv6/work/p1root.json:119",
+  "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (x0 (\\x1. (x0 (x0 x1))))) _)))",
+  "action": "discover_site_2",
+  "ok": false,
+  "reason": "abstract work/state cap",
+  "seconds": 0.17267941700993106,
+  "peak_rss_bytes": 32538624,
+  "threads": 1
+}

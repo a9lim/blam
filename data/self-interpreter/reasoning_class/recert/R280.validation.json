@@ -1,0 +1,9 @@
+{
+  "label": "R280",
+  "valid": true,
+  "source_matches": true,
+  "states": 144,
+  "sha256": "c148c47ee85259241f2cd4232188abf30215e9d17d57f17cec2774e320e63e4d",
+  "seconds": 0.00037908300873823464,
+  "peak_rss_bytes": 23953408
+}

@@ -1,0 +1,9 @@
+{
+  "label": "R223",
+  "valid": true,
+  "source_matches": true,
+  "states": 78,
+  "sha256": "078d90a92de0e569869faa57461d62a3b1b02991cdc4b133c7b44119078ae032",
+  "seconds": 0.0002686249790713191,
+  "peak_rss_bytes": 24150016
+}

@@ -1,0 +1,9 @@
+{
+  "label": "R282",
+  "valid": true,
+  "source_matches": true,
+  "states": 53,
+  "sha256": "3ea967ee35cad388cd401070f1acabf25d2ca4720eaa8c7bc77ef30c57a9da5b",
+  "seconds": 0.00022524999803863466,
+  "peak_rss_bytes": 24068096
+}

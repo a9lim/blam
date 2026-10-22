@@ -1,0 +1,9 @@
+{
+  "label": "R317",
+  "valid": true,
+  "source_matches": true,
+  "states": 126,
+  "sha256": "ce3dd21221677b95cb0bdad90ad925d94373b957f6d27372dfe7f71cef0087b5",
+  "seconds": 0.0003481660096440464,
+  "peak_rss_bytes": 24313856
+}

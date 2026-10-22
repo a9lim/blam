@@ -1,0 +1,9 @@
+{
+  "label": "R340",
+  "valid": true,
+  "source_matches": true,
+  "states": 72,
+  "sha256": "54514f9c2282f4fc7d4d72141b7596eecc7958def5b692e08ec48987b20e1ca9",
+  "seconds": 0.00027395898359827697,
+  "peak_rss_bytes": 24231936
+}

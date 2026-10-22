@@ -1,0 +1,11 @@
+{
+  "label": "A071",
+  "id": "adv6/work/q_94fadb.json:22",
+  "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((x0 (\\x1. (x0 (x0 x1)))) _))))",
+  "action": "discover_site_2",
+  "ok": false,
+  "reason": "abstract work/state cap",
+  "seconds": 0.15665133300353773,
+  "peak_rss_bytes": 31866880,
+  "threads": 1
+}

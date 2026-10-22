@@ -1,0 +1,17 @@
+{
+  "label": "R252",
+  "id": "rootnarrow/work/h63re_11.json:0",
+  "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (((x1 (x0 x1)) x1) x1)))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 83,
+  "work": 92,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 83,
+  "checked": true,
+  "sha256": "d358ffcae8dbff0ad83f7fd2b9d7c8fb61739b26d8d882c6d6c1c18240433e69",
+  "seconds": 0.0011504579742904752,
+  "peak_rss_bytes": 24100864,
+  "threads": 1
+}

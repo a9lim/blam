@@ -1,0 +1,11 @@
+{
+  "id": "rootnarrow/work/h6_3.json:49",
+  "result": {
+    "0": "fail",
+    "1": "fail",
+    "2": "fail"
+  },
+  "beta_calls": 345,
+  "seconds": 0.0011819999781437218,
+  "peak_rss_bytes": 21446656
+}

@@ -1,0 +1,17 @@
+{
+  "label": "R075",
+  "id": "rootnarrow/work/c1_lamyj.json:0",
+  "source": "((\\x0. (\\x1. ((\\x2. (x2 x2)) (\\x2. (x2 (\\x3. ((x2 x3) _))))))) (\\x0. j))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 132,
+  "work": 157,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 132,
+  "checked": true,
+  "sha256": "c9984862a133bf99619114a1d3d74e2547c4daed30edb39b561777e777fbb069",
+  "seconds": 0.001666875003138557,
+  "peak_rss_bytes": 24117248,
+  "threads": 1
+}

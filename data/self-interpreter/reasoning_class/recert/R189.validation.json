@@ -1,0 +1,9 @@
+{
+  "label": "R189",
+  "valid": true,
+  "source_matches": true,
+  "states": 128,
+  "sha256": "85e8747fa97b95524a33a96a6ad44c904b71877a872300afcb9b5b9367e2e724",
+  "seconds": 0.00035316598950885236,
+  "peak_rss_bytes": 24100864
+}

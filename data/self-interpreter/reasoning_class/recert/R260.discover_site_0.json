@@ -1,0 +1,17 @@
+{
+  "label": "R260",
+  "id": "rootnarrow/work/h63re_8.json:0",
+  "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 (x1 x0))) x1)))))",
+  "action": "discover_site_0",
+  "ok": false,
+  "reason": [
+    "lambda-stop",
+    9
+  ],
+  "states": 19,
+  "work": 20,
+  "k": 0,
+  "seconds": 0.00012520799646154046,
+  "peak_rss_bytes": 24543232,
+  "threads": 1
+}

@@ -1,0 +1,17 @@
+{
+  "label": "R240",
+  "id": "rootnarrow/work/h2_6.json:54",
+  "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. ((x1 x1) x1)) (x0 (\\x1. (\\x2. x0)))) _)))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": "deadline",
+    "SFprime": "deadline",
+    "SF2": "deadline"
+  },
+  "legacy": null,
+  "beta_calls": 6837,
+  "seconds": 0.9458727089804597,
+  "peak_rss_bytes": 70287360,
+  "threads": 1
+}

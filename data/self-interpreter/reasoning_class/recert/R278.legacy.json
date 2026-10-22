@@ -1,0 +1,17 @@
+{
+  "label": "R278",
+  "id": "rootnarrow/work/h6_2.json:16",
+  "source": "((\\x0. ((x0 (x0 x0)) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (x2 (\\x3. x2))))))))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": "deadline",
+    "SR": "deadline",
+    "SFprime": false,
+    "SF2": false
+  },
+  "legacy": null,
+  "beta_calls": 8434,
+  "seconds": 0.6080704169871751,
+  "peak_rss_bytes": 25247744,
+  "threads": 1
+}

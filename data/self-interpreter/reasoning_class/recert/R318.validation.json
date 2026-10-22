@@ -1,0 +1,9 @@
+{
+  "label": "R318",
+  "valid": true,
+  "source_matches": true,
+  "states": 41,
+  "sha256": "153d5137b51897405a0b864ab80779e1e399224d2b1147f2d9d86512e34ad8fb",
+  "seconds": 0.00022195899509824812,
+  "peak_rss_bytes": 24068096
+}

@@ -1,0 +1,17 @@
+{
+  "label": "R269",
+  "id": "rootnarrow/work/h6_2.json:7",
+  "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 ((x0 x2) _)))))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 121,
+  "work": 154,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 121,
+  "checked": true,
+  "sha256": "a02061bd3c1b4c9c7c83ae5883cb4ba9c432458e7712fc159b202fa3e4b3d914",
+  "seconds": 0.0015308750153053552,
+  "peak_rss_bytes": 24100864,
+  "threads": 1
+}

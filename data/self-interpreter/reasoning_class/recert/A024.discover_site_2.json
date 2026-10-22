@@ -1,0 +1,17 @@
+{
+  "label": "A024",
+  "id": "adv6/work/p1root.json:14",
+  "source": "((\\x0. (\\x1. (x1 (x0 x0)))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 138,
+  "work": 161,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 138,
+  "checked": true,
+  "sha256": "979b04e9499874d6844c99667071e730ae21b63d47af2630194125f4a93eeef8",
+  "seconds": 0.0016108749841805547,
+  "peak_rss_bytes": 24117248,
+  "threads": 1
+}

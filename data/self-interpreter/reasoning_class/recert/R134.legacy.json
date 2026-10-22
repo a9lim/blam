@@ -1,0 +1,16 @@
+{
+  "label": "R134",
+  "id": "rootnarrow/work/h2_3.json:36",
+  "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 x1)) ((\\x1. (\\x2. ((x0 x2) _))) _))))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": "deadline",
+    "SFprime": true
+  },
+  "legacy": "SFprime",
+  "beta_calls": 14219,
+  "seconds": 0.45741254099993967,
+  "peak_rss_bytes": 24461312,
+  "threads": 1
+}

@@ -1,0 +1,17 @@
+{
+  "label": "A053",
+  "id": "adv6/work/q_5716b1.json:15",
+  "source": "((\\x0. (\\x1. ((x0 x0) _))) (\\x0. (x0 (\\x1. (x1 (x0 x1))))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 114,
+  "work": 143,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 114,
+  "checked": true,
+  "sha256": "8ba77eec887976b1ebfd8bf8af46e953f6ffbe1fb36e3239a7e2b7e1e5f3ee72",
+  "seconds": 0.0013057500182185322,
+  "peak_rss_bytes": 24379392,
+  "threads": 1
+}

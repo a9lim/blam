@@ -1,0 +1,3382 @@
+[
+  {
+    "id": "shared/p1.json:18",
+    "source": "(\\x0. ((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. ((x1 x2) _))) _))))",
+    "tag": "SF",
+    "log_index": 20,
+    "log_file": "shared/p1cert.txt",
+    "label": "A000"
+  },
+  {
+    "id": "shared/p1.json:8",
+    "source": "(\\x0. ((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. (x2 (x1 x2)))) _))))",
+    "tag": "SF",
+    "log_index": 21,
+    "log_file": "shared/p1cert.txt",
+    "label": "A001"
+  },
+  {
+    "id": "shared/p1.json:13",
+    "source": "(\\x0. ((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. (x1 (x1 x2)))) _))))",
+    "tag": "SF",
+    "log_index": 38,
+    "log_file": "shared/p1cert.txt",
+    "label": "A002"
+  },
+  {
+    "id": "shared/p1.json:15",
+    "source": "(\\x0. ((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. (x0 (x1 x2)))) _))))",
+    "tag": "SF",
+    "log_index": 81,
+    "log_file": "shared/p1cert.txt",
+    "label": "A003"
+  },
+  {
+    "id": "shared/p4.json:80",
+    "source": "(\\x0. (((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. ((x1 x2) _))) _))) _))",
+    "tag": "SF",
+    "log_index": 33,
+    "log_file": "shared/p4cert.txt",
+    "label": "A004"
+  },
+  {
+    "id": "shared/p4.json:60",
+    "source": "(\\x0. (((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. (x2 (x1 x2)))) _))) _))",
+    "tag": "SF",
+    "log_index": 35,
+    "log_file": "shared/p4cert.txt",
+    "label": "A005"
+  },
+  {
+    "id": "shared/p4.json:70",
+    "source": "(\\x0. (((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. (x1 (x1 x2)))) _))) _))",
+    "tag": "SF",
+    "log_index": 55,
+    "log_file": "shared/p4cert.txt",
+    "label": "A006"
+  },
+  {
+    "id": "shared/p4.json:74",
+    "source": "(\\x0. (((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. (x0 (x1 x2)))) _))) _))",
+    "tag": "SF",
+    "log_index": 107,
+    "log_file": "shared/p4cert.txt",
+    "label": "A007"
+  },
+  {
+    "id": "shared/p4.json:129",
+    "source": "(\\x0. (((\\x1. (x1 (\\x2. x1))) (\\x1. ((x1 x1) (\\x2. (x2 x1))))) _))",
+    "tag": "Y-family",
+    "log_index": 15,
+    "log_file": "shared/p4cert.txt",
+    "label": "A008"
+  },
+  {
+    "id": "shared/p4.json:224",
+    "source": "(\\x0. (((\\x1. ((x1 (\\x2. x1)) _)) (\\x1. ((x1 x1) (\\x2. (x2 x1))))) _))",
+    "tag": "Y-family",
+    "log_index": 135,
+    "log_file": "shared/p4cert.txt",
+    "label": "A009"
+  },
+  {
+    "id": "shared/p4.json:16",
+    "source": "(\\x0. (((\\x1. (\\x2. (x1 (\\x3. x1)))) (\\x1. ((x1 x1) (\\x2. (x2 x1))))) _))",
+    "tag": "Y-family",
+    "log_index": 147,
+    "log_file": "shared/p4cert.txt",
+    "label": "A010"
+  },
+  {
+    "id": "shared/p4.json:173",
+    "source": "(\\x0. (((\\x1. (x1 (x1 (\\x2. x1)))) (\\x1. ((x1 x1) (\\x2. (x2 x1))))) _))",
+    "tag": "Y-family",
+    "log_index": 182,
+    "log_file": "shared/p4cert.txt",
+    "label": "A011"
+  },
+  {
+    "id": "adv6/work/p1root.json:107",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 20,
+    "log_file": "adv6/work/p1root_cert_a.txt",
+    "label": "A012",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:77",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 21,
+    "log_file": "adv6/work/p1root_cert_a.txt",
+    "label": "A013",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:92",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 44,
+    "log_file": "adv6/work/p1root_cert_a.txt",
+    "label": "A014",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:368",
+    "source": "((\\x0. (\\x1. ((x0 x0) _))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 175,
+    "log_file": "adv6/work/p1root_cert_a.txt",
+    "label": "A015",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/p1root.json:364",
+    "source": "((\\x0. (\\x1. ((x0 x0) _))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 176,
+    "log_file": "adv6/work/p1root_cert_a.txt",
+    "label": "A016",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/p1root.json:111",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (((x0 x1) _) _))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 206,
+    "log_file": "adv6/work/p1root_cert_a.txt",
+    "label": "A017",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:105",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. ((x1 (x0 x1)) _))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 208,
+    "log_file": "adv6/work/p1root_cert_a.txt",
+    "label": "A018",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:84",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (x1 ((x0 x1) _)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 215,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A019",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:73",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x0 x1))))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 216,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A020",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:75",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (x1 (x1 (x0 x1))))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 217,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A021",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:122",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (x0 (\\x1. ((x0 x1) _)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 220,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A022",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:116",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (x0 (\\x1. (x1 (x0 x1))))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 221,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A023",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:14",
+    "source": "((\\x0. (\\x1. (x1 (x0 x0)))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 234,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A024",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/p1root.json:10",
+    "source": "((\\x0. (\\x1. (x1 (x0 x0)))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 235,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A025",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/p1root.json:319",
+    "source": "((\\x0. (\\x1. ((\\x2. (x2 x2)) x0))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 267,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A026",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:317",
+    "source": "((\\x0. (\\x1. ((\\x2. (x2 x2)) x0))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 268,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A027",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:367",
+    "source": "((\\x0. (\\x1. ((x0 x0) _))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 291,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A028",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/p1root.json:212",
+    "source": "((\\x0. (\\x1. (x0 (\\x2. (x2 (\\x3. ((x2 x3) _))))))) (\\x0. ((x0 x0) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 322,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A029",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/p1root.json:210",
+    "source": "((\\x0. (\\x1. (x0 (\\x2. (x2 (\\x3. (x3 (x2 x3)))))))) (\\x0. ((x0 x0) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 324,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A030",
+    "adv6_class": "new-base, also s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:263",
+    "source": "((\\x0. (\\x1. (x0 (x0 x0)))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 352,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A031",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:261",
+    "source": "((\\x0. (\\x1. (x0 (x0 x0)))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 353,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A032",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:108",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. ((x0 (x0 x1)) _))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 376,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A033",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:97",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (x0 ((x0 x1) _)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 378,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A034",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:89",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x0 x1))))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 379,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A035",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:91",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (x0 (x1 (x0 x1))))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 380,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A036",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:78",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (\\x1. (x1 (x0 (x0 x1))))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 383,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A037",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:119",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. ((x0 (x0 (\\x1. (x0 (x0 x1))))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 400,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A038",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1root.json:13",
+    "source": "((\\x0. (\\x1. (x1 (x0 x0)))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 418,
+    "log_file": "adv6/work/p1root_cert_b.txt",
+    "label": "A039",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/p1rootj.json:11",
+    "source": "(((\\x0. (\\x1. (\\x2. (x0 x0)))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 25,
+    "log_file": "adv6/work/p1rootj_cert.txt",
+    "label": "A040",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1rootj.json:7",
+    "source": "(((\\x0. (\\x1. (\\x2. (x0 x0)))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 26,
+    "log_file": "adv6/work/p1rootj_cert.txt",
+    "label": "A041",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/p1rootj.json:10",
+    "source": "(((\\x0. (\\x1. (\\x2. (x0 x0)))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 41,
+    "log_file": "adv6/work/p1rootj_cert.txt",
+    "label": "A042",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/pr_gs_yy___.json:32",
+    "source": "((\\x0. (\\x1. (x0 (\\x2. x0)))) (\\x0. (((x0 x0) (\\x1. (x1 x0))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 13,
+    "log_file": "adv6/work/pr_gs_yy____cert.txt",
+    "label": "A043",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/pr_gs_yy___.json:18",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (((x0 (\\x1. ((x0 x1) _))) _) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 25,
+    "log_file": "adv6/work/pr_gs_yy____cert.txt",
+    "label": "A044",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/pr_gs_yy___.json:14",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (((x0 (\\x1. (x1 (x0 x1)))) _) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 27,
+    "log_file": "adv6/work/pr_gs_yy____cert.txt",
+    "label": "A045",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/pr_gs_yy___.json:17",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (((x0 (\\x1. (x0 (x0 x1)))) _) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 55,
+    "log_file": "adv6/work/pr_gs_yy____cert.txt",
+    "label": "A046",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_0b5945.json:58",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (((\\x1. x0) _) (\\x1. ((x0 x1) _)))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 50,
+    "log_file": "adv6/work/q_0b5945_cert.txt",
+    "label": "A047",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_0b5945.json:50",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (((\\x1. x0) _) (\\x1. (x1 (x0 x1))))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 51,
+    "log_file": "adv6/work/q_0b5945_cert.txt",
+    "label": "A048",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_0b5945.json:55",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (((\\x1. x0) _) (\\x1. (x0 (x0 x1))))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 95,
+    "log_file": "adv6/work/q_0b5945_cert.txt",
+    "label": "A049",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_538700.json:11",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 (x0 (\\x1. ((x0 x1) _))))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 13,
+    "log_file": "adv6/work/q_538700_cert.txt",
+    "label": "A050",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_5716b1.json:9",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 (\\x1. ((x0 x1) _)))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 1,
+    "log_file": "adv6/work/q_5716b1_cert.txt",
+    "label": "A051",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_5716b1.json:17",
+    "source": "((\\x0. (\\x1. ((x0 x0) _))) (\\x0. (x0 (\\x1. ((x0 x1) _)))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 10,
+    "log_file": "adv6/work/q_5716b1_cert.txt",
+    "label": "A052",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/q_5716b1.json:15",
+    "source": "((\\x0. (\\x1. ((x0 x0) _))) (\\x0. (x0 (\\x1. (x1 (x0 x1))))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 11,
+    "log_file": "adv6/work/q_5716b1_cert.txt",
+    "label": "A053",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/q_5716b1.json:11",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 (\\x1. (((x0 x1) _) _)))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 13,
+    "log_file": "adv6/work/q_5716b1_cert.txt",
+    "label": "A054",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_5716b1.json:8",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 (\\x1. ((x1 (x0 x1)) _)))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 15,
+    "log_file": "adv6/work/q_5716b1_cert.txt",
+    "label": "A055",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_5716b1.json:4",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 (\\x1. (x1 ((x0 x1) _))))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 17,
+    "log_file": "adv6/work/q_5716b1_cert.txt",
+    "label": "A056",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_5716b1.json:0",
+    "source": "((\\x0. (\\x1. (x1 (x0 x0)))) (\\x0. (x0 (\\x1. ((x0 x1) _)))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 19,
+    "log_file": "adv6/work/q_5716b1_cert.txt",
+    "label": "A057",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/q_83dd77.json:16",
+    "source": "(((\\x0. (\\x1. (\\x2. (x0 x0)))) (\\x0. (x0 (\\x1. ((x0 x1) _))))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 7,
+    "log_file": "adv6/work/q_83dd77_cert.txt",
+    "label": "A058",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_83dd77.json:55",
+    "source": "(((\\x0. (\\x1. (\\x2. ((\\x3. (x3 x3)) x0)))) (\\x0. (x0 (\\x1. ((x0 x1) _))))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 62,
+    "log_file": "adv6/work/q_83dd77_cert.txt",
+    "label": "A059",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_83dd77.json:73",
+    "source": "(((\\x0. (\\x1. (\\x2. ((x0 x0) _)))) (\\x0. (x0 (\\x1. ((x0 x1) _))))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 64,
+    "log_file": "adv6/work/q_83dd77_cert.txt",
+    "label": "A060",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/q_83dd77.json:18",
+    "source": "(((\\x0. (\\x1. (\\x2. (x0 x0)))) (\\x0. (x0 (\\x1. (((x0 x1) _) _))))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 71,
+    "log_file": "adv6/work/q_83dd77_cert.txt",
+    "label": "A061",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_83dd77.json:15",
+    "source": "(((\\x0. (\\x1. (\\x2. (x0 x0)))) (\\x0. (x0 (\\x1. ((x1 (x0 x1)) _))))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 73,
+    "log_file": "adv6/work/q_83dd77_cert.txt",
+    "label": "A062",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_83dd77.json:11",
+    "source": "(((\\x0. (\\x1. (\\x2. (x0 x0)))) (\\x0. (x0 (\\x1. (x1 ((x0 x1) _)))))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 75,
+    "log_file": "adv6/work/q_83dd77_cert.txt",
+    "label": "A063",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_83dd77.json:20",
+    "source": "(((\\x0. (\\x1. (\\x2. (x0 x0)))) (\\x0. (x0 (x0 (\\x1. ((x0 x1) _)))))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 76,
+    "log_file": "adv6/work/q_83dd77_cert.txt",
+    "label": "A064",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_83dd77.json:2",
+    "source": "(((\\x0. (\\x1. (\\x2. (x2 (x0 x0))))) (\\x0. (x0 (\\x1. ((x0 x1) _))))) j)",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 81,
+    "log_file": "adv6/work/q_83dd77_cert.txt",
+    "label": "A065",
+    "adv6_class": "SF/new-base"
+  },
+  {
+    "id": "adv6/work/q_8d8910.json:46",
+    "source": "(((\\x0. (\\x1. (\\x2. (x1 x1)))) j) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 20,
+    "log_file": "adv6/work/q_8d8910_cert.txt",
+    "label": "A066",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_8d8910.json:29",
+    "source": "(((\\x0. (\\x1. (\\x2. (x1 x1)))) j) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 21,
+    "log_file": "adv6/work/q_8d8910_cert.txt",
+    "label": "A067",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_8d8910.json:37",
+    "source": "(((\\x0. (\\x1. (\\x2. (x1 x1)))) j) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 44,
+    "log_file": "adv6/work/q_8d8910_cert.txt",
+    "label": "A068",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_94fadb.json:25",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((x0 (\\x1. ((x0 x1) _))) _))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 110,
+    "log_file": "adv6/work/q_94fadb_cert.txt",
+    "label": "A069",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_94fadb.json:19",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((x0 (\\x1. (x1 (x0 x1)))) _))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 112,
+    "log_file": "adv6/work/q_94fadb_cert.txt",
+    "label": "A070",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_94fadb.json:22",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((x0 (\\x1. (x0 (x0 x1)))) _))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 205,
+    "log_file": "adv6/work/q_94fadb_cert.txt",
+    "label": "A071",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_df9ee9.json:73",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((\\x1. (\\x2. ((x0 x2) _))) _))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 110,
+    "log_file": "adv6/work/q_df9ee9_cert.txt",
+    "label": "A072",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_df9ee9.json:64",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((\\x1. (\\x2. (x2 (x0 x2)))) _))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 112,
+    "log_file": "adv6/work/q_df9ee9_cert.txt",
+    "label": "A073",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "adv6/work/q_df9ee9.json:70",
+    "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((\\x1. (\\x2. (x0 (x0 x2)))) _))))",
+    "tag": "adv6 handwritten candidate",
+    "log_index": 344,
+    "log_file": "adv6/work/q_df9ee9_cert.txt",
+    "label": "A074",
+    "adv6_class": "s-absent"
+  },
+  {
+    "id": "rootnarrow/work/c1_lamyj.json:0",
+    "aliases": [
+      "rootnarrow/work/c1_lamyj.json:0"
+    ],
+    "source": "((\\x0. (\\x1. ((\\x2. (x2 x2)) (\\x2. (x2 (\\x3. ((x2 x3) _))))))) (\\x0. j))",
+    "tag": "rootnarrow candidate",
+    "label": "R075",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/c1_lamyj.json:1",
+    "aliases": [
+      "rootnarrow/work/c1_lamyj.json:1"
+    ],
+    "source": "((\\x0. (\\x1. ((\\x2. (x2 x2)) (\\x2. ((x2 (\\x3. x2)) (x2 _)))))) (\\x0. j))",
+    "tag": "rootnarrow candidate",
+    "label": "R076",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/c1_lamyj.json:2",
+    "aliases": [
+      "rootnarrow/work/c1_lamyj.json:2"
+    ],
+    "source": "((\\x0. (\\x1. ((\\x2. ((x2 x2) _)) (\\x2. (x2 (x2 (\\x3. x2))))))) (\\x0. j))",
+    "tag": "rootnarrow candidate",
+    "label": "R077",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/c1_lamyj.json:3",
+    "aliases": [
+      "rootnarrow/work/c1_lamyj.json:3"
+    ],
+    "source": "((\\x0. (\\x1. (((\\x2. (x2 x2)) (\\x2. (x2 (x2 (\\x3. x2))))) _))) (\\x0. j))",
+    "tag": "rootnarrow candidate",
+    "label": "R078",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_3.json:0",
+    "aliases": [
+      "rootnarrow/work/fix_3.json:0",
+      "rootnarrow/work/named_3.json:0"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((\\x3. (x3 x3)) (\\x3. (x3 (\\x4. ((x3 x4) _)))))))) (\\x0. c)) j)",
+    "tag": "rootnarrow candidate",
+    "label": "R079",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/fix_3.json:1",
+    "aliases": [
+      "rootnarrow/work/fix_3.json:1",
+      "rootnarrow/work/named_3.json:1"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((\\x3. (x3 x3)) (\\x3. ((x3 (\\x4. x3)) (x3 _))))))) (\\x0. c)) j)",
+    "tag": "rootnarrow candidate",
+    "label": "R080",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_3.json:2",
+    "aliases": [
+      "rootnarrow/work/fix_3.json:2",
+      "rootnarrow/work/named_3.json:2"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((\\x3. ((x3 x3) _)) (\\x3. (x3 (x3 (\\x4. x3)))))))) (\\x0. c)) j)",
+    "tag": "rootnarrow candidate",
+    "label": "R081",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:0",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:0",
+      "rootnarrow/work/named_4.json:0"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. (x2 ((x1 x1) _))))) j) (\\x0. (x0 (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R082",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:1",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:1",
+      "rootnarrow/work/named_4.json:1"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. (x1 (\\x3. (x1 (x3 _))))))) j) (\\x0. (x0 (\\x1. x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R083",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:2",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:2",
+      "rootnarrow/work/named_4.json:2"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. (x1 ((x1 x1) _))))) j) (\\x0. (x0 (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R084",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:3",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:3",
+      "rootnarrow/work/named_4.json:3"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x2 (x1 x1)) _)))) j) (\\x0. (x0 (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R085",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:4",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:4",
+      "rootnarrow/work/named_4.json:4"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 (\\x1. (x1 (x0 x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R086",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:5",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:5",
+      "rootnarrow/work/named_4.json:5"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 (\\x1. (x0 (x0 x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R087",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:6",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:6",
+      "rootnarrow/work/named_4.json:6"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 (\\x1. ((x0 x1) _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R088",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:7",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:7",
+      "rootnarrow/work/named_4.json:7"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R089",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:8",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:8",
+      "rootnarrow/work/named_4.json:8"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 (x0 (x0 (\\x1. x0))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R090",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:9",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:9",
+      "rootnarrow/work/named_4.json:9"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 ((\\x1. (x1 _)) (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R091",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:10",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:10",
+      "rootnarrow/work/named_4.json:10"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 ((x0 (\\x1. x1)) x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R092",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:11",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:11",
+      "rootnarrow/work/named_4.json:11"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 ((x0 (\\x1. (\\x2. x2))) x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R093",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:12",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:12",
+      "rootnarrow/work/named_4.json:12"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 ((x0 (\\x1. (\\x2. x0))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R094",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:13",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:13",
+      "rootnarrow/work/named_4.json:13"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 (\\x3. (x3 (x3 (\\x4. x3))))) _)))) j) (\\x0. (x0 x0)))",
+    "tag": "rootnarrow candidate",
+    "label": "R095",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:14",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:14",
+      "rootnarrow/work/named_4.json:14"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. ((x1 (x1 x1)) _)))) j) (\\x0. (x0 (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R096",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/fix_4.json:15",
+    "aliases": [
+      "rootnarrow/work/fix_4.json:15",
+      "rootnarrow/work/named_4.json:15"
+    ],
+    "source": "(((\\x0. (\\x1. (\\x2. (((x1 x1) _) _)))) j) (\\x0. (x0 (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R097",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:0",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. x1)) ((x0 (\\x1. (x1 (x0 x1)))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R098",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:1",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:1",
+      "rootnarrow/work/h2_left_all.json:0",
+      "rootnarrow/work/h2xre_1.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. x1)) ((x0 (\\x1. ((x0 x1) _))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R099",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:2",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:2"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. x1)) ((x0 (x0 (\\x1. x0))) (x0 _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R100",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:3",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:3"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. x1)) (((x0 (\\x1. x0)) (x0 _)) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R101",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:4",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:4"
+    ],
+    "source": "((\\x0. (x0 _)) (\\x0. ((\\x1. (\\x2. (x1 x1))) (\\x1. (x1 (x1 (\\x2. x1)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R102",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:5",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:5"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. (x1 _))) ((x0 (\\x1. x0)) (x0 _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R103",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:6",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:6"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. (x1 x1))) ((x0 (\\x1. (\\x2. x0))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R104",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:7",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:7"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. ((x2 x1) x2))) ((x0 _) x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R105",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:8",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:8"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. ((x2 (\\x3. x1)) x2))) ((x0 _) x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R106",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:9",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:9"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. ((x2 (x1 x0)) x2))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R107",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:10",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:10"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (\\x2. ((x2 ((x0 _) x0)) x2))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R108",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:11",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:11"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (\\x2. ((x1 (\\x3. x1)) _))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R109",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:12",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:12"
+    ],
+    "source": "((\\x0. (x0 _)) (\\x0. ((\\x1. (x1 x1)) (\\x1. (x1 (\\x2. (x2 (x1 x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R110",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:13",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:13"
+    ],
+    "source": "((\\x0. (x0 _)) (\\x0. ((\\x1. (x1 x1)) (\\x1. (x1 (\\x2. (x1 (x1 x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R111",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:14",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:14"
+    ],
+    "source": "((\\x0. (x0 _)) (\\x0. ((\\x1. (x1 x1)) (\\x1. (x1 (\\x2. ((x1 x2) _)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R112",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:15",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:15"
+    ],
+    "source": "((\\x0. (x0 _)) (\\x0. ((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. x1)) (x1 _))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R113",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:16",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:16"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 x1)) (x0 ((x0 (\\x1. x0)) _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R114",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:17",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:17"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 (\\x2. x1))) (x0 ((x0 (\\x1. x0)) _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R115",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:18",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:18"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 x1)) (x0 ((x0 (\\x1. x0)) _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R116",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:19",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:19"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 (\\x2. x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R117",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:20",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:20"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 (\\x2. (x1 (\\x3. x1))))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R118",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:21",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:21"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 (\\x2. (x0 _)))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R119",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:22",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:22"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 (x1 (\\x2. x1)))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R120",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:23",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:23"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 (x1 (\\x2. (\\x3. x0))))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R121",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:24",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:24"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 (x1 (x1 (\\x2. x1))))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R122",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:25",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:25"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 ((x1 (\\x2. x1)) _))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R123",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:26",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:26"
+    ],
+    "source": "((\\x0. (x0 (\\x1. (\\x2. (x0 (\\x3. x2)))))) (\\x0. ((\\x1. (x1 x1)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R124",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:27",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:27"
+    ],
+    "source": "((\\x0. (x0 (\\x1. (x0 (\\x2. x0))))) (\\x0. ((\\x1. (x1 (\\x2. x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R125",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:28",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:28"
+    ],
+    "source": "((\\x0. (x0 (x0 (\\x1. x0)))) (\\x0. ((\\x1. (x1 (\\x2. x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R126",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:29",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:29"
+    ],
+    "source": "((\\x0. (x0 (x0 (\\x1. x0)))) (\\x0. ((\\x1. (x1 (x1 (\\x2. x1)))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R127",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:30",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:30"
+    ],
+    "source": "((\\x0. (x0 (x0 (x0 (\\x1. x0))))) (\\x0. ((\\x1. (x1 (\\x2. x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R128",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:31",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:31"
+    ],
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. ((\\x1. (x1 x1)) (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R129",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:32",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:32"
+    ],
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. ((\\x1. (x1 (\\x2. x1))) (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R130",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:33",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:33"
+    ],
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. ((\\x1. (x1 x1)) (x0 (\\x1. (\\x2. x0))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R131",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:34",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:34"
+    ],
+    "source": "((\\x0. (x0 ((x0 (\\x1. x0)) _))) (\\x0. ((\\x1. (x1 x1)) (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R132",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:35",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:35"
+    ],
+    "source": "((\\x0. (x0 ((x0 (\\x1. x0)) _))) (\\x0. ((\\x1. (x1 (\\x2. x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R133",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:36",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:36",
+      "rootnarrow/work/h2_left_all.json:1",
+      "rootnarrow/work/h2xre_2.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 x1)) ((\\x1. (\\x2. ((x0 x2) _))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R134",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:37",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:37"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 (\\x2. x1))) ((\\x1. (x0 _)) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R135",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:38",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:38"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 _)) ((x0 (\\x1. x0)) (x0 _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R136",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:39",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:39"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 x1)) ((x0 (\\x1. (\\x2. x0))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R137",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:40",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:40"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 (x1 x1))) ((x0 (\\x1. (\\x2. x0))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R138",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:41",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:41"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 x1)) ((x0 (x0 (\\x1. (\\x2. x0)))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R139",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:42",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:42"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 (\\x2. x1))) ((x0 _) (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R140",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:43",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:43"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 _)) ((x0 _) (\\x1. (x0 _))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R141",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:44",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:44"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (x1 _)) ((x0 (\\x1. x0)) (x0 _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R142",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:45",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:45"
+    ],
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((\\x1. (x1 x1)) ((x0 (\\x1. (\\x2. x0))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R143",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:46",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:46"
+    ],
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. ((\\x1. (x1 x1)) ((x0 (\\x1. x1)) x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R144",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:47",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:47"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 x1)) (((x0 (\\x1. x1)) (\\x1. x0)) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R145",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:48",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:48"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x1 x1)) (((x0 (\\x1. (\\x2. (\\x3. x3)))) _) x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R146",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:49",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:49"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x0 (\\x2. (\\x3. ((x0 x2) _))))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R147",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:50",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:50"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x0 (\\x2. (x2 (\\x3. ((x2 x3) _)))))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R148",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:51",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:51"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x0 (\\x2. (x2 ((x0 x2) _))))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R149",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:52",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:52"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x0 (\\x2. ((x2 (\\x3. x2)) (x2 _))))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R150",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:53",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:53"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x0 (\\x2. ((x2 (x0 x2)) _)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R151",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:54",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:54",
+      "rootnarrow/work/h2_left_all.json:2",
+      "rootnarrow/work/h2xre_3.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x0 (\\x2. ((x0 x2) _)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R152",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:55",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:55",
+      "rootnarrow/work/h2_left_all.json:3",
+      "rootnarrow/work/h2xre_4.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x0 (\\x2. (((x0 x2) _) _)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R153",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:56",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:56",
+      "rootnarrow/work/h2_left_all.json:4",
+      "rootnarrow/work/h2xre_5.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x0 (x0 (\\x2. ((x0 x2) _))))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R154",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:57",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:57"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (x0 ((x0 (\\x2. (\\x3. x0))) _))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R155",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:58",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:58",
+      "rootnarrow/work/h2_left_all.json:5",
+      "rootnarrow/work/h2xre_6.json:0"
+    ],
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((\\x1. (x0 (\\x2. ((x0 x2) _)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R156",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:59",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:59",
+      "rootnarrow/work/h2_left_all.json:6",
+      "rootnarrow/work/h2xre_7.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((\\x2. (x2 x2)) (\\x2. ((x0 x2) _)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R157",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:60",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:60"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. ((\\x2. (x2 (\\x3. x2))) (x0 _))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R158",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:61",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:61"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((\\x2. ((x2 _) (x2 _))) (\\x2. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R159",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:62",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:62"
+    ],
+    "source": "((\\x0. (x0 _)) (\\x0. ((\\x1. ((x1 x1) _)) (\\x1. (x1 (x1 (\\x2. x1)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R160",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:63",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:63"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. ((x1 (\\x2. x1)) _)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R161",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:64",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:64"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. ((x1 (\\x2. x0)) x1)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R162",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:65",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:65"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. ((x1 (\\x2. x0)) (\\x2. x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R163",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:66",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:66"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. ((x1 (\\x2. (\\x3. x1))) x1)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R164",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:67",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:67"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. ((x1 (x1 (\\x2. x1))) _)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R165",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:68",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:68"
+    ],
+    "source": "((\\x0. (x0 (\\x1. (\\x2. x0)))) (\\x0. ((\\x1. ((x1 (\\x2. x1)) x1)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R166",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:69",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:69"
+    ],
+    "source": "((\\x0. (x0 (\\x1. (\\x2. x0)))) (\\x0. ((\\x1. ((x1 (\\x2. x0)) x1)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R167",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:70",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:70"
+    ],
+    "source": "((\\x0. (x0 (\\x1. (\\x2. x0)))) (\\x0. ((\\x1. ((x1 _) (\\x2. x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R168",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:71",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:71"
+    ],
+    "source": "((\\x0. (x0 (x0 (\\x1. x0)))) (\\x0. ((\\x1. ((x1 (\\x2. x1)) _)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R169",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:72",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:72"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((x1 x1) _)) ((x0 (\\x1. (\\x2. x0))) _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R170",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:73",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:73"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((x0 (\\x2. x0)) (\\x2. x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R171",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:74",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:74"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((x0 (\\x2. x0)) (\\x2. (x0 _)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R172",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:75",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:75"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((x0 (\\x2. x0)) (x1 x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R173",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:76",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:76"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((x0 (\\x2. x0)) (x0 _))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R174",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:77",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:77"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((x0 (\\x2. (x2 (x2 (\\x3. x2))))) _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R175",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:78",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:78"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((x0 (\\x2. (x2 (x0 x2)))) _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R176",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:79",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:79",
+      "rootnarrow/work/h2_left_all.json:7",
+      "rootnarrow/work/h2xre_8.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((x0 (\\x2. ((x0 x2) _))) _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R177",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:80",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:80"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. ((x0 (x0 (\\x2. (\\x3. x0)))) _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R178",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:81",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:81"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. ((x0 _) (\\x2. x1))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R179",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:82",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:82"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. ((x0 _) (\\x2. (x0 _)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R180",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:83",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:83"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. ((x0 (\\x2. x0)) (x0 _))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R181",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:84",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:84"
+    ],
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((\\x1. ((x0 (\\x2. x0)) (x0 _))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R182",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:85",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:85"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((\\x1. (((x1 (\\x2. x1)) _) _)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R183",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:86",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:86"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (((x0 (\\x2. x0)) x1) _)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R184",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_3.json:87",
+    "aliases": [
+      "rootnarrow/work/h2_3.json:87"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((\\x1. (((x0 (\\x2. x0)) (x0 _)) _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R185",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:0",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:0",
+      "rootnarrow/work/h2_left_all.json:22",
+      "rootnarrow/work/h2xre_23.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. x1)) (x0 (\\x1. ((x0 x1) _)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R186",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:1",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:1"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. x1)) ((x0 (\\x1. x0)) (x0 _))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R187",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:2",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:2",
+      "rootnarrow/work/h2_left_all.json:23",
+      "rootnarrow/work/h2xre_24.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. (x2 (\\x3. ((x2 x3) _))))) _) x0)))",
+    "tag": "rootnarrow candidate",
+    "label": "R188",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:3",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:3"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. (x2 x1))) (x0 _)) (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R189",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:4",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:4"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. (x1 x1))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R190",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:5",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:5"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. (x1 (\\x3. x1)))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R191",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:6",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:6"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. (x1 x1))) (x0 (\\x1. (\\x2. x0)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R192",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:7",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:7"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (\\x2. (x1 x1))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R193",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:8",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:8"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (\\x2. (x1 (\\x3. x1)))) (x0 _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R194",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:9",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:9"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. (x1 x1))) ((x0 (\\x1. x1)) x0)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R195",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:10",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:10"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. (x0 (x2 _)))) _) (\\x1. x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R196",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:11",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:11"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. ((x2 (\\x3. x2)) x1))) (x0 _)) x0)))",
+    "tag": "rootnarrow candidate",
+    "label": "R197",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:12",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:12"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. ((x2 (\\x3. x2)) (x2 _)))) _) x0)))",
+    "tag": "rootnarrow candidate",
+    "label": "R198",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:13",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:13"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. ((x2 _) (x2 _)))) _) (\\x1. x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R199",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:14",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:14"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. ((x2 x2) _))) _) (x0 (\\x1. x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R200",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:15",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:15"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (\\x1. (x1 (x0 x1)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R201",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:16",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:16"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (\\x1. (x1 (x0 (\\x2. x1))))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R202",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:17",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:17"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (x1 x1)) (\\x1. (x1 (x0 x1)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R203",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:18",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:18"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (\\x1. (x0 (\\x2. (x2 x1))))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R204",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:19",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:19",
+      "rootnarrow/work/h2_left_all.json:24",
+      "rootnarrow/work/h2xre_25.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (\\x1. ((x0 x1) _))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R205",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:20",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:20"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 (\\x2. x1))) (\\x1. ((x0 x1) x1))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R206",
+    "legacy": "SF2"
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:21",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:21"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (\\x1. ((x0 (\\x2. x1)) x1))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R207",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:22",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:22",
+      "rootnarrow/work/h2_left_all.json:25",
+      "rootnarrow/work/h2xre_26.json:0"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (x1 x1)) (\\x1. ((x0 x1) x1))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R208",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:23",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:23"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R209",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:24",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:24"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 (\\x2. x1))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R210",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:25",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:25"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 (\\x2. (x2 x1)))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R211",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:26",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:26"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 (x1 x1))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R212",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:27",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:27"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 (x1 (\\x2. x1)))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R213",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:28",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:28"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 (x0 _))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R214",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:29",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:29"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (x0 (\\x1. (\\x2. x0)))) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R215",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:30",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:30"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (x0 (\\x1. (\\x2. (\\x3. x0))))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R216",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:31",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:31"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (x0 (\\x1. (x1 (\\x2. x0))))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R217",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:32",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:32"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) (x0 (x0 (\\x1. x0)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R218",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:33",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:33"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 (\\x2. x1))) (x0 (x0 (\\x1. x0)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R219",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:34",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:34"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (x1 x1)) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R220",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:35",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:35"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (x1 x1)) (x0 (x0 (\\x1. x0)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R221",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:36",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:36"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (x1 (\\x2. x1))) (x0 _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R222",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:37",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:37"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (x1 (x1 x1))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R223",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:38",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:38"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (x1 (x1 (\\x2. x1)))) (x0 _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R224",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:39",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:39"
+    ],
+    "source": "((\\x0. (x0 (\\x1. (x1 x0)))) (\\x0. (((\\x1. (x1 x1)) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R225",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:40",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:40"
+    ],
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. (((\\x1. (x1 x1)) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R226",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:41",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:41"
+    ],
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. (((\\x1. (x1 (\\x2. x1))) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R227",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:42",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:42"
+    ],
+    "source": "((\\x0. (x0 (x0 (\\x1. x0)))) (\\x0. (((\\x1. (x1 x1)) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R228",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:43",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:43"
+    ],
+    "source": "((\\x0. (x0 (x0 (\\x1. x0)))) (\\x0. (((\\x1. (x1 (\\x2. x1))) (x0 _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R229",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:44",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:44"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) ((x0 (\\x1. x0)) (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R230",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:45",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:45"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x1 x1)) ((x0 (\\x1. (\\x2. x0))) _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R231",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:46",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:46",
+      "rootnarrow/work/h2_left_all.json:26",
+      "rootnarrow/work/h2xre_27.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (x0 (\\x2. ((x0 x2) _)))) _) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R232",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:47",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:47"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. (x0 _)) _) (\\x1. (x0 _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R233",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:48",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:48"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. ((x1 _) x1)) (\\x1. x0)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R234",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:49",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:49"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. ((x1 _) (x1 _))) (\\x1. x0)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R235",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:50",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:50"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. ((x1 _) x1)) (\\x1. x0)) (x0 _))))",
+    "tag": "rootnarrow candidate",
+    "label": "R236",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:51",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:51"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. ((x1 _) x1)) (\\x1. (x0 _))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R237",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:52",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:52"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. ((x1 x1) _)) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R238",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:53",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:53"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. ((x1 (\\x2. x1)) _)) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R239",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:54",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:54"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. ((x1 x1) x1)) (x0 (\\x1. (\\x2. x0)))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R240",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:55",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:55"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. ((x1 x1) _)) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R241",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:56",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:56"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((\\x1. ((x1 (\\x2. x1)) _)) (x0 _)) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R242",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:57",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:57"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. ((x0 x1) x1)) (x0 (\\x1. x0))) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R243",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h2_6.json:58",
+    "aliases": [
+      "rootnarrow/work/h2_6.json:58"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. ((x0 (\\x2. x0)) (x0 _))) _) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R244",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h3_2.json:0",
+    "aliases": [
+      "rootnarrow/work/h3_2.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((\\x1. (x1 x1)) (x0 (\\x1. x0))) _) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R245",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h3_2.json:1",
+    "aliases": [
+      "rootnarrow/work/h3_2.json:1"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((\\x1. (x1 (\\x2. x1))) (x0 (\\x1. x0))) _) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R246",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h3_2.json:2",
+    "aliases": [
+      "rootnarrow/work/h3_2.json:2"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((\\x1. (x1 x1)) (x0 (\\x1. x0))) _) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R247",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h3_2.json:3",
+    "aliases": [
+      "rootnarrow/work/h3_2.json:3"
+    ],
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((\\x1. (x1 (\\x2. x1))) (x0 _)) _) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R248",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h4_1.json:0",
+    "aliases": [
+      "rootnarrow/work/h4_1.json:0"
+    ],
+    "source": "((\\x0. (x0 x0)) (\\x0. (((((x0 (\\x1. x0)) (x0 _)) _) _) _)))",
+    "tag": "rootnarrow candidate",
+    "label": "R249",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_1.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_1.json:0",
+      "rootnarrow/work/h6_3.json:2"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (x1 ((x1 (x0 x1)) x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R250",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_10.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_10.json:0",
+      "rootnarrow/work/h6_3.json:17"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 ((x0 x0) _)) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R251",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_11.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_11.json:0",
+      "rootnarrow/work/h6_3.json:19"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (((x1 (x0 x1)) x1) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R252",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_12.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_12.json:0",
+      "rootnarrow/work/h6_3.json:20"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (((x1 (x0 x0)) x1) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R253",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_2.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_2.json:0",
+      "rootnarrow/work/h6_3.json:3"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (x1 ((x1 (x0 x0)) x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R254",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_3.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_3.json:0",
+      "rootnarrow/work/h6_3.json:4"
+    ],
+    "source": "((\\x0. ((x0 (x0 _)) x0)) (\\x0. (\\x1. (x1 (x1 ((x0 x1) x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R255",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_4.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_4.json:0",
+      "rootnarrow/work/h6_3.json:9"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x1 (x0 x1))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R256",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_5.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_5.json:0",
+      "rootnarrow/work/h6_3.json:10"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x1 (x0 x0))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R257",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_6.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_6.json:0",
+      "rootnarrow/work/h6_3.json:11"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 x1)) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R258",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_7.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_7.json:0",
+      "rootnarrow/work/h6_3.json:12"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 x0)) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R259",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_8.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_8.json:0",
+      "rootnarrow/work/h6_3.json:14"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 (x1 x0))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R260",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h63re_9.json:0",
+    "aliases": [
+      "rootnarrow/work/h63re_9.json:0",
+      "rootnarrow/work/h6_3.json:16"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 ((x0 x1) _)) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R261",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:0",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:0"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (\\x3. (x3 (x2 x3)))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R262",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:1",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:1"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (\\x3. ((x2 x3) _))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R263",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:2",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:2"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (x2 (\\x3. x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R264",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:3",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:3"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (x2 (x2 (\\x3. x2)))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R265",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:4",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:4"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (x2 (x0 x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R266",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:5",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:5"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (x0 x2)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R267",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:6",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:6"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 ((x2 (\\x3. x3)) x2)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R268",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:7",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:7"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 ((x0 x2) _)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R269",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:8",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:8"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. ((x2 (\\x3. x2)) (x2 _)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R270",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:9",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:9"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. ((x2 (x0 x2)) _))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R271",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:10",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:10"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. ((x0 x2) _))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R272",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:11",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:11"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (((x0 x2) _) _))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R273",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:12",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:12"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (x0 (\\x2. (x2 (x0 x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R274",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:13",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:13"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (x0 (\\x2. ((x0 x2) _)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R275",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:14",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:14"
+    ],
+    "source": "((\\x0. ((x0 (\\x1. (x1 (x1 (\\x2. x1))))) _)) (\\x0. (\\x1. (x0 x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R276",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:15",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:15"
+    ],
+    "source": "((\\x0. ((x0 (\\x1. (x1 ((x1 (\\x2. x2)) x1)))) _)) (\\x0. (\\x1. (x0 x0))))",
+    "tag": "rootnarrow candidate",
+    "label": "R277",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:16",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:16"
+    ],
+    "source": "((\\x0. ((x0 (x0 x0)) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (x2 (\\x3. x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R278",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:17",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:17"
+    ],
+    "source": "((\\x0. ((x0 (x0 x0)) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (x0 x2)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R279",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:18",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:18"
+    ],
+    "source": "((\\x0. ((x0 (x0 x0)) _)) (\\x0. (\\x1. (x0 (\\x2. ((x0 x2) _))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R280",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:19",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:19"
+    ],
+    "source": "((\\x0. ((x0 ((x0 x0) x0)) _)) (\\x0. (\\x1. (x0 ((x1 x1) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R281",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:20",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:20"
+    ],
+    "source": "((\\x0. ((x0 ((x0 x0) x0)) _)) (\\x0. (\\x1. (x0 ((x1 x1) x0)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R282",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:21",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:21"
+    ],
+    "source": "((\\x0. ((x0 ((x0 x0) x0)) _)) (\\x0. (\\x1. (x0 ((x1 x0) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R283",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h6_2.json:22",
+    "aliases": [
+      "rootnarrow/work/h6_2.json:22"
+    ],
+    "source": "((\\x0. ((x0 ((x0 x0) x0)) _)) (\\x0. (\\x1. (x0 ((x0 x1) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R284",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:0",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:0"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (\\x2. ((x1 x2) (x1 x0)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R285",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:1",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:1"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (\\x2. ((x1 (\\x3. x0)) x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R286",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:5",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:5"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (\\x2. (\\x3. x0))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R287",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:6",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:6"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (\\x2. (x0 x1))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R288",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:7",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:7"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (\\x2. (x0 x0))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R289",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:8",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:8"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (\\x2. (x0 (\\x3. x3)))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R290",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:13",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:13"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 (\\x2. x2))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R291",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:15",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:15"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 (x0 x1))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R292",
+    "legacy": "SR"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:18",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:18"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (((x1 (\\x2. x0)) x1) (\\x2. x2))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R293",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:21",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:21"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 (\\x2. (x2 (x1 x2))))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R294",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:22",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:22"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 (\\x2. (x1 (x1 x2))))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R295",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:23",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:23"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 (\\x2. ((x1 x2) _)))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R296",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:24",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:24"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 (x1 (\\x2. x1)))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R297",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:25",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:25"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 (x1 (x1 (\\x2. x1))))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R298",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:26",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:26"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 ((x1 x0) (\\x2. x1)))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R299",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:27",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:27"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 ((x1 (\\x2. x2)) x1))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R300",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:28",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:28"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 ((x1 (\\x2. (\\x3. x3))) x1))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R301",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:29",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:29"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 ((x0 _) (\\x2. x1)))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R302",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:30",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:30"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 (x1 (\\x2. x1)))))) (\\x0. (\\x1. (x1 (x1 x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R303",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:31",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:31"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 (x1 x0))))) (\\x0. (\\x1. (x1 (x1 (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R304",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:32",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:32"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 (x0 _))))) (\\x0. (\\x1. (x1 (x1 (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R305",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:33",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:33"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. ((x1 (\\x2. x1)) (x1 _))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R306",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:34",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:34"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. ((x1 x1) x0)))) (\\x0. (\\x1. (x1 (x1 (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R307",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:35",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:35"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. ((x0 _) x1)))) (\\x0. (\\x1. (x1 (x1 (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R308",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:36",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:36"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. ((x0 _) (x1 (\\x2. x1)))))) (\\x0. (\\x1. (x1 x1))))",
+    "tag": "rootnarrow candidate",
+    "label": "R309",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:37",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:37"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. ((x0 _) (x1 _))))) (\\x0. (\\x1. (x1 (\\x2. x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R310",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:38",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:38"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (\\x2. (x2 (x2 (\\x3. x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R311",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:39",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:39"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (\\x2. (x2 (x2 (\\x3. x1))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R312",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:40",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:40"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (\\x2. (x2 (x1 x2)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R313",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:41",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:41"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (\\x2. (x2 (x1 (\\x3. x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R314",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:42",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:42"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (\\x2. (x1 (x2 (\\x3. x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R315",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:43",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:43"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (\\x2. (x1 (x1 x2)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R316",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:44",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:44"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (\\x2. ((x1 x2) _))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R317",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:45",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:45"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (x1 (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R318",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:46",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:46"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (x1 (\\x2. (x2 (\\x3. x1))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R319",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:47",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:47"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (x1 (x1 (\\x2. x1)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R320",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:48",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:48"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (x1 (x1 (\\x2. (\\x3. x1))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R321",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:49",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:49"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (x1 (x1 (x1 (\\x2. x2))))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R322",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:50",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:50"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (x1 ((x1 (\\x2. x2)) x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R323",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:51",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:51"
+    ],
+    "source": "((\\x0. ((x0 x0) (x0 (x0 _)))) (\\x0. (\\x1. (x1 (x0 (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R324",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:52",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:52"
+    ],
+    "source": "((\\x0. ((x0 (x0 _)) (x0 x0))) (\\x0. (\\x1. (x1 (x0 (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R325",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:53",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:53"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 ((x1 (\\x2. x2)) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R326",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:54",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:54"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 ((x1 (\\x2. x1)) (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R327",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:55",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:55"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 ((x1 (\\x2. (\\x3. x3))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R328",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:56",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:56"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 ((x1 (\\x2. (\\x3. x1))) _)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R329",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:57",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:57"
+    ],
+    "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 ((x1 (x1 (\\x2. x2))) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R330",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:58",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:58"
+    ],
+    "source": "((\\x0. ((x0 _) ((\\x1. (x0 _)) _))) (\\x0. (\\x1. (x1 (x1 (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R331",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:59",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:59"
+    ],
+    "source": "((\\x0. ((x0 _) ((x0 _) x0))) (\\x0. (\\x1. (x1 (x1 (\\x2. x1))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R332",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h6_3.json:60",
+    "aliases": [
+      "rootnarrow/work/h6_3.json:60"
+    ],
+    "source": "((\\x0. ((x0 _) ((x0 _) x0))) (\\x0. (\\x1. (x1 ((x1 (\\x2. x2)) x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R333",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h_xfull2.json:0",
+    "aliases": [
+      "rootnarrow/work/h_xfull2.json:0"
+    ],
+    "source": "((\\x0. ((x0 _) (\\x1. (x1 (x1 (\\x2. x1)))))) (\\x0. (\\x1. (\\x2. (x1 x1)))))",
+    "tag": "rootnarrow candidate",
+    "label": "R334",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h_xfull2.json:1",
+    "aliases": [
+      "rootnarrow/work/h_xfull2.json:1"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (\\x2. ((\\x3. (x3 (\\x4. x3))) (x2 x0))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R335",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h_xfull2.json:2",
+    "aliases": [
+      "rootnarrow/work/h_xfull2.json:2"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (\\x2. ((\\x3. ((x3 x3) x3)) (x1 x2))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R336",
+    "legacy": "SFprime"
+  },
+  {
+    "id": "rootnarrow/work/h_xfull2.json:3",
+    "aliases": [
+      "rootnarrow/work/h_xfull2.json:3"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (\\x2. ((x2 x1) (\\x3. (x2 x1)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R337",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h_xfull2.json:4",
+    "aliases": [
+      "rootnarrow/work/h_xfull2.json:4"
+    ],
+    "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (\\x2. ((x2 x0) (\\x3. (x2 x0)))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R338",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h_xfull2.json:5",
+    "aliases": [
+      "rootnarrow/work/h_xfull2.json:5"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (\\x2. (((x1 x2) (\\x3. x3)) (x1 x2))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R339",
+    "legacy": null
+  },
+  {
+    "id": "rootnarrow/work/h_xfull2.json:6",
+    "aliases": [
+      "rootnarrow/work/h_xfull2.json:6"
+    ],
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (\\x2. (((x1 x2) (x1 x2)) (\\x3. x3))))))",
+    "tag": "rootnarrow candidate",
+    "label": "R340",
+    "legacy": null
+  }
+]

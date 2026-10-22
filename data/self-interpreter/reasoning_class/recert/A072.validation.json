@@ -1,0 +1,9 @@
+{
+  "label": "A072",
+  "valid": true,
+  "source_matches": true,
+  "states": 182,
+  "sha256": "33ea24853dbd74f3ec6e2fc663b3c65af30228454d5506529947a6003726c034",
+  "seconds": 0.0004990409943275154,
+  "peak_rss_bytes": 24035328
+}
