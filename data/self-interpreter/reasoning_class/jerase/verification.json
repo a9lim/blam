@@ -1,0 +1,30 @@
+[
+  {
+    "name": "erasure",
+    "exit": 0,
+    "seconds": 0.321,
+    "sampled_peak_bytes_including_driver": 446513152,
+    "cap_kill": null
+  },
+  {
+    "name": "witnesses",
+    "exit": 0,
+    "seconds": 0.4,
+    "sampled_peak_bytes_including_driver": 449396736,
+    "cap_kill": null
+  },
+  {
+    "name": "probes",
+    "exit": 0,
+    "seconds": 0.048,
+    "sampled_peak_bytes_including_driver": 25526272,
+    "cap_kill": null
+  },
+  {
+    "name": "trace",
+    "exit": 0,
+    "seconds": 0.053,
+    "sampled_peak_bytes_including_driver": 23789568,
+    "cap_kill": null
+  }
+]

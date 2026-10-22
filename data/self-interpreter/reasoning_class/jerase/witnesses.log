@@ -1,0 +1,11 @@
+'Blc.JEraseWitnesses.sourceF_laws' depends on axioms: [propext, Quot.sound]
+'Blc.JEraseWitnesses.local_absorber_laws' depends on axioms: [propext, Quot.sound]
+'Blc.JEraseWitnesses.F52_laws' depends on axioms: [propext, Quot.sound]
+'Blc.JEraseWitnesses.mixed58_laws' depends on axioms: [propext, Quot.sound]
+'Blc.JEraseWitnesses.mixed50_laws' depends on axioms: [propext, Quot.sound]
+'Blc.JEraseWitnesses.mixed58_price' does not depend on any axioms
+'Blc.JEraseWitnesses.local_absorber_price' does not depend on any axioms
+'Blc.JEraseWitnesses.sourceF_price' does not depend on any axioms
+'Blc.JEraseWitnesses.F52_price' does not depend on any axioms
+'Blc.JEraseWitnesses.mixed58_normal' depends on axioms: [propext]
+'Blc.JEraseWitnesses.sourceF_normal' depends on axioms: [propext]

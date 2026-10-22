@@ -377,6 +377,19 @@ arguments, not larger checks. The productive tools so far are the first
 dispatch, the context-free anchor at `j`'s parent, and the
 closed-specializer algebra.
 
+Where `j` dies does not price a reader either (Codex, jerase lane). Every
+residual of the source `j` is erased by a contraction whose λ comes from
+the reader source, a unary cell's `F` or the terminal `K` (the occurrence
+identity behind this is kernel-checked; the provenance argument is
+handwritten), but the origin does not fix the cost: the 162 erases `j` at
+the terminal `K` — its `λu` only transfers it,
+`(λu. s (λq. c) (s s u)) j → s (λq. c) (s s j)` — the 165 with an input `F`
+at 49, `λs. s (λb t n. b (t n) (c t (t t n))) j` (`w = 58`, β-normal) kills
+two residuals of `j` by both mechanisms in one run, and
+`λs. s I (s (λq. c)) (s (λb t. b K F) j (s s s))` (`w = 70`) erases it with
+a source `F` that has no `s` or `c` leaves beneath it (all laws for every
+`n` kernel-checked, `reasoning_class/jerase/Witnesses.lean`).
+
 Periodicity of the unary run is not such a tool. A reader's run on `U_n`
 need not settle into a fixed period: `λs. s I (λu. s (λq. c) (G s O)) j`
 with `G = W W`, `W = λg t k. t (λb r. b r (k I (g g r (S k))))` and Church
