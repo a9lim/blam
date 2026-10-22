@@ -1,0 +1,35 @@
+{
+  "markings": 727,
+  "unique": 727,
+  "rows": {
+    "1:0": {
+      "markings": 673,
+      "unique": 673,
+      "wrong_zero": 658,
+      "wrong_unary": 15,
+      "exceptions": 0,
+      "hits": 0
+    },
+    "1:1": {
+      "markings": 38,
+      "unique": 38,
+      "wrong_zero": 38,
+      "wrong_unary": 0,
+      "exceptions": 0,
+      "hits": 0
+    },
+    "2:0": {
+      "markings": 16,
+      "unique": 16,
+      "wrong_zero": 16,
+      "wrong_unary": 0,
+      "exceptions": 0,
+      "hits": 0
+    }
+  },
+  "exceptions": [],
+  "hits": [],
+  "seconds": 0.06060145900119096,
+  "rss": 25985024,
+  "threads": 2
+}

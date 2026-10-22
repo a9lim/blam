@@ -1,0 +1,26 @@
+[gaslamp] → codex · job cx-20261022-030329-8d24 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-030329-8d24/events.jsonl
+( •̀ ω •́ ) **Root-redex exclusion remains open, but the multiplicity bound is stronger.** Full report: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/rootnf/REPORT.md).
+
+1. **Interpreters:** none built; no sub-162 claim.
+
+2. **Normalization bridge:** β preserves the laws but can duplicate `j`; readers need not normalize. A handwritten repair handles multiple holes in an existing normal form by replacing every non-surviving `j` with `c`. **Under H_nf**, this gives
+   \[
+   W(N)\ge46+\sum_{\text{replaced }j}(3\,\mathrm{depth}(j)-2).
+   \]
+   This requires net expansion. Positive pre-stream expansion does **not** force a compensating decrease.
+
+3. **New kernel-checked bound, without H_nf:** for a minimum full-law reader
+   \[
+   R=(\lambda x.B)A\vec C,\qquad
+   w(R)\ge4k+22+4d+\operatorname{tax}_1(R).
+   \]
+   Thus **k≤5**, improving the previous root cap 7; **k≤4 when d≥1**. Whenever `k+d=5`, there is exactly one `c`, `V=k+5`, and either:
+   - `L=3`, index tax ≤3;
+   - `L=4`, index tax ≤1.
+
+   [RootProfile.lean](/Users/a9lim/Work/blam/tmp/round4/rootnf/RootProfile.lean) checks these statements without `sorryAx`; final compilation took 0.46 seconds and 471 MB RSS.
+
+4. **Remaining profiles:** the five-use necessary grammar contains 570,716 trees, counted through 978 coefficient states without generating candidates. It exceeds the cap, so no inventory check was run. The next useful step is a semantic restriction on how the stream and rigid outputs cross the few available binders. H_nf needs a normalization-cost **upper bound**, or a separate treatment of non-normalizing sources, to close the remaining hand-offs.
+
+[gaslamp] job: cx-20261022-030329-8d24 · session: 01a1626c-0806-7852-8362-7bd591bdf0c0 · thread: r5-rootnf · resume: gaslamp codex --thread r5-rootnf · tok: 3315k→40k
+[lane.sh] done rc=0 tries=1

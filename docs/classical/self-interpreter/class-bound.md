@@ -163,8 +163,11 @@ the 39-bit one.
   as four captures); contracting a nonlinear `j`-sharing let and hoisting
   all copies restores one hole and preserves every law, at an exact price.
   Every reader is literally an s-spine, or has its first source head redex
-  at the root (multiplicity ≤ 7 below 46) or directly under its stream λ
-  (≤ 6), with explicit argument budgets; a λ-free argument at the root must
+  at the root or directly under its stream λ (≤ 6 uses), with explicit
+  argument budgets. A minimum root let `(λx. B) A C⃗` with `k` uses and `j`
+  at depth `d` has `w ≥ 4k + 22 + 4d` plus its index tax, so below 46 it
+  has at most five uses, four when `j` is under a λ
+  (`reasoning_class/rootnf/RootProfile.lean`, Codex); a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands. With `j` at
@@ -434,9 +437,12 @@ productive tools so far are the first dispatch, the context-free anchor at
 `j`'s parent, the closed-specializer algebra, exact contraction prices
 under minimality, and the β-normal bound. That bound does not simply
 transfer through normalization: a reader need not have a normal form, and
-contracting a shared let can copy `j`, which leaves the one-hole class;
-only where a contraction keeps one `j` does it force the redex to pay for
-itself.
+contracting a shared let can copy `j`, which leaves the one-hole class.
+Where a normal form exists, replacing every copy of `j` that does not
+survive by `c` restores one hole, so the normal form weighs at least
+`46 + Σ (3·depth − 2)` over the replaced copies (handwritten, Codex); that
+is a lower bound on the normal form, and closing the remaining cases with
+it needs an upper bound on what normalization adds.
 
 Where `j` dies does not price a reader (Codex, jerase lane). Every
 residual of the source `j` is erased by a contraction whose λ comes from

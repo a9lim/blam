@@ -9,7 +9,7 @@ wave of lanes; each directory keeps its own
 write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
-`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `jerase`, `handlerlet` and the reviews `review_hole` and `review_types`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
+`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `jerase`, `handlerlet`, `rootnf`, `firstop` and the reviews `review_hole` and `review_types`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
 `bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `types`, `zcore`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
@@ -46,6 +46,8 @@ working versions.
 | review_types2 | a second, fresh Claude review of the β-normal bound (the brief was written for Gemini, whose quota had run out): sound; hand proofs for the two engine-certified cut-offs; tabled and untabled searches agree on joint laws | `class-bound.md` §3 |
 | zcore | dispatch sites: one closed `s I` anchor anywhere forces `w ≥ 46` (equality only the 162); two sites or one heavy site force 46, so a reader below 46 has at most one site saving 8–15; the three unary cores through 23 bits; the uniform zero-compatible-core statement refuted | `class-bound.md` §3 |
 | handlerlet | no minimum reader below 46 has a literal λ as its first handler: every nonlinear let inside it fails (117,059 sources; 1,868 normalizer exceptions in `Exceptions1–4.lean`; prices in `Prices.lean`) | `class-bound.md` §3 |
+| rootnf | the root-let profile bound `w ≥ 4k + 22 + 4d` (`RootProfile.lean`: at most five uses below 46); the multi-hole repair of the normalization bridge | `class-bound.md` §3 |
+| firstop | redexes inside a `j`-free non-λ first operand have two to five uses in a minimum below 46 (`LinearCertificates.lean`); the handler-sinking inequality; the contextual hoist price | `class-bound.md` §3 |
 | needbinder | the whole-cell opener `λs. s (λb t. B) j` out of a minimum reader below 46 (hoisting price in `OpenerHoist.lean`, normalizer exceptions in `NonlinearExceptions.lean`); the 162-family spine `λs. s A (λu. D) j` narrowed to `|A| ≥ 11`, `|D| ≤ 18`; a needed-binder witness of weight 75 | `class-bound.md` §3 |
 | zerolam | three zero-λ parent shapes out of a minimum reader (literal let, closed transport, disjoint redispatch at 53); the rigid-ancestor anchor and its whole-body witness of weight 75 | `class-bound.md` §3 |
 | loop | the unary run need not be periodic: a correct reader of weight 221 with a growing counter (`Slow.lean`, kernel-checked); the 162's skip is input-generated; conditional pumping, suffix exposure, union accounting; the 164's family `≥ 48` and the hoisted 165's `≥ 49` by rigid shielding (`Shield.lean`, `Prices.lean`) | `class-bound.md` §3 |

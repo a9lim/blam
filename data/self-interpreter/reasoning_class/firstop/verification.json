@@ -1,0 +1,13 @@
+{
+  "files": {
+    "Prices.lean": "638e6948ada995d30fb02a8c89bd86c1ade562891969ec8a9fba77ca37b85f4e",
+    "LinearCertificates.lean": "f75e32e7db965a823465c0f5170da7be74089cea2f582a10a6e0b077cd2c4e35",
+    "LinearInventory.lean": "d0cb42bbf4efe5d8e00f2121cf370ac50b3cd0d9819567b68aa45f558db1a821",
+    "linear_count.py": "2ce88bd3227cf5af89ee6a2461723ecab5f7fe90fd01622a020af8a6bb37e789",
+    "linear_check.py": "0aafbc15cede86775d2d55728c2a58199bbf402ec1655be440ba60f4c05758aa",
+    "linear_manifest.json": "72d47ff2d5142d0db7059296965a8551c4307e6d6076b471065f8230e6665e28",
+    "REPORT.md": "c1054a5f8fc4884c6b862bd0bf394f6fd226912f23ef00bc90609bb5caff34a4"
+  },
+  "linear_refutations": 727,
+  "prices_no_errors_or_sorry": true
+}

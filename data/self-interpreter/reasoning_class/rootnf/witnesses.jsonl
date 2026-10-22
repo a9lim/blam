@@ -1,0 +1,4 @@
+{"name": "165", "source": "(\\n s. s (\\b. b (\\u r. r n) c) (s s s)) j", "metric": {"w": 49, "j": 1, "jd": [0], "c": 1}, "zero_and_unary_1_to_8": true, "nf": "\\s. s (\\b. b (\\u r. r j) c) (s s s)", "nf_metric": {"w": 54, "j": 1, "jd": [4], "c": 1}}
+{"name": "copied_j", "source": "(\\a s. s I (\\u. s (\\q. c) (s s a)) a) j", "metric": {"w": 52, "j": 1, "jd": [0], "c": 1}, "zero_and_unary_1_to_8": true, "nf": "\\s. s (\\a. a) (\\u. s (\\q. c) (s s j)) j", "nf_metric": {"w": 52, "j": 2, "jd": [2, 1], "c": 1}}
+{"name": "recursive", "source": "(\\g s. s (\\b r. b (r j) (c r (g g r)))) (\\g t. t (\\b r. b r (g g r)))", "metric": {"w": 106, "j": 1, "jd": [4], "c": 1}, "zero_and_unary_1_to_8": true}
+{"name": "repaired_copy", "source": "\\s. s I (\\u. s (\\q. c) (s s c)) j", "metric": {"w": 48, "j": 1, "jd": [1], "c": 2}, "zero_and_unary_1_to_8": true, "nf": "\\s. s (\\a. a) (\\u. s (\\q. c) (s s c)) j", "nf_metric": {"w": 48, "j": 1, "jd": [1], "c": 2}}

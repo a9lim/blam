@@ -1,0 +1,21 @@
+{
+  "readers": [
+    {
+      "source": "\\s. s I (\\u. s (\\q. c) (s s u)) j",
+      "nmax": 8,
+      "pass": true,
+      "weight": 46
+    },
+    {
+      "source": "\\s. s (s (\\b t. b K)) (\\u. s (\\q. c) (s s u)) j",
+      "nmax": 8,
+      "pass": true,
+      "weight": 62
+    }
+  ],
+  "identity_prices": {
+    "short": 20,
+    "expanded": 38
+  },
+  "note": "These are reader-level controls, not a full interpreter battery."
+}

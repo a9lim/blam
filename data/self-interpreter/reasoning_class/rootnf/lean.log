@@ -1,0 +1,8 @@
+'Blc.RootNF.full_minimum_nonlam_three_live' depends on axioms: [propext, Quot.sound]
+'Blc.RootNF.root_weight_charge' depends on axioms: [propext, Quot.sound]
+'Blc.RootNF.root_multiplicity_five' depends on axioms: [propext, Quot.sound]
+'Blc.RootNF.root_positive_depth_four' depends on axioms: [propext, Quot.sound]
+'Blc.RootNF.root_five_rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootNF.root_weight_tax_charge' depends on axioms: [propext, Quot.sound]
+'Blc.RootNF.root_boundary_rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootNF.normal_root_contraction_gap' depends on axioms: [propext, Quot.sound]

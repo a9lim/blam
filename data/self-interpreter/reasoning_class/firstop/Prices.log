@@ -1,0 +1,13 @@
+/Users/a9lim/Work/blam/tmp/round4/firstop/Prices.lean:131:44: warning: Variable name `hm` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'Blc.FirstopPrices.reader_price' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopPrices.linear_filter' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopPrices.reify_price' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopPrices.firstop_sink_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.FirstopPrices.contextual_contract_hoist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.FirstopPrices.minimum_contextual_charge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.FirstopPrices.high_cont_in_context' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.FirstopPrices.high_cont_in_tails' depends on axioms: [propext, Classical.choice, Quot.sound]

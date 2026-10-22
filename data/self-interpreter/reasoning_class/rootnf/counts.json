@@ -1,0 +1,16 @@
+{
+  "description": "Exact necessary k=5 grammar; A contains a lambda; no term expansion or law testing",
+  "rows": {
+    "L3_tax0": 16072,
+    "L3_tax1": 71848,
+    "L3_tax2": 67488,
+    "L3_tax3": 78888,
+    "L4_tax0": 32704,
+    "L4_tax1": 303716
+  },
+  "total": 570716,
+  "maximum_factor": 12600,
+  "states": 978,
+  "seconds": 0.009041458994033746,
+  "rss_bytes": 23887872
+}
