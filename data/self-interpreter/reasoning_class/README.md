@@ -9,7 +9,7 @@ wave of lanes; each directory keeps its own
 write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
-`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `jerase`, `handlerlet`, `rootnf`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole` and `review_types`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
+`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `jerase`, `handlerlet`, `rootnf`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole`, `review_types` and `review_spine`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
 `bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `types`, `zcore`, `single`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
@@ -43,6 +43,7 @@ working versions.
 | jerase | where the source `j` dies (reader source, a unary `F`, the terminal `K`; `Erasure.lean`) and why that does not price a reader (`Witnesses.lean`: the 162 erases `j` at the terminal `K`; readers of 58 and 70) | `class-bound.md` §3 |
 | types | intersection-type role supports (the shared skeleton never holds `c` or `j`; the bit-variable lemma; the shared-let split identity) and a demand-driven derivation search over β-normal readers: none below 46, sharp at the 162 (`narrow2.py`, `narrow3.py`; reviewed in `review_types`) | `class-bound.md` §3 |
 | review_types | Codex's adversarial review of the β-normal bound: every run reproduced, an independent enumerator compared on single laws, a single-law tabling defect found, and the needed-occurrence argument that makes the joint-law search sound | `class-bound.md` §3 |
+| review_spine | Codex's audit of the composite "no minimum reader below 46 is an s-spine": exhaustive, consistent hypotheses, spot checks reproduced | `class-bound.md` §3 |
 | review_types2 | a second, fresh Claude review of the β-normal bound (the brief was written for Gemini, whose quota had run out): sound; hand proofs for the two engine-certified cut-offs; tabled and untabled searches agree on joint laws | `class-bound.md` §3 |
 | leanbn | toward a kernel-checked β-normal bound: the shape lemma, the needed-occurrence lemma and the lower bound in Lean (`Foundations.lean`), one small row excluded end to end (`Pilot.lean`), and a design for the rest | `class-bound.md` §3 |
 | single | Theorem S: no reader below 46 with `j` under no λ but the stream's has a syntactic dispatch site (unary cores of weight ≤ 37 listed by needed narrowing as 110 templates, every single-site insertion refuted; reviewed by Codex in `review/`) | `class-bound.md` §3 |

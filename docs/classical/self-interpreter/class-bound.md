@@ -117,7 +117,16 @@ every reader**, and any reader with `w ≤ 45` gives a sub-162 interpreter of
 exactly `116 + w` bits. Every β-normal reader has `w ≥ 46` (below, by
 computer-checked search), so such a reader must contain a source redex:
 what is open is the sharing a redex allows between the zero and the unary
-role. No such reader has been found: the cheapest readers
+role.
+
+Throughout this section a **minimum** reader is a global minimum among
+readers that satisfy both laws at every unary length with one source `j`,
+under the order weight, then source λ count, then the depth of `j`. An
+argument that replaces a reader by a lighter one bounds only minimum
+readers: "no minimum reader below 46 has shape X" leaves open a cheaper
+reader of shape X, but then the minimum has another shape, so it suffices
+for the bound. A replacement may leave the shape it starts from, as long as
+it keeps both laws and one hole. No such reader has been found: the cheapest readers
 other than the 162's weigh 47 (`λs. s I (λu. s (λq. c) (s s s)) j`), 48 (the
 164's `λs. s (λb. b F c) (s I (s s) j)`) and 49 (the 165's). The defect a
 cheaper reader has to repair is visible in the near misses (Claude, adv5
@@ -309,7 +318,9 @@ family; the lists are in the round-4 archive. Claude's lanes:
   kernel-checked, the law-preserving replay handwritten), which a minimum
   needs non-negative, and fourteen complete checks of 424,378 sources leave
   nothing, the 4,337 normalizer exceptions refuted in Lean. So **no minimum
-  reader below 46 is an s-spine**; A handwritten deletion lemma underlies the budgets:
+  reader below 46 is an s-spine** (the composition of these pieces —
+  depth, d1open, loop, handlerlet, firstop, firstopj — audited by Codex
+  for exhaustiveness and consistent hypotheses); A handwritten deletion lemma underlies the budgets:
   replacing a subterm by a cheaper one with the same value on every unary
   probe leaves a unary core, and the only cores through 22 bits are
   `s (λq. c) (s s j)` and `s (λq. c) (s s s)`, so a reader carrying
