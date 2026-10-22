@@ -371,9 +371,10 @@ family; the lists are in the round-4 archive. Claude's lanes:
   any minimality assumption: `λs. (λg. B) (λy. y A W)`, for any `B`, `A`,
   `W` with redexes and `j` anywhere, has no reader with `w ≤ 45` (Claude,
   shared lane: needed narrowing, 13,481 states, all 90 cut-offs certified,
-  four by a self-feeding divergence lemma), and with one trailing operand
-  the same holds unless one of four closed combinators `H H` has a head
-  normal form;
+  four by a self-feeding divergence lemma), and so does
+  `λs. (λg. B) (λy. y A W) C` with one trailing operand (47,591 states; its
+  last four cut-offs are closed combinators `H H` proved unsolvable in Lean,
+  `reasoning_class/combs/Combs.lean`);
 - **no reader with `w ≤ 45` and `j` under no λ but the stream's has a
   syntactic site at all** (Claude, single lane; reviewed by Codex, who
   reran the whole partition: 126 paths, 329,895 narrowing states, 76,845
