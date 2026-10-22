@@ -10,7 +10,7 @@ write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
 `lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `bodylin`, `jerase`, `handlerlet`, `rootnf`, `rootlet`, `rootcert`, `rootlow`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole`, `review_types`, `review_spine` and `review_body`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
-`bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `types`, `zcore`, `single`, `shared`, `combs`, `combs2`, the statement audit
+`bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `adv6`, `types`, `zcore`, `single`, `shared`, `combs`, `combs2`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
 
@@ -65,6 +65,7 @@ working versions.
 | zerolam | three zero-λ parent shapes out of a minimum reader (literal let, closed transport, disjoint redispatch at 53); the rigid-ancestor anchor and its whole-body witness of weight 75 | `class-bound.md` §3 |
 | loop | the unary run need not be periodic: a correct reader of weight 221 with a growing counter (`Slow.lean`, kernel-checked); the 162's skip is input-generated; conditional pumping, suffix exposure, union accounting; the 164's family `≥ 48` and the hoisted 165's `≥ 49` by rigid shielding (`Shield.lean`, `Prices.lean`) | `class-bound.md` §3 |
 | adv5 | the constructive adversary of wave 5: about twenty readers by design, none below 52; the near misses that locate the defect (the 162 is a 40-bit near miss plus its absorber); the depth-0 shared window `(λx n s. M) A j` closed by a complete check | `class-bound.md` §3 |
+| adv6 | constructive adversary on root lets: a dozen readers of 56–90, none below; stream-λ-headed root lets `(λg s. B) A` closed below 46 for every helper reached, without minimality | `class-bound.md` §3 |
 | arch, fresh | first-principles architectures, all already priced or above 162 (163, 167, 169, 201) | `interpreter.md` §6 |
 | audit1 | statement audit of the widen, close46 and probelean Lean: every headline theorem says what its report claims | — |
 

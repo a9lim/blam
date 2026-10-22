@@ -197,7 +197,13 @@ the 39-bit one.
   reader: `(λg. λs. B) H` and `λs. (λg. B~) H` (binders swapped) agree on
   every stream, and the second weighs `u_s(B) − u_g(B) + f_c(H) + 4·occ_j(H)`
   more (handwritten, Claude, shared lane), so results proved for λ-rooted
-  readers without minimality bound such root lets at that offset; a λ-free argument at the root must
+  readers without minimality bound such root lets at that offset. Directly,
+  `(λg s. B) A` with any body `B` (redexes and `j` anywhere) has no reader
+  with `w ≤ 45` for every helper `A` the search reached — identities,
+  `λy. y P…` with up to eight arguments, `λy z. _`, `λy. c …`,
+  `λy. (λz. _) …` — and the depth-0 forms `(λg n s. _) A j` likewise
+  (Claude, adv6 lane: needed narrowing with no minimality, every cut-off
+  certified; open there are `A = j`, `A = λy. j` and `A` a redex); a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands. With `j` at
