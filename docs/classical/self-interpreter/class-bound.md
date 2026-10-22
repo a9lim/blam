@@ -297,7 +297,14 @@ family; the lists are in the round-4 archive. Claude's lanes:
   first operand `((λx. D) j) P⃗` is excluded too (4,188 sources, each with a
   Lean refutation), and turning a stream-headed first operand into a
   literal handler costs exactly `18 + 2F + 6·occ_j(Q)` before contraction
-  (kernel-checked); A handwritten deletion lemma underlies the budgets:
+  (kernel-checked). First operands that carry `j` fail as well (Codex,
+  firstopj lane): contracting a `j`-sharing let while keeping only the copy
+  of `j` the zero output uses changes the weight by exactly
+  `(m−1)|A| + (s_A + c_A − 1)M + 4d − 2 − 4m − s_D − c_D` (the price
+  kernel-checked, the law-preserving replay handwritten), which a minimum
+  needs non-negative, and fourteen complete checks of 424,378 sources leave
+  nothing, the 4,337 normalizer exceptions refuted in Lean. So **no minimum
+  reader below 46 is an s-spine**; A handwritten deletion lemma underlies the budgets:
   replacing a subterm by a cheaper one with the same value on every unary
   probe leaves a unary core, and the only cores through 22 bits are
   `s (λq. c) (s s j)` and `s (λq. c) (s s s)`, so a reader carrying
@@ -441,11 +448,11 @@ has `|A| ≥ 11` and `|D| ≤ 18`, and `D = u (s s u)` is excluded for every
 at most 53,537 terms after the first pass; the review reproduced the small
 ones, not the full 25-bit cut-off audit.
 
-**Open.** Only readers with a source redex remain, in three branches of
-the source-head classification: s-spines whose first operand carries `j`,
-is not a literal λ, and has a β-redex on its head path; readers whose stream-λ body is
-a let (below 46 a minimum has at most four uses, a λ inside the argument,
-and `j` inside it when linear); and root lets — depth-0 shared top-level
+**Open.** Only readers with a source redex remain, and among minimum
+readers below 46 none is an s-spine, so two branches of the source-head
+classification are left: readers whose stream-λ body is a let (below 46
+a minimum has at most four uses, a λ inside the argument, and `j` inside
+it when linear); and root lets — depth-0 shared top-level
 lets and application-rooted readers whose let argument hands control on
 before binding the stream. Cutting across them are the zero-λ parents
 `Y j` with `Y` an application over `s` or `c`, the needed-binder case of the

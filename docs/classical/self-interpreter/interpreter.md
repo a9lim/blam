@@ -562,9 +562,8 @@ The 162 is optimal in the class if and only if every reader has weight at
 least 46. Every β-normal reader meets it (a computer-checked search over
 the joint laws, no minimality assumption), so a cheaper reader needs a
 source redex; among those it is settled for whole sharing contexts and
-one-helper sharing (Lean), every hole depth other than 1, every s-spine
-whose dispatch path has no redex, and every minimum reader with a literal λ
-as its first handler; the open families are listed in `class-bound.md` §3. The class widens without
+one-helper sharing (Lean), every hole depth other than 1, and every minimum
+reader that is an s-spine or has a syntactic dispatch site; the open families are listed in `class-bound.md` §3. The class widens without
 changing its minimum (§4 there): NEXT of any syntax above a price frontier,
 any variable-value representation with a NEXT-free decoder, any opaque
 two-port recursion, and continuation-headed analogues (at least 165).
@@ -881,10 +880,8 @@ Open:
 
 - the reader weight bound `w(R) ≥ 46` (`class-bound.md` §3), which would make
   the 162 optimal in the separated class and its widenings: every β-normal
-  reader meets it, so it is open only for readers with a source redex —
-  s-spines whose first operand carries `j`, is not a literal λ and has a
-  redex on its head path, readers whose stream-λ body is a let, and root lets (with the
-  zero-λ hole parents and the 162's needed-binder case cutting across);
+  reader meets it and no minimum reader below 46 is an s-spine, so it is
+  open only for minimum readers whose stream-λ body or root is a let;
 - NEXT of arbitrary syntax in `32 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
   `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix
   cells, and knotless first heads with two nonlinear binders

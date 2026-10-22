@@ -1,0 +1,2 @@
+'Blc.FirstopJ.ExceptionsShared0.reject0' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopJ.ExceptionsShared0.reject1' depends on axioms: [propext, Quot.sound]

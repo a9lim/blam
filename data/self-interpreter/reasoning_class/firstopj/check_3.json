@@ -1,0 +1,91 @@
+{
+  "name": "3",
+  "markings": 3756,
+  "unique": 3756,
+  "rows": {
+    "3:0:1": {
+      "markings": 166,
+      "unique": 166,
+      "wrong_zero": 166
+    },
+    "3:0:2": {
+      "markings": 605,
+      "unique": 605,
+      "wrong_zero": 605
+    },
+    "3:0:3": {
+      "markings": 153,
+      "unique": 153,
+      "wrong_zero": 153
+    },
+    "3:0:4": {
+      "markings": 15,
+      "unique": 15,
+      "wrong_zero": 15
+    },
+    "3:1:1": {
+      "markings": 166,
+      "unique": 166,
+      "wrong_zero": 166
+    },
+    "3:1:2": {
+      "markings": 605,
+      "unique": 605,
+      "wrong_zero": 605
+    },
+    "3:1:3": {
+      "markings": 153,
+      "unique": 153,
+      "wrong_zero": 153
+    },
+    "3:1:4": {
+      "markings": 15,
+      "unique": 15,
+      "wrong_zero": 15
+    },
+    "3:2:1": {
+      "markings": 166,
+      "unique": 166,
+      "wrong_zero": 166
+    },
+    "3:2:2": {
+      "markings": 605,
+      "unique": 605,
+      "wrong_zero": 605
+    },
+    "3:2:3": {
+      "markings": 153,
+      "unique": 153,
+      "wrong_zero": 153
+    },
+    "3:2:4": {
+      "markings": 15,
+      "unique": 15,
+      "wrong_zero": 15
+    },
+    "3:3:1": {
+      "markings": 166,
+      "unique": 166,
+      "wrong_zero": 166
+    },
+    "3:3:2": {
+      "markings": 605,
+      "unique": 605,
+      "wrong_zero": 605
+    },
+    "3:3:3": {
+      "markings": 153,
+      "unique": 153,
+      "wrong_zero": 153
+    },
+    "3:3:4": {
+      "markings": 15,
+      "unique": 15,
+      "wrong_zero": 15
+    }
+  },
+  "exceptions": [],
+  "hits": [],
+  "seconds": 0.12130287499167025,
+  "rss": 24821760
+}
