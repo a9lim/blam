@@ -1,0 +1,16 @@
+[gaslamp] → codex · job cx-20261022-033315-7c5a · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-033315-7c5a/events.jsonl
+(・_・) **Kernel foundations and a complete small subchunk pass. Global BN46 remains unformalized.**
+
+Deliverable: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/leanbn/REPORT.md).
+
+- [Foundations.lean](/Users/a9lim/Work/blam/tmp/round4/leanbn/Foundations.lean) proves the zero-only shape lemma, symbolic needed-occurrence/orphan lemmas, admissible lower bound, and preservation of normality and price when filling orphans. It also excludes arity ≥10 and checks the existing 162 reader against Z, U₁, U₂ at weight 46. **1.011 seconds; 0.463 GB RSS.**
+- [Pilot.lean](/Users/a9lim/Work/blam/tmp/round4/leanbn/Pilot.lean) completely excludes **arity-nine readers of weight exactly 44**, covering 873 generated sources, including redex-containing operands. **9.006 seconds; 1.334 GB RSS.** No `sorryAx` or `native_decide`.
+- The larger weight-45 row contains 2,781 sources. Its count checks, but count plus semantic refutation hit the memory guard. No exclusion is claimed for that row.
+- The instrumented `k ≥ 4` search reproduced **32,810 states**, with no solutions or unresolved cut-offs. Its residual payload totals **22.46 MB**, with 635,735 metered beta steps.
+
+The recommended route is a proof-producing symbolic DAG. The report identifies the remaining representation, refinement, memo-transport, and divergence proofs. **Twenty-eight data shards plus common files is an engineering target, not demonstrated feasibility.** The literal-enumeration route was stopped because extrapolating it exceeds the thirty-file budget.
+
+All writes stayed in the lane; no interpreter was built or changed.
+
+[gaslamp] job: cx-20261022-033315-7c5a · session: 01a16287-47c8-7a23-9360-998b57b7dd71 · thread: r5-leanbn · resume: gaslamp codex --thread r5-leanbn · tok: 5163k→42k
+[lane.sh] done rc=0 tries=1

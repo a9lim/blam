@@ -1,0 +1,12 @@
+{
+  "file": "Pilot.lean",
+  "returncode": 0,
+  "status": "finished",
+  "wall_seconds": 5.691,
+  "peak_rss_bytes": 1523171328,
+  "command": [
+    "lean",
+    "-j2",
+    "/Users/a9lim/Work/blam/tmp/round4/leanbn/Pilot.lean"
+  ]
+}

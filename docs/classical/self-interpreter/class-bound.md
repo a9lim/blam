@@ -250,7 +250,10 @@ family; the lists are in the round-4 archive. Claude's lanes:
 - **every β-normal reader: `w ≥ 46`, sharp at the 162**, with no
   minimality assumption (Claude, types lane; reviewed adversarially by
   Codex, who reproduced every run, and again by a fresh Claude reviewer).
-  It is computer-checked, not a Lean theorem. The search is needed narrowing for the
+  The search is computer-checked; the shape lemma below, the
+  needed-occurrence lemma and the lower bound's admissibility are
+  kernel-checked (Codex, `reasoning_class/leanbn/Foundations.lean`), and a
+  proof-producing version of the whole search is designed, not built. The search is needed narrowing for the
   zero law and the unary laws at `n = 1, 2`: each law runs on a normal-order
   machine against its target, a hole is refined only when a run needs it,
   and a hole never refined is a 2-bit filler. A β-normal reader satisfying

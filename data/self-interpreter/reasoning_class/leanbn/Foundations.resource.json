@@ -1,0 +1,12 @@
+{
+  "file": "Foundations.lean",
+  "returncode": 0,
+  "status": "finished",
+  "wall_seconds": 1.011,
+  "peak_rss_bytes": 462782464,
+  "command": [
+    "lean",
+    "-j2",
+    "/Users/a9lim/Work/blam/tmp/round4/leanbn/Foundations.lean"
+  ]
+}
