@@ -1,0 +1,7 @@
+'Blc.Pending.consume_lex_exclusion' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.minimum_context_prefix_uses' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Pending.pull_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.pull_depth' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.minimum_pull_capture' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.minimum_consume_charge' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.minimum_consume_c' depends on axioms: [propext, Quot.sound]

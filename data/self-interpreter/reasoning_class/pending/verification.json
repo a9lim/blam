@@ -1,0 +1,64 @@
+[
+  {
+    "module": "Prices",
+    "seconds": 0.4029684579872992,
+    "rss_bytes": 475742208,
+    "threads": 2,
+    "sha256": "c8f0e1faae2b8b997b922a551277c8498dbeb0156a0fc4c51f1412f83a6c967d",
+    "axioms": [
+      "[propext, Classical.choice, Quot.sound]",
+      "[propext, Quot.sound]"
+    ]
+  },
+  {
+    "module": "Moves",
+    "seconds": 0.29465162500855513,
+    "rss_bytes": 466354176,
+    "threads": 2,
+    "sha256": "504ebb4b97f08c899eb3dda6cdd5284f259afbf0df371806fcaeb1b09fdd4b01",
+    "axioms": [
+      "[propext, Classical.choice, Quot.sound]",
+      "[propext, Quot.sound]"
+    ]
+  },
+  {
+    "module": "PrefixExchange",
+    "seconds": 0.2951316249964293,
+    "rss_bytes": 461815808,
+    "threads": 2,
+    "sha256": "b2b354febe3e4974f26b18f1036d040172e3bc222427a7ad5c61eb9660676ac8",
+    "axioms": [
+      "[propext, Classical.choice, Quot.sound]"
+    ]
+  },
+  {
+    "module": "Boundary",
+    "seconds": 0.23552625000593252,
+    "rss_bytes": 455999488,
+    "threads": 2,
+    "sha256": "fb03a126ccbee83e55aeed30f31b558b40e1af818492def7d9b478c316a727a0",
+    "axioms": [
+      "[propext, Quot.sound]"
+    ]
+  },
+  {
+    "module": "Exceptions0",
+    "seconds": 0.34633037500316277,
+    "rss_bytes": 449544192,
+    "threads": 2,
+    "sha256": "839f3c28986164285edba0a017ed63cce726b221848d4e2d453d78647664d577",
+    "axioms": [
+      "[propext, Quot.sound]"
+    ]
+  },
+  {
+    "module": "Exceptions1",
+    "seconds": 0.23611995900864713,
+    "rss_bytes": 442236928,
+    "threads": 2,
+    "sha256": "aad3af01aa4c1351acef6ddad90a02c6d6fe00f5f51e61a4945f1870126d4e67",
+    "axioms": [
+      "[propext, Quot.sound]"
+    ]
+  }
+]

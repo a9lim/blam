@@ -219,7 +219,14 @@ the 39-bit one.
   narrowing with minimality price filters read off complete subterms, each
   filter a kernel-checked charge or a handwritten argument, every cut-off
   certified); among the shorter chains `(λx. x P) A` most argument shapes
-  close, three of them modulo 24 uncertified cut-offs; a λ-free argument at the root must
+  close, three of them modulo 24 uncertified cut-offs. With pending
+  operands `C⃗`, a root let whose body is a literal λ is excluded too
+  (Codex, pending lane): exchanging adjacent prefix lets
+  `(λx y. D) A C ↦ (λy x. D') C A` costs exactly `uses(y) − uses(x)` and
+  keeps both laws, one `j` and the order's other coordinates, consuming a
+  pending `C` while keeping `A` once has an exact price, both
+  kernel-checked, and the residual cells (13,489 sources) all fail, their
+  20 normalizer exceptions refuted in Lean; a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands. With `j` at

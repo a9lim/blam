@@ -1,0 +1,3 @@
+'Blc.Pending.minimum_adjacent_prefix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Pending.prefix_pair_join' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Pending.prefix_pair_price' depends on axioms: [propext, Classical.choice, Quot.sound]

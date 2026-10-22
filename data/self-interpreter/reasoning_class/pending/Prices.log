@@ -1,0 +1,7 @@
+'Blc.Pending.exchange_join' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Pending.exchange_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Pending.minimum_prefix_uses' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Pending.consume_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.consume_price' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.consume_one_hole' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.consume_depth' depends on axioms: [propext, Quot.sound]
