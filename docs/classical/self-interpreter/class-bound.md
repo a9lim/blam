@@ -235,6 +235,18 @@ family; the lists are in the round-4 archive. Claude's lanes:
 - shared lets over the `s I` and `s K` spines, lets shared across a general
   λ-dispatcher and one or two operands, and the self-application families
   `λs. (λx. x x) A j` that maximise the counting bound;
+- depth-0 readers whose `j` follows a shared top-level let,
+  `(λx. B) A j`, and application-rooted readers with `j` a let-body
+  operand, whenever the let argument's λ-chain binds every root argument
+  and the stream: no minimum reader below 46 has this shape (Claude;
+  complete checks of 32,228, 2,664 and 600 bodies after the forced-use
+  filter). The root-let weight is exactly `w = 8 + 4k + 4t + Σ|B| + Σ|C| + |Σ|`
+  (`k` root arguments, `t` pending ones), so the template body has at most
+  27 bits, and the stream's, `j`'s and the let's variables and `c` must all
+  occur in it. The same holds when `j`'s binder is the head λ-chain at any
+  multiplicity (handwritten, through depth 0's chain swap), and for the
+  self-application `(λx. x x)(λz a. z M⃗) j` whose chain stops before the
+  stream (66,577 bodies);
 - the whole-cell opener `λs. s (λb t. B) j`, of which no minimum reader
   below 46 is an instance (Codex): a λ-headed `B` hoists its binder at a
   strictly lower price (kernel-checked), a linear redex does not fit in
@@ -309,8 +321,9 @@ ones, not the full 25-bit cut-off audit.
 
 **Open.** At depth 1, zero-λ parents `Y j` with `Y` an application
 containing `s` or `c`, and the needed-binder case of the 162's family;
-application-rooted readers with the hole under a non-stream λ; depth-0
-readers whose `j` follows a shared top-level let; s-spines with a β-redex
+depth-0 readers whose `j` follows a shared top-level let, and
+application-rooted readers with the hole under a non-stream λ, where the
+let's argument hands control on before binding the stream; s-spines with a β-redex
 on the first operand's head path, the skeleton `λs. s (λb. b X₁) T₁ T₂`,
 and readers whose stream-λ body is a redex; lets headed by their own
 variable (whose extra uses are needed,

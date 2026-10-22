@@ -10,7 +10,7 @@ write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
 `lean146`, `loop`, `zerolam`, `needbinder` and the review `review_hole`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
-`bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, the statement audit
+`bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
 
@@ -38,6 +38,7 @@ working versions.
 | review_hole | adversarial review of hole: dispensability, the price identity and the index-shift arithmetic confirmed; the persistence step refuted by correct readers of weight 59, 84 and 104; the unary-only wrapper check that repairs the 162-family bound | `class-bound.md` §3 |
 | d1open | every s-spine reader whose first operand reaches the first dispatch with no β-redex on its head path has `w ≥ 46` (one skeleton over the cap); the deletion lemma; `λb. b X Y` with three or more trailing operands closed | `class-bound.md` §3 |
 | global | ceilings for probe-based floors (88 on identity towers, 154 on Church spines); no β-preserving conversion into the class | `Blc/Selfint{Global,Spine,Tower}Barriers.lean`, `global-floor.md` §10, `class-bound.md` §5 |
+| root | six sub-families of depth-0 shared-let and application-rooted readers out of a minimum below 46; the exact root-let weight; forced uses; the pull lemma | `class-bound.md` §3 |
 | needbinder | the whole-cell opener `λs. s (λb t. B) j` out of a minimum reader below 46 (hoisting price in `OpenerHoist.lean`, normalizer exceptions in `NonlinearExceptions.lean`); the 162-family spine `λs. s A (λu. D) j` narrowed to `|A| ≥ 11`, `|D| ≤ 18`; a needed-binder witness of weight 75 | `class-bound.md` §3 |
 | zerolam | three zero-λ parent shapes out of a minimum reader (literal let, closed transport, disjoint redispatch at 53); the rigid-ancestor anchor and its whole-body witness of weight 75 | `class-bound.md` §3 |
 | loop | the unary run need not be periodic: a correct reader of weight 221 with a growing counter (`Slow.lean`, kernel-checked); the 162's skip is input-generated; conditional pumping, suffix exposure, union accounting; the 164's family `≥ 48` and the hoisted 165's `≥ 49` by rigid shielding (`Shield.lean`, `Prices.lean`) | `class-bound.md` §3 |
