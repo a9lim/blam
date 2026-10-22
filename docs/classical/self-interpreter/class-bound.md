@@ -179,9 +179,10 @@ the 39-bit one.
   (`reasoning_class/rootnf/RootProfile.lean`, Codex). In the tight
   profiles `k + d = 5` every source fails: about 240,000 with a
   certificate, 32,743 normalizer exceptions refuted in Lean (Codex, rootlet
-  lane), and of the last 580 listed exceptions 577 by Lean proofs and three
-  of weight 45 by the frozen engine's divergence verdict (Codex, rootcert
-  lane). Source η-contraction keeps both laws and the one hole and strictly
+  lane), and the last 580 listed exceptions by Lean proofs from the zero
+  law alone (Codex, rootcert lane; the final three, of weight 45, by one
+  kernel-checked divergence family `A aₘ aₘ₊₂ ⋯ →h^(4m+2) A aₘ₊₁ aₘ₊₃ ⋯`,
+  Claude, `reasoning_class/combs2/Rootlet3.lean`). Source η-contraction keeps both laws and the one hole and strictly
   lowers the weight (kernel-checked), so a minimum reader has no η-redex;
   of the lower profiles, the 73,311 sources with three λs and `V = k + 5`
   fail too. **No minimum reader below 46 is a linear root let** (Codex,
