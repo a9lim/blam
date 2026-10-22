@@ -209,7 +209,13 @@ family; the lists are in the round-4 archive. Claude's lanes:
   form contracts to a deep reader of weight up to 50;
 - shared lets over the `s I` and `s K` spines, lets shared across a general
   λ-dispatcher and one or two operands, and the self-application families
-  `λs. (λx. x x) A j` that maximise the counting bound.
+  `λs. (λx. x x) A j` that maximise the counting bound;
+- the whole-cell opener `λs. s (λb t. B) j`, of which no minimum reader
+  below 46 is an instance (Codex): a λ-headed `B` hoists its binder at a
+  strictly lower price (kernel-checked), a linear redex does not fit in
+  `|B| ≤ 29`, and every rigid-headed body (92,534 sources) and every body
+  whose head let has two to four uses (18,640 sources, the 24 normalizer
+  exceptions refuted in Lean) fails a law.
 
 **Reduction of depth 1** (handwritten with checks through 25 bits, Claude;
 reviewed adversarially by Codex). Call a position unary-dispensable when
