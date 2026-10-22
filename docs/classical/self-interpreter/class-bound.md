@@ -280,7 +280,12 @@ family; the lists are in the round-4 archive. Claude's lanes:
   and minimality `Δ ≥ 0` for every let inside `B`, kernel-checked, leave
   117,059 sources over `q = 1 … 5`, all refuted, 1,868 normalizer
   exceptions individually in Lean). So **no minimum reader below 46 has a
-  literal λ as its first handler**; A handwritten deletion lemma underlies the budgets:
+  literal λ as its first handler**. When the first operand is not a literal
+  λ but is free of `j`, every redex inside it still has two to five uses
+  (Codex, firstop lane: the linear cases reduce to 727 sources, each
+  refuted in Lean), and a let of the form `s ((λx. λb. B) A) T⃗` must
+  satisfy `occ_x(B) < F_A + occ_b(B)`, since at equality sinking it gives
+  another minimum with a literal handler; A handwritten deletion lemma underlies the budgets:
   replacing a subterm by a cheaper one with the same value on every unary
   probe leaves a unary core, and the only cores through 22 bits are
   `s (λq. c) (s s j)` and `s (λq. c) (s s s)`, so a reader carrying
