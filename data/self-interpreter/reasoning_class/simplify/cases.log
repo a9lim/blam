@@ -1,0 +1,47 @@
+'Blc.Simplify.wrapped_full' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.specialized_full' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case157_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case163_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case164_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case165_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case166_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case170_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case180_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case182_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case183_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case184_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case185_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case186_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case187_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case188_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case194_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case384_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case385_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case386_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case387_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case396_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case397_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case398_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case399_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case400_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case401_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case402_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.case403_not_minimum' depends on axioms: [propext, Quot.sound]
+        0.24 real         0.20 user         0.07 sys
+           434520064  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               28858  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                2006  involuntary context switches
+          3125106906  instructions retired
+          1168726423  cycles elapsed
+            91378176  peak memory footprint

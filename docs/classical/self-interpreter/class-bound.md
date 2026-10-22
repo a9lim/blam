@@ -532,7 +532,15 @@ replacing `G` by `I` saves 11 bits — so what closes the case is not a bound
 on the expansion but a source-level simplification that keeps both laws and
 recovers the whole expansion cost, or a split of the remaining minimum
 sources into families each with an endpoint floor that holds without
-minimality. Every λ-rooted minimum reader below
+minimality. Two such simplifications are kernel-checked (Codex, simplify
+lane): specializing a static hand-off `(λx. T[x]) (λz. z M) C⃗` (`T` an
+application tree) keeps both laws and one `j` at the exact price
+`7b − 6 − F(M)` for the `b` wrappers that remain, so it always simplifies
+when none remains and forces `F(M) ≤ 1` when one does; and for an
+idempotent helper such as `J = λx. x (λy. x)`, `J J →β³ J`, replacing a use
+`x x` by `x` saves `q + 4` bits, which takes 27 of rootnl's listed sources
+out of the minimum. Dependent payloads, helpers with several payloads and
+general root bodies are not covered. Every λ-rooted minimum reader below
 46 is excluded, so the zero-λ parents, needed binders, self-headed lets and
 dispatch-free readers that the depth-1 analysis isolated matter only inside
 a root let's argument. The space of all readers below 46 is far beyond

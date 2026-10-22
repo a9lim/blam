@@ -1,0 +1,84 @@
+{
+  "algebra_pairs": 64,
+  "reader_witnesses": [
+    {
+      "name": "wrapped",
+      "source": "(\\xx. xx xx) (\\zz. zz (\\z n s. s (\\a. a) (\\u. s (\\q. c) (s s u)) n)) j",
+      "weight": [
+        70,
+        70,
+        0,
+        8,
+        12,
+        10,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "specialized",
+      "source": "(\\pp. pp pp) (\\z n s. s (\\a. a) (\\u. s (\\q. c) (s s u)) n) j",
+      "weight": [
+        63,
+        63,
+        0,
+        7,
+        11,
+        9,
+        1,
+        1
+      ]
+    }
+  ],
+  "inventory_rows": 658,
+  "idempotent_helper_rows": 67,
+  "excluded_minimum_count": 27,
+  "excluded_minimum_ids": [
+    157,
+    163,
+    164,
+    165,
+    166,
+    170,
+    180,
+    182,
+    183,
+    184,
+    185,
+    186,
+    187,
+    188,
+    194,
+    384,
+    385,
+    386,
+    387,
+    396,
+    397,
+    398,
+    399,
+    400,
+    401,
+    402,
+    403
+  ],
+  "elapsed_s": 0.005016874987632036
+}
+        0.03 real         0.02 user         0.00 sys
+            25395200  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                1862  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                  24  involuntary context switches
+           355094986  instructions retired
+           129888757  cycles elapsed
+            13976080  peak memory footprint
