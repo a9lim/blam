@@ -248,6 +248,14 @@ and a redispatch `λs. P D` with source-disjoint `P` (`r` / `c U`) and `D`
 (`j` / `N`), which costs at least `6 + 2 + 20 + 25 = 53`, attained by
 `λs. s I (s (λq. c)) (s K j (s s s))`. The rest, `Y j` with `Y` an
 application containing `s` or `c` (the simplest is `s K j`), is unpriced.
+At depth 1 every ancestor of `j` is an application, so the lowest one whose
+zero value is rigid, `X*`, is context-free too; anchoring there keeps the
+zero classification, the unary projection and the operand minima, and
+recovers priced operands such as the `j`/`N` operand `s K j (s s s)` above.
+But minimality then only gives `R = λs. X*`, and `X*` can be the whole
+body: `λs. s (λb t. b (λx. x t) (c t)) (s (λb t. b (λa k. k a) (t t)) j)`
+(`w = 75`, β-normal, Codex) has both halves λ-valued on a zero stream,
+`λx. x r` and `λk. k j`.
 
 Inside the first family, anchor again at the node `ν` that becomes the
 unary output. When every binder above `ν` touches only unary-dispensable
