@@ -241,15 +241,15 @@ family; the lists are in the round-4 archive. Claude's lanes:
   25 bits;
 - **every β-normal reader: `w ≥ 46`, sharp at the 162**, with no
   minimality assumption (Claude, types lane; reviewed adversarially by
-  Codex, who reproduced every run). The search is needed narrowing for the
+  Codex, who reproduced every run, and again by a fresh Claude reviewer).
+  It is computer-checked, not a Lean theorem. The search is needed narrowing for the
   zero law and the unary laws at `n = 1, 2`: each law runs on a normal-order
   machine against its target, a hole is refined only when a run needs it,
   and a hole never refined is a 2-bit filler. A β-normal reader satisfying
   the zero law is an s-spine `λs. s A₁ … A_k`; depth ≥ 2 is one run (99,562
   states), and depth 1 splits exactly by the root arity `k` into four runs
-  of 45,497, 78,828, 59,550 and 32,810 states, the seven cut-offs all
-  self-applications without a head normal form (by hand or by the frozen
-  engine). Tabling is sound for the joint laws because both force needed
+  of 45,497, 78,828, 59,550 and 32,810 states; each of the seven cut-offs
+  has no head normal form for any filling, proved by hand. Tabling is sound for the joint laws because both force needed
   source occurrences — the zero run must reach the source `j` and a unary
   run some source `c` — so a subterm the search has not placed can be
   replaced by a 2-bit variable without breaking a law (Codex's repair; with

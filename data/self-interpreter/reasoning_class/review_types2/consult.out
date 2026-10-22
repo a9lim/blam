@@ -1,0 +1,5 @@
+[gaslamp] → gemini · job gm-20261022-031751-09d9 · watch: tail -f /Users/a9lim/.gaslamp/jobs/gm-20261022-031751-09d9/events.jsonl
+[gaslamp] agy: Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 127h36m2s.
+error: Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 127h36m2s.
+AGY_ERROR: {"short_error":"RESOURCE_EXHAUSTED (code 429): Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 127h36m2s.","status":"RESOURCE_EXHAUSTED","error_code":429,"code_kind":"http","retryable":true,"error_id":"b2c3de2a-122f-4b7a-aace-ca17b9ed36ff-6"}
+[gaslamp] FAILED (exit 3) · job: gm-20261022-031751-09d9 · session: 7e11e419-3d33-4483-aaff-2bc166c76ca1 · resume: gaslamp gemini --resume 7e11e419-3d33-4483-aaff-2bc166c76ca1 · model: gemini-4-argon · tok: 18k→168 · log: /Users/a9lim/.gaslamp/jobs/gm-20261022-031751-09d9/stderr.log
