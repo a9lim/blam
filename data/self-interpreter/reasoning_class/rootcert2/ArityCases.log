@@ -1,0 +1,6 @@
+'Blc.Rootcert2.ArityCases.reject542' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.ArityCases.reject543' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.ArityCases.reject556' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.ArityCases.reject557' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.ArityCases.reject572' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.ArityCases.reject573' depends on axioms: [propext, Quot.sound]

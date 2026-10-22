@@ -1,0 +1,35 @@
+{
+  "source_count": 658,
+  "helpers": 93,
+  "lean": 653,
+  "engine_only": 5,
+  "unresolved": 0,
+  "formal_gap_ids": [
+    474,
+    492,
+    493,
+    506,
+    507
+  ],
+  "proof_patterns": {
+    "flow": 515,
+    "develop": 48,
+    "mixed": 33,
+    "simplify": 2,
+    "arity": 6,
+    "unary": 12,
+    "tri": 33,
+    "owls": 4
+  },
+  "modules": 103,
+  "max_lean_seconds": 7.211704124987591,
+  "max_lean_rss_bytes": 1047216128,
+  "source_sha256": "302b9f8f050f39a0d05583a9d7fa72dd780fa26930b76979a36c31ceb3c1ff6c",
+  "manifest_sha256": "6e634f63d3d36a6ed579d51d64e54597e7a14d29eb8b98772b185a5c4229fc74",
+  "binary_sha256": "00883f147c7128a1642f323920deef23f0af9c8b742dadb3c0f30cf5478bfaa2",
+  "axioms": [
+    "propext",
+    "Quot.sound"
+  ],
+  "wire_matching": true
+}

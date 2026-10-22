@@ -1,0 +1,4 @@
+'Blc.Rootcert2.MixedCases02.reject434' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.MixedCases02.reject435' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.MixedCases02.reject436' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.MixedCases02.reject437' depends on axioms: [propext, Quot.sound]

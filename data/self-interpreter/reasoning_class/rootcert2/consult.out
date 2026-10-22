@@ -1,0 +1,13 @@
+[gaslamp] → codex · job cx-20261022-070238-615d · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-070238-615d/events.jsonl
+(｀・ω・´) **653 sources have Lean refutations; the remaining five have frozen-engine DIVERGE evidence.** All 658 are accounted for, but five formal proof obligations remain.
+
+- **583 proofs** use a new kernel-checked flow/arity checker.
+- **70 proofs** use head-prefix cycles and infinite divergence families.
+- Engine-only IDs: **474, 492, 493, 506, 507**, all weight 44, sharing `H = λx y. x (y (y x))`.
+- All **103 Lean modules passed**; maximum 7.21 seconds and 1.05 GB per file. Axioms: `propext`, `Quot.sound`.
+- No sub-162 candidate. Build-only artifacts removed; no tracked files changed.
+
+Deliverables: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/rootcert2/REPORT.md), [source-to-proof manifest](/Users/a9lim/Work/blam/tmp/round4/rootcert2/MANIFEST.tsv), [engine-only sources](/Users/a9lim/Work/blam/tmp/round4/rootcert2/ENGINE_ONLY.tsv), [verification](/Users/a9lim/Work/blam/tmp/round4/rootcert2/verification.json).
+
+[gaslamp] job: cx-20261022-070238-615d · session: 01a16346-f964-7373-bce0-1c8bf7fbb4a4 · thread: r5-rootcert2 · resume: gaslamp codex --thread r5-rootcert2 · tok: 10932k→86k
+[lane.sh] done rc=0 tries=1

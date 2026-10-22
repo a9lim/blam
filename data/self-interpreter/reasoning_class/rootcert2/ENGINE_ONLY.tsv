@@ -1,0 +1,6 @@
+id	weight	source_file	exception_index	status	kind	probe	evidence	theorem	helper	source	zero_bits
+474	44	check_4_0_Cs_x_2_2.json	170	engine-only	DIVERGE	zero	deep.out:2		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 (x2 x1))) j c	000000010101010001011010011010000001110011001101101101110000101100000110110
+492	44	check_4_0_Cs_x_2_2.json	230	engine-only	DIVERGE	zero	deep.out:4		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 (x2 x1))) j c	000000010101010001011001101010000001110011001101101101110000101100000110110
+493	44	check_4_0_Cs_x_2_2.json	231	engine-only	DIVERGE	zero	deep.out:1		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 (x2 x1))) c j	000000010101010001011001101010000001110011001101101110110000101100000110110
+506	44	check_4_0_Cs_x_2_2.json	278	engine-only	DIVERGE	zero	deep.out:3		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 (x2 x1))) j c	000000010101010001010110101010000001110011001101101101110000101100000110110
+507	44	check_4_0_Cs_x_2_2.json	279	engine-only	DIVERGE	zero	deep.out:5		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 (x2 x1))) c j	000000010101010001010110101010000001110011001101101110110000101100000110110

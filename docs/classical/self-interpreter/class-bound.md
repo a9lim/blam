@@ -193,12 +193,14 @@ the 39-bit one.
   (`j` counted four times in `F`; kernel-checked), but at depth 0 or 1 it
   moves `j` deeper, so an equal-weight exposure does not carry minimality
   across. For the nonlinear root lets with four uses and `j` at depth 0,
-  188,718 sources leave 658 unresolved normalizer exceptions over 93
-  helpers, listed with prices in `reasoning_class/rootnl/SURVIVORS.tsv`
-  (149,789 fail the zero law outright, 38,271 are refuted in Lean; Codex,
+  every one of 188,718 sources in the cells under the cap fails (Codex:
+  149,789 on the zero law outright and 38,271 by Lean refutations in the
   rootnl lane, which also kernel-checks the Lift transfer, a self-feeding
   divergence theorem with arbitrary payloads, and a repair of discarded `j`
-  copies saving `4h − 2` each); A root let
+  copies saving `4h − 2` each; the last 658 in the rootcert2 lane, 653 by
+  Lean proofs — most through a kernel-checked flow and arity checker — and
+  five of weight 44, sharing the helper `λx y. x (y (y x))`, by the frozen
+  engine's divergence verdict); A root let
   whose body is headed by the stream binder lifts exactly to a λ-rooted
   reader: `(λg. λs. B) H` and `λs. (λg. B~) H` (binders swapped) agree on
   every stream, and the second weighs `u_s(B) − u_g(B) + f_c(H) + 4·occ_j(H)`

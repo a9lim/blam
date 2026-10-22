@@ -1,0 +1,19 @@
+# rootcert2 progress
+
+Read BRIEF/BRIEF5, current class-bound and STATUS, rootnl and precedents. Fixed input: 658 sources / 93 helpers; no enumeration. Every literal source price rechecked with coord/rd.py. Lean copies retain original namespaces and authorship.
+
+Frozen zero audit: 518 DIVERGE / 20 HALT / 120 UNKNOWN; 0.25s, 6.9MB sampled RSS, 2 threads. Fresh binary copied after exact Python unlink (shell rm was blocked). Ground-all-I prefix exploration found no short certificates before its 95,000-state cap; nothing counted as refuted there.
+
+New route: finite recursive flow typing. A source-level 0CFA omits rigid r from 439 zero outputs; up to 16 explicit head contractions improve this to 515/658 in 2,979 analyses (3.8s, 35MB). This is only candidate certificate data until a general subject-reduction checker is proved in Lean. The finite model carries lambda labels with argument/result sets, arbitrary cycles allowed. Goal: Typing preserved by all beta steps, and typing r j forces r in the output set. This can exclude wrong heads or nontermination uniformly without normalization.
+
+Flow soundness and all 515 initial source certificates kernel-check. Bounded full developments add 48, small internal simplifications add 2 flow proofs and 33 genuine head-step/beta-return proofs, arity flow adds 6, and length-one arity flow adds 12. Total then 616. Subject reduction, finite checker soundness, and each source's axiom audit use propext and Quot.sound only.
+
+Important audit correction: the frozen engine emits completion order, not input order. Initial per-ID status commentary based on zipping rows was invalid (aggregate 20/518/120 was correct). zero_matched.json and unary_matched.json now match exact wire encodings. None of the Lean work used those provisional statuses as premises. At 616 Lean coverage, the true remainder was 8 DIVERGE and 34 UNKNOWN, no halters. The attempted naive "halt208" head walk was stopped under the two-minute cap; its source was actually an UNKNOWN. No claim or certificate came from that diagnostic.
+
+New general recurrence: A_D=lambda x y.x D, K_D=A_D A_D A_D. If K_D ->weak^2 A_D K_D, then K_D z ->weak^4 K_D (D[K_D/x,z/y]). A decreasing finite weak-head clock proves divergence for all z. It covers five helpers and 33 sources; all checked in TriCases00..04. For H=lambda x y.x(x y y), this is the exact symbolic reason source 208 diverges.
+
+Two further infinite-family proofs close four sources: TripleOwl handles A=lambda x y.y(y(y x)), and NestedOwl handles A=lambda x y.y(x(y x)). The first uses positive application trees over G_n=lambda x.x^3 a_n (a_0=A, a_(n+1)=A a_n). The second uses G_t=lambda x.x(t(x t)), payload t=A or a tree of allowed G atoms. Every nontrivial tree of the allowed atoms has no weak-head clock. Both balanced A A (A A) probes reduce to a nontrivial tree. All four source certificates kernel-check.
+
+Current final boundary: 653 direct original-source Lean refutations; five engine-only sources 474,492,493,506,507, all using H=lambda x y.x(y(y x)). The frozen deeper audit now reports DIVERGE on all five closed zero probes in 0.066s / 6.8MB / 2 threads, matched by wire. The higher budgets are recorded in deep.resources.json. Short symbolic head recurrences and small finite algebra invariants did not produce a Lean proof for this last helper. No new interpreter and no passing sub-162 candidate.
+
+Final replay: all 103 required Lean modules pass, max 7.212 seconds / 1.0473 GB sampled RSS per file. Controls pass. Final audit independently re-encodes every zero probe from the source de Bruijn tree, rechecks every exact weight, and verifies all proof hashes plus wire-matched engine rows. All build-only .olean/.ilean files removed. No lane-owned experiment processes remain. REPORT.md, MANIFEST.tsv, HELPER_PROOFS.tsv, ENGINE_ONLY.tsv and verification.json are the deliverables.
