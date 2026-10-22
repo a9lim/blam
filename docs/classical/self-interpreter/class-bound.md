@@ -164,7 +164,13 @@ the 39-bit one.
   (≤ 6), with explicit argument budgets; a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
-  so a minimum reader's sharing reaches at least two operands.
+  so a minimum reader's sharing reaches at least two operands. With `j` at
+  depth 1, a minimum reader below 46 whose stream-λ body is a let
+  `((λx. B) A) C⃗` uses `x` at most four times, has a λ inside `A`, and, if
+  the let is linear, has `j` inside `A` (Codex, bodyredex lane: handwritten
+  with the scalar bounds and the `A = (s s s) j` case in
+  `reasoning_class/bodyredex/FlatRestHole.lean`, and complete checks of
+  92,480 and 47,328 sources).
 - **Lets headed by their own variable** (Lean, Codex,
   `Blc/SelfintNeededHead.lean`, `Blc/SelfintNestedLets.lean`). In
   `(λx. x B₁ … B_k) A`, keeping `A` once at the head and replacing every

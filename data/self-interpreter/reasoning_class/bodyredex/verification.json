@@ -1,0 +1,40 @@
+{
+  "canonical_reader": {
+    "weight": 46,
+    "probes": "zero and unary 1..8",
+    "passed": true
+  },
+  "independent_named_checks": {
+    "sources": 6,
+    "probes_each": [
+      "zero",
+      "unary1",
+      "unary3"
+    ],
+    "sources_checked": [
+      "\\x1. (\\x2. x2 (x2 (x2 (x2 (x2 x2))))) (\\x2. x1) j c",
+      "\\x1. (\\x2. x2 (x2 (x2 (x2 x2)))) (\\x2. c) j x1 c",
+      "\\x1. (\\x2. x2 (x2 (x2 (x2 x2)))) (x1 (c (\\x2. x2))) j",
+      "\\x1. (\\x2. x2 (x2 (x2 (x2 (x2 c))))) (\\x2. x1) j",
+      "\\x1. (\\x2. x2 (x2 (x2 (x2 x2)))) (j (x1 (\\x2. \\x3. x3))) c",
+      "\\x1. (\\x2. x2 (x2 (x2 (x2 (x2 (\\x3. c)))))) (x1 x1) j"
+    ]
+  },
+  "lean": {
+    "exit_code": 0,
+    "seconds": 0.675774832998286,
+    "peak_rss_bytes": 467664896,
+    "threads": 2,
+    "remaining_hypothesis": "TinyUnaryClassification; existing computer-checked 23-bit arm inventory"
+  },
+  "sha256": {
+    "high_count.py": "112bd4d61e068c0a3406cfff9508dd9fd0d225b4b62d257ca3f43b685a6ff03c",
+    "high_check.py": "e43d5cecebb6d5555be42900d553d54a20d7a367003a3ff6335cec6afd234ba0",
+    "high_check.json": "38076907c14bf5ab77a54fccb600ca1b9672d729210ce6b1225c01593f99e2cd",
+    "flat_count.py": "20f122472ec87b249e605418d2f5476234e1ba99195480d42a3ed78f58afaaad",
+    "flat_check.py": "1c97d51cc97fad7ffa68274db540fb066d48ac1c5add965a7ed7bbc82da88adc",
+    "flat_check.json": "1514204bc97b84ab66b57de71d20da0c2fe81a94c9742c1341d501864391e25c",
+    "FlatRestHole.lean": "06f7f599c279328e50d045f58ccca842599a119a86d446e2f8640321a12305a1",
+    "FlatRestHole.log": "2b97494408aaf766af2c9d18ee17f6d61eeafa7480f51e9f485c79bc64e21785"
+  }
+}

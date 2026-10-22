@@ -1,0 +1,27 @@
+{
+  "sources": 47328,
+  "rows": {
+    "A2:m2:L4": 1850,
+    "A2:m2:L5": 760,
+    "A2:m2:L6": 390,
+    "A2:m3:L3": 20672,
+    "A2:m3:L4": 9664,
+    "A2:m4:L3": 4480,
+    "A3:m2:L3": 6230,
+    "A3:m2:L4": 2106,
+    "A3:m3:L3": 1176
+  },
+  "failures": {
+    "n0": 45789,
+    "n1": 1539
+  },
+  "survivors": [],
+  "exceptions": 0,
+  "all_contracted_probes_affine": true,
+  "max_probe_nodes": 148,
+  "max_probe_beta_steps": 23,
+  "seconds": 2.806978332999279,
+  "peak_rss_bytes": 57819136,
+  "threads": 1,
+  "source_digest": "2cb69aa407ed41acb9873f654272744de4aae9bf351ddeaa1a68d8fb053ef0ef"
+}
