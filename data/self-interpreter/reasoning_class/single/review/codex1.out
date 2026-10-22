@@ -1,0 +1,47 @@
+[gaslamp] → codex · job cx-20261022-044111-3606 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-044111-3606/events.jsonl
+(•̀ᴗ•́)و **Verdict: correct as a computer-assisted exclusion, with one omitted but repairable argument in step 2.** No counterexample found. The minimum-reader corollary remains conditional on the cited depth results; I did not re-prove those.
+
+Full findings and reproduction records: [THEOREM_S_REVIEW.md](/Users/a9lim/Work/blam/tmp/round4/single/review/THEOREM_S_REVIEW.md).
+
+The necessary proof clarification is **why case (c), with `j` inside `A`, forces `A = j`**. This does not follow syntactically. Deletion leaves a j-free unary core, costing at least 22. Since the site is at M-depth zero,
+\[
+39\ge |M|=|M'|+15+|A|\ge37+|A|.
+\]
+Thus `|A| ≤ 2`. A composite term containing `j` at depth zero costs at least 4, so `A = j`. I independently checked the supporting lower bound: all 16,459 j-free terms through cost 21 fail even U1, with no uncertified cutoffs.
+
+The other coverage steps withstand review:
+
+- Zero excludes `j` in `W`; type (b) excludes it throughout the site by the depth hypothesis. Consequently, deletion preserves `j`’s path in the retained-j case.
+- An applied source `j` cannot yield the bare `j` in `r j`: its residuals remain applied or disappear. Thus paths end in R. The bound `6 + 4|p|` excludes lengths ≥8.
+- Untabled narrowing **allows head-position holes to become lambdas**. These runs disable the β-normal restriction. The refinement choices and lower bounds support completeness for the checked laws.
+- Filler expansion correctly distributes the remaining budget `31 − |template|`. Both fillers and inserted `E` terms use the correct local binder frame. Insertion adds exactly `|E| + 2`, without changing `j`’s tax.
+- Keep type (b)’s definition precise: the source contains **`s (λx.P)`**, not merely a lambda somewhere among an s-headed spine’s operands.
+
+I reproduced the requested computations and the entire remaining path partition:
+
+| Check | Reproduced result |
+|---|---|
+| `ccase.py` | 80,976 terms; 3 cores; 27 insertions; no hits or uncertified caps |
+| Lambda-rooted X | 12,740 states; one template, yielding exactly V and X29 |
+| `(s _) j` | 18,649 states; no templates |
+| `((λy._) _) j` | 39,754 states; no templates; one G cutoff |
+| `((_ _) _) j` | 45,761 states; no templates; one H cutoff |
+| `pathR.py` | 253 insertions; no hits |
+| All 126 paths, lengths 2–7 | 329,895 states; 76,845 insertions; no hits, uncertified insertion caps, or core caps |
+
+The residual cutoff families close uniformly: both
+`G = λx.x ((λy.x) _)` and `H = λx.x (I x)` β-reduce to `Δ = λx.x x`. Their self-applications are therefore β-equivalent to Ω, independently of the filler.
+
+Positive controls recover exactly the weight-46 and weight-47 readers. The small brute-force/narrowing cross-check also agrees; I additionally certified its six brute-force cutoffs. Construction attempts included 76 local absorber repairs of the weight-39 near miss through weight 47, with no success.
+
+**One separate warning about the newly added NOTES §12:** the broader condition “`j` not in `E`” does not preserve the path partition. For example,
+```text
+s (λq.c) (s s ((K j) s))
+```
+satisfies the unary laws, but deleting `K j → j` produces
+```text
+s (λq.c) (s s (j s)),
+```
+whose j-path ends L. Here `E = K` is j-free and costs 7. Neither term satisfies zero, so this does **not** refute Theorem S or the generalized conclusion; it exposes a gap in extending this proof to that conclusion. The stated syntactic-site theorem avoids it because zero excludes `j` in `W`.
+
+[gaslamp] job: cx-20261022-044111-3606 · session: 01a162c5-7a45-7042-b928-f57779133b28 · thread: single-thmS-review · resume: gaslamp codex --thread single-thmS-review · tok: 1001k→13k

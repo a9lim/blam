@@ -1,0 +1,4 @@
+states 21420 sols 2 fuel 0
+
+{"states": 21420, "sol": [[37, "(\\x0. ((x0 (\\x1. c)) (((\\x1. x0) j) (\\x1. (x0 x0)))))"], [34, "(\\x0. ((x0 (\\x1. c)) (((\\x1. (x0 x0)) j) _)))"]], "fuel": []}
+templates 2 cores 5 insertions 916 hits 0 uncertified caps 0 core caps 0 0.0s

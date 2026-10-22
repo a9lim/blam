@@ -186,8 +186,8 @@ with all features (three opt-in tests ignored) and 328 with default features.
   whose first operand reaches the stream's bit with no redex on its head
   path, and every minimum reader whose first handler is a literal λ
   (complete finite checks); the 164's and the hoisted 165's families cost
-  exactly 48 and 49; and a reader below 46 dispatches through at most one
-  site. What remains is the sharing a redex allows between the zero and
+  exactly 48 and 49; and no minimum reader below 46 has a syntactic
+  dispatch site at all. What remains is the sharing a redex allows between the zero and
   unary roles: s-spines whose first operand carries `j`, is not a literal
   λ and has a redex on its head path, readers whose stream-λ body is a let, and root
   lets. The class widens without moving its minimum:

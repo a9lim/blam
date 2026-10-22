@@ -10,7 +10,7 @@ write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
 `lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `jerase`, `handlerlet`, `rootnf`, `firstop`, `leanbn` and the reviews `review_hole` and `review_types`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
-`bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `types`, `zcore`, the statement audit
+`bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `types`, `zcore`, `single`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
 
@@ -45,6 +45,7 @@ working versions.
 | review_types | Codex's adversarial review of the β-normal bound: every run reproduced, an independent enumerator compared on single laws, a single-law tabling defect found, and the needed-occurrence argument that makes the joint-law search sound | `class-bound.md` §3 |
 | review_types2 | a second, fresh Claude review of the β-normal bound (the brief was written for Gemini, whose quota had run out): sound; hand proofs for the two engine-certified cut-offs; tabled and untabled searches agree on joint laws | `class-bound.md` §3 |
 | leanbn | toward a kernel-checked β-normal bound: the shape lemma, the needed-occurrence lemma and the lower bound in Lean (`Foundations.lean`), one small row excluded end to end (`Pilot.lean`), and a design for the rest | `class-bound.md` §3 |
+| single | Theorem S: no reader below 46 with `j` under no λ but the stream's has a syntactic dispatch site (unary cores of weight ≤ 37 listed by needed narrowing as 110 templates, every single-site insertion refuted; reviewed by Codex in `review/`) | `class-bound.md` §3 |
 | zcore | dispatch sites: one closed `s I` anchor anywhere forces `w ≥ 46` (equality only the 162); two sites or one heavy site force 46, so a reader below 46 has at most one site saving 8–15; the three unary cores through 23 bits; the uniform zero-compatible-core statement refuted | `class-bound.md` §3 |
 | handlerlet | no minimum reader below 46 has a literal λ as its first handler: every nonlinear let inside it fails (117,059 sources; 1,868 normalizer exceptions in `Exceptions1–4.lean`; prices in `Prices.lean`) | `class-bound.md` §3 |
 | rootnf | the root-let profile bound `w ≥ 4k + 22 + 4d` (`RootProfile.lean`: at most five uses below 46); the multi-hole repair of the normalization bridge | `class-bound.md` §3 |

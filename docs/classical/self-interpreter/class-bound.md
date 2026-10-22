@@ -328,6 +328,18 @@ family; the lists are in the round-4 archive. Claude's lanes:
   among terms through 9 bits) costs at least 11 bits at its site; calls
   handing it `c`, `s` or a tail reuse both arms and are not priced
   (correct readers of 93 and 99 do this);
+- **no reader with `w ≤ 45` and `j` under no λ but the stream's has a
+  syntactic site at all** (Claude, single lane; reviewed by Codex, who
+  reran the whole partition: 126 paths, 329,895 narrowing states, 76,845
+  insertions, no reader). Enumerating unary cores by the unary laws rather
+  than by cost — needed narrowing on `U₁, U₂` with `j`'s path pinned —
+  lists every core of weight at most 37 as 110 templates; putting one site
+  back into each in every way and testing both laws finds nothing, and
+  brute force agrees with the narrowing at the costs where both run. The
+  same holds for any deletable `E W` with `|E| ≥ 6` and `j ∉ E W`, and no
+  `j`-free subterm can be replaced by `I`, `F` or `K` keeping the unary laws
+  unless it costs at least 12, 14 or 15. With the depth results above,
+  **no minimum reader below 46 has a syntactic site**;
 - every reader with its hole at depth ≥ 2, and every depth-0 reader whose
   `j` is the argument of a λ, under the minimality order (weight, λ count,
   depth). This corrects round 3's reduction, which handed depth-2 rows to
@@ -438,8 +450,11 @@ lets and application-rooted readers whose let argument hands control on
 before binding the stream. Cutting across them are the zero-λ parents
 `Y j` with `Y` an application over `s` or `c`, the needed-binder case of the
 162's family, and lets headed by their own variable, whose extra uses are
-needed but not yet tied to the unary output. Any such reader below 46
-dispatches through at most one site, saving 8 to 15 bits. The space is far
+needed but not yet tied to the unary output. A minimum reader below 46
+has no syntactic dispatch site at all: it must read the bit through a
+let-shared dispatcher with a call that is not a bit, through an
+under-applied dispatch `x A` with `|x| + |A| ≤ 9`, or by applying the stream
+to itself (`s (s K)`). The space is far
 beyond enumeration (the record's estimate is about 2×10⁹ λ-rooted depth-1
 readers at `w ≤ 45`), so these need arguments, not larger checks. The
 productive tools so far are the first dispatch, the context-free anchor at
