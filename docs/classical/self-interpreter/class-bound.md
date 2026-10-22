@@ -258,10 +258,21 @@ ones, not the full 25-bit cut-off audit.
 that are stream-headed or redexes, and `λb. b X Y` with four or more
 operands; lets headed by their own variable (whose extra uses are needed,
 but not yet tied to the unary output) and nested lets. The record's
-estimate is about 2×10⁹
-λ-rooted depth-1 readers at `w ≤ 45`, so these need arguments, not larger
-checks. The productive tools so far are the first dispatch, the
-context-free anchor at `j`'s parent, and the closed-specializer algebra.
+estimate is about 2×10⁹ λ-rooted depth-1 readers at `w ≤ 45`, so these need
+arguments, not larger checks. The productive tools so far are the first
+dispatch, the context-free anchor at `j`'s parent, and the
+closed-specializer algebra.
+
+Periodicity of the unary run is not such a tool. A reader's run on `U_n`
+need not settle into a fixed period: `λs. s I (λu. s (λq. c) (G s O)) j`
+with `G = W W`, `W = λg t k. t (λb r. b r (k I (g g r (S k))))` and Church
+`O`, `S` is a correct reader (`w = 221`, both laws for every `n`
+kernel-checked, Codex, `reasoning_class/loop/Slow.lean`) that carries a
+growing counter and takes `2n² + 8n + 8` steps to skip. And in the 162 the
+repeating skip `U_(m+1) U_(m+1) →⁴ U_m U_m` consists entirely of input-cell
+redexes: the reader's `s s` only starts it, so a period charges no reader
+source. What the remaining cases share is an overlap of the source that
+two roles use, as in the 164's split operands and `R84`'s shared `x`.
 
 ## 4. The same minimum under weaker hypotheses
 
