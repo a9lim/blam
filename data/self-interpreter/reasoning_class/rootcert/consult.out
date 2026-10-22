@@ -1,0 +1,14 @@
+[gaslamp] → codex · job cx-20261022-052114-1a56 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-052114-1a56/events.jsonl
+( •̀ᴗ•́ ) **All 580 supplied sources are refuted:** 577 by original-source Lean proofs, three by frozen-engine `DIVERGE` verdicts.
+
+- **η-contraction is formalized.** It preserves every exact reader law, preserves the single hole, and strictly lowers weight. All 346 catalogue applications are checked.
+- **Lower-profile progress:** 73,311 sources with `L=3, V=k+5, k+d≤4` are excluded: 69,793 finite failures, 3,508 engine divergence verdicts, ten Lean proofs.
+- **Verification:** all 20 Lean modules pass without `sorryAx`; maximum 2.79 seconds and 525 MB per file.
+- **Remaining boundary:** general lower-multiplicity profiles remain open. The three engine-only tight cases are rootlet cell-5 indices **7594, 7640, 7725**, all weight 45.
+
+Thus the tight profiles close under rootlet’s stated minimum/completeness hypotheses. No new interpreter or sub-162 candidate was found.
+
+[Full report](/Users/a9lim/Work/blam/tmp/round4/rootcert/REPORT.md) · [Source-to-proof manifest](/Users/a9lim/Work/blam/tmp/round4/rootcert/MANIFEST.tsv) · [Verification record](/Users/a9lim/Work/blam/tmp/round4/rootcert/verification.json)
+
+[gaslamp] job: cx-20261022-052114-1a56 · session: 01a162ea-2383-70c2-a4b1-d1a90c787e1d · thread: r5-rootcert · resume: gaslamp codex --thread r5-rootcert · tok: 8176k→56k
+[lane.sh] done rc=0 tries=1

@@ -1,0 +1,8 @@
+/Users/a9lim/Work/blam/tmp/round4/rootcert/Lark.lean:11:54: warning: This simp argument is unused:
+  substDec_shift
+
+Hint: Omit it from the simp argument list.
+  simp [̵w̵e̵a̵k̵S̵t̵e̵p̵s̵,̵w̵e̵a̵k̵S̵t̵e̵p̵,̵K̵,̵H̵,̵c̵o̵n̵t̵r̵a̵c̵t̵,̵s̵u̵b̵s̵t̵D̵e̵c̵,̵s̵h̵i̵f̵t̵,̵s̵u̵b̵s̵t̵D̵e̵c̵_̵s̵h̵i̵f̵t̵]̵[̲w̲e̲a̲k̲S̲t̲e̲p̲s̲,̲ ̲w̲e̲a̲k̲S̲t̲e̲p̲,̲ ̲K̲,̲ ̲H̲,̲ ̲c̲o̲n̲t̲r̲a̲c̲t̲,̲ ̲s̲u̲b̲s̲t̲D̲e̲c̲,̲ ̲s̲h̲i̲f̲t̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.RootcertLark.reject' depends on axioms: [propext, Quot.sound]

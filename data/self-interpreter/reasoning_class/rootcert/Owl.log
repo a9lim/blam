@@ -1,0 +1,15 @@
+/Users/a9lim/Work/blam/tmp/round4/rootcert/Owl.lean:18:49: warning: This simp argument is unused:
+  shift
+
+Hint: Omit it from the simp argument list.
+  simp [̵G̵,̵w̵e̵a̵k̵S̵t̵e̵p̵,̵c̵o̵n̵t̵r̵a̵c̵t̵,̵i̵t̵e̵r̵_̵s̵u̵b̵s̵t̵,̵s̵u̵b̵s̵t̵D̵e̵c̵,̵O̵,̵s̵h̵i̵f̵t̵]̵[̲G̲,̲ ̲w̲e̲a̲k̲S̲t̲e̲p̲,̲ ̲c̲o̲n̲t̲r̲a̲c̲t̲,̲ ̲i̲t̲e̲r̲_̲s̲u̲b̲s̲t̲,̲ ̲s̲u̲b̲s̲t̲D̲e̲c̲,̲ ̲O̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/a9lim/Work/blam/tmp/round4/rootcert/Owl.lean:23:27: warning: This simp argument is unused:
+  shift
+
+Hint: Omit it from the simp argument list.
+  simp [̵c̵o̵n̵t̵r̵a̵c̵t̵,̵s̵u̵b̵s̵t̵D̵e̵c̵,̵s̵h̵i̵f̵t̵,̵G̵_̵s̵h̵i̵f̵t̵]̵[̲c̲o̲n̲t̲r̲a̲c̲t̲,̲ ̲s̲u̲b̲s̲t̲D̲e̲c̲,̲ ̲G̲_̲s̲h̲i̲f̲t̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.RootcertOwl.reject' depends on axioms: [propext, Quot.sound]

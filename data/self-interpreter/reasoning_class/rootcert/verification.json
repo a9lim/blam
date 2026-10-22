@@ -1,0 +1,236 @@
+{
+  "main_sources": 580,
+  "main_lean": 577,
+  "main_engine": 3,
+  "main_remaining": 0,
+  "main_by_cell": {
+    "5": {
+      "Lean": 154,
+      "engine": 3
+    },
+    "4A": {
+      "Lean": 58
+    },
+    "4B": {
+      "Lean": 338
+    },
+    "4Cs": {
+      "Lean": 27
+    }
+  },
+  "eta_minimum_certificates": 346,
+  "lower_sources": 73311,
+  "lower_direct_failures": 69793,
+  "lower_exception_lean": 10,
+  "lower_exception_engine": 3508,
+  "lower_remaining": 0,
+  "lower_exceptions_by_cell": {
+    "4d0": {
+      "engine": 1947,
+      "Lean": 10
+    },
+    "3d1": {
+      "engine": 1008
+    },
+    "3d0": {
+      "engine": 390
+    },
+    "2d1": {
+      "engine": 103
+    },
+    "2d0": {
+      "engine": 60
+    }
+  },
+  "lean_modules": 20,
+  "max_lean_seconds": 2.785139125015121,
+  "max_lean_rss_bytes": 525369344,
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "frozen_engine_sha256": "00883f147c7128a1642f323920deef23f0af9c8b742dadb3c0f30cf5478bfaa2",
+  "resources": [
+    {
+      "file": "Certificates.lean",
+      "code": 0,
+      "seconds": 0.5483155000256374,
+      "peak_rss_bytes": 453427200,
+      "limit": null,
+      "threads": 2,
+      "sha256": "5f9160ddc42aa4f4eda29978bc7b9b07c2628af8066ed26f73a547b0a11cb62e"
+    },
+    {
+      "file": "Special.lean",
+      "code": 0,
+      "seconds": 0.3337932910071686,
+      "peak_rss_bytes": 435945472,
+      "limit": null,
+      "threads": 2,
+      "sha256": "94647e2ba9603f54dcceb5d90313b2a6bbe75d7a249a0c9144226e34a9d5ecc4"
+    },
+    {
+      "file": "Grow.lean",
+      "code": 0,
+      "seconds": 0.3287912500090897,
+      "peak_rss_bytes": 436748288,
+      "limit": null,
+      "threads": 2,
+      "sha256": "457dff173513c92ea08bcf39bb7730010ebd7e241dd730622d9e8a11ceb199d6"
+    },
+    {
+      "file": "EtaPrice.lean",
+      "code": 0,
+      "seconds": 0.347310709010344,
+      "peak_rss_bytes": 426557440,
+      "limit": null,
+      "threads": 2,
+      "sha256": "315100390fc2eb1211d7c54072b6e21e351769cd07d7821cd0e50c7f83265489"
+    },
+    {
+      "file": "Church.lean",
+      "code": 0,
+      "seconds": 0.33554800000274554,
+      "peak_rss_bytes": 437764096,
+      "limit": null,
+      "threads": 2,
+      "sha256": "adef6218e200d2f23aa3a65c6e27e1eb5e95d0a7807ce1fa6b5c92e6d92ee40b"
+    },
+    {
+      "file": "Recursor.lean",
+      "code": 0,
+      "seconds": 0.3411411659908481,
+      "peak_rss_bytes": 439992320,
+      "limit": null,
+      "threads": 2,
+      "sha256": "132d7c91efaf54204b3deb28cf3610870135c971533c07965f2f1791a35df532"
+    },
+    {
+      "file": "Lark.lean",
+      "code": 0,
+      "seconds": 0.34470658301142976,
+      "peak_rss_bytes": 138723328,
+      "limit": null,
+      "threads": 2,
+      "sha256": "f53395a5c95556d15e8137ddd7903d5c858a09c18105058e9d212231c64d40cc"
+    },
+    {
+      "file": "Owl.lean",
+      "code": 0,
+      "seconds": 0.3347412080038339,
+      "peak_rss_bytes": 440942592,
+      "limit": null,
+      "threads": 2,
+      "sha256": "9e6a7a2b7b69e4d3760ed4f968bb8bd99d8c99fb4c185fe39f4b5d53a9caf7f2"
+    },
+    {
+      "file": "Eta.lean",
+      "code": 0,
+      "seconds": 0.4488793339987751,
+      "peak_rss_bytes": 449200128,
+      "limit": null,
+      "threads": 2,
+      "sha256": "94b27328b70bde61b3d55fd34bc6594cc69cbc5b85b7021ec992810cf4f92030"
+    },
+    {
+      "file": "Families0.lean",
+      "code": 0,
+      "seconds": 2.3488136249943636,
+      "peak_rss_bytes": 525369344,
+      "limit": null,
+      "threads": 2,
+      "sha256": "be5975d7c6a77e9af095f633955820b09ae134450debf3d62f093e84c5c90bc0"
+    },
+    {
+      "file": "Families1.lean",
+      "code": 0,
+      "seconds": 2.014434832992265,
+      "peak_rss_bytes": 493420544,
+      "limit": null,
+      "threads": 2,
+      "sha256": "1343923bedbbabec4de506e672a25967046f3ca94e708749309c4729203f276e"
+    },
+    {
+      "file": "Families2.lean",
+      "code": 0,
+      "seconds": 1.871490958990762,
+      "peak_rss_bytes": 488833024,
+      "limit": null,
+      "threads": 2,
+      "sha256": "214f84201c6d3fe8d46649b3873759cfefc73fcf65ff0645faba0da4b7735623"
+    },
+    {
+      "file": "ChurchCases.lean",
+      "code": 0,
+      "seconds": 0.5516157090023626,
+      "peak_rss_bytes": 443826176,
+      "limit": null,
+      "threads": 2,
+      "sha256": "6cf8b56a19a3ef71690cc688fd4a8edc204bff6df897f72482cbb2369c6a5b78"
+    },
+    {
+      "file": "RecursorCases.lean",
+      "code": 0,
+      "seconds": 2.785139125015121,
+      "peak_rss_bytes": 523550720,
+      "limit": null,
+      "threads": 2,
+      "sha256": "68f25074c9bef34bfa0cfb03e60a6dd59f7f3d7e3c5d37dd3982bba01841ac98"
+    },
+    {
+      "file": "LarkCases.lean",
+      "code": 0,
+      "seconds": 0.9970687500026543,
+      "peak_rss_bytes": 456687616,
+      "limit": null,
+      "threads": 2,
+      "sha256": "231e031767aad0a229a52d37935ffba4436abf6720e67ce57eb7f60abeacc30b"
+    },
+    {
+      "file": "OwlCases.lean",
+      "code": 0,
+      "seconds": 0.33071129201562144,
+      "peak_rss_bytes": 432898048,
+      "limit": null,
+      "threads": 2,
+      "sha256": "ceecb9d3851798e1799eb938d53d32670f2e8b7344557ebe4bfc062e427949ae"
+    },
+    {
+      "file": "MixedCases.lean",
+      "code": 0,
+      "seconds": 0.45261083301738836,
+      "peak_rss_bytes": 440860672,
+      "limit": null,
+      "threads": 2,
+      "sha256": "ff96693a2f1af05d3861c896fa29c98680330e92b69e90afbd0230e4349df1d1"
+    },
+    {
+      "file": "EtaCases0.lean",
+      "code": 0,
+      "seconds": 0.9050736250064801,
+      "peak_rss_bytes": 460718080,
+      "limit": null,
+      "threads": 2,
+      "sha256": "918db6e3b976c188899025dc4df3669691c4e9ff4a4b7acceec956a06de46b78"
+    },
+    {
+      "file": "EtaCases1.lean",
+      "code": 0,
+      "seconds": 0.9048656669910997,
+      "peak_rss_bytes": 461275136,
+      "limit": null,
+      "threads": 2,
+      "sha256": "15fc2aa1f332325935dee0481e1684f01c35e44c78022d839cdd5c2dc758596b"
+    },
+    {
+      "file": "LowerCases.lean",
+      "code": 0,
+      "seconds": 0.3383673339849338,
+      "peak_rss_bytes": 432209920,
+      "limit": null,
+      "threads": 2,
+      "sha256": "5f3e1cc0ec915d76b654d448d88a2fec718abfddf833a02e49a703b9402a885e"
+    }
+  ]
+}

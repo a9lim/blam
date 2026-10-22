@@ -1,0 +1,10 @@
+/Users/a9lim/Work/blam/tmp/round4/rootcert/Eta.lean:101:46: warning: This simp argument is unused:
+  shift
+
+Hint: Omit it from the simp argument list.
+  simp [s̵h̵i̵f̵t̵,̵contract, ̲shift_substDec b' a 0 c (Nat.zero_le c)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.RootcertEta.postpone' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootcertEta.readerLaws_eta' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootcertEta.minimum_no_eta' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,3 @@
+'Blc.RootletEta.shifted_weight' depends on axioms: [propext, Quot.sound]
+'Blc.RootletEta.eta_context_price' depends on axioms: [propext, Quot.sound]
+'Blc.RootletEta.eta_context_strict' depends on axioms: [propext, Quot.sound]

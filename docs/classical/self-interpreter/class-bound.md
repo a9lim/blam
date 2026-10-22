@@ -177,10 +177,14 @@ the 39-bit one.
   at depth `d` has `w ≥ 4k + 22 + 4d` plus its index tax, so below 46 it
   has at most five uses, four when `j` is under a λ
   (`reasoning_class/rootnf/RootProfile.lean`, Codex). In the tight
-  profiles `k + d = 5`, about 240,000 sources fail a law with a certificate
-  (32,743 normalizer exceptions refuted in Lean) and 580 remain, listed with
-  their prices in `reasoning_class/rootlet/SURVIVORS.tsv`: normalizer
-  exceptions not yet refuted, not readers (Codex, rootlet lane). A root let
+  profiles `k + d = 5` every source fails: about 240,000 with a
+  certificate, 32,743 normalizer exceptions refuted in Lean (Codex, rootlet
+  lane), and of the last 580 listed exceptions 577 by Lean proofs and three
+  of weight 45 by the frozen engine's divergence verdict (Codex, rootcert
+  lane). Source η-contraction keeps both laws and the one hole and strictly
+  lowers the weight (kernel-checked), so a minimum reader has no η-redex;
+  of the lower profiles, the 73,311 sources with three λs and `V = k + 5`
+  fail too. A root let
   whose body is headed by the stream binder lifts exactly to a λ-rooted
   reader: `(λg. λs. B) H` and `λs. (λg. B~) H` (binders swapped) agree on
   every stream, and the second weighs `u_s(B) − u_g(B) + f_c(H) + 4·occ_j(H)`
@@ -493,8 +497,8 @@ below 46 is neither an s-spine nor a reader whose stream-λ body is a let,
 so one branch of the source-head classification is left: **root lets**
 `(λx. B) A C⃗` — depth-0 shared top-level lets and application-rooted
 readers whose let argument hands control on before binding the stream,
-with at most five uses of `x`; in the tight profiles `k + d = 5`, 580
-listed sources remain to be refuted. Every λ-rooted minimum reader below
+with at most five uses of `x` and `k + d ≤ 4` (the tight profiles
+`k + d = 5` are closed). Every λ-rooted minimum reader below
 46 is excluded, so the zero-λ parents, needed binders, self-headed lets and
 dispatch-free readers that the depth-1 analysis isolated matter only inside
 a root let's argument. The space of all readers below 46 is far beyond
