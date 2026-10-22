@@ -407,3 +407,317 @@ for it.
 The unrestricted unary-core >=20 and <=23 uniqueness statements remain
 supported here by the earlier finite checks, not by a new independent
 proof. No new unconditional reader floor is claimed.
+
+## 5. Follow-up: rigid shielding and priced shared configurations
+
+**Result.** I have not proved the requested exhaustion for an arbitrary
+minimum reader. I did prove the following precisely delimited,
+computer-assisted source-family bounds, without any normality or minimality
+assumption on their operands:
+
+| Source family | Lower bound on w | Sharp witness / required example |
+|---|---:|---|
+| `λs.s (λb.b A c) B`, exactly one j anywhere in A or B | **48** | 164, w=48 |
+| `(λa s.s (λb.b A c) B) j`, arbitrary multiplicity of a in either or both operands | **49** | Hoisted 165, w=49 |
+| `λs.(λx.s (λb t.b (x t) (c t x))) X`, exactly one j in X | **70** | Includes R84, w=84; bound not claimed sharp |
+| `λs.(λu.(λx.s (λb t.b (x s) x)) X) j` | **49** | Includes R104, w=104; bound is wrapper accounting |
+
+The first two bounds price the 164's split continuation and the 165's
+hoisting exactly. The second permits nonlinear sharing of the hoisted
+argument; it is not restricted to a single use of a. The third allows an
+arbitrary lambda-valued zero result of X and prices its source once.
+All local operands may contain arbitrary beta-redexes and internal lets.
+These are syntactic families, not their beta-equivalence closures.
+
+**Evidence boundary.** The semantic rigid-shield invariant and four exact
+source-price identities are kernel-checked. The family bounds combine
+handwritten reductions, confluence, and exhaustive small helper lemmas
+checked by Python. The finite helper lemmas and the assembled family bounds
+are not Lean theorems. No unrestricted w>=46 theorem or new interpreter is
+claimed.
+
+### 5.1 The semantic invariant: a surviving occurrence may be inaccessible
+
+The stronger occurrence-erasure claim is false. Let
+
+```text
+B = s (λb t.t t) j.
+```
+
+Its local weighted cost is 16. For every n>=1,
+
+```text
+B[U_n/s] -> U_(n-1) U_(n-1) j ->* N,
+B[Z(r)/s] -> r r j.
+```
+
+Thus retaining the source j on zero does not make it usable. The precise
+replacement is **rigid shielding**: every surviving j lies inside a
+c-headed application, or an r-headed spine with at least two arguments.
+The target `r j` has no such protected occurrence.
+
+This property is preserved by beta reduction. A reduction inside a shield
+cannot contract its rigid head or remove its existing spine arguments. A
+reduction outside a shield can erase it or copy it, but every surviving
+copy retains the shield. Substitution of another shielded term preserves
+the property as well. Consequently an arbitrary j-free context cannot
+turn `r r j` into `r j`, even if it duplicates its operand, applies it,
+or contains its own redexes.
+
+`Shield.lean` proves this in ordinary lambda syntax with named free atoms
+and de Bruijn bound variables. `Safe.sub`, `Safe.step`, `Safe.steps`, and
+`no_recovery` are the relevant results. `no_recovery_from_rrj` specializes
+the result to the actual low-cost obstruction. These theorems depend on no
+axioms. The named atoms are the rigid probe variables c,j,r; this file does
+not claim a formally checked translation to the repository's `Term`.
+
+When the operand B has a normal form Q, we may reduce B first in its
+surrounding context. If the original reader also reduces to the normal
+form `r j`, confluence forces the context containing Q to reduce to
+`r j`. The shielding theorem then rules this out. This avoids the invalid
+assumption that the operational reader must evaluate B before using it.
+
+### 5.2 Complete helper cases and their scope
+
+`split_check.py` enumerates source syntax by exact cost. Ordinary variables
+have cost 2+index; an abstraction and an application each cost 2. In a
+weighted one-hole operand, the j atom costs four times its internal lambda
+depth. In a hoisted operand, the marker represents the bound a variable,
+so its cost is its ordinary index plus two, increasing by one per internal
+lambda. Its slot is excluded from ordinary variable generation.
+
+The recurrence covers every source term: choose a variable/marker leaf,
+remove two from the cost for a lambda and increment the lexical depth,
+or split cost minus two and the marker multiplicity across an application.
+These constructor cases are disjoint. No beta-normality, head-shape,
+linearity, or lambda-count restriction is imposed. For the hoisted cases,
+all positive marker counts up to floor(cost/minimum-marker-cost) are
+covered. Sources without the marker are shielded by syntax and cannot
+normalize to j; they do not need to be normalized for those conclusions.
+
+An all-n reader law implies the necessary probes at n=1,2,3 used by the
+checks. This implication is the only use of those probes in the proof;
+passing them is not asserted to prove an all-n positive law. A resource
+cutoff raises an exception and fails the entire check. The final run had
+no cutoffs.
+
+The closed helper cases are:
+
+| Helper statement | Complete sources checked | Necessary-unary survivors |
+|---|---:|---:|
+| One j, frame `[s,c]`, weighted cost <=17: zero NF is r or `r r j` | 3,277 | 61 |
+| Same frame, cost <=19: zero NF is not j, and applying it to r is not `r j` | 10,752 | 195 |
+| No j, frame `[s,c]`, raw cost <=9: cannot return N on U1 | 24 | 0 |
+| One j, frame `[b,s,c]`, weighted cost <=9: `A[K/b,Z/s] r X` fails for every j-free X | 38 | Not a unary check |
+| Hoisted frame `[s,a,c]`, positive a count, raw cost <=20: zero NF after a=j is r or `r r j` | 5,380 | 84 |
+| Same hoisted frame, raw cost <=11: zero NF is not j | 28 | 1 |
+| Hoisted frame `[b,s,a,c]`, positive a count, raw cost <=13: classify `A[K/b,Z/s,j/a] r X` for arbitrary X | 55 | Not a unary check |
+
+Every unary survivor in a hoisted positive-a frame has cost >=11.
+The no-a lower bound 10 transfers from `[s,c]` to `[s,a,c]` by deleting the
+unused a slot, which can only lower ordinary variable costs.
+
+In the first zero-arm check, the symbolic result either has the wrong
+rigid head or contains no j. Substituting any j-free X preserves that
+failure. In the second zero-arm check X is completely arbitrary and may
+contain j: the result has a wrong rigid head/arity, retains an outer
+lambda, contains neither j nor X, or is exactly `r X`. The last case has
+A cost at least 12; it occurs only once in this enumeration. These are
+stable syntactic obstructions, not tests on a few chosen X values.
+
+The combined check covers **19,554 helper sources**, takes **0.481 s**, and
+uses **25,067,520 bytes** maximum RSS in the final recorded run. It has one
+compute thread plus its resource-watchdog thread. The log is
+`split_check.log`. This is not a whole-reader enumeration.
+
+### 5.3 Split dispatch: the sharp source bound 48
+
+Let
+
+```text
+S(A,B) = λs.s (λb.b A c) B,
+```
+
+where A is scoped in `[b,s,c,j]`, B in `[s,c,j]`, and exactly one source j
+occurs across A and B. Both operands are otherwise arbitrary terms.
+Use raw cost for a j-free operand, and local weighted cost for the operand
+containing j; the latter prices j at zero plus four per internal lambda.
+
+Direct dispatch gives, for n>=1,
+
+```text
+S(A,B) U_n ->* c U_(n-1) B[U_n/s],
+S(A,B) Z(r) ->* A[K/b,Z/s] r B[Z/s].
+```
+
+The first line forces B[U_n/s] to normalize to N. In particular, the
+unary value handed to c is the outer input tail: it is routed by the
+literal dispatch, independently of the suffix computation inside B.
+
+If j lies in B, exact source accounting gives
+
+```text
+w(S) = 24 + raw(A) + weighted(B).
+```
+
+If weighted(B)<=17, its zero normal form is shielded by §5.2, whereas
+`A[K/b,Z/s] r [-]` is a j-free context. This contradicts the zero law.
+Hence weighted(B)>=18. If w<=47 then raw(A)<=5. The complete list is
+`b`, `s`, `c`, `I`, `λv.b`. On zero, their resulting outer heads are,
+respectively, r with no argument; r with three arguments; c; `r B[Z/s]`;
+and a lambda. Only I could work, requiring B[Z/s]=j. Its cost is four,
+so w<=47 also gives weighted(B)<=19, and the second helper case excludes
+that requirement.
+
+If j lies in A, the exact price is
+
+```text
+w(S) = 28 + weighted(A) + raw(B).
+```
+
+The j-free suffix operand has raw(B)>=10. Thus w<=47 implies
+weighted(A)<=9. The small zero-arm classification rules out
+`A[K/b,Z/s] r B[Z/s] =β r j` for every possible j-free B[Z/s].
+
+Both cases contradict w<=47. Therefore **w(S)>=48**. The 164 attains it
+with `A=F` (cost six) and `B=s I (s s) j` (weighted cost eighteen).
+No global minimality assumption was used.
+
+`Prices.split_price` kernel-checks the underlying identity
+`weight 0 (S A B) = 20 + weight 2 A + weight 1 B` in the repository's
+actual `Term` representation. The one-hole split into the two displayed
+formulas is ordinary depth accounting.
+
+### 5.4 Hoisted split dispatch: the sharp source bound 49
+
+Now let
+
+```text
+H(A,B) = (λa s.s (λb.b A c) B) j,
+```
+
+where A is scoped in `[b,s,a,c]`, B in `[s,a,c]`, and there is no other
+free j. Any number of a occurrences is allowed, in either or both operands.
+The reader laws force at least one a occurrence. All costs below are raw
+wire costs in those lexical frames. The exact source identity is
+
+```text
+w(H) = 25 + raw(A) + raw(B).
+```
+
+This is `Prices.hoisted_price`. It does not contract the outer let or
+charge the resulting j copies separately.
+
+If A contains no a, B must contain a. If raw(B)<=20, its zero normal form
+after a=j is shielded, and the j-free A context cannot produce `r j`.
+Thus raw(B)>=21. The only A below cost four are b and s; their zero
+outputs have the wrong r arity, independently of B. Hence raw(A)>=4,
+and this branch actually has **w>=50**.
+
+If A contains a, the necessary unary law gives raw(B)>=10, whether or
+not B also contains a. Suppose w<=48. Then raw(A)<=13. The complete
+positive-a classification in §5.2 rejects every such A for arbitrary X,
+except a source of cost at least 12 whose zero action is `r X`. In that
+exception raw(B)<=11 and the zero law requires B[Z/s,j/a]=j. If B has no
+a it cannot produce j at all. If it has a, the raw-cost-11 helper case
+excludes j. This also contradicts w<=48.
+
+Therefore **w(H)>=49**, attained by
+
+```text
+A = λu r.r a       raw(A)=14,
+B = s s s         raw(B)=10.
+```
+
+This is the hoisted 165. Its unhoisted depth-four presentation lies in S
+with w=54. The proof prices the hoisted source at 49 directly and never
+uses an invalid monotonicity claim about let contraction.
+
+### 5.5 Shared X and a lambda-valued zero parent
+
+For the R84 wrapper, define
+
+```text
+RX(X) = λs.(λx.s (λb t.b (x t) (c t x))) X,
+```
+
+where X is any term in `[s,c,j]` with exactly one j. The laws force
+
+```text
+X[U_n/s] =β N                 for every n>=1,
+X[Z(r)/s] r =β r j.
+```
+
+There is no restriction on the zero normal form of X: it may be a lambda,
+as in R84. Exact source accounting is
+
+```text
+w(RX) = 50 + weighted(X).
+```
+
+The cost-19 helper check excludes the functional zero requirement, so
+weighted(X)>=20 and **w(RX)>=70**. This is not claimed sharp. The fixed
+wrapper itself already exceeds 45. What matters for the overlap issue is
+that X is counted once although its residuals supply both the zero handoff
+and the unary suffix; the captured tail t is priced in the fixed wrapper.
+`Prices.sharedX_price` checks its general source identity.
+
+For the R104 wrapper,
+
+```text
+NX(X) = λs.(λu.(λx.s (λb t.b (x s) x)) X) j,
+```
+
+X is arbitrary in `[u,s,c]`. `Prices.nestedX_price` proves
+`w(NX)=47+raw(X)`. Every source term has raw cost at least two, so
+**w(NX)>=49** without any semantic helper check. This handles any
+multiplicity of u inside X and does not assume its zero result is rigid.
+
+### 5.6 Required examples, causal interpretation, and the remaining gap
+
+| Required example | Follow-up coverage |
+|---|---|
+| 162, w=46 | The previous serial theorem in §3 remains sharp |
+| 47-bit reader | Same serial theorem; the last junk leaf costs one more |
+| 164, w=48 | Sharp instance of S; B owns the shared skip/zero routing |
+| 165 at depth four, w=54 | Instance of S with j inside A |
+| Hoisted 165, w=49 | Sharp instance of H; source a uses are charged before contraction |
+| R59, w=59 | Previously checked source; contracts to the serial reader with a 13-bit saving |
+| R84, w=84 | Instance of RX; arbitrary zero-valued closures allowed |
+| R104, w=104 | Instance of NX; wrapper price already excludes <=45 |
+| Rslow, w=221 | Still the counterexample to exact finite-template pumping; outside these syntactic families |
+
+These proofs follow a useful part of contracted-node ancestry without
+pretending to obtain pairwise-disjoint supports. In S, the literal outer
+dispatch supplies the retained input tail to c. The source of B can serve
+both the unbounded skip and zero routing and is charged once; the shielding
+lemma gives a lower price for that overlap. If j is in A, it disappears
+on unary dispatch and the j-free B is charged separately. In H, the
+single source j may be copied into both supports, but every source use of
+a already has its ordinary index/depth price. In RX, one source X and
+its captured t route are priced exactly despite repeated residual use.
+
+For an arbitrary globally minimum reader under **(w, lambda count, j-depth)**,
+what remains missing is a theorem producing one of these cuts, or another
+finite list of separately priced cuts, without increasing that order. An
+arbitrary shared function can straddle the first dispatch, retain a tail in
+its environment, and supply c from inside that shared function. No result
+here moves such a function into the literal `λb.b A c` handler, restricts
+a general shared argument to the hole j, or proves that an arbitrary
+wrapper is at least as expensive as RX or NX. The reviewed minimum-reader
+non-erasure and local beta-price inequalities do not provide that
+classification on their own.
+
+So the remaining problem is an **exhaustion of low-cost causal sharing
+configurations**, rather than a need to price the 164 or hoisted165 again.
+These family theorems exclude all their members below 46 independently of
+minimality, but do not prove that every minimum below 46 belongs to their
+union. I do not infer that exhaustion from the tested examples.
+
+Artifacts: `split_check.py` / `split_check.log`, `Shield.lean` /
+`shield.log`, and `Prices.lean` / `prices.log`. The final shield check took
+0.704 s with a sampled process-group peak of 490,110,976 bytes; the price
+check took 0.324 s with 471,662,592 bytes. Both used Lean `-j 2` and a
+process-group watchdog. The price identities use only propext and
+Quot.sound; the shield theorems use no axioms. All writes stayed in this
+lane; no consult, commit, or broad search ran.

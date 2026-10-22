@@ -38,7 +38,7 @@ working versions.
 | review_hole | adversarial review of hole: dispensability, the price identity and the index-shift arithmetic confirmed; the persistence step refuted by correct readers of weight 59, 84 and 104; the unary-only wrapper check that repairs the 162-family bound | `class-bound.md` §3 |
 | d1open | jn's open depth-1 families by reasoning | `class-bound.md` §3 |
 | global | ceilings for probe-based floors (88 on identity towers, 154 on Church spines); no β-preserving conversion into the class | `Blc/Selfint{Global,Spine,Tower}Barriers.lean`, `global-floor.md` §10, `class-bound.md` §5 |
-| loop | the unary run need not be periodic: a correct reader of weight 221 with a growing counter (`Slow.lean`, kernel-checked); the 162's skip is input-generated; conditional pumping, suffix exposure, union accounting | `class-bound.md` §3 |
+| loop | the unary run need not be periodic: a correct reader of weight 221 with a growing counter (`Slow.lean`, kernel-checked); the 162's skip is input-generated; conditional pumping, suffix exposure, union accounting; the 164's family `≥ 48` and the hoisted 165's `≥ 49` by rigid shielding (`Shield.lean`, `Prices.lean`) | `class-bound.md` §3 |
 | arch, fresh | first-principles architectures, all already priced or above 162 (163, 167, 169, 201) | `interpreter.md` §6 |
 | audit1 | statement audit of the widen, close46 and probelean Lean: every headline theorem says what its report claims | — |
 

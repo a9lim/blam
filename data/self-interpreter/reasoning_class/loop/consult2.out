@@ -1,1 +1,17 @@
 [gaslamp] → codex · job cx-20261022-013731-9afb · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-013731-9afb/events.jsonl
+( •̀ᴗ•́ ) Added the follow-up to [REPORT.md §5](/Users/a9lim/Work/blam/tmp/round4/loop/REPORT.md:411) and updated NOTES.md.
+
+Established two **sharp, computer-assisted family bounds**:
+
+- `λs.s (λb.b A c) B`: **w ≥ 48**, with arbitrary operand redexes and exactly one j. The 164 attains it.
+- `(λa s.s (λb.b A c) B) j`: **w ≥ 49**, allowing arbitrary multiplicity of a in either or both operands. The hoisted 165 attains it.
+
+The key semantic replacement for occurrence erasure is **rigid shielding**. A 16-bit operand can return N on every unary input while returning `r r j` on zero. Its j survives, but no j-free context can extract it to produce `r j`. [Shield.lean](/Users/a9lim/Work/blam/tmp/round4/loop/Shield.lean) proves preservation under substitution and arbitrary β-reduction, without axioms.
+
+[Prices.lean](/Users/a9lim/Work/blam/tmp/round4/loop/Prices.lean) kernel-checks the exact source prices, including hoisting. Additional bounds cover the R84 wrapper (**≥70**) and R104 wrapper (**≥49**) without assuming rigid zero results.
+
+The complete helper checks covered **19,554 sources**, with **zero cutoffs**, in **0.481 seconds** and about **25 MB RSS**. The assembled family bounds remain handwritten/computer-assisted, not fully Lean-formalized.
+
+**Still open:** proving that every minimum reader below 46 admits one of these configurations—or another exhaustively priced configuration. The 164 and hoisted165 overlaps are now priced; the general causal-sharing classification is not proved.
+[gaslamp] job: cx-20261022-013731-9afb · session: 01a16205-662d-7183-be63-f7b1fc08aee6 · thread: r5-loop · resume: gaslamp codex --thread r5-loop · tok: 6364k→91k
+[lane.sh] done rc=0 tries=1

@@ -169,6 +169,16 @@ other than the 162's weigh 47 (`λs. s I (λu. s (λq. c) (s s s)) j`), 48 (the
   fails. A nested head redex `((λy. D) E) B⃗` can be displayed as adjacent
   lets at an exact capture charge, and independent adjacent lets
   interchange at the exact price `F(A) − F(E) + uses_y(D) − uses_x(D)`.
+- **The 164's and the 165's families** (Codex; prices and shielding
+  kernel-checked, `reasoning_class/loop/Prices.lean`, `Shield.lean`, the
+  assembly handwritten with complete helper checks over 19,554 sources).
+  `λs. s (λb. b A c) B` with any operands, redexes included, and one `j`
+  has `w ≥ 48`, attained by the 164; its hoisted form
+  `(λa s. s (λb. b A c) B) j` has `w ≥ 49` for any multiplicity of `a`,
+  attained by the hoisted 165. The tool is rigid shielding: a 16-bit
+  operand can give `N` on every unary stream and `r r j` on a zero one, and
+  no `j`-free context can extract that `j` to make `r j`. The same pricing
+  gives `R84`'s wrapper at least 70 and `R104`'s at least 49.
 - **What a let can save** (handwritten, Claude). For `(λx. B) A` with `k`
   uses of `x`, the contraction changes the weight by
   `S = (k−1)|A| + (f_A − 1)M − 4 − 2k − T` (`M` the uses' depths under B's
