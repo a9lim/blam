@@ -1,0 +1,298 @@
+{
+  "elapsed_seconds": 0.001715999998850748,
+  "cases": [
+    {
+      "name": "capturing_local",
+      "source": "\\s.((\\g.s(g F)(g s))(\\x u.x(\\q.c)(x x u)))j",
+      "weight": [
+        67,
+        63,
+        1,
+        7,
+        11,
+        9,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": true
+    },
+    {
+      "name": "capturing_external",
+      "source": "(\\g s.s(g F)(g s)j)(\\x u.x(\\q.c)(x x u))",
+      "weight": [
+        70,
+        62,
+        2,
+        7,
+        11,
+        8,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": true
+    },
+    {
+      "name": "padded_dual_combination",
+      "source": "\\s.s(\\b r.b I(c r))(s I(s s)j)",
+      "weight": [
+        54,
+        50,
+        1,
+        5,
+        10,
+        4,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "captured_tail_baseline",
+      "source": "\\s.s(\\b r.b r(\\u.c r(r r u)))j",
+      "weight": [
+        52,
+        48,
+        1,
+        4,
+        9,
+        8,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "K_repair",
+      "source": "\\s.s I(s(\\q.c))(s K I(s s)j)",
+      "weight": [
+        55,
+        51,
+        1,
+        6,
+        10,
+        3,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "reordered_K_repair",
+      "source": "\\s.s I(s(\\q.c))(s K j(s s s))",
+      "weight": [
+        53,
+        49,
+        1,
+        5,
+        10,
+        3,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "K_captured_return",
+      "source": "\\s.s I(K(s(\\q.c)(s s s)))j",
+      "weight": [
+        49,
+        45,
+        1,
+        5,
+        9,
+        3,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "shared_K",
+      "source": "\\s.((\\k.s(F k)(k(s(\\q.c)(s s s))))K)j",
+      "weight": [
+        67,
+        63,
+        1,
+        7,
+        11,
+        9,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "delta_original",
+      "source": "\\s.s(\\x.x x) I(s s)j",
+      "weight": [
+        34,
+        30,
+        1,
+        3,
+        7,
+        0,
+        0,
+        1
+      ],
+      "outputs": [
+        {
+          "input": "zero",
+          "result": "j"
+        },
+        {
+          "input": "unary1",
+          "result": "N j"
+        },
+        {
+          "input": "unary2",
+          "result": "N"
+        },
+        {
+          "input": "unary3",
+          "result": "N"
+        }
+      ]
+    },
+    {
+      "name": "K_repaired",
+      "source": "\\s.s K I(s s)j",
+      "weight": [
+        33,
+        29,
+        1,
+        4,
+        6,
+        1,
+        0,
+        1
+      ],
+      "outputs": [
+        {
+          "input": "zero",
+          "result": "j"
+        },
+        {
+          "input": "unary1",
+          "result": "N"
+        },
+        {
+          "input": "unary2",
+          "result": "N"
+        },
+        {
+          "input": "unary3",
+          "result": "N"
+        }
+      ]
+    },
+    {
+      "name": "K_reordered",
+      "source": "\\s.s K j(s s s)",
+      "weight": [
+        31,
+        27,
+        1,
+        3,
+        6,
+        1,
+        0,
+        1
+      ],
+      "outputs": [
+        {
+          "input": "zero",
+          "result": "j"
+        },
+        {
+          "input": "unary1",
+          "result": "N"
+        },
+        {
+          "input": "unary2",
+          "result": "N"
+        },
+        {
+          "input": "unary3",
+          "result": "N"
+        }
+      ]
+    },
+    {
+      "name": "padded_simplified",
+      "source": "\\s.s I(s s)j",
+      "weight": [
+        24,
+        20,
+        1,
+        2,
+        5,
+        0,
+        0,
+        1
+      ],
+      "outputs": [
+        {
+          "input": "zero",
+          "result": "r j"
+        },
+        {
+          "input": "unary1",
+          "result": "N"
+        },
+        {
+          "input": "unary2",
+          "result": "N"
+        },
+        {
+          "input": "unary3",
+          "result": "N"
+        }
+      ]
+    }
+  ],
+  "identities": [
+    [
+      "G_F",
+      "(\\x u.x(\\q.c)(x x u)) F",
+      "I"
+    ],
+    [
+      "G_I",
+      "(\\x u.x(\\q.c)(x x u)) I",
+      "\\u.c"
+    ],
+    [
+      "G_K",
+      "(\\x u.x(\\q.c)(x x u)) K",
+      "\\u q.c"
+    ],
+    [
+      "G_s",
+      "(\\x u.x(\\q.c)(x x u)) s",
+      "\\u.s(\\q.c)(s s u)"
+    ],
+    [
+      "padding_delta",
+      "(\\f.f F s)(\\x.x x)",
+      "s"
+    ],
+    [
+      "padding_square",
+      "(\\f.f F s)(\\f.f F s)",
+      "s s"
+    ],
+    [
+      "padding_dual",
+      "(\\f.f F s)(\\x.x x) I((\\f.f F s)(\\f.f F s))j",
+      "s I(s s)j"
+    ]
+  ]
+}

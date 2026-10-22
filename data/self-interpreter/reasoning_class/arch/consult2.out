@@ -1,0 +1,23 @@
+[gaslamp] → codex · job cx-20261021-224902-a81a · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-224902-a81a/events.jsonl
+(・・) **No protocol meets the <170-bit build threshold.** Findings appended to [NOTES.md](/Users/a9lim/Work/blam/tmp/round4/arch/NOTES.md) and [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/arch/REPORT.md).
+
+The required equation is
+```text
+D c e t Q_{L_M(W_c)}
+  =β P (λf.c B(e,f)) (t Q_{L_M(W_c)}),
+```
+with no free `P` in `D`.
+
+The unchanged token fails even for a variable child: it is `Q_{W_c}`, not `Q_c`. A newly derived **14-bit reset** `J = λh x.h(λy.x)` exposes the mismatch:
+```text
+Q_{W_c} K J V = W_c A(V)
+Q_c     K J V = c A(V).
+```
+These have different head forms for rigid `c`.
+
+A valid discipline returns **the parser itself** through a fourth reader operand. APP then uses that returned token for its second parse. Its price is **185-bit core +26-bit public adapter =211 bits**: +14 against the 171-bit core, +49 against 162.
+
+The additional idea returns a **suffix continuation transformer**, moving forcing work into the producer. It prices at **178+21=199 bits**, two below the previous 201-bit protocol.
+
+**Verified:** five nonrecursive generator counts and 15 fixed component identities. Full protocol arguments are handwritten; no complete new interpreter was built or battery-tested.
+[gaslamp] job: cx-20261021-224902-a81a · session: 01a1615e-eff1-7ab0-bbc4-1a89d615f722 · thread: r4-arch · resume: gaslamp codex --thread r4-arch · tok: 2372k→65k

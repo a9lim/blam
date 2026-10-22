@@ -1,0 +1,180 @@
+[gaslamp] → codex · job cx-20261021-230154-120c · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-230154-120c/events.jsonl
+(・_・) **Verdict: Lemma B survives this review in its precisely stated one-occurrence, two-port model. I reproduced both exhaustive runs and found no unsound rejection. The unrestricted class consequence needs additional hypotheses. Lemma C’s componentwise proof is false, but a small joint enumeration repairs its stated 22-bit bound and equality claim.**
+
+1. **Model: coherent, but narrower than “any opaque recursion apparatus.”**
+
+   It accurately describes one body occurrence with two hygienic ports, where:
+   - each port can use apparatus binders and its own internal binders;
+   - neither port can access the body’s internal binders;
+   - correctness holds for a rigid, uninterpreted binary `h`: `t =β h t t`.
+
+   That last equation is a substantive hypothesis. Correctness after substituting the actual parser body does not establish it.
+
+   The model excludes multiple source occurrences of the body, apparatus binders interleaved with body binders, sharing introduced around a proper subexpression of the body, and recursion exploiting actual body behavior. For example, the let around NEXT in `tmp/round4/knot/v_nextlet.lam` is not a let outside the whole opaque body or wholly inside either head. Moving or expanding that let changes its literal cost; it cannot silently be covered by this abstraction.
+
+   Thus “arbitrary knot syntax and arbitrary head terms **within this model**” is justified. “Any recursion apparatus, any lets” without those qualifications is not.
+
+2. **Step (ii): correct, with a cleaner residual argument available.**
+
+   Track the particular residual of the unique source `h` that becomes the head of the common reduct
+   ```text
+   u = h t₁ t₂.
+   ```
+   The two application nodes immediately above that occurrence cannot themselves contract: their function heads remain the rigid free `h`. Duplication can copy the entire marked spine; erasure can remove a copy, but neither changes the two argument positions of the surviving copy.
+
+   For the needed conclusion, avoid proving the stronger general statement about one accumulated substitution `σ`. Suppose simply that source `H` has no outer leaves. Then `H` is closed, since the unique `h` lies outside it. Every tracked copy of that argument remains a reduct of closed `H`; exterior substitutions cannot change it. Consequently
+   ```text
+   H →* t₁,       t →* t₁,
+   ```
+   so `H =β t`.
+
+   This is impossible: if closed `w =β t`, then
+   ```text
+   w =β h w w.
+   ```
+   Church–Rosser would give a common reduct that is both closed and headed by free `h`. The same argument applies to `J`.
+
+   **Important distinction:** the old unqualified statement `H →* H*` is false when `H` has outer variables. Your revised substitution formulation addresses that; the closed-head proof above needs less machinery.
+
+3. **Steps (i) and (iii): correct.**
+
+   The normal-form contradiction works for the binary fixed-point equation, and the inspected `one_nonlinear_normalizes` theorem permits free variables.
+
+   With one free leaf:
+   ```text
+   A = V,
+   g = 2L + 4V + Σindices,
+   V ≥ 2m,
+   L ≥ m.
+   ```
+   Hence `ghost' ≥ 10m + a + b`.
+
+   Equality at `30+a+b` in the `m≥3` case forces exactly:
+   ```text
+   m=L=3, V=A=6, Σindices=0, O_H=O_J=1.
+   ```
+   These numerical equalities alone do not classify the syntax. Your equality-budget enumeration supplies that missing classification.
+
+4. **Enumerator, caps, and refutations: pass on inspection and reproduction.**
+
+   I inspected [m2_enum.py](/Users/a9lim/Work/blam/tmp/round4/knot/m2_enum.py:21) and reran both commands with `--all-m --keep-chain --lamcap 7`.
+
+   | Taxes | Maximum cost | Generated | Shape refutations | No-HNF refutations | Open |
+   |---|---:|---:|---:|---:|---:|
+   | `(3,4)` | 37 | 234,585 | 234,569 | 15 | 1 |
+   | `(2,3)` | 35 | 244,432 | 244,413 | 18 | 1 |
+
+   Both unique survivors were exactly
+   ```text
+   (λx. x x)(λx. (λp. h p p)(x x)).
+   ```
+
+   Specific audit findings:
+
+   - **Coverage:** the distinguished spine can occur under lambdas, in either application child, and with further applications above it. Generic construction correctly excludes bare `h` and partial `h H`, which are forbidden except as constituent nodes of the distinguished spine.
+   - **Taxes:** within a head, `k` counts its internal lambdas, so `i≥k` identifies precisely the leaves bound outside the spine. The implementation charges these correctly.
+   - **Caps:** below the claimed bound,
+     `2L+4V≤29`, `L≥2`, `V≥4`, giving `V≤6`, `L≤6`. At equality the right side becomes 30, giving `V≤6`, `L≤7`. Thus cap 7 covers uniqueness as well as exclusion.
+   - **Starting cost:** the loop starts at 15, which is safe. Even the smallest scoped spine with both outer leaves costs at least `10+a+b≥15`.
+   - **HNF test:** β-equivalence to `h t t` forces zero initial lambdas, head `h`, two arguments, and each argument β-equivalent to `t`. Recursing through those arguments is sound.
+   - **Cycles and `loops`:** exact repetition under deterministic head reduction certifies failure to reach HNF. The additional certificate `R →⁺ R B₁…Bⱼ` also works: excluding an argument-free lambda ensures appended arguments remain an untouched suffix throughout the repeated segment.
+   - **Resource limits:** inconclusive resource exhaustion returns `open`, not a rejection. This is essential and implemented correctly.
+
+   Two minor presentation defects:
+   - `loops` says “True iff” in its docstring, but bounded search supports only the sound implication from `True`.
+   - The printed label “m=2 non-Chain” is misleading with the flags above; those runs actually inspect all generated terms.
+
+   Matching closed-term counts is a useful check, not the coverage proof. The structural generator audit and cap derivation are the coverage argument.
+
+   Finally, the survivor is genuinely a fixed point, not merely a depth-three survivor. Writing
+   ```text
+   G = λx. (λp. h p p)(x x),    t = Δ G,
+   ```
+   both `t` and `h t t` reduce to `h (G G) (G G)`.
+
+   **Evidence level:** inspected and reproduced Python finite exhaustion plus handwritten coverage/soundness reasoning; I did not kernel-check this enumeration in Lean.
+
+5. **Step (v): correct.**
+
+   After step (ii), both coefficients `O_H−1` and `O_J−1` are nonnegative. The admissible terms and fixed-point equation are independent of the taxes. Therefore the `(2,3)` result extends to every `a≥2,b≥3`.
+
+   In fact, uniqueness also extends throughout that region: equality at larger taxes requires equality at `(2,3)`, whose unique fixed-point survivor is the displayed knot.
+
+6. **Class consequence: valid for the canonical two-port body; not established for the entire stated enlargement.**
+
+   For canonical NEXT and reader depth `d`, the accounting works exactly:
+   ```text
+   a = 2+d,   b = 3+d,
+   body with recursive leaves deleted = 85 + cost(R) + 2d,
+   apparatus overhead ≥ 26+a+b = 31+2d.
+   ```
+   Summing gives
+   ```text
+   |E| ≥ 116 + cost(R) + 4d = 116 + w(R).
+   ```
+
+   But the live [class definition](/Users/a9lim/Work/blam/docs/classical/self-interpreter/class-bound.md:22) allows more than this model:
+
+   - The knot may have multiple body holes.
+   - NEXT need not have exactly two source recursive occurrences. For example,
+     ```text
+     Q = λb.
+       b (p (λf. c Abs(f)))
+         (p (λf. p (λg. c App(f,g))))
+     ```
+     satisfies the stated rigid branch laws, is β-normal after expanding the canonical constructors, and uses `b` as a two-argument head. It has **three** source occurrences of `p`.
+   - Allowing apparatus lets inside the body introduces the placement issue in item 1.
+
+   None of these observations disproves `116+w(R)`. They show that Lemma B alone does not establish the advertised unrestricted consequence. State the canonical two-port extension precisely, or supply a cost-preserving reduction/generalized port theorem covering these cases.
+
+7. **Lemma C: the proposed proof has a counterexample, but the bound can be repaired.**
+
+   First clarify notation. Your cost formula and candidate list require
+   ```text
+   G = λx. (λp.B) d(x),
+   ```
+   where `d(x)` denotes a term in frame `[x]`. If `(D' x)` is literal application, the accounting and candidate interpretations are different.
+
+   **Counterexample to “every `D'` below 6 bits fails”:**
+   ```text
+   d(x) = x,
+   D = Y = λf. (λz. z z)(λz. f (z z)).
+   ```
+   Set `F_B = λp.B`. Then
+   ```text
+   G = λx. F_B x =β F_B,
+   E = Y G →* Δ (λz. F_B (z z)),
+   ```
+   which is the canonical interpreter knot. Thus the 2-bit fill `x` works with a suitable closed driver. The rejected reasoning implicitly assumes what value `D` supplies to `G`, rather than quantifying over drivers.
+
+   There is also another closed 8-bit term besides `Δ`:
+   ```text
+   λa b c. c.
+   ```
+   It fails—`D G C S → S`—but must be included before claiming uniqueness among viable 8-bit drivers.
+
+   **Read-only repair check performed:** I independently enumerated every closed `D` and every term `d` in frame `[x]` with
+   ```text
+   |D| + |d| ≤ 14.
+   ```
+   There are **87 pairs**. Using the actual parsed `int162.lam` body, the two rigid contract probes for programs
+   ```text
+   0010    = λa.a
+   000010  = λa.λb.b
+   ```
+   rejected 86 pairs: 82 by HNF shape and four by distinct computed normal forms, with no inconclusive cases. The only survivor was
+   ```text
+   D = Δ,    d(x) = x x.
+   ```
+
+   A useful near-miss demonstrating why both probes matter is
+   ```text
+   D = λg. g (g g),    d(x)=x.
+   ```
+   Its costs are `12+2=14`. It passes the first probe but fails the second with a leading lambda instead of rigid continuation head `C`.
+
+   Therefore the **22-bit floor and unique minimum survive this finite joint check**, under the clarified template. Replace the false separate lower bound on `D'` with joint coverage of `(D,d)`; the independent inequalities in the submitted proof do not establish it.
+
+No repository files were modified.
+
+[gaslamp] job: cx-20261021-230154-120c · session: 01a1618e-dc98-77b1-85d8-58bbb56a6cf3 · resume: gaslamp codex --resume 01a1618e-dc98-77b1-85d8-58bbb56a6cf3 · tok: 672k→9.9k

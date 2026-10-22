@@ -63,9 +63,13 @@ predecessors, §5 the lower bounds. None is an unconditional optimality proof;
 §7 says what remains. The strongest bound near 162 is conditional
 (`class-bound.md`): every interpreter built like the 162 and the 165 — an
 opaque fixed-point knot, a separate NEXT that builds the canonical values,
-and any reader — has at least 146 bits, exactly `116 + w(R)` for its reader
-`R`, so the 162 is optimal in that class if and only if every reader has
-weight at least 46.
+and any reader — has at least 146 bits (kernel-checked), exactly
+`116 + w(R)` for its reader `R` with the canonical NEXT, so the 162 is
+optimal in that class if and only if every reader has weight at least 46.
+The same equivalence holds with NEXT of any syntax above a price frontier
+(Lean), and the bound transfers to any value representation with a
+NEXT-free decoder (Lean), any opaque two-port recursion scheme, and the
+continuation-headed analogues, which cost at least 165 outright.
 
 `tools/self-interpreter/battery.py` is the exact contract check used for every
 measured size: rigid continuation and tail, every closed program through 18
@@ -330,7 +334,9 @@ priced at zero, has two nonlinear binders and so at least `18 + 2k` bits for
 `k` hole occurrences; adding the parser binder and two recursive calls at
 zero-based depths `d1, d2` costs at least `26 + d1 + d2`, which is 31 at the
 165's depths 2 and 3 and is attained there, and 33 at the 162's depths 3 and
-4. Relocating the two references trades depth for lets and indices (NEXT
+4. The same holds for every recursion scheme, not only fixed points of an
+opaque hole, when the body is modelled as one rigid term with two recursive
+ports: the 162's knot is then the unique minimum (`class-bound.md` §4.3). Relocating the two references trades depth for lets and indices (NEXT
 let-bound above `λlist` gives depths 2 and 3 at 166, APP's continuation
 let-bound gives 176, a dispatch helper keeping both references out of the
 bit binder 183), which are the cut configurations letopt prices. Without an
@@ -549,16 +555,21 @@ laws. The 162 and the 165 are its literal assemblies. Every member has
 `|E| ≥ 116 + w(R)`, with equality for the canonical NEXT and knot, where
 `w(R) = cost(R) + 4 depth(j)`; the 162 is `w = 46`, the 165 `w = 49`.
 `Blc/SelfintClass.lean` kernel-checks this and `|E| ≥ 138`, including the
-92-bit NEXT classification; a reviewed handwritten argument with 3,484
-kernel-checked cases raises the reader weight to 30, so **every member has at
-least 146 bits**. The 162 is optimal in the class if and only if every reader
-has weight at least 46; two-λ readers have at least 50, the serial form
-`λs. s D E j` with literal abstractions and at most four λs at least 46, and
-the open families are listed exactly there. Outside the class the cheapest
-priced mechanisms all cost at least 170 (`class-bound.md` §5): in particular,
-under `λlist` NEXT can embed any closed interpreter at `+17` bits, so an
-unrestricted bound on the 162's NEXT region would itself be a 79-bit global
-floor.
+92-bit NEXT classification, and `Blc/SelfintReader30.lean` the reader weight
+30 with no remaining assumption, so **every member has at least 146 bits**.
+The 162 is optimal in the class if and only if every reader has weight at
+least 46. That bound is settled for two-λ readers, the short serial forms,
+whole sharing contexts over factories and closed specializers (Lean), every
+hole depth other than 1 and part of depth 0, and every depth-1 family that
+reaches the stream's bit through `I`, `K` or a small dispatcher; the open
+families are listed in `class-bound.md` §3. The class widens without
+changing its minimum (§4 there): NEXT of any syntax above a price frontier,
+any variable-value representation with a NEXT-free decoder, any opaque
+two-port recursion, and continuation-headed analogues (at least 165).
+Outside the class the cheapest priced mechanisms all cost at least 170
+(`class-bound.md` §5): in particular, under `λlist` NEXT can embed any closed
+interpreter at `+17` bits, so an unrestricted bound on the 162's NEXT region
+would itself be a 79-bit global floor.
 
 ### Bounds within the 165's reader shape
 
@@ -807,10 +818,12 @@ their optimal let structure (`blam golf letopt`, at most three cuts).
 
 ### Variants of the 162
 
-Built by the third round of reasoning lanes, each priced by hand before it
-was written; sources, proofs and logs are in
-`data/self-interpreter/reasoning_162/<lane>/`. Each passes the battery unless
-marked; sizes are polished unless a lane recorded only the written size.
+Built by the third and fourth rounds of reasoning lanes, each priced by hand
+before it was written; sources, proofs and logs are in
+`data/self-interpreter/reasoning_162/<lane>/` and
+`data/self-interpreter/reasoning_class/<lane>/` (the lane names in the table
+are unique across the two). Each passes the battery unless marked; sizes are
+polished unless a lane recorded only the written size.
 
 | idea | bits | lane | note |
 |---|---:|---|---|
@@ -834,6 +847,20 @@ marked; sizes are polished unless a lane recorded only the written size.
 | APP supplies argument thunks consumed by a leaky cell | 164, *fails* | archzoo | `λx.x` returns `C (λe a. a N) N` |
 | A local `F` phase supplied at ABS | 167, *fails* | archzoo | `λx.λy.x` returns `C (λe a. N) N` |
 | The right-associated skip `s (s s)` | 163, *fails* | adversary | `s (s s) = N r` on variables, not `N` |
+| NEXT dispatching inside the first parse's argument, `λb. p (b (λf. c Abs) (λf. p (λg. c App)))` | 163 | nextctor | the cheapest NEXT other than the canonical one: 93 bits, four free leaves |
+| Callback selection before the first parse, `p (b KA KB)` | 163 | arch, fresh | the select-first 163 again: a second `λexp` (+2) against a shallower `bit1` (−1) |
+| Zero arm handing NEXT `(r, r)`: `λs. s (λb. b (λt w. t NEXT) c) (s s s)` | 171 / 166 | escape | the variable arm is the free `c r N`; NEXT drops the copy |
+| Destructuring handler `list (λb q. b (q NEXT) (cont q (q q b)))` | 171 / 169 | fresh | the bit is the skip's junk; letopt lets NEXT out at `λcont`, the depth-0 member of weight 53 |
+| Joint return/parse head `b c p` | 167 | arch | one application more, one index bit more; still two `c` references |
+| Value, suffix thunk and NEXT token returned together, forced at APP and at the root | 201 | arch | free at ABS; the variable arm saves 10, APP pays 19, the public decoder 30 (the core is 171) |
+| Parse twice, `λc s. (λp. c (p K s) (p F s)) INT162` | 209 | chead | continuation-headed; the parser plus 47 |
+| One body selected twice by mode, `λc s. (λg. c (g K) (g F)) (λσ. BODY_σ)` | 200 | chead | continuation-headed; removing the selector spine gives an s-headed 172 |
+| Separate value- and rest-mode readers and NEXTs sharing only the knot | 200 / 199 | chead | continuation-headed; a member of the split class, which costs at least 165 |
+| Head conversion `λc s. E (s (λx y. c)) s` of the 162 and of the 200 | 185 / 223 | chead | any interpreter becomes s-headed at `+23` |
+| First-bit guard `λc s. s K (E c s) s` | 192 | global | preserves the contract; no class member is β-equal to it |
+| Inexact variable value; APP's second operand not parsed from the rest; NEXT handing the stream twice; non-rigid parser; reader correct only for the actual NEXT | 208 / 194 / 265 (241) / 222 / 228 | escape | each breaks one class hypothesis the contract does not force (`class-bound.md` §4.5) |
+| The 162's lets re-placed: the `intL` let around NEXT only, binder order `\cont \intL \list`, no let | 164 / 165 / 167 | knot | β-equal to the 162 |
+| Six inert wrappers around the hole and let-shared `c`, `p` in NEXT | 233 / 162 | widen | refutes the per-reader price `116 + w(R)` at deep holes; Lean proves its contract |
 
 ## 7. Boundaries
 
@@ -845,15 +872,22 @@ work (here `s I` makes the cell's selection deliver the tail as the zero
 arm), combined with an operand that one branch uses and the other erases
 (NEXT, the skip's junk on variables). Inside the separated class of §5 those
 moves are now all priced: a sub-162 there is exactly a reader of weight at
-most 45, and outside it every mechanism the third round priced costs at
-least 170.
+most 45, the same holds for the widened classes of `class-bound.md` §4, and
+outside them every mechanism priced so far costs at least 170.
 
 Open:
 
-- the reader weight bound `w(R) ≥ 46` (`class-bound.md` §4), which would make
-  the 162 optimal in the separated class: proved for two-λ readers and for
-  the serial form with literal abstractions and at most four λs; open for
-  three or more λs at depths 0 and 1 and six depth-2 count families;
+- the reader weight bound `w(R) ≥ 46` (`class-bound.md` §3), which would make
+  the 162 optimal in the separated class and its widenings: open at depth 1
+  for hole parents that are a λ on a zero stream and four residual families
+  (among them the 162's own shape with a 31–37-bit variable arm), and for
+  application-rooted readers, depth-0 readers whose hole follows a shared
+  top-level let, stream-headed or redex first operands, and let bodies
+  headed by the let's variable with a λ in its argument;
+- NEXT of arbitrary syntax in `32 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
+  `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix
+  cells, and knotless first heads with two nonlinear binders
+  (`class-bound.md` §4);
 - with the real NEXT and knot, the `s I` family's variable arm (§3): the
   enumeration through 27 bits needs a corrected checker, and 29 residuals
   of its capped arms are uncertified;
@@ -889,6 +923,7 @@ Open:
 | `tools/self-interpreter/theory/floor37/verify.py` | the 108 residual layouts and the kernel-checked clauses of `global-floor.md` |
 | `data/self-interpreter/reasoning_floor/` | the second round of reasoning lanes: floors, knot and remainder theorems, and the variants of §6 they built |
 | `data/self-interpreter/reasoning_162/` | the third round: the separated class and the reader weight, the 38- and 39-bit floors, the recursion bounds, the §3 reader-slot checks, the variants of the 162 |
+| `data/self-interpreter/reasoning_class/` | the fourth round: the widened classes, the reader-weight families and reductions, the divergent-probe derivations, the continuation-headed class, the variants of §6 it built |
 | `data/self-interpreter/reasoning_165/` | the proofs and checks behind §2's identities, §5's shape bounds and exclusions, and §6's variants |
 | `blam golf letopt`, `blam golf component` (lab) | let structure and βη component (`--contextual`) |
 | `blam selfint hole` (lab), `tools/self-interpreter/sketches.py` | one- and two-hole searches, including the 165's reader slots |

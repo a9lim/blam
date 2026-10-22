@@ -1,0 +1,19 @@
+factory_self_boundary: w=45 n1..3=False same_normal_form=False
+delta_c_boundary: w=45 n1..3=False same_normal_form=False
+shared_delta: w=68 n1..3=True same_normal_form=True
+fused_factory: w=69 n1..3=True same_normal_form=True
+external_factory: w=70 n1..3=True same_normal_form=True
+external_factory_and_hole: w=71 n1..3=True same_normal_form=True
+one_lambda_factory: w=75 n1..3=True same_normal_form=True
+stream_factory_square: w=43 n1..3=False same_normal_form=False
+stream_factory_identity: w=44 n1..3=False same_normal_form=False
+external_boundary: w=49 n1..3=False same_normal_form=False
+factory_self_boundary zero: r j
+factory_self_boundary unary1: c c j
+delta_c_boundary zero: r j
+delta_c_boundary unary1: c c j
+stream_factory_square zero: r j
+stream_factory_square unary1: c (\y. N) (\x y. x) N j
+stream_factory_identity zero: r j
+stream_factory_identity unary1: c (\y. y) (\x y. x) N j
+Elapsed 0.0017s; one process, no enumeration.

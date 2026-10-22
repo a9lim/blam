@@ -1,0 +1,356 @@
+
+namespace Blc.Lean146Accounting
+open Term SelfintClass SelfintClassNext SelfintWireCost SelfintLowerBound SelfintFloor Lean146Live Lean146 Lean146NonLambda
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+def sourceWeight (t : Term) : Nat := weight t
+/- Spine and exact substitution identities adapted from close46/SourceCost.lean;
+   the minimum interface here uses only the two-probe Reader. -/
+def spine (t : Term) : List Term → Term
+  | [] => t
+  | a::as => spine (.app t a) as
+
+def spineOcc (j : Nat) : List Term → Nat
+  | [] => 0
+  | a::as => occ j a + spineOcc j as
+
+def spineWire : List Term → Nat
+  | [] => 0
+  | a::as => wire a + 2 + spineWire as
+
+def spineDepth (j : Nat) : List Term → Nat
+  | [] => 0
+  | a::as => occDepth j a + spineDepth j as
+
+theorem spine_occ (t : Term) (as : List Term) (j : Nat) :
+    occ j (spine t as) = occ j t + spineOcc j as := by
+  induction as generalizing t with
+  | nil => simp [spine, spineOcc]
+  | cons a as ih => simp [spine, spineOcc, ih, occ, Nat.add_assoc]
+
+theorem spine_wire (t : Term) (as : List Term) :
+    wire (spine t as) = wire t + spineWire as := by
+  induction as generalizing t with
+  | nil => simp [spine, spineWire]
+  | cons a as ih => simp [spine, spineWire, ih, wire_app, Nat.add_assoc]
+
+theorem spine_depth (t : Term) (as : List Term) (j : Nat) :
+    occDepth j (spine t as) = occDepth j t + spineDepth j as := by
+  induction as generalizing t with
+  | nil => simp [spine, spineDepth]
+  | cons a as ih => simp [spine, spineDepth, ih, occDepth, Nat.add_assoc]
+
+theorem spine_beta {t u : Term} (h : Beta t u) (as : List Term) :
+    Beta (spine t as) (spine u as) := by
+  induction as generalizing t u with
+  | nil => exact h
+  | cons a as ih => exact ih (.appL a h)
+
+theorem spine_scope (t : Term) (as : List Term) (k : Nat)
+    (h : FreeUnder k (spine t as)) : FreeUnder k t := by
+  induction as generalizing t with
+  | nil => exact h
+  | cons a as ih => exact (ih _ h).1
+
+def spineNonlinear : List Term → Nat
+  | [] => 0
+  | a::as => nonlinear a + spineNonlinear as
+
+def spineFree (j : Nat) : List Term → Nat
+  | [] => 0
+  | a::as => freeLeaves j a + spineFree j as
+
+theorem spine_nonlinear (t : Term) (as : List Term) :
+    nonlinear (spine t as) = nonlinear t + spineNonlinear as := by
+  induction as generalizing t with
+  | nil => simp [spine, spineNonlinear]
+  | cons a as ih => simp [spine, spineNonlinear, nonlinear, ih, Nat.add_assoc]
+
+theorem spine_free (t : Term) (as : List Term) (j : Nat) :
+    freeLeaves j (spine t as) = freeLeaves j t + spineFree j as := by
+  induction as generalizing t with
+  | nil => simp [spine, spineFree]
+  | cons a as ih => simp [spine, spineFree, freeLeaves, ih, Nat.add_assoc]
+
+theorem occDepth_shift_ge (t : Term) (v c : Nat) (h : c ≤ v) :
+    occDepth (v+1) (shift 1 c t) = occDepth v t := by
+  induction t generalizing v c with
+  | var n => simp only [shift]; split <;> rfl
+  | lam b ih =>
+    simp only [shift, occDepth]
+    rw [occ_shift_ge b (v+1) (c+1) (by omega), ih (v+1) (c+1) (by omega)]
+  | app f a ihf iha => simp only [shift, occDepth, ihf v c h, iha v c h]
+
+/-- Depth accounting for every copied occurrence, without linearity. -/
+theorem occDepth_subst_ge (t a : Term) (v k : Nat) (h : k ≤ v) :
+    occDepth v (substDec k a t) = occDepth (v+1) t +
+      occ k t * occDepth v a + occ v a * occDepth k t := by
+  induction t generalizing a v k with
+  | var n =>
+    simp only [substDec]
+    split
+    · simp_all [occDepth, occ]
+    · split <;> simp_all [occDepth, occ]
+  | lam b ih =>
+    simp only [substDec, occDepth, occ]
+    rw [ih (shift 1 0 a) (v+1) (k+1) (by omega),
+      occ_substDec_ge b (shift 1 0 a) (v+1) (k+1) (by omega),
+      occ_shift_ge a v 0 (by omega), occDepth_shift_ge a v 0 (by omega)]
+    simp only [Nat.mul_add, Nat.mul_comm (occ v a) (occ (k+1) b)]
+    omega
+  | app f x ihf ihx =>
+    simp only [substDec, occDepth, occ, ihf a v k h, ihx a v k h,
+      Nat.add_mul, Nat.mul_add]
+    omega
+
+/-- Exact source sourceWeight change for a root head redex, including copied
+    source holes and all source index shifts. No normality assumption. -/
+theorem weight_wire (t : Term) : sourceWeight t + 3 * occ 1 t = wire t + 3 * occDepth 1 t := by
+  have hh := holeCost_wire t 1
+  change wire t = cost t + 3 * occ 1 t + depth t at hh
+  change cost t + 4 * depth t + 3 * occ 1 t = wire t + 3 * depth t
+  omega
+
+theorem weighted_beta_delta (b a : Term) (as : List Term)
+    (hs : FreeUnder 2 (spine (.app (.lam b) a) as)) :
+    (sourceWeight (spine (contract b a) as) : Int) -
+        sourceWeight (spine (.app (.lam b) a) as) =
+      ((occ 0 b : Int)-1) * sourceWeight a +
+      ((occ 0 a : Int) + 4 * occ 1 a - 1) * occDepth 0 b -
+      2 * occ 0 b - 4 - occ 1 b - 4 * occ 2 b := by
+  have hscope := spine_scope (.app (.lam b) a) as 2 hs
+  have za := freeLeaves_closed a 2 hscope.2
+  have zb := freeLeaves_closed b 3 hscope.1
+  have fa0 := freeLeaves_split a 0
+  have fa1 := freeLeaves_split a 1
+  have fb1 := freeLeaves_split b 1
+  have fb2 := freeLeaves_split b 2
+  simp only [Nat.reduceAdd] at fa0 fa1 fb1 fb2
+  have fa : freeLeaves 0 a = occ 0 a + occ 1 a := by omega
+  have fb : freeLeaves 1 b = occ 1 b + occ 2 b := by omega
+  have w0 := weight_wire (spine (.app (.lam b) a) as)
+  have w1 := weight_wire (spine (contract b a) as)
+  have wa := weight_wire a
+  have hd := wire_beta_delta b a
+  rw [fa, fb] at hd
+  simp only [spine_occ, spine_depth, spine_wire, wire_app, wire_lam,
+    occ, occDepth, contract, occ_substDec_ge b a 1 0 (by omega),
+    occDepth_subst_ge b a 1 0 (by omega), Nat.reduceAdd] at w0 w1 wa
+  have w0i := congrArg (fun n : Nat => (n : Int)) w0
+  have w1i := congrArg (fun n : Nat => (n : Int)) w1
+  have wai := congrArg (fun n : Nat => (n : Int)) wa
+  have hwarg : (wire a : Int) = sourceWeight a + 3 * occ 1 a - 3 * occDepth 1 a := by
+    simp only [Int.natCast_add, Int.natCast_mul] at wai
+    omega
+  simp only [wire_app, wire_lam, Int.natCast_add, contract] at hd
+  rw [hwarg] at hd
+  simp only [contract, Int.natCast_add, Int.natCast_mul,
+    Int.sub_mul, Int.mul_add, Int.add_mul, Int.mul_sub, Int.one_mul,
+    Int.mul_comm, Int.mul_left_comm, Int.mul_assoc] at hd w0i w1i ⊢
+  omega
+
+def spineLambdas : List Term → Nat
+  | [] => 0
+  | a::as => lamCount a + spineLambdas as
+
+theorem spine_lambdas (t : Term) (as : List Term) :
+    lamCount (spine t as) = lamCount t + spineLambdas as := by
+  induction as generalizing t with
+  | nil => simp [spine, spineLambdas]
+  | cons a as ih => simp [spine, spineLambdas, lamCount, ih, Nat.add_assoc]
+
+theorem spine_append_one (t : Term) (as : List Term) (a : Term) :
+    spine t (as ++ [a]) = .app (spine t as) a := by
+  induction as generalizing t with
+  | nil => rfl
+  | cons b as ih => simpa only [List.cons_append, spine] using ih (.app t b)
+
+theorem head_shape (t : Term) : IsLam t ∨ Rigid t ∨
+    ∃ b a as, t = spine (.app (.lam b) a) as := by
+  induction t with
+  | var n => exact .inr (.inl (.var n))
+  | lam b => exact .inl trivial
+  | app f a ihf _ =>
+    rcases ihf with hL | hR | ⟨b,x,as,h⟩
+    · cases f with
+      | var n => exact False.elim hL
+      | app f x => exact False.elim hL
+      | lam b => exact .inr (.inr ⟨b,a,[],rfl⟩)
+    · exact .inr (.inl (.app a hR))
+    · exact .inr (.inr ⟨b,x,as++[a], by rw [spine_append_one, h]⟩)
+
+
+theorem erase_spine {t u : Term} (h : Erase t u) (as : List Term) : Erase (spine t as) (spine u as) := by
+  induction as generalizing t u with
+  | nil => exact h
+  | cons a as ih => exact ih (.appL a h)
+
+theorem spine_not_lam {t : Term} (hn : ¬ IsLam t) (as : List Term) : ¬ IsLam (spine t as) := by
+  induction as generalizing t with
+  | nil => exact hn
+  | cons a as ih => exact ih (by simp [IsLam])
+
+theorem minimum_head_linear {b a : Term} {as : List Term}
+    (hm : Minimum (spine (.app (.lam b) a) as)) (hw : sourceWeight (spine (.app (.lam b) a) as) < 30) :
+    occ 0 b = 1 := by
+  have hnl := spine_not_lam (t := .app (.lam b) a) (by simp [IsLam]) as
+  have hv := (minimum_nonlam_sub30_counts hm hnl hw).2.2.1
+  have hl := minimum_nonlam_three_live hm hnl
+  have hc := reader_c hm.reader
+  have hj := hm.hole
+  have hleaf := leaves_bound (spine (.app (.lam b) a) as)
+  have hf0 := freeLeaves_split (spine (.app (.lam b) a) as) 0
+  have hf1 := freeLeaves_split (spine (.app (.lam b) a) as) 1
+  simp only [Nat.reduceAdd] at hf0 hf1
+  have hnon : nonlinear (spine (.app (.lam b) a) as) ≤ 1 := by omega
+  have hp : 0 < occ 0 b := by
+    by_cases hz : occ 0 b = 0
+    · exact (hm.no_erasing _ (erase_spine (.root b a hz) as)).elim
+    · omega
+  by_cases hh : 1 < occ 0 b
+  · have hb : nonlinear b = 0 := by simp only [spine_nonlinear,nonlinear,if_pos hh] at hnon; omega
+    have ha : nonlinear a = 0 := by simp only [spine_nonlinear,nonlinear,if_pos hh] at hnon; omega
+    have has : spineNonlinear as = 0 := by simp only [spine_nonlinear,nonlinear,if_pos hh] at hnon; omega
+    have hu := hm.reader.beta (spine_beta (.beta b a) as)
+    have hn := reader_nonlinear hu
+    simp only [spine_nonlinear,contract,nonlinear_subst,hb,ha,has,Nat.mul_zero,Nat.add_zero] at hn
+    omega
+  · omega
+
+theorem minimum_linear_charge {b a : Term} {as : List Term}
+    (hm : Minimum (spine (.app (.lam b) a) as)) (ho : occ 0 b = 1) :
+    7 + (occ 1 b : Int) + 4 * occ 2 b ≤
+      ((occ 0 a : Int) + 4 * occ 1 a - 1) * occDepth 0 b := by
+  have hu := hm.reader.beta (spine_beta (.beta b a) as)
+  have hj : occ 1 (spine (contract b a) as) = 1 := by
+    have hh := hm.hole
+    simp only [spine_occ,occ,Nat.reduceAdd] at hh
+    simpa only [spine_occ,contract,occ_substDec_ge b a 1 0 (by omega),Nat.reduceAdd,ho,Nat.one_mul] using hh
+  have hmin := hm.minWeight _ hu hj
+  change sourceWeight (spine (.app (.lam b) a) as) ≤ sourceWeight (spine (contract b a) as) at hmin
+  have hd := weighted_beta_delta b a as hm.reader.scope
+  rw [ho] at hd
+  have hL : lamCount (spine (contract b a) as) + 1 = lamCount (spine (.app (.lam b) a) as) := by
+    simp only [spine_lambdas,contract,lamCount_subst,lamCount,ho,Nat.one_mul]; omega
+  have hstrict : sourceWeight (spine (.app (.lam b) a) as) < sourceWeight (spine (contract b a) as) := by
+    by_cases heq : sourceWeight (spine (contract b a) as) = sourceWeight (spine (.app (.lam b) a) as)
+    · have hbad := hm.minLambdas _ hu hj heq; omega
+    · omega
+  simp only [Int.natCast_one,Int.sub_self,Int.zero_mul,Int.zero_add] at hd
+  omega
+
+def spineTax (j : Nat) : List Term → Nat
+  | [] => 0
+  | a::as => tax j a + spineTax j as
+
+theorem spine_tax (t : Term) (as : List Term) (j : Nat) :
+    tax j (spine t as) = tax j t + spineTax j as := by
+  induction as generalizing t with
+  | nil => rfl
+  | cons a as ih => simp only [spine,spineTax,tax,ih]; omega
+
+theorem occDepth_tax (t : Term) (j k : Nat) (hne : j ≠ k) :
+    occDepth j t + j * occ j t ≤ tax k t := by
+  induction t generalizing j k with
+  | var n => simp only [occDepth,occ,tax]; split <;> split <;> simp_all <;> omega
+  | lam b ih =>
+    have hh := ih (j+1) (k+1) (by omega)
+    simp only [occDepth,occ,tax,Nat.add_mul,Nat.one_mul] at hh ⊢
+    omega
+  | app f a ihf iha =>
+    have hf := ihf j k hne; have ha := iha j k hne
+    simp only [occDepth,occ,tax,Nat.mul_add]; omega
+
+theorem subst_spine (t a : Term) (as : List Term) (k : Nat) :
+    substDec k a (spine t as) = spine (substDec k a t) (as.map (substDec k a)) := by
+  induction as generalizing t with
+  | nil => rfl
+  | cons x as ih => exact ih (.app t x)
+
+theorem replace_head_argument (f a : Term) (as : List Term)
+    (hr : Rigid a) (hn : NFt a) (ha : SelfintInert.Avoid a zeroOut)
+    (hred : Betas (.app (spine (.app f a) as) Z) zeroOut) (b : Term) :
+    Betas (.app (spine (.app f b) as) Z) zeroOut := by
+  let t : Term := .app (spine (.app (shift 1 0 f) (.var 0)) (as.map (shift 1 0))) (shift 1 0 Z)
+  have he (v : Term) : substDec 0 v t = .app (spine (.app f v) as) Z := by
+    simp only [t,substDec,subst_spine,substDec_shift,↓reduceIte,List.map_map]
+    have hh : (fun x => substDec 0 v (shift 1 0 x)) = id := by funext x; exact substDec_shift x v 0
+    simp only [Function.comp_def,hh,List.map_id]
+  have hh := SelfintInert.replace_inert 0 hr hn ha (he a ▸ hred) b
+  simpa only [he] using hh
+
+theorem trapped_cj {b : Term} {as : List Term} {a : Term}
+    (hr : Reader (spine (.app (.lam b) a) as)) (hb : occ 2 b = 0)
+    (has : spineOcc 1 as = 0)
+    (ha : a = .app (.var 0) (.var 1) ∨ a = .app (.var 1) (.var 0)) : False := by
+  have hrepl : Betas (.app (spine (.app (.lam b) (.var 0)) as) Z) zeroOut := by
+    rcases ha with rfl | rfl
+    · exact replace_head_argument _ _ _ (.app _ (.var 0)) (by decide) (by simp [SelfintInert.Avoid,zeroOut]) hr.zero_red (.var 0)
+    · exact replace_head_argument _ _ _ (.app _ (.var 1)) (by decide) (by simp [SelfintInert.Avoid,zeroOut]) hr.zero_red (.var 0)
+  have hz : occ 1 (.app (spine (.app (.lam b) (.var 0)) as) Z) = 0 := by
+    simp [occ,spine_occ,hb,has,show occ 1 Z = 0 by decide]
+  have hout := SelfintKnot.occ_betas_zero hrepl 1 hz
+  have hv : occ 1 zeroOut = 1 := by decide
+  omega
+
+theorem minimum_head_sub30_impossible {b a : Term} {as : List Term}
+    (hm : Minimum (spine (.app (.lam b) a) as))
+    (hw : weight (spine (.app (.lam b) a) as) < 30) : False := by
+  have hnl := spine_not_lam (t := .app (.lam b) a) (by simp [IsLam]) as
+  obtain ⟨hd,hc,hv,hcounts⟩ := minimum_nonlam_sub30_counts hm hnl hw
+  have ho := minimum_head_linear hm hw
+  have hcharge := minimum_linear_charge hm ho
+  have hs := spine_scope (.app (.lam b) a) as 2 hm.reader.scope
+  have hj := hm.hole
+  have hD := occDepth_le_lambdas b 0
+  rw [ho,Nat.mul_one] at hD
+  have hX := occDepth_tax b 0 2 (by omega)
+  simp only [Nat.zero_mul,Nat.add_zero] at hX
+  have hcc : occ 1 b + occ 0 a + spineOcc 0 as = 1 := by simpa only [spine_occ,occ,Nat.reduceAdd] using hc
+  have hjj : occ 2 b + occ 1 a + spineOcc 1 as = 1 := by simpa only [spine_occ,occ,Nat.reduceAdd] using hj
+  have hdepth : occDepth 2 b + occ 2 b + occDepth 1 a + spineDepth 1 as = 0 := by
+    simpa only [depth,spine_depth,occDepth,Nat.reduceAdd] using hd
+  have hLmax : lamCount b + 1 + lamCount a + spineLambdas as ≤ 4 := by
+    simp only [spine_lambdas,lamCount,spine_tax,tax,Nat.reduceAdd] at hcounts
+    omega
+  have hDx : occDepth 0 b ≤ 2 := by
+    simp only [spine_lambdas,lamCount,spine_tax,tax,Nat.reduceAdd] at hcounts
+    omega
+  have hAc : occ 0 a = 0 ∨ occ 0 a = 1 := by omega
+  have hAj : occ 1 a = 0 ∨ occ 1 a = 1 := by omega
+  have corner : occ 0 a = 1 ∧ occ 1 a = 1 ∧ occDepth 0 b = 2 := by
+    rcases hAc with h0 | h0 <;> rcases hAj with h1 | h1
+    all_goals simp [h0,h1] at hcharge
+    all_goals omega
+  obtain ⟨hAc,hAj,hDx2⟩ := corner
+  have hLa : lamCount a = 0 := by
+    simp only [spine_lambdas,lamCount,spine_tax,tax,Nat.reduceAdd] at hcounts
+    omega
+  have hVa : leafCount a = 2 := by
+    rw [lamfree_leafCount_eq a hLa hs.2,hAc,hAj]
+  have ha : a = .app (.var 0) (.var 1) ∨ a = .app (.var 1) (.var 0) := by
+    obtain ⟨n,m,he⟩ := lamfree_leaf2 a hLa hVa
+    subst a
+    have hscope : n < 2 ∧ m < 2 := hs.2
+    have hn : n = 0 ∨ n = 1 := by omega
+    have hmidx : m = 0 ∨ m = 1 := by omega
+    rcases hn with rfl | rfl <;> rcases hmidx with rfl | rfl <;> simp_all [occ]
+  exact trapped_cj hm.reader (by omega) (by omega) ha
+
+/-- Minimum non-lambda elimination, with no residual coverage premise. -/
+theorem minimumLambdaCoverage : MinimumLambdaCoverage := by
+  intro R hm hw
+  rcases head_shape R with hl | hrig | ⟨b,a,as,he⟩
+  · cases R with
+    | var n => exact hl.elim
+    | app f a => exact hl.elim
+    | lam b => exact ⟨b,rfl⟩
+  · exact (reader_not_rigid hm.reader hrig).elim
+  · subst R
+    exact (minimum_head_sub30_impossible hm hw).elim
+
+#print axioms weighted_beta_delta
+#print axioms minimum_linear_charge
+#print axioms trapped_cj
+#print axioms minimumLambdaCoverage
+end Blc.Lean146Accounting

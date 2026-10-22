@@ -1,0 +1,7 @@
+-- zero handoff (r, r): reader \s. s (\b. b P c) (s s s), P = \t w. t NEXT (pricing check, expected ~171)
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\b. b (\t \w. t (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+    cont) (list list list))
+  (x x))

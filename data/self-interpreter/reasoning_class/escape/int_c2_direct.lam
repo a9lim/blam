@@ -1,0 +1,7 @@
+-- keeps C1 (Q b t = p k t) but breaks C2: APP's first-operand continuation returns at once, parsing the second operand twice (value via K, rest via F)
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (\t. cont (\args. exp args (intL (\f \r. f) t args)) (intL (\f \r. r) t)))))
+  (x x))

@@ -1,0 +1,10 @@
+letj D=3 dm=[1]: n=855534 {'z': 853880, 'u1': 1199, 'zfuel': 455} hits=0 caps=455 16.2s
+letj D=3 dm=[2, 3, 4, 5]: n=238805 {'z': 238731, 'u1': 50, 'zfuel': 24} hits=0 caps=24 11.6s
+letj D=4 dm=[1, 2, 3, 4, 5]: n=248422 {'z': 248161, 'u1': 233, 'zfuel': 28} hits=0 caps=28 6.9s
+letj D=5 dm=[1, 2, 3, 4, 5]: n=50905 {'z': 50849, 'u1': 56} hits=0 caps=0 2.2s
+letj D=6 dm=[1, 2, 3, 4, 5]: n=8729 {'z': 8720, 'u1': 9} hits=0 caps=0 0.7s
+letj D=7 dm=[1, 2, 3, 4]: n=1327 {'z': 1327} hits=0 caps=0 0.2s
+letj D=8 dm=[1, 2, 3]: n=136 {'z': 136} hits=0 caps=0 0.0s
+letj D=9 dm=[1, 2]: n=18 {'z': 18} hits=0 caps=0 0.0s
+letj D=10 dm=[1]: n=0 {} hits=0 caps=0 0.0s
+done

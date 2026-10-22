@@ -1,0 +1,46 @@
+[gaslamp] → codex · job cx-20261021-233815-7f07 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-233815-7f07/events.jsonl
+(⌐■_■) **No candidate meeting either requested frontier.** I obtained a small new improvement and a broader exclusion for single-redex compression.
+
+The `c` let can be placed immediately before the `f` binder:
+
+```text
+\b. p ((\C f.
+  b (C (\e a. f (\x y. x a (y e))))
+    (p (\g. C (\e. f e (g e)))))
+  c)
+```
+
+**Verified:** `q=99, F=3, q+F=102`; both laws pass. This differs from your `q=100` outer `c` let and saves one bit, but remains outside the valuable range.
+
+**Family exclusion:** Every source that contracts to literal `Q0` in **one β-step**, at any location, satisfies:
+
+| Source free-leaf count | Minimum q |
+|---|---:|
+| F=4 | 98 |
+| F=3 | 99 |
+| F=2 | Impossible |
+
+This covers arbitrary capture-safe argument extraction, including sharing only a subset of matching occurrences—not just top-level lets.
+
+The size argument is short. For an inverse contraction replacing selected occurrences of a variable of index `i`, let `E` count leaves free relative to the extraction site. Sharing two occurrences changes size by
+
+```text
+Δq = E + 4 − i.
+```
+
+Inspection of `Q0` gives all possible repeated arguments and their minimum costs:
+
+| Shared argument | Minimum Δq |
+|---|---:|
+| p | +7 |
+| c | +7 |
+| f | +10 |
+| Application-branch e | +8 |
+
+There are **no repeated compound arguments**, even allowing index shifts across binders. A single-occurrence extraction costs at least six bits: same-depth extraction adds at least six; variable extraction adds `E+5`; the only compound extraction crossing a binder is `x a` across `λy`, also costing six. An unused argument likewise cannot improve size.
+
+I independently checked all **121 non-erasing inverse-β constructions** using the checker’s AST operations, asserted that each contracts back to `Q0`, and checked both laws for the minimizing witnesses. The table agrees with the calculation. No files were written.
+
+**Where a successful term could still exist:** tag-specific simplification remains the most plausible opening. A source could exploit `b=K/F` without reducing to `Q0` for rigid `b`, or use interacting redexes whose combined compression is unavailable to one extraction. This exclusion does **not** establish incompressibility under multiple β-steps or optimality among arbitrary sources. It does rule out every single-let placement or single-subterm extraction from `Q0`, including placements beyond those already priced.
+
+[gaslamp] job: cx-20261021-233815-7f07 · session: 01a161b0-2250-7d51-b9ac-5bb2645ede5c · resume: gaslamp codex --resume 01a161b0-2250-7d51-b9ac-5bb2645ede5c · tok: 411k→13k

@@ -1,0 +1,20 @@
+[gaslamp] → codex · job cx-20261021-231321-1902 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-231321-1902/events.jsonl
+( •̀ᴗ•́ ) **All three derivations are kernel-checked**, including the every-n induction and rigid-to-actual substitutions.
+
+[Derive.lean](/Users/a9lim/Work/blam/tmp/round4/probelean/Derive.lean), [REPORT.md §8](/Users/a9lim/Work/blam/tmp/round4/probelean/REPORT.md:228), [build audit](/Users/a9lim/Work/blam/tmp/round4/probelean/DERIVE_BUILD.log).
+
+The end-to-end theorem `derive_from_source_hypotheses` takes literal `SelfintClass.assemble`, its self-interpreter contract, scoped source head-reduction C1/C2, and actual Z. It proves:
+
+- `variable_rest_reader`: every positive unary length, abstract `c`, actual NEXT, rest reduced to N.
+- `abs_dataflow`: `kA x y →β* c A_K y`.
+- `app_second_dataflow`: `k2[x] z w →β* c A_2 w`.
+
+`derive_abs_from_source` proves the first two without APP control or C2.
+
+**Verified simplification:** separate semantic RET/VAL assumptions are unnecessary here. The public contract on `λΩ` supplies the required closed unsolvable value `λλΩ`, uniformly over continuations and suffixes. `semantic_retval_from_contract` proves this. It does **not** establish an operational first-return property or syntactic closedness of the first machine closure.
+
+The source-template scopes formalize “built before reading the body.” Rest-independent constructors, rigid-j laws, and rigid-p dataflow remain unproved.
+
+Final build: Lean 4.32.2, `-j2`, exit 0, **0.689 seconds**. No `sorry`; axioms only `propext`, `Classical.choice`, `Quot.sound`. All writes stayed within the lane.
+[gaslamp] job: cx-20261021-231321-1902 · session: 01a16182-fda1-7071-a77f-781d43c49979 · thread: r4-probelean · resume: gaslamp codex --thread r4-probelean · tok: 7206k→79k
+[lane.sh] done rc=0 tries=1

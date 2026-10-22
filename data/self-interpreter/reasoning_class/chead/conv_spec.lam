@@ -1,0 +1,7 @@
+-- generic s-head conversion  E' = \c s. E (s (\x y. c)) s  applied to the c-headed spec200
+\c. \s. ((\x. x x) (\x. (\p. \c. \s. c
+   (s (\a. a) (\u. s (\a. \b. b))
+      (\b2. p (\exp. b2 (\r. \args \arg. exp (\zx \zy. zx arg (zy args)))
+                        (p (\exp2 \r. \args. exp args (exp2 args))))))
+   (s (\a. a) (s s) (\b2. p (\exp. b2 (\a. a) (p (\a. \b. b))))))
+  (x x))) (s (\x. \y. c)) s

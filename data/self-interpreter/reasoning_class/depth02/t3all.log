@@ -1,0 +1,500 @@
+D=3 f=1 cost<=35: n=291793 {'z': 290527, 'u1': 803, 'zfuel': 462, 'u2': 1} 5.5s
+D=3 f=2 cost<=34: n=40933 {'z': 40878, 'u1': 53, 'zfuel': 2} 0.5s
+D=3 f=3 cost<=33: n=4402 {'z': 4400, 'u1': 2} 0.1s
+D=4 f=1 cost<=34: n=65703 {'z': 65412, 'u1': 269, 'zfuel': 22} 1.5s
+D=4 f=2 cost<=33: n=6447 {'z': 6426, 'u1': 21} 0.1s
+D=4 f=3 cost<=32: n=318 {'z': 316, 'u1': 2} 0.0s
+D=5 f=1 cost<=33: n=12849 {'z': 12809, 'u1': 39, 'zfuel': 1} 0.5s
+D=5 f=2 cost<=32: n=1303 {'z': 1302, 'u1': 1} 0.0s
+D=6 f=1 cost<=32: n=2007 {'z': 1997, 'u1': 10} 0.2s
+D=6 f=2 cost<=31: n=110 {'z': 110} 0.0s
+D=7 f=1 cost<=31: n=381 {'z': 381} 0.0s
+D=8 f=1 cost<=30: n=44 {'z': 44} 0.0s
+grand {'z': 424602, 'u1': 1200, 'zfuel': 487, 'u2': 1} hits 0 caps 487 8.6s
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) c)
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 j) c
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. \x2. x1 x1 j)
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. \x2. x1 x1 j)
+CAP 3 1 \x0. (\x1. \x2. x1 x1 j) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. \x2. x1 x1 j) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 j c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 c j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) c (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. j) c
+CAP 3 1 \x0. (\x1. x1 c (x1 (\x2. j))) (\x1. \x2. x2 x2)
+CAP 3 1 \x0. (\x1. x1 (\x2. j) (x1 c)) (\x1. \x2. x2 x2)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. c (x1 x1)) (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c) (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) (\x1. c)
+CAP 3 1 \x0. (\x1. x1 (\x2. x1)) (\x1. x1 (\x2. j) x1) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) (\x2. c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. c) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 (\x2. x1)) (\x1. x1 c x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 (\x2. x1)) (\x1. x1 (\x2. j) x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 (\x2. c))
+CAP 3 1 \x0. (\x1. x1 (\x2. j) x1) (\x1. \x2. x2 c x2)
+CAP 3 1 \x0. (\x1. c (x1 (\x2. x1))) (\x1. x1 (\x2. j) x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. c)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 (\x2. x1) c) (\x1. x1 (\x2. j) x1)
+CAP 3 1 \x0. (\x1. x1 (\x2. c) x1) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. x1 (\x2. x1) (\x2. j)) (\x1. x1 c x1)
+CAP 3 1 \x0. (\x1. \x2. x1 x1) (\x1. x1 x1 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. \x2. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 (\x2. x1)) (\x1. x1 c (\x2. x1 j))
+CAP 3 1 \x0. (\x1. \x2. x1 x1) (\x1. x1 x1 c (\x2. j))
+CAP 3 1 \x0. (\x1. \x2. x1 x1) (\x1. x1 x1 (\x2. j) c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c (\x2. x1 x1))
+CAP 3 1 \x0. (\x1. c (\x2. x1 x1)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 c (\x2. j)) (\x1. \x2. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) c) (\x1. \x2. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 j) (\x1. c)
+CAP 3 1 \x0. (\x1. x1 (\x2. x1)) (\x1. \x2. x1 j x1) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. \x2. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. \x2. x1 x1 c)
+CAP 3 1 \x0. (\x1. \x2. x1 j x1) (\x1. \x2. x2 c x2)
+CAP 3 1 \x0. (\x1. \x2. x1 x1 j) (\x1. x1 x1 (\x2. c))
+CAP 3 1 \x0. (\x1. c (x1 (\x2. x1))) (\x1. \x2. x1 j x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. c)) (\x1. \x2. x1 x1 j)
+CAP 3 1 \x0. (\x1. x1 (\x2. x1) c) (\x1. \x2. x1 j x1)
+CAP 3 1 \x0. (\x1. \x2. c (x1 x1)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. \x2. x1 x1 c) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. \x2. x1 c x1) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. \x2. x1 (\x3. x1) j) (\x1. x1 c x1)
+CAP 3 1 \x0. (\x1. \x2. x1 x1) (\x1. \x2. x1 x1 j) c
+CAP 3 1 \x0. (\x1. \x2. x1 x1 j) (\x1. \x2. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. c) (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. j) (\x1. c)
+CAP 3 1 \x0. (\x1. x1 (\x2. j) (x1 (\x2. c))) (\x1. \x2. x2 x2)
+CAP 3 1 \x0. (\x1. x1 (\x2. c) (x1 (\x2. j))) (\x1. \x2. x2 x2)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) (\x1. \x2. c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. c)) (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 (\x2. x1)) (\x1. x1 c x1) (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1) c (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 (\x2. x1)) (\x1. x1 (\x2. j) x1) (\x1. c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1) (\x1. \x2. j) c
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1 (\x2. j)) c)
+CAP 3 1 \x0. x0 c (\x1. (\x2. x2 x2) (\x2. x2 x2 j))
+CAP 3 1 \x0. x0 c ((\x1. x1 x1) (\x1. x1 x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) (x0 c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) (c x0)
+CAP 3 1 \x0. x0 (\x1. (\x2. x2 x2) (\x2. x2 x2 j)) c
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1 (\x2. j))) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x2 x2 j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1 (\x2. j))) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. x2 j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x1 (\x2. j))) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. j) (x1 x1)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1) (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 x1 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) x1) c
+CAP 3 1 \x0. (\x1. x1 (x1 x1)) (\x1. x1 x1 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1 x1) (\x1. \x2. x2 j x2) c
+CAP 3 1 \x0. (\x1. x1 x1 x1) (\x1. x1 x1 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 (x1 x1)) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 x1) c
+CAP 3 1 \x0. (\x1. x1 (x1 x1 (\x2. j))) (\x1. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 x1 (x1 (\x2. j))) (\x1. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 (\x2. j) (x1 x1)) (\x1. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 (x1 x1) (\x2. j)) (\x1. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 x1 x1 (\x2. j)) (\x1. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) x1) (\x1. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) x0 c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) c x0
+CAP 3 1 \x0. x0 (\x1. (\x2. x2 x2) (\x2. x2 x2 j) c)
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1 c (\x2. j)))
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1 (\x2. j) c))
+CAP 3 1 \x0. x0 ((\x1. c (x1 x1)) (\x1. x1 x1 (\x2. j)))
+CAP 3 1 \x0. x0 ((\x1. x1 x1 c) (\x1. x1 x1 (\x2. j)))
+CAP 3 1 \x0. x0 ((\x1. x1 c x1) (\x1. \x2. x2 j x2))
+CAP 3 1 \x0. x0 ((\x1. x1 x1 (\x2. j)) (\x1. c (x1 x1)))
+CAP 3 1 \x0. x0 ((\x1. x1 x1 (\x2. j)) (\x1. x1 x1 c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1 c (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1 (\x2. j) c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x1 c (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x1 (\x2. j) c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 c (x1 x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. j) (c (x1 x1)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. j) (x1 x1 c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c (\x2. x2 j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c (x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) (x1 c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) (c x1))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 c (\x2. j) (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. j) c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (c (x1 x1)) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1 c) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x1 c) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (c x1) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 c (x1 x1) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1) c (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 x1 c (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x2 x2 j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1 (\x2. j)) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. x2 j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x1 (\x2. j)) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. j) (x1 x1) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1) (\x2. j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 x1 (\x2. j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) x1 c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c (\x2. j) x1)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) c x1)
+CAP 3 1 \x0. (\x1. x1 (x1 x1)) (\x1. x1 x1 c (\x2. j))
+CAP 3 1 \x0. (\x1. x1 (x1 x1)) (\x1. x1 x1 (\x2. j) c)
+CAP 3 1 \x0. (\x1. x1 x1 x1) (\x1. x1 x1 c (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 x1) (\x1. x1 x1 (\x2. j) c)
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 (\x2. x2 x2 j))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 (x1 x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 (\x2. x2 j))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 (x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 (\x2. j) (x1 x1))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 (x1 x1) (\x2. j))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 (\x2. j) x1)
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 (\x2. x2 x2 j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 (x1 x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 (\x2. x2 j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 (x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 (\x2. j) (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 (x1 x1) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 (\x2. j) x1)
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 x2 (x2 j))
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 j (x2 x2))
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 x2 x2 j)
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 (x2 j) x2)
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 j x2 x2)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 (c (x1 x1)))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 (x1 x1 c))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c (x1 (x1 x1)))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c (x1 x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 (x1 c))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 (c x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c x1 (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 (x1 x1) c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c (x1 x1) x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 c x1)
+CAP 3 1 \x0. (\x1. x1 (c (x1 x1))) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 (x1 x1 c)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. c (x1 (x1 x1))) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. c (x1 x1 x1)) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. c (x1 x1 x1)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 (x1 c)) (\x1. \x2. x2 x2 j)
+CAP 3 1 \x0. (\x1. x1 x1 (x1 c)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 (c x1)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 c (x1 x1)) (\x1. \x2. x2 x2 j)
+CAP 3 1 \x0. (\x1. x1 c (x1 x1)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. c x1 (x1 x1)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 (x1 x1) c) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 x1 c) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. x1 x1 x1 c) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 (x1 c) x1) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. x1 (c x1) x1) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. c (x1 x1) x1) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 c x1) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 c x1 x1) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. x1 (x1 x1 (\x2. j))) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 (x1 x1 (\x2. j))) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. x2 j)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. x2 j)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 (x1 (\x2. j))) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (x1 (\x2. j))) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 (\x2. j) (x1 x1)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 (\x2. j) (x1 x1)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 (x1 x1) (\x2. j)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 (x1 x1) (\x2. j)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 x1 (\x2. j)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 x1 (\x2. j)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) x1) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) x1) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 c (\x2. j)) (\x1. x1 (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 c (\x2. j)) (\x1. x1 x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) c) (\x1. x1 (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) c) (\x1. x1 x1 x1)
+CAP 3 1 \x0. (\x1. x1 (x1 x1 c (\x2. j))) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (x1 x1 (\x2. j) c)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (x1 c (\x2. j))) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (x1 (\x2. j) c)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 c (x1 x1 (\x2. j))) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (\x2. j) (c (x1 x1))) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (\x2. j) (x1 x1 c)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 c (x1 (\x2. j))) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) (x1 c)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) (c x1)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 c (\x2. j) (x1 x1)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (\x2. j) c (x1 x1)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (c (x1 x1)) (\x2. j)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (x1 x1 c) (\x2. j)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (x1 c) (\x2. j)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (c x1) (\x2. j)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 c (x1 x1) (\x2. j)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (x1 x1) c (\x2. j)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 x1 c (\x2. j)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 c x1 (\x2. j)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (x1 x1 (\x2. j)) c) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (x1 (\x2. j)) c) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (\x2. j) (x1 x1) c) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 (x1 x1) (\x2. j) c) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 x1 (\x2. j) c) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) x1 c) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 c (\x2. j) x1) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) c x1) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x2 x1 j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x1 x2 j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (x1 x1 (\x2. j))) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. x1 j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x0 (\x2. j))) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (\x2. j) (x1 x1)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (x1 x1) (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 x0 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) x0) c
+CAP 3 1 \x0. (\x1. x0 (x1 x1)) (\x1. x1 x1 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1 x0) (\x1. x1 x1 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x0 x1) (\x1. \x2. x2 j x2) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x0 (x1 x1)) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 x0) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. x1 j)) (\x1. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c (\x2. j)) x0
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) c) x0
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 (\x2. j)) x0
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 (\x2. j)) x0
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 j x2) x0
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c (x1 x1)) x0
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 c) x0
+CAP 3 1 \x0. x0 (\x1. (\x2. x2 x2) (\x2. x2 x2 j c))
+CAP 3 1 \x0. x0 (\x1. (\x2. x2 x2) (\x2. x2 x2 c j))
+CAP 3 1 \x0. x0 (\x1. (\x2. x2 x2 j) (\x2. c (x2 x2)))
+CAP 3 1 \x0. x0 (\x1. (\x2. x2 x2 j) (\x2. x2 x2 c))
+CAP 3 1 \x0. x0 (\x1. (\x2. c (x2 x2)) (\x2. x2 x2 j))
+CAP 3 1 \x0. x0 (\x1. (\x2. x2 x2 c) (\x2. x2 x2 j))
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. \x2. x1 x1 j) c)
+CAP 3 1 \x0. x0 c ((\x1. x1 x1) (\x1. \x2. x1 x1 j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x2 x2 j c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x2 x2 c j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (x1 x1 c (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (x1 x1 (\x2. j) c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. x2 j c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. x2 c j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x0 c (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x0 (\x2. j) c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 c (x1 x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (\x2. j) (c (x1 x1)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (\x2. j) (x1 x1 c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c (\x2. x1 j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c (x0 (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) (x0 c))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) (c x0))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 c (\x2. j) (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (\x2. j) c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (c (x1 x1)) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (x1 x1 c) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x0 c) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (c x0) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 c (x1 x1) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (x1 x1) c (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 x0 c (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c x0 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x2 x1 j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x1 x2 j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (x1 x1 (\x2. j)) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. x1 j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (x0 (\x2. j)) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (\x2. j) (x1 x1) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x0 (x1 x1) (\x2. j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 x0 (\x2. j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) x0 c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c (\x2. j) x0)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) c x0)
+CAP 3 1 \x0. (\x1. x1 x1 x1) (\x1. \x2. x2 j x2 c)
+CAP 3 1 \x0. (\x1. x1 x1 x1) (\x1. \x2. x2 c x2 j)
+CAP 3 1 \x0. (\x1. x0 (x1 x1)) (\x1. x1 x1 c (\x2. j))
+CAP 3 1 \x0. (\x1. x0 (x1 x1)) (\x1. x1 x1 (\x2. j) c)
+CAP 3 1 \x0. (\x1. x1 x1 x0) (\x1. x1 x1 c (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 x0) (\x1. x1 x1 (\x2. j) c)
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 (\x2. x2 x1 j))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 (\x2. x1 x2 j))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x0 (x1 x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 (\x2. x1 j))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 (x0 (\x2. j)))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x0 (\x2. j) (x1 x1))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x0 (x1 x1) (\x2. j))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 x0 (\x2. j))
+CAP 3 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 (\x2. j) x0)
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 (\x2. x2 x1 j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 (\x2. x1 x2 j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x0 (x1 x1 (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 (\x2. x1 j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 (x0 (\x2. j)))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x0 (\x2. j) (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x0 (x1 x1) (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 x0 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 (\x2. j) x0)
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x1 (x2 j x2))
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 j x2 x1)
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 x1 x2 j)
+CAP 3 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 (x1 j) x2)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x0 (c (x1 x1)))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x0 (x1 x1 c))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c (x0 (x1 x1)))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c (x1 x1 x0))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 (x0 c))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 (c x0))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x0 c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c x0 (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x0 (x1 x1) c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 x0 c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. c (x1 x1) x0)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 c x0)
+CAP 3 1 \x0. (\x1. x0 (c (x1 x1))) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x0 (x1 x1 c)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x0 (x1 c x1)) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. c (x0 (x1 x1))) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. c (x1 x1 x0)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. c (x1 x0 x1)) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. x1 x1 (x0 c)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 (c x0)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x0 (x1 c)) (\x1. \x2. x2 x2 j)
+CAP 3 1 \x0. (\x1. x1 c (x1 x0)) (\x1. \x2. x2 x2 j)
+CAP 3 1 \x0. (\x1. x0 c (x1 x1)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. c x0 (x1 x1)) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x0 (x1 x1) c) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 x0 c) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x0 x1 c) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. c (x1 x1) x0) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1 c x0) (\x1. x1 x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 c x1 x0) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. x1 (x0 c) x1) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. x1 (c x0) x1) (\x1. \x2. x2 j x2)
+CAP 3 1 \x0. (\x1. x1 (\x2. x2 x1 j)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 (\x2. x2 x1 j)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 (\x2. x1 x2 j)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 (\x2. x1 x2 j)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x0 (x1 x1 (\x2. j))) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x0 (x1 x1 (\x2. j))) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. x1 j)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. x1 j)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 (x0 (\x2. j))) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (x0 (\x2. j))) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x0 (\x2. j) (x1 x1)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x0 (\x2. j) (x1 x1)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x0 (x1 x1) (\x2. j)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x0 (x1 x1) (\x2. j)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 x0 (\x2. j)) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 x0 (\x2. j)) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) x0) (\x1. c (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) x0) (\x1. x1 x1 c)
+CAP 3 1 \x0. (\x1. x1 x1 c (\x2. j)) (\x1. x0 (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 c (\x2. j)) (\x1. x1 x1 x0)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) c) (\x1. x0 (x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j) c) (\x1. x1 x1 x0)
+CAP 3 1 \x0. (\x1. x1 x1 c (\x2. x1 j)) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. x1 j) c) (\x1. x1 x1)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 j) (x0 c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 j) (c x0)
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. \x2. x1 x1 j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x2 (x1 x1 j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x2 j (x1 x1)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 (x2 j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x2 (x1 x1) j) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 x2 j) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 j x2) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x1 x1 j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. x0 j)) c
+CAP 3 1 \x0. (\x1. x1 (x1 x1)) (\x1. \x2. x1 x1 j) c
+CAP 3 1 \x0. (\x1. x1 x1 x1) (\x1. \x2. x1 x1 j) c
+CAP 3 1 \x0. (\x1. \x2. x1 x1 j) (\x1. x1 (x1 x1)) c
+CAP 3 1 \x0. (\x1. \x2. x1 x1 j) (\x1. x1 x1 x1) c
+CAP 3 1 \x0. (\x1. x1 (\x2. x1 x1 j)) (\x1. x1 x1) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 j) x0 c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 j) c x0
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1) c (\x1. \x2. j))
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. j) c)
+CAP 3 1 \x0. x0 c (\x1. \x2. (\x3. x3 x3) (\x3. x3 x3) j)
+CAP 3 1 \x0. x0 c (\x1. (\x2. x2 x2) (\x2. x2 x2) (\x2. j))
+CAP 3 1 \x0. x0 c ((\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. j))
+CAP 3 1 \x0. x0 (\x1. \x2. j) (c ((\x1. x1 x1) (\x1. x1 x1)))
+CAP 3 1 \x0. x0 (\x1. \x2. j) ((\x1. x1 x1) (\x1. x1 x1) c)
+CAP 3 1 \x0. x0 c (\x1. \x2. j) ((\x1. x1 x1) (\x1. x1 x1))
+CAP 3 1 \x0. x0 (\x1. \x2. j) c ((\x1. x1 x1) (\x1. x1 x1))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (x0 c (\x1. \x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (x0 (\x1. \x2. j) c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) c (\x1. \x2. x2 j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) c (\x1. x1 (\x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) c (x0 (\x1. \x2. j))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) (c (\x1. x1))
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. j) (x0 c)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. j) (c x0)
+CAP 3 1 \x0. x0 (c ((\x1. x1 x1) (\x1. x1 x1))) (\x1. \x2. j)
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1) c) (\x1. \x2. j)
+CAP 3 1 \x0. x0 c ((\x1. x1 x1) (\x1. x1 x1)) (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (x0 c) (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (c x0) (\x1. \x2. j)
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1)) c (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1)) c (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 x1) c (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 (x1 x1)) (\x1. x1 x1) c (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1 x1) (\x1. x1 x1) c (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) x0 c (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) c x0 (\x1. \x2. j)
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) c (\x1. x1)
+CAP 3 1 \x0. x0 (\x1. \x2. (\x3. x3 x3) (\x3. x3 x3) j) c
+CAP 3 1 \x0. x0 (\x1. (\x2. x2 x2) (\x2. x2 x2) (\x2. j)) c
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (\x2. x2 x2) (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. x2) (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j) (\x2. x2)) c
+CAP 3 1 \x0. x0 (\x1. \x2. j) ((\x1. x1 x1) (\x1. x1 x1)) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. x2)) (\x1. x1 x1 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 (\x2. x2) x1) (\x1. \x2. x2 j x2) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 (\x2. x2 x2)) c
+CAP 3 1 \x0. (\x1. x1 x1 (\x2. j)) (\x1. x1 x1 (\x2. x2)) c
+CAP 3 1 \x0. (\x1. x1 (\x2. j) x1) (\x1. \x2. x2 x2 x2) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. x2 j) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. x1 (\x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (x0 (\x1. \x2. j)) c
+CAP 3 1 \x0. (\x1. x1 x1 (x1 (\x2. j))) (\x1. \x2. x2 x2) c
+CAP 3 1 \x0. (\x1. x1 (\x2. j) (x1 x1)) (\x1. \x2. x2 x2) c
+CAP 3 1 \x0. x0 ((\x1. x1 x1) (\x1. x1 x1)) (\x1. \x2. j) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 (x1 x1)) (\x1. \x2. j) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 x1) (\x1. \x2. j) c
+CAP 3 1 \x0. (\x1. x1 (x1 x1)) (\x1. x1 x1) (\x1. \x2. j) c
+CAP 3 1 \x0. (\x1. x1 x1 x1) (\x1. x1 x1) (\x1. \x2. j) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) x0 (\x1. \x2. j) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) (\x1. x1) c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. j) x0 c
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) c (\x1. \x2. j) x0
+CAP 3 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. j) c x0
+CAP 3 2 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) (c c)
+CAP 3 2 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. j)) c c
+CAP 4 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. \x3. j)) c
+CAP 4 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c (\x2. \x3. j))
+CAP 4 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. \x3. j) c)
+CAP 4 1 \x0. (\x1. c (x1 x1)) (\x1. x1 x1 (\x2. \x3. j))
+CAP 4 1 \x0. (\x1. x1 x1 c) (\x1. x1 x1 (\x2. \x3. j))
+CAP 4 1 \x0. (\x1. x1 c x1) (\x1. \x2. x2 (\x3. j) x2)
+CAP 4 1 \x0. (\x1. x1 x1 (\x2. \x3. j)) (\x1. c (x1 x1))
+CAP 4 1 \x0. (\x1. x1 x1 (\x2. \x3. j)) (\x1. x1 x1 c)
+CAP 4 1 \x0. (\x1. x1 x1) (\x1. \x2. x1 x1 (\x3. j)) c
+CAP 4 1 \x0. (\x1. c (x1 x1)) (\x1. \x2. x1 x1 (\x3. j))
+CAP 4 1 \x0. (\x1. x1 x1 c) (\x1. \x2. x1 x1 (\x3. j))
+CAP 4 1 \x0. (\x1. x1 c x1) (\x1. \x2. \x3. x2 j x2)
+CAP 4 1 \x0. (\x1. \x2. x1 x1 (\x3. j)) (\x1. c (x1 x1))
+CAP 4 1 \x0. (\x1. \x2. x1 x1 (\x3. j)) (\x1. x1 x1 c)
+CAP 4 1 \x0. (\x1. x1 x1) (\x1. x1 x1) c (\x1. \x2. \x3. j)
+CAP 4 1 \x0. (\x1. x1 x1) (\x1. x1 x1) (\x1. \x2. \x3. j) c
+CAP 4 1 \x0. (\x1. x1 c (x1 (\x2. \x3. j))) (\x1. \x2. x2 x2)
+CAP 4 1 \x0. (\x1. x1 (\x2. \x3. j) (x1 c)) (\x1. \x2. x2 x2)
+CAP 4 1 \x0. (\x1. x1 x1) (\x1. c (x1 x1)) (\x1. \x2. \x3. j)
+CAP 4 1 \x0. (\x1. x1 x1) (\x1. x1 x1 c) (\x1. \x2. \x3. j)
+CAP 4 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. \x3. j)) (\x1. c)
+CAP 4 1 \x0. (\x1. x1 (\x2. x1)) (\x1. x1 (\x2. \x3. j) x1) c
+CAP 5 1 \x0. (\x1. x1 x1) (\x1. x1 x1 (\x2. \x3. \x4. j)) c

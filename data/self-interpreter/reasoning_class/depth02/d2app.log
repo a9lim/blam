@@ -1,0 +1,8 @@
+d2app f=1 V=[4, 5, 6, 7]: n=247035 {'z': 243456, 'zfuel': 3330, 'u1': 236, 'alarm': 13} hits=0 caps=3343 22.6s
+d2app f=1 V=[8, 9, 10]: n=58165 {'z': 52421, 'zfuel': 5640, 'u1': 81, 'alarm': 23} hits=0 caps=5663 21.4s
+d2app f=2 V=[5, 6, 7, 8, 9, 10]: n=172112 {'z': 170204, 'u1': 61, 'zfuel': 1845, 'alarm': 2} hits=0 caps=1847 16.3s
+d2app f=3 V=[6, 7, 8, 9, 10]: n=72693 {'z': 72480, 'u1': 9, 'zfuel': 204} hits=0 caps=204 12.0s
+d2app f=4 V=[7, 8, 9, 10]: n=19396 {'z': 19396} hits=0 caps=0 8.1s
+d2app f=5 V=[8, 9, 10]: n=3345 {'z': 3345} hits=0 caps=0 3.1s
+d2app f=6 V=[9, 10]: n=530 {'z': 530} hits=0 caps=0 0.2s
+done

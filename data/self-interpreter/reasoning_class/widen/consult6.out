@@ -1,0 +1,30 @@
+[gaslamp] → codex · job cx-20261021-233438-5866 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-233438-5866/events.jsonl
+( •̀ᴗ•́ ) **Proved sharp bounds for an unbounded source family; arbitrary-source NEXT ≥ 92 remains open.**
+
+| NEXT source | Kernel-checked bound |
+|---|---:|
+| Structural Boolean pruning | `q ≥ 92`, `F ≥ 4` |
+| One designated let anywhere inside the tag binder | `q ≥ 98` |
+| One let outside the tag binder | `q ≥ 99` |
+
+**Essential hypothesis:** both Boolean projections must already be beta-normal after pruning and the designated substitution. This does not cover every source that is beta-normal outside one let.
+
+The proof charges sharing exactly once. Complete inverse-substitution lemmas recover every used argument and body from target-tree cuts; structural induction then prices the shared argument pair once and the body pair once. Only four fixed target pairs are evaluated—there is no source-term sweep.
+
+`OneLet.covered_admin_frontier` also allows arbitrarily many preceding cost-safe administrative contractions and proves both required inequalities:
+
+```text
+q ≥ 92
+q + 3F ≥ 104
+```
+
+All three bounds have checked witnesses. The family strictly extends the old two-arm class: `headChoiceNext` satisfies the rigid laws and new hypotheses but violates the old tag-arity restriction.
+
+The remaining `q=32..91` cases must resist this coverage even after administrative cleanup. The unresolved issue is shared functions whose applications create further beta reductions after selection or substitution; their source arguments need not survive as target subtrees.
+
+Details and exact hypotheses are in [REPORT.md §9](/Users/a9lim/Work/blam/tmp/round4/widen/REPORT.md:588); the reusable theorem is in [Widen.lean](/Users/a9lim/Work/blam/tmp/round4/widen/Widen.lean:2298). `NOTES.md` is updated.
+
+Final audit: **76 theorem dependency sets, 12.09 seconds, two threads**, no proof holes or extra axioms. No tracked files changed and no new complete interpreter was constructed.
+
+[gaslamp] job: cx-20261021-233438-5866 · session: 01a1615e-eb26-73f0-b5e5-f58af78c3700 · thread: r4-widen · resume: gaslamp codex --thread r4-widen · tok: 22678k→205k
+[lane.sh] done rc=0 tries=1

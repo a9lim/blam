@@ -1,0 +1,124 @@
+[gaslamp] → codex · job cx-20261021-231645-99ae · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-231645-99ae/events.jsonl
+( •̀_•́ ) I reproduced successful Lean checks of both `ValuesH3.lean` and its imported `Widen.lean` snapshot, with the reported axioms. I found no error in the proved cost identities. The substantive issues concern coverage and interpretation.
+
+1. **High severity: correct interpreters need not admit the stipulated converter—even while satisfying your other reader hypotheses.**
+
+   The restriction is [Converter, line 165](/Users/a9lim/Work/blam/tmp/round4/values/lean/ValuesH3.lean:165): conversion must work with `j` rigid, before substituting the actual NEXT.
+
+   Here is a concrete counterexample construction, derived by hand rather than formalized in this review. Write
+   ```
+   A = p (λf. c Abs(f))
+   B = p (λf. p (λg. c App(f,g)))
+   Q = λb. b A B
+   V_n = j (λx y. U_n(N)).
+   ```
+   This `Q` satisfies the canonical branch laws. After filling the hole,
+   ```
+   V_n[Q/j] →* U_n(N).
+   ```
+   Nevertheless, **no `Converter V κ` exists**. Substitute `j := λz.I` in its purported laws. Every `V_n` becomes `I`, while `κ` is unchanged because its only free variable is `c`. Consequently the same term `κ I N` would be β-equivalent to both
+   ```
+   c U_0(N) N
+   c U_1(N) N,
+   ```
+   distinct β-normal forms. Contradiction.
+
+   This representation has an actual one-hole reader. Let `S` be a closed unary-stream skipper satisfying `S U_n(N) →* N`; for example,
+   ```
+   S = Y (λrec s. s (λb t. b t (rec t))).
+   R = (λk. λs. s (λb t.
+          b (t k) (c (k (λx y.t)) (S t)))) j.
+   ```
+   Then `R Z(r) =β r j` and `R U_(n+1)(N) =β c V_n N`. It has exactly one source `j`, only `c,j` free, and `V_n` contains no `c`. Substituting the displayed `Q` contracts its variable arm to the ordinary raw-value arm; the resulting parser has the standard canonical semantics.
+
+   Thus the converter hypothesis leaves a **real semantic coverage gap**, not merely a missing existence proof. This example does not establish a competitive size. It establishes that “correct interpreter ⇒ rigid converter exists” is false under the stated representation allowance.
+
+2. **Medium severity: (ii) needs an explicit `F ≥ 2` qualification after dropping NEXT’s laws.**
+
+   [The shifted theorem, line 354](/Users/a9lim/Work/blam/tmp/round4/values/lean/ValuesH3.lean:354) explicitly assumes this. In the older lane, `RigidNext` supplied it; arbitrary `FreeUnder 2 Q` does not.
+
+   For `δ=3`, the frontier is exactly
+   ```
+   F ≥ 2,    q ≥ 95,    q + 3F ≥ 107.
+   ```
+   **Assuming `F ≥ 2`**, your complement arithmetic is correct:
+   ```
+   q ≤ 94  or  (F=2 and q≤100)  or  (F=3 and q≤97).
+   ```
+   Without that assumption, add `F≤1` to the uncovered region. For example, the numerical profile `F=1,q=96` satisfies none of your listed alternatives but fails the theorem’s hypotheses.
+
+   This is a missing qualification, not a demonstrated sub-162 interpreter. Do not recover `F≥2` by citing the old rigid-branch theorem after removing its hypotheses.
+
+3. **Medium severity: domination is a source-size comparison, not an equivalence-preserving replacement theorem.**
+
+   The conclusion at [lines 336–337](/Users/a9lim/Work/blam/tmp/round4/values/lean/ValuesH3.lean:336) provides a canonical assembly with a `FullReader` and no larger literal source size. That does give a member of the raw separated class as defined in the background.
+
+   It does **not** assert that the original assembly satisfies the self-interpreter contract, that its values implement any constructors, or that the two assemblies are β-equivalent. Indeed arbitrary nonsense `Q` is allowed if its scope and numerical prices qualify.
+
+   Therefore consequence (i) is correct when phrased as:
+   > The domination inequality does not require the candidate NEXT’s constructor laws.
+
+   It is overstated if read as:
+   > Every correct alternative-constructor interpreter is now covered.
+
+   The latter additionally needs the reader interface, converter, source separation, and price conditions. The canonical constructors also remain on the **dominating** side.
+
+   The fallback at [line 385](/Users/a9lim/Work/blam/tmp/round4/values/lean/ValuesH3.lean:385) makes this distinction especially clear: once the original source costs at least 162, the witness is simply `reader162`, unrelated to its representation.
+
+4. **Medium severity: substantial interface and source restrictions remain; “arbitrary value representation” should name them.**
+
+   [VReader, lines 157–161](/Users/a9lim/Work/blam/tmp/round4/values/lean/ValuesH3.lean:157), together with the domination hypotheses, still requires:
+
+   - A continuation receiving exactly two arguments, with the second β-equivalent to the original rigid `N`. Bundled results, encoded remainders, and merely η-equivalent remainders are outside this interface.
+   - Exactly `R Z(r) =β r j`, preserving the original zero-tag handoff.
+   - Reader source scope `[c,j]`, excluding direct recursion access and other helpers.
+   - One **source occurrence** of `j`, plus hygienic NEXT insertion that cannot capture reader-local binders.
+   - An opaque fixed-point context.
+   - A converter whose source cannot independently access `j`, recursion, or reader-local state.
+
+   These conditions are not consequences of the external closed-program contract. Even the harmless source transformation `(λx.R) j`, with `x` unused and `R` already containing one `j`, preserves behavior while violating the one-hole condition. Hoisting can repair multiplicity, but its price must be charged.
+
+   Consequently this is a useful enlargement of a separated CPS class, not removal of all value/protocol assumptions.
+
+5. **Low severity: the prose misstates where freshness and representation scope are enforced.**
+
+   `VReader` itself contains neither `occ 0 (V n)=0` nor a scope condition on `V n`. Freshness is a separate hypothesis at [line 179](/Users/a9lim/Work/blam/tmp/round4/values/lean/ValuesH3.lean:179). The advertised frame `[c,j,N,r]` is not syntactically enforced for `V`.
+
+   Both distinctions are observable because the laws use β-joinability. For example,
+   ```
+   V_n = (λx.U_n(N)) c
+   ```
+   works with an ordinary raw reader and converter `κ=c`, but fails syntactic freshness. Similarly, replacing that final `c` by an out-of-frame variable gives a representation accepted by `VReader` despite violating the advertised frame.
+
+   These examples do **not** invalidate transfer: its explicit freshness hypothesis is used correctly. They show that freshness is a sufficient syntactic condition, stronger than semantic continuation independence, and that the definition summary should match the actual record.
+
+6. **Low severity: the cell threshold is correct under its stated accounting assumptions, but “exactly” needs care.**
+
+   With `δ=3`, `q=68+|D|`, and `F=4`, the two frontier inequalities both reduce to `|D|≥27`. That arithmetic is correct.
+
+   For the **literal** `wp162`, more is available directly:
+   ```
+   cost(wp162)=39,  depth(wp162)=1,
+   |assemble knot wp162 Q| = 63 + q + F.
+   ```
+   Thus every such assembly with `q+F≥99` is already dominated by the known 162, without the reader conjecture. Any sub-162 assembly using this reader and any permitted knot must satisfy `q+F≤98`: in particular `q≤96` for `F=2`, and `q≤95` for `F=3`. Your listed regions are valid but weaker when “162-shape” means this exact reader.
+
+   For the literal cell replacement with `F=4`, the source size is `135+|D|`. The 27-bit threshold is therefore also exactly the point at which that canonical-knot source reaches 162. It is not a necessary condition for domination under arbitrary larger knots or other readers.
+
+   Also, keep `F=4` as an explicit restriction on `D`. The round-3 report permits references to numerous ambient helpers; arbitrary such replacements need not preserve the NEXT capture count or its permitted source scope. The report itself correctly limits the 27-bit result to `D=λu r.r H` and uniform lookup ([REPORT, line 241](/Users/a9lim/Work/blam/data/self-interpreter/reasoning_162/env/REPORT.md:241)).
+
+7. **Verified: the δ accounting is sound, and (iii) follows with all hypotheses retained.**
+
+   At reader depth `d`, a bare `c` costs `d+2`. A shifted one-free-leaf converter costs `|κ|+d`, giving exactly `|κ|−2` per occurrence. The converter contains no `j`, so substitution preserves the existing hole’s occurrence and depth.
+
+   For whole-prefix stripping, a bare occurrence costs ten extra bits; replacing `c a` by `a (λq.c)` costs three. Each source occurrence is either applied or bare, yielding
+   ```
+   δ = 10(a+u) − 7a = 3a + 10u.
+   ```
+   The rewrite adds no binder above the moved argument, so it preserves any `j` depth inside it. I found no applied/bare counting error or natural-subtraction problem.
+
+   `floor_of_dominated` then correctly transfers the **all-unary, one-hole FullReader** floor. Under that precise reader-46 conjecture, every assembly satisfying a domination theorem’s complete hypotheses has at least 162 bits. Converter existence alone is insufficient: an expensive converter can put the required price frontier beyond the candidate’s NEXT budget.
+
+**Verdict:** The checked theorems support a sound, nonvacuous conditional domination result; I found no proof or price-accounting defect. Consequence (iii) is valid, and (ii)’s arithmetic is valid with explicit `F≥2` and cell-accounting assumptions. The main overstatement would be treating this as coverage of arbitrary correct value representations: the rigid-converter requirement excludes even correctness-compatible, one-hole, continuation-free representations, as the explicit opaque-`j` construction demonstrates. Describe the result as domination for converter-admitting representations within the retained separated reader interface.
+
+[gaslamp] job: cx-20261021-231645-99ae · session: 01a1619c-71f6-7963-b57b-9ecb7b27e3fe · resume: gaslamp codex --resume 01a1619c-71f6-7963-b57b-9ecb7b27e3fe · tok: 588k→8.8k

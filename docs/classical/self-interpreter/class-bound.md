@@ -4,9 +4,13 @@ This is the strongest lower bound near 162 bits. It covers every
 interpreter built the way the 162 and the 165 are built — an opaque
 fixed-point knot around a parser whose reader may fuse dispatch, variable
 value, skip and return arbitrarily, with a separate NEXT that builds the
-canonical values — and it reduces 162-optimality within that class to a
-single question about readers. That question is open; §4 says exactly how
-far it is settled.
+values — and it reduces 162-optimality within that class to a single
+question about readers. That question is open; §3 says exactly how far it is
+settled. §4 widens the class (NEXT of any syntax, any value representation,
+any opaque recursion in a two-port model, continuation-headed analogues) and
+derives part of its laws from the contract; §5 records what lies outside.
+Lane archives: `data/self-interpreter/reasoning_162/` (round 3) and
+`data/self-interpreter/reasoning_class/` (round 4).
 
 ## 1. The class
 
@@ -38,10 +42,14 @@ A member of the class is `E = T[H/h]` with
 All sizes are of these literal source trees. The 162 is the member with
 `R = λs. s I (λu. s (λq. c) (s s u)) j`; the 165 is the member with
 `R = (λn s. s (λb. b (λu r. r n) c) (s s s)) j`. The separation, the
-normality and the rigid laws are hypotheses: they are not derived from the
-closed-source contract, and §5 records what lies outside them.
+normality and the rigid laws are hypotheses: §4 says which of them can be
+weakened or derived, and §5 what lies outside. Two consequences of the
+definition: every member is s-headed (the zero law forces the reader's
+head normal form to be `λs. s A⃗`), and the record's dual-operand readers,
+such as `λs. s I (s (λq. c)) (s K j (s s s))` (`w = 53`, the 169), meet the
+rigid laws and are ordinary members.
 
-## 2. The exact price and the 138-bit bound
+## 2. The exact price and the 146-bit bound
 
 Write `cost(R)` for R's BLC size with the `j` leaf priced at zero (and `c`
 at its index in the frame `[c, j]`), `depth(j)` for the number of R's
@@ -79,99 +87,310 @@ the `4 depth(j)`. The proof has three parts, all kernel-checked:
   (`reader_depth_charges`), hence `w(R) ≥ 22`, `|H| ≥ 118`, and with the
   Lean knot bound `18 + 2k` (`SelfintKnot`), `|E| ≥ 18 + 120k ≥ 138`.
 
-The handwritten proof is Codex's (round 3); two independent reviews (a
-fresh Codex consult and Gemini) found it correct, the Codex review noting
-that the exact price is an equality only for the canonical NEXT and knot
-(an unused redex in the knot adds 8 bits while keeping the fixed-point
-equation).
+**Theorem (Lean, `Blc/SelfintReader30.lean`, Codex).** Every one-hole
+reader satisfying the zero law and the length-one unary law has
+`w(R) ≥ 30` (`SelfintReader30Final.reader_weight_30`), so **every member has
+at least 146 bits** (`SelfintReader30Final.class_bound_146`), with no
+coverage or minimality hypothesis left. The proof formalizes Codex's
+round-3 handwritten argument, which two reviews had found correct: a
+minimum-weight counterexample, with the λ count as tie-break, exists and
+has no erasing redex; it has two live source binders, and three when it is
+not λ-rooted, which eliminates the non-λ case below 30; a λ-rooted one below
+30 is β-normal, stream-headed and satisfies five count rows; and a Lean
+enumerator, proved complete, produces exactly the 3,484 layouts those rows
+admit, each refuted by a non-joinability certificate.
 
-## 3. The reader weight is at least 30: 146 bits
+**Hoisting is exact** (Lean): for `f` free `c` leaves and depth `d`,
+`w((λa. R[a/j]) j) = w(R) + 6 + f − 3d`, and the hoist reduces back to `R`.
+So depth ≥ 5 already has `w ≥ 46`, and a hoist from depth `d ≤ 2` is never a
+minimum (it contracts to a lighter reader).
 
-**Theorem (handwritten, finite cases in Lean).** Every reader has
-`w(R) ≥ 30`; hence every member of the class has at least **146** bits.
+The per-reader price `116 + w(R)` is exact only for the canonical NEXT and
+knot: a let-bound NEXT pays one bit per reader λ for two leaves instead of
+four, so at deep holes the same reader can assemble one bit cheaper
+(a 233-bit witness against 234). That never lowers the class minimum (§4.1).
 
-- Every reader has two live source binders, one of them nonlinear (a
-  paired-head invariant on the two inputs, extended to arbitrary source by
-  weak-head reduction).
-- A minimum-weight counterexample has no erasing redex, and a non-λ one has
-  three live binders; the resulting count rows reduce every reader of
-  weight below 30 to 3,484 β-normal source layouts, each refuted by an
-  explicit non-joinability theorem in Lean. The coverage step is
-  handwritten: it is a minimum-counterexample argument, not a listing of
-  every reader.
-- **Hoisting is exact** (Lean): for `f` free `c` leaves and depth `d`,
-  `w((λa. R[a/j]) j) = w(R) + 6 + f − 3d`. So depth ≥ 5 already has
-  `w ≥ 46`, and any sub-46 reader at depth 3 or 4 hoists to a depth-0 one
-  of no greater weight.
-
-Two independent reviews (a fresh Codex consult and Gemini) found the
-argument correct.
-
-## 4. The open question: is every reader's weight at least 46?
+## 3. The open question: is every reader's weight at least 46?
 
 By §2, **the 162 is optimal in the class if and only if `w(R) ≥ 46` for
 every reader**, and any reader with `w ≤ 45` gives a sub-162 interpreter of
-exactly `116 + w` bits. What is settled beyond §3:
+exactly `116 + w` bits. No such reader has been found: the cheapest readers
+other than the 162's weigh 47 (`λs. s I (λu. s (λq. c) (s s s)) j`), 48 (the
+164's `λs. s (λb. b F c) (s I (s s) j)`) and 49 (the 165's).
 
-- **Two λs.** Every two-λ reader has the literal shape
-  `λs. s D ((s s) A)` with its hole at depth two, and `w ≥ 50`
-  (handwritten). So a sub-46 reader has at least three λs; the 162's has
-  four.
-- **Three λs.** At depth 1 a minimum λ-rooted three-λ counterexample is
-  β-normal or has a nonlinear redex copying its other inner λ; at depth 0
-  the first head contractor is nonlinear and `f ≤ 4`; at depth 2,
-  `f ≤ 3` and two further count rows are excluded (handwritten, 42 fixed
-  reductions and 92 callback normal forms in Lean). A minimum
-  application-rooted reader with the fewest leaves has a linear first head
-  contractor, and the exact contraction cost combined with hoisting removes
-  every such profile at depth 1 with three λs and every one at depth 2:
-  151 of the 1,098 count profiles go, 947 remain (handwritten;
-  structural and arithmetic parts in Lean).
-- **Serial readers.** `λs. s D E j` with literal abstractions and at most
-  four λs has `w ≥ 46` (sharp), and with exactly two λs in each operand
-  `w ≥ 52` (sharp). Any application context with at most one flat source
-  callback reduces, on long unary inputs, to data, a neutral or that same
-  callback (Lean, unbounded), so a one-λ selector of any syntax forces the
-  last arm itself to satisfy `E j =β c U_(n−1) N`. Roles cannot be separated
-  in general: `H_c = λx. x (λq. c)` has `H_c F →* I`, `H_c I →* K c` and
-  `H_c H_c →* c` (Lean), one term serving as selector, wrapper and
-  continuation; the reader built from it has weight 75 and reduces to the
-  canonical one.
-- **The 162's own shape, inside the class.** With `j` and `c` rigid (NEXT
-  opaque, as the class has it), every middle operand `A` of
-  `λs. s I A j` up to 30 bits (1,313,478 terms over `[s, c]`), and every
-  variable arm `λu. B` up to 32 bits with `u` free, meets the variable law
-  only if it is the 162's family `λu. s (λq. c) (s s X)` (Claude's round-3
-  handoff lane; probes on unary codes of length 1–3, every hit in the
-  family whose law is proved for all lengths). So in the `s I` shape the
-  162's reader is forced in shape, not only in size, through those budgets.
-- **With the real NEXT and knot**, an enumeration of the same slot through
-  27 bits found nothing, but its checker mis-binds the generator when it is
-  applied to a non-generator argument and its comparison cache can reject
-  β-equal terms (both reproduced in Lean); it is not a result
-  (`interpreter.md` §3).
-- **Constructive side.** No reader with `w ≤ 45` has been found. The
-  cheapest readers other than the 162's weigh 47
-  (`λs. s I (λu. s (λq. c) (s s s)) j`), 48 and 49 (the 165's). Three
-  finite checks found none, each complete within its bounds: every s-headed
-  reader with β-normal operands of at most 18 bits at depth 1 (a dynamic
-  programme over operand meanings on `Z(r)`, `U_1`, `U_2`), the same at
-  depth 0 with `j` let-bound, and the three-λ redex row
-  `λs. (λx. M) (λy. A)` (1,251,361 pairs). The sharp remaining
-  obstruction is one operand that is `j` on a zero stream and `N` on a
-  variable: the 162 pays 6 bits for it (the absorber `λu` and `s s u`), and
-  every standalone such operand found costs at least 25 (Claude's round-3
-  refute46 lane).
+**Settled by proof.**
 
-The remaining count families (depth, root form, λ count, leaves, index
-sum) are listed exactly in
-`data/self-interpreter/reasoning_162/floor/STATE46.md`.
+- Two-λ readers have the shape `λs. s D ((s s) A)` and `w ≥ 50`; the serial
+  form `λs. s D E j` with literal abstractions and at most four λs has
+  `w ≥ 46` (sharp), with two λs in each operand `w ≥ 52` (handwritten,
+  round 3).
+- **Sharing in whole contexts** (Lean, Codex). No application tree over
+  `s`, `I`, `F`, rigid parameters, continuation towers `C_m = λ^m. c` and
+  factories `H_m = λx. x C_m` — any number of copies, different
+  specialization arguments, nonlinear lets — satisfies both laws: it fails
+  at every unary length past its application count
+  (`ClosureBarrier.factories_cannot_read`). The invariant stops exactly at
+  `Δ = λx. x x`: `s Δ I (s s) j` is `j` on a zero stream and `N` at every
+  length ≥ 2, but `N j` at length 1, so any proof must carry `n = 1`
+  separately.
+- **Cross-operand sharing through one helper** (Lean, Codex): every
+  reader `λs. ((λg. s (g P) (g s)) A) j`, and its root form
+  `(λg s. s (g P) (g s) j) A`, with any helper `A` and any specializer `P`
+  whose free variables are among `g, s`, has `w ≥ 46`, with no minimality
+  assumption. For closed `P` the zero law alone forces `|A| ≥ 10`, which
+  below 46 forces `P = I` and leaves a complete 26-helper basis. It covers the capturing helper `G = λx u. x (λq. c) (x x u)`, which
+  gives `G F = I` and `G s` = the 162's variable arm, one helper in both
+  roles; shared, it weighs 67.
+- **Minimum readers' source structure** (Lean, Codex): exact weighted β
+  balance at every source position; no erasing redex; every surviving
+  linear redex satisfies the index tax `(F − 1)D ≥ 7 + G` (the hole charged
+  as four captures); contracting a nonlinear `j`-sharing let and hoisting
+  all copies restores one hole and preserves every law, at an exact price.
+  Every reader is literally an s-spine, or has its first source head redex
+  at the root (multiplicity ≤ 7 below 46) or directly under its stream λ
+  (≤ 6), with explicit argument budgets; a λ-free argument at the root must
+  be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
+  Moving a let into the only operand that uses it never raises the weight,
+  so a minimum reader's sharing reaches at least two operands.
+- **What a let can save** (handwritten, Claude). For `(λx. B) A` with `k`
+  uses of `x`, the contraction changes the weight by
+  `S = (k−1)|A| + (f_A − 1)M − 4 − 2k − T` (`M` the uses' depths under B's
+  λs, `T` B's other outward leaves). A linear let pays only through the
+  index tax, when `(f_A − 1)m > 6 + T` (Lean has a 29-bit source whose
+  contractum is 31, not a reader), and otherwise a let needs two uses that
+  are productive. Counting alone allows a let-contracted
+  reader of about 91 bits, whose cheapest shapes are pure self-application
+  bodies `x x … x`: no bounded-sharing bridge follows from accounting, so
+  the remaining step has to be semantic.
+
+**Settled by complete finite checks.** These enumerate every term of every
+shape (redexes included) within the stated budget under the class's exact
+cost model, test both laws on `n = 1, 2, 3`, and certify every fuel or size
+cut-off (a head cycle on the term or its η-normal form, a target constant
+absent, or a closed Ω subterm). An empty result therefore refutes the
+family; the lists are in the round-4 archive. Claude's lanes:
+
+- minimal pieces: the unary core (one `j`, erased) costs at least 20 bits
+  and through 28 bits the only core of at most 23 is `s (λq. c) (s s j)`;
+  the zero core at least 12; an operand that is `j` on a zero stream and `N`
+  on unary at least 25 (two minima, `s K j (s s s)` and
+  `s (λx. s (λb. b F)) j`); a variable arm that need not absorb `j` at least
+  22, uniquely `s (λq. c) (s s s)`;
+- the **first dispatch**: substituting a generic cell `cons b r` and
+  head-reducing, every reader's body reaches `b A B C⃗` (zero: `A C⃗ = r j`,
+  unary: `B C⃗ = c r N`) or `r A`. The additive "dispatcher + zero part +
+  unary part" decomposition is false — the 164's `c`, `N` and single `j`
+  each serve two roles — so the families are closed by first-dispatch
+  shape: selectors `I` and `K` for every operand shape; `λb. b X Y` with one
+  or two trailing operands; general `λb. B` dispatchers with
+  `|B|, |T| ≤ 21`, or `|B| ≤ 9`; every λ-rooted reader whose body is at most
+  25 bits;
+- every reader with its hole at depth ≥ 2, and every depth-0 reader whose
+  `j` is the argument of a λ, under the minimality order (weight, λ count,
+  depth). This corrects round 3's reduction, which handed depth-2 rows to
+  depth 0 by hoisting: such hoists are never minima, and a hoisted depth-0
+  form contracts to a deep reader of weight up to 50;
+- shared lets over the `s I` and `s K` spines, lets shared across a general
+  λ-dispatcher and one or two operands, and the self-application families
+  `λs. (λx. x x) A j` that maximise the counting bound.
+
+**Reduction of depth 1** (handwritten with checks through 25 bits, Claude;
+reviewed adversarially by Codex). Call a position unary-dispensable when
+replacing it by Ω keeps the unary law for every `n`; along the normal-order
+run that holds exactly when no residual of it is touched or survives (the
+transfer argument, joint dispensability and ancestor closure all survive
+review), so the cores of the two laws are unique and `w` splits exactly into
+core, fillers and the hole's depth tax. (The 162 is a 40-bit unary core, a
+2-bit filler — its `u`, needed by neither law — and `j` at depth 1.)
+
+Anchoring at `j`'s parent node `X`, which at depth 1 is context-free, covers
+the readers whose `X` is rigid on a zero stream: each such λ-rooted
+depth-1 reader with `w ≤ 45` lies in one of four families, the 162's own
+`λs. Y j` with `Y[Z] =βη r`, `Y[U] j = c U N` and `31 ≤ |Y| ≤ 37` (the 162
+has 38); a zero-only operand inside a 23–27-bit wrapper; the wrapper
+`s I I x` with a 23-bit operand; and an operand that stays a λ on unary
+inputs. Every other rigid combination is closed (a zero handoff of the
+164's kind costs at least 48). `X` can instead return a λ that its context
+applies: in
+`λs. (λx. s (λb t. b (x t) (c t x))) (s (λb t. b (λa k. k a) (t t)) j)`
+(`w = 84`, Codex) `X` gives `λk. k j` on a zero stream and `N` on every
+unary one. Zero-λ parents are therefore outside the four families and
+unpriced.
+
+Inside the first family, anchor again at the node `ν` that becomes the
+unary output. When every binder above `ν` touches only unary-dispensable
+positions in it (the absorber's variable always does), moving `ν`'s subterm
+out past `k` binders saves exactly `k` bits per needed `s` or `c` leaf (the
+index arithmetic is confirmed), the only arms of at most 23 bits are
+`s (λq. c) (s s s)` and `s (λq. c) (s s c)`, and a wrapper check that tests
+the unary law alone (Codex: all 6,089 wrappers of charged cost ≤ 18, no
+cut-offs) leaves nothing below the 162's `s I (λu. x)`. So a *minimum*
+reader of this shape has `w ≥ 46`, with equality only through the 162's
+wrapper. The argument builds a lighter reader elsewhere, so it bounds
+minimum readers, not every reader of the family; and the zero output need
+not be rigid there (a `w = 104` reader with the binder hypothesis met has
+`ν` returning `λq. r j` on zero). What remains of the family is a binder
+above `ν` carrying a value the unary output needs — sharing between roles
+again, through a let or through a cell part the bit opens. The checks have
+at most 53,537 terms after the first pass; the review reproduced the small
+ones, not the full 25-bit cut-off audit.
+
+**Open.** At depth 1, zero-λ parents and the needed-binder case of the
+162's family; application-rooted readers with the hole under a non-stream
+λ; depth-0 readers whose `j` follows a shared top-level let; first operands
+that are stream-headed or redexes, and `λb. b X Y` with four or more
+operands; first-redex bodies headed by the let's variable whose argument
+contains a λ, and nested head redexes. The record's estimate is about 2×10⁹
+λ-rooted depth-1 readers at `w ≤ 45`, so these need arguments, not larger
+checks. The productive tools so far are the first dispatch, the
+context-free anchor at `j`'s parent, and the closed-specializer algebra.
+
+## 4. The same minimum under weaker hypotheses
+
+Each widening below either keeps the class minimum or bounds what the
+widened members can cost, so a sub-162 outside the original class must
+break something it does not cover.
+
+### 4.1 NEXT of any syntax
+
+**Theorem (Lean, `Blc/SelfintWiden.lean`, Codex).** Replace NEXT's normality
+and tag-use restrictions by its rigid branch laws alone (`RigidNext`), and
+write `q = |Q|` and `F` for its free `c`/`p` leaves. If
+
+```text
+q ≥ 92    and    q + 3F ≥ 104,
+```
+
+every assembly is at least as large as an original-class assembly with the
+same reader, its hoist, or the 162's reader (`frontier_dominated_full`). In
+this wider class the 162 is optimal **if and only if** every reader obeying
+all unary laws has `w ≥ 46` (`frontier_optimal_iff_reader_floor`), and the
+146 transfers.
+
+The four-free-leaf property fails once normality goes: a NEXT whose `c` and
+`p` are let-shared has two free leaves at 105 bits, and a β-normal NEXT with
+a four-argument tag spine has two at 113. A NEXT that could lower the
+minimum must lie in `32 ≤ q ≤ 91`, or `F = 2` and `q ≤ 97`, or `F = 3` and
+`q ≤ 94`. Lean excludes the rest of the cheap end and two structured
+families: every `RigidNext` has three live source binders and `q ≥ 32`;
+every NEXT obtained from an original-class NEXT by `c`- or `p`-aliasing
+clears the frontier (the cheapest cost 99 and 100 with `F = 3`); and NEXTs
+with one designated let whose projections are β-normal after pruning and
+that substitution cost `q ≥ 98` (let inside the tag binder), `q ≥ 99`
+(outside), or `q ≥ 92` with `F ≥ 4`, after any cost-safe administrative
+contractions (`OneLet.covered_admin_frontier`); this family strictly extends
+the original class. The open remainder is shared functions whose
+applications create further redexes after selection or substitution.
+
+A constructive attempt on paper (Claude) found nothing in the open regions:
+the cheapest NEXTs it could build are 92 bits with `F = 4`, 99 with `F = 3`
+and 105 with `F = 2`, and every way of removing a free leaf cost at least 7
+bits against the frontier's 3. Its 93-bit NEXT, which dispatches inside the
+first parse's argument, assembles to a correct 163. With NEXT's restrictions
+dropped entirely Lean proves `|E| ≥ 76` for the class
+(`unrestricted_next_assembly_lower`) and `|E| ≥ 18 + k(26 + q)` for a knot
+with `k` holes, so a sub-162 member has one hole, or two and `q ≤ 45`.
+
+### 4.2 Value representations
+
+**Theorem (Lean, `Blc/SelfintValues.lean`, Claude).** Let the reader return
+`c V_n N` on unary input for any family `V_n`, keep the zero law, and let
+NEXT be any source. If a converter `κ` with only `c` free satisfies
+`κ V_n N =β c U_(n−1)(N) N`, the member is no smaller than an
+original-class member whenever NEXT clears the frontier shifted by the
+conversion cost `δ` (`transfer_dominated`: `q ≥ 92 + δ`,
+`q + 3F ≥ 104 + δ`, `δ = f(|κ| − 2)` for `f` occurrences of `c`;
+`share_dominated` when the reader is reused unchanged), so any raw reader
+floor carries over (`floor_of_dominated`). The underlying transfer
+(`Blc/SelfintValuesTransfer.lean`) substitutes `κ` for `c`.
+
+For whole-prefix values `U_n` the converter is `λv. v (λq. c)`, 3 bits at an
+applied occurrence of `c` and 10 at a bare one; stripping it from the
+162-shape whole-prefix reader gives the 162's reader exactly
+(`wp162_strip`). Every environment cell of the shape `λu. λr. B`, any body,
+needs more than 26 bits (an exhaustive check of 1,764 bodies through 22
+bits, with a handwritten completeness argument), which with `δ = 3` is
+exactly the price at which a whole-prefix member is dominated; cells with
+fewer leading λs reduce to that shape or fail (handwritten), and let-headed
+cells are open. Not covered: values that use NEXT itself as their decoder,
+which admit no `j`-free converter (Codex's review). The thirteen
+representations priced on paper all lose to the 162's 81 bits of value
+modules: applying the stream delivers only `s X = X F r`, so the only cheap
+variable values are `s` and `r`.
+
+### 4.3 Recursion
+
+**Lemma B (Claude; steps in Lean, `Blc/SelfintKnotHeads.lean`; finite cases
+computer-checked; two Codex reviews).** Model the parser body as one rigid
+occurrence of `h` with two hygienic recursive ports, `h H J`, correctness
+`t =β h t t`, and charge each port's outward references their depth taxes
+`a` and `b`. Every recursion scheme then costs at least `26 + a + b` bits for
+all `a ≥ 2`, `b ≥ 3` — 33 in the 162's frame, 31 in the 165's — and the
+162's knot is the unique minimum. With three or more nonlinear binders this
+is counting (no normal form, two nonlinear binders, no closed port, the bit
+count); with at most two, any counterexample has at most six variable
+occurrences and seven λs, and all fail (234,585 and 244,432 terms at the two
+tax pairs, plus monotonicity). The model excludes lets inside the body,
+several body copies, NEXTs with three recursive call sites, and schemes that
+use what the body computes. The driver template `D G` with
+`G = λx. (λp. B)(D' x)` costs at least 22 bits, uniquely Δ with `x x` (a
+joint check of all 138 driver/fill pairs; a review refuted the first
+proof). Knotless recursion needs its first head to be a complete parser of
+at most 30 bits; every such head with three nonlinear binders fails (6,408
+complete interpreters), and two-binder heads are open.
+
+### 4.4 Continuation-headed analogues
+
+The continuation-headed analogues cost more, independently of the reader
+question (Claude):
+
+- **Split class (Lean, `Blc/SelfintChead.lean`).** Members
+  `T[λp c s. c (R_A[Q_A/j]) (R_B[Q_B/j])]` have separate value- and
+  rest-mode readers and NEXTs under the class's NEXT hypotheses. Value-mode
+  NEXT costs at least 86 bits and rest-mode at least 34, both attained, and
+  every member has at least 165 bits (`split_class_165`; that the zero law
+  forces each reader to be an application is handwritten).
+- Sharing one body between the two modes costs at least 163, sharing one
+  NEXT at least 165, other binder orders at least 164 (handwritten); mode
+  sharing is never optimal, since removing the selector spine saves at least
+  28 bits.
+- Any interpreter `E` gives an s-headed one, `λc s. E (s (λx y. c)) s`, at
+  `|E| + 23`; a conversion with no overhead would itself be the optimality
+  theorem. A literal continuation-headed source below 162 needs a value
+  decoder of at most 127 bits; the best known is 171 (`intL162 K`). The
+  cheapest continuation-headed interpreter built is 199
+  (`reasoning_class/chead/spec200.lam`).
+
+### 4.5 Which laws the contract forces
+
+The rigid laws are hypotheses, but part of them follows from the contract.
+The tool is a divergent probe (Claude's argument, Codex's Lean): the
+canonical value of `λy. Ω` is unsolvable, and a continuation `κ` with only
+`C` free and `κ v N =β C X N` for an unsolvable `v` reduces to `C`, `λa. C B`
+or `λa b. C B b`, so it forwards its second argument verbatim
+(`Blc/SelfintProbe.lean`, `lemmaA`, `classify_continuation`). Under
+syntactic separation, the actual zero handoff and two scoped control
+conditions (NEXT hands the stream to the parser once; APP parses its second
+operand from its first operand's rest), the contract forces the rest part of
+the variable law at every unary length, with an abstract continuation and
+the actual NEXT, and the ABS law and APP's second-operand law as data flow
+(`Blc/SelfintProbeDerive.lean`, `derive_from_source_hypotheses`). The rest
+does not follow: each of these passes the battery while violating one
+hypothesis, none of them small — an inexact variable value (208 bits), APP's
+second operand not parsed from the rest (194), NEXT handing the stream twice
+(265, polished 241), a non-rigid parser (222), a reader correct only for the
+actual NEXT (228). The zero law is a choice of split rather than a
+property: one 171-bit tree splits both ways, and a reader that factors NEXT
+re-separates exactly.
 
 ## 5. Outside the class
 
-A sub-162 interpreter not in the class must break one of its hypotheses.
-The cheapest known mechanism for each is priced below, with constructions in
-`interpreter.md` §6 and the round-3 archive:
+A sub-162 interpreter outside every class above must break one of the
+remaining hypotheses: NEXT's separation from the stream binder, the
+two-port opaque recursion model, an evaluator-style value representation
+with a NEXT-free decoder, the CPS protocol with an exact two-argument
+return. The cheapest known mechanism for each is priced below, with
+constructions in `interpreter.md` §6 and the archives:
 
 - **NEXT uses the stream.** Inside the reader's `λs`, NEXT can embed any
   closed interpreter `Q` as `λb t. Q c s` for `|Q| + 17` bits, so an
@@ -179,21 +398,24 @@ The cheapest known mechanism for each is priced below, with constructions in
   unrestricted would imply every interpreter has at least 79 bits). The
   useful extra modes measured: a separately guarded variable mode, exact
   minimum 177 in its family; markers and second-tag selections 182–193.
-- **Recursion not an opaque knot.** Deleting the knot and filling both
-  recursive call sites with arbitrary terms needs a first head with two
-  incomparable nonlinear binders, and under the ordinary first-child cut
-  costs at least 165; keeping the generator without the `intL` let costs at
-  least 167, attained (Lean, `Blc/SelfintRecursion.lean`). The cut is not
-  forced by the contract: a first head can replay the whole parent (a
-  312-bit witness), so the knotless case is open below that budget.
-- **Values.** With raw-tail variable values and root transparency, the
-  value modules are forced to the 162's shape and cost at least
-  `28 + 34 + 19 = 81` (handwritten); whole-prefix values need a cell of at
-  least 27 bits in the natural `λu r. r H` shape (110-case check).
-- **Reader laws only for the actual NEXT.** Dual operands make the variable
-  operand 10 bits but the dual itself dearer (172); every application of the
-  canonical NEXT is a parser awaiting a stream, so it can never supply a
-  bare continuation.
-- **No CPS parser.** Pair returns, stream-first parsers, thunked
-  remainders and direct evaluation all lose the remainder's η (≥ 8 bits a
-  site) or pay a public adapter (13–21).
+- **No conversion into the class.** A first-bit guard,
+  `G(E) = λc s. s K (E c s) s`, preserves the closed-source contract at
+  `|E| + 30` but violates a law every member satisfies
+  (`Blc/SelfintGlobalBarriers.lean`), so no β-preserving conversion takes
+  every interpreter into the class; a conversion preserving only the
+  contract with bounded overhead would itself be a lower-bound theorem.
+- **Recursion outside the model.** Knotless two-head skeletons cost at
+  least 165 under the ordinary first-child cut and the unshared generator
+  at least 167, attained (`Blc/SelfintRecursion.lean`); the cut is not
+  forced (a 312-bit parent-replay witness), and knotless first heads with
+  two nonlinear binders are open (§4.3).
+- **Returns that are not exact.** A continuation with only `C` free that
+  receives a divergent value forwards its rest verbatim (§4.5), so a
+  variable arm returning `c r NEXT` or a trailing argument fails whatever
+  the continuations and NEXT do. Returning a suffix thunk and the pending
+  NEXT as extra arguments is free at ABS but costs 19 bits at APP and 30 at
+  the public boundary: 201 bits built, 199 and 211 for two variants priced
+  on paper (`reasoning_class/arch/`).
+- **No CPS parser.** Pair returns, stream-first parsers and direct
+  evaluation lose the remainder's η (≥ 8 bits a site) or pay a public
+  adapter (13–21).

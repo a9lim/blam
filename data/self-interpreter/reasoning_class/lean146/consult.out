@@ -1,0 +1,20 @@
+[gaslamp] → codex · job cx-20261021-230957-c9c0 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-230957-c9c0/events.jsonl
+(•̀ᴗ•́) **146 is not fully formalized. The fallback is completed, and the unconditional Lean bound improves to 140 bits.**
+
+Kernel-checked results:
+
+- Minimum-weight readers exist, with lambda count as tie-breaker, and contain no erasing redex.
+- Every two-probe `Reader` has at least two live source binders.
+- Every lambda-rooted sub-30 reader satisfies the five count rows, is beta-normal, and is stream-headed.
+- `reader_weight_24` and `class_bound_140` hold without coverage assumptions.
+- Depth ≥ 5 implies weight ≥ 46.
+
+All statements use only the zero and unary-one probes, so they apply to `FullReader`.
+
+**Two gaps remain for 146:** eliminating minimum non-lambda sources, and proving the generator’s exhaustive membership bridge to the 3,484 layouts. `class_bound_146_of_coverage` exposes these as explicit hypotheses.
+
+Regenerated and checked all **3,484** refutations using `reader29_lean.py`. Final verification: **17 Lean files**, **35.36 seconds**, longest child **2.66 seconds**. No `sorryAx`; dependencies are limited to `propext`, `Classical.choice`, and `Quot.sound`.
+
+[REPORT.md](/Users/a9lim/Work/blam/tmp/round4/lean146/REPORT.md) contains theorem statements, remaining obligations, and build commands. [verification.json](/Users/a9lim/Work/blam/tmp/round4/lean146/verification.json) records hashes and audits. No tracked files changed.
+
+[gaslamp] job: cx-20261021-230957-c9c0 · session: 01a16196-3a67-7811-b8b6-647ae16ae946 · thread: r4-lean146 · resume: gaslamp codex --thread r4-lean146 · tok: 3469k→30k

@@ -1,0 +1,44 @@
+
+namespace Blc.Lean146
+open Term SelfintClass SelfintClassNext SelfintLowerBound SelfintFloor Lean146Live
+
+/-- Minimum-source boundary, discharged by Lean146Accounting.minimumLambdaCoverage. -/
+def MinimumLambdaCoverage : Prop := ∀ R, Minimum R → weight R < 30 →
+  ∃ B, R = .lam B
+
+/-- Finite-grammar exclusion boundary, discharged by Lean146Enum.fiveRowExclusion
+    using the proved source enumerator and 3484 recorded certificates. -/
+def FiveRowExclusion : Prop := ∀ B,
+  FreeUnder 3 B → occ 1 (.lam B) = 1 → NFt (.lam B) → Head 0 B →
+  2 ≤ live (.lam B) → 1 ≤ nonlinear (.lam B) →
+  CountRows (lamCount (.lam B)) (leafCount (.lam B)) (tax 1 (.lam B))
+    (depth (.lam B)) (occ 0 (.lam B)) → ¬ Reader (.lam B)
+
+/-- Modular integration theorem. Both named coverage assumptions are discharged
+    in Final146.lean. -/
+theorem reader_weight_30_of_coverage
+    (hmin : MinimumLambdaCoverage) (hrows : FiveRowExclusion)
+    {R : Term} (hr : Reader R) (hj : occ 1 R = 1) : 30 ≤ weight R := by
+  by_cases hw : 30 ≤ weight R
+  · exact hw
+  · obtain ⟨M,hm,hsmall,_⟩ := counterexample_minimum hr hj (show weight R < 30 by omega)
+    obtain ⟨B,he⟩ := hmin M hm hsmall
+    subst M
+    obtain ⟨hn,hh,hl,hlin,hcounts⟩ := sub30_lambda_shape hm.reader hm.hole hsmall
+    exact (hrows B hm.reader.scope hm.hole hn hh hl hlin hcounts hm.reader).elim
+
+/-- Modular class corollary, instantiated without coverage hypotheses by
+    Lean146Final.class_bound_146 in Final146.lean. -/
+theorem class_bound_146_of_coverage
+    (hmin : MinimumLambdaCoverage) (hrows : FiveRowExclusion)
+    {T R Q : Term} (hT : FreeUnder 1 T) (hfix : BetaJoin T (.app (.var 0) T))
+    (hr : Reader R) (hj : occ 1 R = 1) (hq : Next Q) :
+    146 ≤ SelfintWireCost.wire (assemble T R Q) := by
+  have hw := reader_weight_30_of_coverage hmin hrows hr hj
+  have hc := SelfintClassNext.assembly_lower hT hfix hr.scope hj hq
+  change 30 ≤ cost R + 4 * depth R at hw
+  omega
+
+#print axioms reader_weight_30_of_coverage
+#print axioms class_bound_146_of_coverage
+end Blc.Lean146

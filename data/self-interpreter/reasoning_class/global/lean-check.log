@@ -1,0 +1,21 @@
+GlobalBarriers.lean
+'Blc.Round4Global.projection_value' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Global.value_bound_transfers' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Global.guard_contract' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Global.guard_not_join_root_variable' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Global.concrete_guard' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Global.semantic_conversion_iff' does not depend on any axioms
+elapsed_seconds=0.301; exit=0
+
+TowerBarriers.lean
+'Blc.Round4Towers.value57_towers' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Towers.value84_towers' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Towers.value84_poison' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Towers.both88_towers' depends on axioms: [propext, Quot.sound]
+elapsed_seconds=0.319; exit=0
+
+SpineBarriers.lean
+'Blc.Round4Spines.church_value121_contract' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Spines.church_full_contract' depends on axioms: [propext, Quot.sound]
+'Blc.Round4Spines.church_value_contract' depends on axioms: [propext, Quot.sound]
+elapsed_seconds=0.425; exit=0

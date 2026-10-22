@@ -1,0 +1,15 @@
+[gaslamp] → codex · job cx-20261021-225533-3c44 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-225533-3c44/events.jsonl
+( •̀ᴗ•́ ) **H2 remains open.** [REPORT.md, section 8](/Users/a9lim/Work/blam/tmp/round4/widen/REPORT.md:392) records the follow-up.
+
+New kernel-checked results in [Widen.lean](/Users/a9lim/Work/blam/tmp/round4/widen/Widen.lean:1179):
+
+- Every unrestricted `RigidNext` needs **three live source binders and at least 32 bits**, excluding q≤31 without enumeration.
+- Complete `c`-alias and `p`-alias families over every old-class NEXT satisfy the price frontier. Canonical instances cost **100/F3** and **99/F3**.
+- The unrestricted assembled-class floor rises to **76 bits**. Two-hole sub-162 assemblies require **32≤q≤45**.
+- The minimum-counterexample construction is formalized. Such minima contain no administrative redexes; surviving linear redexes must satisfy the strict index tax `(F_a−1)D > 6+G`.
+
+The remaining disjoint regions are **q=32–91**, **F=2/q=92–97**, and **F=3/q=92–94**. Arbitrary open-function sharing and longer tag spines remain unclassified; minimality alone does not imply normality.
+
+Final audit passed: **54 theorem dependency checks**, no proof holes, **3.76 seconds with two threads**. No new complete interpreter, source sweep, or H3 result. All writes stayed in the lane; tracked files remain unchanged.
+
+[gaslamp] job: cx-20261021-225533-3c44 · session: 01a1615e-eb26-73f0-b5e5-f58af78c3700 · thread: r4-widen · resume: gaslamp codex --thread r4-widen · tok: 15579k→132k

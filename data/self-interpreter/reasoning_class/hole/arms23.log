@@ -1,0 +1,3 @@
+arms cmax=23: 53537 terms, 2 arms, 0.3s
+  cost 22 F_need 4 F 5 :: s (\x0. c) (s s s)   zero: c r r
+  cost 23 F_need 4 F 5 :: s (\x0. c) (s s c)   zero: c r r

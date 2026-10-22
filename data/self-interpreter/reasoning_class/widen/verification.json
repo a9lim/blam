@@ -1,0 +1,10 @@
+{
+  "algorithm": "Known 162 after inert hole padding and local parameter sharing",
+  "as_written": 233,
+  "polished": 162,
+  "battery_written": "233 bits  ok=667 skip=1 fail=0",
+  "battery_polished": "162 bits  ok=667 skip=1 fail=0",
+  "threads": 2,
+  "letopt_timeout_seconds": 100,
+  "frozen_blam_sha256": "00883f147c7128a1642f323920deef23f0af9c8b742dadb3c0f30cf5478bfaa2"
+}

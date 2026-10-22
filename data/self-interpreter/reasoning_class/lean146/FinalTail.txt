@@ -1,0 +1,24 @@
+
+namespace Blc.Lean146Final
+open Term SelfintClass SelfintClassNext Lean146
+
+/-- Every one-hole two-probe reader has weighted source cost at least 30. -/
+theorem reader_weight_30 {R : Term} (hr : Reader R) (hj : occ 1 R = 1) :
+    30 ≤ cost R + 4 * depth R :=
+  reader_weight_30_of_coverage Lean146Accounting.minimumLambdaCoverage
+    Lean146Enum.fiveRowExclusion hr hj
+
+/-- Unconditional 146-bit bound for the separated class. Its only hypotheses
+    are the class contract; neither finite coverage nor minimality is assumed. -/
+theorem class_bound_146 {T R Q : Term}
+    (hT : FreeUnder 1 T) (hfix : BetaJoin T (.app (.var 0) T))
+    (hr : Reader R) (hj : occ 1 R = 1) (hq : Next Q) :
+    146 ≤ SelfintWireCost.wire (assemble T R Q) :=
+  class_bound_146_of_coverage Lean146Accounting.minimumLambdaCoverage
+    Lean146Enum.fiveRowExclusion hT hfix hr hj hq
+
+#print reader_weight_30
+#print class_bound_146
+#print axioms reader_weight_30
+#print axioms class_bound_146
+end Blc.Lean146Final

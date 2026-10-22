@@ -1,0 +1,9 @@
+CAPz 20 j ((\x0. x0 x0) (\x0. x0 x0))
+CAPz 20 (\x0. x0 x0) (\x0. x0 x0) j
+CAPz 22 j (\x0. (\x1. x1 x1) (\x1. x1 x1))
+CAPz 22 (\x0. x0 x0) ((\x0. \x1. x1 x1) j)
+CAPz 22 (\x0. \x1. x1 x1) j (\x0. x0 x0)
+CAPz 22 (\x0. (\x1. x1 x1) (\x1. x1 x1)) j
+side C cmax=22: 60427 terms, 6 caps, 0.3s
+  sig ('cUN', 'cUN', 'cUN'): 19 terms, min 16: ['s (\\x0. x0) (\\x0. x0) j']
+  sig ('N', 'N', 'N'): 2 terms, min 22: ['s (\\x0. x0 (\\x1. x1) c) j', 's (\\x0. x0) (s (\\x0. c)) j']

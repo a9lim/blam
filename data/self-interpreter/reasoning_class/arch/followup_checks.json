@@ -1,0 +1,72 @@
+{
+  "scope": "fixed nonrecursive components only; no complete new interpreter built",
+  "prices": {
+    "old_thunk": {
+      "generator_bits": 151,
+      "L": 15,
+      "A": 21,
+      "X": 35,
+      "with_old_knot": 171
+    },
+    "parser_exposure": {
+      "generator_bits": 170,
+      "L": 21,
+      "A": 24,
+      "X": 30,
+      "with_old_knot": 190,
+      "single_site_depth": 3,
+      "core": 187,
+      "public_adapter": 30,
+      "total": 217
+    },
+    "guard_parser": {
+      "generator_bits": 164,
+      "L": 17,
+      "A": 24,
+      "X": 32,
+      "with_old_knot": 184,
+      "core": 184,
+      "public_adapter": 30,
+      "total": 214
+    },
+    "four_operand_raw": {
+      "generator_bits": 169,
+      "L": 18,
+      "A": 23,
+      "X": 39,
+      "with_old_knot": 189,
+      "single_site_depth": 2,
+      "core": 185,
+      "public_adapter": 26,
+      "total": 211
+    },
+    "suffix_transformer": {
+      "generator_bits": 158,
+      "L": 16,
+      "A": 22,
+      "X": 36,
+      "with_old_knot": 178,
+      "core": 178,
+      "public_adapter": 21,
+      "total": 199
+    }
+  },
+  "checks": {
+    "reset_J": true,
+    "I_is_not_reset": true,
+    "J_I": true,
+    "J_preserves_constant": true,
+    "expose_parser": true,
+    "raw_ABS": true,
+    "raw_APP": true,
+    "raw_variable_1": true,
+    "suffix_transformer_1": true,
+    "raw_variable_2": true,
+    "suffix_transformer_2": true,
+    "raw_variable_5": true,
+    "suffix_transformer_5": true,
+    "raw_variable_17": true,
+    "suffix_transformer_17": true
+  },
+  "elapsed_seconds": 0.10742120799841359
+}

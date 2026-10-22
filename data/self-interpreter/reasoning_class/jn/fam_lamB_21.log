@@ -1,0 +1,37 @@
+T with capped unary meaning (skipped): ['j ((\\x0. x0 x0) (\\x0. x0 x0))', '(\\x0. x0 x0) (\\x0. x0 x0) j', '(\\x0. x0 x0) (\\x0. x0 x0)', '\\x0. (\\x1. x1 x1) (\\x1. x1 x1)']
+T meanings 16437 function/c-headed 9189 1.6s
+  cb 4 checks so far 9189 1.6s
+  cb 6 checks so far 18378 1.6s
+  cb 7 checks so far 27568 1.7s
+  cb 8 checks so far 36757 1.7s
+  cb 9 checks so far 45946 1.8s
+  cb 10 checks so far 55135 1.8s
+  cb 11 checks so far 97216 12.6s
+  cb 12 checks so far 121741 12.7s
+  cb 13 checks so far 149465 12.9s
+  cb 14 checks so far 175604 13.1s
+  cb 15 checks so far 208944 13.4s
+  cb 16 checks so far 235600 13.7s
+  cb 17 checks so far 274547 14.1s
+  cb 18 checks so far 312483 14.5s
+  cb 19 checks so far 354384 14.8s
+  cb 20 checks so far 394123 15.1s
+  cb 21 checks so far 447187 15.4s
+  cb 12 checks so far 510361 15.7s
+  cb 14 checks so far 510361 15.7s
+  cb 15 checks so far 511017 15.7s
+  cb 16 checks so far 511433 15.7s
+  cb 17 checks so far 513354 15.8s
+  cb 18 checks so far 515153 15.8s
+  cb 19 checks so far 518273 15.8s
+  cb 20 checks so far 519700 15.8s
+  cb 21 checks so far 522098 15.8s
+worst [('\\x1. x1', 9189), ('\\x1. s', 9189), ('b s', 9189), ('b (\\x1. x1)', 9189), ('s (\\x1. x1)', 9189), ('\\x1. \\x2. x2 x2', 9189), ('\\x1. (\\x2. x2) x1', 9189), ('s (\\x1. b)', 9189)]
+capped checks 1434 distinct (template, meaning) pairs 994
+capped T meanings (top): [('\\x0. x0 x0', 108), ('\\x0. x0 x0 x0', 41), ('\\x0. x0 (x0 x0)', 36), ('\\x0. x0 x0 (\\x1. \\x2. x2) (\\x1. x1 (\\x2. \\x3. x2) ', 34), ('\\x0. x0 x0 (\\x1. x1 (\\x2. \\x3. x3) (\\x2. x2 (\\x3. ', 34), ('\\x0. \\x1. x0 x0', 33), ('\\x0. \\x1. x1 x1', 18), ('\\x0. x0 (\\x1. x1 (\\x2. \\x3. x3) (\\x2. x2 (\\x3. \\x4', 18), ('\\x0. x0 (\\x1. x1 x1)', 18), ('\\x0. c (x0 x0)', 13)]
+capped templates (top): [('t t', 445), ('t t t', 56), ('t (\\x0. t)', 51), ('t (t t)', 47), ('t t (\\x0. x0 (\\x1. \\x2. x1) N)', 28), ('t t (\\x0. \\x1. x0) N', 28), ('t t (\\x0. \\x1. x1)', 17), ('t t (\\x0. x0)', 17)]
+capped pairs with a not-target certificate (head cycle / head-arity mismatch): 994 of 994
+capped T meanings (top): [('\\x0. x0 x0', 108), ('\\x0. x0 x0 x0', 41), ('\\x0. x0 (x0 x0)', 36), ('\\x0. x0 x0 (\\x1. \\x2. x2) (\\x1. x1 (\\x2.', 35), ('\\x0. x0 x0 (\\x1. x1 (\\x2. \\x3. x3) (\\x2.', 34), ('\\x0. \\x1. x0 x0', 33)]
+zero checks capped without certificate: 0 []
+B templates capped without a head-cycle certificate: 0 []
+B 27057 viable 4355 complex 3498 hits 0 15.8s

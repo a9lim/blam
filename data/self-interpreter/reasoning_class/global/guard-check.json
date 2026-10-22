@@ -1,0 +1,8 @@
+{
+  "battery": "192 bits  ok=667 skip=1 fail=0",
+  "battery_seconds": 2.2807026250084164,
+  "failures": [],
+  "letopt_returncode": 0,
+  "polished_bits": 192,
+  "letopt_seconds": 0.15193912498943973
+}

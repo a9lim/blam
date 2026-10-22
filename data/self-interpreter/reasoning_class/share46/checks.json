@@ -1,0 +1,165 @@
+{
+  "elapsed_seconds": 0.0017106250015785918,
+  "cases": [
+    {
+      "name": "factory_self_boundary",
+      "source": "\\s. ((\\h. s (h F) (h h)) (\\x. x c)) j",
+      "weight": [
+        45,
+        41,
+        1,
+        5,
+        8,
+        3,
+        1,
+        1
+      ],
+      "reader_n1_to_3": false,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "delta_c_boundary",
+      "source": "\\s. ((\\h. s (h F) (h c)) (\\x. x x)) j",
+      "weight": [
+        45,
+        41,
+        1,
+        5,
+        8,
+        3,
+        1,
+        1
+      ],
+      "reader_n1_to_3": false,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "shared_delta",
+      "source": "\\s. ((\\h. s (h F) (\\u. s (\\q.c) (h s u))) (\\x. x x)) j",
+      "weight": [
+        68,
+        64,
+        1,
+        7,
+        11,
+        10,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": true
+    },
+    {
+      "name": "fused_factory",
+      "source": "\\s. ((\\h. s (h F) (\\u. h s (s s u))) (\\x. x (\\q.c))) j",
+      "weight": [
+        69,
+        65,
+        1,
+        7,
+        11,
+        11,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": true
+    },
+    {
+      "name": "external_factory",
+      "source": "(\\h s. s (h F) (\\u. h s (s s u)) j) (\\x. x (\\q.c))",
+      "weight": [
+        70,
+        62,
+        2,
+        7,
+        11,
+        8,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": true
+    },
+    {
+      "name": "external_factory_and_hole",
+      "source": "((\\h n s. s (h F) (\\u. h s (s s u)) n) (\\x. x (\\q.c))) j",
+      "weight": [
+        71,
+        71,
+        0,
+        8,
+        12,
+        11,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": true
+    },
+    {
+      "name": "one_lambda_factory",
+      "source": "\\s. ((\\h. s (h F) (\\u. s (h K) (s s u))) (\\x. x c)) j",
+      "weight": [
+        75,
+        71,
+        1,
+        8,
+        12,
+        11,
+        1,
+        1
+      ],
+      "reader_n1_to_3": true,
+      "normal_form_equals_canonical": true
+    },
+    {
+      "name": "stream_factory_square",
+      "source": "\\s. ((\\h. s h (h c)) (\\x. x (s s))) j",
+      "weight": [
+        43,
+        39,
+        1,
+        3,
+        8,
+        5,
+        1,
+        1
+      ],
+      "reader_n1_to_3": false,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "stream_factory_identity",
+      "source": "\\s. ((\\h. s h (h c)) (\\x. x (s I))) j",
+      "weight": [
+        44,
+        40,
+        1,
+        4,
+        8,
+        4,
+        1,
+        1
+      ],
+      "reader_n1_to_3": false,
+      "normal_form_equals_canonical": false
+    },
+    {
+      "name": "external_boundary",
+      "source": "(\\h s. s (h F) (h s) j) (\\x. x c)",
+      "weight": [
+        49,
+        41,
+        2,
+        5,
+        8,
+        3,
+        1,
+        1
+      ],
+      "reader_n1_to_3": false,
+      "normal_form_equals_canonical": false
+    }
+  ]
+}

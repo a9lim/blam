@@ -1,0 +1,107 @@
+[gaslamp] → codex · job cx-20261021-223324-b7c1 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-223324-b7c1/events.jsonl
+(¬_¬) **Verdict: correct-with-gap. Lemma A is correct; the stated general consequences require stronger interface hypotheses.**
+
+**1. Lemma A survives the adversarial check.**
+
+Assuming `FV(κ) ⊆ {C}` and distinct fresh `x,y,N`, the solvability, head-variable, and Church–Rosser arguments work.
+
+For precision, replace “a lambda for `m ≤ 1`” with “has a leading abstraction for `m ≤ 1`.” For `m ≥ 2`, the substituted `x`-headed term is unsolvable. Neither possibility is β-convertible to the rigid head `C`.
+
+Once the head is `C`, substitution preserves its spine length. Church–Rosser therefore gives exactly two arguments and
+`A₂[v_W/x,N/y] =β N`. The second head analysis proves `A₂ →β* y`. No η reasoning is needed.
+
+**2. The abstract corollary also works if Lemma A’s free-variable restriction is retained.**
+
+Given `FV(κ_C) ⊆ {C}`, H1, and the literal factorization in H3, the identity run forces
+
+```text
+T′ →h κ X Y,       Y →β* N.
+```
+
+Here is a useful missing justification for “exactly two arguments.” Lemma A implies that the HNF of `κ_C` has one of these forms:
+
+```text
+C
+λa. C B
+λa b. C B b
+```
+
+with the appropriate binder dependencies in `B`. Thus a `κ`-headed spine produces a `C`-headed spine of the required arity two exactly when it supplies two arguments. With fewer arguments it remains abstracted or supplies too few arguments; with more, the extra arguments survive. This also excludes every `κ`-headed candidate for `Y`.
+
+**But H1–H3 must explicitly retain `FV(κ_C) ⊆ {C}`.** “Fixed before the body is read” does not itself establish that restriction: a continuation can capture an unevaluated stream or a suffix-computation thunk.
+
+For example, allowing `N` free gives the immediate obstruction
+
+```text
+κN = λv t. C (Abs v) N.
+T′ = κ r j.
+```
+
+The `v_W` test succeeds, and the identity result is correct when `r` is its canonical variable value, yet `Y = j` need not reduce to `N`. This is an algebraic counterexample to omitting the free-variable restriction; realizing it operationally requires obtaining or capturing the suffix.
+
+**3. H3 is an interface condition, not a consequence of parser closedness.**
+
+A closed parser can bind `C` once and send it through several channels:
+
+```text
+λC s. bodyWorker C κ_C s
+```
+
+Closedness does not require `bodyWorker` to receive `C` exclusively through `κ_C`.
+
+A concrete, deliberately inefficient counterdesign shows the distinction. Set
+
+```text
+D_W = λz. λx. λy. W
+κ_C = λv n. C D_W n.
+```
+
+Before reading the body, pass this same continuation to a worker. The worker recognizes the particular body `λy.W`; on that branch it returns `κ_C v_W N`. Otherwise it invokes a correct interpreter on the reconstructed whole input using its separately retained `C`.
+
+This satisfies H1 and the stated same-continuation requirement in H2, and is correct on every closed input. H3 fails on identity: substituting this `κ_C` into a `C`-free term can expose `C` only with first argument `D_W`; it cannot produce `C (λz.λx.x) N`.
+
+This is a semantic counterdesign, **not a small-bit construction**.
+
+**4. Consequences (i) and (ii) are valid for direct returns to that same continuation.**
+
+If the identity run is literally the tail call
+
+```text
+κ_C r j
+```
+
+with `j` genuinely `N`-free, Lemma A makes its rest argument `j`, so it fails. Likewise,
+
+```text
+κ_C X N Z →β* C A N Z
+```
+
+has an irrevocable third argument.
+
+H3 alone, however, does not identify the variable arm’s callee with `κ_C`, or establish that its call is the whole run’s result. The factorization theorem constrains the eventual exposed `κ` call.
+
+A simple escape illustrates the missing identification:
+
+```text
+c′ = λv n z. κ_C v n
+variable return: c′ r N Z →β* κ_C r N
+```
+
+Or, after finding the variable’s suffix:
+
+```text
+c′ = λv ignored. κ_C v N
+variable return: c′ r j →β* κ_C r N
+```
+
+Both preserve canonical values and ordinary constructor returns. They change the actual variable callee after inspecting the code. They escape H2 if H2 names the actual callee; if H2 names only the outer continuation, they show why that version of H2 is insufficient. Neither is claimed to improve the bit count.
+
+**5. Consequence (iii) is not established.**
+
+The argument constrains the identity run’s eventual continuation call. It does not establish the rigid reader law for every unary length, every surrounding continuation, or independent rigid `c,j`. Even proving that law after substituting the actual NEXT would not automatically prove it with `j` rigid.
+
+To obtain the broader result, require a uniform tail-call interface at every relevant variable occurrence, and extend the probe argument to those contexts. The current document correctly treats the independent rigid laws as hypotheses: [class-bound.md:29–42](/Users/a9lim/Work/blam/docs/classical/self-interpreter/class-bound.md:29).
+
+Verified by mathematical inspection and reading the live class definition and `int162.lam`; no Lean check or size measurement was performed.
+
+[gaslamp] job: cx-20261021-223324-b7c1 · session: 01a16174-c38d-75c3-bf26-98605845153e · thread: escape-lemmaA · resume: gaslamp codex --thread escape-lemmaA · tok: 170k→5.2k

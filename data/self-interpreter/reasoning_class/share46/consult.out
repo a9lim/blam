@@ -1,0 +1,18 @@
+[gaslamp] → codex · job cx-20261021-224858-1bf4 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-224858-1bf4/events.jsonl
+(・・) **No reader with `w ≤ 45` found.** [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/share46/REPORT.md) contains the constructions, exact prices, proofs, and remaining boundary.
+
+Three handwritten results:
+
+- **Specialized factory exclusion.** For
+  ```
+  λs. ((λh. s (h F) (h B)) (λx. x A)) j
+  ```
+  with `A` free in `x,s,c` and `B` free in `h,s,c`, the exact weight is `39 + |A| + |B|`. Below 46, the only c-containing possibilities are `(A,B)=(c,h)` and `(x,c)`. Both weigh 45 and reduce to `λs.s I (c c) j`, failing every unary input.
+- **Absorber uniformity.** If `T,Y` are j-free and `T j =β Y`, then substitution gives `T A =β Y` for every `A`. That same argument position cannot also specialize to a different selector. This leaves `T A=I` versus `T B j=c r N` open.
+- **Stream-supplied specialization exclusion.** With `T_s=λx.x A_s`, the family `λs.(λh.s h(h c))T_s j` returns `c A_s b' t j` on unary input: four rigid-head arguments instead of two. Concrete weight-43 and weight-44 instances pass zero but fail unary.
+
+Five correct refactorings weigh **68, 69, 70, 71, 75**; each normalizes to the canonical reader. Ten targeted checks matched the predicted prices and outcomes in **0.0017 seconds**, without enumeration. No complete interpreter, battery, polish, or Lean result is claimed.
+
+The unresolved opportunity is sharing a helper that constructs **different closures before absorbing `j`**, particularly when the stream supplies a specialization argument.
+
+[gaslamp] job: cx-20261021-224858-1bf4 · session: 01a16183-01f1-7213-a1b4-ecfc378889a7 · thread: r4-share46 · resume: gaslamp codex --thread r4-share46 · tok: 842k→27k

@@ -1,0 +1,8 @@
+-- D6: explicit destructuring reader, NEXT inside the handler, the bit b as skip junk.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\b \q. b
+    (q (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+    (cont q (q q b))))
+  (x x))

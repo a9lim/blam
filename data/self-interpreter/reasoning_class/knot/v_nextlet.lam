@@ -1,0 +1,6 @@
+-- knot lane pricing control: intL let wrapped around NEXT only (inside \cont \list).
+(\x. x x) (\x. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    ((\intL. \bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))) (x x)))

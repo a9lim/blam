@@ -1,0 +1,7 @@
+cmax=25: caps=108 3.6s
+  X sig ('c', 'c', 'c'): 25 terms, min 18: ['s (\\x0. x0) (\\x0. c) j']
+  X sig ('N', 'N', 'N'): 36 terms, min 18: ['s (\\x0. x0) (s s) j']
+  X sig ('U', 'U', 'U'): 4 terms, min 24: ['s (\\x0. \\x1. x0 x1 (\\x2. x1)) j']
+  C sig ('cUN', 'cUN', 'cUN'): 3277 terms, min 0: ['j']
+  C sig ('N', 'N', 'N'): 1 terms, min 24: ['s (\\x0. x0 (\\x1. \\x2. x2) c) j']
+min matched non-whole cost(C')+cost(X): (42, ('N', 'N', 'N')) -> w >= 48

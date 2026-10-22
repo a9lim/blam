@@ -174,19 +174,32 @@ with all features (three opt-in tests ignored) and 328 with default features.
   canonical rigid branch laws — costs exactly `116 + w(R)` with the
   canonical NEXT and knot and at least that otherwise, where
   `w(R) = cost(R) + 4 depth(j)`; the 162 is `w = 46`, the 165 `w = 49`.
-  `Blc/SelfintClass.lean` kernel-checks this and `|E| ≥ 138`, including
-  the 92-bit NEXT classification. A handwritten argument with 3,484
-  kernel-checked cases (two reviews) gives `w ≥ 30`: **every member has at
-  least 146 bits**, and the 162 is optimal in the class if and only if
-  every reader has `w ≥ 46` (proved for two-λ readers, `w ≥ 50`, and for the
-  serial form `λs. s D E j` with literal abstractions and at most four λs).
-  With NEXT opaque, the `s I A j` middle operand is exactly the 162's
-  variable-arm family through 30 bits (1,313,478 terms). Outside the class
-  every mechanism the third round priced costs at least 170; NEXT under
-  `λlist` can embed any closed interpreter at `+17`, and
-  `Blc/SelfintRecursion.lean` prices the knotless two-head skeleton at
-  `≥ 165` under the ordinary first-child cut and the unshared generator at
-  `≥ 167` (attained). Archive: `data/self-interpreter/reasoning_162/`.
+  Lean proves `|E| ≥ 138` (`Blc/SelfintClass.lean`) and the reader weight
+  `w ≥ 30` with no remaining assumption (`Blc/SelfintReader30.lean`):
+  **every member has at least 146 bits, kernel-checked**, and the 162 is
+  optimal in the class if and only if every reader has `w ≥ 46`. That is
+  settled for two-λ readers, the short serial forms, whole sharing contexts
+  over factories and closed specializers (Lean), every hole depth other
+  than 1 and the depth-0 readers whose hole is a λ's argument (complete
+  finite checks), and every depth-1 family reaching the stream's bit
+  through `I`, `K` or a dispatcher of at most 21 bits. At depth 1 a
+  reviewed semantic reduction leaves the readers whose hole's parent is a λ
+  on a zero stream, and four families for the rest, among them the 162's
+  own shape with a 31–37-bit variable arm. The class widens without moving its minimum:
+  NEXT of any syntax above the price frontier `q ≥ 92`, `q + 3F ≥ 104`
+  (Lean, `Blc/SelfintWiden.lean`; optimal there iff `w ≥ 46`), any value
+  representation with a NEXT-free decoder (Lean, `Blc/SelfintValues.lean`),
+  any opaque two-port recursion scheme (Lemma B, steps in Lean), and the
+  continuation-headed split class costs at least 165 outright (Lean,
+  `Blc/SelfintChead.lean`). A divergent-probe lemma derives the variable
+  law's rest part and NEXT's data flow from the contract
+  (`Blc/SelfintProbe*.lean`); the value part, the zero law, the control
+  flow and the rigid forms do not follow (five correct counterexamples,
+  194–265 bits). With NEXT unrestricted the class costs at least 76. Outside
+  the class every mechanism priced costs at least 170; NEXT under `λlist`
+  can embed any closed interpreter at `+17`, and no β-preserving conversion
+  takes every interpreter into the class. Archives:
+  `data/self-interpreter/reasoning_162/`, `reasoning_class/`.
 - **The 165**, the previous record (`classical/self-interpreter/interpreter.md`,
   `data/self-interpreter/machines/int165.lam`), Codex's design: Palmer's 168
   with a reader that computes the skip `list list list` once on the whole
@@ -573,18 +586,25 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
 9. **The self-interpreter below 162** (`classical/self-interpreter/interpreter.md`
-   §7, `class-bound.md`). Proof: the reader weight bound `w(R) ≥ 46` would
-   make the 162 optimal in the separated class; the open families (three
-   or more λs at depths 0 and 1, six depth-2 count rows) are listed in
-   `data/self-interpreter/reasoning_162/floor/STATE46.md`, and any reader
-   with `w ≤ 45` is a sub-162 interpreter of exactly `116 + w` bits. The
-   unconditional floor is 40, by classifications that grow fast (4,672
-   layouts at 39); a size-aware structural lemma is the next lever.
-   Constructive: a sub-162 outside the class must break the knot, the NEXT
-   separation, the canonical values or the CPS protocol, and every
-   mechanism priced so far costs at least 170; with the real NEXT, the
-   162's variable-arm slot needs a corrected enumeration (the round-3
-   checker mis-binds the knot's generator). The 162's reader is on the
+   §7, `class-bound.md` §3). Proof: the reader weight bound `w(R) ≥ 46` would
+   make the 162 optimal in the separated class and in its widened forms (NEXT
+   of any syntax above the price frontier, any NEXT-free value decoder, any
+   opaque two-port recursion). Still open: at depth 1, hole parents that
+   are a λ on a zero stream and the four residual families of the anchor
+   reduction; application-rooted readers, depth-0 readers whose hole
+   follows a shared top-level let, stream-headed or redex first operands,
+   and let bodies headed by the let's variable with a λ in its argument;
+   the remaining space is far too large for enumeration
+   (about 2×10⁹ λ-rooted depth-1 readers), so the next step is a semantic
+   lemma, most likely the anchor reduction applied inside the variable arm.
+   Any reader with `w ≤ 45` is a sub-162 interpreter of exactly `116 + w`
+   bits. Also open on the class side: NEXT of arbitrary syntax in
+   `32 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two
+   nonlinear binders. The unconditional floor is 40; restricted-domain
+   witnesses cap every proof that uses only identity towers (88) or Church
+   spines (154), so a global argument must charge applications whose
+   children both vary. Constructive: none of about thirty round-4 designs
+   (163–265 bits) beats 162. The 162's reader is on the
    fork's golf branch (tromp/AIT#13): `int.lam` 162, `uni.lam` 184 / 172,
    `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp` 1270, each verified
    against its previous version (`classical/golf.md`); the PR's title and a

@@ -1,0 +1,7 @@
+-- variable value with a junk tail at n = 1: r (\b t. b (cons K u) r), u = NEXT; selector-equal to r, not beta-equal (value part not forced)
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\b0 \r. cont (r (\b \t. b (\f. f (\x \y. x) u) r))) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

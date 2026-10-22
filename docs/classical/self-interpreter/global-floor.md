@@ -684,6 +684,32 @@ The classifications grow quickly (676, 1,206 and 4,672 layouts at 37, 38 and
 39). A further step would want a size-aware structural lemma rather than a
 larger inventory.
 
+## 10. What probe families can charge
+
+A lower-bound argument that uses only some of the contract's obligations is
+capped by the smallest term meeting those obligations. Kernel-checked
+restricted-domain witnesses (Codex; `Blc/SelfintTowerBarriers.lean`,
+`Blc/SelfintSpineBarriers.lean`, `Blc/SelfintGlobalBarriers.lean`; inductions
+over every depth with arbitrary suffixes, not finite batteries) put those caps
+at:
+
+| obligations used | witness | cap on a floor for `E` |
+|---|---:|---:|
+| values on every `λⁿ.I` | 57 | 48 |
+| values on every `λⁿ.I` and `λⁿ.Ω` | 84 | 75 |
+| both outputs on every `λⁿ.I` | 88 | 88 |
+| values on every Church numeral `λf x. fⁿ x` | 121 | 112 |
+| both outputs on every Church numeral | 154 | 154 |
+
+The witnesses are not interpreters, and the caps do not add. The
+projections cost `|E (λv r. v)| = |E| + 9` and `|E (λv r. r)| = |E| + 8`
+(`projection_value`), so a value-decoder floor of 50 or a remainder floor of
+49 would already improve the 40. The Church-spine witness works because each
+left child is the same variable, whose code merges with the application tag
+into one unary skip; a proof that goes further must use applications whose
+two children both vary, and charge shared source connections once
+(`data/self-interpreter/reasoning_class/global/`).
+
 Source for the external theorem: Rick Statman, *Two Variables Are Not
 Enough*, ICTCS 2005, printed pp. 406-409,
 https://doi.org/10.1007/11560586_32 .

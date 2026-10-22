@@ -1,0 +1,6 @@
+input 57 bits; core 57 bits (25 nodes); 67 candidate cuts (5 shared)
+k=1: 67 valid, 0 invalid, 0.0s; smallest sizes 60:2 61:2 62:3 63:5 64:7 65:9
+k=2: 1896 valid, 315 invalid, 0.0s; smallest sizes 66:10 67:25 68:33 69:63 70:64 71:79
+k=3: 29989 valid, 17916 invalid, 0.0s; smallest sizes 72:15 73:75 74:144 75:219 76:356 77:409
+smallest rendering over 0..=3 cuts: 57 bits
+best 57 010001101000000101011000100000100000011100101111101111010

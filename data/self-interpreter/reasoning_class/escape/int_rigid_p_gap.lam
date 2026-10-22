@@ -1,0 +1,7 @@
+-- ABS returns through the real parser: \t. p (\v r. cont ABS r) (1 0 ++ t); correct only with p = the parser (rigid-p branch law fails)
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp. bit1
+      (\t. intL (\v \r. cont (\args \arg. exp (\zx \zy. zx arg (zy args))) r) (\f. f (\x \y. y) (\g. g (\x \y. x) t)))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

@@ -1,0 +1,25 @@
+Lean (version 4.32.2, arm64-apple-darwin24.6.0, commit f3b06c705e6c85f5314019d5d3baab0fec5b580c, Release)
+cwd: /Users/a9lim/Work/blam/lean
+LEAN_PATH=/Users/a9lim/Work/blam/lean/.lake/build/lib/lean
+command: lean -j2 /Users/a9lim/Work/blam/tmp/round4/probelean/Derive.lean
+exit: 0
+elapsed_seconds: 0.689
+
+'Blc.ProbeInterface.closed_probe_return' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.variable_rest_parser' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.ProbeInterface.variable_rest_reader' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.ProbeInterface.abs_dataflow' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.ProbeInterface.app_second_dataflow' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.ProbeInterface.rigid_abs_instance' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.rigid_second_instance' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.Protocol.of_rigid' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.derive_from_assembly' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.ProbeInterface.Sep.unfold' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.actual_reader_plug' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.iterA_scope' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.parse_prefix' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.iterA_probe' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.HeadControls.rigid' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.derive_from_source_hypotheses' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.ProbeInterface.semantic_retval_from_contract' depends on axioms: [propext, Quot.sound]
+'Blc.ProbeInterface.derive_abs_from_source' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,15 @@
+[gaslamp] → codex · job cx-20261021-223915-d13d · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-223915-d13d/events.jsonl
+(•̀ᴗ•́) [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/widen/REPORT.md) is complete. [Widen.lean](/Users/a9lim/Work/blam/tmp/round4/widen/Widen.lean) checks in 3.43 seconds with two threads, no `sorry` or added axioms.
+
+The main results are kernel-checked:
+
+- **The proposed four-capture bound is false.** Explicit rigid NEXTs have two free parameter leaves: a 105-bit let-sharing source and a **β-normal 113-bit source** with four-argument tag dispatch.
+- **A wider class preserves the original minimum.** For arbitrary rigid NEXT syntax, writing `q=|Q|` and `F=freeLeaves(Q)`, the conditions `q≥92` and `q+3F≥104` suffice. Every assembly is dominated by an old-class assembly using the same reader, its hoisted reader, or reader162. The theorem quantifies **all unary reader laws**.
+- Consequently, **every NEXT with q≥98 is covered**, and 162-optimality in this wider class is **equivalent to the original reader-weight ≥46 conjecture**. The 138-bit kernel bound transfers; 146 retains the existing handwritten coverage dependency.
+- With H2 removed completely, the checked weaker bound is **67 bits**. For knot multiplicity `k`, `|E|≥18+k(26+q)≥18+49k`; a sub-162 assembly therefore has one hole, or two holes with `q≤45`.
+
+The fixed-reader `116+w(R)` formula fails: the materialized witness costs **233**, against a predicted **234**. Its full contract is proved in Lean. Both written and polished sources passed `ok=667 skip=1 fail=0`; polishing returns the canonical **162 exactly**.
+
+**No sub-162 algorithm or optimality proof was obtained.** H1’s opaque knot, H3’s canonical values, and H4’s rigid reader laws remain. A NEXT improving the class minimum must lie in the unresolved regions `q≤91`, or `F=2,q≤97`, or `F=3,q≤94`.
+
+[gaslamp] job: cx-20261021-223915-d13d · session: 01a1615e-eb26-73f0-b5e5-f58af78c3700 · thread: r4-widen · resume: gaslamp codex --thread r4-widen · tok: 9073k→73k

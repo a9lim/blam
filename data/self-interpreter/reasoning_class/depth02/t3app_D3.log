@@ -1,0 +1,14 @@
+D=3: n=2037192 {'z': 2031415, 'u1': 2521, 'zfuel': 3256} hits=0 uncertified_caps=47 176.1s
+  UNC zfuel (\x0. x0 (\x1. x0)) (\x0. x0 c (\x1. x0 (\x2. j)))
+  UNC zfuel (\x0. x0 x0) ((\x0. \x1. x1 (\x2. x1 x2 j)) c)
+  UNC zfuel (\x0. (\x1. x1 x1) (\x1. x1 (\x2. x1 x2 j))) c
+  UNC zfuel (\x0. x0 x0) (\x0. x0 (\x1. x0 x1 (\x2. j))) c
+  UNC zfuel (\x0. x0 x0) (\x0. x0 (\x1. x0 x1 (\x2. j)) c)
+  UNC zfuel (\x0. x0 x0) ((\x0. \x1. \x2. x1 x1 (x2 j)) c)
+  UNC zfuel (\x0. x0 x0 c) (\x0. x0 (\x1. x0 x1 (\x2. j)))
+  UNC zfuel (\x0. x0 c x0) (\x0. \x1. x1 x1 (\x2. x1 j))
+  UNC zfuel (\x0. x0 c x0) (\x0. \x1. x1 (x0 (\x2. j)) x1)
+  UNC zfuel (\x0. (\x1. x1 x1) (\x1. \x2. x1 x1 (x2 j))) c
+  UNC zfuel (\x0. x0 x0) (\x0. \x1. x0 x0 (x1 (\x2. j))) c
+  UNC zfuel (\x0. x0 x0) (\x0. x0 (\x1. x0 x1 c (\x2. j)))
+  ... more uncertified: 35

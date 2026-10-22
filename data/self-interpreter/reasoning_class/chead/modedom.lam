@@ -1,0 +1,6 @@
+-- mode200 with its root selector spine removed: generator λp c s. (λσ. BODY_σ) c  (s-headed)
+(\x. x x) (\x. (\p. \c. \s. (\sig. s (\a. a) (\u. s (\q. sig) (s s u))
+     (\bit1. p (\exp. bit1
+       (sig (\args \arg. exp (\zx \zy. zx arg (zy args))))
+       (p (\exp2. sig (\args. exp args (exp2 args))))))) c)
+  (x x))

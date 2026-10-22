@@ -1,0 +1,10 @@
+d2lam f=1 V=[4, 5]: n=48573 {'z': 48570, 'u1': 3} hits=0 caps=0 1.4s
+d2lam f=1 V=[6]: n=301525 {'z': 301271, 'u1': 137, 'zfuel': 117} hits=0 caps=117 5.0s
+d2lam f=1 V=[7]: n=788430 {'z': 785903, 'u1': 533, 'zfuel': 1994} hits=0 caps=1994 13.3s
+d2lam f=1 V=[8, 9]: n=670681 {'z': 665655, 'u1': 535, 'zfuel': 4489, 'ufuel1': 2} hits=0 caps=4491 10.7s
+d2lam f=2 V=[5, 6, 7, 8, 9]: n=667351 {'z': 666891, 'u1': 86, 'zfuel': 374} hits=0 caps=374 12.3s
+d2lam f=3 V=[6, 7, 8, 9]: n=156305 {'z': 156296, 'u1': 4, 'zfuel': 5} hits=0 caps=5 6.9s
+d2lam f=4 V=[7, 8, 9]: n=22061 {'z': 22061} hits=0 caps=0 2.2s
+d2lam f=5 V=[8, 9]: n=3347 {'z': 3347} hits=0 caps=0 0.3s
+d2lam f=6 V=[9]: n=0 {} hits=0 caps=0 0.0s
+done

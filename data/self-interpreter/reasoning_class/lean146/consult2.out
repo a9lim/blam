@@ -1,0 +1,20 @@
+[gaslamp] → codex · job cx-20261021-232541-a027 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-232541-a027/events.jsonl
+(ง •̀_•́)ง **Both coverage gaps are closed.** [Final146.lean](/Users/a9lim/Work/blam/tmp/round4/lean146/Final146.lean:5231) proves:
+
+- `Blc.Lean146Final.reader_weight_30`: `Reader R → occ 1 R = 1 → 30 ≤ cost R + 4 * depth R`.
+- `Blc.Lean146Final.class_bound_146`: the separated-class bound under the original knot, Reader, one-hole, and NEXT hypotheses—**no coverage assumptions remain**.
+
+The proof establishes the unrestricted three-live-binder lemma for non-lambda minima, eliminates their sub-30 cases, proves the Lean enumerator complete, and checks its five outputs against all **3,484 recorded layouts**. Only the zero and unary-one reader probes are needed.
+
+The complete standalone file kernel-checked in **65.95 seconds**, using `lean -j2`, no `-o`, and 44 axiom audits. Dependencies are exactly `propext`, `Classical.choice`, and `Quot.sound`; no `sorryAx` or native-decision trust.
+
+Reproduce from the repository root:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python tmp/round4/lean146/verify_followup.py
+```
+
+[REPORT.md](/Users/a9lim/Work/blam/tmp/round4/lean146/REPORT.md:142) has the requested follow-up section; `NOTES.md` and `verification-followup.json` record progress, hashes, commands, and audits. All writes stayed in the lane; tracked Git status is clean. Weight 46 and separated-class optimality at 162 remain open.
+
+[gaslamp] job: cx-20261021-232541-a027 · session: 01a16196-3a67-7811-b8b6-647ae16ae946 · thread: r4-lean146 · resume: gaslamp codex --thread r4-lean146 · tok: 12091k→84k
+[lane.sh] done rc=0 tries=1

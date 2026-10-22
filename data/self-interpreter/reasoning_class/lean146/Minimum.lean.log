@@ -1,0 +1,4 @@
+'Blc.Lean146.absent_subst_weight' depends on axioms: [propext, Quot.sound]
+'Blc.Lean146.Erase.reader_single_hole' depends on axioms: [propext, Quot.sound]
+'Blc.Lean146.Minimum.no_erasing' depends on axioms: [propext, Quot.sound]
+'Blc.Lean146.counterexample_minimum' depends on axioms: [propext, Classical.choice, Quot.sound]

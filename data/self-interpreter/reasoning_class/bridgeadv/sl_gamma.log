@@ -1,0 +1,4 @@
+gamma w <= 45 triples 424043 hits 0 unc caps 3 timeouts 0 4.9s
+  UNC (17, 6, 2, '\\x0. x0 ((\\x1. x0) j)', '\\x2. x', 'x')
+  UNC (17, 7, 2, '\\x0. x0 ((\\x1. x0) j)', 'b x', 'x')
+  UNC (18, 6, 2, '(\\x0. \\x1. x1 ((\\x2. x2) x1)) j', '\\x2. x', 'x')

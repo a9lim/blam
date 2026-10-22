@@ -1,0 +1,10 @@
+D=4: n=582542 {'z': 581381, 'u1': 750, 'zfuel': 411} hits=0 uncertified_caps=4 8.0s
+  UNC zfuel (\x0. x0 x0) ((\x0. \x1. x1 (\x2. x1 x2 (\x3. j))) c)
+  UNC zfuel (\x0. \x1. (\x2. x2 x2) (\x2. x2 (\x3. x2 x3 j))) c
+  UNC zfuel (\x0. (\x1. x1 x1) (\x1. x1 (\x2. x1 x2 (\x3. j)))) c
+  UNC zfuel (\x0. x0 x0) (\x0. x0 (\x1. x0 x1 (\x2. \x3. j))) c
+D=5: n=143320 {'z': 143097, 'u1': 191, 'zfuel': 32} hits=0 uncertified_caps=0 2.3s
+D=6: n=29713 {'z': 29696, 'u1': 17} hits=0 uncertified_caps=0 0.6s
+D=7: n=5404 {'z': 5404} hits=0 uncertified_caps=0 0.2s
+D=8: n=680 {'z': 680} hits=0 uncertified_caps=0 0.0s
+D=9: n=63 {'z': 63} hits=0 uncertified_caps=0 0.0s
