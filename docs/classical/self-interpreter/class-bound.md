@@ -212,6 +212,21 @@ family; the lists are in the round-4 archive. Claude's lanes:
   or two trailing operands; general `λb. B` dispatchers with
   `|B|, |T| ≤ 21`, or `|B| ≤ 9`; every λ-rooted reader whose body is at most
   25 bits;
+- **every s-spine reader `λs. s A₁ … A_k` whose first operand reaches the
+  first dispatch through stream expansions, λ-bindings and variable heads
+  alone** — no β-redex on its head path; the pieces off that path are
+  arbitrary terms. This covers `λb. b X Y` with any number of trailing
+  operands, large `λb. B` dispatchers over a small `T`, general `λb. B`
+  with two or more trailing operands, and stream-headed first operands
+  `s (s P …) …`, apart from one skeleton, `λs. s (λb. b X₁) T₁ T₂`, whose
+  check would exceed the cap (the generator recovers the 164 at exactly 48
+  as a control). A handwritten deletion lemma underlies the budgets:
+  replacing a subterm by a cheaper one with the same value on every unary
+  probe leaves a unary core, and the only cores through 22 bits are
+  `s (λq. c) (s s j)` and `s (λq. c) (s s s)`, so a reader carrying
+  `|Q| − |Q'|` bits of zero-only material has `w ≥ 29 + |Q| − |Q'|`. The 162
+  and the 164 each carry exactly 10 such bits around a 30-bit unary core;
+  keeping `j` alive on the zero run is what raises the core from 23 to 30;
 - every reader with its hole at depth ≥ 2, and every depth-0 reader whose
   `j` is the argument of a λ, under the minimality order (weight, λ count,
   depth). This corrects round 3's reduction, which handed depth-2 rows to
@@ -286,10 +301,12 @@ at most 53,537 terms after the first pass; the review reproduced the small
 ones, not the full 25-bit cut-off audit.
 
 **Open.** At depth 1, zero-λ parents `Y j` with `Y` an application
-containing `s` or `c`, and the needed-binder case of the 162's family; application-rooted readers with the hole under a non-stream
-λ; depth-0 readers whose `j` follows a shared top-level let; first operands
-that are stream-headed or redexes, and `λb. b X Y` with four or more
-operands; lets headed by their own variable (whose extra uses are needed,
+containing `s` or `c`, and the needed-binder case of the 162's family;
+application-rooted readers with the hole under a non-stream λ; depth-0
+readers whose `j` follows a shared top-level let; s-spines with a β-redex
+on the first operand's head path, the skeleton `λs. s (λb. b X₁) T₁ T₂`,
+and readers whose stream-λ body is a redex; lets headed by their own
+variable (whose extra uses are needed,
 but not yet tied to the unary output) and nested lets. The record's
 estimate is about 2×10⁹ λ-rooted depth-1 readers at `w ≤ 45`, so these need
 arguments, not larger checks. The productive tools so far are the first

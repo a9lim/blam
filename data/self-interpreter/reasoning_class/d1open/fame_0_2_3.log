@@ -1,0 +1,6 @@
+OCAP (\x1. x1 x1) (\x1. x1 x1)
+p=0 m=2 W=21 OMAX=19: T meanings 2314, operand meanings 2819, operand caps 1, 0.3s
+UCAP (\x1. x1 x1) (\x1. x1 x1) 0
+A2 6949 viable 4175 unary survivors 1 ucaps 1 0.8s
+  U 2 b | s | \x0. c | s s j | left 1
+done p=0 m=2 q=3: hits 0 zcaps 0 0.8s

@@ -878,12 +878,11 @@ outside them every mechanism priced so far costs at least 170.
 Open:
 
 - the reader weight bound `w(R) ≥ 46` (`class-bound.md` §3), which would make
-  the 162 optimal in the separated class and its widenings: open at depth 1
-  for hole parents that are a λ on a zero stream and four residual families
-  (among them the 162's own shape with a 31–37-bit variable arm), and for
-  application-rooted readers, depth-0 readers whose hole follows a shared
-  top-level let, stream-headed or redex first operands, and let bodies
-  headed by the let's variable with a λ in its argument;
+  the 162 optimal in the separated class and its widenings: open only where
+  the zero and unary roles share source — zero-λ hole parents, the
+  needed-binder case of the 162's own shape, s-spines with a β-redex on the
+  first operand's head path, readers whose body or root is a let, and
+  application-rooted readers;
 - NEXT of arbitrary syntax in `32 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
   `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix
   cells, and knotless first heads with two nonlinear binders

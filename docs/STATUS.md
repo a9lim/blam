@@ -179,13 +179,16 @@ with all features (three opt-in tests ignored) and 328 with default features.
   **every member has at least 146 bits, kernel-checked**, and the 162 is
   optimal in the class if and only if every reader has `w ≥ 46`. That is
   settled for two-λ readers, the short serial forms, whole sharing contexts
-  over factories and closed specializers (Lean), every hole depth other
-  than 1 and the depth-0 readers whose hole is a λ's argument (complete
-  finite checks), and every depth-1 family reaching the stream's bit
-  through `I`, `K` or a dispatcher of at most 21 bits. At depth 1 a
-  reviewed semantic reduction leaves the readers whose hole's parent is a λ
-  on a zero stream, and four families for the rest, among them the 162's
-  own shape with a 31–37-bit variable arm. The class widens without moving its minimum:
+  over factories and one-helper sharing with any specializer (Lean), every
+  hole depth other than 1 and the depth-0 readers whose hole is a λ's
+  argument, every s-spine reader whose first operand reaches the stream's
+  bit with no β-redex on its head path (one skeleton aside), and the
+  whole-cell opener `λs. s (λb t. B) j` (complete finite checks); the 164's
+  and the hoisted 165's families cost exactly 48 and 49. What remains is
+  sharing between the zero and unary roles: hole parents that are a λ on a
+  zero stream, the needed-binder case of the 162's own family, s-spines
+  with a redex on the first operand's head path, and readers whose body or
+  root is a let. The class widens without moving its minimum:
   NEXT of any syntax above the price frontier `q ≥ 92`, `q + 3F ≥ 104`
   (Lean, `Blc/SelfintWiden.lean`; optimal there iff `w ≥ 46`), any value
   representation with a NEXT-free decoder (Lean, `Blc/SelfintValues.lean`),
@@ -589,14 +592,16 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    §7, `class-bound.md` §3). Proof: the reader weight bound `w(R) ≥ 46` would
    make the 162 optimal in the separated class and in its widened forms (NEXT
    of any syntax above the price frontier, any NEXT-free value decoder, any
-   opaque two-port recursion). Still open: at depth 1, hole parents that
-   are a λ on a zero stream and the four residual families of the anchor
-   reduction; application-rooted readers, depth-0 readers whose hole
-   follows a shared top-level let, stream-headed or redex first operands,
-   and let bodies headed by the let's variable with a λ in its argument;
-   the remaining space is far too large for enumeration
-   (about 2×10⁹ λ-rooted depth-1 readers), so the next step is a semantic
-   lemma, most likely the anchor reduction applied inside the variable arm.
+   opaque two-port recursion). Still open, all of it sharing between the
+   zero and unary roles: at depth 1, hole parents `Y j` that are a λ on a
+   zero stream with `Y` an application over `s` or `c`, and the
+   needed-binder case of the 162's family; s-spines with a β-redex on the
+   first operand's head path; readers whose stream-λ body or root is a let,
+   including depth-0 shared top-level lets; application-rooted readers. The
+   remaining space is far too large for enumeration (about 2×10⁹ λ-rooted
+   depth-1 readers), so the next step is a theorem bounding the source that
+   the two roles can share; neither periodicity of the unary run nor
+   accounting alone can supply it (`class-bound.md` §3).
    Any reader with `w ≤ 45` is a sub-162 interpreter of exactly `116 + w`
    bits. Also open on the class side: NEXT of arbitrary syntax in
    `32 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two

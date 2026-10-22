@@ -1,0 +1,20 @@
+T terms 96229 distinct unary meanings 28002 3.1s
+function meanings 15872
+Y terms 136321 viable 83926 complex 42569 unary pairs 716 5.5s
+  pair 12 Y = c | T = s s j
+  pair 14 Y = c | T = s s s
+  pair 15 Y = c | T = s s c
+  pair 16 Y = c | T = s s (j s)
+  pair 16 Y = c | T = s s (s j)
+  pair 16 Y = c | T = s s (\x0. x0)
+  pair 17 Y = c | T = s s (j c)
+  pair 17 Y = c | T = s s (c j)
+  pair 17 Y = c | T = s s (\x0. s)
+  pair 18 Y = c | T = (\x0. x0) (s s j)
+  pair 18 Y = c | T = s s (\x0. j)
+  pair 18 Y = c | T = s s (j (\x0. x0))
+  pair 18 Y = c | T = s s ((\x0. x0) j)
+  pair 18 Y = c | T = s ((\x0. x0) s) j
+  pair 18 Y = c | T = (\x0. x0) (s s) j
+X pool 490 5.5s
+done: hits 0 5.5s

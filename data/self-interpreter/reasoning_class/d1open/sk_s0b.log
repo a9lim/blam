@@ -1,0 +1,187 @@
+[u1 q1 m2] pools 5889 terms (0 caps), unary survivors 0, ucaps 0, 0.4s
+[u1 q1 m2] hits 0 0.4s
+[u1 q1 m3] pools 1768 terms (0 caps), unary survivors 0, ucaps 0, 0.1s
+[u1 q1 m3] hits 0 0.1s
+[u1 q1 m4] pools 545 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q1 m4] hits 0 0.0s
+[u1 q1 m5] pools 181 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q1 m5] hits 0 0.0s
+[b1 q1 m2] pools 3269 terms (0 caps), unary survivors 0, ucaps 0, 0.2s
+[b1 q1 m2] hits 0 0.2s
+[b1 q1 m3] pools 996 terms (0 caps), unary survivors 0, ucaps 0, 0.1s
+[b1 q1 m3] hits 0 0.1s
+[b1 q1 m4] pools 309 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q1 m4] hits 0 0.0s
+[b1 q1 m5] pools 101 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q1 m5] hits 0 0.0s
+[uv1 q1 m2] pools 1102 terms (0 caps), unary survivors 1, ucaps 0, 0.1s
+[uv1 q1 m2] hits 0 0.1s
+[uv1 q1 m3] pools 351 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q1 m3] hits 0 0.0s
+[uv1 q1 m4] pools 115 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q1 m4] hits 0 0.0s
+[uvb1 q1 m2] pools 645 terms (0 caps), unary survivors 1, ucaps 0, 0.0s
+[uvb1 q1 m2] hits 0 0.0s
+[uvb1 q1 m3] pools 214 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q1 m3] hits 0 0.0s
+[uvb1 q1 m4] pools 75 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q1 m4] hits 0 0.0s
+[u1 q2 m2] pools 1876 terms (0 caps), unary survivors 0, ucaps 0, 0.1s
+[u1 q2 m2] hits 0 0.1s
+[u1 q2 m3] pools 591 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q2 m3] hits 0 0.0s
+[u1 q2 m4] pools 188 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q2 m4] hits 0 0.0s
+[u1 q2 m5] pools 62 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q2 m5] hits 0 0.0s
+[b1 q2 m2] pools 1056 terms (0 caps), unary survivors 0, ucaps 0, 0.1s
+[b1 q2 m2] hits 0 0.1s
+[b1 q2 m3] pools 336 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q2 m3] hits 0 0.0s
+[b1 q2 m4] pools 110 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q2 m4] hits 0 0.0s
+[uv1 q2 m2] pools 367 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q2 m2] hits 0 0.0s
+[uv1 q2 m3] pools 123 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q2 m3] hits 0 0.0s
+[uv1 q2 m4] pools 42 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q2 m4] hits 0 0.0s
+[uvb1 q2 m2] pools 222 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q2 m2] hits 0 0.0s
+[uvb1 q2 m3] pools 78 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q2 m3] hits 0 0.0s
+[uvb1 q2 m4] pools 26 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q2 m4] hits 0 0.0s
+[u1 q3 m2] pools 620 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q3 m2] hits 0 0.0s
+[u1 q3 m3] pools 205 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q3 m3] hits 0 0.0s
+[u1 q3 m4] pools 72 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q3 m4] hits 0 0.0s
+[b1 q3 m2] pools 352 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q3 m2] hits 0 0.0s
+[b1 q3 m3] pools 118 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q3 m3] hits 0 0.0s
+[b1 q3 m4] pools 41 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q3 m4] hits 0 0.0s
+[uv1 q3 m2] pools 128 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q3 m2] hits 0 0.0s
+[uv1 q3 m3] pools 47 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q3 m3] hits 0 0.0s
+[uvb1 q3 m2] pools 81 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q3 m2] hits 0 0.0s
+[uvb1 q3 m3] pools 32 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q3 m3] hits 0 0.0s
+[u1 q4 m2] pools 213 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q4 m2] hits 0 0.0s
+[u1 q4 m3] pools 75 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q4 m3] hits 0 0.0s
+[u1 q4 m4] pools 26 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q4 m4] hits 0 0.0s
+[b1 q4 m2] pools 123 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q4 m2] hits 0 0.0s
+[b1 q4 m3] pools 46 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q4 m3] hits 0 0.0s
+[uv1 q4 m2] pools 48 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q4 m2] hits 0 0.0s
+[uv1 q4 m3] pools 18 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q4 m3] hits 0 0.0s
+[uvb1 q4 m2] pools 31 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q4 m2] hits 0 0.0s
+[uvb1 q4 m3] pools 12 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q4 m3] hits 0 0.0s
+[u1 q5 m2] pools 78 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q5 m2] hits 0 0.0s
+[u1 q5 m3] pools 32 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u1 q5 m3] hits 0 0.0s
+[b1 q5 m2] pools 47 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q5 m2] hits 0 0.0s
+[b1 q5 m3] pools 17 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b1 q5 m3] hits 0 0.0s
+[uv1 q5 m2] pools 19 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv1 q5 m2] hits 0 0.0s
+[uvb1 q5 m2] pools 14 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb1 q5 m2] hits 0 0.0s
+[u q4 m1 l2] pools 219 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u q4 m1 l2] hits 0 0.0s
+[u q4 m1 l3] pools 76 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u q4 m1 l3] hits 0 0.0s
+[u q4 m1 l4] pools 26 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u q4 m1 l4] hits 0 0.0s
+[u q4 m2 l2] pools 76 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u q4 m2 l2] hits 0 0.0s
+[u q4 m2 l3] pools 26 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u q4 m2 l3] hits 0 0.0s
+[u q4 m3 l2] pools 26 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u q4 m3 l2] hits 0 0.0s
+[b q4 m1 l2] pools 127 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b q4 m1 l2] hits 0 0.0s
+[b q4 m1 l3] pools 47 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b q4 m1 l3] hits 0 0.0s
+[b q4 m2 l2] pools 47 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b q4 m2 l2] hits 0 0.0s
+[uv q4 m1 l2] pools 50 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv q4 m1 l2] hits 0 0.0s
+[uv q4 m1 l3] pools 18 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv q4 m1 l3] hits 0 0.0s
+[uv q4 m2 l2] pools 18 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv q4 m2 l2] hits 0 0.0s
+[uvb q4 m1 l2] pools 33 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb q4 m1 l2] hits 0 0.0s
+[uvb q4 m1 l3] pools 12 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb q4 m1 l3] hits 0 0.0s
+[uvb q4 m2 l2] pools 12 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb q4 m2 l2] hits 0 0.0s
+[bQ q4 m1 l2] pools 631 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q4 m1 l2] hits 0 0.0s
+[bQ q4 m1 l3] pools 206 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q4 m1 l3] hits 0 0.0s
+[bQ q4 m1 l4] pools 75 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q4 m1 l4] hits 0 0.0s
+[bQ q4 m2 l2] pools 206 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q4 m2 l2] hits 0 0.0s
+[bQ q4 m2 l3] pools 75 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q4 m2 l3] hits 0 0.0s
+[bQ q4 m3 l2] pools 75 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q4 m3 l2] hits 0 0.0s
+[bZ q4 m2] pools 631 terms (0 caps), unary survivors 0, ucaps 0, 0.1s
+[bZ q4 m2] hits 0 0.1s
+[bZ q4 m3] pools 206 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bZ q4 m3] hits 0 0.0s
+[bZ q4 m4] pools 75 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bZ q4 m4] hits 0 0.0s
+[u q5 m1 l2] pools 80 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u q5 m1 l2] hits 0 0.0s
+[u q5 m1 l3] pools 31 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u q5 m1 l3] hits 0 0.0s
+[u q5 m2 l2] pools 32 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[u q5 m2 l2] hits 0 0.0s
+[b q5 m1 l2] pools 48 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b q5 m1 l2] hits 0 0.0s
+[b q5 m1 l3] pools 17 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b q5 m1 l3] hits 0 0.0s
+[b q5 m2 l2] pools 17 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[b q5 m2 l2] hits 0 0.0s
+[uv q5 m1 l2] pools 20 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uv q5 m1 l2] hits 0 0.0s
+[uvb q5 m1 l2] pools 14 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[uvb q5 m1 l2] hits 0 0.0s
+[bQ q5 m1 l2] pools 214 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q5 m1 l2] hits 0 0.0s
+[bQ q5 m1 l3] pools 78 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q5 m1 l3] hits 0 0.0s
+[bQ q5 m1 l4] pools 26 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q5 m1 l4] hits 0 0.0s
+[bQ q5 m2 l2] pools 78 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q5 m2 l2] hits 0 0.0s
+[bQ q5 m2 l3] pools 26 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q5 m2 l3] hits 0 0.0s
+[bQ q5 m3 l2] pools 26 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bQ q5 m3 l2] hits 0 0.0s
+[bZ q5 m2] pools 214 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bZ q5 m2] hits 0 0.0s
+[bZ q5 m3] pools 78 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bZ q5 m3] hits 0 0.0s
+[bZ q5 m4] pools 26 terms (0 caps), unary survivors 0, ucaps 0, 0.0s
+[bZ q5 m4] hits 0 0.0s
+skeletons 93 hits 0

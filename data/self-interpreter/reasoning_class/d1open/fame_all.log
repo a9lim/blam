@@ -1,0 +1,183 @@
+p=0 m=2 q=2 exit 0 75710464
+A2 22572 viable 12842 unary survivors 2 ucaps 2 3.0s
+done p=0 m=2 q=2: hits 0 zcaps 0 3.0s
+p=0 m=3 q=2 exit 0 35323904
+A2 2183 viable 1613 unary survivors 0 ucaps 0 0.5s
+done p=0 m=3 q=2: hits 0 zcaps 0 0.5s
+p=0 m=4 q=2 exit 0 26066944
+A2 234 viable 183 unary survivors 0 ucaps 0 0.1s
+done p=0 m=4 q=2: hits 0 zcaps 0 0.1s
+p=0 m=5 q=2 exit 0 23822336
+A2 30 viable 24 unary survivors 0 ucaps 0 0.0s
+done p=0 m=5 q=2: hits 0 zcaps 0 0.0s
+p=0 m=6 q=2 exit 0 22937600
+A2 5 viable 4 unary survivors 0 ucaps 0 0.0s
+done p=0 m=6 q=2: hits 0 zcaps 0 0.0s
+p=1 m=2 q=2 exit 0 33406976
+A2 4555 viable 2462 unary survivors 1 ucaps 1 0.4s
+done p=1 m=2 q=2: hits 0 zcaps 0 0.4s
+p=1 m=3 q=2 exit 0 25100288
+A2 469 viable 299 unary survivors 0 ucaps 0 0.1s
+done p=1 m=3 q=2: hits 0 zcaps 0 0.1s
+p=1 m=4 q=2 exit 0 23199744
+A2 57 viable 41 unary survivors 0 ucaps 0 0.0s
+done p=1 m=4 q=2: hits 0 zcaps 0 0.0s
+p=1 m=5 q=2 exit 0 22986752
+A2 9 viable 7 unary survivors 0 ucaps 0 0.0s
+done p=1 m=5 q=2: hits 0 zcaps 0 0.0s
+p=1 m=6 q=2 exit 0 22708224
+A2 1 viable 1 unary survivors 0 ucaps 0 0.0s
+done p=1 m=6 q=2: hits 0 zcaps 0 0.0s
+p=2 m=2 q=2 exit 0 24870912
+A2 867 viable 556 unary survivors 0 ucaps 0 0.0s
+done p=2 m=2 q=2: hits 0 zcaps 0 0.0s
+p=2 m=3 q=2 exit 0 23101440
+A2 98 viable 77 unary survivors 0 ucaps 0 0.0s
+done p=2 m=3 q=2: hits 0 zcaps 0 0.0s
+p=2 m=4 q=2 exit 0 23003136
+A2 14 viable 13 unary survivors 0 ucaps 0 0.0s
+done p=2 m=4 q=2: hits 0 zcaps 0 0.0s
+p=2 m=5 q=2 exit 0 22740992
+A2 2 viable 2 unary survivors 0 ucaps 0 0.0s
+done p=2 m=5 q=2: hits 0 zcaps 0 0.0s
+p=3 m=2 q=2 exit 0 22986752
+A2 176 viable 75 unary survivors 0 ucaps 0 0.0s
+done p=3 m=2 q=2: hits 0 zcaps 0 0.0s
+p=3 m=3 q=2 exit 0 22773760
+A2 24 viable 16 unary survivors 0 ucaps 0 0.0s
+done p=3 m=3 q=2: hits 0 zcaps 0 0.0s
+p=3 m=4 q=2 exit 0 22970368
+A2 4 viable 4 unary survivors 0 ucaps 0 0.0s
+done p=3 m=4 q=2: hits 0 zcaps 0 0.0s
+p=0 m=2 q=3 exit 0 40812544
+A2 6949 viable 4175 unary survivors 1 ucaps 1 0.8s
+done p=0 m=2 q=3: hits 0 zcaps 0 0.8s
+p=0 m=3 q=3 exit 0 26705920
+A2 701 viable 529 unary survivors 0 ucaps 0 0.1s
+done p=0 m=3 q=3: hits 0 zcaps 0 0.1s
+p=0 m=4 q=3 exit 0 24100864
+A2 81 viable 65 unary survivors 0 ucaps 0 0.0s
+done p=0 m=4 q=3: hits 0 zcaps 0 0.0s
+p=0 m=5 q=3 exit 0 22970368
+A2 12 viable 10 unary survivors 0 ucaps 0 0.0s
+done p=0 m=5 q=3: hits 0 zcaps 0 0.0s
+p=0 m=6 q=3 exit 0 22855680
+A2 2 viable 2 unary survivors 0 ucaps 0 0.0s
+done p=0 m=6 q=3: hits 0 zcaps 0 0.0s
+p=1 m=2 q=3 exit 0 26525696
+A2 1440 viable 899 unary survivors 0 ucaps 0 0.1s
+done p=1 m=2 q=3: hits 0 zcaps 0 0.1s
+p=1 m=3 q=3 exit 0 23592960
+A2 159 viable 107 unary survivors 0 ucaps 0 0.0s
+done p=1 m=3 q=3: hits 0 zcaps 0 0.0s
+p=1 m=4 q=3 exit 0 23003136
+A2 22 viable 15 unary survivors 0 ucaps 0 0.0s
+done p=1 m=4 q=3: hits 0 zcaps 0 0.0s
+p=1 m=5 q=3 exit 0 22757376
+A2 4 viable 4 unary survivors 0 ucaps 0 0.0s
+done p=1 m=5 q=3: hits 0 zcaps 0 0.0s
+p=2 m=2 q=3 exit 0 23265280
+A2 285 viable 233 unary survivors 0 ucaps 0 0.0s
+done p=2 m=2 q=3: hits 0 zcaps 0 0.0s
+p=2 m=3 q=3 exit 0 22773760
+A2 36 viable 32 unary survivors 0 ucaps 0 0.0s
+done p=2 m=3 q=3: hits 0 zcaps 0 0.0s
+p=2 m=4 q=3 exit 0 22806528
+A2 6 viable 6 unary survivors 0 ucaps 0 0.0s
+done p=2 m=4 q=3: hits 0 zcaps 0 0.0s
+p=3 m=2 q=3 exit 0 22740992
+A2 63 viable 45 unary survivors 0 ucaps 0 0.0s
+done p=3 m=2 q=3: hits 0 zcaps 0 0.0s
+p=3 m=3 q=3 exit 0 22740992
+A2 10 viable 10 unary survivors 0 ucaps 0 0.0s
+done p=3 m=3 q=3: hits 0 zcaps 0 0.0s
+p=3 m=4 q=3 exit 0 22773760
+A2 1 viable 1 unary survivors 0 ucaps 0 0.0s
+done p=3 m=4 q=3: hits 0 zcaps 0 0.0s
+p=4 m=2 q=3 exit 0 22724608
+A2 15 viable 6 unary survivors 0 ucaps 0 0.0s
+done p=4 m=2 q=3: hits 0 zcaps 0 0.0s
+p=4 m=3 q=3 exit 0 22937600
+A2 2 viable 2 unary survivors 0 ucaps 0 0.0s
+done p=4 m=3 q=3: hits 0 zcaps 0 0.0s
+p=0 m=2 q=4 exit 0 28590080
+A2 2183 viable 1340 unary survivors 0 ucaps 0 0.2s
+done p=0 m=2 q=4: hits 0 zcaps 0 0.2s
+p=0 m=3 q=4 exit 0 24166400
+A2 234 viable 171 unary survivors 0 ucaps 0 0.0s
+done p=0 m=3 q=4: hits 0 zcaps 0 0.0s
+p=0 m=4 q=4 exit 0 23183360
+A2 30 viable 23 unary survivors 0 ucaps 0 0.0s
+done p=0 m=4 q=4: hits 0 zcaps 0 0.0s
+p=0 m=5 q=4 exit 0 22740992
+A2 5 viable 4 unary survivors 0 ucaps 0 0.0s
+done p=0 m=5 q=4: hits 0 zcaps 0 0.0s
+p=1 m=2 q=4 exit 0 23822336
+A2 469 viable 304 unary survivors 0 ucaps 0 0.0s
+done p=1 m=2 q=4: hits 0 zcaps 0 0.0s
+p=1 m=3 q=4 exit 0 22888448
+A2 57 viable 41 unary survivors 0 ucaps 0 0.0s
+done p=1 m=3 q=4: hits 0 zcaps 0 0.0s
+p=1 m=4 q=4 exit 0 22937600
+A2 9 viable 7 unary survivors 0 ucaps 0 0.0s
+done p=1 m=4 q=4: hits 0 zcaps 0 0.0s
+p=1 m=5 q=4 exit 0 22708224
+A2 1 viable 1 unary survivors 0 ucaps 0 0.0s
+done p=1 m=5 q=4: hits 0 zcaps 0 0.0s
+p=2 m=2 q=4 exit 0 22855680
+A2 98 viable 84 unary survivors 0 ucaps 0 0.0s
+done p=2 m=2 q=4: hits 0 zcaps 0 0.0s
+p=2 m=3 q=4 exit 0 22708224
+A2 14 viable 13 unary survivors 0 ucaps 0 0.0s
+done p=2 m=3 q=4: hits 0 zcaps 0 0.0s
+p=2 m=4 q=4 exit 0 22757376
+A2 2 viable 2 unary survivors 0 ucaps 0 0.0s
+done p=2 m=4 q=4: hits 0 zcaps 0 0.0s
+p=3 m=2 q=4 exit 0 22757376
+A2 24 viable 22 unary survivors 0 ucaps 0 0.0s
+done p=3 m=2 q=4: hits 0 zcaps 0 0.0s
+p=3 m=3 q=4 exit 0 22806528
+A2 4 viable 4 unary survivors 0 ucaps 0 0.0s
+done p=3 m=3 q=4: hits 0 zcaps 0 0.0s
+p=4 m=2 q=4 exit 0 22937600
+A2 6 viable 6 unary survivors 0 ucaps 0 0.0s
+done p=4 m=2 q=4: hits 0 zcaps 0 0.0s
+p=5 m=2 q=4 exit 0 22855680
+A2 1 viable 1 unary survivors 0 ucaps 0 0.0s
+done p=5 m=2 q=4: hits 0 zcaps 0 0.0s
+p=0 m=2 q=5 exit 0 24985600
+A2 701 viable 442 unary survivors 0 ucaps 0 0.1s
+done p=0 m=2 q=5: hits 0 zcaps 0 0.1s
+p=0 m=3 q=5 exit 0 23035904
+A2 81 viable 63 unary survivors 0 ucaps 0 0.0s
+done p=0 m=3 q=5: hits 0 zcaps 0 0.0s
+p=0 m=4 q=5 exit 0 22740992
+A2 12 viable 10 unary survivors 0 ucaps 0 0.0s
+done p=0 m=4 q=5: hits 0 zcaps 0 0.0s
+p=0 m=5 q=5 exit 0 22855680
+A2 2 viable 2 unary survivors 0 ucaps 0 0.0s
+done p=0 m=5 q=5: hits 0 zcaps 0 0.0s
+p=1 m=2 q=5 exit 0 23052288
+A2 159 viable 108 unary survivors 0 ucaps 0 0.0s
+done p=1 m=2 q=5: hits 0 zcaps 0 0.0s
+p=1 m=3 q=5 exit 0 22757376
+A2 22 viable 15 unary survivors 0 ucaps 0 0.0s
+done p=1 m=3 q=5: hits 0 zcaps 0 0.0s
+p=1 m=4 q=5 exit 0 22953984
+A2 4 viable 4 unary survivors 0 ucaps 0 0.0s
+done p=1 m=4 q=5: hits 0 zcaps 0 0.0s
+p=2 m=2 q=5 exit 0 22740992
+A2 36 viable 31 unary survivors 0 ucaps 0 0.0s
+done p=2 m=2 q=5: hits 0 zcaps 0 0.0s
+p=2 m=3 q=5 exit 0 22822912
+A2 6 viable 6 unary survivors 0 ucaps 0 0.0s
+done p=2 m=3 q=5: hits 0 zcaps 0 0.0s
+p=3 m=2 q=5 exit 0 22839296
+A2 10 viable 10 unary survivors 0 ucaps 0 0.0s
+done p=3 m=2 q=5: hits 0 zcaps 0 0.0s
+p=3 m=3 q=5 exit 0 22986752
+A2 1 viable 1 unary survivors 0 ucaps 0 0.0s
+done p=3 m=3 q=5: hits 0 zcaps 0 0.0s
+p=4 m=2 q=5 exit 0 22855680
+A2 2 viable 2 unary survivors 0 ucaps 0 0.0s
+done p=4 m=2 q=5: hits 0 zcaps 0 0.0s
