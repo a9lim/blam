@@ -1,0 +1,12 @@
+[gaslamp] → codex · job cx-20261022-091040-1e4f · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-091040-1e4f/events.jsonl
+(•̀ᴗ•́) Added the follow-up to [REPORT.md §6](/Users/a9lim/Work/blam/tmp/round4/pending/REPORT.md:317) and appended `NOTES.md`.
+
+- **Nested-headed branch closed under the inherited minimum-source filters.** Checked 146,191 residual sources; all 3,577 normalizer exceptions have individual Lean refutations.
+- **Common first-argument specialization proved.** When every shared use receives the same independent source argument P, the exact saving is `(k−1)(w(P)+2)+F(P)(k+q)>0`. NeededHead’s joint necessity does **not** establish that invariant.
+- **Selected x-headed cell remains partial:** 98,442 sources → 86,081 finite refutations, 12,310 Lean refutations, **51 unresolved**, listed in [X_REMAINING.tsv](/Users/a9lim/Work/blam/tmp/round4/pending/X_REMAINING.tsv).
+- Eight x-headed cells remain over cap: **2,102,856 sources** after simplify’s stated cuts; none was constructed or probed.
+
+All final proof files passed within the caps. The general 46-reader bound and 162 optimality remain open.
+
+[gaslamp] job: cx-20261022-091040-1e4f · session: 01a163a1-0a28-7d03-b295-0fc6770dbad8 · thread: r5-pending · resume: gaslamp codex --thread r5-pending · tok: 14871k→90k
+[lane.sh] done rc=0 tries=1

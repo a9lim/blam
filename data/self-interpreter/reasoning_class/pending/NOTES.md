@@ -69,3 +69,78 @@ inferring it from t: every surviving B is exactly one leading lambda;
 (2,0) has t=2, m=2/3; (2,1) t=1 m=2/3 or t=2 m=2. Counts unchanged.
 REPORT.md records the result and the inherited completeness assumptions.
 No general x-headed/nested-headed pending cell was enumerated.
+
+## 5. Coordinator follow-up: nested-head flattening and call invariant
+Read current NeededHead/NestedLets and simplify specialization prices.
+NeededHead's actual quantifier is joint: replacing every non-head occurrence
+must break some law. It does not certify each call's necessity, equal call
+arguments, or that dynamic arguments remain literal after substituting A.
+
+For independent nested E (x absent), write
+R=(lambda x. ((lambda y.D) E) Pvec) A Cvec.
+Flatten to F=(lambda x y.D Pvec_up) A E_down Cvec, or exchange x/y and A/E.
+Let kD=uses_x(D), kP=uses_x(Pvec), m=uses_y(D), FE=#c(E)+4#j(E),
+FP=#c(Pvec)+4#j(Pvec). Exact prices expected:
+Delta_xy=kP+FP-FE; Delta_yx=m-kD+FP-FE.
+Lambda count stays; j-depth change is #j(Pvec)-#j(E).
+The endpoint has literal lambda-headed B and a pending E, so the previous
+closure applies at a tie iff the hole does not get deeper. In particular,
+independent E with no trailing body operands always transports to that
+excluded family, even if the weight ties.
+Dependent E cannot be pulled. A closure-lift reconstruction costs positive
+bits in the 2--4-use profiles; this will be kept distinct from a blanket
+normalization theorem. No general x-headed handoff reduction follows yet.
+
+## 6. Follow-up proof and nested closure
+Nested.lean now kernel-checks both flattenings, exact prices, lambda/hole
+counts and depths, scope, all-length laws, and complete three-coordinate
+minimum transport to an explicitly assumed literal-prefix floor. Independent
+E with no trailing body operands is always covered. Dependent E is not.
+Uniform.lean checks the common first-argument invariant B=D[x P/z], including
+arbitrary inner lambdas/redexes, and the exact saving
+(k-1)(w(P)+2)+F(P)(k+q). One source j and k>=2 force P j-free; both all-n laws
+transfer to (lambda z.D)(A P) Cvec. This strictly excludes such a minimum.
+NeededHead does not supply the required common-argument invariant.
+
+All five complete nested-head (k,d) families are below 100000 before the
+new flatten cut. Before/cut/remaining: (2,0) 53867/1174/52693;
+(2,1) 18683/543/18140; (3,0) 48583/110/48473;
+(3,1) 14970/96/14874; (4,0) 12011/0/12011. Every residual source fails.
+There are 142614 finite mismatches (one at unary length1, all others zero),
+and 3577 original-source Lean refutations in NestedExceptions00--11.
+3372 simple loops,156 missing rigid leaves,4 lark,1 template,36 mixed cycles,
+and8 owl trees. All twelve modules compiled, at most2.97s/628.3MB each;
+axioms propext and Quot.sound. verify_followup.py checks all hashes and
+source-to-theorem coverage. Generator completeness remains inherited [H/C].
+
+The entire newly under-cap x cell (k,d,location,t,h)=(2,0,Cs,3,1) was counted
+as98442 after simplify's known cuts before source generation, and then
+checked once:86081 finite zero mismatches,12361 normalizer exceptions,
+no finite passes;57.33s/732.3MB. Baseline loop/missing certificates resolve
+10266. A generic family search reached its110s watchdog, producing no
+accepted output. Flow annotations resolve775, longer head clocks/replicator
+resolve153, mixed-cycle proofs on102 literal cores resolve1104 more.
+63 exceptions remain at this point;12 further flow developments discovered,
+with kernel compilation pending. No unresolved outcome is a negative verdict.
+
+## 7. Follow-up final verification and honest remainder
+Final x result:86081 finite zero failures +12310 individual Lean refutations
++51 unresolved exceptions =98442 sources. The remaining51 have12 literal
+let cores, all B=x x, weights43(3),44(6),45(42); exact source/hash files
+X_REMAINING.tsv/json and x_opened.json. No unresolved outcome is a verdict.
+All accepted x proofs compile in XBasic00--38, XFlow00--15, XDevelop00--11.
+The twelve development-flow proofs initially exceeded the configured Lean
+memory budget when combined; individual files pass in<=5.77s, maxRSS
+1761214464 bytes. No hard2GB limit was exceeded. One110s family-discovery
+watchdog and bounded unsuccessful51-case probes are recorded as no-result.
+verify_followup.py passed both nested and x coverage/hash/resource audits:
+3577 nested exception proofs and12310 x exception proofs, all actual
+original-source statements. The exact copy of rootcert2/Flow.lean was
+compiled in this lane; no upstream/other-lane files were changed.
+
+The eight x-headed over-cap cells after simplify's stated rules total
+2102856. Uniform's additional source-pattern theorem is not coefficient-
+counted in those envelopes. No over-cap source construction or probing.
+REPORT.md section6 records formulas, full nested closure, partial x-cell
+result, exact remaining inventory, and the inherited completeness boundary.
+The general46-reader floor and162 optimality remain open.

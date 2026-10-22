@@ -240,7 +240,14 @@ the 39-bit one.
   keeps both laws, one `j` and the order's other coordinates, consuming a
   pending `C` while keeping `A` once has an exact price, both
   kernel-checked, and the residual cells (13,489 sources) all fail, their
-  20 normalizer exceptions refuted in Lean; a λ-free argument at the root must
+  20 normalizer exceptions refuted in Lean. Bodies headed by a nested redex
+  fail as well (146,191 residual sources, 3,577 normalizer exceptions
+  refuted in Lean), and when every shared use of `x` receives the same
+  independent argument `P`, specializing it saves exactly
+  `(k−1)(w(P) + 2) + F(P)(k + q) > 0`; what is left of the pending case is
+  bodies headed by `x` itself: one cell down to 51 listed sources
+  (`reasoning_class/pending/X_REMAINING.tsv`) and eight cells over the cap
+  with 2,102,856 sources (Codex, pending lane); a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands. With `j` at

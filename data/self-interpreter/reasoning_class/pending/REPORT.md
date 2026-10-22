@@ -309,3 +309,262 @@ Imports reuse existing rootlow/rootnl/handlerlet modules without editing
 them. The pinned Lean toolchain is selected from `lean/`. The small
 `prefix_2_0.json` file records an earlier coefficient-only exchange cut and
 is not part of the final source-exclusion claim.
+
+## 6. Follow-up: common call arguments and complete nested-head closure
+
+**The nested-redex-headed root branch is closed under the inherited
+minimum-source filters. The x-headed branch remains open.** This supersedes
+§4's nested-head boundary. No new reader or interpreter was found; neither
+the 46-reader bound nor 162 optimality is proved.
+
+### 6.1 What NeededHead supplies, and the stronger useful invariant [L]
+
+`SelfintNeededHead.minimum_forget_fails` says that replacing **all** non-head
+uses of x together by the nearest outer variable must break some full
+reader law in a minimum. Its quantifier is joint. It does not say each use
+is individually necessary, that each use is already applied at its source
+position, or that different uses receive equal arguments. In particular,
+`B=x x` contains a bare non-head use; a dynamic invocation of that value is
+not a source occurrence `x P` with a known independent P.
+
+There is a strict descent once a common source argument is established.
+Let D be a scoped template with k uses of a fresh shared variable z, and
+let P be a root-scoped argument independent of x. Replace **every** z leaf
+of D hygienically by `x P`. Arbitrary lambdas and internal redexes in D and
+P are permitted. Then
+
+```
+R = (λx. D[x P/z]) A C⃗
+S = (λz. D) (A P) C⃗,
+R =β S.
+```
+
+Put `q=sum of the lambda depths of z in D` and `F(P)=#c(P)+4#j(P)`.
+The exact saving is
+
+```
+w(R)-w(S) = (k-1)(w(P)+2) + F(P)(k+q),
+L(R)-L(S) = (k-1)L(P).
+```
+
+The k source copies of P become one; A remains once. If R has one source
+j and k≥2, P necessarily has no j, so S still has one source j. The source
+scope and both laws at every unary length transfer, and the weight saving
+is strictly positive. `Uniform.lean::{uniform_contract,uniform_join,
+uniform_price,uniform_occ,uniform_lambdas,uniform_laws,
+uniform_no_minimum}` kernel-check the statements. Scope premises are
+explicit: D is in frame `[z,c,j]`, P in `[c,j]`.
+
+For example, `(λx.(x I)(x I)) A C⃗` specializes to
+`(λz.z z)(A I) C⃗`, saving six weight units. This is a source factoring
+identity, not the invalid pending-operand reassociation of §2.4.
+
+The exact syntactic obstruction to this particular move is now explicit:
+at least one source use is bare, the first arguments differ, or a first
+argument depends on x or on a local binder that cannot be extracted as the
+same root-scoped P. Even a common *dynamic* argument would require a
+separate proof that these source replacements are valid. NeededHead does
+not supply that proof. Simplify's dependent-payload reconstruction also
+cannot fill the gap: its kernel-checked uniform overhead is positive.
+No numerical cut for the new Uniform theorem is claimed on an over-cap
+inventory.
+
+### 6.2 Flattening independent nested definitions [L]
+
+Write a nested-head source as
+
+```
+R = (λx. ((λy.D) E) P⃗) A C⃗,
+```
+
+and suppose x is absent from E. Let `kD=uses_x(D)`,
+`kP=uses_x(P⃗)`, `m=uses_y(D)`, and let FE/FP count the weighted external
+c/j leaves of E/P⃗, excluding x. A prime means hygienic binder adjustment.
+Two endpoints have literal-lambda-headed root bodies:
+
+```
+Fxy = (λx y. D P⃗′) A E↓ C⃗,
+Fyx = (λy x. (D P⃗′)swap) E↓ A C⃗.
+```
+
+Their exact coordinate differences from R are
+
+```
+Δw_xy = kP + FP - FE,
+Δw_yx = m - kD + FP - FE,
+ΔL_xy = ΔL_yx = 0,
+Δdepth_j_xy = Δdepth_j_yx = #j(P⃗)-#j(E).
+```
+
+Every source occurrence of j is preserved. `Nested.lean` checks both beta
+joins, scope, all-length law transport, the prices, lambda counts and hole
+depths. Combining either endpoint with the previous literal-prefix floor
+works precisely when its weight decreases, or its weight ties and
+`#j(P⃗)≤#j(E)`. In the latter case all three coordinates are nonincreasing,
+so a global minimum transports. The `LiteralPrefixFloor` premise is
+explicit; the earlier handwritten/computer inventory closure has not been
+turned into an axiom or represented as a Lean-certified enumerator.
+
+Consequently, if P⃗ is empty, every independent E is covered, including a
+closed E at an exact three-coordinate tie. More generally the cut is
+
+```
+min(kP,m-kD)+FP-FE < 0,
+or equality and #j(P⃗)≤#j(E).
+```
+
+This is not a universal free interchange. If x occurs in E, the downward
+shift E↓ is unavailable. Displaying the inner redex beneath x does not
+remove this dependency. If E is independent but the displayed price is
+positive, or it ties and deepens j, these two moves do not transport the
+minimum. The complete finite checks below handle both kinds of residual;
+no unproved claim that every nested source can be flattened cheaply is used.
+
+### 6.3 Complete residual nested-head checks [H,C,L]
+
+The coefficient recurrence `nested_count.py` refines the inherited rootnl
+syntax grammar along the body's application spine. It records
+`(uses_x(E),m,kD,kP,FE,FP,#j(E),#j(P⃗),depthsum_y(D),length(P⃗))`, and checks
+that summing the new tags recovers every old coefficient exactly. It builds
+no source terms. Every whole (k,d) nested-head family was under 100,000
+**before** the new price cut, so none is a shard of an over-cap check.
+The pending outer spine C⃗ may be empty.
+
+| k,d | Before | Price cut | Residual checked | Finite mismatches | Lean exceptions | Open |
+|---|---:|---:|---:|---:|---:|---:|
+| 2,0 | 53,867 | 1,174 | 52,693 | 51,099 | 1,594 | 0 |
+| 2,1 | 18,683 | 543 | 18,140 | 18,008 | 132 | 0 |
+| 3,0 | 48,583 | 110 | 48,473 | 47,146 | 1,327 | 0 |
+| 3,1 | 14,970 | 96 | 14,874 | 14,680 | 194 | 0 |
+| 4,0 | 12,011 | 0 | 12,011 | 11,681 | 330 | 0 |
+| Total | **148,114** | **1,923** | **146,191** | **142,614** | **3,577** | **0** |
+
+All finite mismatches are at zero except one at unary length one. Every
+cycle, cutoff or recursion exception has an individual original-source
+`¬Reader r` theorem in `NestedExceptions00` through `NestedExceptions11`.
+The certificates comprise 3,372 head-prefix loops, 156 missing rigid leaves,
+four lark instances, one template instance, 36 mixed cycles and eight owl
+application trees. The last eight reuse rootnl's generic owl theorem with
+explicit original-source beta replays. `nested_manifest.json` binds every
+exception index and source hash to its checked theorem.
+
+Before those probes, the uncheap independent-E counts were respectively
+1,313, 48, 576, 22 and 28; every other residual had x in E. Thus the
+closure does not depend on overlooking dependent nested definitions.
+
+**Assembled statement [H+C+L]: no minimum reader with weight≤45, two to
+four root uses, j depth≤1 and k+d≤4 has a nested-redex-headed root body,
+with or without pending operands, under the current inherited structural
+and source-minimality filters.** Completeness remains the inherited grammar
+argument plus coefficient/generator agreement, not a theorem about an
+exhaustive Lean enumerator. The k=4 nested subfamily also overlaps an earlier
+rootnl closure; it is not new mass to add to that lane's totals.
+
+### 6.4 The newly under-cap x cell and exact over-cap boundary
+
+Simplify's already-proved cuts bring the natural cell
+`(k,d,location,t,h)=(2,0,Cs,3,1)` from 113,874 to **98,442** sources.
+`x_check.py` applies those cuts to coefficient blocks first, verifies the
+98,442 count, and only then generates the whole surviving cell. It does not
+construct the larger pre-cut family. The complete check has **86,081** finite
+zero mismatches, **12,361** normalizer exceptions and no finite-probe survivor.
+
+**This cell is not closed.** Of its 12,361 exceptions, **12,310** now have
+individual original-source Lean refutations, while **51 remain unresolved**.
+The refutations comprise 10,233 short prefix loops, 33 missing-leaf proofs,
+150 longer head/strict-argument certificates, three replicator instances,
+1,104 mixed cycles, and 787 flow annotations (775 after a weak-head prefix,
+12 after internal beta developments). Core grouping shares certificate
+discovery, but every final original source has its own checked theorem.
+`x_manifest.json` records complete theorem/source correspondence.
+
+The 51 unresolved sources have exactly 12 literal let cores, all with
+`B=x x`, and weights 43 (three sources), 44 (six), or 45 (42). Their exact
+sources, exception indices and hashes are in `X_REMAINING.tsv` and
+`X_REMAINING.json`; `x_opened.json` lists the indices. No fuel, memory,
+flow-analysis failure or unrecognized cycle has been counted as a verdict.
+There is no all-n reader witness among these sources, and no claim that
+they satisfy the laws. They are an explicit formal remainder.
+
+A generic family-discovery attempt reached its 110-second watchdog and
+produced no accepted output. Further bounded strict-context, mixed-cycle,
+length-one and closed-instance attempts did not settle the final 51.
+These attempts are discovery only. The accepted evidence is the successful
+kernel replay plus the finite mismatches, not the unsuccessful searches.
+
+The remaining over-cap x cells after simplify's explicit coefficient rules
+are exactly:
+
+| k,d | j location | t | A's leading λ count h | Residue |
+|---|---|---:|---:|---:|
+| 2,0 | Cs | 2 | 1 | 361,096 |
+| 2,0 | Cs | 1 | 1 | 681,409 |
+| 2,0 | Cs | 2 | 2 | 153,588 |
+| 2,0 | Cs | 1 | 2 | 216,772 |
+| 2,1 | A | 0 | 1 | 183,197 |
+| 2,1 | B | 0 | 1 | 112,402 |
+| 3,0 | Cs | 2 | 1 | 120,590 |
+| 3,0 | Cs | 1 | 1 | 273,802 |
+| Total | | | | **2,102,856** |
+
+`x_overcap.json` records these exact rule-relative counts. They are not an
+exact count after every imaginable specialization, and the Uniform theorem
+has not been coefficient-counted there. No source from these cells was
+constructed or probed. Other previously untested under-cap x cells are not
+silently closed by this report; this follow-up's x check is the one newly
+licensed natural cell above. The general x-headed minimum remains open,
+including both differing call arguments and bare shared uses.
+
+### 6.5 Verification, reproduction and evidence boundary
+
+All new writes remain in this lane. No cargo build, engine verdict, commit,
+consult-back, delegation or edit to another lane was used. `Flow.lean` is an
+exact local copy of rootcert2's proved flow checker, recompiled here so the
+annotation proofs can import it; it is not a new flow theorem.
+
+`followup_verification.json` audits source hashes, source-to-theorem coverage,
+all compiler statuses, resource measurements and the inherited input hashes.
+The largest whole source check is 98,442 terms, 57.33 seconds and 732.3 MB
+RSS. Nested checks use at most 52,693 residual sources, 9.47 seconds and
+703.8 MB. Each computation uses one worker plus one watchdog; no source
+check exceeded the hard caps.
+
+All final Lean modules passed at `-j2 -M1800`, with a maximum of **5.77 s**
+and **1,761,214,464 bytes RSS** per file. An initial combined flow-proof file
+hit Lean's configured memory limit at 1.91 GB and was rejected; the twelve
+new development proofs were then emitted separately and all passed. This
+is proof-artifact partitioning after the same fixed source check. Generated
+refutations use only `propext` and `Quot.sound`; generic minimum transport
+also uses `Classical.choice`. No sorry, new axiom or external proof oracle
+is accepted. `Closed.lean` additionally checks a generic closed-instance
+cycle transport; it discharged none of the final open cases.
+
+The original positive controls already exercise the same handlerlet
+comparator at zero and lengths 1–8, including the weight-40 unary near miss.
+All generated exception proofs use the weaker zero/one `Reader` predicate;
+refuting it refutes the full all-length laws. Proof-file partitioning occurs
+after a compliant whole source check and is not source-inventory sharding.
+
+Reproduction, from the repository root, using one (k,d) pair at a time:
+
+```
+python tmp/round4/pending/nested_count.py K D
+python tmp/round4/pending/nested_check.py K D
+python tmp/round4/pending/certify.py check_nested_K_D.json
+python tmp/round4/pending/nested_families.py cert_nested_2_0.json
+python tmp/round4/pending/nested_families.py cert_nested_3_0.json
+python tmp/round4/pending/nested_mixed.py family_nested_2_0.json
+python tmp/round4/pending/nested_mixed.py family_nested_3_0.json
+python tmp/round4/pending/nested_owl.py mixed_nested_2_0.json
+python tmp/round4/pending/nested_owl.py mixed_nested_3_0.json
+python tmp/round4/pending/export_nested.py
+python tmp/round4/pending/compile_one.py MODULE
+python tmp/round4/pending/verify_followup.py
+```
+
+K,D range over `(2,0),(2,1),(3,0),(3,1),(4,0)`; MODULE ranges over Nested,
+Uniform and `nested_modules.json`. The x-cell scripts and manifests retain
+its complete checked inventory and certificate chain separately. The
+remaining proof obligation is an exhaustive economical interface for
+nonuniform shared calls. Neither NeededHead's joint necessity nor the
+positive-cost dependent reconstruction supplies that implication.
