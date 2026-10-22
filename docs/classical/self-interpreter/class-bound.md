@@ -231,8 +231,17 @@ inputs. Every other rigid combination is closed (a zero handoff of the
 applies: in
 `λs. (λx. s (λb t. b (x t) (c t x))) (s (λb t. b (λa k. k a) (t t)) j)`
 (`w = 84`, Codex) `X` gives `λk. k j` on a zero stream and `N` on every
-unary one. Zero-λ parents are therefore outside the four families and
-unpriced.
+unary one. Zero-λ parents are therefore outside the four families. Three
+of their shapes are out of a minimum reader (Codex): a literal let parent
+`(λa. B) j` (keeping the one `a` that supplies the zero output's `j` and
+replacing the others by `s` preserves both laws, and then contracting or
+hoisting the let is strictly lighter unless `w ≥ 49`; handwritten); a
+closed transport `Y j` (a complete check of 47,392 `Y` and 11,620 context
+pairs, every unresolved probe certified divergent by the frozen engine);
+and a redispatch `λs. P D` with source-disjoint `P` (`r` / `c U`) and `D`
+(`j` / `N`), which costs at least `6 + 2 + 20 + 25 = 53`, attained by
+`λs. s I (s (λq. c)) (s K j (s s s))`. The rest, `Y j` with `Y` an
+application containing `s` or `c` (the simplest is `s K j`), is unpriced.
 
 Inside the first family, anchor again at the node `ν` that becomes the
 unary output. When every binder above `ν` touches only unary-dispensable
@@ -252,8 +261,8 @@ again, through a let or through a cell part the bit opens. The checks have
 at most 53,537 terms after the first pass; the review reproduced the small
 ones, not the full 25-bit cut-off audit.
 
-**Open.** At depth 1, zero-λ parents and the needed-binder case of the
-162's family; application-rooted readers with the hole under a non-stream
+**Open.** At depth 1, zero-λ parents `Y j` with `Y` an application
+containing `s` or `c`, and the needed-binder case of the 162's family; application-rooted readers with the hole under a non-stream
 λ; depth-0 readers whose `j` follows a shared top-level let; first operands
 that are stream-headed or redexes, and `λb. b X Y` with four or more
 operands; lets headed by their own variable (whose extra uses are needed,
