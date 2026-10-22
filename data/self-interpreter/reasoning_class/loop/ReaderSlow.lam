@@ -1,0 +1,4 @@
+\s. s (\a.a) (\u. s (\q.c)
+  (((\g t k. t (\b r. b r (k (\a.a) (g g r ((\k f x. f (k f x)) k)))))
+    (\g t k. t (\b r. b r (k (\a.a) (g g r ((\k f x. f (k f x)) k))))))
+    s (\f x.x))) j
