@@ -180,8 +180,13 @@ the 39-bit one.
   β-normal term directly (kernel-checked, `Followup.lean`), and a λ-headed
   linear `B` (13,296 sources) and the uniform helper family
   `λs. ((λx. s x … x) A) j` with two to four uses (14,150 sources) have no
-  reader below 46; what is left is a linear let whose `B` holds a nested
-  head redex, and other nonlinear lets.
+  reader below 46. Nor does any other let with two to four uses: no
+  minimum reader below 46 has such a body (Codex, bodylet lane: the
+  handlerlet method over 52 complete cells, 746,914 sources, the 22,660
+  normalizer exceptions refuted individually in Lean, most through a
+  kernel-checked divergence theorem for growing helpers,
+  `A_T A_S →β* A_S A_(S++W) T`). What is left of this branch is a linear
+  let carrying `j` whose `B` holds a nested head redex.
 - **Lets headed by their own variable** (Lean, Codex,
   `Blc/SelfintNeededHead.lean`, `Blc/SelfintNestedLets.lean`). In
   `(λx. x B₁ … B_k) A`, keeping `A` once at the head and replacing every
@@ -450,9 +455,9 @@ ones, not the full 25-bit cut-off audit.
 
 **Open.** Only readers with a source redex remain, and among minimum
 readers below 46 none is an s-spine, so two branches of the source-head
-classification are left: readers whose stream-λ body is a let (below 46
-a minimum has at most four uses, a λ inside the argument, and `j` inside
-it when linear); and root lets — depth-0 shared top-level
+classification are left: readers whose stream-λ body is a linear let
+carrying `j` with a nested head redex in its body (every nonlinear body
+let is excluded); and root lets — depth-0 shared top-level
 lets and application-rooted readers whose let argument hands control on
 before binding the stream. Cutting across them are the zero-λ parents
 `Y j` with `Y` an application over `s` or `c`, the needed-binder case of the

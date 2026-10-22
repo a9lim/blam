@@ -1,0 +1,24 @@
+[
+  {
+    "file": "check-3-0-C-A.json",
+    "index": 375,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 17,
+      "head": "c",
+      "arity": 4
+    }
+  },
+  {
+    "file": "check-3-0-C-A.json",
+    "index": 402,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 16,
+      "head": "c",
+      "arity": 4
+    }
+  }
+]

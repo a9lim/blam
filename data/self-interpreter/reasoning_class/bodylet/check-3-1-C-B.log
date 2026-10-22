@@ -1,0 +1,21 @@
+{
+  "cell": [
+    3,
+    "1",
+    "C",
+    "B"
+  ],
+  "sources": 3378,
+  "counts": {
+    "wrongzero": 3142,
+    "wrong1": 180,
+    "exceptionzero": 54,
+    "exception1": 2
+  },
+  "source_digest": "0c22cbc91281d968cb1cb45263597352cf819611f6b76ee9ea51de68f624ecfa",
+  "max_steps": 20,
+  "seconds": 1.8009841250022873,
+  "rss": 113180672,
+  "threads": 2
+}
+exceptions 56 hits 0

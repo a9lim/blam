@@ -1,0 +1,4 @@
+'Blc.HandlerLet.absent_reduct' depends on axioms: [propext, Quot.sound]
+'Blc.HandlerLet.head_reduct' depends on axioms: [propext, Quot.sound]
+'Blc.HandlerLet.loop_reduct' depends on axioms: [propext, Quot.sound]
+'Blc.HandlerLet.mixed_reduct' depends on axioms: [propext, Quot.sound]

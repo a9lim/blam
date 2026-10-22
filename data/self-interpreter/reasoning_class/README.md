@@ -9,7 +9,7 @@ wave of lanes; each directory keeps its own
 write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
-`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `jerase`, `handlerlet`, `rootnf`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole` and `review_types`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
+`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `jerase`, `handlerlet`, `rootnf`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole` and `review_types`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
 `bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `types`, `zcore`, `single`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
@@ -51,6 +51,7 @@ working versions.
 | rootnf | the root-let profile bound `w ≥ 4k + 22 + 4d` (`RootProfile.lean`: at most five uses below 46); the multi-hole repair of the normalization bridge | `class-bound.md` §3 |
 | firstop | redexes inside a `j`-free non-λ first operand have two to five uses in a minimum below 46 (`LinearCertificates.lean`); the handler-sinking inequality; the contextual hoist price | `class-bound.md` §3 |
 | firstopj | first operands carrying `j` out of a minimum below 46, so no minimum reader below 46 is an s-spine (selective pruning price in `Selective.lean`; 424,378 sources; 4,337 normalizer exceptions in Lean) | `class-bound.md` §3 |
+| bodylet | every nonlinear stream-λ body let out of a minimum below 46 (52 cells, 746,914 sources, 22,660 normalizer exceptions in Lean; `Grow.lean`, `Prices.lean`) | `class-bound.md` §3 |
 | needbinder | the whole-cell opener `λs. s (λb t. B) j` out of a minimum reader below 46 (hoisting price in `OpenerHoist.lean`, normalizer exceptions in `NonlinearExceptions.lean`); the 162-family spine `λs. s A (λu. D) j` narrowed to `|A| ≥ 11`, `|D| ≤ 18`; a needed-binder witness of weight 75 | `class-bound.md` §3 |
 | zerolam | three zero-λ parent shapes out of a minimum reader (literal let, closed transport, disjoint redispatch at 53); the rigid-ancestor anchor and its whole-body witness of weight 75 | `class-bound.md` §3 |
 | loop | the unary run need not be periodic: a correct reader of weight 221 with a growing counter (`Slow.lean`, kernel-checked); the 162's skip is input-generated; conditional pumping, suffix exposure, union accounting; the 164's family `≥ 48` and the hoisted 165's `≥ 49` by rigid shielding (`Shield.lean`, `Prices.lean`) | `class-bound.md` §3 |
@@ -63,7 +64,11 @@ finite checks of up to a few million terms (each under two minutes but two),
 before the coordinator capped checks at 100,000 terms; their reports list
 every such run. They test both laws at `n = 1, 2, 3` and certify every
 fuel or size cut-off, so an empty check refutes its family. Frozen `blam`
-binaries, compiled Lean, pickled pools and the lean146 lane's generated
+binaries, compiled Lean, pickled pools, the lean146 lane's generated
 intermediate Lean (`ReaderChecks*.lean`, `CompactRow*`, `Coverage.lean`;
-regenerate with `lean146/regenerate.py`) are omitted. Scripts may name
+regenerate with `lean146/regenerate.py`) and bodylet's four largest audit
+and helper dumps (`audit.json`, `check-2-0-C-C.json`,
+`helpers-2-0-{A,C}-A.json`; its REPORT §3.6 gives the commands that
+rebuild them; `final.json` and `manifest.json` are the authoritative
+record) are omitted. Scripts may name
 `tmp/round4/<lane>/` paths from where they ran.

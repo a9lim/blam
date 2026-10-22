@@ -1,0 +1,18 @@
+{
+  "cell": [
+    4,
+    "1",
+    "A",
+    "A"
+  ],
+  "sources": 5949,
+  "counts": {
+    "wrongzero": 5949
+  },
+  "source_digest": "d2b45b8a222f2c49bc69e0357fe71d9bef5f98b576204ee762cce84f7f57b023",
+  "max_steps": 8,
+  "seconds": 1.6406287910067476,
+  "rss": 69844992,
+  "threads": 2
+}
+exceptions 0 hits 0

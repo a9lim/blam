@@ -1,0 +1,27 @@
+[gaslamp] → codex · job cx-20261022-034438-19cb · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-034438-19cb/events.jsonl
+( •̀ᴗ•́ ) All 17 remaining cases now have kernel-checked refutations: 16 use the growing-helper theorem, and one has a finite reduction cycle. I’m checking the certificate manifest against all 22,660 recorded exceptions and documenting the result’s boundary: a handwritten completeness argument, finite checks, and Lean exception proofs.
+[gaslamp] FAILED (exit 1) · job: cx-20261022-034438-19cb · session: 01a16291-b6cc-7843-96e8-fec8013e84e3 · thread: r5-bodylet · resume: gaslamp codex --thread r5-bodylet · log: /Users/a9lim/.gaslamp/jobs/cx-20261022-034438-19cb/stderr.log
+[lane.sh] capacity cut-off on cx-20261022-034438-19cb; resuming (try 2)
+[gaslamp] → codex · job cx-20261022-050137-3d69 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-050137-3d69/events.jsonl
+( •̀ᴗ•́ ) **The nonlinear body-let branch is closed**, using the imported preliminary reductions and exclusions.
+
+For a globally minimum reader under `(weight, λ count, hole depth)`, no weight-≤45 source
+`λs. ((λx.B) A) C⃗` with its unique j at depth 1 has x multiplicity 2–4.
+
+- **52 complete semantic cells; 746,914 sources; zero survivors.**
+- **All 22,660 normalizer exceptions individually refuted in Lean.**
+- Final audit confirms an exact bijection between exception sources and compiled proofs.
+- Every check stayed within the prescribed term, time, memory and thread caps.
+
+The result combines **handwritten reductions, computer-checked inventories, and kernel-checked exception proofs**; it is not a single fully formalized enumeration theorem.
+
+New reusable proofs include the arbitrary-context contraction/hoist price in [Prices.lean](/Users/a9lim/Work/blam/tmp/round4/bodylet/Prices.lean), and [Grow.lean](/Users/a9lim/Work/blam/tmp/round4/bodylet/Grow.lean), which proves divergence of the growing-helper family
+`A_T A_S → A_S G(A_S) T →β* A_S A_(S++W) T`
+for arbitrary term lists.
+
+**The optional linear nested-head branch remains open.** No new interpreter was constructed; this does not establish the full 46-bit reader bound or 162-bit optimality.
+
+Deliverables: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/bodylet/REPORT.md), [final inventory](/Users/a9lim/Work/blam/tmp/round4/bodylet/final.json), [certificate manifest](/Users/a9lim/Work/blam/tmp/round4/bodylet/manifest.json).
+
+[gaslamp] job: cx-20261022-050137-3d69 · session: 01a16291-b6cc-7843-96e8-fec8013e84e3 · thread: r5-bodylet · resume: gaslamp codex --thread r5-bodylet · tok: 17804k→100k
+[lane.sh] done rc=0 tries=2
