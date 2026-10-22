@@ -1,0 +1,7 @@
+'Blc.Close46ClosedSpecializer.capture_eleven' depends on axioms: [propext, Quot.sound]
+'Blc.Close46ClosedSpecializer.local_helper_ten' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46ClosedSpecializer.local_closed_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46ClosedSpecializer.root_closed_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46ClosedSpecializer.local_inline_price' depends on axioms: [propext, Quot.sound]
+'Blc.Close46ClosedSpecializer.root_inline_price' depends on axioms: [propext, Quot.sound]
+'Blc.Close46ClosedSpecializer.discardedC_not_reader' depends on axioms: [propext, Quot.sound]

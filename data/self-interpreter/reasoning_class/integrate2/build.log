@@ -1,0 +1,223 @@
+ℹ [63/99] Replayed Blc.SelfintClass
+info: Blc/SelfintClass.lean:832:0: 'Blc.SelfintClass.reader_nonlinear' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:833:0: 'Blc.SelfintClass.app_tree_algebra' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:834:0: 'Blc.SelfintClass.reader_two_lambdas' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:835:0: 'Blc.SelfintClass.reader_depth_charges' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:836:0: 'Blc.SelfintClass.reader_weighted_cost' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:837:0: 'Blc.SelfintClass.functional_wire' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:838:0: 'Blc.SelfintClass.assembly_lower' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:839:0: 'Blc.SelfintClass.class_bound_138' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:840:0: 'Blc.SelfintClass.class_bound_multiplicity' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:841:0: 'Blc.SelfintClass.canonical_assembly_exact' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:842:0: 'Blc.SelfintClass.canonical_class_bound' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:843:0: 'Blc.SelfintClass.reader162_laws' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:844:0: 'Blc.SelfintClass.reader165_laws' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:845:0: 'Blc.SelfintClass.assembly_is_int162' does not depend on any axioms
+info: Blc/SelfintClass.lean:846:0: 'Blc.SelfintClass.assembly_is_int165' does not depend on any axioms
+info: Blc/SelfintClass.lean:1432:0: 'Blc.SelfintClassNext.tagged_of_twoArm' depends on axioms: [propext]
+info: Blc/SelfintClass.lean:1433:0: 'Blc.SelfintClassNext.pruning_monotone' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1434:0: 'Blc.SelfintClassNext.prune_cost' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1435:0: 'Blc.SelfintClassNext.prune_tag_absent' depends on axioms: [propext]
+info: Blc/SelfintClass.lean:1436:0: 'Blc.SelfintClassNext.merged_lower' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1437:0: 'Blc.SelfintClassNext.merged' depends on axioms: [propext]
+info: Blc/SelfintClass.lean:1438:0: 'Blc.SelfintClassNext.merged_le_choice' depends on axioms: [propext]
+info: Blc/SelfintClass.lean:1439:0: 'Blc.SelfintClassNext.merged_le_spine' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1440:0: 'Blc.SelfintClassNext.measure_prune' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1441:0: 'Blc.SelfintClassNext.prune_normal' depends on axioms: [propext]
+info: Blc/SelfintClass.lean:1442:0: 'Blc.SelfintClassNext.shift_subst_absent' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1443:0: 'Blc.SelfintClassNext.prune_beta' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1444:0: 'Blc.SelfintClassNext.normal_applied_fresh' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1445:0: 'Blc.SelfintClassNext.Next.lambda' depends on axioms: [propext]
+info: Blc/SelfintClass.lean:1446:0: 'Blc.SelfintClassNext.Next.pruned_forms' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1447:0: 'Blc.SelfintClassNext.merged_targets' depends on axioms: [propext]
+info: Blc/SelfintClass.lean:1448:0: 'Blc.SelfintClassNext.next_price' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1449:0: 'Blc.SelfintClassNext.next_bound_of_rigid_laws' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1450:0: 'Blc.SelfintClassNext.class_bound_138' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1451:0: 'Blc.SelfintClassNext.assembly_lower' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1452:0: 'Blc.SelfintClassNext.class_bound_multiplicity' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1453:0: 'Blc.SelfintClassNext.canonicalNext_is_Next' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClass.lean:1454:0: 'Blc.SelfintClassNext.canonicalNext_minimum' depends on axioms: [propext, Quot.sound]
+ℹ [64/99] Replayed Blc.SelfintRecursion
+info: Blc/SelfintRecursion.lean:337:0: 'Blc.SelfintRecursion.first_head_not_chain' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintRecursion.lean:338:0: 'Blc.SelfintRecursion.two_independent_heads_at_least_165' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintRecursion.lean:339:0: 'Blc.SelfintRecursion.sub162_requires_different_cut' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintRecursion.lean:340:0: 'Blc.SelfintRecursion.affine_direct_heads_at_least_167' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintRecursion.lean:341:0: 'Blc.SelfintRecursion.reference_cut' depends on axioms: [propext, Quot.sound]
+ℹ [65/99] Replayed Blc.SelfintWiden
+info: Blc/SelfintWiden.lean:2403:0: 'Blc.SelfintWiden.OneLet.covered_admin_frontier' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintWiden.lean:2406:0: 'Blc.SelfintWiden.unrestricted_next_assembly_lower' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintWiden.lean:2407:0: 'Blc.SelfintWiden.counterexample_is_interpreter' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintWiden.lean:2408:0: 'Blc.SelfintWiden.unrestricted_knot_multiplicity' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintWiden.lean:2409:0: 'Blc.SelfintWiden.sub162_knot_localization' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintWiden.lean:2410:0: 'Blc.SelfintWiden.frontier_dominated_full' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintWiden.lean:2411:0: 'Blc.SelfintWiden.frontier_optimal_iff_reader_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [66/99] Replayed Blc.SelfintProbe
+info: Blc/SelfintProbe.lean:895:0: 'Blc.SelfintProbe.lemmaA' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintProbe.lean:896:0: 'Blc.SelfintProbe.lemmaA_after_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintProbe.lean:897:0: 'Blc.SelfintProbe.classify_continuation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintProbe.lean:898:0: 'Blc.SelfintProbe.probe_two_argument_corollary' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [67/99] Replayed Blc.SelfintProbeSlots
+info: Blc/SelfintProbeSlots.lean:80:0: 'Blc.SelfintProbeSlots.lemmaA_two_slots' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [68/99] Replayed Blc.SelfintProbeDerive
+info: Blc/SelfintProbeDerive.lean:459:0: 'Blc.SelfintProbeDerive.derive_from_source_hypotheses' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintProbeDerive.lean:471:0: 'Blc.SelfintProbeDerive.semantic_retval_from_contract' depends on axioms: [propext, Quot.sound]
+ℹ [70/99] Replayed Blc.SelfintValues
+info: Blc/SelfintValues.lean:662:0: 'Blc.SelfintValues.share_dominated' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintValues.lean:663:0: 'Blc.SelfintValues.wp162_strip' depends on axioms: [propext]
+info: Blc/SelfintValues.lean:664:0: 'Blc.SelfintValues.floor_of_dominated' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintValues.lean:770:0: 'Blc.SelfintValues.transfer_dominated' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintValues.lean:814:0: 'Blc.SelfintValues.vnext_two_leaves' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintValues.lean:815:0: 'Blc.SelfintValues.wholePrefix_dominated_law' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [71/99] Replayed Blc.SelfintKnotHeads
+info: Blc/SelfintKnotHeads.lean:304:0: 'Blc.SelfintKnotHeads.no_closed_first_head' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintKnotHeads.lean:305:0: 'Blc.SelfintKnotHeads.no_closed_second_head' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintKnotHeads.lean:306:0: 'Blc.SelfintKnotHeads.binary_fixedpoint_count' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintKnotHeads.lean:307:0: 'Blc.SelfintKnotHeads.three_nonlinear_thirty' depends on axioms: [propext, Quot.sound]
+ℹ [72/99] Replayed Blc.SelfintReader30
+info: Blc/SelfintReader30.lean:5214:0: 'Blc.SelfintReader30Final.reader_weight_30' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintReader30.lean:5215:0: 'Blc.SelfintReader30Final.class_bound_146' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [73/99] Replayed Blc.SelfintGlobalBarriers
+info: Blc/SelfintGlobalBarriers.lean:191:0: 'Blc.SelfintGlobalBarriers.projection_value' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintGlobalBarriers.lean:192:0: 'Blc.SelfintGlobalBarriers.value_bound_transfers' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintGlobalBarriers.lean:193:0: 'Blc.SelfintGlobalBarriers.guard_contract' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintGlobalBarriers.lean:194:0: 'Blc.SelfintGlobalBarriers.guard_not_join_root_variable' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintGlobalBarriers.lean:195:0: 'Blc.SelfintGlobalBarriers.concrete_guard' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintGlobalBarriers.lean:196:0: 'Blc.SelfintGlobalBarriers.semantic_conversion_iff' does not depend on any axioms
+ℹ [74/99] Replayed Blc.SelfintSpineBarriers
+info: Blc/SelfintSpineBarriers.lean:322:0: 'Blc.SelfintSpineBarriers.church_value121_contract' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintSpineBarriers.lean:324:0: 'Blc.SelfintSpineBarriers.church_full_contract' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintSpineBarriers.lean:325:0: 'Blc.SelfintSpineBarriers.church_value_contract' depends on axioms: [propext, Quot.sound]
+ℹ [75/99] Replayed Blc.SelfintTowerBarriers
+info: Blc/SelfintTowerBarriers.lean:308:0: 'Blc.SelfintTowerBarriers.value57_towers' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintTowerBarriers.lean:309:0: 'Blc.SelfintTowerBarriers.value84_towers' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintTowerBarriers.lean:310:0: 'Blc.SelfintTowerBarriers.value84_poison' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintTowerBarriers.lean:311:0: 'Blc.SelfintTowerBarriers.both88_towers' depends on axioms: [propext, Quot.sound]
+ℹ [76/99] Replayed Blc.SelfintChead
+info: Blc/SelfintChead.lean:121:0: 'Blc.SelfintChead.value_next_bound' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintChead.lean:122:0: 'Blc.SelfintChead.rest_next_bound' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintChead.lean:240:0: 'Blc.SelfintChead.cassembly_lower' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintChead.lean:241:0: 'Blc.SelfintChead.split_class_165' depends on axioms: [propext, Quot.sound]
+✔ [77/99] Built Blc.SelfintRoleAlgebra (683ms)
+ℹ [78/99] Built Blc.SelfintClosureBarrier (1.3s)
+info: Blc/SelfintClosureBarrier.lean:624:0: 'Blc.SelfintClosureBarrier.factories_cannot_read' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClosureBarrier.lean:625:0: 'Blc.SelfintClosureBarrier.sharing_cannot_read' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClosureBarrier.lean:626:0: 'Blc.SelfintClosureBarrier.represented_reader_impossible' depends on axioms: [propext, Quot.sound]
+ℹ [79/99] Built Blc.SelfintSourceCost (2.2s)
+info: Blc/SelfintSourceCost.lean:599:0: 'Blc.SelfintSourceCost.contract_hoist_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintSourceCost.lean:600:0: 'Blc.SelfintSourceCost.ReaderLaws.hoist' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintSourceCost.lean:601:0: 'Blc.SelfintSourceCost.minimum_argument_charge' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintSourceCost.lean:602:0: 'Blc.SelfintSourceCost.nohole_argument_budget' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintSourceCost.lean:603:0: 'Blc.SelfintSourceCost.hole_argument_budget' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintSourceCost.lean:604:0: 'Blc.SelfintSourceCost.reader_head_multiplicity_le_seven' depends on axioms: [propext, Quot.sound]
+ℹ [80/99] Built Blc.SelfintBoundaryAlgebra (976ms)
+info: Blc/SelfintBoundaryAlgebra.lean:98:0: 'Blc.SelfintBoundaryAlgebra.dual_zero' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintBoundaryAlgebra.lean:99:0: 'Blc.SelfintBoundaryAlgebra.dual_one' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintBoundaryAlgebra.lean:100:0: 'Blc.SelfintBoundaryAlgebra.dual_long' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintBoundaryAlgebra.lean:101:0: 'Blc.SelfintBoundaryAlgebra.near_zero' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintBoundaryAlgebra.lean:102:0: 'Blc.SelfintBoundaryAlgebra.near_one' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintBoundaryAlgebra.lean:103:0: 'Blc.SelfintBoundaryAlgebra.near_long' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintBoundaryAlgebra.lean:104:0: 'Blc.SelfintBoundaryAlgebra.factory_selector_price' does not depend on any axioms
+ℹ [81/99] Built Blc.SelfintBoundaryChecks (1.1s)
+info: Blc/SelfintBoundaryChecks.lean:54:0: 'Blc.SelfintBoundaryChecks.near_reader_not_reader' depends on axioms: [propext, Quot.sound]
+ℹ [82/99] Built Blc.SelfintDispatchAudit (892ms)
+info: Blc/SelfintDispatchAudit.lean:78:0: 'Blc.SelfintDispatchAudit.tiny_j_operand' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintDispatchAudit.lean:79:0: 'Blc.SelfintDispatchAudit.j_head_fails_zero' depends on axioms: [propext]
+ℹ [83/99] Built Blc.SelfintLocalCost (1.7s)
+info: Blc/SelfintLocalCost.lean:240:0: 'Blc.SelfintLocalCost.weighted_beta_at' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintLocalCost.lean:241:0: 'Blc.SelfintLocalCost.minimum_linear_source_charge' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintLocalCost.lean:242:0: 'Blc.SelfintLocalCost.minimum_source_non_erasing' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintLocalCost.lean:243:0: 'Blc.SelfintLocalCost.minimum_source_sharing_charge' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintLocalCost.lean:244:0: 'Blc.SelfintLocalCost.nested_argument_budget' depends on axioms: [propext, Quot.sound]
+ℹ [84/99] Built Blc.SelfintSourceFront (670ms)
+info: Blc/SelfintSourceFront.lean:160:0: 'Blc.SelfintSourceFront.reader_source_head' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintSourceFront.lean:161:0: 'Blc.SelfintSourceFront.body_head_multiplicity' depends on axioms: [propext, Quot.sound]
+ℹ [85/99] Built Blc.SelfintFlatSemantics (1.1s)
+info: Blc/SelfintFlatSemantics.lean:366:0: 'Blc.SelfintFlatSemantics.flat_algebra' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintFlatSemantics.lean:367:0: 'Blc.SelfintFlatSemantics.irrelevant_inert' depends on axioms: [propext, Quot.sound]
+ℹ [86/99] Built Blc.SelfintFlatMinimum (688ms)
+info: Blc/SelfintFlatMinimum.lean:366:0: 'Blc.SelfintFlatMinimum.minimum_flat_argument' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintFlatMinimum.lean:367:0: 'Blc.SelfintFlatMinimum.minimum_flat_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintFlatMinimum.lean:368:0: 'Blc.SelfintFlatMinimum.no_three_lambda_linear' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [87/99] Built Blc.SelfintRootFlat (505ms)
+info: Blc/SelfintRootFlat.lean:124:0: 'Blc.SelfintRootFlat.minimum_root_flat_is_hole' depends on axioms: [propext, Quot.sound]
+ℹ [88/99] Built Blc.SelfintFlatPrefix (418ms)
+info: Blc/SelfintFlatPrefix.lean:141:0: 'Blc.SelfintFlatPrefix.reader_flat_prefix' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintFlatPrefix.lean:142:0: 'Blc.SelfintFlatPrefix.minimum_not_flat_flat' depends on axioms: [propext, Quot.sound]
+ℹ [89/99] Built Blc.SelfintLetSink (1.2s)
+info: Blc/SelfintLetSink.lean:310:0: 'Blc.SelfintLetSink.sunk_price' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintLetSink.lean:311:0: 'Blc.SelfintLetSink.minimum_sink_charge_zero' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintLetSink.lean:312:0: 'Blc.SelfintLetSink.no_one_operand_spine_let' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintLetSink.lean:313:0: 'Blc.SelfintLetSink.sunkRoot_price' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintLetSink.lean:314:0: 'Blc.SelfintLetSink.minimum_root_sink_charge_zero' depends on axioms: [propext, Quot.sound]
+ℹ [90/99] Built Blc.SelfintHelperPair (1.3s)
+info: Blc/SelfintHelperPair.lean:240:0: 'Blc.SelfintHelperPair.local_pair_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintHelperPair.lean:241:0: 'Blc.SelfintHelperPair.root_pair_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintHelperPair.lean:242:0: 'Blc.SelfintHelperPair.capturing_local_normal' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintHelperPair.lean:243:0: 'Blc.SelfintHelperPair.capturing_root_normal' depends on axioms: [propext, Quot.sound]
+ℹ [91/99] Built Blc.SelfintClosedSpecializer (2.0s)
+info: Blc/SelfintClosedSpecializer.lean:439:0: 'Blc.SelfintClosedSpecializer.local_closed_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintClosedSpecializer.lean:440:0: 'Blc.SelfintClosedSpecializer.root_closed_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintClosedSpecializer.lean:441:0: 'Blc.SelfintClosedSpecializer.local_inline_price' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintClosedSpecializer.lean:442:0: 'Blc.SelfintClosedSpecializer.root_inline_price' depends on axioms: [propext, Quot.sound]
+⚠ [92/99] Built Blc.SelfintLambdaSink (734ms)
+warning: Blc/SelfintLambdaSink.lean:36:26: This simp argument is unused:
+  show k + 1 ≠ k by omega
+
+Hint: Omit it from the simp argument list.
+  simp [̵s̵w̵a̵p̵,̵s̵u̵b̵s̵t̵D̵e̵c̵,̵s̵h̵o̵w̵ ̵k̵+̵1̵ ̵≠̵[̲s̲w̲a̲p̲,̲ ̲s̲u̲b̲s̲t̲D̲e̲c̲,̲ ̲s̲h̲o̲w̲ ̲¬̲k̲ ̲>̲ k +̲ ̲1̲ ̲by o̵m̵e̵g̵a̵,̵s̵h̵o̵w̵ ̵¬̵ ̵k̵>̵k̵+̵1̵ ̵b̵y̵ ̵omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Blc/SelfintLambdaSink.lean:39:28: This simp argument is unused:
+  show k + 1 ≠ k by omega
+
+Hint: Omit it from the simp argument list.
+  simp [̵s̵w̵a̵p̵,̵s̵u̵b̵s̵t̵D̵e̵c̵,̵s̵h̵o̵w̵ ̵k̵+̵1̵ ̵≠̵ ̵k̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]̵[̲s̲w̲a̲p̲,̲ ̲s̲u̲b̲s̲t̲D̲e̲c̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Blc/SelfintLambdaSink.lean:68:31: This simp argument is unused:
+  hk'
+
+Hint: Omit it from the simp argument list.
+  simp [̵s̵w̵a̵p̵,̵w̵e̵i̵g̵h̵t̵,̵o̵c̵c̵,̵h̵k̵,̵h̵k̵'̵]̵[̲s̲w̲a̲p̲,̲ ̲w̲e̲i̲g̲h̲t̲,̲ ̲o̲c̲c̲,̲ ̲h̲k̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Blc/SelfintLambdaSink.lean:74:33: This simp argument is unused:
+  hk'
+
+Hint: Omit it from the simp argument list.
+  simp [̵s̵w̵a̵p̵,̵w̵e̵i̵g̵h̵t̵,̵o̵c̵c̵,̵h̵k̵,̵h̵k̵'̵]̵[̲s̲w̲a̲p̲,̲ ̲w̲e̲i̲g̲h̲t̲,̲ ̲o̲c̲c̲,̲ ̲h̲k̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: Blc/SelfintLambdaSink.lean:199:0: 'Blc.SelfintLambdaSink.sink_join' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintLambdaSink.lean:200:0: 'Blc.SelfintLambdaSink.sink_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintLambdaSink.lean:201:0: 'Blc.SelfintLambdaSink.minimum_root_capture' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintLambdaSink.lean:202:0: 'Blc.SelfintLambdaSink.minimum_body_capture' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintLambdaSink.lean:203:0: 'Blc.SelfintLambdaSink.linear_saving_counterexample' does not depend on any axioms
+ℹ [93/99] Built Blc.SelfintSourceBody (442ms)
+info: Blc/SelfintSourceBody.lean:130:0: 'Blc.SelfintSourceBody.minimum_body_alternatives' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintSourceBody.lean:131:0: 'Blc.SelfintSourceBody.root_body_alternatives' depends on axioms: [propext, Quot.sound]
+ℹ [94/99] Built Blc.SelfintStreamHelpers (1.5s)
+info: Blc/SelfintStreamHelpers.lean:235:0: 'Blc.SelfintStreamHelpers.root_nine' depends on axioms: [propext, Quot.sound]
+info: Blc/SelfintStreamHelpers.lean:236:0: 'Blc.SelfintStreamHelpers.capture_thirteen' depends on axioms: [propext, Quot.sound]
+ℹ [95/99] Built Blc.SelfintStreamSpecializer (2.7s)
+info: Blc/SelfintStreamSpecializer.lean:172:0: 'Blc.SelfintStreamSpecializer.root_stream_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintStreamSpecializer.lean:173:0: 'Blc.SelfintStreamSpecializer.local_stream_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintStreamSpecializer.lean:174:0: 'Blc.SelfintStreamSpecializer.local_helper_ten' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintStreamSpecializer.lean:175:0: 'Blc.SelfintStreamSpecializer.specializer_boundary' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [96/99] Built Blc.SelfintNeededHead (496ms)
+info: Blc/SelfintNeededHead.lean:202:0: 'Blc.SelfintNeededHead.unary_needed_if_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintNeededHead.lean:203:0: 'Blc.SelfintNeededHead.forget_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintNeededHead.lean:204:0: 'Blc.SelfintNeededHead.minimum_forget_fails' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintNeededHead.lean:205:0: 'Blc.SelfintNeededHead.minimum_extra_use' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintNeededHead.lean:206:0: 'Blc.SelfintNeededHead.body_needed_sharing' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [97/99] Built Blc.SelfintNestedLets (670ms)
+info: Blc/SelfintNestedLets.lean:267:0: 'Blc.SelfintNestedLets.pending_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintNestedLets.lean:268:0: 'Blc.SelfintNestedLets.minimum_nested_alternative' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintNestedLets.lean:269:0: 'Blc.SelfintNestedLets.order_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintNestedLets.lean:270:0: 'Blc.SelfintNestedLets.minimum_order_charge' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Blc/SelfintNestedLets.lean:271:0: 'Blc.SelfintNestedLets.push_context_price' depends on axioms: [propext, Quot.sound]
+✔ [98/99] Built Blc (355ms)
+Build completed successfully (99 jobs).
+real 17.67
+user 19.72
+sys 4.20

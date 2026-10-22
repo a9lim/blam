@@ -1,0 +1,25 @@
+[gaslamp] → codex · job cx-20261022-005734-6442 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-005734-6442/events.jsonl
+(•̀ᴗ•́) **New kernel-checked constraints connect the two viewpoints, but the needed-binder gap remains open.** Details are in [REPORT §10](/Users/a9lim/Work/blam/tmp/round4/close46/REPORT.md:967).
+
+For an x-headed let `(λx.x B₁…Bₖ) A`, keep `A` once at the head and replace all other `x` uses by the nearest outer variable. This preserves scope and source-hole count and saves exactly
+
+```text
+6 + ordinary capture count + 4 × j capture count
+```
+
+Consequently, a minimum reader cannot retain all reader laws after this replacement. If zero remains correct, **some unary length must fail**. Below 46, a first body redex has one to five additional syntactic uses; their collective dependence is proved, not individual productivity. See [NeededHead.lean](/Users/a9lim/Work/blam/tmp/round4/close46/NeededHead.lean:121).
+
+For nested head redexes, pending operands can be moved beneath the inner binder with an exact capture charge. Independent nested definitions can then be interchanged without copying either definition. Including arbitrary pending operands, the checked cost change is
+
+```text
+F(A) − F(E) + uses_y(D) − uses_x(D) + G
+```
+
+where `F` charges captured leaves, and `G` charges the pending operands’ captures other than `x`. Thus a minimum source either has an occurrence of `x` in `E`, or satisfies the corresponding nonnegative-charge inequality. See [minimum_nested_alternative](/Users/a9lim/Work/blam/tmp/round4/close46/NestedLets.lean:243).
+
+This gives source costs and a semantic dependence test for source-delivered values. **Still missing:** identifying that source binder with the unary-output ancestor, tracking created-redex origins, and pricing input-cell-delivered values. The inspected hole notes also explicitly retain R2b and R3 alongside needed-binder sharing.
+
+[Verification](/Users/a9lim/Work/blam/tmp/round4/close46/verification.json): 24 checks passed in **17.85 seconds**, two threads per child; current hashes match. No sweeps, admits, or writes outside this lane. No universal weight-46 theorem or sub-46 reader.
+
+[gaslamp] job: cx-20261022-005734-6442 · session: 01a1615e-e629-72b0-a983-8f5d47a3126a · thread: r4-close46 · resume: gaslamp codex --thread r4-close46 · tok: 30702k→332k
+[lane.sh] done rc=0 tries=1

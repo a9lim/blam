@@ -1,0 +1,33 @@
+/Users/a9lim/Work/blam/tmp/round4/close46/LambdaSink.lean:26:26: warning: This simp argument is unused:
+  show k + 1 ≠ k by omega
+
+Hint: Omit it from the simp argument list.
+  simp [̵s̵w̵a̵p̵,̵s̵u̵b̵s̵t̵D̵e̵c̵,̵s̵h̵o̵w̵ ̵k̵+̵1̵ ̵≠̵[̲s̲w̲a̲p̲,̲ ̲s̲u̲b̲s̲t̲D̲e̲c̲,̲ ̲s̲h̲o̲w̲ ̲¬̲k̲ ̲>̲ k +̲ ̲1̲ ̲by o̵m̵e̵g̵a̵,̵s̵h̵o̵w̵ ̵¬̵ ̵k̵>̵k̵+̵1̵ ̵b̵y̵ ̵omega]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/a9lim/Work/blam/tmp/round4/close46/LambdaSink.lean:29:28: warning: This simp argument is unused:
+  show k + 1 ≠ k by omega
+
+Hint: Omit it from the simp argument list.
+  simp [̵s̵w̵a̵p̵,̵s̵u̵b̵s̵t̵D̵e̵c̵,̵s̵h̵o̵w̵ ̵k̵+̵1̵ ̵≠̵ ̵k̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]̵[̲s̲w̲a̲p̲,̲ ̲s̲u̲b̲s̲t̲D̲e̲c̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/a9lim/Work/blam/tmp/round4/close46/LambdaSink.lean:58:31: warning: This simp argument is unused:
+  hk'
+
+Hint: Omit it from the simp argument list.
+  simp [̵s̵w̵a̵p̵,̵w̵e̵i̵g̵h̵t̵,̵o̵c̵c̵,̵h̵k̵,̵h̵k̵'̵]̵[̲s̲w̲a̲p̲,̲ ̲w̲e̲i̲g̲h̲t̲,̲ ̲o̲c̲c̲,̲ ̲h̲k̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/a9lim/Work/blam/tmp/round4/close46/LambdaSink.lean:64:33: warning: This simp argument is unused:
+  hk'
+
+Hint: Omit it from the simp argument list.
+  simp [̵s̵w̵a̵p̵,̵w̵e̵i̵g̵h̵t̵,̵o̵c̵c̵,̵h̵k̵,̵h̵k̵'̵]̵[̲s̲w̲a̲p̲,̲ ̲w̲e̲i̲g̲h̲t̲,̲ ̲o̲c̲c̲,̲ ̲h̲k̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.Close46LambdaSink.sink_join' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46LambdaSink.sink_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46LambdaSink.minimum_root_capture' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46LambdaSink.minimum_body_capture' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46LambdaSink.linear_saving_counterexample' does not depend on any axioms

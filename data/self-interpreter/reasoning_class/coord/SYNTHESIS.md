@@ -430,3 +430,21 @@ knot, fresh, values. Brief: tmp/round4/BRIEF.md.
   class-bound.md §3 downgraded: four families cover rigid-on-zero parents
   only; zero-λ parents open. Files: review_hole/REVIEW.md, check.py,
   wrapper_unfiltered.py.
+
+- **close46-6 (30.7M tok total; lane closed)** — NeededHead.lean: for
+  (λx. x B1..Bk) A, keep A once at the head, replace other x uses by the
+  nearest outer variable: weight falls by exactly 6 + Σ freeLeaves(B_i) +
+  3 Σ count_j(B_i); minimum_forget_fails ⇒ the replacement breaks a law in a
+  minimum reader; minimum_extra_use (≥ 1 non-head use, no weight bound);
+  body_needed_sharing (1..5 extra uses below 46); unary_needed_if_zero (if
+  zero survives, some unary length fails). NestedLets.lean: nested head
+  redex ⇒ adjacent lets at exact capture charge; independent adjacent lets
+  interchange at F(A) − F(E) + uses_y(D) − uses_x(D). 22 modules, 17.85 s.
+  Still missing: tie the needed uses to the unary-output ancestor, created-
+  redex origins, input-cell-delivered values. Promotion → integrate2 lane.
+
+- **Wave 5 launched (2026-10-22 ~01:11)**: Codex astra xhigh zerolam (zero-λ
+  parents), needbinder (R1′), loop (pumping lemma for the unary run); Claude
+  opus root (app-rooted + depth-0 shared top-level let), adv5 (constructive
+  adversary); integrate2 (close46 Lean promotion). BRIEF5.md is the addendum.
+  Codex weekly reset (1% used, resets Oct 29).

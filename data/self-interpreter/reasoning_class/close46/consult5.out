@@ -1,0 +1,27 @@
+[gaslamp] → codex · job cx-20261022-003522-579e · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-003522-579e/events.jsonl
+(•̀ᴗ•́) **Both specialization families now have kernel-checked weight ≥46 bounds:**
+
+```text
+λs. ((λg. s (g P) (g s)) A) j
+(λg s. s (g P) (g s) j) A
+```
+
+`A` is arbitrary source syntax; `P` is arbitrary syntax whose free variables are among `g,s`. The assumptions are exactly one source `j` and the zero/shortest-unary reader laws. **No minimality or normal-form assumption.** See [local_stream_floor](/Users/a9lim/Work/blam/tmp/round4/close46/StreamSpecializer.lean:98), [root_stream_floor](/Users/a9lim/Work/blam/tmp/round4/close46/StreamSpecializer.lean:135), and [REPORT §9.4](/Users/a9lim/Work/blam/tmp/round4/close46/REPORT.md:880).
+
+The proof derives complete small source classifications from the original cost budget, then checks concrete incorrect normal forms. Arbitrary stream-dependent and `g`-dependent specializers are covered; fuel exhaustion never certifies rejection.
+
+**The general premise gap remains open**, but now has checked boundaries:
+
+- X-headed bodies with lambda-free `A` are excluded.
+- Leading-lambda bodies admit a no-copy let motion with exact cost change  
+  `freeLeaves(A) + 3 count_j(A) + uses_y(B) − uses_x(B)`.
+- X-headed bodies with lambda-containing `A`, nested head redexes, and other sharing contexts remain unresolved.
+
+Also, unrestricted “linear lets never pay” is false: `A=(s s)c`, `B=λy₁ y₂ y₃ y₄.x` gives source weight **29**, contractum **31**, with one use of `x`. [Kernel certificate](/Users/a9lim/Work/blam/tmp/round4/close46/LambdaSink.lean:184). **This example is not a reader.**
+
+[Verification](/Users/a9lim/Work/blam/tmp/round4/close46/verification.json): 20 Lean modules plus two auxiliary checks passed in **10.75 seconds**, at most two threads; current hashes match. No admits, native-decision trust axioms, sweeps, or writes outside this lane.
+
+**No universal weight-46 theorem or sub-46 reader was obtained.**
+
+[gaslamp] job: cx-20261022-003522-579e · session: 01a1615e-e629-72b0-a983-8f5d47a3126a · thread: r4-close46 · resume: gaslamp codex --thread r4-close46 · tok: 26560k→300k
+[lane.sh] done rc=0 tries=1

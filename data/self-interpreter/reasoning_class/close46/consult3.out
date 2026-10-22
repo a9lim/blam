@@ -1,0 +1,18 @@
+[gaslamp] → codex · job cx-20261021-233609-3766 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-233609-3766/events.jsonl
+( •̀ᴗ•́ ) **The 46 bound remains open.** Five new Lean modules establish substantive semantic reductions; no smaller reader or interpreter was constructed.
+
+- **Flat arguments are classified completely.** A minimum root redex’s lambda-free argument must be literal `j`. Under `λs`, the sub-46 possibilities reduce to `j`, `s s`, `s s s`, and `s s s j`.
+- **Two redex families are excluded:** both body and argument lambda-free; and every linear first body redex with at most three source lambdas.
+- **Sharing lets can be moved without expanding their definitions.** For an application context whose fixed pieces omit `x`,
+  ```
+  (λx. C[G]) A  =β  C↓[(λx. G) A]
+  ```
+  This preserves every reader law and exactly one source hole. The weight saved is precisely the removed capture charge.
+- Consequently, if the redex body is an `s`-spine, **a minimum reader’s shared definition must affect at least two operands**. Sharing confined to one operand strictly improves when moved into it.
+
+These results are kernel-checked independently of jn’s finite inventories. The remaining gap is sharing across different operands, lambda-containing arguments, and deeper linear capture.
+
+Full statements, proofs, and boundaries are in [REPORT.md §7](/Users/a9lim/Work/blam/tmp/round4/close46/REPORT.md:432). All **16 verification runs passed in 5.32 seconds**, including fourteen Lean modules; source hashes match. No admits, term sweeps, or tracked-file changes.
+
+[gaslamp] job: cx-20261021-233609-3766 · session: 01a1615e-e629-72b0-a983-8f5d47a3126a · thread: r4-close46 · resume: gaslamp codex --thread r4-close46 · tok: 18212k→217k
+[lane.sh] done rc=0 tries=1

@@ -1,0 +1,13 @@
+[gaslamp] → codex · job cx-20261021-220931-fb85 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-220931-fb85/events.jsonl
+( •̀_•́ ) **The unrestricted bound 46 remains open.** No reader with `w ≤ 45` or complete interpreter was constructed.
+
+[REPORT.md](/Users/a9lim/Work/blam/tmp/round4/close46/REPORT.md) records two new kernel-checked results:
+
+- **Whole-context sharing exclusion:** arbitrary application trees over streams, `I`, `F`, continuation towers `C_m = λ^m.c`, and factories `H_m = λx.x C_m` cannot satisfy both reader laws. This permits unlimited copies, different specialization arguments, and explicit nonlinear sharing lets. It requires no disjoint-role assumption.
+- **A concrete boundary:** with `Δ = λx.x x`, the operand `D(s) = s Δ I (s s) j` returns `j` on zero input and `N` at every unary length ≥2, but returns **`N j` at length 1**. Thus the paired invariant cannot extend unchanged to arbitrary flat callbacks. The resulting reader-shaped term has `w = 56` and is formally refuted.
+
+The missing step is a source-cost argument covering callbacks outside the proved grammar. No entire count profile is claimed eliminated.
+
+Verification passed in **1.42 seconds**, using at most two threads. Audited dependencies contain only `propext` and `Quot.sound`; no `sorryAx`. All artifacts remain in the lane directory.
+
+[gaslamp] job: cx-20261021-220931-fb85 · session: 01a1615e-e629-72b0-a983-8f5d47a3126a · thread: r4-close46 · resume: gaslamp codex --thread r4-close46 · tok: 4345k→67k

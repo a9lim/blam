@@ -124,24 +124,30 @@ other than the 162's weigh 47 (`λs. s I (λu. s (λq. c) (s s s)) j`), 48 (the
   form `λs. s D E j` with literal abstractions and at most four λs has
   `w ≥ 46` (sharp), with two λs in each operand `w ≥ 52` (handwritten,
   round 3).
-- **Sharing in whole contexts** (Lean, Codex). No application tree over
+- **Sharing in whole contexts** (Lean, Codex,
+  `Blc/SelfintClosureBarrier.lean`). No application tree over
   `s`, `I`, `F`, rigid parameters, continuation towers `C_m = λ^m. c` and
   factories `H_m = λx. x C_m` — any number of copies, different
   specialization arguments, nonlinear lets — satisfies both laws: it fails
   at every unary length past its application count
-  (`ClosureBarrier.factories_cannot_read`). The invariant stops exactly at
+  (`factories_cannot_read`, `sharing_cannot_read`). The invariant stops exactly at
   `Δ = λx. x x`: `s Δ I (s s) j` is `j` on a zero stream and `N` at every
   length ≥ 2, but `N j` at length 1, so any proof must carry `n = 1`
   separately.
-- **Cross-operand sharing through one helper** (Lean, Codex): every
+- **Cross-operand sharing through one helper** (Lean, Codex,
+  `Blc/SelfintStreamSpecializer.lean`, `SelfintClosedSpecializer`,
+  `SelfintHelperPair`): every
   reader `λs. ((λg. s (g P) (g s)) A) j`, and its root form
   `(λg s. s (g P) (g s) j) A`, with any helper `A` and any specializer `P`
   whose free variables are among `g, s`, has `w ≥ 46`, with no minimality
   assumption. For closed `P` the zero law alone forces `|A| ≥ 10`, which
-  below 46 forces `P = I` and leaves a complete 26-helper basis. It covers the capturing helper `G = λx u. x (λq. c) (x x u)`, which
+  below 46 forces `P = I` and leaves a complete 26-helper basis. It covers
+  the capturing helper `G = λx u. x (λq. c) (x x u)`, which
   gives `G F = I` and `G s` = the 162's variable arm, one helper in both
   roles; shared, it weighs 67.
-- **Minimum readers' source structure** (Lean, Codex): exact weighted β
+- **Minimum readers' source structure** (Lean, Codex,
+  `Blc/SelfintSourceCost.lean`, `SelfintLocalCost`, `SelfintSourceFront`,
+  `SelfintFlatMinimum`, `SelfintRootFlat`, `SelfintLetSink`): exact weighted β
   balance at every source position; no erasing redex; every surviving
   linear redex satisfies the index tax `(F − 1)D ≥ 7 + G` (the hole charged
   as four captures); contracting a nonlinear `j`-sharing let and hoisting
@@ -152,12 +158,23 @@ other than the 162's weigh 47 (`λs. s I (λu. s (λq. c) (s s s)) j`), 48 (the
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands.
+- **Lets headed by their own variable** (Lean, Codex,
+  `Blc/SelfintNeededHead.lean`, `Blc/SelfintNestedLets.lean`). In
+  `(λx. x B₁ … B_k) A`, keeping `A` once at the head and replacing every
+  other use of `x` by the nearest outer variable lowers the weight by exactly
+  `6 + (captured leaves of the B_i) + 3·(j occurrences in the B_i)`, with no
+  copy of `A`. So in a minimum reader that replacement breaks a law: every
+  such let has a use besides the head, a first body redex below 46 has one
+  to five, and if the zero law survives the replacement some unary length
+  fails. A nested head redex `((λy. D) E) B⃗` can be displayed as adjacent
+  lets at an exact capture charge, and independent adjacent lets
+  interchange at the exact price `F(A) − F(E) + uses_y(D) − uses_x(D)`.
 - **What a let can save** (handwritten, Claude). For `(λx. B) A` with `k`
   uses of `x`, the contraction changes the weight by
   `S = (k−1)|A| + (f_A − 1)M − 4 − 2k − T` (`M` the uses' depths under B's
   λs, `T` B's other outward leaves). A linear let pays only through the
-  index tax, when `(f_A − 1)m > 6 + T` (Lean has a 29-bit source whose
-  contractum is 31, not a reader), and otherwise a let needs two uses that
+  index tax, when `(f_A − 1)m > 6 + T` (`Blc/SelfintLambdaSink.lean` has a
+  29-bit source whose contractum is 31, not a reader), and otherwise a let needs two uses that
   are productive. Counting alone allows a let-contracted
   reader of about 91 bits, whose cheapest shapes are pure self-application
   bodies `x x … x`: no bounded-sharing bridge follows from accounting, so
@@ -239,8 +256,9 @@ ones, not the full 25-bit cut-off audit.
 162's family; application-rooted readers with the hole under a non-stream
 λ; depth-0 readers whose `j` follows a shared top-level let; first operands
 that are stream-headed or redexes, and `λb. b X Y` with four or more
-operands; first-redex bodies headed by the let's variable whose argument
-contains a λ, and nested head redexes. The record's estimate is about 2×10⁹
+operands; lets headed by their own variable (whose extra uses are needed,
+but not yet tied to the unary output) and nested lets. The record's
+estimate is about 2×10⁹
 λ-rooted depth-1 readers at `w ≤ 45`, so these need arguments, not larger
 checks. The productive tools so far are the first dispatch, the
 context-free anchor at `j`'s parent, and the closed-specializer algebra.

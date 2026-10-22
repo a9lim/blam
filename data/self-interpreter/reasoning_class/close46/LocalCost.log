@@ -1,0 +1,6 @@
+'Blc.Close46Local.weighted_beta_at' depends on axioms: [propext, Quot.sound]
+'Blc.Close46Local.minimum_linear_source_charge' depends on axioms: [propext, Quot.sound]
+'Blc.Close46Local.minimum_linear_source_not_shallow' depends on axioms: [propext, Quot.sound]
+'Blc.Close46Local.minimum_source_non_erasing' depends on axioms: [propext, Quot.sound]
+'Blc.Close46Local.minimum_source_sharing_charge' depends on axioms: [propext, Quot.sound]
+'Blc.Close46Local.nested_argument_budget' depends on axioms: [propext, Quot.sound]

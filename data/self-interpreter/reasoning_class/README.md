@@ -11,7 +11,7 @@ the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
 `lean146` and the review `review_hole`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
 `bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, the statement audit
-`audit1` and the Lean promotion `integrate`. Lanes consulted Codex for
+`audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
 
 **No interpreter below 162 was found.** The round's results are recorded in
@@ -30,7 +30,7 @@ working versions.
 | knot | Lemma B: every two-port opaque recursion scheme costs `≥ 26 + a + b`, the 162's knot unique; Lemma C repaired; knotless three-binder heads excluded | `Blc/SelfintKnotHeads.lean`, `class-bound.md` §4.3 |
 | chead | the continuation-headed split class `≥ 165`; mode NEXT bounds; conversions `+23`, `+10`; mode sharing never optimal | `Blc/SelfintChead.lean`, `class-bound.md` §4.4 |
 | escape, probelean | the forwarding lemma for unsolvable probes; the variable law's rest part and NEXT's data flow derived from the contract; five correct counterexamples to the other hypotheses; the dual-operand readers are class members | `Blc/SelfintProbe.lean`, `SelfintProbeSlots.lean`, `SelfintProbeDerive.lean`, `class-bound.md` §4.5 |
-| close46 | kernel-checked sharing exclusions (factories, closed specializers), exact source-cost balance, first-head classification, let-sinking | `class-bound.md` §3 |
+| close46 | kernel-checked sharing exclusions (factories, closed and stream-dependent specializers), exact source-cost balance, first-head classification, let-sinking, the linear-let counterexample, the needed extra uses of self-headed lets, nested-let exchange | `Blc/SelfintClosureBarrier.lean`, `SelfintStreamSpecializer`, `SelfintSourceCost`, `SelfintNeededHead`, `SelfintNestedLets` and fifteen more (`integrate2/promote.py` has the map), `class-bound.md` §3 |
 | jn | minimal pieces (unary core 20 unique, zero core 12, j/N operand 25, arm 22); the first-dispatch normal form; the additive decomposition refuted; depth-1 dispatcher families closed | `class-bound.md` §3 |
 | depth02 | depth ≥ 2 and depth-0 readers with `j` a λ's argument closed; two flaws in round 3's depth reduction | `class-bound.md` §3 |
 | bridgeadv, share46 | the exact let-saving formula and two-productive-uses lemma; counting cannot bound sharing; sharing families closed | `class-bound.md` §3 |

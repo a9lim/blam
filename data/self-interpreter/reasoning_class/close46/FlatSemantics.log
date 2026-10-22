@@ -1,0 +1,2 @@
+'Blc.Close46Flat.flat_algebra' depends on axioms: [propext, Quot.sound]
+'Blc.Close46Flat.irrelevant_inert' depends on axioms: [propext, Quot.sound]

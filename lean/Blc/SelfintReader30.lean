@@ -4847,7 +4847,7 @@ set_option maxRecDepth 10000
 set_option maxHeartbeats 2000000
 def sourceWeight (t : Term) : Nat := weight t
 /- Spine and exact substitution identities adapted from
-   data/self-interpreter/reasoning_class/close46/SourceCost.lean; the minimum
+   `Blc.SelfintSourceCost`; the minimum
    interface here uses only the two-probe Reader. -/
 def spine (t : Term) : List Term → Term
   | [] => t

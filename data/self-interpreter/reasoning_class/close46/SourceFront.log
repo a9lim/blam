@@ -1,0 +1,2 @@
+'Blc.Close46Front.reader_source_head' depends on axioms: [propext, Quot.sound]
+'Blc.Close46Front.body_head_multiplicity' depends on axioms: [propext, Quot.sound]

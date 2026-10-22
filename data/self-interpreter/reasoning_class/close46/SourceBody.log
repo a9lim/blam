@@ -1,0 +1,4 @@
+'Blc.Close46SourceBody.reader_head_index' depends on axioms: [propext, Quot.sound]
+'Blc.Close46SourceBody.x_head_flat_argument' depends on axioms: [propext, Quot.sound]
+'Blc.Close46SourceBody.minimum_body_alternatives' depends on axioms: [propext, Quot.sound]
+'Blc.Close46SourceBody.root_body_alternatives' depends on axioms: [propext, Quot.sound]

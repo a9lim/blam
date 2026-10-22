@@ -1,0 +1,199 @@
+Blc.lean: inserted after Blc.SelfintChead
+SelfintRoleAlgebra: 249 lines; prints kept: -
+SelfintClosureBarrier: 627 lines; prints kept: factories_cannot_read, sharing_cannot_read, represented_reader_impossible
+SelfintBoundaryAlgebra: 105 lines; prints kept: dual_zero, dual_one, dual_long, near_zero, near_one, near_long, factory_selector_price
+SelfintBoundaryChecks: 57 lines; prints kept: near_reader_not_reader
+SelfintSourceCost: 606 lines; prints kept: contract_hoist_price, ReaderLaws.hoist, minimum_argument_charge, nohole_argument_budget, hole_argument_budget, reader_head_multiplicity_le_seven
+SelfintLocalCost: 246 lines; prints kept: weighted_beta_at, minimum_linear_source_charge, minimum_source_non_erasing, minimum_source_sharing_charge, nested_argument_budget
+SelfintDispatchAudit: 80 lines; prints kept: tiny_j_operand, j_head_fails_zero
+SelfintSourceFront: 162 lines; prints kept: reader_source_head, body_head_multiplicity
+SelfintFlatSemantics: 368 lines; prints kept: flat_algebra, irrelevant_inert
+SelfintFlatMinimum: 369 lines; prints kept: minimum_flat_argument, minimum_flat_four, no_three_lambda_linear
+SelfintRootFlat: 125 lines; prints kept: minimum_root_flat_is_hole
+SelfintFlatPrefix: 143 lines; prints kept: reader_flat_prefix, minimum_not_flat_flat
+SelfintLetSink: 315 lines; prints kept: sunk_price, minimum_sink_charge_zero, no_one_operand_spine_let, sunkRoot_price, minimum_root_sink_charge_zero
+SelfintHelperPair: 244 lines; prints kept: local_pair_floor, root_pair_floor, capturing_local_normal, capturing_root_normal
+SelfintClosedSpecializer: 443 lines; prints kept: local_closed_floor, root_closed_floor, local_inline_price, root_inline_price
+SelfintLambdaSink: 204 lines; prints kept: sink_join, sink_price, minimum_root_capture, minimum_body_capture, linear_saving_counterexample
+SelfintSourceBody: 132 lines; prints kept: minimum_body_alternatives, root_body_alternatives
+SelfintStreamHelpers: 237 lines; prints kept: root_nine, capture_thirteen
+SelfintStreamSpecializer: 176 lines; prints kept: root_stream_floor, local_stream_floor, local_helper_ten, specializer_boundary
+SelfintNeededHead: 207 lines; prints kept: unary_needed_if_zero, forget_price, minimum_forget_fails, minimum_extra_use, body_needed_sharing
+SelfintNestedLets: 272 lines; prints kept: pending_price, minimum_nested_alternative, order_price, minimum_order_charge, push_context_price
+
+ReaderHoist | dedup | namespace identical to SelfintWiden.SelfintWidenHoist | not promoted; dependents import Blc.SelfintWiden
+RoleAlgebra | rename | Round3Role | SelfintRoleAlgebra (5 occurrences)
+RoleAlgebra | prints | kept 0 | dropped 0
+ClosureBarrier | import | import RoleAlgebra | import Blc.SelfintRoleAlgebra
+ClosureBarrier | drop-summary | /- Whole application contexts over continuation constants and application\n   factories. This is a semantic sharing obstruction, not a reader bound. -/ | superseded by the header
+ClosureBarrier | rename | Round3Role | SelfintRoleAlgebra (4 occurrences)
+ClosureBarrier | rename | Close46 | SelfintClosureBarrier (6 occurrences)
+ClosureBarrier | prints | kept 3 | dropped 6
+BoundaryAlgebra | import | import ClosureBarrier | import Blc.SelfintClosureBarrier
+BoundaryAlgebra | rename | Round3Role | SelfintRoleAlgebra (1 occurrences)
+BoundaryAlgebra | rename | Close46 | SelfintClosureBarrier (1 occurrences)
+BoundaryAlgebra | rename | Close46BoundaryAlgebra | SelfintBoundaryAlgebra (2 occurrences)
+BoundaryAlgebra | prints | kept 7 | dropped 2
+BoundaryChecks | import | import ClosureBarrier | import Blc.SelfintClosureBarrier
+BoundaryChecks | rename | Close46Boundary | SelfintBoundaryChecks (2 occurrences)
+BoundaryChecks | prints | kept 1 | dropped 0
+SourceCost | import | import ReaderHoist | import Blc.SelfintWiden
+SourceCost | drop-summary | /- Exact whole-source costs for nonlinear head contraction followed by\n   restoration of the one-source-hole convention. No term enumeration. -/ | superseded by the header
+SourceCost | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+SourceCost | rename | Close46Source | SelfintSourceCost (2 occurrences)
+SourceCost | prints | kept 6 | dropped 4
+LocalCost | import | import SourceCost | import Blc.SelfintSourceCost
+LocalCost | drop-summary | /- Cost and minimum-source statements at arbitrary source positions.\n   In particular these cover redexes beneath the stream lambda, not only\n   application-rooted readers. -/ | superseded by
+LocalCost | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+LocalCost | rename | Close46Source | SelfintSourceCost (1 occurrences)
+LocalCost | rename | Close46Local | SelfintLocalCost (2 occurrences)
+LocalCost | prints | kept 5 | dropped 1
+DispatchAudit | import | import SourceCost | import Blc.SelfintSourceCost
+DispatchAudit | drop-summary | /- A small correction to the K-dispatch handwritten argument. This file\n   does not certify the other lane's finite core inventories. -/ | superseded by the header
+DispatchAudit | rename | Close46Source | SelfintSourceCost (1 occurrences)
+DispatchAudit | rename | Close46Dispatch | SelfintDispatchAudit (2 occurrences)
+DispatchAudit | prints | kept 2 | dropped 0
+SourceFront | import | import LocalCost | import Blc.SelfintLocalCost
+SourceFront | import | import DispatchAudit | import Blc.SelfintDispatchAudit
+SourceFront | drop-summary | /- A complete first-source-head classification. It identifies the exact\n   two kinds of source redex that remain before literal s-spine arguments\n   apply; it does not assert that those red
+SourceFront | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+SourceFront | rename | Close46Source | SelfintSourceCost (2 occurrences)
+SourceFront | rename | Close46Local | SelfintLocalCost (1 occurrences)
+SourceFront | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+SourceFront | rename | Close46Front | SelfintSourceFront (2 occurrences)
+SourceFront | prints | kept 2 | dropped 0
+FlatSemantics | import | import SourceFront | import Blc.SelfintSourceFront
+FlatSemantics | drop-summary | /- Exact, all-length semantics of lambda-free source arguments. No search. -/ | superseded by the header
+FlatSemantics | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+FlatSemantics | rename | Close46Source | SelfintSourceCost (1 occurrences)
+FlatSemantics | rename | Close46Local | SelfintLocalCost (1 occurrences)
+FlatSemantics | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+FlatSemantics | rename | Close46Flat | SelfintFlatSemantics (2 occurrences)
+FlatSemantics | prints | kept 2 | dropped 0
+FlatMinimum | import | import FlatSemantics | import Blc.SelfintFlatSemantics
+FlatMinimum | drop-summary | /- The source-cost bridge for flat arguments of a first body head redex.\n   It permits arbitrary nonlinear bodies and arbitrary pending operands. -/ | superseded by the header
+FlatMinimum | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+FlatMinimum | rename | Close46Source | SelfintSourceCost (1 occurrences)
+FlatMinimum | rename | Close46Local | SelfintLocalCost (1 occurrences)
+FlatMinimum | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+FlatMinimum | rename | Close46Front | SelfintSourceFront (3 occurrences)
+FlatMinimum | rename | Close46Flat | SelfintFlatSemantics (1 occurrences)
+FlatMinimum | rename | Close46FlatMinimum | SelfintFlatMinimum (2 occurrences)
+FlatMinimum | prints | kept 3 | dropped 0
+RootFlat | import | import FlatMinimum | import Blc.SelfintFlatMinimum
+RootFlat | drop-summary | /- Root first-redex arguments with no source lambdas reduce to the literal\n   j-hoist family. The body and pending spine are unrestricted. -/ | superseded by the header
+RootFlat | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+RootFlat | rename | Close46Source | SelfintSourceCost (1 occurrences)
+RootFlat | rename | Close46Local | SelfintLocalCost (1 occurrences)
+RootFlat | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+RootFlat | rename | Close46Flat | SelfintFlatSemantics (1 occurrences)
+RootFlat | rename | Close46FlatMinimum | SelfintFlatMinimum (1 occurrences)
+RootFlat | rename | Close46RootFlat | SelfintRootFlat (2 occurrences)
+RootFlat | prints | kept 1 | dropped 0
+FlatPrefix | import | import RootFlat | import Blc.SelfintRootFlat
+FlatPrefix | drop-summary | /- A flat source prefix cannot act as a reader function, except when it\n   is literally the original stream. Pending operands may be arbitrary. -/ | superseded by the header
+FlatPrefix | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+FlatPrefix | rename | Close46Source | SelfintSourceCost (2 occurrences)
+FlatPrefix | rename | Close46Local | SelfintLocalCost (1 occurrences)
+FlatPrefix | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+FlatPrefix | rename | Close46Front | SelfintSourceFront (3 occurrences)
+FlatPrefix | rename | Close46Flat | SelfintFlatSemantics (1 occurrences)
+FlatPrefix | rename | Close46FlatMinimum | SelfintFlatMinimum (1 occurrences)
+FlatPrefix | rename | Close46RootFlat | SelfintRootFlat (1 occurrences)
+FlatPrefix | rename | Close46FlatPrefix | SelfintFlatPrefix (2 occurrences)
+FlatPrefix | prints | kept 2 | dropped 0
+LetSink | import | import FlatPrefix | import Blc.SelfintFlatPrefix
+LetSink | drop-summary | /- Move a sharing let into an application context without expanding its\n   argument. All uses may remain nonlinear. Exact weighted savings count\n   the captures removed from the surrounding con
+LetSink | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+LetSink | rename | Close46Source | SelfintSourceCost (1 occurrences)
+LetSink | rename | Close46Local | SelfintLocalCost (1 occurrences)
+LetSink | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+LetSink | rename | Close46Flat | SelfintFlatSemantics (1 occurrences)
+LetSink | rename | Close46FlatMinimum | SelfintFlatMinimum (1 occurrences)
+LetSink | rename | Close46RootFlat | SelfintRootFlat (1 occurrences)
+LetSink | rename | Close46LetSink | SelfintLetSink (2 occurrences)
+LetSink | prints | kept 5 | dropped 2
+HelperPair | import | import LetSink | import Blc.SelfintLetSink
+HelperPair | drop-summary | /- A source-cost exclusion for the selector/absorbing-arm specialization\n   context. The helper is arbitrary, including source redexes. The finite\n   boundary below is derived structurally, 
+HelperPair | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+HelperPair | rename | Close46Source | SelfintSourceCost (1 occurrences)
+HelperPair | rename | Close46Local | SelfintLocalCost (1 occurrences)
+HelperPair | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+HelperPair | rename | Close46FlatMinimum | SelfintFlatMinimum (1 occurrences)
+HelperPair | rename | Close46HelperPair | SelfintHelperPair (2 occurrences)
+HelperPair | prints | kept 4 | dropped 1
+ClosedSpecializer | import | import HelperPair | import Blc.SelfintHelperPair
+ClosedSpecializer | drop-summary | /- Extend the cross-operand template to every closed specialization\n   argument, with a structural completeness proof for each small list. -/ | superseded by the header
+ClosedSpecializer | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+ClosedSpecializer | rename | Close46Source | SelfintSourceCost (1 occurrences)
+ClosedSpecializer | rename | Close46Local | SelfintLocalCost (1 occurrences)
+ClosedSpecializer | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+ClosedSpecializer | rename | Close46HelperPair | SelfintHelperPair (1 occurrences)
+ClosedSpecializer | rename | Close46ClosedSpecializer | SelfintClosedSpecializer (2 occurrences)
+ClosedSpecializer | prints | kept 4 | dropped 3
+LambdaSink | import | import ClosedSpecializer | import Blc.SelfintClosedSpecializer
+LambdaSink | drop-summary | /- A let may move across a lambda without copying its definition. This is\n   an exact source transformation; its capture charge may be positive. -/ | superseded by the header
+LambdaSink | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+LambdaSink | rename | Close46Source | SelfintSourceCost (1 occurrences)
+LambdaSink | rename | Close46Local | SelfintLocalCost (1 occurrences)
+LambdaSink | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+LambdaSink | rename | Close46FlatMinimum | SelfintFlatMinimum (1 occurrences)
+LambdaSink | rename | Close46RootFlat | SelfintRootFlat (1 occurrences)
+LambdaSink | rename | Close46LambdaSink | SelfintLambdaSink (2 occurrences)
+LambdaSink | prints | kept 5 | dropped 0
+SourceBody | import | import LambdaSink | import Blc.SelfintLambdaSink
+SourceBody | drop-summary | /- Complete literal head alternatives for the body of a first source let.\n   This closes flat x-headed arguments but retains the real lambda/nonlinear\n   and nested-redex cases, rather than 
+SourceBody | edit | No weight bound or other lane's semantic inventory is assumed. -/ | No weight bound or finite semantic inventory is assumed. -/
+SourceBody | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+SourceBody | rename | Close46Source | SelfintSourceCost (3 occurrences)
+SourceBody | rename | Close46Local | SelfintLocalCost (1 occurrences)
+SourceBody | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+SourceBody | rename | Close46Front | SelfintSourceFront (1 occurrences)
+SourceBody | rename | Close46FlatMinimum | SelfintFlatMinimum (1 occurrences)
+SourceBody | rename | Close46RootFlat | SelfintRootFlat (1 occurrences)
+SourceBody | rename | Close46FlatPrefix | SelfintFlatPrefix (1 occurrences)
+SourceBody | rename | Close46LetSink | SelfintLetSink (1 occurrences)
+SourceBody | rename | Close46SourceBody | SelfintSourceBody (2 occurrences)
+SourceBody | prints | kept 2 | dropped 2
+StreamHelpers | import | import ClosedSpecializer | import Blc.SelfintClosedSpecializer
+StreamHelpers | drop-summary | /- Structural helper classification forced by the stream-specializer budget.\n   The lists are a fixed grammar split at the source root, not an enumerator. -/ | superseded by the header
+StreamHelpers | rename | Close46Source | SelfintSourceCost (1 occurrences)
+StreamHelpers | rename | Close46HelperPair | SelfintHelperPair (1 occurrences)
+StreamHelpers | rename | Close46ClosedSpecializer | SelfintClosedSpecializer (1 occurrences)
+StreamHelpers | rename | Close46StreamHelpers | SelfintStreamHelpers (2 occurrences)
+StreamHelpers | prints | kept 2 | dropped 0
+StreamSpecializer | import | import SourceBody | import Blc.SelfintSourceBody
+StreamSpecializer | import | import StreamHelpers | import Blc.SelfintStreamHelpers
+StreamSpecializer | drop-summary | /- Stream-dependent (and g-dependent) specialization in the fixed\n   s (g P) (g s) j sharing context. -/ | superseded by the header
+StreamSpecializer | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+StreamSpecializer | rename | Close46Source | SelfintSourceCost (1 occurrences)
+StreamSpecializer | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+StreamSpecializer | rename | Close46HelperPair | SelfintHelperPair (1 occurrences)
+StreamSpecializer | rename | Close46ClosedSpecializer | SelfintClosedSpecializer (1 occurrences)
+StreamSpecializer | rename | Close46StreamHelpers | SelfintStreamHelpers (1 occurrences)
+StreamSpecializer | rename | Close46StreamSpecializer | SelfintStreamSpecializer (2 occurrences)
+StreamSpecializer | prints | kept 4 | dropped 4
+NeededHead | import | import StreamSpecializer | import Blc.SelfintStreamSpecializer
+NeededHead | drop-summary | /- An x-headed source let must use its definition essentially beyond the\n   head occurrence. This is an exact replacement theorem, not a claim about\n   the residual origin of the unary outpu
+NeededHead | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+NeededHead | rename | Close46Source | SelfintSourceCost (1 occurrences)
+NeededHead | rename | Close46Local | SelfintLocalCost (1 occurrences)
+NeededHead | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+NeededHead | rename | Close46Front | SelfintSourceFront (1 occurrences)
+NeededHead | rename | Close46FlatMinimum | SelfintFlatMinimum (1 occurrences)
+NeededHead | rename | Close46RootFlat | SelfintRootFlat (1 occurrences)
+NeededHead | rename | Close46NeededHead | SelfintNeededHead (2 occurrences)
+NeededHead | prints | kept 5 | dropped 2
+NestedLets | import | import NeededHead | import Blc.SelfintNeededHead
+NestedLets | drop-summary | /- Exact source conversions for nested head redexes. Pending operands can\n   be brought beneath a binder without copying, with a measured capture\n   charge. A nested-redex normal form is not
+NestedLets | rename | Round3Reader | SelfintWidenHoist (1 occurrences)
+NestedLets | rename | Close46Source | SelfintSourceCost (2 occurrences)
+NestedLets | rename | Close46Local | SelfintLocalCost (1 occurrences)
+NestedLets | rename | Close46Dispatch | SelfintDispatchAudit (1 occurrences)
+NestedLets | rename | Close46Front | SelfintSourceFront (1 occurrences)
+NestedLets | rename | Close46FlatMinimum | SelfintFlatMinimum (1 occurrences)
+NestedLets | rename | Close46RootFlat | SelfintRootFlat (1 occurrences)
+NestedLets | rename | Close46LambdaSink | SelfintLambdaSink (1 occurrences)
+NestedLets | rename | Close46NeededHead | SelfintNeededHead (1 occurrences)
+NestedLets | rename | Close46NestedLets | SelfintNestedLets (2 occurrences)
+NestedLets | prints | kept 5 | dropped 7

@@ -1,0 +1,2 @@
+'Blc.Close46FlatPrefix.reader_flat_prefix' depends on axioms: [propext, Quot.sound]
+'Blc.Close46FlatPrefix.minimum_not_flat_flat' depends on axioms: [propext, Quot.sound]

@@ -1,0 +1,5 @@
+'Blc.Close46HelperPair.nine_bit_capture' depends on axioms: [propext, Quot.sound]
+'Blc.Close46HelperPair.local_pair_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46HelperPair.root_pair_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46HelperPair.capturing_local_normal' depends on axioms: [propext, Quot.sound]
+'Blc.Close46HelperPair.capturing_root_normal' depends on axioms: [propext, Quot.sound]

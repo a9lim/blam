@@ -1,0 +1,14 @@
+[gaslamp] → codex · job cx-20261021-225347-b110 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-225347-b110/events.jsonl
+( •̀_•́ ) **46 remains open.** [REPORT.md §6](/Users/a9lim/Work/blam/tmp/round4/close46/REPORT.md) records new kernel-checked source-cost results:
+
+- **Every source position:** exact weighted β balance, including duplication and index shifts. A minimum reader has no erasing redexes; every surviving linear redex satisfies `(F−1)D ≥ 7+G`, counting each `j` as four captures.
+- **Nonlinear sharing of `j`:** contraction followed by hoisting all copies restores exactly one source hole and preserves **every unary reader law**. For a root head redex, its exact cost change is  
+  `(m−1)(wire(A)−3) + f_A(D+m) + f_C − 3d_A`.
+- **Complete first-head classification:** every reader is literally an `s`-spine, has a root head redex, or has one immediately beneath its stream lambda. Under `w≤45`, those redexes have multiplicity at most **7** and **6**, respectively. Explicit argument-size bounds are proved for both cases.
+- **jn audit:** repaired §7’s tiny-operand step: when `j∈A₂` and `|A₂|≤2`, the possible operand is **`j`**, not `s`. Its zero branch remains `j`-headed and fails. Both facts are now kernel-checked.
+
+The missing step is semantic exclusion or cheaper replacement of the surviving bounded arguments. The classification does **not** eliminate those redex cases, and its bounds cannot be iterated through expanding reducts without further justification.
+
+Verification passed: **nine Lean modules in 3.64 seconds**, two threads, no `sorryAx` or native-decide trust axiom. No term sweep, sub-46 reader, or new interpreter.
+
+[gaslamp] job: cx-20261021-225347-b110 · session: 01a1615e-e629-72b0-a983-8f5d47a3126a · thread: r4-close46 · resume: gaslamp codex --thread r4-close46 · tok: 11416k→139k

@@ -1,0 +1,8 @@
+'Blc.Close46StreamSpecializer.root_stream_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46StreamSpecializer.safeRoot_anyP' depends on axioms: [propext]
+'Blc.Close46StreamSpecializer.root9_stream_reject' depends on axioms: [propext]
+'Blc.Close46StreamSpecializer.local_stream_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46StreamSpecializer.capture13_reject' depends on axioms: [propext]
+'Blc.Close46StreamSpecializer.smallC_anyP' depends on axioms: [propext]
+'Blc.Close46StreamSpecializer.local_helper_ten' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46StreamSpecializer.specializer_boundary' depends on axioms: [propext, Classical.choice, Quot.sound]
