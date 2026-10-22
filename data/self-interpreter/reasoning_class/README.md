@@ -9,7 +9,7 @@ wave of lanes; each directory keeps its own
 write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
-`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `bodylin`, `jerase`, `handlerlet`, `rootnf`, `rootlet`, `rootcert`, `rootcert2`, `rootlow`, `rootnl`, `expand`, `simplify`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole`, `review_types`, `review_spine` and `review_body`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
+`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `bodylin`, `jerase`, `handlerlet`, `rootnf`, `rootlet`, `rootcert`, `rootcert2`, `rootlow`, `rootnarrow`, `rootnl`, `expand`, `simplify`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole`, `review_types`, `review_spine` and `review_body`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
 `bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `adv6`, `types`, `zcore`, `single`, `shared`, `combs`, `combs2`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
@@ -60,6 +60,7 @@ working versions.
 | rootnl | nonlinear root lets: the four-use depth-0 branch cut to 658 listed sources (38,271 Lean refutations); kernel-checked Lift transfer, self-feeding divergence with payloads, stronger hole repair; the remaining envelopes counted | `class-bound.md` §3 |
 | expand | the missing step for nonlinear root lets stated exactly; pre-stream hand-offs expand without bound in the source weight (`Church(m) G H I j`, a 108-bit reader with a 393,256-bit endpoint, kernel-checked in `Expansion.lean`) | `class-bound.md` §3 |
 | simplify | two kernel-checked source simplifications for root-let hand-offs (static specialization at `7b − 6 − F(M)`, idempotent helpers), 27 of rootnl's listed sources out of the minimum (`Handoff.lean`, `Cases.lean`) | `class-bound.md` §3 |
+| rootnarrow | needed narrowing with minimality price filters on the root-let residue: the redex-argument and `λy. j` stream-λ-headed cells and every full-chain hand-off closed for minimum readers; short chains mostly closed (`FILTERS.md` gives each filter's soundness) | `class-bound.md` §3 |
 | rootcert2 | rootnl's 658 listed sources refuted, 653 in Lean (a kernel-checked flow and arity checker) and five by the frozen engine | `class-bound.md` §3 |
 | rootcert | the 580 listed root-let sources refuted (577 in Lean, three by the frozen engine); source η-contraction formalized; 73,311 lower-profile sources excluded | `class-bound.md` §3 |
 | firstopj | first operands carrying `j` out of a minimum below 46, so no minimum reader below 46 is an s-spine (selective pruning price in `Selective.lean`; 424,378 sources; 4,337 normalizer exceptions in Lean) | `class-bound.md` §3 |

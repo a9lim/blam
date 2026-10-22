@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/a9lim/Work/blam/tmp/round4/rootnarrow/work/certgen.py", line 62, in <module>
+    lo = int(sys.argv[2]) if len(sys.argv) > 2 else 0
+         ~~~^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '80 160'

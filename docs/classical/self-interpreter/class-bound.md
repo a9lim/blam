@@ -211,7 +211,14 @@ the 39-bit one.
   `λy. y P…` with up to eight arguments, `λy z. _`, `λy. c …`,
   `λy. (λz. _) …` — and the depth-0 forms `(λg n s. _) A j` likewise
   (Claude, adv6 lane: needed narrowing with no minimality, every cut-off
-  certified; open there are `A = j`, `A = λy. j` and `A` a redex); a λ-free argument at the root must
+  certified; open there were `A = j`, `A = λy. j` and `A` a redex). Under
+  minimality the last two close as well, and so do the hand-offs whose let
+  argument binds every root argument and then the stream,
+  `(λx. x P⃗)(λz₁…z_q s. N)`, for every `q` (Claude, rootnarrow lane: needed
+  narrowing with minimality price filters read off complete subterms, each
+  filter a kernel-checked charge or a handwritten argument, every cut-off
+  certified); among the shorter chains `(λx. x P) A` most argument shapes
+  close, three of them modulo 24 uncertified cut-offs; a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands. With `j` at
