@@ -9,7 +9,7 @@ wave of lanes; each directory keeps its own
 write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
-`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `bodylin`, `jerase`, `handlerlet`, `rootnf`, `rootlet`, `rootcert`, `rootcert2`, `rootlow`, `rootnarrow`, `rootnl`, `expand`, `simplify`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole`, `review_types`, `review_spine` and `review_body`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
+`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `bodylin`, `jerase`, `handlerlet`, `rootnf`, `rootlet`, `rootcert`, `rootcert2`, `rootlow`, `rootnarrow`, `rootnl`, `expand`, `simplify`, `firstop`, `firstopj`, `leanbn`, `combs3` and the reviews `review_hole`, `review_types`, `review_spine` and `review_body`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
 `bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `adv6`, `types`, `zcore`, `single`, `shared`, `combs`, `combs2`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
@@ -51,6 +51,7 @@ working versions.
 | shared | the shared-dispatcher skeleton `λs. (λg. B) (λy. y A W)` closed below 46 without minimality (all cut-offs certified; self-feeding divergence lemma); the Lift identity from root lets to λ-rooted readers; tabling sound with redexes | `class-bound.md` §3 |
 | combs | the four closed combinators left by `shared`'s one-trailing-operand skeleton are unsolvable, kernel-checked (`Combs.lean`) | `class-bound.md` §3 |
 | combs2 | the three root-let sources rootcert left to the frozen engine refuted in Lean by one divergence family (`Rootlet3.lean`) | `class-bound.md` §3 |
+| combs3 | the five root-let sources rootcert2 left to the frozen engine refuted in Lean by one 44-step cycle (`Rootlet5.lean`) | `class-bound.md` §3 |
 | zcore | dispatch sites: one closed `s I` anchor anywhere forces `w ≥ 46` (equality only the 162); two sites or one heavy site force 46, so a reader below 46 has at most one site saving 8–15; the three unary cores through 23 bits; the uniform zero-compatible-core statement refuted | `class-bound.md` §3 |
 | handlerlet | no minimum reader below 46 has a literal λ as its first handler: every nonlinear let inside it fails (117,059 sources; 1,868 normalizer exceptions in `Exceptions1–4.lean`; prices in `Prices.lean`) | `class-bound.md` §3 |
 | rootnf | the root-let profile bound `w ≥ 4k + 22 + 4d` (`RootProfile.lean`: at most five uses below 46); the multi-hole repair of the normalization bridge | `class-bound.md` §3 |
