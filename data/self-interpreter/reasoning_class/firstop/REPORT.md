@@ -339,3 +339,229 @@ H_nf would provide an absolute bound after full normalization, but it
 would still need a bound on the cumulative increases caused by these
 source contractions. No such bound is proved here, and H_nf was not
 assumed in any result above.
+
+## 5. Follow-up: the j-free branch is closed; one j-bearing family also closes
+
+This section supersedes section4's open j-free nonlinear bullet. The full
+assigned branch remains open only where the first operand contains j.
+No H_nf is used. In particular, neither normalizability of the reader
+itself nor preservation of the one-hole class by arbitrary contraction
+is assumed. The last paragraph of section4 is superseded by this correction.
+
+### 5.1 Statement and source restrictions
+
+**New exclusion:** let R be a global minimum full-law one-hole reader,
+ordered by weight, source lambda count, then source-j depth. Suppose
+w(R)<=45, its unique j has depth1, and
+
+    R = lambda s. s H T1...Tq,
+
+where H is j-free and not a literal lambda. Then H cannot contain a
+source beta-redex anywhere. Together with the inherited d1open exclusion
+for first dispatch without a source head redex, this closes this whole
+j-free nonliteral-first-operand branch. The literal-handler branch was
+already excluded by loop/handlerlet. This is an assembly of handwritten
+completeness arguments, exact finite checks, and the kernel certificates
+below; it is not one monolithic Lean enumeration theorem.
+
+For a marked redex H=C[(lambda x.D) A], use the prices and definitions in
+section2. Every source redex anywhere in H has multiplicity2..5 by the
+previous linear/high-multiplicity result. Each one must satisfy
+
+    Delta = (m-1)a + (F_A-1)M -4-2m-G_D >= 0.
+
+When A has no lambdas, equality removes one lambda at unchanged weight,
+so Delta>=1. NonlinearPrices.lean kernel-checks the exact charge and the
+strict lambda-free rule for arbitrary source contexts. The strict sink
+constraint (S) applies when the marked redex is all of H and D is a
+literal lambda. A syntactically c-headed D, or x-headed D with c-headed A,
+is excluded at that same root position by the zero law.
+
+The decisive additional bound is to impose the source-redex restrictions
+recursively on **every redex in both A and D**, before constructing a
+source. There is no assumption that A or D is beta-normal. Context
+siblings and all trailing operands remain unrestricted in this check.
+
+### 5.2 Complete nonlinear inventories
+
+admissible_count.py counts syntax by the exact constructor recurrence.
+A state retains lambda count, multiplicity and internal depth-sum of every
+free variable, syntactic head, and the parameter profile of a literal
+root lambda. These data determine the local charge exactly when joining
+an application whose function is a literal lambda. nonlinear_check.py
+inverts that recurrence to generate precisely its admissible terms.
+
+Completeness is by constructor induction: each variable has its actual
+index cost; a lambda extends the lexical frame; an application considers
+every ordered cost split. The context recurrence considers its hole,
+lambda, and both application positions, omitting only a literal-lambda
+root H. The tail recurrence considers every ordered cost/c/j split,
+with j allowed exactly at local depth0, i.e. global depth1. Every block's
+emitted count is checked against its independent DP count; every marked
+source checks its original weight and actual substitution price.
+
+The safe finite ceilings require no guessed redex-size lemma:
+a>=2, d>=6, k>=2ell, p>=2(q-1), and
+14+2q+a+d+k+p<=45 imply q<=6 and ell<=10. This arithmetic is kernel-checked
+in NonlinearPrices.nonlinear_ceilings. The wider loops q=1..8, ell=0..11
+visit every feasible case; q>=5 is actually empty after the filters.
+
+Arity1 exceeds the cap as a whole. Its two genuine source alternatives,
+marked redex at H's root or strictly below it, each fit. No arbitrary
+index chunking is used.
+
+| q / marked position | Markings | Unique within cell | Wrong zero NF | Wrong unary NF | Exceptions, all Lean-refuted |
+|---|---:|---:|---:|---:|---:|
+| 1 / root | 79,071 | 79,071 | 76,636 | 414 | 2,021 |
+| 1 / nested | 85,380 | 85,368 | 82,346 | 528 | 2,494 |
+| 2 / any | 52,844 | 52,832 | 49,132 | 1,706 | 1,994 |
+| 3 / any | 8,535 | 8,535 | 8,056 | 17 | 462 |
+| 4 / any | 648 | 648 | 595 | 1 | 52 |
+
+There are no surviving candidates or unresolved evaluator exceptions.
+The table does not claim that sources in different marked-position cells
+are disjoint. It records 226,478 markings, with deduplication inside each
+cell only. Ordinary distinct-normal-form refutations are exact Python
+checks. All7,023 exceptions have individual Lean refutations.
+
+An independent small-syntax check, validate_admissible.py, generates all
+36,597 ordinary terms through20 bits in frames of sizes2,3,4, computes
+features by a separate tree walk and admissibility by actual contraction,
+and compares both counted and generated sets. All15,430 admissible terms
+match exactly. This validates implementation details; constructor
+induction supplies the larger inventory's completeness argument.
+
+### 5.3 Every exception is certified
+
+The finite certificates comprise4,847 prefix head cycles,1,881 wrong
+rigid heads/arities,260 missing required constants, and32 mixed cycles
+(one genuine weak-head step followed by ordinary beta reductions).
+Three further exceptions use the following kernel-checked families:
+
+    A_R = lambda x u. x x (u c),
+    A_L = lambda x u. x x (c u).
+
+For every a, (A_R A_R) a reduces in two weak-head steps to
+(A_R A_R)(a c), and similarly on the left. Strong induction on a proposed
+finite weak-head clock excludes every carried argument.
+
+The third family uses
+
+    A = lambda x. x (lambda u. x u c),
+    W(v) = lambda u. v u c,
+    T_0=A,  T_(n+1)=W(T_n).
+
+T_0 T_j reduces to T_j T_(j+1), and T_(i+1) T_j reduces to
+T_i T_j c. A finite head clock for a pair would therefore give a strictly
+smaller clock for another pair. No pair has one, even under arbitrary
+trailing applications. The proof retains the wrappers as syntax; it
+uses no eta conversion.
+
+NonlinearFamilies.lean proves these recurrences; NonlinearResidual.lean
+connects them to the three exact sources. The other7,020 source theorems
+are in the sixteen NonlinearQ*.lean modules. nonlinear_manifest.json
+maps every exception index to its theorem. Every concrete refutation has
+axioms exactly [propext, Quot.sound]. No sorryAx or native_decide occurs
+in any checked final proof log.
+
+### 5.4 Additional j-bearing closure: the shared argument is exactly j
+
+A second complete exclusion covers all minimum readers below46 of shape
+
+    R = lambda s. s (((lambda x.D) j) P1...Pp) T1...Tq,
+
+where D, all P_i, and all T_i are j-free. Put t=p+q, v equal to the sum
+of their ordinary wire costs, m=occ_x(D), s_D=occ_s(D), and c_out equal
+to their total c count. The exact source and hoist prices become
+
+    w(R)=14+|D|+2t+v,
+    Delta_hoist=m-4-s_D+c_out.
+
+Here equality is impossible in the THREE-coordinate global minimum:
+contracting removes one lambda, hoisting adds one, and j moves from
+source depth1 to depth0. Consequently Delta_hoist>=1.
+JBarePrices.bare_j_charge kernel-checks this under an explicit
+DepthMinimum hypothesis. Repository LexMinimumReader alone contains
+only the weight and lambda coordinates; the extra depth hypothesis is
+not silently inferred from its name.
+
+Every redex in D and the pending operands obeys the ordinary nonnegative
+charge and lambda-free tie rule. This inventory allows arbitrary positive
+multiplicity there; it does not reuse the j-free-H multiplicity2..5
+restriction. Syntactic x/c heads in D violate the zero law. At p=0, if D
+is a literal lambda, ordinary sinking additionally requires m<=4+occ_b(B).
+No strict sink claim is made here, since sinking j increases its depth.
+
+The budget gives t<=7. jbare_count.py and jbare_check.py cover every
+pending-operand split p=0..t and all source constructors. The nonempty
+cells have the following totals over their splits:
+
+| t | Sources | Wrong zero NF |
+|---:|---:|---:|
+| 1 | 1,600 | 1,600 |
+| 2 | 1,287 | 1,287 |
+| 3 | 860 | 860 |
+| 4 | 375 | 375 |
+| 5 | 66 | 66 |
+| total | **4,188** | **4,188** |
+
+All sources are distinct; t=0,6,7 are empty. There are no normalizer
+exceptions. JBare1.lean through JBare5.lean contain an individual
+kernel-checked normal-form refutation for **every source**, using at
+most6 beta steps each. jbare_certificates.json is the theorem map.
+The analogous independent small-syntax validation also passes.
+
+### 5.5 Stream reification and the remaining boundary
+
+The j-free stream-headed cases with source redexes are covered by the
+arbitrary-context inventory of section5.2, including redexes below the
+first operand's stream head. They need no reification domination argument.
+
+For a j-bearing stream-headed first operand, StreamReify.lean checks the
+general weighted price (Blc.FirstopPrices.reify_weighted)
+
+    weight_1(reify Q) - weight_1(s Q)
+      =18+2F_Q+6 occ_j(Q).
+
+Thus a single source j makes the displayed expansion cost24+2F_Q MORE.
+The semantic cell identity remains valid, including Q mentioning s.
+Subsequent contractions must be priced before using the expansion as a
+minimality move.
+
+Still open: nontrivial j-bearing shared arguments, j in other positions
+of a first operand with redexes, and j-bearing stream-headed first
+operands. The bare-j result covers the displayed direct head let with
+pending operands; it does not claim arbitrary enclosing contexts.
+No full46 lower bound, new reader, or complete interpreter is claimed.
+
+### 5.6 Resources, artifacts, reproduction
+
+The nonlinear checks took16.418s,24.353s,12.257s,12.274s,0.169s in table
+order; their largest RSS was85,786,624 bytes. The bare-j check took1.368s
+and62,930,944 bytes. The two count-only DPs took0.156s and2.666s. All
+source checks used one compute thread plus a watchdog and stayed below
+100,000 terms,120s,1GB and2 threads **per check**.
+
+Across27 checked new Lean modules the longest file took53.465s and the
+largest sampled peak was1,183,481,856 bytes. Every Lean job used2 threads,
+with a110s/1.8GB process watchdog, below the authorized120s/2GB limits.
+followup_verification.json records theorem coverage, axiom audits, exact
+resources, and SHA-256 hashes of source and evidence artifacts.
+
+Reproduction order, from the repository root:
+
+1. Run admissible_count.py, then nonlinear_check.py for `(1,root)`,
+   `(1,nested)`, `(2,all)`, `(3,all)`, `(4,all)`.
+2. Run nonlinear_audit.py for those same five cells, then
+   nonlinear_supplement.py, export_families.py, export_nonlinear.py.
+3. Through run_limited.py, compile NonlinearCertificates.lean,
+   NonlinearFamilies.lean, NonlinearResidual.lean, NonlinearPrices.lean,
+   and each module listed in nonlinear_modules.json.
+4. Run jbare_count.py, jbare_check.py, export_jbare.py; through
+   run_limited.py compile JBare1.lean through JBare5.lean, JBarePrices.lean,
+   and StreamReify.lean. LinearCertificates.olean and Prices.olean are the
+   checked prerequisites from the first report.
+5. Run validate_admissible.py, validate_jbare.py, verify_followup.py.
+
+Every named file is in tmp/round4/firstop/. No external consult, subagent,
+commit, engine change, or write outside this lane was performed.

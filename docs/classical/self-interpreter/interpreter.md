@@ -882,8 +882,8 @@ Open:
 - the reader weight bound `w(R) ≥ 46` (`class-bound.md` §3), which would make
   the 162 optimal in the separated class and its widenings: every β-normal
   reader meets it, so it is open only for readers with a source redex —
-  s-spines whose first operand is not a literal λ and has a redex on its
-  head path, readers whose stream-λ body is a let, and root lets (with the
+  s-spines whose first operand carries `j`, is not a literal λ and has a
+  redex on its head path, readers whose stream-λ body is a let, and root lets (with the
   zero-λ hole parents and the 162's needed-binder case cutting across);
 - NEXT of arbitrary syntax in `32 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
   `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix

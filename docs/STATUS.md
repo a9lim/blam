@@ -188,8 +188,8 @@ with all features (three opt-in tests ignored) and 328 with default features.
   (complete finite checks); the 164's and the hoisted 165's families cost
   exactly 48 and 49; and a reader below 46 dispatches through at most one
   site. What remains is the sharing a redex allows between the zero and
-  unary roles: s-spines whose first operand is not a literal λ and has a
-  redex on its head path, readers whose stream-λ body is a let, and root
+  unary roles: s-spines whose first operand carries `j`, is not a literal
+  λ and has a redex on its head path, readers whose stream-λ body is a let, and root
   lets. The class widens without moving its minimum:
   NEXT of any syntax above the price frontier `q ≥ 92`, `q + 3F ≥ 104`
   (Lean, `Blc/SelfintWiden.lean`; optimal there iff `w ≥ 46`), any value
@@ -596,8 +596,8 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    of any syntax above the price frontier, any NEXT-free value decoder, any
    opaque two-port recursion). Every β-normal reader has `w ≥ 46`, so what
    is open is readers with a source redex, in three branches: s-spines
-   whose first operand is not a literal λ and has a redex on its head path,
-   readers whose stream-λ body is a let, and root lets (depth-0 shared
+   whose first operand carries `j`, is not a literal λ and has a redex on
+   its head path, readers whose stream-λ body is a let, and root lets (depth-0 shared
    top-level lets, application-rooted readers); cutting across them, zero-λ
    hole parents and the needed-binder case of the 162's family. The
    remaining space is far too large for enumeration (about 2×10⁹ λ-rooted

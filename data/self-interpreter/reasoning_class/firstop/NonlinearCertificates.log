@@ -1,0 +1,4 @@
+'Blc.FirstopNonlinear.absent_reduct' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopNonlinear.head_reduct' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopNonlinear.loop_reduct' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopNonlinear.mixed_reduct' depends on axioms: [propext, Quot.sound]

@@ -1,0 +1,110 @@
+{
+  "markings": 4188,
+  "unique": 4188,
+  "rows": {
+    "1:0": {
+      "markings": 793,
+      "unique": 793,
+      "wrong_zero": 793
+    },
+    "1:1": {
+      "markings": 807,
+      "unique": 807,
+      "wrong_zero": 807
+    },
+    "2:0": {
+      "markings": 429,
+      "unique": 429,
+      "wrong_zero": 429
+    },
+    "2:1": {
+      "markings": 429,
+      "unique": 429,
+      "wrong_zero": 429
+    },
+    "2:2": {
+      "markings": 429,
+      "unique": 429,
+      "wrong_zero": 429
+    },
+    "3:0": {
+      "markings": 215,
+      "unique": 215,
+      "wrong_zero": 215
+    },
+    "3:1": {
+      "markings": 215,
+      "unique": 215,
+      "wrong_zero": 215
+    },
+    "3:2": {
+      "markings": 215,
+      "unique": 215,
+      "wrong_zero": 215
+    },
+    "3:3": {
+      "markings": 215,
+      "unique": 215,
+      "wrong_zero": 215
+    },
+    "4:0": {
+      "markings": 75,
+      "unique": 75,
+      "wrong_zero": 75
+    },
+    "4:1": {
+      "markings": 75,
+      "unique": 75,
+      "wrong_zero": 75
+    },
+    "4:2": {
+      "markings": 75,
+      "unique": 75,
+      "wrong_zero": 75
+    },
+    "4:3": {
+      "markings": 75,
+      "unique": 75,
+      "wrong_zero": 75
+    },
+    "4:4": {
+      "markings": 75,
+      "unique": 75,
+      "wrong_zero": 75
+    },
+    "5:0": {
+      "markings": 11,
+      "unique": 11,
+      "wrong_zero": 11
+    },
+    "5:1": {
+      "markings": 11,
+      "unique": 11,
+      "wrong_zero": 11
+    },
+    "5:2": {
+      "markings": 11,
+      "unique": 11,
+      "wrong_zero": 11
+    },
+    "5:3": {
+      "markings": 11,
+      "unique": 11,
+      "wrong_zero": 11
+    },
+    "5:4": {
+      "markings": 11,
+      "unique": 11,
+      "wrong_zero": 11
+    },
+    "5:5": {
+      "markings": 11,
+      "unique": 11,
+      "wrong_zero": 11
+    }
+  },
+  "exceptions": [],
+  "hits": [],
+  "seconds": 1.3684049169969512,
+  "rss": 62930944
+}

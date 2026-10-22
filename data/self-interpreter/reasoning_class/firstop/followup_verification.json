@@ -1,0 +1,121 @@
+{
+  "nonlinear_exception_theorems": 7023,
+  "jbare_source_theorems": 4188,
+  "coverage": [
+    {
+      "cell": "nonlinear_1_root",
+      "markings": 79071,
+      "unique": 79071,
+      "nf_refutations": {
+        "zero": 76636,
+        "unary": 414
+      },
+      "exception_theorems": 2021,
+      "seconds": 16.417556667001918,
+      "rss": 80986112
+    },
+    {
+      "cell": "nonlinear_1_nested",
+      "markings": 85380,
+      "unique": 85368,
+      "nf_refutations": {
+        "zero": 82346,
+        "unary": 528
+      },
+      "exception_theorems": 2494,
+      "seconds": 24.352754082996398,
+      "rss": 85786624
+    },
+    {
+      "cell": "nonlinear_2_all",
+      "markings": 52844,
+      "unique": 52832,
+      "nf_refutations": {
+        "zero": 49132,
+        "unary": 1706
+      },
+      "exception_theorems": 1994,
+      "seconds": 12.257324999998673,
+      "rss": 61456384
+    },
+    {
+      "cell": "nonlinear_3_all",
+      "markings": 8535,
+      "unique": 8535,
+      "nf_refutations": {
+        "zero": 8056,
+        "unary": 17
+      },
+      "exception_theorems": 462,
+      "seconds": 12.274027374995057,
+      "rss": 39550976
+    },
+    {
+      "cell": "nonlinear_4_all",
+      "markings": 648,
+      "unique": 648,
+      "nf_refutations": {
+        "zero": 595,
+        "unary": 1
+      },
+      "exception_theorems": 52,
+      "seconds": 0.1691869580099592,
+      "rss": 25411584
+    }
+  ],
+  "max_lean_seconds": 53.46524700000009,
+  "max_lean_rss": 1183481856,
+  "lean_modules": 27,
+  "axioms": "all concrete refutations: propext, Quot.sound; general price statements may also use Classical.choice",
+  "sha256": {
+    "NonlinearResidual.lean": "31f1f300ba48f51a81fc015a965d60358b6254297915e59ed989207b66ad5202",
+    "NonlinearQ1RootLoop.lean": "367aff1080a2d9a060fae1d423a3b822124ffb24a74ba779f6e9a90d68a1ae83",
+    "NonlinearQ1RootHead.lean": "f373e56405be55da69f796b6820682f6efd0e5831bc9b5a8ac2add1fb19e0b26",
+    "NonlinearQ1RootMissing.lean": "0e1611ab4540f5da4f35096900784f8871b2faa7b57adb73834ffc51d01c45e9",
+    "NonlinearQ1RootMixed.lean": "afe0b7929e0b038f5992e48b0cfc5ca3c46425382cb87d15624a9a76789e0f4b",
+    "NonlinearQ1NestedLoop.lean": "262ac1dd6343d1d395af53199cc674a9a23f038086122b154700fb4a29347f59",
+    "NonlinearQ1NestedHead.lean": "8fc1ebc2053218f1971ca01eb90e69ebebdab607fccd19c0ce8045467a70408b",
+    "NonlinearQ1NestedMissing.lean": "11e5a31ed5265a3a63c71e20541bdbbe9f57d3d46c3d0c1c699c5984f20481d3",
+    "NonlinearQ1NestedMixed.lean": "b3e34204a543cca1b5d26337558ac923ae75d5066a582e217d5892711c11a9bc",
+    "NonlinearQ2AllLoop.lean": "b2a3eb72a224d1c892041e969ac9d217b0f351835d0809bc82b1dbf06d1fc402",
+    "NonlinearQ2AllHead.lean": "59642c66fda07026f957a1011e0f48baa1dbed8d9562757fc6ba1f33f31ca9f5",
+    "NonlinearQ2AllMissing.lean": "44f5d1453fcf32c693ba65d71cf39424141b9faba2276038277537edf04e0b91",
+    "NonlinearQ2AllMixed.lean": "7420582660cc8eed6051d2000c4091120eec782e22f4fc533a8f2b3532faa34d",
+    "NonlinearQ3AllLoop.lean": "7897253da1f147fa13529136db4c556cea69929c76016668079e8750f64ecdcd",
+    "NonlinearQ3AllHead.lean": "7379d3f3e95ce83c36c3ab011ca98361eb2b7d5886b45bfdd0ad86413841c23c",
+    "NonlinearQ3AllMissing.lean": "f48454e8aa1b82907fff3429fe94874de1874a9b6f971e513deb2395875b8c39",
+    "NonlinearQ4AllLoop.lean": "c5da84ac04bdfcb9b1df4a25bf6bfbee8ea96e6f6fd3684d730df476a192ea4f",
+    "JBare1.lean": "fc716c23dcd809d8f84bf96da06937e9753ec7be6c72892ccb34fc88f6510ab6",
+    "JBare2.lean": "4639b5b0e753dc35cf22e624722a0cfa558fee5fe1b49b48324728c54ae4316e",
+    "JBare3.lean": "30a28883f00574e6fd4be87cb6862c976d0809d1b2698ea8405b44cbb29c3c39",
+    "JBare4.lean": "0d9ea74cc4bf09d170c843fbc7dabb07f96b3cf7680967d07e2b9b62ed718adb",
+    "JBare5.lean": "e1999a28ce1187b2eae9593dc5020eae49c8c55c0b60dfc26605eb0252aaf9dd",
+    "NonlinearCertificates.lean": "911dba229dd15cddc69d7d0840a974de28793ad5ccbd9a3332983245465462dc",
+    "NonlinearFamilies.lean": "4ec74dd3e85ed88f06a6394af18c50d17c0960611b3f1e820d2b6514ce719570",
+    "NonlinearPrices.lean": "51ced992443504e7dc7e5512876773f9d7d4e5d8fcfd69e6f8394781c1b743c8",
+    "JBarePrices.lean": "c3270b609a8ba527e4684f2bdd6d5aa8abaf2904c8ed87f937893cf47a5a47ea",
+    "StreamReify.lean": "b55ce0da4d429d2a4c949229849f35a23ef5c94610404672f77e02292022480e",
+    "nonlinear_1_root.json": "03201636aca5436a64f0d3f69c26d81bbf9530863d2d93a3e516b140dcd13413",
+    "nonlinear_1_root_audit.json": "13d062095222d5748df5cbb4a695c0ad92b7b452b32122eb1281089b96040c5f",
+    "nonlinear_1_nested.json": "2033f32a95bef4e1ce652aa0c5da94d4efa3effb8dab90791d5411d256a0f990",
+    "nonlinear_1_nested_audit.json": "139ffb3dfa5cc70be741c5494cd58c5ff6a6911b8196b15514395fd8872e19ef",
+    "nonlinear_2_all.json": "56726e1ca7be32cf46d646e200d468de8661a892caf54d2ca8e05fd146e45909",
+    "nonlinear_2_all_audit.json": "7f073e8b9c19d7faf91386541683c78b29f6707deb3570021ae8a3ba6a32a136",
+    "nonlinear_3_all.json": "faf65c6268926bb0997e28bd4fbc4d92c5340e6f2b7c7a37e1dded74708cc4cd",
+    "nonlinear_3_all_audit.json": "53477e68cd268c3499d5f767b2cdd641e631b2961d5eac68fa667b78aec3dfb4",
+    "nonlinear_4_all.json": "72ac3485f09a5323179e01790f0ccf3250abb3b2763cca3d2a833f4d9dccfb5a",
+    "nonlinear_4_all_audit.json": "faf0d36206edb3f2f5cd4fae53d2b915ccaf77cb46e4ba758d9e27ae3ce2fcda",
+    "admissible_count.py": "67c201caca62145d77154aaaa84c5024c9096759aeb18dce25469c50c8cb3d8c",
+    "admissible_count.json": "b0cab629cfb1602359888860fcb2b3b3c8c11c97b7bd4a4bff7e03de6f2de374",
+    "nonlinear_check.py": "75ab8f91ba95096f72b1ea3bbfae0e4a508b8b305e46ffb48c3bb1db39153d64",
+    "jbare_count.py": "bcfc315399b61ae227c8358e1b1b40620a5e143d97a498ae78ec8d9df310b565",
+    "jbare_count.json": "e1ab6e35f171c3dd2dec7ce3b9367634bdd58da32f595b5b3c9ffacae5f44450",
+    "jbare_check.py": "f213165992936c1e474eb0805add741a53c275e4011afd4da9de6a1f5008df7a",
+    "jbare_check.json": "1f109784c69d32b9590e983f02f262a2698870b9b38a07055f9603a5962d9178",
+    "jbare_manifest.json": "0eed98de6c16433371cad90295cf95b54c9fdae17f9f9cff11221aaa7f3250d4",
+    "nonlinear_manifest.json": "635f2dc30cf64829833791eef6a1422ea8b6a23db10a9e7787c8a1bbca5617f6",
+    "jbare_certificates.json": "b5c01772b81554895703173c00682477920569460a7173ea857cb877a6d52e7f",
+    "validate_admissible.json": "fce025d126514d0f3268193dd34e1e5d46956694ccb1174670f99c76d99c7645",
+    "validate_jbare.json": "93ba4c8ed0261c9a56804a5fc07eafaeff727c89c93e5c8a964bd8456b717229"
+  }
+}

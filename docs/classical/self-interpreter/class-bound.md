@@ -288,10 +288,16 @@ family; the lists are in the round-4 archive. Claude's lanes:
   exceptions individually in Lean). So **no minimum reader below 46 has a
   literal λ as its first handler**. When the first operand is not a literal
   λ but is free of `j`, every redex inside it still has two to five uses
-  (Codex, firstop lane: the linear cases reduce to 727 sources, each
-  refuted in Lean), and a let of the form `s ((λx. λb. B) A) T⃗` must
-  satisfy `occ_x(B) < F_A + occ_b(B)`, since at equality sinking it gives
-  another minimum with a literal handler; A handwritten deletion lemma underlies the budgets:
+  (the linear cases reduce to 727 sources, each refuted in Lean), a let of
+  the form `s ((λx. λb. B) A) T⃗` must satisfy `occ_x(B) < F_A + occ_b(B)`
+  (at equality sinking it gives another minimum with a literal handler),
+  and the nonlinear cases fail in five complete cells: **no minimum reader
+  below 46 has a `j`-free first operand** (Codex, firstop lane; 7,023
+  normalizer exceptions refuted individually in Lean). The `j`-carrying
+  first operand `((λx. D) j) P⃗` is excluded too (4,188 sources, each with a
+  Lean refutation), and turning a stream-headed first operand into a
+  literal handler costs exactly `18 + 2F + 6·occ_j(Q)` before contraction
+  (kernel-checked); A handwritten deletion lemma underlies the budgets:
   replacing a subterm by a cheaper one with the same value on every unary
   probe leaves a unary core, and the only cores through 22 bits are
   `s (λq. c) (s s j)` and `s (λq. c) (s s s)`, so a reader carrying
@@ -424,8 +430,8 @@ at most 53,537 terms after the first pass; the review reproduced the small
 ones, not the full 25-bit cut-off audit.
 
 **Open.** Only readers with a source redex remain, in three branches of
-the source-head classification: s-spines whose first operand is not a
-literal λ and has a β-redex on its head path; readers whose stream-λ body is
+the source-head classification: s-spines whose first operand carries `j`,
+is not a literal λ, and has a β-redex on its head path; readers whose stream-λ body is
 a let (below 46 a minimum has at most four uses, a λ inside the argument,
 and `j` inside it when linear); and root lets — depth-0 shared top-level
 lets and application-rooted readers whose let argument hands control on

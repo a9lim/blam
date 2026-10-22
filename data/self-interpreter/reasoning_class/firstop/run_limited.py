@@ -14,7 +14,7 @@ with (H/(Path(name).stem+'.log')).open('w') as out:
    s=subprocess.check_output(['ps','-o','rss=','-p',str(p.pid)],text=True).strip()
    peak=max(peak,int(s or 0)*1024)
   except subprocess.CalledProcessError:pass
-  if peak>900_000_000:reason='memory';break
+  if peak>1_800_000_000:reason='memory';break
   time.sleep(.1)
  if reason:os.killpg(p.pid,signal.SIGKILL)
  code=p.wait()

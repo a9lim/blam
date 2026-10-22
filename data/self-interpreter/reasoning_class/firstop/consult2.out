@@ -1,1 +1,14 @@
 [gaslamp] → codex · job cx-20261022-034005-5ed0 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-034005-5ed0/events.jsonl
+(•̀ᴗ•́) **Closed the nonlinear j-free first-operand case**, under the stated global-minimum and depth-one hypotheses.
+
+- Five complete inventory cells, each below 100,000 sources; no survivors. **All 7,023 normalizer exceptions are individually refuted in Lean.** Combined with the previous exclusions, this closes the j-free first-operand branch. Enumeration completeness remains handwritten and computer-checked.
+- Also closed `H = ((λx.D) j) P₁…Pₚ`, including every pending-operand split: **all 4,188 sources have individual Lean refutations**. The strict hoist charge is kernel-checked with explicit depth minimality.
+- Kernel-checked the general reification surcharge: `18 + 2F + 6·occ_j(Q)`, hence `24 + 2F` with one `j`.
+
+**Still open:** nontrivial j-bearing shared arguments, other j-bearing contexts, and j-bearing stream-headed first operands. No full 46 lower bound or new interpreter is claimed; H_nf was unused.
+
+Every check respected the caps. The largest inventory had 85,380 markings; the slowest Lean file took 53.5 seconds, and peak Lean RSS was 1.184 GB.
+
+Findings and completeness arguments: [REPORT.md §5](/Users/a9lim/Work/blam/tmp/round4/firstop/REPORT.md:343). Proof coverage, resources, and hashes: [followup_verification.json](/Users/a9lim/Work/blam/tmp/round4/firstop/followup_verification.json). NOTES.md was appended; all writes stayed within the lane.
+[gaslamp] job: cx-20261022-034005-5ed0 · session: 01a16275-ff98-7a93-9b3e-8586c98682a3 · thread: r5-firstop · resume: gaslamp codex --thread r5-firstop · tok: 11752k→87k
+[lane.sh] done rc=0 tries=1

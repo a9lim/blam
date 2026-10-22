@@ -1,0 +1,18 @@
+[
+  "NonlinearQ1RootLoop.lean",
+  "NonlinearQ1RootHead.lean",
+  "NonlinearQ1RootMissing.lean",
+  "NonlinearQ1RootMixed.lean",
+  "NonlinearQ1NestedLoop.lean",
+  "NonlinearQ1NestedHead.lean",
+  "NonlinearQ1NestedMissing.lean",
+  "NonlinearQ1NestedMixed.lean",
+  "NonlinearQ2AllLoop.lean",
+  "NonlinearQ2AllHead.lean",
+  "NonlinearQ2AllMissing.lean",
+  "NonlinearQ2AllMixed.lean",
+  "NonlinearQ3AllLoop.lean",
+  "NonlinearQ3AllHead.lean",
+  "NonlinearQ3AllMissing.lean",
+  "NonlinearQ4AllLoop.lean"
+]
