@@ -175,3 +175,107 @@ fc_cert.py checks the syntax only; the rebinding condition was verified per case
 REPORT.md written (sections 1-5).
 - h1full.py: Δ-root h=1, p=1, M1 = λu1 u2 u3. E (full template inside M1),
   w = 24+|E|, E<=21 over [s,a,u1,z,c], forced s,a,c,(u1|z): 120 terms, all fail.
+
+# Follow-up (coordinator wave 5b): (1) A2/A3 by hand, (2) pre-stream reduction, (3) lazy enumerator
+
+## (1) A2/A3 pricing (handwritten; exact moves cited)
+Setting: R = ((λx.B) A) C⃗ app-rooted minimum, j under exactly one λy, λy.E at
+λ-depth 0 (reachable from the root through application nodes), j at app-depth in E.
+A2: λy.E inside A; A3: inside a pending C_q.
+- Head of E: c => j inside a c-spine (F2) dead; E = j (thunk) or y-headed or redex.
+- Zero output node: either j's own parent (P j) in E with P -> r, so y is bound
+  to a stream ("zero handler" λy. y F j, λy. y y X j ...), or P becomes a λ and
+  consumes j ("carrier" λy. y .. j ..). Example carrier reader (rd.py PASS):
+  (λx. λs. s (λb. b (λu. x) c) (s s s)) (λk. k j)  w = 52 (the 165 + 3).
+- A2 = λy.E linear (x once, depth D in B):
+  close46 linear charge [Lean]: (f_A+3) D >= 7 + f_B   (F = f_A + 4: j counts 4);
+  close46 (8) contract_hoist_price [Lean] with m = 1, d_A = 1:
+    w(H(R')) - w(R) = f_A (D+1) + f_C - 3, and H(R') has the same L and depth 0,
+  so a minimum needs f_A(D+1) + f_C >= 4 (equality-0 loses on depth).
+  => every j-carrier/zero-handler piece WITHOUT c (f_A = 0) needs f_C >= 4 (four
+  c leaves among the pending root args) and D >= 3. With f_A >= 1 D >= 2
+  unless f_A >= 4. The example above has f_A = 0, f_C = 0: dominated (49).
+- A2 thunk A = λy. j: if every x-use is applied, R° = (λx. B°) j C⃗ (drop the
+  thunk and the dummy args) is β-equal and lighter by 6 + Σ(2+|V|) - 3 n_u,
+  L(R°) = L(R) + n_u - 1. Survivors need n_u >= 2 unapplied uses and
+  3 n_u >= 6 + Σ_applied (2+|V_i|).
+- A2 nonlinear (m >= 2, j-carrying shared piece): (8) gives +(m-1)(wire(A)-3)
+  + ..., no constraint; the non-surviving copies' j is erased in every run but
+  shares its source position with the survivor, so no per-copy replacement.
+  OPEN.
+- A3 with C_q bound by a let-body chain binder w_q (B = λw⃗. B0): generalised
+  chain swap moves w_q outermost at Δ = q·k_{w_q} - n_{x,w<q} <= 0 when w_q is
+  linear (each earlier binder used >= 1), giving an A2 shape no heavier, same
+  L, same depth. So linear-chain A3 ⊂ A2. Other A3 (C_q reached through A's
+  hand-off, or shared): OPEN.
+Net: (1) does not close by hand; survivors are the c-carrying pieces
+(f_A(D+1)+f_C >= 4), thunks with >= 2 value uses, nonlinear j-pieces, and
+hand-off A3.
+
+## (2) Pre-stream reduction lemma: attempt and why it fails (handwritten)
+Goal: contract a minimum's closed pre-stream computation at no weight increase.
+- For the head-y / head-z hand-offs the pre-stream reduct must contain both the
+  invoked value and the invoker: Δ-root h=1, A = λz. z M1 M2..Mp, reduces to
+  G M1[G] M2[G]..Mp[G] M2[A]..Mp[A] j with G = M1[A]. M2..Mp occur twice and A
+  and G both stay live, so any let-free representative is heavier by >= Σ|M_i|
+  (i>=2) minus overhead, and any full-chain representative (template = A')
+  must carry G's body and A's body. So a free contraction lemma is false in
+  general: the hand-off IS the sharing.
+- A semantic lemma "what a <=33-bit self-applied body can pass to the stream"
+  needs the stream's first operand W1 with W1 K r W⃗ = r j, W1 F r W⃗ = c r N
+  where W1 is a residual of a subterm of A under z ↦ {A, M1[A], ..}; jn/close46
+  first-operand classifications assume literal operands and do not cover
+  residuals carrying A. No lemma found. => go to (3).
+
+## (3) Lazy pre-stream enumerator: soundness (handwritten)
+Partial term P: source with hole atoms ?h (scope = d_h bound vars + c; never j).
+Engine = normal order on P·I with atoms inert (shift/subst leave them alone);
+it raises Inspect(h) when the leftmost-outermost walk puts an atom at a head
+(whnf of a term with atom head, or of an argument of a rigid head).
+LEMMA (unreached holes). If the run of P·I ends in a normal form, or in a
+lazy-comparison mismatch, without Inspect, then for every filling φ the run of
+P[φ]·I performs the same contractions and has the same nf (resp. the same
+Böhm-tree prefix at the mismatch).
+Proof. Induction on steps with the correspondence T_k ~ T_k[φ_k] (each atom
+residual replaced by the filling instance carrying the accumulated
+substitutions). The normal-order walk of T_k visits heads and, under rigid
+heads, arguments left to right; it never enters an atom residual (reaching one
+as a head, or as an argument to normalise, is an Inspect). So the walk on
+T_k[φ_k] meets the same heads and picks the image of the same redex, which lies
+outside every atom residual; contracting it substitutes into fillings exactly
+as into atoms, giving T_{k+1}[φ_{k+1}]. Arguments already normalised contain no
+atoms. The final nf has no atoms (each would have been inspected). ∎
+(Specialises the hole lane's transfer lemma: atoms are untouched positions.)
+COMPLETENESS. Branching ?h into {var i (i <= d_h), λ ?h', ?h1 ?h2} partitions
+the fillings; pruning drops only partial terms whose cheapest completion (2
+bits per hole: index-0 var or c) exceeds the budget. Every term of the family
+within budget is an instance of exactly one leaf. A leaf refuted without
+Inspect refutes all its instances (lemma). Caps must be certified separately.
+
+## CORRECTION (H2 last cut-off): blam --file output is rayon-reordered; I had
+matched verdicts by position. Rematched by bit string (eng/blam_match.py): the
+1,511 DIVERGE count stands; the undecided one is Σ2 = z I (z z (a c)) (not
+z (I z) a c a). Hand certificate: with A = λz a. z I (z z (a c)),
+T(X,m) := A I (A A X) c^m s  ->h*  T(X c, m+1)  (A binds z:=I: I I (I I (Y c)) c^m s
+-> Y c c^m s with Y = A A X; then A binds z:=A, a:=X), and R s ->* T(j c, 0):
+infinite head reduction, no hnf, both laws fail. H2 stays closed.
+
+## (3) results
+- eng/lpe.py (lazy narrowing, soundness in NOTES (3)); validation: the 165
+  family (λn s. s ?D (s s s)) j at budget 49 exceeded 100k nodes before
+  reaching D = λb. b (λu r. r n) c (DFS order), so it is NOT a cheap search in
+  dispatcher-heavy families.
+- Δ3 by laziness alone (no forced-use filter): (λx.xx)(λz a s. ?Σ) j, budget 45:
+  75,130 nodes, 0 passes, 314 caps -> 1,687 completions (eng/lpe_caps2.py):
+  1,672 zero-instance DIVERGE (blam, matched by bit string), 15 contain no c
+  (N3). Agrees with Δ3.
+- Whole Δ-root family (λx. x x) ?A j (A any shape over [c]): nodes 564 / 3,564
+  / 23,504 at budgets 29 / 33 / 37 (×6.5 per 4 bits => ~10^6 at 45). At budget
+  37: 0 passes, 1,882 caps -> 5,881 completions: 5,872 DIVERGE, 9 c-free (N3).
+  => no reader (λx. x x) A j with w <= 37 at all [C, no minimality].
+- Survival pruning (eng/lpe2.py: refute when j/r (zero) or N (unary) loses
+  every residual before any Inspect; sound since holes never contain them):
+  -30% nodes, 25x slower (occurrence scans on self-application blow-ups). No gain.
+Conclusion: laziness pays only where the runs fail early; a would-be reader's
+runs inspect almost all of A, so the tree ~ the inventory of needed cores.
+The hand-off bulk at w <= 45 needs ~10^6+ nodes per family: not under the caps.

@@ -144,8 +144,13 @@ p >= 3 has 16,195. There are 0 passes.
 - 2,690 have M1 = z and are certified by 2.4.
 - 62,375 fail definitively.
 - 1,512 hit the fuel cut-off. `blam adjudicate --no-oracle` returns DIVERGE
-  on the zero instance λc j r. R (cons K r) for 1,511 of them. The last one,
-  Σ2 = z (I z) a c a, diverges on all three unary instances.
+  on the zero instance λc j r. R (cons K r) for 1,511 of them (verdicts
+  matched by bit string, because `--file` output is reordered).
+- The last one is Σ2 = z I (z z (a c)), certified by hand. Write
+  T(X, m) = A I (A A X) c^m s. Then T(X, m) head-reduces to T(X c, m+1),
+  and R s reduces to T(j c, 0), so there is no hnf. (A first version of this
+  report named the wrong term here because it matched blam's verdicts by
+  position.)
 
 The blam encoding was validated first: the 165's zero instance halts with
 the 13-bit nf λc j r. r j, and Ω diverges.
@@ -243,3 +248,92 @@ classifications regenerated depth02's filtered terms at w <= 33 and 35
 (about 18k and 67k short-chain terms, 2–3 s). They were not checks, and
 depth02's enumerations were not extended. No tracked file was modified;
 nothing was committed.
+
+## 6. Follow-up: (A2)/(A3) pricing, the pre-stream lemma, the lazy enumerator
+
+**6.1 (A2) and (A3) by hand [H, with Lean prices].** j sits under exactly one
+λy. λy.E is reachable from the root through application nodes, and j sits at
+application depth in E. If E is c-headed, j is stuck in a c-spine and the
+shape is dead. Otherwise the zero output node is one of two kinds:
+- j's own parent (P j) with P → r, so y is bound to a stream (a "zero
+  handler", such as λy. y F j);
+- a λ that P becomes and that consumes j (a "carrier", such as λk. k j).
+
+What survives in a minimum:
+- **(A2), linear let A = λy.E.** close46's linear charge gives
+  (f_A+3)·D >= 7 + f_B. close46's (8), with m = 1 and d_A = 1, gives
+  w(H(R')) − w(R) = f_A·(D+1) + f_C − 3; H(R') has the same λ count and
+  depth 0. So a minimum needs **f_A·(D+1) + f_C >= 4**. A piece with no c
+  survives only with at least four c leaves among the pending root
+  arguments.
+  - Example: (λx. λs. s (λb. b (λu. x) c) (s s s)) (λk. k j) is a correct
+    reader at w = 52. It has f_A = 0 and f_C = 0, and its contract-and-hoist
+    is the 165 at 49.
+- **(A2), thunk A = λy. j.** If every use of x is applied,
+  R° = (λx. B°) j C⃗ drops the thunk and the dummy arguments. It is β-equal
+  and lighter by 6 + Σ(2+|V|) − 3·n_u, where n_u counts the uses of x that
+  are not applied. Survivors need n_u >= 2 and
+  3·n_u >= 6 + Σ_applied(2+|V_i|).
+- **(A2), nonlinear j-carrying piece.** Not priced. Formula (8) is positive.
+  The erased copies of j share one source position with the survivor, so no
+  per-copy replacement exists.
+- **(A3), C_q bound by a linear let-body chain binder.** The generalised chain
+  swap moves that binder outermost at Δ <= 0, with the same λ count and
+  depth, so it reduces to (A2). Other (A3) shapes, reached through a
+  hand-off or shared, are open.
+
+**6.2 The pre-stream reduction lemma fails as stated [H].** In a hand-off the
+pre-stream reduct keeps both the invoker and the invoked value live. For the
+Δ-root with h = 1 and A = λz. z M1..Mp, the reduct is
+
+    G M1[G] M2[G]..Mp[G] M2[A]..Mp[A] j,  with G = M1[A].
+
+Here M2..Mp occur twice and A and G stay live. So no let-free
+representative, and no full-chain representative with template A', is
+lighter: the hand-off is the sharing. I found no semantic lemma about what a
+self-applied body of at most 33 bits can pass to the stream. The stream's
+first operand is a residual carrying A, and the existing first-operand
+classifications assume literal operands.
+
+**6.3 Lazy pre-stream enumerator [soundness H; runs C].** Holes are inert
+atoms. A run that never puts an atom at a head position decides every
+filling; the unreached-holes lemma and its proof are in NOTES "(3)". It
+specialises the hole lane's transfer lemma. Branching on the inspected hole
+is complete, and pruning charges 2 bits per hole. Fuel cut-offs are
+certified by expanding the remaining holes and passing every completion to
+blam. Each probe is closed as λc j r. R (cons K r) and matched by bit
+string; unary instances are added where needed.
+
+Results (`eng/lpe.py`, `lpe_caps2.py`, `lpe_delta_cert.py`):
+- **Δ3 by laziness alone, with no forced-use filter, budget 45:** 75,130
+  nodes, 0 passes, 314 cut-offs. These expand to 1,687 completions: 1,672
+  have a zero instance blam proves divergent, and 15 contain no c. This
+  agrees with §3.2.
+- **The whole Δ-root, (λx. x x) A j with A of any shape** [C, no minimality]:
+  23,504 nodes at budget 37, 0 passes. The 1,882 cut-offs expand to 5,881
+  completions: 5,872 have a zero instance blam proves divergent, and 9
+  contain no c. So **no reader (λx. x x) A j with w <= 37 exists at all.**
+- **Growth.** The node count is 564 / 3,564 / 23,504 at budgets 29 / 33 / 37,
+  about ×6.5 per 4 bits, so roughly 10^6 nodes at 45 for the Δ-root alone.
+- **Pruning.** Refuting a run as soon as j or r (zero) or N (unary) loses
+  every residual is sound, but it removes only about 30% of the nodes at
+  25× the time.
+- **Dispatcher-heavy families.** On (λn s. s ?D (s s s)) j at budget 49, the
+  search exceeded 100,000 nodes before reaching the 165's D.
+
+**Read.** Laziness pays only where the runs fail early. A would-be reader's
+runs inspect almost all of A, so the tree is about as large as the
+inventory of needed cores. The closures of §3 worked because forced uses
+pin a template's frame, not because of laziness. Closing the hand-off bulk
+at w <= 45 this way needs about 10^6 or more nodes per chain shape, which is
+outside the caps.
+
+What would change that is pricing forced uses dynamically. When the run
+reveals which source λ takes the stream and which takes j, charge each
+variable's occurrence at the depth of the cheapest hole where it can still
+occur. Also apply the minimality filters (no erasing redex; the linear-let
+index tax) to subterms the moment they become complete. I have not built
+either. A cheaper semantic route may exist for (A2): a minimum has
+f_A·(D+1) + f_C >= 4, so the j-piece itself carries c. A piece holding both
+outputs' rigid atoms, with j under a single λ, looks very constrained, and
+pricing it is the next step I would try by hand.

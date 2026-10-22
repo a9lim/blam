@@ -246,7 +246,12 @@ family; the lists are in the round-4 archive. Claude's lanes:
   occur in it. The same holds when `j`'s binder is the head λ-chain at any
   multiplicity (handwritten, through depth 0's chain swap), and for the
   self-application `(λx. x x)(λz a. z M⃗) j` whose chain stops before the
-  stream (66,577 bodies);
+  stream (66,577 bodies). No reader `(λx. x x) A j` at all weighs at most
+  37 (a lazy enumeration that only expands what the run inspects, sound by
+  the transfer lemma; 23,504 nodes, every cut-off certified); the tree grows
+  about 6.5× per 4 bits, so 45 is out of reach this way. Contracting the
+  pre-stream computation of a hand-off is never lighter: the reduct keeps
+  both the let argument and the value it hands on;
 - the whole-cell opener `λs. s (λb t. B) j`, of which no minimum reader
   below 46 is an instance (Codex): a λ-headed `B` hoists its binder at a
   strictly lower price (kernel-checked), a linear redex does not fit in
