@@ -256,7 +256,12 @@ family; the lists are in the round-4 archive. Claude's lanes:
   over 89,511 operands giving `a + b ≥ 24` when `A` or `B` carries `j`,
   `≥ 22` otherwise). With the first operand a literal `λb. B` and `j`
   outside it, every redex inside `B` of a minimum reader below 46 has two
-  to five uses, for any operands. A handwritten deletion lemma underlies the budgets:
+  to five uses, for any operands (Codex), and none of those survives
+  (Codex, handlerlet lane: the exact price `w = 12 + 2q + |B| + Σ|T_i|`
+  and minimality `Δ ≥ 0` for every let inside `B`, kernel-checked, leave
+  117,059 sources over `q = 1 … 5`, all refuted, 1,868 normalizer
+  exceptions individually in Lean). So **no minimum reader below 46 has a
+  literal λ as its first handler**; A handwritten deletion lemma underlies the budgets:
   replacing a subterm by a cheaper one with the same value on every unary
   probe leaves a unary core, and the only cores through 22 bits are
   `s (λq. c) (s s j)` and `s (λq. c) (s s s)`, so a reader carrying
@@ -384,8 +389,9 @@ ones, not the full 25-bit cut-off audit.
 containing `s` or `c`, and the needed-binder case of the 162's family;
 depth-0 readers whose `j` follows a shared top-level let, and
 application-rooted readers with the hole under a non-stream λ, where the
-let's argument hands control on before binding the stream; s-spines with a
-β-redex on the first operand's head path, and readers whose stream-λ body is a redex; lets headed by their own
+let's argument hands control on before binding the stream; s-spines whose
+first operand is not a literal λ and has a β-redex on its head path, and
+readers whose stream-λ body is a redex; lets headed by their own
 variable (whose extra uses are needed,
 but not yet tied to the unary output) and nested lets. The record's
 estimate is about 2×10⁹ λ-rooted depth-1 readers at `w ≤ 45`, so these need

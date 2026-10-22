@@ -1,0 +1,5 @@
+'Blc.HandlerLetPrices.reader_price' depends on axioms: [propext, Quot.sound]
+'Blc.HandlerLetPrices.nonlinear_twelve' depends on axioms: [propext, Quot.sound]
+'Blc.HandlerLetPrices.arity_five' depends on axioms: [propext, Quot.sound]
+'Blc.HandlerLetPrices.minimum_lamfree_strict' depends on axioms: [propext, Quot.sound]
+'Blc.HandlerLetPrices.charge' depends on axioms: [propext, Quot.sound]

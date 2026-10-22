@@ -880,8 +880,8 @@ Open:
 - the reader weight bound `w(R) ≥ 46` (`class-bound.md` §3), which would make
   the 162 optimal in the separated class and its widenings: open only where
   the zero and unary roles share source — zero-λ hole parents, the
-  needed-binder case of the 162's own shape, s-spines with a β-redex on the
-  first operand's head path, readers whose body or root is a let, and
+  needed-binder case of the 162's own shape, s-spines whose first operand is
+  not a literal λ and has a β-redex on its head path, readers whose body or root is a let, and
   application-rooted readers;
 - NEXT of arbitrary syntax in `32 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
   `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix

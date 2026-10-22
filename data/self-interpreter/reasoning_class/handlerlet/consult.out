@@ -1,0 +1,31 @@
+[gaslamp] → codex · job cx-20261022-024312-c65a · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-024312-c65a/events.jsonl
+( •̀ᴗ•́) **Closed for globally minimum readers under `(weight, lambda count, hole depth)`.** Every assigned nonlinear-handler cell is excluded.
+
+Full deliverable: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/handlerlet/REPORT.md).
+
+1. **Interpreters:** none built; no sub-162 candidate, battery or polish result.
+
+2. **Decisive source reduction:** retain the exact price
+   `w = 12 + 2q + |B| + Σ weighted(Tᵢ)`.
+   For any marked let `(λx.D) A` inside B, contraction changes weight by
+   `Δ = (m−1)|A| + (F−1)M − 4 − 2m − T`.
+   Minimality requires `Δ ≥ 0`; equality additionally requires `L(A)>0`, since otherwise contraction removes a lambda. These prices and the lambda-count filter are kernel-checked.
+
+3. **Complete inventories:**
+
+   | q | Marked sources | Survivors |
+   |---:|---:|---:|
+   | 1 | 85,765 | 0 |
+   | 2 | 28,022 | 0 |
+   | 3 | 3,234 | 0 |
+   | 4 | 68 | 0 |
+   | 5 | 0 | 0 |
+
+   These cover arbitrary redex positions inside B, arbitrary trailing operands, and every hole depth there. Across the separate checks: **117,059 unique sources**, with 112,385 wrong zero normal forms, 2,806 wrong unary normal forms, and **1,868 exceptions individually refuted in Lean**. All exception theorems have exactly `[propext, Quot.sound]` dependencies.
+
+   Every check respected the caps. Largest source check: **30.57 s / 120 MB**. Largest Lean check: **12.68 s / 851 MB**. At most two threads.
+
+4. **Scope:** combined with loop’s multiplicity restriction and d1open’s redex-free closure, this eliminates the entire literal-lambda-first-handler branch of a global minimum below 46. The source inventory’s completeness remains handwritten plus Python-checked; it is not a fully formalized exhaustion theorem. Nonliteral first operands and stream-body/root lets remain outside this result.
+
+[gaslamp] job: cx-20261022-024312-c65a · session: 01a16259-779c-7552-9d2f-aaeb2e5534f6 · thread: r5-handlerlet · resume: gaslamp codex --thread r5-handlerlet · tok: 6982k→49k
+[lane.sh] done rc=0 tries=1

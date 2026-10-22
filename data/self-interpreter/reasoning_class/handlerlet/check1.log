@@ -1,0 +1,148 @@
+{
+  "q": 1,
+  "markings": 85765,
+  "unique": 85735,
+  "rows": {
+    "5:A": {
+      "markings": 564,
+      "unique": 564,
+      "wrong_nf": {
+        "zero": 564
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "4:tail": {
+      "markings": 340,
+      "unique": 340,
+      "wrong_nf": {
+        "zero": 330
+      },
+      "exceptions": 10,
+      "hits": 0
+    },
+    "4:context": {
+      "markings": 120,
+      "unique": 120,
+      "wrong_nf": {
+        "zero": 114,
+        "1": 6
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "5:tail": {
+      "markings": 28,
+      "unique": 28,
+      "wrong_nf": {
+        "zero": 28
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "3:tail": {
+      "markings": 3064,
+      "unique": 3064,
+      "wrong_nf": {
+        "zero": 2989,
+        "1": 1
+      },
+      "exceptions": 74,
+      "hits": 0
+    },
+    "3:context": {
+      "markings": 1444,
+      "unique": 1444,
+      "wrong_nf": {
+        "zero": 1378,
+        "1": 42
+      },
+      "exceptions": 24,
+      "hits": 0
+    },
+    "4:D": {
+      "markings": 280,
+      "unique": 280,
+      "wrong_nf": {
+        "zero": 242,
+        "1": 38
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "3:D": {
+      "markings": 1660,
+      "unique": 1660,
+      "wrong_nf": {
+        "zero": 1554,
+        "1": 92
+      },
+      "exceptions": 14,
+      "hits": 0
+    },
+    "2:tail": {
+      "markings": 12752,
+      "unique": 12752,
+      "wrong_nf": {
+        "zero": 12223,
+        "1": 11
+      },
+      "exceptions": 518,
+      "hits": 0
+    },
+    "2:context": {
+      "markings": 6504,
+      "unique": 6498,
+      "wrong_nf": {
+        "zero": 6026,
+        "1": 233
+      },
+      "exceptions": 239,
+      "hits": 0
+    },
+    "2:D": {
+      "markings": 4038,
+      "unique": 4038,
+      "wrong_nf": {
+        "zero": 3822,
+        "1": 185
+      },
+      "exceptions": 31,
+      "hits": 0
+    },
+    "3:A": {
+      "markings": 9208,
+      "unique": 9208,
+      "wrong_nf": {
+        "zero": 9101,
+        "1": 101
+      },
+      "exceptions": 6,
+      "hits": 0
+    },
+    "4:A": {
+      "markings": 1602,
+      "unique": 1602,
+      "wrong_nf": {
+        "zero": 1597,
+        "1": 5
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "2:A": {
+      "markings": 44161,
+      "unique": 44137,
+      "wrong_nf": {
+        "zero": 42901,
+        "1": 1081
+      },
+      "exceptions": 155,
+      "hits": 0
+    }
+  },
+  "seconds": 30.56666829099413,
+  "rss": 119619584,
+  "threads": 2
+}
+EXCEPTIONS 1071 HITS 0

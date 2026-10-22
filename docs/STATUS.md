@@ -183,12 +183,14 @@ with all features (three opt-in tests ignored) and 328 with default features.
   hole depth other than 1 and the depth-0 readers whose hole is a λ's
   argument, every s-spine reader whose first operand reaches the stream's
   bit with no β-redex on its head path, and the
-  whole-cell opener `λs. s (λb t. B) j` (complete finite checks); the 164's
-  and the hoisted 165's families cost exactly 48 and 49. What remains is
-  sharing between the zero and unary roles: hole parents that are a λ on a
-  zero stream, the needed-binder case of the 162's own family, s-spines
-  with a redex on the first operand's head path, and readers whose body or
-  root is a let. The class widens without moving its minimum:
+  whole-cell opener `λs. s (λb t. B) j`, and every minimum reader whose
+  first handler is a literal λ (complete finite checks); the 164's and the
+  hoisted 165's families cost exactly 48 and 49; a reader below 46
+  dispatches through at most one site. What remains is sharing between the
+  zero and unary roles: hole parents that are a λ on a zero stream, the
+  needed-binder case of the 162's own family, s-spines whose first operand
+  is not a literal λ and has a redex on its head path, and readers whose
+  body or root is a let. The class widens without moving its minimum:
   NEXT of any syntax above the price frontier `q ≥ 92`, `q + 3F ≥ 104`
   (Lean, `Blc/SelfintWiden.lean`; optimal there iff `w ≥ 46`), any value
   representation with a NEXT-free decoder (Lean, `Blc/SelfintValues.lean`),
@@ -595,8 +597,8 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    opaque two-port recursion). Still open, all of it sharing between the
    zero and unary roles: at depth 1, hole parents `Y j` that are a λ on a
    zero stream with `Y` an application over `s` or `c`, and the
-   needed-binder case of the 162's family; s-spines with a β-redex on the
-   first operand's head path; readers whose stream-λ body or root is a let,
+   needed-binder case of the 162's family; s-spines whose first operand is
+   not a literal λ and has a β-redex on its head path; readers whose stream-λ body or root is a let,
    including depth-0 shared top-level lets; application-rooted readers. The
    remaining space is far too large for enumeration (about 2×10⁹ λ-rooted
    depth-1 readers), so the next step is a theorem bounding the source that
