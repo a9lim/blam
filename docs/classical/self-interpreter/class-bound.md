@@ -180,7 +180,12 @@ the 39-bit one.
   profiles `k + d = 5`, about 240,000 sources fail a law with a certificate
   (32,743 normalizer exceptions refuted in Lean) and 580 remain, listed with
   their prices in `reasoning_class/rootlet/SURVIVORS.tsv`: normalizer
-  exceptions not yet refuted, not readers (Codex, rootlet lane); a λ-free argument at the root must
+  exceptions not yet refuted, not readers (Codex, rootlet lane). A root let
+  whose body is headed by the stream binder lifts exactly to a λ-rooted
+  reader: `(λg. λs. B) H` and `λs. (λg. B~) H` (binders swapped) agree on
+  every stream, and the second weighs `u_s(B) − u_g(B) + f_c(H) + 4·occ_j(H)`
+  more (handwritten, Claude, shared lane), so results proved for λ-rooted
+  readers without minimality bound such root lets at that offset; a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands. With `j` at
@@ -360,7 +365,13 @@ family; the lists are in the round-4 archive. Claude's lanes:
   something else, and a selector call (only `K` itself acts as `K` on unary
   among terms through 9 bits) costs at least 11 bits at its site; calls
   handing it `c`, `s` or a tail reuse both arms and are not priced
-  (correct readers of 93 and 99 do this);
+  (correct readers of 93 and 99 do this). Their skeleton is closed without
+  any minimality assumption: `λs. (λg. B) (λy. y A W)`, for any `B`, `A`,
+  `W` with redexes and `j` anywhere, has no reader with `w ≤ 45` (Claude,
+  shared lane: needed narrowing, 13,481 states, all 90 cut-offs certified,
+  four by a self-feeding divergence lemma), and with one trailing operand
+  the same holds unless one of four closed combinators `H H` has a head
+  normal form;
 - **no reader with `w ≤ 45` and `j` under no λ but the stream's has a
   syntactic site at all** (Claude, single lane; reviewed by Codex, who
   reran the whole partition: 126 paths, 329,895 narrowing states, 76,845
