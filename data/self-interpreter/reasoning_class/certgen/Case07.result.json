@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "states": 25,
+  "work": 28,
+  "k": 0,
+  "mode": "site",
+  "portable_states": 25,
+  "portable_edges": 33,
+  "certificate_sha256": "cb52a4c5a139f74a12ce76bb2c1762985f22543c3bda6a43b0c94615622f952f",
+  "id": "h2_2.final_left:7",
+  "source": "((\\x0. (x0 ((x0 (\\x1. x0)) _))) (\\x0. ((x0 x0) (\\x1. (x1 x0)))))",
+  "label": "Case07",
+  "seconds": 0.0004873750149272382,
+  "peak_rss_bytes": 23805952,
+  "threads": 1
+}

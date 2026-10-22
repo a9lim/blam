@@ -1,0 +1,1117 @@
+[
+  {
+    "id": "h2_2.final_left:0",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 67,
+        "work": 69,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 9.866600157693028e-05
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 152,
+        "work": 164,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 0.00021441600983962417
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 67,
+        "work": 69,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "arg",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 9.595800656825304e-05
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 43,
+        "work": 47,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "lambda",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 8.512497879564762e-05
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 68,
+        "work": 68,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 2,
+        "termsize": 61,
+        "seconds": 0.00010766700142994523
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 347,
+        "work": 325,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 2,
+        "termsize": 61,
+        "seconds": 0.00041033298475667834
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 68,
+        "work": 68,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "arg",
+        "prefix": 2,
+        "termsize": 61,
+        "seconds": 0.00010674999793991446
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 42,
+        "work": 46,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "lambda",
+        "prefix": 2,
+        "termsize": 61,
+        "seconds": 9.362501441501081e-05
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 51,
+        "work": 50,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 3,
+        "termsize": 96,
+        "seconds": 0.0001043330121319741
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 429,
+        "work": 422,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 3,
+        "termsize": 96,
+        "seconds": 0.0005898750096093863
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 51,
+        "work": 50,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "arg",
+        "prefix": 3,
+        "termsize": 96,
+        "seconds": 0.00010379200102761388
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 111,
+        "work": 125,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "lambda",
+        "prefix": 3,
+        "termsize": 96,
+        "seconds": 0.00021624998771585524
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 43,
+        "work": 42,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 5,
+        "termsize": 90,
+        "seconds": 0.00010570802260190248
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 386,
+        "work": 388,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 5,
+        "termsize": 90,
+        "seconds": 0.000553416000911966
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 44,
+        "work": 43,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "arg",
+        "prefix": 5,
+        "termsize": 90,
+        "seconds": 0.00010899998596869409
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 105,
+        "work": 119,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "lambda",
+        "prefix": 5,
+        "termsize": 90,
+        "seconds": 0.00021366600412875414
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 75,
+        "work": 74,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 8,
+        "termsize": 131,
+        "seconds": 0.00016320799477398396
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 415,
+        "work": 447,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "site",
+        "prefix": 8,
+        "termsize": 131,
+        "seconds": 0.0007025419909041375
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 75,
+        "work": 74,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "mode": "arg",
+        "prefix": 8,
+        "termsize": 131,
+        "seconds": 0.00016645799041725695
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 362,
+        "work": 473,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "mode": "lambda",
+        "prefix": 8,
+        "termsize": 131,
+        "seconds": 0.0008937090169638395
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:2",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          21
+        ],
+        "states": 414,
+        "work": 429,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "mode": "site",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 0.0005383749958127737
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          21
+        ],
+        "states": 616,
+        "work": 646,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "mode": "site",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 0.0008648749790154397
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          21
+        ],
+        "states": 361,
+        "work": 397,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "mode": "arg",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 0.0005010830063838512
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          21
+        ],
+        "states": 264,
+        "work": 303,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "mode": "lambda",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 0.0005562499864026904
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          40
+        ],
+        "states": 2899,
+        "work": 2952,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "mode": "site",
+        "prefix": 2,
+        "termsize": 74,
+        "seconds": 0.0073300419899169356
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          40
+        ],
+        "states": 2275,
+        "work": 2615,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "mode": "site",
+        "prefix": 2,
+        "termsize": 74,
+        "seconds": 0.005769625015091151
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          40
+        ],
+        "states": 2196,
+        "work": 2546,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "mode": "arg",
+        "prefix": 2,
+        "termsize": 74,
+        "seconds": 0.006517292000353336
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          40
+        ],
+        "states": 627,
+        "work": 787,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "mode": "lambda",
+        "prefix": 2,
+        "termsize": 74,
+        "seconds": 0.002118083997629583
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 323,
+        "work": 343,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "mode": "site",
+        "prefix": 3,
+        "termsize": 167,
+        "seconds": 0.0005572079971898347
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 433,
+        "work": 488,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "mode": "site",
+        "prefix": 3,
+        "termsize": 167,
+        "seconds": 0.0008262090268544853
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 323,
+        "work": 343,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "mode": "arg",
+        "prefix": 3,
+        "termsize": 167,
+        "seconds": 0.0005631670064758509
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 183,
+        "work": 207,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "mode": "lambda",
+        "prefix": 3,
+        "termsize": 167,
+        "seconds": 0.0003195000172127038
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 312,
+        "work": 332,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "mode": "site",
+        "prefix": 5,
+        "termsize": 91,
+        "seconds": 0.0005425839917734265
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 381,
+        "work": 415,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "mode": "site",
+        "prefix": 5,
+        "termsize": 91,
+        "seconds": 0.0006393749790731817
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 312,
+        "work": 332,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "mode": "arg",
+        "prefix": 5,
+        "termsize": 91,
+        "seconds": 0.0005405420088209212
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 176,
+        "work": 201,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "mode": "lambda",
+        "prefix": 5,
+        "termsize": 91,
+        "seconds": 0.00031379100983031094
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:2",
+        "k": 1,
+        "mode": "site",
+        "prefix": 8,
+        "termsize": 331,
+        "seconds": 0.6287867909995839
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:2",
+        "k": 2,
+        "mode": "site",
+        "prefix": 8,
+        "termsize": 331,
+        "seconds": 0.1989352500240784
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:2",
+        "k": 1,
+        "mode": "arg",
+        "prefix": 8,
+        "termsize": 331,
+        "seconds": 0.7761485000082757
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 1692,
+        "work": 2547,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "mode": "lambda",
+        "prefix": 8,
+        "termsize": 331,
+        "seconds": 0.00911350001115352
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:3",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          7
+        ],
+        "states": 1326,
+        "work": 1722,
+        "k": 1,
+        "id": "h2_2.final_left:3",
+        "mode": "site",
+        "prefix": 1,
+        "termsize": 34,
+        "seconds": 0.0028295000083744526
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          7
+        ],
+        "states": 970,
+        "work": 1047,
+        "k": 2,
+        "id": "h2_2.final_left:3",
+        "mode": "site",
+        "prefix": 1,
+        "termsize": 34,
+        "seconds": 0.001446332986233756
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          7
+        ],
+        "states": 1650,
+        "work": 1924,
+        "k": 1,
+        "id": "h2_2.final_left:3",
+        "mode": "arg",
+        "prefix": 1,
+        "termsize": 34,
+        "seconds": 0.0031045000068843365
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          7
+        ],
+        "states": 214,
+        "work": 279,
+        "k": 2,
+        "id": "h2_2.final_left:3",
+        "mode": "lambda",
+        "prefix": 1,
+        "termsize": 34,
+        "seconds": 0.00039658299647271633
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          16
+        ],
+        "states": 12547,
+        "work": 17007,
+        "k": 1,
+        "id": "h2_2.final_left:3",
+        "mode": "site",
+        "prefix": 2,
+        "termsize": 53,
+        "seconds": 0.05422433401690796
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          16
+        ],
+        "states": 4576,
+        "work": 4128,
+        "k": 2,
+        "id": "h2_2.final_left:3",
+        "mode": "site",
+        "prefix": 2,
+        "termsize": 53,
+        "seconds": 0.007918207993498072
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          16
+        ],
+        "states": 13802,
+        "work": 17655,
+        "k": 1,
+        "id": "h2_2.final_left:3",
+        "mode": "arg",
+        "prefix": 2,
+        "termsize": 53,
+        "seconds": 0.05606087498017587
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          36
+        ],
+        "states": 1007,
+        "work": 1347,
+        "k": 2,
+        "id": "h2_2.final_left:3",
+        "mode": "lambda",
+        "prefix": 2,
+        "termsize": 53,
+        "seconds": 0.003205249988241121
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 1,
+        "mode": "site",
+        "prefix": 3,
+        "termsize": 106,
+        "seconds": 0.17343091699876823
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 2,
+        "mode": "site",
+        "prefix": 3,
+        "termsize": 106,
+        "seconds": 0.14750620900304057
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 1,
+        "mode": "arg",
+        "prefix": 3,
+        "termsize": 106,
+        "seconds": 0.17199825000716373
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          87
+        ],
+        "states": 2113,
+        "work": 5370,
+        "k": 2,
+        "id": "h2_2.final_left:3",
+        "mode": "lambda",
+        "prefix": 3,
+        "termsize": 106,
+        "seconds": 0.05054545900202356
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 1,
+        "mode": "site",
+        "prefix": 5,
+        "termsize": 100,
+        "seconds": 0.1652682919811923
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 2,
+        "mode": "site",
+        "prefix": 5,
+        "termsize": 100,
+        "seconds": 0.14690399999381043
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 1,
+        "mode": "arg",
+        "prefix": 5,
+        "termsize": 100,
+        "seconds": 0.17570558399893343
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          82
+        ],
+        "states": 2095,
+        "work": 5510,
+        "k": 2,
+        "id": "h2_2.final_left:3",
+        "mode": "lambda",
+        "prefix": 5,
+        "termsize": 100,
+        "seconds": 0.05070841699489392
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 1,
+        "mode": "site",
+        "prefix": 8,
+        "termsize": 365,
+        "seconds": 0.16632379099610262
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 2,
+        "mode": "site",
+        "prefix": 8,
+        "termsize": 365,
+        "seconds": 0.14668825000990182
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 1,
+        "mode": "arg",
+        "prefix": 8,
+        "termsize": 365,
+        "seconds": 0.16585587500594556
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          67
+        ],
+        "states": 3798,
+        "work": 10785,
+        "k": 2,
+        "id": "h2_2.final_left:3",
+        "mode": "lambda",
+        "prefix": 8,
+        "termsize": 365,
+        "seconds": 0.15788637500372715
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:9",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          20
+        ],
+        "states": 622,
+        "work": 735,
+        "k": 1,
+        "id": "h2_2.final_left:9",
+        "mode": "site",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 0.00111983300303109
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          20
+        ],
+        "states": 874,
+        "work": 1001,
+        "k": 2,
+        "id": "h2_2.final_left:9",
+        "mode": "site",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 0.0014592079969588667
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          20
+        ],
+        "states": 702,
+        "work": 833,
+        "k": 1,
+        "id": "h2_2.final_left:9",
+        "mode": "arg",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 0.001265416998649016
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 327,
+        "work": 426,
+        "k": 2,
+        "id": "h2_2.final_left:9",
+        "mode": "lambda",
+        "prefix": 1,
+        "termsize": 38,
+        "seconds": 0.0006595420127268881
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          23
+        ],
+        "states": 3352,
+        "work": 6093,
+        "k": 1,
+        "id": "h2_2.final_left:9",
+        "mode": "site",
+        "prefix": 2,
+        "termsize": 74,
+        "seconds": 0.03644616701058112
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          23
+        ],
+        "states": 3518,
+        "work": 4125,
+        "k": 2,
+        "id": "h2_2.final_left:9",
+        "mode": "site",
+        "prefix": 2,
+        "termsize": 74,
+        "seconds": 0.008344791014678776
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          23
+        ],
+        "states": 3353,
+        "work": 6004,
+        "k": 1,
+        "id": "h2_2.final_left:9",
+        "mode": "arg",
+        "prefix": 2,
+        "termsize": 74,
+        "seconds": 0.03617783301160671
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          23
+        ],
+        "states": 1134,
+        "work": 1891,
+        "k": 2,
+        "id": "h2_2.final_left:9",
+        "mode": "lambda",
+        "prefix": 2,
+        "termsize": 74,
+        "seconds": 0.006517500005429611
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 1,
+        "mode": "site",
+        "prefix": 3,
+        "termsize": 167,
+        "seconds": 0.7379177910042927
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 2,
+        "mode": "site",
+        "prefix": 3,
+        "termsize": 167,
+        "seconds": 0.6662695830164012
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 1,
+        "mode": "arg",
+        "prefix": 3,
+        "termsize": 167,
+        "seconds": 0.7784635830030311
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          84
+        ],
+        "states": 378,
+        "work": 631,
+        "k": 2,
+        "id": "h2_2.final_left:9",
+        "mode": "lambda",
+        "prefix": 3,
+        "termsize": 167,
+        "seconds": 0.001969083008589223
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 1,
+        "mode": "site",
+        "prefix": 5,
+        "termsize": 419,
+        "seconds": 0.8189242920198012
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 2,
+        "mode": "site",
+        "prefix": 5,
+        "termsize": 419,
+        "seconds": 0.7360213749925606
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 1,
+        "mode": "arg",
+        "prefix": 5,
+        "termsize": 419,
+        "seconds": 0.7842939590045717
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          63
+        ],
+        "states": 1276,
+        "work": 3003,
+        "k": 2,
+        "id": "h2_2.final_left:9",
+        "mode": "lambda",
+        "prefix": 5,
+        "termsize": 419,
+        "seconds": 0.01830716701806523
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 1,
+        "mode": "site",
+        "prefix": 8,
+        "termsize": 475,
+        "seconds": 0.7717984169721603
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 2,
+        "mode": "site",
+        "prefix": 8,
+        "termsize": 475,
+        "seconds": 0.6344191249809228
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 1,
+        "mode": "arg",
+        "prefix": 8,
+        "termsize": 475,
+        "seconds": 0.7106276249978691
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 739,
+        "work": 955,
+        "k": 2,
+        "id": "h2_2.final_left:9",
+        "mode": "lambda",
+        "prefix": 8,
+        "termsize": 475,
+        "seconds": 0.002311542019015178
+      }
+    ]
+  }
+]

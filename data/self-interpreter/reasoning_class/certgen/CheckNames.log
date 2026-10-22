@@ -1,0 +1,11 @@
+Array.mem_of_getElem?.{u_1} {α : Type u_1} {xs : Array α} {i : Nat} {a : α} (e : xs[i]? = some a) : a ∈ xs
+Array.all_eq_true.{u_1} {α : Type u_1} {p : α → Bool} {as : Array α} :
+  as.all p = true ↔ ∀ (i : Nat) (x : i < as.size), p as[i] = true
+Array.mem_iff_getElem.{u_1} {α : Type u_1} {a : α} {xs : Array α} : a ∈ xs ↔ ∃ i h, xs[i] = a
+Array.mem_iff_getElem?.{u_1} {α : Type u_1} {a : α} {xs : Array α} : a ∈ xs ↔ ∃ i, xs[i]? = some a
+List.mem_of_getElem?.{u_1} {α : Type u_1} {l : List α} {i : Nat} {a : α} (e : l[i]? = some a) : a ∈ l
+Array.getElem?_eq_some_iff.{u_1} {α : Type u_1} {i : Nat} {b : α} {xs : Array α} : xs[i]? = some b ↔ ∃ h, xs[i] = b
+List.mem_range {m n : Nat} : m ∈ List.range n ↔ m < n
+/Users/a9lim/Work/blam/tmp/round4/certgen/CheckNames.lean:9:7: error(lean.unknownIdentifier): Unknown constant `Array.mem_toList`
+Array.getElem?_eq_getElem.{u_1} {α : Type u_1} {xs : Array α} {i : Nat} (h : i < xs.size) : xs[i]? = some xs[i]
+Array.getElem_mem.{u} {α : Type u} {xs : Array α} {i : Nat} (h : i < xs.size) : xs[i] ∈ xs

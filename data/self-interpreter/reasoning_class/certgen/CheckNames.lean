@@ -1,0 +1,11 @@
+import Regular
+#check Array.mem_of_getElem?
+#check Array.all_eq_true
+#check Array.mem_iff_getElem
+#check Array.mem_iff_getElem?
+#check List.mem_of_getElem?
+#check Array.getElem?_eq_some_iff
+#check List.mem_range
+#check Array.mem_toList
+#check Array.getElem?_eq_getElem
+#check Array.getElem_mem

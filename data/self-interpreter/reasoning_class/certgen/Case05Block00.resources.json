@@ -1,0 +1,10 @@
+{
+  "core_sha256": "f84231eb7d74319c7b12359269de329d70ba0c3257ec448d27676f9ae35c53e7",
+  "file": "Case05Block00.lean",
+  "code": 0,
+  "seconds": 0.7528304590086918,
+  "peak_rss_bytes": 531120128,
+  "limit": null,
+  "threads": 2,
+  "sha256": "ab240d45358c796df847e77757ffc1249f5d9a2b19e62d907d5cafd71fe305e1"
+}

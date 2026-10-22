@@ -1,0 +1,413 @@
+[
+  {
+    "id": "h_xfull1.json:0",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. (x1 ((x1 (x0 x1)) x1)))))",
+    "legacy": [],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": false,
+      "SF2": false
+    },
+    "work": 4786,
+    "seconds": 0.44350358299561776
+  },
+  {
+    "id": "h_xfull1.json:1",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. (x1 ((x1 (x0 x0)) x1)))))",
+    "legacy": [],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": "time",
+      "SF2": "time"
+    },
+    "work": 5770,
+    "seconds": 0.6465875829744618
+  },
+  {
+    "id": "h_xfull1.json:2",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (\\x1. (x0 (\\x2. (x2 (x2 (\\x3. x2))))))))",
+    "legacy": [],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": false,
+      "SF2": false
+    },
+    "work": 6511,
+    "seconds": 0.4192347089992836
+  },
+  {
+    "id": "h_xfull1.json:3",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (\\x1. (x0 (\\x2. (x2 (x0 x2)))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4520,
+    "seconds": 0.2678447090147529
+  },
+  {
+    "id": "h_xfull1.json:4",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (\\x1. (x0 (\\x2. ((x0 x2) _))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8841,
+    "seconds": 0.40145450001000427
+  },
+  {
+    "id": "h_xfull1.json:5",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. (x0 ((x1 x1) x1)))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 86,
+    "seconds": 0.007907082996098325
+  },
+  {
+    "id": "h_xfull1.json:6",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. (x0 ((x1 x1) x0)))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 90,
+    "seconds": 0.009846500004641712
+  },
+  {
+    "id": "h_xfull1.json:7",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. (x0 ((x1 x0) x1)))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 90,
+    "seconds": 0.009960875002434477
+  },
+  {
+    "id": "h_xfull1.json:8",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. (x0 ((x0 x1) x1)))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 90,
+    "seconds": 0.011712165985954925
+  },
+  {
+    "id": "h_xfull1.json:9",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 x0) (\\x2. (x1 _))))))",
+    "legacy": [],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": false,
+      "SF2": false
+    },
+    "work": 30823,
+    "seconds": 0.2447724170051515
+  },
+  {
+    "id": "h_xfull1.json:10",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 2.941599814221263e-05
+  },
+  {
+    "id": "h_xfull1.json:11",
+    "source": "((\\x0. (x0 (((x0 _) x0) _))) (\\x0. (\\x1. ((x1 (\\x2. x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 3.12910124193877e-05
+  },
+  {
+    "id": "h_xfull1.json:12",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. (\\x3. x0))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 6,
+    "seconds": 3.329198807477951e-05
+  },
+  {
+    "id": "h_xfull1.json:13",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. (\\x3. (\\x4. x0)))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 7,
+    "seconds": 3.495797864161432e-05
+  },
+  {
+    "id": "h_xfull1.json:14",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. (x1 x0))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 6,
+    "seconds": 4.087499110028148e-05
+  },
+  {
+    "id": "h_xfull1.json:15",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. (x0 _))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 3.3374992199242115e-05
+  },
+  {
+    "id": "h_xfull1.json:16",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x1 x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 3.187498077750206e-05
+  },
+  {
+    "id": "h_xfull1.json:17",
+    "source": "((\\x0. (x0 ((x0 x0) (x0 _)))) (\\x0. (\\x1. ((x1 (x1 x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 9,
+    "seconds": 5.379199865274131e-05
+  },
+  {
+    "id": "h_xfull1.json:18",
+    "source": "((\\x0. (x0 (((x0 _) x0) _))) (\\x0. (\\x1. ((x1 (x1 x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 3.3249991247430444e-05
+  },
+  {
+    "id": "h_xfull1.json:19",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x1 (\\x2. x0))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 6,
+    "seconds": 3.533298149704933e-05
+  },
+  {
+    "id": "h_xfull1.json:20",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x1 (x1 x0))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 6,
+    "seconds": 4.720798460766673e-05
+  },
+  {
+    "id": "h_xfull1.json:21",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x1 (x0 _))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 3.5375007428228855e-05
+  },
+  {
+    "id": "h_xfull1.json:22",
+    "source": "((\\x0. (x0 (x0 ((x0 _) x0)))) (\\x0. (\\x1. ((x1 (x0 x1)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 7,
+    "seconds": 5.2333984058350325e-05
+  },
+  {
+    "id": "h_xfull1.json:23",
+    "source": "((\\x0. (x0 (x0 ((x0 _) x0)))) (\\x0. (\\x1. ((x1 (x0 x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 8,
+    "seconds": 7.100001676008105e-05
+  },
+  {
+    "id": "h_xfull1.json:24",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x0 _)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 4,
+    "seconds": 2.8542010113596916e-05
+  },
+  {
+    "id": "h_xfull1.json:25",
+    "source": "((\\x0. (x0 ((x0 _) (\\x1. x0)))) (\\x0. (\\x1. ((x1 (x0 x0)) x1))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 2410,
+    "seconds": 0.090149833005853
+  },
+  {
+    "id": "h_xfull1.json:26",
+    "source": "((\\x0. (x0 (((x0 _) x0) _))) (\\x0. (\\x1. ((x1 (x0 _)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 4,
+    "seconds": 3.516700235195458e-05
+  },
+  {
+    "id": "h_xfull1.json:27",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 ((x1 x0) _)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 4.083398380316794e-05
+  },
+  {
+    "id": "h_xfull1.json:28",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 ((x0 _) _)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 4,
+    "seconds": 3.091699909418821e-05
+  },
+  {
+    "id": "h_xfull1.json:29",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. ((x0 x1) (x0 x1)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4724,
+    "seconds": 0.25995233398862183
+  },
+  {
+    "id": "h_xfull1.json:30",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. (((x1 (\\x2. x0)) x1) _))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 3.183397348038852e-05
+  },
+  {
+    "id": "h_xfull1.json:31",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. (((x1 (x1 x0)) x1) _))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 3.762502456083894e-05
+  },
+  {
+    "id": "h_xfull1.json:32",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. (((x1 (x0 _)) x1) _))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 4,
+    "seconds": 3.079199814237654e-05
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "targets": 53,
+  "certified": 50,
+  "intended_residuals": 36,
+  "intended_certified": 33,
+  "unresolved": [
+    "h2_2.final_left:0",
+    "h2_2.final_left:2",
+    "h2_2.final_left:3"
+  ],
+  "formal_target_instances": 49,
+  "formal_modules": 104,
+  "formal_deferred": "Case04",
+  "legacy_regression_passed": 255,
+  "legacy_regression_total": 256,
+  "max_discovery_states": 2993,
+  "max_discovery_work": 8819,
+  "max_discovery_seconds": 0.11087387500447221,
+  "max_discovery_rss": 26411008,
+  "max_lean_seconds": 9.339701624994632,
+  "max_lean_rss": 1356251136
+}

@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "states": 2993,
+  "work": 8819,
+  "k": 1,
+  "mode": "arg",
+  "portable_states": 1926,
+  "portable_edges": 7848,
+  "certificate_sha256": "4040676bc38b408f427bfd5083db0d3b7d07fc00c9e0353d5985aaa90b717628",
+  "id": "h2_2.final_left:4",
+  "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x1 (\\x2. x0))))) (x0 _))))",
+  "label": "Trial04",
+  "seconds": 0.110843250004109,
+  "peak_rss_bytes": 26509312,
+  "threads": 1
+}

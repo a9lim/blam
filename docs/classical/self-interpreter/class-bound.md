@@ -218,8 +218,17 @@ the 39-bit one.
   `(λx. x P⃗)(λz₁…z_q s. N)`, for every `q` (Claude, rootnarrow lane: needed
   narrowing with minimality price filters read off complete subterms, each
   filter a kernel-checked charge or a handwritten argument, every cut-off
-  certified); among the shorter chains `(λx. x P) A` most argument shapes
-  close, three of them modulo 24 uncertified cut-offs. With pending
+  certified); among the shorter chains every argument shape the search
+  reached closes except `(λx. x P)(λz. z Q R)`, which is closed modulo four
+  cut-offs. Most cut-offs there are self-application dispatchers
+  `Δ(λz. z A⃗)`; one general closure-and-stack certificate (Codex, certgen
+  lane; the checker and 49 of its instances kernel-checked, the translation
+  to head reduction handwritten) certifies all but three of the 36 the
+  search left, and found that the narrowing lane's two-argument
+  self-feeding variant was unsound — `(λx. x x)(λz. z (λa b. b b z) W)`
+  passes it, yet with `W = I` its zero probe reaches `r` in 17 steps
+  (kernel-checked) — so the one cut-off that only it certified is open
+  again. With pending
   operands `C⃗`, a root let whose body is a literal λ is excluded too
   (Codex, pending lane): exchanging adjacent prefix lets
   `(λx y. D) A C ↦ (λy x. D') C A` costs exactly `uses(y) − uses(x)` and

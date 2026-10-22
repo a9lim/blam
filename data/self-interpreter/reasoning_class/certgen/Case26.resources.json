@@ -1,0 +1,10 @@
+{
+  "core_sha256": "f84231eb7d74319c7b12359269de329d70ba0c3257ec448d27676f9ae35c53e7",
+  "file": "Case26.lean",
+  "code": 0,
+  "seconds": 0.9765052080038004,
+  "peak_rss_bytes": 534347776,
+  "limit": null,
+  "threads": 2,
+  "sha256": "95d05e8f007a4bf6bdd0e6de525447cd06fd355ef86893c4157505be0a5bdd00"
+}

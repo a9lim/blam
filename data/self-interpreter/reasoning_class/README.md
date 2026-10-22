@@ -9,7 +9,7 @@ wave of lanes; each directory keeps its own
 write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
-`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `bodylin`, `jerase`, `handlerlet`, `rootnf`, `rootlet`, `rootcert`, `rootcert2`, `rootlow`, `rootnarrow`, `pending`, `rootnl`, `expand`, `simplify`, `firstop`, `firstopj`, `leanbn`, `combs3` and the reviews `review_hole`, `review_types`, `review_spine` and `review_body`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
+`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `bodylin`, `jerase`, `handlerlet`, `rootnf`, `rootlet`, `rootcert`, `rootcert2`, `rootlow`, `rootnarrow`, `pending`, `certgen`, `rootnl`, `expand`, `simplify`, `firstop`, `firstopj`, `leanbn`, `combs3` and the reviews `review_hole`, `review_types`, `review_spine` and `review_body`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
 `bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `adv6`, `types`, `zcore`, `single`, `shared`, `combs`, `combs2`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
@@ -63,6 +63,7 @@ working versions.
 | simplify | two kernel-checked source simplifications for root-let hand-offs (static specialization at `7b − 6 − F(M)`, idempotent helpers), 27 of rootnl's listed sources out of the minimum (`Handoff.lean`, `Cases.lean`) | `class-bound.md` §3 |
 | rootnarrow | needed narrowing with minimality price filters on the root-let residue: the redex-argument and `λy. j` stream-λ-headed cells and every full-chain hand-off closed for minimum readers; short chains mostly closed (`FILTERS.md` gives each filter's soundness) | `class-bound.md` §3 |
 | pending | root lets with a literal-λ body and pending operands out of a minimum below 46; adjacent prefix exchange and operand consumption priced exactly (`PrefixExchange.lean`, `Moves.lean`, `Prices.lean`) | `class-bound.md` §3 |
+| certgen | one general closure-and-stack divergence certificate (checker and 49 instances kernel-checked); 33 of rootnarrow's 36 open cut-offs certified; the narrowing lane's SF2 variant shown unsound (`SF2Counterexample.lean`) and its one dependent cut-off reopened | `class-bound.md` §3 |
 | rootcert2 | rootnl's 658 listed sources refuted, 653 in Lean (a kernel-checked flow and arity checker) and five by the frozen engine | `class-bound.md` §3 |
 | rootcert | the 580 listed root-let sources refuted (577 in Lean, three by the frozen engine); source η-contraction formalized; 73,311 lower-profile sources excluded | `class-bound.md` §3 |
 | firstopj | first operands carrying `j` out of a minimum below 46, so no minimum reader below 46 is an s-spine (selective pruning price in `Selective.lean`; 424,378 sources; 4,337 normalizer exceptions in Lean) | `class-bound.md` §3 |

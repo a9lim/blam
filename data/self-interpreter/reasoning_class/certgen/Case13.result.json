@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "states": 382,
+  "work": 883,
+  "k": 2,
+  "mode": "lambda",
+  "portable_states": 382,
+  "portable_edges": 1630,
+  "certificate_sha256": "c37cec87657181628c95831b9c7f3bf83f8b8eca818445135c1bfc0cb93c9b36",
+  "id": "h2_5.final_left:1",
+  "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (\\x2. (x0 (x1 x2))))) x0) _)))",
+  "label": "Case13",
+  "seconds": 0.0047572500188834965,
+  "peak_rss_bytes": 23920640,
+  "threads": 1
+}

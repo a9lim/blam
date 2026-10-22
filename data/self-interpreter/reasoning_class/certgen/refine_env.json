@@ -1,0 +1,483 @@
+[
+  {
+    "id": "h2_2.final_left:0",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 205,
+        "work": 305,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.0004597500083036721,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 80,
+        "work": 91,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.0001404999929945916,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 70,
+        "work": 71,
+        "k": 3,
+        "id": "h2_2.final_left:0",
+        "seconds": 9.820799459703267e-05,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 70,
+        "work": 71,
+        "k": 4,
+        "id": "h2_2.final_left:0",
+        "seconds": 9.862499427981675e-05,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 70,
+        "work": 71,
+        "k": 6,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.00010062500950880349,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 205,
+        "work": 305,
+        "k": 1,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.000460083014331758,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 83,
+        "work": 92,
+        "k": 2,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.0001390830148011446,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 261,
+        "work": 314,
+        "k": 3,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.00048066599993035197,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 142,
+        "work": 155,
+        "k": 4,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.00023316600709222257,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 326,
+        "work": 383,
+        "k": 6,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.0006621250067837536,
+        "mode": "argenv"
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:2",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 897,
+        "work": 1107,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "seconds": 0.003067459008889273,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 488,
+        "work": 459,
+        "k": 2,
+        "id": "h2_2.final_left:2",
+        "seconds": 0.0007956670015119016,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 249,
+        "work": 251,
+        "k": 3,
+        "id": "h2_2.final_left:2",
+        "seconds": 0.0003122500202152878,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 249,
+        "work": 251,
+        "k": 4,
+        "id": "h2_2.final_left:2",
+        "seconds": 0.0003060830058529973,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 249,
+        "work": 251,
+        "k": 6,
+        "id": "h2_2.final_left:2",
+        "seconds": 0.00030274997698143125,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 897,
+        "work": 1107,
+        "k": 1,
+        "id": "h2_2.final_left:2",
+        "seconds": 0.0030807919974904507,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:2",
+        "k": 2,
+        "seconds": 0.1291322500037495,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:2",
+        "k": 3,
+        "seconds": 0.042505042016273364,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:2",
+        "k": 4,
+        "seconds": 0.0855974169971887,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:2",
+        "k": 6,
+        "seconds": 0.09610041699488647,
+        "mode": "argenv"
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:3",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 594,
+        "work": 591,
+        "k": 1,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.0009341670083813369,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 762,
+        "work": 910,
+        "k": 2,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.0013162499817553908,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 908,
+        "work": 1124,
+        "k": 3,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.0017213340033777058,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 908,
+        "work": 1124,
+        "k": 4,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.001686041010543704,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 908,
+        "work": 1124,
+        "k": 6,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.001669334014877677,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 594,
+        "work": 591,
+        "k": 1,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.0009268750145565718,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 2,
+        "seconds": 0.2416504170105327,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 3,
+        "seconds": 0.2235641670122277,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 4,
+        "seconds": 0.1639104999776464,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:3",
+        "k": 6,
+        "seconds": 0.21143624998512678,
+        "mode": "argenv"
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:9",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          10
+        ],
+        "states": 1197,
+        "work": 1266,
+        "k": 1,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.0024792499898467213,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          10
+        ],
+        "states": 556,
+        "work": 663,
+        "k": 2,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.0010357080027461052,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          10
+        ],
+        "states": 556,
+        "work": 660,
+        "k": 3,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.0010462499922141433,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          10
+        ],
+        "states": 556,
+        "work": 660,
+        "k": 4,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.0010415419819764793,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          10
+        ],
+        "states": 556,
+        "work": 660,
+        "k": 6,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.0010554999753367156,
+        "mode": "env"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          10
+        ],
+        "states": 1197,
+        "work": 1266,
+        "k": 1,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.002552166988607496,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 2,
+        "seconds": 1.0293510420015082,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 3,
+        "seconds": 0.32096129198907875,
+        "mode": "argenv"
+      },
+      {
+        "ok": false,
+        "reason": "abstract work/state cap",
+        "id": "h2_2.final_left:9",
+        "k": 4,
+        "seconds": 0.2856990419968497,
+        "mode": "argenv"
+      },
+      {
+        "ok": true,
+        "states": 706,
+        "work": 742,
+        "k": 6,
+        "mode": "argenv",
+        "id": "h2_2.final_left:9",
+        "seconds": 0.001544792001368478
+      }
+    ]
+  }
+]

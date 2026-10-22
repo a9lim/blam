@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "reason": [
+    "opaque",
+    "_1"
+  ],
+  "states": 82,
+  "work": 91,
+  "k": 2,
+  "id": "h2_2.final_left:0",
+  "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x2 (x0 x1))))) (x0 _))))",
+  "label": "Case00",
+  "mode": "site",
+  "seconds": 0.00013079200289212167,
+  "peak_rss_bytes": 23543808,
+  "threads": 1
+}

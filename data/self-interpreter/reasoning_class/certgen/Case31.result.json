@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "states": 72,
+  "work": 79,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 72,
+  "portable_edges": 83,
+  "certificate_sha256": "035b1ee4a07138c9747d03edab2e0817525260914dfa1369ce7d9a21e3a87cc6",
+  "id": "pre_h63re.txt:8",
+  "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 ((x0 x1) _)) x1)))))",
+  "label": "Case31",
+  "seconds": 0.0009706249984446913,
+  "peak_rss_bytes": 23805952,
+  "threads": 1
+}

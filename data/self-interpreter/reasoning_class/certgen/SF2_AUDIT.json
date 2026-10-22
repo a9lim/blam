@@ -1,0 +1,56 @@
+[
+  {
+    "id": "h2_2.json:30",
+    "repaired_accepts": true,
+    "new_regular_accepts": true,
+    "work": 4
+  },
+  {
+    "id": "h2_2.json:31",
+    "repaired_accepts": false,
+    "new_regular_accepts": false,
+    "work": 219
+  },
+  {
+    "id": "h2_2.json:32",
+    "repaired_accepts": true,
+    "new_regular_accepts": true,
+    "work": 4
+  },
+  {
+    "id": "h2_2.json:33",
+    "repaired_accepts": true,
+    "new_regular_accepts": true,
+    "work": 4
+  },
+  {
+    "id": "h2_2.json:163",
+    "repaired_accepts": true,
+    "new_regular_accepts": true,
+    "work": 4
+  },
+  {
+    "id": "h2_2.json:339",
+    "repaired_accepts": true,
+    "new_regular_accepts": true,
+    "work": 34
+  },
+  {
+    "id": "h2_5.json:31",
+    "repaired_accepts": false,
+    "new_regular_accepts": true,
+    "work": 103
+  },
+  {
+    "id": "h2_5.json:32",
+    "repaired_accepts": true,
+    "new_regular_accepts": true,
+    "work": 4
+  },
+  {
+    "id": "soundness-counterexample",
+    "repaired_accepts": false,
+    "new_regular_accepts": null,
+    "work": 8
+  }
+]

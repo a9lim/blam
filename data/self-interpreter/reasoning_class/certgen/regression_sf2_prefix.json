@@ -1,0 +1,386 @@
+[
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 81,
+    "work": 78,
+    "k": 1,
+    "prefix": 1,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 320,
+    "work": 308,
+    "k": 2,
+    "prefix": 1,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 53,
+    "work": 49,
+    "k": 2,
+    "prefix": 1,
+    "mode": "lambda"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 94,
+    "work": 89,
+    "k": 1,
+    "prefix": 1,
+    "mode": "arg"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 209,
+    "work": 189,
+    "k": 1,
+    "prefix": 2,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 602,
+    "work": 574,
+    "k": 2,
+    "prefix": 2,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 82,
+    "work": 82,
+    "k": 2,
+    "prefix": 2,
+    "mode": "lambda"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 209,
+    "work": 189,
+    "k": 1,
+    "prefix": 2,
+    "mode": "arg"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 140,
+    "work": 132,
+    "k": 1,
+    "prefix": 3,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 270,
+    "work": 238,
+    "k": 2,
+    "prefix": 3,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 81,
+    "work": 81,
+    "k": 2,
+    "prefix": 3,
+    "mode": "lambda"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 146,
+    "work": 148,
+    "k": 1,
+    "prefix": 3,
+    "mode": "arg"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 144,
+    "work": 146,
+    "k": 1,
+    "prefix": 4,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 266,
+    "work": 234,
+    "k": 2,
+    "prefix": 4,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 80,
+    "work": 84,
+    "k": 2,
+    "prefix": 4,
+    "mode": "lambda"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 138,
+    "work": 130,
+    "k": 1,
+    "prefix": 4,
+    "mode": "arg"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 132,
+    "work": 124,
+    "k": 1,
+    "prefix": 5,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 243,
+    "work": 213,
+    "k": 2,
+    "prefix": 5,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 76,
+    "work": 76,
+    "k": 2,
+    "prefix": 5,
+    "mode": "lambda"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_2"
+    ],
+    "states": 138,
+    "work": 140,
+    "k": 1,
+    "prefix": 5,
+    "mode": "arg"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 235,
+    "work": 226,
+    "k": 1,
+    "prefix": 6,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 271,
+    "work": 249,
+    "k": 2,
+    "prefix": 6,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 96,
+    "work": 94,
+    "k": 2,
+    "prefix": 6,
+    "mode": "lambda"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 193,
+    "work": 176,
+    "k": 1,
+    "prefix": 6,
+    "mode": "arg"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 189,
+    "work": 172,
+    "k": 1,
+    "prefix": 7,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 269,
+    "work": 247,
+    "k": 2,
+    "prefix": 7,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 94,
+    "work": 92,
+    "k": 2,
+    "prefix": 7,
+    "mode": "lambda"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 233,
+    "work": 224,
+    "k": 1,
+    "prefix": 7,
+    "mode": "arg"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 177,
+    "work": 166,
+    "k": 1,
+    "prefix": 8,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 197,
+    "work": 181,
+    "k": 2,
+    "prefix": 8,
+    "mode": "site"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 86,
+    "work": 84,
+    "k": 2,
+    "prefix": 8,
+    "mode": "lambda"
+  },
+  {
+    "ok": false,
+    "reason": [
+      "opaque",
+      "_1"
+    ],
+    "states": 177,
+    "work": 168,
+    "k": 1,
+    "prefix": 8,
+    "mode": "arg"
+  }
+]

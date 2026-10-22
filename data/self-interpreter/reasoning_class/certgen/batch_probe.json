@@ -1,0 +1,2173 @@
+[
+  {
+    "id": "h2_2.final_left:0",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x2 (x0 x1))))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 54,
+        "work": 50,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:0",
+        "seconds": 5.574998795054853e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 96,
+        "work": 86,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:0",
+        "seconds": 8.645901107229292e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 126,
+        "work": 126,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.0001196670054923743
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 115,
+        "work": 114,
+        "k": 6,
+        "width": 4,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.00010945799294859171
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 508,
+        "work": 495,
+        "k": 8,
+        "width": 4,
+        "id": "h2_2.final_left:0",
+        "seconds": 0.00047575001372024417
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:1",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x1 ((x0 x1) _))))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 54,
+        "work": 49,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:1",
+        "seconds": 5.358300404623151e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 666,
+        "work": 606,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:1",
+        "seconds": 0.0004568750155158341
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 212,
+        "work": 189,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:1",
+        "seconds": 0.00016450000111944973
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 1275,
+        "work": 1191,
+        "k": 6,
+        "width": 4,
+        "id": "h2_2.final_left:1",
+        "seconds": 0.0012159170000813901
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 969,
+        "work": 914,
+        "k": 8,
+        "width": 4,
+        "id": "h2_2.final_left:1",
+        "seconds": 0.0009610830165911466
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:2",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x0 (x0 x2))))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 81,
+        "work": 70,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:2",
+        "seconds": 7.30419997125864e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 99,
+        "work": 91,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:2",
+        "seconds": 8.454101043753326e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 141,
+        "work": 129,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:2",
+        "seconds": 0.000124167010653764
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 185,
+        "work": 157,
+        "k": 6,
+        "width": 4,
+        "id": "h2_2.final_left:2",
+        "seconds": 0.00014341599307954311
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 105,
+        "work": 99,
+        "k": 8,
+        "width": 4,
+        "id": "h2_2.final_left:2",
+        "seconds": 0.00010416601435281336
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:3",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x0 (x0 x1))))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 81,
+        "work": 70,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:3",
+        "seconds": 6.920899613760412e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 133,
+        "work": 126,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.00010879200999625027
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 494,
+        "work": 466,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.00038804099312983453
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 187,
+        "work": 187,
+        "k": 6,
+        "width": 4,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.00016737499390728772
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 205,
+        "work": 202,
+        "k": 8,
+        "width": 4,
+        "id": "h2_2.final_left:3",
+        "seconds": 0.00017304200446233153
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:4",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x1 (\\x2. x0))))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 450,
+        "work": 343,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:4",
+        "seconds": 0.0002808749850373715
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 86,
+        "work": 79,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:4",
+        "seconds": 7.708300836384296e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 340,
+        "work": 308,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:4",
+        "seconds": 0.00025424998602829874
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 940,
+        "work": 818,
+        "k": 6,
+        "width": 4,
+        "id": "h2_2.final_left:4",
+        "seconds": 0.0006956669967621565
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 9534,
+        "work": 8271,
+        "k": 8,
+        "width": 4,
+        "id": "h2_2.final_left:4",
+        "seconds": 0.008167167019564658
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:5",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x0 (x1 (\\x2. x1)))))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 579,
+        "work": 418,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:5",
+        "seconds": 0.00032216700492426753
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 74,
+        "work": 66,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:5",
+        "seconds": 7.262500002980232e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 348,
+        "work": 317,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:5",
+        "seconds": 0.0003023750032298267
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 187,
+        "work": 178,
+        "k": 6,
+        "width": 4,
+        "id": "h2_2.final_left:5",
+        "seconds": 0.0001553339825477451
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 1220,
+        "work": 1095,
+        "k": 8,
+        "width": 4,
+        "id": "h2_2.final_left:5",
+        "seconds": 0.0009792500059120357
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:6",
+    "source": "((\\x0. (x0 (x0 (x0 x0)))) (\\x0. ((x0 (x0 (\\x1. x0))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 716,
+        "work": 513,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:6",
+        "seconds": 0.00034229198354296386
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 755,
+        "work": 615,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:6",
+        "seconds": 0.00044499998330138624
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 547,
+        "work": 520,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:6",
+        "seconds": 0.0003728749870788306
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 1132,
+        "work": 915,
+        "k": 6,
+        "width": 4,
+        "id": "h2_2.final_left:6",
+        "seconds": 0.0006985000218264759
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 1721,
+        "work": 1606,
+        "k": 8,
+        "width": 4,
+        "id": "h2_2.final_left:6",
+        "seconds": 0.001282749988604337
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:7",
+    "source": "((\\x0. (x0 ((x0 (\\x1. x0)) _))) (\\x0. ((x0 x0) (\\x1. (x1 x0)))))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 63,
+        "work": 68,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:7",
+        "seconds": 9.695900371298194e-05
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:8",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 ((x1 (\\x2. x0)) x1)))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 113,
+        "work": 103,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:8",
+        "seconds": 9.695798507891595e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 50,
+        "work": 47,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:8",
+        "seconds": 5.508301546797156e-05
+      },
+      {
+        "ok": true,
+        "states": 1555,
+        "work": 1731,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:8",
+        "seconds": 0.002611374977277592
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:9",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x0 (\\x2. x1))))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 833,
+        "work": 649,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.000453874992672354
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 148,
+        "work": 140,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.00011712501873262227
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 97,
+        "work": 93,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:9",
+        "seconds": 8.933397475630045e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 2789,
+        "work": 2753,
+        "k": 6,
+        "width": 4,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.002104875020449981
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 8935,
+        "work": 8480,
+        "k": 8,
+        "width": 4,
+        "id": "h2_2.final_left:9",
+        "seconds": 0.008379875012906268
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:10",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x0 (x1 (\\x2. x1)))))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 1521,
+        "work": 1277,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:10",
+        "seconds": 0.0009076660207938403
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 162,
+        "work": 140,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:10",
+        "seconds": 0.00011812499724328518
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 866,
+        "work": 691,
+        "k": 4,
+        "width": 4,
+        "id": "h2_2.final_left:10",
+        "seconds": 0.0005377080233301967
+      },
+      {
+        "ok": true,
+        "states": 392,
+        "work": 419,
+        "k": 6,
+        "width": 4,
+        "id": "h2_2.final_left:10",
+        "seconds": 0.000509292003698647
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:11",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x1 (\\x2. (\\x3. x0))) x1))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 76,
+        "work": 72,
+        "k": 0,
+        "width": 4,
+        "id": "h2_2.final_left:11",
+        "seconds": 6.841699359938502e-05
+      },
+      {
+        "ok": true,
+        "states": 559,
+        "work": 676,
+        "k": 2,
+        "width": 4,
+        "id": "h2_2.final_left:11",
+        "seconds": 0.000830000004498288
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:0",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. x0)) (\\x1. ((x1 x0) (\\x2. x2)))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 67,
+        "work": 59,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:0",
+        "seconds": 6.116600707173347e-05
+      },
+      {
+        "ok": true,
+        "states": 117,
+        "work": 134,
+        "k": 2,
+        "width": 4,
+        "id": "h2_5.final_left:0",
+        "seconds": 0.00019400002202019095
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:1",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (\\x2. (x0 (x1 x2))))) x0) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 125,
+        "work": 99,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:1",
+        "seconds": 9.416701504960656e-05
+      },
+      {
+        "ok": true,
+        "states": 36092,
+        "work": 39765,
+        "k": 2,
+        "width": 4,
+        "id": "h2_5.final_left:1",
+        "seconds": 0.09828870801720768
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:2",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (x0 (\\x1. x0))) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 290,
+        "work": 236,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:2",
+        "seconds": 0.00017062501865439117
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 759,
+        "work": 996,
+        "k": 2,
+        "width": 4,
+        "id": "h2_5.final_left:2",
+        "seconds": 0.0007931669824756682
+      },
+      {
+        "ok": true,
+        "states": 947,
+        "work": 1095,
+        "k": 4,
+        "width": 4,
+        "id": "h2_5.final_left:2",
+        "seconds": 0.0012775830109603703
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:3",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 x0) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 39,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:3",
+        "seconds": 7.112501771189272e-05
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:4",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 (\\x1. x1)) (\\x1. (x1 (x0 x1)))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 43,
+        "work": 46,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:4",
+        "seconds": 7.654199725948274e-05
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:5",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 (\\x1. (x1 x1))) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 54,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:5",
+        "seconds": 8.595798863098025e-05
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:6",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 (x0 (\\x1. x1))) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 121,
+        "work": 116,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:6",
+        "seconds": 0.00010266699246130884
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 226,
+        "work": 299,
+        "k": 2,
+        "width": 4,
+        "id": "h2_5.final_left:6",
+        "seconds": 0.0002418750082142651
+      },
+      {
+        "ok": true,
+        "states": 2136,
+        "work": 2630,
+        "k": 4,
+        "width": 4,
+        "id": "h2_5.final_left:6",
+        "seconds": 0.0033077919797506183
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:7",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 x0) (\\x1. ((x1 (\\x2. x2)) x0))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 127,
+        "work": 120,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:7",
+        "seconds": 0.0001015419838950038
+      },
+      {
+        "ok": true,
+        "states": 289,
+        "work": 355,
+        "k": 2,
+        "width": 4,
+        "id": "h2_5.final_left:7",
+        "seconds": 0.00044770800741389394
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:8",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 (\\x1. x1)) (\\x1. ((x1 x0) x1))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 43,
+        "work": 45,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:8",
+        "seconds": 7.470799027942121e-05
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:9",
+    "source": "((\\x0. (x0 (\\x1. (\\x2. x0)))) (\\x0. (((x0 x0) _) (\\x1. (x1 x0)))))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 21,
+        "work": 23,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:9",
+        "seconds": 5.275002331472933e-05
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:10",
+    "source": "((\\x0. (x0 (x0 (\\x1. x0)))) (\\x0. (((x0 x0) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 83,
+        "work": 87,
+        "k": 0,
+        "width": 4,
+        "id": "h2_5.final_left:10",
+        "seconds": 0.00012108299415558577
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:0",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (x1 ((x1 (x0 x1)) x1))))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:0",
+        "seconds": 3.858399577438831e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:0",
+        "seconds": 4.2791012674570084e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 93,
+        "work": 95,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:0",
+        "seconds": 9.016599506139755e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 82,
+        "work": 81,
+        "k": 6,
+        "width": 4,
+        "id": "pre_h63re.txt:0",
+        "seconds": 8.091700146906078e-05
+      },
+      {
+        "ok": true,
+        "states": 144,
+        "work": 154,
+        "k": 8,
+        "width": 4,
+        "id": "pre_h63re.txt:0",
+        "seconds": 0.0002195419801864773
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:1",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (x1 ((x1 (x0 x0)) x1))))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:1",
+        "seconds": 4.208300379104912e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:1",
+        "seconds": 4.404198261909187e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 1527,
+        "work": 1375,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:1",
+        "seconds": 0.0010792500106617808
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 580,
+        "work": 505,
+        "k": 6,
+        "width": 4,
+        "id": "pre_h63re.txt:1",
+        "seconds": 0.0004421659978106618
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 523,
+        "work": 395,
+        "k": 8,
+        "width": 4,
+        "id": "pre_h63re.txt:1",
+        "seconds": 0.0003776669909711927
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:2",
+    "source": "((\\x0. ((x0 (x0 _)) x0)) (\\x0. (\\x1. (x1 (x1 ((x0 x1) x1))))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 27,
+        "work": 26,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:2",
+        "seconds": 4.1749997762963176e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:2",
+        "seconds": 4.095799522474408e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 63,
+        "work": 64,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:2",
+        "seconds": 6.85419945511967e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 149,
+        "work": 145,
+        "k": 6,
+        "width": 4,
+        "id": "pre_h63re.txt:2",
+        "seconds": 0.00014100002590566874
+      },
+      {
+        "ok": true,
+        "states": 173,
+        "work": 196,
+        "k": 8,
+        "width": 4,
+        "id": "pre_h63re.txt:2",
+        "seconds": 0.00026937498478218913
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:3",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x1 (x0 x1))) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:3",
+        "seconds": 3.858297714032233e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:3",
+        "seconds": 4.1125022107735276e-05
+      },
+      {
+        "ok": true,
+        "states": 120,
+        "work": 148,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:3",
+        "seconds": 0.00020316601148806512
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:4",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x1 (x0 x0))) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:4",
+        "seconds": 3.962501068599522e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:4",
+        "seconds": 4.14160022046417e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 180,
+        "work": 171,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:4",
+        "seconds": 0.0001484160020481795
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 101,
+        "work": 97,
+        "k": 6,
+        "width": 4,
+        "id": "pre_h63re.txt:4",
+        "seconds": 9.625000529922545e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 120,
+        "work": 112,
+        "k": 8,
+        "width": 4,
+        "id": "pre_h63re.txt:4",
+        "seconds": 0.00011475000064820051
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:5",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 x1)) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:5",
+        "seconds": 3.7999998312443495e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:5",
+        "seconds": 4.0292012272402644e-05
+      },
+      {
+        "ok": true,
+        "states": 101,
+        "work": 119,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:5",
+        "seconds": 0.0001678749977145344
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:6",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 x0)) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:6",
+        "seconds": 4.004102083854377e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:6",
+        "seconds": 4.420900950208306e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 155,
+        "work": 147,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:6",
+        "seconds": 0.00012829099432565272
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 96,
+        "work": 92,
+        "k": 6,
+        "width": 4,
+        "id": "pre_h63re.txt:6",
+        "seconds": 9.554199641570449e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 114,
+        "work": 106,
+        "k": 8,
+        "width": 4,
+        "id": "pre_h63re.txt:6",
+        "seconds": 0.00010591698810458183
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:7",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 (x1 x0))) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:7",
+        "seconds": 4.07910265494138e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:7",
+        "seconds": 4.170800093561411e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 380,
+        "work": 384,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:7",
+        "seconds": 0.0003034579858649522
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 110,
+        "work": 110,
+        "k": 6,
+        "width": 4,
+        "id": "pre_h63re.txt:7",
+        "seconds": 0.0001002080098260194
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 110,
+        "work": 110,
+        "k": 8,
+        "width": 4,
+        "id": "pre_h63re.txt:7",
+        "seconds": 0.00010791700333356857
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:8",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 ((x0 x1) _)) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:8",
+        "seconds": 3.937500878237188e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:8",
+        "seconds": 4.808299127034843e-05
+      },
+      {
+        "ok": true,
+        "states": 113,
+        "work": 131,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:8",
+        "seconds": 0.00018162501510232687
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:9",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 ((x0 x0) _)) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:9",
+        "seconds": 3.933400148525834e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:9",
+        "seconds": 4.2333005694672465e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 156,
+        "work": 148,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:9",
+        "seconds": 0.00012725000851787627
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 80,
+        "work": 80,
+        "k": 6,
+        "width": 4,
+        "id": "pre_h63re.txt:9",
+        "seconds": 8.433402399532497e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 88,
+        "work": 87,
+        "k": 8,
+        "width": 4,
+        "id": "pre_h63re.txt:9",
+        "seconds": 9.300000965595245e-05
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:10",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (((x1 (x0 x1)) x1) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:10",
+        "seconds": 4.499999340623617e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:10",
+        "seconds": 4.429201362654567e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 60,
+        "work": 59,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:10",
+        "seconds": 7.041599019430578e-05
+      },
+      {
+        "ok": true,
+        "states": 103,
+        "work": 111,
+        "k": 6,
+        "width": 4,
+        "id": "pre_h63re.txt:10",
+        "seconds": 0.0001642499992158264
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:11",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (((x1 (x0 x0)) x1) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 26,
+        "work": 25,
+        "k": 0,
+        "width": 4,
+        "id": "pre_h63re.txt:11",
+        "seconds": 3.962501068599522e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "pre_h63re.txt:11",
+        "seconds": 4.42500167991966e-05
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 60,
+        "work": 59,
+        "k": 4,
+        "width": 4,
+        "id": "pre_h63re.txt:11",
+        "seconds": 6.729099550284445e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 70,
+        "work": 69,
+        "k": 6,
+        "width": 4,
+        "id": "pre_h63re.txt:11",
+        "seconds": 7.425001240335405e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 94,
+        "work": 95,
+        "k": 8,
+        "width": 4,
+        "id": "pre_h63re.txt:11",
+        "seconds": 9.379099356010556e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:0",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x1)) (\\x1. (x0 (\\x2. x1)))) x0) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 62,
+        "work": 57,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:0",
+        "seconds": 6.145800580270588e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 31,
+        "work": 31,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:0",
+        "seconds": 4.454201553016901e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 31,
+        "work": 31,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:0",
+        "seconds": 4.383400664664805e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 31,
+        "work": 31,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:0",
+        "seconds": 4.587500006891787e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 31,
+        "work": 31,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:0",
+        "seconds": 4.558300133794546e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:1",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x1)) (x0 (\\x1. x0))) _) x0)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 37,
+        "work": 34,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:1",
+        "seconds": 4.570800228975713e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 32,
+        "work": 33,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:1",
+        "seconds": 4.4917018385604024e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 32,
+        "work": 32,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:1",
+        "seconds": 4.525002441368997e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 32,
+        "work": 32,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:1",
+        "seconds": 4.66250057797879e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 32,
+        "work": 32,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:1",
+        "seconds": 4.5791995944455266e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:2",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x1)) (x0 (\\x1. x0))) _) (\\x1. x1))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 37,
+        "work": 34,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:2",
+        "seconds": 4.474999150261283e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 31,
+        "work": 32,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:2",
+        "seconds": 4.612500197254121e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 31,
+        "work": 31,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:2",
+        "seconds": 4.512499435804784e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 31,
+        "work": 31,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:2",
+        "seconds": 4.620800609700382e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 31,
+        "work": 31,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:2",
+        "seconds": 4.5249995309859514e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:3",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x0)) (\\x1. x0)) (x0 _)) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 60,
+        "work": 58,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:3",
+        "seconds": 5.816601333208382e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 256,
+        "work": 160,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:3",
+        "seconds": 0.00014054198982194066
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 79,
+        "work": 76,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:3",
+        "seconds": 7.524999091401696e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 107,
+        "work": 104,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:3",
+        "seconds": 9.39579913392663e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 151,
+        "work": 148,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:3",
+        "seconds": 0.00012533398694358766
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:4",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x0)) (\\x1. (x0 _))) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 58,
+        "work": 52,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:4",
+        "seconds": 6.004198803566396e-05
+      },
+      {
+        "ok": true,
+        "states": 50,
+        "work": 51,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:4",
+        "seconds": 8.579101995564997e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:5",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x0)) (x0 _)) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 71,
+        "work": 52,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:5",
+        "seconds": 5.7666009524837136e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 72,
+        "work": 68,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:5",
+        "seconds": 6.61670055706054e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 90,
+        "work": 87,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:5",
+        "seconds": 8.099997648969293e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 126,
+        "work": 123,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:5",
+        "seconds": 0.00010812497930601239
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 174,
+        "work": 171,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:5",
+        "seconds": 0.00014629200450144708
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:6",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (\\x2. x2))) (x0 (\\x1. x0))) x0) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 60,
+        "work": 55,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:6",
+        "seconds": 5.879098898731172e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 36,
+        "work": 35,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:6",
+        "seconds": 4.8792018787935376e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 29,
+        "work": 29,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:6",
+        "seconds": 4.295899998396635e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 29,
+        "work": 29,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:6",
+        "seconds": 4.866698873229325e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 29,
+        "work": 29,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:6",
+        "seconds": 4.387501394376159e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:7",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (\\x2. x1))) (x0 (\\x1. x0))) x0) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 28,
+        "work": 28,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:7",
+        "seconds": 4.387501394376159e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 26,
+        "work": 26,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:7",
+        "seconds": 4.020801861770451e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 26,
+        "work": 26,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:7",
+        "seconds": 4.199999966658652e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 26,
+        "work": 26,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:7",
+        "seconds": 4.22910088673234e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 26,
+        "work": 26,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:7",
+        "seconds": 4.354197881184518e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:8",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (x1 (x0 x1)))) _) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 270,
+        "work": 275,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:8",
+        "seconds": 0.00032225000904873013
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:9",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (x0 (x0 x1)))) _) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 308,
+        "work": 315,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:9",
+        "seconds": 0.0003717920044437051
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:10",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. ((x0 x1) _))) _) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 51,
+        "work": 54,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:10",
+        "seconds": 8.387499838136137e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:11",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (x0 (\\x1. x0))) (x0 _)) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 277,
+        "work": 209,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:11",
+        "seconds": 0.00015408301260322332
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 423,
+        "work": 333,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:11",
+        "seconds": 0.00023516599321737885
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 485,
+        "work": 396,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:11",
+        "seconds": 0.00027166600921191275
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 571,
+        "work": 485,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:11",
+        "seconds": 0.0003437919949647039
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 1164,
+        "work": 1054,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:11",
+        "seconds": 0.0008345000096596777
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:12",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 _) (\\x1. x0)) (x0 _)) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _3",
+        "states": 74,
+        "work": 58,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:12",
+        "seconds": 6.145800580270588e-05
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 96,
+        "work": 78,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:12",
+        "seconds": 7.85409938544035e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 69,
+        "work": 66,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:12",
+        "seconds": 7.124998955987394e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 99,
+        "work": 96,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:12",
+        "seconds": 8.708398672752082e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 133,
+        "work": 130,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:12",
+        "seconds": 0.00012154201976954937
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:13",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 x0) (\\x1. (x1 x0))) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 25,
+        "work": 27,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:13",
+        "seconds": 5.600001895800233e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:14",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 _) (\\x1. (x0 _))) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 23,
+        "work": 24,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:14",
+        "seconds": 5.308398976922035e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:15",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 (\\x1. x1)) (x0 (\\x1. x0))) _) x0)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 197,
+        "work": 162,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:15",
+        "seconds": 0.0001220419944729656
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 61,
+        "work": 59,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:15",
+        "seconds": 6.249998114071786e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 43,
+        "work": 43,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:15",
+        "seconds": 5.5415992392227054e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 43,
+        "work": 43,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:15",
+        "seconds": 5.133301601745188e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 43,
+        "work": 43,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:15",
+        "seconds": 5.425000563263893e-05
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:16",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 (\\x1. x0)) (x0 _)) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 74,
+        "work": 56,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:16",
+        "seconds": 5.929102189838886e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 58,
+        "work": 54,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:16",
+        "seconds": 6.304201087914407e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 83,
+        "work": 80,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:16",
+        "seconds": 7.616699440404773e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 117,
+        "work": 114,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:16",
+        "seconds": 0.0001039999770000577
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 159,
+        "work": 156,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:16",
+        "seconds": 0.00013054197188466787
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:17",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((((x0 (\\x1. x0)) (x0 _)) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 78,
+        "work": 61,
+        "k": 0,
+        "width": 4,
+        "id": "h3_1.json:17",
+        "seconds": 6.399999256245792e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 50,
+        "work": 47,
+        "k": 2,
+        "width": 4,
+        "id": "h3_1.json:17",
+        "seconds": 5.312499706633389e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 98,
+        "work": 95,
+        "k": 4,
+        "width": 4,
+        "id": "h3_1.json:17",
+        "seconds": 8.591698133386672e-05
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 134,
+        "work": 131,
+        "k": 6,
+        "width": 4,
+        "id": "h3_1.json:17",
+        "seconds": 0.00010791598469950259
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 178,
+        "work": 175,
+        "k": 8,
+        "width": 4,
+        "id": "h3_1.json:17",
+        "seconds": 0.00013825000496581197
+      }
+    ]
+  }
+]

@@ -1,0 +1,5 @@
+{
+  "source": "(\\x.x x)(\\z.z (\\a b.b b z) _)",
+  "accepted": true,
+  "filled": "(\\x.x x)(\\z.z (\\a b.b b z) (\\w.w))"
+}
