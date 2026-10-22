@@ -579,8 +579,20 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
 4. **Raise `census --rescue` before n=42.**
 5. **Formalize prefix-freeness and Kraft accounting** from
    `lean/Blc/Wire.lean`, then derive machine-checked K upper bounds.
-6. **Coding theorem:** rerun the report on the K ≤ 35 cohort; an explicit
-   Kraft–Chaitin decoder would upper-bound c.
+6. **Coding theorem and the hard side of symmetry of information.** Rerun
+   the report on the K ≤ 35 cohort. An explicit Kraft–Chaitin decoder would
+   upper-bound c, which the census bounds only from below. Its core is a
+   step-bounded, dovetailing evaluator, a different contract from the
+   self-interpreter's, since E cannot time-slice. Conditioned on x\*, the
+   same decoder gives a concrete constant for
+   KP(x) + KP(y|x\*) ≤ KP(x,y) + c, the direction `ref/AIT/BLC.tex` leaves
+   open (the easy side is `pairupKP`, 756). The bar is a concrete, golfed
+   constant, not an optimality proof: the true constant is a supremum over
+   pairs, which any uniform witness only bounds above. Parked as the next
+   constants target after docket 9. A conditional census (each program
+   applied to the stream x\*) would bound the true gap from below as the
+   census bounds c. The census range sits at the self-interpreter floor (40),
+   so those gaps will mostly measure pairing overhead.
 7. **AIT golf:** tromp/AIT#13 awaits Tromp's review (end of October). Terms
    that Tromp's compiler will not keep as sources: `tree_ordinals` 715
    against its 726 source, and `loader` 1779 / `tweet` 2130 against 1781 /
