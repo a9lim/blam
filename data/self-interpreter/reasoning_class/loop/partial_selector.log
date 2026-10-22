@@ -1,0 +1,22 @@
+positive unary-pair control: PASS n=1,2,3; operand sum=31
+operand sources False 53537
+operand sources True 35974
+distinct operand probe classes 27437
+total sources 89511 X is not enumerated
+symbolic unsolvable source certificates: 11 pruned sources: 19
+source-cycle 1 ('four-probes', ('a', ('l', ('a', ('v', 0), ('v', 0))), ('l', ('a', ('v', 1), ('a', ('v', 0), ('v', 0))))))
+source-cycle 1 ('four-probes', ('a', ('l', ('a', ('v', 1), ('a', ('v', 0), ('v', 0)))), ('l', ('a', ('v', 0), ('v', 0)))))
+source-cycle 1 ('universal', ('a', ('l', ('a', ('a', ('v', 0), ('v', 0)), ('v', 0))), ('l', ('a', ('v', 0), ('v', 0)))))
+source-cycle 1 ('universal', ('a', ('l', ('a', ('a', ('v', 0), ('v', 0)), ('v', 1))), ('l', ('a', ('v', 0), ('v', 0)))))
+source-cycle 1 ('universal', ('a', ('l', ('a', ('v', 0), ('a', ('v', 0), ('v', 0)))), ('l', ('a', ('v', 0), ('v', 0)))))
+source-cycle 1 ('universal', ('a', ('l', ('a', ('v', 0), ('v', 0))), ('l', ('a', ('a', ('v', 0), ('v', 0)), ('v', 0)))))
+source-cycle 1 ('universal', ('a', ('l', ('a', ('v', 0), ('v', 0))), ('l', ('a', ('a', ('v', 0), ('v', 0)), ('v', 1)))))
+source-cycle 1 ('universal', ('a', ('l', ('a', ('v', 0), ('v', 0))), ('l', ('a', ('v', 0), ('a', ('v', 0), ('v', 0))))))
+source-cycle 9 ('universal', ('a', ('l', ('a', ('v', 0), ('v', 0))), ('l', ('a', ('v', 0), ('v', 0)))))
+source-cycle 1 ('universal', ('a', ('l', ('a', ('v', 0), ('v', 0))), ('l', ('l', ('a', ('v', 1), ('v', 1))))))
+source-cycle 1 ('universal', ('a', ('l', ('l', ('a', ('v', 1), ('v', 1)))), ('l', ('a', ('v', 0), ('v', 0)))))
+template head-cycle certificates: 0
+pair certificates 0 zero certificates 0
+templates 27437 unary pairs 2945 unary survivors 0 zero checks 0
+NO READER; sources= 89511 sources+tested-pairs+zero-checks= 92456 uncertified-cutoffs=0
+elapsed= 14.68714620800165 maxrss= 151945216

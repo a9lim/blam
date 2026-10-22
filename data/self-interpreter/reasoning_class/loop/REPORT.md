@@ -721,3 +721,292 @@ check took 0.324 s with 471,662,592 bytes. Both used Lean `-j 2` and a
 process-group watchdog. The price identities use only propext and
 Quot.sound; the shield theorems use no axioms. All writes stayed in this
 lane; no consult, commit, or broad search ran.
+
+## 6. S-spine follow-up: a closed partial-selector case and a uniform redex restriction
+
+**The full target remains open.** I have not proved that every
+`R=λs.s T1...Tk` has w>=46, nor that minimality alone closes that branch.
+Two results are new:
+
+1. Every one-hole source `λs.s (λb.b X) A B` satisfying the unary laws has
+   **w>=46**, for arbitrary X,A,B, including source redexes and any j depth.
+   This closes the q=2 exception still listed in d1open/NOTES.md §17.
+   The zero law is not needed.
+2. In a globally lex-minimum reader `λs.s (λb.B) T1...Tq` below 46, with j
+   outside the handler, **every source beta-redex anywhere inside B has
+   multiplicity between two and five**. There are no erasing or linear
+   handler redexes. This is uniform in q and all operand syntax, but does
+   not eliminate nonlinear sharing.
+
+The first result is handwritten source accounting plus one complete,
+small helper check. The second is handwritten structural accounting using
+existing minimum-source theorems, with new kernel-checked arithmetic and
+kernel-checked rejection of the two remaining linear-source shapes.
+Neither assembled result is a fully formalized Lean theorem.
+
+### 6.1 The remaining partial selector needs an expensive second-cell handler
+
+Take
+
+```text
+R = λs.s (λb.b X) A B.
+```
+
+X is in frame `[b,s,c,j]`, A and B in `[s,c,j]`; exactly one source j is
+present across them. Define a local operand weight by pricing j at zero
+plus four times its lambda depth within the operand. For X only, add a
+further four per j for the surrounding handler binder. Write these prices
+x,a,b. The exact source identity is
+
+```text
+w(R) = 20 + x + a + b.
+```
+
+`Prices.partialSelector_price` checks the equivalent repository identity
+`weight 0 R = 16 + weight 2 X + weight 1 A + weight 1 B` for arbitrary
+`Term` operands.
+
+On a unary input `s=U_n(N)`, n>=1, the first false bit erases X and gives
+
+```text
+R U_n ->* U_(n-1) A[U_n/s] B[U_n/s].
+```
+
+Let r=U_(n-1). Opening that second cell gives the necessary three-probe
+conditions
+
+```text
+A[U_1/s] K N       B[U_1/s] =β c U_0 N,
+A[U_2/s] F U_0     B[U_2/s] =β c U_1 N,
+A[U_3/s] F U_1     B[U_3/s] =β c U_2 N.
+```
+
+The complete helper check establishes:
+
+- If A,B together contain one j, these conditions require **a+b>=24**.
+- If A,B contain no j, they require **a+b>=22**.
+
+These are source bounds, including arbitrary redexes. Equivalently, the
+unary core `s F A B` costs at least 38 with one j, and at least 36 without j.
+The bounds are not claimed sharp.
+
+If j is in A or B, X is j-free and x>=2. Thus
+`w>=20+2+24=46`. If j is in X, its extra handler depth gives x>=4, while
+A,B are j-free; hence `w>=20+4+22=46`. This proves the source-family bound
+without global minimality, without classifying X, and without examining
+its zero behavior. The initially considered bound x<=16 and all X
+enumeration became unnecessary.
+
+### 6.2 The helper check, completeness, and cutoff treatment
+
+`partial_selector.py` uses a single shared source pool for A and B. If one
+of them contains j, the other operand costs at least two. Therefore the
+complete ceilings are:
+
+| Source operand class | Maximum cost needed | Sources |
+|---|---:|---:|
+| No j | 23 | 53,537 |
+| Exactly one j, including internal depth tax | 21 | 35,974 |
+
+The sum is 89,511, below the cap. This is the reduction missing from the
+larger pool estimate in d1open's open case: charging the one-hole budget
+jointly avoids generating one-j operands through 23.
+
+The generator is the complete constructor recurrence of §5.2. No reader,
+X, handler skeleton, or beta-normal-only subset is enumerated. The same
+source pool is reused in the two operand positions. Equal normal forms on
+the four probes Z,U1,U2,U3 are merged, separately by j count, retaining a
+least-cost source. This compression preserves the necessary equations and
+never increases the source price; it makes no assertion of all-n
+semantic equivalence.
+
+For every resulting A probe class, first reduce
+`A[U_n] bit2 tail2 Q` with a fresh rigid placeholder Q. A lambda, a fixed
+wrong head, a wrong c arity, or a fixed wrong c argument cannot be repaired
+by substituting B for Q. Remaining argument constraints select B classes
+within the joint budget, then the checker tests their actual unary
+normal forms. The final check has 27,437 operand probe classes and tests
+2,945 concrete unary pairs. **There are zero unary survivors**, so no
+zero-law check is necessary.
+
+The positive control is
+
+```text
+A = λb t.c (s F),       a=23,
+B = s s j,             b=8.
+```
+
+It satisfies every unary equation: `r A B -> c (s F) (s s j) ->* c r N`.
+The checker accepts its n=1,2,3 instances. Its operand sum 31 is outside
+the excluded range.
+
+Nineteen source operands lack a normal form on a pool probe. None is
+silently treated as a wrong answer. Each has a source subterm with an
+explicit head-cycle certificate: nine patterns are universally
+unsolvable, and two additional patterns are unsolvable on all four
+probes. The latter are the two orientations of the small stream fixed
+point built from `λx.x x` and `λx.s (x x)`. The full de Bruijn patterns and
+multiplicities are printed in `partial_selector.log`.
+
+Why these can be pruned: suppose a bounded unary-pair solution exists,
+and choose a least-cost one. A subterm unsolvable on each required probe
+cannot be needed in a context producing the specified normal form
+(the normal-order genericity/dispensability argument). Replace it by a
+nearest variable if it is j-free, or by bare j if it contains the unique
+j. Both choices preserve the j count, strictly lower its weighted source
+cost, and preserve the required normal forms. Thus a least-cost solution
+contains none of these certified subterms. Probe-specific pruning only
+needs the finite necessary equations, not an all-n replacement theorem.
+The checker does not assume that arbitrary nonnormal source operands may
+be removed.
+
+All retained operand probes, symbolic templates, and concrete unary pairs
+finish without unresolved cutoffs. No template/pair cutoff certificate is
+needed. The final run records **89,511 sources + 2,945 concrete pairs =
+92,456 checked candidates**, zero survivors, **14.687 seconds**, and
+**151,945,216-byte peak RSS**. One compute thread and one watchdog thread
+were used. This was one pinned helper case, not a rerun of jn's or
+d1open's existing family enumerations.
+
+### 6.3 A uniform source restriction for literal lambda handlers
+
+Now assume R is globally minimum under `(weight, lambda count, j-depth)`,
+its weight is at most 45, and
+
+```text
+R = λs.s (λb.B) T1...Tq,
+```
+
+with j absent from B. Necessarily q>=1. B is an arbitrary j-free source
+in frame `[b,s,c]`; the Ti may contain arbitrary redexes and lets. Set
+`S=Σ weighted(Ti)`. Exact accounting gives
+
+```text
+w(R)=12+2q+|B|+S,       S>=2(q-1),       |B|<=31.
+```
+
+If c does not occur in B, it occurs in the trailing operands. For q=1,
+the one operand must contain c and j, costing at least5. For q>=2, the
+cheapest separated c and j, together with other operands, cost at least
+`2q-1`. Either way the weight budget gives **|B|<=26**.
+
+Consider any linear source redex `(λx.D) A` at any position inside B.
+Let F count A's free leaves, and d be the depth of D's unique x occurrence.
+The existing kernel theorem `minimum_linear_source_charge` implies
+
+```text
+(F-1)d >= 7.
+```
+
+The source-tree baseline is
+
+```text
+|A| >= 4F-2,
+|D| >= 3d+2,
+|(λx.D) A| >= 4F+3d+4 >= 28.
+```
+
+The D inequality counts the d lambdas on the x path and x's index; the A
+inequality counts free leaves and their joining application tree. They do
+not assume either term is normal. Additional source context only raises
+the cost. Hence c outside B is impossible, since then |B|<=26.
+
+If c is in D or elsewhere in B but outside A, its additional leaf and
+joining application contribute at least four beyond that baseline. This
+gives |B|>=32, also impossible. If c is in A, its source index in the
+`[b,s,c]` frame is at least two. Its extra index charge gives
+
+```text
+|B| >= 4F+3d+6 >= 30.
+```
+
+Combined with the whole-reader budget, this forces q=1, T1=j, and
+|B|<=31. The only integer pairs fitting both inequalities are
+
+```text
+(F,d)=(3,4) or (4,3).
+```
+
+There is at most one bit of slack. A nonempty surrounding context costs
+at least two, and a second leaf in D costs at least four. Thus the redex
+is all of B and D is exactly `λ^d.x`. After the input cell dispatch and
+this redex contract, its two supplied operands r and j leave d-2>=1
+leading lambdas. The zero result cannot be `r j`.
+
+`HandlerLinear.lean` checks the arithmetic cases, the budget implications,
+and rejects both `λs.s (λb.(λx.λ^d.x) A) j` shapes for **arbitrary A** in
+the repository's Reader semantics. Their first six head steps already
+leave a lambda, and beta reduction cannot remove that outer lambda.
+The structural source-price and slack arguments above remain handwritten.
+
+Therefore **no source redex anywhere inside B is linear**. The general
+minimum-source theorem already excludes erasing redexes.
+
+### 6.4 The remaining multiplicity is at most five
+
+For a redex `(λx.D) A` with m occurrences of x, source counting gives
+`|B|>=4m+2+|A|`. Suppose m>=6.
+
+- If c is outside B, |B|<=26 but the redex costs at least 4m+4>=28.
+- If c is in B but not in A, its extra leaf/connecting application gives
+  |B|>=4m+8>=32.
+- If c is in A, |A|>=4. The bound |B|<=31 forces m=6 and |A|<=5.
+  Again q=1, T1=j, and there is at most one bit of slack. The redex is
+  all of B; A must be literally c; D is a pure application tree with six
+  x leaves. Contracting it makes the zero head rigid c, which cannot
+  produce `r j`.
+
+Thus **every source redex inside B has multiplicity 2, 3, 4, or 5**. This is a
+uniform restriction on all literal lambda handlers of the displayed
+minimum-reader family, not just whole-cell openers or head redexes.
+The arithmetic endpoints are also in `HandlerLinear.lean`.
+
+### 6.5 What this closes, and the precise remaining handler behaviors
+
+The direct partial-selector theorem closes exactly
+`λs.s (λb.b X) A B`, the q=2 exception in d1open/NOTES.md §17. That lane
+already reports q=3 closed and lists the other partial-selector arities
+under its existing checks. This result can be inserted into its coverage
+argument without repeating those checks. I have not independently
+re-audited that lane's entire skeleton-exhaustion proof, so I do not
+promote its redex-free-handler headline to a new standalone uniform
+theorem here.
+
+For a minimum below 46, the known depth reduction puts j at depth one in
+an s-spine, so a literal lambda handler is automatically j-free. The new
+restriction then applies: if such a handler has any source redex, it is
+nonlinear with multiplicity2..5. A handler containing only affine source
+redexes would therefore have no redexes at all, placing it in the
+redex-free branch of the existing inventory.
+
+The unresolved source behaviors are now explicit:
+
+- A literal lambda handler whose dispatch path encounters a nonlinear
+  source let. The two-to-five-use bound does not say which uses carry the
+  retained tail, suffix computation, and zero j handoff.
+- A first operand that is itself a head redex, or an s-headed handler chain
+  reaching such a redex before entering a literal lambda-handler region.
+  The uniform restriction above does not cover these placements.
+- A transformation claiming to replace these generated handlers by a
+  priced literal handler must preserve the source weight and the one-hole
+  condition. Moving a handler let outside the surrounding s-spine adds
+  capture charges; contracting it can raise the weight. Neither operation
+  is automatically a valid improvement of a global minimum.
+
+The rigid-shield lemma remains useful once a suffix operand is isolated,
+but it does not itself supply that isolation for an arbitrary shared
+function. Likewise, unary/zero core minima cannot simply be added across
+such a function: the 164 and hoisted 165 already show why overlapping
+supports need an exact source price.
+
+The minimum-only depth result must also stay minimum-only: it does not
+by itself reduce a theorem about **every** s-spine reader to depth one.
+No complete interpreter was built, and no sub-162 or unrestricted reader
+floor is claimed.
+
+Artifacts: `partial_selector.py` / `partial_selector.log`, the new
+`HandlerLinear.lean` / `handler_linear.log`, and the added partial-selector
+identity in `Prices.lean`. Final Lean checks used two threads and a
+process-group watchdog: Prices 0.404s/480,952,320 bytes; HandlerLinear 0.594s/
+493,338,624 bytes. Printed theorem dependencies are only propext and
+Quot.sound. No sorry, native_decide, external consult, or commit was used.

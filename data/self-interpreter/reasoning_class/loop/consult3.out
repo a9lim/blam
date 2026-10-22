@@ -1,0 +1,16 @@
+[gaslamp] → codex · job cx-20261022-020334-29fe · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-020334-29fe/events.jsonl
+(•̀ᴗ•́) **The full s-spine theorem remains open.** Added [REPORT.md §6](/Users/a9lim/Work/blam/tmp/round4/loop/REPORT.md:725) and updated [NOTES.md](/Users/a9lim/Work/blam/tmp/round4/loop/NOTES.md:213).
+
+Two new results:
+
+- **Every `λs.s (λb.b X) A B` satisfying the unary laws has `w ≥ 46`**, allowing arbitrary source redexes and any j depth. This closes d1open’s remaining q=2 partial-selector case. Exact accounting gives `w=20+x+a+b`; the helper check proves `a+b≥24` when A/B contain j, and `a+b≥22` otherwise. Since X costs respectively at least 2 or 4, both cases give 46.
+- **In a globally lex-minimum reader `λs.s (λb.B) T₁…Tq` below 46, with j outside B, every source redex anywhere inside B has multiplicity 2–5.** Erasing and linear redexes are excluded, as are multiplicities ≥6. This applies uniformly across operand syntax and arity.
+
+The partial-selector check examined **89,511 source operands and 2,945 concrete pairs**, with no survivors or unresolved cutoffs: 14.687 seconds, 152 MB peak RSS. Nineteen nonnormal sources received explicit unsolvability certificates.
+
+[HandlerLinear.lean](/Users/a9lim/Work/blam/tmp/round4/loop/HandlerLinear.lean) checks the arithmetic and both arbitrary-argument lambda-tower refutations; [Prices.lean](/Users/a9lim/Work/blam/tmp/round4/loop/Prices.lean) checks the price identity. **The assembled results remain handwritten/computer-assisted**, not fully formalized theorems.
+
+Remaining: nonlinear handler lets with 2–5 uses, and generated handlers whose redex lies outside the literal-lambda region. The depth reduction remains minimum-only. All writes stayed in the assigned lane; no delegation or commits.
+
+[gaslamp] job: cx-20261022-020334-29fe · session: 01a16205-662d-7183-be63-f7b1fc08aee6 · thread: r5-loop · resume: gaslamp codex --thread r5-loop · tok: 12066k→153k
+[lane.sh] done rc=0 tries=1

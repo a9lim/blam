@@ -147,3 +147,83 @@ handwritten/computer-assisted, not Lean theorems. Final helper run:
 19,554 sources, zero cutoffs,0.481s,25,067,520 bytes maxRSS. Final bounded
 Lean checks: shield0.704s/groupRSS490,110,976 bytes; prices0.324s/groupRSS
 471,662,592 bytes; -j2. Every new file/write stayed in tmp/round4/loop.
+
+## S-spine follow-up: live boundary and first reduction
+
+The requested universal s-spine theorem is stronger than excluding the
+s-spine branch of a global minimum: the depth>=2 result in class-bound is
+minimum-only. I retain that distinction. d1open's current sec17 has closed
+q=3 of s (λb.b X) T1..Tq, but q=2 remains open under its pool gate; its
+redex-free-handler headline still depends on this exception. No existing
+enumerations will be rerun here.
+
+A sharper one-hole budget puts the remaining q=2 helper case under the cap.
+R=λs.s(λb.b X) A B has w=20+weighted(X)+weighted(A)+weighted(B), with X's
+hole taxed an additional4 for the handler binder. Unary replacement by
+s F A B preserves all unary laws, and the existing core inventory gives
+weighted(X)<=16 below46. If A contains j, X and B cost >=2 each, so A<=21;
+if A has no j, its maximum is23 (the other operand may be bare j). Same
+for B. The shared [s,c] pool therefore needs 53,537 no-j terms through23
+and35,974 one-j terms through21, not one-j through23. X needs1,252 no-j
+terms through16 plus its small taxed one-j pool. This is <100k sources in
+one pinned check, even before using the stronger depth-one assumption.
+This closes a specific missing second-cell-handler case if its finite
+obligations pass; it is not a proposed whole-reader search.
+
+General-theorem obstruction remains handler-head redexes: first literal
+cell dispatch does not prevent a nonlinear sharing redex inside the first
+operand. Lifting it to the body head adds the captures of the enclosing
+spine; normalization is not source-cost-monotone. The previous shielding
+lemma prices some overlaps but does not classify these generated handlers.
+
+The partial-selector case closed more strongly than expected: no unary
+pair survives, so X and the zero law need not be searched at all. For
+r=U_(n-1), r A[U_n] B[U_n]=c r N requires |A|+|B|>=24 with one j across
+them, or>=22 with none. The source price is20+X+A+B; X costs>=2 without
+j, >=4 when it contains j beneath λb. Either location gives w>=46.
+All A/B source redexes are included. One shared pool has89,511 sources,
+27,437 four-probe meanings and2,945 concrete unary-pair checks; no unary
+survivor. Nineteen nonnormal operand sources have explicit unsolvability
+certificates (9 universal patterns,2 additional all-four-probe patterns).
+No unresolved cutoff. Pruning is justified by genericity and minimizing
+within the finite-probe unary-pair class; if a pruned subterm contains j,
+replace it by bare j, preserving the one-hole count at a lower price.
+The final script has a positive control λb t.c(sF), ssj, with sum31.
+
+New uniform handwritten lemma: in a global lex-minimum R=λs.s(λb.B)T1..Tq
+with w<=45 and j outside the handler, EVERY source redex inside B has
+multiplicity2..5. This does not classify the nonlinear cases away.
+Exact price12+2q+|B|+ΣW(Ti), q>=1, gives|B|<=31. If c is outside B,
+Σtails>=5 for q1, >=2q-1 for q>=2, hence|B|<=26. A linear redex with F
+argument free leaves and sole-use depth d must satisfy(F-1)d>=7, so it
+costs>=4F+3d+4>=28: impossible when c outside. If c is in D or elsewhere
+in B but not A, adding its leaf/connecting application gives>=32. If c
+is in A, its index>=2 gives>=4F+3d+6>=30. This forcesq1,T=j,B<=31;
+only(F,d)=(3,4),(4,3)fit. At most1bit slack forces the redex to be all B,
+with D=λ^d.x. Its zero run still has d-2>=1 lambdas, contradiction.
+HandlerLinear.lean checks these arithmetic endpoints and rejects both
+arbitrary-A tower sources in the existing Term/Reader semantics.
+
+For m>=6 nonlinear: c outside B contradicts|B|<=26 via4m+4; c in B but
+outside A contradicts31 via4m+8. If c in A,4m+2+|A|<=31 forcesm6,A<=5,
+q1,Tj,and B the whole redex. OnlyA=c fits; D is a pure six-x application
+tree (slack<=1). Contracting makes the zero head rigid c. Thusm<=5.
+Erasing redexes are already excluded by the minimum-source theorem.
+
+Final s-spine follow-up is in REPORT.md §6. The partial-selector check used
+89,511 source operands and 2,945 concrete pairs (92,456 candidates), took
+14.687 s, and peaked at 151,945,216 bytes RSS with one compute thread and
+one watchdog thread. There were 19 certified nonnormal-source exceptions
+and no unresolved cutoffs. Prices and HandlerLinear passed Lean with -j2;
+their process-group peaks were 480,952,320 and 493,338,624 bytes. Printed
+dependencies are propext and Quot.sound, with no sorry or native_decide.
+
+The full s-spine theorem remains open, including for minimum readers.
+The partial-selector family bound is handwritten/computer-assisted; the
+uniform handler restriction is handwritten with kernel-checked arithmetic
+and tower refutations. Neither assembled result is fully formalized.
+Remaining dispatch behaviors are nonlinear handler lets with 2..5 uses,
+and generated handlers whose redex lies outside the literal-lambda region.
+The depth reduction is minimum-only. The d1open coverage inventory was
+read but not independently re-audited or rerun. All writes stayed in this
+lane; no consult, delegation, commit, or whole-reader search was used.

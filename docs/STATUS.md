@@ -182,7 +182,7 @@ with all features (three opt-in tests ignored) and 328 with default features.
   over factories and one-helper sharing with any specializer (Lean), every
   hole depth other than 1 and the depth-0 readers whose hole is a λ's
   argument, every s-spine reader whose first operand reaches the stream's
-  bit with no β-redex on its head path (one skeleton aside), and the
+  bit with no β-redex on its head path, and the
   whole-cell opener `λs. s (λb t. B) j` (complete finite checks); the 164's
   and the hoisted 165's families cost exactly 48 and 49. What remains is
   sharing between the zero and unary roles: hole parents that are a λ on a

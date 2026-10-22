@@ -2,5 +2,6 @@
 'Blc.LoopPrices.hoisted_price' depends on axioms: [propext, Quot.sound]
 'Blc.LoopPrices.sharedX_price' depends on axioms: [propext, Quot.sound]
 'Blc.LoopPrices.nestedX_price' depends on axioms: [propext, Quot.sound]
+'Blc.LoopPrices.partialSelector_price' depends on axioms: [propext, Quot.sound]
 
-exit=0 elapsed=0.324s sampled_group_peak_rss=471662592 bytes threads=2
+exit=0 elapsed=0.404s sampled_group_peak_rss=480952320 bytes threads=2

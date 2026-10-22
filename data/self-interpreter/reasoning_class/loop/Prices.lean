@@ -52,8 +52,19 @@ theorem nestedX_price (X : Term) (hX : FreeUnder 3 X) :
   simp [nestedX, weight, no_hole_price X 2 hX]
   omega
 
+-- λs.s (λb.b X) A B; X frame [b,s,c,j], A/B frame [s,c,j].
+def partialSelector (X A B : Term) : Term := .lam
+  (.app (.app (.app (.var 0) (.lam (.app (.var 0) X))) A) B)
+
+theorem partialSelector_price (X A B : Term) :
+    weight 0 (partialSelector X A B) =
+      16 + weight 2 X + weight 1 A + weight 1 B := by
+  simp [partialSelector, weight]
+  omega
+
 #print axioms split_price
 #print axioms hoisted_price
 #print axioms sharedX_price
 #print axioms nestedX_price
+#print axioms partialSelector_price
 end Blc.LoopPrices

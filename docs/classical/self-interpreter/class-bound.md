@@ -218,9 +218,14 @@ family; the lists are in the round-4 archive. Claude's lanes:
   arbitrary terms. This covers `λb. b X Y` with any number of trailing
   operands, large `λb. B` dispatchers over a small `T`, general `λb. B`
   with two or more trailing operands, and stream-headed first operands
-  `s (s P …) …`, apart from one skeleton, `λs. s (λb. b X₁) T₁ T₂`, whose
-  check would exceed the cap (the generator recovers the 164 at exactly 48
-  as a control). A handwritten deletion lemma underlies the budgets:
+  `s (s P …) …` (the generator recovers the 164 at exactly 48 as a
+  control). The one skeleton the check could not reach under the cap,
+  `λs. s (λb. b X) A B`, has `w ≥ 46` with any source redexes and `j` at
+  any depth (Codex: exact accounting `w = 20 + x + a + b` and a helper check
+  over 89,511 operands giving `a + b ≥ 24` when `A` or `B` carries `j`,
+  `≥ 22` otherwise). With the first operand a literal `λb. B` and `j`
+  outside it, every redex inside `B` of a minimum reader below 46 has two
+  to five uses, for any operands. A handwritten deletion lemma underlies the budgets:
   replacing a subterm by a cheaper one with the same value on every unary
   probe leaves a unary core, and the only cores through 22 bits are
   `s (λq. c) (s s j)` and `s (λq. c) (s s s)`, so a reader carrying
@@ -328,9 +333,8 @@ ones, not the full 25-bit cut-off audit.
 containing `s` or `c`, and the needed-binder case of the 162's family;
 depth-0 readers whose `j` follows a shared top-level let, and
 application-rooted readers with the hole under a non-stream λ, where the
-let's argument hands control on before binding the stream; s-spines with a β-redex
-on the first operand's head path, the skeleton `λs. s (λb. b X₁) T₁ T₂`,
-and readers whose stream-λ body is a redex; lets headed by their own
+let's argument hands control on before binding the stream; s-spines with a
+β-redex on the first operand's head path, and readers whose stream-λ body is a redex; lets headed by their own
 variable (whose extra uses are needed,
 but not yet tied to the unary output) and nested lets. The record's
 estimate is about 2×10⁹ λ-rooted depth-1 readers at `w ≤ 45`, so these need
