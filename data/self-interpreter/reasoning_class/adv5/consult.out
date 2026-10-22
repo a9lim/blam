@@ -1,0 +1,119 @@
+[gaslamp] → codex · job cx-20261022-020311-6ff1 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-020311-6ff1/events.jsonl
+(ง •̀_•́)ง **No `w ≤ 45` reader found.** I obtained a concrete restriction on shared top-level lets, conditional only on your supplied exclusion of direct depth-0 hoists. The remaining sharing case is substantially narrower; it is not empty by this argument.
+
+All nine candidates below were checked with `rd.check(..., nmax=6)`. No enumeration or file writes.
+
+**Shared-let restriction**
+
+Consider exactly
+```text
+R = (\x n s. M) A j
+```
+where `A` has no free variables except possibly `c`, and `x` occurs `m ≥ 2` times in `M`.
+
+Let:
+
+- `a = cost(A)` at top level;
+- `f` count free `c` occurrences in `A`;
+- `q` count free `c` occurrences in `B = \n s.M`;
+- `k_i ≥ 2` count binders within `B` above the ith occurrence of `x`.
+
+Inlining the outer let changes the weight by exactly
+```text
+Δ = w(B[A/x] j) − w((\x.B) A j)
+  = (m−1)a + (f−1)Σk_i − 2m − q − 4.
+```
+Here `j` stays at depth zero. This formula includes both duplication and index changes.
+
+If `A` is closed, `M` must contain `c`, `n`, and `s`. Their cheapest source leaves, together with the `x` leaves, give
+```text
+cost(B) ≥ 6m + 18
+w(R)    ≥ a + 6m + 24.
+```
+Thus `w ≤ 45` forces `m=2` and `a≤9`: for `m≥3`, even the cheapest closed `A` is too large. But then
+```text
+Δ = a − 8 − q − k₁ − k₂ ≤ 9 − 8 − 1 − 4 = −4.
+```
+Inlining produces a smaller direct hoist, excluded by your supplied result.
+
+**Therefore no closed shared argument `A` can help in this family.**
+
+There is a stronger restriction when `A` contains **exactly one** free `c`:
+
+- If `q≥1`, the same source-size bound and inlining formula exclude the candidate.
+- If `q=0`, the cheaper bound is
+  ```text
+  cost(B) ≥ 6m + 11
+  w(R)    ≥ a + 6m + 17.
+  ```
+- For `m=2`, inlining is non-increasing whenever `a≤8`.
+- For `m=3`, the cap gives `a≤10`. If `a≤5`, inlining is non-increasing. There are no single-`c` terms of cost 6 or 7. For `8≤a≤10`, `B` has room only for an application tree with leaves `x,x,x,n,s`: an additional leaf or lambda exceeds its budget. Every such `A` is affine—duplicating a bound variable while also containing `c` costs at least 12. After inlining, the entire reader is affine in its stream input. It cannot turn the input’s single occurrence of rigid `N` into the target’s two occurrences in `c U_(n−1)(N) N`.
+- For `m=4`, `a≤4`, forcing `A=c`; inlining decreases weight. Larger `m` is impossible.
+
+Consequently, **among shared arguments with at most one free `c`, every surviving candidate of this exact shape must satisfy**
+```text
+m = 2,
+9 ≤ cost(A) ≤ 16,
+M contains no free c.
+```
+Arguments containing multiple free copies of `c`, and let bodies without the literal `\n s` prefix, remain outside this conclusion.
+
+**Why the “34 + binding” accounting needs an additional lemma**
+
+Sharing can genuinely save a bit even at this small scale:
+```text
+(\x n s. s x (n x)) (\t. t c) j           w = 38
+(\n s. s (\t. t c) (n (\t. t c))) j       w = 39
+```
+The second is the first after contracting only the outer let; both weights were measured. The first fails the reader laws, but establishes that decomposing a source into independently charged components can overcharge it. Thus “binding costs at least 8” needs an argument controlling these shared representations; the local arity observation alone does not supply one.
+
+A particularly close shared construction uses
+```text
+G = \t. t t c.
+```
+It satisfies
+```text
+            zero        unary
+s G         K r         c U_(n−1)(N)
+G s         r           N
+```
+Hence
+```text
+(\g n s. s g (g s) n) G j
+```
+has `w=46`, gets the zero law exactly, and produces
+```text
+c U_(n−1)(N) N j
+```
+on unary input. This realizes your arity obstruction through a shared factory: the sharing works, but the trailing `j` remains.
+
+**Every checked candidate**
+
+“Pass” means the zero case and unary cases `1..6` passed. The four passing constructions also have direct all-`n` derivations from your identities.
+
+| Candidate | `w` | Result |
+|---|---:|---|
+| `\s. s (\b. b I c) (s K j (s s s))` | 53 | Pass |
+| `\s. (\x. s K x (c (s F) x)) (s I (s s) j)` | 67 | Pass |
+| `\s. (\x. s K x (\u. c (s F) x)) (s s I) j` | 68 | Pass |
+| `\s. (\x. s I (\u. s (\q. c) (x u))) (s s) j` | 54 | Pass |
+| `(\g n s. s g (g s) n) (\t. t t c) j` | 46 | Zero passes; unary has extra trailing `j` |
+| `(\g n s. s g (g n)) (\t. t t c) j` | 42 | Zero gives `r`; unary gives `c U_(n−1)(N) (j j c)` |
+| `(\g n s. g (s g) n) (\t. t (t c)) j` | 42 | Zero gives `c j`; unary also fails |
+| `(\g n s. s g (g n)) (\t. t I c) j` | 44 | Zero gives `r (j I c)`; unary gives `c U_(n−1)(N) (j I c)` |
+| `(\x n s. s x (n x)) (\t. t c) j` | 38 | Zero gives `c (j (\t. t c))`; unary also fails |
+
+For the passing constructions, the useful intermediate pairs are:
+
+```text
+s (\b. b I c)       = r / c U_(n−1)(N)
+s K j (s s s)       = j / N
+
+s I (s s) j         = r j / N
+s s I               = r / N
+s s                 = K r / K N
+```
+
+The strongest result here is the shared-let restriction, not evidence of global optimality. In particular, the single-`c` shared-argument window `9..16` still contains cases that the pricing frame does not eliminate.
+
+[gaslamp] job: cx-20261022-020311-6ff1 · session: 01a16234-d3bc-7650-93a3-db7da182d83e · thread: adv5-construct · resume: gaslamp codex --thread adv5-construct · tok: 421k→21k

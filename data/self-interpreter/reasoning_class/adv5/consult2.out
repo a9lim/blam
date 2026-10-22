@@ -1,0 +1,171 @@
+[gaslamp] → codex · job cx-20261022-022413-5f2b · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-022413-5f2b/events.jsonl
+( •̀_•́) **The stated two-use shared-let window is now completely excluded by an exhaustive checker.** This includes redexes in both `A` and `M`, arbitrary first handlers, stream-headed bodies, and nested lets. No `w≤45` repair was found. I do **not** have a universal seven-bit lower bound for repairs outside this window.
+
+**1. What blocks the 39-bit construction**
+
+Put
+```text
+G = \t. t t c.
+```
+For any fixed spine
+```text
+\s. (s G) A₁ … Aₘ
+```
+the obstruction is exact, independent of the operands’ complexity:
+
+```text
+zero:   (K R) A₁ … Aₘ  →  R A₂ … Aₘ
+unary:  (c r) A₁ … Aₘ
+```
+
+Because `R` and `c` are rigid:
+
+- The zero target `R j` requires `m=2`.
+- The unary target `c r N` requires `m=1`.
+
+Redexes, sharing, or divergence **inside the operands** cannot change this rigid-head argument count. Thus this entire fixed-head-spine family is impossible, at any size.
+
+A repair must change the dispatcher’s two branch values, or put `s G` in a context that uses it differently between branches. Merely finding a better operand cannot work.
+
+The complementary near misses make the obstruction explicit:
+
+```text
+\s. s G (s s c) j     w=39:  R j / c r N j
+\s. s G (s s j)       w=34:  R   / c r N
+```
+
+The known absorber repair remains:
+```text
+\s. s I (\u. s (\q. c) (s s u)) j
+```
+at `w=46`. I verified all three weights and reductions with `rd.py`.
+
+**2. The shared-let window is finished**
+
+The excluded family is precisely
+```text
+R = (\x n s. M) A j
+```
+with:
+
+```text
+9 ≤ cost(A) ≤ 16
+FV(A) = {c}, with exactly one source occurrence of c
+M has exactly two occurrences referring to the outer x
+M is c-free
+w(R) ≤ 45.
+```
+
+`M` may contain additional lambdas, applications, redexes, and bound-variable uses. There is **no** assumption that `A` is normal, that it acts as the first handler, or that the body has a particular head.
+
+Exhaustiveness comes from the small remaining body budget. Both `n` and `s` must occur. Under the three outer binders, their cheapest leaves cost:
+
+```text
+x: 4 each, twice
+n: 3
+s: 2
+three applications: 6
+────────────────────
+minimum cost(M): 19.
+```
+
+Writing `a=cost(A)`,
+```text
+w(R) = a + cost(M) + 10,
+cost(M) ≤ 35−a.
+```
+There are at most seven bits above the minimum. An additional `s` occurrence costs at least four bits; an additional `n` costs at least five. Consequently the only occurrence-count pairs needing enumeration are
+```text
+(#n,#s) = (1,1), (1,2), (2,1).
+```
+The generator includes every lambda/application tree satisfying these budgets, including uses of newly introduced bound variables.
+
+| `cost(A)` | Arguments `A` | Compatible bodies per argument | Candidates |
+|---:|---:|---:|---:|
+| 9 | 2 | 5,628 | 11,256 |
+| 10 | 2 | 2,760 | 5,520 |
+| 11 | 7 | 1,260 | 8,820 |
+| 12 | 10 | 792 | 7,920 |
+| 13 | 14 | 300 | 4,200 |
+| 14 | 27 | 60 | 1,620 |
+| 15 | 46 | 60 | 2,760 |
+| 16 | 82 | 60 | 4,920 |
+| **Total** | **190** | | **47,016** |
+
+Results:
+
+```text
+46,772  fail the zero law
+   178  pass zero but fail unary n=1
+    66  have a certified head-diverging zero computation
+     0  unresolved
+     0  survivors
+```
+
+The checker first used bounded reductions. The 66 fuel cases were then resolved by actual reductions to four explicit head-loop patterns—not classified from fuel exhaustion:
+
+```text
+D D → D D                         D = \t. t t
+
+G G → G G c                       G = \t. t t c
+
+G' G' → G' G' (\u. c)             G' = \t. t t (\u. c)
+
+H (K H) → (K H) c (K H)
+        → H (K H)                 H = \t. t c t
+```
+
+These remain head-divergent with arbitrary trailing operands. The respective counts were `20, 29, 6, 11`.
+
+This is an exhaustive computational exclusion with explicit divergence arguments, **not a Lean-checked theorem**. Unlike a finite battery supporting a candidate, the zero and `n=1` failures suffice to refute every member of this finite source family.
+
+The full run took approximately **1.1 seconds**, plus **0.14 seconds** to finish the remaining loop certificates, using one thread. A preliminary normal-argument-only pass examined 29,208 candidates; even counting both passes, fewer than 100,000 candidate visits occurred.
+
+Artifacts, all confined to the permitted directory:
+
+- [Reproducible checker](./shared_window.py)
+- [Every candidate, its weight, and exclusion result](./shared_window.jsonl)
+- [Counts and loop summary](./shared_window.summary.json)
+- [Additional individual checks](./repair_candidates.json)
+
+**3. Concrete cheap failures and correct larger members**
+
+The cheapest zero-correct member of the enumerated window is:
+```text
+(\x n s. s x x n) ((\u v. v) c) j       w=39
+```
+Its shared argument reduces to `I`, erasing `c`; its outputs are `R j / j`.
+
+Two other zero-correct failures:
+```text
+(\g n s. s g g n) (\t. t t c) j         w=42
+    outputs R j / c r G j
+
+(\g n s. s s (g g) n) (\t. t c) j       w=42
+    outputs R j / N j.
+```
+
+I also checked three correct larger members, each retaining exactly two uses of the shared variable and one source `c`:
+
+```text
+(\g n s. s I (\u. s g (g s)) n)
+  (\t. t t c) j
+```
+`w=62`.
+
+```text
+(\g n s. s (\b. b (\u r. r n) g) (s s g))
+  (\t. c t) j
+```
+`w=64`.
+
+```text
+(\g n s. s (\b. b (\u r. r n) (g I)) (g (s s)))
+  (\t. t c) j
+```
+`w=70`.
+
+All nine individual terms reported here were checked through unary `n=6`; their records are in the individual-check artifact. The three larger successes also follow directly from the supplied stream identities.
+
+The unresolved repair mechanisms are therefore outside both exclusions: a context that changes how `s G` reaches the final head, or source structures beyond this exact shared-let window, including shared arguments with multiple occurrences of `c`.
+[gaslamp] job: cx-20261022-022413-5f2b · session: 01a16234-d3bc-7650-93a3-db7da182d83e · thread: adv5-construct · resume: gaslamp codex --thread adv5-construct · tok: 1257k→36k

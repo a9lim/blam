@@ -116,7 +116,14 @@ By §2, **the 162 is optimal in the class if and only if `w(R) ≥ 46` for
 every reader**, and any reader with `w ≤ 45` gives a sub-162 interpreter of
 exactly `116 + w` bits. No such reader has been found: the cheapest readers
 other than the 162's weigh 47 (`λs. s I (λu. s (λq. c) (s s s)) j`), 48 (the
-164's `λs. s (λb. b F c) (s I (s s) j)`) and 49 (the 165's).
+164's `λs. s (λb. b F c) (s I (s s) j)`) and 49 (the 165's). The defect a
+cheaper reader has to repair is visible in the near misses (Claude, adv5
+lane): `λs. s I (s (λq. c) (s s s)) j` (40) gives `r j` on a zero stream
+but `c r N j` on unary, and `λs. s G (s s c) j` with `G = λt. t t c` (39)
+gives `r j` and `c r N j` too. The zero run needs `j` as an extra argument
+and the unary run must not see it; the 162 is the 40-bit near miss plus its
+6-bit absorber, and every other repair priced costs at least 7 bits over
+the 39-bit one.
 
 **Settled by proof.**
 
@@ -256,7 +263,11 @@ family; the lists are in the round-4 archive. Claude's lanes:
   the transfer lemma; 23,504 nodes, every cut-off certified); the tree grows
   about 6.5× per 4 bits, so 45 is out of reach this way. Contracting the
   pre-stream computation of a hand-off is never lighter: the reduct keeps
-  both the let argument and the value it hands on;
+  both the let argument and the value it hands on. The depth-0 window
+  `(λx n s. M) A j` with one `c` in `A`, `x` used twice, `M` free of `c` and
+  `9 ≤ |A| ≤ 16` — what a handwritten reduction leaves of that shape — has
+  no reader (Codex and Claude, adv5 lane: 47,016 candidates, redexes
+  included, 66 certified head-divergent on zero);
 - the whole-cell opener `λs. s (λb t. B) j`, of which no minimum reader
   below 46 is an instance (Codex): a λ-headed `B` hoists its binder at a
   strictly lower price (kernel-checked), a linear redex does not fit in
