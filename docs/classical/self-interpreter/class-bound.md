@@ -186,6 +186,17 @@ the 39-bit one.
   operand can give `N` on every unary stream and `r r j` on a zero one, and
   no `j`-free context can extract that `j` to make `r j`. The same pricing
   gives `R84`'s wrapper at least 70 and `R104`'s at least 49.
+- **Role supports from intersection types** (handwritten, Claude, types
+  lane). Typing each law in a non-idempotent intersection system makes a
+  position untyped exactly when it is dispensable, so a law's support is its
+  core; the skeleton both laws use never contains `c` or `j`, and every
+  branch one law alone uses hangs off an eraser in the other (a bit, the
+  final `K` of `U₀`, or a binder that law never uses). The 162 shares only
+  14 bits between its roles (26 unary-only, 2 filler), the 164 28. In a
+  β-normal reader every shared `b X Y` gives `X` to the zero role and `Y` to
+  the unary one, so `j` is never applied; and splitting a shared let into
+  one per role costs exactly its argument's shared skeleton plus 4 and the
+  index terms, which is all a shared let can save.
 - **What a let can save** (handwritten, Claude). For `(λx. B) A` with `k`
   uses of `x`, the contraction changes the weight by
   `S = (k−1)|A| + (f_A − 1)M − 4 − 2k − T` (`M` the uses' depths under B's
@@ -219,6 +230,13 @@ family; the lists are in the round-4 archive. Claude's lanes:
   or two trailing operands; general `λb. B` dispatchers with
   `|B|, |T| ≤ 21`, or `|B| ≤ 9`; every λ-rooted reader whose body is at most
   25 bits;
+- **every β-normal reader with `w ≤ 43`**, and every β-normal reader with
+  `j` at depth ≥ 2 below 46 — with no minimality assumption (Claude, types
+  lane: a complete demand-driven search for typing derivations of the zero
+  law and the unary laws at `n = 1, 2`, 96,933 and 99,562 states, cut-offs
+  refuted by hand or by the frozen engine); among β-normal readers the only
+  core `λs. s A B j` with `w ≤ 46` is the 162's and the only
+  `λs. s A (s B C D)` with `w ≤ 48` the 164's;
 - **every s-spine reader `λs. s A₁ … A_k` whose first operand reaches the
   first dispatch through stream expansions, λ-bindings and variable heads
   alone** — no β-redex on its head path; the pieces off that path are
