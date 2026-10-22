@@ -520,8 +520,19 @@ readers whose let argument hands control on before binding the stream,
 nonlinear, with two to four uses of `x` and `j` at depth at most 1 (the
 profile `k + d = 5` and every linear root let are closed); count-only
 envelopes of these cells total about 4.1 million sources, ten cells over
-the check cap, so closing them needs an upper bound on how much a
-pre-stream hand-off can expand before the stream arrives. Every λ-rooted minimum reader below
+the check cap. A hand-off's pre-stream computation can expand without any
+bound in the source weight: with `G = λp x. p (x x)`,
+`H = λv n s. s v (λu. s (λq. c) (s s u)) n` and Church numerals,
+`Church(m) G H I j` is a correct reader of weight `84 + 5m` whose first
+weak-head λ, `λs. s Xₘ (λu. s (λq. c) (s s u)) j` with `Xₘ →β* I`, weighs
+`40 + 6·2ᵐ`, every node of it needed by both laws (Codex, expand lane; a
+108-bit instance with a 393,256-bit endpoint is kernel-checked in
+`reasoning_class/expand/Expansion.lean`). Such readers are not minimal —
+replacing `G` by `I` saves 11 bits — so what closes the case is not a bound
+on the expansion but a source-level simplification that keeps both laws and
+recovers the whole expansion cost, or a split of the remaining minimum
+sources into families each with an endpoint floor that holds without
+minimality. Every λ-rooted minimum reader below
 46 is excluded, so the zero-λ parents, needed binders, self-headed lets and
 dispatch-free readers that the depth-1 analysis isolated matter only inside
 a root let's argument. The space of all readers below 46 is far beyond

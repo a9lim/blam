@@ -1,0 +1,91 @@
+{
+  "rows": [
+    {
+      "kind": "literal",
+      "n": 0,
+      "source": "(\\f p. p) (\\p x. p (x x)) (\\v n s. s v (\\u. s (\\q. c) (s s u)) n) I j",
+      "laws_zero_U1_U8": true,
+      "source_weight": 84,
+      "endpoint_weight": 46,
+      "net_expansion": -38,
+      "head_steps": 4,
+      "payload_nodes_checked": 2
+    },
+    {
+      "kind": "literal",
+      "n": 1,
+      "source": "(\\f p. f (p)) (\\p x. p (x x)) (\\v n s. s v (\\u. s (\\q. c) (s s u)) n) I j",
+      "laws_zero_U1_U8": true,
+      "source_weight": 89,
+      "endpoint_weight": 52,
+      "net_expansion": -37,
+      "head_steps": 6,
+      "payload_nodes_checked": 5
+    },
+    {
+      "kind": "literal",
+      "n": 2,
+      "source": "(\\f p. f (f (p))) (\\p x. p (x x)) (\\v n s. s v (\\u. s (\\q. c) (s s u)) n) I j",
+      "laws_zero_U1_U8": true,
+      "source_weight": 94,
+      "endpoint_weight": 64,
+      "net_expansion": -30,
+      "head_steps": 8,
+      "payload_nodes_checked": 11
+    },
+    {
+      "kind": "literal",
+      "n": 3,
+      "source": "(\\f p. f (f (f (p)))) (\\p x. p (x x)) (\\v n s. s v (\\u. s (\\q. c) (s s u)) n) I j",
+      "laws_zero_U1_U8": true,
+      "source_weight": 99,
+      "endpoint_weight": 88,
+      "net_expansion": -11,
+      "head_steps": 10,
+      "payload_nodes_checked": 23
+    },
+    {
+      "kind": "literal",
+      "n": 4,
+      "source": "(\\f p. f (f (f (f (p))))) (\\p x. p (x x)) (\\v n s. s v (\\u. s (\\q. c) (s s u)) n) I j",
+      "laws_zero_U1_U8": true,
+      "source_weight": 104,
+      "endpoint_weight": 136,
+      "net_expansion": 32,
+      "head_steps": 12,
+      "payload_nodes_checked": 47
+    },
+    {
+      "kind": "compressed",
+      "k": 2,
+      "n": 4,
+      "source": "(\\x. x x) (\\f p. f (f p)) (\\p x. p (x x)) (\\v n s. s v (\\u. s (\\q. c) (s s u)) n) I j",
+      "source_weight": 104,
+      "endpoint_formula": "40 + 6*2^4",
+      "expanded": true,
+      "laws_zero_U1_U8": true,
+      "endpoint_weight": 136,
+      "head_steps": 19
+    },
+    {
+      "kind": "compressed",
+      "k": 3,
+      "n": 16,
+      "source": "(\\x. x x x) (\\f p. f (f p)) (\\p x. p (x x)) (\\v n s. s v (\\u. s (\\q. c) (s s u)) n) I j",
+      "source_weight": 108,
+      "endpoint_formula": "40 + 6*2^16",
+      "expanded": false
+    },
+    {
+      "kind": "compressed",
+      "k": 4,
+      "n": 65536,
+      "source": "(\\x. x x x x) (\\f p. f (f p)) (\\p x. p (x x)) (\\v n s. s v (\\u. s (\\q. c) (s s u)) n) I j",
+      "source_weight": 112,
+      "endpoint_formula": "40 + 6*2^65536",
+      "expanded": false
+    }
+  ],
+  "seconds": 0.005978792003588751,
+  "peak_rss_bytes": 20414464
+}

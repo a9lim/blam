@@ -1,0 +1,60 @@
+[gaslamp] → codex · job cx-20261022-070239-05df · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-070239-05df/events.jsonl
+( •̀ ω •́ ) **Partial result: the nonlinear minimum-reader case remains open.** [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/expand/REPORT.md) and [NOTES.md](/Users/a9lim/Work/blam/tmp/round4/expand/NOTES.md) are complete.
+
+1. **Complete interpreters:** none built; no sub-162 claim.
+
+2. **New expanding readers, with exact identities.** Define
+
+   ```text
+   I = λa. a
+   G = λp x. p (x x)
+   H = λv n s. s v (λu. s (λq. c) (s s u)) n
+   X₀ = I; Xₘ₊₁ = Xₘ Xₘ
+   Rₘ = Church(m) G H I j
+   ```
+
+   Its first weak-head lambda is
+
+   ```text
+   Tₘ = λs. s Xₘ (λu. s (λq. c) (s s u)) j.
+   ```
+
+   Each step `G p x →² p (x x)` doubles the suspended accumulator. Consequently:
+
+   \[
+   w(R_m)=84+5m,\qquad w(T_m)=40+6\cdot2^m.
+   \]
+
+   Since \(X_m\to_\beta^* I\), both reader laws hold at every unary length.
+
+   Sharing Church Two gives the concrete reader
+
+   ```text
+   (λx. x x x) (λf p. f (f p)) G H I j
+   ```
+
+   with **three root uses, one depth-zero `j`, source weight 108, and endpoint weight 393,256**. Its full reader laws, beta reduction and prices are kernel-checked in [Expansion.lean](/Users/a9lim/Work/blam/tmp/round4/expand/Expansion.lean). The first-weak-head-endpoint characterization is handwritten; the smaller 104→136 witness additionally has a kernel-checked 19-head-step trace.
+
+   Every node of the expanded identity tree is needed in **both** laws. Thus expansion is not confined to erased filler, and copied-hole repair does nothing here. Nevertheless replacing the source `G` by `I` preserves both laws and saves exactly 11 bits—also kernel-checked. These readers are explicitly **non-minimal and above 45**.
+
+3. **The missing theorem and what the counterexamples establish.** Let `Read` include the all-unary laws and exactly one source hole, and let `Min` use the full order `(weight, lambda count, hole depth)`. For the residual root family \(\Gamma\), the missing claim is precisely
+
+   \[
+   \neg\exists R:\ \operatorname{Min}(R)\land\Gamma(R)\land w(R)\le45.
+   \]
+
+   For a repaired endpoint \(U\), with \(e=w(U)-w(R)\), the pointwise inequality \(w(U)\ge46+e\) is equivalent to the desired source bound. A useful independent factorization must provide:
+
+   - Coverage: every remaining minimum source has an endpoint in some family \(F_i\), with \(e\le E_i\).
+   - An **unconditional endpoint floor**: every one-hole reader \(U\in F_i\) has \(w(U)\ge46+E_i\).
+
+   Alternatively, an endpoint simplification must save **more than \(e\)**, or exactly \(e\) with the necessary lambda/depth comparison and a valid minimum-transfer argument.
+
+   **No bound’s existence can be refuted at the fixed 45 budget:** there are finitely many scoped sources—at most 23 syntax nodes—and every reader has a finite first-lambda trace. Some maximum expansion therefore exists. The constructed family refutes unrestricted small-growth claims; a handwritten extension has tower growth with exactly two root uses. It does **not** refute the minimum/below-46 formulation.
+
+4. **Remaining boundary.** No nonlinear cell below 46 was closed. Lift did not yield a general non-increasing hand-off rewrite, and role supports alone did not supply the missing price. The needed extra ingredient is a source-level semantic simplification theorem that preserves both laws and recovers the entire expansion cost, including tie-breaks.
+
+   Validation stayed within caps: final Lean compilation **0.36 seconds, 448 MB RSS, two threads**, with no `sorry` or new axioms. Targeted Python checks passed on zero and unary lengths 1–8; no enumeration or large endpoint was materialized.
+
+[gaslamp] job: cx-20261022-070239-05df · session: 01a16346-fdc3-7082-80e0-7201bb239665 · thread: r5-expand · resume: gaslamp codex --thread r5-expand · tok: 2914k→36k
+[lane.sh] done rc=0 tries=1
