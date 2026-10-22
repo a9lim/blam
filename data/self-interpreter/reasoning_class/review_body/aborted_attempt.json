@@ -1,0 +1,10 @@
+{
+  "attempt": "initial bodylin recurrence reconstruction, superseded by archived-source replay",
+  "outcome": "AssertionError at aggregated feature counter tally 100550",
+  "guard_implementation_error": "checked after a returned feature map was added, overshooting 100000 by 550",
+  "seconds": 0.7478554999979679,
+  "peak_child_rss_bytes": 70942720,
+  "partial_reader_source_count": null,
+  "used_as_evidence": false,
+  "correction": "The progress note claiming no reader sources had been checked before this abort was unsupported; no partial source count was preserved."
+}

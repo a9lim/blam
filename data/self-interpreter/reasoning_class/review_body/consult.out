@@ -1,0 +1,54 @@
+[gaslamp] → codex · job cx-20261022-052957-ffd1 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-052957-ffd1/events.jsonl
+(・_・) **Verdict: sound as a composition of the stated lane results.** I found no uncovered source shape, inconsistent minimum hypothesis, or circular use of the final exclusion. The conclusion concerns **global minimum full-law one-hole readers under `(weight, source lambda count, hole depth)`**. It does not exclude every λ-rooted reader below 46 or settle root lets.
+
+The full review is saved in [REVIEW.md](/Users/a9lim/Work/blam/tmp/round4/review_body/REVIEW.md).
+
+1. **The body-let partition is exhaustive.**
+
+   At depth one, j cannot occur in B: it would lie under both λs and λx. Thus j is in A or the pending forest.
+
+   | Case | Closure |
+   |---|---|
+   | Zero uses of x | General minimum-source non-erasure theorem |
+   | More than six uses | Source multiplicity bound |
+   | Five or six uses | bodyredex §3.1 |
+   | Lambda-free A | Four flat possibilities, excluded by the literal-j-parent result and bodyredex §§3.2–3.4 |
+   | Two to four uses, lambda-containing A | bodylet |
+   | Linear, j outside A | bodyredex §3.5 |
+   | Linear, j in A, rigid-headed B | `minimum_linear_body_alternatives` |
+   | Linear, j in A, lambda-headed B | bodyredex §5.3 |
+   | Linear, j in A, nested head redex in B | bodylin |
+
+   The crucial distinction is that **“the immediate contractum is not normal” alone would be insufficient**. The actual `minimum_linear_body_alternatives` theorem excludes rigid-headed B outright, including redexes inside its operands. I inspected and recompiled it.
+
+2. **The hypotheses and replacements compose correctly.**
+
+   `ReaderLaws` supplies every unary length; probe refutations only establish necessary-law failures. `MinimumReader`, `LexMinimumReader`, and bodylin’s `DepthMinimumReader` respectively supply the weight, lambda-count, and depth comparisons required by the arguments.
+
+   Nonlinear contractions that copy j are followed by a proven full-law, one-hole hoist before invoking minimality. Bodylin’s replacements instead change **B inside the existing let**, leaving A written once. The two replacements that duplicate x therefore retain exactly one source j.
+
+   The lambda-headed linear binder exchange preserves the relevant ordering coordinates when its equality case invokes the earlier j-free-linear exclusion. No source-normalization assumption or H_nf inference is needed for the assembled closure. The external tiny-core inventory and other inherited finite results remain explicit dependencies.
+
+3. **The λ-rooted conclusion follows.**
+
+   `reader_source_head` classifies literal source syntax without assuming normalization. Its proof excludes a second leading lambda through the zero law.
+
+   A λ-rooted source cannot be the application-rooted root-redex alternative. Its hole has depth at least one; the imported minimum-reader depth results eliminate depth ≥2. At depth one, the remaining alternatives are exactly an s-spine or first body redex. The two composites exclude both.
+
+   This proves the claimed statement about **λ-rooted global minima**, while leaving root lets unresolved.
+
+4. **Focused checks passed.**
+
+   - Recompiled `BodyReplacement.lean`, `Bodies.lean`, `Followup.lean`, `Prices.lean`, and `LinearPrices.lean`. All passed; the eleven body exclusions use only `{propext, Quot.sound}`.
+   - Independently reproduced all eleven body reductions and their strict cost savings.
+   - Extracted all **569 archived sources**, matched their hashes and cell digests, verified their eleven-body distribution, and checked that every replacement retains one j. An independent named normalizer rejected every original source on zero without a cutoff.
+   - Independently derived and regenerated bodylet’s **420-source cell** `(2, λ-headed B, j in A, first c in B)`, without its feature recurrence.
+
+   For that cell, write B=`λy.D`. Binder exchange requires at least two y uses; D also contains two x uses and c. Hence `b≥25`. With `a≥6` and nonempty pending cost `p≥4`, the budget `10+a+b+p≤45` forces equality. Thus A=`j I`—the alternative `I j` contracts cheaply—pending is `[s]`, and D is any application tree on `{x,x,y,y,c}`. There are exactly **14 tree shapes × 30 leaf permutations = 420**. Both normalizers rejected all zero laws.
+
+**Documentation correction:** class-bound says “most” of bodylet’s 22,660 exceptions use the growing-helper theorem. The recorded accounting attributes **16** to Grow and **21,937** to weak-head prefix cycles. This is an attribution error, not a proof gap.
+
+**Operational exception:** an abandoned recurrence attempt reached **100,550 feature-counter entries** before its post-return guard fired, exceeding the stated state cap by 550. It stopped after 0.75 seconds at approximately 71 MB and contributes no evidence to this verdict. I replaced it with the bounded checks above. My earlier progress claim that no reader sources had been checked before that abort was unsupported; the partial source count was not preserved. This is recorded in `aborted_attempt.json`. All writes remained inside the authorized review directory.
+
+[gaslamp] job: cx-20261022-052957-ffd1 · session: 01a162f2-200f-7a63-83db-cc8f57c17a59 · thread: r5-review-body · resume: gaslamp codex --thread r5-review-body · tok: 1685k→18k
+[lane.sh] done rc=0 tries=1

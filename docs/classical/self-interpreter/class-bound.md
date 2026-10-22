@@ -201,16 +201,18 @@ the 39-bit one.
   reader below 46. Nor does any other let with two to four uses: no
   minimum reader below 46 has such a body (Codex, bodylet lane: the
   handlerlet method over 52 complete cells, 746,914 sources, the 22,660
-  normalizer exceptions refuted individually in Lean, most through a
-  kernel-checked divergence theorem for growing helpers,
-  `A_T A_S →β* A_S A_(S++W) T`). The last case, a linear let carrying `j`
+  normalizer exceptions refuted individually in Lean — 21,937 by weak-head
+  prefix cycles, 16 by a kernel-checked divergence theorem for growing
+  helpers, `A_T A_S →β* A_S A_(S++W) T`). The last case, a linear let carrying `j`
   whose `B` holds a nested head redex, fails too (Codex, bodylin lane): the
   exact minimality conditions leave 569 sources over eleven bodies `B`,
   each of which has a strictly cheaper β-equivalent replacement for any `A`
   and any pending operands — it may copy `x`, but `A` stays once under the
   let, so the source keeps one `j` — kernel-checked, with the 569 zero-law
   refutations in Lean as well. So **no minimum reader below 46 has a let
-  as its stream-λ body**.
+  as its stream-λ body**, and with the s-spines no λ-rooted minimum reader
+  below 46 exists (both composites audited by Codex for exhaustiveness and
+  consistent hypotheses).
 - **Lets headed by their own variable** (Lean, Codex,
   `Blc/SelfintNeededHead.lean`, `Blc/SelfintNestedLets.lean`). In
   `(λx. x B₁ … B_k) A`, keeping `A` once at the head and replacing every
