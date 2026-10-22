@@ -1,0 +1,25 @@
+{
+  "k": 5,
+  "depth": 0,
+  "rows": {
+    "L3_tax0": 3184,
+    "L3_tax1": 18226,
+    "L3_tax2": 14922,
+    "L3_tax3": 11244,
+    "L4_tax0": 3646,
+    "L4_tax1": 35902
+  },
+  "branches": {
+    "x_head": 78156,
+    "nested_head": 8968
+  },
+  "hole_locations": {
+    "Cs": 58433,
+    "A": 28691
+  },
+  "total": 87124,
+  "blocks": 389,
+  "count_states": 980,
+  "seconds": 0.02031537500442937,
+  "rss_bytes": 24674304
+}

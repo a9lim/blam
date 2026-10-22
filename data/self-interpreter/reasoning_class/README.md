@@ -9,7 +9,7 @@ wave of lanes; each directory keeps its own
 write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
-`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `jerase`, `handlerlet`, `rootnf`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole`, `review_types` and `review_spine`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
+`lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `bodylet`, `jerase`, `handlerlet`, `rootnf`, `rootlet`, `firstop`, `firstopj`, `leanbn` and the reviews `review_hole`, `review_types` and `review_spine`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
 `bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `types`, `zcore`, `single`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
@@ -51,6 +51,7 @@ working versions.
 | handlerlet | no minimum reader below 46 has a literal λ as its first handler: every nonlinear let inside it fails (117,059 sources; 1,868 normalizer exceptions in `Exceptions1–4.lean`; prices in `Prices.lean`) | `class-bound.md` §3 |
 | rootnf | the root-let profile bound `w ≥ 4k + 22 + 4d` (`RootProfile.lean`: at most five uses below 46); the multi-hole repair of the normalization bridge | `class-bound.md` §3 |
 | firstop | redexes inside a `j`-free non-λ first operand have two to five uses in a minimum below 46 (`LinearCertificates.lean`); the handler-sinking inequality; the contextual hoist price | `class-bound.md` §3 |
+| rootlet | the tight root-let profiles `k + d = 5`: about 240,000 sources fail with certificates (32,743 normalizer exceptions refuted in Lean), 580 listed in `SURVIVORS.tsv` with prices (a lane-local cargo `target/` is omitted) | `class-bound.md` §3 |
 | firstopj | first operands carrying `j` out of a minimum below 46, so no minimum reader below 46 is an s-spine (selective pruning price in `Selective.lean`; 424,378 sources; 4,337 normalizer exceptions in Lean) | `class-bound.md` §3 |
 | bodylet | every nonlinear stream-λ body let out of a minimum below 46 (52 cells, 746,914 sources, 22,660 normalizer exceptions in Lean; `Grow.lean`, `Prices.lean`) | `class-bound.md` §3 |
 | needbinder | the whole-cell opener `λs. s (λb t. B) j` out of a minimum reader below 46 (hoisting price in `OpenerHoist.lean`, normalizer exceptions in `NonlinearExceptions.lean`); the 162-family spine `λs. s A (λu. D) j` narrowed to `|A| ≥ 11`, `|D| ≤ 18`; a needed-binder witness of weight 75 | `class-bound.md` §3 |

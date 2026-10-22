@@ -1,0 +1,35 @@
+{
+  "controls": [
+    {
+      "name": "reader162",
+      "weight": 46,
+      "zero": true,
+      "unary_lengths": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "name": "reader165",
+      "weight": 49,
+      "zero": true,
+      "unary_lengths": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    }
+  ],
+  "seconds": 0.0038928749854676425
+}

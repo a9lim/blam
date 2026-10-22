@@ -1,0 +1,15 @@
+   Compiling crossbeam-utils v0.8.22
+   Compiling crossbeam-epoch v0.9.20
+   Compiling crossbeam-deque v0.8.7
+   Compiling typenum v1.20.1
+   Compiling rayon-core v1.13.0
+   Compiling version_check v0.9.5
+   Compiling im-rc v15.1.0
+   Compiling bitmaps v2.1.0
+   Compiling rand_core v0.6.4
+   Compiling rand_xoshiro v0.6.0
+   Compiling sized-chunks v0.6.5
+   Compiling either v1.17.0
+   Compiling rayon v1.12.0
+   Compiling blam v3.0.1 (/Users/a9lim/Work/blam)
+    Finished `release` profile [optimized + debuginfo] target(s) in 48.39s

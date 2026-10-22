@@ -1,0 +1,30 @@
+{
+  "rows": {
+    "L3_tax0": 14860,
+    "L3_tax1": 127840,
+    "L3_tax2": 100848,
+    "L3_tax3": 95040,
+    "L4_tax0": 39790,
+    "L4_tax1": 468040
+  },
+  "total": 846418,
+  "components": {
+    "B": {
+      "specs": 50,
+      "total": 334791,
+      "maximum": 42000
+    },
+    "A": {
+      "specs": 54,
+      "total": 7423,
+      "maximum": 2904
+    },
+    "Cs": {
+      "specs": 39,
+      "total": 771,
+      "maximum": 144
+    }
+  },
+  "seconds": 0.018203416009782813,
+  "rss_bytes": 26345472
+}

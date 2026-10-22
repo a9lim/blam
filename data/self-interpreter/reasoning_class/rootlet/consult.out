@@ -1,0 +1,28 @@
+[gaslamp] → codex · job cx-20261022-040511-def7 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-040511-def7/events.jsonl
+( •̀_•́) **The root-let branch remains open.** No new reader or interpreter was found.
+
+[REPORT.md](/Users/a9lim/Work/blam/tmp/round4/rootlet/REPORT.md) contains the proofs, completeness argument, resource audit and remaining boundaries.
+
+The tight `k+d=5` profiles now have **580 explicitly priced unresolved sources**:
+
+| Cell | Checked | Unresolved |
+|---|---:|---:|
+| `k=5,d=0` | 98,267 | 157 |
+| `k=4,d=1`, j in A | 55,395 | 58 |
+| `k=4,d=1`, j in B | 82,891 | 338 |
+| `k=4,d=1`, j in pending operands | 4,268 | 27 |
+
+**32,743 evaluation exceptions were individually refuted in Lean**, with only `propext` and `Quot.sound`. Largest proof file: 10.7 seconds, 802 MB. The remaining exceptions are retained as unknowns; complete cutoff certification was not achieved.
+
+Complete subcell exclusions include weight 42 in both profiles, every five-use/four-λ source, and every five-use source carrying j inside A. The 157 remaining five-use sources have three λs and only seven possible argument forms.
+
+- [SURVIVORS.tsv](/Users/a9lim/Work/blam/tmp/round4/rootlet/SURVIVORS.tsv): every unresolved source and exact price.
+- [ARGUMENTS.tsv](/Users/a9lim/Work/blam/tmp/round4/rootlet/ARGUMENTS.tsv): grouped argument forms.
+- [verification.json](/Users/a9lim/Work/blam/tmp/round4/rootlet/verification.json): kernel checks and resource evidence.
+
+A promising next cut is source η-contraction. Its exact saving is kernel-checked; the proposed reader-law preservation argument remains handwritten. Formalizing it would remove **346** current candidates. It is **not included** in the verified exclusions.
+
+Lower-multiplicity cells remain open. General application-rooted hand-offs still lack the cost-preserving bridge needed to apply the λ-rooted site bounds.
+
+[gaslamp] job: cx-20261022-040511-def7 · session: 01a162a4-85b2-7e82-97d0-451e8393b1e4 · thread: r5-rootlet · resume: gaslamp codex --thread r5-rootlet · tok: 14837k→90k
+[lane.sh] done rc=0 tries=1

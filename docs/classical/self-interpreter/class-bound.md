@@ -176,7 +176,11 @@ the 39-bit one.
   argument budgets. A minimum root let `(λx. B) A C⃗` with `k` uses and `j`
   at depth `d` has `w ≥ 4k + 22 + 4d` plus its index tax, so below 46 it
   has at most five uses, four when `j` is under a λ
-  (`reasoning_class/rootnf/RootProfile.lean`, Codex); a λ-free argument at the root must
+  (`reasoning_class/rootnf/RootProfile.lean`, Codex). In the tight
+  profiles `k + d = 5`, about 240,000 sources fail a law with a certificate
+  (32,743 normalizer exceptions refuted in Lean) and 580 remain, listed with
+  their prices in `reasoning_class/rootlet/SURVIVORS.tsv`: normalizer
+  exceptions not yet refuted, not readers (Codex, rootlet lane); a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands. With `j` at
