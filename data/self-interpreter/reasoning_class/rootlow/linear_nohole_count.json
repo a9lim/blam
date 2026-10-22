@@ -1,0 +1,20 @@
+{
+  "k": 1,
+  "depth": 0,
+  "rows": {
+    "L6_tax4": 210,
+    "L6_tax5": 430,
+    "L5_tax3": 596
+  },
+  "branches": {
+    "nested_head": 1236
+  },
+  "hole_locations": {
+    "Cs": 1236
+  },
+  "total": 1236,
+  "blocks": 25,
+  "count_states": 1655,
+  "seconds": 0.017948875000001863,
+  "rss_bytes": 27115520
+}

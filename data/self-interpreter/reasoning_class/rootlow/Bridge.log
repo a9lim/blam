@@ -1,0 +1,15 @@
+'Blc.RootLow.exposure_floor' depends on axioms: [propext, Quot.sound]
+'Blc.RootLow.sink_order' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootLow.pull_price' depends on axioms: [propext, Quot.sound]
+'Blc.RootLow.handoff_floor' depends on axioms: [propext, Quot.sound]
+'Blc.RootLow.linear_nohole_scalar' depends on axioms: [propext, Classical.choice, Quot.sound]
+/Users/a9lim/Work/blam/tmp/round4/rootlow/Bridge.lean:180:17: warning: This simp argument is unused:
+  show d ≠ d + 1 by omega
+
+Hint: Omit it from the simp argument list.
+  simp [weight,̵s̵h̵o̵w̵ ̵d̵≠̵d̵+̵1̵ ̵b̵y̵ ̵o̵m̵e̵g̵a̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.RootLow.contextual_step_price' depends on axioms: [propext, Quot.sound]
+'Blc.RootLow.repair_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootLow.repaired_endpoint_price' depends on axioms: [propext, Classical.choice, Quot.sound]

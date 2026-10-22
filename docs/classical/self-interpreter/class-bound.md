@@ -184,7 +184,14 @@ the 39-bit one.
   lane). Source η-contraction keeps both laws and the one hole and strictly
   lowers the weight (kernel-checked), so a minimum reader has no η-redex;
   of the lower profiles, the 73,311 sources with three λs and `V = k + 5`
-  fail too. A root let
+  fail too. **No minimum reader below 46 is a linear root let** (Codex,
+  rootlow lane: complete inventories of 135,652 sources, the 118 normalizer
+  exceptions and 1,236 further failures refuted in Lean). Exposing the
+  stream binder of `(λx y₁…y_t s. M) A C₁…C_t` changes the weight by
+  exactly `F(A) + Σ F(C_i) + (t+1)·occ_s(M) − occ_x(M) − Σ occ_{y_i}(M)`
+  (`j` counted four times in `F`; kernel-checked), but at depth 0 or 1 it
+  moves `j` deeper, so an equal-weight exposure does not carry minimality
+  across; A root let
   whose body is headed by the stream binder lifts exactly to a λ-rooted
   reader: `(λg. λs. B) H` and `λs. (λg. B~) H` (binders swapped) agree on
   every stream, and the second weighs `u_s(B) − u_g(B) + f_c(H) + 4·occ_j(H)`
@@ -497,8 +504,11 @@ below 46 is neither an s-spine nor a reader whose stream-λ body is a let,
 so one branch of the source-head classification is left: **root lets**
 `(λx. B) A C⃗` — depth-0 shared top-level lets and application-rooted
 readers whose let argument hands control on before binding the stream,
-with at most five uses of `x` and `k + d ≤ 4` (the tight profiles
-`k + d = 5` are closed). Every λ-rooted minimum reader below
+nonlinear, with two to four uses of `x` and `j` at depth at most 1 (the
+profile `k + d = 5` and every linear root let are closed); count-only
+envelopes of these cells run from about 320,000 to 4.3 million sources, so
+closing them needs a semantic bound on sharing during the pre-stream
+hand-off first. Every λ-rooted minimum reader below
 46 is excluded, so the zero-λ parents, needed binders, self-headed lets and
 dispatch-free readers that the depth-1 analysis isolated matter only inside
 a root let's argument. The space of all readers below 46 is far beyond

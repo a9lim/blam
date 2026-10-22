@@ -189,8 +189,8 @@ with all features (three opt-in tests ignored) and 328 with default features.
   exactly 48 and 49; and no minimum reader below 46 has a syntactic
   dispatch site at all. No minimum reader below 46 is an s-spine or has a let as its
   stream-λ body, so every λ-rooted minimum reader is excluded and only root
-  lets `(λx. B) A C⃗` remain, with at most five uses and `k + d ≤ 4` (the
-  tightest profiles are closed). The class widens without moving its minimum:
+  lets `(λx. B) A C⃗` remain: nonlinear, two to four uses, `j` at depth at
+  most 1 (every linear root let and the profile `k + d = 5` are closed). The class widens without moving its minimum:
   NEXT of any syntax above the price frontier `q ≥ 92`, `q + 3F ≥ 104`
   (Lean, `Blc/SelfintWiden.lean`; optimal there iff `w ≥ 46`), any value
   representation with a NEXT-free decoder (Lean, `Blc/SelfintValues.lean`),
@@ -597,9 +597,9 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    opaque two-port recursion). Every β-normal reader has `w ≥ 46`, no minimum
    reader below 46 is an s-spine or has a let as its stream-λ body; what is
    open is minimum readers below 46 whose root is a let (depth-0 shared
-   top-level lets, application-rooted readers) with `k` uses of the let
-   variable and `j` at depth `d`, `k + d ≤ 4` (the profile `k + d = 5` is
-   closed).
+   top-level lets, application-rooted readers) that are nonlinear, with two
+   to four uses of the let variable and `j` at depth at most 1 (linear root
+   lets and the profile `k + d = 5` are closed).
    The general step is still a theorem bounding the source that the two
    roles can share; neither periodicity of the unary run nor accounting
    alone can supply it (`class-bound.md` §3).

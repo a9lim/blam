@@ -1,0 +1,11 @@
+{
+  "total_sources": 135652,
+  "unresolved": 0,
+  "normalizer_exceptions": 118,
+  "individual_Lean_refutations": 1354,
+  "modules": 9,
+  "max_Lean_seconds": 4.56537166700582,
+  "max_Lean_rss": 566329344,
+  "max_source_seconds": 2.668437000014819,
+  "max_source_rss": 506576896
+}

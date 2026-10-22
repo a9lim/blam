@@ -1,0 +1,21 @@
+'Blc.RootLow.contextual_hoist_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootLow.contextual_hoist_positive' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootLow.root_linear_hole_charge' depends on axioms: [propext, Classical.choice, Quot.sound]
+/Users/a9lim/Work/blam/tmp/round4/rootlow/LinearPrices.lean:139:69: warning: This simp argument is unused:
+  Int.zero_add
+
+Hint: Omit it from the simp argument list.
+  simp only [̵h̵x̵,̵h̵d̵,̵h̵c̵a̵,̵h̵c̵c̵,̵I̵n̵t̵.̵n̵a̵t̵C̵a̵s̵t̵_̵o̵n̵e̵,̵I̵n̵t̵.̵s̵u̵b̵_̵s̵e̵l̵f̵,̵I̵n̵t̵.̵z̵e̵r̵o̵_̵m̵u̵l̵,̵I̵n̵t̵.̵z̵e̵r̵o̵_̵a̵d̵d̵,̵
+  ̵ ̵ ̵ ̵ ̵I̵n̵t̵.̵n̵a̵t̵C̵a̵s̵t̵_̵z̵e̵r̵o̵,̵I̵n̵t̵.̵m̵u̵l̵_̵z̵e̵r̵o̵,̵I̵n̵t̵.̵a̵d̵d̵_̵z̵e̵r̵o̵,̵I̵n̵t̵.̵s̵u̵b̵_̵z̵e̵r̵o̵]̵[̲h̲x̲,̲ ̲h̲d̲,̲ ̲h̲c̲a̲,̲ ̲h̲c̲c̲,̲ ̲I̲n̲t̲.̲n̲a̲t̲C̲a̲s̲t̲_̲o̲n̲e̲,̲ ̲I̲n̲t̲.̲s̲u̲b̲_̲s̲e̲l̲f̲,̲ ̲I̲n̲t̲.̲z̲e̲r̲o̲_̲m̲u̲l̲,̲ ̲I̲n̲t̲.̲n̲a̲t̲C̲a̲s̲t̲_̲z̲e̲r̲o̲,̲
+  ̲ ̲ ̲ ̲ ̲I̲n̲t̲.̲m̲u̲l̲_̲z̲e̲r̲o̲,̲ ̲I̲n̲t̲.̲a̲d̲d̲_̲z̲e̲r̲o̲,̲ ̲I̲n̲t̲.̲s̲u̲b̲_̲z̲e̲r̲o̲]̲ at hp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/a9lim/Work/blam/tmp/round4/rootlow/LinearPrices.lean:140:47: warning: This simp argument is unused:
+  Int.sub_zero
+
+Hint: Omit it from the simp argument list.
+  simp only [hx, ̲hd, ̲hca, ̲hcc, ̲Int.natCast_one, ̲Int.sub_self, ̲Int.zero_mul, ̲Int.zero_add,
+      Int.natCast_zero, ̲Int.mul_zero, ̲Int.add_zero,̵I̵n̵t̵.̵s̵u̵b̵_̵z̵e̵r̵o̵] at hp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.RootLow.root_linear_zero_charge' depends on axioms: [propext, Classical.choice, Quot.sound]

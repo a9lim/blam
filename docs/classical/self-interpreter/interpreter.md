@@ -881,7 +881,7 @@ Open:
 - the reader weight bound `w(R) ≥ 46` (`class-bound.md` §3), which would make
   the 162 optimal in the separated class and its widenings: every β-normal
   reader meets it and no λ-rooted minimum reader below 46 exists, so it is
-  open only for minimum readers whose root is a let;
+  open only for minimum readers whose root is a nonlinear let;
 - NEXT of arbitrary syntax in `32 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
   `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix
   cells, and knotless first heads with two nonlinear binders
