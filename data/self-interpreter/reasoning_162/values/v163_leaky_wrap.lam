@@ -1,0 +1,8 @@
+-- 162 with the leaky cell  \zx. zx (\q. arg) (\zy. zy args)  (25 bits): the
+-- K-arm returns (\q. arg) r' = arg, the F-arm r' args.  Expected 163.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx. zx (\q. arg) (\zy. zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

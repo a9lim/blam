@@ -1,0 +1,153 @@
+{
+  "identities": [
+    {
+      "identity": "pointwise_box_decode",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0010"
+    },
+    {
+      "identity": "pointwise_box_application",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0000000101100000000001011011110000101111010011111010000101111101001111010"
+    },
+    {
+      "identity": "resumption_pair_decode",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "000010"
+    },
+    {
+      "identity": "resumption_pair_diagonal",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "00000101011101101010"
+    },
+    {
+      "identity": "neutral_seed_on_lambda_payload",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "00000111010"
+    },
+    {
+      "identity": "argument_thunk_erases_suffix",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0000001110"
+    },
+    {
+      "identity": "constructor_phase_is_not_environment_phase",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0000001110"
+    },
+    {
+      "identity": "fold_variable",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0010"
+    },
+    {
+      "identity": "fold_abstraction",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "000000010101011110000000011110000001011101110011011110000000010111101001110100010000001011101110011011110"
+    },
+    {
+      "identity": "fold_application",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "00000001010101011110000000011110000001011101110011011110000000010111101001110100010100101010111000000001111000000101110111001101111000000001011110100111010001010"
+    },
+    {
+      "identity": "whole_prefix_reader_zero",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "00000001101110"
+    },
+    {
+      "identity": "whole_prefix_reader_variable_1",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "000000010111000010110000010000101100000110111010"
+    },
+    {
+      "identity": "whole_prefix_lookup_1",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0000001110"
+    },
+    {
+      "identity": "whole_prefix_reader_variable_2",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "000000010111000010110000010000101100000100001011000001101111010"
+    },
+    {
+      "identity": "whole_prefix_lookup_2",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0000000101110000010000101100000110110"
+    },
+    {
+      "identity": "whole_prefix_reader_variable_3",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "000000010111000010110000010000101100000100001011000001000010110000011011111010"
+    },
+    {
+      "identity": "whole_prefix_lookup_3",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0000000101110000010000101100000100001011000001101110"
+    },
+    {
+      "identity": "whole_prefix_reader_variable_8",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "000000010111000010110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000010000101100000100001011000001101111111111010"
+    },
+    {
+      "identity": "whole_prefix_lookup_8",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0000000101110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000010000101100000110111111110"
+    },
+    {
+      "identity": "whole_prefix_reader_variable_16",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "000000010111000010110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000010000101100000110111111111111111111010"
+    },
+    {
+      "identity": "whole_prefix_lookup_16",
+      "python_beta": true,
+      "rust_kn": true,
+      "normal_form_bits": "0000000101110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000010000101100000100001011000001000010110000011011111111111111110"
+    }
+  ],
+  "refutations": [
+    {
+      "candidate": "argument_thunks",
+      "source": "\\x.x",
+      "got": "0000010111000000110111010",
+      "want": "0000010111000001010",
+      "unequal_normal_forms": true,
+      "python_beta": true,
+      "rust_kn": true
+    },
+    {
+      "candidate": "local_phase",
+      "source": "\\x\\y.x",
+      "got": "000001011100000111010",
+      "want": "0000010111000000011010",
+      "unequal_normal_forms": true,
+      "python_beta": true,
+      "rust_kn": true
+    }
+  ],
+  "count": 21,
+  "elapsed_seconds": 0.151,
+  "enumeration": false
+}

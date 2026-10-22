@@ -1,0 +1,18 @@
+{
+  "source": "embedded162_direct.lam",
+  "bits": 223,
+  "battery": "223 bits  ok=667 skip=1 fail=0  embedded162_direct.lam",
+  "failures": [],
+  "seconds": 1.7882661250041565,
+  "polish": [
+    {
+      "flags": [
+        "--max-cuts",
+        "2"
+      ],
+      "minimum": 223,
+      "battery": "223 bits  ok=667 skip=1 fail=0  embedded162_direct.polished0.blc",
+      "source": "embedded162_direct.polished0.blc"
+    }
+  ]
+}

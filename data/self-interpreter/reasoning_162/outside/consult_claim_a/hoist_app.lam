@@ -1,0 +1,7 @@
+(\x. x x) (\x. (\p. \c.
+ (\j. \s. s (\a.a) (\u.s (\q.c) (s s u))
+   (\b. p (\e. b
+     (c (\args \arg. e (\zx \zy. zx arg (zy args))))
+     (j e))))
+ (\e. p (\e2. c (\args. e args (e2 args))))
+ ) (x x))

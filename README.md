@@ -122,9 +122,14 @@ proven.
   and passes the parser's second-bit stage as an operand that the variable
   branch erases. Lean proves it correct for every closed program, as it does
   the previous record, the 165, and the 168. Nothing smaller appears in its
-  let structure or its βη components. Every self-interpreter has at least 37
-  bits by a reviewed handwritten proof, and at least 27 kernel-checked in Lean
-  ([global floor](docs/classical/self-interpreter/global-floor.md)). The same
+  let structure or its βη components. Every self-interpreter has at least 40
+  bits by reviewed handwritten proofs with kernel-checked components, and at
+  least 27 kernel-checked in Lean
+  ([global floor](docs/classical/self-interpreter/global-floor.md)). Every
+  interpreter built like the 162 — an opaque knot, any reader, a separate
+  NEXT building the canonical values — has at least 146 bits, and the 162 is
+  optimal among them exactly when one reader bound holds
+  ([separated class](docs/classical/self-interpreter/class-bound.md)). The same
   reader gives universal machines of 172 (non-strict) and 184 (strict) bits,
   against Tromp's 178 and 190, and Lean proves all four universal
   ([universal](docs/classical/self-interpreter/universal.md)).
@@ -436,7 +441,7 @@ guarantees, and records of what the measurements and searches establish.
 | classical engine | [architecture](docs/classical/architecture.md), [running programs: notation, blc, uni](docs/classical/programs.md), [speed prior](docs/classical/speed.md) |
 | classical results | [bits of Ω](docs/classical/omega.md), [coding theorem](docs/classical/coding.md), [AIT golf](docs/classical/golf.md) |
 | certificates | [specification](docs/classical/certificates/specification.md), [frontier maps](docs/classical/certificates/frontier.md), [BB(33/34/35)](docs/classical/certificates/busy-beaver.md), [Lean](lean/README.md) |
-| self-interpreter | [the 162](docs/classical/self-interpreter/interpreter.md), [global floor](docs/classical/self-interpreter/global-floor.md), [universal machine](docs/classical/self-interpreter/universal.md), [slot searches](docs/classical/self-interpreter/slots.md) |
+| self-interpreter | [the 162](docs/classical/self-interpreter/interpreter.md), [global floor](docs/classical/self-interpreter/global-floor.md), [separated class](docs/classical/self-interpreter/class-bound.md), [universal machine](docs/classical/self-interpreter/universal.md), [slot searches](docs/classical/self-interpreter/slots.md) |
 | qBLC | [architecture](docs/quantum/architecture.md), [frontier adjudication](docs/quantum/escalation.md), [Galois structure](docs/quantum/galois.md), [odd-sector search](docs/quantum/oddmin.md), [bisimulation](docs/quantum/bisimulation.md) |
 | qALC | [architecture](docs/quantum-algebraic/architecture.md), [token machine](docs/quantum-algebraic/token.md), [kernel register](docs/quantum-algebraic/kernel.md), [instance identity](docs/quantum-algebraic/instance-identity.md), [objects](docs/quantum-algebraic/objects.md), [speed prior](docs/quantum-algebraic/speed.md), [Rust pillar](docs/quantum-algebraic/rust-pillar.md), [reference and proof records](qalc/README.md) |
 

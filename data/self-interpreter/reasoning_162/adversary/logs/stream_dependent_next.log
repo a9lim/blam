@@ -1,0 +1,2 @@
+/Users/a9lim/Work/blam/tmp/round3/adversary/stream_dependent_next.lam: 178 bits  ok=667 skip=1 fail=0  /Users/a9lim/Work/blam/tmp/round3/adversary/stream_dependent_next.lam
+  letopt --max-cuts 2: smallest 176

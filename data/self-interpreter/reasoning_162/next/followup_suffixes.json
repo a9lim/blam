@@ -1,0 +1,170 @@
+[
+  {
+    "file": "marker_late.lam",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_late.lam",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_late.lam",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_late.polished0.blc",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_late.polished0.blc",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_late.polished0.blc",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_dual.lam",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_dual.lam",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_dual.lam",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_dual.polished0.blc",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_dual.polished0.blc",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_dual.polished0.blc",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_bit.lam",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_bit.lam",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_bit.lam",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_bit.polished0.blc",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_bit.polished0.blc",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "marker_bit.polished0.blc",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "stream_second.lam",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "stream_second.lam",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "stream_second.lam",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "stream_second.polished0.blc",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "stream_second.polished0.blc",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "file": "stream_second.polished0.blc",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  }
+]

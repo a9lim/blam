@@ -1,0 +1,47 @@
+[
+  {
+    "module": "Families38",
+    "exit_code": 0,
+    "seconds": 0.183133665996138
+  },
+  {
+    "module": "Size38Sources",
+    "exit_code": 0,
+    "seconds": 6.018353917010245
+  },
+  {
+    "module": "Size38Pumps",
+    "exit_code": 0,
+    "seconds": 0.9616837920038961
+  },
+  {
+    "module": "WGrammar38",
+    "exit_code": 0,
+    "seconds": 0.2612080840044655
+  },
+  {
+    "module": "Payload38",
+    "exit_code": 0,
+    "seconds": 0.16995004200725816
+  },
+  {
+    "module": "Size38Residuals",
+    "exit_code": 0,
+    "seconds": 0.9267097090050811
+  },
+  {
+    "module": "Finite38Base",
+    "exit_code": 0,
+    "seconds": 0.19372829199710395
+  },
+  {
+    "module": "Size38Finite",
+    "exit_code": 0,
+    "seconds": 4.765284458000679
+  },
+  {
+    "module": "AxiomAudit",
+    "exit_code": 0,
+    "seconds": 0.1801030839997111
+  }
+]

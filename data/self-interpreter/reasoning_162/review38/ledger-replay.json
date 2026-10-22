@@ -1,0 +1,43 @@
+{
+  "four_rows": 652,
+  "five_rows": 24,
+  "unique_wires": 676,
+  "four_kinds": {
+    "nonlinear_chain": 407,
+    "wrong_hnf": 128,
+    "unresolved_growth": 11,
+    "unresolved_head": 48,
+    "identity_wrong_payload": 12,
+    "exact_cycle": 6,
+    "three_lambdas": 12,
+    "identity_wrong_hnf": 28
+  },
+  "five_kinds": {
+    "nonlinear_chain": 6,
+    "smaller_than_37": 2,
+    "wrong_hnf": 5,
+    "three_lambdas": 3,
+    "unresolved_head": 2,
+    "identity_wrong_payload": 6
+  },
+  "finite": 615,
+  "handwritten_invariants": 48,
+  "residual_ids": [
+    448,
+    449,
+    454,
+    455,
+    460,
+    461,
+    466,
+    467,
+    472,
+    473,
+    478,
+    479,
+    572
+  ],
+  "macro_head_replays": 12,
+  "literal_lean_sources_match_ledger": true,
+  "seconds": 5.954689457998029
+}

@@ -1,0 +1,86 @@
+{
+  "residual_layouts": 676,
+  "finite_refutations": 615,
+  "handwritten_invariant_refutations": 48,
+  "remaining": [
+    {
+      "id": 448,
+      "source": "\\a.((a (\\b.(\\c.(a (b c))))) a)",
+      "family": "diag_200",
+      "invocation_I_engine": "UNKNOWN"
+    },
+    {
+      "id": 449,
+      "source": "\\a.(a (a (\\b.(\\c.(a (b c))))))",
+      "family": "diag_200",
+      "invocation_I_engine": "UNKNOWN"
+    },
+    {
+      "id": 454,
+      "source": "\\a.((a (\\b.(\\c.(a (c b))))) a)",
+      "family": "diag_200",
+      "invocation_I_engine": "DIVERGE bb-engine"
+    },
+    {
+      "id": 455,
+      "source": "\\a.(a (a (\\b.(\\c.(a (c b))))))",
+      "family": "diag_200",
+      "invocation_I_engine": "UNKNOWN"
+    },
+    {
+      "id": 460,
+      "source": "\\a.((a (\\b.(\\c.(b (a c))))) a)",
+      "family": "diag_200",
+      "invocation_I_engine": "UNKNOWN"
+    },
+    {
+      "id": 461,
+      "source": "\\a.(a (a (\\b.(\\c.(b (a c))))))",
+      "family": "diag_200",
+      "invocation_I_engine": "UNKNOWN"
+    },
+    {
+      "id": 466,
+      "source": "\\a.((a (\\b.(\\c.(b (c a))))) a)",
+      "family": "diag_200",
+      "invocation_I_engine": "DIVERGE bb-engine"
+    },
+    {
+      "id": 467,
+      "source": "\\a.(a (a (\\b.(\\c.(b (c a))))))",
+      "family": "diag_200",
+      "invocation_I_engine": "DIVERGE bb-engine"
+    },
+    {
+      "id": 472,
+      "source": "\\a.((a (\\b.(\\c.(c (a b))))) a)",
+      "family": "diag_200",
+      "invocation_I_engine": "UNKNOWN"
+    },
+    {
+      "id": 473,
+      "source": "\\a.(a (a (\\b.(\\c.(c (a b))))))",
+      "family": "diag_200",
+      "invocation_I_engine": "UNKNOWN"
+    },
+    {
+      "id": 478,
+      "source": "\\a.((a (\\b.(\\c.(c (b a))))) a)",
+      "family": "diag_200",
+      "invocation_I_engine": "DIVERGE bb-engine"
+    },
+    {
+      "id": 479,
+      "source": "\\a.(a (a (\\b.(\\c.(c (b a))))))",
+      "family": "diag_200",
+      "invocation_I_engine": "DIVERGE bb-engine"
+    },
+    {
+      "id": 572,
+      "source": "\\a.a (\\b\\c.(a (c b)))",
+      "family": "triple1",
+      "invocation_I_engine": "UNKNOWN"
+    }
+  ],
+  "unconditional_floor_unchanged": 37
+}

@@ -1,0 +1,49 @@
+{
+  "name": "resumption_pairs",
+  "as_written_bits": 276,
+  "battery": "276 bits  ok=667 skip=1 fail=0  resumption_pairs.lam",
+  "first_failures": [],
+  "battery_seconds": 1.844,
+  "polish": [
+    {
+      "flags": [
+        "--max-cuts",
+        "2"
+      ],
+      "status": 2,
+      "seconds": 0.942,
+      "minimum": null
+    },
+    {
+      "flags": [
+        "--no-inline",
+        "--max-cuts",
+        "2"
+      ],
+      "status": 0,
+      "seconds": 0.509,
+      "minimum": 276,
+      "same_wire_as_input": true,
+      "battery": "276 bits  ok=667 skip=1 fail=0  resumption_pairs.polished1.blc",
+      "wire_file": "resumption_pairs.polished1.blc"
+    }
+  ],
+  "divergent_suffixes": [
+    {
+      "source": "Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    },
+    {
+      "source": "lambda_Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    },
+    {
+      "source": "Omega_Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    }
+  ],
+  "total_seconds": 3.304
+}

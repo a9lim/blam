@@ -1,0 +1,66 @@
+{
+  "literal": {
+    "count": 1008,
+    "groups": {
+      "literal-contexts": 1008
+    },
+    "extras": 0,
+    "missing": 0
+  },
+  "four": {
+    "count": 2248,
+    "groups": {
+      "4,7,5:a-below+a-above": 60,
+      "4,7,5:a-below+b-above": 60,
+      "4,7,5:triple0": 60,
+      "4,7,5:triple1": 60,
+      "4,7,5:a-below+c": 420,
+      "4,7,5:a-between+a-between": 36,
+      "4,7,5:a-between+b-below": 60,
+      "4,7,5:b-below+b-below": 280,
+      "5,6,7:outer-between:side2": 24,
+      "5,6,7:outer-below:side1": 60,
+      "5,6,7:outer-below:side2": 96,
+      "5,6,7:middle-below:side2": 84,
+      "5,6,7:inner:side2": 60,
+      "6,6,5:outer-before": 96,
+      "5,7,3:closed-wrapper": 84,
+      "6,6,5:middle-before": 96,
+      "6,6,5:inner": 612
+    },
+    "extras": 0,
+    "missing": 0
+  },
+  "five": {
+    "count": 1416,
+    "groups": {
+      "C:nonlinear-ancestor": 72,
+      "A:function-width": 36,
+      "C:Delta-left": 96,
+      "C:Delta-right": 96,
+      "D:two-arguments": 192,
+      "B:function-I": 252,
+      "C:affine-ancestor": 84,
+      "C:I-argument": 588
+    },
+    "extras": 0,
+    "missing": 0
+  },
+  "one_wrapper_sites": {
+    "('outer-between', 2, 3)": 24,
+    "('outer-below', 1, 2)": 60,
+    "('outer-below', 2, 2)": 96,
+    "('middle-below', 2, 3)": 84,
+    "('inner', 2, 4)": 60
+  },
+  "two_wrapper_site_profiles": {
+    "('outer-before', 3)": 6,
+    "('middle-before', 3)": 6,
+    "('outer-before', 4)": 6,
+    "('middle-before', 4)": 6,
+    "('inner', 3)": 12,
+    "('inner', 4)": 36,
+    "('inner', 5)": 12
+  },
+  "seconds": 0.09538654200150631
+}

@@ -1,0 +1,9 @@
+-- (d) variable arm that uses the actual NEXT: NEXT (\a \p. cont r) s parses the
+-- variable's own stream with a constant continuation, so the parser does the
+-- skip.  Paper 166 (V' = 32 against V = 28).
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. u (\a \p. list (\q. cont)) list)
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

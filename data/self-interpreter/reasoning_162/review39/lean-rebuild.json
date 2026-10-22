@@ -1,0 +1,82 @@
+[
+  {
+    "module": "Proofs",
+    "exit_code": 0,
+    "seconds": 0.8506407499953639
+  },
+  {
+    "module": "Checks",
+    "exit_code": 0,
+    "seconds": 1.667815499997232
+  },
+  {
+    "module": "RankRealization",
+    "exit_code": 0,
+    "seconds": 0.27936920800129883
+  },
+  {
+    "module": "Protected461",
+    "exit_code": 0,
+    "seconds": 0.33851641599903814
+  },
+  {
+    "module": "Residuals",
+    "exit_code": 0,
+    "seconds": 0.1864082919928478
+  },
+  {
+    "module": "OneArgument38",
+    "exit_code": 0,
+    "seconds": 0.36997362499823794
+  },
+  {
+    "module": "Families38",
+    "exit_code": 0,
+    "seconds": 0.20353691600030288
+  },
+  {
+    "module": "Size38Sources",
+    "exit_code": 0,
+    "seconds": 8.202569457993377
+  },
+  {
+    "module": "Size38Pumps",
+    "exit_code": 0,
+    "seconds": 1.1640289580100216
+  },
+  {
+    "module": "WGrammar38",
+    "exit_code": 0,
+    "seconds": 0.28949854100937955
+  },
+  {
+    "module": "Payload38",
+    "exit_code": 0,
+    "seconds": 0.1893382499984
+  },
+  {
+    "module": "Size38Residuals",
+    "exit_code": 0,
+    "seconds": 1.1048684169945773
+  },
+  {
+    "module": "Finite38Base",
+    "exit_code": 0,
+    "seconds": 0.2320728750055423
+  },
+  {
+    "module": "Size38Finite",
+    "exit_code": 0,
+    "seconds": 6.057601958003943
+  },
+  {
+    "module": "AxiomAudit",
+    "exit_code": 0,
+    "seconds": 0.17477037498611026
+  },
+  {
+    "module": "ExplicitBindings",
+    "exit_code": 0,
+    "seconds": 1.4346588750049705
+  }
+]

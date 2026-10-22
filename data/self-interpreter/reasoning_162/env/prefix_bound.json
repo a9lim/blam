@@ -1,0 +1,683 @@
+{
+  "hypothesis": "D = lambda u r. r H; mandatory free a,e; H<=18",
+  "frame": [
+    "r",
+    "u",
+    "a",
+    "e",
+    "exp",
+    "bit1",
+    "list",
+    "cont",
+    "intL",
+    "x"
+  ],
+  "candidate_count": 110,
+  "base_pass": 0,
+  "both_pass": 0,
+  "python_seconds": 0.005632041997159831,
+  "rust_crosschecks": 110,
+  "rust_seconds": 0.1446535830036737,
+  "checks": [
+    {
+      "H_bits": 18,
+      "H_wire": "000100111110111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "000100111111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "000111110001111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "000111110111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "000111111000111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "000111111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01000011111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01000011111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010001101111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010001101111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010001111101011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010001111110101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01001001111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01001001111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010011001111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010011001111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01001111000111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010011110011011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010011110011111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 14,
+      "H_wire": "01001111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01001111100011110",
+      "base_ok": false,
+      "successor_ok": true
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010011111001101110",
+      "base_ok": false,
+      "successor_ok": true
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010011111001111010",
+      "base_ok": false,
+      "successor_ok": true
+    },
+    {
+      "H_bits": 14,
+      "H_wire": "01001111101110",
+      "base_ok": false,
+      "successor_ok": true
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01010010111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01010010111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010100110111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010100110111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010100111101011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010100111101111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010100111110101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010100111110111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010110001111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010110001111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010110111000111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "010110111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010110111100011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "010110111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0101110111011110",
+      "base_ok": false,
+      "successor_ok": true
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0101110111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01011110001011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111100011011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111100011111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111101000111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "010111101011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0101111011011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01011110111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01011110111100010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111101111000110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "010111101111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0101111011110110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01011110111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111101111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01011111000101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111110001101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111110001111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111110100011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "010111110101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0101111101101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01011111011100010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111110111000110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "010111110111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0101111101110110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01011111011101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111110111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "010111110111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011001001111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011001001111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011001111000111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "011001111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011001111100011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "011001111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0111001111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0111001111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01111000001111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011110000110111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011110000111111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 14,
+      "H_wire": "01111000111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01111001001011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011110010011011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011110010011111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011110011000111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "011110011011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0111100111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01111001111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01111001111100010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011110011111000110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "011110011111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0111100111110110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01111001111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011110011111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 11,
+      "H_wire": "01111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01111100000111110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011111000011011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011111000011111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 14,
+      "H_wire": "01111100011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01111100100101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011111001001101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011111001001111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011111001100011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "011111001101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0111110011101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01111100111100010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011111001111000110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 15,
+      "H_wire": "011111001111010",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 16,
+      "H_wire": "0111110011110110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 17,
+      "H_wire": "01111100111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011111001111011110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 18,
+      "H_wire": "011111001111101110",
+      "base_ok": false,
+      "successor_ok": false
+    },
+    {
+      "H_bits": 11,
+      "H_wire": "01111101110",
+      "base_ok": false,
+      "successor_ok": false
+    }
+  ]
+}

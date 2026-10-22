@@ -167,6 +167,26 @@ with all features (three opt-in tests ignored) and 328 with default features.
   The 165's reader-shape searches and conditional bounds below do not reach
   the 162's reader: as a two-operand reader its last operand is the bare
   `next`, a family they left open.
+- **The separated class** (`classical/self-interpreter/class-bound.md`):
+  every interpreter built as an opaque fixed-point knot around
+  `λp c. R[Q/j]` — any reader `R` obeying the independent rigid reader
+  laws, a separate β-normal NEXT `Q` with two-armed tag tests obeying the
+  canonical rigid branch laws — costs exactly `116 + w(R)` with the
+  canonical NEXT and knot and at least that otherwise, where
+  `w(R) = cost(R) + 4 depth(j)`; the 162 is `w = 46`, the 165 `w = 49`.
+  `Blc/SelfintClass.lean` kernel-checks this and `|E| ≥ 138`, including
+  the 92-bit NEXT classification. A handwritten argument with 3,484
+  kernel-checked cases (two reviews) gives `w ≥ 30`: **every member has at
+  least 146 bits**, and the 162 is optimal in the class if and only if
+  every reader has `w ≥ 46` (proved for two-λ readers, `w ≥ 50`, and for the
+  serial form `λs. s D E j` with literal abstractions and at most four λs).
+  With NEXT opaque, the `s I A j` middle operand is exactly the 162's
+  variable-arm family through 30 bits (1,313,478 terms). Outside the class
+  every mechanism the third round priced costs at least 170; NEXT under
+  `λlist` can embed any closed interpreter at `+17`, and
+  `Blc/SelfintRecursion.lean` prices the knotless two-head skeleton at
+  `≥ 165` under the ordinary first-child cut and the unshared generator at
+  `≥ 167` (attained). Archive: `data/self-interpreter/reasoning_162/`.
 - **The 165**, the previous record (`classical/self-interpreter/interpreter.md`,
   `data/self-interpreter/machines/int165.lam`), Codex's design: Palmer's 168
   with a reader that computes the skip `list list list` once on the whole
@@ -262,13 +282,23 @@ with all features (three opt-in tests ignored) and 328 with default features.
   fourth live binder is necessary. This gives a preliminary global floor
   of 33; analytical exclusion of its equality cases raises it to 34, and
   `classical/self-interpreter/global-floor.md` excludes 34–36 the same way:
-  **every interpreter has at least 37 bits**. This is Codex's handwritten
+  every interpreter has at least 37 bits. This is Codex's handwritten
   proof; two independent adversarial reviews (a fresh Codex consult and
   Gemini) found it correct, the Codex review replaying all 102 finite
   refutations with its own reducer. `Blc/SelfintFloor37.lean` kernel-checks
   its 144 fixed reduction clauses; `tools/self-interpreter/theory/floor37/`
   regenerates them and checks the 108 residual layouts in 0.05 seconds
-  (`data/self-interpreter/theory/floor37.json`).
+  (`data/self-interpreter/theory/floor37.json`). A literal interface `λc.B`
+  costs at least 39 (Statman width inside `B` plus a live `c`), and with it
+  the same first-contraction method excludes sizes 37, 38 and 39: **every
+  interpreter has at least 40 bits** (Codex's handwritten classifications:
+  676 layouts at 37, 1,206 at 38 and 4,672 at 39, each excluded by finite
+  certificates whose predicates are kernel-checked and by complete Lean
+  proofs of `¬ IsSelfInterpreter` for the residuals — 13, 63 and 167; two
+  independent reviews of each step, the second by Gemini and then by fresh
+  Claude consults, one of which re-enumerated all 35.4 million closed terms
+  at the size-39 count triples; `data/self-interpreter/reasoning_162/floor38/`).
+  No Lean theorem states the numeric floor.
   A shared-S construction attains width three, two nonlinear binders,
   and the required capture counts simultaneously, even
   in the beta-normal fragment with every zero-based index at most two.
@@ -543,21 +573,22 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
 9. **The self-interpreter below 162** (`classical/self-interpreter/interpreter.md`
-   §7). Constructive: the 162's own architecture is new and its
-   neighbourhood beyond letopt and the βη components is unexplored; readers with the bare `next` operand
-   and other heads, the knot × NEXT coupling through the reader's diagonal,
-   and wiring searches for U around the 162's body. NEXT-internal fusions and
-   second-bit dispatch placements are catalogued and lose; NEXT optimality
-   alone is as hard as a 48-bit global floor (any interpreter embeds into
-   the NEXT slot at +44 bits). Look for another shared computation of the
-   kind the readers are, by reasoning first. Proof: the floor is 37
-   handwritten and 27 kernel-checked; the next steps are an
-   application-sensitive charge for residual control (`remainder.md`), which
-   no structural count supplies, and a formalization of residual tracing.
-   The 162's reader is on the fork's golf branch (tromp/AIT#13): `int.lam`
-   162, `uni.lam` 184 / 172, `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp`
-   1270, each verified against its previous version (`classical/golf.md`);
-   the PR's title and a summary comment carry the new table.
+   §7, `class-bound.md`). Proof: the reader weight bound `w(R) ≥ 46` would
+   make the 162 optimal in the separated class; the open families (three
+   or more λs at depths 0 and 1, six depth-2 count rows) are listed in
+   `data/self-interpreter/reasoning_162/floor/STATE46.md`, and any reader
+   with `w ≤ 45` is a sub-162 interpreter of exactly `116 + w` bits. The
+   unconditional floor is 40, by classifications that grow fast (4,672
+   layouts at 39); a size-aware structural lemma is the next lever.
+   Constructive: a sub-162 outside the class must break the knot, the NEXT
+   separation, the canonical values or the CPS protocol, and every
+   mechanism priced so far costs at least 170; with the real NEXT, the
+   162's variable-arm slot needs a corrected enumeration (the round-3
+   checker mis-binds the knot's generator). The 162's reader is on the
+   fork's golf branch (tromp/AIT#13): `int.lam` 162, `uni.lam` 184 / 172,
+   `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp` 1270, each verified
+   against its previous version (`classical/golf.md`); the PR's title and a
+   summary comment carry the new table.
 10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the
    open global-allocator decision) would remove most of malloc/free and the

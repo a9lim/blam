@@ -1,0 +1,95 @@
+{
+  "literal": {
+    "layouts": 1008,
+    "triples": {
+      "(5, 7, 3)": 1008
+    },
+    "kinds": {
+      "smaller_than_39": 286,
+      "wrong_hnf": 446,
+      "nonlinear_chain": 149,
+      "identity_wrong_payload": 1,
+      "three_lambdas": 120,
+      "W_grammar": 4
+    },
+    "predicate_flags": {
+      "('smaller', False)": 286,
+      "('sourceHead', False)": 446,
+      "('chain', False)": 149,
+      "('three', False)": 120
+    },
+    "finite": 1002,
+    "full_before_residuals": 4
+  },
+  "four": {
+    "layouts": 2248,
+    "triples": {
+      "(4, 7, 5)": 1036,
+      "(5, 6, 7)": 324,
+      "(6, 6, 5)": 804,
+      "(5, 7, 3)": 84
+    },
+    "kinds": {
+      "wrong_hnf": 252,
+      "three_lambdas": 694,
+      "nonlinear_chain": 891,
+      "identity_wrong_hnf": 188,
+      "identity_wrong_payload": 84,
+      "smaller_than_39": 55,
+      "W_grammar": 77,
+      "identity_cycle": 2
+    },
+    "predicate_flags": {
+      "('sourceHead', False)": 252,
+      "('three', False)": 694,
+      "('chain', False)": 891,
+      "('identityHead', True)": 188,
+      "('smaller', False)": 55
+    },
+    "finite": 2164,
+    "full_before_residuals": 79
+  },
+  "five": {
+    "layouts": 1416,
+    "triples": {
+      "(5, 7, 3)": 1416
+    },
+    "kinds": {
+      "nonlinear_chain": 1018,
+      "wrong_hnf": 130,
+      "identity_wrong_hnf": 39,
+      "three_lambdas": 27,
+      "smaller_than_39": 98,
+      "identity_wrong_payload": 27,
+      "W_grammar": 66,
+      "identity_cycle": 7,
+      "W_identity_reduct": 2
+    },
+    "predicate_flags": {
+      "('chain', False)": 1018,
+      "('sourceHead', False)": 130,
+      "('identityHead', True)": 39,
+      "('three', False)": 27,
+      "('smaller', False)": 98
+    },
+    "finite": 1339,
+    "full_before_residuals": 75
+  },
+  "total_layouts": 4672,
+  "finite": 4505,
+  "full": 167,
+  "replayed_beta_steps": 13199,
+  "max_payload_steps": 26,
+  "residuals": [
+    "five:312",
+    "five:553",
+    "four:0",
+    "four:1000",
+    "four:376",
+    "four:399",
+    "four:80",
+    "literal:180",
+    "literal:276"
+  ],
+  "seconds": 0.22947041600127704
+}

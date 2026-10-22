@@ -1,0 +1,46 @@
+{
+  "raw": 1206,
+  "finite": {
+    "wrong_hnf": 201,
+    "identity_wrong_payload": 72,
+    "three_lambdas": 188,
+    "nonlinear_chain": 613,
+    "exact_cycle": 4,
+    "identity_wrong_hnf": 59,
+    "smaller_than_38": 6
+  },
+  "residuals": 63,
+  "grammar": 57,
+  "pump": 1,
+  "payloads": 5,
+  "replayed_beta_steps": 3906,
+  "max_payload_steps": 14,
+  "families": {
+    "one_a_zero_a": 12,
+    "one_a_zero_b": 72,
+    "one_a_zero_c": 60,
+    "one_b_zero_a": 60,
+    "one_b_zero_b": 60,
+    "one_b_zero_c": 420,
+    "triple0_outer_between": 12,
+    "triple0_middle_below": 60,
+    "triple1_outer_between": 12,
+    "triple1_middle_below": 60,
+    "N_box_outer_before": 12,
+    "D_body_outer_between": 12,
+    "N_box_outer_between": 30,
+    "N_box_middle_before": 24,
+    "D_arg_outer_below": 60,
+    "N_box_outer_below": 120,
+    "D_body_middle_below": 60,
+    "N_box_middle_below": 36,
+    "N_box_inner": 24
+  },
+  "preliminary": {
+    "three_lambdas": 102,
+    "nonlinear_chain": 85,
+    "identity_wrong_payload": 3,
+    "wrong_hnf": 2
+  },
+  "seconds": 0.06561441600206308
+}

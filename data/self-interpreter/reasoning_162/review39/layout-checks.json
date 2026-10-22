@@ -1,0 +1,36 @@
+{
+  "base_counts": {
+    "outer_before": 12,
+    "outer_between": 12,
+    "outer_below": 60,
+    "middle_before": 12,
+    "middle_below": 60,
+    "inner": 60
+  },
+  "template_counts": {
+    "one_a_zero_a": 12,
+    "one_a_zero_b": 72,
+    "one_a_zero_c": 60,
+    "one_b_zero_a": 60,
+    "one_b_zero_b": 60,
+    "one_b_zero_c": 420,
+    "triple0_outer_between": 12,
+    "triple0_middle_below": 60,
+    "triple1_outer_between": 12,
+    "triple1_middle_below": 60,
+    "N_box_outer_before": 12,
+    "D_body_outer_between": 12,
+    "N_box_outer_between": 30,
+    "D_arg_outer_below": 60,
+    "N_box_outer_below": 120,
+    "N_box_middle_before": 24,
+    "D_body_middle_below": 60,
+    "N_box_middle_below": 36,
+    "N_box_inner": 24
+  },
+  "total": 1206,
+  "four_lambdas": 828,
+  "one_vacuous": 378,
+  "exact_wire_family_match": true,
+  "seconds": 0.012024833005852997
+}

@@ -1,0 +1,9 @@
+-- Fusion lane: continuation passed as a constant function (cc = \q. k), so the
+-- variable arm reads `list cc = k r` straight off the stream cell (V 25 instead
+-- of 28); every return then needs a junk first operand and the root an adapter.
+\c. (\x. x x) (\x. (\intL. \cc. \list.
+  list (\a. a) (\u. list cc (list list u))
+    (\bit1. intL (\q. \exp. bit1
+      (cc bit1 (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\q2. \exp2. cc exp2 (\args. exp args (exp2 args)))))))
+  (x x)) (\q. c)

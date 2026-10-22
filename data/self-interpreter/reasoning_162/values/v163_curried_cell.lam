@@ -1,0 +1,8 @@
+-- 162 with the curried stream-shaped cell  \b. b (\q. arg) (\r. r args)  (25 bits).
+-- Laws: cell K n = arg ; cell F r = r args.  Expected 163.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\b. b (\q. arg) (\r. r args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

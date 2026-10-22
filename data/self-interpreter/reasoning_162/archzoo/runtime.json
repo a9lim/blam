@@ -1,0 +1,7 @@
+{
+  "frozen_binary_sha256": "00883f147c7128a1642f323920deef23f0af9c8b742dadb3c0f30cf5478bfaa2",
+  "workers": 2,
+  "per_letopt_timeout_seconds": 45,
+  "candidate_enumeration": false,
+  "let_structure_optimization": true
+}

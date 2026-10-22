@@ -1,0 +1,62 @@
+[
+  {
+    "name": "parser_operand",
+    "bits": 179,
+    "purpose": "Three operands after I; the final operand supplies recursion and skip force.",
+    "expected": true
+  },
+  {
+    "name": "stream_dependent_next",
+    "bits": 178,
+    "purpose": "Use the original stream to make NEXT itself the variable return prefix.",
+    "expected": true
+  },
+  {
+    "name": "next_continuation_mode",
+    "bits": 179,
+    "purpose": "Attempt to borrow K c from shared-head NEXT; the changed reset law cycles.",
+    "expected": false
+  },
+  {
+    "name": "third_tag_projection",
+    "bits": 195,
+    "purpose": "NEXT has a literal third projection mode, exposing K c without recursive reset.",
+    "expected": true
+  },
+  {
+    "name": "suffix_or_next",
+    "bits": 174,
+    "purpose": "The second operand is NEXT at zero and the raw suffix on variables.",
+    "expected": true
+  },
+  {
+    "name": "tail_preserving_dual",
+    "bits": 172,
+    "purpose": "Repair c144 with a NEXT-or-suffix operand; its K arm borrows the input bit.",
+    "expected": true
+  },
+  {
+    "name": "stream_operand",
+    "bits": 186,
+    "purpose": "Third operand is the whole stream, used locally by V and consumed by NEXT.",
+    "expected": true
+  },
+  {
+    "name": "right_associated_skip",
+    "bits": 163,
+    "purpose": "Grok I5 proposed 163-bit right-associated skip; predicted N-headed suffix.",
+    "expected": false
+  },
+  {
+    "name": "borrowed_body_cell",
+    "bits": 155,
+    "purpose": "Use the documented 17-bit exp a a e cell outside its favourable body.",
+    "expected": false
+  },
+  {
+    "name": "identity_cut_counterexample",
+    "bits": 312,
+    "purpose": "Knotless two-head skeleton, H replays the parent and J=f; IdentityCut is false.",
+    "expected": true
+  }
+]

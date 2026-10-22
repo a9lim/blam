@@ -1,0 +1,50 @@
+[
+  {
+    "file": "prefix_own_tag",
+    "stats": [
+      16,
+      26,
+      32
+    ],
+    "bits": 170
+  },
+  {
+    "file": "prefix_own_tag",
+    "suffix": "Omega",
+    "ok": true
+  },
+  {
+    "file": "prefix_own_tag",
+    "suffix": "lambda_Omega",
+    "ok": true
+  },
+  {
+    "file": "prefix_own_tag",
+    "suffix": "Omega_Omega",
+    "ok": true
+  },
+  {
+    "file": "phase_argument",
+    "stats": [
+      21,
+      30,
+      39
+    ],
+    "bits": 203
+  },
+  {
+    "file": "phase_argument",
+    "suffix": "Omega",
+    "ok": true
+  },
+  {
+    "file": "phase_argument",
+    "suffix": "lambda_Omega",
+    "ok": true
+  },
+  {
+    "file": "phase_argument",
+    "suffix": "Omega_Omega",
+    "ok": true
+  }
+]

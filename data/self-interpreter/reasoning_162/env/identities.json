@@ -1,0 +1,146 @@
+{
+  "checks": [
+    {
+      "name": "prefix_literal_K_index1",
+      "ok": true
+    },
+    {
+      "name": "prefix_literal_K_successor_1",
+      "ok": true
+    },
+    {
+      "name": "prefix_literal_K_successor_2",
+      "ok": true
+    },
+    {
+      "name": "prefix_literal_K_successor_3",
+      "ok": true
+    },
+    {
+      "name": "prefix_literal_K_successor_4",
+      "ok": true
+    },
+    {
+      "name": "prefix_literal_K_successor_7",
+      "ok": true
+    },
+    {
+      "name": "prefix_literal_K_successor_16",
+      "ok": true
+    },
+    {
+      "name": "prefix_literal_K_successor_31",
+      "ok": true
+    },
+    {
+      "name": "prefix_own_tag_index1",
+      "ok": true
+    },
+    {
+      "name": "prefix_own_tag_successor_1",
+      "ok": true
+    },
+    {
+      "name": "prefix_own_tag_successor_2",
+      "ok": true
+    },
+    {
+      "name": "prefix_own_tag_successor_3",
+      "ok": true
+    },
+    {
+      "name": "prefix_own_tag_successor_4",
+      "ok": true
+    },
+    {
+      "name": "prefix_own_tag_successor_7",
+      "ok": true
+    },
+    {
+      "name": "prefix_own_tag_successor_16",
+      "ok": true
+    },
+    {
+      "name": "prefix_own_tag_successor_31",
+      "ok": true
+    },
+    {
+      "name": "alias_successor_0",
+      "ok": true
+    },
+    {
+      "name": "stream_diagonal_0",
+      "ok": true
+    },
+    {
+      "name": "alias_successor_1",
+      "ok": true
+    },
+    {
+      "name": "stream_diagonal_1",
+      "ok": true
+    },
+    {
+      "name": "alias_successor_2",
+      "ok": true
+    },
+    {
+      "name": "stream_diagonal_2",
+      "ok": true
+    },
+    {
+      "name": "alias_successor_3",
+      "ok": true
+    },
+    {
+      "name": "stream_diagonal_3",
+      "ok": true
+    },
+    {
+      "name": "alias_successor_7",
+      "ok": true
+    },
+    {
+      "name": "stream_diagonal_7",
+      "ok": true
+    },
+    {
+      "name": "alias_successor_16",
+      "ok": true
+    },
+    {
+      "name": "stream_diagonal_16",
+      "ok": true
+    },
+    {
+      "name": "phase_abs",
+      "ok": true
+    },
+    {
+      "name": "phase_app",
+      "ok": true
+    },
+    {
+      "name": "phase_var_1",
+      "ok": true
+    },
+    {
+      "name": "phase_var_2",
+      "ok": true
+    },
+    {
+      "name": "phase_var_3",
+      "ok": true
+    },
+    {
+      "name": "phase_var_9",
+      "ok": true
+    }
+  ],
+  "cell_bits": {
+    "canonical": 24,
+    "prefix_literal_K": 34,
+    "prefix_own_tag": 35,
+    "prefix_borrow_ABS_tag": 37
+  }
+}

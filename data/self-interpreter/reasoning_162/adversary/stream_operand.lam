@@ -1,0 +1,1 @@
+(\x.x x) (\x.(\p.\c \s.s (\a.a) (\u \t.t (\q.c) (t t u)) (\b \rest \t.p (\f.b (c (\e \a.f (\b \r.b a (r e)))) (p (\g.c (\e.f e (g e))))) rest) s) (x x))

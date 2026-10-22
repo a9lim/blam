@@ -1,0 +1,10 @@
+-- Double I-selection (NOTES §5): s I I V NEXT; V's argument is the second tag on a
+-- zero stream and NEXT on a variable; NEXT plays the variable arm. ABS/APP each bind
+-- and erase the trailing NEXT and each holds its own parse. Expected well above 162.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\a. a)
+    (\u. u
+      (\r2 \n. intL (\exp. cont (\args \arg. exp (\zx \zy. zx arg (zy args)))) r2)
+      (\r2 \n. intL (\exp. intL (\exp2. cont (\args. exp args (exp2 args)))) r2))
+    (\a \p. list (\q. cont) (list list a)))
+  (x x))

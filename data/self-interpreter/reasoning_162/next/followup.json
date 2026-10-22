@@ -1,0 +1,599 @@
+{
+  "prices": [
+    {
+      "name": "reset_raw",
+      "W": 41,
+      "NEXT": 101,
+      "bits": 180
+    },
+    {
+      "name": "reset_shared",
+      "W": 41,
+      "NEXT": 100,
+      "bits": 179
+    },
+    {
+      "name": "reset_app_identity",
+      "W": 46,
+      "NEXT": 96,
+      "bits": 180
+    },
+    {
+      "name": "marker_late",
+      "W": 36,
+      "NEXT": 113,
+      "bits": 187
+    },
+    {
+      "name": "marker_dual",
+      "W": 33,
+      "NEXT": 115,
+      "bits": 186
+    },
+    {
+      "name": "marker_bit",
+      "W": 33,
+      "NEXT": 113,
+      "bits": 184
+    },
+    {
+      "name": "stream_second",
+      "W": 28,
+      "NEXT": 125,
+      "bits": 191
+    }
+  ],
+  "checked_equalities": 41,
+  "checks": [
+    {
+      "label": "reset_raw_ABS",
+      "left": "(\\b.p (\\e.b c (\\v.p (\\g.c (\\env.e env (g env)))) (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\a \\b.a) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.a) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "reset_raw_APP",
+      "left": "(\\b.p (\\e.b c (\\v.p (\\g.c (\\env.e env (g env)))) (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\a \\b.b) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.b) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "reset_shared_ABS",
+      "left": "(\\b.p (\\e.(b c p) (\\y.b (\\arg.e (\\z \\w.z arg (w y))) (c (\\env.e env (y env)))))) (\\a \\b.a) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.a) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "reset_shared_APP",
+      "left": "(\\b.p (\\e.(b c p) (\\y.b (\\arg.e (\\z \\w.z arg (w y))) (c (\\env.e env (y env)))))) (\\a \\b.b) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.b) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "reset_app_identity_ABS",
+      "left": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.a) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.a) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "reset_app_identity_APP",
+      "left": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.b) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.b) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "marker_late_ABS",
+      "left": "(\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c) (\\a \\b.a) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.a) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "marker_late_APP",
+      "left": "(\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c) (\\a \\b.b) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.b) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "marker_dual_ABS",
+      "left": "(\\b.(b p p) (\\e.b (\\c.c (\\env \\arg.e (\\z \\y.z arg (y env)))) (\\c.p (\\g.c (\\env.e env (g env)))) c)) (\\a \\b.a) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.a) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "marker_dual_APP",
+      "left": "(\\b.(b p p) (\\e.b (\\c.c (\\env \\arg.e (\\z \\y.z arg (y env)))) (\\c.p (\\g.c (\\env.e env (g env)))) c)) (\\a \\b.b) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.b) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "marker_bit_ABS",
+      "left": "(\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c) (\\a \\b.a) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.a) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "marker_bit_APP",
+      "left": "(\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c) (\\a \\b.b) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.b) t",
+      "context": [
+        "t",
+        "s",
+        "c",
+        "p",
+        "x"
+      ]
+    },
+    {
+      "label": "raw_mode",
+      "left": "(\\b.p (\\e.b c (\\v.p (\\g.c (\\env.e env (g env)))) (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\a \\b \\d.a) (\\i.i)",
+      "right": "p (\\e.c) (\\i.i)",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "raw_shared_mode",
+      "left": "(\\b.p (\\e.(b c p) (\\y.b (\\arg.e (\\z \\w.z arg (w y))) (c (\\env.e env (y env)))))) (\\a \\b \\d.a) (\\i.i)",
+      "right": "p (\\e.c) (\\i.i)",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "late_mode",
+      "left": "(\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c) (\\a \\b \\d.d)",
+      "right": "c",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "dual_mode",
+      "left": "(\\b.(b p p) (\\e.b (\\c.c (\\env \\arg.e (\\z \\y.z arg (y env)))) (\\c.p (\\g.c (\\env.e env (g env)))) c)) (\\a \\b \\d.d)",
+      "right": "(\\e.c)",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "late_I_reset",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\q.u (\\a \\b \\d.d)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\i.i)",
+      "right": "c",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "late_var_1",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\q.u (\\a \\b \\d.d)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))",
+      "right": "c (\\h.h ((\\a \\b.a)) (n)) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "late_var_2",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\q.u (\\a \\b \\d.d)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "late_var_3",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\q.u (\\a \\b \\d.d)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "late_var_4",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\q.u (\\a \\b \\d.d)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))))))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "late_var_5",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\q.u (\\a \\b \\d.d)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))))))))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "dual_I_reset",
+      "left": "(\\s.s (\\i.i) (\\u.s (u (\\a \\b \\d.d)) (s s u)) (\\b.(b p p) (\\e.b (\\c.c (\\env \\arg.e (\\z \\y.z arg (y env)))) (\\c.p (\\g.c (\\env.e env (g env)))) c))) (\\i.i)",
+      "right": "c",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "dual_var_1",
+      "left": "(\\s.s (\\i.i) (\\u.s (u (\\a \\b \\d.d)) (s s u)) (\\b.(b p p) (\\e.b (\\c.c (\\env \\arg.e (\\z \\y.z arg (y env)))) (\\c.p (\\g.c (\\env.e env (g env)))) c))) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))",
+      "right": "c (\\h.h ((\\a \\b.a)) (n)) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "dual_var_2",
+      "left": "(\\s.s (\\i.i) (\\u.s (u (\\a \\b \\d.d)) (s s u)) (\\b.(b p p) (\\e.b (\\c.c (\\env \\arg.e (\\z \\y.z arg (y env)))) (\\c.p (\\g.c (\\env.e env (g env)))) c))) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "dual_var_3",
+      "left": "(\\s.s (\\i.i) (\\u.s (u (\\a \\b \\d.d)) (s s u)) (\\b.(b p p) (\\e.b (\\c.c (\\env \\arg.e (\\z \\y.z arg (y env)))) (\\c.p (\\g.c (\\env.e env (g env)))) c))) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "dual_var_4",
+      "left": "(\\s.s (\\i.i) (\\u.s (u (\\a \\b \\d.d)) (s s u)) (\\b.(b p p) (\\e.b (\\c.c (\\env \\arg.e (\\z \\y.z arg (y env)))) (\\c.p (\\g.c (\\env.e env (g env)))) c))) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))))))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "dual_var_5",
+      "left": "(\\s.s (\\i.i) (\\u.s (u (\\a \\b \\d.d)) (s s u)) (\\b.(b p p) (\\e.b (\\c.c (\\env \\arg.e (\\z \\y.z arg (y env)))) (\\c.p (\\g.c (\\env.e env (g env)))) c))) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))))))))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "bit_marker_var_1",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\b.u (\\a.b)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))",
+      "right": "c (\\h.h ((\\a \\b.a)) (n)) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "bit_marker_var_2",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\b.u (\\a.b)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "bit_marker_var_3",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\b.u (\\a.b)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "bit_marker_var_4",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\b.u (\\a.b)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))))))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "bit_marker_var_5",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\b.u (\\a.b)) (s s u)) (\\b.b (\\c.p (\\e.c (\\env \\arg.e (\\z \\y.z arg (y env))))) (\\c.p (\\e.p (\\g.c (\\env.e env (g env))))) c)) (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n))))))))))))",
+      "right": "c (\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.b)) ((\\h.h ((\\a \\b.a)) (n)))))))))) n",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "app_identity_(\\a \\b.a)",
+      "left": "(\\e \\g.(\\env.e env (g env))) (\\a \\b.b) (\\h.h ((\\a \\b.a)) (t))",
+      "right": "(\\h.h ((\\a \\b.a)) (t))",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "app_identity_(\\a \\b.b)",
+      "left": "(\\e \\g.(\\env.e env (g env))) (\\a \\b.b) (\\h.h ((\\a \\b.b)) (t))",
+      "right": "(\\h.h ((\\a \\b.b)) (t))",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "raw_I_unfold",
+      "left": "(\\s.s (\\i.i) (\\u.s (u (\\a \\b \\d.a) (\\i.i)) (s s u)) (\\b.p (\\e.b c (\\v.p (\\g.c (\\env.e env (g env)))) (\\env \\arg.e (\\z \\y.z arg (y env)))))) (\\i.i)",
+      "right": "(p (\\e.c) (\\i.i)) ((\\s.(\\b.p (\\e.b c (\\v.p (\\g.c (\\env.e env (g env)))) (\\env \\arg.e (\\z \\y.z arg (y env)))))) (\\i.i))",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "raw_shared_I_unfold",
+      "left": "(\\s.s (\\i.i) (\\u.s (u (\\a \\b \\d.a) (\\i.i)) (s s u)) (\\b.p (\\e.(b c p) (\\y.b (\\arg.e (\\z \\w.z arg (w y))) (c (\\env.e env (y env))))))) (\\i.i)",
+      "right": "(p (\\e.c) (\\i.i)) ((\\s.(\\b.p (\\e.(b c p) (\\y.b (\\arg.e (\\z \\w.z arg (w y))) (c (\\env.e env (y env))))))) (\\i.i))",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "app_reset_I_unfold",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\b.u b (\\i.i) b (\\i.i)) (s s u)) (\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env))))))) (\\i.i)",
+      "right": "(p (\\e.(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env))))) (\\i.i)) (\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\i.i)",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "second_stream_ABS",
+      "left": "(\\b \\t.p (\\e.(b t) (\\u.p (\\g.c (\\env.e env (g env)))) (\\a \\r.c (\\env \\arg.e (\\z \\y.z arg (y env))))) t) (\\a \\b.a) (\\h.h (q) (t))",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.a) (\\h.h (q) (t))",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "second_stream_APP",
+      "left": "(\\b \\t.p (\\e.(b t) (\\u.p (\\g.c (\\env.e env (g env)))) (\\a \\r.c (\\env \\arg.e (\\z \\y.z arg (y env))))) t) (\\a \\b.b) t",
+      "right": "(\\b.p (\\e.b (c (\\env \\arg.e (\\z \\y.z arg (y env)))) (p (\\g.c (\\env.e env (g env)))))) (\\a \\b.b) t",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    },
+    {
+      "label": "second_stream_I_reset",
+      "left": "(\\s.s (\\i.i) (\\u.s (\\q.c) (s s u)) (\\b \\t.p (\\e.(b t) (\\u.p (\\g.c (\\env.e env (g env)))) (\\a \\r.c (\\env \\arg.e (\\z \\y.z arg (y env))))) t)) (\\i.i)",
+      "right": "c",
+      "context": [
+        "t",
+        "n",
+        "c",
+        "p",
+        "q",
+        "e",
+        "g"
+      ]
+    }
+  ]
+}

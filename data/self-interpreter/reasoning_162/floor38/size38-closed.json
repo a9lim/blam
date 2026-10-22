@@ -1,0 +1,86 @@
+[
+  {
+    "id": 120,
+    "continuation": "I",
+    "kind": "unresolved",
+    "steps": 32,
+    "nodes": 21267
+  },
+  {
+    "id": 120,
+    "continuation": "K",
+    "kind": "unresolved",
+    "steps": 31,
+    "nodes": 20854
+  },
+  {
+    "id": 120,
+    "continuation": "F",
+    "kind": "unresolved",
+    "steps": 31,
+    "nodes": 20854
+  },
+  {
+    "id": 122,
+    "continuation": "I",
+    "kind": "unresolved",
+    "steps": 24,
+    "nodes": 22844
+  },
+  {
+    "id": 122,
+    "continuation": "K",
+    "kind": "unresolved",
+    "steps": 24,
+    "nodes": 23334
+  },
+  {
+    "id": 122,
+    "continuation": "F",
+    "kind": "unresolved",
+    "steps": 24,
+    "nodes": 23334
+  },
+  {
+    "id": 137,
+    "continuation": "I",
+    "kind": "unresolved",
+    "steps": 153,
+    "nodes": 20772
+  },
+  {
+    "id": 137,
+    "continuation": "K",
+    "kind": "unresolved",
+    "steps": 147,
+    "nodes": 20358
+  },
+  {
+    "id": 137,
+    "continuation": "F",
+    "kind": "unresolved",
+    "steps": 147,
+    "nodes": 20358
+  },
+  {
+    "id": 176,
+    "continuation": "I",
+    "kind": "unresolved",
+    "steps": 81,
+    "nodes": 21494
+  },
+  {
+    "id": 176,
+    "continuation": "K",
+    "kind": "unresolved",
+    "steps": 81,
+    "nodes": 21655
+  },
+  {
+    "id": 176,
+    "continuation": "F",
+    "kind": "unresolved",
+    "steps": 81,
+    "nodes": 21655
+  }
+]

@@ -1,0 +1,32 @@
+'Blc.Round3Reader138.reader_nonlinear' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.app_tree_algebra' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.reader_two_lambdas' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.reader_depth_charges' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.reader_weighted_cost' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.functional_wire' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.assembly_lower' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.class_bound_138' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.class_bound_multiplicity' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.canonical_assembly_exact' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.canonical_class_bound' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.reader162_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.reader165_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Reader138.assembly_is_int162' does not depend on any axioms
+'Blc.Round3Reader138.assembly_is_int165' does not depend on any axioms
+
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-j2",
+    "/Users/a9lim/Work/blam/tmp/round3/lean138/Reader138.lean"
+  ],
+  "cwd": "/Users/a9lim/Work/blam/lean",
+  "source": "/Users/a9lim/Work/blam/tmp/round3/lean138/Reader138.lean",
+  "sha256": "875574bdde3611379c1e670f193057a5edf3ea4a38386fba13fdd66bd7d4f600",
+  "exit_code": 0,
+  "wall_seconds": 2.1764129999937722,
+  "user_seconds": 2.194034,
+  "sys_seconds": 0.148119
+}

@@ -1,0 +1,61 @@
+{
+  "literal276": {
+    "prefix_steps": 4,
+    "cycle_steps": 3,
+    "extra_arguments": 2,
+    "core_nodes": 24,
+    "first_step_is_weak_head": true
+  },
+  "four376": {
+    "prefix_steps": 1,
+    "cycle_steps": 4,
+    "extra_arguments": 2,
+    "core_nodes": 57,
+    "first_step_is_weak_head": true
+  },
+  "four399": {
+    "prefix_steps": 8,
+    "cycle_steps": 3,
+    "extra_arguments": 1,
+    "core_nodes": 33,
+    "first_step_is_weak_head": true
+  },
+  "four1000": {
+    "prefix_steps": 4,
+    "cycle_steps": 6,
+    "extra_arguments": 1,
+    "core_nodes": 73,
+    "first_step_is_weak_head": true
+  },
+  "five312": {
+    "prefix_steps": 5,
+    "cycle_steps": 10,
+    "extra_arguments": 0,
+    "core_nodes": 35,
+    "first_step_is_weak_head": true
+  },
+  "five553": {
+    "prefix_steps": 3,
+    "cycle_steps": 6,
+    "extra_arguments": 0,
+    "core_nodes": 48,
+    "first_step_is_weak_head": true
+  },
+  "literal180": {
+    "prefix_steps": 4,
+    "landing": "A A quoteI(R)"
+  },
+  "four0": {
+    "prefix_steps": 19,
+    "head": "C",
+    "arguments": 7
+  },
+  "four80": {
+    "prefix_steps": 9,
+    "payload_steps": 4,
+    "payload_leading_lambdas": 2,
+    "payload_head_variable": 1,
+    "payload_head_arguments": 2
+  },
+  "seconds": 0.018842417004634626
+}

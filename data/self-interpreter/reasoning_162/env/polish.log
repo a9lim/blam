@@ -1,0 +1,5 @@
+/Users/a9lim/Work/blam/tmp/round3/env/prefix_own_tag.lam: 170 bits  ok=667 skip=1 fail=0  prefix_own_tag.lam
+  letopt --max-cuts 3: smallest 170
+  letopt --no-inline --max-cuts 2: smallest 170
+/Users/a9lim/Work/blam/tmp/round3/env/phase_argument.lam: 203 bits  ok=667 skip=1 fail=0  phase_argument.lam
+  letopt --max-cuts 2: smallest 203

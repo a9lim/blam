@@ -1,0 +1,71 @@
+{
+  "name": "argument_thunks",
+  "as_written_bits": 164,
+  "battery": "164 bits  ok=0 skip=1 fail=667  argument_thunks.lam",
+  "first_failures": [
+    [
+      "0010",
+      "WRONG"
+    ],
+    [
+      "000010",
+      "WRONG"
+    ],
+    [
+      "0000110",
+      "WRONG"
+    ],
+    [
+      "00000010",
+      "WRONG"
+    ],
+    [
+      "00011010",
+      "WRONG"
+    ],
+    [
+      "000000110",
+      "WRONG"
+    ],
+    [
+      "0000001110",
+      "WRONG"
+    ],
+    [
+      "0000000010",
+      "WRONG"
+    ]
+  ],
+  "battery_seconds": 2.04,
+  "polish": [],
+  "witnesses": [
+    {
+      "source": "\\x.x",
+      "source_bits": "0010",
+      "got": "0000010111000000110111010",
+      "want": "0000010111000001010",
+      "got_named": "\\a\\b.a (\\c\\d.d b) b",
+      "want_named": "\\a\\b.a (\\c\\d.d) b",
+      "unequal_normal_forms": true
+    },
+    {
+      "source": "\\x\\y.y",
+      "source_bits": "000010",
+      "got": "0000010111000000001101111010",
+      "want": "000001011100000001010",
+      "got_named": "\\a\\b.a (\\c\\d\\e.e b) b",
+      "want_named": "\\a\\b.a (\\c\\d\\e.e) b",
+      "unequal_normal_forms": true
+    },
+    {
+      "source": "\\x\\y.x",
+      "source_bits": "0000110",
+      "got": "00000101110000000011101111010",
+      "want": "0000010111000000011010",
+      "got_named": "\\a\\b.a (\\c\\d\\e.d b) b",
+      "want_named": "\\a\\b.a (\\c\\d\\e.d) b",
+      "unequal_normal_forms": true
+    }
+  ],
+  "total_seconds": 2.057
+}

@@ -1,0 +1,127 @@
+[
+  {
+    "module": "Proofs",
+    "exit_code": 0,
+    "seconds": 0.7058566659979988
+  },
+  {
+    "module": "Checks",
+    "exit_code": 0,
+    "seconds": 1.280765125004109
+  },
+  {
+    "module": "RankRealization",
+    "exit_code": 0,
+    "seconds": 0.2403052079898771
+  },
+  {
+    "module": "Protected461",
+    "exit_code": 0,
+    "seconds": 0.38235650000569876
+  },
+  {
+    "module": "Residuals",
+    "exit_code": 0,
+    "seconds": 0.20170329199754633
+  },
+  {
+    "module": "OneArgument38",
+    "exit_code": 0,
+    "seconds": 0.37147725000977516
+  },
+  {
+    "module": "Families38",
+    "exit_code": 0,
+    "seconds": 0.16734579199692234
+  },
+  {
+    "module": "Size38Sources",
+    "exit_code": 0,
+    "seconds": 6.383722500002477
+  },
+  {
+    "module": "Size38Pumps",
+    "exit_code": 0,
+    "seconds": 0.9574585000082152
+  },
+  {
+    "module": "WGrammar38",
+    "exit_code": 0,
+    "seconds": 0.25037354200321715
+  },
+  {
+    "module": "Payload38",
+    "exit_code": 0,
+    "seconds": 0.1736682920018211
+  },
+  {
+    "module": "Size38Residuals",
+    "exit_code": 0,
+    "seconds": 0.9184581250010524
+  },
+  {
+    "module": "Finite38Base",
+    "exit_code": 0,
+    "seconds": 0.1951391250040615
+  },
+  {
+    "module": "Size38Finite",
+    "exit_code": 0,
+    "seconds": 4.394048833011766
+  },
+  {
+    "module": "Pair39",
+    "exit_code": 0,
+    "seconds": 0.18058462500630412
+  },
+  {
+    "module": "Sources39Literal",
+    "exit_code": 0,
+    "seconds": 5.392709042003844
+  },
+  {
+    "module": "Sources39Four",
+    "exit_code": 0,
+    "seconds": 12.282812999997986
+  },
+  {
+    "module": "Sources39Five",
+    "exit_code": 0,
+    "seconds": 7.613226250003208
+  },
+  {
+    "module": "Shapes39",
+    "exit_code": 0,
+    "seconds": 0.1797424999967916
+  },
+  {
+    "module": "Finite39Base",
+    "exit_code": 0,
+    "seconds": 0.18006150001019705
+  },
+  {
+    "module": "Finite39Literal",
+    "exit_code": 0,
+    "seconds": 2.4186048330011545
+  },
+  {
+    "module": "Finite39Four",
+    "exit_code": 0,
+    "seconds": 8.703510583989555
+  },
+  {
+    "module": "Finite39Five",
+    "exit_code": 0,
+    "seconds": 5.8006282090063905
+  },
+  {
+    "module": "Residuals39",
+    "exit_code": 0,
+    "seconds": 0.4535560000076657
+  },
+  {
+    "module": "AxiomAudit",
+    "exit_code": 0,
+    "seconds": 0.15629799998714589
+  }
+]

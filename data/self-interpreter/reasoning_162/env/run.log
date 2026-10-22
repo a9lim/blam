@@ -1,0 +1,24 @@
+{"checks_passed": 34, "cell_bits": {"canonical": 24, "prefix_literal_K": 34, "prefix_own_tag": 35, "prefix_borrow_ABS_tag": 37}}
+170 bits  ok=667 skip=1 fail=0  prefix_own_tag.lam (2.058s)
+203 bits  ok=667 skip=1 fail=0  phase_argument.lam (1.812s)
+/Users/a9lim/Work/blam/tmp/round3/env/prefix_own_tag.lam: 170 bits  ok=667 skip=1 fail=0  prefix_own_tag.lam
+  letopt --max-cuts 3: smallest 170
+  letopt --no-inline --max-cuts 2: smallest 170
+/Users/a9lim/Work/blam/tmp/round3/env/phase_argument.lam: 203 bits  ok=667 skip=1 fail=0  phase_argument.lam
+  letopt --max-cuts 2: smallest 203
+170 bits  ok=667 skip=1 fail=0  bits (1.855s)
+203 bits  ok=667 skip=1 fail=0  bits (1.836s)
+[
+  {
+    "file": "prefix_own_tag.lam",
+    "bits_written": 170,
+    "bits_polished": 170,
+    "optimized_battery": "170 bits  ok=667 skip=1 fail=0  bits"
+  },
+  {
+    "file": "phase_argument.lam",
+    "bits_written": 203,
+    "bits_polished": 203,
+    "optimized_battery": "203 bits  ok=667 skip=1 fail=0  bits"
+  }
+]

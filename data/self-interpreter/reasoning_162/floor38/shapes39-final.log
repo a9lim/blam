@@ -1,0 +1,2 @@
+'Blc.Round3Floor38.literal_constant_not_selfint' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Floor38.selfint_of_literal_eta' depends on axioms: [propext, Quot.sound]

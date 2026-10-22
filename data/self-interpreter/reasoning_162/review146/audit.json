@@ -1,0 +1,76 @@
+{
+  "inventory_size": 3484,
+  "rows": [
+    {
+      "case": [
+        "lambda",
+        2,
+        5,
+        5,
+        1,
+        1
+      ],
+      "count": 364
+    },
+    {
+      "case": [
+        "lambda",
+        2,
+        6,
+        1,
+        1,
+        1
+      ],
+      "count": 1762
+    },
+    {
+      "case": [
+        "lambda",
+        3,
+        5,
+        3,
+        1,
+        1
+      ],
+      "count": 1070
+    },
+    {
+      "case": [
+        "lambda",
+        4,
+        5,
+        1,
+        1,
+        1
+      ],
+      "count": 230
+    },
+    {
+      "case": [
+        "lambda",
+        2,
+        5,
+        1,
+        2,
+        1
+      ],
+      "count": 58
+    }
+  ],
+  "outcomes": {
+    "zero": 3450,
+    "one": 34
+  },
+  "max_refutation_steps": 15,
+  "symbolic_counts_match": true,
+  "lean_statements_and_traces_match": true,
+  "callback_counts": {
+    "linear": 2,
+    "binary": 6,
+    "capture_c": 12,
+    "capture_s": 12,
+    "capture_c_binary": 60
+  },
+  "callback_max_steps": 8,
+  "seconds": 0.419
+}

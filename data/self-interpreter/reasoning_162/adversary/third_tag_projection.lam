@@ -1,0 +1,4 @@
+(\x.x x) (\x.(\p.\c \s.s (\a.a) (\u.s (u (\a \b \d.d)) (s s u)) (\b.b
+    (\d.p (\f.d f (\e \a.f (\x \r.x a (r e)))))
+    (\d.p (\f.p (\g.d g (\e.f e (g e)))))
+    (\q.c))) (x x))

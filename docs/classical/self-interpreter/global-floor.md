@@ -1,28 +1,34 @@
-# An unconditional 37-bit floor
+# An unconditional 40-bit floor
 
 **Theorem.** Every closed interpreter for the repository's beta-exact,
-closed-source contract has BLC length at least **37**.
+closed-source contract has BLC length at least **40**.
 
-This is Codex's handwritten proof. Two independent adversarial reviews (a
-separate Codex consult and Gemini) found it correct; each re-derived the
-counting, the width-loss lemma and the six divergence invariants, and the
-Codex review replayed every finite refutation with its own reducer
-(`data/self-interpreter/reasoning_floor/verify/`). The classification and its
-use of Statman's width theorem are handwritten. `Blc/SelfintFloor37.lean`
-kernel-checks the 144 fixed head-reduction clauses the case analysis cites,
+The proof has three layers. Sections 1–5 are Codex's handwritten proof of
+37: the counting argument of `capture-width.md` gives 33 and excludes it,
+and sections 3–4 exclude 34, 35 and 36 using semantic consequences of the
+exact contract (head arity, internal width, internal nonlinearity, and exact
+identity-source outputs). Two independent adversarial reviews (a separate
+Codex consult and Gemini) found it correct; each re-derived the counting,
+the width-loss lemma and the six divergence invariants, and the Codex review
+replayed every finite refutation with its own reducer
+(`data/self-interpreter/reasoning_floor/verify/`). `Blc/SelfintFloor37.lean`
+kernel-checks the 144 fixed head-reduction clauses that case analysis cites,
 including the loop clauses and fixed instances of the six parametric
 divergence invariants, plus eight clauses for remainder extractors
-(`remainder.md`). It does **not** prove the 37-bit theorem itself. The
-parametric invariants are proved below; no fuel cap is used as a refutation.
-`tools/self-interpreter/theory/floor37/verify.py` regenerates those clauses
-and checks the 108 residual layouts in 0.05 seconds
-(`data/self-interpreter/theory/floor37.json`).
+(`remainder.md`); `tools/self-interpreter/theory/floor37/verify.py`
+regenerates them and checks the 108 residual layouts in 0.05 seconds
+(`data/self-interpreter/theory/floor37.json`). Section 6 proves that every
+literal `λc.B` interpreter has at least 39 bits; sections 7–9 use it to
+exclude sizes 37, 38 and 39 (Codex's handwritten proofs with kernel-checked
+components, each found correct by two independent reviews). No Lean theorem
+states the numeric floor itself: the syntax classifications, the width
+argument and the implications of the finite certificates are handwritten;
+the parametric invariants are proved below or in Lean, and no fuel cap is
+used as a refutation anywhere.
 
-The counting argument of `capture-width.md` gives 33 and excludes it. This
-proof excludes 34, 35 and 36 using semantic consequences of the exact
-contract (head arity, internal width, internal nonlinearity, and exact
-identity-source outputs). It is not an additive parser-module argument and
-does not approach a proof of 162-bit optimality.
+This is not an additive parser-module argument and does not approach a
+proof of 162-bit optimality; the conditional bound near 162 is
+`class-bound.md`.
 
 ## 1. Dependencies and conventions
 
@@ -551,9 +557,132 @@ untypability assumption is made.
 The next inventory is qualitatively more permissive: seven leaves can
 support a third nonlinear binder, or allow the off-chain nonlinear binder
 to capture a variable whose other occurrence lies in the width witness.
-The closed width-one operand argument above then stops applying. This
-proof establishes 37, not a claim that a few more leaf counts will bridge
-the gap to 162.
+Sections 6–8 handle it with a different first-contraction argument, which
+uses closedness of the first head argument rather than an index budget.
+
+## 6. A literal interface costs at least 39
+
+**Lemma.** Every interpreter that is literally `λc.B` has at least 39 bits,
+for arbitrary `B` (redexes allowed). Take the contract at `M = S` with
+`C := K`, `N := I`, and apply the result to `I`: the closed term
+`B[K/c] stream(S, I) I` is β-convertible to `S`, so it has width three. The
+inserted copies of `K`, the quotation and `I` have width one and are closed,
+so the witness descends from a subterm `U` of `B` whose three free
+variables other than `c` are bound inside `B`. The incomparable nonlinear
+pair is also inside `B` (the outer `c` is comparable with every binder), so
+`B` has at least four live binders owning at least six leaves; `c` itself is
+live, since otherwise the identity source could not produce the rigid `C`.
+That is five live binders, seven leaves and index sum at least three:
+`2·5 + 4·7 − 2 + 3 = 39`. Both reviews of section 7 and the two reviews of
+the round-3 class bound re-derived it
+(`data/self-interpreter/reasoning_162/floor/literal-interface.md`).
+
+## 7. Size 37
+
+A 37-bit interpreter would be globally minimum, so any strictly smaller
+β-reduct contradicts section 5. Section 6 excludes a λ root. The witness
+chain `a, b, c` and the incomparable pair force four live binders; five
+would need seven leaves and 39 bits. The only `(L, V, X)` triples are
+`(4,6,7)`, `(5,6,5)`, `(6,6,3)` and `(4,7,3)`. The first head redex of an
+application-rooted closed source has a closed argument, so an affine or
+vacuous contractor shrinks the term; a chain contractor leaves every
+subterm of width at most two; hence the contractor is the off-chain
+binder `d` and the source is `D N` with closed normal operands, `N` holding
+the whole chain. `(4,6,7)` has no admissible layout; the duplicators `D`
+and the leaf placements in `N` give 652 normal layouts, and the vacuous
+λ insertions 24 more: **676** layouts
+(`reasoning_162/floor/floor37-progress.md`).
+
+All 676 are excluded: 615 by finite exact certificates (413 nonlinear
+binders on one chain, 133 wrong candidate head forms, 28 wrong identity-source
+head forms, 18 wrong normal identity payloads, 15 three-λ heads, 6 exact
+repeated head states, 2 smaller reducts), 48 by five parametric divergence
+invariants (macro systems, direct `N N` pumps, two-pending-argument systems,
+duplicated-argument and boxed wrappers), and the last 13 by complete Lean
+proofs of `¬ IsSelfInterpreter` on the identity source: eight by a rank-zero
+macro invariant, one by a protected trailing-argument grammar, four by
+explicit pumps (`reasoning_162/floor38/proof.md`; the Lean builds with `floor38/check_lean.py`).
+
+Two independent reviews (a fresh Codex consult and Gemini) found this
+correct. The Codex review replayed all 615 finite certificates with a
+separately written reducer, re-derived the 652 + 24 counts by hand and
+matched every Lean term to its layout; Gemini re-enumerated the four count
+triples and reproduced the ledgers byte for byte
+(`reasoning_162/review38/`).
+
+## 8. Size 38
+
+The same argument at 38 bits gives the triples `(4,6,8)`, `(5,6,6)`,
+`(6,6,4)` and `(4,7,4)`. Three binders may now be nonlinear, but the
+first-contractor argument never uses which chain binder is, so again the
+source is `D N`. `(4,6,8)` has no layout; `(6,6,4)` forces a zero-charge
+vacuous wrapper whose every placement either makes the head contractor
+vacuous or is erased to a smaller interpreter; `(4,7,4)` gives 828 layouts
+and `(5,6,6)` 378: **1,206** layouts (`reasoning_162/floor38/inventory38.md`).
+
+All 1,206 are excluded: 1,143 by finite certificates whose predicates and
+replay traces are kernel-checked (chain 613, wrong source head 201, three-λ
+head 188, wrong identity head 59, wrong payload 72, head cycle 4, smaller
+reduct 6), and the last 63 by complete Lean proofs: 57 through a `W/B`
+grammar preserved by head reduction, one parametric pump and five rigid
+payload mismatches (`reasoning_162/floor38/proof39.md`).
+The certificates' implications for non-interpreter status are handwritten.
+
+Two independent reviews (a fresh Codex consult and a fresh Claude
+consult, standing in for Gemini) found this correct. The Codex review
+re-instantiated the layout templates independently and matched all 1,206;
+the Claude review enumerated the whole `D N` slice independently (1,602
+terms: the 1,206 plus 396 `(6,6,4)` terms, each with a smaller β-reduct
+within two steps), checked every certificate predicate against the
+contract and re-encoded every Lean term (`reasoning_162/review39/`). An
+earlier draft's claim that the first contraction of a two-vacuous-binder
+layout always shrinks is false (`(λd. d (λu. d)) (λv. N0)` grows from 38 to 54
+bits before reaching 23); the proof uses the two-step argument instead.
+
+## 9. Size 39
+
+At 39 bits the literal interface first becomes possible. Equality in
+section 6 forces `(L, V, X) = (5, 7, 3)`: no vacuous binder, `c` used once at
+index 0 outside every internal λ, four internal live binders with exactly
+two nonlinear. The maximal λ-rooted pieces of the application context are
+closed and each needs a live binder, so there are at most two. With one, the
+source is `λc. c P` or `λc. P c`: Lean proves that no `λc. c P` with closed `P`
+is an interpreter (the identity invocation reaches `C P ⌜I⌝` and projection
+would equate a λ-rooted stream with the rigid remainder), and that an
+interpreter `λc. P c` makes `P` one, of 33 bits, contradicting section 6.
+With two, the off-chain piece is `Δ` and the chain piece one of 84 normal
+shapes, in twelve contexts: 1,008 layouts
+(`reasoning_162/floor38/literal40.md`).
+
+Application roots give six count triples, now with a possible fifth live
+binder at `(5,7,3)`. With four live binders the size-38 argument applies
+unchanged (`E = D N`); with five, the witness uses the unique index-2 and
+index-1 leaves, so a chain first contractor leaves every index at most one
+and width at most two. The inventory has 2,248 four-live and 1,416
+five-live layouts (`reasoning_162/floor38/inventory39.md`).
+
+All 4,672 are excluded: 4,505 by kernel-checked finite certificates
+(`chain` 2,058, wrong source head 828, three-λ head 841, smaller reduct 439,
+wrong identity head 227, wrong payload 112) and 167 by complete Lean proofs
+(147 by the `W/B` grammar on sources and 2 on identity reducts, 9 head
+cycles, and the last 9 residuals: an active-pair invariant, six pumps, two
+rigid-shape obstructions; `reasoning_162/floor38/proof40.md`).
+
+Two independent reviews (a fresh Codex consult and a fresh Claude consult)
+found this correct (`reasoning_162/review40/`). The Codex review rebuilt the
+templates independently (exactly 1,008 + 2,248 + 1,416 terms) and replayed
+the nine late residuals. The Claude review went further: a standalone
+enumerator generated every closed term at the six application triples (35.4
+million terms) and filtered them by necessary conditions only (width,
+incomparable nonlinear pair, no smaller reduct within two steps); exactly the
+ledger's application-rooted layouts survive, so the five-live classification
+and the vacuous-wrapper counts are complete without the first-contractor
+lemma, and every λ-rooted survivor lies in a class section 6 or the two Lean
+lemmas exclude.
+
+The classifications grow quickly (676, 1,206 and 4,672 layouts at 37, 38 and
+39). A further step would want a size-aware structural lemma rather than a
+larger inventory.
 
 Source for the external theorem: Rick Statman, *Two Variables Are Not
 Enough*, ICTCS 2005, printed pp. 406-409,

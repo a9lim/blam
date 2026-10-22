@@ -1,0 +1,38 @@
+{
+  "name": "pointwise_boxes",
+  "as_written_bits": 266,
+  "battery": "266 bits  ok=667 skip=1 fail=0  pointwise_boxes.lam",
+  "first_failures": [],
+  "battery_seconds": 1.845,
+  "polish": [
+    {
+      "flags": [
+        "--max-cuts",
+        "2"
+      ],
+      "status": 0,
+      "seconds": 0.525,
+      "minimum": 265,
+      "battery": "265 bits  ok=667 skip=1 fail=0  pointwise_boxes.polished0.blc",
+      "wire_file": "pointwise_boxes.polished0.blc"
+    }
+  ],
+  "divergent_suffixes": [
+    {
+      "source": "Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    },
+    {
+      "source": "lambda_Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    },
+    {
+      "source": "Omega_Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    }
+  ],
+  "total_seconds": 4.217
+}

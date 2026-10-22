@@ -1,0 +1,10 @@
+-- Dual operand with the cheap return arm (NOTES §8): zero arm r NEXT via the dual,
+-- variable arm `cont r` applied to the dual, which is N there. Measured 169 (polished 169).
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (list (\q. cont))
+    (list (\a \b. a)
+      (\bit1. intL (\exp. bit1
+        (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+        (intL (\exp2. cont (\args. exp args (exp2 args))))))
+      (list list list)))
+  (x x))

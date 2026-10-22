@@ -53,3 +53,5 @@ import Blc.SelfintFloorApp
 import Blc.SelfintResidualControl
 import Blc.SelfintSharedS647
 import Blc.SelfintFixedResiduals
+import Blc.SelfintClass
+import Blc.SelfintRecursion

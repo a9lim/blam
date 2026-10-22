@@ -1,0 +1,327 @@
+[
+  {
+    "name": "stream_dependent_next/zero",
+    "status": "equal",
+    "normal": "#2 #1"
+  },
+  {
+    "name": "stream_dependent_next/variable1",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.b) #4) #3"
+  },
+  {
+    "name": "stream_dependent_next/variable2",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.c) #5)) #3"
+  },
+  {
+    "name": "stream_dependent_next/variable3",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.d) #6))) #3"
+  },
+  {
+    "name": "stream_dependent_next/variable4",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.e) #7)))) #3"
+  },
+  {
+    "name": "stream_dependent_next/variable8",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.i) #11)))))))) #3"
+  },
+  {
+    "name": "stream_dependent_next/variable16",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.j) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.l) (\\k.k (\\l\\m.m) (\\l.l (\\m\\n.n) (\\m.m (\\n\\o.o) (\\n.n (\\o\\p.p) (\\o.o (\\p\\q.q) (\\p.p (\\q\\r.q) #19)))))))))))))))) #3"
+  },
+  {
+    "name": "stream_dependent_next/variable31",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.j) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.l) (\\k.k (\\l\\m.m) (\\l.l (\\m\\n.n) (\\m.m (\\n\\o.o) (\\n.n (\\o\\p.p) (\\o.o (\\p\\q.q) (\\p.p (\\q\\r.r) (\\q.q (\\r\\s.s) (\\r.r (\\s\\t.t) (\\s.s (\\t\\u.u) (\\t.t (\\u\\v.v) (\\u.u (\\v\\w.w) (\\v.v (\\w\\x.x) (\\w.w (\\x\\y.y) (\\x.x (\\y\\z.z) (\\y.y (\\z\\a1.a1) (\\z.z (\\a1\\b1.b1) (\\a1.a1 (\\b1\\c1.c1) (\\b1.b1 (\\c1\\d1.d1) (\\c1.c1 (\\d1\\e1.e1) (\\d1.d1 (\\e1\\f1.f1) (\\e1.e1 (\\f1\\g1.f1) #34))))))))))))))))))))))))))))))) #3"
+  },
+  {
+    "name": "suffix_or_next/zero",
+    "status": "equal",
+    "normal": "#2 #1"
+  },
+  {
+    "name": "suffix_or_next/variable1",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.b) #4) #3"
+  },
+  {
+    "name": "suffix_or_next/variable2",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.c) #5)) #3"
+  },
+  {
+    "name": "suffix_or_next/variable3",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.d) #6))) #3"
+  },
+  {
+    "name": "suffix_or_next/variable4",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.e) #7)))) #3"
+  },
+  {
+    "name": "suffix_or_next/variable8",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.i) #11)))))))) #3"
+  },
+  {
+    "name": "suffix_or_next/variable16",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.j) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.l) (\\k.k (\\l\\m.m) (\\l.l (\\m\\n.n) (\\m.m (\\n\\o.o) (\\n.n (\\o\\p.p) (\\o.o (\\p\\q.q) (\\p.p (\\q\\r.q) #19)))))))))))))))) #3"
+  },
+  {
+    "name": "suffix_or_next/variable31",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.j) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.l) (\\k.k (\\l\\m.m) (\\l.l (\\m\\n.n) (\\m.m (\\n\\o.o) (\\n.n (\\o\\p.p) (\\o.o (\\p\\q.q) (\\p.p (\\q\\r.r) (\\q.q (\\r\\s.s) (\\r.r (\\s\\t.t) (\\s.s (\\t\\u.u) (\\t.t (\\u\\v.v) (\\u.u (\\v\\w.w) (\\v.v (\\w\\x.x) (\\w.w (\\x\\y.y) (\\x.x (\\y\\z.z) (\\y.y (\\z\\a1.a1) (\\z.z (\\a1\\b1.b1) (\\a1.a1 (\\b1\\c1.c1) (\\b1.b1 (\\c1\\d1.d1) (\\c1.c1 (\\d1\\e1.e1) (\\d1.d1 (\\e1\\f1.f1) (\\e1.e1 (\\f1\\g1.f1) #34))))))))))))))))))))))))))))))) #3"
+  },
+  {
+    "name": "tail_preserving_dual/zero",
+    "status": "equal",
+    "normal": "#2 #1"
+  },
+  {
+    "name": "tail_preserving_dual/variable1",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.b) #4) #3"
+  },
+  {
+    "name": "tail_preserving_dual/variable2",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.c) #5)) #3"
+  },
+  {
+    "name": "tail_preserving_dual/variable3",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.d) #6))) #3"
+  },
+  {
+    "name": "tail_preserving_dual/variable4",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.e) #7)))) #3"
+  },
+  {
+    "name": "tail_preserving_dual/variable8",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.i) #11)))))))) #3"
+  },
+  {
+    "name": "tail_preserving_dual/variable16",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.j) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.l) (\\k.k (\\l\\m.m) (\\l.l (\\m\\n.n) (\\m.m (\\n\\o.o) (\\n.n (\\o\\p.p) (\\o.o (\\p\\q.q) (\\p.p (\\q\\r.q) #19)))))))))))))))) #3"
+  },
+  {
+    "name": "tail_preserving_dual/variable31",
+    "status": "equal",
+    "normal": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.j) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.l) (\\k.k (\\l\\m.m) (\\l.l (\\m\\n.n) (\\m.m (\\n\\o.o) (\\n.n (\\o\\p.p) (\\o.o (\\p\\q.q) (\\p.p (\\q\\r.r) (\\q.q (\\r\\s.s) (\\r.r (\\s\\t.t) (\\s.s (\\t\\u.u) (\\t.t (\\u\\v.v) (\\u.u (\\v\\w.w) (\\v.v (\\w\\x.x) (\\w.w (\\x\\y.y) (\\x.x (\\y\\z.z) (\\y.y (\\z\\a1.a1) (\\z.z (\\a1\\b1.b1) (\\a1.a1 (\\b1\\c1.c1) (\\b1.b1 (\\c1\\d1.d1) (\\c1.c1 (\\d1\\e1.e1) (\\d1.d1 (\\e1\\f1.f1) (\\e1.e1 (\\f1\\g1.f1) #34))))))))))))))))))))))))))))))) #3"
+  },
+  {
+    "name": "new_handler/identity",
+    "status": "equal",
+    "normal": "#0"
+  },
+  {
+    "name": "new_handler/diagonal",
+    "status": "equal",
+    "normal": "#0 #0"
+  },
+  {
+    "name": "diagonal0",
+    "status": "equal",
+    "normal": "\\a.#4"
+  },
+  {
+    "name": "diagonal1",
+    "status": "equal",
+    "normal": "\\a.#4"
+  },
+  {
+    "name": "right_association1",
+    "status": "equal",
+    "normal": "#3 (\\a.a (\\b\\c.b) #4)"
+  },
+  {
+    "name": "diagonal2",
+    "status": "equal",
+    "normal": "\\a.#4"
+  },
+  {
+    "name": "right_association2",
+    "status": "equal",
+    "normal": "#3 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.c) #5))"
+  },
+  {
+    "name": "diagonal3",
+    "status": "equal",
+    "normal": "\\a.#4"
+  },
+  {
+    "name": "right_association3",
+    "status": "equal",
+    "normal": "#3 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.d) #6)))"
+  },
+  {
+    "name": "diagonal4",
+    "status": "equal",
+    "normal": "\\a.#4"
+  },
+  {
+    "name": "right_association4",
+    "status": "equal",
+    "normal": "#3 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.e) #7))))"
+  },
+  {
+    "name": "diagonal8",
+    "status": "equal",
+    "normal": "\\a.#4"
+  },
+  {
+    "name": "right_association8",
+    "status": "equal",
+    "normal": "#3 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.i) #11))))))))"
+  },
+  {
+    "name": "diagonal16",
+    "status": "equal",
+    "normal": "\\a.#4"
+  },
+  {
+    "name": "right_association16",
+    "status": "equal",
+    "normal": "#3 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.j) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.l) (\\k.k (\\l\\m.m) (\\l.l (\\m\\n.n) (\\m.m (\\n\\o.o) (\\n.n (\\o\\p.p) (\\o.o (\\p\\q.q) (\\p.p (\\q\\r.q) #19))))))))))))))))"
+  },
+  {
+    "name": "diagonal31",
+    "status": "equal",
+    "normal": "\\a.#4"
+  },
+  {
+    "name": "right_association31",
+    "status": "equal",
+    "normal": "#3 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.e) (\\d.d (\\e\\f.f) (\\e.e (\\f\\g.g) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.j) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.l) (\\k.k (\\l\\m.m) (\\l.l (\\m\\n.n) (\\m.m (\\n\\o.o) (\\n.n (\\o\\p.p) (\\o.o (\\p\\q.q) (\\p.p (\\q\\r.r) (\\q.q (\\r\\s.s) (\\r.r (\\s\\t.t) (\\s.s (\\t\\u.u) (\\t.t (\\u\\v.v) (\\u.u (\\v\\w.w) (\\v.v (\\w\\x.x) (\\w.w (\\x\\y.y) (\\x.x (\\y\\z.z) (\\y.y (\\z\\a1.a1) (\\z.z (\\a1\\b1.b1) (\\a1.a1 (\\b1\\c1.c1) (\\b1.b1 (\\c1\\d1.d1) (\\c1.c1 (\\d1\\e1.e1) (\\d1.d1 (\\e1\\f1.f1) (\\e1.e1 (\\f1\\g1.f1) #34)))))))))))))))))))))))))))))))"
+  },
+  {
+    "name": "select_first/K",
+    "status": "equal",
+    "normal": "#0 (\\a.#2 (\\b\\c.a (\\d\\e.d c (e b))))"
+  },
+  {
+    "name": "select_first/F",
+    "status": "equal",
+    "normal": "#0 (\\a.#1 (\\b.#3 (\\c.a c (b c))))"
+  },
+  {
+    "name": "shared_head/K",
+    "status": "equal",
+    "normal": "#0 (\\a.#2 (\\b\\c.a (\\d\\e.d c (e b))))"
+  },
+  {
+    "name": "shared_head/F",
+    "status": "equal",
+    "normal": "#0 (\\a.#1 (\\b.#3 (\\c.a c (b c))))"
+  },
+  {
+    "name": "third_mode/K",
+    "status": "equal",
+    "normal": "#0 (\\a.#2 (\\b\\c.a (\\d\\e.d c (e b))))"
+  },
+  {
+    "name": "third_mode/F",
+    "status": "equal",
+    "normal": "#0 (\\a.#1 (\\b.#3 (\\c.a c (b c))))"
+  },
+  {
+    "name": "third_mode/projection",
+    "status": "equal",
+    "normal": "\\a.#2"
+  },
+  {
+    "name": "shared_head/first_projection",
+    "status": "equal",
+    "normal": "#0 (\\a.#2)"
+  },
+  {
+    "name": "failed_reset_unfold",
+    "status": "equal",
+    "normal": "#0 (\\a.#2) (\\a.a) (\\a.#1 (\\b.a #3 #2 (\\c.a (\\d.b (\\e\\f.e d (f c))) (#4 (\\d.b d (c d))))))"
+  },
+  {
+    "name": "select_first_not_beta_eta_equal",
+    "status": "distinct beta eta normal forms"
+  },
+  {
+    "name": "parent_replay/constructor",
+    "status": "equal",
+    "normal": "#0 #1 (\\a.a (\\b\\c.b) (\\b.b #4 #5))"
+  },
+  {
+    "name": "right_associated_skip/closed_identity",
+    "status": "equal",
+    "normal": "#0 (\\a\\b.b) (#1 (\\a.a (\\b\\c.b) #2))"
+  },
+  {
+    "name": "borrowed_body_cell/closed_identity",
+    "status": "equal",
+    "normal": "#0 (\\a\\b.b (\\c\\d.c) #3 b a (\\c\\d.c) #3) #1"
+  },
+  {
+    "name": "parser_operand/Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "parser_operand/lambda_Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "stream_dependent_next/Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "stream_dependent_next/lambda_Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "stream_operand/Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "stream_operand/lambda_Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "third_tag_projection/Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "third_tag_projection/lambda_Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "suffix_or_next/Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "suffix_or_next/lambda_Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "tail_preserving_dual/Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "tail_preserving_dual/lambda_Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "identity_cut_counterexample/Omega",
+    "status": "exact rigid suffix"
+  },
+  {
+    "name": "identity_cut_counterexample/lambda_Omega",
+    "status": "exact rigid suffix"
+  }
+]

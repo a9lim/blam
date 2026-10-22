@@ -1,0 +1,29 @@
+{
+  "source": "reset_app_identity.lam",
+  "bits": 180,
+  "battery": "180 bits  ok=0 skip=1 fail=667  reset_app_identity.lam",
+  "failures": [
+    [
+      "0010",
+      "fuel"
+    ],
+    [
+      "000010",
+      "fuel"
+    ],
+    [
+      "0000110",
+      "fuel"
+    ],
+    [
+      "00000010",
+      "fuel"
+    ],
+    [
+      "00011010",
+      "fuel"
+    ]
+  ],
+  "seconds": 1.9848555000062333,
+  "polish": []
+}

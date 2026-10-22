@@ -1,0 +1,11 @@
+{
+  "source": "(lambda d. d (lambda u. d)) (lambda v a b c. a (b (c c)))",
+  "wire": "01000110001100000000001111001110011010",
+  "sizes": [
+    38,
+    54,
+    23
+  ],
+  "first_reduct": "(lambda v. N0) (lambda u v. N0)",
+  "second_reduct": "N0 = lambda a b c. a (b (c c))"
+}

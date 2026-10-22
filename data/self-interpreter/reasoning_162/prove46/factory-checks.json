@@ -1,0 +1,37 @@
+[
+  {
+    "name": "factory_false",
+    "steps": 2
+  },
+  {
+    "name": "factory_ident",
+    "steps": 2
+  },
+  {
+    "name": "factory_self",
+    "steps": 3
+  },
+  {
+    "name": "expanded_selector_reader",
+    "steps": 1
+  },
+  {
+    "name": "shared_factory_reader",
+    "steps": 5
+  },
+  {
+    "name": "reference",
+    "weight": 46,
+    "wire": 46
+  },
+  {
+    "name": "expanded_selector",
+    "weight": 52,
+    "wire": 52
+  },
+  {
+    "name": "shared_factory",
+    "weight": 75,
+    "wire": 75
+  }
+]

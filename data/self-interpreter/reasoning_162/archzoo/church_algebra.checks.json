@@ -1,0 +1,39 @@
+{
+  "name": "church_algebra",
+  "as_written_bits": 297,
+  "battery": "297 bits  ok=667 skip=1 fail=0  church_algebra.lam",
+  "first_failures": [],
+  "battery_seconds": 1.848,
+  "polish": [
+    {
+      "flags": [
+        "--max-cuts",
+        "2"
+      ],
+      "status": 0,
+      "seconds": 0.338,
+      "minimum": 297,
+      "same_wire_as_input": true,
+      "battery": "297 bits  ok=667 skip=1 fail=0  church_algebra.polished0.blc",
+      "wire_file": "church_algebra.polished0.blc"
+    }
+  ],
+  "divergent_suffixes": [
+    {
+      "source": "Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    },
+    {
+      "source": "lambda_Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    },
+    {
+      "source": "Omega_Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    }
+  ],
+  "total_seconds": 2.196
+}
