@@ -1,0 +1,6 @@
+'Blc.BodyRedexFollowup.minimum_linear_body_alternatives' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.BodyRedexFollowup.minimum_linear_contractum_not_normal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.BodyRedexFollowup.badR_not_reader' depends on axioms: [propext, Quot.sound]
+'Blc.BodyRedexFollowup.exchange_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.BodyRedexFollowup.exchange_join' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.BodyRedexFollowup.normal_contract_charge' depends on axioms: [propext, Quot.sound]

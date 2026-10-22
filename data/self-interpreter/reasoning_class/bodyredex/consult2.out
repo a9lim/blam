@@ -1,1 +1,16 @@
 [gaslamp] → codex · job cx-20261022-030157-acd3 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-030157-acd3/events.jsonl
+( •̀ᴗ•́ ) **The whole branch remains open, but the linear remainder now requires a nested head redex inside `B`.** Results appended to [REPORT.md §5](/Users/a9lim/Work/blam/tmp/round4/bodyredex/REPORT.md:286).
+
+- **Kernel-checked:** contracting a linear first body let in any minimum reader cannot immediately produce a β-normal term. No size bound or `H_nf` assumption is needed.
+- **Lambda-headed linear `B` excluded below46:** binder exchange plus the earlier flat/j-free-linear exclusions reduces this case to 13,296 sources. All fail zero or unary-one; no cut-offs. Runtime 0.73 s, 35 MB.
+- **Uniform repeated-helper family excluded:** `λs. ((λx. s x … x) A) j`, multiplicity 2–4, leaves 14,150 sources. All fail; its single fuel exception has a Lean divergence proof. Runtime 0.55 s, 59 MB.
+- **Conditional accounting recorded:** exact contraction and hoisting prices, surviving scalar regions, and a handwritten labelled-hole pruning argument for nonlinear arguments carrying `j`.
+
+The normalization consequence needs care: `H_nf` alone does not establish source normalizability, and nonlinear contraction can duplicate `j`. The report makes both obligations explicit. The fresh review now accepts BN46 for its stated joint-law scope.
+
+**Remaining cases:** linear lets carrying `j` whose `B` contains a nested head redex, and nonlinear lets with 2–4 uses outside the excluded families. I have not proved that `H_nf` excludes them.
+
+[Followup.lean](/Users/a9lim/Work/blam/tmp/round4/bodyredex/Followup.lean) compiles without `sorry`; final compilation took 0.33 s and 451 MB. All writes stayed in the lane directory. No interpreter was constructed.
+
+[gaslamp] job: cx-20261022-030157-acd3 · session: 01a16241-e257-7d23-87cf-521417c1a142 · thread: r5-bodyredex · resume: gaslamp codex --thread r5-bodyredex · tok: 12023k→110k
+[lane.sh] done rc=0 tries=1

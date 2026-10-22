@@ -282,3 +282,273 @@ still do not do that.
 
 No claim of 162-bit optimality, or of closing this whole branch, follows
 from this report.
+
+## 5. Coordinator follow-up: normal readers and the first contraction
+
+**The whole first-body branch is still open. The linear remainder is now
+strictly smaller:** in a globally lexicographically minimum reader below46
+with source j at depth1, a linear first body let must carry j in its
+lambda-containing A, and **B must itself have a nested head redex**.
+Neither a rigid-headed B nor a lambda-headed B survives. The nonlinear
+remainder still has 2–4 uses and a lambda-containing A, with the uniform
+repeated-helper family below also excluded. No new interpreter was built.
+
+### 5.1 What H_nf supplies, and what it does not
+
+`review_types/REVIEW.md` is now present and accepts BN46 for the joint
+zero/U1/U2 laws, subject to the Python search/Rust divergence-checker trust
+boundary and a handwritten needed-occurrence/orphan lemma. It also finds
+an unrelated single-law tabling incompleteness. I read the review; I did
+not repeat its searches. Below, **H_nf** names the reviewed, external
+normal-reader floor. It is not a Lean axiom or a kernel-checked theorem.
+
+There are two premises to track before using it after normalization:
+
+1. **Existence of a source normal form.** Reader laws alone do not imply
+   this. For example, with `Ω=(λx.x x)(λx.x x)`, the correct reader
+
+       λs. s I (λu. s (λq.c) (s s Ω)) j
+
+   has weight62 and no source normal form. Zero erases the variable arm;
+   every unary stream makes `s s Ω = N`. This is not a minimum or a
+   sub46 witness. It shows why normalizability of the remaining small
+   minima still needs an argument; H_nf does not establish that premise.
+2. **One source hole.** If A carries j and the let has m uses, its
+   immediate contractum has m holes. H_nf is stated for one. A correction
+   by labelled-hole pruning is given in §5.5; applying H_nf directly to
+   the copied source is not justified by its statement.
+
+Even when these premises hold, only the *sum* of the contraction prices
+must reach the floor. A more expensive reduct need not itself be a global
+minimum, so the source-minimum inequalities cannot be restarted there.
+For an explicit non-reader control, the linear head chain
+
+    λs. ((λx y z. y x) (s I j)) s c            weight42
+      → λs. (λy z. y (s I j)) s c             weight44
+      → λs. (λz. s (s I j)) c                 weight33
+      → λs. s (s I j)                        weight20
+
+has exact prices `+2, -11, -13`. First-step growth alone proves little.
+`followup_verify.py` checks those weights independently with named terms.
+
+### 5.2 Linear immediate normal contracta are impossible, without H_nf
+
+**Kernel-checked, with no size or hole-depth assumption.**
+`minimum_linear_contractum_not_normal` states:
+
+    MinimumReader (λs. ((λx.B) A) C⃗) → uses_x(B)=1 →
+      ¬ NormalForm (λs. B[A/x] C⃗).
+
+Proof: a rigid-headed B can only be x-headed or s-headed. The former
+contradicts `minimum_extra_use`; in the latter the sole x is in one
+operand, contradicting `no_one_operand_spine_let`. The source-head
+classification leaves a lambda-headed B with a nonempty pending list, or
+an existing nested head redex. Contraction creates a pending-argument
+redex in the former and preserves the nested redex in the latter.
+
+Moreover, in the remaining linear sub46 case j is in A at depth zero.
+Thus A is not lambda-rooted. The proposed `x`-in-function-position plus
+lambda-A creation mechanism cannot occur in this case. An application-
+rooted A can already contain a redex, but that is a different situation.
+
+`Followup.lean` proves the rigid-head exclusions and the complete immediate
+contractum statement against the existing library, not against H_nf.
+
+### 5.3 The created-redex case with lambda-headed B is excluded
+
+**Handwritten source reduction plus a complete 13,296-source check.**
+Write it as
+
+    λs. ((λx y.D) A) C C⃗,       uses_x(D)=1,       j in A.
+
+Swap the two binders and their arguments:
+
+    λs. ((λy x.Dswap) C) A C⃗.
+
+This preserves all laws, all lambda nodes and the source hole depth. Its
+weight changes by exactly `uses_y(D)−1`; `exchange_join` and
+`exchange_price` are kernel-checked.
+
+- If y has no uses, this is a strictly lighter reader.
+- If y has one use, the swapped source is another global lexicographic
+  minimum with a **j-free linear first argument C**, excluded by §3.3 if C is flat and §3.5 otherwise.
+- Therefore y has at least two uses. This step depends on the handwritten
+  §3.3/§3.5 exclusions; it is not claimed as an unconditional Lean theorem.
+
+Now put q=#free s/c leaves of A, a=cost(A) with j priced zero, b=wire(B),
+D_x=depth of its unique x, G=#outward s/c leaves of B, and
+p=Σ(2+wire(Ci)). The source and linear charge give
+
+    a+b+p ≤35,       (q+3)D_x ≥7+G.
+
+A contains a lambda and j is at its depth zero, so a≥6; if q≥1 then
+`a≥4q+3`. For the latter bound, either A has an extra bound leaf, giving
+`a≥4q+6`, or every lambda adds at least one capture bit to a non-j leaf.
+B has x and at least two y leaves, so `b≥3D_x+10`; also p≥4.
+These inequalities force q≤3. At q=0, D_x≥3 and a≤12. At q=1,2,3,
+D_x≥2 and a≤15. Uniformly,
+
+    6≤a≤15,       16≤b≤25,       4≤p≤12.
+
+`linear_lambda.py` generates every A and lambda-headed B in these small
+budgets, retaining the exact x/y multiplicities, source support, first
+linear charge and total source price, then every pending forest. A and B
+may contain further redexes. The constructor grammar includes all in-scope
+indices; no beta-normality assumption or H_nf pruning is imposed.
+
+**Result:** 13,296 sources; 13,292 fail zero and 4 fail unary-one;
+no cycle, fuel, size or recursion exceptions and no survivors. Maximum
+probe work was 12 beta contractions. The check took 0.73 s, 34.8 MB,
+one thread. Six selected sources agree with the independent named
+normalizer and cost calculator on zero and unary-one.
+
+Together with §5.2, **every remaining linear first body let has a nested
+head redex inside B**. The nested head redex may be nonlinear; this check
+does not cover it by silently contracting it or treating the reduct as
+another minimum.
+
+### 5.4 Exact nonlinear profiles and one completely closed family
+
+The following is the necessary price region, not a claim that every scalar
+row is realizable by a reader. Let m be the first multiplicity, M the sum
+of its use depths, L_B the lambda count of B, and G its outward s/c leaves.
+Let a price A with j at zero if A holds it, and p price the pending forest
+with j at zero if it holds it. Since B has no j at source depth1,
+
+    w = 10+a+b+p,
+    b ≥ 4m−2+M+2L_B,
+    a+M+2L_B+p ≤ 37−4m.
+
+| m | right-hand budget | j-free A: largest possible a (p≥2) |
+|---|---:|---:|
+| 2 | 29 | 27 |
+| 3 | 25 | 23 |
+| 4 | 21 | 19 |
+
+For j-free A, write q=#free s/c leaves. The exact contraction price is
+
+    Δ = (m−1)a + (q−1)M −2m−4−G.
+
+Minimum weight requires Δ≥0. **If the immediate contractum is normal,
+H_nf strengthens this to Δ≥46−w**, with its one-hole hypothesis preserved.
+`normal_contract_charge` kernel-checks this inference with H_nf, normality
+and the residual hole count explicit as assumptions. Source creation and
+later contractions require their own prices; H_nf supplies no standalone
+upper bound on the total expansion of a nonlinear chain.
+
+For example the particular source family
+
+    R = λs. ((λx. s x … x) A) j,       m copies of x,
+
+has `w=15+4m+a`, Δ=`(m−1)a−2m−5`, M=0 and G=1. If A is normal, the
+contractum is normal with weight `10+2m+m a`. Thus the arithmetic alone
+leaves:
+
+| m | source cap on a | H_nf scalar survivors for normal A |
+|---|---:|---:|
+| 2 | a≤22 | 16≤a≤22 |
+| 3 | a≤18 | 10≤a≤18 |
+| 4 | a≤14 | 7≤a≤14 |
+
+These intervals are nonempty, so the price comparison alone does not
+exclude even this simple sharing pattern.
+
+**The whole displayed family is nevertheless excluded in a minimum
+below46**, without H_nf and without normality of A. Here A must contain c,
+because the rest of the source has none, and must contain a lambda by
+§3.1–§3.4. The minimum-source charge gives `(m−1)a≥2m+5`.
+`repeated_helper.py` checks exactly 14,150 sources satisfying those
+conditions: 12,900 at m=2, 1,145 at m=3 and 105 at m=4.
+
+13,264 fail zero, 883 fail unary-one, and two have exact head-state cycles.
+The sole fuel exception is retained in the raw JSON:
+
+    m=2,       A=λx. x (λz. z z c),       w=44.
+
+With D=`λz. z z c`, its zero run reaches `D D c j` in nine head steps and
+`D D C⃗ → D D c C⃗` forever. `badR_zero_trace`, `grow_no_nf` and
+`badR_not_reader` certify it in Lean. Thus the assembled check has no
+unresolved cases. Runtime 0.55 s, 59.0 MB, one thread; the largest completed
+probe comparison used 19 contractions. Evidence: `repeated_helper.json`,
+`Followup.lean`, and the separate adjudication in
+`followup_verification.json`.
+
+### 5.5 Hole-bearing nonlinear arguments: corrected conditional charge
+
+Here q counts A's free s/c leaves, a prices its depth-zero j at zero, and
+m=2..4. The weighted price, using the library's additive weight for every
+residual hole, is exactly
+
+    Δ = (m−1)a + (q+3)M +2m−8−G.
+
+One cannot just insert that multi-hole term into H_nf. There are two
+precise available transformations.
+
+**Hoisting, exact price (handwritten algebra from the library identities).**
+Contract and hoist every residual j to one root argument. If c_A is the
+number of c leaves in A, s_B the number of s leaves in B, and c_C the
+number of c leaves in the pending operands, the whole-source price is
+
+    Δ_hoist = (m−1)a + qM + m−4−s_B + m*c_A + c_C.
+
+This follows from `wire_beta_delta` and
+`weight(hoist T)=wire(T)+4+count_c(T)−count_j(T)`.
+Four independent named-term controls check the formula, including deep
+uses and repeated holes. Minimum weight requires Δ_hoist≥0. At m=1,
+hoisting after contraction preserves the lambda count and lowers source
+hole depth from1 to0, so lexicographic minimality requires Δ_hoist≥1.
+The hoist itself is a redex, so it does not discharge H_nf's normality
+hypothesis.
+
+**Pruning extra holes, handwritten transfer lemma.** Suppose the immediate
+contractum is normal. Label its m source j occurrences distinctly. The
+zero reduction to `r j` identifies exactly one source label j_* that
+supplies the output; all other labels are erased. Every unary reduction
+erases every label. By the established dispensability/transfer argument,
+replace each nonselected source hole by its nearest bound variable. The
+same reductions still work, and variable replacement preserves source
+normality. The resulting source has one j, so H_nf applies.
+
+If D_* is the depth of the selected x use inside B, pruning saves exactly
+`2(m−1)+4(M−D_*)`: a hole under depth1+D_i costs 4(1+D_i), whereas its
+replacement costs2. Consequently the corrected necessary inequality is
+
+    46−w ≤ (m−1)a + (q−1)M +4D_*−6−G,
+    0≤D_*≤L_B,       D_*≤M.
+
+This is stronger than merely requiring the additive multi-hole weight to
+reach46. The pruning lemma is handwritten, not kernel-checked here;
+`normal_contract_charge` requires the one-hole condition explicitly and
+does not conceal this transfer. For a longer normalizing chain, the same
+argument applies to its final normal form, but the selected-hole depths
+and total price must be tracked through the actual chain. No all-chain
+bound was obtained.
+
+### 5.6 Exact remaining claim and evidence boundary
+
+The follow-up does **not** prove “under H_nf, no minimum reader below46
+has a first body redex.” What is established is:
+
+- linear immediate normal contracta: impossible for any minimum reader,
+  kernel-checked, without H_nf or a size bound;
+- linear lambda-headed B below46 with j at depth1: excluded, using the
+  earlier handwritten flat and j-free-linear lemmas, a kernel-checked binder swap,
+  and the complete 13,296-source check;
+- uniform repeated-helper B=`s x … x`, pending `[j]`: excluded below46 in
+  a minimum by 14,150 cases plus one Lean divergence certificate;
+- general normal immediate contracta: the exact H_nf inequalities above,
+  with normality and hole multiplicity made explicit.
+
+Still open: **linear lets carrying j with a nested head redex in B**, and
+**nonlinear lets with 2–4 uses of a lambda-containing A outside the closed
+families**. Their intermediate expansion and later contraction can trade
+weight in both directions. The next missing semantic step is a bound on
+that shared computation, or a normalization/pruning transformation whose
+whole-source price is controlled; H_nf alone is not that bound.
+
+The final `Followup.lean` compiles without errors or sorry, with axioms
+contained in `{propext, Classical.choice, Quot.sound}`. Timing, RSS,
+independent controls and source hashes are in `followup_verification.json`.
+Each new finite check is below100,000 sources, two minutes, 1 GB and two
+threads. All new writes remain inside this lane; no consult, delegate,
+tracked edit, or commit was made.

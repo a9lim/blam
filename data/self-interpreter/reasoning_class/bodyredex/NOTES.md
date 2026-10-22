@@ -232,3 +232,91 @@ at zero/unary1..8. It recompiles all 221 Lean lines: 0.68 s, 467.7 MB, 2
 threads, no errors or sorryAx. Source hashes are in verification.json.
 Both source checks finished; no lane worker remains running. No files were
 written outside this lane and no commit was made.
+
+## Coordinator follow-up: BN46 is conditional; first structural consequences
+
+H_nf means the types lane's one-source-j beta-normal-reader floor, pending
+review. It does not itself imply that an arbitrary reader normalizes:
+Rinf = λs. s I (λu. s (λq.c) (s s Ω)) j satisfies every law and has no
+source beta normal form. This is not a minimum and is not a sub46 example;
+it isolates a missing premise in the proposed normalization consequence.
+
+For the remaining linear case, j is in A at depth zero. Hence A is NOT
+lambda-rooted. Substitution at an x-headed application cannot create a
+beta redex by placing a lambda there. The remaining creation mechanism is
+a lambda-headed B consuming a pending operand; pre-existing redexes in A/B
+may of course remain.
+
+More strongly, a minimum LINEAR first body let cannot have rigid B:
+- if B is x-headed, NeededHead.minimum_extra_use contradicts m=1;
+- if B is s-headed, its unique x lies in one operand and LetSink's
+  no_one_operand_spine_let contradicts minimum weight;
+- rigid c/j heads violate the zero law.
+SourceBody.minimum_body_alternatives therefore leaves only a lambda-headed
+B with a pending operand, or a nested head redex in B. In the first case
+contraction creates a root redex; in the second it retains a source redex.
+Thus NO minimum linear first-body reader has a beta-normal immediate
+contractum, independently of H_nf. This closes the requested no-created-
+redex-and-normal-result subcase by source structure, not by an inequality.
+
+For nonlinear j-bearing A, the first contractum has m copies of j and
+H_nf cannot be applied to it directly. A possible correction is labelled
+hole pruning: on the zero normal-order run, retain the unique source j
+label that supplies its output j and replace other source j occurrences
+by a nearest bound variable; all j occurrences are dispensable on unary
+runs. If the source is beta-normal, variable replacement preserves it.
+This gives a one-hole normal reader and an exact saving sum(4*d_i-2)
+over discarded holes (all d_i>=1). The argument is handwritten and needs
+explicit proof/review; it is not smuggled into H_nf as an assumption.
+
+## BN46 review received; uniform repeated-helper branch closed
+
+review_types/REVIEW.md now accepts BN46 for the joint zero/U1/U2 laws,
+with a needed-occurrence/orphan lemma repairing the report's overly broad
+single-law tabling claim. I read that review; I did not rerun its searches.
+BN46 remains computer-checked with handwritten completeness, not Lean.
+
+Pinned subcase R=λs.((λx.s x...x) A)j, m=2..4:
+- c must occur in A; j is absent from A; A contains a lambda by the first
+  report. No source-normality assumption on A.
+- w=15+4m+a, a=wire(A), hence a<=22/18/14 respectively.
+- minimum-source sharing charge: (m-1)a>=2m+5.
+- If A is normal, the immediate contractum is normal and H_nf additionally
+  gives 10+2m+m*a>=46. For m=2,3,4 the scalar survivors are respectively
+  a=16..22, 10..18, 7..14. These are only price profiles, not readers.
+
+repeated_helper.py checks the broader family without relying on H_nf:
+14,150 sources (12,900 / 1,145 / 105), 13,264 fail zero, 883 fail unary-one,
+2 have exact head-state cycles, one reaches the fuel guard. No successes.
+0.55 s, 59.0 MB, one thread. The guard is NOT counted as failure.
+The one exception is m=2, A=λx.x(λz.z z c), w44. Let D=λz.z z c.
+Its zero run reaches D D c j, and D D Cvec -> D D c Cvec forever.
+Followup.lean proves the 9-step zero trace and badR_not_reader, using an
+arbitrary-spine head-divergence invariant. Thus all 14,150 sources are
+excluded: finite check plus a kernel-checked exception, no unresolved fuel.
+
+Followup.lean also kernel-checks the unrestricted theorem
+minimum_linear_contractum_not_normal. It assumes only MinimumReader and
+one use in the first body-let, not the 45-bit budget, hole depth or H_nf.
+
+## Final follow-up synthesis
+
+The lambda-headed linear B case is now excluded. Swapping x/y and A/C
+changes weight by uses_y-1, keeps all lambdas and hole depth, and preserves
+laws (exchange_price and exchange_join in Followup.lean). Thus uses_y=0
+improves weight; uses_y=1 gives another lex minimum with a j-free linear
+first argument, excluded by the earlier handwritten REPORT3.3 (flat C) / REPORT3.5 theorem.
+For uses_y>=2, source budget + linear charge force q<=3,a<=15,b<=25,p<=12.
+The complete 13,296-source residual (linear_lambda.py) has no survivors,
+cut-offs or cycles: 13,292 zero failures, 4 unary-one failures, maximum12
+beta contractions; 0.73s and34.8MB. The exact budget proof is in REPORT5.3.
+
+REPORT5 appends the conditional H_nf accounting, explicitly states the
+missing normalizability premise, and gives a handwritten labelled-hole
+pruning repair for nonlinear copied j. General raw price region and the
+root-hoist formula are recorded. The final conclusion remains partial:
+linear minimum first-body lets must now have a nested head redex in B;
+nonlinear m2..4 lambda-containing arguments remain outside closed families.
+followup_verify.py checks four independent named-term price controls, six
+selected new finite sources, the chain weights42,44,33,20, and compiles all
+new Lean. It retains the raw fuel exception and records its Lean discharge.

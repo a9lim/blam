@@ -1,0 +1,27 @@
+{
+  "sources": 14150,
+  "counts": {
+    "2": 12900,
+    "3": 1145,
+    "4": 105
+  },
+  "failures": {
+    "law0": 13264,
+    "law1": 883,
+    "cycle0": 2
+  },
+  "unknowns": [
+    {
+      "m": 2,
+      "A": "\\x2. x2 (\\x3. x3 x3 c)",
+      "weight": 44,
+      "reason": "fuel"
+    }
+  ],
+  "survivors": [],
+  "max_probe_beta_steps": 19,
+  "seconds": 0.5511910000059288,
+  "peak_rss_bytes": 59015168,
+  "threads": 1,
+  "source_digest": "cff9df25ae74c3a99ddee7677134767e896abb574346ff14101dc2a17b7e4b94"
+}

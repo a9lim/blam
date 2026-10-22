@@ -173,7 +173,12 @@ the 39-bit one.
   the let is linear, has `j` inside `A` (Codex, bodyredex lane: handwritten
   with the scalar bounds and the `A = (s s s) j` case in
   `reasoning_class/bodyredex/FlatRestHole.lean`, and complete checks of
-  92,480 and 47,328 sources).
+  92,480 and 47,328 sources). Contracting such a linear let never yields a
+  β-normal term directly (kernel-checked, `Followup.lean`), and a λ-headed
+  linear `B` (13,296 sources) and the uniform helper family
+  `λs. ((λx. s x … x) A) j` with two to four uses (14,150 sources) have no
+  reader below 46; what is left is a linear let whose `B` holds a nested
+  head redex, and other nonlinear lets.
 - **Lets headed by their own variable** (Lean, Codex,
   `Blc/SelfintNeededHead.lean`, `Blc/SelfintNestedLets.lean`). In
   `(λx. x B₁ … B_k) A`, keeping `A` once at the head and replacing every
@@ -422,8 +427,11 @@ beyond enumeration (the record's estimate is about 2×10⁹ λ-rooted depth-1
 readers at `w ≤ 45`), so these need arguments, not larger checks. The
 productive tools so far are the first dispatch, the context-free anchor at
 `j`'s parent, the closed-specializer algebra, exact contraction prices
-under minimality, and the β-normal bound: a reader below 46 normalizes to
-one of at least 46, so some redex must pay for itself.
+under minimality, and the β-normal bound. That bound does not simply
+transfer through normalization: a reader need not have a normal form, and
+contracting a shared let can copy `j`, which leaves the one-hole class;
+only where a contraction keeps one `j` does it force the redex to pay for
+itself.
 
 Where `j` dies does not price a reader (Codex, jerase lane). Every
 residual of the source `j` is erased by a contraction whose λ comes from

@@ -1,0 +1,98 @@
+{
+  "price_controls": [
+    {
+      "m": 1,
+      "a": 10,
+      "q": 1,
+      "M": 2,
+      "G": 1,
+      "source": 41,
+      "contracted": 42,
+      "hoisted": 40
+    },
+    {
+      "m": 2,
+      "a": 10,
+      "q": 1,
+      "M": 0,
+      "G": 2,
+      "source": 37,
+      "contracted": 41,
+      "hoisted": 44
+    },
+    {
+      "m": 3,
+      "a": 12,
+      "q": 2,
+      "M": 1,
+      "G": 0,
+      "source": 43,
+      "contracted": 70,
+      "hoisted": 71
+    },
+    {
+      "m": 4,
+      "a": 6,
+      "q": 0,
+      "M": 0,
+      "G": 0,
+      "source": 30,
+      "contracted": 48,
+      "hoisted": 48
+    }
+  ],
+  "chain_weights": [
+    42,
+    44,
+    33,
+    20
+  ],
+  "independent_samples": [
+    {
+      "source": "\\x1. (\\x2. \\x3. x3 (x3 (\\x4. \\x5. x2))) (j (\\x2. x2)) x1 c",
+      "weight": 44
+    },
+    {
+      "source": "\\x1. (\\x2. \\x3. (\\x4. x2) (x3 x3 x1)) (j (\\x2. c)) x1",
+      "weight": 44
+    },
+    {
+      "source": "\\x1. (\\x2. \\x3. (\\x4. x2) (x3 x3 x3)) ((\\x2. x2) j x1) c",
+      "weight": 45
+    },
+    {
+      "source": "\\x1. (\\x2. \\x3. (\\x4. x3 x2) x3) (j (\\x2. x2 c)) x1",
+      "weight": 43
+    },
+    {
+      "source": "\\x1. (\\x2. \\x3. (\\x4. x2) (x3 x3)) (j (\\x2. \\x3. x2) x1) c",
+      "weight": 44
+    },
+    {
+      "source": "\\x1. (\\x2. \\x3. (\\x4. x2) x3 x3) ((\\x2. \\x3. \\x4. x4) c j) x1",
+      "weight": 45
+    }
+  ],
+  "repeated_helper_adjudication": {
+    "sources": 14150,
+    "raw_fuel_unknowns": 1,
+    "kernel_certified_exceptions": [
+      "Blc.BodyRedexFollowup.badR_not_reader"
+    ],
+    "unresolved": 0,
+    "survivors": 0
+  },
+  "lean": {
+    "exit_code": 0,
+    "seconds": 0.33237745899532456,
+    "peak_rss_bytes": 450838528,
+    "threads": 2
+  },
+  "hashes": {
+    "Followup.lean": "96c0c5b5dab0adb07c212bdb70d831a3dbf859f67fda35f6c77fe8eef49826ab",
+    "linear_lambda.py": "d70954c7228fa55426bbcf85e38811ae6a9aa206fbf4c0e9a60deb657c08d846",
+    "linear_lambda.json": "46bac915ea606e51b1ff4ecc586de100f3b9d300589e5d474e56ce98cf5813f5",
+    "repeated_helper.py": "d530623ecf4679d6b72932ebc57d199847d108c49395e5a3f47c3552b56ce10e",
+    "repeated_helper.json": "c4828324b43b46996f9a7801d0fbb0c54cb469ff00e984125c5d9d9cc4f740f8"
+  }
+}
