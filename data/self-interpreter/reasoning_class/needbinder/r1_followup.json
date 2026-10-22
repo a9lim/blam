@@ -1,0 +1,406 @@
+{
+  "dispatchers": [
+    {
+      "cost": 2,
+      "A": "s",
+      "zero": "(r j)",
+      "unary_one": "(N j)",
+      "reason": "wrong rigid unary-one head"
+    },
+    {
+      "cost": 3,
+      "A": "c",
+      "zero": "((((c (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "((((c (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 4,
+      "A": "(\\v2. v2)",
+      "zero": "(r j)",
+      "unary_one": "(V j)",
+      "reason": "existing I-selector bound"
+    },
+    {
+      "cost": 5,
+      "A": "(\\v2. s)",
+      "zero": "((((r (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "(((N (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero arity"
+    },
+    {
+      "cost": 6,
+      "A": "(\\v2. c)",
+      "zero": "(((c r) V) j)",
+      "unary_one": "(((c (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 6,
+      "A": "(\\v2. (\\v3. v3))",
+      "zero": "((r V) j)",
+      "unary_one": "(((V (\\v3. (\\v4. v3))) N) j)",
+      "reason": "wrong rigid zero arity"
+    },
+    {
+      "cost": 6,
+      "A": "(s s)",
+      "zero": "(((r r) V) j)",
+      "unary_one": "(((N (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero arity"
+    },
+    {
+      "cost": 7,
+      "A": "(\\v2. (\\v3. v2))",
+      "zero": "V",
+      "unary_one": "j",
+      "reason": "zero is V, a lambda"
+    },
+    {
+      "cost": 7,
+      "A": "(s c)",
+      "zero": "((((((c (\\v3. (\\v4. v3))) r) (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "((((((c (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 7,
+      "A": "(c s)",
+      "zero": "(((((c (\\v3. ((v3 (\\v4. (\\v5. v4))) r))) (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "(((((c (\\v3. ((v3 (\\v4. (\\v5. v5))) (\\v4. ((v4 (\\v5. (\\v6. v5))) N))))) (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 8,
+      "A": "(\\v2. (\\v3. s))",
+      "zero": "(((V (\\v3. (\\v4. v3))) r) j)",
+      "unary_one": "(((V (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) j)",
+      "reason": "remove A: decreases weight by 10"
+    },
+    {
+      "cost": 8,
+      "A": "(\\v2. (\\v3. (\\v4. v4)))",
+      "zero": "(V j)",
+      "unary_one": "(V j)",
+      "reason": "remove s and A: decreases weight by 14"
+    },
+    {
+      "cost": 8,
+      "A": "(\\v2. (v2 v2))",
+      "zero": "V",
+      "unary_one": "(((V (\\v3. (\\v4. v3))) N) j)",
+      "reason": "zero is V, a lambda"
+    },
+    {
+      "cost": 8,
+      "A": "(s (\\v2. v2))",
+      "zero": "(((r r) V) j)",
+      "unary_one": "(V j)",
+      "reason": "wrong rigid zero arity"
+    },
+    {
+      "cost": 8,
+      "A": "(c c)",
+      "zero": "(((((c c) (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "(((((c c) (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 9,
+      "A": "(\\v2. (\\v3. c))",
+      "zero": "((c V) j)",
+      "unary_one": "((c V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 9,
+      "A": "(\\v2. (\\v3. (\\v4. v3)))",
+      "zero": "(r j)",
+      "unary_one": "((j (\\v3. (\\v4. v3))) N)",
+      "reason": "wrong rigid unary-one head"
+    },
+    {
+      "cost": 9,
+      "A": "(\\v2. (v2 s))",
+      "zero": "(((V (\\v3. (\\v4. v3))) r) j)",
+      "unary_one": "(((V (\\v3. (\\v4. v3))) N) j)",
+      "reason": "new second-cell callback bound"
+    },
+    {
+      "cost": 9,
+      "A": "(\\v2. (s v2))",
+      "zero": "(r j)",
+      "unary_one": "(N j)",
+      "reason": "wrong rigid unary-one head"
+    },
+    {
+      "cost": 9,
+      "A": "(s (\\v2. s))",
+      "zero": "((((((r (\\v3. (\\v4. v3))) r) (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "(((((N (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero arity"
+    },
+    {
+      "cost": 9,
+      "A": "(c (\\v2. v2))",
+      "zero": "(((((c (\\v3. v3)) (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "(((((c (\\v3. v3)) (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 10,
+      "A": "(\\v2. (\\v3. (\\v4. v2)))",
+      "zero": "(\\v3. j)",
+      "unary_one": "(\\v3. v3)",
+      "reason": "zero retains a lambda"
+    },
+    {
+      "cost": 10,
+      "A": "(\\v2. (\\v3. (\\v4. (\\v5. v5))))",
+      "zero": "j",
+      "unary_one": "j",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 10,
+      "A": "(\\v2. (\\v3. (v3 v3)))",
+      "zero": "(((r r) V) j)",
+      "unary_one": "(N j)",
+      "reason": "wrong rigid zero arity"
+    },
+    {
+      "cost": 10,
+      "A": "(\\v2. (v2 c))",
+      "zero": "((c V) j)",
+      "unary_one": "(((V (\\v3. (\\v4. v3))) N) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 10,
+      "A": "(\\v2. (v2 (\\v3. v3)))",
+      "zero": "(V j)",
+      "unary_one": "(((V (\\v3. (\\v4. v3))) N) j)",
+      "reason": "new second-cell callback bound"
+    },
+    {
+      "cost": 10,
+      "A": "(\\v2. (s s))",
+      "zero": "((r V) j)",
+      "unary_one": "((N V) j)",
+      "reason": "wrong rigid zero arity"
+    },
+    {
+      "cost": 10,
+      "A": "(\\v2. (c v2))",
+      "zero": "((((c (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "((((c (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 10,
+      "A": "(s (\\v2. c))",
+      "zero": "(((((c r) (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "(((((c (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 10,
+      "A": "(s (\\v2. (\\v3. v3)))",
+      "zero": "((((r (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "(((N (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero arity"
+    },
+    {
+      "cost": 10,
+      "A": "(s (s s))",
+      "zero": "(((((r r) (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "(((((N (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero arity"
+    },
+    {
+      "cost": 10,
+      "A": "(c (\\v2. s))",
+      "zero": "(((((c (\\v3. (\\v4. ((v4 (\\v5. (\\v6. v5))) r)))) (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "(((((c (\\v3. (\\v4. ((v4 (\\v5. (\\v6. v6))) (\\v5. ((v5 (\\v6. (\\v7. v6))) N)))))) (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero head"
+    },
+    {
+      "cost": 10,
+      "A": "((s s) s)",
+      "zero": "((((r (\\v3. (\\v4. v3))) r) V) j)",
+      "unary_one": "((((N (\\v3. (\\v4. v4))) (\\v3. ((v3 (\\v4. (\\v5. v4))) N))) V) j)",
+      "reason": "wrong rigid zero arity"
+    }
+  ],
+  "non_normal": [
+    {
+      "cost": 8,
+      "A": "((\\v2. v2) s)",
+      "nf_cost": 2
+    },
+    {
+      "cost": 9,
+      "A": "((\\v2. v2) c)",
+      "nf_cost": 3
+    },
+    {
+      "cost": 9,
+      "A": "((\\v2. s) s)",
+      "nf_cost": 2
+    },
+    {
+      "cost": 10,
+      "A": "(\\v2. ((\\v3. v3) v2))",
+      "nf_cost": 4
+    },
+    {
+      "cost": 10,
+      "A": "((\\v2. v2) (\\v2. v2))",
+      "nf_cost": 4
+    },
+    {
+      "cost": 10,
+      "A": "((\\v2. s) c)",
+      "nf_cost": 2
+    },
+    {
+      "cost": 10,
+      "A": "((\\v2. c) s)",
+      "nf_cost": 3
+    },
+    {
+      "cost": 10,
+      "A": "((\\v2. (\\v3. v3)) s)",
+      "nf_cost": 4
+    }
+  ],
+  "fixtures": {
+    "capture53": {
+      "source": "\\s. s I ((\\x u. s (\\q. c) (x u)) (s s)) j",
+      "price": [
+        53,
+        49,
+        1,
+        5,
+        9,
+        7,
+        1,
+        1
+      ],
+      "zero_and_unary_through": 8
+    },
+    "sunk55": {
+      "source": "\\s. s I (\\u. (\\x. s (\\q. c) (x u)) (s s)) j",
+      "price": [
+        55,
+        51,
+        1,
+        5,
+        9,
+        9,
+        1,
+        1
+      ],
+      "zero_and_unary_through": 8
+    },
+    "needed66": {
+      "source": "\\s. s (\\b t v. b t (v t)) (\\u k. c u (u u k)) j",
+      "price": [
+        66,
+        62,
+        1,
+        6,
+        11,
+        10,
+        1,
+        1
+      ],
+      "zero_and_unary_through": 8
+    },
+    "deep109": {
+      "source": "\\s. s I (\\u. (\\x a b d e f. s (\\q. c) x) (s s u) I I I I I) j",
+      "price": [
+        109,
+        105,
+        1,
+        15,
+        14,
+        23,
+        1,
+        1
+      ],
+      "zero_and_unary_through": 8
+    },
+    "contract111": {
+      "source": "\\s. s I (\\u. (\\a b d e f. s (\\q. c) (s s u)) I I I I I) j",
+      "price": [
+        111,
+        107,
+        1,
+        14,
+        13,
+        31,
+        1,
+        1
+      ],
+      "zero_and_unary_through": 8
+    },
+    "sink119": {
+      "source": "\\s. s I (\\u. (\\a b d e f. (\\x. s (\\q. c) x) (s s u)) I I I I I) j",
+      "price": [
+        119,
+        115,
+        1,
+        15,
+        14,
+        33,
+        1,
+        1
+      ],
+      "zero_and_unary_through": 8
+    },
+    "thin75": {
+      "source": "\\s. s (\\b t v k. b (t k) (v (c t))) (\\u. u (s s u)) j",
+      "price": [
+        75,
+        71,
+        1,
+        6,
+        12,
+        15,
+        1,
+        1
+      ],
+      "zero_and_unary_through": 8
+    }
+  },
+  "thin_dispatcher_check": {
+    "D": "u (s s u)",
+    "D_cost": 16,
+    "A_cap": 13,
+    "sources": 70,
+    "counts_by_cost": {
+      "2": 0,
+      "3": 1,
+      "4": 0,
+      "5": 0,
+      "6": 1,
+      "7": 2,
+      "8": 1,
+      "9": 3,
+      "10": 6,
+      "11": 12,
+      "12": 14,
+      "13": 30
+    },
+    "wrong_nf": {
+      "zero": 66,
+      "1": 4
+    },
+    "exceptions": [],
+    "survivors": []
+  },
+  "seconds": 0.08238008299667854,
+  "peak_rss_bytes": 22134784,
+  "threads": 1
+}

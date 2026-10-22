@@ -1,0 +1,22 @@
+progress: 100/376 (0s)
+progress: 200/376 (0s)
+progress: 300/376 (0s)
+adjudicated 376 terms: 0 halt, 376 diverge, 0 unknown (0.0s)
+        0.25 real         0.01 user         0.00 sys
+             4128768  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                 596  page reclaims
+                   1  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                 249  involuntary context switches
+           322000957  instructions retired
+            87493739  cycles elapsed
+             2621944  peak memory footprint

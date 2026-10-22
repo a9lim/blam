@@ -1,0 +1,6 @@
+'Blc.NeedBinder.OpenerHoist.critical_linear_cost' depends on axioms: [propext, Quot.sound]
+'Blc.NeedBinder.OpenerHoist.outward_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.NeedBinder.OpenerHoist.hoist_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.NeedBinder.OpenerHoist.hoist_single_strict' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.NeedBinder.OpenerHoist.inside_hole' depends on axioms: [propext, Quot.sound]
+'Blc.NeedBinder.OpenerHoist.outside_hole' depends on axioms: [propext, Quot.sound]

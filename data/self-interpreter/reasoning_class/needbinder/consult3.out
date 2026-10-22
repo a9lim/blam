@@ -1,0 +1,25 @@
+[gaslamp] → codex · job cx-20261022-014524-777a · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-014524-777a/events.jsonl
+(•̀ᴗ•́) **General R1′ remains open, with three additional exclusions.** Appended [REPORT.md §6](/Users/a9lim/Work/blam/tmp/round4/needbinder/REPORT.md:388), preserving the previous report byte-for-byte.
+
+The complete source split is now explicit: within `λs.Y j`, the root-redex arm is absent; lambda-shaped `Y` is excluded from a global minimum by the literal-j-let theorem; the remaining sources are s-spines or first body redexes, with multiplicity **1–6** under minimality. The report refines every first-dispatch shape and marks inherited closures. The semantic `b P Q C⃗` / `t P` split does not justify adding independent source costs.
+
+The 162’s outer `u` receives rigid `j` on unary inputs, so it cannot be unary-needed. Its entire I-selector family is already closed, including arbitrary internal binders.
+
+New bounds:
+
+- **`λs.s (λb.b H) (λu.D) j` has `w≥46`, without minimality.** Unary dispatch erases arbitrary `H`; the original budget forces `|D|≤21` below46. All **6,113** possible c-containing bodies fail unary length one by wrong normal forms, with **zero cutoffs**.
+- **A globally minimum sub46 `λs.s A (λu.D) j` must have `|A|≥11` and `|D|≤18`.** The complete 41-source inventory through `|A|=10` closes every cheaper dispatcher.
+- **The exact body `D=u(s s u)` is excluded below46 for arbitrary `A`.** Its budget permits 70 c-containing dispatchers; 66 fail zero and four fail unary-one, without exceptions.
+
+The remaining obstruction is concrete. This full reader has a needed outer `u` and a **16-bit** body:
+```text
+λs.s (λb t v k.b(t k)(v(c t))) (λu.u(s s u)) j
+```
+Here `u` receives `c tail`; the dispatcher supplies part of the output computation. Its weight is **75**, so it is not a counterexample, but it invalidates applying the standalone unary-core bound directly to `D`.
+
+For single-role capture, full-law witnesses show **53→55** on sinking, and **109→111** on contraction versus **109→119** on sinking. These witnesses are nonminimal. Below46, the exact linear-let charges leave only twelve necessary `(free leaves, capture depth)` profiles; their semantic exclusion remains open.
+
+[R1Followup.lean](/Users/a9lim/Work/blam/tmp/round4/needbinder/R1Followup.lean) checks the witnesses’ **all-unary laws**, prices, and profile arithmetic. Source inventories remain Python/handwritten evidence. Both finite checks took under one second and 24 MB, using one thread. [Verification manifest](/Users/a9lim/Work/blam/tmp/round4/needbinder/r1_verification.json).
+
+[gaslamp] job: cx-20261022-014524-777a · session: 01a16205-620f-7980-a236-a8b182473185 · thread: r5-needbinder · resume: gaslamp codex --thread r5-needbinder · tok: 12607k→117k
+[lane.sh] done rc=0 tries=1

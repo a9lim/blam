@@ -1,0 +1,34 @@
+[gaslamp] → codex · job cx-20261022-011122-28b4 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-011122-28b4/events.jsonl
+( •̀_•́ ) **R1′ remains open. No reader with `w ≤ 45` was constructed.** The new result narrows the literal cell-opener case. Full proofs and evidence are saved in [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/needbinder/REPORT.md).
+
+1. **Complete interpreters:** none built; no splice, battery, or polish claim.
+
+2. **New exact transformations:**
+   - For `λs. s (λb t u. D) j`, prune all but the zero-surviving source occurrence of `u`, then hoist its binder:
+     ```text
+     (λu s. s (λb t. D*)) j
+     ```
+     The exact combined weight change is `−1 − m_t − m_b − m_s`. Thus this source shape cannot be globally minimum. The semantic argument is handwritten using the reviewed transfer lemma; arbitrary-body price, scope, and hole counts are kernel-checked.
+   - Sinking a single-role let through a context crossing `k` lambdas has exact price
+     ```text
+     new − old = k(F − m) + H − T.
+     ```
+     Therefore the proposed automatic reduction from needed binders to cross-role sharing still needs a capture-cost exclusion.
+
+3. **New opener reduction:** In a globally lexicographically minimum full-law reader
+   ```text
+   R = λs. s (λb t. B) j,     w(R) ≤ 45,
+   ```
+   `B` must have a nonlinear source head redex whose binder has **2–4 occurrences**.
+
+   - All source-rigid bodies are excluded. The complete pinned check covered **92,534 sources**, with arbitrary operands and redexes: **87,428 wrong zero normal forms; 5,106 wrong shortest-unary normal forms; zero cutoffs**. Runtime **44.343 seconds**, peak RSS **20.9 MB**, one thread.
+   - Lambda-headed bodies admit the strict hoisting improvement above.
+   - Any linear redex inside `B` would require `|B| ≥ 31`, contradicting `|B| ≤ 29`. The source-tree argument is handwritten; its arithmetic endpoint is kernel-checked.
+   - Counting and the zero law exclude multiplicity five.
+
+4. **Remaining boundary:** nonlinear head lets of multiplicity 2–4 inside this opener; general source lets; created or partially applied openers; and terminal-cell output origins. The next target is their **original source budget**, retaining the exact let and capture charges.
+
+[OpenerHoist.lean](/Users/a9lim/Work/blam/tmp/round4/needbinder/OpenerHoist.lean) compiles without `sorryAx`; [verification.json](/Users/a9lim/Work/blam/tmp/round4/needbinder/verification.json) records the evidence and explicitly separates the handwritten, Python-checked, and kernel-checked portions.
+
+[gaslamp] job: cx-20261022-011122-28b4 · session: 01a16205-620f-7980-a236-a8b182473185 · thread: r5-needbinder · resume: gaslamp codex --thread r5-needbinder · tok: 3270k→39k
+[lane.sh] done rc=0 tries=1

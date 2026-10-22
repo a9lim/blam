@@ -296,7 +296,14 @@ minimum readers, not every reader of the family; and the zero output need
 not be rigid there (a `w = 104` reader with the binder hypothesis met has
 `ν` returning `λq. r j` on zero). What remains of the family is a binder
 above `ν` carrying a value the unary output needs — sharing between roles
-again, through a let or through a cell part the bit opens. The checks have
+again, through a let or through a cell part the bit opens. In the 162 the
+binder `u` receives the rigid `j` on unary streams, so it is never needed;
+but a binder can be: `λs. s (λb t v k. b (t k) (v (c t))) (λu. u (s s u)) j`
+(`w = 75`, Codex) hands `u` the value `c r` and has a 16-bit body. For the
+spine `λs. s A (λu. D) j` (Codex, complete checks): `λs. s (λb. b H) (λu. D) j`
+has `w ≥ 46` for every `H` (6,113 bodies fail), a minimum reader below 46
+has `|A| ≥ 11` and `|D| ≤ 18`, and `D = u (s s u)` is excluded for every
+`A`. The checks have
 at most 53,537 terms after the first pass; the review reproduced the small
 ones, not the full 25-bit cut-off audit.
 

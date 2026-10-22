@@ -1,0 +1,123 @@
+{
+  "sources": 6113,
+  "rows": {
+    "2": {
+      "count": 0,
+      "wrong_nf": {}
+    },
+    "3": {
+      "count": 0,
+      "wrong_nf": {}
+    },
+    "4": {
+      "count": 1,
+      "wrong_nf": {
+        "1": 1
+      }
+    },
+    "5": {
+      "count": 0,
+      "wrong_nf": {}
+    },
+    "6": {
+      "count": 0,
+      "wrong_nf": {}
+    },
+    "7": {
+      "count": 1,
+      "wrong_nf": {
+        "1": 1
+      }
+    },
+    "8": {
+      "count": 2,
+      "wrong_nf": {
+        "1": 2
+      }
+    },
+    "9": {
+      "count": 2,
+      "wrong_nf": {
+        "1": 2
+      }
+    },
+    "10": {
+      "count": 4,
+      "wrong_nf": {
+        "1": 4
+      }
+    },
+    "11": {
+      "count": 6,
+      "wrong_nf": {
+        "1": 6
+      }
+    },
+    "12": {
+      "count": 14,
+      "wrong_nf": {
+        "1": 14
+      }
+    },
+    "13": {
+      "count": 23,
+      "wrong_nf": {
+        "1": 23
+      }
+    },
+    "14": {
+      "count": 41,
+      "wrong_nf": {
+        "1": 41
+      }
+    },
+    "15": {
+      "count": 68,
+      "wrong_nf": {
+        "1": 68
+      }
+    },
+    "16": {
+      "count": 138,
+      "wrong_nf": {
+        "1": 138
+      }
+    },
+    "17": {
+      "count": 244,
+      "wrong_nf": {
+        "1": 244
+      }
+    },
+    "18": {
+      "count": 453,
+      "wrong_nf": {
+        "1": 453
+      }
+    },
+    "19": {
+      "count": 801,
+      "wrong_nf": {
+        "1": 801
+      }
+    },
+    "20": {
+      "count": 1527,
+      "wrong_nf": {
+        "1": 1527
+      }
+    },
+    "21": {
+      "count": 2788,
+      "wrong_nf": {
+        "1": 2788
+      }
+    }
+  },
+  "exceptions": [],
+  "survivors": [],
+  "seconds": 0.34214054100448266,
+  "peak_rss_bytes": 23805952,
+  "threads": 1,
+  "domain": "c-containing D in [u,s,c], wire(D)<=21; second-cell callback"
+}

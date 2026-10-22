@@ -1,0 +1,32 @@
+{
+  "files_sha256": {
+    "REPORT.md": "c7f5732508fbafa2f0005df076e7ed09bf2900f0eba3bc6a9e13a6416c527267",
+    "NOTES.md": "df376620e43ad261081dfd8abdf66ba480fda5bfa68c729edb27eca854243691",
+    "openers.py": "a925cb7c3e33e147b8c12af414fe990806ef7fe4ffcbd6c842b75562a2346d21",
+    "openers.log": "d17b0016398379980f2b2b7bafb6eb28ac830fcb40e53dd2d3e28964bbfaf43a",
+    "openers.json": "077c85a7eb0fa04703b77e3a140321b9de55c0fd961e57ce3feef7d791878deb",
+    "OpenerHoist.lean": "7bdfc367c820a05bde6250004a82c917bc0d778ba92c84c38aa5a625030a69b4",
+    "OpenerHoist.log": "e1c087d8a49dd5ac963a76ec6dccd224f5b02db7388eaa3eec49029b10f3aa85",
+    "OpenerHoist.olean": "3dd9f82f663a77ed164cdd0f6518b876e0cd32e2024f067de2b8140dfe587b1f"
+  },
+  "finite_check": {
+    "sources": 92534,
+    "cutoffs": 0,
+    "survivors": 0,
+    "seconds": 44.3432629579911,
+    "peak_rss_bytes": 20873216,
+    "threads": 1
+  },
+  "lean": {
+    "file": "OpenerHoist.lean",
+    "threads": 2,
+    "axioms": "propext, Classical.choice, Quot.sound; no sorryAx",
+    "coverage": "arbitrary-body hoist source price, scope, one-hole facts; arithmetic critical-linear-cost inequality"
+  },
+  "not_kernel_checked": [
+    "residual pruning",
+    "cell-specific hoist semantics",
+    "source-tree cost lower bound",
+    "source enumeration completeness and rejection results"
+  ]
+}

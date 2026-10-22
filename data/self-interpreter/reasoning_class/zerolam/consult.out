@@ -1,0 +1,51 @@
+[gaslamp] → codex · job cx-20261022-011121-6103 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-011121-6103/events.jsonl
+( •̀ᴗ•́ ) **Two minimum-reader subcases are closed; the general zero-λ bound remains open.** Full proofs and reproducible evidence are in [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/zerolam/REPORT.md).
+
+1. **Interpreters:** none built; no reader with `w≤45` found. No new battery or polish claim.
+
+2. **Exact transport reductions — handwritten, with targeted arithmetic checks.**
+
+   For a reader
+   ```
+   R = λs.C[(λa.B) j],
+   ```
+   retain the source `a` occurrence supplying the zero output’s sole `j`, and replace the other `a` occurrences by `s`. Those other occurrences are dispensable on zero, and every `a` occurrence is dispensable on every unary input. The reviewed joint-dispensability machinery therefore preserves all reader laws.
+
+   Let `m` be the retained occurrence’s depth inside B, `T` its original outward s/c leaf count, `s_B` its s count, and `c_C` C’s c count. Relative to the **original, unpruned reader**:
+   ```
+   contract the pruned j-let:  Δw = 3m − 6 − T;     ΔL = −1
+   hoist it outside λs:       Δw = c_C − s_B − 3;  ΔL = 0, depth 1→0
+   ```
+   These formulas accommodate duplicated `a`; the pruning surcharge cancels exactly.
+
+3. **Exclusions and bounds.**
+
+   **Literal parent `(λa.B) j`:** a globally minimum reader cannot have this parent. If `m≤2`, contraction improves the minimum order. If `c_C≤s_B+3`, hoisting improves it. Otherwise:
+   ```
+   L≥5, A≥7, index_sum≥7,
+   w = 2L + 4A + index_sum + 4 ≥49.
+   ```
+   The application bound uses the reader’s necessary nonlinear source binder. Since the canonical reader weighs 46, the last case also excludes global minimality. This is a handwritten minimum-reader theorem, **not** a universal 49-bit bound for every reader of this shape.
+
+   **Closed transport `Y j`:** also excluded from a global minimum, including non-normal Y. The remaining application-rooted closed Y have `|Y|≤29`, because C must supply s and c and costs at least 9.
+
+   The complete bounded check examined **47,392 Y** and **11,620 exceptional context pairs**. Strictly cheaper β-equivalent weak-head forms eliminate most Y by minimality. No exceptional pair survived; all **376 unresolved zero probes** received:
+   ```
+   0 halt, 376 diverge, 0 unknown
+   ```
+   from the frozen BLAM engine. Wire multisets match exactly. This is computer-checked evidence using the trusted engine, **not Lean verification**. Python took 15.82 seconds and 24.22 MB; the engine audit took 0.25 seconds with two threads.
+
+   **Source-disjoint redispatch:** if the literal reader is `λs.P D`, with P returning `r / c U` and D returning `j / N`, the inherited operand bounds give
+   ```
+   w ≥6+2+20+25=53.
+   ```
+   The known reader `λs.s I (s (λq.c)) (s K j (s s s))` attains this. Its immediate j-parent `s K j` is already λ-valued on zero.
+
+4. **Remaining case.**
+
+   A minimum zero-λ reader must now have parent `Y j` where **Y is application-rooted and contains a free s or c occurrence**. The simplest outstanding pattern is `s K j`, giving `K j` on zero and `I` on unary.
+
+   Pricing arbitrary contexts around such parents still requires a bound on source sharing. Two semantic dispatches do not justify adding two disjoint source costs. Neither the universal `w≥46` claim nor exclusion of every zero-λ parent from a minimum has been proved.
+
+[gaslamp] job: cx-20261022-011121-6103 · session: 01a16205-5f62-7da3-8f56-8cb00a42c204 · thread: r5-zerolam · resume: gaslamp codex --thread r5-zerolam · tok: 3261k→43k
+[lane.sh] done rc=0 tries=1

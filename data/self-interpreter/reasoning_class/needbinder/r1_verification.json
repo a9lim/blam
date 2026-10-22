@@ -1,0 +1,78 @@
+{
+  "files_sha256": {
+    "REPORT.md": "3ececc5a32b7c5e2414b043eff10faf49a41d419cd40f88d9584633c0080ff89",
+    "NOTES.md": "1bdb5bb3e684f234f61b841e2a562afca29ecea5442718c6b5098c5ff93426c4",
+    "callbacks.py": "9c80123bec45bcc9fb0585d260f5961d25ff0c82f5290bc83ad934860adacf6d",
+    "callbacks.json": "7d9a88c7372e561d214388446752f48e01daa78d1ed7d2ccb4b8d09ada73bb52",
+    "callbacks.log": "7d9a88c7372e561d214388446752f48e01daa78d1ed7d2ccb4b8d09ada73bb52",
+    "r1_followup.py": "0a771a90979e25ce1c43211b6af775a0103461428105b138cd5cb903dc441cd6",
+    "r1_followup.json": "1ed1d1da120ce4fd459856f34b4c2258dbeaa1b0c65acacf8358ef2b5b32812f",
+    "r1_followup.log": "30974113e3a6a1127e5e5e97e5c85eb37a70b5adbce1b78d9cc127f92c8238ff",
+    "R1Followup.lean": "439da9348aaa23b44709ff86a0290240a778ad0e1e8c5401bd45d5eb0cb262f2",
+    "R1Followup.olean": "5d55e4dd413362194eb10e4a57cb16ffd897622d23d565f0c56363a7ca5f08b8",
+    "R1Followup.log": "a6566068ee5984351a4df2dd4de78f73530ee293d08464c485b6b66ec357f0af"
+  },
+  "context_sha256": {
+    "tmp/round4/jn/dbn.py": "bf793c2119148627cc332a160a5785c642843f1438aed7664c43a11119c46e14",
+    "tmp/round4/coord/rd.py": "aa846634952925ab72572cdad0e48922620b504034a22f9b041b92bc75da4031",
+    "lean/Blc/SelfintSourceFront.lean": "e63d306b677c2fb9763aa1cf93c28c84993138a88e8e6b745b82133dcb972e39",
+    "lean/Blc/SelfintSourceBody.lean": "690881a530ca334f3b1d7563cc9e4ad6e0a2113505cba1a05ac45893ac85436f",
+    "lean/Blc/SelfintNeededHead.lean": "400b8f6490b75792bd7bc1b79b54030c7916d12e30c90fd08f3b9afcec478228",
+    "lean/Blc/SelfintWiden.lean": "cf1374027d6f00c9564d840cc97c67f02c99895e731d2665ad77f45c4ce2ab1f",
+    "lean/lean-toolchain": "2bdc48adfa58d0017e538a0ad117c5d73d35deec879978f909406a80c8037273"
+  },
+  "previous_report_preserved_byte_exactly": true,
+  "callback_check": {
+    "sources": 6113,
+    "seconds": 0.34214054100448266,
+    "peak_rss_bytes": 23805952,
+    "threads": 1,
+    "domain": "c-containing D in [u,s,c], wire(D)<=21; second-cell callback"
+  },
+  "small_inventory_and_fixed_D_check": {
+    "normal_dispatchers": 33,
+    "non_normal_dispatchers": 8,
+    "fixed_D_sources": 70,
+    "fixed_D_rejections": {
+      "zero": 66,
+      "1": 4
+    },
+    "seconds": 0.08238008299667854,
+    "peak_rss_bytes": 22134784,
+    "threads": 1
+  },
+  "unresolved_sources_in_new_checks": 0,
+  "lean": {
+    "file": "R1Followup.lean",
+    "compile_exit_code": 0,
+    "threads": 2,
+    "full_law_reader_weights": [
+      53,
+      55,
+      66,
+      109,
+      111,
+      119,
+      75
+    ],
+    "source_price_checks": true,
+    "linear_capture_numeric_profiles": 12,
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "new_bounds": [
+    "w>=46 for s(lambda b.b H)(lambda u.D)j, no minimality",
+    "A>=11 and D<=18 for a globally minimum sub46 s A(lambda u.D)j",
+    "w>=46 for fixed D=u(s s u), arbitrary A, no minimality"
+  ],
+  "not_kernel_checked": [
+    "source inventory completeness and Python normalizations",
+    "generic cheap-dispatch removal semantics",
+    "source-cost estimate feeding the linear-profile arithmetic",
+    "source-origin and neededness descriptions of witnesses"
+  ],
+  "remaining": "General R1 prime, arbitrary A>=11 with D<=18, source head lets, and single-role capture; no sub46 reader."
+}
