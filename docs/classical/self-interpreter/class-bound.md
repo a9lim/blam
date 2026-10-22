@@ -297,7 +297,15 @@ family; the lists are in the round-4 archive. Claude's lanes:
   through at most one site in its whole body, saving 8 to 15 bits, and the
   same holds for hoisted readers `(λa. λs. M) j`. The bound is joint: a
   cheap site is paid for by a large core, as correct readers of 52, 54 and
-  61 with 9-, 19- and 8-bit sites show;
+  61 with 9-, 19- and 8-bit sites show. A dispatcher shared through a let
+  is a site of its own when every call that runs on a unary stream hands it
+  the bit (or `F`, or `s K`): deleting it saves at least 8 bits once,
+  however many calls there are, and with the reader's one site that is two
+  sites. So below 46 a shared dispatcher needs a call that hands it
+  something else, and a selector call (only `K` itself acts as `K` on unary
+  among terms through 9 bits) costs at least 11 bits at its site; calls
+  handing it `c`, `s` or a tail reuse both arms and are not priced
+  (correct readers of 93 and 99 do this);
 - every reader with its hole at depth ≥ 2, and every depth-0 reader whose
   `j` is the argument of a λ, under the minimality order (weight, λ count,
   depth). This corrects round 3's reduction, which handed depth-2 rows to

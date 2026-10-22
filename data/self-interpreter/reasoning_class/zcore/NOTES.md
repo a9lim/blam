@@ -350,3 +350,108 @@ have at most one syntactic site in the whole body.
   (w 64, V the 162's arm) has two disjoint zero-relevant sites g W of
   deletion cost 4 each.  It needs the let-group accounting (section 14:
   sigma_group >= 12 + 4k), consistent with w 64.
+
+## 21. Follow-up task (coordinator): price the shared dispatcher call site by call site
+Plan: (1) state the call-site pricing lemma exactly; (2) a finite check of
+core + one site + one shared helper under the cap; (3) the combined
+theorem under H_nf, or what survives with a witness.
+First observation (handwritten): T1 applies to ANY deletable site, not just
+syntactic/hygienic ones -- after deletion the core is one of the three
+literal cores (no lets, only binder q), so the site's E can only use s, c,
+q, and onesite_sem.py enumerated all such E.  T2's finite branch likewise
+(core20 literal).  Only the j-free/>=24 branches of T2 used sigma >= 8,
+which fails for let aliases (sigma 4): those need the let-group charge.
+
+## 22. Correction of my residue statement (handwritten)
+My report's "a sub-162 could only hide in a shared lambda receiving the bit
+at one call site and a non-bit at another" was too narrow.  What T1, T2,
+A2 (+ H_nf) leave below 46 for lambda-rooted / hoisted readers is
+ (R-a) SINGLE-dispatch readers with a source redex whose one deletable site
+   has sigma in [8, 15]: type (b) handler sites x A W, type (c) s K j W,
+   and type (a) s I W only when W is not closable or the context is not
+   G0 (a pure single s I dispatch IS G0, NOTES s.8, hence excluded);
+ (R-b) created dispatches through a shared lambda with an incompatible
+   call (below);
+ (R-c) under-applied dispatches x A whose second argument comes from
+   reduction (deletable only as x A -> I, sigma' = |x| + |A| - 2), e.g.
+   d1open's open skeleton \s. s (\b. b X1) T1 T2.
+(R-a) is the largest and was not addressed by the shared-lambda remark.
+
+## 23. Lemma S: call-site pricing of a shared dispatcher (handwritten)
+Setting: a let (\g. B) H, H = \y. P, D = y A W a literal occurrence in P
+(y applied to >= 2 arguments).  A CALL of g is an occurrence whose context
+fills y: g X ... (y := X) or s g / s (g Z..) (y := the cell's bit).
+Compatible call: in every unary instance y's value v there has
+v A W =beta W (X =beta F on unary: a handler bit, F, s K, the cell bit).
+ S1. If every call executed on a unary run is compatible, D -> W keeps the
+   unary law; sigma_D = |y| + |A| + 4 >= 8, counted ONCE for all calls.
+   Proof: for a syntactic call g X with X =unary F, H X =beta P[X/y] =beta
+   P[F/y] ->beta P'[F/y] =beta H' X; for s g the cell supplies the bit;
+   calls inside a deleted zero arm are never executed on unary.
+ S3. Consequence with T2: if the reader's single deletable site (if any)
+   is deleted first and every REMAINING call is compatible, then D is a
+   second, disjoint deletion; the doubly deleted core still contains the
+   let while g is used, so it is not one of the let-free cores of <= 23
+   bits: |M| >= 24 + 8 + 8 = 40 (j-free core: 22 + 10 + 8).  If no
+   deletable site exists, sigma_D >= 16 gives T1's bound the same way.
+ S2. Selector calls (Y =beta K in every instance) with H = \y. y A W:
+   replace each g Y by a copy of A (valid on both laws), then delete D.
+   Exact saving with one selector call at binder depth d inside B and A
+   with f_A free leaves: sigma_total = |g Y| + |y| + 4 - f_A d
+   >= 2 + (2+d) + 7 + 2 + 4 - f_A d = 17 - d (f_A - 1)
+   (|Y| >= 7: see the check below; g's index >= d).
+ So the coordinator's "a non-bit call pays F 6 / K 7 plus its application"
+ is true for SELECTOR calls only; it is false for calls whose argument is
+ a cheap rigid or stream value (c, s, a tail t, j, g itself): such a call
+ reuses both arms (Y A W) and inlining it costs |A| + |W| more.
+
+## 24. Selector minimum, the gap comparison, and two finite checks
+- Selector minimum (computer): among all terms over [s,c] through 9 bits
+  only K itself acts as K on every unary input.  So a hygienic selector
+  call g Y costs >= 2 + |g| + 7 >= 11 at its site.  (A let-bound alias of
+  K would cost 2 at the call but 11 at its own let: charge the let.)
+- Gap comparison (exact): syntactic s I site deletes 10; a let-shared s I
+  use g W deletes |g| + 2 = 4: gap 6 per use.  A k-use let-group deletes
+  >= 12 + 4k (= 20 at k = 2, the price of two syntactic sites), matching
+  close46's contraction balance S = (k-1)|A| + (f_A - 1)M - 4 - 2k - T
+  = 6k - 12 - T for A = s I.  A selector call alone (>= 11) exceeds the
+  6-bit gap; inline-and-delete (S2) saves sigma_total >= 17 - d(f_A - 1),
+  and the doubly reduced core keeps the let (the bit call remains), so it
+  is >= 24 and |M| >= 24 + 16 = 40 whenever d(f_A - 1) <= 1.
+- FC1 (computer, fc1.py): R = \s. (\g. s g C1..Cm) H with
+  H in {\y. y A W, \y z. y A W}, g occurring in some C_i, j once anywhere,
+  every piece of every shape, |M| <= 39: 2,548 candidates, no reader,
+  0.1 s.  Assembly validated on \s. (\g. s g (g K) j) (\y. y K (\t k u.
+  c t (t t u))) (cost 80, reader).
+- FC2 (computer, fc2.py): R = \s. (\g. s Hd D1..Dq) H, Hd in
+  {\x. g x C1..Cp, \x t. g x C1..Cp} (p, q <= 2), same H, g again in some
+  C_i or D_i, |M| <= 39: 20 candidates, no reader (the skeleton alone is
+  >= 26 bits).  Assembly validated on R99 (cost 93, reader).
+  Completeness: within each shape every piece cost split up to the budget
+  is enumerated with jn's complete enum_terms; the exact cost of each
+  assembled body is recomputed before the law test.
+  (A first fc2 run used a placeholder priced as j, so it skipped
+  everything; fixed, rerun as above.)
+- Witness of the shared-dispatcher residue (R-b), with NO deletable site:
+  R99 = \s. (\g. s (\x t. g x (g K)) j) (\y. y (s s) (\d u. c (s F) (d u)))
+  w 99 (rd.check n <= 6).  Its selector call g K reuses the zero arm s s
+  as the unary N-maker; S2 gives sigma_total = 13 + 2 + 4 - 2*2 = 15.
+
+## 25. Combined statement after the follow-up (handwritten over the checks)
+Under H_nf, a lambda-rooted or hoisted reader with w <= 45 (if any) has a
+source redex and lies in one of:
+ (R-a) exactly one deletable site, sigma in [8, 15] (hoisted: <= 16), no G0
+   closable s I anchor, and every shared dispatcher in it has an
+   incompatible call executed on unary (else S3 makes it a second
+   deletion);  witness shape: \s. (\v. s (\b t. b t (v t)))
+   (\t u. c t (t t u)) j (w 66, one site b t (v t), sigma 9, head redex);
+ (R-b) a shared dispatcher with an incompatible call on the unary path --
+   a non-selector argument (c, s, a tail, j, g, small lambdas), or a
+   selector call with d(f_A - 1) >= 2 -- outside the FC1/FC2 shapes;
+   witness R99 (w 99, no deletable site at all);
+ (R-c) dispatches whose second argument is supplied by reduction.
+The finite checks close the minimal shared-dispatcher shapes (FC1, FC2),
+not (R-b) in general: a complete head-let check (H = \y. y A W, any B) is
+922,161 candidates at |M| <= 39, nine times the cap, and its unary core
+cannot be reduced below 24 bits by deletions while the incompatible call
+blocks D.  So "no reader with w <= 45" is NOT established.

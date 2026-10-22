@@ -169,3 +169,69 @@ finite check of "core20/22/23 + one site + one shared helper" fits the cap.
 Still open: application-rooted readers not of the hoisted shape; single
 type-(b) sites with σ ≤ 15 around 24–31-bit cores (the 24-bit core list
 alone is 102,649 terms, over the cap).
+
+## 6. Follow-up: pricing the shared dispatcher call by call
+
+(Saved by the coordinator from the lane's returned report; NOTES.md §§21–25.)
+
+The combined theorem does not close, even under H_nf (every β-normal reader
+has w ≥ 46). Each check stayed under the cap (at most 2,548 candidates,
+under 1 s, one thread).
+
+**Correction to §5.** After T1, T2, Lemma A/A2 and H_nf, a reader with
+w ≤ 45 has a source redex and is one of: (R-a) a single-dispatch reader —
+exactly one deletable site saving 8–15 bits and no G0 `s I` anchor (a
+handler site `x A W`, `s K j W`, or an `s I W` whose W cannot be closed or
+whose context is not G0; a reader whose only dispatch is one `s I` site is
+G0, so excluded) — the largest residue; (R-b) a shared dispatcher with an
+incompatible call; (R-c) an under-applied dispatch `x A` whose second
+argument arrives by reduction (deletable only as `x A → I`, saving
+|x| + |A| − 2). Side result: T1 holds for any deletable site with σ ≥ 16,
+not only syntactic ones (the core is then one of three literal let-free
+terms, already enumerated by onesite_sem.py).
+
+**Lemma S (handwritten).** Let `(\g. B) H`, `H = \y. P`, D = `y A W` in P; a
+call fills y (`g X …`, or `s g` / `s (g Z…)`); a call is compatible if on
+every unary input y's value v satisfies `v A W =β W` (handler bits, F,
+`s K`, the cell's bit). S1: if every call that runs on unary is compatible,
+`D → W` keeps the unary law, saving |y| + |A| + 4 ≥ 8 once. S3: with T2 —
+delete the one site first; if every remaining call is compatible, D is a
+second disjoint deletion; the reduced core keeps the let, every unary core
+≤ 23 is let-free, so |M| ≥ 24 + 8 + 8 = 40 (j-free core: 22 + 10 + 8). S2
+(selector calls `g Y`, Y = K on every input): replace the call by a copy of
+A, then delete D: σ_total = |g Y| + |y| + 4 − f_A·d ≥ 17 − d(f_A − 1); the
+smallest unary selector over [s, c] through 9 bits is K itself, so a
+selector call costs ≥ 11. Gap: syntactic `s I` deletes 10, a let-shared use
+`g W` 4; a let-group of k uses deletes ≥ 12 + 4k (close46's balance
+S = 6k − 12 − T). False as first phrased: a call whose argument is a cheap
+rigid or stream value (c, s, a tail, j, g, a small λ) reuses both arms, and
+inlining it costs more; the index term f_A·d is real (R99 has σ_total 15).
+
+**Finite checks.** fc1.py: `\s. (\g. s g C1..Cm) H`, H ∈ {`\y. y A W`,
+`\y z. y A W`}, g used again: 2,548 candidates at |M| ≤ 39, no reader
+(reproduces `\s. (\g. s g (g K) j) (\y. y K (\t k u. c t (t t u)))`, cost 80).
+fc2.py: `\s. (\g. s Hd D…) H`, Hd ∈ {`\x. g x C…`, `\x t. g x C…`}: 20
+candidates, no reader (reproduces R99, cost 93; a first run mispriced
+placeholders and was fixed). The general head-let case has 922,161
+candidates at |M| ≤ 39, nine times the cap.
+
+**Established (under H_nf).** Every λ-rooted or hoisted reader with w ≤ 45
+lies in (R-a), (R-b) or (R-c) with a source redex; inside (R-b) the minimal
+shapes FC1, FC2 are excluded, every shared dispatcher whose unary calls are
+all compatible is excluded (S3), and selector sharing with d(f_A − 1) ≤ 1 is
+excluded (S2). Not established: no such reader with w ≤ 45.
+
+**Witnesses (rd.check, n ≤ 6).** (R-a)
+`\s. (\v. s (\b t. b t (v t))) (\t u. c t (t t u)) j` w 66 (one site σ 9,
+head redex); (R-b) R99 = `\s. (\g. s (\x t. g x (g K)) j) (\y. y (s s) (\d u. c (s F) (d u)))`
+w 99 (no deletable site; the selector call reuses `s s` as the unary
+N-maker); (R-b) non-selector
+`\s. (\g. s (\x t. x (g x j) (g c))) (\y. y (s F) (s s s))` w 93.
+
+**Next.** (R-a): a single handler site of σ 8–15 with a redex leaves a
+24–31-bit core, too many to enumerate; pure single handler dispatches whose
+context delivers j reduce through Lemma A's closure to the opener family
+closed by needbinder; remaining: the tail passing through as an argument,
+the reader's head being the stream's tail (reading cell 2), a handler whose
+dispatch gets its second argument by reduction. (R-b): price each
+non-selector incompatible call by argument type (c, s, a tail, g).
