@@ -187,9 +187,10 @@ with all features (three opt-in tests ignored) and 328 with default features.
   path, and every minimum reader whose first handler is a literal λ
   (complete finite checks); the 164's and the hoisted 165's families cost
   exactly 48 and 49; and no minimum reader below 46 has a syntactic
-  dispatch site at all. No minimum reader below 46 is an s-spine. What remains is the
-  sharing a let allows between the zero and unary roles: readers whose
-  stream-λ body is a let, and root lets. The class widens without moving its minimum:
+  dispatch site at all. No minimum reader below 46 is an s-spine or has a let as its
+  stream-λ body, so every λ-rooted minimum reader is excluded and only root
+  lets `(λx. B) A C⃗` remain (at most five uses; 580 listed sources in the
+  tightest profiles). The class widens without moving its minimum:
   NEXT of any syntax above the price frontier `q ≥ 92`, `q + 3F ≥ 104`
   (Lean, `Blc/SelfintWiden.lean`; optimal there iff `w ≥ 46`), any value
   representation with a NEXT-free decoder (Lean, `Blc/SelfintValues.lean`),
@@ -594,11 +595,10 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    make the 162 optimal in the separated class and in its widened forms (NEXT
    of any syntax above the price frontier, any NEXT-free value decoder, any
    opaque two-port recursion). Every β-normal reader has `w ≥ 46`, no minimum
-   reader below 46 is an s-spine, and none has a syntactic dispatch site;
-   what is open is minimum readers below 46 whose stream-λ body is a let or
-   whose root is a let (depth-0 shared top-level lets, application-rooted
-   readers), reading the bit through a let-shared dispatcher with a non-bit
-   call, a small under-applied dispatch, or the stream applied to itself.
+   reader below 46 is an s-spine or has a let as its stream-λ body; what is
+   open is minimum readers below 46 whose root is a let (depth-0 shared
+   top-level lets, application-rooted readers): at most five uses, and in
+   the tightest profiles 580 listed sources awaiting refutation.
    The general step is still a theorem bounding the source that the two
    roles can share; neither periodicity of the unary run nor accounting
    alone can supply it (`class-bound.md` §3).

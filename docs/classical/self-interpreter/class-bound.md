@@ -198,8 +198,14 @@ the 39-bit one.
   handlerlet method over 52 complete cells, 746,914 sources, the 22,660
   normalizer exceptions refuted individually in Lean, most through a
   kernel-checked divergence theorem for growing helpers,
-  `A_T A_S →β* A_S A_(S++W) T`). What is left of this branch is a linear
-  let carrying `j` whose `B` holds a nested head redex.
+  `A_T A_S →β* A_S A_(S++W) T`). The last case, a linear let carrying `j`
+  whose `B` holds a nested head redex, fails too (Codex, bodylin lane): the
+  exact minimality conditions leave 569 sources over eleven bodies `B`,
+  each of which has a strictly cheaper β-equivalent replacement for any `A`
+  and any pending operands — it may copy `x`, but `A` stays once under the
+  let, so the source keeps one `j` — kernel-checked, with the 569 zero-law
+  refutations in Lean as well. So **no minimum reader below 46 has a let
+  as its stream-λ body**.
 - **Lets headed by their own variable** (Lean, Codex,
   `Blc/SelfintNeededHead.lean`, `Blc/SelfintNestedLets.lean`). In
   `(λx. x B₁ … B_k) A`, keeping `A` once at the head and replacing every
@@ -468,25 +474,21 @@ has `|A| ≥ 11` and `|D| ≤ 18`, and `D = u (s s u)` is excluded for every
 at most 53,537 terms after the first pass; the review reproduced the small
 ones, not the full 25-bit cut-off audit.
 
-**Open.** Only readers with a source redex remain, and among minimum
-readers below 46 none is an s-spine, so two branches of the source-head
-classification are left: readers whose stream-λ body is a linear let
-carrying `j` with a nested head redex in its body (every nonlinear body
-let is excluded); and root lets — depth-0 shared top-level
-lets and application-rooted readers whose let argument hands control on
-before binding the stream. Cutting across them are the zero-λ parents
-`Y j` with `Y` an application over `s` or `c`, the needed-binder case of the
-162's family, and lets headed by their own variable, whose extra uses are
-needed but not yet tied to the unary output. A minimum reader below 46
-has no syntactic dispatch site at all: it must read the bit through a
-let-shared dispatcher with a call that is not a bit, through an
-under-applied dispatch `x A` with `|x| + |A| ≤ 9`, or by applying the stream
-to itself (`s (s K)`). The space is far
-beyond enumeration (the record's estimate is about 2×10⁹ λ-rooted depth-1
-readers at `w ≤ 45`), so these need arguments, not larger checks. The
-productive tools so far are the first dispatch, the context-free anchor at
-`j`'s parent, the closed-specializer algebra, exact contraction prices
-under minimality, and the β-normal bound. That bound does not simply
+**Open.** Only readers with a source redex remain, and a minimum reader
+below 46 is neither an s-spine nor a reader whose stream-λ body is a let,
+so one branch of the source-head classification is left: **root lets**
+`(λx. B) A C⃗` — depth-0 shared top-level lets and application-rooted
+readers whose let argument hands control on before binding the stream,
+with at most five uses of `x`; in the tight profiles `k + d = 5`, 580
+listed sources remain to be refuted. Every λ-rooted minimum reader below
+46 is excluded, so the zero-λ parents, needed binders, self-headed lets and
+dispatch-free readers that the depth-1 analysis isolated matter only inside
+a root let's argument. The space of all readers below 46 is far beyond
+enumeration (the record's estimate is about 2×10⁹ λ-rooted depth-1 readers
+alone), so the branches were closed by argument first: exact contraction
+prices under minimality cut each branch to cells of at most 100,000
+sources, which complete checks then refute with every normalizer
+exception proved in Lean. The β-normal bound does not simply
 transfer through normalization: a reader need not have a normal form, and
 contracting a shared let can copy `j`, which leaves the one-hole class.
 Where a normal form exists, replacing every copy of `j` that does not

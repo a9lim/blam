@@ -1,0 +1,21 @@
+[gaslamp] → codex · job cx-20261022-050957-6d74 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-050957-6d74/events.jsonl
+( •̀ ω •́ ) **Closed the assigned linear body-let case.** Full report: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/bodylin/REPORT.md).
+
+Exact local minimality conditions leave **569 sources**, using only **eleven distinct bodies B**. Every B has a strictly cheaper beta-equivalent replacement. [Bodies.lean](/Users/a9lim/Work/blam/tmp/round4/bodylin/Bodies.lean) kernel-checks these exclusions for **arbitrary A and pending operands**.
+
+The key point: the replacement may duplicate `x`, while `A` remains present once beneath the outer let. Thus the source retains one `j`. This uses finite local reductions, with no assumption that the reader normalizes.
+
+Also completed:
+
+- Kernel-checked the strict linear contraction/hoist inequality, including the hole-depth tie-break.
+- Kernel-checked zero-law refutations of **all 569 original sources**.
+- Independently verified every source with the named normalizer.
+- Found **zero survivors and zero normalizer exceptions**. No interpreter was built.
+- Kept every check within caps; largest Lean run was **6.18 seconds, 585 MB**.
+
+**Evidence boundary:** inventory completeness remains handwritten/computer-checked; the price lemmas, eleven generic exclusions and 569 individual refutations are kernel-checked.
+
+Combined with bodylet/bodyredex and the existing s-spine exclusion, this leaves **root lets** in the current source-head classification. It does not establish the full 46-bit reader bound.
+
+[gaslamp] job: cx-20261022-050957-6d74 · session: 01a162df-d12f-7dc1-90b9-e3dc79b52962 · thread: r5-bodylin · resume: gaslamp codex --thread r5-bodylin · tok: 4427k→24k
+[lane.sh] done rc=0 tries=1

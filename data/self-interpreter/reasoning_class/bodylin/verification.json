@@ -1,0 +1,82 @@
+{
+  "sources": 569,
+  "body_replacements": 11,
+  "exceptions": 0,
+  "coverage": "mixed: handwritten grammar completeness, computer inventory, kernel refutations",
+  "cells": {
+    "A": "43e6dea8d07b068ecf3636f23fb02fd67b56eb38af1c954b758013ecb6c2f8f5",
+    "B": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "C": "8c36f9607fc9451769444765e8350ca1ac5fe3306d6667c3e65ec965047d2dee"
+  },
+  "lean_resources": {
+    "Prices": {
+      "file": "Prices.lean",
+      "code": 0,
+      "seconds": 0.5529864169948269,
+      "peak_rss_bytes": 478429184,
+      "limit": null,
+      "threads": 2
+    },
+    "LinearPrices": {
+      "file": "LinearPrices.lean",
+      "code": 0,
+      "seconds": 0.3354476669919677,
+      "peak_rss_bytes": 432226304,
+      "limit": null,
+      "threads": 2
+    },
+    "BodyReplacement": {
+      "file": "BodyReplacement.lean",
+      "code": 0,
+      "seconds": 0.3336232919828035,
+      "peak_rss_bytes": 109166592,
+      "limit": null,
+      "threads": 2
+    },
+    "Bodies": {
+      "file": "Bodies.lean",
+      "code": 0,
+      "seconds": 0.3327195000019856,
+      "peak_rss_bytes": 430292992,
+      "limit": null,
+      "threads": 2
+    },
+    "Cases": {
+      "file": "Cases.lean",
+      "code": 0,
+      "seconds": 6.174010416987585,
+      "peak_rss_bytes": 584515584,
+      "limit": null,
+      "threads": 2
+    }
+  },
+  "hashes": {
+    "BodyReplacement.lean": "28539eb15563b0331e56bc9867f288f7ae1294891c2550e8fd583ae875458d9e",
+    "Cases.lean": "9682c306363061687b0af62f58756e1764023636eb416b18c547a585f1c13da3",
+    "audit.py": "671edd0a23826d961cac3a966644f5fb2a01d20f47e0e442f701c04b1f9c6ac9",
+    "check.py": "ea53a159fdf7f00891846b91c9d56a8571d608e9a53ad1f46f36234b61adb98a",
+    "export_bodies.py": "bcc57e24e73581320d145e66c4e6e5e8e856df5d1904a80d2cc8ec93ae004c5f",
+    "check-1-redex-A-C.json": "03d0048c3cacdf08b89915ddb401c5a9bf0d0fc2c3cd1d556599a2ce59dce047",
+    "export.py": "fc8143b51fd19e324ca0f8144f1acf5054e19a8e328919502097f81fd399670c",
+    "check-1-redex-A-B.json": "399ae15d3e6aa65acd01c8c6b783d0c9a2fdd7f6f79fe2227256463def30ecfe",
+    "LinearPrices.lean": "11034a75100337d2232aba5433b3bc63d4e4eb70322a4c76bc7c99f5af8d72e5",
+    "check-1-redex-A-A.json": "8fa0af19b59dccedc7c4c0caa64dc236fe8af147c891132798ee7374c81b23fd",
+    "validate.py": "c349e274669b96aa8180f6923251a6f9793e5ae1535eea318b934486622a5da6",
+    "minimum1.json": "a0bee7efecdd57fa954fc9bd9072b131db1e7364c5c6ca506c0f390c33f30cf4",
+    "minimum.py": "768559af2b357727b03eb84e0159aa928642283ee6f642b7fb933be9cd266670",
+    "Bodies.lean": "1403262ab3a416d2b4fdaec37a4ee437b24cd20f351eb0f552fffd7a4df2506e",
+    "run_limited.py": "483674ae1ab8560d6ab020e8af287b80bdc5c9ab4f43b328e44d70caa037538c",
+    "validation.json": "e29b82e3365b8182ef400bc263dd986f711e43bd11f94f53b102339b88436c51",
+    "manifest.json": "f062cf0b4ff39fe3b916494dae2d420bba17199baf0fd7be1a10061ac5da069b",
+    "Cases.resources.json": "e0ae2fc634ec8e3e4be689d0adbffe423eb8d185039adaad280a888c62ecebfa",
+    "LinearPrices.resources.json": "9afef403a431bc4a66c21a36c29baf8c26f205458362e9fa86c41aed03c957db",
+    "Bodies.resources.json": "5b5b261c7b38582bef61578be759df4d69bbe797a99e7279e1cad38a419ace1c",
+    "Prices.lean": "90f3f1eddf7c7afb9cd1733249a32a5061b760610a0817058313425fdb2ab292",
+    "BodyReplacement.resources.json": "6b08673df8dab4dca902cd78fe82e7d185d52d8e5f84a80c502e61227d4dec59",
+    "body-manifest.json": "8e7b2106b250ccc390bc5db7bd95ac4eabc0e3bfe0e2a1525056dcb7aa27fa8b",
+    "Prices.resources.json": "d9a225d93e3ac52c7ab9bb47ce86801cefdf0ad325f431f12bbc3240bc99fadb",
+    "shape-summary.json": "7dc4de42f4b0f8389bec3a7c74352c4869b0f1c347420d9cbd48b85a2544f631"
+  },
+  "seconds": 1.8200184589950368,
+  "rss": 108544000
+}
