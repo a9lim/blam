@@ -1,0 +1,60 @@
+(•̀ᴗ•́)و **No counterexample reader found. Lemma A survives; T2 survives. I found an evidence gap in A2’s cited checker and a harmless over-enumeration bug in `twosite.py`.**
+
+1. **Claim 1: Lemma A is correct under the stated hygiene assumptions.**
+
+   The instance-wise version of G0 suffices. Instantiate first; then substitute `Qσ` for `h` throughout the generic reduction. Since the instantiated `Y1` is β-equal to rigid `j`, substitution preserves that equality even if `Y1` contains `h`. Thus
+   \[
+   M[U_n/s]=_\beta Q[U_n/s]j.
+   \]
+   I found no circularity or capture problem.
+
+   The cost argument also survives. In the equality case, the only two-bit contexts containing the sole untaxed `j` are `[] j` and `j []`; the latter contradicts the zero law.
+
+   The **let extension is sound provided “hygienic up to outer lets” excludes `j` and all non-let context binders**, and closure includes every transitive let dependency. Establish its semantics by substituting the enclosing lets first; direct hole substitution before closing `Q` would not be justified.
+
+   **A2’s original computational justification has a gap:** [`acheck.py:15–17`](/Users/a9lim/Work/blam/tmp/round3/handoff/acheck.py:15) maps fuel exhaustion to `False`. Exhaustive enumeration with that predicate does not itself establish the lower bound.
+
+   I independently repaired the relevant evidence **through cost 28**, sufficient for both the lower bound and equality:
+   - 376,730 terms mentioning both `s` and `c`.
+   - Exactly one accepted term: `\u. s (\q. c) (s s u)`, cost 28.
+   - 28 capped cases; **all 28 rejected by `not_target_cert` directly**, without its η-based fallback.
+
+   Therefore **A2 survives this audit**, although its recorded justification should include cap adjudication. I did not revalidate the stronger catalogue through cost 30.
+
+2. **Claim 2: T2’s reduction and bounded coverage are correct on this audit.**
+
+   For type (b), the valid congruence argument operates at the enclosing handler:
+   \[
+   U_n(\lambda x.P)\to_\beta P[F/x]\,U_{n-1}.
+   \]
+   There, every selected `x A W` becomes `F A′ W′ →β W′`. It is not an open-term identity before substituting `F`, but the stated enclosing-handler argument supplies what is needed.
+
+   Deletion cannot destroy the licensing handler of another disjoint surviving site: destroying that handler would put the other site inside the deleted E-part.
+
+   I reproduced:
+   - J-free cores through 22: unique minimum 22; all 11 caps directly certified non-target.
+   - One-j cores through 20: unique minimum 20; both caps directly certified non-target.
+   - Exact costs 21/22/23: the reported counts and four cost-22 caps. Those four are respectively rigid-`j`-headed or reduce to Ω.
+   - Two-site budget 39, arm depth 2: **144 candidates, zero readers, zero caps**.
+   - Budget 42, depth 2: two printed hits representing the same 164 reader up to α-renaming.
+
+   Depth 1 already covers the relevant arms: a j-free arm of cost ≤5 is a variable or a single abstraction over a variable. Applications and two abstractions cost at least 6.
+
+3. **Concrete checker defect: the disjointness filter over-includes.**
+
+   [`twosite.py:70`](/Users/a9lim/Work/blam/tmp/round4/zcore/twosite.py:70) excludes only the first E-part’s **argument subtree**, rather than its entire subtree. For example, it permits:
+   ```text
+   c → q q c → q q (q q) c
+   ```
+   inside the existing handler. The second insertion wraps the first E-part; the first marked site no longer survives.
+
+   Replace the condition with:
+   ```python
+   if p2[:len(p1) + 1] == p1 + (0,):
+       continue
+   ```
+   This defect adds candidates, so it **does not invalidate the zero-reader exclusion**. The differing depth-1/2/3 counts also include α-equivalent duplicates because deduplication uses printed binder names.
+
+**Verdicts:** Lemma A **correct**; A2 **gap in the cited evidence, closed through the necessary cost by this audit**; T2 **correct on the checked reduction and finite evidence**, with an over-inclusion bug. These conditional results do not establish coverage of every reader.
+
+[gaslamp] job: cx-20261022-024802-ec18 · session: 01a1625d-e181-73e0-9224-98f63191bffb · thread: zcore-review · resume: gaslamp codex --thread zcore-review · tok: 769k→7.5k

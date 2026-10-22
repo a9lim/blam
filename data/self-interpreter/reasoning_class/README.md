@@ -10,7 +10,7 @@ write, and the coordinator saved the returned text). `coord/SYNTHESIS.md` is
 the coordinator's running record of every lane result as it arrived.
 Codex ran `close46`, `widen`, `arch`, `global`, `probelean`, `share46`,
 `lean146`, `loop`, `zerolam`, `needbinder`, `bodyredex`, `jerase` and the review `review_hole`; Claude ran `jn`, `escape`, `knot`, `fresh`, `values`, `depth02`,
-`bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, the statement audit
+`bridgeadv`, `nextctor`, `chead`, `hole`, `d1open`, `root`, `adv5`, `types`, `zcore`, the statement audit
 `audit1` and the Lean promotions `integrate` and `integrate2`. Lanes consulted Codex for
 fresh-context reviews where their reports say so.
 
@@ -41,6 +41,8 @@ working versions.
 | root | six sub-families of depth-0 shared-let and application-rooted readers out of a minimum below 46; the exact root-let weight; forced uses; the pull lemma | `class-bound.md` §3 |
 | bodyredex | readers whose stream-λ body is a let: in a minimum below 46, at most four uses, a λ inside the argument, and `j` inside it when linear (`FlatRestHole.lean`) | `class-bound.md` §3 |
 | jerase | where the source `j` dies (reader source, a unary `F`, the terminal `K`; `Erasure.lean`) and why that does not price a reader (`Witnesses.lean`: the 162 erases `j` at the terminal `K`; readers of 58 and 70) | `class-bound.md` §3 |
+| types | intersection-type role supports (the shared skeleton never holds `c` or `j`; the bit-variable lemma; the shared-let split identity) and a demand-driven derivation search over β-normal readers: none below 46, sharp at the 162 (`narrow2.py`, `narrow3.py`; reviewed in `review_types`) | `class-bound.md` §3 |
+| zcore | dispatch sites: one closed `s I` anchor anywhere forces `w ≥ 46` (equality only the 162); two sites or one heavy site force 46, so a reader below 46 has at most one site saving 8–15; the three unary cores through 23 bits; the uniform zero-compatible-core statement refuted | `class-bound.md` §3 |
 | needbinder | the whole-cell opener `λs. s (λb t. B) j` out of a minimum reader below 46 (hoisting price in `OpenerHoist.lean`, normalizer exceptions in `NonlinearExceptions.lean`); the 162-family spine `λs. s A (λu. D) j` narrowed to `|A| ≥ 11`, `|D| ≤ 18`; a needed-binder witness of weight 75 | `class-bound.md` §3 |
 | zerolam | three zero-λ parent shapes out of a minimum reader (literal let, closed transport, disjoint redispatch at 53); the rigid-ancestor anchor and its whole-body witness of weight 75 | `class-bound.md` §3 |
 | loop | the unary run need not be periodic: a correct reader of weight 221 with a growing counter (`Slow.lean`, kernel-checked); the 162's skip is input-generated; conditional pumping, suffix exposure, union accounting; the 164's family `≥ 48` and the hoisted 165's `≥ 49` by rigid shielding (`Shield.lean`, `Prices.lean`) | `class-bound.md` §3 |

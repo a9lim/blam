@@ -261,8 +261,24 @@ family; the lists are in the round-4 archive. Claude's lanes:
   probe leaves a unary core, and the only cores through 22 bits are
   `s (λq. c) (s s j)` and `s (λq. c) (s s s)`, so a reader carrying
   `|Q| − |Q'|` bits of zero-only material has `w ≥ 29 + |Q| − |Q'|`. The 162
-  and the 164 each carry exactly 10 such bits around a 30-bit unary core;
-  keeping `j` alive on the zero run is what raises the core from 23 to 30;
+  carries exactly 10 such bits (its `s I`) around a 30-bit unary core, the
+  164 12 (its outer `b F`) around a 30-bit core that holds a 10-bit `s I`
+  around `s (λq. c) (s s j)`;
+- **dispatch sites** (Claude, zcore lane; handwritten with complete checks,
+  every claim reviewed by Codex). Call `s I W` (saving 10), `x A W` with
+  `λx. P` a direct argument of a stream occurrence (saving at least 8) and
+  `s K A W` (at least 15) the sites a reader dispatches through; deleting a
+  site keeps the unary law, through any let or redex. Exactly three unary
+  cores have at most 23 bits: `s (λq. c) (s s j)`, `s (λq. c) (s s s)` and
+  `s (λq. c) (s s c)`. If a closed `s I` anchor sits anywhere in the body,
+  under any lets, the reader weighs at least 46, with equality only for the
+  162 (Codex's repaired check through cost 28: of 376,730 candidates only
+  `λu. s (λq. c) (s s u)` completes it). Two disjoint sites, or one saving
+  at least 16, force `w ≥ 46`; so a λ-rooted reader below 46 dispatches
+  through at most one site in its whole body, saving 8 to 15 bits, and the
+  same holds for hoisted readers `(λa. λs. M) j`. The bound is joint: a
+  cheap site is paid for by a large core, as correct readers of 52, 54 and
+  61 with 9-, 19- and 8-bit sites show;
 - every reader with its hole at depth ≥ 2, and every depth-0 reader whose
   `j` is the argument of a λ, under the minimality order (weight, λ count,
   depth). This corrects round 3's reduction, which handed depth-2 rows to
