@@ -1,0 +1,9 @@
+{
+  "file": "Recursor.lean",
+  "sha256": "132d7c91efaf54204b3deb28cf3610870135c971533c07965f2f1791a35df532",
+  "code": 0,
+  "seconds": 0.23121029199683107,
+  "peak_rss_bytes": 220332032,
+  "limit": null,
+  "threads": 2
+}

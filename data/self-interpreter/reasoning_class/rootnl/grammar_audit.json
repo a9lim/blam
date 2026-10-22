@@ -1,0 +1,18 @@
+{
+  "audits": [
+    {
+      "depth": 0,
+      "raw_terms": 7277,
+      "retained": 1870,
+      "states": 555
+    },
+    {
+      "depth": 1,
+      "raw_terms": 5498,
+      "retained": 1958,
+      "states": 540
+    }
+  ],
+  "seconds": 0.16484799998579547,
+  "rss_bytes": 32325632
+}

@@ -1,0 +1,34 @@
+[gaslamp] → codex · job cx-20261022-061205-151f · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-061205-151f/events.jsonl
+( •̀ᴗ•́ ) **Partial result: the nonlinear root-let case remains open. No sub-162 construction was found.**
+
+The four-use, depth-zero branch now has **658 explicitly priced unresolved sources over 93 helpers**:
+
+| Outcome | Sources |
+|---|---:|
+| Definitive zero-law failures | 149,789 |
+| Individual Lean refutations | 38,271 |
+| Unresolved exceptions | 658 |
+| Total checked | 188,718 |
+
+The new results are:
+
+- **Unconditional Lift transfer**, kernel-checked with the family floor as an explicit hypothesis.
+- **Stronger hole repair:** replacing discarded `j` copies by the nearest scoped variable saves `4h−2` per copy, improving `3h−2`. Exact prices are kernel-checked; law-preserving residual replay remains handwritten.
+- **Self-feeding exclusion with arbitrary payloads**, kernel-checked using weak-head clocks.
+- **Strict-context transport of divergence**, kernel-checked; five helper cycles refute 145 larger sources.
+
+The five count-only envelopes shrink from **7,959,195 to 4,126,214** sources before the four-use probe results. Ten natural cells remain over the cap. Lower-multiplicity cells were counted only, including those individually under the cap.
+
+All **117 Lean modules** passed. The largest source check contained 84,951 terms and took 95.72 seconds; the largest Lean check took 9.81 seconds and 803 MB.
+
+The missing theorem is still an upper bound on pre-stream expansion. Neither the normal-form floor nor the stronger repair supplies it.
+
+- [Full report and proofs of the reductions](/Users/a9lim/Work/blam/tmp/round4/rootnl/REPORT.md)
+- [658 literal priced sources](/Users/a9lim/Work/blam/tmp/round4/rootnl/SURVIVORS.tsv)
+- [93 priced helper groups](/Users/a9lim/Work/blam/tmp/round4/rootnl/ARGUMENTS.tsv)
+- [Verification and exact over-cap cells](/Users/a9lim/Work/blam/tmp/round4/rootnl/verification.json)
+
+No tracked files were changed, and no cargo build, engine run, delegation, or consult-back occurred.
+
+[gaslamp] job: cx-20261022-061205-151f · session: 01a16318-b4ed-7e31-995a-369c6d9fb5fc · thread: r5-rootnl · resume: gaslamp codex --thread r5-rootnl · tok: 14475k→71k
+[lane.sh] done rc=0 tries=1

@@ -1,0 +1,51 @@
+{
+  "positives": [
+    {
+      "source": "\\s. s I (\\u. s (\\q. c) (s s u)) j",
+      "weight": 46,
+      "zero_and_unary_1_to_8": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "source": "(\\n s. s (\\b. b (\\u r. r n) c) (s s s)) j",
+      "weight": 49,
+      "zero_and_unary_1_to_8": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "source": "(\\a s. s I (\\u. s (\\q.c) (s s a)) a) j",
+      "weight": 52,
+      "zero_and_unary_1_to_8": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ],
+  "near_miss_weight": 40,
+  "near_miss_unary_rejected": true
+}
