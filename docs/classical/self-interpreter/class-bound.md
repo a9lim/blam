@@ -594,6 +594,32 @@ cannot expose the lambda required by the reader laws. These are unbounded
 source-family exclusions. They do not cover lambda bodies headed by a
 different variable or by a redex.
 
+Codex's `SelfintRootLetBudgetDelay` extends the invariant to bounded lambda
+delay. Every source lambda may expose at most `m` leading binders before
+heading on the newest binder or a rigid free parameter, and its subterms
+obey the same condition. Arbitrary beta reduction preserves this grammar.
+A computation in it cannot cross a block of `m` rigid pending operands to
+reach the stream. A source outside it has an innermost lambda escaping in
+exactly one of three ways: one more leading binder, an older captured head,
+or a source head redex. If the captured-head lambda is live and is not the
+literal eta form `λx.y x`, its wire cost is at least thirteen; the formal
+context inequality also charges every surrounding source node.
+
+This local charge does not close a whole remaining coarse cell. For closed
+`P`, the family
+
+```text
+H_P = λx.x (λy.x (y P y))
+R_P = (λx.x x) H_P c j
+```
+
+escapes every delay cap through its captured head and has exact reader
+weight `37 + |P|`. Small closed payloads fit the residual budget. These
+are grammar-and-cost examples, not asserted readers or minimum sources.
+Excluding such helpers needs a semantic argument or a source simplification
+beyond the delay invariant; vacuous and eta-shaped captures and source
+head redexes also remain outside the displayed price theorem.
+
 **Open.** Only readers with a source redex remain, and a minimum reader
 below 46 is neither an s-spine nor a reader whose stream-λ body is a let,
 so one branch of the source-head classification is left: **root lets**

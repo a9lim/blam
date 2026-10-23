@@ -203,6 +203,11 @@ with all features (three opt-in tests ignored) and 328 with default features.
   over-cap cells containing 2,102,856 sources remain. A further theorem
   excludes every hereditary first-argument-forcing reader with `j` at
   depth zero, without a source-size cap (`SelfintRootLetRigidPrefix`).
+  `SelfintRootLetBudgetDelay` extends this to bounded hereditary lambda
+  delay before a sufficient rigid pending block and prices a live non-eta
+  captured-head escape at at least 13 bits. Its exact 41- and 45-weight
+  grammar-escape examples show that the price alone closes no further
+  whole coarse cell; they are not reader witnesses.
   The regular closure checker's translation to ordinary lambda terms,
   including arbitrary scoped hole fillings, is now kernel-checked
   (`SelfintRegularCertificate`, `SelfintRegularSoundness`). A seven-state

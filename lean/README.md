@@ -279,6 +279,10 @@ Self-interpretation:
 - `Blc/SelfintRootLetRigidPrefix.lean` — hereditary first-argument-forcing
   terms fail before a rigid operand; every such reader with its hole at
   depth zero is excluded, with no size bound.
+- `Blc/SelfintRootLetBudgetDelay.lean` — bounded hereditary lambda delay
+  cannot cross a sufficient rigid pending block; exact source escape
+  alternatives, a sharp live-captured-head price, and a family showing
+  that this local charge does not close the remaining coarse cells.
 - `Blc/SelfintRegularCertificate.lean`, `SelfintRegularSoundness`, and
   `SelfintRegularExamples` — finite regular closure/stack invariants,
   their sound translation to ordinary lambda terms with arbitrary scoped

@@ -209,7 +209,8 @@ It does not refute a stronger argument using the full interpreter contract.
 
 ## Source-copy dependencies must contain a cycle
 
-For every exact interpreter `E`, there is a closed normal source program
+Codex's source-copy theorem states that for every exact interpreter `E`,
+there is a closed normal source program
 whose successful decoding forces a directed cycle in the dependency graph
 of source-origin copying. The statement concerns every successful beta
 trace, with the contracted redexes fixed. An edge `o -> c` means that a
