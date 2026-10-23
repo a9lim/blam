@@ -9,12 +9,14 @@ of the holes can give it a head normal form. For a narrowing source R we
 certify the zero-law probe R Z. This requires no minimality, size, closedness,
 or dispatcher-shape hypothesis. The source may contain arbitrary redexes.
 
-The finite checker and its simulation to the concrete, ordinary call-by-name
-Krivine closure machine are **kernel-checked** in `Regular.lean`. Individual
-code-table instances are replayed in `Case*.lean`. The equivalence between
-this closure machine and the repository's de Bruijn `headStep` / `Solvable`,
-and the arbitrary scoped-hole-filling corollary, are **handwritten below**.
-The exported `no_stop` theorems do not claim that this last bridge is in Lean.
+The finite checker and its simulation to the concrete call-by-name Krivine
+machine are kernel-checked in `lean/Blc/SelfintRegularCertificate.lean`.
+`Regular.lean` retains the import path used by the archived `Case*.lean`
+modules. `SelfintRegularSoundness.lean` proves the ordinary-lambda semantic
+bridge and arbitrary scoped-hole corollary. The general source-level theorem
+is complete; the archived individual `no_stop` theorems have not been
+replayed as source-level applications of it. Such an application also checks
+the source DAG and its exact correspondence to the decoded literal term.
 
 ## Domain
 
@@ -79,57 +81,65 @@ environment and empty stack are related to the explicit entry state.
 search, observed cycle, fairness assumption, or coinductive axiom is used.
 The printed axiom inventory is only `propext`, `Quot.sound`.
 
-## Translation to lambda head reduction [handwritten]
+## Translation to lambda head reduction [kernel-checked]
 
-The source graph is a finite DAG: every lambda/application child has strictly
-larger index than its parent. `compile_term` constructs such a graph from the
-literal syntax; the portable Python checker validates this property. A node
-and its environment denote the usual capture-avoiding simultaneous
-substitution into that source subterm, with local lambda binders retained.
-The machine stack denotes left-associated application of its closures in
-order. These definitions use finite closures, so denotation is well-founded.
+`SelfintRegularSoundness.Model` assigns a lambda term to each code node,
+respecting its variable, lambda and application equations. Opaque nodes
+have no equation. `CodeRank` makes the source graph well-founded;
+`rankedCode` derives this from the executable `ordered` check, which requires
+every child to follow its parent and lie inside the table. `decode` builds
+a model for every opaque filling. Sharing in the source DAG is permitted.
 
-Application decomposition and variable lookup preserve the denoted term.
-A lambda/pop transition denotes exactly one weak-head beta contraction:
-substituting a closure for the leading binder is precisely prepending that
-closure to the environment. Capture avoidance follows by the standard index
-shift under each retained binder. Therefore every finite machine execution
-projects to a sequence of weak-head beta steps, omitting administrative moves.
+A closure denotes capture-avoiding simultaneous substitution of its finite
+environment into the source term. The machine stack denotes left-associated
+application of its closures. `instN_lam` and `instN_var_lookup` account for
+local binders and captured arguments explicitly.
 
-There cannot be an infinite suffix containing only administrative moves.
-Give a closure at source node p with environment e the positive integer rank
-`source_tree_size(p) * (1 + sum(rank(c) for c in e))` (shared source DAGs may
-be unfolded for this rank). Application-to-function decreases source size
-and preserves e. Variable lookup selects one member of e, whose rank is
-strictly below the displayed product. These are all administrative moves.
-Consequently an infinite machine run contains infinitely many beta steps.
-A finite weak-head normalizing term cannot have such a run, since weak-head
-reduction is deterministic. A term with a head normal form first reaches a
-weak-head normal form; hence the certified term has no head normal form.
+`step_model` proves that application decomposition and variable lookup
+preserve the denoted term and decrease the head closure's positive rank
 
-This argument also explains why a cyclic code table alone is insufficient:
-it could loop administratively. The source-DAG check is essential to the
-handwritten bridge even though `no_stop` itself is valid for any code table.
+```text
+nodes(term_at_p) * (1 + sum(rank(c) for c in environment)).
+```
 
-## Holes [handwritten]
+A lambda/pop transition is exactly one ordinary weak-head beta contraction.
+The stack need not contribute to the administrative rank: application
+shrinks the head source subterm, and lookup selects a strictly smaller
+captured closure. Nested induction on the deterministic weak-head clock and
+this rank proves `invariant_no_clock`. Thus administrative-only loops cannot
+be mistaken for lambda divergence.
 
-Each source hole occurrence is initially an opaque code node. A narrowing
-hole can be filled with a term depending on its lexically surrounding binders;
-it need not be a globally closed replacement. Before that hole becomes the
-current closure, substitution only moves/copies its suspended closure and
-captured environment. Every head beta step outside a hole therefore lifts
-to every scoped filling, with the same captured arguments.
+`checked_source_unsolvable` combines the source-DAG check, finite certificate,
+entry membership, and arbitrary filling to prove the repository's
+`not Solvable` predicate directly. A parallel theorem excludes a beta normal
+form. The general bridge has no handwritten semantic hypothesis remaining;
+its printed axioms are only `propext` and `Quot.sound`.
 
-An accepted invariant forbids *every* opaque current code node. Thus the
-infinite head computation never needs any hole. The same infinite sequence
-lifts to every filling. This is stronger than treating holes as arbitrary
-fixed normal forms, and does not require identifying distinct holes.
+`SelfintRegularExamples` applies the theorem to a small cyclic closure/stack
+store for `H H`, where `H = lambda x.x x U` and `U` is arbitrary scoped code.
+It separately rejects a cyclic *source* graph. Cycles in the abstract stores
+are valid regular grammars of finite closures; cycles in source syntax are
+not valid finite lambda terms.
+
+## Holes [kernel-checked]
+
+A filling is an arbitrary map from opaque node IDs to lambda terms. A term
+may refer to every binder surrounding that node; it need not be closed.
+Closure denotation performs the corresponding substitutions, so the proof
+covers local capture without assuming that payloads are independent.
+
+The accepted invariant never reaches an opaque head. All simulated steps
+therefore use the structural model equations, which hold for every filling.
+Fillings are uniform per opaque node ID, as source-DAG sharing requires;
+distinct independent holes use distinct IDs. No normalization assumption is
+made about a filling.
 
 ## Incompleteness
 
 Finite addresses merge histories and lose relationships between a captured
 parameter and the continuation with which it is used. A possible opaque
 head or empty stack is a failed certificate, not a concrete halt verdict.
-The three unresolved supplied sources have such spurious paths in the tried
-assignments. No claim is made that no finite regular invariant could express
-them; the recorded failures concern these allocations and resource caps.
+The tried allocations have such spurious paths for three supplied sources.
+Those sources are excluded independently by `SelfintRootCutoffs.lean`; the
+recorded certificate failures still concern only those allocations and
+resource caps. They do not show that no regular invariant can express them.

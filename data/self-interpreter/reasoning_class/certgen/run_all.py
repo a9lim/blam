@@ -2,10 +2,14 @@
 import json,subprocess,sys,hashlib,time
 from pathlib import Path
 H=Path(__file__).resolve().parent;begin=time.monotonic();out=[]
+CORE=H.parents[3]/'lean/Blc/SelfintRegularCertificate.lean'
+core_hash=hashlib.sha256(CORE.read_bytes()).hexdigest()
+import_hash=hashlib.sha256((H/'Regular.lean').read_bytes()).hexdigest()
+subprocess.run(['lake','build','Blc.SelfintRegularCertificate'],cwd=H.parents[3]/'lean',check=True)
 for i,fn in enumerate(json.loads((H/'modules.json').read_text())):
  rp=H/(Path(fn).stem+'.resources.json');old=json.loads(rp.read_text()) if rp.exists() else {}
  sha=hashlib.sha256((H/fn).read_bytes()).hexdigest()
- reuse='--reuse' in sys.argv and old.get('core_sha256')==hashlib.sha256((H/'Regular.lean').read_bytes()).hexdigest() and old.get('code')==0 and old.get('sha256')==sha and (H/(Path(fn).stem+'.olean')).exists()
+ reuse='--reuse' in sys.argv and old.get('core_sha256')==core_hash and old.get('import_sha256')==import_hash and old.get('code')==0 and old.get('sha256')==sha and (H/(Path(fn).stem+'.olean')).exists()
  if not reuse:
   p=subprocess.run([sys.executable,str(H/'run_limited.py'),fn],capture_output=True,text=True,timeout=115)
   if p.returncode:print(p.stdout,p.stderr);raise SystemExit('failed '+fn)

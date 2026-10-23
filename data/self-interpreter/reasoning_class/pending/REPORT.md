@@ -4,7 +4,8 @@
 current established minimum-source invariants, **no minimum reader of weight
 at most 45 has `(λx. B) A C₁…C_t` with `t≥1` and B a literal λ**. This closes
 the pending-operand extension of the stream-λ-headed root bodies left open by
-rootnarrow. It does not close x-headed or nested-redex-headed hand-offs.
+rootnarrow. The nested-redex-headed extension is closed in §6.3; one full x-headed
+cell is closed in §6.4, while the general x-headed hand-off remains open.
 
 The principal new identity exchanges a consumed pending operand with an
 earlier definition, retaining both once and charging only the difference
@@ -469,28 +470,34 @@ Simplify's already-proved cuts bring the natural cell
 construct the larger pre-cut family. The complete check has **86,081** finite
 zero mismatches, **12,361** normalizer exceptions and no finite-probe survivor.
 
-**This cell is not closed.** Of its 12,361 exceptions, **12,310** now have
-individual original-source Lean refutations, while **51 remain unresolved**.
-The refutations comprise 10,233 short prefix loops, 33 missing-leaf proofs,
+**This cell is closed under its existing coverage and minimum-source
+filters.** Its normalizer exceptions comprise 12,310 original-source
+refutations in the archived modules and 51 unbounded symbolic exclusions
+in `lean/Blc/SelfintRootLet*.lean`.
+
+The first group comprises 10,233 short prefix loops, 33 missing-leaf proofs,
 150 longer head/strict-argument certificates, three replicator instances,
 1,104 mixed cycles, and 787 flow annotations (775 after a weak-head prefix,
-12 after internal beta developments). Core grouping shares certificate
-discovery, but every final original source has its own checked theorem.
-`x_manifest.json` records complete theorem/source correspondence.
+12 after internal beta developments). `x_manifest.json` records that
+source/theorem correspondence.
 
-The 51 unresolved sources have exactly 12 literal let cores, all with
-`B=x x`, and weights 43 (three sources), 44 (six), or 45 (42). Their exact
-sources, exception indices and hashes are in `X_REMAINING.tsv` and
-`X_REMAINING.json`; `x_opened.json` lists the indices. No fuel, memory,
-flow-analysis failure or unrecognized cycle has been counted as a verdict.
-There is no all-n reader witness among these sources, and no claim that
-they satisfy the laws. They are an explicit formal remainder.
+The other sources have twelve literal let cores, all with `B=x x`.
+`X_REMAINING.tsv` and `X_REMAINING.json` retain their exact sources, exception
+indices and hashes; their filenames identify the fixed archive, not current
+open status. `Blc/SelfintRootLetPending.lean` contains every literal AST,
+its exact equality to a symbolic theorem instance, and an aggregate
+non-reader theorem. The companion
+`tools/self-interpreter/theory/rootlet_pending.py --check` verifies the
+archive hash, each AST hash, the complete index set, and deterministic
+regeneration. It generates no candidates and supplies no semantic verdict.
 
-A generic family-discovery attempt reached its 110-second watchdog and
-produced no accepted output. Further bounded strict-context, mixed-cycle,
-length-one and closed-instance attempts did not settle the final 51.
-These attempts are discovery only. The accepted evidence is the successful
-kernel replay plus the finite mismatches, not the unsuccessful searches.
+The symbolic families use diagonal-power collapse, finite-clock orbit
+invariants, positive-head self-embedding, advancing cycles, identity
+peeling and duplication, hereditary forcing, and a binary helper orbit.
+They permit unbounded reduction and arbitrary stated pending operands.
+Their proofs supply the exclusions; none relies on an exhausted cap.
+The complete cell exclusion still uses the recorded finite coverage and
+minimum-source filters above, not a newly verified Lean enumerator.
 
 The remaining over-cap x cells after simplify's explicit coefficient rules
 are exactly:
@@ -517,8 +524,8 @@ including both differing call arguments and bare shared uses.
 
 ### 6.5 Verification, reproduction and evidence boundary
 
-All new writes remain in this lane. No cargo build, engine verdict, commit,
-consult-back, delegation or edit to another lane was used. `Flow.lean` is an
+The archived finite check used no engine verdict as proof. The symbolic
+correspondence and exclusion modules are in the main Lean library. `Flow.lean` is an
 exact local copy of rootcert2's proved flow checker, recompiled here so the
 annotation proofs can import it; it is not a new flow theorem.
 

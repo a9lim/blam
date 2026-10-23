@@ -91,6 +91,21 @@ and qualification are in `docs/STATUS.md`. The bundle makes a combined
 state available; no smaller recursive definition using only that state
 has been established.
 
+Independent projections cannot provide the saving. Replacing the adjacent
+`c,p` slots by `h I,h F` adds six bits per `c` and seven per `p`, while
+each farther free occurrence saves one index bit. `SelfintArchitecture5BundleCost`
+proves the exact formula for arbitrary terms. The canonical NEXT has two
+occurrences of each slot, so it gains 26 bits; collapsing the enclosing
+binders recovers only two. A correlated query `h (b I b)` selects the
+right head on both tags, but that literal selection still costs more than
+`b c p` in its actual binding frame. Neither calculation excludes other
+correlated uses of the bundle.
+
+The apparently cheap replacement `NEXT := p c K` is circular: it asks the
+parser for the clause being defined. Lean refutes that exact construction
+on the closed source `I`, with continuation `F` and suffix `I`, by an
+explicit prefix into a repeating head-reduction cycle.
+
 ## Erasing ABS requires unbounded depth information
 
 Let `compile(q,M)` be an arbitrary value representation with a fixed public
@@ -1088,6 +1103,48 @@ rigid box equations, the standard battery, and exact suffix extraction on
 `Omega` and `lambda a.Omega`. Its report is
 `data/self-interpreter/theory/shared_tag.json`; current measurements belong
 in `docs/STATUS.md`. No candidate enumeration is involved.
+
+## Inherited environments and exact unary suffix recovery
+
+An inherited-environment parser receives the semantic environment while
+reading syntax. Its application clause can return `f g` directly, without
+the pointwise environment lift. Its abstraction clause still needs two
+uses of the body syntax: a provisional parse to find the suffix, then a
+parse under the eventual semantic argument. The provisional semantic value
+can be discarded lazily.
+
+Unary lookup can return both a semantic value and its exact source suffix
+with the environment cell
+
+```text
+cell(a,e) = lambda b r.b (lambda k.k a r) (r e).
+```
+
+For every index within the supplied environment prefix, applying its raw
+unary quotation to that environment returns the selected value paired with
+the untouched suffix. `SelfintArchitecture5Inherited.lookup_environment`
+proves this for every index, arbitrary values, and arbitrary tails.
+
+The provisional ABS parse must nevertheless extend its environment. Omitting
+that binding makes even the closed source `I` fail: with continuation `F`
+and suffix `I`, the proposed fused parser returns `F` instead of the required
+`I`. The exact source and reduction refutation are kernel-checked. Closedness
+of the source does not repair an under-scoped intermediate lookup.
+
+Two explicit repairs extend the provisional environment with a dummy binding,
+or make its bottom total. A finite total bottom is
+
+```text
+bottom = lambda b r k.k b (b r (r r b)).
+```
+
+The semantic value at an absent index is arbitrary, while the suffix is
+exact at every unary length. Lean proves this law and its preservation under
+finite environment extension. These constructions remain larger than the
+record interpreter. The script `architecture5_inherited.py` prices the fixed
+sources and checks fixed continuation/suffix examples; it does not establish
+a full parser induction or perform the standard battery. Measurements are
+in `docs/STATUS.md`.
 
 ## Swapping a closure's two arguments is not an exact involution
 

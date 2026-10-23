@@ -100,3 +100,12 @@ import Blc.SelfintArchitecture5Bundle
 import Blc.SelfintRootLetCycles
 import Blc.SelfintRootLetPeel
 import Blc.SelfintRootLetIdentityCollapse
+import Blc.SelfintRootLetPending
+import Blc.SelfintRootLetRigidPrefix
+import Blc.SelfintRegularExamples
+import Blc.SelfintRound5BoundSink
+import Blc.SelfintRound5BoundOrigins
+import Blc.SelfintArchitecture5Inherited
+import Blc.SelfintArchitecture5BundleCost
+import Blc.SelfintRound5BoundCycle
+import Blc.SelfintRound5BoundSelected

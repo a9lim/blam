@@ -195,11 +195,19 @@ with all features (three opt-in tests ignored) and 328 with default features.
   cutoffs, including the case previously supported only by an unsound rule
   (`Blc/SelfintRootCutoffs.lean`); that branch is complete subject to its
   existing narrowing coverage, while general root lets remain open.
-  Six further modules `SelfintRootLet{Powers,Orbit,Embedding,Cycles,Peel,IdentityCollapse}`
-  close 36 of the 51 listed pending sources by algebraic collapse,
-  finite-clock orbit invariants, or unbounded self-embedding/advancing
-  families; 15 listed sources remain, plus eight other over-cap cells
-  containing 2,102,856 sources. No new candidate enumeration is involved.
+  Unbounded symbolic `SelfintRootLet*` theorems close **all 51** listed
+  pending sources. `SelfintRootLetPending` pins every literal archived AST
+  to its theorem; `rootlet_pending.py --check` verifies the fixed archive
+  and deterministic correspondence without generating candidates. Together
+  with the existing finite coverage this closes that cell. Eight other
+  over-cap cells containing 2,102,856 sources remain. A further theorem
+  excludes every hereditary first-argument-forcing reader with `j` at
+  depth zero, without a source-size cap (`SelfintRootLetRigidPrefix`).
+  The regular closure checker's translation to ordinary lambda terms,
+  including arbitrary scoped hole fillings, is now kernel-checked
+  (`SelfintRegularCertificate`, `SelfintRegularSoundness`). A seven-state
+  example instantiates the bridge; the older 49 code-table proofs have
+  not been replayed as individual source-level corollaries.
   The class widens without moving its minimum:
   NEXT of any syntax above the price frontier `q ≥ 92`, `q + 3F ≥ 104`
   (Lean, `Blc/SelfintWiden.lean`; optimal there iff `w ≥ 46`), any value
@@ -229,6 +237,15 @@ with all features (three opt-in tests ignored) and 328 with default features.
   protocol whose ABS clause merely updates state and returns its child
   value, with a fixed public decoder. Unbounded state is allowed and
   unpriced.
+  An inherited-environment parser makes semantic application direct but
+  needs separate syntactic skipping or a total environment for its ABS
+  suffix pass. Exact sources cost 241 bits with independent skipping,
+  278 with a total bottom, and 289 with a dummy binding; fixed I/K/S
+  continuation-and-suffix checks pass in 0.52 s. These variants have no
+  all-source proof or standard battery qualification. The tempting
+  239-bit form is refuted in Lean on the closed source I; the same module
+  proves all-index lookup for adequate and total environments
+  (`SelfintArchitecture5Inherited`, `architecture5_inherited.py`).
 - **The 165**, the previous record (`classical/self-interpreter/interpreter.md`,
   `data/self-interpreter/machines/int165.lam`), Codex's design: Palmer's 168
   with a reader that computes the skip `list list list` once on the whole
@@ -363,6 +380,18 @@ with all features (three opt-in tests ignored) and 328 with default features.
   to copying an argument that already contains a live capture: the exact
   substitution bound forces a count increase on sufficiently large normal
   outputs. It does not bound the number of copying events.
+  `SelfintRound5Bound{Rank,Origins,Cycle,Graph,Selected}` proves a stronger
+  unconditional trace constraint: for every exact interpreter, one closed
+  normal probe forces a directed cycle in the graph of source-origin
+  copy dependencies on every successful decode. The graph covers the
+  explicitly selected contractions; the ordinary edge-list lift preserves
+  the supplied trace. A constructive mass bound independent of quotation
+  length rules out every acyclic source-origin ranking. These theorems
+  use standard Lean axioms only and do not raise the bit floor.
+  `SelfintRound5BoundSink` shows why a capturing source origin need not
+  occur on that cycle: a closed noncapturing copier shape produces
+  arbitrarily capture-rich normal outputs from affine Scott numerals.
+  This counterexample is not itself an interpreter.
   A handwritten modified SK abstraction
   construction shows that all interpreter-origin output binders can share
   one original binder, so distinct output roles do not force distinct

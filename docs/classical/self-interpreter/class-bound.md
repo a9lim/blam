@@ -222,9 +222,10 @@ the 39-bit one.
   reached closes, including `(λx. x P)(λz. z Q R)`. Most cut-offs there are
   self-application dispatchers
   `Δ(λz. z A⃗)`; one general closure-and-stack certificate (Codex, certgen
-  lane; the checker and 49 of its instances kernel-checked, the translation
-  to head reduction handwritten) certifies all but three of the 36 the
-  search left, and found that the narrowing lane's two-argument
+  lane; the checker, its translation to ordinary lambda reduction with
+  arbitrary scoped holes, and 49 code-table instances kernel-checked;
+  the old instances have not been replayed as source-level corollaries)
+  certifies all but three of the 36 the search left. The narrowing lane's two-argument
   self-feeding variant was unsound — `(λx. x x)(λz. z (λa b. b b z) W)`
   passes it, yet with `W = I` its zero probe reaches `r` in 17 steps
   (kernel-checked). The actual remaining family is excluded by an
@@ -265,15 +266,21 @@ the 39-bit one.
   independent argument `P`, specializing it saves exactly
   `(k−1)(w(P) + 2) + F(P)(k + q) > 0`; what is left of the pending case is
   bodies headed by `x` itself. Unbounded symbolic proofs in
-  `Blc/SelfintRootLet{Powers,Orbit,Embedding,Cycles,Peel,IdentityCollapse}.lean`
+  `Blc/SelfintRootLet*.lean`
   reduce diagonal powers to `J = λx.x (λy.x)`, classify an application
   orbit over `J`, collapse one helper to a rigid-head-forcing value, or
   give positive-head self-embeddings and advancing families. The
   self-embedding criterion permits internal beta steps while requiring
   genuine head progress; arbitrary beta cycles alone would be unsound.
-  These close cases in the listed residual cell; `docs/STATUS.md` gives
-  the remaining count. Eight other cells remain over the cap
-  (Codex, pending lane); a λ-free argument at the root must
+  Identity peeling, extra identity spines, duplicated pending arguments,
+  hereditary first-argument forcing, and a binary orbit close the other
+  listed cases. `SelfintRootLetPending` contains the literal archived
+  sources, their exact equalities to theorem instances, and the aggregate
+  non-reader theorem. Its companion `rootlet_pending.py --check` verifies
+  the fixed archive and deterministic regeneration, with no candidate
+  generation. All listed exceptions are closed; assembling that cell's
+  exclusion still uses its existing finite coverage. Other cells remain
+  over the cap (Codex, pending lane); a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands. With `j` at
@@ -576,15 +583,26 @@ has `|A| ≥ 11` and `|D| ≤ 18`, and `D = u (s s u)` is excluded for every
 at most 53,537 terms after the first pass; the review reproduced the small
 ones, not the full 25-bit cut-off audit.
 
+**Hereditary forcing.** In `Blc/SelfintRootLetForcing.lean`, every lambda
+has its own bound variable at the rigid head of its body, and all subterms
+satisfy the same property. This property survives beta reduction.
+`SelfintRootLetRigidPrefix` proves that an open computation with this
+property fails as a reader when any rigid operand is pending before the
+stream. More generally, every such reader with `j` at depth zero is
+excluded: shallow occurrences of `j` cannot decrease, so the computation
+cannot expose the lambda required by the reader laws. These are unbounded
+source-family exclusions. They do not cover lambda bodies headed by a
+different variable or by a redex.
+
 **Open.** Only readers with a source redex remain, and a minimum reader
 below 46 is neither an s-spine nor a reader whose stream-λ body is a let,
 so one branch of the source-head classification is left: **root lets**
 `(λx. B) A C⃗` — depth-0 shared top-level lets and application-rooted
 readers whose let argument hands control on before binding the stream,
 nonlinear, with two to four uses of `x` and `j` at depth at most 1 (the
-profile `k + d = 5` and every linear root let are closed); count-only
-envelopes of these cells total about 4.1 million sources, ten cells over
-the check cap. A hand-off's pre-stream computation can expand without any
+profile `k + d = 5` and every linear root let are closed).
+The current unresolved cell counts are in `docs/STATUS.md`.
+A hand-off's pre-stream computation can expand without any
 bound in the source weight: with `G = λp x. p (x x)`,
 `H = λv n s. s v (λu. s (λq. c) (s s u)) n` and Church numerals,
 `Church(m) G H I j` is a correct reader of weight `84 + 5m` whose first

@@ -191,6 +191,66 @@ abstractions. It does not bound how many copying events are necessary:
 capture-free control can increase a binder's multiplicity before a single
 contraction copies many captures. No separate module costs follow.
 
+Nor must a capture-bearing source binder lie on the copying cycle.
+`Blc/SelfintRound5BoundSink` constructs
+
+```text
+Q = lambda a b.a b
+F = lambda f s.s I (lambda t z.z Q (f f t)).
+```
+
+On affine Scott numerals, `F F` produces normal terms with arbitrarily
+many live captures. Lean supplies the terminating traces and proves that
+every nonlinear contraction in them is the fixed `F F` redex. Its outer
+`f` binder is closed and noncapturing; capture-bearing templates are copied
+as passengers or survive into the output. This refutes the implication
+from unbounded capture output and affine input to a capturing copier.
+It does not refute a stronger argument using the full interpreter contract.
+
+## Source-copy dependencies must contain a cycle
+
+For every exact interpreter `E`, there is a closed normal source program
+whose successful decoding forces a directed cycle in the dependency graph
+of source-origin copying. The statement concerns every successful beta
+trace, with the contracted redexes fixed. An edge `o -> c` means that a
+nonlinear contraction of source binder origin `o` duplicates an argument
+containing a source lambda of origin `c`. This is a cycle among copy
+dependencies over the whole trace, not a repeated runtime state.
+
+`Blc/SelfintRound5BoundRank` and `SelfintRound5BoundOrigins` first bound
+source-origin copying under a fixed finite ranking. Source lambdas and
+their bound occurrences retain origin labels through substitution.
+Quotation-origin data has zero charged mass. Affine steps cannot increase
+that mass; a source contraction grows it at most quadratically. If every
+source lambda in a nonlinearly copied operand has lower rank than the
+contracted binder, the vector of source-lambda counts decreases
+lexicographically. A constructive controlled-growth bound then bounds
+all charged output independently of the quotation's length.
+Quotation-origin lambdas cannot supply live captures, so the same bound
+applies to output captures. A sufficiently capture-rich closed normal
+program cannot have a decoding trace satisfying that ranking. The theorem
+is independent of quotation size and makes no parser-architecture assumption.
+
+`SelfintRound5BoundCycle` labels the source binders distinctly and lifts
+every supplied ordinary beta edge list while preserving that exact list
+under erasure. One probe, determined only by `E`, defeats every ranking
+into `1..number_of_source_lambdas`. `SelfintRound5BoundGraph` proves that
+every finite acyclic graph admits such a ranking by counting reachable
+vertices.
+
+The strongest theorem is `SelfintRound5BoundSelected.every_selected_decode_graph_cycle`.
+Its graph must cover the copying at each explicitly selected contraction.
+This matters when two different redexes give the same before-and-after
+trees: collecting every compatible event from those pairs could add edges
+that the chosen trace did not use. The selected-contraction theorem applies
+to any covering graph, including the minimal graph for those choices.
+The ordinary-trace lift and interpreter contract provide nonvacuity.
+
+The ranking and origin bounds use only `propext` and `Quot.sound`; the
+finite-graph argument also uses standard `Classical.choice`. The result
+does not require a capturing binder on the cycle, as the preceding
+construction shows, and does not raise the numerical bit floor.
+
 ## Quotation-origin binders cannot provide arbitrary binding structure
 
 `Blc.SelfintOrigins` colors abstractions by origin: interpreter syntax is

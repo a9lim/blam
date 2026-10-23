@@ -1,5 +1,6 @@
 """Allocation-independent regular invariant format and independent Python checker.
-The matching Lean definitions/proof are in Regular.lean.
+The matching Lean definitions/proof are in lean/Blc/SelfintRegularCertificate.lean.
+Regular.lean retains the archived import path.
 """
 import json
 

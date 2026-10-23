@@ -1,21 +1,22 @@
 # certgen — regular closure/stack certificates; SF2 soundness bug
 
-**33 of the requested 36 residual cut-offs are certified. Three remain open.**
-The implementation is one allocation-independent finite regular invariant
-checker, with no W5/SR/SF case split. It supports K-like and multi-argument
+**The general regular checker certifies 33 of the requested 36 residual
+cutoffs; all remaining sources are excluded by separate symbolic Lean
+proofs.** The checker uses one allocation-independent finite regular
+invariant, with no W5/SR/SF case split. It supports K-like and multi-argument
 closures by retaining regular languages of pending arguments.
 
-**A separate material finding: the existing SF2 rule is unsound.** An explicit
-accepted counterexample has a kernel-checked head normal form. Seven of the
-eight SF2-positive inventory cases in the regression corpus have independent
-replacement certificates; `rootnarrow/work/h2_2.json` cut index **31** must be
-reopened. Thus the current docket has the three requested residuals below
-**plus this additional unsupported old exclusion**.
+**The old SF2 rule is unsound and remains withdrawn.** An accepted
+counterexample has a kernel-checked head normal form. Seven of its eight
+positive inventory cases have regular replacement certificates; the eighth,
+`rootnarrow/work/h2_2.json` cut index 31, is excluded by a protected-argument
+invariant in `lean/Blc/SelfintRootCutoffs.lean`. That module also closes the
+three sources left by the regular checker.
 
 Evidence labels: **[L]** kernel-checked, **[C]** independently checked finite
 computation, **[H]** handwritten proof. No statement here assumes source
-minimality. All writes are confined to this lane; no commits, outside edits,
-delegation, or consult back.
+minimality. The recorded computations and resource measurements below are
+the saved certificate run, not a fresh replay of every archived case.
 
 ## 1. Complete interpreters and controls
 
@@ -66,8 +67,8 @@ recognized as an S-head.
 argument as S and all later ones as arbitrary. It rejects the false positive.
 It also withdraws `h2_2.json:31` and `h2_5.json:31` from the eight old SF2
 acceptances. The latter is independently recovered by the new checker; the
-former is not. This does not show that `h2_2.json:31` halts, only that its
-previous proof route is invalid and the replacement has not certified it.
+former uses the separate protected-argument proof in `SelfintRootCutoffs`.
+The invalid rule itself supplies no evidence for its conclusion.
 No predecessor file was modified.
 
 ### 2.2 One general regular-shape certificate [H, C, L]
@@ -92,19 +93,16 @@ allowed, with inductive denotations of finite concrete closures/stacks.
 The proof does not mistake an abstract cycle, an empty flow set, or exhausted
 fuel for divergence. Its axiom inventory is only `propext`, `Quot.sound`.
 
-**Formal boundary:** the translation from this concrete closure machine to
-ordinary lambda head reduction, and the theorem for every scoped filling of
-the holes, are handwritten in `SOUNDNESS.md`. Administrative transitions
-preserve the instantiated term; lambda/pop is exactly head beta; a positive
-closure rank forbids an infinite administrative-only suffix. The source
-code is an acyclic finite syntax graph. Since an opaque closure is never
-forced, all these steps lift to arbitrary fillings, including fillings that
-refer to surrounding binders. These facts prove no head normal form.
+**Formal boundary:** `SelfintRegularSoundness.lean` now proves the general
+translation to ordinary lambda reduction and every scoped opaque filling.
+Administrative transitions preserve the instantiated term and decrease a
+closure rank; lambda/pop is exactly a weak-head beta step. An executable
+source-DAG check supplies well-founded decoding. See `SOUNDNESS.md`.
 
-The Lean `Case*.no_stop` theorems are about the literal code tables. They
-are **not** presented as complete Lean proofs of `Blc.SelfintProbe.Solvable`
-exclusions for arbitrary hole fillings. The counterexample in §2.1 *does*
-use that repository predicate directly.
+The archived `Case*.no_stop` theorems remain literal code-table claims.
+Their individual source-DAG and decoding correspondences have not been
+replayed through the new general theorem. The small exact instance in
+`SelfintRegularExamples` checks the complete path to `not Solvable`.
 
 ## 3. Exclusions, validation, and remaining limits
 
@@ -123,9 +121,10 @@ source, chosen allocation, certificate hash, and individual resource record.
 
 `h3_1.json` contains eighteen original cases without identifying the one
 reported residual. Certifying all eighteen includes that residual. Hence
-**33/36** of the requested residuals are certified, with **3 remaining**.
+**33/36** of the requested residuals have regular certificates. The three
+others have independent symbolic proofs in `SelfintRootCutoffs.lean`.
 
-The remaining terms are all in `h2_2.final_left`, at indices **0, 2, 3**
+The terms outside the regular-certificate coverage are all in `h2_2.final_left`, at indices **0, 2, 3**
 (lines **1, 3, 4**). With Delta = lambda x. x x, their forms are:
 
 | Index | Term | Failed abstraction obligation |
@@ -143,8 +142,8 @@ of these instantiated abstractions, **not** a proof that the whole regular
 shape domain cannot express these terms.
 
 `Case04` (index 4 of `h2_2.final_left`) is accepted by the independent Python
-checker, with the handwritten soundness argument and the proved general
-checker available. Its **individual Lean replay is deferred**: the memory
+checker, with the proved general checker and ordinary-lambda semantic bridge
+available. Its **individual Lean replay is deferred**: the memory
 watchdog stopped repeated decompositions of its largest finite invariant.
 It has 1,926 quotient states. `deferred_lean.json` records the exception;
 none of its capped jobs is counted as a proof.

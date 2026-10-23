@@ -5,6 +5,7 @@ from flow_probe import inputs,cert
 from aam import compile_term
 from portable import check,tupleize
 H=Path(__file__).resolve().parent
+CORE=H.parents[3]/'lean/Blc/SelfintRegularCertificate.lean'
 rows=json.loads((H/'MANIFEST.json').read_text());original=dict(inputs());assert len(rows)==53
 certs=[]
 for r in rows:
@@ -17,11 +18,16 @@ for r in rows:
  certs.append(r)
 assert len(certs)==50
 mods=json.loads((H/'modules.json').read_text());formal=json.loads((H/'LEAN_CHECKS.json').read_text());assert [r['file'] for r in formal]==mods
-core=hashlib.sha256((H/'Regular.lean').read_bytes()).hexdigest()
+core=hashlib.sha256(CORE.read_bytes()).hexdigest()
+import_hash=hashlib.sha256((H/'Regular.lean').read_bytes()).hexdigest()
 for r in formal:
  assert r['code']==0 and r['limit'] is None and r['seconds']<120 and r['peak_rss_bytes']<2_000_000_000 and r['threads']<=2
  assert r['core_sha256']==core
- assert r['sha256']==hashlib.sha256((H/r['file']).read_bytes()).hexdigest()
+ # The archived core was moved byte-for-byte; its old proof record names
+ # Regular.lean. Fresh replays record the import wrapper separately.
+ proof_source=CORE if r['file']=='Regular.lean' and r['sha256']==core else H/r['file']
+ assert r['sha256']==hashlib.sha256(proof_source.read_bytes()).hexdigest()
+ if 'import_sha256' in r:assert r['import_sha256']==import_hash
  log=(H/(Path(r['file']).stem+'.log')).read_text();assert 'sorryAx' not in log and 'error:' not in log
 for r in certs:
  if r['label']=='Case04':continue
