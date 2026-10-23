@@ -150,6 +150,47 @@ the width, capture, and nonlinear counts by a shared-S construction. These
 additions are handwritten; they do not strengthen the kernel-checked
 numerical theorem above.
 
+## Nonlinear code and live capture must occupy separate branches
+
+`Blc.SelfintRound5BoundMixed` couples the two source resources. Every exact
+interpreter has an application node with a nonlinear binder in one child
+and a live capturing abstraction in the other, in either orientation.
+For a literal `λc s.B`, this mixed branch is inside `B`.
+
+The invariant `MixedChain d t` forbids such a split at every application.
+It is preserved by unrestricted beta reduction: a copied argument either
+has neither resource, or the enclosing context cannot separate it from
+the other resource. Quotations satisfy the invariant, but the required
+normal output for `λz.z (λx.x x) (λa b.a b)` violates it. A closed normal
+term with two incomparable nonlinear binders beneath a capturing prefix
+meets the older separate requirements and still has `MixedChain`; the
+mixed-branch requirement therefore adds information. This is a topology
+constraint, not a new numerical floor or an additive parser budget.
+
+## Successful decoding must copy capture-bearing code
+
+`Blc.SelfintRound5BoundCapture` counts live capturing abstractions relative
+to their enclosing local binders. Rigid global variables do not count.
+Its substitution bound is
+
+```text
+captures_d(B[x:=A]) <= captures_(d+1)(B) + uses_x(B) * captures_d(A).
+```
+
+Capture-avoiding substitution cannot turn a surviving source binder into
+a new live capture. Thus a beta step that strictly increases the count
+must contract a nonlinear binder whose argument already has a live
+capture. A closed normal family has arbitrarily many such captures,
+while its Scott quotation has none. Choosing an output with one more
+capture than the interpreter forces an increase in every successful
+ordered beta trace. The Lean theorem locates that adjacent pair in the
+supplied edge list and retains the actual prefix and suffix.
+
+This strengthens the requirement to copy arbitrary interpreter-origin
+abstractions. It does not bound how many copying events are necessary:
+capture-free control can increase a binder's multiplicity before a single
+contraction copies many captures. No separate module costs follow.
+
 ## Quotation-origin binders cannot provide arbitrary binding structure
 
 `Blc.SelfintOrigins` colors abstractions by origin: interpreter syntax is

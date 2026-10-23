@@ -63,6 +63,60 @@ These are complete interpreter constructions, all larger than 165. The reset ide
 168-bit variant follows by finitely unfolding its existing knot once;
 the script additionally checks the reset followed by parsing `I`.
 
+## Bundling the parser and continuation through off-domain inputs
+
+The erased skip operand also supplies services in the current reader.
+Replace `list list u` by `list list intL`, retaining the same NEXT and knot.
+For the resulting parser `P`, arbitrary continuation `C`, and
+`I = λx.x`, the exact identities are
+
+```text
+P C I =β C
+P C F =β P
+P C K =β NEXT(P,C).
+```
+
+Therefore `h = P C` packages both `P` and `C`: `h (K I) =β P` and
+`h (F I) =β C`. The original reader already gives the identity service,
+but both Boolean inputs select NEXT. The replacement changes only the
+behavior off the source-stream domain, since the skip erases its final
+operand on every unary selector.
+
+`Blc/SelfintArchitecture5Bundle.lean` proves the full directed interpreter
+contract for arbitrary closed sources, continuations and suffixes, along
+with the service equations and exact wire. This is Codex's construction.
+`tools/self-interpreter/theory/architecture5_bundle.py` independently
+transcribes it and checks the fixed symbolic clauses. Its measured cost
+and qualification are in `docs/STATUS.md`. The bundle makes a combined
+state available; no smaller recursive definition using only that state
+has been established.
+
+## Erasing ABS requires unbounded depth information
+
+Let `compile(q,M)` be an arbitrary value representation with a fixed public
+decoder. Suppose its abstraction clause only updates the control state:
+
+```text
+compile(q, lambda M) =β compile(step(q), M).
+```
+
+If the decoder recovers every closed source exactly up to beta equality,
+all states `step^(n+1)(initial)` must be distinct. Otherwise two different
+closed normal towers `lambda^(n+1).var 0` and `lambda^(m+1).var 0` would
+have beta-equal compiled values and decoder outputs, contradicting their
+different normal forms. The same argument requires the compiled values of
+those towers to be pairwise beta-distinct even if the states themselves
+are syntactically different.
+
+`Blc/SelfintArchitecture5Depth.lean` derives the decoder premise from the
+actual interpreter contract when it factors through such a value, proves
+state injectivity, and rules out every finite collection of reachable
+states. The APP clause, variable representation and decoder syntax are
+unrestricted. An unbounded continuation or environment counts as state;
+this theorem does not price it or exclude it. In particular, a finite tag
+cannot repair a spread-environment proposal whose ABS operation otherwise
+erases the abstraction.
+
 ## Cheap application-only third operands
 
 Consider the ambient frame `[s,j,c,p,x]`, innermost first, with `j` the

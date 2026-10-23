@@ -246,6 +246,27 @@ Self-interpretation:
 - `Blc/SelfintNormal.lean` — the 204-bit β-normal interpreter, including its
   exact wire and directed contract for every closed source and arbitrary
   continuation and suffix.
+- `Blc/SelfintRound5BoundNormal196.lean` — a beta-normal interpreter whose
+  administrative parser reductions connect it to the verified 162;
+  exact wire, normality and all-source beta-join contract.
+- `Blc/SelfintRound5BoundMixed.lean` and `SelfintRound5BoundCapture` — a
+  necessary mixed branch between nonlinear code and live capture, and
+  quantitative capture transport forcing duplication of capture-bearing
+  code during decoding. These are structural constraints, not new numeric
+  lower bounds.
+- `Blc/SelfintArchitecture5Depth.lean` — erasing ABS while only updating
+  a control state requires pairwise distinct states at all positive depths;
+  a finite-state repair is impossible with a fixed decoder.
+- `Blc/SelfintArchitecture5Bundle.lean` — the parser/continuation bundle's
+  exact wire and directed contract, plus its off-domain service identities.
+- `Blc/SelfintRootCutoffs.lean` — four symbolic head-divergence families
+  closing the recorded short-hand-off cutoffs with arbitrary scoped
+  payloads. The withdrawn two-argument self-feeding rule is not used.
+- `Blc/SelfintRootLetPowers.lean`, `SelfintRootLetOrbit`, and
+  `SelfintRootLetEmbedding`, `SelfintRootLetCycles`, `SelfintRootLetPeel`,
+  and `SelfintRootLetIdentityCollapse` — power simplification, a finite-clock orbit
+  invariant, and a positive-head self-embedding criterion for pending
+  reader lets. Each is an unbounded theorem rather than a capped search.
 - `Blc/SelfintSharp.lean` — a sound checker for explicit contextual β traces;
   a 584-bit interpreter with exactly two nonlinear binders, both closed in
   isolation; and a 742-bit β-normal interpreter with the same property.

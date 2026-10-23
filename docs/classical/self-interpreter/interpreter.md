@@ -483,7 +483,10 @@ The two required nonlinear binders must occupy incomparable source
 branches: `Blc/SelfintNonlinearChain.lean` proves that putting all nonlinear
 binders on one ancestor chain is preserved by full beta reduction, whereas
 the required Ω output violates that property. For a literal interface,
-both witnesses are internal.
+both witnesses are internal. `Blc/SelfintRound5BoundMixed.lean` also
+forces a mixed branch: some application separates nonlinear code from a
+live capturing abstraction. This strengthens the topology without giving
+another additive cost.
 See `structural-bounds.md`, `Blc/SelfintLowerBound.lean`, and
 `Blc/SelfintSharp.lean`.
 
@@ -519,6 +522,9 @@ reductions: they remain affine with a protected head occurrence.
 For a suitable closed normal source, every successful colored trace must
 also copy interpreter-origin code at a nonlinear interpreter-origin binder.
 Copying quotation-only arguments cannot create the required output.
+`Blc/SelfintRound5BoundCapture.lean` strengthens the resource requirement:
+a sufficiently capture-rich normal output requires duplication of code
+that already has a live capture, with an exact substitution-count bound.
 These are global constraints, not separately additive module costs
 (`structural-bounds.md`, `Blc/SelfintCapture.lean`,
 `Blc/SelfintOrigins.lean`).
@@ -720,6 +726,11 @@ These are Codex's handwritten proofs, with targeted reduction checks in
   representation produces β-equal results for both. In particular, erasing
   the difference between `I` and `λf x.f x` cannot be repaired at the public
   boundary without additional information (`protocol-obstructions.md`).
+  More generally, if ABS merely changes a control state and returns its
+  child's value up to beta equality, a fixed decoder requires distinct
+  states at every positive lambda depth. Lean proves that no finite-state
+  tag repairs this protocol (`Blc/SelfintArchitecture5Depth.lean`);
+  unbounded environments or continuations remain possible.
 
 ## 6. Protocol changes
 

@@ -1,0 +1,38 @@
+{
+  "bits": 165,
+  "L_A_X": [
+    16,
+    24,
+    35
+  ],
+  "wire_matches_lean": true,
+  "symbolic_head_steps": {
+    "bundle_identity": 9,
+    "bundle_reset": 11,
+    "bundle_next": 7,
+    "bundle_select_parser": 14,
+    "bundle_select_continuation": 11,
+    "baseline_identity": 9,
+    "baseline_false_next": 11,
+    "baseline_true_next": 7,
+    "public_identity": 10
+  },
+  "formal_contract": "forall closed M, all C N: P C (<M> ++ N) ->beta* C (lambda z.M) N",
+  "boundary": "larger than 162; no optimality claim or candidate search",
+  "qualification": {
+    "bits": 165,
+    "battery": {
+      "ok": 667,
+      "skip": 1,
+      "fail": 0,
+      "max_bits": 18,
+      "workers": 2
+    },
+    "suffix_probes": {
+      "omega": "exact rigid tail",
+      "lambda_omega": "exact rigid tail"
+    },
+    "seconds": 1.957,
+    "frozen_binary": true
+  }
+}

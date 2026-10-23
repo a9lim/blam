@@ -190,7 +190,17 @@ with all features (three opt-in tests ignored) and 328 with default features.
   dispatch site at all. No minimum reader below 46 is an s-spine or has a let as its
   stream-λ body, so every λ-rooted minimum reader is excluded and only root
   lets `(λx. B) A C⃗` remain: nonlinear, two to four uses, `j` at depth at
-  most 1 (every linear root let and the profile `k + d = 5` are closed). The class widens without moving its minimum:
+  most 1 (every linear root let and the profile `k + d = 5` are closed).
+  Four symbolic Lean divergence theorems close the recorded short-hand-off
+  cutoffs, including the case previously supported only by an unsound rule
+  (`Blc/SelfintRootCutoffs.lean`); that branch is complete subject to its
+  existing narrowing coverage, while general root lets remain open.
+  Six further modules `SelfintRootLet{Powers,Orbit,Embedding,Cycles,Peel,IdentityCollapse}`
+  close 36 of the 51 listed pending sources by algebraic collapse,
+  finite-clock orbit invariants, or unbounded self-embedding/advancing
+  families; 15 listed sources remain, plus eight other over-cap cells
+  containing 2,102,856 sources. No new candidate enumeration is involved.
+  The class widens without moving its minimum:
   NEXT of any syntax above the price frontier `q ≥ 92`, `q + 3F ≥ 104`
   (Lean, `Blc/SelfintWiden.lean`; optimal there iff `w ≥ 46`), any value
   representation with a NEXT-free decoder (Lean, `Blc/SelfintValues.lean`),
@@ -201,10 +211,24 @@ with all features (three opt-in tests ignored) and 328 with default features.
   (`Blc/SelfintProbe*.lean`); the value part, the zero law, the control
   flow and the rigid forms do not follow (five correct counterexamples,
   194–265 bits). With NEXT unrestricted the class costs at least 76. Outside
-  the class every mechanism priced costs at least 170; NEXT under `λlist`
+  the class, the bundle below gives a 165-bit construction with reader
+  access to recursion; NEXT under `λlist`
   can embed any closed interpreter at `+17`, and no β-preserving conversion
   takes every interpreter into the class. Archives:
   `data/self-interpreter/reasoning_162/`, `reasoning_class/`.
+- **Alternative state protocols** (`classical/self-interpreter/protocol-obstructions.md`):
+  a **165-bit parser/continuation bundle** (L 16, A 24, X 35) changes only
+  the 162's erased skip operand. Lean proves its directed contract for all
+  closed sources and arbitrary continuations/suffixes, plus
+  `P C I =β C`, `P C F =β P`, and `P C K =β NEXT(P,C)`
+  (`SelfintArchitecture5Bundle`). The fixed battery gives 667/1/0 in
+  1.957 s with two workers and a frozen binary; Ω and λΩ preserve exact
+  rigid suffixes (`data/self-interpreter/theory/bundle165.json`). It is
+  larger than 162; a cheaper assembly using the bundled state is open.
+  `SelfintArchitecture5Depth` rules out every finite-state repair of a
+  protocol whose ABS clause merely updates state and returns its child
+  value, with a fixed public decoder. Unbounded state is allowed and
+  unpriced.
 - **The 165**, the previous record (`classical/self-interpreter/interpreter.md`,
   `data/self-interpreter/machines/int165.lam`), Codex's design: Palmer's 168
   with a reader that computes the skip `list list list` once on the whole
@@ -285,6 +309,11 @@ with all features (three opt-in tests ignored) and 328 with default features.
   `SelfintNonlinearChain` kernel-checks a stronger requirement: two
   nonlinear binders must lie in incomparable branches of the source tree,
   including wholly inside the body of a literal two-argument interface.
+  `SelfintRound5BoundMixed` additionally forces an application separating
+  nonlinear code from a live capturing abstraction, again inside a literal
+  interface's body. The corresponding mixed-chain prohibition is beta
+  invariant and fails on a fixed closed normal output; it strengthens the
+  source topology without raising the numeric floor.
   A single ancestor chain is preserved by beta reduction and cannot
   produce the required two-branch Ω output from an affine quotation.
   Statman's published width obstruction, combined with a handwritten
@@ -330,7 +359,11 @@ with all features (three opt-in tests ignored) and 328 with default features.
   has a closed normal source for which every successful colored reduction
   trace contains a strict increase in interpreter-origin abstractions:
   a nonlinear interpreter-origin binder must copy an argument containing
-  interpreter-origin code. A handwritten modified SK abstraction
+  interpreter-origin code. `SelfintRound5BoundCapture` strengthens this
+  to copying an argument that already contains a live capture: the exact
+  substitution bound forces a count increase on sufficiently large normal
+  outputs. It does not bound the number of copying events.
+  A handwritten modified SK abstraction
   construction shows that all interpreter-origin output binders can share
   one original binder, so distinct output roles do not force distinct
   origins without a size-sensitive argument. These results do not yet give
@@ -430,14 +463,17 @@ with all features (three opt-in tests ignored) and 328 with default features.
   `propext` and `Quot.sound`, except `selfintSizeBound_27` and its
   supporting floor lemmas, which also use `Classical.choice`.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
-  `typed-normal.md`): the β-normal interpreter is 204 bits
-  (`int204_normal`, L 21, A 29, X 44). Lean proves its exact wire,
-  normality, and directed contract for every closed source and arbitrary
-  continuation and suffix. A separate 672-bit construction is both
+  `typed-normal.md`): the β-normal interpreter is **196 bits**
+  (`int196_normal`, L 19, A 29, X 40). Lean proves its exact wire,
+  normality, and beta-join contract for every closed source and arbitrary
+  continuation and suffix (`Blc/SelfintRound5BoundNormal196.lean`). Three
+  chosen beta contractions connect its internal parser to the verified
+  162, and a first-zero gate keeps the public source normal. A separate
+  672-bit construction is both
   β-normal and simply typable: Lean proves its ordinary STLC judgment
   through a sound annotation checker and its directed contract through
   a 59-step cast-erasure trace to the literal 165. Application to its
-  quotation need not be simply typable. The 204, 584,
+  quotation need not be simply typable. The 196, 204, 584,
   672, 742, and four erased-skip variants each pass the existing bounded
   battery (667 pass, one divergent expected result skipped, zero failures).
   Targeted divergent-source suffix checks also pass. Sources are in

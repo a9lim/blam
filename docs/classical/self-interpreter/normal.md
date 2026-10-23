@@ -1,75 +1,54 @@
-# A kernel-checked 204-bit beta-normal interpreter
+# A kernel-checked beta-normal interpreter
 
-The complete beta-normal interpreter is **204 bits**. Its source and wire
-encoding are `data/self-interpreter/machines/int204_normal.{lam,blc}`.
-It quantifies the limitation of arguments claiming that correctness forces
-an interpreter to contain a beta redex or a literal fixed-point application.
-It does not improve the minimum unrestricted interpreter size.
+The current construction and measurements are recorded in `docs/STATUS.md`.
+Its source and wire encoding are
+`data/self-interpreter/machines/int196_normal.{lam,blc}`. This construction
+bounds the beta-normal fragment and shows that correctness does not force
+a source beta redex or a literal fixed-point application. It does not
+improve the unrestricted interpreter record.
 
-The full directed-reduction contract, exact size, and normality are proved
-in `lean/Blc/SelfintNormal.lean`:
+`lean/Blc/SelfintRound5BoundNormal196.lean` proves:
 
-- `selfint_contract204`: for every closed source `M` and arbitrary `C,N`,
-  `intL204 C (code(M) ++ N)` beta-reduces to `C (lambda z.M) N`;
-- `isSelfInterpreter_intL204`;
-- `wire_intL204` and `intL204_size`;
-- `intL204_nft` and `intL204_normal`.
+- `selfint_contract196`: for every closed source `M` and arbitrary `C,N`,
+  `intL196 C (code(M) ++ N)` is beta-joinable with `C (lambda z.M) N`;
+- `isSelfInterpreter_intL196`;
+- `intL196_wire` and `intL196_size`;
+- `intL196_nft` and `intL196_normal`.
 
-The contract uses only `propext` and `Quot.sound`; normality uses `propext`.
-The proof imports the existing 165 theorem's machinery, replays the changed
-control reductions with `decide`, and carries over its structural parsing
-induction. It does not assume source normalization or use `sorry`.
+The contract uses only `propext` and `Quot.sound`. It is beta joinability,
+including for divergent sources, continuations and suffixes. No source
+normalization or eta equality is assumed.
 
 ## Construction
 
-Let `K = lambda a b.a` encode bit zero, and let `Q(p,c)` be the existing
-NEXT operation:
-
-```text
-Q(p,c) = lambda t. p (lambda f. t
-  (c (lambda e a. f (lambda z y. z a (y e))))
-  (p (lambda g. c (lambda e. f e (g e)))))
-```
-
-The new, beta-normal generator is
+Let `K = lambda a b.a` encode zero and write the verified interpreter as
+`Delta (lambda x.H (x x))`, where `Delta = lambda x.x x`. Contract the
+administrative application of `H` inside the generator, leaving its two
+recursive uses as `x x`:
 
 ```text
 G = lambda x c s.
-  s (lambda b.
-       b (lambda p u r. r Q(p,c))
-         (lambda p.c)
-         (x x))
-    (s s s).
+  s (lambda a.a)
+    (lambda u.s (lambda q.c) (s s u))
+    (lambda b.(x x) (lambda f.b
+      (c (lambda e a.f (lambda z y.z a (y e))))
+      ((x x) (lambda g.c (lambda e.f e (g e)))))).
 ```
 
-It costs 165 bits. The tag gates the binding of `p = x x`; it saves a copy
-of `x x` without introducing a syntactic beta redex. For a zero cell
-`s = cons K R`, its self-skip is `R`, and
+`G` is closed and beta-normal. Three chosen beta contractions take the
+verified interpreter to `G G`: the outer diagonal and one administrative
+redex in each generator. Consequently `G G` has the same beta contract;
+this finite conversion never reduces reconstructed source code.
+
+Every closed source begins with zero. Use that first input bit to activate
+the duplicated generator:
 
 ```text
-G x c s  ->*  R Q(x x,c).
+D = lambda u x.x x
+E = lambda c s.s (lambda b.b D b) G c s.
 ```
 
-For a variable stream `s = 1^n 0 ++ N`, with immediate tail `R`,
-
-```text
-G x c s  ->*  c R N.
-```
-
-These are exactly the 165's two parsing equations, with recursive parser
-`x x`. Therefore `G G` has the full open-term parser contract. The new
-handler is not globally beta-equivalent to the old handler on arbitrary
-non-Boolean arguments; the proof uses the actual K/F control laws.
-
-To make the complete public interpreter beta-normal, use the fact that
-every closed source starts with zero:
-
-```text
-D = lambda u x. x x
-E = lambda c s. s (lambda b. b D b) G c s.
-```
-
-Here `D` and `G` are written inline, with no lets. If `s = cons K R`,
+Here `D` and `G` are written inline. For `s = cons K R`,
 
 ```text
 E c s  ->*  K D K R G c s
@@ -77,28 +56,24 @@ E c s  ->*  K D K R G c s
        ->*  G G c s.
 ```
 
-The finite source contains no beta redex: the outer heads are `s`, `b`,
-and variables bound inside `D` and `G`. All applications that activate the
-interpreter arise after substituting the actual input's K. The public
-root is required to work on closed sources, exactly as in the target
-contract; the internal parser `G G` also handles open sources.
-
-The syntactic counts are `L=21`, `A=29`, `X=44`, giving
-`2L + 4A + 2 + X = 204`.
+All application heads in the finite source are variables. The beta redexes
+that activate the interpreter arise only after the actual input is
+substituted. This is Codex's construction; the proof reuses the exact
+contract of the verified interpreter and the first-zero gate.
 
 ## Verification
 
 ```text
-(cd lean && lake env lean Blc/SelfintNormal.lean)
-python tools/self-interpreter/theory/normal204.py
+(cd lean && lake env lean Blc/SelfintRound5BoundNormal196.lean)
+python tools/self-interpreter/theory/round5_bound_normal196.py
 ```
 
-The second command verifies that the named source, BLC bits, and Lean wire
-literal agree; checks syntactic beta-normality; runs the existing bounded
-battery with two workers; and verifies rigid suffix extraction for Omega
-and lambda-Omega. Current verification results are recorded in
-`docs/STATUS.md`. The check is limited to this explicit construction; it
-performs no candidate search.
+The script independently compiles the named source and compares its wire
+with the Lean literal, checks syntactic normality, runs the existing bounded
+battery with two workers, and checks exact suffix extraction for Omega and
+lambda-Omega. It regenerates the source, wire and report in `data/`.
+The check is limited to this one construction and performs no candidate
+search. Current results are in `docs/STATUS.md`.
 
 ## Correlated-reader boundary
 

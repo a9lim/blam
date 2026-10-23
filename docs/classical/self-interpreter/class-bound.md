@@ -218,17 +218,36 @@ the 39-bit one.
   `(λx. x P⃗)(λz₁…z_q s. N)`, for every `q` (Claude, rootnarrow lane: needed
   narrowing with minimality price filters read off complete subterms, each
   filter a kernel-checked charge or a handwritten argument, every cut-off
-  certified); among the shorter chains every argument shape the search
-  reached closes except `(λx. x P)(λz. z Q R)`, which is closed modulo four
-  cut-offs. Most cut-offs there are self-application dispatchers
+  certified). Among the shorter chains, every argument shape the search
+  reached closes, including `(λx. x P)(λz. z Q R)`. Most cut-offs there are
+  self-application dispatchers
   `Δ(λz. z A⃗)`; one general closure-and-stack certificate (Codex, certgen
   lane; the checker and 49 of its instances kernel-checked, the translation
   to head reduction handwritten) certifies all but three of the 36 the
   search left, and found that the narrowing lane's two-argument
   self-feeding variant was unsound — `(λx. x x)(λz. z (λa b. b b z) W)`
   passes it, yet with `W = I` its zero probe reaches `r` in 17 steps
-  (kernel-checked) — so the one cut-off that only it certified is open
-  again. Re-running the general checker over every other self-feeding-style
+  (kernel-checked). The actual remaining family is excluded by an
+  independent protected-argument invariant in `Blc/SelfintRootCutoffs.lean`;
+  the unsound rule remains withdrawn. The same module closes the other
+  three cut-offs by unbounded symbolic head-reduction proofs. In each,
+  `Δ = λx.x x` and the payloads are arbitrary scoped terms:
+
+  ```text
+  Δ (λz.z (λa b.b (z a)) (z W))
+  Δ (λz.z (λa b.z (z b)) (z W))
+  Δ (λz.z (λa b.z (z a)) W)
+  Δ (λz.z (λa b.z b U) (z V))
+  ```
+
+  The first grows matched towers that cancel in four steps per layer;
+  the second and fourth preserve a protected head and argument; the third
+  stays inside an application-closed grammar, including under leading
+  lambdas. Every family has arbitrarily long deterministic head reduction,
+  so none can meet the zero law. This completes the recorded narrowing
+  branch, conditional on that branch's existing coverage and price
+  arguments; it is not a classification of all root lets.
+  Re-running the general checker over every other self-feeding-style
   certificate the round used (the shared lane's P1 and P4, the adv6 lane's
   63 handwritten cases, the narrowing lane's positives: 340 certificates in
   all) reopened nothing; the original lemma and its first-argument variant
@@ -245,9 +264,16 @@ the 39-bit one.
   refuted in Lean), and when every shared use of `x` receives the same
   independent argument `P`, specializing it saves exactly
   `(k−1)(w(P) + 2) + F(P)(k + q) > 0`; what is left of the pending case is
-  bodies headed by `x` itself: one cell down to 51 listed sources
-  (`reasoning_class/pending/X_REMAINING.tsv`) and eight cells over the cap
-  with 2,102,856 sources (Codex, pending lane); a λ-free argument at the root must
+  bodies headed by `x` itself. Unbounded symbolic proofs in
+  `Blc/SelfintRootLet{Powers,Orbit,Embedding,Cycles,Peel,IdentityCollapse}.lean`
+  reduce diagonal powers to `J = λx.x (λy.x)`, classify an application
+  orbit over `J`, collapse one helper to a rigid-head-forcing value, or
+  give positive-head self-embeddings and advancing families. The
+  self-embedding criterion permits internal beta steps while requiring
+  genuine head progress; arbitrary beta cycles alone would be unsound.
+  These close cases in the listed residual cell; `docs/STATUS.md` gives
+  the remaining count. Eight other cells remain over the cap
+  (Codex, pending lane); a λ-free argument at the root must
   be `j` itself, and under `λs` one of `j`, `s s`, `s s s`, `s s s j`.
   Moving a let into the only operand that uses it never raises the weight,
   so a minimum reader's sharing reaches at least two operands. With `j` at
@@ -764,12 +790,20 @@ re-separates exactly.
 ## 5. Outside the class
 
 A sub-162 interpreter outside every class above must break one of the
-remaining hypotheses: NEXT's separation from the stream binder, the
+remaining hypotheses: the reader's independence from the recursive parser,
+NEXT's separation from the stream binder, the
 two-port opaque recursion model, an evaluator-style value representation
 with a NEXT-free decoder, the CPS protocol with an exact two-argument
 return. The cheapest known mechanism for each is priced below, with
 constructions in `interpreter.md` §6 and the archives:
 
+- **The reader uses recursion.** Replacing the erased operand `u` in the
+  current reader's `s s u` by the parser `p` preserves every source-stream
+  equation but exposes new off-domain services. The resulting
+  parser/continuation bundle and its full contract are kernel-checked in
+  `Blc/SelfintArchitecture5Bundle.lean`; `protocol-obstructions.md` gives
+  its equations and `docs/STATUS.md` its cost. The reader no longer has
+  only the two rigid ambient parameters `c,j` used in the separated class.
 - **NEXT uses the stream.** Inside the reader's `λs`, NEXT can embed any
   closed interpreter `Q` as `λb t. Q c s` for `|Q| + 17` bits, so an
   unrestricted NEXT bound would itself be a global floor (`|NEXT| ≥ 96`

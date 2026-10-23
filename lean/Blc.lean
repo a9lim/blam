@@ -88,3 +88,15 @@ import Blc.SelfintStreamHelpers
 import Blc.SelfintStreamSpecializer
 import Blc.SelfintNeededHead
 import Blc.SelfintNestedLets
+import Blc.SelfintRootCutoffs
+import Blc.SelfintRootLetPowers
+import Blc.SelfintRootLetOrbit
+import Blc.SelfintRootLetEmbedding
+import Blc.SelfintRound5BoundMixed
+import Blc.SelfintRound5BoundCapture
+import Blc.SelfintRound5BoundNormal196
+import Blc.SelfintArchitecture5Depth
+import Blc.SelfintArchitecture5Bundle
+import Blc.SelfintRootLetCycles
+import Blc.SelfintRootLetPeel
+import Blc.SelfintRootLetIdentityCollapse
