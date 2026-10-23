@@ -111,3 +111,12 @@ import Blc.SelfintArchitecture5BundleCost
 import Blc.SelfintRound5BoundCycle
 import Blc.SelfintRound5BoundSelected
 import Blc.SelfintRootLetBudgetDelay
+import Blc.SelfintRound6ReaderStrict
+import Blc.SelfintRound6ReaderShallow
+import Blc.SelfintRound6BoundLiteral
+import Blc.SelfintRound6BoundNext
+import Blc.SelfintRound6ReaderBinary
+import Blc.SelfintArchitecture6Retag
+import Blc.SelfintArchitecture6NextService
+import Blc.SelfintRound6Next
+import Blc.SelfintArchitecture6DelayedSharing

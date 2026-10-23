@@ -106,6 +106,34 @@ parser for the clause being defined. Lean refutes that exact construction
 on the closed source `I`, with continuation `F` and suffix `I`, by an
 explicit prefix into a repeating head-reduction cycle.
 
+The cheaper Boolean correction `g(s) = s I s` has the desired services
+`g K =β I` and `g F =β F`, but on source cells it removes an initial zero
+and retains an initial one. This makes two different parses collide:
+
+```text
+APP(Var 0, Var 0):  011010 ++ N  -> 11010 ++ N
+Var 1:             110 ++ 10 ++ N -> 11010 ++ N.
+```
+
+Their required suffixes are `N` and `10 ++ N`. No fixed downstream consumer
+can recover both, regardless of its recursion, normality or value protocol.
+`SelfintArchitecture6Retag` proves this obstruction for a uniform exact
+open parser. It also derives a contradiction with the actual closed-source
+interpreter contract whenever the common prefix `λa b` leaves one shared
+residual consumer receiving only `g` of the body stream. The known initial
+zero can still be removed at a closed public entry; the theorem concerns
+uniform recursive use without state retaining the lost distinction.
+
+A separate proposal recovers the continuation from NEXT through the APP
+service, replacing the reader's `λq.C` by `λb.NEXT b I b I`. Its assembled
+parser loses the nonrecursive identity exit used to justify that service.
+`SelfintArchitecture6NextService` proves that every `P C I`, with arbitrary
+pending arguments, makes a positive head reduction into another `P C' I`
+with more arguments. The exact closed-I entry reaches this family, so the
+assembled source is not a self-interpreter. The proof retains delayed
+off-head expressions literally and uses no fuel cutoff.
+`architecture6_control.py` checks the fixed clauses and full source wire.
+
 ## Erasing ABS requires unbounded depth information
 
 Let `compile(q,M)` be an arbitrary value representation with a fixed public

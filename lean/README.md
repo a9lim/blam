@@ -268,6 +268,16 @@ Self-interpretation:
 - `Blc/SelfintArchitecture5BundleCost.lean` — exact pricing of independent
   bundle projections, and a closed-source head-loop refutation of replacing
   NEXT by a recursive query for NEXT itself.
+- `Blc/SelfintArchitecture6Retag.lean` — the cheap Boolean service
+  correction loses suffix information on source cells; both an arbitrary
+  open-parser obstruction and a closed-source common-state obstruction.
+- `Blc/SelfintArchitecture6NextService.lean` — replacing the direct
+  continuation exit by a NEXT query creates an infinite identity-query
+  recurrence, reached by the exact closed-I probe.
+- `Blc/SelfintArchitecture6DelayedSharing.lean` — factoring a common
+  lambda out of a Boolean choice saves one bit in any context and preserves
+  both tag specializations. One delayed shared-argument contraction is
+  thereby reduced to the existing one-let price theorem.
 - `Blc/SelfintRootCutoffs.lean` — four symbolic head-divergence families
   closing the recorded short-hand-off cutoffs with arbitrary scoped
   payloads. The withdrawn two-argument self-feeding rule is not used.
@@ -286,6 +296,31 @@ Self-interpretation:
   cannot cross a sufficient rigid pending block; exact source escape
   alternatives, a sharp live-captured-head price, and a family showing
   that this local charge does not close the remaining coarse cells.
+- `Blc/SelfintRound6ReaderStrict.lean` — a beta-preserved strictness
+  interpretation permits captured heads and arbitrary nonlinear sharing;
+  it excludes good prefixes before rigid operands. Symbolic tower proofs
+  also close every small closed payload in the captured-head example family.
+- `Blc/SelfintRound6ReaderShallow.lean` — shallow binder uses cannot
+  disappear under beta reduction when every source binder has one.
+  Independently, every reader with its hole at depth zero needs a live
+  capture between source binders, permitting vacuous captures elsewhere.
+- `Blc/SelfintRound6BoundLiteral.lean` — internal capture remains necessary
+  after stripping the public interface; disjoint internal and public
+  index charges strengthen the kernel bounds for literal interfaces.
+- `Blc/SelfintRound6ReaderBinary.lean` — a three-grade strictness
+  interpretation excludes application algebras of flat unary and live
+  binary helpers before two rigid operands. Together with live capture,
+  it closes the entire three-lambda slice of the two-operand binary-helper
+  root-let family, including erasing helpers.
+- `Blc/SelfintRound6BoundGlobal.lean` and `SelfintRound6BoundNext` —
+  strengthen the unconditional kernel floor through source pricing and
+  symbolic exhaustion of the equality cases. The few residual templates
+  are derived from the syntax and refuted by fixed head reductions.
+- `Blc/SelfintRound6BoundRedLive.lean` and `SelfintRound6Next` — colored
+  live-binder accounting survives arbitrary beta contexts. A single chain
+  of live source binders cannot increase its live count; this forces more
+  internal binders in a literal rigid NEXT and strengthens the unrestricted
+  NEXT and assembly bounds.
 - `Blc/SelfintRegularCertificate.lean`, `SelfintRegularSoundness`, and
   `SelfintRegularExamples` — finite regular closure/stack invariants,
   their sound translation to ordinary lambda terms with arbitrary scoped

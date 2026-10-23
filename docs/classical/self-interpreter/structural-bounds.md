@@ -68,7 +68,7 @@ The kernel also proves the syntax inequality
 ```
 
 giving `selfintSizeBound_eighteen : SelfintSizeBound 18`. The
-`SelfintFloor*` modules raise the kernel-checked floor to
+`SelfintFloor*` modules first give
 `selfintSizeBound_27 : SelfintSizeBound 27` without Statman's theorem: the
 incomparable pair and a live capture give three live binders (25 bits); a
 β-invariant (every application argument mentions at most one free variable)
@@ -76,9 +76,24 @@ fails for interpreters, which must also expose an abstraction body that is
 not an application; abstraction-rooted interpreters then need four
 abstractions (27 bits), and minimal application-rooted ones below 27 bits
 are classified and refuted by finite head reduction. The proof uses
-`Classical.choice`. A literal `λc s.B` costs at least 31 there. These are
-small numeric consequences, not approximations to a 162-bit bound; the
-handwritten floor is 37 (`global-floor.md`).
+`Classical.choice`. `SelfintRound6BoundGlobal` and `SelfintRound6BoundNext`
+strengthen the unconditional kernel theorem to `selfintSizeBound_29`.
+They price open abstraction nodes by index bits, use internal capture
+after stripping public binders, and derive the remaining equality layouts
+symbolically. Minimum source cost forces an affine capture-bearing interior
+to be normal; four derived templates are then refuted by fixed reductions,
+with a separate vacuous-wrapper case. No source enumeration enters these
+proofs. The handwritten global floor remains 40 (`global-floor.md`).
+
+For a literal `λc s.B`, `SelfintRound6BoundLiteral` proves that `B` already
+contains a live capture between internal binders: the supplied public
+arguments cannot create one. Together with its internal incomparable
+nonlinear pair this forces three live binders inside `B`. An internal
+capture index bit and a continuation index bit charge disjoint leaves,
+giving a kernel-checked 38-bit literal-interface floor. Stripping only
+the public continuation similarly gives 31 bits for every source `λc.B`.
+The separate handwritten literal two-argument bound is 46. None of these
+small numerical consequences approaches 162-bit optimality.
 
 The nonlinear count is sharp, even among beta-normal interpreters.
 `Blc.SelfintSharp` gives a 584-bit interpreter reducing to the literal 165
@@ -144,8 +159,8 @@ floors, respectively:
 the three live binders on the width witness's ancestor chain cannot
 contain both incomparable nonlinear binders, requiring a fourth live
 binder. The resulting 33-bit global floor rises to 34 by analytically
-excluding its equality cases, and `global-floor.md` excludes 34–36 the
-same way, giving 37. The same document proves simultaneous sharpness of
+excluding its equality cases, and `global-floor.md` extends the exclusion
+through 39. The same document proves simultaneous sharpness of
 the width, capture, and nonlinear counts by a shared-S construction. These
 additions are handwritten; they do not strengthen the kernel-checked
 numerical theorem above.
@@ -444,9 +459,9 @@ does not contradict the two-nonlinear-binder lower bound.
 
 ## Exact evidence boundary
 
-The three structural modules are kernel-checked, use no `sorry` or
-candidate enumeration, and depend only on `propext` and `Quot.sound`.
-`lake build` includes them.
+The structural modules are kernel-checked, use no `sorry` or candidate
+enumeration, and depend only on the standard axioms `propext`,
+`Classical.choice` and `Quot.sound`. `lake build` includes them.
 
 None of the results prices parsing, exact remainder recovery, or arbitrary
 closure construction as independent modules. Those operations can share

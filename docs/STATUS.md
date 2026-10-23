@@ -135,8 +135,9 @@ two seeds.
 `lake build Certs BusyBeaver` checks all 415 exclusions, the eight halting
 certificates, and their wire identities; `lake build` also checks the
 self-interpreter proofs and structural theorems (`Blc/Selfint*.lean`). The
-Lean development has no sorries or mathlib, and its axioms are `propext` and
-`Quot.sound`.
+Lean development has no sorries or mathlib. The certificate proofs use
+`propext` and `Quot.sound`; some self-interpreter structural proofs also use
+standard `Classical.choice`.
 `scripts/bb-regen.sh` audits the BB registry's axioms, refreshes the
 frontier, and recomputes the exact bounds. A fresh census 4..40 is
 bit-identical to every canonical row. Both release suites pass: 368 tests
@@ -205,9 +206,17 @@ with all features (three opt-in tests ignored) and 328 with default features.
   depth zero, without a source-size cap (`SelfintRootLetRigidPrefix`).
   `SelfintRootLetBudgetDelay` extends this to bounded hereditary lambda
   delay before a sufficient rigid pending block and prices a live non-eta
-  captured-head escape at at least 13 bits. Its exact 41- and 45-weight
-  grammar-escape examples show that the price alone closes no further
-  whole coarse cell; they are not reader witnesses.
+  captured-head escape at at least 13 bits. `SelfintRound6ReaderStrict`
+  closes every closed payload in that escape family at weight ≤45,
+  including the exact 41/45 examples, by a strictness interpretation and
+  symbolic divergence proofs. `SelfintRound6ReaderShallow` excludes
+  sources whose binders all have a shallow use and proves that every
+  depth-zero reader needs a live capture between source binders.
+  `SelfintRound6ReaderBinary` closes the complete three-lambda slice
+  `((λx.B) (λu v.A)) C D …` at hole depth zero, including vacuous helpers.
+  Its stronger application-algebra theorem has no source-size cap. These
+  results do not close another whole coarse cell; the eight-cell count
+  above is unchanged.
   The regular closure checker's translation to ordinary lambda terms,
   including arbitrary scoped hole fillings, is now kernel-checked
   (`SelfintRegularCertificate`, `SelfintRegularSoundness`). A seven-state
@@ -223,7 +232,13 @@ with all features (three opt-in tests ignored) and 328 with default features.
   law's rest part and NEXT's data flow from the contract
   (`Blc/SelfintProbe*.lean`); the value part, the zero law, the control
   flow and the rigid forms do not follow (five correct counterexamples,
-  194–265 bits). With NEXT unrestricted the class costs at least 76. Outside
+  194–265 bits). With NEXT unrestricted, `SelfintRound6Next` proves
+  `q ≥ 34` and assembly cost at least 78; a literal NEXT needs four live
+  binders and at least 38 bits. The proof tracks source-origin live binders
+  under arbitrary beta reduction. `SelfintArchitecture6DelayedSharing`
+  excludes a common-lambda Boolean choice from a source-price minimum by
+  a one-bit contextual saving; one delayed shared-argument contraction
+  has `q ≥ 99`. Outside
   the class, the bundle below gives a 165-bit construction with reader
   access to recursion; NEXT under `λlist`
   can embed any closed interpreter at `+17`, and no β-preserving conversion
@@ -238,6 +253,15 @@ with all features (three opt-in tests ignored) and 328 with default features.
   1.957 s with two workers and a frozen binary; Ω and λΩ preserve exact
   rigid suffixes (`data/self-interpreter/theory/bundle165.json`). It is
   larger than 162; a cheaper assembly using the bundled state is open.
+  `SelfintArchitecture6Retag` rules out the uniform correction `s I s`:
+  the distinct parses `011010 ++ N` and `110 ++ 10 ++ N` give the same
+  transformed stream but require different suffixes. Its closed-source
+  corollary assumes a common residual consumer after two ABS tags.
+  `SelfintArchitecture6NextService` refutes the 180-bit attempt to obtain
+  the continuation only through NEXT: a closed-I probe reaches an infinite
+  identity-query family after 23 head steps, and each recurrence takes 10.
+  `architecture6_control.py` independently checks eight fixed clauses and
+  the full source wire; neither result uses a capped failure as proof.
   `SelfintArchitecture5Depth` rules out every finite-state repair of a
   protocol whose ABS clause merely updates state and returns its child
   value, with a fixed public decoder. Unbounded state is allowed and
@@ -319,11 +343,16 @@ with all features (three opt-in tests ignored) and 328 with default features.
   Lean proves that every interpreter has at least two syntactically
   nonlinear binders, and that an explicit `λc s.B` needs two inside `B`.
   The normalization argument gives the small numerical floor 18; the
-  `SelfintFloor*` modules raise the kernel-checked floor to 27 without
-  Statman's theorem (`selfintSizeBound_27`, using `Classical.choice`):
-  three live binders, an argument with two free variables, an abstraction
-  body that is not an application, and a classification of minimal
-  application-rooted interpreters below 27 bits. A 584-bit witness has exactly two nonlinear binders, both
+  `SelfintFloor*` and `SelfintRound6Bound*` modules raise the
+  **unconditional kernel-checked floor to 29**, without Statman's theorem
+  (`selfintSizeBound_29`, using standard `Classical.choice`). Source
+  pricing, internal capture, and symbolic equality-case classification
+  leave four derived templates and one vacuous-wrapper case; fixed
+  reductions finish the exclusion without enumeration. The kernel floors
+  for literal `λc.B` and `λc s.B` are 31 and 38 respectively
+  (`SelfintRound6BoundLiteral`). The separate handwritten global and
+  two-argument literal floors remain 40 and 46 below.
+  A 584-bit witness has exactly two nonlinear binders, both
   closed in isolation; a kernel-replayed 71-step reduction reaches the
   literal 165. A 742-bit β-normal witness also has exactly two closed
   nonlinear binders, with its contract kernel-checked as β-joinability.
@@ -367,7 +396,7 @@ with all features (three opt-in tests ignored) and 328 with default features.
   independent reviews of each step, the second by Gemini and then by fresh
   Claude consults, one of which re-enumerated all 35.4 million closed terms
   at the size-39 count triples; `data/self-interpreter/reasoning_162/floor38/`).
-  No Lean theorem states the numeric floor.
+  No Lean theorem states the 40-bit numeric floor.
   A shared-S construction attains width three, two nonlinear binders,
   and the required capture counts simultaneously, even
   in the beta-normal fragment with every zero-based index at most two.
@@ -492,10 +521,9 @@ with all features (three opt-in tests ignored) and 328 with default features.
   final synthesis/transfer audit has nine using at most those axioms and
   five additionally using `Classical.choice` for counter stabilization and
   classical event selection; the final valid-source theorem is among them.
-  Integrated `lake build Blc` passes all 62 jobs. The floor, knot and
-  remainder-control modules' headline theorems use only
-  `propext` and `Quot.sound`, except `selfintSizeBound_27` and its
-  supporting floor lemmas, which also use `Classical.choice`.
+  Integrated `lake build Blc` passes all 143 jobs. The floor, knot and
+  remainder-control modules' headline theorems use at most the standard
+  axioms `propext`, `Classical.choice` and `Quot.sound`.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
   `typed-normal.md`): the β-normal interpreter is **188 bits**
   (`int188_normal`, L 19, A 27, X 40). Lean proves its exact wire,
@@ -517,9 +545,8 @@ with all features (three opt-in tests ignored) and 328 with default features.
   `data/self-interpreter/machines/`, reports in
   `data/self-interpreter/theory/`, and reproducible checks in
   `tools/self-interpreter/theory/`. No candidate enumeration is part of
-  these checks. The integrated Lean build passes, with the main theorem
-  axioms limited to `propext` and `Quot.sound`; the five focused Python
-  checks took 14.4 seconds together.
+  these checks. The integrated Lean build passes, with the witness
+  theorem axioms limited to `propext` and `Quot.sound`.
 - **Protocol constraints** (`classical/self-interpreter/protocol-obstructions.md`):
   the erased skip operand can return the continuation, parser, or generator
   off the input domain, producing correct 167-, 168-, and 169-bit variants.
@@ -690,7 +717,7 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    alone can supply it (`class-bound.md` §3).
    Any reader with `w ≤ 45` is a sub-162 interpreter of exactly `116 + w`
    bits. Also open on the class side: NEXT of arbitrary syntax in
-   `32 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two
+   `34 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two
    nonlinear binders. The unconditional floor is 40; restricted-domain
    witnesses cap every proof that uses only identity towers (88) or Church
    spines (154), so a global argument must charge applications whose

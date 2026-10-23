@@ -11,7 +11,7 @@ handwritten interface argument below. The incomparable-nonlinear-binder
 obstruction is kernel-checked; the numerical counting and exclusion
 arguments and the sharpness constructions are handwritten. Together they
 give 34 bits globally and 46 for literal or beta-normal interpreters;
-`global-floor.md` extends the global count to 37. None of this establishes
+`global-floor.md` extends the global count to 40. None of this establishes
 162-bit optimality.
 
 ## The source measure
