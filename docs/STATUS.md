@@ -214,7 +214,11 @@ with all features (three opt-in tests ignored) and 328 with default features.
   depth-zero reader needs a live capture between source binders.
   `SelfintRound6ReaderBinary` closes the complete three-lambda slice
   `((λx.B) (λu v.A)) C D …` at hole depth zero, including vacuous helpers.
-  Its stronger application-algebra theorem has no source-size cap. These
+  Its stronger application-algebra theorem has no source-size cap.
+  With four lambdas and exactly two pending operands,
+  `SelfintRound6ReaderFourth` proves all four components must be normal.
+  It also excludes an unbounded captured-head family of weight `36 + 4n`,
+  including the 40/44 cases, despite its lambda-headed endpoints. These
   results do not close another whole coarse cell; the eight-cell count
   above is unchanged.
   The regular closure checker's translation to ordinary lambda terms,
@@ -232,13 +236,19 @@ with all features (three opt-in tests ignored) and 328 with default features.
   law's rest part and NEXT's data flow from the contract
   (`Blc/SelfintProbe*.lean`); the value part, the zero law, the control
   flow and the rigid forms do not follow (five correct counterexamples,
-  194–265 bits). With NEXT unrestricted, `SelfintRound6Next` proves
-  `q ≥ 34` and assembly cost at least 78; a literal NEXT needs four live
-  binders and at least 38 bits. The proof tracks source-origin live binders
-  under arbitrary beta reduction. `SelfintArchitecture6DelayedSharing`
+  194–265 bits). With NEXT unrestricted, `SelfintRound6BoundNextPrice`
+  proves **`q ≥ 35`** and `SelfintRound6NextAbs` gives assembly cost at
+  least 79. A literal NEXT needs four live binders and **at least 42 bits**.
+  The proofs track source-origin live binders under arbitrary beta
+  reduction, including copying and migration of nonlinearity.
+  `SelfintArchitecture6DelayedSharing`
   excludes a common-lambda Boolean choice from a source-price minimum by
   a one-bit contextual saving; one delayed shared-argument contraction
-  has `q ≥ 99`. Outside
+  has `q ≥ 99`. `SelfintArchitecture6OneSidedPrice` proves `q ≥ 96`
+  and at least four global free leaves for one one-sided delayed
+  contraction in arbitrary ordinary two-arm contexts with normal final
+  projections, hence the weighted frontier for this family. The source
+  proof is unbounded; only four fixed target pairs are evaluated. Outside
   the class, the bundle below gives a 165-bit construction with reader
   access to recursion; NEXT under `λlist`
   can embed any closed interpreter at `+17`, and no β-preserving conversion
@@ -521,7 +531,7 @@ with all features (three opt-in tests ignored) and 328 with default features.
   final synthesis/transfer audit has nine using at most those axioms and
   five additionally using `Classical.choice` for counter stabilization and
   classical event selection; the final valid-source theorem is among them.
-  Integrated `lake build Blc` passes all 143 jobs. The floor, knot and
+  Integrated `lake build Blc` passes all 149 jobs. The floor, knot and
   remainder-control modules' headline theorems use at most the standard
   axioms `propext`, `Classical.choice` and `Quot.sound`.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
@@ -717,7 +727,7 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    alone can supply it (`class-bound.md` §3).
    Any reader with `w ≤ 45` is a sub-162 interpreter of exactly `116 + w`
    bits. Also open on the class side: NEXT of arbitrary syntax in
-   `34 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two
+   `35 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two
    nonlinear binders. The unconditional floor is 40; restricted-domain
    witnesses cap every proof that uses only identity towers (88) or Church
    spines (154), so a global argument must charge applications whose

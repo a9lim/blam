@@ -658,6 +658,17 @@ three-lambda slice; the coarse statistic `h = 2` counts only leading
 helper lambdas and allows more lambda subtrees, so the whole coarse cell
 remains open.
 
+For the four-lambda slice with exactly two pending operands,
+`SelfintRound6ReaderFourth.four_lambda_components_normal` proves that
+`B`, `A`, `C`, and `D` must all be beta-normal. A redex in any component
+consumes the sole extra lambda and leaves the excluded three-lambda shape,
+even when its contraction expands the wire size. Normal helper subtrees
+still require semantic analysis. The family
+`A_n = λu v.u (λz.u (v z … z))`, with `n` occurrences of `z`, illustrates
+the distinction: `(λx.x x) A_n c j` reaches a lambda, but its surviving
+rigid head is `c` after a stream arrives, contradicting the zero law.
+This excludes the entire family without a size or reduction cap.
+
 **Open.** Only readers with a source redex remain, and a minimum reader
 below 46 is neither an s-spine nor a reader whose stream-λ body is a let,
 so one branch of the source-head classification is left: **root lets**
@@ -756,9 +767,9 @@ all unary laws has `w ≥ 46` (`frontier_optimal_iff_reader_floor`), and the
 The four-free-leaf property fails once normality goes: a NEXT whose `c` and
 `p` are let-shared has two free leaves at 105 bits, and a β-normal NEXT with
 a four-argument tag spine has two at 113. A NEXT that could lower the
-minimum must lie in `34 ≤ q ≤ 91`, or `F = 2` and `q ≤ 97`, or `F = 3` and
+minimum must lie in `35 ≤ q ≤ 91`, or `F = 2` and `q ≤ 97`, or `F = 3` and
 `q ≤ 94`. Lean excludes the rest of the cheap end and two structured
-families: every `RigidNext` has three live source binders and `q ≥ 34`;
+families: every `RigidNext` has three live source binders and `q ≥ 35`;
 every NEXT obtained from an original-class NEXT by `c`- or `p`-aliasing
 clears the frontier (the cheapest cost 99 and 100 with `F = 3`); and NEXTs
 with one designated let whose projections are β-normal after pruning and
@@ -767,16 +778,25 @@ that substitution cost `q ≥ 98` (let inside the tag binder), `q ≥ 99`
 contractions (`OneLet.covered_admin_frontier`); this family strictly extends
 the original class.
 
-`SelfintRound6BoundRedLive` and `SelfintRound6Next` supply the unrestricted
-lower bound. The APP target's three live abstractions cannot have quotation
-origin, because none has a permitted protected head shape. A literal NEXT
-body needs an internal live capture. If it had only two live source
-binders, that capture would put both on one chain; such a chain cannot
-increase its live source count under arbitrary beta reduction. Thus a
-literal NEXT needs four live binders including its tag binder and costs
-at least 38. A source-cost descent through head contractions gives 34 for
-arbitrary NEXT syntax. The colored proofs explicitly permit migration of
-nonlinearity into enclosing binders.
+`SelfintRound6BoundRedLive` and `SelfintRound6Next` show that a literal
+NEXT needs four live binders, including its tag binder. Its body needs an
+internal live capture; with only two live internal binders, those binders
+would lie on one chain, which cannot increase its live source count under
+arbitrary beta reduction. The APP result requires three live source binders
+after the tag is consumed. `SelfintRound6BoundNextPrice` combines this with
+head exposure and a symbolic equality-case argument to prove 35 bits for
+unrestricted NEXT syntax.
+
+The ABS result strengthens the literal bound to 42 in
+`SelfintRound6NextAbs`. All five of its live abstractions must have source
+origin: their exact head shapes exclude quotation origin. Below 42, the
+literal source's leaf budget leaves exactly three live internal binders,
+one nonlinear binder, and at most two occurrences of each bound variable.
+`SelfintRound6BoundPotential` uses a potential, live source binders plus
+nonlinear binders, to exclude five live source binders. If reduction first
+creates higher binder multiplicity, its remaining live source binders lie
+on one chain, which also cannot grow. The proof covers arbitrary beta
+contexts, copying and migration of nonlinearity into enclosing binders.
 
 `SelfintArchitecture6DelayedSharing` additionally proves the contextual
 Boolean-specialization rewrite
@@ -785,18 +805,27 @@ every ambient free-leaf count, so this pattern cannot occur in a global
 source-price minimum. With one tag-exposed shared-argument contraction and
 otherwise ordinary two-arm projections, factoring produces an already
 priced one-let source and gives `q ≥ 99`. This includes beta-normal
-multiargument tag tests. Unmatched function branches and multiple arbitrary
-substitutions remain outside these structured price proofs.
+multiargument tag tests. Multiple arbitrary substitutions remain outside
+these structured price proofs.
+
+For one unmatched branch, `SelfintArchitecture6OneSidedPrice` directly
+prices `b (λx.U) V A` and its symmetric form. An unbounded induction over
+ordinary two-arm contexts uses structural inverse cuts of the contracted
+projection, including erased binders, and the application's shape on the
+opposite projection. For normal final projections, the four possible
+target/eta-target pairs yield `q ≥ 96` and `F ≥ 4`, hence the weighted
+frontier. The proof imposes no restriction on the local free-leaf count
+of `V`. `SelfintArchitecture6OneSided` supplies its Boolean semantic bridge.
 
 A constructive attempt on paper (Claude) found nothing in the open regions:
 the cheapest NEXTs it could build are 92 bits with `F = 4`, 99 with `F = 3`
 and 105 with `F = 2`, and every way of removing a free leaf cost at least 7
 bits against the frontier's 3. Its 93-bit NEXT, which dispatches inside the
 first parse's argument, assembles to a correct 163. With NEXT's restrictions
-dropped entirely Lean proves `|E| ≥ 78` for the class
-(`SelfintRound6Next.unrestricted_next_assembly_lower_78`) and
+dropped entirely Lean proves `|E| ≥ 79` for the class
+(`SelfintRound6NextAbs.unrestricted_next_assembly_lower_79`) and
 `|E| ≥ 18 + k(26 + q)` for a knot with `k` holes, so a sub-162 member has
-one hole, or two and `34 ≤ q ≤ 45`.
+one hole, or two and `35 ≤ q ≤ 45`.
 
 ### 4.2 Value representations
 

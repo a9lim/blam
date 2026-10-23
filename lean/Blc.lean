@@ -120,3 +120,7 @@ import Blc.SelfintArchitecture6Retag
 import Blc.SelfintArchitecture6NextService
 import Blc.SelfintRound6Next
 import Blc.SelfintArchitecture6DelayedSharing
+import Blc.SelfintArchitecture6OneSided
+import Blc.SelfintArchitecture6OneSidedPrice
+import Blc.SelfintRound6ReaderFourth
+import Blc.SelfintRound6NextAbs

@@ -506,8 +506,8 @@ same way (37; its 144 fixed reduction clauses are kernel-checked in
 least 39, and with it excludes sizes 37, 38 and 39: **every interpreter has
 at least 40 bits** (Codex's handwritten classifications with kernel-checked
 certificates and Lean exclusions of every residual; two independent reviews
-of each step). Without Statman's theorem the kernel-checked floor is 27
-(`selfintSizeBound_27`, `structural-bounds.md`).
+of each step). Without Statman's theorem the kernel-checked floor is 29
+(`selfintSizeBound_29`, `structural-bounds.md`).
 `capture-width.md` states the published result and the interface proof,
 and gives a shared-S construction attaining these structural minima
 simultaneously, including in the beta-normal fragment with all zero-based
@@ -884,8 +884,10 @@ work (here `s I` makes the cell's selection deliver the tail as the zero
 arm), combined with an operand that one branch uses and the other erases
 (NEXT, the skip's junk on variables). Inside the separated class of §5 those
 moves are now all priced: a sub-162 there is exactly a reader of weight at
-most 45, the same holds for the widened classes of `class-bound.md` §4, and
-outside them every mechanism priced so far costs at least 170.
+most 45, and the same holds for the widened classes of `class-bound.md` §4.
+Outside them, the 165-bit parser bundle exposes recursion through the
+reader's erased operand (`protocol-obstructions.md`); using that bundled
+state more cheaply remains open.
 
 Open:
 
@@ -893,7 +895,7 @@ Open:
   the 162 optimal in the separated class and its widenings: every β-normal
   reader meets it and no λ-rooted minimum reader below 46 exists, so it is
   open only for minimum readers whose root is a nonlinear let;
-- NEXT of arbitrary syntax in `32 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
+- NEXT of arbitrary syntax in `35 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
   `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix
   cells, and knotless first heads with two nonlinear binders
   (`class-bound.md` §4);

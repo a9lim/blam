@@ -1,9 +1,9 @@
 # Blc — Lean 4 formalization
 
 The kernel-checked BLC formalization behind blam's certificate layer. No
-mathlib and no `sorry`; every theorem depends at most on `propext` and
-`Quot.sound`, except the remainder-growth synthesis (`SelfintGrowth*`) and the
-27-bit floor (`SelfintFloor*`), which also use `Classical.choice`.
+mathlib and no `sorry`; every theorem depends at most on the standard
+axioms `propext`, `Classical.choice` and `Quot.sound`. The certificate
+proofs and self-interpreter correctness proofs do not use choice.
 
 ```
 theorem loop32_noNormalForm : ¬ HasNormalForm loop32     -- axioms: propext
@@ -30,7 +30,7 @@ theorem not_selfintSizeBound_163 : ¬ SelfintSizeBound 163
                                                          -- propext, Quot.sound
 theorem isUniversal_uni172 : IsUniversal uni172          -- propext, Quot.sound
 theorem not_uniSizeBound_173 : ¬ UniSizeBound 173        -- propext, Quot.sound
-theorem selfintSizeBound_27 : SelfintSizeBound 27
+theorem selfintSizeBound_29 : SelfintSizeBound 29
                                     -- propext, Classical.choice, Quot.sound
 ```
 
@@ -278,6 +278,12 @@ Self-interpretation:
   lambda out of a Boolean choice saves one bit in any context and preserves
   both tag specializations. One delayed shared-argument contraction is
   thereby reduced to the existing one-let price theorem.
+- `Blc/SelfintArchitecture6OneSided.lean` — a one-sided tag-created
+  contraction can be converted to the one-let form at an exact cost in
+  local free leaves, preserving both Boolean specializations.
+- `Blc/SelfintArchitecture6OneSidedPrice.lean` — structural inverse cuts
+  directly price every source in that one-sided grammar, including
+  arbitrary ordinary two-arm contexts, and establish the weighted frontier.
 - `Blc/SelfintRootCutoffs.lean` — four symbolic head-divergence families
   closing the recorded short-hand-off cutoffs with arbitrary scoped
   payloads. The withdrawn two-argument self-feeding rule is not used.
@@ -312,6 +318,10 @@ Self-interpretation:
   binary helpers before two rigid operands. Together with live capture,
   it closes the entire three-lambda slice of the two-operand binary-helper
   root-let family, including erasing helpers.
+- `Blc/SelfintRound6ReaderFourth.lean` — any four-lambda reader with a
+  binary helper and exactly two pending operands has normal components.
+  An unbounded captured-head family exposes a lambda yet still fails the
+  zero law, distinguishing head exposure from reader validity.
 - `Blc/SelfintRound6BoundGlobal.lean` and `SelfintRound6BoundNext` —
   strengthen the unconditional kernel floor through source pricing and
   symbolic exhaustion of the equality cases. The few residual templates
@@ -321,6 +331,14 @@ Self-interpretation:
   of live source binders cannot increase its live count; this forces more
   internal binders in a literal rigid NEXT and strengthens the unrestricted
   NEXT and assembly bounds.
+- `Blc/SelfintRound6BoundNextPrice.lean` — head exposure and symbolic
+  equality-case analysis strengthen the unrestricted NEXT floor without
+  a minimum-source or normal-form hypothesis.
+- `Blc/SelfintRound6BoundPotential.lean` and `SelfintRound6NextAbs` —
+  a small live-binder/nonlinearity potential cannot produce the ABS
+  target's five live source-origin binders. Full beta contexts and the
+  first escape from binary binder multiplicity are covered, strengthening
+  the literal NEXT bound.
 - `Blc/SelfintRegularCertificate.lean`, `SelfintRegularSoundness`, and
   `SelfintRegularExamples` — finite regular closure/stack invariants,
   their sound translation to ordinary lambda terms with arbitrary scoped
