@@ -2,18 +2,18 @@
 
 The current construction and measurements are recorded in `docs/STATUS.md`.
 Its source and wire encoding are
-`data/self-interpreter/machines/int196_normal.{lam,blc}`. This construction
+`data/self-interpreter/machines/int188_normal.{lam,blc}`. This construction
 bounds the beta-normal fragment and shows that correctness does not force
 a source beta redex or a literal fixed-point application. It does not
 improve the unrestricted interpreter record.
 
-`lean/Blc/SelfintRound5BoundNormal196.lean` proves:
+`lean/Blc/SelfintRound6Normal188.lean` proves:
 
-- `selfint_contract196`: for every closed source `M` and arbitrary `C,N`,
-  `intL196 C (code(M) ++ N)` is beta-joinable with `C (lambda z.M) N`;
-- `isSelfInterpreter_intL196`;
-- `intL196_wire` and `intL196_size`;
-- `intL196_nft` and `intL196_normal`.
+- `selfint_contract188`: for every closed source `M` and arbitrary `C,N`,
+  `intL188 C (code(M) ++ N)` is beta-joinable with `C (lambda z.M) N`;
+- `isSelfInterpreter_intL188`;
+- `intL188_wire` and `intL188_size`;
+- `intL188_nft` and `intL188_normal`.
 
 The contract uses only `propext` and `Quot.sound`. It is beta joinability,
 including for divergent sources, continuations and suffixes. No source
@@ -40,32 +40,33 @@ verified interpreter to `G G`: the outer diagonal and one administrative
 redex in each generator. Consequently `G G` has the same beta contract;
 this finite conversion never reduces reconstructed source code.
 
-Every closed source begins with zero. Use that first input bit to activate
-the duplicated generator:
+Every quotation begins with a Scott cell. Its ordinary elimination can
+activate the duplicated generator without inspecting either cell field:
 
 ```text
-D = lambda u x.x x
-E = lambda c s.s (lambda b.b D b) G c s.
+D = lambda b r x.x x
+E = lambda c s.s D G c s.
 ```
 
-Here `D` and `G` are written inline. For `s = cons K R`,
+Here `D` and `G` are written inline. For any `s = cons B R`,
 
 ```text
-E c s  ->*  K D K R G c s
-       ->*  D R G c s
+E c s  ->*  D B R G c s
        ->*  G G c s.
 ```
 
 All application heads in the finite source are variables. The beta redexes
 that activate the interpreter arise only after the actual input is
 substituted. This is Codex's construction; the proof reuses the exact
-contract of the verified interpreter and the first-zero gate.
+contract of the verified interpreter and the generator conversion in
+`SelfintRound5BoundNormal196`. The activation theorem accepts arbitrary
+cell fields, continuations and suffixes.
 
 ## Verification
 
 ```text
-(cd lean && lake env lean Blc/SelfintRound5BoundNormal196.lean)
-python tools/self-interpreter/theory/round5_bound_normal196.py
+(cd lean && lake env lean Blc/SelfintRound6Normal188.lean)
+python tools/self-interpreter/theory/round6_normal188.py
 ```
 
 The script independently compiles the named source and compares its wire

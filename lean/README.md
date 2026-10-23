@@ -249,6 +249,9 @@ Self-interpretation:
 - `Blc/SelfintRound5BoundNormal196.lean` — a beta-normal interpreter whose
   administrative parser reductions connect it to the verified 162;
   exact wire, normality and all-source beta-join contract.
+- `Blc/SelfintRound6Normal188.lean` — the current normal construction:
+  any first Scott cell activates that generator through an ignored-field
+  diagonal; exact wire, normality and all-source beta-join contract.
 - `Blc/SelfintRound5BoundMixed.lean` and `SelfintRound5BoundCapture` — a
   necessary mixed branch between nonlinear code and live capture, and
   quantitative capture transport forcing duplication of capture-bearing

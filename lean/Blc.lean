@@ -95,6 +95,7 @@ import Blc.SelfintRootLetEmbedding
 import Blc.SelfintRound5BoundMixed
 import Blc.SelfintRound5BoundCapture
 import Blc.SelfintRound5BoundNormal196
+import Blc.SelfintRound6Normal188
 import Blc.SelfintArchitecture5Depth
 import Blc.SelfintArchitecture5Bundle
 import Blc.SelfintRootLetCycles

@@ -497,17 +497,20 @@ with all features (three opt-in tests ignored) and 328 with default features.
   `propext` and `Quot.sound`, except `selfintSizeBound_27` and its
   supporting floor lemmas, which also use `Classical.choice`.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,
-  `typed-normal.md`): the β-normal interpreter is **196 bits**
-  (`int196_normal`, L 19, A 29, X 40). Lean proves its exact wire,
+  `typed-normal.md`): the β-normal interpreter is **188 bits**
+  (`int188_normal`, L 19, A 27, X 40). Lean proves its exact wire,
   normality, and beta-join contract for every closed source and arbitrary
-  continuation and suffix (`Blc/SelfintRound5BoundNormal196.lean`). Three
+  continuation and suffix (`Blc/SelfintRound6Normal188.lean`). Three
   chosen beta contractions connect its internal parser to the verified
-  162, and a first-zero gate keeps the public source normal. A separate
+  162. The first Scott cell activates its duplicated normal generator
+  through `lambda b r x. x x`; its tag and tail are not inspected.
+  The fixed battery gives 667/1/0 and exact rigid suffixes on Ω and λΩ
+  in 1.933 s (`data/self-interpreter/theory/normal188.json`). A separate
   672-bit construction is both
   β-normal and simply typable: Lean proves its ordinary STLC judgment
   through a sound annotation checker and its directed contract through
   a 59-step cast-erasure trace to the literal 165. Application to its
-  quotation need not be simply typable. The 196, 204, 584,
+  quotation need not be simply typable. The 188, 196, 204, 584,
   672, 742, and four erased-skip variants each pass the existing bounded
   battery (667 pass, one divergent expected result skipped, zero failures).
   Targeted divergent-source suffix checks also pass. Sources are in

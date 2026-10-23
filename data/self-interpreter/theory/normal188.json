@@ -1,0 +1,19 @@
+{
+  "bits": 188,
+  "L_A_X": [
+    19,
+    27,
+    40
+  ],
+  "beta_normal": true,
+  "battery": {
+    "ok": 667,
+    "skipped": 1,
+    "failures": 0
+  },
+  "suffix_probes": {
+    "omega": "exact rigid tail",
+    "lambda_omega": "exact rigid tail"
+  },
+  "seconds": 1.9331
+}
