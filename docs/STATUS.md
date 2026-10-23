@@ -217,10 +217,15 @@ with all features (three opt-in tests ignored) and 328 with default features.
   Its stronger application-algebra theorem has no source-size cap.
   With four lambdas and exactly two pending operands,
   `SelfintRound6ReaderFourth` proves all four components must be normal.
-  It also excludes an unbounded captured-head family of weight `36 + 4n`,
-  including the 40/44 cases, despite its lambda-headed endpoints. These
-  results do not close another whole coarse cell; the eight-cell count
-  above is unchanged.
+  `SelfintRound7ReaderRoute`, `SelfintRound7ReaderMiddle`, and
+  `SelfintRound7ReaderLast` exclude the whole diagonal family
+  `(λx.x x) (λu v.u (λz.h p[u,v,z])) c j` below weight 46, for each
+  `h ∈ {u,v,z}` and arbitrary applicative payload `p`. The exact costs
+  are `33 + price(p)`, `32 + price(p)`, and `31 + price(p)`, respectively.
+  The middle-head case is excluded at every size; the other cases use
+  compositional head locks and symbolic divergence for the residual
+  feedback shapes. These results include the earlier 40/44 examples but
+  do not close another whole coarse cell; the eight-cell count is unchanged.
   The regular closure checker's translation to ordinary lambda terms,
   including arbitrary scoped hole fillings, is now kernel-checked
   (`SelfintRegularCertificate`, `SelfintRegularSoundness`). A seven-state
@@ -241,10 +246,21 @@ with all features (three opt-in tests ignored) and 328 with default features.
   least 79. A literal NEXT needs four live binders and **at least 42 bits**.
   The proofs track source-origin live binders under arbitrary beta
   reduction, including copying and migration of nonlinearity.
+  `SelfintRound7NextSourceShape` localizes any three-lambda NEXT to a
+  lambda-free nonlinear sharing body, a normal two-lambda helper, and
+  lambda-free pending operands. All components must already be normal;
+  no minimum or wire bound is assumed.
   `SelfintArchitecture6DelayedSharing`
   excludes a common-lambda Boolean choice from a source-price minimum by
   a one-bit contextual saving; one delayed shared-argument contraction
-  has `q ≥ 99`. `SelfintArchitecture6OneSidedPrice` proves `q ≥ 96`
+  has `q ≥ 99`. `SelfintArchitecture7SharingContexts` extends factoring
+  to any common one-hole context and arbitrary dependent let stacks, with
+  exact source and capture savings. `SelfintArchitecture7BranchAliases`
+  removes known-Boolean tests through arbitrary helper and alias contexts
+  while retaining bare helper uses. Both transformations preserve the
+  two Boolean projections and exclude their sources from a minimum at
+  every nonnegative capture price. General shared functions remain outside
+  these rules. `SelfintArchitecture6OneSidedPrice` proves `q ≥ 96`
   and at least four global free leaves for one one-sided delayed
   contraction in arbitrary ordinary two-arm contexts with normal final
   projections, hence the weighted frontier for this family. The source
@@ -272,6 +288,12 @@ with all features (three opt-in tests ignored) and 328 with default features.
   identity-query family after 23 head steps, and each recurrence takes 10.
   `architecture6_control.py` independently checks eight fixed clauses and
   the full source wire; neither result uses a capped failure as proof.
+  `SelfintArchitecture7ReaderDiagonal` gives a different exact diagonal
+  for the current reader: at identity continuation, `R R →* J (R R J)`,
+  so `P = R R J` satisfies `P →* J P J`. The specialization
+  `J = λp ignored.F p` supplies a fixed point of any `F`. This is an
+  all-parameter beta theorem; no smaller interpreter or source saving
+  has been obtained from it.
   `SelfintArchitecture5Depth` rules out every finite-state repair of a
   protocol whose ABS clause merely updates state and returns its child
   value, with a fixed public decoder. Unbounded state is allowed and
@@ -362,6 +384,27 @@ with all features (three opt-in tests ignored) and 328 with default features.
   for literal `λc.B` and `λc s.B` are 31 and 38 respectively
   (`SelfintRound6BoundLiteral`). The separate handwritten global and
   two-argument literal floors remain 40 and 46 below.
+  `SelfintRound7SourceShape` reduces any hypothetical three-live-binder
+  interpreter to one nonlinear sharing redex with normal components,
+  without increasing wire size. Its closed operand owns the other two
+  live binders and an internal capture; no source minimum is assumed.
+  `SelfintRound7GlobalSharingBarrier` proves that three live and two
+  nonlinear source binders give no uniform normal-output live-binder
+  bound: for `k ≥ 1`,
+  `A_k = λa b.a (b a … a)` and `(λx.x x) A_k` reach a normal form with
+  `2 + 2k + 2k²` live binders in three beta steps. At `k = 1`, both
+  endpoints have at most two occurrences per binder and source potential
+  five reaches six live binders. Thus the potential-four theorem cannot
+  be strengthened by simply raising its threshold. This is a counting
+  obstruction, not a new interpreter or a stronger numerical floor.
+  `SelfintRound7GlobalLastHead` excludes every shared helper
+  `A = λa b.D` whose zero-live body is headed by `b`, with arbitrary
+  zero-live sharing bodies. Its stronger head-algebra theorem permits
+  arbitrary applications and vacuous wrappers, without normality, size,
+  or duplication bounds. `SelfintRound7GlobalLastPrefix` extends it to
+  arbitrary dead binders before, between, and after the two live prefix
+  binders, retaining their operational behavior with explicit shifts.
+  Outer-headed and off-prefix-inner helper arms remain open.
   A 584-bit witness has exactly two nonlinear binders, both
   closed in isolation; a kernel-replayed 71-step reduction reaches the
   literal 165. A 742-bit β-normal witness also has exactly two closed
@@ -531,7 +574,7 @@ with all features (three opt-in tests ignored) and 328 with default features.
   final synthesis/transfer audit has nine using at most those axioms and
   five additionally using `Classical.choice` for counter stabilization and
   classical event selection; the final valid-source theorem is among them.
-  Integrated `lake build Blc` passes all 149 jobs. The floor, knot and
+  Integrated `lake build Blc` passes all 160 jobs. The floor, knot and
   remainder-control modules' headline theorems use at most the standard
   axioms `propext`, `Classical.choice` and `Quot.sound`.
 - **Normal and typed witnesses** (`classical/self-interpreter/normal.md`,

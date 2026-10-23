@@ -322,6 +322,12 @@ Self-interpretation:
   binary helper and exactly two pending operands has normal components.
   An unbounded captured-head family exposes a lambda yet still fails the
   zero law, distinguishing head exposure from reader validity.
+- `Blc/SelfintRound7ReaderRoute.lean`, `SelfintRound7ReaderMiddle`, and
+  `SelfintRound7ReaderLast` — compositional head locks and symbolic
+  divergence exclude every applicative payload in the helper family
+  `λu v.u (λz.h p)`, for each `h ∈ {u,v,z}`, below the reader frontier.
+  The middle-head case is excluded at every size. The other cases use
+  structural price inductions, self-embeddings, and an advancing tower.
 - `Blc/SelfintRound6BoundGlobal.lean` and `SelfintRound6BoundNext` —
   strengthen the unconditional kernel floor through source pricing and
   symbolic exhaustion of the equality cases. The few residual templates
@@ -339,6 +345,38 @@ Self-interpretation:
   target's five live source-origin binders. Full beta contexts and the
   first escape from binary binder multiplicity are covered, strengthening
   the literal NEXT bound.
+- `Blc/SelfintRound7SourceShape.lean` — every hypothetical interpreter
+  with three live binders reduces without source growth to one nonlinear
+  sharing redex with normal components. The closed operand owns both
+  remaining live binders and the internal capture. No minimum assumption
+  or finite source bound is used.
+- `Blc/SelfintRound7GlobalSharingBarrier.lean` — a symbolic family in
+  that residual shape has unbounded normal-output live counts. A binary
+  source at potential five already reaches six live binders, proving
+  sharpness of the preceding potential-four theorem.
+- `Blc/SelfintRound7GlobalLastHead.lean` and `SelfintRound7GlobalLastPrefix` —
+  an unbounded head algebra
+  excludes shared two-binder helpers whose zero-live bodies are headed
+  by the second binder. Arbitrary zero-live sharing bodies, applications,
+  duplication, and vacuous wrappers are allowed, without normality.
+  Explicit shifts retain arbitrary dead binders before, between, and
+  after the two live prefix binders.
+- `Blc/SelfintRound7NextSourceShape.lean` — any three-lambda NEXT source
+  is a lambda-free nonlinear sharing body applied to a normal two-lambda
+  helper, followed by lambda-free operands. Every component is already
+  normal, independently of source size or minimum assumptions.
+- `Blc/SelfintArchitecture7SharingContexts.lean` — common arbitrary
+  contexts, including dependent let stacks, factor out of Boolean
+  branches with exact strict source savings and nonincreasing captures.
+- `Blc/SelfintArchitecture7BranchAliases.lean` — known-Boolean test
+  deletion propagates through arbitrary dependent lets and alias chains
+  while retaining bare helper uses. Guarded rewrites preserve both
+  projections and strictly reduce every nonnegative source capture price.
+- `Blc/SelfintArchitecture7ReaderDiagonal.lean` — exact two-reader
+  equations for the 162 reader with arbitrary parameters. At identity
+  continuation, `P = R R J` satisfies `P →* J P J`; an explicit generator
+  specialization yields a fixed point of any `F`. No smaller interpreter
+  or source-price claim follows from that equation alone.
 - `Blc/SelfintRegularCertificate.lean`, `SelfintRegularSoundness`, and
   `SelfintRegularExamples` — finite regular closure/stack invariants,
   their sound translation to ordinary lambda terms with arbitrary scoped

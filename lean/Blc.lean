@@ -124,3 +124,14 @@ import Blc.SelfintArchitecture6OneSided
 import Blc.SelfintArchitecture6OneSidedPrice
 import Blc.SelfintRound6ReaderFourth
 import Blc.SelfintRound6NextAbs
+import Blc.SelfintRound7SourceShape
+import Blc.SelfintRound7GlobalSharingBarrier
+import Blc.SelfintRound7GlobalLastHead
+import Blc.SelfintRound7GlobalLastPrefix
+import Blc.SelfintRound7NextSourceShape
+import Blc.SelfintRound7ReaderRoute
+import Blc.SelfintRound7ReaderMiddle
+import Blc.SelfintRound7ReaderLast
+import Blc.SelfintArchitecture7SharingContexts
+import Blc.SelfintArchitecture7BranchAliases
+import Blc.SelfintArchitecture7ReaderDiagonal

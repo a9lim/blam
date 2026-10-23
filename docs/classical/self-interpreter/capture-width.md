@@ -273,8 +273,8 @@ obstruction and the 33-bit exclusion below gives
                                 hence also when E is beta-normal.
 ```
 
-The global count is the base of `global-floor.md`, which excludes 34–36
-and gives 37.
+The global count is the base of `global-floor.md`, which extends the
+exclusion through 39 and gives 40.
 
 Let `L,V,X` count abstractions, variable leaves, and the sum of zero-based
 de Bruijn indices. The BLC size identity is
@@ -313,7 +313,7 @@ Neither term is an interpreter. These are witnesses for the syntax
 counts, not proofs that either numerical interpreter bound is optimal.
 
 The repository's kernel-checked numerical lower bound is the weaker
-18-bit theorem in `structural-bounds.md`. The 34- and 46-bit consequences
+29-bit theorem in `structural-bounds.md`. The 34- and 46-bit consequences
 also use the published width theorem and handwritten interface, counting,
 and exclusion arguments here.
 

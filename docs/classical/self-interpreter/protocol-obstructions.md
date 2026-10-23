@@ -134,6 +134,40 @@ assembled source is not a self-interpreter. The proof retains delayed
 off-head expressions literally and uses no fuel cutoff.
 `architecture6_control.py` checks the fixed clauses and full source wire.
 
+## A diagonal carried by the current reader
+
+With arbitrary NEXT and continuation terms `J,C`, write the literal
+current reader and its value arm as
+
+```text
+V(C,s) = λu.s (λq.C) (s s u),
+R(J,C) = λs.s I V(C,s) J.
+```
+
+`SelfintArchitecture7ReaderDiagonal` proves the exact directed equations
+for arbitrary, possibly open parameters:
+
+```text
+R(J,C) I                     →* C,
+R(J,C) F                     →* J,
+R(Ji,Ci) R(Jj,Cj)            →* Cj V(Ci,R(Jj,Cj)) Ji.
+```
+
+At identity continuation, put `R = R(J,I)`. The diagonal becomes
+
+```text
+R R     →* J (R R J),
+P=R R J →* J P J.
+```
+
+Thus any `J` satisfying `J P J →* F P` for arbitrary `P` supplies a
+fixed point of `F`. The literal `J = λp ignored.F p` meets that condition,
+and the module proves the resulting fixed-point equation for every `F`.
+The extra final generator argument is part of the equation. Using the
+ordinary NEXT clause here would require this generator law in addition
+to its source-tag and child-parsing behavior. No construction has yet
+used this reader diagonal to reduce the complete interpreter's source cost.
+
 ## Erasing ABS requires unbounded depth information
 
 Let `compile(q,M)` be an arbitrary value representation with a fixed public

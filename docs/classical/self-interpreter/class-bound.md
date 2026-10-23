@@ -663,11 +663,26 @@ For the four-lambda slice with exactly two pending operands,
 `B`, `A`, `C`, and `D` must all be beta-normal. A redex in any component
 consumes the sole extra lambda and leaves the excluded three-lambda shape,
 even when its contraction expands the wire size. Normal helper subtrees
-still require semantic analysis. The family
-`A_n = λu v.u (λz.u (v z … z))`, with `n` occurrences of `z`, illustrates
-the distinction: `(λx.x x) A_n c j` reaches a lambda, but its surviving
-rigid head is `c` after a stream arrives, contradicting the zero law.
-This excludes the entire family without a size or reduction cap.
+still require semantic analysis. `SelfintRound7ReaderRoute`,
+`SelfintRound7ReaderMiddle`, and `SelfintRound7ReaderLast` close the
+complete diagonal helper schema
+
+```text
+(λx.x x) (λu v.u (λz.h p[u,v,z])) c j,   h ∈ {u,v,z},
+```
+
+below the reader frontier, for arbitrary applicative payloads `p`.
+A compositional predicate tracks terms that, after another argument,
+reduce to one of the old rigid heads. It permits an intermediate lambda,
+so exposing a lambda before the stream is not an escape from the proof.
+The `h=v` case reduces directly to a `c`-headed result at every size.
+For `h=u` and `h=z`, structural price induction leaves either a payload
+preserving the head predicate, one erasing the required `c`, or a derived
+feedback shape. Positive-head self-embeddings and an advancing capture
+tower prove divergence of those feedback shapes without a reduction cap.
+The earlier unbounded family `p=v z … z` is included. Arbitrary normal
+four-lambda helpers, with other application layouts, remain outside this
+schema.
 
 **Open.** Only readers with a source redex remain, and a minimum reader
 below 46 is neither an s-spine nor a reader whose stream-λ body is a let,
@@ -787,6 +802,16 @@ after the tag is consumed. `SelfintRound6BoundNextPrice` combines this with
 head exposure and a symbolic equality-case argument to prove 35 bits for
 unrestricted NEXT syntax.
 
+At exactly three total source lambdas,
+`SelfintRound7NextSourceShape.three_lam_source_shape` gives the complete
+head localization: a lambda-free nonlinear sharing body applied to a
+normal two-lambda helper, with only lambda-free pending operands. No
+minimum-source or wire bound is used. The helper's two live binders must
+lie on one capturing ancestor chain. Any beta step inside it would consume
+a source lambda without copying another, leaving fewer than the required
+three live binders in the resulting NEXT. This proves normality of the
+components, not exclusion of the remaining helper family.
+
 The ABS result strengthens the literal bound to 42 in
 `SelfintRound6NextAbs`. All five of its live abstractions must have source
 origin: their exact head shapes exclude quotation origin. Below 42, the
@@ -797,6 +822,10 @@ nonlinear binders, to exclude five live source binders. If reduction first
 creates higher binder multiplicity, its remaining live source binders lie
 on one chain, which also cannot grow. The proof covers arbitrary beta
 contexts, copying and migration of nonlinearity into enclosing binders.
+The potential threshold is sharp: `SelfintRound7GlobalSharingBarrier`
+gives a binary source at potential five reaching a binary normal form
+with six live source binders. Raising that threshold requires additional
+structural hypotheses.
 
 `SelfintArchitecture6DelayedSharing` additionally proves the contextual
 Boolean-specialization rewrite
@@ -805,8 +834,28 @@ every ambient free-leaf count, so this pattern cannot occur in a global
 source-price minimum. With one tag-exposed shared-argument contraction and
 otherwise ordinary two-arm projections, factoring produces an already
 priced one-let source and gives `q ≥ 99`. This includes beta-normal
-multiargument tag tests. Multiple arbitrary substitutions remain outside
-these structured price proofs.
+multiargument tag tests.
+
+`SelfintArchitecture7SharingContexts` proves the broader rewrite
+`b (C[U]) (C[V]) ↦ C[b U V]`, with the tag index adjusted for every
+lambda in the context. The one-hole context may contain arbitrary redexes,
+tag uses, and dependent helper bindings. Its exact wire saving is the
+context cost minus its hole depth, strictly positive for every nonempty
+context; the discarded fixed subtrees give the exact ambient capture
+saving. Fusing a common let binding with argument `A` saves `|A| + 3`,
+and any finite dependent stack of such bindings is covered. Every source
+has a smaller or equal representative irreducible under these rewrites.
+
+`SelfintArchitecture7BranchAliases` propagates a known Boolean through
+arbitrary helper contexts and chains of aliases. It deletes a complete
+test of that Boolean while retaining the helper's other bare uses. A let
+argument may be any expression beta-equal to a Boolean under the known
+branch. Guarding this local change by the actual outer choice preserves
+both projections, strictly decreases wire size, and never increases any
+ambient free-leaf count. Neither common contexts nor these guarded tests
+can occur in a source-price minimum. Functions already shared between
+branches with different contexts, and multiple arbitrary substitutions,
+remain outside these structured price proofs.
 
 For one unmatched branch, `SelfintArchitecture6OneSidedPrice` directly
 prices `b (λx.U) V A` and its symmetric form. An unbounded induction over
