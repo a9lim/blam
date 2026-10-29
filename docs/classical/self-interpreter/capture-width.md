@@ -313,7 +313,7 @@ Neither term is an interpreter. These are witnesses for the syntax
 counts, not proofs that either numerical interpreter bound is optimal.
 
 The repository's kernel-checked numerical lower bound is the weaker
-29-bit theorem in `structural-bounds.md`. The 34- and 46-bit consequences
+31-bit theorem in `structural-bounds.md`. The 34- and 46-bit consequences
 also use the published width theorem and handwritten interface, counting,
 and exclusion arguments here.
 

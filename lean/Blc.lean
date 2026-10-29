@@ -135,3 +135,17 @@ import Blc.SelfintRound7ReaderLast
 import Blc.SelfintArchitecture7SharingContexts
 import Blc.SelfintArchitecture7BranchAliases
 import Blc.SelfintArchitecture7ReaderDiagonal
+import Blc.SelfintRound8ReaderTwoLambda
+import Blc.SelfintRound8GlobalOuterRoute
+import Blc.SelfintRound8GlobalOuterSpine
+import Blc.SelfintArchitecture8Continuation
+import Blc.SelfintArchitecture8Guard
+import Blc.SelfintArchitecture8SharingForest
+import Blc.SelfintRound8GlobalOuterSelf
+import Blc.SelfintArchitecture8BooleanKnot
+import Blc.SelfintRound8GlobalOffPrefix
+import Blc.SelfintRound8FourLambda
+import Blc.SelfintRound8DeadApply
+import Blc.SelfintRound8PrefixDeadShapes
+import Blc.SelfintRound8PrefixDead
+import Blc.SelfintRound8BitFloor

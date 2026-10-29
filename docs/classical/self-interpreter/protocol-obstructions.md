@@ -134,6 +134,48 @@ assembled source is not a self-interpreter. The proof retains delayed
 off-head expressions literally and uses no fuel cutoff.
 `architecture6_control.py` checks the fixed clauses and full source wire.
 
+There are two general obstructions beyond that particular failed query.
+`SelfintArchitecture8Continuation` proves that canonical `NEXT(P,C)`
+beta-reduces to the same term after either parameter is replaced by its
+one-argument eta expansion. Both parameters occur only already applied.
+Thus no fixed lambda decoder can uniformly recover the bare continuation
+from NEXT, for any fixed parser; nor can one uniformly recover an arbitrary
+bare parser, for fixed continuation. A rigid variable and its eta expansion
+are different beta-normal forms. The obstruction survives beta-equivalent
+representations. It does not exclude returning an already-applied
+continuation or recovering one particular parser using its additional
+behavior.
+
+`SelfintArchitecture8Guard` proves a stronger exclusion for the actual
+recursion knot. For any closed reader `R` and arbitrary callback body `B`,
+
+```text
+W = λx c.R (x x) (λb.(x x) B),
+P = W W,
+```
+
+cannot implement the exact interpreter contract. The reader may use both
+recursion and NEXT arbitrarily, and `B` may contain nonlinear sharing,
+additional recursion, and arbitrary references to `c`. All access to `c`
+still lies behind a recursive call. A finite recursive intersection typing
+invariant is preserved by every beta step and forbids a return headed by
+the rigid continuation, even on the identity source. This also rules out
+attempts to recover `c` already applied to a value. The ordinary shared-let
+assembly `(λx.x x)(λx.(λp c.R p (λb.p B))(x x))` and its canonical-NEXT
+instance are explicitly pinned to the theorem. There is no source-size or
+execution bound. The claim concerns this actual knot; arbitrary solutions
+of a fixed-point equation and redesigned unguarded constructor code are
+outside it.
+
+The same module proves `noReturnBody_not_selfInterpreter` for arbitrary
+functional bodies satisfying its typing invariant, without a leading
+recursive-call requirement. A sufficient `Guarded` grammar starts from
+closed terms and local bound variables, closes under applications and
+abstractions (including nested lets), and admits `p B` with arbitrary
+payload `B`. Thus an arbitrary closed consumer of the tag-first handler
+`λb.b (p A) (p B)` is excluded too. These are sufficient architectural
+conditions; they do not classify every continuation-dependent term.
+
 ## A diagonal carried by the current reader
 
 With arbitrary NEXT and continuation terms `J,C`, write the literal
@@ -167,6 +209,37 @@ The extra final generator argument is part of the equation. Using the
 ordinary NEXT clause here would require this generator law in addition
 to its source-tag and child-parsing behavior. No construction has yet
 used this reader diagonal to reduce the complete interpreter's source cost.
+
+## A Boolean-preserving recursion generator
+
+`SelfintArchitecture8BooleanKnot` gives a different way to combine an
+input service with recursion. The current definition and exact source
+prices are in that module; STATUS records the measured assembly size.
+For arbitrary, possibly open body parameter `A`, put
+
+```text
+H_A = λu v g.A g (g g),
+B_A = λz.z H_A F,
+G_A = λx.x I B_A x.
+```
+
+The generator satisfies
+
+```text
+G_A K   →* K,
+G_A F   →* F,
+G_A I   →* H_A F,
+G_A G_A →* A G_A (G_A G_A).
+```
+
+The generator can therefore replace the identity service used by the
+reader on actual Boolean bits, while passing itself separately to the
+recursive body. The one-copy source `(λx.x x) G_A` obeys the corresponding
+fixed-point equation up to beta equality. The generic equations and exact
+wire identities are kernel-checked. A closed canonical parser sketch is
+also pinned with its exact size, but has no interpreter qualification and
+does not improve the record. Its remaining cost is in the recursive
+service and argument adapters.
 
 ## Erasing ABS requires unbounded depth information
 

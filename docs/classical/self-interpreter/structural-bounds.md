@@ -76,14 +76,11 @@ fails for interpreters, which must also expose an abstraction body that is
 not an application; abstraction-rooted interpreters then need four
 abstractions (27 bits), and minimal application-rooted ones below 27 bits
 are classified and refuted by finite head reduction. The proof uses
-`Classical.choice`. `SelfintRound6BoundGlobal` and `SelfintRound6BoundNext`
-strengthen the unconditional kernel theorem to `selfintSizeBound_29`.
-They price open abstraction nodes by index bits, use internal capture
-after stripping public binders, and derive the remaining equality layouts
-symbolically. Minimum source cost forces an affine capture-bearing interior
-to be normal; four derived templates are then refuted by fixed reductions,
-with a separate vacuous-wrapper case. No source enumeration enters these
-proofs. The handwritten global floor remains 40 (`global-floor.md`).
+`Classical.choice`. The current unconditional kernel theorem is
+`SelfintRound8BitFloor.selfintSizeBound_31`. It combines source-lambda,
+live-binder, leaf, and index charges with symbolic small-source
+classification, as described below. No source enumeration enters this
+proof. The handwritten global floor remains 40 (`global-floor.md`).
 
 For a literal `λc s.B`, `SelfintRound6BoundLiteral` proves that `B` already
 contains a live capture between internal binders: the supplied public
@@ -180,8 +177,106 @@ dead binders before, between, and after the two live prefix binders.
 Every inserted binder explicitly shifts the enclosed term; no dead lambda
 is silently removed. A pending dead binder loses the continuation, while
 one immediately after the second live binder loses the stream. Helpers
-whose final head is the first binder, or whose second live binder occurs
-off the leading prefix, remain outside this exclusion.
+whose final head is the first binder need a different argument.
+
+`SelfintRound8GlobalOuterRoute` excludes the entire closed algebra of
+applications and dead wrappers over
+
+```text
+A = λa b.a R[a,b],       R headed by b, with no live binder inside R.
+```
+
+The zero-operand case `R=b` is affine. In the other cases, every successful
+return through the public continuation has already fixed its first value
+operand before reading the source stream. That operand would have to
+reduce to both `λz.I` and `λz.K`, contradicting uniqueness of normal forms.
+The proof follows arbitrary finite head-reduction traces, with no source
+size, duplication, or reduction cap. In particular, no application/dead-
+wrapper context over any of the unbounded-growth helpers `A_k` above is an
+interpreter (`growth_generated_not_selfInterpreter`). Large normal-output
+binder growth therefore does not supply the missing decoding dependency.
+
+`SelfintRound8GlobalOuterSpine` permits any number of outer operands,
+`A = λa b.a R1 … Rm`, when all `Ri` are lambda-free and `R1` is
+b-headed, including bare `b`. With multiple outer operands, a pending
+helper exposes the rigid continuation before consuming the stream, leaving
+the entire quotation as its final operand instead of the required suffix.
+Here the generating context permits applications
+but no dead wrappers; the theorem includes every flat source sharing body
+`(λx.B) A`, with arbitrary multiplicity. The distinction is necessary for
+this invariant: with `A=λa b.a(b a)b`, the generated pending term
+`A(λ_.A)` returns `c(s c)s`, so its first value operand depends on the
+stream. This fixed reduction is kernel-checked and is not an interpreter.
+`SelfintRound8GlobalOuterSelf` handles an a-headed first operand instead.
+A finite recursive intersection typing invariant is preserved by arbitrary
+beta reduction. It permits a first returned operand without the
+continuation, but requires some returned operand to retain a continuation
+dependency. The interpreter contract returns `c (λz.M) N`, whose operands
+are both free of `c`, so it contradicts that invariant.
+
+The cases combine in `pure_flat_binary_not_selfInterpreter`: no pure
+application expression over one fixed closed helper `λa b.D` with
+lambda-free `D` can be an interpreter. The corollary
+`flat_binary_sharing_not_selfInterpreter` covers every
+`(λx.B) (λa b.D)` with flat scoped bodies, at arbitrary multiplicity and
+source size. This does not permit mixing distinct helper atoms.
+
+`SelfintRound8GlobalOffPrefix` closes the remaining case with two total
+helper lambdas. A normal closed helper starts with a lambda. If its second
+lambda lies off the leading prefix and supplies the necessary live
+capture, both abstraction bodies must be applications. The existing
+application-body invariant then excludes the whole pure application
+algebra over that helper. Thus no such algebra over any normal closed
+helper with at most two source lambdas can be an interpreter.
+
+`SelfintRound8FourLambda.selfInterpreter_four_lambdas` turns this into an
+unconditional result:
+
+```text
+IsSelfInterpreter E  ->  4 <= lamCount(E).
+```
+
+At at most three source lambdas, the source reduction above already forces
+`B` to be flat and `A` to have exactly two lambdas, both live. Every beta
+step inside `A` would consume one lambda without copying another,
+contradicting the interpreter's three-live-binder floor. Therefore `A` is
+already normal, and the helper theorem applies directly. There is no
+architecture, source-size, minimum, or normality premise on `E`.
+This does not raise the three-live-binder bound: the residual family may
+have additional dead source lambdas, and those cases remain open.
+
+## The kernel-checked bit floor
+
+`SelfintRound8BitFloor` combines the four-lambda theorem with the live and
+nonlinear counts. Any interpreter below 31 bits has exactly five leaves
+and three live binders. For a minimum representative, the root sharing
+redex has a normal two-leaf body and a normal three-leaf helper. Open
+lambda index charges force exactly four source lambdas, so one is dead.
+
+The sharing body is `h t`, where `t` contains one occurrence of `h` and
+possibly dead binders. If the dead binder lies in `t`,
+`SelfintRound8DeadApply` excludes the resulting `A (λ_.A)`. Otherwise
+the source is `(λh.h h) A`. An off-prefix live capture in `A` has six
+symbolically derived shapes. A binary prefix leaves the eight
+outer-headed bodies of `SelfintRound8PrefixDeadShapes`, together with
+the already-excluded last-head family and dead prefix binders.
+
+`SelfintRound8PrefixDead` refutes the terminating cases by exact reductions
+to incompatible outputs. For `A=λa b.a a(λ_.b)` and `F=A A`, every
+`F C S` takes two weak-head steps to `F (λ_.C) S`. A finite weak-head
+clock would strictly decrease forever, proving divergence for arbitrary
+`C,S`. No timeout supplies an exclusion.
+
+The resulting `selfintSizeBound_31` is unconditional: strong induction on
+wire size transfers the minimum-source result to every interpreter.
+`four_lambda_minimum_leaves_six` additionally shows that a minimum with
+four lambdas has at least six leaves, without an index budget. The exact
+remaining minimum-resource cells are recorded in STATUS.
+
+The broader dead-lambda problem remains substantive. The kernel-checked
+helper `A=λa b.a(a(λ_.b))` is normal, has two live lambdas and one dead
+lambda, and self-applies to `K`. Its dead binder becomes computationally
+active; treating it as a removable wrapper would invalidate the argument.
 
 ## A live abstraction must capture an enclosing variable
 

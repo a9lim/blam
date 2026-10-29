@@ -506,8 +506,8 @@ same way (37; its 144 fixed reduction clauses are kernel-checked in
 least 39, and with it excludes sizes 37, 38 and 39: **every interpreter has
 at least 40 bits** (Codex's handwritten classifications with kernel-checked
 certificates and Lean exclusions of every residual; two independent reviews
-of each step). Without Statman's theorem the kernel-checked floor is 29
-(`selfintSizeBound_29`, `structural-bounds.md`).
+of each step). Without Statman's theorem the kernel-checked floor is 31
+(`SelfintRound8BitFloor.selfintSizeBound_31`, `structural-bounds.md`).
 `capture-width.md` states the published result and the interface proof,
 and gives a shared-S construction attaining these structural minima
 simultaneously, including in the beta-normal fragment with all zero-based

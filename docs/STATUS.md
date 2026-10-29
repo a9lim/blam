@@ -215,6 +215,17 @@ with all features (three opt-in tests ignored) and 328 with default features.
   `SelfintRound6ReaderBinary` closes the complete three-lambda slice
   `((λx.B) (λu v.A)) C D …` at hole depth zero, including vacuous helpers.
   Its stronger application-algebra theorem has no source-size cap.
+  `SelfintRound8ReaderTwoLambda` permits arbitrary helper syntax: every
+  all-live source with lambda nesting at most two stays in the same
+  rigidity class, regardless of total lambda count or source redexes.
+  Two rigid pending operands exclude it as a reader. The complete
+  three-lambda flat-root slice includes vacuous helpers. A surviving
+  all-live, j-free three-lambda helper must have all three binders on one
+  ancestor path and must be beta-normal. It starts with a literal lambda
+  whose body is another lambda or is headed by that parameter. The
+  one-prefix form `λu.u G` is also excluded when `G` does not capture `u`
+  and has all live binders at nesting depth at most two. The four-lambda
+  family remains open.
   With four lambdas and exactly two pending operands,
   `SelfintRound6ReaderFourth` proves all four components must be normal.
   `SelfintRound7ReaderRoute`, `SelfintRound7ReaderMiddle`, and
@@ -264,8 +275,14 @@ with all features (three opt-in tests ignored) and 328 with default features.
   and at least four global free leaves for one one-sided delayed
   contraction in arbitrary ordinary two-arm contexts with normal final
   projections, hence the weighted frontier for this family. The source
-  proof is unbounded; only four fixed target pairs are evaluated. Outside
-  the class, the bundle below gives a 165-bit construction with reader
+  proof is unbounded; only four fixed target pairs are evaluated.
+  `SelfintArchitecture8SharingForest` prices arbitrarily many independent
+  designated lets: **`q ≥ 92 + 6n`** for `n` non-nested substitutions with
+  Plain body/argument projections and normal final projections. Erased
+  Boolean branches are counted. Every such NEXT clears the weighted
+  frontier; a minimum at capture tax `s` has `3n ≤ s`. Nested computational
+  substitutions remain open. Only four fixed target pairs are evaluated.
+  Outside the class, the bundle below gives a 165-bit construction with reader
   access to recursion; NEXT under `λlist`
   can embed any closed interpreter at `+17`, and no β-preserving conversion
   takes every interpreter into the class. Archives:
@@ -288,12 +305,31 @@ with all features (three opt-in tests ignored) and 328 with default features.
   identity-query family after 23 head steps, and each recurrence takes 10.
   `architecture6_control.py` independently checks eight fixed clauses and
   the full source wire; neither result uses a capped failure as proof.
+  `SelfintArchitecture8Continuation` rules out uniform recovery of the
+  bare continuation or arbitrary bare parser from canonical NEXT: each
+  parameter's eta expansion is erased by ordinary beta reduction there.
+  `SelfintArchitecture8Guard` excludes every actual self-application knot
+  whose reader receives recursion and NEXT but accesses the continuation
+  only through a recursively guarded callback. Reader and callback syntax
+  are arbitrary; the ordinary shared-let form and canonical NEXT are
+  pinned explicitly. The generic body theorem also covers arbitrary
+  application/lambda/let compositions with unrestricted payloads behind
+  recursive calls, including tag-first choices `λb.b(p A)(p B)`. This
+  includes applied-continuation service attempts, has no size cap, and
+  concerns the actual knot rather than arbitrary fixed-point solutions.
   `SelfintArchitecture7ReaderDiagonal` gives a different exact diagonal
   for the current reader: at identity continuation, `R R →* J (R R J)`,
   so `P = R R J` satisfies `P →* J P J`. The specialization
   `J = λp ignored.F p` supplies a fixed point of any `F`. This is an
   all-parameter beta theorem; no smaller interpreter or source saving
   has been obtained from it.
+  `SelfintArchitecture8BooleanKnot` supplies a different recursive
+  generator `G_A`: it fixes both Church Booleans, exposes `H_A F` on
+  identity, and satisfies `G_A G_A →* A G_A (G_A G_A)`, for arbitrary `A`.
+  Its exact overhead is 48 bits for the generator and 58 for the one-copy
+  knot when `A` is closed. A hand-inlined canonical parser measures
+  197 bits; it is an unqualified construction sketch, not a new interpreter
+  record. The four generic equations and source costs are kernel-checked.
   `SelfintArchitecture5Depth` rules out every finite-state repair of a
   protocol whose ABS clause merely updates state and returns its child
   value, with a fixed public decoder. Unbounded state is allowed and
@@ -375,12 +411,17 @@ with all features (three opt-in tests ignored) and 328 with default features.
   Lean proves that every interpreter has at least two syntactically
   nonlinear binders, and that an explicit `λc s.B` needs two inside `B`.
   The normalization argument gives the small numerical floor 18; the
-  `SelfintFloor*` and `SelfintRound6Bound*` modules raise the
-  **unconditional kernel-checked floor to 29**, without Statman's theorem
-  (`selfintSizeBound_29`, using standard `Classical.choice`). Source
-  pricing, internal capture, and symbolic equality-case classification
-  leave four derived templates and one vacuous-wrapper case; fixed
-  reductions finish the exclusion without enumeration. The kernel floors
+  `SelfintRound8BitFloor` proves the
+  **unconditional kernel-checked floor of 31**, without Statman's theorem
+  (`selfintSizeBound_31`, using standard `Classical.choice`). Four source
+  lambdas and the live/nonlinear counts localize a hypothetical smaller
+  minimum to five leaves and one dead lambda. Symbolic source
+  classification, fixed successful reductions to wrong outputs, and an
+  unbounded weak-head clock descent close all cases without enumeration.
+  Every minimum interpreter with four lambdas needs at least six leaves.
+  At exactly 31 bits the remaining minimum-resource triples `(L,V,X)` are
+  `(4,6,1)` and `(5,5,3)`; neither is claimed to contain an interpreter.
+  The kernel floors
   for literal `λc.B` and `λc s.B` are 31 and 38 respectively
   (`SelfintRound6BoundLiteral`). The separate handwritten global and
   two-argument literal floors remain 40 and 46 below.
@@ -404,7 +445,29 @@ with all features (three opt-in tests ignored) and 328 with default features.
   or duplication bounds. `SelfintRound7GlobalLastPrefix` extends it to
   arbitrary dead binders before, between, and after the two live prefix
   binders, retaining their operational behavior with explicit shifts.
-  Outer-headed and off-prefix-inner helper arms remain open.
+  `SelfintRound8GlobalOuterRoute` excludes every application/dead-wrapper
+  algebra over `λa b.a R` with zero-live, b-headed `R`, including every
+  unbounded-growth helper above. Its first returned value is fixed before
+  the stream is read. `SelfintRound8GlobalOuterSpine` allows any number of
+  outer operands when each is flat and the first is b-headed,
+  in application-only contexts; it covers arbitrary flat sharing bodies.
+  A fixed kernel-checked example shows why arbitrary dead wrappers break
+  that extended first-value invariant. `SelfintRound8GlobalOuterSelf`
+  handles the remaining first-operand direction with a continuation
+  contamination invariant. Together these prove that **no application
+  expression over a fixed `λa b.D` with lambda-free, scoped `D` is an
+  interpreter**, including every flat sharing body `(λx.B) (λa b.D)`.
+  `SelfintRound8GlobalOffPrefix` adds the interior-second-binder case
+  using the existing application-body invariant: no pure application
+  expression over any closed normal helper with at most two lambdas is
+  an interpreter. `SelfintRound8FourLambda` derives normality from the
+  contract at the three-lambda boundary and proves the unconditional
+  **four-source-lambda lower bound**. The three-live-binder family with
+  additional dead lambdas remains open beyond the small resource cases
+  excluded above. `SelfintRound8DeadApply` also pins the nonlinear helper
+  `A=λa b.a(a(λ_.b))`: it has two live lambdas and three total lambdas,
+  and `A A →* K` in five head steps. Dead source abstractions cannot be
+  silently discarded from this remaining classification.
   A 584-bit witness has exactly two nonlinear binders, both
   closed in isolation; a kernel-replayed 71-step reduction reaches the
   literal 165. A 742-bit β-normal witness also has exactly two closed
