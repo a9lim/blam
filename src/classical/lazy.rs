@@ -36,7 +36,8 @@ use std::rc::Rc;
 pub struct Limits {
     /// β-contractions.
     pub beta: u64,
-    /// Machine steps (one per term node entered).
+    /// Machine steps (one per term node entered, and one per readback
+    /// job).
     pub work: u64,
     /// Live heap objects (thunks, environment cells, spine cells) plus
     /// machine stack and readback entries, each a few dozen bytes: the
@@ -592,6 +593,11 @@ impl Lazy {
         sink: &mut S,
     ) -> Result<(), Stop> {
         while let Some((job, depth)) = self.pop_job() {
+            // Each job is a step: forcing an evaluated thunk costs no other,
+            // and a normal form shared k levels deep reads back 2^k neutral
+            // nodes from k β-steps, so without this charge the budgets and
+            // the abort poll never hear it.
+            self.tick(&*sink)?;
             let v = match job {
                 Job::Val(v) => v,
                 Job::Force(t) => self.force(pool, &t, inp, sink)?,

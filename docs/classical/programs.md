@@ -223,7 +223,12 @@ The design:
   lambda argument is stored already evaluated.
 - **Strong normalization** is readback. A closure is entered under a fresh
   rigid level. A neutral term's head is emitted, then its arguments are
-  forced and read back in order. A closure over a closed normal form of the
+  forced and read back in order. Every readback job is a step: a normal
+  form shared k levels deep in evaluated thunks reads back 2ᵏ neutral nodes
+  from k β-steps, and forcing an evaluated thunk costs nothing else, so the
+  step budget and the abort poll hear it only through that charge
+  (`tests/differential.rs`, `lazy_readback_of_shared_normal_form_is_budgeted`).
+  A closure over a closed normal form of the
   program or input (data passing through) is emitted as it stands, node by
   node, without evaluation but under the same budgets and polls as any
   other step. Bits stream into a `Sink`, the same trait the KN machine
