@@ -15,7 +15,10 @@ instrumental, so they can be written out in full when the PRs go up.
     pairups, then the 165's reader in six programs), forty more pushed the
     same day, and on 2026-10-21 the 162's reader in the same six programs
     (int.lam, uni.lam, int4, ko2kp, nf, pairup_Kp) plus a comment fix in
-    ko2kp. The branch now changes 40 programs and saves 1,159 bits.
+    ko2kp. On 2026-11-04, answering Tromp's review, a commit restores his
+    `int4.lam`: our rewrite read `(11)^i 10` as a unary index and broke on
+    `11` before an abstraction or application. The branch now changes 39
+    programs and saves 1,142 bits.
 - blam 3.0.1 is released: point links at the `v3.0.1` tag, which carries the
   162's record, the Lean self-interpreter proofs, and the golf record
   (`docs/classical/golf.md`).
@@ -39,9 +42,9 @@ instrumental, so they can be written out in full when the PRs go up.
       is Claude's;
     - the identity continuation behind the non-strict variant is Codex's.
   - `uni28`: Codex (one reader for the parser, the delimiter and the digits).
-  - `int4`, `ko2kp`, `nf`: Claude, porting the `int.lam` parser.
+  - `ko2kp`, `nf`: Claude, porting the `int.lam` parser.
   - The 165-bit `int.lam` reader (skip the whole stream before dispatch):
-    Codex, in a fresh-context consult. Carrying it into `uni.lam`, `int4`,
+    Codex, in a fresh-context consult. Carrying it into `uni.lam`,
     `ko2kp`, `nf` and `pairup_Kp`, the verification, and the Lean proofs that
     the 168 and the 165 are self-interpreters: Claude.
   - The 162-bit reader (the stream selects its own tail; the second-tag
@@ -114,6 +117,31 @@ the six rows the 162's reader changed (`int.lam` 162, `uni.lam` 184 /
 non-strict 172, `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp` 1270). The
 draft the first was edited from is kept below.
 
+**Draft reply to Tromp's review (2026-11-04, not yet posted):**
+
+> Thanks for checking them, and for catching int4. You're right: the
+> rewrite read `(11)^i 10` as a unary variable index, the way int.lam reads
+> `1^n 0`, so it breaks as soon as 11 comes before an abstraction or an
+> application. I've pushed a commit that restores your 189-bit int4.lam, so
+> the PR no longer touches it.
+>
+> It got past our checks because the int4 test only generated canonical
+> codes, with 11 in front of variables alone. The test now runs every
+> closed term up to 18 bits under every weakening of its subterms, 4,980
+> codes in all: your version passes all of them and the 172 failed 4,313.
+> Your primes command gives the same result. We also looked for a correct
+> int4 under 189 and didn't find one. The closest were 190, and nothing
+> that takes `intL` and `cont` from scope instead of passing them through
+> the stream cell came within a few bits.
+>
+> No other program in the PR uses the int4 code. Without it the PR changes
+> 39 programs and saves 1,142 bits.
+>
+> A small aside: the shortest int4 code for your primes term is 174 bits,
+> since 11 can also go in front of a lambda:
+> `000100011001100101000110100000000101100000101101000101111101101010010001101000011110011010000000000101101111101101101111011110100000110001111110011011100000010110000011101110`
+> It prints the same sequence on your interpreter.
+
 **Draft comment for #13 (as drafted):**
 
 > While you're away I've added forty more commits on the same terms: one
@@ -177,7 +205,7 @@ draft the first was edited from is kept below.
 - **The two PRs.**
   - `uni.rs`: byte-identical with uni.py, about 18× faster.
   - `golf` (#13, already open): int.lam 168 → 162, uni.lam 190 → 184
-    (non-strict 178 → 172), and 38 more programs, 1,159 bits in all.
+    (non-strict 178 → 172), and 37 more programs, 1,142 bits in all.
 - **His tools in blam (3.0.0).** `blam blc ACTION FILE` is his `blc`, all
   31 actions, without GHC; `blam uni` is his universal machine.
   - Checked byte for byte against his own `blc`, built from AIT with GHC
@@ -190,7 +218,7 @@ draft the first was edited from is kept below.
   - Maybe useful to him: a GHC-free `blc` for people trying the repo.
   - The golf sources: the IOCCC BLC8 machine is down from 43 bytes to 38
     (36 non-strict), KP(x) ≤ KO(x) + 540, pairup_Kp 1402 → 1270, Loader's
-    number in 1781 bits, and int.lam's parser is now in ko2kp, nf, int4 and
+    number in 1781 bits, and int.lam's parser is now in ko2kp, nf and
     the pairup programs.
 - **The self-interpreter: 162 bits** (165 when the PR was opened).
   - The 162's reader: `list I` makes the first cell its own selection, so
@@ -199,7 +227,7 @@ draft the first was edited from is kept below.
     its skip. Found by combining a counterexample Codex built while
     reviewing a proof of Claude's, Grok's idea of passing that stage as an
     operand, and blam's let optimizer. Lean-proved; independently reviewed.
-  - Universal machines 184 strict / 172 non-strict; int4 172.
+  - Universal machines 184 strict / 172 non-strict.
   - Lower bounds from the same night: every self-interpreter has at least
     37 bits (handwritten, reviewed twice) and 27 kernel-checked in Lean.
 - **The 165, the step before:**
@@ -212,8 +240,8 @@ draft the first was edited from is kept below.
     168 into seven modules, each the unique smallest term meeting its law,
     minima summing to exactly 168. The 165 fuses three of those modules
     (dispatch, variable, skip), the one assumption the theorem flagged.
-  - The same reader: uni.lam 187 strict / 175 non-strict, int4 175, and 3
-    bits off ko2kp, nf and pairup_Kp.
+  - The same reader: uni.lam 187 strict / 175 non-strict, and 3 bits off
+    ko2kp, nf and pairup_Kp.
   - Kernel-checked in Lean: both the 168 and the 165 are self-interpreters,
     as a β-reduction E C (⌜M⌝ ++ N) →β* C (λz.M) N for every closed M.
   - Nothing smaller around the 165: its let structure, βη and contextual

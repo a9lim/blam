@@ -732,17 +732,19 @@ with all features (three opt-in tests ignored) and 328 with default features.
 
 `classical/golf.md`: certified β-golf shrinks 44 of the 117 tromp/AIT
 programs by 463 bits in all (`data/golf/sweep.tsv`). The upstream branch,
-[tromp/AIT#13](https://github.com/tromp/AIT/pull/13), changes 40 programs by
-1,159 bits, every one as a readable source: 36 of the β-golf gains, several
+[tromp/AIT#13](https://github.com/tromp/AIT/pull/13), changes 39 programs by
+1,142 bits, every one as a readable source: 36 of the β-golf gains, several
 beyond the sweep (`tweet` 2230 → 2134, `loader` 1797 → 1781,
 `pairup_Kp` 1402 → 1270), and hand redesigns. The IOCCC BLC8 machine goes from
 344 bits (43 bytes) to 304 strict (38 bytes) and 283 non-strict (36 bytes),
 `uni28` from 500 to 390 / 370, `uni2` to 332, `blc.lam` 195 → 186, and `uniK`
 903 → 826 (599 with eager weakening). The parser ports, now with the 162's
-reader, give `int4` 172, `ko2kp` 540 (so KP(x) ≤ KO(x) + 540), `nf` 535, and
+reader, give `ko2kp` 540 (so KP(x) ≤ KO(x) + 540), `nf` 535, and
 the pairup programs 756, 651 and 1270 (the last two on contract-valid inputs
 only); `int.lam` is 162 and `uni.lam` 184 strict, 172 non-strict. Artifacts are in
-`data/golf/machines/`.
+`data/golf/machines/`. Tromp's review is under way: about a dozen programs
+pass; `int4` stays at his 189, since its `11` weakens any term and no
+correct redesign beats it (`classical/golf.md`).
 
 ### Running programs: blc and uni
 
@@ -840,7 +842,7 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    children both vary. Constructive: none of about thirty round-4 designs
    (163–265 bits) beats 162. The 162's reader is on the
    fork's golf branch (tromp/AIT#13): `int.lam` 162, `uni.lam` 184 / 172,
-   `int4` 172, `ko2kp` 540, `nf` 535, `pairup_Kp` 1270, each verified
+   `ko2kp` 540, `nf` 535, `pairup_Kp` 1270, each verified
    against its previous version (`classical/golf.md`); the PR's title and a
    summary comment carry the new table.
 10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next

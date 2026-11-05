@@ -23,8 +23,9 @@ records (`self-interpreter/`). This document covers the rest of tromp/AIT:
   and the Kiselyov machine `uniK` 903 → 826 (same algorithm) and 599 (eager
   weakening);
 - ports of the 2025-12 parser design into the programs that still embed the
-  old one: `int4`, `ko2kp`, `nf` and the `pairup` programs, whose sizes are
-  constants in Tromp's AIT theorems (KP(x) ≤ KO(x) + 540).
+  old one: `ko2kp`, `nf` and the `pairup` programs, whose sizes are
+  constants in Tromp's AIT theorems (KP(x) ≤ KO(x) + 540). It does not port
+  into `int4`, whose code needs a real parse under every successor.
 
 The machines were designed with Codex through independent consults. Who
 contributed which idea is marked where it appears.
@@ -95,7 +96,6 @@ compiled bits. BLC8 machines also ship packed `.blc8`.
 | `uni2` (BLC2 machine) | 340 | **332** | **321** (from 324) |
 | `blc` (curried-bit interpreter) | 195 | **186** | |
 | `uniK` (Kiselyov machine) | 903 | **826**; **599** eager (`uniK_lazy`, `uniK`) | |
-| `int4` (self-interpreter, 4-primitive code) | 189 | **172** | |
 | `ko2kp` (KP ≤ KO + c) | 615 | **540** | |
 | `nf` (normal-form printer) | 600 | **535** | |
 | `pairupKP` (symmetry of information) | 778 | **756** | |
@@ -269,7 +269,7 @@ By the genericity lemma any unsolvable term does the same job exactly, so an
 unsolvable built from bindings already in scope can be cheaper than
 `(\x.x x) (\x.x x)`. It pays twice: `uni8`'s `get get get` (−2) and `uni2`'s
 `fix fix` (−1). Elsewhere Codex's proved alternatives lose: `uni.lam`'s best,
-`intL intL intL`, is 192 against 187; strict `int4` 202 against 197;
+`intL intL intL`, is 192 against 187;
 `uni28`'s `get get get` 396 against 390; `uniK`'s `fix fix` 607 against 599;
 `ko2kp`'s clean `Y Y` 566 against 563. These were measured with the 165's
 reader; the 162's lowers both sides of each comparison equally (`uni.lam`
@@ -316,22 +316,46 @@ ports:
 Both are certified β-convertible to the ports in every configuration.
 
 `int4.lam` is Tromp's self-interpreter for a four-primitive code: `00` λ, `01`
-application, `10` variable zero, `11` successor. After its tag bit, a
-variable's code reads `1^(2n-2) 0`, unary with every other bit a tag.
+application, `10` variable zero, `11` successor. The successor is weakening:
+`11 M` is `M` under one more binder, for any term `M`, so a term has one code
+for each way of weakening its subterms, and the short ones put `11` in front
+of applications and abstractions (Tromp's primes code is 178 bits against 192
+canonical; the shortest is 174, weakening a λ too). That is why `int.lam`'s
+design does not port. Its variable is one unary run that the environment
+looks up by the code itself and a skip steps over. Here `11 M` has to parse
+`M`, both to build its value and to find where it ends. Reading `(11)^i 10`
+as a unary index (cells that also swallow each tag bit, with the 162's
+reader: 172 bits) is wrong as soon as `11` precedes a `00` or `01`, as Tromp
+pointed out in review.
 
-- **Skipping.** `l l l` skips every 1 and the first 0 whatever their roles,
-  so skipvar carries over unchanged.
-- **Lookup.** The lookup carries over once each environment cell also
-  swallows the tag bit that follows a 1: `\zx \zy. zx x (zy (\_ \l. l xs))`.
+Tromp's 189 stays. His layout passes `intL` and `cont` through the stream
+cell to a closed handler, so inside it they sit at de Bruijn indices 2–3; the
+designs that take them from scope pay an index bit per use. Correct
+alternatives measured, by Claude and, independently, Codex:
 
-With the rest of the 168 verbatim the result is 178 bits, against 189; with
-the 165's reader, 175, since `l l l` on the whole stream still stops right
-after a variable; with the 162's, 172, since `list list next` does too.
+- one bit over, 190: choosing the λ or application continuation before the
+  parse (`intL (bit1 (\exp. …) (\exp. …))`) and dispatching on the first bit
+  before reading the second (`list1 (bit0 (\bit1. …) (\bit1. …))`), each
+  paying a λ (2 bits) for one shallower index (1 bit); and the
+  pair-environment pop `\a. a (\_. e)` for `11`, with `\a. a bit1` for `10`;
+- the 162's knot with the same cell passing, or the parser and continuation
+  passed in the other order: 189;
+- `cont` and `intL` from scope: first-bit dispatch 193, the 162's reader 195;
+- `cons'` cells, so variable zero can take any dummy: 196, or 198 with the
+  stream itself as its value;
+- one handler that parses first and dispatches on both bits after: 196;
+  separate `10` and `11` continuations 193;
+- the handler as the recursion's state (`\cont\list. list h h cont`):
+  210–211.
+
+A contextual component search around the 189 finds one 188, which the
+battery rejects.
+
 `battery.py --int4` checks the exact self-interpreter contract on every
-closed term of 4..16 bits plus deep-index extras: 236 of 236 for the
-original, the 178 and the 175; the 172 passes 667 of 667 through 18 bits.
-As a negative control, `int.lam` under `--int4` fails 19 of the 40 programs
-of the 4..12-bit battery.
+closed term of 4..18 bits under every one of its codes (past 64 codes, the
+canonical, shortest and maximal ones and a fixed sample): Tromp's 189 passes
+4,980 of 4,980, and the unary-index 172 fails 4,313 of them. As a negative
+control, `int.lam` fails 180 of the 201 codes through 12 bits.
 
 `golf check --io progs` compares normal forms on every closed program,
 followed by up to three data bits:
@@ -484,13 +508,13 @@ Demos (excluded):
 - `rosetta/forloops.lam` (139 → 129): applies the artifact to sample data
 - `rosetta/variadicY.lam` (256 → 249): applies the artifact to sample data
 
-No gain from β-golf: `BB/BB40.lam`, `BB/BB_Xi.lam`, `Sample.lam`, `ait/Aint.lam`, `ait/Y.lam`, `ait/allA.lam`, `ait/bcl.lam`, `ait/beavers.lam`, `ait/blc.lam` (source: 186), `ait/decoders.lam`, `ait/delimit2.lam`, `ait/int.lam` (source: 162), `ait/int4.lam` (source: 172), `ait/mlatu.lam`, `ait/quine.lam`, `ait/readlen.lam`, `ait/uni.lam` (source: 184 strict / 172 non-strict), `ait/vararg.lam`, `ait/wtf.lam`, `ait/zot.lam`, `characteristic_sequences/all.lam`, `characteristic_sequences/even.lam`, `characteristic_sequences/none.lam`, `characteristic_sequences/odd.lam`, `characteristic_sequences/primes.lam`, `characteristic_sequences/thue-morse.lam`, `fast_growing_and_conjectures/BBE0.lam`, `fast_growing_and_conjectures/BO.lam`, `fast_growing_and_conjectures/E0.lam`, `fast_growing_and_conjectures/ackermann.lam`, `fast_growing_and_conjectures/bms.lam`, `fast_growing_and_conjectures/collatz.lam`, `fast_growing_and_conjectures/gAckerman.lam`, `fast_growing_and_conjectures/goldbach.lam`, `fast_growing_and_conjectures/goodstein.lam`, `fast_growing_and_conjectures/graham.lam`, `fast_growing_and_conjectures/laver0.lam`, `fast_growing_and_conjectures/melo.lam`, `fast_growing_and_conjectures/oddperfect.lam`, `fast_growing_and_conjectures/perfect.lam`, `fast_growing_and_conjectures/w1CK.lam`, `fast_growing_and_conjectures/w218.lam`, `fast_growing_and_conjectures/wCubed.lam`, `lists/cat.lam`, `lists/fold.lam`, `lists/length.lam`, `lists/map.lam`, `lists/reverse.lam`, `misc/id.lam`, `misc/truth.lam`, `numerals/div.lam`, `numerals/divides.lam`, `numerals/eq.lam`, `numerals/fac.lam`, `numerals/fib.lam`, `numerals/gcd.lam`, `numerals/half.lam`, `numerals/leq.lam`, `numerals/lt.lam`, `numerals/mod.lam`, `numerals/tri.lam`, `rosetta/catstrings.lam`, `rosetta/mutrec.lam`, `rosetta/swap.lam`.
+No gain from β-golf: `BB/BB40.lam`, `BB/BB_Xi.lam`, `Sample.lam`, `ait/Aint.lam`, `ait/Y.lam`, `ait/allA.lam`, `ait/bcl.lam`, `ait/beavers.lam`, `ait/blc.lam` (source: 186), `ait/decoders.lam`, `ait/delimit2.lam`, `ait/int.lam` (source: 162), `ait/int4.lam`, `ait/mlatu.lam`, `ait/quine.lam`, `ait/readlen.lam`, `ait/uni.lam` (source: 184 strict / 172 non-strict), `ait/vararg.lam`, `ait/wtf.lam`, `ait/zot.lam`, `characteristic_sequences/all.lam`, `characteristic_sequences/even.lam`, `characteristic_sequences/none.lam`, `characteristic_sequences/odd.lam`, `characteristic_sequences/primes.lam`, `characteristic_sequences/thue-morse.lam`, `fast_growing_and_conjectures/BBE0.lam`, `fast_growing_and_conjectures/BO.lam`, `fast_growing_and_conjectures/E0.lam`, `fast_growing_and_conjectures/ackermann.lam`, `fast_growing_and_conjectures/bms.lam`, `fast_growing_and_conjectures/collatz.lam`, `fast_growing_and_conjectures/gAckerman.lam`, `fast_growing_and_conjectures/goldbach.lam`, `fast_growing_and_conjectures/goodstein.lam`, `fast_growing_and_conjectures/graham.lam`, `fast_growing_and_conjectures/laver0.lam`, `fast_growing_and_conjectures/melo.lam`, `fast_growing_and_conjectures/oddperfect.lam`, `fast_growing_and_conjectures/perfect.lam`, `fast_growing_and_conjectures/w1CK.lam`, `fast_growing_and_conjectures/w218.lam`, `fast_growing_and_conjectures/wCubed.lam`, `lists/cat.lam`, `lists/fold.lam`, `lists/length.lam`, `lists/map.lam`, `lists/reverse.lam`, `misc/id.lam`, `misc/truth.lam`, `numerals/div.lam`, `numerals/divides.lam`, `numerals/eq.lam`, `numerals/fac.lam`, `numerals/fib.lam`, `numerals/gcd.lam`, `numerals/half.lam`, `numerals/leq.lam`, `numerals/lt.lam`, `numerals/mod.lam`, `numerals/tri.lam`, `rosetta/catstrings.lam`, `rosetta/mutrec.lam`, `rosetta/swap.lam`.
 
 ## Upstream
 
 The sources go to Tromp as [tromp/AIT#13](https://github.com/tromp/AIT/pull/13),
 from the `golf` branch of the a9lim/AIT fork: one commit per program and
 change, each with its design note and verification, so any subset can be
-taken. Against upstream the branch changes 40 programs and saves 1,159 bits
+taken. Against upstream the branch changes 39 programs and saves 1,142 bits
 in all. `ref/AIT` here stays pinned to the fork's additive `master`; the
 `golf` branch modifies upstream files and never lands there.
