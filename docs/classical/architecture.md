@@ -408,16 +408,18 @@ unaffected.
 
 Every engine change must satisfy:
 
-1. `cargo test --release`, plus `cargo test --release --all-features` so the
-   `lab` surface (instruments and untrusted discovery) is tested too;
+1. `cargo test --release --all-features`, which tests the `lab` surface
+   (instruments and untrusted discovery) with everything else; CI adds the
+   default-feature dispatcher test and an im-rc-only build check;
 2. differential agreement between `classical::reference` and
    `classical::machine` on output bits and β-counts, and between
    `classical::machine` and `classical::lazy` on normal forms;
 3. conformance against Tromp's corpus and published BLC counts
    (`tests/tromp_vectors.rs`, whose bit strings are inlined so the suite runs
    without the `ref/AIT` clone);
-4. the relevant `scripts/spot-check.sh` census rows, with halt counts
-   bit-identical to `data/classical/census_table.txt`; and
+4. the relevant `scripts/spot-check.sh` census rows, with fate counts,
+   max|nf| and β totals bit-identical to `data/classical/census_table.txt`;
+   and
 5. certificate recertification (`scripts/recert-kills.sh`, `scripts/bb-regen.sh`)
    and `lake build Certs BusyBeaver` when certificate paths or data change.
 

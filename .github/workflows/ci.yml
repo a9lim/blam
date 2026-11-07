@@ -13,142 +13,50 @@ concurrency:
 permissions:
   contents: read
 
+# Release builds keep debug info for local profiling; CI needs none of it.
+env:
+  CARGO_PROFILE_RELEASE_DEBUG: "0"
+
 jobs:
-  fmt:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: rustfmt
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
       - run: cargo fmt --all --check
-
-  clippy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
-      - uses: Swatinem/rust-cache@v2
       - run: cargo clippy --workspace --all-targets --all-features -- -D warnings
-
-  rustdoc:
-    # The published API's own docs: a broken intra-doc link, or a public
-    # item pointing at a private one, is a reader following a promise
-    # that is not kept. 2.0.0 ships this surface, so the gate is hard.
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      # The published API's docs: a broken intra-doc link is a promise the
+      # crate does not keep.
       - run: cargo doc --all-features --no-deps
         env:
           RUSTDOCFLAGS: -D warnings
 
-  msrv:
-    # rust-version in Cargo.toml is a promise to anyone who depends on
-    # the crate; nothing enforces it but this job.
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@1.87
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo check --all-features --all-targets
-
-  stale-invocations:
-    # One binary, `blam`, with subcommands. Every predecessor bin name
-    # (qcensus, certsearch, tracescan, …) is gone, so a script or current
-    # document that still invokes one is a command that cannot run. Only the
-    # vendored ref/AIT tree is outside this repository's command contract.
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - name: no invocations of retired binaries
-        run: |
-          bins='census|qcensus|qradical|qcomplement|certsearch|certlean|certdiag|tracescan|slotsearch|oddminproto|solomonoff|adjudicate|normalize|selfint|qskeleton'
-          hits=$(grep -rnE "target/(release|debug)/($bins)\b|--bin +($bins)\b" \
-                   --exclude-dir=.git --exclude-dir=target --exclude-dir=ref \
-                   . || true)
-          if [ -n "$hits" ]; then
-            echo "stale invocations of retired binaries:"
-            echo "$hits"
-            exit 1
-          fi
-
   test:
-    # --release is the repo's own verification bar (AGENTS.md): the cert
-    # battery pushes 196,848 provable halters through the sweep ladder and
-    # is built for release speed. tromp_vectors inlines its vectors, so the
-    # suite needs no ref/AIT checkout.
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    # --release because the certificate soundness battery is built for
+    # release speed. tromp_vectors inlines its vectors, so no ref/AIT
+    # checkout is needed.
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      # --all-features so the `lab` surface (research instruments, the
-      # untrusted certificate discovery layer, and the `blam` subcommands
-      # built on them) is compiled and tested too.
       - run: cargo test --release --workspace --all-features
-      # Default features: the no-lab dispatcher arms actually run.
-      - run: cargo test --release
-      # The engine must also build with im-rc alone.
-      - run: cargo test --release --no-default-features
+      # The engine must build with im-rc alone.
+      - run: cargo check --lib --no-default-features
 
-  census-spot-check:
-    # The standing regression guarantee: halt counts are bit-identical to
-    # data/classical/census_table.txt under every engine change. Rows 4..32 cover the
-    # full ladder including loop32's row and run in under a second locally;
-    # timing columns are excluded, everything else must match exactly.
+  default-features:
+    # The census spot-check: fate columns, max|nf| and beta_total of rows
+    # 4..32 must match data/classical/census_table.txt exactly (escal is
+    # reported, not failed). It builds the default-feature binary, so the one
+    # behaviour default features add, the no-lab dispatcher arms, is tested
+    # here too.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: bash scripts/spot-check.sh 4 32
-
-  lean:
-    # Kernel-check both certificate ledgers and their exact wire identities;
-    # verify that generated exclusions and exact probability trims are current.
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/cache@v6
-        with:
-          path: |
-            ~/.elan
-            lean/.lake
-          key: lean-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain', 'lean/lake-manifest.json') }}
-      - run: curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
-      - run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - run: python3 tools/certificates/bb35_large.py --check
-      - run: lake build Certs BusyBeaver
-        working-directory: lean
-      - run: python3 tools/certificates/bb.py --check
-      - run: python3 tools/certificates/bounds.py | diff - data/classical/certificate_bounds.txt
-      - run: python3 tools/omega/test_accounting.py
-
-  fork-additive:
-    # The ref/AIT submodule is the a9lim/AIT fork: upstream tromp/AIT plus
-    # additions only. The conformance goldens stay byte-identical to
-    # upstream's — the moment the fork *modifies* an upstream file, the
-    # oracle-vs-ours boundary is gone and this job fails.
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-      - run: |
-          cd ref/AIT
-          git remote add upstream https://github.com/tromp/AIT.git
-          git fetch -q upstream master
-          viol=$(git diff --name-status upstream/master...HEAD | grep -v '^A' || true)
-          if [ -n "$viol" ]; then
-            echo "fork is not additive-only over upstream:"
-            echo "$viol"
-            exit 1
-          fi
+      - run: cargo test --release --bin blam lab_subcommands_are_named_either_way

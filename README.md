@@ -425,12 +425,13 @@ extension.
   individually kernel-checked Lean 4 theorem (zero sorries, no mathlib),
   pinned to its wire bits by a kernel-checked encoding.
 - CI runs on `main` and pull requests into it. It checks formatting, Clippy
-  and rustdoc with warnings denied, and the MSRV; runs the release test suite
-  on Ubuntu and macOS with `--all-features`, default features, and
-  `--no-default-features`, so the lab targets, the no-lab dispatcher arms, and
-  the im-rc-only library are each exercised; diffs a census spot-check
-  through 32 bits against the canonical table, where any drift in any column
-  fails; and kernel-checks the Lean certificates and exact bounds.
+  and rustdoc with warnings denied; runs the release test suite with
+  `--all-features`, the no-lab dispatcher test under default features, and an
+  im-rc-only build check; and diffs a census spot-check through 32 bits
+  against the canonical table, where drift in a fate column, max|nf| or the β
+  total fails. Path-scoped workflows kernel-check the Lean certificates and
+  exact bounds, check the qALC fixtures, and check the `ref/AIT` fork's
+  additivity when their files change.
 
 ## Documentation
 

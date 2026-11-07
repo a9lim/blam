@@ -1,0 +1,52 @@
+name: Lean
+
+# Kernel-check both certificate ledgers and their exact wire identities, and
+# verify that generated exclusions and exact probability trims are current.
+# Path-scoped: it runs when the proofs, the ledgers, the data they bound, or
+# the tools that generate or read them change.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lean/**"
+      - "data/certificates/**"
+      - "data/classical/**"
+      - "tools/certificates/**"
+      - "tools/omega/**"
+      - ".github/workflows/lean.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "lean/**"
+      - "data/certificates/**"
+      - "data/classical/**"
+      - "tools/certificates/**"
+      - "tools/omega/**"
+      - ".github/workflows/lean.yml"
+
+concurrency:
+  group: lean-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.elan
+            lean/.lake
+          key: lean-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain', 'lean/lake-manifest.json') }}
+      - run: curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+      - run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - run: python3 tools/certificates/bb35_large.py --check
+      - run: lake build Certs BusyBeaver
+        working-directory: lean
+      - run: python3 tools/certificates/bb.py --check
+      - run: python3 tools/certificates/bounds.py | diff - data/classical/certificate_bounds.txt
+      - run: python3 tools/omega/test_accounting.py

@@ -1094,14 +1094,15 @@ halt-rounding slack equals the number of inexact divisions (96 units at
   the 162-bit self-interpreter and the busy-beaver values credited to Tromp.
 - Checkpoints are `blamckpt v5`, and memo files use the shared tag-first
   codec; older cache files are invalid. Nothing in `data/` uses either.
-- CI runs on pushes to `main` and pull requests into it, not on `dev`. It
-  checks formatting, warning-free Clippy, rustdoc with warnings denied, the
-  1.87 MSRV, that no current file invokes a retired binary, release tests with
-  all, default, and no default features on Ubuntu and macOS, the census
-  spot-check through 32 bits, the Lean certificates with the BB registry and
-  exact bounds, `ref/AIT` additivity, and (path-scoped) qALC fixture
-  determinism. The exhaustive qALC Python batteries and Lean proof checks are
-  explicit local commands.
+- CI runs on pushes to `main` and pull requests into it, not on `dev`: one
+  lint job (formatting, warning-free Clippy, rustdoc with warnings denied),
+  release tests with all features on Ubuntu plus an im-rc-only build check,
+  and the census spot-check through 32 bits with the default-feature
+  dispatcher test. Path-scoped workflows run the Lean certificates with the
+  BB registry and exact bounds, qALC fixture determinism, and `ref/AIT`
+  additivity when their files change; only CI gates a release. The crate
+  makes no MSRV promise. The exhaustive qALC Python batteries and Lean proof
+  checks are explicit local commands.
 - `ref/AIT` is pinned to the additive a9lim/AIT fork at `47b51dd`. The fork's
   `golf` branch is tromp/AIT#13, rebased on upstream master; `uni-rs` carries
   the drafted `uni.rs` PR (`contrib/PR_KIT.md`), not yet opened.

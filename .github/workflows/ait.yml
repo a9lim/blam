@@ -1,0 +1,40 @@
+name: AIT fork
+
+# The ref/AIT submodule is the a9lim/AIT fork: upstream tromp/AIT plus
+# additions only. If a pin bump ever modifies an upstream file, a
+# differential against that oracle can agree with blam for the wrong reason,
+# so a change to the pin must keep the fork additive. Path-scoped to the pin.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ref/AIT"
+      - ".gitmodules"
+      - ".github/workflows/ait.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "ref/AIT"
+      - ".gitmodules"
+      - ".github/workflows/ait.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  fork-additive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - run: |
+          cd ref/AIT
+          git remote add upstream https://github.com/tromp/AIT.git
+          git fetch -q upstream master
+          viol=$(git diff --name-status upstream/master...HEAD | grep -v '^A' || true)
+          if [ -n "$viol" ]; then
+            echo "fork is not additive-only over upstream:"
+            echo "$viol"
+            exit 1
+          fi

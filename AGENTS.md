@@ -22,14 +22,20 @@ work; moving numbers live there, not here.
   suite passes without the clone. `tools/golf/sweep.py` reads its `.lam`
   corpus locally. `contrib/PR_KIT.md` holds the drafts for the upstream PRs
   (the fork's `uni-rs` and `golf` branches); a9 sends them.
-- The verification bar for any engine change is `cargo test --release
-  --all-features` *and* a plain `cargo test --release` (the no-lab dispatcher
-  arms only exist under default features), then a census spot-check
-  (`scripts/spot-check.sh`) whose rows are bit-identical to
-  `data/classical/census_table.txt` in every column but timing, at the sizes
-  touched. Canonical census rows are invariants; treat drift as a bug in the
-  change, not a discovery. CI runs only on `main` and pull requests into it,
-  so on `dev` the bar is local.
+- The verification bar for an engine change is `cargo test --release
+  --all-features`, plus `scripts/spot-check.sh` at the sizes touched when the
+  classical engine changes. Its n, closed, halt, diverge, unknown, max|nf| and
+  beta_total columns must match `data/classical/census_table.txt` exactly;
+  escal is reported, not failed, because memos and scheduling move it by
+  design and a range that does not start at 4 runs without the smaller
+  sizes' memos. Canonical census rows are invariants: treat drift in the
+  compared columns as a bug in the change, not a discovery. A dispatcher
+  change also runs `cargo test --release --bin blam
+  lab_subcommands_are_named_either_way` under default features. Beyond that,
+  run a battery, differential, recertification or Lean build when the change
+  touches what it checks (its inputs, generators, ledgers or encodings
+  included), and not otherwise. CI runs only on `main` and pull requests into
+  it, so on `dev` the bar is local.
 - `data/` holds results, not scratch, and only canonical generations live in
   the tree: `data/classical/` (census, frontier, Solomonoff/speed, Ω, coding),
   `data/quantum/` (operator census, skeleton manifest), `data/qalc/`
@@ -230,10 +236,13 @@ and the code in step.
   means blam's identical output, its failure blam's failure. Where the
   output breaks uni's protocol the reference interpreters disagree with
   one another; do not chase one of them there.
-- A change here reruns the external differentials on a frozen binary:
-  `tools/ait/actions.py` and `runs.py` against a `build_blc.sh` build, and
-  `uni_diff.py` against `uni.py`. They share `tools/ait/pairs.py` (memory
-  caps, a short first limit, a long retry only where one side finished).
+- A change that can alter what a program prints or reads (decoding, I/O,
+  an action's semantics, evaluation order) reruns the external differentials
+  on a frozen binary: `tools/ait/actions.py` and `runs.py` against a
+  `build_blc.sh` build, and `uni_diff.py` against `uni.py`. They share
+  `tools/ait/pairs.py` (memory caps, a short first limit, a long retry only
+  where one side finished), which sets no step budget, so a budget or
+  accounting change needs a budget test in `tests/differential.rs` instead.
   The counts go in STATUS.
 
 ### Certificates
@@ -388,3 +397,21 @@ verification. Whoever owns the task owns the synthesis. Send raw evidence —
 encodings, diffs, measurements, and exact claims — not a softened summary.
 When independence matters, open a fresh context instead of reviving one that
 already contains the design argument.
+
+What a result needs depends on how it is established:
+
+- **Kernel-checked:** a trust audit, not a proof review. Check that the
+  statement says what the document claims, that the definitions and
+  assumptions are the intended ones, that the theorem is about the artifact
+  (its wire identity), and that its axioms are at most `propext`,
+  `Classical.choice` and `Quot.sound` (`tools/certificates/bb.py` enforces
+  an allowlist for the certificate ledger).
+- **Handwritten and consequential:** one serious attempt to falsify it from a
+  fresh context. Agreement between instances of one model adds little.
+- **Finite check:** the check itself is the evidence. Make sure it covers the
+  whole grammar or domain the claim quantifies over, not only the canonical
+  encoder's output (the int4 battery generated only canonical codes and
+  passed a wrong interpreter).
+
+Documents say which of these establishes a result. They do not record review
+histories.
