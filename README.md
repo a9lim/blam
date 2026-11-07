@@ -126,11 +126,12 @@ proven.
   bits by reviewed handwritten proofs with kernel-checked components, and at
   least 31 kernel-checked in Lean
   ([global floor](docs/classical/self-interpreter/global-floor.md)). Every
-  interpreter built like the 162 — an opaque knot, any reader, a separate
-  NEXT building the canonical values — has at least 146 bits, kernel-checked
-  in Lean, and the 162 is optimal among them exactly when one reader bound
-  holds, which every β-normal reader meets; the equivalence survives NEXT of any syntax above a price frontier,
-  other value representations and other opaque recursion schemes
+  interpreter built like the 162 (an opaque knot, any reader, a separate
+  NEXT building the canonical values) has at least 146 bits, kernel-checked
+  in Lean. The 162 is optimal among them exactly when every reader weighs at
+  least 46, which every β-normal reader does; the same holds for NEXT of any
+  syntax above a price frontier, other value representations and other
+  opaque recursion schemes
   ([separated class](docs/classical/self-interpreter/class-bound.md)). The same
   reader gives universal machines of 172 (non-strict) and 184 (strict) bits,
   against Tromp's 178 and 190, and Lean proves all four universal
