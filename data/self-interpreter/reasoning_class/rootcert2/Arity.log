@@ -1,3 +1,0 @@
-'Blc.Rootcert2Arity.betas_typed' depends on axioms: [propext, Quot.sound]
-'Blc.Rootcert2Arity.check_sound' depends on axioms: [propext, Quot.sound]
-'Blc.Rootcert2Arity.reject' depends on axioms: [propext, Quot.sound]

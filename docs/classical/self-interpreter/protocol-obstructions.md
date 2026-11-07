@@ -596,9 +596,10 @@ internal values and a public adapter.
 
 ## The NEXT region
 
-Codex's handwritten results on NEXT with the 165's knot and reader fixed,
-found correct by an independent review
-(`data/self-interpreter/reasoning_floor/verify/vnext_codex.md`):
+Codex's handwritten results on NEXT with the 165's knot and reader fixed
+(`data/self-interpreter/reasoning_floor/next-proof-codex/`), found correct by
+an independent review (`reasoning_floor/verify/vnext_codex.md` at commit
+`703f50d`):
 
 - **Optimality of NEXT alone is a global problem.** Any closed
   self-interpreter `Q` fills the NEXT slot as

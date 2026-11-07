@@ -473,7 +473,8 @@ theorem occDepth_le_lambdas (t : Term) (j : Nat) :
     simp only [SelfintWireCost.occDepth, lamCount, occ, Nat.mul_add]
     omega
 
-/-- The five count rows from data/self-interpreter/reasoning_162/floor/reader30.md,
+/-- The five count rows of round 3's handwritten reader-30 classification
+    (data/self-interpreter/reasoning_162/floor/reader30.md at commit 703f50d),
     now proved for every lambda-rooted sub-30 reader. Normality and
     finite-layout membership are separate steps. -/
 def CountRows (L V X d f : Nat) : Prop := f = 1 ∧

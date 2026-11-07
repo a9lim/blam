@@ -11,7 +11,7 @@ identity-source outputs). Two independent adversarial reviews (a separate
 Codex consult and Gemini) found it correct; each re-derived the counting,
 the width-loss lemma and the six divergence invariants, and the Codex review
 replayed every finite refutation with its own reducer
-(`data/self-interpreter/reasoning_floor/verify/`). `Blc/SelfintFloor37.lean`
+(`data/self-interpreter/reasoning_floor/verify/` at commit `703f50d`). `Blc/SelfintFloor37.lean`
 kernel-checks the 144 fixed head-reduction clauses that case analysis cites,
 including the loop clauses and fixed instances of the six parametric
 divergence invariants, plus eight clauses for remainder extractors
@@ -601,14 +601,16 @@ invariants (macro systems, direct `N N` pumps, two-pending-argument systems,
 duplicated-argument and boxed wrappers), and the last 13 by complete Lean
 proofs of `¬ IsSelfInterpreter` on the identity source: eight by a rank-zero
 macro invariant, one by a protected trailing-argument grammar, four by
-explicit pumps (`reasoning_162/floor38/proof.md`; the Lean builds with `floor38/check_lean.py`).
+explicit pumps (`reasoning_162/floor38/proof.md`). The `floor38/` Lean of
+sections 7–9 is outside `lake build`; after `lake build Blc`,
+`floor38/check_lean.py` rebuilds all 25 modules in about a minute.
 
 Two independent reviews (a fresh Codex consult and Gemini) found this
 correct. The Codex review replayed all 615 finite certificates with a
 separately written reducer, re-derived the 652 + 24 counts by hand and
 matched every Lean term to its layout; Gemini re-enumerated the four count
 triples and reproduced the ledgers byte for byte
-(`reasoning_162/review38/`).
+(`reasoning_162/review38/` at `703f50d`).
 
 ## 8. Size 38
 
@@ -634,7 +636,8 @@ re-instantiated the layout templates independently and matched all 1,206;
 the Claude review enumerated the whole `D N` slice independently (1,602
 terms: the 1,206 plus 396 `(6,6,4)` terms, each with a smaller β-reduct
 within two steps), checked every certificate predicate against the
-contract and re-encoded every Lean term (`reasoning_162/review39/`). An
+contract and re-encoded every Lean term (`reasoning_162/review39/` at
+`703f50d`). An
 earlier draft's claim that the first contraction of a two-vacuous-binder
 layout always shrinks is false (`(λd. d (λu. d)) (λv. N0)` grows from 38 to 54
 bits before reaching 23); the proof uses the two-step argument instead.
@@ -669,7 +672,7 @@ cycles, and the last 9 residuals: an active-pair invariant, six pumps, two
 rigid-shape obstructions; `reasoning_162/floor38/proof40.md`).
 
 Two independent reviews (a fresh Codex consult and a fresh Claude consult)
-found this correct (`reasoning_162/review40/`). The Codex review rebuilt the
+found this correct (`reasoning_162/review40/` at `703f50d`). The Codex review rebuilt the
 templates independently (exactly 1,008 + 2,248 + 1,416 terms) and replayed
 the nine late residuals. The Claude review went further: a standalone
 enumerator generated every closed term at the six application triples (35.4

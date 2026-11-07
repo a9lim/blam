@@ -1,2 +1,0 @@
-\s. s (\b t. b (\x. x t) (c t))
-      (s (\b t. b (\a k. k a) (t t)) j)

@@ -10,7 +10,7 @@ s = U_n(N) = 1^n 0 ++ N (n = 1..3, rigid N), `V j = cont U_(n-1)(N) N`.
 """
 import sys, time, functools
 from multiprocessing import Pool
-sys.path.insert(0, '/Users/a9lim/Work/blam/tmp/round3/handoff')
+sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
 from lab import *
 
 

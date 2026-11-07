@@ -1,3 +1,0 @@
-'Blc.FirstopNonlinear.carryRight_nocount' depends on axioms: [propext, Quot.sound]
-'Blc.FirstopNonlinear.carryLeft_nocount' depends on axioms: [propext, Quot.sound]
-'Blc.FirstopNonlinear.towerC_nocount' depends on axioms: [propext, Quot.sound]

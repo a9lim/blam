@@ -758,7 +758,7 @@ remainder extractor has size at most 26, and **Rmin ≥ 27**.
 The reduction tables and representative recurrence equations pass the
 fixed audit; an independent review replayed them, and 52 further fixed
 equations, with its own reducer and found the argument correct
-(`data/self-interpreter/reasoning_floor/verify/`). The three-live-binder
+(`data/self-interpreter/reasoning_floor/verify/` at commit `703f50d`). The three-live-binder
 argument and the allocation classification are handwritten, not
 formalized; the kernel-checked numerical remainder floor is 18
 (`remainder_bound_eighteen`).

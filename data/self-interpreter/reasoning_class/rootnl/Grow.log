@@ -1,1 +1,0 @@
-'Blc.BodyLetGrow.grow_reduct' depends on axioms: [propext, Quot.sound]

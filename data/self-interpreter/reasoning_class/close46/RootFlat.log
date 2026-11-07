@@ -1,1 +1,0 @@
-'Blc.Close46RootFlat.minimum_root_flat_is_hole' depends on axioms: [propext, Quot.sound]

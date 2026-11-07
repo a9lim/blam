@@ -1,6 +1,6 @@
 /-
 Round 3's role algebra, copied unchanged apart from its namespace from
-data/self-interpreter/reasoning_162/floor/RoleAlgebra.lean. Two unary Scott
+data/self-interpreter/reasoning_162/floor/RoleAlgebra.lean (commit 703f50d). Two unary Scott
 streams applied to each other reduce to the constant suffix, the identity, or
 N applied to a unary stream, at every pair of lengths (`unary_cross`). Every
 application-only expression over the stream, the false bit, c and rigid

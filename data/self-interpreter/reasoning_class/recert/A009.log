@@ -1,1 +1,0 @@
-'Certgen.A009.no_stop' depends on axioms: [propext, Quot.sound]

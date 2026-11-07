@@ -1,3 +1,0 @@
-'Blc.FirstopNonlinear.Residual.reject1776' depends on axioms: [propext, Quot.sound]
-'Blc.FirstopNonlinear.Residual.reject1885' depends on axioms: [propext, Quot.sound]
-'Blc.FirstopNonlinear.Residual.reject1886' depends on axioms: [propext, Quot.sound]

@@ -1,3 +1,0 @@
-'Blc.Pending.closed_push_minimum' depends on axioms: [propext, Quot.sound]
-'Blc.Pending.into_A_counterexample' depends on axioms: [propext, Quot.sound]
-'Blc.Pending.counterexample_prices' does not depend on any axioms

@@ -4,7 +4,7 @@ replacing the subterm at p by a fresh rigid variable breaks the law
 (= p is typed in every intersection-type derivation of that law; see NOTES).
 Prints per-node role sets and the union accounting."""
 import sys
-sys.path.insert(0, '/Users/a9lim/Work/blam/tmp/round4/coord')
+sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'coord'))
 import rd
 
 def positions(t, path=()):

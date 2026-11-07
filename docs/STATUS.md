@@ -297,7 +297,9 @@ and proofs; this section holds the current numbers and the open cells.
   exclude 34–39 (676 layouts at 37, 1,206 at 38, 4,672 at 39), each finite
   certificate's predicate kernel-checked and every residual (13, 63 and 167)
   refuted by a complete Lean proof of `¬ IsSelfInterpreter`
-  (`data/self-interpreter/reasoning_162/floor38/`). No Lean theorem states 40.
+  (`data/self-interpreter/reasoning_162/floor38/`, outside `lake build`;
+  `floor38/check_lean.py` rebuilds it in about a minute). No Lean theorem
+  states 40.
   The **kernel-checked floor is 31** (`SelfintRound8BitFloor.selfintSizeBound_31`,
   without Statman's theorem), with an unconditional four-source-λ bound
   (`SelfintRound8FourLambda`); at exactly 31 the remaining minimum-resource
@@ -340,7 +342,7 @@ and proofs; this section holds the current numbers and the open cells.
   59-step cast-erasure trace to the literal 165). The 188, 196, 204, 584, 672,
   742 and four erased-skip variants pass the battery (667/1/0) and
   divergent-source suffix checks (`data/self-interpreter/theory/`).
-- **Lean.** `lake build Blc Certs BusyBeaver` is current (198 jobs); headline
+- **Lean.** `lake build Blc Certs BusyBeaver` is current (220 jobs); headline
   theorems use at most `propext`, `Classical.choice` and `Quot.sound`
   (`lean/README.md`).
 - **The universal machine** (`universal.md`): Tromp's wirings around the

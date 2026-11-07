@@ -32,7 +32,7 @@ It is the 165 (`machines/int165.lam`, §2) with a new reader; everything from
 `\bit1` inward is the 165's, which is Sean Palmer's 168 (tromp/AIT
 `2cfa384`) with Codex's reader, and the 168 is one β-expansion of Tromp's
 170. The 162's reader is a 44-bit reader that Codex built while refuting a
-step of a reader-optimality proof (`data/self-interpreter/reasoning_floor/`),
+step of a reader-optimality proof (`data/self-interpreter/reasoning_floor/origin162/`),
 placed in the 165 with NEXT as the reader's last operand, Grok's idea; that
 interpreter measures 166 with a `next` let, and `blam golf letopt` renders it
 at 162 by inlining NEXT into the operand slot. In the size identity
@@ -56,7 +56,8 @@ variable residual `s s NEXT` names the continuation, through NEXT, so its
 parser statement quantifies the residual inside the continuation:
 `not_parses_intL162` proves that the 165's continuation-uniform statement
 fails for it. An independent adversarial review re-derived the contract by
-hand and recounted the size (`reasoning_floor/verify/v162_codex.md`).
+hand and recounted the size (`reasoning_floor/verify/v162_codex.md` at commit
+`703f50d`).
 
 **Nothing below 162 is known.** §3 lists everything searched around it and its
 predecessors, §5 the lower bounds. None is an unconditional optimality proof;
@@ -248,9 +249,10 @@ not a result: its symbolic checker unfolds the knot as `G X c s → B[x := G]`
 where the knot gives `B[x := X]`, wrong whenever an arm applies `x` to
 something other than the generator, and its comparison cache can reject
 β-equal terms; both defects are reproduced in Lean
-(`reasoning_162/pumps/GeneratorAudit.lean`). A separate certification
+(`Blc/SelfintGeneratorAudit.lean`). A separate certification
 resolved all but 29 distinct residuals of its 11,109 capped arms with grammar
-and pump certificates (`reasoning_162/pumps/`).
+and pump certificates (`reasoning_162/pumps/` at `703f50d`; the residuals are
+kept in `reasoning_162/pumps/unresolved.md`).
 
 Around the 165:
 
@@ -583,9 +585,18 @@ would itself be a 79-bit global floor.
 These bound readers of the 165's shape with its `next` protocol. The 162's
 reader lies outside them: it has three operands, and as a two-operand reader
 its last operand is the bare `next`, a family they leave open. A
-residual-tracing attempt to extend them to every reader shape was refuted
-step by step in review, without a reader below 43 being found
-(`data/self-interpreter/reasoning_floor/reader-proof/`, `verify/`).
+residual-tracing attempt to extend them to every reader shape (every reader
+body ≥ 43 with the 165's knot and NEXT fixed) was refuted step by step in
+review, without a reader below 43 being found: different signatures do not
+imply different source origins, a reader can take an output node from a
+non-dispatch stream cell, rebuilt tails can borrow their body nodes from the
+stream, and the subcase it priced at ≥ 64 bits holds the β-normal 59-bit
+reader `s (λb. b (λu t. t) cont) T` with `T = s (λb r. b (r next) (r r r))`
+(34 bits; `T` gives `R next` on `cons K R` and `N` on unary streams), which
+spliced into the 165 is a correct 181
+(`data/self-interpreter/reasoning_floor/verify/vreader_codex_splice/alpha_dual_operand.lam`;
+the attempt and its reviews are `reasoning_floor/reader-proof/` and
+`verify/` at commit `703f50d`).
 
 These are Codex's handwritten proofs, with targeted reduction checks in
 `data/self-interpreter/reasoning_165/bounds/` (`proof_check.py`) and
@@ -831,10 +842,11 @@ their optimal let structure (`blam golf letopt`, at most three cuts).
 ### Variants of the 162
 
 Built by the third and fourth rounds of reasoning lanes, each priced by hand
-before it was written; sources, proofs and logs are in
+before it was written; sources are in
 `data/self-interpreter/reasoning_162/<lane>/` and
 `data/self-interpreter/reasoning_class/<lane>/` (the lane names in the table
-are unique across the two). Each passes the battery unless marked; sizes are
+are unique across the two), and the lanes' proofs and logs in the full lane
+archives at commit `703f50d`. Each passes the battery unless marked; sizes are
 polished unless a lane recorded only the written size.
 
 | idea | bits | lane | note |
@@ -932,10 +944,11 @@ Open:
 | `tools/self-interpreter/merges.py` | the 165, its nearest variants, the 168's protocol variants, and the variants of §6 |
 | `tools/self-interpreter/polish.py` | battery, then the optimal let structure (`blam golf letopt`) of a candidate; a new algorithm's size is its letopt minimum |
 | `tools/self-interpreter/theory/floor37/verify.py` | the 108 residual layouts and the kernel-checked clauses of `global-floor.md` |
-| `data/self-interpreter/reasoning_floor/` | the second round of reasoning lanes: floors, knot and remainder theorems, and the variants of §6 they built |
-| `data/self-interpreter/reasoning_162/` | the third round: the separated class and the reader weight, the 38- and 39-bit floors, the recursion bounds, the §3 reader-slot checks, the variants of the 162 |
-| `data/self-interpreter/reasoning_class/` | the fourth round: the widened classes, the reader-weight families and reductions, the divergent-probe derivations, the continuation-headed class, the variants of §6 it built |
+| `data/self-interpreter/reasoning_floor/` | the second round of reasoning lanes: the 162's origin, the variants of §6 it built, and the handwritten NEXT, cell, lift and knot results with their checks |
+| `data/self-interpreter/reasoning_162/` | the third round: the global floor's proofs, inventories and Lean (`floor38/check_lean.py`), the §3 hand-off check, the variants of the 162 |
+| `data/self-interpreter/reasoning_class/` | the fourth round: the β-normal reader search, the open root-let cells' ledgers, the variants of the 162 it built |
 | `data/self-interpreter/reasoning_165/` | the proofs and checks behind §2's identities, §5's shape bounds and exclusions, and §6's variants |
+| commit `703f50d` | the full lane archives of all four rounds (each directory's `README.md` lists what the tree keeps) |
 | `blam golf letopt`, `blam golf component` (lab) | let structure and βη component (`--contextual`) |
 | `blam selfint hole` (lab), `tools/self-interpreter/sketches.py` | one- and two-hole searches, including the 165's reader slots |
 | `blam selfint ctx` (lab) | contextual slot searches in the 168 |

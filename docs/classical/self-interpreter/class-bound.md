@@ -9,8 +9,12 @@ question about readers. That question is open; §3 says exactly how far it is
 settled. §4 widens the class (NEXT of any syntax, any value representation,
 any opaque recursion in a two-port model, continuation-headed analogues) and
 derives part of its laws from the contract; §5 records what lies outside.
-Lane archives: `data/self-interpreter/reasoning_162/` (round 3) and
-`data/self-interpreter/reasoning_class/` (round 4).
+A result credited to a named lane was established in that lane's archive:
+round 3 under `data/self-interpreter/reasoning_162/`, round 4 under
+`data/self-interpreter/reasoning_class/`. The tree keeps only the parts listed
+in each directory's `README.md`; the full lane archives are at commit
+`703f50d`. Lean cited by a `Blc/` module builds with `lake build Blc`; Lean
+credited only to a lane was kernel-checked in its archive and is not rebuilt.
 
 ## 1. The class
 
@@ -176,13 +180,13 @@ the 39-bit one.
   argument budgets. A minimum root let `(λx. B) A C⃗` with `k` uses and `j`
   at depth `d` has `w ≥ 4k + 22 + 4d` plus its index tax, so below 46 it
   has at most five uses, four when `j` is under a λ
-  (`reasoning_class/rootnf/RootProfile.lean`, Codex). In the tight
+  (`Blc/SelfintRootProfile.lean`, Codex). In the tight
   profiles `k + d = 5` every source fails: about 240,000 with a
   certificate, 32,743 normalizer exceptions refuted in Lean (Codex, rootlet
   lane), and the last 580 listed exceptions by Lean proofs from the zero
   law alone (Codex, rootcert lane; the final three, of weight 45, by one
   kernel-checked divergence family `A aₘ aₘ₊₂ ⋯ →h^(4m+2) A aₘ₊₁ aₘ₊₃ ⋯`,
-  Claude, `reasoning_class/combs2/Rootlet3.lean`). Source η-contraction keeps both laws and the one hole and strictly
+  Claude, `Blc/SelfintRootCertThree.lean`). Source η-contraction keeps both laws and the one hole and strictly
   lowers the weight (kernel-checked), so a minimum reader has no η-redex;
   of the lower profiles, the 73,311 sources with three λs and `V = k + 5`
   fail too. **No minimum reader below 46 is a linear root let** (Codex,
@@ -201,7 +205,7 @@ the 39-bit one.
   kernel-checked flow and arity checker in the rootcert2 lane, the final
   five — weight 44, sharing the helper `H = λx y. x (y (y x))` — by one
   kernel-checked cycle in which `H C E (F H)` reproduces itself after 44
-  head steps, `reasoning_class/combs3/Rootlet5.lean`); A root let
+  head steps, `Blc/SelfintRootCertFive.lean`); A root let
   whose body is headed by the stream binder lifts exactly to a λ-rooted
   reader: `(λg. λs. B) H` and `λs. (λg. B~) H` (binders swapped) agree on
   every stream, and the second weighs `u_s(B) − u_g(B) + f_c(H) + 4·occ_j(H)`
@@ -288,9 +292,9 @@ the 39-bit one.
   `((λx. B) A) C⃗` uses `x` at most four times, has a λ inside `A`, and, if
   the let is linear, has `j` inside `A` (Codex, bodyredex lane: handwritten
   with the scalar bounds and the `A = (s s s) j` case in
-  `reasoning_class/bodyredex/FlatRestHole.lean`, and complete checks of
+  `Blc/SelfintFlatRestHole.lean`, and complete checks of
   92,480 and 47,328 sources). Contracting such a linear let never yields a
-  β-normal term directly (kernel-checked, `Followup.lean`), and a λ-headed
+  β-normal term directly (kernel-checked, `Blc/SelfintBodyLetLinear.lean`), and a λ-headed
   linear `B` (13,296 sources) and the uniform helper family
   `λs. ((λx. s x … x) A) j` with two to four uses (14,150 sources) have no
   reader below 46. Nor does any other let with two to four uses: no
@@ -320,7 +324,7 @@ the 39-bit one.
   lets at an exact capture charge, and independent adjacent lets
   interchange at the exact price `F(A) − F(E) + uses_y(D) − uses_x(D)`.
 - **The 164's and the 165's families** (Codex; prices and shielding
-  kernel-checked, `reasoning_class/loop/Prices.lean`, `Shield.lean`, the
+  kernel-checked, `Blc/SelfintLoopPrices.lean`, `SelfintLoopShield`, the
   assembly handwritten with complete helper checks over 19,554 sources).
   `λs. s (λb. b A c) B` with any operands, redexes included, and one `j`
   has `w ≥ 48`, attained by the 164; its hoisted form
@@ -356,7 +360,7 @@ shape (redexes included) within the stated budget under the class's exact
 cost model, test both laws on `n = 1, 2, 3`, and certify every fuel or size
 cut-off (a head cycle on the term or its η-normal form, a target constant
 absent, or a closed Ω subterm). An empty result therefore refutes the
-family; the lists are in the round-4 archive. Claude's lanes:
+family; the lists are in the round-4 lane archives (`703f50d`). Claude's lanes:
 
 - minimal pieces: the unary core (one `j`, erased) costs at least 20 bits
   and through 28 bits the only core of at most 23 is `s (λq. c) (s s j)`;
@@ -376,9 +380,11 @@ family; the lists are in the round-4 archive. Claude's lanes:
 - **every β-normal reader: `w ≥ 46`, sharp at the 162**, with no
   minimality assumption (Claude, types lane; reviewed adversarially by
   Codex, who reproduced every run, and again by a fresh Claude reviewer).
-  The search is computer-checked; the shape lemma below, the
+  The search is computer-checked and reruns from the tree
+  (`data/self-interpreter/reasoning_class/types/`, five runs listed in its
+  `REPORT.md`); the shape lemma below, the
   needed-occurrence lemma and the lower bound's admissibility are
-  kernel-checked (Codex, `reasoning_class/leanbn/Foundations.lean`), and a
+  kernel-checked (Codex, `Blc/SelfintNormalReaderLemmas.lean`), and a
   proof-producing version of the whole search is designed, not built. The search is needed narrowing for the
   zero law and the unary laws at `n = 1, 2`: each law runs on a normal-order
   machine against its target, a hole is refined only when a run needs it,
@@ -469,7 +475,7 @@ family; the lists are in the round-4 archive. Claude's lanes:
   four by a self-feeding divergence lemma), and so does
   `λs. (λg. B) (λy. y A W) C` with one trailing operand (47,591 states; its
   last four cut-offs are closed combinators `H H` proved unsolvable in Lean,
-  `reasoning_class/combs/Combs.lean`);
+  `Blc/SelfintSharedCutoffs.lean`);
 - **no reader with `w ≤ 45` and `j` under no λ but the stream's has a
   syntactic site at all** (Claude, single lane; reviewed by Codex, who
   reran the whole partition: 126 paths, 329,895 narrowing states, 76,845
@@ -710,13 +716,13 @@ bound in the source weight: with `G = λp x. p (x x)`,
 weak-head λ, `λs. s Xₘ (λu. s (λq. c) (s s u)) j` with `Xₘ →β* I`, weighs
 `40 + 6·2ᵐ`, every node of it needed by both laws (Codex, expand lane; a
 108-bit instance with a 393,256-bit endpoint is kernel-checked in
-`reasoning_class/expand/Expansion.lean`). Such readers are not minimal —
+`Blc/SelfintHandoffExpansion.lean`). Such readers are not minimal —
 replacing `G` by `I` saves 11 bits — so what closes the case is not a bound
 on the expansion but a source-level simplification that keeps both laws and
 recovers the whole expansion cost, or a split of the remaining minimum
 sources into families each with an endpoint floor that holds without
 minimality. Two such simplifications are kernel-checked (Codex, simplify
-lane): specializing a static hand-off `(λx. T[x]) (λz. z M) C⃗` (`T` an
+lane, `Blc/SelfintSimplify*.lean`): specializing a static hand-off `(λx. T[x]) (λz. z M) C⃗` (`T` an
 application tree) keeps both laws and one `j` at the exact price
 `7b − 6 − F(M)` for the `b` wrappers that remain, so it always simplifies
 when none remains and forces `F(M) ≤ 1` when one does; and for an
@@ -747,21 +753,21 @@ it needs an upper bound on what normalization adds.
 Where `j` dies does not price a reader (Codex, jerase lane). Every
 residual of the source `j` is erased by a contraction whose λ comes from
 the reader source, a unary cell's `F` or the terminal `K` (the occurrence
-identity behind this is kernel-checked; the provenance argument is
-handwritten), but the origin does not fix the cost: the 162 erases `j` at
+identity behind this is kernel-checked, `Blc/SelfintErasure.lean`; the
+provenance argument is handwritten), but the origin does not fix the cost: the 162 erases `j` at
 the terminal `K` — its `λu` only transfers it,
 `(λu. s (λq. c) (s s u)) j → s (λq. c) (s s j)` — the 165 with an input `F`
 at 49, `λs. s (λb t n. b (t n) (c t (t t n))) j` (`w = 58`, β-normal) kills
 two residuals of `j` by both mechanisms in one run, and
 `λs. s I (s (λq. c)) (s (λb t. b K F) j (s s s))` (`w = 70`) erases it with
 a source `F` that has no `s` or `c` leaves beneath it (all laws for every
-`n` kernel-checked, `reasoning_class/jerase/Witnesses.lean`).
+`n` kernel-checked, `Blc/SelfintErasureWitnesses.lean`).
 
 Periodicity of the unary run is not a pricing tool either. A reader's run on `U_n`
 need not settle into a fixed period: `λs. s I (λu. s (λq. c) (G s O)) j`
 with `G = W W`, `W = λg t k. t (λb r. b r (k I (g g r (S k))))` and Church
 `O`, `S` is a correct reader (`w = 221`, both laws for every `n`
-kernel-checked, Codex, `reasoning_class/loop/Slow.lean`) that carries a
+kernel-checked, Codex, `Blc/SelfintSlowReader.lean`) that carries a
 growing counter and takes `2n² + 8n + 8` steps to skip. And in the 162 the
 repeating skip `U_(m+1) U_(m+1) →⁴ U_m U_m` consists entirely of input-cell
 redexes: the reader's `s s` only starts it, so a period charges no reader

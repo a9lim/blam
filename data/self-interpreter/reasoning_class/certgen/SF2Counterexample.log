@@ -1,2 +1,0 @@
-'Certgen.SF2Counterexample.reduces' depends on axioms: [propext]
-'Certgen.SF2Counterexample.solvable' depends on axioms: [propext]

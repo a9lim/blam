@@ -264,7 +264,7 @@ def search(B, laws, fuel_n, betanormal, maxstates, jlo, jhi, tabling, start):
     return stats
 
 def parse_prefix(src):
-    sys.path.insert(0, '/Users/a9lim/Work/blam/tmp/round4/coord')
+    sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'coord'))
     import rd
     meta = {}; info = {'cost': 0, 'j': False, 'c': False}; ctr = [1]
     def conv(t, env, head):

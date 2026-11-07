@@ -2,9 +2,10 @@
 
 Nine Codex consults (2026-10-20), each given one perspective on a sub-165
 self-interpreter and told to reason first, with only light targeted checks.
-None found one. `BRIEF.md` is the shared brief; each directory holds one
-consult's summary (`SUMMARY.md`), its full report, the complete constructions
-it built (`.lam`, `.blc`), and the scripts behind its identity checks.
+None found one. Each directory holds one consult's summary (`SUMMARY.md`),
+its full report, the complete constructions it built (`.lam`, `.blc`), and
+the scripts behind its identity checks. The shared brief and the run logs are
+in git history at commit `703f50d`.
 
 What the record keeps from them is in
 `docs/classical/self-interpreter/interpreter.md` (§2 identities, §5 shape

@@ -189,7 +189,8 @@ the continuation variable cost 11 bits, giving the kernel-checked
 `22+22+11=55`.
 
 Codex's handwritten argument prices each payload further; two independent
-reviews found it correct (`data/self-interpreter/reasoning_floor/`).
+reviews found it correct (`data/self-interpreter/reasoning_floor/` at commit
+`703f50d`).
 
 - **The value payload costs at least 37.** Its two incomparable nonlinear
   binders lie in `A` itself: the quotation of `Ω` with a rigid tail is

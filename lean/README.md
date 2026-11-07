@@ -302,6 +302,39 @@ Self-interpretation:
   cannot cross a sufficient rigid pending block; exact source escape
   alternatives, a sharp live-captured-head price, and a family showing
   that this local charge does not close the remaining coarse cells.
+- `Blc/SelfintRootProfile.lean` — the root-let profile bound
+  `w ≥ 4k + 22 + 4d`: below 46 a minimum root let has at most five uses,
+  four when `j` is under a λ. `SelfintRootCertThree` and
+  `SelfintRootCertFive` refute the three and five root-let sources the
+  rootcert lanes left to the engine, by one divergence family and by one
+  44-step head cycle.
+- `Blc/SelfintFlatRestHole.lean` and `SelfintBodyLetLinear` — stream-λ body
+  lets: the flat `(s s s) j` argument case and its scalar bounds, and that a
+  minimum reader's linear body let never contracts to a β-normal term
+  directly.
+- `Blc/SelfintLoopPrices.lean` and `SelfintLoopShield` — exact source prices
+  and rigid shielding behind the 164's family (`w ≥ 48`) and the hoisted
+  165's (`w ≥ 49`). `SelfintSlowReader` is a correct reader of weight 221
+  whose unary run carries an unbounded Church counter.
+- `Blc/SelfintNormalReaderLemmas.lean` — the shape lemma, the
+  needed-occurrence lemma and the lower bound's admissibility for the
+  β-normal reader search (the search itself is
+  `data/self-interpreter/reasoning_class/types/`).
+- `Blc/SelfintSharedCutoffs.lean` — the four closed combinators `H H` left by
+  the shared-dispatcher skeleton with one trailing operand are unsolvable.
+- `Blc/SelfintHandoffExpansion.lean` — pre-stream hand-offs expand without
+  bound: a 108-bit reader instance with a 393,256-bit endpoint.
+- `Blc/SelfintErasure.lean` and `SelfintErasureWitnesses` — every loss of a
+  free variable under β has a syntactically erasing redex site, and correct
+  readers that erase the source `j` at different sites, with their laws for
+  every unary length.
+- `Blc/SelfintGeneratorAudit.lean` — the two defects of the round-3
+  variable-arm enumeration's symbolic checker: it mis-binds the knot's
+  generator, and its comparison can reject β-equal terms.
+- `Blc/SelfintSimplifyHandoff.lean` and `SelfintSimplify{General,Factor,
+  Cases,Constant,Dependent,ExtendedCases,Multiple}` — source simplifications
+  for root-let hand-offs (static specialization at the exact price
+  `7b − 6 − F(M)`, idempotent helpers) that mark listed sources non-minimum.
 - `Blc/SelfintRound6ReaderStrict.lean` — a beta-preserved strictness
   interpretation permits captured heads and arbitrary nonlinear sharing;
   it excludes good prefixes before rigid operands. Symbolic tower proofs

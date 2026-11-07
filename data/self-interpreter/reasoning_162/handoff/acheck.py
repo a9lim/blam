@@ -3,7 +3,7 @@
 any shape (not only \\u. B): law A j = cont U_(n-1)(N) N on U_n(N), n=1..3."""
 import sys, time
 from multiprocessing import Pool
-sys.path.insert(0, '/Users/a9lim/Work/blam/tmp/round3/handoff')
+sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
 from lab import *
 from vcheck import terms, inst, NEXT, CONT, N
 

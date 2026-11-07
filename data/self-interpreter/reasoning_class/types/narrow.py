@@ -210,7 +210,7 @@ def search(B, laws, fuel_n, betanormal, maxstates):
         rec({}, {0: (0, False)}, frozenset({0}), 0, False, False)
     else:
         # prefix: named term with '_' holes; build fills/meta/cost
-        sys.path.insert(0, '/Users/a9lim/Work/blam/tmp/round4/coord')
+        sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'coord'))
         import rd
         meta = {}; info = {'cost': 0, 'j': False, 'c': False}
         def conv(t, env, head):
