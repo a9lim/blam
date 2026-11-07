@@ -1,0 +1,51 @@
+[
+  {
+    "id": "h2_2.json:30",
+    "certificate": "SF2_h2_2_30.json",
+    "states": 40,
+    "k": 0,
+    "mode": "site"
+  },
+  {
+    "id": "h2_2.json:32",
+    "certificate": "SF2_h2_2_32.json",
+    "states": 26,
+    "k": 0,
+    "mode": "site"
+  },
+  {
+    "id": "h2_2.json:33",
+    "certificate": "SF2_h2_2_33.json",
+    "states": 28,
+    "k": 0,
+    "mode": "site"
+  },
+  {
+    "id": "h2_2.json:163",
+    "certificate": "SF2_h2_2_163.json",
+    "states": 43,
+    "k": 0,
+    "mode": "site"
+  },
+  {
+    "id": "h2_2.json:339",
+    "certificate": "SF2_h2_2_339.json",
+    "states": 34,
+    "k": 0,
+    "mode": "site"
+  },
+  {
+    "id": "h2_5.json:31",
+    "certificate": "SF2_h2_5_31.json",
+    "states": 27,
+    "k": 0,
+    "mode": "site"
+  },
+  {
+    "id": "h2_5.json:32",
+    "certificate": "SF2_h2_5_32.json",
+    "states": 25,
+    "k": 0,
+    "mode": "site"
+  }
+]

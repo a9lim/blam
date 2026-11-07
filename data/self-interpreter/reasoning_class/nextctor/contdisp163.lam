@@ -1,0 +1,8 @@
+-- nextctor: the 162 with NEXT replaced by the continuation-dispatch form
+-- \b. p (b (\f. c Abs) (\f. p (\g. c App)))  (q = 93, F = 4): expect 163.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (bit1
+      (\exp. cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (\exp. intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

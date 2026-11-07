@@ -1,0 +1,7 @@
+-- Literal architecture from PAPER.md; hypotheses require checking.
+(\g\c.g g (\i\j.j) (\i\j.j) (\v.c (v (\i\j.j)))) (\g\a\j\c\s.
+  (\ret.s (\i.i) (\u.s (\q.ret) (s s u))
+    (\b.g g (\i\j.j) (\i\j.j) (\v.b
+      (ret (\e\x.(v (\i\j.j)) (\z\y.z x (y e))))
+      (v v (\w.ret (w (\i\j.j)))))))
+  (\f.c (\h.h g (\e.a e (f e)))))

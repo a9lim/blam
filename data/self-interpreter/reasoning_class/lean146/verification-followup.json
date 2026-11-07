@@ -1,0 +1,107 @@
+{
+  "timestamp": "2026-10-22T03:55:27.108255+00:00",
+  "seconds": 66.63851212500595,
+  "longest_child": 65.95338083300157,
+  "lean_files": 1,
+  "recorded_layouts": 3484,
+  "row_counts": [
+    364,
+    1762,
+    1070,
+    230,
+    58
+  ],
+  "allowed_axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "records": [
+    {
+      "command": [
+        "/Users/a9lim/.venv/bin/python",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/generate_followup.py"
+      ],
+      "cwd": "/Users/a9lim/Work/blam",
+      "seconds": 0.6784348340006545,
+      "returncode": 0,
+      "log": "generate_followup.py.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/Final146.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 65.95338083300157,
+      "returncode": 0,
+      "log": "Final146.lean.log",
+      "sha256": "cffd53539a9bb6700a3a49f7f7c17eeed78f8948f05a736ddd9078b52496de06",
+      "audited_theorems": 44,
+      "axioms": {
+        "Blc.Lean146.absent_subst_weight": "propext, Quot.sound",
+        "Blc.Lean146.Erase.reader_single_hole": "propext, Quot.sound",
+        "Blc.Lean146.Minimum.no_erasing": "propext, Quot.sound",
+        "Blc.Lean146.counterexample_minimum": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Live.reader_weight_24": "propext, Quot.sound",
+        "Blc.Lean146Live.class_bound_140": "propext, Quot.sound",
+        "Blc.Lean146Live.sub30_lambda_shape": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Live.beta_one_live": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Live.sub30_lambda_normal": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Live.reader_leaf_charge": "propext, Quot.sound",
+        "Blc.Lean146Live.lambda_count_rows": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Live.depth_five_weight_46": "propext, Quot.sound",
+        "Blc.Lean146Live.live_subst": "propext, Quot.sound",
+        "Blc.Lean146Live.weakStep_one_live": "propext, Quot.sound",
+        "Blc.Lean146Live.reader_two_live": "propext, Quot.sound",
+        "Blc.Lean146Live.flat_pair_algebra": "propext, Quot.sound",
+        "Blc.Lean146Live.no_flat_reader": "propext, Quot.sound",
+        "Blc.Lean146.reader_weight_30_of_coverage": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146.class_bound_146_of_coverage": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Enum.layouts_complete": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Enum.row_complete": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Enum.row0_exact": "propext",
+        "Blc.Lean146Enum.row0_reject": "propext, Quot.sound",
+        "Blc.Lean146Enum.row1_exact": "propext",
+        "Blc.Lean146Enum.row1_reject": "propext, Quot.sound",
+        "Blc.Lean146Enum.row2_exact": "propext",
+        "Blc.Lean146Enum.row2_reject": "propext, Quot.sound",
+        "Blc.Lean146Enum.row3_exact": "propext",
+        "Blc.Lean146Enum.row3_reject": "propext, Quot.sound",
+        "Blc.Lean146Enum.row4_exact": "propext",
+        "Blc.Lean146Enum.row4_reject": "propext, Quot.sound",
+        "Blc.Lean146Enum.fiveRowExclusion": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Enum.lambda_reader_weight_30": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Enum.reader_weight_30_of_minimum_lambda": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146NonLambda.minimum_nonlam_three_live": "propext, Quot.sound",
+        "Blc.Lean146NonLambda.minimum_nonlam_sub30_counts": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146NonLambda.one_live_skeleton": "propext, Quot.sound",
+        "Blc.Lean146NonLambda.skeleton_not_reader": "propext, Quot.sound",
+        "Blc.Lean146Accounting.weighted_beta_delta": "propext, Quot.sound",
+        "Blc.Lean146Accounting.minimum_linear_charge": "propext, Quot.sound",
+        "Blc.Lean146Accounting.trapped_cj": "propext, Quot.sound",
+        "Blc.Lean146Accounting.minimumLambdaCoverage": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Final.reader_weight_30": "propext, Classical.choice, Quot.sound",
+        "Blc.Lean146Final.class_bound_146": "propext, Classical.choice, Quot.sound"
+      }
+    }
+  ],
+  "source_sha256": {
+    "Minimum.lean": "d37c37ffae8a271e590095efefdb97254f2d33d2faed1d4bbf36a783672962b5",
+    "Live.lean": "4f7bdd0a4972f43a165ab2f9bc0eea4ce1f5ef8d9626860f56d2030444f1ff7d",
+    "BridgeTail.txt": "cbf1e6fa8467cc7c364574b841e7f3a6759f03fa7e8eccabd42bff618192240c",
+    "Enum.lean": "352fb1ba4fe978e633cfb8439f5831d389338e5f0f88e7a6ed4ed7aafba85a9b",
+    "EnumBridgeTail.txt": "2facb932f8cacaa0ef577efb1dccb93fc2cf0950214bd8da8b7eb5a0951a50cb",
+    "CertificatesTail.txt": "fa4edcb660416710fac2738b3c29ee0137c4ba63513d007faf0ada109473553d",
+    "NonLambdaTail.txt": "81d66303bcb214e85ba3d4ea6daeafbebd2115506ae480566badabe3606ba5f7",
+    "AccountingTail.txt": "366f45a0eee5157d057c8213ccb3d10e529d5cc2f6594798ec35f3898dea661f",
+    "FinalTail.txt": "d3bf9295b7cf2e285f42a096e4d5231cb2824b74cc18a94115a24a76898778f0",
+    "CoverageFinalTail.txt": "4480430821435cdbcc35a080ee05463401a2c3aa5f3c6a1a16824f2a2b1ffe83",
+    "compact_generate.py": "33f6fba09ed1c8c6885e3510d9d2fabadf0d178cf0575553da26877112c37343",
+    "coverage_generate.py": "9b393ddcd021556c381c861017fb023cc413276beef9eb736be6736958928c51",
+    "generate_followup.py": "3c98c2bbfbbff51adc897f744c8dd17acc40a0012d0e426672470e8475b38466",
+    "verify_followup.py": "4180b4ab6804a86ccc15cee3c74ad9a010011fdba62fd63f21779bbfbac3d5a0"
+  },
+  "archive_sha256": "dcc600264f6b48d9938eace936663fa83db223b71e515589e7f5db7eb4c3fb52"
+}

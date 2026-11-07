@@ -1,0 +1,17 @@
+{
+  "label": "R250",
+  "id": "rootnarrow/work/h63re_1.json:0",
+  "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (x1 ((x1 (x0 x1)) x1))))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 115,
+  "work": 130,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 115,
+  "checked": true,
+  "sha256": "cf6a48f1a7562e59e5f3d2fbbbe5e9fea54b3dda8f58e884adf473514c909fc9",
+  "seconds": 0.0013307089975569397,
+  "peak_rss_bytes": 24084480,
+  "threads": 1
+}

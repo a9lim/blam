@@ -1,0 +1,3 @@
+tmp/round4/widen/deep_shared_233.lam: 233 bits  ok=667 skip=1 fail=0  tmp/round4/widen/deep_shared_233.lam
+  letopt --max-cuts 2: smallest 162
+  sub-165 rendering 162 -> /Users/a9lim/Work/blam/tmp/round4/widen/tmpy7e4xf7w.blc: 162 bits  ok=667 skip=1 fail=0  bits

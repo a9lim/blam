@@ -1,0 +1,9 @@
+{
+  "label": "R173",
+  "valid": true,
+  "source_matches": true,
+  "states": 102,
+  "sha256": "d948506f989f340d4d5f1f5a6e1a1c7bf66b596d4dc09a4c7c71cdea970786ec",
+  "seconds": 0.000306583009660244,
+  "peak_rss_bytes": 24068096
+}

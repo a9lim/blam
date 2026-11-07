@@ -1,0 +1,38 @@
+
+namespace Blc.Lean146Enum
+open Term SelfintClass
+
+structure Certificate where
+  reader : Term
+  zero : Bool
+  steps : Nat
+  nf : Term
+
+def Certificate.input (c : Certificate) : Term := if c.zero then Z else S
+def Certificate.output (c : Certificate) : Term := if c.zero then zeroOut else varOut
+
+def Certificate.check (c : Certificate) : Bool :=
+  decide (normalSteps c.steps (.app c.reader c.input) = some c.nf) &&
+  decide (NFt c.nf) && decide (c.nf ≠ c.output)
+
+theorem Certificate.sound (c : Certificate) (h : c.check = true) : ¬ Reader c.reader := by
+  simp only [Certificate.check, Bool.and_eq_true, decide_eq_true_eq] at h
+  intro hr
+  have hn : NormalForm c.nf := fun _ hb => nft_no_beta h.1.2 hb
+  have hnf := normalSteps_sound h.1.1
+  have hout : NormalForm c.output := by
+    simp only [Certificate.output]; split
+    · exact zeroOut_normal
+    · exact varOut_normal
+  have hred : Betas (.app c.reader c.input) c.output := by
+    simp only [Certificate.input,Certificate.output]
+    split
+    · exact hr.zero_red
+    · exact hr.one_red
+  exact h.2 (normalForm_unique hnf hred hn hout)
+
+theorem certificates_reject (cs : List Certificate) (h : cs.all Certificate.check = true)
+    {t : Term} (hm : t ∈ cs.map Certificate.reader) : ¬ Reader t := by
+  obtain ⟨c,hc,he⟩ := List.mem_map.mp hm
+  exact he ▸ Certificate.sound c (List.all_eq_true.mp h c hc)
+end Blc.Lean146Enum

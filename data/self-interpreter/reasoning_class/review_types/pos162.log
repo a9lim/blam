@@ -1,0 +1,3 @@
+B=46 bn=True tab=True laws=[1, 2, 0] states=44010 memo_hits=2087 tabled=15204 fails=26695 sols=1 fuel=1 time=9.6s
+SOL (46, '(\\x0. (((x0 (\\x1. x1)) (\\x1. ((x0 (\\x2. c)) ((x0 x0) _)))) j))')
+FUEL (42, '(\\x0. (((x0 (\\x1. (\\x2. (\\x3. (x3 x3))))) (\\x1. (\\x2. ((x1 x1) _)))) j))')

@@ -1,0 +1,20 @@
+capturing_local: w=67, reader n1..3 PASS, same NF as canonical=True
+capturing_external: w=70, reader n1..3 PASS, same NF as canonical=True
+padded_dual_combination: w=54, reader n1..3 PASS, same NF as canonical=False
+captured_tail_baseline: w=52, reader n1..3 PASS, same NF as canonical=False
+K_repair: w=55, reader n1..3 PASS, same NF as canonical=False
+reordered_K_repair: w=53, reader n1..3 PASS, same NF as canonical=False
+K_captured_return: w=49, reader n1..3 PASS, same NF as canonical=False
+shared_K: w=67, reader n1..3 PASS, same NF as canonical=False
+delta_original: w=34, exact predicted zero/n1/n2/n3 outputs PASS
+K_repaired: w=33, exact predicted zero/n1/n2/n3 outputs PASS
+K_reordered: w=31, exact predicted zero/n1/n2/n3 outputs PASS
+padded_simplified: w=24, exact predicted zero/n1/n2/n3 outputs PASS
+G_F: exact beta normal-form equality PASS
+G_I: exact beta normal-form equality PASS
+G_K: exact beta normal-form equality PASS
+G_s: exact beta normal-form equality PASS
+padding_delta: exact beta normal-form equality PASS
+padding_square: exact beta normal-form equality PASS
+padding_dual: exact beta normal-form equality PASS
+Elapsed 0.0017s; one process; no enumeration.

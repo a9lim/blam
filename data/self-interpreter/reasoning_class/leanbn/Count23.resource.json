@@ -1,0 +1,12 @@
+{
+  "file": "Count23.lean",
+  "returncode": 0,
+  "status": "finished",
+  "wall_seconds": 6.207,
+  "peak_rss_bytes": 1524252672,
+  "command": [
+    "lean",
+    "-j2",
+    "/Users/a9lim/Work/blam/tmp/round4/leanbn/Count23.lean"
+  ]
+}

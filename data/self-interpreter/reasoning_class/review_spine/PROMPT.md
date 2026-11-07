@@ -1,0 +1,14 @@
+Adversarial audit request, high stakes. You are a fresh reviewer; nothing here is your work. Repo /Users/a9lim/Work/blam (read-only for you except tmp/round4/review_spine/, where you may write scratch files and your reply). Caps, hard: at most 100,000 terms or states per check, 2 minutes, 1 GB, 2 threads; do not rerun large inventories — this is an audit of how results COMPOSE.
+
+Context: tmp/round4/BRIEF.md (contract, separated class, reader laws, weight). docs/classical/self-interpreter/class-bound.md §3 now states, as a composite, "**no minimum reader below 46 is an s-spine**" (minimum = global minimum among full-law one-hole readers under the order (weight, λ count, depth); s-spine = λs. s A1 … Ak literally). The pieces, each a separate lane with its own hypotheses:
+ - depth: depth ≥ 2 readers closed under the minimality order (tmp/round4/depth02/REPORT.md; class-bound.md §3 "Settled by complete finite checks");
+ - d1open (tmp/round4/d1open/REPORT.md): every s-spine whose first operand reaches the first dispatch with no β-redex on its head path has w ≥ 46 (computer-checked, probes n = 1..3); the leftover skeleton λs. s (λb. b X) A B closed by loop (tmp/round4/loop/REPORT.md §6);
+ - loop §6 + handlerlet (tmp/round4/handlerlet/REPORT.md): literal λ first handler λb. B with j outside B — redexes in B have 2–5 uses, and every nonlinear case fails;
+ - firstop (tmp/round4/firstop/REPORT.md §§1–5): j-free first operand that is not a literal λ — closed;
+ - firstopj (tmp/round4/firstopj/REPORT.md): first operand carrying j — closed; its §2.4 notes that at depth 1 j cannot sit inside a literal-λ first operand's body.
+Please audit:
+ 1. Exhaustiveness: does the union of these cases cover every s-spine reader (any k, any first operand) at every depth? Name any s-spine shape no piece covers.
+ 2. Hypothesis consistency: do all pieces use the same notion of "minimum" (same order, over the same set — full laws for all n, one source j), the same weight, the same depth convention? Does any piece assume a hypothesis another piece does not supply (e.g. probes n ≤ 3 used to EXCLUDE is fine; is any piece using a finite probe to INCLUDE)? Does any piece rely on a reduction ("replace R by a lighter R′") whose R′ might leave the s-spine class or the one-hole class, so that minimality is invoked against a reader the other pieces never exclude?
+ 3. The "minimum" chain: the composite statement says no MINIMUM below 46 is an s-spine. Check that this is what follows — not "no reader below 46 is an s-spine" — and that the statement in class-bound.md §3 says exactly that.
+ 4. Spot-check one or two pieces' completeness arguments where they look thinnest.
+Verdict: sound / gap (with the exact missing case or hypothesis) / broken (with a witness). Write your reply to tmp/round4/review_spine/REVIEW.md as well.

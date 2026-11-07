@@ -1,0 +1,17 @@
+{
+  "label": "A074",
+  "id": "adv6/work/q_df9ee9.json:70",
+  "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((\\x1. (\\x2. (x0 (x0 x2)))) _))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 2535,
+  "work": 6055,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 738,
+  "checked": true,
+  "sha256": "7272c004370597c58d906b94dcd48effcc9d06fea473f610845f94d6258f8f10",
+  "seconds": 0.02896108297863975,
+  "peak_rss_bytes": 26427392,
+  "threads": 1
+}

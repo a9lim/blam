@@ -1,0 +1,8 @@
+operands: 2172  (0.0s)
+meanings computed (0.0s), fuel-outs: 0
+distinct meanings: 1949
+k=1: live states 140  found so far 0  (0.1s)
+k=2: live states 13117  found so far 0  (8.6s)
+k=3: live states 25843  found so far 0  (10.0s)
+k=4: live states 1255  found so far 0  (10.1s)
+done 10.1s

@@ -1,0 +1,19 @@
+{
+  "cell": [
+    1,
+    "redex",
+    "A",
+    "A"
+  ],
+  "sources": 559,
+  "counts": {
+    "wrongzero": 559
+  },
+  "exceptions": [],
+  "hits": [],
+  "source_digest": "43e6dea8d07b068ecf3636f23fb02fd67b56eb38af1c954b758013ecb6c2f8f5",
+  "max_steps": 7,
+  "seconds": 1.6258467500156257,
+  "rss": 107937792,
+  "threads": 2
+}

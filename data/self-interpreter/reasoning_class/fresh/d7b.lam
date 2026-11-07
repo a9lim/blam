@@ -1,0 +1,8 @@
+-- D7b: dispatch before parse with closed arms taking cont: bit1 A B cont.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (bit1
+      (\k \exp. k (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (\k \exp. intL (\exp2. k (\args. exp args (exp2 args))))
+      cont)))
+  (x x))

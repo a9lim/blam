@@ -1,0 +1,954 @@
+{
+  "algebra_checks": [
+    {
+      "shape": 0,
+      "source": "(\\xx. xx xx) (\\zz. zz (\\a. a)) j",
+      "replacement": "(\\pp. pp pp) (\\a. a) j",
+      "weight": 22,
+      "replacement_weight": 16,
+      "residual_wrappers": 0,
+      "captures": 0
+    },
+    {
+      "shape": 0,
+      "source": "(\\xx. xx xx) (\\zz. zz (\\x y. x)) j",
+      "replacement": "(\\pp. pp pp) (\\x y. x) j",
+      "weight": 25,
+      "replacement_weight": 19,
+      "residual_wrappers": 0,
+      "captures": 0
+    },
+    {
+      "shape": 0,
+      "source": "(\\xx. xx xx) (\\zz. zz c) j",
+      "replacement": "(\\pp. pp pp) c j",
+      "weight": 21,
+      "replacement_weight": 14,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 0,
+      "source": "(\\xx. xx xx) (\\zz. zz j) c",
+      "replacement": "(\\pp. pp pp) j c",
+      "weight": 24,
+      "replacement_weight": 14,
+      "residual_wrappers": 0,
+      "captures": 4
+    },
+    {
+      "shape": 0,
+      "source": "(\\xx. xx xx) (\\zz. zz (\\a. c)) j",
+      "replacement": "(\\pp. pp pp) (\\a. c) j",
+      "weight": 24,
+      "replacement_weight": 17,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 0,
+      "source": "(\\xx. xx xx) (\\zz. zz (\\a. j)) c",
+      "replacement": "(\\pp. pp pp) (\\a. j) c",
+      "weight": 30,
+      "replacement_weight": 20,
+      "residual_wrappers": 0,
+      "captures": 4
+    },
+    {
+      "shape": 0,
+      "source": "(\\xx. xx xx) (\\zz. zz (\\a. a c)) j",
+      "replacement": "(\\pp. pp pp) (\\a. a c) j",
+      "weight": 28,
+      "replacement_weight": 21,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 0,
+      "source": "(\\xx. xx xx) (\\zz. zz (\\a. c c)) j",
+      "replacement": "(\\pp. pp pp) (\\a. c c) j",
+      "weight": 30,
+      "replacement_weight": 22,
+      "residual_wrappers": 0,
+      "captures": 2
+    },
+    {
+      "shape": 1,
+      "source": "(\\xx. xx (xx xx)) (\\zz. zz (\\a. a)) j",
+      "replacement": "(\\pp. pp pp pp) (\\a. a) j",
+      "weight": 26,
+      "replacement_weight": 20,
+      "residual_wrappers": 0,
+      "captures": 0
+    },
+    {
+      "shape": 1,
+      "source": "(\\xx. xx (xx xx)) (\\zz. zz (\\x y. x)) j",
+      "replacement": "(\\pp. pp pp pp) (\\x y. x) j",
+      "weight": 29,
+      "replacement_weight": 23,
+      "residual_wrappers": 0,
+      "captures": 0
+    },
+    {
+      "shape": 1,
+      "source": "(\\xx. xx (xx xx)) (\\zz. zz c) j",
+      "replacement": "(\\pp. pp pp pp) c j",
+      "weight": 25,
+      "replacement_weight": 18,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 1,
+      "source": "(\\xx. xx (xx xx)) (\\zz. zz j) c",
+      "replacement": "(\\pp. pp pp pp) j c",
+      "weight": 28,
+      "replacement_weight": 18,
+      "residual_wrappers": 0,
+      "captures": 4
+    },
+    {
+      "shape": 1,
+      "source": "(\\xx. xx (xx xx)) (\\zz. zz (\\a. c)) j",
+      "replacement": "(\\pp. pp pp pp) (\\a. c) j",
+      "weight": 28,
+      "replacement_weight": 21,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 1,
+      "source": "(\\xx. xx (xx xx)) (\\zz. zz (\\a. j)) c",
+      "replacement": "(\\pp. pp pp pp) (\\a. j) c",
+      "weight": 34,
+      "replacement_weight": 24,
+      "residual_wrappers": 0,
+      "captures": 4
+    },
+    {
+      "shape": 1,
+      "source": "(\\xx. xx (xx xx)) (\\zz. zz (\\a. a c)) j",
+      "replacement": "(\\pp. pp pp pp) (\\a. a c) j",
+      "weight": 32,
+      "replacement_weight": 25,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 1,
+      "source": "(\\xx. xx (xx xx)) (\\zz. zz (\\a. c c)) j",
+      "replacement": "(\\pp. pp pp pp) (\\a. c c) j",
+      "weight": 34,
+      "replacement_weight": 26,
+      "residual_wrappers": 0,
+      "captures": 2
+    },
+    {
+      "shape": 2,
+      "source": "(\\xx. xx xx xx) (\\zz. zz (\\a. a)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp)) (\\a. a) j",
+      "weight": 26,
+      "replacement_weight": 27,
+      "residual_wrappers": 1,
+      "captures": 0
+    },
+    {
+      "shape": 2,
+      "source": "(\\xx. xx xx xx) (\\zz. zz (\\x y. x)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp)) (\\x y. x) j",
+      "weight": 29,
+      "replacement_weight": 30,
+      "residual_wrappers": 1,
+      "captures": 0
+    },
+    {
+      "shape": 2,
+      "source": "(\\xx. xx xx xx) (\\zz. zz c) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp)) c j",
+      "weight": 25,
+      "replacement_weight": 25,
+      "residual_wrappers": 1,
+      "captures": 1
+    },
+    {
+      "shape": 2,
+      "source": "(\\xx. xx xx xx) (\\zz. zz j) c",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp)) j c",
+      "weight": 28,
+      "replacement_weight": 25,
+      "residual_wrappers": 1,
+      "captures": 4
+    },
+    {
+      "shape": 2,
+      "source": "(\\xx. xx xx xx) (\\zz. zz (\\a. c)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp)) (\\a. c) j",
+      "weight": 28,
+      "replacement_weight": 28,
+      "residual_wrappers": 1,
+      "captures": 1
+    },
+    {
+      "shape": 2,
+      "source": "(\\xx. xx xx xx) (\\zz. zz (\\a. j)) c",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp)) (\\a. j) c",
+      "weight": 34,
+      "replacement_weight": 31,
+      "residual_wrappers": 1,
+      "captures": 4
+    },
+    {
+      "shape": 2,
+      "source": "(\\xx. xx xx xx) (\\zz. zz (\\a. a c)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp)) (\\a. a c) j",
+      "weight": 32,
+      "replacement_weight": 32,
+      "residual_wrappers": 1,
+      "captures": 1
+    },
+    {
+      "shape": 2,
+      "source": "(\\xx. xx xx xx) (\\zz. zz (\\a. c c)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp)) (\\a. c c) j",
+      "weight": 34,
+      "replacement_weight": 33,
+      "residual_wrappers": 1,
+      "captures": 2
+    },
+    {
+      "shape": 3,
+      "source": "(\\xx. xx (xx (xx xx))) (\\zz. zz (\\a. a)) j",
+      "replacement": "(\\pp. pp pp pp pp) (\\a. a) j",
+      "weight": 30,
+      "replacement_weight": 24,
+      "residual_wrappers": 0,
+      "captures": 0
+    },
+    {
+      "shape": 3,
+      "source": "(\\xx. xx (xx (xx xx))) (\\zz. zz (\\x y. x)) j",
+      "replacement": "(\\pp. pp pp pp pp) (\\x y. x) j",
+      "weight": 33,
+      "replacement_weight": 27,
+      "residual_wrappers": 0,
+      "captures": 0
+    },
+    {
+      "shape": 3,
+      "source": "(\\xx. xx (xx (xx xx))) (\\zz. zz c) j",
+      "replacement": "(\\pp. pp pp pp pp) c j",
+      "weight": 29,
+      "replacement_weight": 22,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 3,
+      "source": "(\\xx. xx (xx (xx xx))) (\\zz. zz j) c",
+      "replacement": "(\\pp. pp pp pp pp) j c",
+      "weight": 32,
+      "replacement_weight": 22,
+      "residual_wrappers": 0,
+      "captures": 4
+    },
+    {
+      "shape": 3,
+      "source": "(\\xx. xx (xx (xx xx))) (\\zz. zz (\\a. c)) j",
+      "replacement": "(\\pp. pp pp pp pp) (\\a. c) j",
+      "weight": 32,
+      "replacement_weight": 25,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 3,
+      "source": "(\\xx. xx (xx (xx xx))) (\\zz. zz (\\a. j)) c",
+      "replacement": "(\\pp. pp pp pp pp) (\\a. j) c",
+      "weight": 38,
+      "replacement_weight": 28,
+      "residual_wrappers": 0,
+      "captures": 4
+    },
+    {
+      "shape": 3,
+      "source": "(\\xx. xx (xx (xx xx))) (\\zz. zz (\\a. a c)) j",
+      "replacement": "(\\pp. pp pp pp pp) (\\a. a c) j",
+      "weight": 36,
+      "replacement_weight": 29,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 3,
+      "source": "(\\xx. xx (xx (xx xx))) (\\zz. zz (\\a. c c)) j",
+      "replacement": "(\\pp. pp pp pp pp) (\\a. c c) j",
+      "weight": 38,
+      "replacement_weight": 30,
+      "residual_wrappers": 0,
+      "captures": 2
+    },
+    {
+      "shape": 4,
+      "source": "(\\xx. xx (xx xx xx)) (\\zz. zz (\\a. a)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) pp) (\\a. a) j",
+      "weight": 30,
+      "replacement_weight": 31,
+      "residual_wrappers": 1,
+      "captures": 0
+    },
+    {
+      "shape": 4,
+      "source": "(\\xx. xx (xx xx xx)) (\\zz. zz (\\x y. x)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) pp) (\\x y. x) j",
+      "weight": 33,
+      "replacement_weight": 34,
+      "residual_wrappers": 1,
+      "captures": 0
+    },
+    {
+      "shape": 4,
+      "source": "(\\xx. xx (xx xx xx)) (\\zz. zz c) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) pp) c j",
+      "weight": 29,
+      "replacement_weight": 29,
+      "residual_wrappers": 1,
+      "captures": 1
+    },
+    {
+      "shape": 4,
+      "source": "(\\xx. xx (xx xx xx)) (\\zz. zz j) c",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) pp) j c",
+      "weight": 32,
+      "replacement_weight": 29,
+      "residual_wrappers": 1,
+      "captures": 4
+    },
+    {
+      "shape": 4,
+      "source": "(\\xx. xx (xx xx xx)) (\\zz. zz (\\a. c)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) pp) (\\a. c) j",
+      "weight": 32,
+      "replacement_weight": 32,
+      "residual_wrappers": 1,
+      "captures": 1
+    },
+    {
+      "shape": 4,
+      "source": "(\\xx. xx (xx xx xx)) (\\zz. zz (\\a. j)) c",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) pp) (\\a. j) c",
+      "weight": 38,
+      "replacement_weight": 35,
+      "residual_wrappers": 1,
+      "captures": 4
+    },
+    {
+      "shape": 4,
+      "source": "(\\xx. xx (xx xx xx)) (\\zz. zz (\\a. a c)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) pp) (\\a. a c) j",
+      "weight": 36,
+      "replacement_weight": 36,
+      "residual_wrappers": 1,
+      "captures": 1
+    },
+    {
+      "shape": 4,
+      "source": "(\\xx. xx (xx xx xx)) (\\zz. zz (\\a. c c)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) pp) (\\a. c c) j",
+      "weight": 38,
+      "replacement_weight": 37,
+      "residual_wrappers": 1,
+      "captures": 2
+    },
+    {
+      "shape": 5,
+      "source": "(\\xx. xx xx (xx xx)) (\\zz. zz (\\a. a)) j",
+      "replacement": "(\\pp. pp pp (pp pp)) (\\a. a) j",
+      "weight": 30,
+      "replacement_weight": 24,
+      "residual_wrappers": 0,
+      "captures": 0
+    },
+    {
+      "shape": 5,
+      "source": "(\\xx. xx xx (xx xx)) (\\zz. zz (\\x y. x)) j",
+      "replacement": "(\\pp. pp pp (pp pp)) (\\x y. x) j",
+      "weight": 33,
+      "replacement_weight": 27,
+      "residual_wrappers": 0,
+      "captures": 0
+    },
+    {
+      "shape": 5,
+      "source": "(\\xx. xx xx (xx xx)) (\\zz. zz c) j",
+      "replacement": "(\\pp. pp pp (pp pp)) c j",
+      "weight": 29,
+      "replacement_weight": 22,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 5,
+      "source": "(\\xx. xx xx (xx xx)) (\\zz. zz j) c",
+      "replacement": "(\\pp. pp pp (pp pp)) j c",
+      "weight": 32,
+      "replacement_weight": 22,
+      "residual_wrappers": 0,
+      "captures": 4
+    },
+    {
+      "shape": 5,
+      "source": "(\\xx. xx xx (xx xx)) (\\zz. zz (\\a. c)) j",
+      "replacement": "(\\pp. pp pp (pp pp)) (\\a. c) j",
+      "weight": 32,
+      "replacement_weight": 25,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 5,
+      "source": "(\\xx. xx xx (xx xx)) (\\zz. zz (\\a. j)) c",
+      "replacement": "(\\pp. pp pp (pp pp)) (\\a. j) c",
+      "weight": 38,
+      "replacement_weight": 28,
+      "residual_wrappers": 0,
+      "captures": 4
+    },
+    {
+      "shape": 5,
+      "source": "(\\xx. xx xx (xx xx)) (\\zz. zz (\\a. a c)) j",
+      "replacement": "(\\pp. pp pp (pp pp)) (\\a. a c) j",
+      "weight": 36,
+      "replacement_weight": 29,
+      "residual_wrappers": 0,
+      "captures": 1
+    },
+    {
+      "shape": 5,
+      "source": "(\\xx. xx xx (xx xx)) (\\zz. zz (\\a. c c)) j",
+      "replacement": "(\\pp. pp pp (pp pp)) (\\a. c c) j",
+      "weight": 38,
+      "replacement_weight": 30,
+      "residual_wrappers": 0,
+      "captures": 2
+    },
+    {
+      "shape": 6,
+      "source": "(\\xx. xx (xx xx) xx) (\\zz. zz (\\a. a)) j",
+      "replacement": "(\\pp. pp pp pp (\\zz. zz pp)) (\\a. a) j",
+      "weight": 30,
+      "replacement_weight": 31,
+      "residual_wrappers": 1,
+      "captures": 0
+    },
+    {
+      "shape": 6,
+      "source": "(\\xx. xx (xx xx) xx) (\\zz. zz (\\x y. x)) j",
+      "replacement": "(\\pp. pp pp pp (\\zz. zz pp)) (\\x y. x) j",
+      "weight": 33,
+      "replacement_weight": 34,
+      "residual_wrappers": 1,
+      "captures": 0
+    },
+    {
+      "shape": 6,
+      "source": "(\\xx. xx (xx xx) xx) (\\zz. zz c) j",
+      "replacement": "(\\pp. pp pp pp (\\zz. zz pp)) c j",
+      "weight": 29,
+      "replacement_weight": 29,
+      "residual_wrappers": 1,
+      "captures": 1
+    },
+    {
+      "shape": 6,
+      "source": "(\\xx. xx (xx xx) xx) (\\zz. zz j) c",
+      "replacement": "(\\pp. pp pp pp (\\zz. zz pp)) j c",
+      "weight": 32,
+      "replacement_weight": 29,
+      "residual_wrappers": 1,
+      "captures": 4
+    },
+    {
+      "shape": 6,
+      "source": "(\\xx. xx (xx xx) xx) (\\zz. zz (\\a. c)) j",
+      "replacement": "(\\pp. pp pp pp (\\zz. zz pp)) (\\a. c) j",
+      "weight": 32,
+      "replacement_weight": 32,
+      "residual_wrappers": 1,
+      "captures": 1
+    },
+    {
+      "shape": 6,
+      "source": "(\\xx. xx (xx xx) xx) (\\zz. zz (\\a. j)) c",
+      "replacement": "(\\pp. pp pp pp (\\zz. zz pp)) (\\a. j) c",
+      "weight": 38,
+      "replacement_weight": 35,
+      "residual_wrappers": 1,
+      "captures": 4
+    },
+    {
+      "shape": 6,
+      "source": "(\\xx. xx (xx xx) xx) (\\zz. zz (\\a. a c)) j",
+      "replacement": "(\\pp. pp pp pp (\\zz. zz pp)) (\\a. a c) j",
+      "weight": 36,
+      "replacement_weight": 36,
+      "residual_wrappers": 1,
+      "captures": 1
+    },
+    {
+      "shape": 6,
+      "source": "(\\xx. xx (xx xx) xx) (\\zz. zz (\\a. c c)) j",
+      "replacement": "(\\pp. pp pp pp (\\zz. zz pp)) (\\a. c c) j",
+      "weight": 38,
+      "replacement_weight": 37,
+      "residual_wrappers": 1,
+      "captures": 2
+    },
+    {
+      "shape": 7,
+      "source": "(\\xx. xx xx xx xx) (\\zz. zz (\\a. a)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) (\\zz. zz pp)) (\\a. a) j",
+      "weight": 30,
+      "replacement_weight": 38,
+      "residual_wrappers": 2,
+      "captures": 0
+    },
+    {
+      "shape": 7,
+      "source": "(\\xx. xx xx xx xx) (\\zz. zz (\\x y. x)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) (\\zz. zz pp)) (\\x y. x) j",
+      "weight": 33,
+      "replacement_weight": 41,
+      "residual_wrappers": 2,
+      "captures": 0
+    },
+    {
+      "shape": 7,
+      "source": "(\\xx. xx xx xx xx) (\\zz. zz c) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) (\\zz. zz pp)) c j",
+      "weight": 29,
+      "replacement_weight": 36,
+      "residual_wrappers": 2,
+      "captures": 1
+    },
+    {
+      "shape": 7,
+      "source": "(\\xx. xx xx xx xx) (\\zz. zz j) c",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) (\\zz. zz pp)) j c",
+      "weight": 32,
+      "replacement_weight": 36,
+      "residual_wrappers": 2,
+      "captures": 4
+    },
+    {
+      "shape": 7,
+      "source": "(\\xx. xx xx xx xx) (\\zz. zz (\\a. c)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) (\\zz. zz pp)) (\\a. c) j",
+      "weight": 32,
+      "replacement_weight": 39,
+      "residual_wrappers": 2,
+      "captures": 1
+    },
+    {
+      "shape": 7,
+      "source": "(\\xx. xx xx xx xx) (\\zz. zz (\\a. j)) c",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) (\\zz. zz pp)) (\\a. j) c",
+      "weight": 38,
+      "replacement_weight": 42,
+      "residual_wrappers": 2,
+      "captures": 4
+    },
+    {
+      "shape": 7,
+      "source": "(\\xx. xx xx xx xx) (\\zz. zz (\\a. a c)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) (\\zz. zz pp)) (\\a. a c) j",
+      "weight": 36,
+      "replacement_weight": 43,
+      "residual_wrappers": 2,
+      "captures": 1
+    },
+    {
+      "shape": 7,
+      "source": "(\\xx. xx xx xx xx) (\\zz. zz (\\a. c c)) j",
+      "replacement": "(\\pp. pp pp (\\zz. zz pp) (\\zz. zz pp)) (\\a. c c) j",
+      "weight": 38,
+      "replacement_weight": 44,
+      "residual_wrappers": 2,
+      "captures": 2
+    }
+  ],
+  "witness": [
+    {
+      "name": "wrapped",
+      "source": "(\\xx. xx xx) (\\zz. zz (\\z n s. s (\\a. a) (\\u. s (\\q. c) (s s u)) n)) j",
+      "weight": [
+        70,
+        70,
+        0,
+        8,
+        12,
+        10,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "specialized",
+      "source": "(\\pp. pp pp) (\\z n s. s (\\a. a) (\\u. s (\\q. c) (s s u)) n) j",
+      "weight": [
+        63,
+        63,
+        0,
+        7,
+        11,
+        9,
+        1,
+        1
+      ]
+    }
+  ],
+  "inventory_scanned": 658,
+  "idempotent_helper_ids": [
+    154,
+    155,
+    156,
+    157,
+    158,
+    159,
+    160,
+    161,
+    162,
+    163,
+    164,
+    165,
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    175,
+    176,
+    177,
+    178,
+    179,
+    180,
+    181,
+    182,
+    183,
+    184,
+    185,
+    186,
+    187,
+    188,
+    189,
+    190,
+    191,
+    192,
+    193,
+    194,
+    195,
+    380,
+    381,
+    382,
+    383,
+    384,
+    385,
+    386,
+    387,
+    388,
+    389,
+    390,
+    391,
+    392,
+    393,
+    394,
+    395,
+    396,
+    397,
+    398,
+    399,
+    400,
+    401,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407
+  ],
+  "excluded_minimum_rows": [
+    {
+      "id": 157,
+      "weight": 44,
+      "source": "(\\x1. x1 (x1 x1 (\\x2. x1 (x2 c)))) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7264,
+      "saving": 4,
+      "replacement_weight": 40
+    },
+    {
+      "id": 163,
+      "weight": 44,
+      "source": "(\\x1. x1 x1 (x1 (\\x2. x1 (x2 c)))) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7270,
+      "saving": 4,
+      "replacement_weight": 40
+    },
+    {
+      "id": 164,
+      "weight": 44,
+      "source": "(\\x1. x1 (\\x2. x1 (x2 c)) (x1 x1)) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7271,
+      "saving": 4,
+      "replacement_weight": 40
+    },
+    {
+      "id": 165,
+      "weight": 44,
+      "source": "(\\x1. x1 (x1 x1) (\\x2. x1 (x2 c))) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7272,
+      "saving": 4,
+      "replacement_weight": 40
+    },
+    {
+      "id": 166,
+      "weight": 44,
+      "source": "(\\x1. x1 x1 x1 (\\x2. x1 (x2 c))) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7273,
+      "saving": 4,
+      "replacement_weight": 40
+    },
+    {
+      "id": 170,
+      "weight": 44,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x2 c)) x1) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7277,
+      "saving": 4,
+      "replacement_weight": 40
+    },
+    {
+      "id": 180,
+      "weight": 45,
+      "source": "(\\x1. x1 (x1 (\\x2. x1 x1 (x2 c)))) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7860,
+      "saving": 5,
+      "replacement_weight": 40
+    },
+    {
+      "id": 182,
+      "weight": 45,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x1 (x2 c)))) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7862,
+      "saving": 4,
+      "replacement_weight": 41
+    },
+    {
+      "id": 183,
+      "weight": 45,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x2 (c x1)))) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7863,
+      "saving": 4,
+      "replacement_weight": 41
+    },
+    {
+      "id": 184,
+      "weight": 45,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x2 (x1 c)))) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7864,
+      "saving": 4,
+      "replacement_weight": 41
+    },
+    {
+      "id": 185,
+      "weight": 45,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x1 x2) c)) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7865,
+      "saving": 4,
+      "replacement_weight": 41
+    },
+    {
+      "id": 186,
+      "weight": 45,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x2 x1) c)) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7866,
+      "saving": 4,
+      "replacement_weight": 41
+    },
+    {
+      "id": 187,
+      "weight": 45,
+      "source": "(\\x1. x1 x1 (\\x2. x1 x1 (x2 c))) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7867,
+      "saving": 4,
+      "replacement_weight": 41
+    },
+    {
+      "id": 188,
+      "weight": 45,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x2 c) x1)) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7868,
+      "saving": 4,
+      "replacement_weight": 41
+    },
+    {
+      "id": 194,
+      "weight": 45,
+      "source": "(\\x1. x1 (\\x2. x1 x1 (x2 c)) x1) (\\x1. x1 (\\x2. x1)) j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_1_1.json",
+      "exception_index": 7874,
+      "saving": 5,
+      "replacement_weight": 40
+    },
+    {
+      "id": 384,
+      "weight": 43,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x1 x2))) (\\x1. x1 (\\x2. x1)) j c",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5460,
+      "saving": 4,
+      "replacement_weight": 39
+    },
+    {
+      "id": 385,
+      "weight": 43,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x1 x2))) (\\x1. x1 (\\x2. x1)) c j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5461,
+      "saving": 4,
+      "replacement_weight": 39
+    },
+    {
+      "id": 386,
+      "weight": 43,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x2 x1))) (\\x1. x1 (\\x2. x1)) j c",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5462,
+      "saving": 4,
+      "replacement_weight": 39
+    },
+    {
+      "id": 387,
+      "weight": 43,
+      "source": "(\\x1. x1 x1 (\\x2. x1 (x2 x1))) (\\x1. x1 (\\x2. x1)) c j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5463,
+      "saving": 4,
+      "replacement_weight": 39
+    },
+    {
+      "id": 396,
+      "weight": 44,
+      "source": "(\\x1. x1 (\\x2. x1 (x1 x1 x2))) (\\x1. x1 (\\x2. x1)) j c",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5748,
+      "saving": 5,
+      "replacement_weight": 39
+    },
+    {
+      "id": 397,
+      "weight": 44,
+      "source": "(\\x1. x1 (\\x2. x1 (x1 x1 x2))) (\\x1. x1 (\\x2. x1)) c j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5749,
+      "saving": 5,
+      "replacement_weight": 39
+    },
+    {
+      "id": 398,
+      "weight": 44,
+      "source": "(\\x1. x1 (\\x2. x1 (x2 (x1 x1)))) (\\x1. x1 (\\x2. x1)) j c",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5750,
+      "saving": 5,
+      "replacement_weight": 39
+    },
+    {
+      "id": 399,
+      "weight": 44,
+      "source": "(\\x1. x1 (\\x2. x1 (x2 (x1 x1)))) (\\x1. x1 (\\x2. x1)) c j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5751,
+      "saving": 5,
+      "replacement_weight": 39
+    },
+    {
+      "id": 400,
+      "weight": 44,
+      "source": "(\\x1. x1 (\\x2. x1 x1 (x1 x2))) (\\x1. x1 (\\x2. x1)) j c",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5752,
+      "saving": 5,
+      "replacement_weight": 39
+    },
+    {
+      "id": 401,
+      "weight": 44,
+      "source": "(\\x1. x1 (\\x2. x1 x1 (x1 x2))) (\\x1. x1 (\\x2. x1)) c j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5753,
+      "saving": 5,
+      "replacement_weight": 39
+    },
+    {
+      "id": 402,
+      "weight": 44,
+      "source": "(\\x1. x1 (\\x2. x1 x1 (x2 x1))) (\\x1. x1 (\\x2. x1)) j c",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5754,
+      "saving": 5,
+      "replacement_weight": 39
+    },
+    {
+      "id": 403,
+      "weight": 44,
+      "source": "(\\x1. x1 (\\x2. x1 x1 (x2 x1))) (\\x1. x1 (\\x2. x1)) c j",
+      "helper": "\\x1. x1 (\\x2. x1)",
+      "file": "check_4_0_Cs_x_2_1.json",
+      "exception_index": 5755,
+      "saving": 5,
+      "replacement_weight": 39
+    }
+  ],
+  "source_inventory_sha256": "302b9f8f050f39a0d05583a9d7fa72dd780fa26930b76979a36c31ceb3c1ff6c",
+  "elapsed_s": 0.005016874987632036
+}

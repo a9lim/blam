@@ -1,0 +1,2 @@
+'Blc.Close46Dispatch.tiny_j_operand' depends on axioms: [propext, Quot.sound]
+'Blc.Close46Dispatch.j_head_fails_zero' depends on axioms: [propext]

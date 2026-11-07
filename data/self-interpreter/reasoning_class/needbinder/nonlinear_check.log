@@ -1,0 +1,117 @@
+finished m 2 total 15082
+finished m 3 total 18090
+finished m 4 total 18640
+{
+  "sources": 18640,
+  "rows": {
+    "2:A": {
+      "sources": 8571,
+      "lambda_A": 1162,
+      "wrong_nf": {
+        "zero": 8473,
+        "1": 91
+      },
+      "cycles": {
+        "zero": 3
+      },
+      "cutoffs": 4,
+      "survivors": 0
+    },
+    "2:D": {
+      "sources": 4716,
+      "lambda_A": 1206,
+      "wrong_nf": {
+        "zero": 4455,
+        "1": 256
+      },
+      "cycles": {
+        "zero": 5
+      },
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "2:pending": {
+      "sources": 1795,
+      "lambda_A": 449,
+      "wrong_nf": {
+        "zero": 1678,
+        "1": 107
+      },
+      "cycles": {
+        "zero": 7
+      },
+      "cutoffs": 3,
+      "survivors": 0
+    },
+    "3:A": {
+      "sources": 1788,
+      "lambda_A": 198,
+      "wrong_nf": {
+        "zero": 1783,
+        "1": 5
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "3:D": {
+      "sources": 964,
+      "lambda_A": 200,
+      "wrong_nf": {
+        "zero": 936,
+        "1": 28
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "3:pending": {
+      "sources": 256,
+      "lambda_A": 44,
+      "wrong_nf": {
+        "zero": 244,
+        "1": 10
+      },
+      "cycles": {
+        "zero": 2
+      },
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "4:A": {
+      "sources": 390,
+      "lambda_A": 30,
+      "wrong_nf": {
+        "zero": 390
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "4:D": {
+      "sources": 140,
+      "lambda_A": 0,
+      "wrong_nf": {
+        "zero": 140
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "4:pending": {
+      "sources": 20,
+      "lambda_A": 5,
+      "wrong_nf": {
+        "zero": 20
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    }
+  },
+  "seconds": 2.086509125001612,
+  "peak_rss_bytes": 42254336,
+  "threads": 1,
+  "source_domain": "B=((lambda x.D) A) C1...Ck, |B|<=29, m=2..4, c present"
+}
+EXCEPTIONS 24 CUTOFFS 7 HITS 0

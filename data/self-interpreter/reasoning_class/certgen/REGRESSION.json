@@ -1,0 +1,7106 @@
+[
+  {
+    "id": "h2_1.json:2",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 (x0 ((\\x1. (\\x2. ((x0 x2) _))) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4489,
+    "seconds": 0.0003079169837292284,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 39,
+        "work": 54,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 39
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_1.json:5",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 (x0 ((x0 (\\x1. (x1 (x0 x1)))) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3741,
+    "seconds": 0.00042925000889226794,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 59,
+        "work": 94,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 59
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_1.json:6",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 (x0 ((x0 (\\x1. (x0 (x0 x1)))) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2707,
+    "seconds": 0.00045204200432635844,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 61,
+        "work": 94,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 61
+      }
+    ],
+    "peak_rss_bytes": 22265856
+  },
+  {
+    "id": "h2_1.json:7",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 (x0 ((x0 (\\x1. ((x0 x1) _))) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3571,
+    "seconds": 0.0003601249773055315,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 71,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_1.json:20",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((\\x1. (\\x2. (x2 (\\x3. ((x2 x3) _))))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8800,
+    "seconds": 0.0002459159877616912,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 28,
+        "work": 36,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 28
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_1.json:21",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((\\x1. (\\x2. (x2 ((x0 x2) _)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4099,
+    "seconds": 0.0002487089950591326,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 31,
+        "work": 41,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 31
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h2_1.json:22",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((\\x1. (\\x2. (x0 ((x0 x2) _)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3129,
+    "seconds": 0.0002710419939830899,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 45,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_1.json:23",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((\\x1. (\\x2. ((\\x3. (x3 _)) (x0 x2)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 10074,
+    "seconds": 0.0002714580041356385,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 28,
+        "work": 35,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 28
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_1.json:25",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((\\x1. (\\x2. ((x2 (x0 x2)) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4014,
+    "seconds": 0.0003006249899044633,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 36,
+        "work": 53,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h2_1.json:26",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((\\x1. (\\x2. ((x0 x2) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 10355,
+    "seconds": 0.00021387499873526394,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 24,
+        "work": 30,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 24
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_1.json:27",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((\\x1. (\\x2. ((x0 (x0 x2)) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2888,
+    "seconds": 0.0003096669970545918,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 39,
+        "work": 55,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 39
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_1.json:28",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((\\x1. (\\x2. (((x0 x2) _) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 7980,
+    "seconds": 0.0002224589989054948,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 25,
+        "work": 31,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 25
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h2_1.json:30",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((\\x1. (x0 (\\x2. ((x0 x2) _)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4349,
+    "seconds": 0.00030774998595006764,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 39,
+        "work": 57,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 39
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_1.json:41",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (x1 (\\x2. (x0 x1))))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4794,
+    "seconds": 0.0002829589939210564,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 39,
+        "work": 48,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 39
+      }
+    ],
+    "peak_rss_bytes": 22265856
+  },
+  {
+    "id": "h2_1.json:44",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (x1 (x1 (x0 x1))))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3362,
+    "seconds": 0.000428917002864182,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 57,
+        "work": 94,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 57
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_1.json:45",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (x1 (x0 x1)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4148,
+    "seconds": 0.0003561249759513885,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 45,
+        "work": 72,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 45
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_1.json:48",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (x1 (x0 (x0 x1))))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2713,
+    "seconds": 0.0004412920097820461,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 59,
+        "work": 96,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 59
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_1.json:50",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (x1 ((x0 x1) _)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3805,
+    "seconds": 0.00029091699980199337,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 40,
+        "work": 52,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 40
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_1.json:52",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (x0 (\\x2. (x0 x1))))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3276,
+    "seconds": 0.00029954101773910224,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 41,
+        "work": 52,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_1.json:55",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (x0 (x1 (x0 x1))))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2045,
+    "seconds": 0.0004517089982982725,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 59,
+        "work": 102,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 59
+      }
+    ],
+    "peak_rss_bytes": 22118400
+  },
+  {
+    "id": "h2_1.json:56",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (x0 (x0 x1)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2816,
+    "seconds": 0.0003676250053104013,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 74,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_1.json:59",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (x0 ((x0 x1) _)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2658,
+    "seconds": 0.00029829199775122106,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 42,
+        "work": 57,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 42
+      }
+    ],
+    "peak_rss_bytes": 22282240
+  },
+  {
+    "id": "h2_1.json:60",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. ((x1 (x0 x1)) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3768,
+    "seconds": 0.00034091700217686594,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 70,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h2_1.json:61",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. ((x0 x1) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4291,
+    "seconds": 0.00024420800036750734,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 32,
+        "work": 41,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 32
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_1.json:62",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. ((x0 (x0 x1)) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2700,
+    "seconds": 0.0003643340023700148,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 71,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_1.json:63",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (\\x1. (((x0 x1) _) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3911,
+    "seconds": 0.00025345798349007964,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 42,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_1.json:66",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (x0 (\\x1. (x1 (x0 x1))))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3812,
+    "seconds": 0.0004393750277813524,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 59,
+        "work": 93,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 59
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_1.json:68",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (x0 (\\x1. (x0 (x0 x1))))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2585,
+    "seconds": 0.00045112500083632767,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 61,
+        "work": 93,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 61
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_1.json:69",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((x0 (x0 (\\x1. ((x0 x1) _)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3498,
+    "seconds": 0.0003555839939508587,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 70,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_1.json:81",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 (((\\x1. (\\x2. x1)) (\\x1. ((x0 x1) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 11105,
+    "seconds": 0.000231999991228804,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 28,
+        "work": 34,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 28
+      }
+    ],
+    "peak_rss_bytes": 22118400
+  },
+  {
+    "id": "h2_1.json:82",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 (((\\x1. (\\x2. (\\x3. ((x2 x3) _)))) _) x0))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 11598,
+    "seconds": 0.00023299999884329736,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 27,
+        "work": 33,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 27
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_1.json:102",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 (((x0 (\\x1. (x1 (x0 x1)))) _) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3887,
+    "seconds": 0.00034666701685637236,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 46,
+        "work": 73,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 46
+      }
+    ],
+    "peak_rss_bytes": 22265856
+  },
+  {
+    "id": "h2_1.json:103",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 (((x0 (\\x1. (x0 (x0 x1)))) _) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2812,
+    "seconds": 0.0003808329929597676,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 48,
+        "work": 75,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 48
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_1.json:104",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 (((x0 (\\x1. ((x0 x1) _))) _) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4081,
+    "seconds": 0.00024933399981819093,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 42,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_1.json:111",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((((\\x1. (\\x2. (x2 _))) _) (\\x1. (\\x2. x2))) x0))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 20026,
+    "seconds": 0.00020074998610652983,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 21,
+        "work": 22,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 21
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_1.json:112",
+    "source": "((\\x0. (x0 x0)) (\\x0. (x0 ((((\\x1. (x1 _)) (\\x1. (\\x2. (\\x3. x3)))) _) x0))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 20391,
+    "seconds": 0.00019933300791308284,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 21,
+        "work": 22,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 21
+      }
+    ],
+    "peak_rss_bytes": 22249472
+  },
+  {
+    "id": "h2_1.json:136",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. (x0 ((\\x1. (\\x2. ((x0 x2) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 10232,
+    "seconds": 0.0002626670175231993,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 32,
+        "work": 42,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 32
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_1.json:138",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. (x0 ((x0 (\\x1. (x1 (x0 x1)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4047,
+    "seconds": 0.0003654999891296029,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 75,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_1.json:139",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. (x0 ((x0 (\\x1. (x0 (x0 x1)))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2881,
+    "seconds": 0.0003921249881386757,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 53,
+        "work": 77,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 53
+      }
+    ],
+    "peak_rss_bytes": 21938176
+  },
+  {
+    "id": "h2_1.json:140",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. (x0 ((x0 (\\x1. ((x0 x1) _))) _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4210,
+    "seconds": 0.00031625002156943083,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 43,
+        "work": 58,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 43
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_1.json:156",
+    "source": "((\\x0. (x0 (x0 ((x0 x0) _)))) (\\x0. (x0 (\\x1. (x1 (x0 x1))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4472,
+    "seconds": 0.00031566599500365555,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 41,
+        "work": 59,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_1.json:157",
+    "source": "((\\x0. (x0 (x0 ((x0 x0) _)))) (\\x0. (x0 (\\x1. (x0 (x0 x1))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3611,
+    "seconds": 0.00034266599686816335,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 45,
+        "work": 64,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 45
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_1.json:158",
+    "source": "((\\x0. (x0 (x0 ((x0 x0) _)))) (\\x0. (x0 (\\x1. ((x0 x1) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8598,
+    "seconds": 0.0002773749874904752,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 36,
+        "work": 46,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_1.json:165",
+    "source": "((\\x0. (x0 ((\\x1. (\\x2. (x2 (\\x3. ((x2 x3) _))))) _))) (\\x0. (x0 x0)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8786,
+    "seconds": 0.00024295801995322108,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 28,
+        "work": 35,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 28
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_1.json:171",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (x1 (\\x2. (x0 x1)))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 11328,
+    "seconds": 0.0002636660065036267,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 39,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_1.json:174",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (x1 (x1 (x0 x1)))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3651,
+    "seconds": 0.0003618340124376118,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 74,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_1.json:175",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (x1 (x0 x1))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4489,
+    "seconds": 0.0002952079812530428,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 56,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_1.json:178",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (x1 (x0 (x0 x1)))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2920,
+    "seconds": 0.0003856249968521297,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 79,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 22233088
+  },
+  {
+    "id": "h2_1.json:180",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (x1 ((x0 x1) _))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4083,
+    "seconds": 0.0002712920249905437,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 34,
+        "work": 43,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_1.json:181",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (x0 (\\x2. (x0 x1)))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4619,
+    "seconds": 0.0002767080150078982,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 36,
+        "work": 43,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_1.json:184",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (x0 (x1 (x0 x1)))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2395,
+    "seconds": 0.0003963750205002725,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 82,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_1.json:185",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (x0 (x0 x1))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3426,
+    "seconds": 0.0003175830061081797,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 40,
+        "work": 59,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 40
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_1.json:188",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (x0 ((x0 x1) _))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3138,
+    "seconds": 0.0002868330047931522,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 48,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_1.json:189",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. ((x1 (x0 x1)) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3893,
+    "seconds": 0.0003067090001422912,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 39,
+        "work": 55,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 39
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_1.json:190",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. ((x0 x1) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8658,
+    "seconds": 0.00023066700669005513,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 28,
+        "work": 34,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 28
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_1.json:191",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. ((x0 (x0 x1)) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3297,
+    "seconds": 0.00032195899984799325,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 43,
+        "work": 59,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 43
+      }
+    ],
+    "peak_rss_bytes": 22265856
+  },
+  {
+    "id": "h2_1.json:192",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (\\x1. (((x0 x1) _) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 5584,
+    "seconds": 0.00023516599321737885,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 29,
+        "work": 35,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 29
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_1.json:195",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (x0 (\\x1. (x1 (x0 x1)))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4174,
+    "seconds": 0.00037108297692611814,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 77,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_1.json:197",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (x0 (\\x1. (x0 (x0 x1)))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3222,
+    "seconds": 0.00039674999425187707,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 53,
+        "work": 79,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 53
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_1.json:198",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (x0 (x0 (\\x1. ((x0 x1) _))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4265,
+    "seconds": 0.0003183750086463988,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 43,
+        "work": 58,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 43
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_1.json:225",
+    "source": "((\\x0. (x0 ((x0 (x0 x0)) _))) (\\x0. (x0 (\\x1. (x1 (x0 x1))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4457,
+    "seconds": 0.0003140839980915189,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 41,
+        "work": 59,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_1.json:226",
+    "source": "((\\x0. (x0 ((x0 (x0 x0)) _))) (\\x0. (x0 (\\x1. (x0 (x0 x1))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3706,
+    "seconds": 0.0003427499905228615,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 45,
+        "work": 64,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 45
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_1.json:227",
+    "source": "((\\x0. (x0 ((x0 (x0 x0)) _))) (\\x0. (x0 (\\x1. ((x0 x1) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8612,
+    "seconds": 0.00027658400358632207,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 36,
+        "work": 46,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_1.json:234",
+    "source": "((\\x0. (x0 (((x0 x0) _) _))) (\\x0. (x0 (\\x1. (x1 (x0 x1))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4426,
+    "seconds": 0.0003150420088786632,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 38,
+        "work": 57,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 38
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_1.json:235",
+    "source": "((\\x0. (x0 (((x0 x0) _) _))) (\\x0. (x0 (\\x1. (x0 (x0 x1))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3651,
+    "seconds": 0.0003237919881939888,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 41,
+        "work": 61,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22249472
+  },
+  {
+    "id": "h2_1.json:236",
+    "source": "((\\x0. (x0 (((x0 x0) _) _))) (\\x0. (x0 (\\x1. ((x0 x1) _)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8600,
+    "seconds": 0.00024225001106970012,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 29,
+        "work": 35,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 29
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_2.json:25",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x0 (\\x3. x2))))) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 24761,
+    "seconds": 0.0003663749957922846,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 35,
+        "work": 33,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 48,
+        "work": 51,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_2.json:30",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. ((x1 (x0 x1)) _)))) _)))",
+    "legacy": [
+      "SF2"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": false,
+      "SF2": true
+    },
+    "work": 7589,
+    "seconds": 0.0003253339964430779,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 40,
+        "work": 56,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 40
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:31",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. ((x0 x2) _)))) (x0 _))))",
+    "legacy": [
+      "SF2"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": false,
+      "SF2": true
+    },
+    "work": 6324,
+    "seconds": 0.021606958005577326,
+    "new_ok": false,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 30,
+        "work": 30,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_2"
+        ],
+        "states": 182,
+        "work": 175,
+        "k": 1,
+        "mode": "site"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_2"
+        ],
+        "states": 1056,
+        "work": 2705,
+        "k": 2,
+        "mode": "site"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_2"
+        ],
+        "states": 75,
+        "work": 70,
+        "k": 2,
+        "mode": "lambda"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_2"
+        ],
+        "states": 179,
+        "work": 166,
+        "k": 1,
+        "mode": "arg"
+      },
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 5849,
+        "work": 7164,
+        "k": 4,
+        "mode": "site"
+      }
+    ],
+    "peak_rss_bytes": 23707648
+  },
+  {
+    "id": "h2_2.json:32",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. ((x0 x1) _)))) _)))",
+    "legacy": [
+      "SF2"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": false,
+      "SF2": true
+    },
+    "work": 16606,
+    "seconds": 0.00022783299209550023,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 26,
+        "work": 31,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 26
+      }
+    ],
+    "peak_rss_bytes": 22233088
+  },
+  {
+    "id": "h2_2.json:33",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (((x0 x1) _) _)))) _)))",
+    "legacy": [
+      "SF2"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": false,
+      "SF2": true
+    },
+    "work": 11908,
+    "seconds": 0.0002322919899597764,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 28,
+        "work": 32,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 28
+      }
+    ],
+    "peak_rss_bytes": 22249472
+  },
+  {
+    "id": "h2_2.json:37",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x2 (x1 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4047,
+    "seconds": 0.00029120800900273025,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 35,
+        "work": 54,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 35
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_2.json:39",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x2 (x0 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4274,
+    "seconds": 0.00037629102007485926,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 84,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:40",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x2 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3881,
+    "seconds": 0.00038333298289217055,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 83,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:42",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x1 (x1 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3220,
+    "seconds": 0.00029820800409652293,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 36,
+        "work": 57,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_2.json:43",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x1 (x0 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3337,
+    "seconds": 0.00038095901254564524,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 85,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_2.json:44",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x1 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3602,
+    "seconds": 0.0003785839944612235,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 77,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:45",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 10272,
+    "seconds": 0.00021987498621456325,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 27,
+        "work": 32,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 27
+      }
+    ],
+    "peak_rss_bytes": 22183936
+  },
+  {
+    "id": "h2_2.json:46",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x0 (x1 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3168,
+    "seconds": 0.0003516249998938292,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 43,
+        "work": 68,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 43
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:47",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x0 (x0 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3172,
+    "seconds": 0.0003950409882236272,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 88,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_2.json:48",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. ((x1 x2) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8216,
+    "seconds": 0.0002334999735467136,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 26,
+        "work": 32,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 26
+      }
+    ],
+    "peak_rss_bytes": 22183936
+  },
+  {
+    "id": "h2_2.json:49",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. ((x0 x2) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8199,
+    "seconds": 0.00025370900402776897,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 31,
+        "work": 44,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 31
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:50",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (\\x2. ((x0 x1) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 7967,
+    "seconds": 0.00024737499188631773,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 31,
+        "work": 38,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 31
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:54",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x1 (\\x2. (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3409,
+    "seconds": 0.0003697090141940862,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 71,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_2.json:58",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x1 (x1 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2682,
+    "seconds": 0.00042129200301133096,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 54,
+        "work": 81,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 54
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:59",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x1 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3229,
+    "seconds": 0.00031350000062957406,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 42,
+        "work": 60,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 42
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:60",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x1 (x0 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2111,
+    "seconds": 0.0003937500005122274,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 56,
+        "work": 84,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 56
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:62",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x1 ((x0 x1) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3100,
+    "seconds": 0.0003072079853154719,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 41,
+        "work": 56,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_2.json:63",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3911,
+    "seconds": 0.00025679197278805077,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 32,
+        "work": 44,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 32
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_2.json:66",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x0 (\\x2. (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2807,
+    "seconds": 0.00039754199679009616,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 83,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22265856
+  },
+  {
+    "id": "h2_2.json:69",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x0 (x1 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1995,
+    "seconds": 0.0004081249935552478,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 56,
+        "work": 89,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 56
+      }
+    ],
+    "peak_rss_bytes": 22151168
+  },
+  {
+    "id": "h2_2.json:70",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x0 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2447,
+    "seconds": 0.00032820901833474636,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 44,
+        "work": 64,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 44
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:71",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x0 ((x0 x1) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2283,
+    "seconds": 0.0003341249830555171,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 67,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_2.json:78",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 ((x1 (x0 x1)) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3078,
+    "seconds": 0.0003462080203462392,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 44,
+        "work": 61,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 44
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:79",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 ((x0 x1) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3561,
+    "seconds": 0.00023262499598786235,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 29,
+        "work": 35,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 29
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:80",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 ((x0 (x0 x1)) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2347,
+    "seconds": 0.0003306250146124512,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 61,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:81",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (((x0 x1) _) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3259,
+    "seconds": 0.00024112500250339508,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 30,
+        "work": 36,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 30
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_2.json:86",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x2 (x1 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3287,
+    "seconds": 0.0002930409973487258,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 55,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_2.json:87",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x2 (x0 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3959,
+    "seconds": 0.0004044579982291907,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 86,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:88",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x2 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2559,
+    "seconds": 0.0003981670015491545,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 86,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:89",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x1 (x1 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2602,
+    "seconds": 0.00029620801797136664,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 55,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 22233088
+  },
+  {
+    "id": "h2_2.json:90",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x1 (x0 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1915,
+    "seconds": 0.00040291700861416757,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 86,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h2_2.json:91",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3483,
+    "seconds": 0.00023541701375506818,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 29,
+        "work": 35,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 29
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:92",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x0 (x2 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2506,
+    "seconds": 0.0003776669909711927,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 46,
+        "work": 79,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 46
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:93",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x0 (x1 x2)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1712,
+    "seconds": 0.0003813750226981938,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 46,
+        "work": 79,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 46
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:94",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. ((x1 x2) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3752,
+    "seconds": 0.0002424580161459744,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 29,
+        "work": 36,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 29
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_2.json:95",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. ((x0 x2) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 7970,
+    "seconds": 0.0002542500151321292,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 42,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:96",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (\\x2. ((x0 x1) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2809,
+    "seconds": 0.00026312502450309694,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 42,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_2.json:102",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x1 (\\x2. (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1958,
+    "seconds": 0.00037737502134405077,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 72,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:104",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x1 (x1 (x1 x0)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1911,
+    "seconds": 0.0004491250147111714,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 60,
+        "work": 107,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 60
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_2.json:105",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x1 (x1 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1404,
+    "seconds": 0.0004265829920768738,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 56,
+        "work": 89,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 56
+      }
+    ],
+    "peak_rss_bytes": 22167552
+  },
+  {
+    "id": "h2_2.json:106",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x1 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1901,
+    "seconds": 0.0003368330071680248,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 44,
+        "work": 67,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 44
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:107",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x1 (x0 (x1 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1629,
+    "seconds": 0.0003653339808806777,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 75,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_2.json:108",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x1 ((x0 x1) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1866,
+    "seconds": 0.0003444999747443944,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 66,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:109",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2725,
+    "seconds": 0.0002777920162770897,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 34,
+        "work": 46,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:115",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x0 (x1 (x1 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": false,
+      "SFprime": true
+    },
+    "work": 1270,
+    "seconds": 0.0003824170271400362,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 76,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_2.json:116",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x0 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1930,
+    "seconds": 0.0003589169937185943,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 46,
+        "work": 67,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 46
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:119",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 ((x1 (x0 x1)) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 1882,
+    "seconds": 0.0003552910056896508,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 71,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22151168
+  },
+  {
+    "id": "h2_2.json:120",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 ((x0 x1) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2633,
+    "seconds": 0.0002425840066280216,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 31,
+        "work": 39,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 31
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_2.json:122",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (((x0 x1) _) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2358,
+    "seconds": 0.0002533330116420984,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 32,
+        "work": 40,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 32
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:127",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((\\x2. (x2 _)) (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8905,
+    "seconds": 0.0002320829953532666,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 27,
+        "work": 31,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 27
+      }
+    ],
+    "peak_rss_bytes": 22265856
+  },
+  {
+    "id": "h2_2.json:128",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((\\x2. ((x0 x1) _)) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8772,
+    "seconds": 0.00022087499382905662,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 26,
+        "work": 30,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 26
+      }
+    ],
+    "peak_rss_bytes": 22265856
+  },
+  {
+    "id": "h2_2.json:135",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x1 (\\x2. (x0 x1))) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 6902,
+    "seconds": 0.0002548749907873571,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 31,
+        "work": 39,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 31
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:138",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x1 (x1 (x0 x1))) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3024,
+    "seconds": 0.00032895899494178593,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 44,
+        "work": 59,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 44
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:139",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x1 (x0 x1)) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3510,
+    "seconds": 0.00026599998818710446,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 34,
+        "work": 43,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:140",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x1 (x0 (x0 x1))) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2244,
+    "seconds": 0.0003835840034298599,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 46,
+        "work": 61,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 46
+      }
+    ],
+    "peak_rss_bytes": 22118400
+  },
+  {
+    "id": "h2_2.json:142",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x1 ((x0 x1) _)) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3346,
+    "seconds": 0.0002499579859431833,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 31,
+        "work": 36,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 31
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:143",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 7808,
+    "seconds": 0.0002049999893642962,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 23,
+        "work": 26,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 23
+      }
+    ],
+    "peak_rss_bytes": 22200320
+  },
+  {
+    "id": "h2_2.json:147",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x0 (\\x2. (x0 x1))) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2914,
+    "seconds": 0.00025508401449769735,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 39,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_2.json:149",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x0 (x1 (x0 x1))) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2067,
+    "seconds": 0.0003279169904999435,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 63,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:150",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x0 (x0 x1)) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2864,
+    "seconds": 0.00027925000176765025,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 43,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_2.json:151",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x0 ((x0 x1) _)) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2528,
+    "seconds": 0.00025704200379550457,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 34,
+        "work": 40,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:152",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (((x1 (x0 x1)) _) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3343,
+    "seconds": 0.0002674999996088445,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 35,
+        "work": 44,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 35
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:153",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (((x0 x1) _) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4904,
+    "seconds": 0.00020829201093874872,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 24,
+        "work": 27,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 24
+      }
+    ],
+    "peak_rss_bytes": 22118400
+  },
+  {
+    "id": "h2_2.json:154",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (((x0 (x0 x1)) _) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2484,
+    "seconds": 0.0002798750065267086,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 38,
+        "work": 45,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 38
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_2.json:155",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((((x0 x1) _) _) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4598,
+    "seconds": 0.00021066699991934001,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 25,
+        "work": 28,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 25
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:163",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (\\x2. ((x0 x1) _))))) _)))",
+    "legacy": [
+      "SF2"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": false,
+      "SF2": true
+    },
+    "work": 14646,
+    "seconds": 0.00032979200477711856,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 43,
+        "work": 56,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 43
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:166",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (x1 (\\x2. (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4381,
+    "seconds": 0.00036991699016653,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 68,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_2.json:168",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (x1 (x1 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3068,
+    "seconds": 0.00040391599759459496,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 56,
+        "work": 86,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 56
+      }
+    ],
+    "peak_rss_bytes": 22233088
+  },
+  {
+    "id": "h2_2.json:169",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (x1 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3660,
+    "seconds": 0.00032879100763238966,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 44,
+        "work": 64,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 44
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_2.json:170",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (x1 (x0 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2529,
+    "seconds": 0.00042895801016129553,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 58,
+        "work": 89,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 58
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:172",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (x1 ((x0 x1) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3507,
+    "seconds": 0.00033408301533199847,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 62,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:174",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (x0 (\\x2. (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3031,
+    "seconds": 0.000395249982830137,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 51,
+        "work": 74,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 51
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:176",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (x0 (x1 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2039,
+    "seconds": 0.00044229099876247346,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 58,
+        "work": 92,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 58
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:177",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (x0 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2742,
+    "seconds": 0.00033704101224429905,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 46,
+        "work": 65,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 46
+      }
+    ],
+    "peak_rss_bytes": 22167552
+  },
+  {
+    "id": "h2_2.json:178",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (x0 ((x0 x1) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2538,
+    "seconds": 0.0003478749713394791,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 69,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:179",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. ((x1 (x0 x1)) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3531,
+    "seconds": 0.00032766698859632015,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 46,
+        "work": 64,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 46
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:180",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. ((x0 x1) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3897,
+    "seconds": 0.00027108300128020346,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 45,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:181",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. ((x0 (x0 x1)) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2608,
+    "seconds": 0.00033745900145731866,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 64,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:182",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (\\x1. (((x0 x1) _) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3672,
+    "seconds": 0.00026916697970591486,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 38,
+        "work": 46,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 38
+      }
+    ],
+    "peak_rss_bytes": 22183936
+  },
+  {
+    "id": "h2_2.json:187",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (x0 (\\x1. (x1 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3428,
+    "seconds": 0.00042304201633669436,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 58,
+        "work": 89,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 58
+      }
+    ],
+    "peak_rss_bytes": 21938176
+  },
+  {
+    "id": "h2_2.json:188",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (x0 (\\x1. (x0 (x0 x1)))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2533,
+    "seconds": 0.0004279589920770377,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 60,
+        "work": 89,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 60
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_2.json:189",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (x0 (x0 (\\x1. ((x0 x1) _))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3352,
+    "seconds": 0.00033083301968872547,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 64,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:199",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 ((\\x1. (\\x2. ((x0 x2) _))) _)) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 9421,
+    "seconds": 0.00022270801127888262,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 26,
+        "work": 30,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 26
+      }
+    ],
+    "peak_rss_bytes": 22233088
+  },
+  {
+    "id": "h2_2.json:219",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 ((x0 (\\x1. (x1 (x0 x1)))) _)) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3558,
+    "seconds": 0.0003286669962108135,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 65,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h2_2.json:220",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 ((x0 (\\x1. (x0 (x0 x1)))) _)) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2594,
+    "seconds": 0.00035708400537259877,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 68,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_2.json:221",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 ((x0 (\\x1. ((x0 x1) _))) _)) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3864,
+    "seconds": 0.000242166017415002,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 34,
+        "work": 40,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:245",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((x0 (\\x1. (\\x2. (x0 (\\x3. x2))))) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 24205,
+    "seconds": 0.00043104198994114995,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 34,
+        "work": 36,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 61,
+        "work": 65,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 54
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_2.json:247",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3814,
+    "seconds": 0.0007689579797443002,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 31,
+        "work": 36,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 129,
+        "work": 152,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 129
+      }
+    ],
+    "peak_rss_bytes": 22315008
+  },
+  {
+    "id": "h2_2.json:249",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3004,
+    "seconds": 0.0034616249904502183,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 31,
+        "work": 36,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 501,
+        "work": 690,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 501
+      }
+    ],
+    "peak_rss_bytes": 22298624
+  },
+  {
+    "id": "h2_2.json:250",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4367,
+    "seconds": 0.0005759160267189145,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_2"
+        ],
+        "states": 31,
+        "work": 36,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 85,
+        "work": 89,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 85
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_2.json:274",
+    "source": "((\\x0. (x0 (\\x1. (\\x2. (x0 (\\x3. x2)))))) (\\x0. ((x0 _) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 27442,
+    "seconds": 0.00018929201178252697,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 20,
+        "work": 21,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 20
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:281",
+    "source": "((\\x0. (x0 (\\x1. (x1 (\\x2. (x0 (x1 x2))))))) (\\x0. ((x0 x0) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3568,
+    "seconds": 0.0002995000104419887,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 53,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:282",
+    "source": "((\\x0. (x0 (\\x1. (x1 (\\x2. ((x1 x2) _)))))) (\\x0. ((x0 x0) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8133,
+    "seconds": 0.00021708299755118787,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 25,
+        "work": 30,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 25
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:287",
+    "source": "((\\x0. (x0 (\\x1. (x1 x0)))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4020,
+    "seconds": 0.00038420798955485225,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 85,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22118400
+  },
+  {
+    "id": "h2_2.json:288",
+    "source": "((\\x0. (x0 (\\x1. (x1 x0)))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3159,
+    "seconds": 0.00040029099909588695,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 50,
+        "work": 95,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 50
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_2.json:289",
+    "source": "((\\x0. (x0 (\\x1. (x1 x0)))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8125,
+    "seconds": 0.0002502080169506371,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 32,
+        "work": 43,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 32
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_2.json:293",
+    "source": "((\\x0. (x0 (\\x1. (x0 x0)))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3811,
+    "seconds": 0.0003024580073542893,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 40,
+        "work": 58,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 40
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_2.json:294",
+    "source": "((\\x0. (x0 (\\x1. (x0 x0)))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2866,
+    "seconds": 0.0003317090158816427,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 43,
+        "work": 64,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 43
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:295",
+    "source": "((\\x0. (x0 (\\x1. (x0 x0)))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 7948,
+    "seconds": 0.00023970898473635316,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 29,
+        "work": 34,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 29
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:298",
+    "source": "((\\x0. (x0 (\\x1. (x0 (\\x2. x1))))) (\\x0. ((x0 x0) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 25840,
+    "seconds": 0.00030612500268034637,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 39,
+        "work": 39,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 37,
+        "work": 38,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 31
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h2_2.json:300",
+    "source": "((\\x0. (x0 (\\x1. (x0 (\\x2. x1))))) (\\x0. ((x0 (x0 x0)) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 23709,
+    "seconds": 0.0003844579914584756,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 47,
+        "work": 48,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 53,
+        "work": 55,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 43
+      }
+    ],
+    "peak_rss_bytes": 22118400
+  },
+  {
+    "id": "h2_2.json:304",
+    "source": "((\\x0. (x0 (\\x1. (x0 (\\x2. (x2 (x1 x2))))))) (\\x0. ((x0 x0) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4027,
+    "seconds": 0.00027983300969935954,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 34,
+        "work": 44,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 22118400
+  },
+  {
+    "id": "h2_2.json:305",
+    "source": "((\\x0. (x0 (\\x1. (x0 (\\x2. (x1 (x1 x2))))))) (\\x0. ((x0 x0) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3393,
+    "seconds": 0.00027200000477023423,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 34,
+        "work": 44,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:306",
+    "source": "((\\x0. (x0 (\\x1. (x0 (\\x2. (x0 (x1 x2))))))) (\\x0. ((x0 x0) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3999,
+    "seconds": 0.00026212501688860357,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 31,
+        "work": 39,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 31
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h2_2.json:307",
+    "source": "((\\x0. (x0 (\\x1. (x0 (\\x2. ((x1 x2) _)))))) (\\x0. ((x0 x0) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8211,
+    "seconds": 0.00022024998906999826,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 25,
+        "work": 28,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 25
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:331",
+    "source": "((\\x0. (x0 (\\x1. ((x0 (\\x2. x1)) _)))) (\\x0. ((x0 x0) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 23029,
+    "seconds": 0.00033854099456220865,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          20
+        ],
+        "states": 51,
+        "work": 47,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 41,
+        "work": 43,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 35
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:339",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (\\x2. ((x0 x1) _)))) _)))",
+    "legacy": [
+      "SF2"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": false,
+      "SF2": true
+    },
+    "work": 16454,
+    "seconds": 0.0002784589887596667,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 34,
+        "work": 43,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:340",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (x1 (\\x2. (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 10412,
+    "seconds": 0.0002472919877618551,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 40,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_2.json:342",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (x1 (x1 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3318,
+    "seconds": 0.0003435830003581941,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 46,
+        "work": 67,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 46
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h2_2.json:343",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3873,
+    "seconds": 0.00028162499074824154,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 36,
+        "work": 50,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_2.json:344",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (x1 (x0 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2710,
+    "seconds": 0.0003559999749995768,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 72,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:346",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (x1 ((x0 x1) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3586,
+    "seconds": 0.000249749980866909,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 35,
+        "work": 43,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 35
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_2.json:348",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (x0 (\\x2. (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3598,
+    "seconds": 0.0002752089931163937,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 46,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 22151168
+  },
+  {
+    "id": "h2_2.json:350",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (x0 (x1 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2212,
+    "seconds": 0.0003602909855544567,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 76,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:351",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2902,
+    "seconds": 0.00030141600291244686,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 39,
+        "work": 55,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 39
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:352",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (x0 ((x0 x1) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2870,
+    "seconds": 0.000284875015495345,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 39,
+        "work": 50,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 39
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_2.json:353",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. ((x1 (x0 x1)) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3759,
+    "seconds": 0.000276917009614408,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 38,
+        "work": 49,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 38
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:354",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 7955,
+    "seconds": 0.00022704197908751667,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 29,
+        "work": 34,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 29
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_2.json:355",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. ((x0 (x0 x1)) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2961,
+    "seconds": 0.00029949998133815825,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 42,
+        "work": 52,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 42
+      }
+    ],
+    "peak_rss_bytes": 22167552
+  },
+  {
+    "id": "h2_2.json:356",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (\\x1. (((x0 x1) _) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 5006,
+    "seconds": 0.00023545799194835126,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 30,
+        "work": 35,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 30
+      }
+    ],
+    "peak_rss_bytes": 22167552
+  },
+  {
+    "id": "h2_2.json:359",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (x0 (\\x1. (x1 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3659,
+    "seconds": 0.00035924999974668026,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 49,
+        "work": 72,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 49
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_2.json:360",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (x0 (\\x1. (x0 (x0 x1))))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2731,
+    "seconds": 0.00037900000461377203,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 52,
+        "work": 74,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 52
+      }
+    ],
+    "peak_rss_bytes": 22118400
+  },
+  {
+    "id": "h2_2.json:361",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((x0 (x0 (\\x1. ((x0 x1) _)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4140,
+    "seconds": 0.00029245897894725204,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 42,
+        "work": 53,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 42
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_2.json:381",
+    "source": "((\\x0. (x0 (x0 (\\x1. (x0 (\\x2. x1)))))) (\\x0. ((x0 x0) (x0 _))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 25224,
+    "seconds": 0.00036487498437054455,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 53,
+        "work": 57,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 43,
+        "work": 44,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_2.json:385",
+    "source": "((\\x0. (x0 (x0 (x0 x0)))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4101,
+    "seconds": 0.0002955000090878457,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 40,
+        "work": 56,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 40
+      }
+    ],
+    "peak_rss_bytes": 22249472
+  },
+  {
+    "id": "h2_2.json:386",
+    "source": "((\\x0. (x0 (x0 (x0 x0)))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3284,
+    "seconds": 0.0003498339792713523,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 44,
+        "work": 62,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 44
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h2_2.json:387",
+    "source": "((\\x0. (x0 (x0 (x0 x0)))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8099,
+    "seconds": 0.00025883299531415105,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 40,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_2.json:397",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. ((x0 (\\x1. (x1 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4146,
+    "seconds": 0.00028787500923499465,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 38,
+        "work": 51,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 38
+      }
+    ],
+    "peak_rss_bytes": 22233088
+  },
+  {
+    "id": "h2_2.json:398",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. ((x0 (\\x1. (x0 (x0 x1)))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3172,
+    "seconds": 0.0003351669874973595,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 41,
+        "work": 54,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22167552
+  },
+  {
+    "id": "h2_2.json:399",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. ((x0 (\\x1. ((x0 x1) _))) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8159,
+    "seconds": 0.00023091601906344295,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 29,
+        "work": 33,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 29
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_5.json:31",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (\\x2. ((x2 x1) x0)))) x0) _)))",
+    "legacy": [
+      "SF2"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": false,
+      "SF2": true
+    },
+    "work": 12079,
+    "seconds": 0.0002215839922428131,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 27,
+        "work": 31,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 27
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_5.json:32",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (\\x2. ((x0 x1) _)))) _) _)))",
+    "legacy": [
+      "SF2"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": false,
+      "SF2": true
+    },
+    "work": 16540,
+    "seconds": 0.00022491600248031318,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 25,
+        "work": 28,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 25
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_5.json:35",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (x1 (\\x2. (x0 x1))))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 10536,
+    "seconds": 0.0002316670143045485,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 28,
+        "work": 33,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 28
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_5.json:38",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (x1 (x1 (x0 x1))))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3444,
+    "seconds": 0.0003186250105500221,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 43,
+        "work": 61,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 43
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_5.json:39",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (x1 (x0 x1)))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4191,
+    "seconds": 0.0002622909960336983,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 33,
+        "work": 45,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 33
+      }
+    ],
+    "peak_rss_bytes": 22183936
+  },
+  {
+    "id": "h2_5.json:40",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (x1 (x0 (x0 x1))))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2584,
+    "seconds": 0.0003349999897181988,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 45,
+        "work": 65,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 45
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_5.json:42",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (x1 ((x0 x1) _)))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3805,
+    "seconds": 0.0002422079851385206,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 30,
+        "work": 36,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 30
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_5.json:45",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (x0 (\\x2. (x0 x1))))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3312,
+    "seconds": 0.0002414170012343675,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 30,
+        "work": 36,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 30
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h2_5.json:47",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (x0 (x1 (x0 x1))))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2050,
+    "seconds": 0.00033937502303160727,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 45,
+        "work": 68,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 45
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_5.json:48",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (x0 (x0 x1)))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3066,
+    "seconds": 0.0002697909949347377,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 35,
+        "work": 47,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 35
+      }
+    ],
+    "peak_rss_bytes": 22282240
+  },
+  {
+    "id": "h2_5.json:49",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (x0 ((x0 x1) _)))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2753,
+    "seconds": 0.0002506669843569398,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 32,
+        "work": 40,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 32
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_5.json:50",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. ((x1 (x0 x1)) _))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3961,
+    "seconds": 0.00027808398590423167,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 35,
+        "work": 44,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 35
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_5.json:51",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. ((x0 x1) _))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8329,
+    "seconds": 0.00020829198183491826,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 24,
+        "work": 27,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 24
+      }
+    ],
+    "peak_rss_bytes": 22183936
+  },
+  {
+    "id": "h2_5.json:52",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. ((x0 (x0 x1)) _))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2893,
+    "seconds": 0.00027258298359811306,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 38,
+        "work": 44,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 38
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_5.json:53",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (((x0 x1) _) _))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 5303,
+    "seconds": 0.00021437500254251063,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 25,
+        "work": 28,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 25
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_5.json:65",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (x0 (\\x1. (x1 (x0 x1))))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3886,
+    "seconds": 0.0003385840100236237,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 45,
+        "work": 65,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 45
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h2_5.json:66",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (x0 (\\x1. (x0 (x0 x1))))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2865,
+    "seconds": 0.0003476249985396862,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 65,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h2_5.json:67",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (x0 (\\x1. ((x0 x1) _)))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4111,
+    "seconds": 0.00027245801175013185,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 38,
+        "work": 46,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 38
+      }
+    ],
+    "peak_rss_bytes": 22003712
+  },
+  {
+    "id": "h2_5.json:101",
+    "source": "((\\x0. (x0 (\\x1. (\\x2. (x0 (x1 x2)))))) (\\x0. (((x0 x0) x0) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4178,
+    "seconds": 0.00025249997270293534,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 31,
+        "work": 38,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 31
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h2_5.json:107",
+    "source": "((\\x0. (x0 (\\x1. (x0 (\\x2. x1))))) (\\x0. (((x0 x0) (x0 _)) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 24222,
+    "seconds": 0.00032724998891353607,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 41,
+        "work": 41,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 40,
+        "work": 41,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h2_5.json:114",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. (((x0 (\\x1. (x1 (x0 x1)))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4054,
+    "seconds": 0.00028700000257231295,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 37,
+        "work": 51,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h2_5.json:115",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. (((x0 (\\x1. (x0 (x0 x1)))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 3230,
+    "seconds": 0.00031187498825602233,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 40,
+        "work": 55,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 40
+      }
+    ],
+    "peak_rss_bytes": 22183936
+  },
+  {
+    "id": "h2_5.json:116",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. (((x0 (\\x1. ((x0 x1) _))) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 7994,
+    "seconds": 0.00023645799956284463,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 30,
+        "work": 35,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 30
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h3_1.json:8",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (x1 (x0 x1)))) _) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4095,
+    "seconds": 0.0002674999996088445,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 34,
+        "work": 46,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 34
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h3_1.json:9",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (x0 (x0 x1)))) _) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 2922,
+    "seconds": 0.0002872080076485872,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 36,
+        "work": 49,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22020096
+  },
+  {
+    "id": "h3_1.json:10",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. ((x0 x1) _))) _) _) _)))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": "time",
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8187,
+    "seconds": 0.0002118749835062772,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": true,
+        "states": 25,
+        "work": 28,
+        "k": 0,
+        "mode": "site",
+        "portable_states": 25
+      }
+    ],
+    "peak_rss_bytes": 21987328
+  },
+  {
+    "id": "h_xfull1.json:3",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (\\x1. (x0 (\\x2. (x2 (x0 x2)))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4520,
+    "seconds": 0.0008539580157957971,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 20,
+        "work": 20,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 127,
+        "work": 168,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 127
+      }
+    ],
+    "peak_rss_bytes": 22282240
+  },
+  {
+    "id": "h_xfull1.json:4",
+    "source": "((\\x0. (x0 ((x0 x0) _))) (\\x0. (\\x1. (x0 (\\x2. ((x0 x2) _))))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 8841,
+    "seconds": 0.0005932089989073575,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          11
+        ],
+        "states": 20,
+        "work": 20,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 83,
+        "work": 95,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 83
+      }
+    ],
+    "peak_rss_bytes": 22249472
+  },
+  {
+    "id": "h_xfull1.json:5",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. (x0 ((x1 x1) x1)))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 86,
+    "seconds": 0.00046491698594763875,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          13
+        ],
+        "states": 21,
+        "work": 21,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 63,
+        "work": 68,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 63
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h_xfull1.json:6",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. (x0 ((x1 x1) x0)))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 90,
+    "seconds": 0.0004833329876419157,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          13
+        ],
+        "states": 21,
+        "work": 21,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 70,
+        "work": 75,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 70
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h_xfull1.json:7",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. (x0 ((x1 x0) x1)))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 90,
+    "seconds": 0.0004532919847406447,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          13
+        ],
+        "states": 21,
+        "work": 21,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 61,
+        "work": 66,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 61
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h_xfull1.json:8",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. (x0 ((x0 x1) x1)))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 90,
+    "seconds": 0.0004762920143548399,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "lambda-stop",
+          13
+        ],
+        "states": 21,
+        "work": 21,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 67,
+        "work": 72,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 67
+      }
+    ],
+    "peak_rss_bytes": 22134784
+  },
+  {
+    "id": "h_xfull1.json:10",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 0.00031270799809135497,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 23,
+        "work": 23,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 35,
+        "work": 36,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 35
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h_xfull1.json:11",
+    "source": "((\\x0. (x0 (((x0 _) x0) _))) (\\x0. (\\x1. ((x1 (\\x2. x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 0.00031683401903137565,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 24,
+        "work": 24,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 36,
+        "work": 37,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h_xfull1.json:12",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. (\\x3. x0))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 6,
+    "seconds": 0.00032016600016504526,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 24,
+        "work": 24,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 36,
+        "work": 37,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h_xfull1.json:13",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. (\\x3. (\\x4. x0)))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 7,
+    "seconds": 0.00032404199009761214,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 24,
+        "work": 25,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 37,
+        "work": 38,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 37
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h_xfull1.json:14",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. (x1 x0))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 6,
+    "seconds": 0.0003457080165389925,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 27,
+        "work": 28,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 41,
+        "work": 42,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  },
+  {
+    "id": "h_xfull1.json:15",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (\\x2. (x0 _))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 0.00031783399754203856,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 24,
+        "work": 24,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 36,
+        "work": 37,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h_xfull1.json:16",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x1 x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 0.0003512499970383942,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 26,
+        "work": 27,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 40,
+        "work": 41,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 40
+      }
+    ],
+    "peak_rss_bytes": 22167552
+  },
+  {
+    "id": "h_xfull1.json:17",
+    "source": "((\\x0. (x0 ((x0 x0) (x0 _)))) (\\x0. (\\x1. ((x1 (x1 x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 9,
+    "seconds": 0.0004418749886099249,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "r"
+        ],
+        "states": 41,
+        "work": 43,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 58,
+        "work": 59,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 58
+      }
+    ],
+    "peak_rss_bytes": 22085632
+  },
+  {
+    "id": "h_xfull1.json:18",
+    "source": "((\\x0. (x0 (((x0 _) x0) _))) (\\x0. (\\x1. ((x1 (x1 x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 0.0003503749903757125,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 27,
+        "work": 28,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 41,
+        "work": 42,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h_xfull1.json:19",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x1 (\\x2. x0))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 6,
+    "seconds": 0.0003497079887893051,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 27,
+        "work": 28,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 41,
+        "work": 42,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22216704
+  },
+  {
+    "id": "h_xfull1.json:20",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x1 (x1 x0))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 6,
+    "seconds": 0.00037316701491363347,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 29,
+        "work": 31,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 46,
+        "work": 47,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 46
+      }
+    ],
+    "peak_rss_bytes": 22265856
+  },
+  {
+    "id": "h_xfull1.json:21",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x1 (x0 _))) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 0.0003432079975027591,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 27,
+        "work": 28,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 41,
+        "work": 42,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22183936
+  },
+  {
+    "id": "h_xfull1.json:22",
+    "source": "((\\x0. (x0 (x0 ((x0 _) x0)))) (\\x0. (\\x1. ((x1 (x0 x1)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 7,
+    "seconds": 0.000379708013497293,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 29,
+        "work": 31,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 47,
+        "work": 49,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 47
+      }
+    ],
+    "peak_rss_bytes": 22249472
+  },
+  {
+    "id": "h_xfull1.json:23",
+    "source": "((\\x0. (x0 (x0 ((x0 _) x0)))) (\\x0. (\\x1. ((x1 (x0 x0)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 8,
+    "seconds": 0.0004090000002179295,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 35,
+        "work": 36,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 52,
+        "work": 53,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 52
+      }
+    ],
+    "peak_rss_bytes": 21970944
+  },
+  {
+    "id": "h_xfull1.json:24",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 (x0 _)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 4,
+    "seconds": 0.0003046669880859554,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 23,
+        "work": 23,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 35,
+        "work": 36,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 35
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h_xfull1.json:25",
+    "source": "((\\x0. (x0 ((x0 _) (\\x1. x0)))) (\\x0. (\\x1. ((x1 (x0 x0)) x1))))",
+    "legacy": [
+      "SR"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": true
+    },
+    "work": 2410,
+    "seconds": 0.00045683298958465457,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 23,
+        "work": 23,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 61,
+        "work": 63,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 61
+      }
+    ],
+    "peak_rss_bytes": 22102016
+  },
+  {
+    "id": "h_xfull1.json:26",
+    "source": "((\\x0. (x0 (((x0 _) x0) _))) (\\x0. (\\x1. ((x1 (x0 _)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 4,
+    "seconds": 0.00032791600096970797,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 24,
+        "work": 24,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 36,
+        "work": 37,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 21954560
+  },
+  {
+    "id": "h_xfull1.json:27",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 ((x1 x0) _)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 0.0003393749939277768,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 27,
+        "work": 28,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 41,
+        "work": 42,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 41
+      }
+    ],
+    "peak_rss_bytes": 22249472
+  },
+  {
+    "id": "h_xfull1.json:28",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. ((x1 ((x0 _) _)) x1))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 4,
+    "seconds": 0.0003267080173827708,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 24,
+        "work": 24,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 36,
+        "work": 37,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 36
+      }
+    ],
+    "peak_rss_bytes": 22069248
+  },
+  {
+    "id": "h_xfull1.json:29",
+    "source": "((\\x0. (x0 (((x0 x0) x0) _))) (\\x0. (\\x1. ((x0 x1) (x0 x1)))))",
+    "legacy": [
+      "SFprime"
+    ],
+    "outcomes": {
+      "W5": false,
+      "SR": "time",
+      "SFprime": true
+    },
+    "work": 4724,
+    "seconds": 0.001672207989031449,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "r"
+        ],
+        "states": 74,
+        "work": 100,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 248,
+        "work": 340,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 248
+      }
+    ],
+    "peak_rss_bytes": 22183936
+  },
+  {
+    "id": "h_xfull1.json:30",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. (((x1 (\\x2. x0)) x1) _))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 0.0003367090248502791,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 24,
+        "work": 24,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 39,
+        "work": 40,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 39
+      }
+    ],
+    "peak_rss_bytes": 22233088
+  },
+  {
+    "id": "h_xfull1.json:31",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. (((x1 (x1 x0)) x1) _))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 5,
+    "seconds": 0.0003780420229304582,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 27,
+        "work": 28,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 44,
+        "work": 45,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 44
+      }
+    ],
+    "peak_rss_bytes": 22036480
+  },
+  {
+    "id": "h_xfull1.json:32",
+    "source": "((\\x0. (x0 ((x0 _) x0))) (\\x0. (\\x1. (((x1 (x0 _)) x1) _))))",
+    "legacy": [
+      "W5"
+    ],
+    "outcomes": {
+      "W5": true
+    },
+    "work": 4,
+    "seconds": 0.00033491599606350064,
+    "new_ok": true,
+    "attempts": [
+      {
+        "ok": false,
+        "reason": [
+          "opaque",
+          "_1"
+        ],
+        "states": 24,
+        "work": 24,
+        "k": 0,
+        "mode": "site"
+      },
+      {
+        "ok": true,
+        "states": 39,
+        "work": 40,
+        "k": 1,
+        "mode": "site",
+        "portable_states": 39
+      }
+    ],
+    "peak_rss_bytes": 22052864
+  }
+]

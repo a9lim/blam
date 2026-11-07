@@ -1,0 +1,1377 @@
+{
+  "sources": 18640,
+  "rows": {
+    "2:A": {
+      "sources": 8571,
+      "lambda_A": 1162,
+      "wrong_nf": {
+        "zero": 8473,
+        "1": 91
+      },
+      "cycles": {
+        "zero": 3
+      },
+      "cutoffs": 4,
+      "survivors": 0
+    },
+    "2:D": {
+      "sources": 4716,
+      "lambda_A": 1206,
+      "wrong_nf": {
+        "zero": 4455,
+        "1": 256
+      },
+      "cycles": {
+        "zero": 5
+      },
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "2:pending": {
+      "sources": 1795,
+      "lambda_A": 449,
+      "wrong_nf": {
+        "zero": 1678,
+        "1": 107
+      },
+      "cycles": {
+        "zero": 7
+      },
+      "cutoffs": 3,
+      "survivors": 0
+    },
+    "3:A": {
+      "sources": 1788,
+      "lambda_A": 198,
+      "wrong_nf": {
+        "zero": 1783,
+        "1": 5
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "3:D": {
+      "sources": 964,
+      "lambda_A": 200,
+      "wrong_nf": {
+        "zero": 936,
+        "1": 28
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "3:pending": {
+      "sources": 256,
+      "lambda_A": 44,
+      "wrong_nf": {
+        "zero": 244,
+        "1": 10
+      },
+      "cycles": {
+        "zero": 2
+      },
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "4:A": {
+      "sources": 390,
+      "lambda_A": 30,
+      "wrong_nf": {
+        "zero": 390
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "4:D": {
+      "sources": 140,
+      "lambda_A": 0,
+      "wrong_nf": {
+        "zero": 140
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    },
+    "4:pending": {
+      "sources": 20,
+      "lambda_A": 5,
+      "wrong_nf": {
+        "zero": 20
+      },
+      "cycles": {},
+      "cutoffs": 0,
+      "survivors": 0
+    }
+  },
+  "exceptions": [
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "pending",
+      "body": "(((\\v4. (v4 v4)) (\\v4. (v4 v4))) c)",
+      "probe": "zero",
+      "certificate": [
+        3,
+        4,
+        "367bd28c7357575320f6c0e39edf7fcf1fd40ffc0c72f09fd63787cf431f4726"
+      ],
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ],
+        [
+          "v",
+          3
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "pending",
+      "body": "(((\\v4. (v4 v4)) (\\v4. (v4 v4))) (\\v4. c))",
+      "probe": "zero",
+      "certificate": [
+        3,
+        4,
+        "b7d7880717ade9ff9e8368f3975f402415aad97aa1697babd976ac4c5d1cef3d"
+      ],
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "v",
+            4
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "pending",
+      "body": "((((\\v4. (v4 v4)) (\\v4. (v4 v4))) t) c)",
+      "probe": "zero",
+      "certificate": [
+        3,
+        4,
+        "d67f95111874afcffbf191626240d415c19d0f420dc2ff0d5a178d17aba20750"
+      ],
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "a",
+            [
+              "l",
+              [
+                "a",
+                [
+                  "v",
+                  0
+                ],
+                [
+                  "v",
+                  0
+                ]
+              ]
+            ],
+            [
+              "l",
+              [
+                "a",
+                [
+                  "v",
+                  0
+                ],
+                [
+                  "v",
+                  0
+                ]
+              ]
+            ]
+          ],
+          [
+            "v",
+            0
+          ]
+        ],
+        [
+          "v",
+          3
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "pending",
+      "body": "((((\\v4. (v4 v4)) (\\v4. (v4 v4))) c) t)",
+      "probe": "zero",
+      "certificate": [
+        3,
+        4,
+        "76d0a7a6d9c5bf3bd2323d2e2e736bbf6b85759f753ed898bfab3a0b15b97c97"
+      ],
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "a",
+            [
+              "l",
+              [
+                "a",
+                [
+                  "v",
+                  0
+                ],
+                [
+                  "v",
+                  0
+                ]
+              ]
+            ],
+            [
+              "l",
+              [
+                "a",
+                [
+                  "v",
+                  0
+                ],
+                [
+                  "v",
+                  0
+                ]
+              ]
+            ]
+          ],
+          [
+            "v",
+            3
+          ]
+        ],
+        [
+          "v",
+          0
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "pending",
+      "body": "(((\\v4. (v4 v4)) (\\v4. (v4 v4))) (t c))",
+      "probe": "zero",
+      "certificate": [
+        3,
+        4,
+        "1088bb178a7ac99380cd03e460f6649140a204fafe3b02aaa009920765429f58"
+      ],
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ],
+        [
+          "a",
+          [
+            "v",
+            0
+          ],
+          [
+            "v",
+            3
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "pending",
+      "body": "(((\\v4. (v4 v4)) (\\v4. (v4 v4))) (c t))",
+      "probe": "zero",
+      "certificate": [
+        3,
+        4,
+        "31957c80144177ad02fb044fbfb2888a8fd93e7358c7210aec51f6fc4b343f71"
+      ],
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ],
+        [
+          "a",
+          [
+            "v",
+            3
+          ],
+          [
+            "v",
+            0
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "pending",
+      "body": "(((\\v4. (\\v5. (v4 v4))) (\\v4. (v4 v4))) c)",
+      "probe": "zero",
+      "certificate": [
+        5,
+        6,
+        "cfcc8ce23f8faaa7996b61b5cd7e906ea91455f50bd3547ea0c9d8b78023a89f"
+      ],
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "l",
+              [
+                "a",
+                [
+                  "v",
+                  1
+                ],
+                [
+                  "v",
+                  1
+                ]
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ],
+        [
+          "v",
+          3
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "D",
+      "body": "((\\v4. (c (v4 v4))) (\\v4. (v4 v4)))",
+      "probe": "zero",
+      "certificate": [
+        0,
+        1,
+        "2bc3a210dda51f6ad162ecf33bc759545d8ce6b50097e506ca0c7da8af3bd46d"
+      ],
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              4
+            ],
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "D",
+      "body": "((\\v4. ((v4 v4) c)) (\\v4. (v4 v4)))",
+      "probe": "zero",
+      "certificate": [
+        4,
+        5,
+        "367bd28c7357575320f6c0e39edf7fcf1fd40ffc0c72f09fd63787cf431f4726"
+      ],
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ],
+            [
+              "v",
+              4
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "D",
+      "body": "((\\v4. (v4 ((\\v5. v4) c))) (\\v4. (v4 v4)))",
+      "probe": "zero",
+      "certificate": [
+        4,
+        6,
+        "323fe932afd73c92725a985a9145c01f82484b11d9b40aa7d0cdbee81b63c989"
+      ],
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "a",
+              [
+                "l",
+                [
+                  "v",
+                  1
+                ]
+              ],
+              [
+                "v",
+                4
+              ]
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "D",
+      "body": "((\\v4. ((v4 v4) (\\v5. c))) (\\v4. (v4 v4)))",
+      "probe": "zero",
+      "certificate": [
+        4,
+        5,
+        "b7d7880717ade9ff9e8368f3975f402415aad97aa1697babd976ac4c5d1cef3d"
+      ],
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ],
+            [
+              "l",
+              [
+                "v",
+                5
+              ]
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "D",
+      "body": "((\\v4. (((\\v5. v4) c) v4)) (\\v4. (v4 v4)))",
+      "probe": "zero",
+      "certificate": [
+        5,
+        6,
+        "cfcc8ce23f8faaa7996b61b5cd7e906ea91455f50bd3547ea0c9d8b78023a89f"
+      ],
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "a",
+              [
+                "l",
+                [
+                  "v",
+                  1
+                ]
+              ],
+              [
+                "v",
+                4
+              ]
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cutoff",
+      "m": 2,
+      "location": "pending",
+      "body": "(((\\v4. (v4 v4)) (\\v4. (\\v5. (v4 v4)))) c)",
+      "probe": "zero",
+      "reason": "steps",
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "l",
+              [
+                "a",
+                [
+                  "v",
+                  1
+                ],
+                [
+                  "v",
+                  1
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          "v",
+          3
+        ]
+      ]
+    },
+    {
+      "kind": "cutoff",
+      "m": 2,
+      "location": "pending",
+      "body": "(((\\v4. (v4 v4)) (\\v4. (v4 (v4 v4)))) c)",
+      "probe": "zero",
+      "reason": "nodes",
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "a",
+                [
+                  "v",
+                  0
+                ],
+                [
+                  "v",
+                  0
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          "v",
+          3
+        ]
+      ]
+    },
+    {
+      "kind": "cutoff",
+      "m": 2,
+      "location": "pending",
+      "body": "(((\\v4. (v4 v4)) (\\v4. ((v4 v4) v4))) c)",
+      "probe": "zero",
+      "reason": "steps",
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "a",
+              [
+                "a",
+                [
+                  "v",
+                  0
+                ],
+                [
+                  "v",
+                  0
+                ]
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ],
+        [
+          "v",
+          3
+        ]
+      ]
+    },
+    {
+      "kind": "cutoff",
+      "m": 2,
+      "location": "A",
+      "body": "((\\v4. (v4 v4)) (\\v4. ((v4 v4) c)))",
+      "probe": "zero",
+      "reason": "steps",
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ],
+            [
+              "v",
+              4
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cutoff",
+      "m": 2,
+      "location": "A",
+      "body": "((\\v4. (v4 v4)) (\\v4. (c (v4 v4))))",
+      "probe": "zero",
+      "reason": "steps",
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              4
+            ],
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "A",
+      "body": "((\\v4. (v4 (\\v5. v4))) (\\v4. ((v4 c) v4)))",
+      "probe": "zero",
+      "certificate": [
+        4,
+        6,
+        "a6fc1fb09f2790e28aa7602a31e135fc08b514588acb020618b6c176fd1fb2cc"
+      ],
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "l",
+              [
+                "v",
+                1
+              ]
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                4
+              ]
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "A",
+      "body": "((\\v4. (v4 v4)) ((\\v4. (\\v5. (v5 v5))) c))",
+      "probe": "zero",
+      "certificate": [
+        3,
+        5,
+        "323fe932afd73c92725a985a9145c01f82484b11d9b40aa7d0cdbee81b63c989"
+      ],
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ],
+        [
+          "a",
+          [
+            "l",
+            [
+              "l",
+              [
+                "a",
+                [
+                  "v",
+                  0
+                ],
+                [
+                  "v",
+                  0
+                ]
+              ]
+            ]
+          ],
+          [
+            "v",
+            3
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cutoff",
+      "m": 2,
+      "location": "A",
+      "body": "((\\v4. (v4 v4)) (\\v4. (v4 ((\\v5. v4) c))))",
+      "probe": "zero",
+      "reason": "steps",
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "a",
+              [
+                "l",
+                [
+                  "v",
+                  1
+                ]
+              ],
+              [
+                "v",
+                4
+              ]
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cutoff",
+      "m": 2,
+      "location": "A",
+      "body": "((\\v4. (v4 v4)) (\\v4. ((v4 v4) (\\v5. c))))",
+      "probe": "zero",
+      "reason": "steps",
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ],
+            [
+              "l",
+              [
+                "v",
+                5
+              ]
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 2,
+      "location": "A",
+      "body": "((\\v4. (v4 v4)) (\\v4. (((\\v5. v4) c) v4)))",
+      "probe": "zero",
+      "certificate": [
+        4,
+        6,
+        "315c2ea8b6d914fea10c09cc9d75eda9a01b01345919f4ff03277f1d896efc70"
+      ],
+      "term": [
+        "a",
+        [
+          "l",
+          [
+            "a",
+            [
+              "v",
+              0
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ],
+        [
+          "l",
+          [
+            "a",
+            [
+              "a",
+              [
+                "l",
+                [
+                  "v",
+                  1
+                ]
+              ],
+              [
+                "v",
+                4
+              ]
+            ],
+            [
+              "v",
+              0
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 3,
+      "location": "pending",
+      "body": "(((\\v4. (v4 (v4 v4))) (\\v4. (v4 v4))) c)",
+      "probe": "zero",
+      "certificate": [
+        5,
+        6,
+        "62dbee1d9e82b45087dde55b0335f563e27ed6f28c887289f41419255a142623"
+      ],
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "a",
+                [
+                  "v",
+                  0
+                ],
+                [
+                  "v",
+                  0
+                ]
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ],
+        [
+          "v",
+          3
+        ]
+      ]
+    },
+    {
+      "kind": "cycle",
+      "m": 3,
+      "location": "pending",
+      "body": "(((\\v4. ((v4 v4) v4)) (\\v4. (v4 v4))) c)",
+      "probe": "zero",
+      "certificate": [
+        4,
+        5,
+        "c947ca35e1c7450f34fd20b9f0b8ce856b05e058991a42e6d25d1298e876b62b"
+      ],
+      "term": [
+        "a",
+        [
+          "a",
+          [
+            "l",
+            [
+              "a",
+              [
+                "a",
+                [
+                  "v",
+                  0
+                ],
+                [
+                  "v",
+                  0
+                ]
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ],
+          [
+            "l",
+            [
+              "a",
+              [
+                "v",
+                0
+              ],
+              [
+                "v",
+                0
+              ]
+            ]
+          ]
+        ],
+        [
+          "v",
+          3
+        ]
+      ]
+    }
+  ],
+  "survivors": [],
+  "seconds": 2.086509125001612,
+  "peak_rss_bytes": 42254336,
+  "threads": 1,
+  "source_domain": "B=((lambda x.D) A) C1...Ck, |B|<=29, m=2..4, c present"
+}

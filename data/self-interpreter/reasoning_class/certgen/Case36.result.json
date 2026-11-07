@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "states": 229,
+  "work": 258,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 199,
+  "portable_edges": 269,
+  "certificate_sha256": "e0c40b6e87f2ee1845f13abc328b0e189660ebfb201b7bdf194bd0bd80993a35",
+  "id": "h3_1.json:1",
+  "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x1)) (x0 (\\x1. x0))) _) x0)))",
+  "label": "Case36",
+  "seconds": 0.0018436670070514083,
+  "peak_rss_bytes": 23724032,
+  "threads": 1
+}

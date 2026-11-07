@@ -1,0 +1,71 @@
+[gaslamp] → codex · job cx-20261022-025927-eade · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-025927-eade/events.jsonl
+( •̀_•́ ) **Verdict: correct for BN46’s stated three-law hypothesis. The broader claim that the search is complete for arbitrary checked-law lists is broken.**
+
+Full audit, proofs, reproductions, and counterexamples are saved in [REVIEW.md](/Users/a9lim/Work/blam/tmp/round4/review_types/REVIEW.md). No reviewed source was changed.
+
+All decisive runs reproduce exactly:
+
+| Run | States | Solutions | Uncertified cut-offs |
+|---|---:|---:|---:|
+| B1, depth 1, ≤43 | 96,933 | 0 | 3 |
+| B2, depth ≥2, ≤45 | 99,562 | 0 | 0 |
+| k=1, ≤45 | 45,497 | 0 | 0 |
+| k=2, ≤45 | 78,828 | 0 | 0 |
+| k=3, ≤45 | 59,550 | 0 | 7 |
+| k≥4, ≤45 | 32,810 | 0 | 0 |
+| 162 control, ≤46 | 44,010 | 1 core | 1 |
+| 164 control, ≤48 | 13,230 | 1 core | 0 |
+
+The untabled searches also recover both controls. Their literal readers pass `rd.check(..., nmax=8, verbose=False)` at weights 46 and 48. All checks stayed within the caps; the largest observed run used 573.5 MB and the longest took 29.7 seconds.
+
+**The concrete bug is in single-law tabling.** Consider
+
+```text
+R = \s. s s c j       w(R)=19
+R Z(r) →* r j
+```
+
+Nevertheless:
+
+```text
+narrow2.py 19 --betanormal --laws 0
+# 62 states, 0 solutions
+
+narrow2.py 19 --betanormal --laws 0 --notab
+# 65 states, 1 core
+```
+
+`narrow3` has the same defect. The memo merges:
+
+- `\s. s F H`: no orphan, five bits remaining, both source-name flags false.
+- `\s. s s A H`: orphan A, five bits remaining after its two-bit allowance, identical flags and residual.
+
+The first state cannot satisfy the implementation’s requirement to insert both `c` and `j`. The second can: `A=c`, `H=j`. Omitting orphan placement information therefore makes the unrestricted memo-infeasibility assertion false.
+
+Independent exhaustive comparison confirms this:
+
+| Check | Terms enumerated | Independent solutions | Untabled coverage | Tabled coverage |
+|---|---:|---:|---:|---:|
+| Z alone, ≤24 | 23,461 | 26, including 7 containing c | 22; all 7 containing c | 0 |
+| U₁ alone, ≤26 | 65,268 | 1 | 1 | 1 |
+
+These compare exact concrete solution sets represented by returned hole schemas. The independent enumerator uses a separate β-normal grammar and capture-avoiding substitution evaluator. There were no fuel unknowns or false positives. The untabled zero-law omissions arise from requiring source `c` even when only Z is checked.
+
+**Why BN46 survives:** both rigid reader laws force needed source occurrences. The zero computation must reach the unique source `j`; a unary computation must reach some source `c`. Neither name occurs in the inputs, and reduction cannot create them. Consequently an orphan cannot contain the unique required `j`, and cannot be the sole supplier of a still-unplaced `c` in a successful joint completion.
+
+Every orphan can therefore be replaced by a two-bit bound-variable filler without breaking the laws, increasing weight, changing `j`’s depth, or introducing a redex. Equal canonical residuals then preserve **existence of an affordable completion**, which suffices for the exclusion. This requires no minimality hypothesis. It is not the unrestricted one-to-one correspondence of literal completions asserted in the report.
+
+The remaining audit findings support the exclusion:
+
+- The evaluator checks full β-normal forms, including beneath lambdas, with consistent zero-based internal indices and separate rigid free names.
+- Refinement includes every bound index introduced inside holes. The generated-syntax `--betanormal` restriction excludes exactly literal β-redexes.
+- The weight accounting and LB are admissible for joint-law completions.
+- The root-arity partition is exhaustive and disjoint.
+- The handwritten W₁/W₃/W₅ cut-off arguments cover every filling. W₂ and W₄ independently return `DIVERGE` with no WHNF on their own head chains under the bounded Rust checks.
+- All 35 automatic cycle failures encountered in B2 also fail under the closure-preserving evaluator.
+- Seven targeted cheap variants failed the requested length-eight reader check. No reader below 46 was found.
+
+**Required correction:** retain BN46, add the needed-occurrence/orphan lemma, replace “one-to-one correspondence” with preservation of affordable-completion existence, and retract unrestricted single-law completeness until source obligations and orphan accounting are repaired. This remains computer-checked plus handwritten reasoning, not a Lean theorem.
+
+[gaslamp] job: cx-20261022-025927-eade · session: 01a16268-58c9-74c1-9f8b-459a456f3392 · thread: r5-review-types · resume: gaslamp codex --thread r5-review-types · tok: 1659k→26k
+[lane.sh] done rc=0 tries=1

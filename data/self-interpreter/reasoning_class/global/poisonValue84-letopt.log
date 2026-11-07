@@ -1,0 +1,9 @@
+input 84 bits; core 84 bits (37 nodes); 132 candidate cuts (17 shared)
+k=1: 132 valid, 0 invalid, 0.0s; smallest sizes 84:1 86:3 87:2 88:4 89:7 90:7
+  84 [[23, 27]->28]
+      (\a. a a) (\a b. b (\c. c) (\c d. d) (\c d. c (\e. a a d) (\e. (\f. f f) (\f. f f))))
+      010001101000000101011000100000100000010111000010111111011111011000010001101000011010
+k=2: 7610 valid, 1036 invalid, 0.0s; smallest sizes 86:2 87:2 88:5 89:8 90:10 91:22
+k=3: 257463 valid, 117197 invalid, 0.2s; smallest sizes 91:1 92:17 93:47 94:76 95:150 96:205
+smallest rendering over 0..=3 cuts: 84 bits
+best 84 010001101000000101011000100000100000010111000010111111011111011000010001101000011010

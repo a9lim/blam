@@ -1,0 +1,9 @@
+{
+  "label": "R180",
+  "valid": true,
+  "source_matches": true,
+  "states": 61,
+  "sha256": "77782c6b43f1990dd2f08096d4fc9ae964c82d1fde01629ef9cd6531e4f9b0dc",
+  "seconds": 0.00024595900322310627,
+  "peak_rss_bytes": 24231936
+}

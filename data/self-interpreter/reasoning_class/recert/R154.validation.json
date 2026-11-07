@@ -1,0 +1,9 @@
+{
+  "label": "R154",
+  "valid": true,
+  "source_matches": true,
+  "states": 833,
+  "sha256": "9ad8fef8d1744c4ebfa0e0572ccac452af4ec9faa0dc217ff4d1aeba8f7c412f",
+  "seconds": 0.0015457920089829713,
+  "peak_rss_bytes": 24608768
+}

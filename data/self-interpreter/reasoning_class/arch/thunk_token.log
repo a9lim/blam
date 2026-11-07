@@ -1,0 +1,3 @@
+tmp/round4/arch/thunk_token.lam: 201 bits ok=667 skip=1 fail=0 tmp/round4/arch/thunk_token.lam
+  letopt --max-cuts 2: smallest 201
+elapsed=2.301s

@@ -1,0 +1,3 @@
+'Blc.HandlerLet.Pending1.reject0' depends on axioms: [propext, Quot.sound]
+'Blc.HandlerLet.Pending1.reject1' depends on axioms: [propext, Quot.sound]
+'Blc.HandlerLet.Pending1.reject2' depends on axioms: [propext, Quot.sound]

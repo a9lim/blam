@@ -1,0 +1,9 @@
+{
+  "label": "R121",
+  "valid": true,
+  "source_matches": true,
+  "states": 66,
+  "sha256": "bbdd7c113944d244e98f545a984632152495a90d5ae575ee7882142730482741",
+  "seconds": 0.00025125002139247954,
+  "peak_rss_bytes": 24068096
+}

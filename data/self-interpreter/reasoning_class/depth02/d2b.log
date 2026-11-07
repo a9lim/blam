@@ -1,0 +1,17 @@
+d2lam f=1 V=[4, 5, 6]: n=94706 {'z': 94564, 'u1': 84, 'zfuel': 58} hits=0 caps=58 5.8s
+d2lam f=1 V=[7]: n=198450 {'z': 197232, 'zfuel': 916, 'u1': 302} hits=0 caps=916 9.2s
+d2lam f=1 V=[8, 9, 10]: n=80892 {'z': 78662, 'zfuel': 2157, 'u1': 72, 'ufuel1': 1} hits=0 caps=2158 5.8s
+d2lam f=2 V=[5, 6, 7, 8, 9, 10]: n=87338 {'z': 87064, 'u1': 56, 'zfuel': 218} hits=0 caps=218 9.8s
+d2lam f=3 V=[6, 7, 8, 9, 10]: n=11624 {'z': 11617, 'u1': 2, 'zfuel': 5} hits=0 caps=5 6.9s
+d2lam f=4 V=[7, 8, 9, 10]: n=293 {'z': 293} hits=0 caps=0 2.3s
+d2lam f=5 V=[8, 9, 10]: n=0 {} hits=0 caps=0 0.3s
+d2lam f=6 V=[9, 10]: n=0 {} hits=0 caps=0 0.0s
+d2app f=1 V=[4, 5, 6]: n=61748 {'z': 61578, 'zfuel': 125, 'u1': 45} hits=0 caps=125 6.9s
+d2app f=1 V=[7]: n=87589 {'z': 85729, 'zfuel': 1686, 'u1': 163, 'alarm': 11} hits=0 caps=1697 14.5s
+d2app f=1 V=[8, 9, 10]: n=32643 {'z': 29468, 'zfuel': 3084, 'u1': 68, 'alarm': 23} hits=0 caps=3107 18.9s
+d2app f=2 V=[5, 6, 7, 8, 9, 10]: n=92012 {'z': 90939, 'zfuel': 1028, 'u1': 43, 'alarm': 2} hits=0 caps=1030 17.6s
+d2app f=3 V=[6, 7, 8, 9, 10]: n=35544 {'z': 35414, 'zfuel': 130} hits=0 caps=130 13.3s
+d2app f=4 V=[7, 8, 9, 10]: n=7227 {'z': 7227} hits=0 caps=0 9.3s
+d2app f=5 V=[8, 9, 10]: n=724 {'z': 724} hits=0 caps=0 3.4s
+d2app f=6 V=[9, 10]: n=0 {} hits=0 caps=0 0.3s
+done

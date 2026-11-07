@@ -1,0 +1,110 @@
+{
+  "note": "Exact simplify-rule residue in the eight still-over-cap x cells. Uniform-call cuts are not numerically applied. No source construction.",
+  "cells": [
+    {
+      "k": 2,
+      "depth": 0,
+      "cell": [
+        "Cs",
+        "x",
+        2,
+        1
+      ],
+      "before": 399084,
+      "cut": 37988,
+      "after": 361096
+    },
+    {
+      "k": 2,
+      "depth": 0,
+      "cell": [
+        "Cs",
+        "x",
+        1,
+        1
+      ],
+      "before": 716476,
+      "cut": 35067,
+      "after": 681409
+    },
+    {
+      "k": 2,
+      "depth": 0,
+      "cell": [
+        "Cs",
+        "x",
+        2,
+        2
+      ],
+      "before": 201140,
+      "cut": 47552,
+      "after": 153588
+    },
+    {
+      "k": 2,
+      "depth": 0,
+      "cell": [
+        "Cs",
+        "x",
+        1,
+        2
+      ],
+      "before": 254812,
+      "cut": 38040,
+      "after": 216772
+    },
+    {
+      "k": 2,
+      "depth": 1,
+      "cell": [
+        "A",
+        "x",
+        0,
+        1
+      ],
+      "before": 184004,
+      "cut": 807,
+      "after": 183197
+    },
+    {
+      "k": 2,
+      "depth": 1,
+      "cell": [
+        "B",
+        "x",
+        0,
+        1
+      ],
+      "before": 112402,
+      "cut": 0,
+      "after": 112402
+    },
+    {
+      "k": 3,
+      "depth": 0,
+      "cell": [
+        "Cs",
+        "x",
+        2,
+        1
+      ],
+      "before": 126994,
+      "cut": 6404,
+      "after": 120590
+    },
+    {
+      "k": 3,
+      "depth": 0,
+      "cell": [
+        "Cs",
+        "x",
+        1,
+        1
+      ],
+      "before": 277140,
+      "cut": 3338,
+      "after": 273802
+    }
+  ],
+  "total": 2102856
+}

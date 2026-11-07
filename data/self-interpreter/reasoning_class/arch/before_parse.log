@@ -1,0 +1,6 @@
+tmp/round4/arch/before_parse.lam: 163 bits ok=667 skip=1 fail=0 tmp/round4/arch/before_parse.lam
+  letopt --max-cuts 3: smallest 163
+  sub-165 rendering 163 -> /Users/a9lim/Work/blam/tmp/round4/arch/tmptsrrrnmi.blc: 163 bits ok=667 skip=1 fail=0 bits
+  letopt --no-inline --max-cuts 2: smallest 163
+  sub-165 rendering 163 -> /Users/a9lim/Work/blam/tmp/round4/arch/tmp_jx4zn2t.blc: 163 bits ok=667 skip=1 fail=0 bits
+elapsed=12.311s

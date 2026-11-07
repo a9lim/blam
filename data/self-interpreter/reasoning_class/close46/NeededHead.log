@@ -1,0 +1,7 @@
+'Blc.Close46NeededHead.forget_context_scope' depends on axioms: [propext, Quot.sound]
+'Blc.Close46NeededHead.unary_needed_if_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46NeededHead.nearest_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46NeededHead.forget_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46NeededHead.minimum_forget_fails' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46NeededHead.minimum_extra_use' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46NeededHead.body_needed_sharing' depends on axioms: [propext, Classical.choice, Quot.sound]

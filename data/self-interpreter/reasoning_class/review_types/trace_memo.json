@@ -1,0 +1,62 @@
+{
+  "stats": {
+    "states": 62,
+    "memo_hits": 1,
+    "sol": [],
+    "fuel": [],
+    "fails": 37,
+    "tabled": 24,
+    "memo_size": 24
+  },
+  "hits": [
+    {
+      "prior": {
+        "term": "(\\x0. ((x0 (\\x1. (\\x2. x2))) _))",
+        "cost": 14,
+        "remaining": 5,
+        "orphans": 0,
+        "open": [
+          [
+            6,
+            [
+              1,
+              false
+            ]
+          ]
+        ],
+        "flags": [
+          false,
+          false
+        ],
+        "key": "(False, False, (('need', (('HC', 0, 0, (('L', ('A', ('A', ('V', 0), ('L', ('L', ('V', 1)))), ('C', 'r'))),)), (), ('C', 'j'), (), ())),), ((1, False),))"
+      },
+      "hit": {
+        "term": "(\\x0. (((x0 x0) _) _))",
+        "cost": 12,
+        "remaining": 5,
+        "orphans": 1,
+        "open": [
+          [
+            6,
+            [
+              1,
+              false
+            ]
+          ],
+          [
+            8,
+            [
+              1,
+              false
+            ]
+          ]
+        ],
+        "flags": [
+          false,
+          false
+        ],
+        "key": "(False, False, (('need', (('HC', 0, 0, (('L', ('A', ('A', ('V', 0), ('L', ('L', ('V', 1)))), ('C', 'r'))),)), (), ('C', 'j'), (), ())),), ((1, False),))"
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "k": 4,
+  "depth": 1,
+  "location": "Cs",
+  "total": 4268,
+  "stats": {
+    "exception": 1186,
+    "zero_head": 2782,
+    "zero_missing": 293,
+    "1_missing": 7
+  },
+  "prices": {
+    "(3, 0)": 120,
+    "(3, 1)": 592,
+    "(4, 0)": 547,
+    "(4, 1)": 3009
+  },
+  "seconds": 0.5392331659968477,
+  "rss_bytes": 30769152,
+  "threads": 2
+}
+EXCEPTIONS 1186 HITS 0

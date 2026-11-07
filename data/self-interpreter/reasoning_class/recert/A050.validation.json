@@ -1,0 +1,9 @@
+{
+  "label": "A050",
+  "valid": true,
+  "source_matches": true,
+  "states": 790,
+  "sha256": "a4aa78724700bf562972e4a1284192e2c4d2ced56f4c90a02ebbd238031f1512",
+  "seconds": 0.0013933749869465828,
+  "peak_rss_bytes": 24428544
+}

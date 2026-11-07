@@ -1,0 +1,17 @@
+{
+  "label": "R322",
+  "id": "rootnarrow/work/h6_3.json:49",
+  "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (x1 (x1 (x1 (\\x2. x2))))))))",
+  "action": "discover_site_6",
+  "ok": false,
+  "reason": [
+    "lambda-stop",
+    22
+  ],
+  "states": 1948,
+  "work": 4877,
+  "k": 6,
+  "seconds": 0.014372208999702707,
+  "peak_rss_bytes": 24838144,
+  "threads": 1
+}

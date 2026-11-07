@@ -1,0 +1,28 @@
+R53 laws True weight (53, 49, 1, 5, 10, 3, 1, 1) source_beta_normal True
+  node s (\x y. x) j
+    zero \y. j unary ['\\y. y', '\\y. y', '\\y. y']
+  node s (\x y. x) j (s s s)
+    zero j unary ['N', 'N', 'N']
+    LOWEST_RIGID; body_root False literal_final_j False
+  node s (\a. a) (s (\q. c)) (s (\x y. x) j (s s s))
+    zero r j unary ['c (\\f. f (\\x y. x) N) N', 'c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N', 'c (\\f. f (\\x y. y) (\\f. f (\\x y. y) (\\f. f (\\x y. x) N))) N']
+R59 laws True weight (59, 55, 1, 6, 10, 7, 1, 1) source_beta_normal False
+  node (\a t. t a) j
+    zero \t. t j unary ['\\t. t j', '\\t. t j', '\\t. t j']
+  node (\a t. t a) j (s (\a. a) (\u. s (\q. c) (s s u)))
+    zero r j unary ['c (\\f. f (\\x y. x) N) N', 'c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N', 'c (\\f. f (\\x y. y) (\\f. f (\\x y. y) (\\f. f (\\x y. x) N))) N']
+    LOWEST_RIGID; body_root True literal_final_j False
+R84 laws True weight (84, 80, 1, 8, 14, 12, 1, 1) source_beta_normal False
+  node s (\b t. b (\a k. k a) (t t)) j
+    zero \k. k j unary ['N', 'N', 'N']
+  node (\x. s (\b t. b (x t) (c t x))) (s (\b t. b (\a k. k a) (t t)) j)
+    zero r j unary ['c (\\f. f (\\x y. x) N) N', 'c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N', 'c (\\f. f (\\x y. y) (\\f. f (\\x y. y) (\\f. f (\\x y. x) N))) N']
+    LOWEST_RIGID; body_root True literal_final_j False
+R75 laws True weight (75, 71, 1, 8, 13, 7, 1, 1) source_beta_normal True
+  node s (\b t. b (\a k. k a) (t t)) j
+    zero \k. k j unary ['N', 'N', 'N']
+  node s (\b t. b (\x. x t) (c t)) (s (\b t. b (\a k. k a) (t t)) j)
+    zero r j unary ['c (\\f. f (\\x y. x) N) N', 'c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N', 'c (\\f. f (\\x y. y) (\\f. f (\\x y. y) (\\f. f (\\x y. x) N))) N']
+    LOWEST_RIGID; body_root True literal_final_j False
+P cost_at_depth1 33
+Q cost_at_depth1 34

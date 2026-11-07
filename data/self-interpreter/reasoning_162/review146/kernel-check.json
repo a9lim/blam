@@ -1,0 +1,23 @@
+[
+  {
+    "file": "ReaderHoist.lean",
+    "sha256": "df3da845ca091d1d6f54d7731bc5c7e2d9ab065271dce14b890ae530e3f96290",
+    "exit_code": 0,
+    "seconds": 0.319,
+    "output": ""
+  },
+  {
+    "file": "Depth2Cases.lean",
+    "sha256": "a7dd63578f9e79b96e8060c79f0c4994efb3c4e99839ed4cc268f6adbd05dd7f",
+    "exit_code": 0,
+    "seconds": 0.732,
+    "output": ""
+  },
+  {
+    "file": "ReaderChecks.lean",
+    "sha256": "4c43dfc966fb06762a99e2ea39c701fa309f1c19f618ea87c9c7b8e22f07bfa5",
+    "exit_code": 0,
+    "seconds": 20.524,
+    "output": ""
+  }
+]

@@ -1,0 +1,1672 @@
+[
+  {
+    "id": "h2_2.final_left:0",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x2 (x0 x1))))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 50,
+        "work": 46,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 51,
+        "work": 47,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 95,
+        "work": 85,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 161,
+        "work": 150,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:1",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x1 ((x0 x1) _))))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 27,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 28,
+        "work": 27,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 171,
+        "work": 149,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 72,
+        "work": 65,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:2",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x0 (x0 x2))))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 29,
+        "work": 27,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 29,
+        "work": 28,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 105,
+        "work": 93,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 116,
+        "work": 102,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:3",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x0 (x0 x1))))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 29,
+        "work": 27,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 29,
+        "work": 28,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 77,
+        "work": 72,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 438,
+        "work": 440,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:4",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x1 (\\x2. x0))))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 662,
+        "work": 464,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 773,
+        "work": 525,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 86,
+        "work": 78,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 360,
+        "work": 329,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:5",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 (x0 (x1 (\\x2. x1)))))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 876,
+        "work": 594,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 1186,
+        "work": 798,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 77,
+        "work": 66,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 524,
+        "work": 433,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:6",
+    "source": "((\\x0. (x0 (x0 (x0 x0)))) (\\x0. ((x0 (x0 (\\x1. x0))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 628,
+        "work": 501,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 759,
+        "work": 612,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 1668,
+        "work": 1282,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 2745,
+        "work": 1983,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:7",
+    "source": "((\\x0. (x0 ((x0 (\\x1. x0)) _))) (\\x0. ((x0 x0) (\\x1. (x1 x0)))))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 110,
+        "work": 115,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:8",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x1 ((x1 (\\x2. x0)) x1)))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 176,
+        "work": 142,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 165,
+        "work": 139,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 50,
+        "work": 47,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": true,
+        "states": 67131,
+        "work": 67734,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:9",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x0 (\\x2. x1))))) (x0 _))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 643,
+        "work": 462,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 768,
+        "work": 555,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 86,
+        "work": 80,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 567,
+        "work": 497,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:10",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x0 (x1 (\\x2. x1)))))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 5325,
+        "work": 3933,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 6605,
+        "work": 4788,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 170,
+        "work": 144,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 118,
+        "work": 110,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_2.final_left:11",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. ((x1 (\\x2. (\\x3. x0))) x1))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 72,
+        "work": 64,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 76,
+        "work": 67,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": true,
+        "states": 1136,
+        "work": 1251,
+        "k": 2,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:0",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. x0)) (\\x1. ((x1 x0) (\\x2. x2)))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 51,
+        "work": 45,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 51,
+        "work": 45,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": true,
+        "states": 290,
+        "work": 307,
+        "k": 2,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:1",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (\\x1. (\\x2. (x0 (x1 x2))))) x0) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 70,
+        "work": 58,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 70,
+        "work": 58,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "100000 abstract work/state cap",
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "100000 abstract work/state cap",
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:2",
+    "source": "((\\x0. (x0 x0)) (\\x0. (((x0 (x0 (\\x1. x0))) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 344,
+        "work": 257,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 397,
+        "work": 300,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 2294,
+        "work": 2980,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": true,
+        "states": 938,
+        "work": 985,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:3",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 x0) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 78,
+        "work": 80,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:4",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 (\\x1. x1)) (\\x1. (x1 (x0 x1)))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 93,
+        "work": 96,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:5",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 (\\x1. (x1 x1))) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 108,
+        "work": 113,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:6",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 (x0 (\\x1. x1))) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 162,
+        "work": 150,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 149,
+        "work": 138,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 383,
+        "work": 497,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": true,
+        "states": 20350,
+        "work": 20552,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:7",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 x0) (\\x1. ((x1 (\\x2. x2)) x0))) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 174,
+        "work": 163,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 176,
+        "work": 166,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": true,
+        "states": 877,
+        "work": 975,
+        "k": 2,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:8",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. (((x0 (\\x1. x1)) (\\x1. ((x1 x0) x1))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 93,
+        "work": 96,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:9",
+    "source": "((\\x0. (x0 (\\x1. (\\x2. x0)))) (\\x0. (((x0 x0) _) (\\x1. (x1 x0)))))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 20,
+        "work": 22,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h2_5.final_left:10",
+    "source": "((\\x0. (x0 (x0 (\\x1. x0)))) (\\x0. (((x0 x0) (\\x1. (x1 x0))) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 290,
+        "work": 294,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:0",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (x1 ((x1 (x0 x1)) x1))))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:1",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (x1 ((x1 (x0 x0)) x1))))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:2",
+    "source": "((\\x0. ((x0 (x0 _)) x0)) (\\x0. (\\x1. (x1 (x1 ((x0 x1) x1))))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:3",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x1 (x0 x1))) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:4",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x1 (x0 x0))) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:5",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 x1)) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:6",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 x0)) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:7",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 (x1 x0))) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:8",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 ((x0 x1) _)) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:9",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 ((x0 x0) _)) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:10",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (((x1 (x0 x1)) x1) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "pre_h63re.txt:11",
+    "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (((x1 (x0 x0)) x1) x1)))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 12,
+        "work": 12,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:0",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x1)) (\\x1. (x0 (\\x2. x1)))) x0) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 91,
+        "work": 75,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 91,
+        "work": 75,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 139,
+        "work": 122,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": true,
+        "states": 177,
+        "work": 178,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:1",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x1)) (x0 (\\x1. x0))) _) x0)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 46,
+        "work": 40,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 46,
+        "work": 40,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 45,
+        "work": 45,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 180,
+        "work": 171,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:2",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x1)) (x0 (\\x1. x0))) _) (\\x1. x1))))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 46,
+        "work": 40,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 46,
+        "work": 40,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 142,
+        "work": 139,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 160,
+        "work": 154,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:3",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x0)) (\\x1. x0)) (x0 _)) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 90,
+        "work": 77,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 128,
+        "work": 95,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 415,
+        "work": 242,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 212,
+        "work": 165,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:4",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x0)) (\\x1. (x0 _))) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 65,
+        "work": 56,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 72,
+        "work": 60,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": true,
+        "states": 73,
+        "work": 74,
+        "k": 2,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:5",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. x0)) (x0 _)) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 79,
+        "work": 58,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 78,
+        "work": 57,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 164,
+        "work": 127,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _3",
+        "states": 135,
+        "work": 122,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:6",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (\\x2. x2))) (x0 (\\x1. x0))) x0) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 93,
+        "work": 76,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 104,
+        "work": 77,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 49,
+        "work": 43,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 50,
+        "work": 47,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:7",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (\\x2. x1))) (x0 (\\x1. x0))) x0) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 35,
+        "work": 33,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 35,
+        "work": 33,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "unknown stack tail demanded",
+        "states": 36,
+        "work": 35,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 41,
+        "work": 40,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:8",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (x1 (x0 x1)))) _) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 1374,
+        "work": 1381,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:9",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. (x0 (x0 x1)))) _) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 1574,
+        "work": 1587,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:10",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (\\x1. ((x0 x1) _))) _) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 130,
+        "work": 134,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:11",
+    "source": "((\\x0. (x0 x0)) (\\x0. ((((x0 (x0 (\\x1. x0))) (x0 _)) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 405,
+        "work": 269,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 360,
+        "work": 253,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 2041,
+        "work": 1514,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 2195,
+        "work": 1888,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:12",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 _) (\\x1. x0)) (x0 _)) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _3",
+        "states": 102,
+        "work": 72,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "lambda with empty stack",
+        "states": 101,
+        "work": 71,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 132,
+        "work": 102,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _3",
+        "states": 196,
+        "work": 150,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:13",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 x0) (\\x1. (x1 x0))) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 53,
+        "work": 55,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:14",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 _) (\\x1. (x0 _))) _) _)))",
+    "attempts": [
+      {
+        "ok": true,
+        "states": 47,
+        "work": 48,
+        "k": 0,
+        "width": 6
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:15",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 (\\x1. x1)) (x0 (\\x1. x0))) _) x0)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 306,
+        "work": 232,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 460,
+        "work": 305,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 245,
+        "work": 181,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 99,
+        "work": 93,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:16",
+    "source": "((\\x0. (x0 (\\x1. x0))) (\\x0. ((((x0 (\\x1. x0)) (x0 _)) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 96,
+        "work": 73,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _1",
+        "states": 103,
+        "work": 72,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 147,
+        "work": 108,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 114,
+        "work": 101,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  },
+  {
+    "id": "h3_1.json:17",
+    "source": "((\\x0. (x0 (x0 x0))) (\\x0. ((((x0 (\\x1. x0)) (x0 _)) _) _)))",
+    "attempts": [
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 150,
+        "work": 108,
+        "k": 0,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 146,
+        "work": 101,
+        "k": 1,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _2",
+        "states": 75,
+        "work": 67,
+        "k": 2,
+        "width": 6
+      },
+      {
+        "ok": false,
+        "reason": "opaque head _3",
+        "states": 150,
+        "work": 136,
+        "k": 3,
+        "width": 8
+      }
+    ]
+  }
+]

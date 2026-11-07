@@ -1,0 +1,9 @@
+{
+  "label": "R311",
+  "valid": true,
+  "source_matches": true,
+  "states": 80,
+  "sha256": "2a52e27d33136bb303c15ec04d660b5eec397831687ce910b95fe9e7cdcd9086",
+  "seconds": 0.00029279099544510245,
+  "peak_rss_bytes": 24231936
+}

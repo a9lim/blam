@@ -1,0 +1,4 @@
+-- Literal architecture from PAPER.md; hypotheses require checking.
+\root.((\x.x x) (\x.(\p.\c\s.s (\i.i) (\u.s (\q\r.c (\a\b\v.v r)) (s s u))
+      (\b.p (\f.b (c (\a\b\v.a (f a b v)))
+                       (p (\g.c (\a\b\v.b (f a b v) (g a b v))))))) (x x))) (\w.root (w (\f\e\a.f (\z\y.z a (y e))) (\f\g\e.f e (g e)) (\i.i)))

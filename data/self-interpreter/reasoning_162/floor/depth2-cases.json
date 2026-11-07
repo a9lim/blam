@@ -1,0 +1,646 @@
+[
+  {
+    "case": "linear",
+    "body": "(j x)",
+    "steps": 3,
+    "nf": "010111000001101110",
+    "display": "#1 (\\a\\b.a) #2"
+  },
+  {
+    "case": "linear",
+    "body": "(x j)",
+    "steps": 5,
+    "nf": "110",
+    "display": "#1"
+  },
+  {
+    "case": "binary",
+    "body": "(j (x x))",
+    "steps": 4,
+    "nf": "01011100000001101110",
+    "display": "#1 (\\a\\b\\c.b) #2"
+  },
+  {
+    "case": "binary",
+    "body": "((j x) x)",
+    "steps": 3,
+    "nf": "010101110000011000001101110",
+    "display": "#1 (\\a\\b.a) (\\a\\b.a) #2"
+  },
+  {
+    "case": "binary",
+    "body": "(x (j x))",
+    "steps": 5,
+    "nf": "011100000110",
+    "display": "#1 (\\a\\b.a)"
+  },
+  {
+    "case": "binary",
+    "body": "((x j) x)",
+    "steps": 5,
+    "nf": "011101110",
+    "display": "#1 #2"
+  },
+  {
+    "case": "binary",
+    "body": "(x (x j))",
+    "steps": 6,
+    "nf": "001110",
+    "display": "\\a.#2"
+  },
+  {
+    "case": "binary",
+    "body": "((x x) j)",
+    "steps": 6,
+    "nf": "0011110",
+    "display": "\\a.#3"
+  },
+  {
+    "case": "capture_c",
+    "body": "(c (j x))",
+    "steps": 3,
+    "nf": "0101100111000001101110",
+    "display": "#0 (#1 (\\a\\b.a)) #2"
+  },
+  {
+    "case": "capture_c",
+    "body": "((c j) x)",
+    "steps": 3,
+    "nf": "0101011011000001101110",
+    "display": "#0 #1 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c",
+    "body": "(c (x j))",
+    "steps": 4,
+    "nf": "0101100011101110",
+    "display": "#0 (\\a.#2) #2"
+  },
+  {
+    "case": "capture_c",
+    "body": "((c x) j)",
+    "steps": 3,
+    "nf": "0101011000001101101110",
+    "display": "#0 (\\a\\b.a) #1 #2"
+  },
+  {
+    "case": "capture_c",
+    "body": "(j (c x))",
+    "steps": 3,
+    "nf": "0101110011000001101110",
+    "display": "#1 (#0 (\\a\\b.a)) #2"
+  },
+  {
+    "case": "capture_c",
+    "body": "((j c) x)",
+    "steps": 3,
+    "nf": "0101011101000001101110",
+    "display": "#1 #0 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c",
+    "body": "(j (x c))",
+    "steps": 4,
+    "nf": "0101110001101110",
+    "display": "#1 (\\a.#1) #2"
+  },
+  {
+    "case": "capture_c",
+    "body": "((j x) c)",
+    "steps": 3,
+    "nf": "0101011100000110101110",
+    "display": "#1 (\\a\\b.a) #0 #2"
+  },
+  {
+    "case": "capture_c",
+    "body": "(x (c j))",
+    "steps": 5,
+    "nf": "0110110",
+    "display": "#0 #1"
+  },
+  {
+    "case": "capture_c",
+    "body": "((x c) j)",
+    "steps": 5,
+    "nf": "01101110",
+    "display": "#0 #2"
+  },
+  {
+    "case": "capture_c",
+    "body": "(x (j c))",
+    "steps": 5,
+    "nf": "0111010",
+    "display": "#1 #0"
+  },
+  {
+    "case": "capture_c",
+    "body": "((x j) c)",
+    "steps": 5,
+    "nf": "011101110",
+    "display": "#1 #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "(j (s x))",
+    "steps": 6,
+    "nf": "010111000001101110",
+    "display": "#1 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "((j s) x)",
+    "steps": 3,
+    "nf": "0101011100001011000001101111000001101110",
+    "display": "#1 (\\a.a (\\b\\c.b) #3) (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "(j (x s))",
+    "steps": 4,
+    "nf": "0101110000001011000001101111101110",
+    "display": "#1 (\\a\\b.b (\\c\\d.c) #4) #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "((j x) s)",
+    "steps": 3,
+    "nf": "0101011100000110000101100000110111101110",
+    "display": "#1 (\\a\\b.a) (\\a.a (\\b\\c.b) #3) #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "(s (j x))",
+    "steps": 4,
+    "nf": "010101011100000110000011011101110",
+    "display": "#1 (\\a\\b.a) (\\a\\b.a) #2 #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "((s j) x)",
+    "steps": 4,
+    "nf": "010101011100000110111000001101110",
+    "display": "#1 (\\a\\b.a) #2 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "(s (x j))",
+    "steps": 6,
+    "nf": "010111011101110",
+    "display": "#1 #2 #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "((s x) j)",
+    "steps": 8,
+    "nf": "110",
+    "display": "#1"
+  },
+  {
+    "case": "capture_s",
+    "body": "(x (j s))",
+    "steps": 5,
+    "nf": "0111000010110000011011110",
+    "display": "#1 (\\a.a (\\b\\c.b) #3)"
+  },
+  {
+    "case": "capture_s",
+    "body": "((x j) s)",
+    "steps": 5,
+    "nf": "011101110",
+    "display": "#1 #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "(x (s j))",
+    "steps": 6,
+    "nf": "010111000001101110",
+    "display": "#1 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_s",
+    "body": "((x s) j)",
+    "steps": 6,
+    "nf": "0101111000001101110",
+    "display": "#2 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(c (j (x x)))",
+    "steps": 4,
+    "nf": "010110011100000001101110",
+    "display": "#0 (#1 (\\a\\b\\c.b)) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(c ((j x) x))",
+    "steps": 3,
+    "nf": "0101100101110000011000001101110",
+    "display": "#0 (#1 (\\a\\b.a) (\\a\\b.a)) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((c j) (x x))",
+    "steps": 4,
+    "nf": "010101101100000001101110",
+    "display": "#0 #1 (\\a\\b\\c.b) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((c (j x)) x)",
+    "steps": 3,
+    "nf": "0101011001110000011000001101110",
+    "display": "#0 (#1 (\\a\\b.a)) (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((c j) x) x)",
+    "steps": 3,
+    "nf": "0101010110110000011000001101110",
+    "display": "#0 #1 (\\a\\b.a) (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(c (x (j x)))",
+    "steps": 4,
+    "nf": "0101100001111000001101110",
+    "display": "#0 (\\a.#2 (\\b\\c.b)) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(c ((x j) x))",
+    "steps": 5,
+    "nf": "0101101101110",
+    "display": "#0 #1 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((c x) (j x))",
+    "steps": 3,
+    "nf": "0101011000001100111000001101110",
+    "display": "#0 (\\a\\b.a) (#1 (\\a\\b.a)) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((c (x j)) x)",
+    "steps": 4,
+    "nf": "0101011000111000001101110",
+    "display": "#0 (\\a.#2) (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((c x) j) x)",
+    "steps": 3,
+    "nf": "0101010110000011011000001101110",
+    "display": "#0 (\\a\\b.a) #1 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(c (x (x j)))",
+    "steps": 5,
+    "nf": "0101100000111101110",
+    "display": "#0 (\\a\\b.#3) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(c ((x x) j))",
+    "steps": 5,
+    "nf": "01011000001101110",
+    "display": "#0 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((c x) (x j))",
+    "steps": 4,
+    "nf": "0101011000001100011101110",
+    "display": "#0 (\\a\\b.a) (\\a.#2) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((c (x x)) j)",
+    "steps": 4,
+    "nf": "010101100000001101101110",
+    "display": "#0 (\\a\\b\\c.b) #1 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((c x) x) j)",
+    "steps": 3,
+    "nf": "0101010110000011000001101101110",
+    "display": "#0 (\\a\\b.a) (\\a\\b.a) #1 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(j (c (x x)))",
+    "steps": 4,
+    "nf": "010111001100000001101110",
+    "display": "#1 (#0 (\\a\\b\\c.b)) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(j ((c x) x))",
+    "steps": 3,
+    "nf": "0101110010110000011000001101110",
+    "display": "#1 (#0 (\\a\\b.a) (\\a\\b.a)) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((j c) (x x))",
+    "steps": 4,
+    "nf": "010101110100000001101110",
+    "display": "#1 #0 (\\a\\b\\c.b) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((j (c x)) x)",
+    "steps": 3,
+    "nf": "0101011100110000011000001101110",
+    "display": "#1 (#0 (\\a\\b.a)) (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((j c) x) x)",
+    "steps": 3,
+    "nf": "0101010111010000011000001101110",
+    "display": "#1 #0 (\\a\\b.a) (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(j (x (c x)))",
+    "steps": 4,
+    "nf": "0101110000111000001101110",
+    "display": "#1 (\\a.#1 (\\b\\c.b)) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(j ((x c) x))",
+    "steps": 5,
+    "nf": "0101110101110",
+    "display": "#1 #0 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((j x) (c x))",
+    "steps": 3,
+    "nf": "0101011100000110011000001101110",
+    "display": "#1 (\\a\\b.a) (#0 (\\a\\b.a)) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((j (x c)) x)",
+    "steps": 4,
+    "nf": "0101011100011000001101110",
+    "display": "#1 (\\a.#1) (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((j x) c) x)",
+    "steps": 3,
+    "nf": "0101010111000001101000001101110",
+    "display": "#1 (\\a\\b.a) #0 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(j (x (x c)))",
+    "steps": 5,
+    "nf": "0101110000011101110",
+    "display": "#1 (\\a\\b.#2) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(j ((x x) c))",
+    "steps": 5,
+    "nf": "010111000001101110",
+    "display": "#1 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((j x) (x c))",
+    "steps": 4,
+    "nf": "0101011100000110001101110",
+    "display": "#1 (\\a\\b.a) (\\a.#1) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((j (x x)) c)",
+    "steps": 4,
+    "nf": "010101110000000110101110",
+    "display": "#1 (\\a\\b\\c.b) #0 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((j x) x) c)",
+    "steps": 3,
+    "nf": "0101010111000001100000110101110",
+    "display": "#1 (\\a\\b.a) (\\a\\b.a) #0 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x (c (j x)))",
+    "steps": 5,
+    "nf": "0110011100000110",
+    "display": "#0 (#1 (\\a\\b.a))"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x ((c j) x))",
+    "steps": 5,
+    "nf": "0101101100000110",
+    "display": "#0 #1 (\\a\\b.a)"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x c) (j x))",
+    "steps": 5,
+    "nf": "01101110",
+    "display": "#0 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x (c j)) x)",
+    "steps": 5,
+    "nf": "0101101101110",
+    "display": "#0 #1 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((x c) j) x)",
+    "steps": 5,
+    "nf": "01011000001101110",
+    "display": "#0 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x (c (x j)))",
+    "steps": 6,
+    "nf": "0110001110",
+    "display": "#0 (\\a.#2)"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x ((c x) j))",
+    "steps": 5,
+    "nf": "0101100000110110",
+    "display": "#0 (\\a\\b.a) #1"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x c) (x j))",
+    "steps": 5,
+    "nf": "01101110",
+    "display": "#0 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x (c x)) j)",
+    "steps": 5,
+    "nf": "01011000001101110",
+    "display": "#0 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((x c) x) j)",
+    "steps": 5,
+    "nf": "0101101101110",
+    "display": "#0 #1 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x (j (c x)))",
+    "steps": 5,
+    "nf": "0111001100000110",
+    "display": "#1 (#0 (\\a\\b.a))"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x ((j c) x))",
+    "steps": 5,
+    "nf": "0101110100000110",
+    "display": "#1 #0 (\\a\\b.a)"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x j) (c x))",
+    "steps": 5,
+    "nf": "011101110",
+    "display": "#1 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x (j c)) x)",
+    "steps": 5,
+    "nf": "0101110101110",
+    "display": "#1 #0 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((x j) c) x)",
+    "steps": 5,
+    "nf": "010111000001101110",
+    "display": "#1 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x (j (x c)))",
+    "steps": 6,
+    "nf": "0111000110",
+    "display": "#1 (\\a.#1)"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x ((j x) c))",
+    "steps": 5,
+    "nf": "0101110000011010",
+    "display": "#1 (\\a\\b.a) #0"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x j) (x c))",
+    "steps": 5,
+    "nf": "011101110",
+    "display": "#1 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x (j x)) c)",
+    "steps": 5,
+    "nf": "010111000001101110",
+    "display": "#1 (\\a\\b.a) #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((x j) x) c)",
+    "steps": 5,
+    "nf": "0101110101110",
+    "display": "#1 #0 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x (x (c j)))",
+    "steps": 6,
+    "nf": "00011101110",
+    "display": "\\a.#1 #2"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x ((x c) j))",
+    "steps": 7,
+    "nf": "10",
+    "display": "#0"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x x) (c j))",
+    "steps": 6,
+    "nf": "0011110",
+    "display": "\\a.#3"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x (x c)) j)",
+    "steps": 7,
+    "nf": "10",
+    "display": "#0"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((x x) c) j)",
+    "steps": 7,
+    "nf": "110",
+    "display": "#1"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x (x (j c)))",
+    "steps": 6,
+    "nf": "00011110110",
+    "display": "\\a.#2 #1"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(x ((x j) c))",
+    "steps": 7,
+    "nf": "110",
+    "display": "#1"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x x) (j c))",
+    "steps": 6,
+    "nf": "0011110",
+    "display": "\\a.#3"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "((x (x j)) c)",
+    "steps": 7,
+    "nf": "110",
+    "display": "#1"
+  },
+  {
+    "case": "capture_c_binary",
+    "body": "(((x x) j) c)",
+    "steps": 7,
+    "nf": "10",
+    "display": "#0"
+  }
+]

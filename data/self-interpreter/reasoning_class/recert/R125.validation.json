@@ -1,0 +1,9 @@
+{
+  "label": "R125",
+  "valid": true,
+  "source_matches": true,
+  "states": 40,
+  "sha256": "1e8efb5c34be616e7d2db4a6522d8dbd97187c156421a6d46db1c7a7d5c4aad2",
+  "seconds": 0.0002069160109385848,
+  "peak_rss_bytes": 24051712
+}

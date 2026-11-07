@@ -1,0 +1,4 @@
+SKIP over cap e q1 | ph0 bit@0 l1 1197075
+SKIP over cap e q2 | ph2 T1@0 l0 226832
+UNCERT 1 [('u', 'e q3 | ph2 T1@0 l0', 'j ((\\x0. x0 x0) (\\x0. x0 x0))')]
+fam e chunk 0/16: skeletons 193 hits 0 max pool 52433 95.1s unh 0

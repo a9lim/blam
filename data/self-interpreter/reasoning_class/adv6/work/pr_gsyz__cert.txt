@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/a9lim/Work/blam/tmp/round4/adv6/work/../../shared/certrun.py", line 7, in <module>
+    d = json.load(open(sys.argv[1])); lo, hi = int(sys.argv[2]), int(sys.argv[3])
+                  ~~~~^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'pr_gsyz_.json'

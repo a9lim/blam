@@ -1,0 +1,15 @@
+[gaslamp] → codex · job cx-20261021-231018-a859 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-231018-a859/events.jsonl
+(・・) **Extended [REPORT.md §6](/Users/a9lim/Work/blam/tmp/round4/share46/REPORT.md) and NOTES.md. No sub-46 reader found.**
+
+New results:
+
+- **Capturing helper:** `G_c = λx u.x C₁(x x u)` satisfies `G_c F =β I` and `G_c s =β λu.s C₁(s s u)`. It genuinely supplies the two different closures. Its local shared reader weighs **67**; the external-definition version weighs **70**.
+- **All-size repair obstruction:** `s Δ A B_s j` cannot implement the j/N dual when `A` is independent of `s,j`. Zero forces `A j =β j`, hence `A K =β K`; length one then necessarily returns `N j`, regardless of `B_s`.
+- **Exact cheap repair:** replacing Δ by **K** repairs length one and saves one bit: `s K I(s s)j` is j/N for every required input. The complete reader weighs **55**; rearrangement reaches the already known **53**. K is outside close46’s grammar and captures arbitrary computed arguments.
+- **Padding repair:** prepending a unary cell simplifies exactly to `s I(s s)j`, returning **r j/N** uniformly. Its weighted lambda-s form costs **24**, but the compatible return selector makes the complete reader **54**.
+
+Verification: eight pinned readers, four duals, and seven symbolic identities checked in **0.0017 seconds**, one process, no enumeration. All-length arguments and exclusions are handwritten; fixed reductions and prices are computer-checked. One omitted definition charge was caught and documented: the shared-K construction weighs **67**, not 60.
+
+No complete interpreter or battery/polish claim. Stream-dependent specialization and sharing of the surrounding dispatch context remain open.
+[gaslamp] job: cx-20261021-231018-a859 · session: 01a16183-01f1-7213-a1b4-ecfc378889a7 · thread: r4-share46 · resume: gaslamp codex --thread r4-share46 · tok: 1750k→39k
+[lane.sh] done rc=0 tries=1

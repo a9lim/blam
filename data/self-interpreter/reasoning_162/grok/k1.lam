@@ -1,0 +1,7 @@
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp.
+      (list (\zx \zy. zy)) (\a. a)
+        (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+        (\bit1b. intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

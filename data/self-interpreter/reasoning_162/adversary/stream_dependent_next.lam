@@ -1,0 +1,1 @@
+(\x.x x) (\x.(\p.\c \s.s (\a.a) (\u.u (s s u)) (s (\tag.tag (\unused.(\b.p (\f.b (c (\e \a.f (\b \r.b a (r e)))) (p (\g.c (\e.f e (g e))))))) c))) (x x))

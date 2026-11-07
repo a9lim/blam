@@ -1,0 +1,17 @@
+{
+  "label": "R334",
+  "id": "rootnarrow/work/h_xfull2.json:0",
+  "source": "((\\x0. ((x0 _) (\\x1. (x1 (x1 (\\x2. x1)))))) (\\x0. (\\x1. (\\x2. (x1 x1)))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 89,
+  "work": 105,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 85,
+  "checked": true,
+  "sha256": "5b557922fc2d0364023545b0b98a13d85b3920d9d8aadba60fc05695af86f357",
+  "seconds": 0.001131124998209998,
+  "peak_rss_bytes": 24330240,
+  "threads": 1
+}

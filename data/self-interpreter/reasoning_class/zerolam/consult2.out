@@ -1,0 +1,60 @@
+[gaslamp] → codex · job cx-20261022-014129-85f6 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-014129-85f6/events.jsonl
+( •̀ᴗ•́ ) **The ancestor construction is sound, but it does not recover the original four-family reduction unchanged.** The obstruction is the whole-output case: minimality yields `R = λs.X*`, without yielding the literal `R = λs.Y j`.
+
+The full audit is appended as §5 of [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/zerolam/REPORT.md).
+
+1. **What transfers**
+
+   For the lowest zero-rigid ancestor, the following remain valid:
+
+   - Context-freeness and the exact split `w = 6 + |C| + |X*|`.
+   - Zero classification: `X*[Z(r)] =β j` or `r j`. A rigid value cannot expose its internal `j` through later application; some retained residual must supply the output’s sole `j`.
+   - Unary rigid-hole projection, or untouched erasure, under their original hypotheses.
+   - Operand minima and projected-wrapper checks: their generators cover arbitrary source trees, including internal zero-λ parents.
+   - Minimum-reader simplifications that remove a redundant outside context or replace a unary-dispensable `j`-valued operand by `j`.
+
+   Unary λ-valued operands remain an exception to rigid-hole projection.
+
+2. **The exact minimum-reader conclusion**
+
+   Suppose R is globally minimum under `(w, λ count, depth)` and
+   ```
+   X*[Z(r)] =β r j,
+   X*[U_n(N)] =β c U_(n−1)(N) N   for every n≥1.
+   ```
+   Then **C is trivial**, because `λs.X*` is itself a strictly lighter reader whenever C is nontrivial.
+
+   This proves only `R = λs.X*`. Inferring `X* = Y j` used **immediate parenthood**. Consequently these subsequent steps do not transfer:
+
+   - the j-free absorbing arm Y and its `31≤|Y|≤37` budget;
+   - the assertion that the unary root application contracts;
+   - §11’s specialized `Y0[ν] j` wrapper enumeration and automatic availability of a binder receiving rigid `j`.
+
+   The index-shift lemma itself remains valid, but its dispensable-binder hypothesis must be established independently.
+
+   At `w≤45`, the generalized whole-output case leaves `|X*|≤39`, with no nontrivial outside wrapper supplying a useful cost charge. The existing small operand catalogues therefore do not close it.
+
+3. **A β-normal witness to the failed transfer**
+
+   [ancestor_r75.lam](/Users/a9lim/Work/blam/tmp/round4/zerolam/ancestor_r75.lam):
+   ```
+   R75 = λs.
+     s (λb t. b (λx. x t) (c t))
+       (s (λb t. b (λa k. k a) (t t)) j).
+   ```
+   It has **w=75**, one `j` at depth 1, and β-normal source syntax.
+
+   Write its body as `P Q`, where Q is the immediate j-parent. With `u=U_(n−1)(N)`:
+   ```
+   P[Z(r)] →* λx.x r,       P[U_n(N)] →* c u,
+   Q[Z(r)] →* λk.k j,       Q[U_n(N)] →* N.
+   ```
+   The unary identity follows from `U_m(N) U_m(N) →* K N`. Hence the reader laws hold for every n.
+
+   Q is λ-valued on zero, and its next ancestor is the entire body `P Q`. Thus **X*=body**, but the body is not a literal `Y j`. Moreover, `P Q` contracts on zero and survives on unary. The zero output’s application comes from `k a` inside Q at source depth 5, so X* is not the source zero-output node required by §9 either.
+
+   This is a structural counterexample, **not** a ≤45 or minimum-reader counterexample. Four fixed witnesses were checked; no enumeration was needed. R53 illustrates the successful transfer to a priced j/N operand; R59, R84 and R75 illustrate the generalized whole-output branch.
+
+**The remaining obligation is a new source-cost or minimum-reader reduction for that generalized branch. The ancestor move alone does not prove the zero-λ bound.**
+[gaslamp] job: cx-20261022-014129-85f6 · session: 01a16205-5f62-7da3-8f56-8cb00a42c204 · thread: r5-zerolam · resume: gaslamp codex --thread r5-zerolam · tok: 4233k→62k
+[lane.sh] done rc=0 tries=1

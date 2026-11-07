@@ -1,0 +1,399 @@
+{
+  "total_seconds": 17.8505210000003,
+  "runs": [
+    {
+      "label": "lean-version",
+      "command": [
+        "lean",
+        "--version"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.05493774999922607,
+      "exit_code": 0
+    },
+    {
+      "label": "boundary-checks",
+      "command": [
+        "/Users/a9lim/.venv/bin/python",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/boundary_check.py"
+      ],
+      "cwd": "/Users/a9lim/Work/blam",
+      "seconds": 0.03578454100352246,
+      "exit_code": 0
+    },
+    {
+      "label": "RoleAlgebra",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/RoleAlgebra.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/RoleAlgebra.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.5161350410053274,
+      "exit_code": 0
+    },
+    {
+      "label": "ClosureBarrier",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/ClosureBarrier.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/ClosureBarrier.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 1.0179550830071094,
+      "exit_code": 0
+    },
+    {
+      "label": "BoundaryAlgebra",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/BoundaryAlgebra.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/BoundaryAlgebra.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.31958654199843295,
+      "exit_code": 0
+    },
+    {
+      "label": "BoundaryChecks",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/BoundaryChecks.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/BoundaryChecks.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.374430083000334,
+      "exit_code": 0
+    },
+    {
+      "label": "ReaderHoist",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/ReaderHoist.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/ReaderHoist.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.4732540830009384,
+      "exit_code": 0
+    },
+    {
+      "label": "SourceCost",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/SourceCost.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/SourceCost.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 1.5438376660022186,
+      "exit_code": 0
+    },
+    {
+      "label": "LocalCost",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/LocalCost.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/LocalCost.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 1.0228724170010537,
+      "exit_code": 0
+    },
+    {
+      "label": "DispatchAudit",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/DispatchAudit.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/DispatchAudit.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.33516774998861365,
+      "exit_code": 0
+    },
+    {
+      "label": "SourceFront",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/SourceFront.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/SourceFront.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.4688309590128483,
+      "exit_code": 0
+    },
+    {
+      "label": "FlatSemantics",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/FlatSemantics.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/FlatSemantics.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.5902868330013007,
+      "exit_code": 0
+    },
+    {
+      "label": "FlatMinimum",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/FlatMinimum.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/FlatMinimum.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.7830397500074469,
+      "exit_code": 0
+    },
+    {
+      "label": "RootFlat",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/RootFlat.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/RootFlat.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.5070199579931796,
+      "exit_code": 0
+    },
+    {
+      "label": "FlatPrefix",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/FlatPrefix.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/FlatPrefix.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.4022087500052294,
+      "exit_code": 0
+    },
+    {
+      "label": "LetSink",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/LetSink.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/LetSink.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.794899542001076,
+      "exit_code": 0
+    },
+    {
+      "label": "HelperPair",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/HelperPair.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/HelperPair.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.7717474999953993,
+      "exit_code": 0
+    },
+    {
+      "label": "ClosedSpecializer",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/ClosedSpecializer.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/ClosedSpecializer.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 1.7200757090031402,
+      "exit_code": 0
+    },
+    {
+      "label": "LambdaSink",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/LambdaSink.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/LambdaSink.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.8257534169970313,
+      "exit_code": 0
+    },
+    {
+      "label": "SourceBody",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/SourceBody.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/SourceBody.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.36978379198990297,
+      "exit_code": 0
+    },
+    {
+      "label": "StreamHelpers",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/StreamHelpers.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/StreamHelpers.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 1.2957569590071216,
+      "exit_code": 0
+    },
+    {
+      "label": "StreamSpecializer",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/StreamSpecializer.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/StreamSpecializer.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.3697086659958586,
+      "exit_code": 0
+    },
+    {
+      "label": "NeededHead",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/NeededHead.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/NeededHead.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.5246710000064922,
+      "exit_code": 0
+    },
+    {
+      "label": "NestedLets",
+      "command": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round4/close46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/NestedLets.olean",
+        "/Users/a9lim/Work/blam/tmp/round4/close46/NestedLets.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.7305011659918819,
+      "exit_code": 0
+    }
+  ],
+  "sha256": {
+    "RoleAlgebra.lean": "29b25c28910a13a5cea6615522072c0ece8f195512d54e8f9a135d36ebbd3a9a",
+    "ClosureBarrier.lean": "4e499e68bcb07e128c6daae17cc34fb6982b1537549b80cf0ed2833dc00bd929",
+    "BoundaryAlgebra.lean": "6aa829372bb0d47ae9e72f56a89e3399f7c65a6c35a70d44a8b04221f346cc8f",
+    "BoundaryChecks.lean": "124ed6b8ff914f2ab24aac8f8b214d521ba4453d6441fd393e2607d8468d0edf",
+    "boundary_check.py": "ec4dbbf67c1df4a218badb441afde9bf34542c05233c24c784d598b84624923d",
+    "verify.py": "fc0bce8e58b149cb45559401d028f10d1c787726d90c12d270895058a8e660b8",
+    "dual.txt": "8676c18f8d79eeba5ae8773f820a49ccf6680839d8ef59b342dca0eaab8a7d8e",
+    "near_reader.txt": "a1517512960fa5c85d6a6edcdc39f3ba349904a8956a4a12fb899d2072c0000f",
+    "ReaderHoist.lean": "df3da845ca091d1d6f54d7731bc5c7e2d9ab065271dce14b890ae530e3f96290",
+    "SourceCost.lean": "57b83be91613d92dcc7f31a5d3afa33ee4ad41352ffe83e1317317c53ae295c9",
+    "LocalCost.lean": "417522a69aa2fa83e98c7b9c9e7ba79eefe4eaee3c9573369aec78fc0ea92538",
+    "DispatchAudit.lean": "9f83739bb79772aaefd35abe3638243653d45489e37d6b1255f0a62a44517ec4",
+    "SourceFront.lean": "4e1b39a6dc5c1fd7c3340c0033b8db2e14b49d5a38a03ce182d0ce5d1565c106",
+    "FlatSemantics.lean": "a91074c9ee6f3c0c0c831aade9accd06234840985f7eb08e17e8eb16fe1b9380",
+    "FlatMinimum.lean": "c3be2cd9d80dc98eff02345e170e3266390a55bbaa6ca8f36f58f96c200e689f",
+    "RootFlat.lean": "8fd0c8a4cd5b9efb1022fd5266baef46a6b159f19853cf737be77ca7bdf93162",
+    "FlatPrefix.lean": "e3f6aab1836ae7fc3bf8c736598efce1adf6fe4a43f7b7e210dfb4c89b9e9542",
+    "LetSink.lean": "7ed680dc79e40e57daf73db8c3a99d583958808cf46643147e3a5f1e4e30b18f",
+    "HelperPair.lean": "11d2ddd6ba720ff6d8af828c455743725348f9e535dd46bb4d9b933e5de8cd95",
+    "ClosedSpecializer.lean": "a35a932a38272cba2806a0d36ed65736d8b6e070c231779e22890dab982a498b",
+    "LambdaSink.lean": "3bf539feb20fb4644422ea2bbf66e56911bcbccbdca6fc61b5b14946a404dd7d",
+    "SourceBody.lean": "8498c9a6d723b751f0f552eaf95296b0a008ed1fbd3d377e0be87a6af5bdf883",
+    "StreamHelpers.lean": "4c9629e9460b084335f7317d6dd24978a5b9afd39f8ed5692949cd79b4ee75c1",
+    "StreamSpecializer.lean": "7b0bbc4a48904e02bc184c017003cab036862b810ef4399a30b2c2160f337e26",
+    "NeededHead.lean": "1b200976ee426a9dc049734d7791330f373db3618578e01bae15e46dea6d8386",
+    "NestedLets.lean": "a20dbbc69085ffc1c55ac1a70445d7b7987025e491de34aa0dccda1dd71eab9d"
+  },
+  "threads_per_child": 2,
+  "timeout_seconds_per_child": 110,
+  "finite_source_terms_checked": 2,
+  "fixed_probe_instances": 8,
+  "kernel_helper_cases": {
+    "fixed_F": 10,
+    "generic_local": 8,
+    "generic_root": 3,
+    "identity_entries": 27,
+    "identity_distinct": 26,
+    "canonical_reductions": 2,
+    "stream_specializers": 4,
+    "stream_root_helpers": 10,
+    "generic_stream_root_helpers": 8
+  },
+  "term_sweeps": 0
+}

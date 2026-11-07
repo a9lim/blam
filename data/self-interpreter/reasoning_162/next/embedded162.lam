@@ -1,0 +1,16 @@
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1 \tail. (-- 162-bit BLC self-interpreter:  E C (<M> ++ N) = C (\z. M) N  for closed M.
+-- The 165's knot, NEXT, ABS and APP around a new reader. `list I` turns the
+-- first cell into its own selection `bit0 list1`, so on a 0-tag the zero arm
+-- is the tail list1 itself, applied to NEXT, which is the reader's last
+-- operand; on a variable the selection picks the middle operand, which
+-- reopens the stream to hand list1 to cont and erases NEXT as the skip's
+-- junk operand.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))) cont list))
+  (x x))

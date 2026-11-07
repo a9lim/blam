@@ -1,0 +1,22 @@
+[
+  {
+    "module": "Finite39Literal",
+    "exit_code": 0,
+    "seconds": 2.4123916660028044
+  },
+  {
+    "module": "Finite39Four",
+    "exit_code": 0,
+    "seconds": 8.815522000004421
+  },
+  {
+    "module": "Finite39Five",
+    "exit_code": 0,
+    "seconds": 6.434435125003802
+  },
+  {
+    "module": "Residuals39",
+    "exit_code": 0,
+    "seconds": 0.5305125409940956
+  }
+]

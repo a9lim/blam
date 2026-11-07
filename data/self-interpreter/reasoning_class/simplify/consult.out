@@ -1,0 +1,23 @@
+[gaslamp] → codex · job cx-20261022-072746-95ff · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-072746-95ff/events.jsonl
+(・_・) **Partial result: two source simplification theorems are kernel-checked; ROOT remains open.** Full report: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/simplify/REPORT.md).
+
+1. **Interpreters:** none built. A correct depth-zero reader specializes from weight 70 to 63; both readers’ all-length laws are kernel-checked.
+
+2. **Static hand-off theorem:** for
+   `R = (λx. T[x]) (λz. z M) C⃗`,
+   with T any application tree and z fresh for M, symbolic specialization preserves beta equivalence, both laws and one source j. If b wrappers remain, the reconstructed source S satisfies exactly:
+   ```
+   w(S) − w(R) = 7b − 6 − F(M)
+   L(S) − L(R) = b − 1
+   d(R) − d(S) = #j(M)
+   ```
+   Here `F(M)=#c(M)+4#j(M)`. Thus b=0 always strictly simplifies; b=1 forces `F(M)≤1` in a minimum. All identities and law transport are in [Handoff.lean](/Users/a9lim/Work/blam/tmp/round4/simplify/Handoff.lean).
+
+3. **Concrete minimum exclusions:** `J = λx. x (λy. x)` satisfies `J J →β³ J`. For any root let binding an idempotent helper, replacing a selected `x x` by `x` anywhere in its body preserves the laws and saves `q+4` bits, where q is x’s local index. This excludes **27 entries of rootnl’s 658-source catalogue as minima**, with individual proofs in [Cases.lean](/Users/a9lim/Work/blam/tmp/round4/simplify/Cases.lean). These are non-minimum proofs, not non-reader proofs; the other 631 entries retain their prior status.
+
+4. **Remaining step:** dependent payloads, multiple-payload helpers and general root bodies remain unclassified. Even the independent-payload specialization can cost one extra bit when b=1 and M is closed. Therefore it does not establish that every hand-off is dispensable in a minimum reader.
+
+Final Lean checks passed with only `propext` and `Quot.sound`, each under 0.6 seconds and 0.5 GB. The targeted Python audit checked 64 algebra pairs; no broad enumeration was performed. Notes, exact cases and validation logs are saved in the lane directory.
+
+[gaslamp] job: cx-20261022-072746-95ff · session: 01a1635d-fe73-7a70-a9f7-5006106c8ed2 · thread: r5-simplify · resume: gaslamp codex --thread r5-simplify · tok: 4431k→38k
+[lane.sh] done rc=0 tries=1

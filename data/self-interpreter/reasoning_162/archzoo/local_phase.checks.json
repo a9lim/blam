@@ -1,0 +1,71 @@
+{
+  "name": "local_phase",
+  "as_written_bits": 167,
+  "battery": "167 bits  ok=28 skip=1 fail=639  local_phase.lam",
+  "first_failures": [
+    [
+      "000010",
+      "WRONG"
+    ],
+    [
+      "0000110",
+      "WRONG"
+    ],
+    [
+      "00000010",
+      "WRONG"
+    ],
+    [
+      "00011010",
+      "WRONG"
+    ],
+    [
+      "000000110",
+      "WRONG"
+    ],
+    [
+      "0000001110",
+      "WRONG"
+    ],
+    [
+      "0000000010",
+      "WRONG"
+    ],
+    [
+      "0000011010",
+      "WRONG"
+    ]
+  ],
+  "battery_seconds": 1.835,
+  "polish": [],
+  "witnesses": [
+    {
+      "source": "\\x.x",
+      "source_bits": "0010",
+      "got": "0000010111000001010",
+      "want": "0000010111000001010",
+      "got_named": "\\a\\b.a (\\c\\d.d) b",
+      "want_named": "\\a\\b.a (\\c\\d.d) b",
+      "unequal_normal_forms": false
+    },
+    {
+      "source": "\\x\\y.y",
+      "source_bits": "000010",
+      "got": "00000101110000000000101110111001101111010",
+      "want": "000001011100000001010",
+      "got_named": "\\a\\b.a (\\c\\d\\e\\f.e d (f c)) b",
+      "want_named": "\\a\\b.a (\\c\\d\\e.e) b",
+      "unequal_normal_forms": true
+    },
+    {
+      "source": "\\x\\y.x",
+      "source_bits": "0000110",
+      "got": "000001011100000111010",
+      "want": "0000010111000000011010",
+      "got_named": "\\a\\b.a (\\c\\d.b) b",
+      "want_named": "\\a\\b.a (\\c\\d\\e.d) b",
+      "unequal_normal_forms": true
+    }
+  ],
+  "total_seconds": 1.852
+}

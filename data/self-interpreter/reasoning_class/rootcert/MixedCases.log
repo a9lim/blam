@@ -1,0 +1,6 @@
+'Blc.Rootcert.MixedCases.reject545' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert.MixedCases.reject546' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert.MixedCases.reject552' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert.MixedCases.reject568' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert.MixedCases.reject569' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert.MixedCases.reject570' depends on axioms: [propext, Quot.sound]

@@ -1,0 +1,4 @@
+p=1 m=3 W=20 OMAX=16: T meanings 52, operand meanings 714, operand caps 0, 0.0s
+A2 1440 viable 786 unary survivors 1 ucaps 0 0.1s
+  U 5 c | s | T = s s j | left 3
+done p=1 m=3: hits 0 zcaps 0 0.1s

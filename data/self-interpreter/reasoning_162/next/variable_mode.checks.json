@@ -1,0 +1,18 @@
+{
+  "source": "variable_mode.lam",
+  "bits": 177,
+  "battery": "177 bits  ok=667 skip=1 fail=0  variable_mode.lam",
+  "failures": [],
+  "seconds": 1.7664522920094896,
+  "polish": [
+    {
+      "flags": [
+        "--max-cuts",
+        "2"
+      ],
+      "minimum": 177,
+      "battery": "177 bits  ok=667 skip=1 fail=0  variable_mode.polished0.blc",
+      "source": "variable_mode.polished0.blc"
+    }
+  ]
+}

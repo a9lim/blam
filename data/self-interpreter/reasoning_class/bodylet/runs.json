@@ -1,0 +1,309 @@
+[
+  {
+    "cell": "4:0:A:A",
+    "sources": 20059,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:0:A:B",
+    "sources": 6235,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:0:A:C",
+    "sources": 1331,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:0:C:A",
+    "sources": 7196,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:0:C:B",
+    "sources": 16985,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:0:C:C",
+    "sources": 20666,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:1:A:A",
+    "sources": 5949,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:1:A:B",
+    "sources": 2346,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:1:A:C",
+    "sources": 511,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:1:C:A",
+    "sources": 2875,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:1:C:B",
+    "sources": 1117,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "4:1:C:C",
+    "sources": 912,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:0:A:A",
+    "sources": 113064,
+    "status": "over-cap"
+  },
+  {
+    "cell": "3:0:A:B",
+    "sources": 24295,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:0:A:C",
+    "sources": 8226,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:0:C:A",
+    "sources": 37904,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:0:C:B",
+    "sources": 36507,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:0:C:C",
+    "sources": 75243,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:1:A:A",
+    "sources": 31310,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:1:A:B",
+    "sources": 11176,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:1:A:C",
+    "sources": 2720,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:1:C:A",
+    "sources": 12814,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:1:C:B",
+    "sources": 3378,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:1:C:C",
+    "sources": 3730,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:redex:A:A",
+    "sources": 294,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:redex:A:B",
+    "sources": 46,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:redex:A:C",
+    "sources": 28,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:redex:C:A",
+    "sources": 132,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "3:redex:C:C",
+    "sources": 46,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:0:A:A",
+    "sources": 557062,
+    "status": "over-cap"
+  },
+  {
+    "cell": "2:0:A:B",
+    "sources": 57740,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:0:A:C",
+    "sources": 41809,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:0:C:A",
+    "sources": 179475,
+    "status": "over-cap"
+  },
+  {
+    "cell": "2:0:C:B",
+    "sources": 50265,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:0:C:C",
+    "sources": 199029,
+    "status": "over-cap"
+  },
+  {
+    "cell": "2:1:A:A",
+    "sources": 116083,
+    "status": "over-cap"
+  },
+  {
+    "cell": "2:1:A:B",
+    "sources": 28098,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:1:A:C",
+    "sources": 10059,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:1:C:A",
+    "sources": 28139,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:1:C:B",
+    "sources": 3936,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:1:C:C",
+    "sources": 8368,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:lam:A:A",
+    "sources": 1880,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:lam:A:B",
+    "sources": 420,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:lam:A:C",
+    "sources": 1730,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:lam:C:A",
+    "sources": 4886,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:lam:C:C",
+    "sources": 720,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:redex:A:A",
+    "sources": 1365,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:redex:A:B",
+    "sources": 669,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:redex:A:C",
+    "sources": 110,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:redex:C:A",
+    "sources": 257,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:redex:C:B",
+    "sources": 28,
+    "status": "finished",
+    "code": 0
+  },
+  {
+    "cell": "2:redex:C:C",
+    "sources": 28,
+    "status": "finished",
+    "code": 0
+  }
+]

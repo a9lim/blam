@@ -1,0 +1,32 @@
+{
+  "towerValue57": {
+    "as_written": 57,
+    "polished": 57,
+    "seconds": 0.038268166987109,
+    "returncode": 0
+  },
+  "towerBoth88": {
+    "as_written": 88,
+    "polished": 88,
+    "seconds": 0.4289287499996135,
+    "returncode": 0
+  },
+  "poisonValue84": {
+    "as_written": 84,
+    "polished": 84,
+    "seconds": 0.25372333300765604,
+    "returncode": 0
+  },
+  "churchSpine154": {
+    "as_written": 154,
+    "polished": 154,
+    "seconds": 21.950397166001494,
+    "returncode": 0
+  },
+  "churchValue123": {
+    "as_written": 123,
+    "polished": 121,
+    "seconds": 8.197669375003898,
+    "returncode": 0
+  }
+}

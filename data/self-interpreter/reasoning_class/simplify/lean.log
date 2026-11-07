@@ -1,0 +1,31 @@
+'Blc.Simplify.capture_scoped' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.minimum_single_residual' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.small_residuals' does not depend on any axioms
+'Blc.Simplify.idem_idempotent' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.no_minimum_idempotent_diagonal' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.specialize_reduces' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source_join' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source_price' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source_lambdas' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source_holes' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source_depth' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.residual_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.no_minimum_static' depends on axioms: [propext, Quot.sound]
+        0.51 real         0.58 user         0.11 sys
+           490553344  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               32276  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                5461  involuntary context switches
+          7523744609  instructions retired
+          2905559739  cycles elapsed
+           135844544  peak memory footprint

@@ -1,0 +1,3 @@
+'Blc.Close46FlatMinimum.minimum_flat_argument' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46FlatMinimum.minimum_flat_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Close46FlatMinimum.no_three_lambda_linear' depends on axioms: [propext, Classical.choice, Quot.sound]

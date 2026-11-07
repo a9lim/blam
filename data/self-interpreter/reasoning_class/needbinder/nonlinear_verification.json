@@ -1,0 +1,56 @@
+{
+  "files_sha256": {
+    "REPORT.md": "9e7c5ddc1702a1d188d26acb3f64f6169fe4d0f9143c473c82ebc2295d7ec84f",
+    "NOTES.md": "a4650b142e5c023ec5340c4d896946ada79c9138db5906bdfb926fd1557f4db4",
+    "nonlinear_count.py": "db1cc0167e52a847e4dd80530c98402de3be0bb5fb2c6985d71d7644d548cb42",
+    "nonlinear_check.py": "7ad01b7b540fea4e5558b7960db65cd721c8460008e9d260f8d683ebaa6e1f93",
+    "nonlinear_check.json": "3fa8b33b92398779d7b932d5469fee489c49a64a38d40ea30049bf8d6483f5b9",
+    "nonlinear_check.log": "488d0654f5f55b03b55589059dcf8e0b5d11919ca1e7557cf7201c10cc99eee1",
+    "exception_cert.py": "60a1651f323385013e094963cddac2af00b21063b623c140be6114cb02843e1a",
+    "nonlinear_audit.json": "e8d40260adedd0bf438f221661e07f9a34844e3053f6029026e4003a368807d6",
+    "NonlinearExceptions.lean": "7874ab2ba09a1ce9c3a8ad8422e191284b5b3c12fbbc9ca6f364c689260504e5",
+    "NonlinearExceptions.log": "ef355c5a88cdca72070006e70cec1feaf99df9a18a1823ec73442ac6a78b6d3b",
+    "NonlinearExceptions.olean": "38915d98ff6e1af352eddc76e04c0c76ef750a512725cfd9dff31f569dfc6a89"
+  },
+  "direct_context_sha256": {
+    "tmp/round4/jn/dbn.py": "bf793c2119148627cc332a160a5785c642843f1438aed7664c43a11119c46e14",
+    "lean/lean-toolchain": "2bdc48adfa58d0017e538a0ad117c5d73d35deec879978f909406a80c8037273",
+    "lean/Blc/SelfintNeededHead.lean": "400b8f6490b75792bd7bc1b79b54030c7916d12e30c90fd08f3b9afcec478228",
+    "lean/Blc/SelfintClass.lean": "670ce860c3114f0629ad6a0082ffea6ca9db71844978490895f76cb54d13865b",
+    "lean/Blc/SelfintStreamSpecializer.lean": "9d0d638727ba605198ba29aae8fa76040efa890405104c4d110a2d5c74c93f4b"
+  },
+  "previous_report_preserved_byte_exactly": true,
+  "finite_check": {
+    "sources": 18640,
+    "seconds": 2.086509125001612,
+    "peak_rss_bytes": 42254336,
+    "threads": 1,
+    "source_domain": "B=((lambda x.D) A) C1...Ck, |B|<=29, m=2..4, c present"
+  },
+  "outcomes": {
+    "wrong_zero_nf": 18119,
+    "wrong_unary_one_nf": 497,
+    "normalizer_cycles": 17,
+    "normalizer_cutoffs": 7,
+    "kernel_checked_exceptions": 24,
+    "unresolved": 0,
+    "survivors": 0
+  },
+  "lean": {
+    "file": "NonlinearExceptions.lean",
+    "threads": 2,
+    "compile_exit_code": 0,
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ],
+    "coverage": "24 literal source refutations; 20 missing-r proofs and 4 unique-redex fixed loops"
+  },
+  "not_kernel_checked": [
+    "finite inventory completeness",
+    "Python normalization of the 18616 wrong-normal-form sources",
+    "handwritten source-cost derivation",
+    "earlier minimality reductions where REPORT.md identifies handwritten arguments"
+  ],
+  "conclusion": "No reader in the pinned nonlinear opener domain; combined earlier reductions exclude a globally minimum sub46 literal whole-cell opener. General R1 prime remains open."
+}

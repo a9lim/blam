@@ -1,0 +1,146 @@
+[
+  {
+    "index": 0,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "(((\\v4. (v4 v4)) (\\v4. (v4 v4))) c)"
+  },
+  {
+    "index": 1,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "(((\\v4. (v4 v4)) (\\v4. (v4 v4))) (\\v4. c))"
+  },
+  {
+    "index": 2,
+    "kind": "cycle",
+    "proof": "single redex repeats exactly",
+    "body": "((((\\v4. (v4 v4)) (\\v4. (v4 v4))) t) c)"
+  },
+  {
+    "index": 3,
+    "kind": "cycle",
+    "proof": "single redex repeats exactly",
+    "body": "((((\\v4. (v4 v4)) (\\v4. (v4 v4))) c) t)"
+  },
+  {
+    "index": 4,
+    "kind": "cycle",
+    "proof": "single redex repeats exactly",
+    "body": "(((\\v4. (v4 v4)) (\\v4. (v4 v4))) (t c))"
+  },
+  {
+    "index": 5,
+    "kind": "cycle",
+    "proof": "single redex repeats exactly",
+    "body": "(((\\v4. (v4 v4)) (\\v4. (v4 v4))) (c t))"
+  },
+  {
+    "index": 6,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "(((\\v4. (\\v5. (v4 v4))) (\\v4. (v4 v4))) c)"
+  },
+  {
+    "index": 7,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (c (v4 v4))) (\\v4. (v4 v4)))"
+  },
+  {
+    "index": 8,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. ((v4 v4) c)) (\\v4. (v4 v4)))"
+  },
+  {
+    "index": 9,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (v4 ((\\v5. v4) c))) (\\v4. (v4 v4)))"
+  },
+  {
+    "index": 10,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. ((v4 v4) (\\v5. c))) (\\v4. (v4 v4)))"
+  },
+  {
+    "index": 11,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (((\\v5. v4) c) v4)) (\\v4. (v4 v4)))"
+  },
+  {
+    "index": 12,
+    "kind": "cutoff",
+    "proof": "missing r after four steps",
+    "body": "(((\\v4. (v4 v4)) (\\v4. (\\v5. (v4 v4)))) c)"
+  },
+  {
+    "index": 13,
+    "kind": "cutoff",
+    "proof": "missing r after four steps",
+    "body": "(((\\v4. (v4 v4)) (\\v4. (v4 (v4 v4)))) c)"
+  },
+  {
+    "index": 14,
+    "kind": "cutoff",
+    "proof": "missing r after four steps",
+    "body": "(((\\v4. (v4 v4)) (\\v4. ((v4 v4) v4))) c)"
+  },
+  {
+    "index": 15,
+    "kind": "cutoff",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (v4 v4)) (\\v4. ((v4 v4) c)))"
+  },
+  {
+    "index": 16,
+    "kind": "cutoff",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (v4 v4)) (\\v4. (c (v4 v4))))"
+  },
+  {
+    "index": 17,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (v4 (\\v5. v4))) (\\v4. ((v4 c) v4)))"
+  },
+  {
+    "index": 18,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (v4 v4)) ((\\v4. (\\v5. (v5 v5))) c))"
+  },
+  {
+    "index": 19,
+    "kind": "cutoff",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (v4 v4)) (\\v4. (v4 ((\\v5. v4) c))))"
+  },
+  {
+    "index": 20,
+    "kind": "cutoff",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (v4 v4)) (\\v4. ((v4 v4) (\\v5. c))))"
+  },
+  {
+    "index": 21,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "((\\v4. (v4 v4)) (\\v4. (((\\v5. v4) c) v4)))"
+  },
+  {
+    "index": 22,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "(((\\v4. (v4 (v4 v4))) (\\v4. (v4 v4))) c)"
+  },
+  {
+    "index": 23,
+    "kind": "cycle",
+    "proof": "missing r after four steps",
+    "body": "(((\\v4. ((v4 v4) v4)) (\\v4. (v4 v4))) c)"
+  }
+]

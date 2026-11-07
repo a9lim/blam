@@ -1,0 +1,12 @@
+[
+  {
+    "module": "Finite38Base",
+    "exit_code": 0,
+    "seconds": 0.22696104100032244
+  },
+  {
+    "module": "Size38Finite",
+    "exit_code": 0,
+    "seconds": 5.016541500008316
+  }
+]

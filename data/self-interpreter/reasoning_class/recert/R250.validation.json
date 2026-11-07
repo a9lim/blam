@@ -1,0 +1,9 @@
+{
+  "label": "R250",
+  "valid": true,
+  "source_matches": true,
+  "states": 115,
+  "sha256": "cf6a48f1a7562e59e5f3d2fbbbe5e9fea54b3dda8f58e884adf473514c909fc9",
+  "seconds": 0.0003115830186288804,
+  "peak_rss_bytes": 24051712
+}

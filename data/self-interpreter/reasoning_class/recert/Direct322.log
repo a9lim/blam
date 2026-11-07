@@ -1,0 +1,2 @@
+'Recert.Direct322.reduces' depends on axioms: [propext]
+'Recert.Direct322.solvable' depends on axioms: [propext]

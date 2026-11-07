@@ -1,0 +1,5 @@
+template s3 sizes 2..=17: total 2528 wrong 2527 survivors 0 capped 1
+reasons: [("abs", 886), ("arity", 699), ("big", 1), ("headN", 757), ("headPG", 83), ("loop", 50), ("rest", 1), ("value", 51)]
+== survivors (pass all 8 probes):
+== capped:
+15 15 big 010111110111010 ((x intL) list)

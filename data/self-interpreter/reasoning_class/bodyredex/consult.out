@@ -1,0 +1,17 @@
+[gaslamp] → codex · job cx-20261022-021727-2d60 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-021727-2d60/events.jsonl
+( •̀ᴗ•́ ) [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/bodyredex/REPORT.md) contains the proofs, completeness arguments, and artifacts.
+
+**No sub-46 reader found; the whole branch remains open.** New reductions for a globally minimum reader with `w≤45` and hole depth 1:
+
+- First-body multiplicity is **at most four**.
+- **A must contain a lambda**, regardless of B’s head.
+- If the let is linear, **j must occur in A**. This exclusion is handwritten, with scalar bounds checked in Lean.
+
+The remaining cases are therefore linear lets carrying j inside a lambda-containing A, and nonlinear lets with **two to four uses** of such an A.
+
+Two narrowed checks refuted all **92,480** and **47,328** sources, respectively, with no cutoffs or survivors; both stayed within every compute cap.
+
+[FlatRestHole.lean](/Users/a9lim/Work/blam/tmp/round4/bodyredex/FlatRestHole.lean) checks the unary replacement, exact price, inverse completeness, and five residual refutations for `A=(s s s)j`. Its assembled exclusion explicitly assumes the existing computer-checked two-core inventory; that assumption is not hidden.
+
+[gaslamp] job: cx-20261022-021727-2d60 · session: 01a16241-e257-7d23-87cf-521417c1a142 · thread: r5-bodyredex · resume: gaslamp codex --thread r5-bodyredex · tok: 6434k→69k
+[lane.sh] done rc=0 tries=1

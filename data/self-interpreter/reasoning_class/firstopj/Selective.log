@@ -1,0 +1,15 @@
+/Users/a9lim/Work/blam/tmp/round4/firstopj/Selective.lean:62:4: warning: This simp argument is unused:
+  Int.add_zero
+
+Hint: Omit it from the simp argument list.
+  simp only [̵N̵a̵t̵.̵r̵e̵d̵u̵c̵e̵A̵d̵d̵,̵h̵A̵,̵h̵D̵,̵h̵F̵,̵h̵G̵,̵h̵A̵p̵r̵i̵c̵e̵,̵
+  ̵ ̵ ̵ ̵ ̵I̵n̵t̵.̵n̵a̵t̵C̵a̵s̵t̵_̵a̵d̵d̵,̵I̵n̵t̵.̵n̵a̵t̵C̵a̵s̵t̵_̵o̵n̵e̵,̵I̵n̵t̵.̵n̵a̵t̵C̵a̵s̵t̵_̵z̵e̵r̵o̵,̵I̵n̵t̵.̵m̵u̵l̵_̵z̵e̵r̵o̵,̵
+  ̵ ̵ ̵ ̵ ̵I̵n̵t̵.̵a̵d̵d̵_̵z̵e̵r̵o̵,̵I̵n̵t̵.̵s̵u̵b̵_̵z̵e̵r̵o̵,̵I̵n̵t̵.̵m̵u̵l̵_̵o̵n̵e̵]̵[̲N̲a̲t̲.̲r̲e̲d̲u̲c̲e̲A̲d̲d̲,̲ ̲h̲A̲,̲ ̲h̲D̲,̲ ̲h̲F̲,̲ ̲h̲G̲,̲ ̲h̲A̲p̲r̲i̲c̲e̲,̲ ̲I̲n̲t̲.̲n̲a̲t̲C̲a̲s̲t̲_̲a̲d̲d̲,̲ ̲I̲n̲t̲.̲n̲a̲t̲C̲a̲s̲t̲_̲o̲n̲e̲,̲
+  ̲ ̲ ̲ ̲ ̲I̲n̲t̲.̲n̲a̲t̲C̲a̲s̲t̲_̲z̲e̲r̲o̲,̲ ̲I̲n̲t̲.̲m̲u̲l̲_̲z̲e̲r̲o̲,̲ ̲I̲n̲t̲.̲s̲u̲b̲_̲z̲e̲r̲o̲,̲ ̲I̲n̲t̲.̲m̲u̲l̲_̲o̲n̲e̲]̲ at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.FirstopJ.prune_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.FirstopJ.prune_lambdas' depends on axioms: [propext]
+'Blc.FirstopJ.prune_holes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.FirstopJ.selective_context_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.FirstopJ.replay_price_nonnegative' depends on axioms: [propext, Quot.sound]

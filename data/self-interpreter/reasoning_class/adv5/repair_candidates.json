@@ -1,0 +1,47 @@
+[
+  {
+    "term": "\\s. s (\\t. t t c) (s s c) j",
+    "w": 39,
+    "passes_zero_and_unary_1_to_6": false
+  },
+  {
+    "term": "\\s. s (\\t. t t c) (s s j)",
+    "w": 34,
+    "passes_zero_and_unary_1_to_6": false
+  },
+  {
+    "term": "\\s. s I (\\u. s (\\q. c) (s s u)) j",
+    "w": 46,
+    "passes_zero_and_unary_1_to_6": true
+  },
+  {
+    "term": "(\\g n s. s I (\\u. s g (g s)) n) (\\t. t t c) j",
+    "w": 62,
+    "passes_zero_and_unary_1_to_6": true
+  },
+  {
+    "term": "(\\g n s. s (\\b. b (\\u r. r n) g) (s s g)) (\\t. c t) j",
+    "w": 64,
+    "passes_zero_and_unary_1_to_6": true
+  },
+  {
+    "term": "(\\g n s. s (\\b. b (\\u r. r n) (g I)) (g (s s))) (\\t. t c) j",
+    "w": 70,
+    "passes_zero_and_unary_1_to_6": true
+  },
+  {
+    "term": "(\\x n s. s x x n) ((\\u v. v) c) j",
+    "w": 39,
+    "passes_zero_and_unary_1_to_6": false
+  },
+  {
+    "term": "(\\g n s. s g g n) (\\t. t t c) j",
+    "w": 42,
+    "passes_zero_and_unary_1_to_6": false
+  },
+  {
+    "term": "(\\g n s. s s (g g) n) (\\t. t c) j",
+    "w": 42,
+    "passes_zero_and_unary_1_to_6": false
+  }
+]

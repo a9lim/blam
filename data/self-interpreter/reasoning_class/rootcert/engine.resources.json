@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/Users/a9lim/Work/blam/tmp/round4/rootcert/blam-frozen",
+    "adjudicate",
+    "--file",
+    "/Users/a9lim/Work/blam/tmp/round4/rootcert/zero.blc",
+    "--threads",
+    "2",
+    "--budget1",
+    "64",
+    "--budget2",
+    "4096",
+    "--bb-cap",
+    "100000",
+    "--rescue",
+    "10000",
+    "--work-mult",
+    "2",
+    "--no-oracle"
+  ],
+  "code": 0,
+  "seconds": 0.300796416006051,
+  "peak_rss_bytes": 6438912,
+  "limit": null,
+  "threads": 2
+}

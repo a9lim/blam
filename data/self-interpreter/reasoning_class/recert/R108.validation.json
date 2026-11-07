@@ -1,0 +1,9 @@
+{
+  "label": "R108",
+  "valid": true,
+  "source_matches": true,
+  "states": 56,
+  "sha256": "dba1f4257d06234498c87c60cf79ffc38ef158f6542112245085e1cdf263d559",
+  "seconds": 0.0002503329887986183,
+  "peak_rss_bytes": 24051712
+}

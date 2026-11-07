@@ -1,0 +1,7 @@
+'Blc.Pending.flat_price' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.flat_yx_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Pending.flat_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.flat_depth' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.independent_nested_floor' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.independent_nested_exchange_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Pending.independent_adjacent_floor' depends on axioms: [propext, Classical.choice, Quot.sound]

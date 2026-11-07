@@ -1,0 +1,8 @@
+{
+  "file": "ReaderChecks.lean",
+  "exit_code": 0,
+  "seconds": 25.276772625002195,
+  "theorems": 3484,
+  "threads": 2,
+  "sha256": "4c43dfc966fb06762a99e2ea39c701fa309f1c19f618ea87c9c7b8e22f07bfa5"
+}

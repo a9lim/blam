@@ -1,0 +1,81 @@
+/-
+Lemma A with value slots. `reflect_remainder_k` and `lemmaA_context_k` let the
+rest sit at any index k ≥ 1; two applications give `lemmaA_two_slots`, the form
+with APP's first operand as a second, abstract value slot: filling both slots
+with blind probe values and joining `C X N` forces `t ⇝ C A w`.
+`docs/classical/self-interpreter/class-bound.md`. Indices are 0-based; in t,
+C=0, the value slots x=1 and z=2, the rest w=3.
+-/
+import Blc.SelfintProbe
+
+namespace Blc.SelfintProbeSlots
+open Term SelfintControl SelfintProjections QuoteOrigins SelfintLowerBound SelfintWireCost
+  SelfintProbe
+set_option maxRecDepth 4096
+set_option maxHeartbeats 800000
+
+theorem reflect_remainder_k {t v : Term} (k : Nat) (hk : 1 ≤ k) (hv : Blind v)
+    (h : BetaJoin (substDec 1 v t) (.var k)) : Betas t (.var (k + 1)) := by
+  obtain ⟨q, htq, hq, hi, hj⟩ := reflect_rigid 1 hv (.var k) h
+  obtain ⟨n, as, heq⟩ := rigid_view hq
+  subst q
+  have hnj : n ≠ 1 := by
+    intro he; subst n
+    have hj' := hj
+    simp only [subst_apps, substDec, if_true] at hj'
+    exact hv _ _ (.var k) hj'
+  have hs := rigid_join_shape hi (.var k) hj
+  simp only [subst_apps, substDec, hnj, if_false] at hs
+  split at hs
+  · simp only [shape_apps, shape, Nat.zero_add, Prod.mk.injEq] at hs
+    have hn : n = k + 1 := by omega
+    have ha : as = [] := by simpa using hs.2
+    subst n; subst as
+    exact htq
+  · simp only [shape_apps, shape, Nat.zero_add, Prod.mk.injEq] at hs
+    omega
+
+theorem lemmaA_context_k {t v X : Term} (k : Nat) (hk : 1 ≤ k) (hv : Blind v)
+    (h : BetaJoin (substDec 1 v t) (.app (.app (.var 0) X) (.var k))) :
+    ∃ A, Betas t (.app (.app (.var 0) A) (.var (k + 1))) := by
+  obtain ⟨q, htq, hq, hi, hj⟩ := reflect_rigid 1 hv (.app _ (.app _ (.var 0))) h
+  obtain ⟨n, as, heq⟩ := rigid_view hq
+  subst q
+  have hnj : n ≠ 1 := by
+    intro he; subst n
+    have hj' := hj
+    simp only [subst_apps, substDec, if_true] at hj'
+    exact hv _ _ (.app _ (.app _ (.var 0))) hj'
+  have hs := rigid_join_shape hi (.app _ (.app _ (.var 0))) hj
+  simp only [subst_apps, substDec, hnj, if_false] at hs
+  have hn : n = 0 := by
+    split at hs <;> simp only [shape_apps, shape, Nat.zero_add, Prod.mk.injEq] at hs <;> omega
+  subst n
+  have ha : as.length = 2 := by
+    simpa [subst_apps, substDec, shape_apps, shape] using congrArg Prod.snd hs
+  cases as with
+  | nil => simp at ha
+  | cons A as =>
+    cases as with
+    | nil => simp at ha
+    | cons B as =>
+      have he : as = [] := by simpa using ha
+      subst as
+      change BetaJoin (.app (.app (.var 0) (substDec 1 v A)) (substDec 1 v B))
+        (.app (.app (.var 0) X) (.var k)) at hj
+      have hb := (rigid_app_join (.app _ (.var 0)) (.app _ (.var 0)) hj).2
+      exact ⟨A, betas_trans htq (betas_appR _ (reflect_remainder_k k hk hv hb))⟩
+
+/-- Generalized Lemma A, two value slots (Theorem B2). In t: C = 0, the
+first operand's value slot x = 1, the second value z = 2, the rest w = 3.
+Filling both slots with blind probe values (x first, then z) and joining
+`C X N` (N = 1 after both substitutions) forces t to reduce to `C A w`. -/
+theorem lemmaA_two_slots {t v1 v2 X : Term} (hv1 : Blind v1) (hv2 : Blind v2)
+    (h : BetaJoin (substDec 1 v2 (substDec 1 v1 t))
+      (.app (.app (.var 0) X) (.var 1))) :
+    ∃ A, Betas t (.app (.app (.var 0) A) (.var 3)) := by
+  obtain ⟨A', hA'⟩ := lemmaA_context hv2 h
+  exact lemmaA_context_k 2 (by omega) hv1 (join_of_betas hA')
+
+#print axioms lemmaA_two_slots
+end Blc.SelfintProbeSlots

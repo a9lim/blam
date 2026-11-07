@@ -1,0 +1,101 @@
+[
+  {
+    "index": 0,
+    "body": "(\\x3. x3 x3) (\\x3. \\x4. x)",
+    "replacement": "\\x3. x",
+    "body_cost": 18,
+    "replacement_cost": 5,
+    "sources": 431,
+    "theorem": "Blc.BodyLinBodies.exclude0"
+  },
+  {
+    "index": 1,
+    "body": "(\\x3. x3 x3) (\\x3. \\x4. \\x5. x)",
+    "replacement": "\\x3. \\x4. x",
+    "body_cost": 21,
+    "replacement_cost": 8,
+    "sources": 16,
+    "theorem": "Blc.BodyLinBodies.exclude1"
+  },
+  {
+    "index": 2,
+    "body": "(\\x3. x3 (\\x4. x3)) (\\x3. \\x4. x)",
+    "replacement": "\\x3. x",
+    "body_cost": 21,
+    "replacement_cost": 5,
+    "sources": 14,
+    "theorem": "Blc.BodyLinBodies.exclude2"
+  },
+  {
+    "index": 3,
+    "body": "(\\x3. x3 x3) (\\x3. \\x4. x4 x)",
+    "replacement": "\\x3. x3 x",
+    "body_cost": 22,
+    "replacement_cost": 9,
+    "sources": 14,
+    "theorem": "Blc.BodyLinBodies.exclude3"
+  },
+  {
+    "index": 4,
+    "body": "(\\x3. x3 x3) (\\x3. \\x4. x x4)",
+    "replacement": "\\x3. x x3",
+    "body_cost": 22,
+    "replacement_cost": 9,
+    "sources": 14,
+    "theorem": "Blc.BodyLinBodies.exclude4"
+  },
+  {
+    "index": 5,
+    "body": "(\\x3. x3 x3) (\\x3. x3 (\\x4. x))",
+    "replacement": "x",
+    "body_cost": 22,
+    "replacement_cost": 2,
+    "sources": 14,
+    "theorem": "Blc.BodyLinBodies.exclude5"
+  },
+  {
+    "index": 6,
+    "body": "(\\x3. x3 (x3 x3)) (\\x3. \\x4. x)",
+    "replacement": "\\x3. x",
+    "body_cost": 22,
+    "replacement_cost": 5,
+    "sources": 14,
+    "theorem": "Blc.BodyLinBodies.exclude6"
+  },
+  {
+    "index": 7,
+    "body": "(\\x3. x3 x3 x3) (\\x3. \\x4. x)",
+    "replacement": "x",
+    "body_cost": 22,
+    "replacement_cost": 2,
+    "sources": 14,
+    "theorem": "Blc.BodyLinBodies.exclude7"
+  },
+  {
+    "index": 8,
+    "body": "(\\x3. \\x4. x3 x3) (\\x3. \\x4. x)",
+    "replacement": "\\x3. \\x4. x",
+    "body_cost": 22,
+    "replacement_cost": 8,
+    "sources": 14,
+    "theorem": "Blc.BodyLinBodies.exclude8"
+  },
+  {
+    "index": 9,
+    "body": "(\\x3. x3 x3) (\\x3. \\x4. x3 x)",
+    "replacement": "\\x3. \\x4. x x",
+    "body_cost": 23,
+    "replacement_cost": 14,
+    "sources": 12,
+    "theorem": "Blc.BodyLinBodies.exclude9"
+  },
+  {
+    "index": 10,
+    "body": "(\\x3. x3 x3) (\\x3. \\x4. x x3)",
+    "replacement": "\\x3. x (\\x4. \\x5. x x4)",
+    "body_cost": 23,
+    "replacement_cost": 21,
+    "sources": 12,
+    "theorem": "Blc.BodyLinBodies.exclude10"
+  }
+]

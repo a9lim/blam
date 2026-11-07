@@ -1,0 +1,15 @@
+[gaslamp] → codex · job cx-20261022-081908-0849 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-081908-0849/events.jsonl
+(｀・ω・´) All five exclusions are kernel-checked.
+
+- [Proof file](/Users/a9lim/Work/blam/tmp/round4/combs3/Rootlet5.lean)
+- [Report](/Users/a9lim/Work/blam/tmp/round4/combs3/REPORT.md)
+- [Compile log](/Users/a9lim/Work/blam/tmp/round4/combs3/Rootlet5.log)
+
+The rejection theorems are `Blc.Combs3.reject474`, `reject492`, `reject493`, `reject506`, and `reject507`. Each also has source-unsolvability, zero-probe-unsolvability, and zero-law non-β-joinability theorems.
+
+One invariant handles everything: writing `A = H H`, `B = H A`, `C = H B`, `D = H C`, `E = D A`, and `F = D E`, the prefix `Core = H C E (F H)` reproduces itself after **44 head β-steps**, prepending 12 fixed arguments to any trailing spine. All five sources reach this family.
+
+Compilation succeeded in **0.376 seconds**, peak RSS **433.4 MiB**. Audited axioms: **`[propext, Quot.sound]`** only. No tracked files modified; no commit made.
+
+[gaslamp] job: cx-20261022-081908-0849 · session: 01a1638d-04e3-73a3-9219-c680c83a4fc3 · thread: r5-combs3 · resume: gaslamp codex --thread r5-combs3 · tok: 730k→8.3k
+[lane.sh] done rc=0 tries=1

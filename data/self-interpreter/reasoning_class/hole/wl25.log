@@ -1,0 +1,59 @@
+CAPz 20 j ((\x0. x0 x0) (\x0. x0 x0))
+CAPz 20 (\x0. x0 x0) (\x0. x0 x0) j
+CAPz 22 j (\x0. (\x1. x1 x1) (\x1. x1 x1))
+CAPz 22 (\x0. x0 x0) ((\x0. \x1. x1 x1) j)
+CAPz 22 (\x0. \x1. x1 x1) j (\x0. x0 x0)
+CAPz 22 (\x0. (\x1. x1 x1) (\x1. x1 x1)) j
+CAPz 24 j (\x0. \x1. (\x2. x2 x2) (\x2. x2 x2))
+CAPz 24 j (s ((\x0. x0 x0) (\x0. x0 x0)))
+CAPz 24 j ((\x0. x0 x0) (\x0. \x1. x0 x0))
+CAPz 24 j ((\x0. x0 x0) (\x0. x0 (x0 x0)))
+CAPz 24 j ((\x0. x0 x0) (\x0. x0 x0 x0))
+CAPz 24 j ((\x0. \x1. x0 x0) (\x0. x0 x0))
+CAPz 24 j ((\x0. x0 (x0 x0)) (\x0. x0 x0))
+CAPz 24 j ((\x0. x0 x0 x0) (\x0. x0 x0))
+CAPz 24 j ((\x0. x0 x0) (\x0. x0 x0) s)
+CAPz 24 s (j ((\x0. x0 x0) (\x0. x0 x0)))
+CAPz 24 s ((\x0. x0 x0) (\x0. x0 x0) j)
+CAPz 24 j s ((\x0. x0 x0) (\x0. x0 x0))
+CAPz 24 s j ((\x0. x0 x0) (\x0. x0 x0))
+CAPz 24 (\x0. x0 x0) (\x0. x0 x0) (j s)
+CAPz 24 (\x0. x0 x0) (\x0. x0 x0) (s j)
+CAPz 24 j ((\x0. x0 x0) (\x0. x0 x0)) s
+CAPz 24 (\x0. x0 x0) (\x0. x0 x0) j s
+CAPz 24 (\x0. \x1. (\x2. x2 x2) (\x2. x2 x2)) j
+CAPz 24 s ((\x0. x0 x0) (\x0. x0 x0)) j
+CAPz 24 (\x0. x0 x0) (\x0. \x1. x0 x0) j
+CAPz 24 (\x0. x0 x0) (\x0. x0 (x0 x0)) j
+CAPz 24 (\x0. x0 x0) (\x0. x0 x0 x0) j
+CAPz 24 (\x0. \x1. x0 x0) (\x0. x0 x0) j
+CAPz 24 (\x0. x0 (x0 x0)) (\x0. x0 x0) j
+CAPz 24 (\x0. x0 x0 x0) (\x0. x0 x0) j
+CAPz 24 (\x0. x0 x0) (\x0. x0 x0) s j
+CAPz 25 j (c ((\x0. x0 x0) (\x0. x0 x0)))
+CAPz 25 j ((\x0. x0 x0) (\x0. s (x0 x0)))
+CAPz 25 j ((\x0. x0 x0) (\x0. x0 x0 s))
+CAPz 25 j ((\x0. s (x0 x0)) (\x0. x0 x0))
+CAPz 25 j ((\x0. x0 x0 s) (\x0. x0 x0))
+CAPz 25 j ((\x0. x0 x0) (\x0. x0 x0) c)
+CAPz 25 c (j ((\x0. x0 x0) (\x0. x0 x0)))
+CAPz 25 c ((\x0. x0 x0) (\x0. x0 x0) j)
+CAPz 25 j c ((\x0. x0 x0) (\x0. x0 x0))
+CAPz 25 c j ((\x0. x0 x0) (\x0. x0 x0))
+CAPz 25 (\x0. x0 x0) (\x0. x0 x0) (j c)
+CAPz 25 (\x0. x0 x0) (\x0. x0 x0) (c j)
+CAPz 25 j ((\x0. x0 x0) (\x0. x0 x0)) c
+CAPz 25 (\x0. x0 x0) (\x0. x0 x0) j c
+CAPz 25 c ((\x0. x0 x0) (\x0. x0 x0)) j
+CAPz 25 (\x0. x0 x0) (\x0. s (x0 x0)) j
+CAPz 25 (\x0. x0 x0) (\x0. x0 x0 s) j
+CAPz 25 (\x0. s (x0 x0)) (\x0. x0 x0) j
+CAPz 25 (\x0. x0 x0 s) (\x0. x0 x0) j
+CAPz 25 (\x0. x0 x0) (\x0. x0 x0) c j
+cmax=25: 371863 terms, 3612 with C[x] Z = x, 52 caps, 1.7s
+  N-outer (c U x): 1 hits, min 24: ['s (\\x0. x0 (\\x1. \\x2. x2) c) j']
+  cU (x N): 0 hits, min None: []
+  c (x U N): 0 hits, min None: []
+  N-inner (c U[x] N): 0 hits, min None: []
+  U (c x N): 0 hits, min None: []
+  whole (x): 3277 hits, min 0: ['j']

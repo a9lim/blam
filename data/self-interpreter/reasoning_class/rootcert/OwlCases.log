@@ -1,0 +1,5 @@
+'Blc.Rootcert.OwlCases.reject0' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert.OwlCases.reject1' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert.OwlCases.reject2' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert.OwlCases.reject3' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert.OwlCases.reject102' depends on axioms: [propext, Quot.sound]

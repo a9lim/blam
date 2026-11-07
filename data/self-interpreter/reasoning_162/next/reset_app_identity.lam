@@ -1,0 +1,1 @@
+(\x.x x) (\x.(\p \c \s.s (\i.i) (\u.s (\b.u b (\i.i) b (\i.i)) (s s u)) (\b.p (\e.b (c (\env \arg.e (\z \y.z arg (y env)))) (p (\g.c (\env.e env (g env))))))) (x x))

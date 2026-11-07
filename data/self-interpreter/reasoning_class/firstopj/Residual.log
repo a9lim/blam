@@ -1,0 +1,3 @@
+'Blc.FirstopJ.Residual.reject703' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopJ.Residual.reject793' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopJ.Residual.reject794' depends on axioms: [propext, Quot.sound]

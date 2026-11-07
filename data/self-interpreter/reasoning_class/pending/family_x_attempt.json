@@ -1,0 +1,7 @@
+{
+  "status": "watchdog_exit_97",
+  "time_cap_seconds": 110,
+  "rss_cap_bytes": 900000000,
+  "named_exceptions": 2095,
+  "verdict": "no conclusions; no output accepted"
+}

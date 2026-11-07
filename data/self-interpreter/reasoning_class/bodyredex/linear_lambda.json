@@ -1,0 +1,16 @@
+{
+  "sources": 13296,
+  "catalog_A": 726,
+  "catalog_B": 2782,
+  "failures": {
+    "law0": 13292,
+    "law1": 4
+  },
+  "unknowns": [],
+  "survivors": [],
+  "max_probe_beta_steps": 12,
+  "seconds": 0.7272791659925133,
+  "peak_rss_bytes": 34750464,
+  "threads": 1,
+  "source_digest": "db8b9b0fdd0791ddd0b6d2c1eeb7967dc7a3dae10c6de5c67be0685324960f0d"
+}

@@ -1,0 +1,9 @@
+jout cmax 21 terms 16459 zero-ok 832 uncertified zero caps 24 hits 0 43.3s
+  ZCAP (16, '\\x0. x0 ((\\x1. x0) s)')
+  ZCAP (19, '\\x0. x0 (s (\\x1. \\x2. x0))')
+  ZCAP (19, '\\x0. x0 ((\\x1. x0) (\\x1. s))')
+  ZCAP (19, '\\x0. s (x0 ((\\x1. x1) x0))')
+  ZCAP (19, '\\x0. x0 ((\\x1. x1) x0) s')
+  ZCAP (20, '\\x0. x0 (x0 ((\\x1. x0) s))')
+  ZCAP (20, '\\x0. x0 (s (\\x1. x1 x0))')
+  ZCAP (20, '\\x0. x0 ((\\x1. x0) (x0 s))')

@@ -1,0 +1,7 @@
+'Blc.Close46LetSink.sunk_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Close46LetSink.sunk_price' depends on axioms: [propext, Quot.sound]
+'Blc.Close46LetSink.minimum_sink_charge_zero' depends on axioms: [propext, Quot.sound]
+'Blc.Close46LetSink.no_one_operand_spine_let' depends on axioms: [propext, Quot.sound]
+'Blc.Close46LetSink.sunkRoot_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Close46LetSink.sunkRoot_price' depends on axioms: [propext, Quot.sound]
+'Blc.Close46LetSink.minimum_root_sink_charge_zero' depends on axioms: [propext, Quot.sound]

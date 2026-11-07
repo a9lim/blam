@@ -1,0 +1,108 @@
+[gaslamp] → codex · job cx-20261021-225702-5b83 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-225702-5b83/events.jsonl
+(⊙_⊙) **The main failures are the η-value counterexample in item 3 and the re-entry argument in item 6(c).** B1/B2 survive, but their rest-preservation conclusions are weaker than ordinary rest-independent constructor laws.
+
+1. **Generalized Lemma A — correct.**
+
+   Interpret the notation as simultaneous substitution into the free value slots, followed by application to the value and rest arguments. Every substituted slot must satisfy VAL. The same head argument excludes all value-slot heads and forces the second argument to reduce to the fresh rest variable.
+
+   Use “has a leading abstraction” or weak-head terminology: `λa. Ω` has a leading abstraction but no head normal form.
+
+2. **Theorem B — correct-with-gap.**
+
+   **B1 and B2 are correct**, provided RET/VAL quantify over the continuation instances and suffixes used in these programs. The two probe values in B2 need not be identical; both must satisfy the probe property and have no additional free variables.
+
+   The conclusion actually obtained is
+   ```text
+   kA x y       →β* C A_K[x,y] y
+   k2[x] z w    →β* C A_2[x,z,w] w.
+   ```
+   This does **not** justify η-contraction to ordinary constructors `Abs'(x)` and `App'(x,z)`: the displayed value expressions may depend on `y` or `w`. Erasure of that dependence on probe instances does not establish erasure for abstract values. Retain the rest arguments explicitly, or add a separate rest-independence theorem.
+
+   **B3 is correct**, but the double-parse example, which also violates C1, does not independently establish that C2 fails to follow from the remaining hypotheses. A suitable construction keeps the first call `p kF t` and replaces the second call inside `kF` by an unfolded canonical parser body:
+   ```text
+   kF[f] y := H₀ p (λg. c App(f,g)) y,
+   ```
+   where `H₀` is the canonical generator. With rigid `p`, this heads on `y`, violating C2; structural induction still gives the interpreter contract.
+
+3. **Variable law — rest conclusion correct; proposed value counterexample broken.**
+
+   Under the uniformly quantified RET/VAL hypotheses, the depth-by-depth continuation argument establishes the claimed rest conclusion with abstract `c` and actual NEXT. It does not establish the rigid-`j` law.
+
+   However, **`int_eta_value.lam` does not violate the value law**. For every `n ≥ 1`,
+   ```text
+   r = U_(n−1)(N) = λf. f b t
+   λe. r e →β λe. e b t =α r.
+   ```
+   The tail is already an abstraction, so this η-expansion is β-equal to it.
+
+   I checked this reader with rigid `c,j` through `n = 5`; it passes. The calculation above proves the equality for every `n`. Thus the claim that the value component is not forced remains unsupported by this example. The further assertion in §12 that all alternatives are η-variants with a fixed extra cost also lacks a proof.
+
+4. **Double-parse interpreter — correct.**
+
+   Its constructor branch is `c`-headed with rigid `p,c,t`, so it violates C1 and the canonical rigid branch laws. Its correctness has a straightforward structural proof: the `K` projection computes an operand’s value, and the `F` projection computes its suffix.
+
+   I independently reproduced **265 bits, 667 ok / 1 skip / 0 failures**. The battery alone is finite evidence; the structural argument supplies the general justification.
+
+5. **Re-separation — correct-with-gap in the bookkeeping.**
+
+   The substitution identity and the two zero reductions are correct:
+   ```text
+   R1 Z(r) →β* r j
+   R2 Z(r) →β* j r r.
+   ```
+   The zero law therefore belongs to a chosen separation, not to the assembled interpreter alone. I also reproduced the 171-bit battery result.
+
+   The final size identity is correct with the canonical NEXT and **exactly one source occurrence of `j` in R**, plus hygienic substitution. That occurrence hypothesis should be explicit.
+
+   The intermediate assertion
+   ```text
+   cost(R') = cost(R) + cost(A)
+   ```
+   is generally false under the stated independent-frame cost convention. Inserting `A` beneath `d` reader binders also shifts every free `c` occurrence in `A`, adding `d · #c(A)`. The final identity can instead be justified directly from the identical expanded source trees.
+
+6. **Rigid-j versus actual NEXT.**
+
+   **(a) Correct.** I reproduced all four rigid checks. Their laws extend to every `n` using the unary-stream identities; these readers are class members. Their placement as rigid/actual-gap examples should be corrected.
+
+   **(b) Correct, and valid for every `k ≥ 1`.** Write `J = λx y z. z`. For canonical NEXT,
+   ```text
+   Q_c J =β P F,
+   Q_c J U_k(N) →β* F U_(k−1)(N) N →β N.
+   ```
+   I reproduced `k = 1,2,3` and confirmed an `N`-headed weak-head form at `k = 0`.
+
+   **(c) Broken.** Re-entering the same stream with a different continuation does not establish divergence. Here is a self-consistent counterexample, using canonical NEXT and its own knot:
+   ```text
+   R* = λs.
+     s I
+       (λu.
+         s (λb r.
+              c (r (λd t. d (λf. f K (u J s)) r)))
+           (s s u))
+       j
+   ```
+   `J` is expanded as above; there is one source occurrence of `j`.
+
+   Let `P*` be the resulting parser. On every unary input,
+   ```text
+   P* F U_n(N) →β* F X N →β N,
+   ```
+   because `F` discards the value containing the recursive call. Consequently,
+   ```text
+   Q*_c J U_n(N) =β P* F U_n(N) →β* N.
+   ```
+   For `n = 1`, the reader’s value is `cons K (Q*_c J s)`, hence reduces to `U₀(N)`. For `n ≥ 2`, its selector returns the original `r`. Thus its actual variable law holds for every `n`.
+
+   With rigid `j`, however, its `n = 1` result is
+   ```text
+   c (cons K (j J U₁(N))) N,
+   ```
+   which is not β-equal to `c U₀(N) N`. I reproduced the self-consistent actual reductions for `n = 1,2,3` and this rigid failure.
+
+   The offending `j` call parses **the original `s`**, not a constructed input cell. A cell is constructed in the output value. This directly defeats the claimed classification of calls on `s` as nonterminating.
+
+   A second unsupported step is that every `j`-free computation yielding `N` at `n = 1` works uniformly: `(s F) F` yields `N` at `n = 1` but `U₀(N)` at `n = 2`.
+
+   This counterexample is larger (`w(R*) = 112`); it does **not** refute a size lower bound. It refutes the proposed argument transferring actual laws to rigid laws and therefore leaves the “cannot save bits” conclusion unproved.
+
+[gaslamp] job: cx-20261021-225702-5b83 · session: 01a1618a-66b2-73c1-8c88-a17f1555f9fd · thread: escape-derive · resume: gaslamp codex --thread escape-derive · tok: 563k→11k

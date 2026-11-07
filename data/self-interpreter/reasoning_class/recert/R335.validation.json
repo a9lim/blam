@@ -1,0 +1,9 @@
+{
+  "label": "R335",
+  "valid": true,
+  "source_matches": true,
+  "states": 45,
+  "sha256": "e6bf0b12597c692e600f31b36b25b6c2864f5418e49b26a2531088f29bebb743",
+  "seconds": 0.00022375001572072506,
+  "peak_rss_bytes": 24018944
+}

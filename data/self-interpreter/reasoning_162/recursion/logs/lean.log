@@ -1,0 +1,5 @@
+'Blc.Round3Recursion.first_head_not_chain' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Recursion.two_independent_heads_at_least_165' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Recursion.sub162_requires_different_cut' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Recursion.affine_direct_heads_at_least_167' depends on axioms: [propext, Quot.sound]
+'Blc.Round3Recursion.reference_cut' depends on axioms: [propext, Quot.sound]

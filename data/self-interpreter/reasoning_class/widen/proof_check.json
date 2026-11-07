@@ -1,0 +1,18 @@
+{
+  "command": [
+    "lean",
+    "-j2",
+    "/Users/a9lim/Work/blam/tmp/round4/widen/Widen.lean"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 12.0918,
+  "threads": 2,
+  "timeout_seconds": 110,
+  "printed_theorems": 76,
+  "axiom_free_theorems": 2,
+  "source_wire_lean_match": true,
+  "polished_matches_canonical_162": true,
+  "written_bits": 233,
+  "polished_bits": 162,
+  "widen_lean_sha256": "7a58de22c922bb4b9ef2a5f263fff8c05e2b5316d39a9d35778662eb3c76653b"
+}

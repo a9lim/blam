@@ -1,0 +1,4 @@
+'Blc.Round3Pumps.GeneratorAudit.comparison_beta_equal' does not depend on any axioms
+'Blc.Round3Pumps.GeneratorAudit.real_generator_head' depends on axioms: [propext]
+'Blc.Round3Pumps.GeneratorAudit.erroneous_unfold_head' depends on axioms: [propext]
+'Blc.Round3Pumps.GeneratorAudit.wrong_head_is_abstraction' depends on axioms: [propext]

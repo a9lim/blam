@@ -1,0 +1,18 @@
+{
+  "sha256": {
+    "Handoff.lean": "5850256526b2b9fd03aae28ddf89e74ff3aabec7eda4bacff6765476b37d6c84",
+    "Cases.lean": "1af8dcdc582eb436a5eda3c96d0a156e552b36d380d3782a742029e6acae5ec0",
+    "check.py": "57aa201fa023cae59a035c85b2f45594cca0370e7abfe1e58a56fd8185fb520a",
+    "checks.json": "52526c3736482a3983ee745e60d7af387e93182f1ce2a3de85e2b7f4c7eccc97",
+    "REPORT.md": "1283316a94087d98415661bb91692b7c1753c74fb25a4394963772fbf7147157",
+    "NOTES.md": "f3604663eb92f5bd2dd7fad88c6d94b98c3df258d8258eac6dd4dfbc3b4ceffb",
+    "lean.log": "85922df202584c939dd60e0cf5778b65eaf2b89a40bb188314ade579290ad0ef",
+    "cases.log": "35dc274ff8ecd8f750746d3578300e928e1072ae555d68c8b8872caf03dcd809",
+    "check.log": "9604aa6a86632011803ce375eb06de803437f35ef4bf94764dd859f9b7e2960c"
+  },
+  "checks_passed": true,
+  "axioms": [
+    "propext",
+    "Quot.sound"
+  ]
+}

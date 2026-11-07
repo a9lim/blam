@@ -1,0 +1,65 @@
+[
+  {
+    "interpreter": "variable_mode.lam",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "interpreter": "variable_mode.lam",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "interpreter": "variable_mode.lam",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "interpreter": "embedded162.lam",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "interpreter": "embedded162.lam",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "interpreter": "embedded162.lam",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "interpreter": "embedded162_direct.lam",
+    "source": "(\\x.x x) (\\x.x x)",
+    "source_bits": "010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "interpreter": "embedded162_direct.lam",
+    "source": "\\y.((\\x.x x) (\\x.x x))",
+    "source_bits": "00010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  },
+  {
+    "interpreter": "embedded162_direct.lam",
+    "source": "((\\x.x x) (\\x.x x)) ((\\x.x x) (\\x.x x))",
+    "source_bits": "01010001101000011010010001101000011010",
+    "normal_form": "0010",
+    "verdict": "exact rigid suffix"
+  }
+]

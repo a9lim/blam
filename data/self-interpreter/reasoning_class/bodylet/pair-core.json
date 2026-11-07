@@ -1,0 +1,17 @@
+{
+  "cell": [
+    2,
+    "0",
+    "C",
+    "C"
+  ],
+  "helper_pairs": 7898,
+  "pair_rejections": {
+    "one": 1883,
+    "zero": 2113
+  },
+  "retained_pair_exceptions": 304,
+  "remaining_sources": 81834,
+  "seconds": 10.7724146249966,
+  "rss": 123387904
+}

@@ -1,0 +1,21 @@
+{
+  "candidates": 47016,
+  "arguments": {
+    "9": 2,
+    "10": 2,
+    "11": 7,
+    "12": 10,
+    "13": 14,
+    "14": 27,
+    "15": 46,
+    "16": 82
+  },
+  "counts": {
+    "fails_zero": 46772,
+    "fails_unary_1": 178,
+    "certified_zero_head_loop": 66
+  },
+  "unknown": [],
+  "passes": [],
+  "seconds": 0.9134341250028228
+}

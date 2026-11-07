@@ -1,0 +1,58 @@
+[
+  {
+    "name": "parser_operand",
+    "written": 179,
+    "polished": 179,
+    "battery": "179 bits  ok=667 skip=1 fail=0",
+    "wire": "/Users/a9lim/Work/blam/tmp/round3/adversary/optimized/parser_operand.blc",
+    "seconds": 0.0
+  },
+  {
+    "name": "stream_dependent_next",
+    "written": 178,
+    "polished": 176,
+    "battery": "176 bits  ok=667 skip=1 fail=0",
+    "wire": "/Users/a9lim/Work/blam/tmp/round3/adversary/optimized/stream_dependent_next.blc",
+    "seconds": 1.897
+  },
+  {
+    "name": "stream_operand",
+    "written": 186,
+    "polished": 184,
+    "battery": "184 bits  ok=667 skip=1 fail=0",
+    "wire": "/Users/a9lim/Work/blam/tmp/round3/adversary/optimized/stream_operand.blc",
+    "seconds": 1.911
+  },
+  {
+    "name": "third_tag_projection",
+    "written": 195,
+    "polished": 193,
+    "battery": "193 bits  ok=667 skip=1 fail=0",
+    "wire": "/Users/a9lim/Work/blam/tmp/round3/adversary/optimized/third_tag_projection.blc",
+    "seconds": 1.939
+  },
+  {
+    "name": "suffix_or_next",
+    "written": 174,
+    "polished": 172,
+    "battery": "172 bits  ok=667 skip=1 fail=0",
+    "wire": "/Users/a9lim/Work/blam/tmp/round3/adversary/optimized/suffix_or_next.blc",
+    "seconds": 1.926
+  },
+  {
+    "name": "tail_preserving_dual",
+    "written": 172,
+    "polished": 172,
+    "battery": "172 bits  ok=667 skip=1 fail=0",
+    "wire": "/Users/a9lim/Work/blam/tmp/round3/adversary/optimized/tail_preserving_dual.blc",
+    "seconds": 0.0
+  },
+  {
+    "name": "identity_cut_counterexample",
+    "written": 312,
+    "polished": 223,
+    "battery": "223 bits  ok=667 skip=1 fail=0",
+    "wire": "/Users/a9lim/Work/blam/tmp/round3/adversary/optimized/identity_cut_counterexample.blc",
+    "seconds": 2.162
+  }
+]

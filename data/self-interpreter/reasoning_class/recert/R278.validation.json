@@ -1,0 +1,9 @@
+{
+  "label": "R278",
+  "valid": true,
+  "source_matches": true,
+  "states": 85,
+  "sha256": "73aaba0857e0d4118558c84061c02fd47b1d5652131514ec5cb615231415d37f",
+  "seconds": 0.00029995798831805587,
+  "peak_rss_bytes": 24002560
+}

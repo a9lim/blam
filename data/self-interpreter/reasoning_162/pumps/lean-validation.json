@@ -1,0 +1,22 @@
+[
+  {
+    "module": "PumpLemmas",
+    "exit_code": 0,
+    "seconds": 0.203
+  },
+  {
+    "module": "GeneratorAudit",
+    "exit_code": 0,
+    "seconds": 0.213
+  },
+  {
+    "module": "WrapperConcrete",
+    "exit_code": 0,
+    "seconds": 1.335
+  },
+  {
+    "module": "WrongHeadConcrete",
+    "exit_code": 0,
+    "seconds": 0.644
+  }
+]

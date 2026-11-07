@@ -1,0 +1,43 @@
+{
+  "budget": 26,
+  "law": 1,
+  "enumerated": 65268,
+  "solutions": 1,
+  "solutions_with_c": 1,
+  "unknown": [],
+  "engines": [
+    {
+      "engine": "narrow",
+      "states": 563,
+      "cores": 1,
+      "fuel": [],
+      "missing_count": 0,
+      "extra_count": 0,
+      "missing_with_c": 0,
+      "missing_examples": [],
+      "extra_examples": []
+    },
+    {
+      "engine": "narrow2",
+      "states": 486,
+      "cores": 1,
+      "fuel": [],
+      "missing_count": 0,
+      "extra_count": 0,
+      "missing_with_c": 0,
+      "missing_examples": [],
+      "extra_examples": []
+    },
+    {
+      "engine": "narrow3",
+      "states": 486,
+      "cores": 1,
+      "fuel": [],
+      "missing_count": 0,
+      "extra_count": 0,
+      "missing_with_c": 0,
+      "missing_examples": [],
+      "extra_examples": []
+    }
+  ]
+}

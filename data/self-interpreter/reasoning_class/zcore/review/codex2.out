@@ -1,0 +1,56 @@
+(•̀ᴗ•́)و **Claim 3 survives; Claim 4 survives; Claim 5 needs a corrected threshold and an explicit scope restriction. No sub-46 reader found.**
+
+1. **Claim 3 — correct on the audited reduction and finite check.**
+
+   I reproduced `onesite.py 39 16`: **245 candidates, zero readers, zero normalization caps**.
+
+   I also audited all **53,537 j-free terms through cost 23**: exactly `core22` and `core23`; all **17 caps** received direct `not_target_cert` certificates. Together with the previous one-j audit, the three-core classification holds.
+
+   The insertion coverage looks sound:
+   - A type-(b) site’s licensing handler survives its deletion, so the handler must occur in the resulting core.
+   - Those cores have maximum binder depth one; hence reinserting type (a) costs at most 11 and cannot supply the hypothesized heavy site.
+   - The arm enumeration correctly adds the ambient `4k` tax when the sole `j` lies in the inserted arm.
+
+   The nested-site corollary also survives. A site contained in another site’s E-part must lie in its arm `A`; the fixed `s I`, `s K`, and variable-head portions cannot contain a site. Such an `A` costs at least 10, forcing the outer deletion cost to at least 16.
+
+2. **Claim 4 — correct, including both consequences.**
+
+   The key substitution is justified by applying **`[c/j]` to the unary equation** for `M''[j/a]`. Its target contains no `j`, so this establishes the unary law for `M''[c/a]`.
+
+   The cost identity is exact. Moreover, an original `c` occurrence is necessary **before** that substitution: neither the stream nor the rigid filler `j` can produce the target’s free `c`.
+
+   For equality at body cost 23, the substituted term must literally be `core22`, and there must be exactly one original `c` leaf. Since `core22` has only one `c` leaf altogether, no `a` occurrence can remain.
+
+   Both bounds are sharp for unary cores. I verified weights:
+   ```text
+   (\a s. s (\q. c) (s s s)) j    w = 29
+   (\a s. s (\q. c) (s s a)) j    w = 30
+   ```
+   The two-site accounting and the single-site threshold 17 follow as stated. Multiple occurrences of `a` do not invalidate the argument.
+
+3. **Claim 5 — the literal catalogue is false; the restricted T2 extension survives after correction.**
+
+   **Concrete counterexample to the catalogue:**
+   ```text
+   E = q K
+   ```
+   In frame `[q,s,c]`, `|E| = 2 + 2 + 7 = 11`, but its arm costs **7**, exceeding the stated limit 5. It is zero-relevant:
+   \[
+   E[F/q]\,y =_\beta y,\qquad E[K/q]\,y =_\beta K.
+   \]
+   I verified both normal forms. Another omitted example is `q (q q)`, cost 10, whose arm costs 6.
+
+   The needed threshold is **deletion cost `σ < 12`**, equivalently **`|E| < 10`**, not `|E| < 12`. With that correction, the argument works for the stated hygienic/handler environments:
+   - A site with `σ ≥ 12`, together with another costing at least 8 and a surviving-j core costing at least 20, already gives 40.
+   - If deletion removes `j`, the corresponding bounds are `22 + 10 + 8 = 40`.
+   - The remaining small sites are the syntactic cases already enumerated.
+   - The new expressions of E-cost 10 and 11 therefore require no new reader enumeration.
+
+   **Do not extend the local price bound to arbitrary let aliases.** For example, this is a valid reader:
+   ```text
+   \s. (\g. g (g (\u. s (\q. c) (s s u))) j) (s I)
+   ```
+   Its two `g W` sites are disjoint and zero-relevant. Each has **`|E| = |g| = 2`**, deletion cost 4. On unary inputs `g =β I`; on zero inputs `g =β K r`. These identities prove the reader laws for every `n`; I additionally checked through `n=8` and measured **w = 64**.
+
+   This does **not** refute T2’s final lower bound. It refutes an unqualified semantic-site minimum of 6. Including let aliases requires separate accounting for their shared definition and binder, rather than applying the `uid.py`/`uidq.py` local bounds directly.
+[gaslamp] job: cx-20261022-030309-83be · session: 01a1625d-e181-73e0-9224-98f63191bffb · thread: zcore-review · resume: gaslamp codex --thread zcore-review · tok: 1084k→13k

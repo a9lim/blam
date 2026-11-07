@@ -1,0 +1,9 @@
+{
+  "label": "R300",
+  "valid": true,
+  "source_matches": true,
+  "states": 214,
+  "sha256": "82e850a09ed71abf09e42c516ccff39621077455d4fd0626039e93e71c3684a4",
+  "seconds": 0.0005287079839035869,
+  "peak_rss_bytes": 24068096
+}

@@ -1,0 +1,96 @@
+mixed58 n=1 weight=58 steps=13
+  {'origin': 'R.b.f.a.b.b', 'binder': 'n', 'multiplicity': 2, 'j_in_argument': 1, 'j_delta': 1}
+  {'origin': 'F[1]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+  {'origin': 'F[1].b', 'binder': 'y', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+mixed58 n=2 weight=58 steps=17
+  {'origin': 'R.b.f.a.b.b', 'binder': 'n', 'multiplicity': 2, 'j_in_argument': 1, 'j_delta': 1}
+  {'origin': 'F[2]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+  {'origin': 'F[2].b', 'binder': 'y', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+mixed58 n=8 weight=58 steps=41
+  {'origin': 'R.b.f.a.b.b', 'binder': 'n', 'multiplicity': 2, 'j_in_argument': 1, 'j_delta': 1}
+  {'origin': 'F[8]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+  {'origin': 'F[8].b', 'binder': 'y', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+F52 n=1 weight=52 steps=16
+  {'origin': 'cell[1]', 'binder': 'f', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'R.b.f.a.f', 'binder': 'n', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'F[1]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+F52 n=2 weight=52 steps=20
+  {'origin': 'cell[2]', 'binder': 'f', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'R.b.f.a.f', 'binder': 'n', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'F[2]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+F52 n=8 weight=52 steps=44
+  {'origin': 'cell[8]', 'binder': 'f', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'R.b.f.a.f', 'binder': 'n', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'F[8]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+162 n=1 weight=46 steps=18
+  {'origin': 'R.b.f.a', 'binder': 'u', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+162 n=2 weight=46 steps=22
+  {'origin': 'R.b.f.a', 'binder': 'u', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+162 n=8 weight=46 steps=46
+  {'origin': 'R.b.f.a', 'binder': 'u', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+47 n=1 weight=47 steps=18
+  {'origin': 'R.b.f.a', 'binder': 'u', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+47 n=2 weight=47 steps=22
+  {'origin': 'R.b.f.a', 'binder': 'u', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+47 n=8 weight=47 steps=46
+  {'origin': 'R.b.f.a', 'binder': 'u', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+165 n=1 weight=49 steps=16
+  {'origin': 'R.f', 'binder': 'n', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'cell[1]', 'binder': 'f', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'F[1]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+165 n=2 weight=49 steps=20
+  {'origin': 'R.f', 'binder': 'n', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'cell[2]', 'binder': 'f', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'F[2]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+165 n=8 weight=49 steps=44
+  {'origin': 'R.f', 'binder': 'n', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'cell[8]', 'binder': 'f', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'F[8]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+mixed50 n=1 weight=50 steps=16
+  {'origin': 'R.f', 'binder': 'n', 'multiplicity': 2, 'j_in_argument': 1, 'j_delta': 1}
+  {'origin': 'cell[1]', 'binder': 'f', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'F[1]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+mixed50 n=2 weight=50 steps=20
+  {'origin': 'R.f', 'binder': 'n', 'multiplicity': 2, 'j_in_argument': 1, 'j_delta': 1}
+  {'origin': 'cell[2]', 'binder': 'f', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'F[2]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+mixed50 n=8 weight=50 steps=44
+  {'origin': 'R.f', 'binder': 'n', 'multiplicity': 2, 'j_in_argument': 1, 'j_delta': 1}
+  {'origin': 'cell[8]', 'binder': 'f', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'F[8]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+local_absorber n=1 weight=64 steps=17
+  {'origin': 'R.b.a.f.a.b.b.a', 'binder': 'u', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+local_absorber n=2 weight=64 steps=21
+  {'origin': 'R.b.a.f.a.b.b.a', 'binder': 'u', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+local_absorber n=8 weight=64 steps=45
+  {'origin': 'R.b.a.f.a.b.b.a', 'binder': 'u', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+sourceF n=1 weight=70 steps=24
+  {'origin': 'R.b.a.f.f.a.b.b.a', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+sourceF n=2 weight=70 steps=28
+  {'origin': 'R.b.a.f.f.a.b.b.a', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+sourceF n=8 weight=70 steps=52
+  {'origin': 'R.b.a.f.f.a.b.b.a', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+mixed67 n=1 weight=67 steps=19
+  {'origin': 'R.b.f', 'binder': 'n', 'multiplicity': 2, 'j_in_argument': 1, 'j_delta': 1}
+  {'origin': 'F[1]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+  {'origin': 'F[1].b', 'binder': 'y', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+mixed67 n=2 weight=67 steps=23
+  {'origin': 'R.b.f', 'binder': 'n', 'multiplicity': 2, 'j_in_argument': 1, 'j_delta': 1}
+  {'origin': 'F[2]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+  {'origin': 'F[2].b', 'binder': 'y', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+mixed67 n=8 weight=67 steps=47
+  {'origin': 'R.b.f', 'binder': 'n', 'multiplicity': 2, 'j_in_argument': 1, 'j_delta': 1}
+  {'origin': 'F[8]', 'binder': 'x', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}
+  {'origin': 'F[8].b', 'binder': 'y', 'multiplicity': 1, 'j_in_argument': 1, 'j_delta': 0}
+  {'origin': 'K[0].b', 'binder': 'y', 'multiplicity': 0, 'j_in_argument': 1, 'j_delta': -1}

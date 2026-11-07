@@ -1,0 +1,9 @@
+{
+  "label": "R333",
+  "valid": true,
+  "source_matches": true,
+  "states": 87,
+  "sha256": "925a11c3165aa58a79f363f097fdeaf0324ae42611e1e7bd14ddfe1c17bead4b",
+  "seconds": 0.00028500001644715667,
+  "peak_rss_bytes": 23969792
+}

@@ -1,0 +1,9 @@
+{
+  "label": "R248",
+  "valid": true,
+  "source_matches": true,
+  "states": 35,
+  "sha256": "7728064d48d7f8f253a0346ed92313742d8b0dbc694cf77d4822ccbc9166d87d",
+  "seconds": 0.00020637499983422458,
+  "peak_rss_bytes": 24215552
+}

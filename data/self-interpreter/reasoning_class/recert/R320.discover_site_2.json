@@ -1,0 +1,17 @@
+{
+  "label": "R320",
+  "id": "rootnarrow/work/h6_3.json:47",
+  "source": "((\\x0. ((x0 _) (x0 _))) (\\x0. (\\x1. (x1 (x1 (x1 (\\x2. x1)))))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 191,
+  "work": 263,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 92,
+  "checked": true,
+  "sha256": "c9ac4843691e22e84d6cb7ae6d2c400e1327d04b3c34f8c862997dd64b2e6d25",
+  "seconds": 0.0017575419915374368,
+  "peak_rss_bytes": 24281088,
+  "threads": 1
+}

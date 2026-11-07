@@ -1,0 +1,16 @@
+{
+  "complete_candidates": 10,
+  "passing": 7,
+  "polish_total_seconds": 73.45,
+  "longest_polish_seconds": 24.166,
+  "frozen_binary_sha256": "00883f147c7128a1642f323920deef23f0af9c8b742dadb3c0f30cf5478bfaa2",
+  "recursion_lean_recheck": {
+    "exit_code": 0,
+    "command": "LEAN_PATH=/Users/a9lim/Work/blam/lean/.lake/build/lib/lean lean -j2 /Users/a9lim/Work/blam/tmp/round3/recursion/RecursionObstruction.lean",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ],
+    "source_sha256": "637771195fbc14b9b98e1349b0a6d9280ea2627081154dfa90f0269f11c827a4"
+  }
+}

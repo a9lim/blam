@@ -1,0 +1,17 @@
+{
+  "label": "R338",
+  "id": "rootnarrow/work/h_xfull2.json:4",
+  "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (\\x2. ((x2 x0) (\\x3. (x2 x0)))))))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": "deadline",
+    "SFprime": "beta cap",
+    "SF2": "beta cap"
+  },
+  "legacy": null,
+  "beta_calls": 30002,
+  "seconds": 0.35338229199987836,
+  "peak_rss_bytes": 24526848,
+  "threads": 1
+}

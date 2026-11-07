@@ -1,0 +1,5 @@
+'LoopShield.Safe.step' does not depend on any axioms
+'LoopShield.no_recovery' does not depend on any axioms
+'LoopShield.no_recovery_from_rrj' does not depend on any axioms
+
+exit=0 elapsed=0.704s sampled_group_peak_rss=490110976 bytes threads=2

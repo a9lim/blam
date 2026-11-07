@@ -1,0 +1,13 @@
+{
+  "rows": 341,
+  "statuses": {
+    "recertified": 340,
+    "C2 mismatch, not divergence": 1
+  },
+  "max_states": 7270,
+  "max_work": 10897,
+  "max_portable_states": 7270,
+  "max_seconds": 0.10121199997956865,
+  "max_rss": 35061760,
+  "lean_instances": 14
+}

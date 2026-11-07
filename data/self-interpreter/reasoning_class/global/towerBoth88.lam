@@ -1,0 +1,1 @@
+(\x. x x) (\x \c \s. s (\b \r. b (x x (\v. c (b v))) (c (\a. a)) (r (\a \b. b))))

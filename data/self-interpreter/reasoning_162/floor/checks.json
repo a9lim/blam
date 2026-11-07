@@ -1,0 +1,144 @@
+{
+  "accounting": [
+    {
+      "machine": 162,
+      "knot": 20,
+      "functional": 142,
+      "outer_lambdas": 4,
+      "next_base": 92,
+      "next_actual": 96,
+      "reader_context": 42
+    },
+    {
+      "machine": 165,
+      "knot": 20,
+      "functional": 145,
+      "outer_lambdas": 4,
+      "next_base": 92,
+      "next_actual": 92,
+      "reader_context": 49
+    }
+  ],
+  "identities": [
+    {
+      "name": "reader162_zero",
+      "steps": 5
+    },
+    {
+      "name": "reader162_var1",
+      "steps": 18
+    },
+    {
+      "name": "reader162_var2",
+      "steps": 22
+    },
+    {
+      "name": "reader162_var4",
+      "steps": 30
+    },
+    {
+      "name": "reader162_var9",
+      "steps": 50
+    },
+    {
+      "name": "reader165_zero",
+      "steps": 14
+    },
+    {
+      "name": "reader165_var1",
+      "steps": 16
+    },
+    {
+      "name": "reader165_var2",
+      "steps": 20
+    },
+    {
+      "name": "reader165_var4",
+      "steps": 28
+    },
+    {
+      "name": "reader165_var9",
+      "steps": 48
+    },
+    {
+      "name": "stream_square",
+      "steps": 9
+    },
+    {
+      "name": "stream_constant_suffix",
+      "steps": 2
+    },
+    {
+      "name": "constant_on_stream",
+      "steps": 1
+    },
+    {
+      "name": "constant_on_suffix",
+      "steps": 1
+    },
+    {
+      "name": "constant_on_neutral",
+      "steps": 1
+    },
+    {
+      "name": "stream_on_neutral",
+      "steps": 1
+    },
+    {
+      "name": "next_zero",
+      "steps": 3
+    },
+    {
+      "name": "next_one",
+      "steps": 3
+    }
+  ],
+  "next_forms": [
+    {
+      "name": "next_form_0",
+      "bits": 99,
+      "free_occurrences": 5
+    },
+    {
+      "name": "next_form_1",
+      "bits": 93,
+      "free_occurrences": 4
+    },
+    {
+      "name": "next_form_2",
+      "bits": 92,
+      "free_occurrences": 4
+    },
+    {
+      "name": "next_form_3",
+      "bits": 108,
+      "free_occurrences": 5
+    },
+    {
+      "name": "next_form_4",
+      "bits": 107,
+      "free_occurrences": 5
+    },
+    {
+      "name": "next_form_5",
+      "bits": 116,
+      "free_occurrences": 5
+    },
+    {
+      "name": "next_form_6",
+      "bits": 115,
+      "free_occurrences": 5
+    },
+    {
+      "name": "next_form_7",
+      "bits": 104,
+      "free_occurrences": 4
+    },
+    {
+      "name": "next_form_8",
+      "bits": 103,
+      "free_occurrences": 4
+    }
+  ],
+  "seconds": 0.0025034160062205046
+}

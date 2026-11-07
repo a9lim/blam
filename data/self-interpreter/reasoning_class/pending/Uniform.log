@@ -1,0 +1,5 @@
+'Blc.Pending.uniform_join' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.uniform_price' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.uniform_occ' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.uniform_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Pending.uniform_no_minimum' depends on axioms: [propext, Quot.sound]

@@ -1,0 +1,39 @@
+{
+  "name": "prefix_continuation",
+  "as_written_bits": 185,
+  "battery": "185 bits  ok=667 skip=1 fail=0  prefix_continuation.lam",
+  "first_failures": [],
+  "battery_seconds": 1.834,
+  "polish": [
+    {
+      "flags": [
+        "--max-cuts",
+        "2"
+      ],
+      "status": 0,
+      "seconds": 0.104,
+      "minimum": 185,
+      "same_wire_as_input": true,
+      "battery": "185 bits  ok=667 skip=1 fail=0  prefix_continuation.polished0.blc",
+      "wire_file": "prefix_continuation.polished0.blc"
+    }
+  ],
+  "divergent_suffixes": [
+    {
+      "source": "Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    },
+    {
+      "source": "lambda_Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    },
+    {
+      "source": "Omega_Omega",
+      "normal_form": "0010",
+      "exact_suffix": true
+    }
+  ],
+  "total_seconds": 1.947
+}

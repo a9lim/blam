@@ -1,0 +1,93 @@
+[gaslamp] → codex · job cx-20261022-005245-8568 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-005245-8568/events.jsonl
+( •̀_•́ ) **No reader with w ≤45 found. Both theorem statements have gaps.** The persistence premise is false; the transfer lemma and index-shift arithmetic survive review.
+
+Full verdict and reproducible checks: [REVIEW.md](/Users/a9lim/Work/blam/tmp/round4/review_hole/REVIEW.md).
+
+| Issue | Verdict |
+|---|---|
+| Transfer, joint dispensability, ancestor closure | **Correct** under the stated origin tracking and hygienic substitution |
+| Persistence | **Wrong as stated** |
+| Rigid-hole projection / cost identity | **Correct conditionally**; rigidity is not established where used |
+| Finite checks | **Generators and costs correct**; semantic coverage and recorded cap certification have gaps |
+| Index-shift accounting | **Correct** under its stated hypotheses |
+| R1–R4 exhaustion / theorem conclusions | **Gap**, not a demonstrated ≤45 counterexample |
+
+**The missing case is a zero-lambda operand.** This valid reader has j at depth 1:
+
+```text
+R84 = \s. (\x. s (\b t. b (x t) (c t x)))
+          (s (\b t. b (\a k. k a) (t t)) j)
+```
+
+Its immediate j-parent is
+
+```text
+X = s (\b t. b (\a k. k a) (t t)) j
+```
+
+and satisfies
+
+```text
+X[Z(r)]   →* \k. k j
+X[U_n(N)] →* N                 for every n ≥1.
+```
+
+The wrapper applies X to r on zero and returns `c U_(n−1) X` on unary. Consequently, R84 satisfies both reader laws. `rd.check(..., nmax=8, verbose=False)` returned:
+
+```text
+(True, (84, 80, 1, 8, 14, 12, 1, 1))
+```
+
+Thus touching X does **not** force its zero normal form to be `r j` or `j`. Its unary value is rigid, so the unary-lambda exception does not capture this mechanism. It lies outside the four listed forms. Its weight is 84: this refutes the structural argument, **not** the theorem’s ≤45 implication. A quantitative exclusion of this missing case is still needed.
+
+**§11.2 also has a counterexample satisfying §11.1’s actual hypothesis:**
+
+```text
+R104 = \s. (\u. (\x. s (\b t. b (x s) x))
+                  (s (\b t. b (\a q. t u) (c t)) (s s s))) j
+```
+
+Choose the source unary-output anchor
+
+```text
+X2 = s (\b t. b (\a q. t u) (c t)) (s s s).
+```
+
+Only u binds above X2 within Y. Its occurrence is erased by the first unary F, hence unary-dispensable for every n. Nevertheless,
+
+```text
+X2[Z, u:=j]   →* \q. r j
+X2[U_n]       →* c U_(n−1) N.
+```
+
+Replacing X2 by rigid h makes the zero wrapper return `h Z(r)`, outside the enumerated `{r j, h j, h, r h}`. The reader passed `rd.check` through n=8 at weight 104; the displayed reductions establish the all-n behavior.
+
+**There is a useful finite repair for §11.** I checked the unary wrapper law without imposing any zero-output filter. Among all **6,089** charged-cost ≤18 terms, there were **53** unary-law survivors and **zero caps**. Exactly one survivor was omitted by the original filter:
+
+```text
+charged cost 17: \u. s I x       zero result: r
+```
+
+Therefore **no survivor is omitted through charged cost 16**, covering the proposed exclusion and equality budgets. This repairs the filter at the relevant budget without asserting the false general persistence lemma.
+
+**The index accounting is sound.** With k enclosing binders, an original s/c leaf saves k bits. Replacing an occurrence of the ith outer-to-inner binder by s saves `k−i ≥0`; internal binder depth cancels. Joint dispensability ensures those replacement leaves remain dispensable. Thus
+
+```text
+|X2| − |T|
+  = k · (# original s/c leaves)
+    + Σ_i (k−i) · (# replaced xi leaves)
+  ≥ k · F_need(T).
+```
+
+The asserted XB bounds follow from the two small arms and the necessary s/c leaves.
+
+**The remaining theorem-level problem is minimality.** Removing a transparent wrapper produces a different, lighter reader, potentially outside R1. That contradicts **global minimality**, but does not establish a lower bound for every reader in the original subclass. The same unstated assumption appears in 10.1 when making C′ trivial and discarding shape B/E.
+
+A defensible repaired §11 target is: **a globally minimum reader with the specified source anchor and dispensable-binder hypothesis cannot have w≤45**. The statement about every R1 reader, and its universal equality claim, needs further justification.
+
+Verification reproduced the P-lemma’s 9,265-term check, the 53,537-term arm check, and the small wrapper checks. All 17 capped original arm evaluations were independently rejected by a supplementary Python non-equality checker; this is not Lean certification. I inspected the larger generators and stored logs without rerunning their enumerations. The combined 25-bit log omits individual operand caps, so I do not independently certify that entire cap audit.
+
+**Recommendation:** retain the dispensability and index-shift results; downgrade the four-family exhaustion; replace §11’s zero-shape premise with the unary-only finite check; state global minimality explicitly.
+
+[gaslamp] job: cx-20261022-005245-8568 · session: 01a161f4-57e9-74c3-8d72-f649c3beb833 · thread: r4-review-hole · resume: gaslamp codex --thread r4-review-hole · tok: 1583k→21k
+[lane.sh] done rc=0 tries=1

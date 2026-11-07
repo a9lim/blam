@@ -1,0 +1,34 @@
+'Blc.Expand.payload_reduce' does not depend on any axioms
+'Blc.Expand.payload_weight' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Expand.endpoint_full' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.endpoint_weight' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Expand.literal_head' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.literal_full' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.literal_weight' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.shared4_head' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.shared4_full' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.positive_expansion' does not depend on any axioms
+'Blc.Expand.shared4_not_minimum' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.shared16_full' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.shared16_endpoint' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.shared16_prices' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.Expand.simplified_full' depends on axioms: [propext, Quot.sound]
+'Blc.Expand.simplified_saves' depends on axioms: [propext, Quot.sound]
+        0.36 real         0.37 user         0.09 sys
+           447594496  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               29642  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                2238  involuntary context switches
+          5710258340  instructions retired
+          1962891947  cycles elapsed
+           106303376  peak memory footprint

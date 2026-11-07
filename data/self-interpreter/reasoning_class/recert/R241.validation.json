@@ -1,0 +1,9 @@
+{
+  "label": "R241",
+  "valid": true,
+  "source_matches": true,
+  "states": 56,
+  "sha256": "782250971bd72e4c4e822b0e2d12591f67f7928e08feeaa2cbbbc7ca4fa25e2a",
+  "seconds": 0.0002422079851385206,
+  "peak_rss_bytes": 24051712
+}

@@ -1,0 +1,29 @@
+{
+  "search": {
+    "states": 32810,
+    "memo_hits": 1567,
+    "sol": [],
+    "fuel": [],
+    "fails": 20309,
+    "tabled": 10934,
+    "memo_size": 9965
+  },
+  "law_calls": {
+    "need": 39877,
+    "fail": 20309,
+    "ok": 42
+  },
+  "metrics": {
+    "source_nodes_total": 629248,
+    "source_nodes_max": 21,
+    "compare_calls": 60255,
+    "beta_steps_total": 635735,
+    "beta_steps_max_per_compare": 2001,
+    "residual_nodes_total": 7702670,
+    "residual_nodes_max": 2199,
+    "residual_json_bytes_total": 22459553,
+    "residual_json_bytes_max": 6433
+  },
+  "wall_seconds": 15.404545375000453,
+  "note": "Metrics only; Python search evidence, not a Lean certificate."
+}

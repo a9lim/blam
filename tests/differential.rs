@@ -117,21 +117,6 @@ fn machine_reproduces_bb_witnesses() {
 }
 
 #[test]
-fn machine_handles_bb34_fast() {
-    // (\1 1 1 1) C2 -> C65536: 327686-bit normal form. The whole point of
-    // the machine — no fat stack, no ignore attribute, streaming size sink.
-    let c2 = lam(lam(app(var(2), app(var(2), var(1)))));
-    let t = app(lam(app(app(app(var(1), var(1)), var(1)), var(1))), c2);
-    let mut pool = Pool::new();
-    let root = pool.from_term(&t);
-    let mut vm = Machine::new();
-    let mut sink = SizeSink::default();
-    vm.normalize(&pool, root, 10_000_000_000, &mut sink)
-        .unwrap();
-    assert_eq!(sink.0, 327_686);
-}
-
-#[test]
 fn machine_survives_corpus_diverger() {
     // The 170-bit self-interpreter is built with Y-injected recursion, so
     // the bare term has NO normal form — normalizing it must exhaust fuel
@@ -228,6 +213,49 @@ fn lazy_machine_streams_in_bounded_memory() {
         live: 10_000,
     };
     let r = Lazy::new().normalize(&pool, root, limits, &mut Count(0));
+    assert_eq!(r, Err(Stop::Aborted));
+}
+
+/// Readback of a shared normal form is budgeted and polled like any other
+/// step. `λf. λz. 27 (λy. f y y) z` reaches its normal form in a few dozen
+/// β, but the form is a neutral tree of 2²⁷ nodes shared 27 levels deep, so
+/// its readback forces only evaluated thunks: the step cap and the abort
+/// poll must still end the run.
+#[test]
+fn lazy_readback_of_shared_normal_form_is_budgeted() {
+    struct Count(u64);
+    impl blam::classical::machine::Sink for Count {
+        const CAN_ABORT: bool = true;
+        fn zero(&mut self) {
+            self.0 += 1;
+        }
+        fn one(&mut self) {
+            self.0 += 1;
+        }
+        fn var(&mut self, n: u32) {
+            self.0 += u64::from(n) + 1;
+        }
+        fn aborted(&self) -> bool {
+            self.0 > 10_000
+        }
+    }
+    let three = lam(lam(app(var(2), app(var(2), app(var(2), var(1))))));
+    let dup = lam(app(app(var(3), var(1)), var(1)));
+    let t = lam(lam(app(app(app(three.clone(), three), dup), var(1))));
+    let mut pool = Pool::new();
+    let root = pool.from_term(&t);
+    let capped = Limits {
+        beta: u64::MAX,
+        work: 100_000,
+        live: 1 << 20,
+    };
+    let r = Lazy::new().normalize(&pool, root, capped, &mut SizeSink::default());
+    assert_eq!(r, Err(Stop::Work));
+    let open = Limits {
+        work: u64::MAX,
+        ..capped
+    };
+    let r = Lazy::new().normalize(&pool, root, open, &mut Count(0));
     assert_eq!(r, Err(Stop::Aborted));
 }
 

@@ -1,0 +1,32 @@
+[
+  {
+    "module": "Proofs",
+    "exit_code": 0,
+    "seconds": 0.587690999993356,
+    "sha256": "4f130fc5e2c4cc698b1b7e9acc60818f1a5b001d5c348890b281e3b5a9641813"
+  },
+  {
+    "module": "Checks",
+    "exit_code": 0,
+    "seconds": 1.186887707997812,
+    "sha256": "09fdcdc89c022e26a26b98c826667495d566bdb22c05081c0fdfce429d8a0682"
+  },
+  {
+    "module": "RankRealization",
+    "exit_code": 0,
+    "seconds": 0.20720970899856184,
+    "sha256": "3397e407051391c6a5a620245b283877430802a3fa20072160c84e20c178690d"
+  },
+  {
+    "module": "Protected461",
+    "exit_code": 0,
+    "seconds": 0.25291629100684077,
+    "sha256": "ae23e680a373c0cc27776c68829351c0dd419514b23e98863a7f2b296e64d899"
+  },
+  {
+    "module": "Residuals",
+    "exit_code": 0,
+    "seconds": 0.1518618330010213,
+    "sha256": "173f4854549424d487b134bc77eaafa6d8ee4cec45ee252a351738e75cd63a18"
+  }
+]

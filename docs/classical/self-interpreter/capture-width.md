@@ -11,7 +11,7 @@ handwritten interface argument below. The incomparable-nonlinear-binder
 obstruction is kernel-checked; the numerical counting and exclusion
 arguments and the sharpness constructions are handwritten. Together they
 give 34 bits globally and 46 for literal or beta-normal interpreters;
-`global-floor.md` extends the global count to 37. None of this establishes
+`global-floor.md` extends the global count to 40. None of this establishes
 162-bit optimality.
 
 ## The source measure
@@ -273,8 +273,8 @@ obstruction and the 33-bit exclusion below gives
                                 hence also when E is beta-normal.
 ```
 
-The global count is the base of `global-floor.md`, which excludes 34–36
-and gives 37.
+The global count is the base of `global-floor.md`, which extends the
+exclusion through 39 and gives 40.
 
 Let `L,V,X` count abstractions, variable leaves, and the sum of zero-based
 de Bruijn indices. The BLC size identity is
@@ -313,7 +313,7 @@ Neither term is an interpreter. These are witnesses for the syntax
 counts, not proofs that either numerical interpreter bound is optimal.
 
 The repository's kernel-checked numerical lower bound is the weaker
-18-bit theorem in `structural-bounds.md`. The 34- and 46-bit consequences
+31-bit theorem in `structural-bounds.md`. The 34- and 46-bit consequences
 also use the published width theorem and handwritten interface, counting,
 and exclusion arguments here.
 

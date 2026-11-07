@@ -1,0 +1,30 @@
+{
+  "162": {
+    "weight": 46,
+    "zero_and_unary_1_to_8": [
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass"
+    ]
+  },
+  "165": {
+    "weight": 49,
+    "zero_and_unary_1_to_8": [
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass",
+      "pass"
+    ]
+  }
+}

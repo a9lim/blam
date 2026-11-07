@@ -1,0 +1,9 @@
+{
+  "label": "R327",
+  "valid": true,
+  "source_matches": true,
+  "states": 140,
+  "sha256": "ccf9ea8a1b9627d8fc49a6000acf79a8b0c6ea2b21e9017cdbd28da665dc531c",
+  "seconds": 0.0004185000143479556,
+  "peak_rss_bytes": 23986176
+}

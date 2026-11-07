@@ -1,0 +1,43 @@
+{
+  "before_parse": {
+    "bits": 163,
+    "L": 17,
+    "A": 24,
+    "X": 31,
+    "divergent_source_suffix_probes": [
+      true,
+      true,
+      true
+    ]
+  },
+  "joint_dispatch": {
+    "bits": 167,
+    "L": 16,
+    "A": 25,
+    "X": 33,
+    "divergent_source_suffix_probes": [
+      true,
+      true,
+      true
+    ]
+  },
+  "thunk_token": {
+    "bits": 201,
+    "L": 21,
+    "A": 29,
+    "X": 41,
+    "divergent_source_suffix_probes": [
+      true,
+      true,
+      true
+    ],
+    "core_bits": 171,
+    "unary_thunk_probes": [
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "elapsed_seconds": 0.11365491600008681
+}

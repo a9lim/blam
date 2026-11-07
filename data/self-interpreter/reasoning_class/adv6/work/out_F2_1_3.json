@@ -1,0 +1,269 @@
+{
+"res": {
+"fail": 3175,
+"fuel:Z": 65
+},
+"hits": [],
+"fuels": [
+[
+"fuel:Z",
+"(\\h n s. h (s (h h n))) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (h h n s)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (s (h h) n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (h h s n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (s h h n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h (h h n))) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h h (h n))) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h n (h h))) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h (h h) n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h h h n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h h n h)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h (s (h n))) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h (h n s)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h (h s n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h (s h n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n (s (h h))) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n (h h s)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s h (h h n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h n (h s)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h n (s h)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h h) (h n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h s (h n)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h n) (h h)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n s (h h)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h s n (h h)) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (h h n) s) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h (h n) s) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n (h h) s) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (h h) n s) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h h n s) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h n h s) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (s (h h)) n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (h h s) n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h (h h)) n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h h h) n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h (h s) n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h (s h) n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s h (h h) n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (h h) s n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h h s n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h h) h n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h s h n) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h h n) h) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h n s h) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h h) n h) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h s n h) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s h h n h) (\\v0. v0 v0) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h h (h n))) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. s (h n (h h))) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n (h (h s))) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n (h (s h))) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n (h s h)) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h s (h (h n))) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h s (h n h)) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (h n) (h s)) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n h (h s)) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (h s) (h n)) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h (s h) (h n)) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h s h (h n)) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h (h n) s) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n (h h) s) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h h (h s) n) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h s (h h) n) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h n (h s) h) (\\v0 v1. v1 v1) j"
+],
+[
+"fuel:Z",
+"(\\h n s. h s (h n) h) (\\v0 v1. v1 v1) j"
+]
+]
+}

@@ -1,0 +1,17 @@
+{
+  "label": "R198",
+  "id": "rootnarrow/work/h2_6.json:12",
+  "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. (\\x2. ((x2 (\\x3. x2)) (x2 _)))) _) x0)))",
+  "action": "discover_site_2",
+  "ok": false,
+  "reason": [
+    "lambda-stop",
+    14
+  ],
+  "states": 90,
+  "work": 87,
+  "k": 2,
+  "seconds": 0.0002092909999191761,
+  "peak_rss_bytes": 23969792,
+  "threads": 1
+}

@@ -1,0 +1,127 @@
+{
+  "q": 2,
+  "markings": 28022,
+  "unique": 28022,
+  "rows": {
+    "5:A": {
+      "markings": 56,
+      "unique": 56,
+      "wrong_nf": {
+        "zero": 56
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "4:tail": {
+      "markings": 340,
+      "unique": 340,
+      "wrong_nf": {
+        "zero": 306,
+        "1": 24
+      },
+      "exceptions": 10,
+      "hits": 0
+    },
+    "5:tail": {
+      "markings": 28,
+      "unique": 28,
+      "wrong_nf": {
+        "zero": 28
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "3:tail": {
+      "markings": 3060,
+      "unique": 3060,
+      "wrong_nf": {
+        "zero": 2771,
+        "1": 215
+      },
+      "exceptions": 74,
+      "hits": 0
+    },
+    "3:context": {
+      "markings": 104,
+      "unique": 104,
+      "wrong_nf": {
+        "zero": 104
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "3:D": {
+      "markings": 120,
+      "unique": 120,
+      "wrong_nf": {
+        "zero": 114,
+        "1": 6
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "2:tail": {
+      "markings": 12726,
+      "unique": 12726,
+      "wrong_nf": {
+        "zero": 11603,
+        "1": 606
+      },
+      "exceptions": 517,
+      "hits": 0
+    },
+    "3:A": {
+      "markings": 1432,
+      "unique": 1432,
+      "wrong_nf": {
+        "zero": 1427,
+        "1": 5
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "4:A": {
+      "markings": 120,
+      "unique": 120,
+      "wrong_nf": {
+        "zero": 120
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "2:context": {
+      "markings": 568,
+      "unique": 568,
+      "wrong_nf": {
+        "zero": 503,
+        "1": 35
+      },
+      "exceptions": 30,
+      "hits": 0
+    },
+    "2:A": {
+      "markings": 9072,
+      "unique": 9072,
+      "wrong_nf": {
+        "zero": 8973,
+        "1": 83
+      },
+      "exceptions": 16,
+      "hits": 0
+    },
+    "2:D": {
+      "markings": 396,
+      "unique": 396,
+      "wrong_nf": {
+        "zero": 376,
+        "1": 20
+      },
+      "exceptions": 0,
+      "hits": 0
+    }
+  },
+  "seconds": 16.757611665991135,
+  "rss": 54607872,
+  "threads": 2
+}
+EXCEPTIONS 647 HITS 0

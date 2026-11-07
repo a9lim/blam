@@ -1,0 +1,14 @@
+{
+  "verified": 615,
+  "kinds": {
+    "nonlinear_chain": 413,
+    "wrong_hnf": 133,
+    "identity_wrong_payload": 18,
+    "exact_cycle": 6,
+    "three_lambdas": 15,
+    "identity_wrong_hnf": 28,
+    "smaller_than_37": 2
+  },
+  "largest_payload_normalization_steps": 10,
+  "seconds": 0.010468125008628704
+}

@@ -1,0 +1,11 @@
+/Users/a9lim/Work/blam/tmp/round4/bodylet/Special.lean:41:81: warning: This simp argument is unused:
+  substDec_shift
+
+Hint: Omit it from the simp argument list.
+  simp [̵w̵e̵a̵k̵S̵t̵e̵p̵s̵,̵w̵e̵a̵k̵S̵t̵e̵p̵,̵t̵e̵m̵p̵l̵a̵t̵e̵S̵t̵a̵t̵e̵,̵t̵e̵m̵p̵l̵a̵t̵e̵A̵,̵t̵e̵m̵p̵l̵a̵t̵e̵N̵e̵x̵t̵,̵c̵o̵n̵t̵r̵a̵c̵t̵,̵s̵u̵b̵s̵t̵D̵e̵c̵,̵s̵u̵b̵s̵t̵D̵e̵c̵_̵s̵h̵i̵f̵t̵]̵[̲w̲e̲a̲k̲S̲t̲e̲p̲s̲,̲ ̲w̲e̲a̲k̲S̲t̲e̲p̲,̲ ̲t̲e̲m̲p̲l̲a̲t̲e̲S̲t̲a̲t̲e̲,̲ ̲t̲e̲m̲p̲l̲a̲t̲e̲A̲,̲ ̲t̲e̲m̲p̲l̲a̲t̲e̲N̲e̲x̲t̲,̲ ̲c̲o̲n̲t̲r̲a̲c̲t̲,̲ ̲s̲u̲b̲s̲t̲D̲e̲c̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.BodyLetSpecial.template_reduct' depends on axioms: [propext, Quot.sound]
+'Blc.BodyLetSpecial.delay_reduct' depends on axioms: [propext, Quot.sound]
+'Blc.BodyLetSpecial.bad0_not_reader' depends on axioms: [propext, Quot.sound]
+'Blc.BodyLetSpecial.bad1_not_reader' depends on axioms: [propext, Quot.sound]

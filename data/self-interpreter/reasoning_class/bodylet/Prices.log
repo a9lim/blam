@@ -1,0 +1,13 @@
+/Users/a9lim/Work/blam/tmp/round4/bodylet/Prices.lean:74:4: warning: This simp argument is unused:
+  Int.mul_add
+
+Hint: Omit it from the simp argument list.
+  simp only [̵c̵o̵n̵t̵r̵a̵c̵t̵,̵I̵n̵t̵.̵n̵a̵t̵C̵a̵s̵t̵_̵a̵d̵d̵,̵I̵n̵t̵.̵n̵a̵t̵C̵a̵s̵t̵_̵m̵u̵l̵,̵I̵n̵t̵.̵s̵u̵b̵_̵m̵u̵l̵,̵I̵n̵t̵.̵m̵u̵l̵_̵s̵u̵b̵,̵
+  ̵ ̵ ̵ ̵ ̵I̵n̵t̵.̵m̵u̵l̵_̵a̵d̵d̵,̵I̵n̵t̵.̵a̵d̵d̵_̵m̵u̵l̵,̵I̵n̵t̵.̵o̵n̵e̵_̵m̵u̵l̵]̵[̲c̲o̲n̲t̲r̲a̲c̲t̲,̲ ̲I̲n̲t̲.̲n̲a̲t̲C̲a̲s̲t̲_̲a̲d̲d̲,̲ ̲I̲n̲t̲.̲n̲a̲t̲C̲a̲s̲t̲_̲m̲u̲l̲,̲ ̲I̲n̲t̲.̲s̲u̲b̲_̲m̲u̲l̲,̲ ̲I̲n̲t̲.̲m̲u̲l̲_̲s̲u̲b̲,̲ ̲I̲n̲t̲.̲a̲d̲d̲_̲m̲u̲l̲,̲
+  ̲ ̲ ̲ ̲ ̲I̲n̲t̲.̲o̲n̲e̲_̲m̲u̲l̲]̲ at he hhi hwi ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.BodyLetPrices.source_price' depends on axioms: [propext, Quot.sound]
+'Blc.BodyLetPrices.local_hoist_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.BodyLetPrices.minimum_local_hoist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.BodyLetPrices.local_sink_price' depends on axioms: [propext, Quot.sound]

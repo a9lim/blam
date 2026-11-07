@@ -1,0 +1,7 @@
+-- generic s-head conversion applied to the 162 (s-headed already): +23
+\c. \s. ((\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))) (s (\x. \y. c)) s

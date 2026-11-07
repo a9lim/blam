@@ -1,0 +1,217 @@
+{
+"res": {
+"fail": 12236,
+"fuel:Z": 52
+},
+"hits": [],
+"fuels": [
+[
+"fuel:Z",
+"(\\h s. s (s (s (h h j)))) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h j s))) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (s (h h) j))) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h s j))) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h j (s s))) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h j) s)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h j s s)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h) j s)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h s j s)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (s (h h)) j)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h s) j)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h (s s) j)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h) s j)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h s s j)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h j (s (s s))) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h j (s s s)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s s) (h h j)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s s s (h h j)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h j) (s s)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h j s (s s)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h) j (s s)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h s j (s s)) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h j)) s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h j s) s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h) j) s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h s j) s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h j (s s) s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h j) s s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h j s s s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h) j s s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h s j s s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h)) j s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h s) j s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h (s s) j s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h) s j s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h s s j s) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (s (h h))) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h s)) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h (s s)) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h) s) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h s s) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h (s (s s)) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h (s s s) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h) (s s) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h s (s s) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s s) (h h) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s s s (h h) j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (s (h h)) s j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h s) s j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h (s s) s j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. s (h h) s s j) (\\v0. v0 v0)"
+],
+[
+"fuel:Z",
+"(\\h s. h h s s s j) (\\v0. v0 v0)"
+]
+]
+}

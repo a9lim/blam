@@ -1,0 +1,17 @@
+[gaslamp] → codex · job cx-20261022-042025-4029 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-042025-4029/events.jsonl
+( •̀ᴗ•́ ) **The assigned branch is closed under the stated global minimum hypothesis.** Full deliverable: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/firstopj/REPORT.md).
+
+1. **Interpreters:** None built; no sub-162 candidate, battery run, or polish claim.
+
+2. **New pricing argument:** Contract a j-bearing let, retain the unique source j copy contributing to the zero output, and replace only the other j leaves by nearest bound variables. Residual replay preserves every reader law. The exact change is
+   \[
+   S=(m-1)|A|+(s_A+c_A-1)M+4d-2-4m-s_D-c_D.
+   \]
+   A minimum requires \(S\ge0\), strictly when the let is linear or \(A\) has no lambdas. [Selective.lean](/Users/a9lim/Work/blam/tmp/round4/firstopj/Selective.lean) kernel-checks the price for an explicit pruning witness; the law-preserving replay construction remains handwritten.
+
+3. **Complete exclusion:** Fourteen bounded checks covered **424,378 sources** across nontrivial j-bearing shared arguments, j in pending first-operand arguments, and stream-headed first operands. No candidate survived. **All 4,337 normalizer exceptions have individual Lean refutations**, with axioms exactly `[propext, Quot.sound]`. The largest check contained 76,787 sources; the longest Lean file took 13.409 seconds and peaked below 960 MB. [Verification record](/Users/a9lim/Work/blam/tmp/round4/firstopj/verification.json).
+
+4. **Boundary:** Completeness and semantic replay are handwritten; this is not a monolithic Lean family theorem. Together with the supplied earlier closures, it removes the depth-one literal s-spine branch from a global minimum below 46. **Stream-body lets and root lets remain open.** No general 162-optimality claim follows yet.
+
+[gaslamp] job: cx-20261022-042025-4029 · session: 01a162b2-76bc-7b61-a11e-31538e434624 · thread: r5-firstopj · resume: gaslamp codex --thread r5-firstopj · tok: 5940k→54k
+[lane.sh] done rc=0 tries=1

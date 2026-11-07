@@ -1,0 +1,60 @@
+p=0 m=3 exit 0
+p=0 m=3 W=23 OMAX=19: T meanings 52, operand meanings 2819, operand caps 1, 0.2s
+A2 6949 viable 4829 unary survivors 16 ucaps 1 0.6s
+done p=0 m=3: hits 0 zcaps 0 0.6s
+            33161216  maximum resident set size
+p=0 m=4 exit 0
+p=0 m=4 W=21 OMAX=15: T meanings 52, operand meanings 410, operand caps 0, 0.0s
+A2 701 viable 542 unary survivors 6 ucaps 0 0.2s
+done p=0 m=4: hits 0 zcaps 0 0.2s
+            23707648  maximum resident set size
+p=0 m=5 exit 0
+p=0 m=5 W=19 OMAX=11: T meanings 52, operand meanings 65, operand caps 0, 0.0s
+A2 81 viable 66 unary survivors 0 ucaps 0 0.0s
+done p=0 m=5: hits 0 zcaps 0 0.0s
+            22757376  maximum resident set size
+p=0 m=6 exit 0
+p=0 m=6 W=17 OMAX=7: T meanings 52, operand meanings 13, operand caps 0, 0.0s
+A2 12 viable 10 unary survivors 0 ucaps 0 0.0s
+done p=0 m=6: hits 0 zcaps 0 0.0s
+            22659072  maximum resident set size
+p=0 m=7 exit 0
+p=0 m=7 W=15 OMAX=3: T meanings 52, operand meanings 2, operand caps 0, 0.0s
+A2 2 viable 2 unary survivors 0 ucaps 0 0.0s
+done p=0 m=7: hits 0 zcaps 0 0.0s
+            22544384  maximum resident set size
+p=1 m=3 exit 0
+p=1 m=3 W=20 OMAX=16: T meanings 52, operand meanings 714, operand caps 0, 0.0s
+A2 1440 viable 786 unary survivors 1 ucaps 0 0.1s
+done p=1 m=3: hits 0 zcaps 0 0.1s
+            24428544  maximum resident set size
+p=1 m=4 exit 0
+p=1 m=4 W=18 OMAX=12: T meanings 52, operand meanings 109, operand caps 0, 0.0s
+A2 159 viable 102 unary survivors 0 ucaps 0 0.0s
+done p=1 m=4: hits 0 zcaps 0 0.0s
+            23003136  maximum resident set size
+p=1 m=5 exit 0
+p=1 m=5 W=16 OMAX=8: T meanings 52, operand meanings 22, operand caps 0, 0.0s
+A2 22 viable 15 unary survivors 0 ucaps 0 0.0s
+done p=1 m=5: hits 0 zcaps 0 0.0s
+            22642688  maximum resident set size
+p=1 m=6 exit 0
+p=1 m=6 W=14 OMAX=4: T meanings 52, operand meanings 4, operand caps 0, 0.0s
+A2 4 viable 4 unary survivors 0 ucaps 0 0.0s
+done p=1 m=6: hits 0 zcaps 0 0.0s
+            22659072  maximum resident set size
+p=2 m=3 exit 0
+p=2 m=3 W=17 OMAX=13: T meanings 52, operand meanings 193, operand caps 0, 0.0s
+A2 285 viable 183 unary survivors 0 ucaps 0 0.0s
+done p=2 m=3: hits 0 zcaps 0 0.0s
+            23248896  maximum resident set size
+p=2 m=4 exit 0
+p=2 m=4 W=15 OMAX=9: T meanings 52, operand meanings 33, operand caps 0, 0.0s
+A2 36 viable 28 unary survivors 0 ucaps 0 0.0s
+done p=2 m=4: hits 0 zcaps 0 0.0s
+            22544384  maximum resident set size
+p=2 m=5 exit 0
+p=2 m=5 W=13 OMAX=5: T meanings 52, operand meanings 6, operand caps 0, 0.0s
+A2 6 viable 6 unary survivors 0 ucaps 0 0.0s
+done p=2 m=5: hits 0 zcaps 0 0.0s
+            22855680  maximum resident set size

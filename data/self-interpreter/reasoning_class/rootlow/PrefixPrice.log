@@ -1,0 +1,7 @@
+'Blc.RootLow.rotate_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootLow.prefix_price' depends on axioms: [propext, Classical.choice, Quot.sound]
+/Users/a9lim/Work/blam/tmp/round4/rootlow/PrefixPrice.lean:110:17: warning: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Blc.RootLow.prefix_depth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.RootLow.prefix_order_external_hole' depends on axioms: [propext, Classical.choice, Quot.sound]

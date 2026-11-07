@@ -1,0 +1,14 @@
+[
+  {
+    "file": "prefix_own_tag.lam",
+    "bits_written": 170,
+    "bits_polished": 170,
+    "optimized_battery": "170 bits  ok=667 skip=1 fail=0  bits"
+  },
+  {
+    "file": "phase_argument.lam",
+    "bits_written": 203,
+    "bits_polished": 203,
+    "optimized_battery": "203 bits  ok=667 skip=1 fail=0  bits"
+  }
+]

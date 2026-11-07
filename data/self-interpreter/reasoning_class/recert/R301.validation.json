@@ -1,0 +1,9 @@
+{
+  "label": "R301",
+  "valid": true,
+  "source_matches": true,
+  "states": 135,
+  "sha256": "8e1894b5f14100b278133cca1fd9ac8b734b486ca4a9f31b59b2aa2766d8d19c",
+  "seconds": 0.0003847920161206275,
+  "peak_rss_bytes": 24084480
+}

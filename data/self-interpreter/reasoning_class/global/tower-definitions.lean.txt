@@ -1,0 +1,35 @@
+def towerValue57G : Term := (.lam (.lam (.app (.app (.app (.var 0) (.lam (.var 0))) (.lam (.lam (.var 0)))) (.lam (.lam (.app (.var 1) (.app (.app (.var 3) (.var 3)) (.var 0))))))))
+
+def towerValue57 : Term := .app (.lam (.app (.var 0) (.var 0))) towerValue57G
+
+def towerValue57P : Term := .app towerValue57G towerValue57G
+
+theorem towerValue57_closed : Closed towerValue57 := by decide
+
+theorem towerValue57_size : (blcCode towerValue57).length = 57 := by decide
+
+theorem towerValue57P_closed : Closed towerValue57P := by decide
+
+def towerBoth88G : Term := (.lam (.lam (.lam (.app (.var 0) (.lam (.lam (.app (.app (.app (.var 1) (.app (.app (.var 4) (.var 4)) (.lam (.app (.var 4) (.app (.var 2) (.var 0)))))) (.app (.var 3) (.lam (.var 0)))) (.app (.var 0) (.lam (.lam (.var 0)))))))))))
+
+def towerBoth88 : Term := .app (.lam (.app (.var 0) (.var 0))) towerBoth88G
+
+def towerBoth88P : Term := .app towerBoth88G towerBoth88G
+
+theorem towerBoth88_closed : Closed towerBoth88 := by decide
+
+theorem towerBoth88_size : (blcCode towerBoth88).length = 88 := by decide
+
+theorem towerBoth88P_closed : Closed towerBoth88P := by decide
+
+def poisonValue84G : Term := (.lam (.lam (.app (.app (.app (.var 0) (.lam (.var 0))) (.lam (.lam (.var 0)))) (.lam (.lam (.app (.app (.var 1) (.lam (.app (.app (.var 4) (.var 4)) (.var 1)))) (.lam (.app (.lam (.app (.var 0) (.var 0))) (.lam (.app (.var 0) (.var 0)))))))))))
+
+def poisonValue84 : Term := .app (.lam (.app (.var 0) (.var 0))) poisonValue84G
+
+def poisonValue84P : Term := .app poisonValue84G poisonValue84G
+
+theorem poisonValue84_closed : Closed poisonValue84 := by decide
+
+theorem poisonValue84_size : (blcCode poisonValue84).length = 84 := by decide
+
+theorem poisonValue84P_closed : Closed poisonValue84P := by decide

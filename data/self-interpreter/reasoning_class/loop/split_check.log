@@ -1,0 +1,9 @@
+weighted-rest<=17 sources= 3277 unary-survivors= 61 zero-normal-forms= [(8, 'r'), (12, 'r'), (13, 'r'), (14, 'r'), (15, 'r'), (16, 'r'), (16, 'r r j'), (17, 'r')]
+weighted-rest<=19/strict-j sources= 10752 unary-survivors= 195 zero-normal-forms= [(8, 'r'), (12, 'r'), (13, 'r'), (14, 'r'), (15, 'r'), (16, 'r'), (16, 'r r j'), (17, 'r'), (18, 'r'), (18, 'r (\\x0. \\x1. x0) r j'), (18, 'r (\\x0. x0 (\\x1. \\x2. x1) r) j'), (18, 'r j'), (19, 'r'), (19, 'r r j')]
+no-j-rest<=9 sources= 24 no U1 -> N
+weighted-zero-arm<=9 sources= 38 rejections= {'wrong-rigid-head': 32, 'j-absent': 6}
+hoisted-rest<=20/any-marker-count sources= 5380 unary-survivors= 84 zero-normal-forms= [(11, 'r'), (14, 'r'), (15, 'r'), (16, 'r'), (17, 'r'), (18, 'r'), (19, 'r'), (19, 'r r j'), (20, 'r')]
+hoisted-rest<=11/strict-j/any-marker-count sources= 28 unary-survivors= 1 zero-normal-forms= [(11, 'r')]
+hoisted-zero-arm<=13/positive-marker-count sources= 55 rejections= {'wrong-rigid-head': 48, 'wrong-r-arity': 3, 'j-and-X-absent': 2, 'identity-route': 1, 'lambda': 1}
+TOTAL sources= 19554 unknowns=0
+elapsed= 0.48063945800822694 maxrss= 25067520

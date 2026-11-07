@@ -1,0 +1,75 @@
+[gaslamp] → codex · job cx-20261021-184227-d894 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-184227-d894/events.jsonl
+(・_・) **Claim A is false as an architecture-wide scope argument. I found no sub-162 construction, and no single-site construction whose added machinery fits below the nine-bit saving.** The missing step is a bound on the cost of moving dependencies—not a proof that those dependencies force particular enclosing binders.
+
+1. **`d1 ≥ 3` and `d2 ≥ 4` both fail under ordinary let-floating.**
+
+   Keep your reader exactly, but hoist NEXT above `list`:
+
+   ```text
+   (\x. x x) (\x. (\p. \c.
+     (\next. \s.
+       s (\a. a) (\u. s (\q. c) (s s u)) next)
+     (\b. p (\e. b
+       (c (\args \arg. e (\zx \zy. zx arg (zy args))))
+       (p (\e2. c (\args. e args (e2 args)))))))
+     (x x))
+   ```
+
+   This is **166 bits**, with `(L,A,X)=(17,25,30)`. Its recursive references have depths **`(2,3)`**, so knot plus references costs **31**, not 33. The complete term is β-equivalent to your 162; I checked equality of the open generator bodies after normalization.
+
+   The extra let and changed reader indices outweigh that two-bit saving. Your existing **165**, independently recounted as `(17,25,29)`, already gives the same 31-bit recursion overhead.
+
+   Thus “no saving there” is false literally. “Any such saving is offset elsewhere” remains plausible but needs another argument.
+
+2. **Dependence on `exp` does not force APP’s parser occurrence beneath the first parse’s `\exp`.**
+
+   Define the APP continuation earlier:
+
+   ```text
+   (\j. \s.
+      s I V
+        (\b. p (\e. b (c (ABS e)) (j e))))
+   (\e. p (\e2. c (LIFT e e2)))
+   ```
+
+   Here `ABS`, `LIFT`, `I`, and `V` denote their exact inline expressions from your term, not additional lets.
+
+   With the original outer knot and `\p.\c`, this costs **176 bits**, `(18,26,34)`. The parser references have depths **`(4,2)`**, giving **32 bits** of knot-plus-reference overhead.
+
+   The second parse receives `exp` through application to a previously constructed closure. Its source occurrence need not lie beneath the binder introducing the first parse’s result. Again, the complete term is β-equivalent to the 162; the rearrangement loses overall.
+
+3. **The second-bit dispatch can preserve the tail without enclosing either parser reference in a bit binder.**
+
+   Let these be textual abbreviations, expanded inline:
+
+   ```text
+   H   = \p \a \d \b. p (b a d)
+   KA  = \e. c (ABS e)
+   KP  = \e. p (\e2. c (LIFT e e2))
+
+   NEXT = H p KA KP
+   ```
+
+   For `r = cons b r2`:
+
+   ```text
+   r NEXT  →*  p (b KA KP) r2.
+   ```
+
+   Both `b=K` and `b=F` preserve `r2`. Neither occurrence of the recursive parser variable is under the helper’s bit binder.
+
+   **`H` costs 28 bits**: `(L,A,X)=(4,3,6)`. Substitution into your unchanged reader gives **183 bits**, `(20,27,33)`, with parser-reference depths **`(2,3)`**. I checked both NEXT clauses with the parser and continuation rigid.
+
+   Your calculation that `r I X Y` loses the tail in the F arm is correct. It excludes that expression with tail-independent operands; it does not establish a general binder necessity.
+
+For your numbered questions:
+
+- **(1):** No construction below the nine-bit allowance found. My explicit self-passing NEXT spelling costs **187**, `(20,26,41)`. It has one parser self-application site, costing 24 bits, but the remaining code grows by 34 bits: `162 − 9 + 34 = 187`. This does not challenge your differently arranged 186.
+- **(2):** Below 33 for *knot plus parser references*: yes, already 31 in the 165 and the hoisted 166. For **direct recursive NEXT re-entry that shares the parsing site**, I found no qualifying cheaper layout.
+- **(3):** Yes, concretely as above; the construction is too expensive.
+
+All four constructed terms passed the exact battery: **667 ok / 1 skip / 0 fail**. Sources and checks are in [consult_claim_a](/Users/a9lim/Work/blam/tmp/round3/outside/consult_claim_a/check.py).
+
+The defensible replacement for Claim A is conditional: **with the recursive references in the literal 162 frame, the opaque-knot theorem gives 33.** Extending that to this entire CPS/closure architecture requires pricing let-floating, continuation closure creation, and shared dispatch together.
+
+[gaslamp] job: cx-20261021-184227-d894 · session: 01a160a1-528e-7db2-8109-89fbb70033a5 · resume: gaslamp codex --resume 01a160a1-528e-7db2-8109-89fbb70033a5 · tok: 510k→15k

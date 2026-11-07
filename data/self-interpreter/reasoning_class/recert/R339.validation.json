@@ -1,0 +1,9 @@
+{
+  "label": "R339",
+  "valid": true,
+  "source_matches": true,
+  "states": 63,
+  "sha256": "e952dc95532db0749d50ea396f4dc7829ff7755b783e16fde74e9feabe0dd58f",
+  "seconds": 0.00025975002790801227,
+  "peak_rss_bytes": 24068096
+}

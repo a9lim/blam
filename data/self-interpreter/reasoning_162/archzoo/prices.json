@@ -1,0 +1,98 @@
+[
+  {
+    "name": "argument_thunks",
+    "paper_counts": [
+      17,
+      24,
+      32
+    ],
+    "paper_bits": 164,
+    "measured_counts": [
+      17,
+      24,
+      32
+    ],
+    "measured_bits": 164,
+    "pricing_error": 0
+  },
+  {
+    "name": "local_phase",
+    "paper_counts": [
+      17,
+      25,
+      31
+    ],
+    "paper_bits": 167,
+    "measured_counts": [
+      17,
+      25,
+      31
+    ],
+    "measured_bits": 167,
+    "pricing_error": 0
+  },
+  {
+    "name": "prefix_continuation",
+    "paper_counts": [
+      19,
+      28,
+      33
+    ],
+    "paper_bits": 185,
+    "measured_counts": [
+      19,
+      28,
+      33
+    ],
+    "measured_bits": 185,
+    "pricing_error": 0
+  },
+  {
+    "name": "pointwise_boxes",
+    "paper_counts": [
+      30,
+      37,
+      56
+    ],
+    "paper_bits": 266,
+    "measured_counts": [
+      30,
+      37,
+      56
+    ],
+    "measured_bits": 266,
+    "pricing_error": 0
+  },
+  {
+    "name": "resumption_pairs",
+    "paper_counts": [
+      36,
+      37,
+      54
+    ],
+    "paper_bits": 276,
+    "measured_counts": [
+      36,
+      37,
+      54
+    ],
+    "measured_bits": 276,
+    "pricing_error": 0
+  },
+  {
+    "name": "church_algebra",
+    "paper_counts": [
+      32,
+      43,
+      59
+    ],
+    "paper_bits": 297,
+    "measured_counts": [
+      32,
+      43,
+      59
+    ],
+    "measured_bits": 297,
+    "pricing_error": 0
+  }
+]

@@ -1,0 +1,7 @@
+-- NOT a counterexample (Codex): \e. r e ->b r since r is a lambda. Kept for the record; see int_value_junk.lam
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\b \r. cont (\e. r e)) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

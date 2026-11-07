@@ -1,0 +1,132 @@
+{
+  "reader_identities": [
+    {
+      "name": "identity_reset",
+      "contractions": 8,
+      "ok": true
+    },
+    {
+      "name": "boolean_K",
+      "contractions": 6,
+      "ok": true
+    },
+    {
+      "name": "boolean_F",
+      "contractions": 10,
+      "ok": true
+    },
+    {
+      "name": "continuation_packet",
+      "contractions": 13,
+      "ok": true
+    },
+    {
+      "name": "single_field_K",
+      "contractions": 13,
+      "ok": true
+    },
+    {
+      "name": "single_field_F",
+      "contractions": 7,
+      "ok": true
+    },
+    {
+      "name": "double_constant",
+      "contractions": 5,
+      "ok": true
+    }
+  ],
+  "carrier_bound_leaves": [
+    {
+      "name": "g",
+      "frame": "g",
+      "bits": 2,
+      "target": "g q and g g diagonal",
+      "refuted": true
+    },
+    {
+      "name": "I",
+      "frame": "g",
+      "bits": 4,
+      "target": "g q and g g diagonal",
+      "refuted": true
+    },
+    {
+      "name": "K_g",
+      "frame": "g",
+      "bits": 5,
+      "target": "g q and g g diagonal",
+      "refuted": true
+    },
+    {
+      "name": "F",
+      "frame": "g",
+      "bits": 6,
+      "target": "g q and g g diagonal",
+      "refuted": true
+    },
+    {
+      "name": "K",
+      "frame": "g",
+      "bits": 7,
+      "target": "g q and g g diagonal",
+      "refuted": true
+    },
+    {
+      "name": "g_g",
+      "frame": "g",
+      "bits": 6,
+      "target": "g q and g g diagonal",
+      "refuted": true
+    },
+    {
+      "name": "I",
+      "frame": "closed",
+      "bits": 4,
+      "target": "g g",
+      "refuted": true
+    },
+    {
+      "name": "F",
+      "frame": "closed",
+      "bits": 6,
+      "target": "g g",
+      "refuted": true
+    },
+    {
+      "name": "K",
+      "frame": "closed",
+      "bits": 7,
+      "target": "g g",
+      "refuted": true
+    },
+    {
+      "name": "K_F",
+      "frame": "closed",
+      "bits": 8,
+      "target": "g g",
+      "refuted": true
+    },
+    {
+      "name": "K_K",
+      "frame": "closed",
+      "bits": 9,
+      "target": "g g",
+      "refuted": true
+    },
+    {
+      "name": "Delta",
+      "frame": "closed",
+      "bits": 8,
+      "target": "g g",
+      "refuted": true,
+      "reduces_to": "g (Omega g)",
+      "steps": 9
+    }
+  ],
+  "head_skeleton_base_bits": 129,
+  "abs_cut_contractions": 10,
+  "abs_trace": "[[.left], [], [.left, .left], [.left, .left, .left], [.left, .left], [.left], [], [.left], [.left, .right, .under, .left], [.left, .right, .under]]",
+  "abs_result": "#97 (\\a.#1 (\\b\\c.a (\\d\\e.d c (e b)))) (\\a.a (\\b\\c.b) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.d) (\\d.d (\\e\\f.e) (\\e.e (\\f\\g.f) (\\f.f (\\g\\h.h) (\\g.g (\\h\\i.i) (\\h.h (\\i\\j.i) (\\i.i (\\j\\k.k) (\\j.j (\\k\\l.k) (\\k.k (\\l\\m.l) (\\l.l (\\m\\n.m) (\\m.m (\\n\\o.n) (\\n.n (\\o\\p.p) (\\o.o (\\p\\q.q) (\\p.p (\\q\\r.q) (\\q.q (\\r\\s.s) (\\r.r (\\s\\t.s) #19))))))))))))))))))",
+  "seconds": 0.003
+}

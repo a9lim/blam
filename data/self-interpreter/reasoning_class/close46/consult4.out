@@ -1,0 +1,27 @@
+[gaslamp] → codex · job cx-20261022-001812-7381 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-001812-7381/events.jsonl
+( •̀ᴗ•́ ) **Kernel-checked `w ≥ 46` for a full family of cross-operand sharing contexts.** The universal reader bound remains open.
+
+For arbitrary source helper `A` and **any closed specializer `P`**, both readers below require weight at least 46:
+
+```text
+λs. ((λg. s (g P) (g s)) A) j
+(λg s. s (g P) (g s) j) A
+```
+
+`A` and `P` may contain redexes and nonlinear binders. The proofs assume the reader laws and exactly one source `j`, without minimality or normal-form assumptions. See [ClosedSpecializer.lean](/Users/a9lim/Work/blam/tmp/round4/close46/ClosedSpecializer.lean:352) and [REPORT §8](/Users/a9lim/Work/blam/tmp/round4/close46/REPORT.md:637).
+
+The source prices are `30 + |P| + |A|` locally and `34 + |P| + |A|` at the root. Locally, symbolic zero-branch reductions force `|A| ≥ 10`. Below 46, this forces `P = I` and `|A| ≤ 11`; a **structurally proved, complete 26-term helper basis** then closes the case. At the root, only `c`, `λx.c`, and `c c` remain, and all fail zero.
+
+The shortest unary probe matters: **`A = F c`, `P = I` gives a 45-bit source that passes zero**. It erases `c`, becomes `λs.s I s j`, and fails unary with result `j F U₀`. Lean checks that boundary explicitly.
+
+Also proved:
+
+- Exact inlining differences: `|A| − 10` locally; `|A| + 2 freeLeaves(A) − 14` at the root. These can be positive, so no general inlining-dominance claim follows.
+- The known `G_c` constructions have weights **67/70**, and both whole source readers β-reduce to `reader162`, establishing equivalence for every stream.
+
+**Remaining premise gap:** let-sinking forces cross-operand sharing **when `B` is already an `s`-spine**. We have not proved every surviving first-redex body has that form. Stream-dependent specializers, other surrounding contexts, `x`-headed bodies, and nested head redexes remain open.
+
+Verification: **18 checks passed in 6.37 seconds**, two threads, no admits, native-decision trust axioms, term sweeps, or cap-based exclusions. Report and notes updated; tracked files unchanged.
+
+[gaslamp] job: cx-20261022-001812-7381 · session: 01a1615e-e629-72b0-a983-8f5d47a3126a · thread: r4-close46 · resume: gaslamp codex --thread r4-close46 · tok: 21259k→254k
+[lane.sh] done rc=0 tries=1

@@ -1,0 +1,4 @@
+'Blc.BodyLinPrices.hoist_lambdas' depends on axioms: [propext]
+'Blc.BodyLinPrices.hoist_depth_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.BodyLinPrices.minimum_hoist_strict' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.BodyLinPrices.linear_hoist_strict' depends on axioms: [propext, Classical.choice, Quot.sound]

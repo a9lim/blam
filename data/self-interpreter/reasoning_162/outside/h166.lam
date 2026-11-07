@@ -1,0 +1,8 @@
+-- Handler-form reader with NEXT inside the zero arm: pricing check (paper 166).
+(\x. x x) (\x. (\intL. \cont. \s.
+  s (\b. \r. b
+      (r (\bit1. intL (\exp. bit1
+          (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+          (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+      (cont r (r r r))))
+  (x x))

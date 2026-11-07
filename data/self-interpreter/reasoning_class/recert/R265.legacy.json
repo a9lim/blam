@@ -1,0 +1,17 @@
+{
+  "label": "R265",
+  "id": "rootnarrow/work/h6_2.json:3",
+  "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (x0 (\\x2. (x2 (x2 (x2 (\\x3. x2)))))))))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": "deadline",
+    "SFprime": false,
+    "SF2": false
+  },
+  "legacy": null,
+  "beta_calls": 6963,
+  "seconds": 0.5321320829971228,
+  "peak_rss_bytes": 25640960,
+  "threads": 1
+}

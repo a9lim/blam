@@ -1,0 +1,18 @@
+{
+  "source": "stream_second.lam",
+  "bits": 191,
+  "battery": "191 bits  ok=667 skip=1 fail=0  stream_second.lam",
+  "failures": [],
+  "seconds": 1.805653125004028,
+  "polish": [
+    {
+      "flags": [
+        "--max-cuts",
+        "2"
+      ],
+      "minimum": 191,
+      "battery": "191 bits  ok=667 skip=1 fail=0  stream_second.polished0.blc",
+      "source": "stream_second.polished0.blc"
+    }
+  ]
+}

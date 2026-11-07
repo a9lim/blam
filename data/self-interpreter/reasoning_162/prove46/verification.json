@@ -1,0 +1,226 @@
+{
+  "status": "passed",
+  "total_seconds": 5.585349333996419,
+  "threads_per_child": 2,
+  "child_timeout_seconds": 110,
+  "runs": [
+    {
+      "name": "lean-version",
+      "argv": [
+        "lean",
+        "--version"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 0.04073266699560918
+    },
+    {
+      "name": "fixed-facts",
+      "argv": [
+        "/Users/a9lim/.venv/bin/python",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/factory_check.py"
+      ],
+      "cwd": "/Users/a9lim/Work/blam",
+      "exit_code": 0,
+      "seconds": 0.02265191600599792
+    },
+    {
+      "name": "count-refinement",
+      "argv": [
+        "/Users/a9lim/.venv/bin/python",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/refine_counts.py"
+      ],
+      "cwd": "/Users/a9lim/Work/blam",
+      "exit_code": 0,
+      "seconds": 0.025944792010704987
+    },
+    {
+      "name": "RoleAlgebra",
+      "argv": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round3/floor",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/RoleAlgebra.olean",
+        "/Users/a9lim/Work/blam/tmp/round3/floor/RoleAlgebra.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 0.31605912500526756
+    },
+    {
+      "name": "Reader138",
+      "argv": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round3/lean138",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/Reader138.olean",
+        "/Users/a9lim/Work/blam/tmp/round3/lean138/Reader138.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 1.8643724169960478
+    },
+    {
+      "name": "ShallowFacts",
+      "argv": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round3/floor",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/ShallowFacts.olean",
+        "/Users/a9lim/Work/blam/tmp/round3/floor/ShallowFacts.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 1.3965722080029082
+    },
+    {
+      "name": "ReaderHoist",
+      "argv": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round3/floor",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/ReaderHoist.olean",
+        "/Users/a9lim/Work/blam/tmp/round3/floor/ReaderHoist.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 0.31386262500018347
+    },
+    {
+      "name": "OneCallback",
+      "argv": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/OneCallback.olean",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/OneCallback.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 0.40941545899841003
+    },
+    {
+      "name": "SerialSelectors",
+      "argv": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/SerialSelectors.olean",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/SerialSelectors.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 0.40499062500020955
+    },
+    {
+      "name": "MinimalLeaf",
+      "argv": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/MinimalLeaf.olean",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/MinimalLeaf.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 0.42354404099751264
+    },
+    {
+      "name": "ReaderFacts",
+      "argv": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46",
+        "-o",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/ReaderFacts.olean",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/ReaderFacts.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 0.198746875001234
+    },
+    {
+      "name": "axiom-audit",
+      "argv": [
+        "lean",
+        "-j2",
+        "-R",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46",
+        "/Users/a9lim/Work/blam/tmp/round3/prove46/AxiomAudit.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "exit_code": 0,
+      "seconds": 0.16332862499984913
+    }
+  ],
+  "sha256": {
+    "tmp/round3/floor/RoleAlgebra.lean": "29b25c28910a13a5cea6615522072c0ece8f195512d54e8f9a135d36ebbd3a9a",
+    "tmp/round3/lean138/Reader138.lean": "c9290b5e5efe876df9980a1b233ead25a8fa79c9ff1a97e4149e67d46a12f8cb",
+    "tmp/round3/floor/ShallowFacts.lean": "fd2796f547ecfba93a0f9df913de7de4c5095b7f5410ac602a1627afa4ff4d80",
+    "tmp/round3/floor/ReaderHoist.lean": "df3da845ca091d1d6f54d7731bc5c7e2d9ab065271dce14b890ae530e3f96290",
+    "tmp/round3/prove46/OneCallback.lean": "ca006f4d58a9c4b986e63ddfa6ce17a2b504572ccb7add478057087673f2b448",
+    "tmp/round3/prove46/SerialSelectors.lean": "c5fbdbaa0fb629344a7fe47eca76f645b0e5bad02b27c5023afd954900acf320",
+    "tmp/round3/prove46/MinimalLeaf.lean": "ca640a9b35a6b6e9ac78c7030ffc029b22f0c0e09d9651da9f23959870198762",
+    "tmp/round3/prove46/ReaderFacts.lean": "186ac766982cb99088c2a093214c71bc31d8ef555e47a9d82fc87f77a960b915",
+    "tmp/round3/prove46/AxiomAudit.lean": "e6d106338b1eee8595b70f20d99f3ee01cf392d647f752bd5126119f50008d15",
+    "tmp/round3/prove46/factory_check.py": "c5981c77a341f0018766078dca65e98b59272ff1e87c91f81356bb31e160c919",
+    "tmp/round3/prove46/refine_counts.py": "0099119c125fa9b3465f7b127d5117d965d5de60e11be1e3094594063d92e0ca",
+    "tmp/round3/prove46/verify.py": "1a28eeb943f8bdea13715675068c37bd5894fe824019dce5ad922d9bd511f7fe",
+    "tmp/round3/floor/STATE46.md": "16d02fea7f9e159f1d2e6ee50763584c84e72a3f985b3d5dc44450491063c58a",
+    "tmp/round3/floor/STATE46-counts.md": "464a1b5be600bab27b21d9be1404a3cf6d9721408260795fdd122a02aafde830",
+    "tmp/round3/floor/role-pricing.md": "21263fd7f7445a61eb880689fd077eeefdc119618c11410a43818358e831ea16",
+    "tmp/round3/floor/shallow-readers.md": "1467f31e0f967e3bd5894ec64c8ac3240a9b3ecac61d28475304bc13a2100be8"
+  },
+  "audited_theorems": [
+    "Blc.Round3Prove46.marked_value",
+    "Blc.Round3Prove46.marked_finish",
+    "Blc.Round3Prove46.value_trailing_hole",
+    "Blc.Round3Prove46.one_callback_trailing_hole",
+    "Blc.Round3Prove46.nonliteral_selector_forces_arm",
+    "Blc.Round3Prove46.data_prefix_result",
+    "Blc.Round3Prove46.serial_two_callback_forces_arm",
+    "Blc.Round3Prove46.serial_two_two_price",
+    "Blc.Round3Prove46.minimum_leaf_nonlinearity",
+    "Blc.Round3Prove46.first_contractor_linear",
+    "Blc.Round3Prove46.linear_head_removes_one_lambda",
+    "Blc.Round3Prove46.linear_free_eight_depth_one",
+    "Blc.Round3Prove46.linear_free_four_depth_two",
+    "Blc.Round3Prove46.filled_wire_implies_weight",
+    "Blc.Round3Prove46.contraction_hoist_delta",
+    "Blc.Round3Prove46.contraction_hoist_bound",
+    "Blc.Round3Reader.hoist_weight",
+    "Blc.Round3Prove46Facts.factory_false",
+    "Blc.Round3Prove46Facts.factory_ident",
+    "Blc.Round3Prove46Facts.factory_self",
+    "Blc.Round3Prove46Facts.expanded_selector_reader",
+    "Blc.Round3Prove46Facts.shared_factory_reader",
+    "Blc.Round3Prove46Facts.reference_weight",
+    "Blc.Round3Prove46Facts.expanded_selector_weight",
+    "Blc.Round3Prove46Facts.shared_factory_weight"
+  ],
+  "used_axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "term_sweeps": 0,
+  "fixed_equalities": 5,
+  "count_rows": 1098,
+  "removed_rows": 151,
+  "remaining_rows": 947
+}

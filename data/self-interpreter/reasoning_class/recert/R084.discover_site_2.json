@@ -1,0 +1,17 @@
+{
+  "label": "R084",
+  "id": "rootnarrow/work/fix_4.json:2",
+  "source": "(((\\x0. (\\x1. (\\x2. (x1 ((x1 x1) _))))) j) (\\x0. (x0 (x0 (\\x1. x0)))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 92,
+  "work": 108,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 88,
+  "checked": true,
+  "sha256": "1086a486d6d9b7488e79ef3576966cdb4d61e82f43d9f6b5159acfd95a21edee",
+  "seconds": 0.0012019170098938048,
+  "peak_rss_bytes": 24068096,
+  "threads": 1
+}

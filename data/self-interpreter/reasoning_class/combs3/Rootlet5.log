@@ -1,0 +1,17 @@
+'Blc.Combs3.r474_unsolvable' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.zero474_not_join' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.reject474' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.r492_unsolvable' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.zero492_not_join' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.reject492' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.r493_unsolvable' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.zero493_not_join' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.reject493' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.r506_unsolvable' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.zero506_not_join' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.reject506' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.r507_unsolvable' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.zero507_not_join' depends on axioms: [propext, Quot.sound]
+'Blc.Combs3.reject507' depends on axioms: [propext, Quot.sound]
+
+exit=0 wall_seconds=0.376 child_maxrss_bytes=454443008

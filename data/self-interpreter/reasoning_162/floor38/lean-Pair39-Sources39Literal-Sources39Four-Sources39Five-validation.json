@@ -1,0 +1,22 @@
+[
+  {
+    "module": "Pair39",
+    "exit_code": 0,
+    "seconds": 0.185184959002072
+  },
+  {
+    "module": "Sources39Literal",
+    "exit_code": 0,
+    "seconds": 5.3491754999995464
+  },
+  {
+    "module": "Sources39Four",
+    "exit_code": 0,
+    "seconds": 11.794629791998887
+  },
+  {
+    "module": "Sources39Five",
+    "exit_code": 0,
+    "seconds": 7.6810502909938805
+  }
+]

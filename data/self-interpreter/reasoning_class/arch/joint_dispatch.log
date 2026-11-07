@@ -1,0 +1,4 @@
+tmp/round4/arch/joint_dispatch.lam: 167 bits ok=667 skip=1 fail=0 tmp/round4/arch/joint_dispatch.lam
+  letopt --max-cuts 3: smallest 167
+  letopt --no-inline --max-cuts 2: smallest 167
+elapsed=8.645s

@@ -1,0 +1,330 @@
+{
+  "cells": [
+    {
+      "cell": "linear0",
+      "markings": 31517,
+      "unique": 31517,
+      "seconds": 1.1535855410038494,
+      "rss": 48103424,
+      "wrong_zero": 31406,
+      "wrong_unary": 111,
+      "exceptions": 0
+    },
+    {
+      "cell": "shared0",
+      "markings": 76787,
+      "unique": 76787,
+      "seconds": 3.2676270000083605,
+      "rss": 61112320,
+      "wrong_zero": 76779,
+      "wrong_unary": 6,
+      "exceptions": 2
+    },
+    {
+      "cell": "1",
+      "markings": 68906,
+      "unique": 68906,
+      "seconds": 2.2604139580071205,
+      "rss": 53133312,
+      "wrong_zero": 68857,
+      "wrong_unary": 45,
+      "exceptions": 4
+    },
+    {
+      "cell": "2",
+      "markings": 22845,
+      "unique": 22845,
+      "seconds": 0.7238100829999894,
+      "rss": 35766272,
+      "wrong_zero": 22845,
+      "wrong_unary": 0,
+      "exceptions": 0
+    },
+    {
+      "cell": "3",
+      "markings": 3756,
+      "unique": 3756,
+      "seconds": 0.12130287499167025,
+      "rss": 24821760,
+      "wrong_zero": 3756,
+      "wrong_unary": 0,
+      "exceptions": 0
+    },
+    {
+      "cell": "4",
+      "markings": 230,
+      "unique": 230,
+      "seconds": 0.007783833993016742,
+      "rss": 22855680,
+      "wrong_zero": 230,
+      "wrong_unary": 0,
+      "exceptions": 0
+    },
+    {
+      "cell": "pending1",
+      "markings": 53819,
+      "unique": 53819,
+      "seconds": 4.739774166009738,
+      "rss": 58425344,
+      "wrong_zero": 52861,
+      "wrong_unary": 2,
+      "exceptions": 956
+    },
+    {
+      "cell": "pending2",
+      "markings": 43146,
+      "unique": 43146,
+      "seconds": 5.3949215409957105,
+      "rss": 48234496,
+      "wrong_zero": 41981,
+      "wrong_unary": 1,
+      "exceptions": 1164
+    },
+    {
+      "cell": "pending3",
+      "markings": 13950,
+      "unique": 13950,
+      "seconds": 1.700007416002336,
+      "rss": 31178752,
+      "wrong_zero": 13368,
+      "wrong_unary": 0,
+      "exceptions": 582
+    },
+    {
+      "cell": "pending4",
+      "markings": 1640,
+      "unique": 1640,
+      "seconds": 0.047218041989253834,
+      "rss": 23838720,
+      "wrong_zero": 1510,
+      "wrong_unary": 0,
+      "exceptions": 130
+    },
+    {
+      "cell": "stream1",
+      "markings": 27630,
+      "unique": 27630,
+      "seconds": 1.7689195409911918,
+      "rss": 63176704,
+      "wrong_zero": 27473,
+      "wrong_unary": 3,
+      "exceptions": 154
+    },
+    {
+      "cell": "stream2",
+      "markings": 50160,
+      "unique": 50160,
+      "seconds": 3.5111790829978418,
+      "rss": 70057984,
+      "wrong_zero": 49595,
+      "wrong_unary": 4,
+      "exceptions": 561
+    },
+    {
+      "cell": "stream3",
+      "markings": 25752,
+      "unique": 25752,
+      "seconds": 2.3702137090003816,
+      "rss": 44662784,
+      "wrong_zero": 25169,
+      "wrong_unary": 0,
+      "exceptions": 583
+    },
+    {
+      "cell": "stream4",
+      "markings": 4240,
+      "unique": 4240,
+      "seconds": 0.38844691700069234,
+      "rss": 28393472,
+      "wrong_zero": 4039,
+      "wrong_unary": 0,
+      "exceptions": 201
+    }
+  ],
+  "sources": 424378,
+  "exceptions": 4337,
+  "certificate_kinds": {
+    "loop": 2525,
+    "head": 1532,
+    "missing": 257,
+    "mixed": 20,
+    "family_tower": 1,
+    "family_Right": 1,
+    "family_Left": 1
+  },
+  "lean": [
+    {
+      "file": "ExceptionsShared0.lean",
+      "code": 0,
+      "seconds": 0.22374395799124613,
+      "peak_rss_bytes": 294404096,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "Exceptions1.lean",
+      "code": 0,
+      "seconds": 0.22261125000659376,
+      "peak_rss_bytes": 192233472,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "ExceptionsPending1.lean",
+      "code": 0,
+      "seconds": 10.102813208999578,
+      "peak_rss_bytes": 868745216,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "ExceptionsPending2.lean",
+      "code": 0,
+      "seconds": 13.408851874992251,
+      "peak_rss_bytes": 959168512,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "ExceptionsPending3.lean",
+      "code": 0,
+      "seconds": 7.25940837500093,
+      "peak_rss_bytes": 688259072,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "ExceptionsPending4.lean",
+      "code": 0,
+      "seconds": 2.247123749999446,
+      "peak_rss_bytes": 483344384,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "ExceptionsStream1.lean",
+      "code": 0,
+      "seconds": 2.4845901249937015,
+      "peak_rss_bytes": 490405888,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "ExceptionsStream2.lean",
+      "code": 0,
+      "seconds": 5.449420499993721,
+      "peak_rss_bytes": 622575616,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "ExceptionsStream3.lean",
+      "code": 0,
+      "seconds": 5.4955196250084555,
+      "peak_rss_bytes": 629538816,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "ExceptionsStream4.lean",
+      "code": 0,
+      "seconds": 2.1222738749929704,
+      "peak_rss_bytes": 507183104,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "Residual.lean",
+      "code": 0,
+      "seconds": 0.22423270800209139,
+      "peak_rss_bytes": 207896576,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "FirstopJPrices.lean",
+      "code": 0,
+      "seconds": 0.3426258749968838,
+      "peak_rss_bytes": 437551104,
+      "limit": null,
+      "threads": 2
+    },
+    {
+      "file": "Selective.lean",
+      "code": 0,
+      "seconds": 0.34240162500645965,
+      "peak_rss_bytes": 441581568,
+      "limit": null,
+      "threads": 2
+    }
+  ],
+  "hashes": {
+    "Exceptions.lean": "e204aab4b478e4583934e5a1fa8905a6aa1cd6334e404ee7d8ee59c6fa199238",
+    "Exceptions.resources.json": "dab2d92084143657c8d86e36f938f0108cfe3ee782b83defef9220b93ee65791",
+    "Exceptions1.lean": "707717b696b215c4f58f738eb999a4e1f5a50437b89556230d6558d00e3f23c8",
+    "Exceptions1.resources.json": "d5a973481a2785fdc3fc8e1a0330593da8469942f66fdbfe7ee10b9390acc8be",
+    "ExceptionsPending1.lean": "e16e39a060b71f5caa543212f358934130a8e3ac55e2238af9f1a03656d61283",
+    "ExceptionsPending1.resources.json": "ec35b01655d6e959907d67c101c3b8d2673a525b9784423423d2064d8061f309",
+    "ExceptionsPending2.lean": "3e66753ba93f3383226ac0730ac52d0b181f123174db8ae38d30efa979d3c2d7",
+    "ExceptionsPending2.resources.json": "d9e8d6200bfdccb9c8ceac9b51bf63bdfed367bc8ca40c070c5b06e996eab24a",
+    "ExceptionsPending3.lean": "0c75312e1bdf2c122fcf4411fe532d229ceada89d635a13feaa360e9e5db57bd",
+    "ExceptionsPending3.resources.json": "00f55bef240af903ee418e136407fb4569841badb830e48c58cfa6401140ebba",
+    "ExceptionsPending4.lean": "6436003fcc8a1e65cef973855efa7ad8b2ad16c091c84086c777c91213f5a58b",
+    "ExceptionsPending4.resources.json": "e477710bfee2c25c1556c14735de22e110c19aa8e9c70283024b10206c83c231",
+    "ExceptionsShared0.lean": "ec9732857c03c23a24f14fe879f20cfcc62f1ba36adb78bf8eb803bde03cd702",
+    "ExceptionsShared0.resources.json": "fac27ddabeea083b59ef396f06c6b4ca6756dffde14521980a8cdfba8c06414f",
+    "ExceptionsStream1.lean": "5079d37beaae6231858ec3f279b5b43e64da43635df78134e1526fcd998252ef",
+    "ExceptionsStream1.resources.json": "22e87d94130fb928323c3d260c4c020c501537be96f20a7caaff5e893d415aef",
+    "ExceptionsStream2.lean": "2d05fc6060bf1dc54242cd23814a63323acefcd8d1cd25fb16c31c4ea0305265",
+    "ExceptionsStream2.resources.json": "d2f907a0a9f79b2bb04cbccf954665e78c8bf144e159b6a040ad296af4827925",
+    "ExceptionsStream3.lean": "933c175bdb3234b071e1a4da3e5c140cad4f39894089f5696ffa6e242e0acf0a",
+    "ExceptionsStream3.resources.json": "ea66010e023c8e203ed082fbcdc4d8f55f03b32f78cac55d15dfc4f639a7c3b3",
+    "ExceptionsStream4.lean": "0c4c6ca387d394446cbdeca889aa430d258bd1707147d86ede9e12ce65784d37",
+    "ExceptionsStream4.resources.json": "fca97b3dfbc5cc2587a9cfa03018b0384785177e73ab664ed74bd11692d1cf14",
+    "FirstopJPrices.lean": "37387abb937f2e7e98818a513d011d6bdd110d249831d0e52c3b63777a0bf5b3",
+    "FirstopJPrices.resources.json": "a9d22b7dbadce4603546729008bfa7ec6b5081157f92e03cb063d23a487b9fd6",
+    "Prices.resources.json": "b9faf693b65a9c8d110778d8d1faf56051908b4446abd53859a60c94c74751f8",
+    "Residual.lean": "84baf9561afcac9f8af0269ce1f06571eacf0d6c3df3a57c411ba15ceff28654",
+    "Residual.resources.json": "be812e1930221ad26906df0088bcb1ec9a2e49b693a6e2dc91323605a2b9b221",
+    "Selective.lean": "5ea40774994e9c82824c841577ff626b3005379acc4b5bfae3e758d768d9e825",
+    "Selective.resources.json": "2ec72cb050301453343cfc8c4f8530612a396e299f9780880baa8dce1885d50e",
+    "audit.json": "d253e8f8ea06649cc8c82571dd1c180790c593308849bad166757475bddb5254",
+    "audit.py": "3e7dee0970e040bb8facb2e73df188a0d619b57f825ee66e305ce087430c79eb",
+    "certificates.json": "20fed7f4ea08b29e05c9837fa2af99e5542e924a17538e5439827d27b0869bb3",
+    "check.py": "86c47cd4e89817763979f230b6061fb408e1b0ceac8fc3fb59d9f681daa08ea6",
+    "check_1.json": "e20bdbb0716fea92569493c11ec5368f99cf793f04784c16d3678822255f5e8f",
+    "check_2.json": "b681f3611f0bcc82379eca24e4b6855c2beb3342faefc21ca4a06f163bdcf333",
+    "check_3.json": "cbc496552fe0309c6028ae47b37c2b0d3b78ed0731aeebfd26aa5976f3690122",
+    "check_4.json": "6a6a3ed4d7e1b4869469768f49a33a77c929dd5838f200a6716f14ef465178a3",
+    "check_linear0.json": "1313dc384deb2c1145edc7f168c0fdb2dd86a56539b2beff9eadfab430198904",
+    "check_pending1.json": "ef73633acdb93c7d62d8e721164465318a2094832dafe79da6fdd136020ada61",
+    "check_pending2.json": "4d0005d4353ed126d15170cf8bb65d30a21bc111aa782e00baeb4be4a7e44c1f",
+    "check_pending3.json": "b8437fd1f300d3d5b32ffb6b175e299cee3a8e99bc86b919be21b91e81c9da8f",
+    "check_pending4.json": "6da2bbee5bd68bbc440de4d7f019a8c7776381724bf303c2c03e401a74c7838b",
+    "check_shared0.json": "a40f2c0329858c8a03e8fa9e58e6aafa3d6c9509c54909771ffe496a89467a38",
+    "check_stream1.json": "840e79f5a6f0bf5e6a05c692d0239f398ef2948abba047034c94f3dd8ac1844e",
+    "check_stream2.json": "766045a475dec9a5dfdc505172bd2680834cbf7268acc43de55696e201eb8971",
+    "check_stream3.json": "d089fd877005f1819465250d5ee53444e66b63aaafb66000d82b7b915a5d4410",
+    "check_stream4.json": "c3ace3fa3a37057572f69684f29b3ef8aa96b271940005706aa7564267b2adf7",
+    "controls.json": "f7fb2e8cef4e99151e02710c560614352ea456dd4fa08788b59a3b3511282feb",
+    "controls.py": "a152b955430a4460fbe912bc932593f6e99723675e82d9bcbf45ea7e200094c3",
+    "count.json": "a8ba4868d31e4c6c0bc2a7bb43732416d880b7ba094d0c50bb0d3a4040783a4b",
+    "count.py": "53a4650bac784fd7578d582443cc4e90ca7b47bbdd68a5d5d7ca6e0da2432e52",
+    "export.py": "b73b5b74f9a246ea38208f5849c1bc4ec632f88362613b59b3ecee0dfd9474c1",
+    "inspect_open.py": "f16c911ef3058262d87d513034ece47467ee48606dd1592a3b554067b9f76541",
+    "modules.json": "f8a4344d062040c3f0e963394e42fee5d602941a4cf982a8d2b474c3f539ec8e",
+    "normal_count.json": "3e9c84e5e9802c8104be41f60f4bc07a6d30f67f67c48e6698c7ff0613b1f72e",
+    "normal_count.py": "01318e3d4b9636eb091800e9189969c8d9f20918fb994c52a9c655ab9e65d37a",
+    "other_check.py": "29b3bd65a6fe5e202eec14b7c10776cdd0e44e127f25a386f537afbbd50d6a1c",
+    "other_count.json": "1b06b684f9a5c633985250c5a3e9fe5cfb1101fc1215148a3289f848cd16593b",
+    "other_count.py": "b3c1a49a9e1230da45253f480b3f5e4e0af5d5013ef4e06acdeb2f7a1fec0ead",
+    "run_limited.py": "d39a4c860a017e99ab98b1021281c1929b0daca3892efb850e307dcd4509cfb6",
+    "stream_check.py": "52ded4cc92f04fcb439af9469a45f4fdced4f626911068f8d3027e4baa354afe",
+    "stream_count.json": "b99c3a02a68e43ea447d7bc645d5119053e8953b87ad6b11cf362fd96374fd18",
+    "stream_count.py": "2713db7dab045dbe4b9e22eed5097acdc223f3ebc9ad38f561c52d7258ed2adb",
+    "supplement.py": "d7e8b7011f1dc1678de89068fdc07168949869faa3b82f6f922f23c5dacf52e5",
+    "validate.json": "6ac82673bfa94b4dac282e286649c70874df7d8ffa8802379074307badc39dad",
+    "validate.py": "9a0f4626bc862209490c9d7dd77c6e04a17bc461a7fe602ed7b938cc78a6fe37",
+    "verify.py": "a20eb5085e79b3404eb7870e88d78acda27f419dd476233ca222748ad959ff3e"
+  }
+}

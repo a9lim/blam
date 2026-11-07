@@ -1,0 +1,299 @@
+[
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1838,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 4
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1856,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 5
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1857,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 5
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1858,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 4
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1859,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 4
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1949,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "N",
+      "arity": 7
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1964,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "c",
+      "arity": 6
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1967,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "N",
+      "arity": 8
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1968,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "N",
+      "arity": 8
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1969,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "N",
+      "arity": 7
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 1970,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "N",
+      "arity": 7
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 2260,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 4
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 2301,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "N",
+      "arity": 7
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 2761,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 4
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 2766,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 4
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 2780,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "N",
+      "arity": 7
+    }
+  },
+  {
+    "file": "check-2-0-C-A.json",
+    "index": 2781,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "N",
+      "arity": 7
+    }
+  },
+  {
+    "file": "check-3-0-C-A.json",
+    "index": 427,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 14,
+      "head": "N",
+      "arity": 8
+    }
+  },
+  {
+    "file": "check-3-0-C-A.json",
+    "index": 433,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 5
+    }
+  },
+  {
+    "file": "check-3-0-C-A.json",
+    "index": 449,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "c",
+      "arity": 8
+    }
+  },
+  {
+    "file": "check-3-0-C-A.json",
+    "index": 454,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 12,
+      "head": "N",
+      "arity": 12
+    }
+  },
+  {
+    "file": "check-3-0-C-A.json",
+    "index": 455,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "c",
+      "arity": 6
+    }
+  },
+  {
+    "file": "check-3-0-C-A.json",
+    "index": 460,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 10,
+      "head": "N",
+      "arity": 8
+    }
+  },
+  {
+    "file": "check-3-0-C-C.json",
+    "index": 2633,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 13,
+      "head": "N",
+      "arity": 6
+    }
+  },
+  {
+    "file": "check-3-0-C-C.json",
+    "index": 2634,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 13,
+      "head": "N",
+      "arity": 6
+    }
+  },
+  {
+    "file": "check-3-0-C-C.json",
+    "index": 2635,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 13,
+      "head": "N",
+      "arity": 5
+    }
+  },
+  {
+    "file": "check-3-0-C-C.json",
+    "index": 2636,
+    "probe": "1",
+    "certificate": {
+      "kind": "head",
+      "steps": 13,
+      "head": "N",
+      "arity": 5
+    }
+  }
+]

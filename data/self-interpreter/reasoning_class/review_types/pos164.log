@@ -1,0 +1,2 @@
+B=48 bn=True tab=True laws=[1, 2, 0] states=13230 memo_hits=340 tabled=4368 fails=8507 sols=1 fuel=0 time=1.3s
+SOL (48, '(\\x0. ((x0 (\\x1. ((x1 (\\x2. (\\x3. x3))) c))) (((x0 (\\x1. x1)) (x0 x0)) j)))')

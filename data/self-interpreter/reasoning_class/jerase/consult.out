@@ -1,0 +1,71 @@
+[gaslamp] → codex · job cx-20261022-024311-c7c7 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-024311-c7c7/events.jsonl
+( •̀ᴗ•́ ) **The proposed trichotomy is not a valid exclusive, priced classification of all readers.** Eraser origins are exhaustive, but their proposed shape and cost consequences fail. No sub-162 reader or general `w ≥ 46` proof was obtained.
+
+Full report: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/jerase/REPORT.md).
+
+1. **Complete interpreters built:** none. All reported sizes are literal reader weights; no polished-machine claim or battery result.
+
+2. **Counterexamples and exact identities:**
+
+   - **The 162 erases `j` at terminal input-`K`.** Its `λu` has one use:
+     ```text
+     (λu. s (λq.c) (s s u)) j
+       → s (λq.c) (s s j)
+       →* c r N.
+     ```
+     The binder transfers `j`; terminal `K` removes it. Thus terminal-`K` erasure does not imply the 164’s shape or `w ≥ 48`.
+
+   - **The 165 erases a carrier containing `j` with input-`F`, at weight 49.** The existing adv5 redex-handler reader does this at depth 1 and weight 52. Thus input-`F` erasure does not imply a separate `j/N` operand or `w ≥ 53`.
+
+   - **One source `j` can die by both mechanisms**, even with β-normality and depth 1:
+     ```text
+     R58 = λs. s (λb t n. b (t n) (c t (t t n))) j.
+     ```
+     Zero gives `K (r j) (…) → r j`. Unary gives
+     `F (r j) (c r (r r j)) → c r (r r j) →* c r N`.
+     The handler copies `j`; leading `F` erases one residual and terminal `K` the other. Exact weight: **58**.
+
+   - **A source selector need not enclose the needed `s/c` leaves:**
+     ```text
+     R70 = λs. s I (s (λq.c))
+                   (s (λb t. b K F) j (s s s)).
+     ```
+     The outer provider returns `r / c r`; the inner handler returns the literal source `K / F`. Its operand therefore returns `j / N`. On unary, the **source `F`** erases `j`, with no source `s/c` leaves beneath that erasing binder. Exact weight: **70**, β-normal, depth 1. This is a missing routing shape under the narrow proposed case (i), although it introduces no fourth eraser origin.
+
+   [Witnesses.lean](/Users/a9lim/Work/blam/tmp/round4/jerase/Witnesses.lean) kernel-checks five witnesses’ zero laws, **all unary lengths**, and exact prices. These are not bounded-probe claims.
+
+3. **Repaired theorem:**
+
+   Track every residual of the source `j`, including copies. Each lineage ends in an intermediate contraction
+   ```text
+   C[(λx.B) A] → C[B[A/x]]
+   ```
+   where `x` is absent from `B` and the residual lies in `A`. Its erasing lambda originates in exactly one of:
+
+   - the reader source;
+   - a unary-prefix `F`’s first binder;
+   - terminal `K`’s second binder.
+
+   Input cell binders are linear; β-reduction creates no new lambda origins. This proves provenance exhaustion **per death event**, without minimality, depth, or normality assumptions. Multiple origins can occur in one run.
+
+   [Erasure.lean](/Users/a9lim/Work/blam/tmp/round4/jerase/Erasure.lean) kernel-checks the underlying arbitrary-term, arbitrary-finite-reduction theorem using
+   ```text
+   occ j (contract b a)
+     = occ (j+1) b + occ 0 b · occ j a.
+   ```
+   Labelled provenance exhaustion remains handwritten; explicit traces corroborate it.
+
+4. **What remains:**
+
+   The missing theorem concerns **shared source costs**, not erasure origins. Correct accounting remains
+   ```text
+   w = κ(U) + κ(Z \ U) + κ(source \ (Z ∪ U)) + 4 depth(j),
+   ```
+   with costs in the original lexical frame. Input erasers cost no reader bits, and copied runtime events cannot each be charged the same source material.
+
+   These witnesses do not refute a classification restricted to a global minimum under `(w, λ-count, depth)`. Such a result still needs a law-preserving domination argument for shared helpers, carriers, and needed binders. The erasure theorem supplies no such argument.
+
+Verification used no enumeration. All final commands completed within 0.4 seconds each, with sampled peak RSS below 450 MB and at most two threads. Only the lane directory was deliberately written.
+
+[gaslamp] job: cx-20261022-024311-c7c7 · session: 01a16259-0dd4-7dc1-8091-6d2cec317ae4 · thread: r5-jerase · resume: gaslamp codex --thread r5-jerase · tok: 2634k→33k
+[lane.sh] done rc=0 tries=1

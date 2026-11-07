@@ -1,0 +1,17 @@
+{
+  "label": "R335",
+  "id": "rootnarrow/work/h_xfull2.json:1",
+  "source": "((\\x0. ((x0 x0) _)) (\\x0. (\\x1. (\\x2. ((\\x3. (x3 (\\x4. x3))) (x2 x0))))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 58,
+  "work": 59,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 45,
+  "checked": true,
+  "sha256": "e6bf0b12597c692e600f31b36b25b6c2864f5418e49b26a2531088f29bebb743",
+  "seconds": 0.0009203340159729123,
+  "peak_rss_bytes": 24297472,
+  "threads": 1
+}

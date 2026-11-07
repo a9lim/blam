@@ -1,0 +1,7 @@
+term: 38 bits, redex: true
+oracle prefilter no_nf: false
+ladder: budget1=64 budget2=1000 bb-cap=5000 rescue=1000 x32 trans; prescan=true oracle=false work-mult=2 probe-fuel=256
+decided at: escalation engine
+verdict: DIVERGE (0.000s)
+no whnf: the proof landed on the term's own head chain
+rung 2 out of fuel: beta budget exhausted

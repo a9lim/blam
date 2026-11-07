@@ -1,0 +1,17 @@
+{
+  "label": "R258",
+  "id": "rootnarrow/work/h63re_6.json:0",
+  "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 ((x1 (x0 x1)) x1)))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 68,
+  "work": 74,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 68,
+  "checked": true,
+  "sha256": "7541dce39a6458d7f5da1f1dca234a342bd959c2a0d1d9106a673679827ed666",
+  "seconds": 0.0009727499855216593,
+  "peak_rss_bytes": 24330240,
+  "threads": 1
+}

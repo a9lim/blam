@@ -1,0 +1,20 @@
+[gaslamp] → codex · job cx-20261022-092327-143e · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-092327-143e/events.jsonl
+( •̀ᴗ•́ ) **No additional exclusions need reopening.** Saved [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/recert/REPORT.md), with exact terms and evidence in `MANIFEST.json`.
+
+| Corpus | Result |
+|---|---|
+| shared P1 | 4/4 re-certified |
+| shared P4 | 8/8 re-certified |
+| adv6 | All 63 handwritten residuals re-certified, including both new-base cases |
+| rootnarrow | All 60 reconstructed family positives re-certified; broader coverage recovered 265/266 divergence certificates |
+
+The remaining rootnarrow case, `h6_3.json:49`, terminates: filling holes with I gives `R →⁵¹³ I`. Lean verifies this. Its reader exclusion remains valid through **C2 mismatch**, not divergence.
+
+**SF and SF′ are sound under their stated preservation hypotheses.** They preserve a protected head and first argument while allowing arbitrary tails. SF2 incorrectly treats later arbitrary arguments as protected. The previously reopened `h2_2.json:31` remains unresolved.
+
+**Indexing correction:** shared/adv6 certificate-log indices differ from JSON indices. Every audited entry was matched by literal source; the report supplies both indices.
+
+All 340 replacement certificates passed independent source-matched validation. Fifteen Lean files passed, including all shared cases and both new-base cases. The closure-machine-to-lambda soundness bridge remains handwritten. No tracked files changed; no commits made.
+
+[gaslamp] job: cx-20261022-092327-143e · session: 01a163c7-e4df-7c93-91f4-d47bca42347b · thread: r5-recert · resume: gaslamp codex --thread r5-recert · tok: 4686k→21k
+[lane.sh] done rc=0 tries=1

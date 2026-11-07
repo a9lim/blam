@@ -1,0 +1,16 @@
+mixed58
+PASS w=58 cost=54 d=1 L=4 V=10 X=10 f=1 j=1 :: \s. s (\b t n. b (t n) (c t (t t n))) j
+F52
+PASS w=52 cost=48 d=1 L=5 V=9 X=6 f=1 j=1 :: \s. s ((\n b. b (\u t. t n) c) j) (s s s)
+165
+PASS w=49 cost=49 d=0 L=5 V=9 X=7 f=1 j=1 :: (\n s. s (\b. b (\u t. t n) c) (s s s)) j
+mixed50
+PASS w=50 cost=50 d=0 L=5 V=9 X=8 f=1 j=1 :: (\n s. s (\b. b (\u t. t n) c) (s s n)) j
+local_absorber
+PASS w=64 cost=60 d=1 L=7 V=11 X=6 f=1 j=1 :: \s. s (\b. b I c) (s (\b t. b I (\u. t t t)) j)
+sourceF
+PASS w=70 cost=66 d=1 L=9 V=12 X=4 f=1 j=1 :: \s. s I (s (\q. c)) (s (\b t. b K F) j (s s s))
+sourceF_shared
+PASS w=87 cost=79 d=2 L=10 V=13 X=11 f=1 j=1 :: \s. (\f. s (\b. b I c) (s (\b t. b K f) j (s s f))) F
+mixed67
+PASS w=67 cost=63 d=1 L=7 V=11 X=9 f=1 j=1 :: \s. (\n. s K (s F n) (s (\q. c) (s s n))) j

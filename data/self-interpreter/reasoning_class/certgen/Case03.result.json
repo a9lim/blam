@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "reason": [
+    "lambda-stop",
+    11
+  ],
+  "states": 8911,
+  "work": 10423,
+  "k": 2,
+  "id": "h2_2.final_left:3",
+  "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (\\x2. (x0 (x0 x1))))) _)))",
+  "label": "Case03",
+  "mode": "site",
+  "seconds": 0.020533583010546863,
+  "peak_rss_bytes": 26148864,
+  "threads": 1
+}

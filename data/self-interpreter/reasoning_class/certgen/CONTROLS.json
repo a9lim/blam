@@ -1,0 +1,403 @@
+{
+  "negative_checks": [
+    {
+      "name": "SF2_false_positive",
+      "mode": "site",
+      "k": 0,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        9
+      ]
+    },
+    {
+      "name": "SF2_false_positive",
+      "mode": "site",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        10
+      ]
+    },
+    {
+      "name": "SF2_false_positive",
+      "mode": "lambda",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        10
+      ]
+    },
+    {
+      "name": "SF2_false_positive",
+      "mode": "arg",
+      "k": 1,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        10
+      ]
+    },
+    {
+      "name": "identity",
+      "mode": "site",
+      "k": 0,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        0
+      ]
+    },
+    {
+      "name": "identity",
+      "mode": "site",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        0
+      ]
+    },
+    {
+      "name": "identity",
+      "mode": "lambda",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        0
+      ]
+    },
+    {
+      "name": "identity",
+      "mode": "arg",
+      "k": 1,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        0
+      ]
+    },
+    {
+      "name": "K",
+      "mode": "site",
+      "k": 0,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        0
+      ]
+    },
+    {
+      "name": "K",
+      "mode": "site",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        0
+      ]
+    },
+    {
+      "name": "K",
+      "mode": "lambda",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        0
+      ]
+    },
+    {
+      "name": "K",
+      "mode": "arg",
+      "k": 1,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        0
+      ]
+    },
+    {
+      "name": "rigid_spine",
+      "mode": "site",
+      "k": 0,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "a"
+      ]
+    },
+    {
+      "name": "rigid_spine",
+      "mode": "site",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "a"
+      ]
+    },
+    {
+      "name": "rigid_spine",
+      "mode": "lambda",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "a"
+      ]
+    },
+    {
+      "name": "rigid_spine",
+      "mode": "arg",
+      "k": 1,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "a"
+      ]
+    },
+    {
+      "name": "ignored_omega",
+      "mode": "site",
+      "k": 0,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        2
+      ]
+    },
+    {
+      "name": "ignored_omega",
+      "mode": "site",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        2
+      ]
+    },
+    {
+      "name": "ignored_omega",
+      "mode": "lambda",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        2
+      ]
+    },
+    {
+      "name": "ignored_omega",
+      "mode": "arg",
+      "k": 1,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        2
+      ]
+    },
+    {
+      "name": "self_application_identity",
+      "mode": "site",
+      "k": 0,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        5
+      ]
+    },
+    {
+      "name": "self_application_identity",
+      "mode": "site",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        5
+      ]
+    },
+    {
+      "name": "self_application_identity",
+      "mode": "lambda",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        5
+      ]
+    },
+    {
+      "name": "self_application_identity",
+      "mode": "arg",
+      "k": 1,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        5
+      ]
+    },
+    {
+      "name": "under_applied_binary",
+      "mode": "site",
+      "k": 0,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        2
+      ]
+    },
+    {
+      "name": "under_applied_binary",
+      "mode": "site",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        2
+      ]
+    },
+    {
+      "name": "under_applied_binary",
+      "mode": "lambda",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        2
+      ]
+    },
+    {
+      "name": "under_applied_binary",
+      "mode": "arg",
+      "k": 1,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        2
+      ]
+    },
+    {
+      "name": "bad_SF_dispatcher",
+      "mode": "site",
+      "k": 0,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "W"
+      ]
+    },
+    {
+      "name": "bad_SF_dispatcher",
+      "mode": "site",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "W"
+      ]
+    },
+    {
+      "name": "bad_SF_dispatcher",
+      "mode": "lambda",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "W"
+      ]
+    },
+    {
+      "name": "bad_SF_dispatcher",
+      "mode": "arg",
+      "k": 1,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "W"
+      ]
+    },
+    {
+      "name": "fuel_is_not_divergence",
+      "mode": "site",
+      "k": 0,
+      "accepted": false,
+      "reason": [
+        "lambda-stop",
+        18
+      ]
+    },
+    {
+      "name": "fuel_is_not_divergence",
+      "mode": "site",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "W"
+      ]
+    },
+    {
+      "name": "fuel_is_not_divergence",
+      "mode": "lambda",
+      "k": 2,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "W"
+      ]
+    },
+    {
+      "name": "fuel_is_not_divergence",
+      "mode": "arg",
+      "k": 1,
+      "accepted": false,
+      "reason": [
+        "opaque",
+        "W"
+      ]
+    }
+  ],
+  "positive_checks": [
+    {
+      "name": "Omega",
+      "states": 10,
+      "mode": "site",
+      "k": 0
+    },
+    {
+      "name": "W5",
+      "states": 19,
+      "mode": "site",
+      "k": 0
+    },
+    {
+      "name": "SR",
+      "states": 13,
+      "mode": "site",
+      "k": 0
+    },
+    {
+      "name": "SFprime",
+      "states": 27,
+      "mode": "site",
+      "k": 0
+    },
+    {
+      "name": "SF2",
+      "states": 16,
+      "mode": "site",
+      "k": 0
+    },
+    {
+      "name": "Y_family",
+      "states": 13,
+      "mode": "site",
+      "k": 0
+    }
+  ],
+  "mutations_rejected": 3
+}

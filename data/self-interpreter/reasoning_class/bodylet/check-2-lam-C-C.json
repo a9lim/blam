@@ -1,0 +1,20 @@
+{
+  "cell": [
+    2,
+    "lam",
+    "C",
+    "C"
+  ],
+  "sources": 720,
+  "counts": {
+    "wrongzero": 712,
+    "wrong1": 8
+  },
+  "exceptions": [],
+  "hits": [],
+  "source_digest": "89c9bf6c5747d04165f652f4d9eac5052d86a3b4c9afc2f37f74a8ac3197cd77",
+  "max_steps": 14,
+  "seconds": 8.027961665997282,
+  "rss": 116834304,
+  "threads": 2
+}

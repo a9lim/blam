@@ -1,0 +1,15 @@
+canonical (True, (46, 42, 1, 4, 8, 6, 1, 1))
+R59 (True, (59, 55, 1, 6, 10, 7, 1, 1))
+dup_transport (True, (58, 54, 1, 5, 9, 12, 1, 1))
+deep_transport (True, (75, 71, 1, 8, 12, 11, 3, 1))
+dual53 (True, (53, 49, 1, 5, 10, 3, 1, 1))
+R84 (True, (84, 80, 1, 8, 14, 12, 1, 1))
+transform R59
+transform columns: m,k,T,s_B,c_C,w,w_contract,w_hoist [(1, 1, 0, 0, 1, 59, 56, 57)]
+transform dup_transport
+transform columns: m,k,T,s_B,c_C,w,w_contract,w_hoist [(0, 2, 5, 4, 0, 58, 47, 51)]
+transform deep_transport
+transform columns: m,k,T,s_B,c_C,w,w_contract,w_hoist [(3, 1, 0, 0, 3, 75, 78, 75)]
+R84 wrapper C, X costs 44 34
+jN (31, 27, 1, 3, 6, 1, 0, 1) \s. s K j (s s s)
+jN (31, 27, 1, 5, 5, 1, 0, 1) \s. s (\x. s (\b. b F)) j

@@ -1,0 +1,23 @@
+{
+  "k": 4,
+  "depth": 1,
+  "location": "A",
+  "total": 55395,
+  "stats": {
+    "zero_head": 53320,
+    "exception": 2019,
+    "zero_missing": 56
+  },
+  "prices": {
+    "(3, 0)": 662,
+    "(3, 1)": 13362,
+    "(3, 2)": 9102,
+    "(3, 3)": 8236,
+    "(4, 0)": 1329,
+    "(4, 1)": 22704
+  },
+  "seconds": 6.418550166999921,
+  "rss_bytes": 41697280,
+  "threads": 2
+}
+EXCEPTIONS 2019 HITS 0

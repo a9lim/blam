@@ -1,0 +1,29 @@
+{
+  "source_sha256": "e98f6082563dda27bd624dd3dc737bb7b696bcef57ad7834b0b92593fbcb7b78",
+  "source_count": 11109,
+  "source_certified": 11077,
+  "source_unresolved": 32,
+  "source_families": {
+    "grammar": 7199,
+    "wrong": 2720,
+    "pump": 778,
+    "eval-grammar": 380,
+    "unknown": 32
+  },
+  "normal_count": 4417,
+  "normal_families": {
+    "grammar": 2689,
+    "eval-grammar": 298,
+    "pump": 479,
+    "wrong": 930,
+    "unknown": 21
+  },
+  "residual_count": 5240,
+  "residual_families": {
+    "grammar": 3385,
+    "wrong": 1044,
+    "pump": 484,
+    "eval-grammar": 298,
+    "unknown": 29
+  }
+}

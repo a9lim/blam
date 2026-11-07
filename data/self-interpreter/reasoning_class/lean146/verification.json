@@ -1,0 +1,252 @@
+{
+  "timestamp": "2026-10-22T03:23:46.967796+00:00",
+  "seconds": 35.35697845800314,
+  "longest_child": 2.662714958001743,
+  "lean_files": 17,
+  "recorded_refutations": 3484,
+  "audit_count": 3520,
+  "allowed_axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "records": [
+    {
+      "command": [
+        "/Users/a9lim/.venv/bin/python3",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/regenerate.py"
+      ],
+      "seconds": 0.6293834999960382,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/Users/a9lim/.venv/bin/python3",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/combine.py"
+      ],
+      "seconds": 0.02139329099736642,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/Minimum.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.31800187499902677,
+      "returncode": 0,
+      "sha256": "d37c37ffae8a271e590095efefdb97254f2d33d2faed1d4bbf36a783672962b5",
+      "audited_theorems": 4,
+      "log": "Minimum.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/Live.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 0.8572639580088435,
+      "returncode": 0,
+      "sha256": "4f7bdd0a4972f43a165ab2f9bc0eea4ce1f5ef8d9626860f56d2030444f1ff7d",
+      "audited_theorems": 13,
+      "log": "Live.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/All.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 1.051115000009304,
+      "returncode": 0,
+      "sha256": "ccb62604a15dc6ba59d9f17190fd533c5e0e24a8dc2c2dae2e96050a4c1919fd",
+      "audited_theorems": 19,
+      "log": "All.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks00.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.194912083010422,
+      "returncode": 0,
+      "sha256": "e7a309e682c02e0ef69784feaa8b96de86a0cb7ebd09f07d35e63ae3a84ed281",
+      "audited_theorems": 256,
+      "log": "ReaderChecks00.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks01.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.449679166995338,
+      "returncode": 0,
+      "sha256": "3c3182046a0370cd313ef52b2e1ff1733d80c8b8576175190cb12cb8b904572f",
+      "audited_theorems": 256,
+      "log": "ReaderChecks01.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks02.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.662714958001743,
+      "returncode": 0,
+      "sha256": "054bb16680c647c6a051654bd7de3b3a1a0dd7fd9c66541e3da339720a8d2cc3",
+      "audited_theorems": 256,
+      "log": "ReaderChecks02.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks03.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.222828917001607,
+      "returncode": 0,
+      "sha256": "711c24960a82b007245a3f6cf0b2b6c0ab468b5e9d34ced383447b1806048f31",
+      "audited_theorems": 256,
+      "log": "ReaderChecks03.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks04.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.6247686669958057,
+      "returncode": 0,
+      "sha256": "2a5f22a743245d29298b52df9524373f914e8d92afd43abb064e842d35cb3fb5",
+      "audited_theorems": 256,
+      "log": "ReaderChecks04.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks05.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.5899930000014137,
+      "returncode": 0,
+      "sha256": "c3958ff97457cfe88e8a0be358a788f59d0dc089c0523b1cde867f2e7bc98585",
+      "audited_theorems": 256,
+      "log": "ReaderChecks05.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks06.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.576104749998194,
+      "returncode": 0,
+      "sha256": "e54c1a0ef45e315bab59432bd906f78d1b6ac699df3194138574578fdf50b223",
+      "audited_theorems": 256,
+      "log": "ReaderChecks06.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks07.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.413899916995433,
+      "returncode": 0,
+      "sha256": "ef6d4fa7d555c15f2bf013e9781482b2ea9ef46d043f445b040f87084550f2d9",
+      "audited_theorems": 256,
+      "log": "ReaderChecks07.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks08.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.2226299589965492,
+      "returncode": 0,
+      "sha256": "3791bd4ccd3a4de97bed8e5e477ad3a5c4cc2b92a47d0c86102957a39b77c8a3",
+      "audited_theorems": 256,
+      "log": "ReaderChecks08.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks09.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.1867267079942394,
+      "returncode": 0,
+      "sha256": "9517b822199e340accbfeb26a8837c2e4d12ab48591554851a75ef1ccdae304f",
+      "audited_theorems": 256,
+      "log": "ReaderChecks09.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks10.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.260544165997999,
+      "returncode": 0,
+      "sha256": "b1e49ed47897b8bc069fc4e9e72888b4a2f00985a9d34dfa38509614a6e6bc46",
+      "audited_theorems": 256,
+      "log": "ReaderChecks10.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks11.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.2973789579991717,
+      "returncode": 0,
+      "sha256": "53cbd89243b2fc4ab46e6be2b83b860b764700637726847dccd70ca010f237c2",
+      "audited_theorems": 256,
+      "log": "ReaderChecks11.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks12.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 2.293232458992861,
+      "returncode": 0,
+      "sha256": "e0e25f4618a971c2cf55ca835e206103edc987ec3b6bdb17b62967e647c083f6",
+      "audited_theorems": 256,
+      "log": "ReaderChecks12.lean.log"
+    },
+    {
+      "command": [
+        "lean",
+        "-j2",
+        "/Users/a9lim/Work/blam/tmp/round4/lean146/ReaderChecks13.lean"
+      ],
+      "cwd": "/Users/a9lim/Work/blam/lean",
+      "seconds": 1.4648295419901842,
+      "returncode": 0,
+      "sha256": "5d922ded4ecde2e4adb8017430b6692f098e1badeb758444ce0aae01321ddf24",
+      "audited_theorems": 156,
+      "log": "ReaderChecks13.lean.log"
+    }
+  ]
+}

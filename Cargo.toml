@@ -1,8 +1,7 @@
 [package]
 name = "blam"
-version = "3.0.1"
+version = "3.0.2"
 edition = "2021"
-rust-version = "1.87"
 description = "Binary lambda calculus engine for algorithmic information theory: John Tromp's blc and uni, exhaustive term censuses, busy-beaver frontiers, exact Solomonoff/Kolmogorov measurements"
 license = "AGPL-3.0-or-later"
 repository = "https://github.com/a9lim/blam"

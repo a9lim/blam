@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "-c",
+    "import os; os.execv(\"tmp/round4/types/blam\", [\"tmp/round4/types/blam\", \"adjudicate\", r\"(\\x. x (x (\\y.y) x)) (\\x. x (x (\\y.y) x))\", \"--no-oracle\", \"--budget1\", \"64\", \"--budget2\", \"1000\", \"--bb-cap\", \"5000\", \"--work-mult\", \"2\", \"--probe-fuel\", \"256\", \"--rescue\", \"1000\"])"
+  ],
+  "exit": 0,
+  "seconds": 0.12,
+  "peak_rss_bytes": 8044544,
+  "killed": null
+}

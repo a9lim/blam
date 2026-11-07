@@ -1,0 +1,31 @@
+[gaslamp] → codex · job cx-20261022-084100-9086 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-084100-9086/events.jsonl
+(⌐■_■) **Closed the literal-λ-headed pending family; general hand-offs remain open.** Full deliverable: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/pending/REPORT.md).
+
+1. **Interpreters:** none built; no sub-162 claim.
+
+2. **New kernel-checked identities:**
+   - Exchanging `(λx y.D) A C` with `(λy x.Dswap) C A` costs exactly `uses(y) − uses(x)`, preserving λ count, hole depth, one source j and both laws at every unary length. This extends to arbitrary adjacent pairs in a consumed literal prefix.
+   - Consuming C while retaining A once costs
+     ```
+     Δw = (m−1)w(C) + mF(C) + (F(C)−1)q − 2m − 4 − G,
+     ΔL = (m−1)L(C)−1.
+     ```
+     One-hole transport holds when C is j-free or m=1. Exact hole-count/depth equations and the full lexicographic exclusion are checked.
+   - Independent-suffix pull and zero-capture push preserve the required laws; zero-capture push also transports three-coordinate minimality.
+
+3. **Complete residual closure:** using the established minimum-source filters plus these prices:
+
+   | Profile | Sources | Definite zero-law failures | Lean-refuted exceptions |
+   |---|---:|---:|---:|
+   | k=2, d=0 | 4,304 | 4,287 | 17 |
+   | k=2, d=1 | 9,185 | 9,182 | 3 |
+   | k=3,d=0/1; k=4,d=0 | 0 | — | — |
+
+   Thus **no minimum reader below 46 has literal λ-headed B with t≥1**, conditional on the established structural/filter completeness arguments. Inventory completeness is handwritten/computer-checked; all 20 normalizer exceptions have individual kernel-checked original-source refutations.
+
+4. **Remaining boundary:** x-headed and nested-redex-headed B with pending operands. Simply replacing A by `A C` is invalid: a checked counterexample has one j and weight 25 on both sides but distinct normal forms. Further specialization needs a proved invariant about arguments received by the shared calls.
+
+All checks stayed within caps: largest source check 9,185 terms; maximum check RSS 692 MB; longest check 7.67 seconds. Six final Lean modules passed, each under 0.41 seconds and 476 MB. Writes stayed entirely within the lane.
+
+[gaslamp] job: cx-20261022-084100-9086 · session: 01a163a1-0a28-7d03-b295-0fc6770dbad8 · thread: r5-pending · resume: gaslamp codex --thread r5-pending · tok: 4755k→36k
+[lane.sh] done rc=0 tries=1

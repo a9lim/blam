@@ -1,12 +1,12 @@
 name: Release
 
-# Triggered by the main push itself — crates.io trusted publishing
-# rejects `workflow_run`-minted tokens (2026-08-08, measured: status
-# 400, "does not support the workflow_run event trigger") — but the
-# guard job's first step WAITS for the CI workflow on this exact SHA
-# and fails unless it succeeded. Publication therefore still never
-# outruns the verification bar — cargo publish alone compiles the
-# package but runs none of the suite/spot-check/Lean gates.
+# Triggered by the main push itself, because crates.io trusted publishing
+# rejects `workflow_run`-minted tokens. The guard first resolves whether
+# this push is a release at all (an untagged version in Cargo.toml); only
+# then does it wait for the CI workflow on this exact SHA, and it fails
+# unless CI succeeded. Publication never outruns CI; the path-scoped Lean,
+# qALC and AIT workflows guard the repository's data, not the crate, and
+# are not publication gates.
 on:
   push:
     branches: [main]
@@ -23,10 +23,10 @@ permissions:
 jobs:
   # The gate. Version comes from Cargo.toml; the git tag is the
   # completion marker, so the pipeline is dormant while main's version
-  # is already tagged — bumping the version is what arms it. The
+  # is already tagged, and bumping the version is what arms it. The
   # crates.io probe is independent of the tag so a partial-failure run
   # resumes cleanly: an already-published version skips straight to the
-  # tag + GitHub release. Every checkout pins the exact SHA CI passed.
+  # tag + GitHub release. Every checkout pins the pushed SHA.
   guard:
     runs-on: ubuntu-latest
     outputs:
@@ -35,31 +35,6 @@ jobs:
       crates_published: ${{ steps.state.outputs.crates_published }}
       released: ${{ steps.state.outputs.released }}
     steps:
-      - name: Wait for CI success on this exact SHA
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          # Poll the CI workflow's run for this SHA (REST, not `gh run
-          # list -c`, so a runner gh version bump cannot break the gate).
-          # Both workflows trigger on the same push, so the run record
-          # may not exist yet on early polls ("null null" from jq on the
-          # empty list — treated as still pending). CI takes ~3 minutes;
-          # 120 * 30 s = 1 h ceiling.
-          for i in $(seq 1 120); do
-            resp="$(gh api \
-              "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&per_page=1" \
-              -q '.workflow_runs[0] | "\(.status) \(.conclusion)"' 2>/dev/null || true)"
-            status="${resp%% *}"
-            conclusion="${resp##* }"
-            if [ "$status" = "completed" ]; then
-              [ "$conclusion" = "success" ] && exit 0
-              echo "CI concluded '$conclusion' on $GITHUB_SHA — refusing to release" >&2
-              exit 1
-            fi
-            sleep 30
-          done
-          echo "CI never concluded for $GITHUB_SHA" >&2
-          exit 1
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -91,6 +66,32 @@ jobs:
           else
             echo "released=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: Wait for CI success on this exact SHA
+        if: steps.state.outputs.should_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Poll the CI workflow's run for this SHA (REST, not `gh run
+          # list -c`, so a runner gh version bump cannot break the gate).
+          # Both workflows trigger on the same push, so the run record
+          # may not exist yet on early polls ("null null" from jq on the
+          # empty list — treated as still pending). CI takes ~3 minutes;
+          # 120 * 30 s = 1 h ceiling.
+          for i in $(seq 1 120); do
+            resp="$(gh api \
+              "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&per_page=1" \
+              -q '.workflow_runs[0] | "\(.status) \(.conclusion)"' 2>/dev/null || true)"
+            status="${resp%% *}"
+            conclusion="${resp##* }"
+            if [ "$status" = "completed" ]; then
+              [ "$conclusion" = "success" ] && exit 0
+              echo "CI concluded '$conclusion' on $GITHUB_SHA — refusing to release" >&2
+              exit 1
+            fi
+            sleep 30
+          done
+          echo "CI never concluded for $GITHUB_SHA" >&2
+          exit 1
 
   # crates.io via trusted publishing: rust-lang/crates-io-auth-action
   # exchanges the workflow's OIDC identity for a short-lived registry

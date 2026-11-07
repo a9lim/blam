@@ -1,0 +1,9 @@
+{
+  "label": "R283",
+  "valid": true,
+  "source_matches": true,
+  "states": 47,
+  "sha256": "ffb8398660119d1c9c36ab0c6f81a93f70c644d2061c12754fc7c2be749f0c6f",
+  "seconds": 0.00021187501261010766,
+  "peak_rss_bytes": 24035328
+}

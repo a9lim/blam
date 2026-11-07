@@ -1,0 +1,2 @@
+'Blc.Rootcert2NestedOwl.no_count' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2NestedOwl.reject' depends on axioms: [propext, Quot.sound]

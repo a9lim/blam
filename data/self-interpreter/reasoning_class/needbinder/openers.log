@@ -1,0 +1,47 @@
+head b k 1 checked 25900
+head b k 2 checked 21517
+head b k 3 checked 10018
+head b k 4 checked 2684
+head b k 5 checked 270
+head b k 6 checked 0
+head s k 1 checked 13900
+head s k 2 checked 11560
+head s k 3 checked 5278
+head s k 4 checked 1312
+head s k 5 checked 95
+head s k 6 checked 0
+{
+  "sources": 92534,
+  "counts": {
+    "b:1": 25900,
+    "b:2": 21517,
+    "b:3": 10018,
+    "b:4": 2684,
+    "b:5": 270,
+    "b:6": 0,
+    "s:1": 13900,
+    "s:2": 11560,
+    "s:3": 5278,
+    "s:4": 1312,
+    "s:5": 95,
+    "s:6": 0
+  },
+  "wrong_normal_form": {
+    "zero": 87428,
+    "1": 5106,
+    "2": 0,
+    "3": 0
+  },
+  "certified_head_cycles": {
+    "zero": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+  },
+  "survivors": [],
+  "seconds": 44.3432629579911,
+  "peak_rss_bytes": 20873216,
+  "one_thread": true,
+  "complete_domain": "s (lambda b t. h A1 ... Ak), h in {b,s}, |Y|<=37, c present"
+}
+CUTOFFS 0

@@ -1,0 +1,5 @@
+T meanings 5742 0.4s
+Y 22572 viable 16405 complex 14773 unary triples 2 1.6s
+   20 Y = b | T1 = s (\x0. c) | T2 = s s j
+   20 Y = \x1. s | T1 = \x0. c | T2 = s s j
+done: hits 0 1.6s

@@ -1,0 +1,5 @@
+'Blc.Rootcert2.FlowCases06.reject58' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.FlowCases06.reject64' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.FlowCases06.reject70' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.FlowCases06.reject76' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2.FlowCases06.reject82' depends on axioms: [propext, Quot.sound]

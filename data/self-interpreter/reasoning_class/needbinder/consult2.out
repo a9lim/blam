@@ -1,0 +1,27 @@
+[gaslamp] → codex · job cx-20261022-013155-f7b6 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-013155-f7b6/events.jsonl
+(•̀ᴗ•́)و **The pinned nonlinear opener target is closed.** Appended [REPORT.md §5](/Users/a9lim/Work/blam/tmp/round4/needbinder/REPORT.md:222), preserving the previous report byte-for-byte.
+
+All **18,640** sources with `|B| ≤ 29` were excluded:
+
+| Multiplicity | First c in A | First c in D | First c pending |
+|---:|---:|---:|---:|
+| 2 | 8,571 | 4,716 | 1,795 |
+| 3 | 1,788 | 964 | 256 |
+| 4 | 390 | 140 | 20 |
+
+The report supplies original-source inequalities and the exhaustive constructor recurrence. No minimality, normality, or let-saving filter restricts this check.
+
+- **18,119** sources have a wrong zero normal form.
+- **497** have a wrong unary-one normal form.
+- **24** normalizer exceptions—including all seven resource cutoffs—have kernel-checked refutations in [NonlinearExceptions.lean](/Users/a9lim/Work/blam/tmp/round4/needbinder/NonlinearExceptions.lean). Twenty lose the required free `r`; four have a unique self-repeating redex.
+
+**Zero unresolved sources.** The check took **2.087 seconds**, **42.3 MB peak RSS**, and **one thread**. Lean reports only `propext` and `Quot.sound`. Inventory completeness and ordinary normal-form rejections remain Python/handwritten evidence, not a fully formalized enumeration.
+
+Combined with the earlier reductions, this excludes a **globally minimum sub46 literal whole-cell opener**. General R1′ remains open, including single-role capture across lambda paths.
+
+The 2,817 cases with `m=2` and lambda-shaped `A` are all excluded. The 162’s absorber is outside this literal source shape and has **one** source occurrence of `u`; no equality case at weight46 is established.
+
+Hashes and the verification boundary are recorded in [nonlinear_verification.json](/Users/a9lim/Work/blam/tmp/round4/needbinder/nonlinear_verification.json).
+
+[gaslamp] job: cx-20261022-013155-f7b6 · session: 01a16205-620f-7980-a236-a8b182473185 · thread: r5-needbinder · resume: gaslamp codex --thread r5-needbinder · tok: 6583k→64k
+[lane.sh] done rc=0 tries=1

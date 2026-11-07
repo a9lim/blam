@@ -1,0 +1,57 @@
+{
+  "q": 3,
+  "markings": 3234,
+  "unique": 3234,
+  "rows": {
+    "4:tail": {
+      "markings": 30,
+      "unique": 30,
+      "wrong_nf": {
+        "zero": 30
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "3:tail": {
+      "markings": 360,
+      "unique": 360,
+      "wrong_nf": {
+        "zero": 348
+      },
+      "exceptions": 12,
+      "hits": 0
+    },
+    "3:A": {
+      "markings": 84,
+      "unique": 84,
+      "wrong_nf": {
+        "zero": 84
+      },
+      "exceptions": 0,
+      "hits": 0
+    },
+    "2:tail": {
+      "markings": 1935,
+      "unique": 1935,
+      "wrong_nf": {
+        "zero": 1793,
+        "1": 16
+      },
+      "exceptions": 126,
+      "hits": 0
+    },
+    "2:A": {
+      "markings": 825,
+      "unique": 825,
+      "wrong_nf": {
+        "zero": 825
+      },
+      "exceptions": 0,
+      "hits": 0
+    }
+  },
+  "seconds": 2.344404833012959,
+  "rss": 33587200,
+  "threads": 2
+}
+EXCEPTIONS 138 HITS 0

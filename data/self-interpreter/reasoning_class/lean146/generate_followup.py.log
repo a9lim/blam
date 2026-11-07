@@ -1,0 +1,4 @@
+exported 3484 kernel refutations; 2260604 bytes
+Wrote 14 chunks, 3484 Reader refutations, no searches.
+Prepared recorded-row identities: [(0, 364), (1, 1762), (2, 1070), (3, 230), (4, 58)]
+Assembled Final146.lean; every finite check uses decide +kernel.

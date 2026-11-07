@@ -21,7 +21,12 @@ within 2^16 beta.  Like `blam selfint wiring --strict`, it is a filter, not a
 proof of strictness.
 
 --int4 encodes the programs in int4.lam's four-primitive code (00 lambda,
-01 application, 10 variable zero, 11 successor) instead of BLC.
+01 application, 10 variable zero, 11 successor) instead of BLC.  Successor
+is weakening, so `11 M` is M under one more binder, for any M: a program has
+an encoding for every way of weakening its subterms, and the battery runs
+each program under all of them (or, past ALL4, the canonical, shortest and
+maximally weakened ones and a fixed pseudo-random sample).  Tromp's primes
+encoding puts 11s in front of applications; `(11)^i 10` alone misses that.
 
 Needs target/release/blam (cargo build --release).
 """
@@ -29,6 +34,7 @@ from concurrent.futures import ThreadPoolExecutor
 import functools
 import os
 from pathlib import Path
+import random
 import subprocess
 import sys
 import tempfile
@@ -65,12 +71,108 @@ def enc(t):
 
 
 def enc4(t):
-    """int4.lam's four-primitive code: 0-based index i is (11)^i 10."""
+    """int4.lam's four-primitive code, canonical form: 0-based index i is
+    (11)^i 10 and no other subterm is weakened."""
     if t[0] == "V":
         return "11" * t[1] + "10"
     if t[0] == "L":
         return "00" + enc4(t[1])
     return "01" + enc4(t[1]) + enc4(t[2])
+
+
+def min_free(t, c=0):
+    """Smallest free 0-based index of t under c binders, or None if closed."""
+    if t[0] == "V":
+        return t[1] - c if t[1] >= c else None
+    if t[0] == "L":
+        return min_free(t[1], c + 1)
+    m = [x for x in (min_free(t[1], c), min_free(t[2], c)) if x is not None]
+    return min(m) if m else None
+
+
+def _weakenings(t, d):
+    """Each k with t = shift^k(q): 11^k q.  Weakening is capped at the d
+    binders around t, so it never pops the program's own environment."""
+    m = min_free(t)
+    return range((d if m is None else min(d, m)) + 1)
+
+
+def _enc4_all(t, d):
+    out = []
+    for k in _weakenings(t, d):
+        q = shift(t, -k)
+        if q[0] == "V":
+            if q[1] == 0:
+                out.append("11" * k + "10")
+        elif q[0] == "L":
+            out += ["11" * k + "00" + e for e in _enc4_all(q[1], d - k + 1)]
+        else:
+            out += ["11" * k + "01" + f + a
+                    for f in _enc4_all(q[1], d - k)
+                    for a in _enc4_all(q[2], d - k)]
+    return out
+
+
+def _enc4_count(t, d):
+    n = 0
+    for k in _weakenings(t, d):
+        q = shift(t, -k)
+        if q[0] == "V":
+            n += q[1] == 0
+        elif q[0] == "L":
+            n += _enc4_count(q[1], d - k + 1)
+        else:
+            n += _enc4_count(q[1], d - k) * _enc4_count(q[2], d - k)
+    return n
+
+
+def _enc4_pick(t, d, rng, pick):
+    ks = [k for k in _weakenings(t, d)
+          if shift(t, -k)[0] != "V" or shift(t, -k)[1] == 0]
+    k = pick(rng, ks)
+    q = shift(t, -k)
+    if q[0] == "V":
+        return "11" * k + "10"
+    if q[0] == "L":
+        return "11" * k + "00" + _enc4_pick(q[1], d - k + 1, rng, pick)
+    return ("11" * k + "01" + _enc4_pick(q[1], d - k, rng, pick)
+            + _enc4_pick(q[2], d - k, rng, pick))
+
+
+@functools.lru_cache(None)
+def enc4_short(t, d=0):
+    """A shortest int4 encoding: each subterm weakened as far as pays."""
+    best = None
+    for k in _weakenings(t, d):
+        q = shift(t, -k)
+        if q[0] == "V":
+            if q[1] != 0:
+                continue
+            e = "10"
+        elif q[0] == "L":
+            e = "00" + enc4_short(q[1], d - k + 1)
+        else:
+            e = "01" + enc4_short(q[1], d - k) + enc4_short(q[2], d - k)
+        e = "11" * k + e
+        if best is None or len(e) < len(best):
+            best = e
+    return best
+
+
+ALL4 = 64       # programs with at most this many encodings run under all
+SAMPLE4 = 16    # otherwise: canonical, shortest, maximal, and this many samples
+
+
+def enc4_all(t):
+    """The int4 encodings of closed t that the battery runs."""
+    if _enc4_count(t, 0) <= ALL4:
+        return sorted(set(_enc4_all(t, 0)))
+    rng = random.Random(enc(t))
+    out = {enc4(t), enc4_short(t),
+           _enc4_pick(t, 0, None, lambda _, ks: max(ks))}
+    out |= {_enc4_pick(t, 0, rng, lambda r, ks: r.choice(ks))
+            for _ in range(SAMPLE4)}
+    return sorted(out)
 
 
 def shift(t, d, c=0):
@@ -128,15 +230,23 @@ def programs(max_bits=18):
     return out + [dbparse.parse(s) for s in EXTRA]
 
 
-def _probe(E, M, uni, code=enc):
+@functools.lru_cache(None)
+def _want(M, uni):
     if uni:
         want = ("L", ("A", shift(M, 1), ("V", 0)))
-        got = ("L", ("A", shift(E, 1), bitlist(code(M), ("V", 0))))
     else:
         want = ("L", ("L", ("A", ("A", ("V", 1), ("L", shift(M, 3))), ("V", 0))))
+    return normalize(enc(want), 1 << 16)
+
+
+def _probe(E, M, uni, code=enc):
+    bits = code(M)
+    if uni:
+        got = ("L", ("A", shift(E, 1), bitlist(bits, ("V", 0))))
+    else:
         got = ("L", ("L", ("A", ("A", shift(E, 2), ("V", 1)),
-                             bitlist(code(M), ("V", 0)))))
-    w = normalize(enc(want), 1 << 16)
+                             bitlist(bits, ("V", 0)))))
+    w = _want(M, uni)
     if w is None:
         return "skip"
     g = normalize(enc(got), 1 << 20)
@@ -144,11 +254,19 @@ def _probe(E, M, uni, code=enc):
 
 
 def check(E, uni=False, max_bits=18, threads=10, code=enc):
-    """Returns (ok, skipped, failures); failures lists (program bits, verdict)."""
-    progs = programs(max_bits)
+    """Returns (ok, skipped, failures); failures lists (program bits, verdict),
+    plus the code bits when they are not the program's BLC.  `code` maps a
+    program to its code bits, or to a list of codes that must all pass; the
+    counts are per code."""
+    probes = []
+    for M in programs(max_bits):
+        cs = code(M)
+        probes += [(M, c) for c in ([cs] if isinstance(cs, str) else cs)]
     with ThreadPoolExecutor(threads) as ex:
-        res = list(ex.map(lambda M: _probe(E, M, uni, code), progs))
-    bad = [(enc(M), r) for M, r in zip(progs, res) if r not in ("ok", "skip")]
+        res = list(ex.map(lambda p: _probe(E, p[0], uni, lambda _: p[1]),
+                          probes))
+    bad = [(enc(M), r) + (() if c == enc(M) else (c,))
+           for (M, c), r in zip(probes, res) if r not in ("ok", "skip")]
     return sum(r == "ok" for r in res), sum(r == "skip" for r in res), bad
 
 
@@ -163,7 +281,7 @@ def strict_halts(E, threads=7):
 def main():
     args = sys.argv[1:]
     uni = "--uni" in args
-    code = enc4 if "--int4" in args else enc
+    code = enc4_all if "--int4" in args else enc
     max_bits = 18
     if "--max-bits" in args:
         i = args.index("--max-bits")

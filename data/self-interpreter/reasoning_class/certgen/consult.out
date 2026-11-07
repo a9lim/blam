@@ -1,0 +1,13 @@
+[gaslamp] → codex · job cx-20261022-082112-a5f9 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-082112-a5f9/events.jsonl
+( •̀_•́ ) **33/36 requested residuals certified; SF2 soundness bug found.** Full findings: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/certgen/REPORT.md).
+
+- Implemented one general regular closure/stack checker. Remaining residuals: `h2_2.final_left` indices **0, 2, 3**.
+- **SF2 accepts a false divergence certificate:** `(λx. x x)(λz. z (λa b. b b z) _)`. Filling `_` with identity makes its zero probe reduce to `r` in **17 beta steps**, kernel-checked.
+- Seven audited SF2 cases have independent replacements. **`h2_2.json:31` must be reopened.**
+- The generic checker and **49 code-table instances** are kernel-checked. The translation to lambda head reduction is handwritten; one larger accepted instance has only Python replay.
+- Regression: **255/256** old-rule positives recovered; all **36 terminating-control checks** rejected.
+
+Operational exception: an early grouped exploratory process exceeded the aggregate 100,000-state cap. Final evidence was regenerated per source within limits. Notes and report disclose this and all deferred obligations.
+
+[gaslamp] job: cx-20261022-082112-a5f9 · session: 01a1638e-e97a-7b63-8e0f-bd2783d5936c · thread: r5-certgen · resume: gaslamp codex --thread r5-certgen · tok: 11098k→74k
+[lane.sh] done rc=0 tries=1

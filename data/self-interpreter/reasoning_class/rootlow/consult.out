@@ -1,0 +1,28 @@
+[gaslamp] → codex · job cx-20261022-052958-7651 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-052958-7651/events.jsonl
+(•̀ᴗ•́) **Partial closure: every linear root let is excluded; the nonlinear low-profile branch remains open.**
+
+Full deliverable: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/rootlow/REPORT.md).
+
+1. **Interpreters:** none built; no sub-162 claim or battery result.
+
+2. **Exact bridge:** for
+   \[
+   (\lambda x\,y_1\ldots y_t\,s.M)\,A\,C_1\ldots C_t,
+   \]
+   exposing `λs` changes weight by
+   \[
+   F(A)+\sum_iF(C_i)+(t+1)\operatorname{occ}_s(M)
+   -\operatorname{occ}_x(M)-\sum_i\operatorname{occ}_{y_i}(M),
+   \]
+   with `j` counted four times in `F`. The price, unchanged λ count, and depth change are kernel-checked. **At depth 0 or 1, this exposure moves `j` deeper, so equal weight does not transfer minimality.**
+
+   Arbitrary hand-offs admit a handwritten head-exposure/coloured-hole repair argument. Its exact kernel-checked net price is total β expansion minus \(\sum(3h-2)\) for discarded `j` copies. No bound forcing that net price nonpositive was established.
+
+3. **Linear-root exclusion:** assuming the current established structural, depth and direct-hole exclusions, complete inventories cover **135,652 sources**, with no survivors. All **118 normalizer exceptions** have individual Lean refutations; another 1,236 ordinary failures are individually certified. Inventory completeness is handwritten with computer checks; the arithmetic, prices and 1,354 source refutations are kernel-checked. All nine Lean files passed, within caps.
+
+4. **Remaining work:** nonlinear profiles have count-only envelopes of 319,867–4,305,944 sources. They were not enumerated or treated as reader survivors. Closing them needs a semantic bound on sharing during pre-stream hand-offs; the literal-prefix bridge alone does not supply it.
+
+All artifacts are confined to `tmp/round4/rootlow/`; no tracked files changed.
+
+[gaslamp] job: cx-20261022-052958-7651 · session: 01a162f2-2462-7b70-8c15-6ebb45a78f78 · thread: r5-rootlow · resume: gaslamp codex --thread r5-rootlow · tok: 8837k→62k
+[lane.sh] done rc=0 tries=1

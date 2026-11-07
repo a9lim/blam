@@ -1,0 +1,22 @@
+{
+  "cell": [
+    2,
+    "lam",
+    "A",
+    "B"
+  ],
+  "sources": 420,
+  "sorted_source_digest": "a27053932e752f83edac50fd877b51b2e60806433c122717f25d0bc93644ea65",
+  "independent_counts": {
+    "wrongzero": 420
+  },
+  "constructor_yields": 3510,
+  "component_prices": {
+    "a": 6,
+    "b": 25,
+    "p": 4
+  },
+  "feature_states": 0,
+  "seconds": 0.021664125000825152,
+  "rss": 25346048
+}

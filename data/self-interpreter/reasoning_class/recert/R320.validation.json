@@ -1,0 +1,9 @@
+{
+  "label": "R320",
+  "valid": true,
+  "source_matches": true,
+  "states": 92,
+  "sha256": "c9ac4843691e22e84d6cb7ae6d2c400e1327d04b3c34f8c862997dd64b2e6d25",
+  "seconds": 0.0002991250075865537,
+  "peak_rss_bytes": 24199168
+}

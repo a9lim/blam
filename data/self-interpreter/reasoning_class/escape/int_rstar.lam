@@ -1,0 +1,7 @@
+-- Codex's R*: n = 1 value cons K (NEXT J s), J = \x y z. z; actual variable law holds for every n, rigid law fails at n = 1
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\b \r. cont (r (\d \t. d (\f. f (\x \y. x) (u (\x \y \z. z) list)) r))) (list list u))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

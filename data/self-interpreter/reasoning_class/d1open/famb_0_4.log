@@ -1,0 +1,9 @@
+p=0 m=4 W=21 OMAX=15: T meanings 52, operand meanings 410, operand caps 0, 0.0s
+A2 701 viable 542 unary survivors 6 ucaps 0 0.2s
+  U 2 b | s | ?2 | T = s s j | left 3
+  U 2 b | c | ?2 | T = s s j | left 2
+  U 2 b | ?2 | ?2 | T = s s j | left 1
+  U 2 b | \x0. x0 | ?2 | T = s s j | left 1
+  U 2 b | \x0. s | ?2 | T = s s j | left 0
+  U 3 s | \x0. x0 | ?2 | T = s s j | left 0
+done p=0 m=4: hits 0 zcaps 0 0.2s

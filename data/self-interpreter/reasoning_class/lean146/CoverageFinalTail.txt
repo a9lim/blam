@@ -1,0 +1,32 @@
+
+namespace Blc.Lean146Enum
+open Term SelfintClass SelfintClassNext SelfintLowerBound SelfintFloor Lean146Live Lean146
+
+/-- The complete five-row grammar exclusion, with no coverage hypothesis. -/
+theorem fiveRowExclusion : FiveRowExclusion := by
+  intro B hs hj hn hh hl hnl hrows
+  rcases hrows with ⟨hc, ⟨hd, hcase⟩ | ⟨hd,hL,hV,hX⟩⟩
+  · rcases hcase with ⟨hL,hV,hX⟩ | ⟨hL,hV,hX⟩ | ⟨hL,hV,hX⟩ | ⟨hL,hV,hX⟩
+    · exact row0_reject (row_complete hs hj hc hn hh hl hnl hL hV hX hd)
+    · exact row1_reject (row_complete hs hj hc hn hh hl hnl hL hV hX hd)
+    · exact row2_reject (row_complete hs hj hc hn hh hl hnl hL hV hX hd)
+    · exact row3_reject (row_complete hs hj hc hn hh hl hnl hL hV hX hd)
+  · exact row4_reject (row_complete hs hj hc hn hh hl hnl hL hV hX hd)
+
+/-- Unconditional weight-30 bound for every lambda-rooted two-probe reader. -/
+theorem lambda_reader_weight_30 {B : Term} (hr : Reader (.lam B))
+    (hj : occ 1 (.lam B) = 1) : 30 ≤ cost (.lam B) + 4 * depth (.lam B) := by
+  by_cases h : 30 ≤ cost (.lam B) + 4 * depth (.lam B)
+  · exact h
+  · obtain ⟨hn,hh,hl,hnl,hrows⟩ := sub30_lambda_shape hr hj (by omega)
+    exact (fiveRowExclusion B hr.scope hj hn hh hl hnl hrows hr).elim
+
+/-- Modular bound from finite coverage and the minimum-source classification. -/
+theorem reader_weight_30_of_minimum_lambda (hmin : MinimumLambdaCoverage)
+    {R : Term} (hr : Reader R) (hj : occ 1 R = 1) : 30 ≤ weight R :=
+  reader_weight_30_of_coverage hmin fiveRowExclusion hr hj
+
+#print axioms fiveRowExclusion
+#print axioms lambda_reader_weight_30
+#print axioms reader_weight_30_of_minimum_lambda
+end Blc.Lean146Enum

@@ -1,0 +1,9 @@
+/Users/a9lim/Work/blam/tmp/round4/firstopj/FirstopJPrices.lean:62:27: warning: Variable name `hm` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'Blc.FirstopJ.strict_hoist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.FirstopJ.selective_price' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopJ.selected_depth_upper' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopJ.direct_ceilings' depends on axioms: [propext, Classical.choice, Quot.sound]

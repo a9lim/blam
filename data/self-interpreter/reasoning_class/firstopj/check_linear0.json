@@ -1,0 +1,17 @@
+{
+  "name": "linear0",
+  "markings": 31517,
+  "unique": 31517,
+  "rows": {
+    "0:0:1": {
+      "markings": 31517,
+      "unique": 31517,
+      "wrong_zero": 31406,
+      "wrong_unary": 111
+    }
+  },
+  "exceptions": [],
+  "hits": [],
+  "seconds": 1.1535855410038494,
+  "rss": 48103424
+}

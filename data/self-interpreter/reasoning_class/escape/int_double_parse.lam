@@ -1,0 +1,8 @@
+-- direct-style NEXT: parse each operand twice, once for its value (cont K) and once for its rest (cont F); violates the branch laws and C1
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list list u))
+    (\bit1 \t. bit1
+      (cont (\args \arg. intL (\f \r. f) t (\zx \zy. zx arg (zy args))) (intL (\f \r. r) t))
+      ((\r1. cont (\args. intL (\f \r. f) t args (intL (\f \r. f) r1 args)) (intL (\f \r. r) r1))
+        (intL (\f \r. r) t))))
+  (x x))

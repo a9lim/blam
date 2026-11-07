@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/Users/a9lim/.venv/bin/python",
+    "/Users/a9lim/Work/blam/tmp/round4/review_body/spot.py",
+    "cell"
+  ],
+  "code": 0,
+  "seconds": 0.06599866700707935,
+  "peak_child_rss": 2654208,
+  "limit": null
+}

@@ -1,0 +1,9 @@
+'Blc.Close46BoundaryAlgebra.unary_dup' depends on axioms: [propext, Quot.sound]
+'Blc.Close46BoundaryAlgebra.dual_zero' depends on axioms: [propext, Quot.sound]
+'Blc.Close46BoundaryAlgebra.dual_one' depends on axioms: [propext, Quot.sound]
+'Blc.Close46BoundaryAlgebra.dual_long' depends on axioms: [propext, Quot.sound]
+'Blc.Close46BoundaryAlgebra.near_zero' depends on axioms: [propext, Quot.sound]
+'Blc.Close46BoundaryAlgebra.near_one' depends on axioms: [propext, Quot.sound]
+'Blc.Close46BoundaryAlgebra.near_long' depends on axioms: [propext, Quot.sound]
+'Blc.Close46BoundaryAlgebra.factory_true' depends on axioms: [propext, Quot.sound]
+'Blc.Close46BoundaryAlgebra.factory_selector_price' does not depend on any axioms

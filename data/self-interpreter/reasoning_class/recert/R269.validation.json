@@ -1,0 +1,9 @@
+{
+  "label": "R269",
+  "valid": true,
+  "source_matches": true,
+  "states": 121,
+  "sha256": "a02061bd3c1b4c9c7c83ae5883cb4ba9c432458e7712fc159b202fa3e4b3d914",
+  "seconds": 0.00034108301042579114,
+  "peak_rss_bytes": 24150016
+}

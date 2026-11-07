@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "tmp/round4/review_types/candidates.py"
+  ],
+  "exit": 0,
+  "seconds": 0.118,
+  "peak_rss_bytes": 5914624,
+  "killed": null
+}

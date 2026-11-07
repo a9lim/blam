@@ -1,0 +1,3 @@
+T meanings 3486 function/c-headed 1924 0.2s
+HIT 44 B = b (\x1. \x2. x2) c | T = s (\x0. x0) (s s) j
+B 1485 viable 255 complex 211 hits 1 5.0s

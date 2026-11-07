@@ -1,0 +1,46 @@
+
+namespace Blc.Lean146Enum
+open Term SelfintClass SelfintClassNext SelfintWireCost SelfintLowerBound SelfintFloor Lean146Live
+
+theorem streamHead_of_head {b : Term} (hh : Head 0 b) : streamHead b = true := by
+  induction hh with
+  | var => rfl
+  | app a hh ih => exact ih
+
+theorem rowExact_complete {b : Term} {l v x d : Nat}
+    (hs : FreeUnder 3 b) (hj : occ 1 (.lam b) = 1) (hc : occ 0 (.lam b) = 1)
+    (hn : NFt (.lam b)) (hh : Head 0 b)
+    (hlive : 2 ≤ live (.lam b)) (hlin : 1 ≤ nonlinear (.lam b))
+    (hl : lamCount (.lam b) = l) (hv : leafCount (.lam b) = v)
+    (hx : tax 1 (.lam b) = x) (hd : depth (.lam b) = d) :
+    .lam b ∈ rowExact l v x d := by
+  have hbody := layouts_complete (l-1+v) b 1
+    (by simp only [lamCount] at hl; change leafCount b = v at hv; omega)
+    hs hn (by change occ 2 b ≤ 1; change occ 2 b = 1 at hj; omega)
+  have hl' : lamCount b = l-1 := by simp only [lamCount] at hl; omega
+  have hd' : occDepth 2 b = d-1 := by
+    change occ 2 b = 1 at hj
+    change occDepth 2 b + occ 2 b = d at hd
+    omega
+  change occ 2 b = 1 at hj
+  change occ 1 b = 1 at hc
+  change leafCount b = v at hv
+  change tax 2 b = x at hx
+  simp only [Nat.reduceAdd, hl', hv, hx, hj, hc, hd'] at hbody
+  apply List.mem_map.mpr
+  refine ⟨b, List.mem_filter.mpr ⟨hbody, ?_⟩, rfl⟩
+  simp [survives, streamHead_of_head hh, hlive, hlin]
+
+theorem row_complete {b : Term} {l v x d : Nat}
+    (hs : FreeUnder 3 b) (hj : occ 1 (.lam b) = 1) (hc : occ 0 (.lam b) = 1)
+    (hn : NFt (.lam b)) (hh : Head 0 b)
+    (hlive : 2 ≤ live (.lam b)) (hlin : 1 ≤ nonlinear (.lam b))
+    (hl : lamCount (.lam b) = l) (hv : leafCount (.lam b) = v)
+    (hx : tax 1 (.lam b) ≤ x) (hd : depth (.lam b) = d) :
+    .lam b ∈ row l v x d := by
+  apply List.mem_flatMap.mpr
+  refine ⟨tax 1 (.lam b), by simp [splits]; omega, ?_⟩
+  exact rowExact_complete hs hj hc hn hh hlive hlin hl hv rfl hd
+
+#print axioms row_complete
+end Blc.Lean146Enum

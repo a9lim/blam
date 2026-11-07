@@ -1,0 +1,27 @@
+[
+  {
+    "module": "Proofs",
+    "exit_code": 0,
+    "seconds": 0.9773012079967884
+  },
+  {
+    "module": "RankRealization",
+    "exit_code": 0,
+    "seconds": 0.31762991700088605
+  },
+  {
+    "module": "Protected461",
+    "exit_code": 0,
+    "seconds": 0.35378074999607634
+  },
+  {
+    "module": "Residuals",
+    "exit_code": 0,
+    "seconds": 0.2019710830063559
+  },
+  {
+    "module": "AxiomAudit",
+    "exit_code": 0,
+    "seconds": 0.18564450000121724
+  }
+]

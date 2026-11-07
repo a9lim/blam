@@ -1,0 +1,17 @@
+{
+  "label": "A003",
+  "id": "shared/p1.json:15",
+  "source": "(\\x0. ((\\x1. (x1 x1)) (\\x1. ((x1 (\\x2. (x0 (x1 x2)))) _))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 91,
+  "work": 108,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 91,
+  "checked": true,
+  "sha256": "72cacf54ddc9db8028e2f273e65513bcdf92d61cc148758986f38c7d42bac623",
+  "seconds": 0.0011940000113099813,
+  "peak_rss_bytes": 24084480,
+  "threads": 1
+}

@@ -1,0 +1,25 @@
+cell	argument_weight	sources	argument
+5	15	5	\x1. \x2. x2 (x1 x2)
+5	15	41	\x1. \x2. x1 (x2 x2)
+5	16	63	\x1. \x2. x1 (x2 x1)
+5	16	25	\x1. \x2. x1 (x1 x2)
+5	21	14	\x1. x1 (\x2. x1 x2 c)
+5	21	3	\x1. \x2. x2 (x1 x2) c
+5	21	6	\x1. \x2. x2 (x1 c) x2
+4A	21	33	\x1. x1 (\x2. x1 x2) j
+4A	26	5	\x1. x1 (\x2. x1 x2) (j c)
+4A	26	5	\x1. x1 (\x2. x1 x2) (c j)
+4A	26	5	\x1. x1 (\x2. x1 x2) j c
+4A	26	5	\x1. x1 (\x2. x1 x2) c j
+4A	27	5	\x1. x1 (\x2. x1 x2 c) j
+4B	15	250	\x1. x1 (\x2. x1 x2)
+4B	20	23	\x1. x1 (\x2. x1 x2) c
+4B	21	19	\x1. \x2. x2 (x1 c) x2
+4B	21	15	\x1. \x2. x2 (c x1) x2
+4B	21	23	\x1. x1 (\x2. x1 x2 c)
+4B	17	2	\x1. x1 (\x2. \x3. x2) x1
+4B	17	5	\x1. \x2. x2 (\x3. x2 x3)
+4B	8	1	\x1. x1 x1
+4Cs	15	9	\x1. \x2. x1 (x2 x2)
+4Cs	15	15	\x1. x1 (\x2. x1 x2)
+4Cs	15	3	\x1. \x2. x2 (x2 x1)

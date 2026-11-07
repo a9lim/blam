@@ -1,0 +1,103 @@
+{
+  "fixed_beta_traces": 18,
+  "wire_facts": 18,
+  "generated_facts_match": true,
+  "accounting": [
+    {
+      "machine": 162,
+      "knot": 20,
+      "functional": 142,
+      "outer_lambdas": 4,
+      "next_base": 92,
+      "next_actual": 96,
+      "reader_context": 42
+    },
+    {
+      "machine": 165,
+      "knot": 20,
+      "functional": 145,
+      "outer_lambdas": 4,
+      "next_base": 92,
+      "next_actual": 92,
+      "reader_context": 49
+    }
+  ],
+  "membership": [
+    {
+      "size": 162,
+      "cost": 42,
+      "depth": 1,
+      "weight": 46
+    },
+    {
+      "size": 165,
+      "cost": 49,
+      "depth": 0,
+      "weight": 49
+    }
+  ],
+  "next_forms": [
+    {
+      "name": "next_form_0",
+      "size": 99,
+      "c": 2,
+      "p": 3
+    },
+    {
+      "name": "next_form_1",
+      "size": 93,
+      "c": 2,
+      "p": 2
+    },
+    {
+      "name": "next_form_2",
+      "size": 92,
+      "c": 2,
+      "p": 2
+    },
+    {
+      "name": "next_form_3",
+      "size": 108,
+      "c": 2,
+      "p": 3
+    },
+    {
+      "name": "next_form_4",
+      "size": 107,
+      "c": 2,
+      "p": 3
+    },
+    {
+      "name": "next_form_5",
+      "size": 116,
+      "c": 2,
+      "p": 3
+    },
+    {
+      "name": "next_form_6",
+      "size": 115,
+      "c": 2,
+      "p": 3
+    },
+    {
+      "name": "next_form_7",
+      "size": 104,
+      "c": 2,
+      "p": 2
+    },
+    {
+      "name": "next_form_8",
+      "size": 103,
+      "c": 2,
+      "p": 2
+    }
+  ],
+  "sha256": {
+    "tmp/round3/floor/floor138.md": "2984d17d9284dda25650d1f1651c2845afa9c9b56d41d6c9ef0506c649e75b05",
+    "tmp/round3/floor/literal-interface.md": "ef36e925b36df14ed149b1ad3a8aa29c5fc9abc29500b88692a00d1607757034",
+    "tmp/round3/floor/REPORT.md": "14b60a939a978435d5320bda681d7d37342c92e48c0f1533c13c8d7bc8305b18",
+    "tmp/round3/floor/checks.py": "ad40457fd2969982e1b7ea0cf3d5d1f01f29b37282f5f0cd7a02260d7fd20340",
+    "tmp/round3/floor/Facts.lean": "2ed65b795a0f3551b32b8dfeeef45ae257bcfa191fd7aaac6f3eb8a61600f3cb"
+  },
+  "seconds": 0.003175665988237597
+}

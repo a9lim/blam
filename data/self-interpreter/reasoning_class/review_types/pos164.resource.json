@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "tmp/round4/types/narrow2.py",
+    "48",
+    "--betanormal",
+    "--prefix",
+    "\\s. s _ (s _ _ _)"
+  ],
+  "exit": 0,
+  "seconds": 1.58,
+  "peak_rss_bytes": 97075200,
+  "killed": null
+}

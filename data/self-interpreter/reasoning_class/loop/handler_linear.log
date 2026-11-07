@@ -1,0 +1,6 @@
+'Blc.LoopHandlerLinear.critical_base' depends on axioms: [propext, Quot.sound]
+'Blc.LoopHandlerLinear.two_small_shapes' depends on axioms: [propext, Quot.sound]
+'Blc.LoopHandlerLinear.tower3_not_reader' depends on axioms: [propext, Quot.sound]
+'Blc.LoopHandlerLinear.tower4_not_reader' depends on axioms: [propext, Quot.sound]
+
+exit=0 elapsed=0.594s sampled_group_peak_rss=493338624 bytes threads=2

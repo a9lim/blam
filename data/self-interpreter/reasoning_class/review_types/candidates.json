@@ -1,0 +1,101 @@
+[
+  {
+    "label": "162 control",
+    "source": "\\s. s I (\\u. s (\\q.c) (s s u)) j",
+    "pass_n8": true,
+    "weight": 46,
+    "outputs_Z_U1_U2": [
+      "r j",
+      "c (\\f. f (\\x y. x) N) N",
+      "c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N"
+    ]
+  },
+  {
+    "label": "164 control",
+    "source": "\\s. s (\\b.b F c) (s I (s s) j)",
+    "pass_n8": true,
+    "weight": 48,
+    "outputs_Z_U1_U2": [
+      "r j",
+      "c (\\f. f (\\x y. x) N) N",
+      "c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N"
+    ]
+  },
+  {
+    "label": "replace I by stream",
+    "source": "\\s. s s (\\u. s (\\q.c) (s s u)) j",
+    "pass_n8": false,
+    "weight": 44,
+    "outputs_Z_U1_U2": [
+      "r j",
+      "N j",
+      "N j"
+    ]
+  },
+  {
+    "label": "remove shielding lambda",
+    "source": "\\s. s I (s (\\q.c) (s s s)) j",
+    "pass_n8": false,
+    "weight": 40,
+    "outputs_Z_U1_U2": [
+      "r j",
+      "c (\\f. f (\\x y. x) N) N j",
+      "c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N j"
+    ]
+  },
+  {
+    "label": "shorten skip to s u",
+    "source": "\\s. s I (\\u. s (\\q.c) (s u)) j",
+    "pass_n8": false,
+    "weight": 41,
+    "outputs_Z_U1_U2": [
+      "r j",
+      "c (\\f. f (\\x y. x) N) (j (\\x y. y) (\\f. f (\\x y. x) N))",
+      "c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) (j (\\x y. y) (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)))"
+    ]
+  },
+  {
+    "label": "omit skip argument",
+    "source": "\\s. s I (\\u. s (\\q.c) (s s)) j",
+    "pass_n8": false,
+    "weight": 42,
+    "outputs_Z_U1_U2": [
+      "r j",
+      "c (\\f. f (\\x y. x) N) (\\y. N)",
+      "c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) (\\y. N)"
+    ]
+  },
+  {
+    "label": "replace lifted c by c",
+    "source": "\\s. s I (\\u. s c (s s u)) j",
+    "pass_n8": false,
+    "weight": 43,
+    "outputs_Z_U1_U2": [
+      "r j",
+      "c (\\x y. y) (\\f. f (\\x y. x) N) N",
+      "c (\\x y. y) (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N"
+    ]
+  },
+  {
+    "label": "direct second-selector c",
+    "source": "\\s. s (\\b.b F c) (s s j)",
+    "pass_n8": false,
+    "weight": 38,
+    "outputs_Z_U1_U2": [
+      "r",
+      "c (\\f. f (\\x y. x) N) N",
+      "c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N"
+    ]
+  },
+  {
+    "label": "self-app dispatch near miss",
+    "source": "\\s. s (\\t.t t c) (s s c) j",
+    "pass_n8": false,
+    "weight": 39,
+    "outputs_Z_U1_U2": [
+      "r j",
+      "c (\\f. f (\\x y. x) N) N j",
+      "c (\\f. f (\\x y. y) (\\f. f (\\x y. x) N)) N j"
+    ]
+  }
+]

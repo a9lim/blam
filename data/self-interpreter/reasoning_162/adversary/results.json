@@ -1,0 +1,138 @@
+[
+  {
+    "name": "parser_operand",
+    "bits": 179,
+    "purpose": "Three operands after I; the final operand supplies recursion and skip force.",
+    "expected": true,
+    "battery": "179 bits  ok=667 skip=1 fail=0",
+    "polished": 179,
+    "letopt": [
+      179
+    ],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 2.2
+  },
+  {
+    "name": "stream_dependent_next",
+    "bits": 178,
+    "purpose": "Use the original stream to make NEXT itself the variable return prefix.",
+    "expected": true,
+    "battery": "178 bits  ok=667 skip=1 fail=0",
+    "polished": 176,
+    "letopt": [
+      176
+    ],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 1.998
+  },
+  {
+    "name": "next_continuation_mode",
+    "bits": 179,
+    "purpose": "Attempt to borrow K c from shared-head NEXT; the changed reset law cycles.",
+    "expected": false,
+    "battery": "179 bits  ok=0 skip=1 fail=667",
+    "polished": null,
+    "letopt": [],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 1.996
+  },
+  {
+    "name": "stream_operand",
+    "bits": 186,
+    "purpose": "Third operand is the whole stream, used locally by V and consumed by NEXT.",
+    "expected": true,
+    "battery": "186 bits  ok=667 skip=1 fail=0",
+    "polished": 184,
+    "letopt": [
+      184
+    ],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 1.983
+  },
+  {
+    "name": "right_associated_skip",
+    "bits": 163,
+    "purpose": "Grok I5 proposed 163-bit right-associated skip; predicted N-headed suffix.",
+    "expected": false,
+    "battery": "163 bits  ok=0 skip=1 fail=667",
+    "polished": null,
+    "letopt": [],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 24.166
+  },
+  {
+    "name": "borrowed_body_cell",
+    "bits": 155,
+    "purpose": "Use the documented 17-bit exp a a e cell outside its favourable body.",
+    "expected": false,
+    "battery": "155 bits  ok=1 skip=1 fail=666",
+    "polished": null,
+    "letopt": [],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 2.531
+  },
+  {
+    "name": "third_tag_projection",
+    "bits": 195,
+    "purpose": "NEXT has a literal third projection mode, exposing K c without recursive reset.",
+    "expected": true,
+    "battery": "195 bits  ok=667 skip=1 fail=0",
+    "polished": 193,
+    "letopt": [
+      193
+    ],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 2.035
+  },
+  {
+    "name": "suffix_or_next",
+    "bits": 174,
+    "purpose": "The second operand is NEXT at zero and the raw suffix on variables.",
+    "expected": true,
+    "battery": "174 bits  ok=667 skip=1 fail=0",
+    "polished": 172,
+    "letopt": [
+      172,
+      172
+    ],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 17.184
+  },
+  {
+    "name": "tail_preserving_dual",
+    "bits": 172,
+    "purpose": "Repair c144 with a NEXT-or-suffix operand; its K arm borrows the input bit.",
+    "expected": true,
+    "battery": "172 bits  ok=667 skip=1 fail=0",
+    "polished": 172,
+    "letopt": [
+      172,
+      172
+    ],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 17.298
+  },
+  {
+    "name": "identity_cut_counterexample",
+    "bits": 312,
+    "purpose": "Knotless two-head skeleton, H replays the parent and J=f; IdentityCut is false.",
+    "expected": true,
+    "battery": "312 bits  ok=667 skip=1 fail=0",
+    "polished": 223,
+    "letopt": [
+      223
+    ],
+    "timed_out": false,
+    "exit": 0,
+    "seconds": 2.059
+  }
+]

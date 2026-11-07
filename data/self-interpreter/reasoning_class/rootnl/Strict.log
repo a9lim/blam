@@ -1,0 +1,2 @@
+'Blc.RootNLStrict.bad_no_count' depends on axioms: [propext, Quot.sound]
+'Blc.RootNLStrict.reject' depends on axioms: [propext, Quot.sound]

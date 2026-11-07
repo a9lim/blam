@@ -1,0 +1,34 @@
+/Users/a9lim/Work/blam/tmp/round4/simplify/Multiple.lean:63:16: warning: This simp argument is unused:
+  hc1
+
+Hint: Omit it from the simp argument list.
+  simp only [hc,h̵c̵1̵,̵ ̲wrap2, ̲occ, ̲occ_shift_ge m j 0 (by omega), ̲occ_shift_ge n j 0 (by omega),
+      show 0 ̲≠ ̲j ̲+ ̲1 by omega, ̲↓reduceIte, ̲Nat.zero_add, ̲Nat.add_assoc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Blc.Simplify.source2_join' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source2_price' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source2_holes' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source2_lambdas' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source2_laws' depends on axioms: [propext, Quot.sound]
+'Blc.Simplify.source2_minimum_charge' depends on axioms: [propext, Quot.sound]
+real 0.23
+user 0.18
+sys 0.08
+           450904064  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               29866  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                 888  involuntary context switches
+          3042459300  instructions retired
+          1093998536  cycles elapsed
+           102503008  peak memory footprint

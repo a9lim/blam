@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "states": 706,
+  "work": 742,
+  "k": 6,
+  "mode": "argenv",
+  "portable_states": 703,
+  "portable_edges": 739,
+  "certificate_sha256": "78097e0e8c6f1645025ef8a8d95e0e3cb89e0fda110247ab63f37cbc88c737a4",
+  "id": "h2_2.final_left:9",
+  "source": "((\\x0. (x0 x0)) (\\x0. ((x0 (\\x1. (x0 (x0 (\\x2. x1))))) (x0 _))))",
+  "label": "Case09",
+  "seconds": 0.007799166982294992,
+  "peak_rss_bytes": 24625152,
+  "threads": 1
+}

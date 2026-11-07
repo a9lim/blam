@@ -1,0 +1,9 @@
+{
+  "label": "R305",
+  "valid": true,
+  "source_matches": true,
+  "states": 60,
+  "sha256": "4d243646dd8f6cca64545091798ddb250835527a7711a5be6b49acf39ecf4d00",
+  "seconds": 0.00025020900648087263,
+  "peak_rss_bytes": 24002560
+}

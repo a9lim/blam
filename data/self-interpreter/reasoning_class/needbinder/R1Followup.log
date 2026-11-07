@@ -1,0 +1,11 @@
+'Blc.NeedBinder.R1Followup.capture_full' depends on axioms: [propext, Quot.sound]
+'Blc.NeedBinder.R1Followup.sunk_full' depends on axioms: [propext, Quot.sound]
+'Blc.NeedBinder.R1Followup.prices' does not depend on any axioms
+'Blc.NeedBinder.R1Followup.needed_full' depends on axioms: [propext, Quot.sound]
+'Blc.NeedBinder.R1Followup.deep_full' depends on axioms: [propext, Quot.sound]
+'Blc.NeedBinder.R1Followup.contract_full' depends on axioms: [propext, Quot.sound]
+'Blc.NeedBinder.R1Followup.sink_full' depends on axioms: [propext, Quot.sound]
+'Blc.NeedBinder.R1Followup.deep_prices' does not depend on any axioms
+'Blc.NeedBinder.R1Followup.critical_profiles' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Blc.NeedBinder.R1Followup.thin_price' does not depend on any axioms
+'Blc.NeedBinder.R1Followup.thin_full' depends on axioms: [propext, Quot.sound]

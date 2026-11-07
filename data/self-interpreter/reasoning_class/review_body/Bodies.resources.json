@@ -1,0 +1,15 @@
+{
+  "command": [
+    "lean",
+    "-j2",
+    "-R",
+    "/Users/a9lim/Work/blam/tmp/round4/review_body",
+    "-o",
+    "/Users/a9lim/Work/blam/tmp/round4/review_body/Bodies.olean",
+    "/Users/a9lim/Work/blam/tmp/round4/review_body/Bodies.lean"
+  ],
+  "code": 0,
+  "seconds": 0.2997957909828983,
+  "peak_child_rss": 431472640,
+  "limit": null
+}

@@ -1,0 +1,17 @@
+{
+  "label": "R124",
+  "id": "rootnarrow/work/h2_3.json:26",
+  "source": "((\\x0. (x0 (\\x1. (\\x2. (x0 (\\x3. x2)))))) (\\x0. ((\\x1. (x1 x1)) (x0 _))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 51,
+  "work": 53,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 31,
+  "checked": true,
+  "sha256": "7c5b19dd7e8fdb1642e827a0a8a2998f41d758fb37a7966d3ed10cfe0f78a4f5",
+  "seconds": 0.0008883329865057021,
+  "peak_rss_bytes": 23953408,
+  "threads": 1
+}

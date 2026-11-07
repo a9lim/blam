@@ -1,0 +1,244 @@
+
+namespace Blc.Lean146NonLambda
+open Term SelfintClass SelfintClassNext SelfintWireCost SelfintLowerBound SelfintFloor Lean146Live Lean146
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+
+/-- A term assembled from c,j, applications, vacuous lambdas, and unchanged
+    copies of one fixed globally scoped source abstraction D. -/
+inductive Skeleton (D : Term) : Term → Prop where
+  | var (n : Nat) : n < 2 → Skeleton D (.var n)
+  | atom : Skeleton D D
+  | app {f a : Term} : Skeleton D f → Skeleton D a → Skeleton D (.app f a)
+  | konst {t : Term} : Skeleton D t → Skeleton D (konst t)
+
+theorem konst_scope {t : Term} (hs : FreeUnder 2 (konst t)) : FreeUnder 2 t := by
+  have hh := SelfintClass.subst_scope (shift 1 0 t) (.var 0) 0 2 (by omega) hs (by decide)
+  simpa only [substDec_shift] using hh
+
+theorem flat_skeleton {D t : Term} (hf : Flat t) (hs : FreeUnder 2 t) : Skeleton D t := by
+  induction hf with
+  | var n hn => exact .var n hs
+  | app hf ha ihf iha => exact .app (ihf hs.1) (iha hs.2)
+  | konst ht ih => exact .konst (ih (konst_scope hs))
+
+theorem zero_live_skeleton (D t : Term) (hz : live t = 0) (hs : FreeUnder 2 t) : Skeleton D t :=
+  flat_skeleton (flat_of_live_zero t hz (freeUnder_mono (by omega) hs)) hs
+
+theorem flat_contract_skeleton {D t a : Term} (hf : Flat t) (ha : Skeleton D a) :
+    Skeleton D (contract t a) := by
+  induction hf with
+  | var n hn =>
+    have hh : n = 0 ∨ n = 1 ∨ n = 2 := by omega
+    rcases hh with rfl | rfl | rfl
+    · exact ha
+    · exact .var 0 (by decide)
+    · exact .var 1 (by decide)
+  | app hf hg ihf ihg => exact .app ihf ihg
+  | konst ht ih => rw [contract_konst]; exact .konst ih
+
+/-- A term with exactly one live binder is a vacuous/application context
+    around copies of a single, unchanged, globally scoped live abstraction. -/
+theorem one_live_skeleton (t : Term) (hl : live t = 1) (hs : FreeUnder 2 t) :
+    ∃ B, FreeUnder 3 B ∧ live B = 0 ∧ 0 < occ 0 B ∧ Skeleton (.lam B) t := by
+  generalize he : nodes t = m
+  induction m using Nat.strongRecOn generalizing t with
+  | ind m ih =>
+    cases t with
+    | var n => simp [live] at hl
+    | app f a =>
+      have hf : live f + live a = 1 := hl
+      by_cases hlf : live f = 1
+      · obtain ⟨B,hB,hz,hp,hsk⟩ := ih (nodes f) (by simp only [nodes] at he; omega) f hlf hs.1 rfl
+        exact ⟨B,hB,hz,hp,.app hsk (zero_live_skeleton _ a (by omega) hs.2)⟩
+      · obtain ⟨B,hB,hz,hp,hsk⟩ := ih (nodes a) (by simp only [nodes] at he; omega) a (by omega) hs.2 rfl
+        exact ⟨B,hB,hz,hp,.app (zero_live_skeleton _ f (by omega) hs.1) hsk⟩
+    | lam b =>
+      by_cases hp : 0 < occ 0 b
+      · have hz : live b = 0 := by simp only [live,if_pos hp] at hl; omega
+        exact ⟨b,hs,hz,hp,.atom⟩
+      · have hz : occ 0 b = 0 := by omega
+        let u := substDec 0 (.var 0) b
+        have hu : live u = 1 := by
+          simp only [live,if_neg hp,Nat.add_zero] at hl
+          simp [u,live_subst,live,hl]
+        have hsu : FreeUnder 2 u := SelfintClass.subst_scope b (.var 0) 0 2 (by omega) hs (by decide)
+        have hnu : nodes u < m := by
+          have hh := nodes_subst b (.var 0) 0
+          simp only [hz,Nat.zero_mul,Nat.add_zero] at hh
+          simp only [nodes] at he
+          dsimp [u]; omega
+        obtain ⟨B,hB,hzB,hpB,hsk⟩ := ih _ hnu u hu hsu rfl
+        have heq : konst u = .lam b := congrArg Term.lam (shift_subst_absent b 0 (.var 0) hz)
+        exact ⟨B,hB,hzB,hpB,heq ▸ Skeleton.konst hsk⟩
+
+theorem skeleton_lambda {B b : Term} (h : Skeleton (.lam B) (.lam b)) :
+    b = B ∨ occ 0 b = 0 := by
+  cases h with
+  | atom => exact Or.inl rfl
+  | konst ht => exact Or.inr (occ_shift_eq _ 0)
+
+theorem skeleton_weakStep {B t u : Term} (h : Skeleton (.lam B) t)
+    (hB : FreeUnder 3 B) (hz : live B = 0) (hs : weakStep t = some u) :
+    Skeleton (.lam B) u := by
+  induction h generalizing u with
+  | var n hn => simp [weakStep] at hs
+  | atom => simp [weakStep] at hs
+  | konst ht ih => simp [konst,weakStep] at hs
+  | @app f a hf ha ihf iha =>
+    cases f with
+    | var n => simp [weakStep] at hs
+    | app f b =>
+      simp only [weakStep,Option.map_eq_some_iff] at hs
+      obtain ⟨v,hv,rfl⟩ := hs
+      exact .app (ihf hv) ha
+    | lam b =>
+      simp only [weakStep,Option.some.injEq] at hs
+      subst u
+      cases hf with
+      | atom => exact flat_contract_skeleton (flat_of_live_zero B hz hB) ha
+      | @konst b hb =>
+        simpa only [contract,substDec_shift] using hb
+
+theorem weakStep_headStep {t u : Term} (h : weakStep t = some u) : headStep t = some u := by
+  induction t generalizing u with
+  | var n => simp [weakStep] at h
+  | lam b => simp [weakStep] at h
+  | app f a ihf iha =>
+    cases f with
+    | var n => simp [weakStep] at h
+    | lam b => exact h
+    | app f b =>
+      simp only [weakStep,Option.map_eq_some_iff] at h
+      obtain ⟨v,hv,rfl⟩ := h
+      exact congrArg (Option.map (Term.app · a)) (ihf hv)
+
+theorem weakStep_app_headStep {t u : Term} (h : weakStep t = some u) (a : Term) :
+    headStep (.app t a) = some (.app u a) := by
+  have hh := weakStep_headStep h
+  cases t with
+  | var n => simp [weakStep] at h
+  | lam b => simp [weakStep] at h
+  | app f b => exact congrArg (Option.map (Term.app · a)) hh
+
+/-- General weak-head invariant principle, using the reader's zero-law
+    normalization to rule out an infinite pre-lambda computation. -/
+theorem reader_weak_invariant (Good : Term → Prop)
+    (step : ∀ {t u}, Good t → weakStep t = some u → Good u)
+    (reject : ∀ b, Good (.lam b) → ¬ Reader (.lam b))
+    {R : Term} (hG : Good R) (hr : Reader R) : False := by
+  obtain ⟨n,p,hpath,hstop⟩ := hasNormalForm_headTerminates ⟨zeroOut,hr.zero_red,zeroOut_normal⟩
+  induction n generalizing R p with
+  | zero =>
+    simp only [headSteps,Option.some.injEq] at hpath
+    subst p
+    cases R with
+    | lam b => exact reject b hG hr
+    | var n => exact reader_not_rigid hr (.var n)
+    | app f a =>
+      cases hs : weakStep (.app f a) with
+      | none => exact reader_not_rigid hr (weakStep_none_rigid hs (by simp [IsLam]))
+      | some u =>
+        have hh := weakStep_app_headStep hs Z
+        rw [hh] at hstop
+        contradiction
+  | succ n ih =>
+    cases R with
+    | lam b => exact reject b hG hr
+    | var k => exact reader_not_rigid hr (.var k)
+    | app f a =>
+      cases hs : weakStep (.app f a) with
+      | none => exact reader_not_rigid hr (weakStep_none_rigid hs (by simp [IsLam]))
+      | some u =>
+        have hh := weakStep_app_headStep hs Z
+        simp only [headSteps,hh,Option.bind_some] at hpath
+        exact ih (step hG hs) (hr.beta (weakStep_beta hs)) p hpath hstop
+
+theorem skeleton_not_reader {B R : Term} (hB : FreeUnder 3 B) (hz : live B = 0)
+    (hsk : Skeleton (.lam B) R) : ¬ Reader R := by
+  intro hr
+  apply reader_weak_invariant (Skeleton (.lam B)) (fun h hs => skeleton_weakStep h hB hz hs) ?_ hsk hr
+  intro b hb hreader
+  rcases skeleton_lambda hb with he | ho
+  · subst b; exact no_flat_reader hreader hz
+  · have hp := reader_root_live hreader; omega
+
+/-- At most two live source binders: a nonerasing first head contraction
+    either reduces their count, or leaves a skeleton of a single source lambda. -/
+theorem weakStep_two_live {t u : Term} (hs : weakStep t = some u)
+    (hscope : FreeUnder 2 t) (hl : live t ≤ 2) (hne : ∀ v, ¬ Erase t v) :
+    (live u + 1 ≤ live t) ∨
+      (live t = 2 ∧ ∃ B, FreeUnder 3 B ∧ live B = 0 ∧ Skeleton (.lam B) u) := by
+  induction t generalizing u with
+  | var n => simp [weakStep] at hs
+  | lam b => simp [weakStep] at hs
+  | app f a ihf iha =>
+    cases f with
+    | var n => simp [weakStep] at hs
+    | lam b =>
+      simp only [weakStep,Option.some.injEq] at hs
+      subst u
+      have hp : 0 < occ 0 b := by
+        by_cases hz : occ 0 b = 0
+        · exact (hne _ (.root b a hz)).elim
+        · omega
+      by_cases ha : live a = 0
+      · left
+        simp only [contract,live_subst,live,if_pos hp,ha,Nat.mul_zero,Nat.add_zero]
+        omega
+      · right
+        have hal : live a = 1 := by simp only [live,if_pos hp] at hl; omega
+        have hb : live b = 0 := by simp only [live,if_pos hp] at hl; omega
+        obtain ⟨B,hB,hzB,_,hsk⟩ := one_live_skeleton a hal hscope.2
+        refine ⟨by simp [live,if_pos hp,hb,hal], B,hB,hzB,?_⟩
+        exact flat_contract_skeleton (flat_of_live_zero b hb hscope.1) hsk
+    | app f b =>
+      simp only [weakStep,Option.map_eq_some_iff] at hs
+      obtain ⟨v,hv,rfl⟩ := hs
+      have hlf : live (.app f b) ≤ 2 := by simp only [live] at hl ⊢; omega
+      have hnef : ∀ v, ¬ Erase (.app f b) v := fun v he => hne _ (.appL a he)
+      rcases ihf hv hscope.1 hlf hnef with hsmall | ⟨he,B,hB,hzB,hsk⟩
+      · left; simp only [live] at hsmall ⊢; omega
+      · right
+        have ha : live a = 0 := by simp only [live] at hl he; omega
+        exact ⟨by simp only [live] at he ⊢; omega,
+          B,hB,hzB,.app hsk (zero_live_skeleton _ a ha hscope.2)⟩
+
+/-- The formerly handwritten non-lambda minimum live-binder theorem.
+    It is unbounded in weight and does not require beta-normal source. -/
+theorem minimum_nonlam_three_live {R : Term} (hm : Minimum R) (hnl : ¬ IsLam R) :
+    3 ≤ live R := by
+  by_cases hh : 3 ≤ live R
+  · exact hh
+  · have hsmall : live R ≤ 2 := by omega
+    cases hs : weakStep R with
+    | none => exact (reader_not_rigid hm.reader (weakStep_none_rigid hs hnl)).elim
+    | some U =>
+      have hu := hm.reader.beta (weakStep_beta hs)
+      rcases weakStep_two_live hs hm.reader.scope hsmall hm.no_erasing with hdrop | ⟨_,B,hB,hz,hsk⟩
+      · have hl := reader_two_live hu; omega
+      · exact (skeleton_not_reader hB hz hsk hu).elim
+
+theorem minimum_nonlam_sub30_counts {R : Term} (hm : Minimum R) (hnl : ¬ IsLam R)
+    (hw : weight R < 30) :
+    depth R = 0 ∧ occ 0 R = 1 ∧ leafCount R = 6 ∧
+      ((lamCount R = 3 ∧ tax 1 R ≤ 3) ∨ (lamCount R = 4 ∧ tax 1 R ≤ 1)) := by
+  have hl := minimum_nonlam_three_live hm hnl
+  have hL := live_le_lamCount R
+  have hn := reader_nonlinear hm.reader
+  have hc := reader_c hm.reader
+  have hj := hm.hole
+  have hv := leaves_bound R
+  have hf0 := freeLeaves_split R 0
+  have hf1 := freeLeaves_split R 1
+  simp only [Nat.reduceAdd] at hf0 hf1
+  have hprice := holeCost_identity R 1
+  change cost R + 2 + 2 * occ 1 R = 2 * lamCount R + 4 * leafCount R + tax 1 R at hprice
+  change cost R + 4 * depth R < 30 at hw
+  omega
+
+#print axioms minimum_nonlam_three_live
+#print axioms minimum_nonlam_sub30_counts
+#print axioms one_live_skeleton
+#print axioms skeleton_not_reader
+end Blc.Lean146NonLambda

@@ -1,0 +1,24 @@
+[gaslamp] → codex · job cx-20261022-031422-7d29 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-031422-7d29/events.jsonl
+(•̀_•́) **Partial closure; the full firstop branch remains open.** No reader with \(w\le45\), no complete interpreter, and no use of \(H_{\mathrm{nf}}\).
+
+[REPORT.md](/Users/a9lim/Work/blam/tmp/round4/firstop/REPORT.md) contains the proofs, hypotheses and reproduction commands.
+
+- **New restriction:** every redex anywhere inside a **`j`-free first operand** of a global minimum below 46 has multiplicity **2–5**. Linear cases reduce to 727 sources, all individually refuted in Lean; multiplicity ≥6 is excluded by handwritten accounting and zero-head analysis.
+- **Strict handler-sinking condition:** for `s ((λx.λb.B) A) T⃗`, with the first operand `j`-free, minimality requires  
+  \[
+  \operatorname{occ}_x(B)<F_A+\operatorname{occ}_b(B).
+  \]
+  Equality would produce another global minimum with a literal first handler, invoking handlerlet.
+- **Kernel-checked contextual hoist price:** when the unique depth-one `j` lies in a shared argument \(A\), contracting and restoring one hole changes weight by  
+  \[
+  (m-1)|A|+(s_A+c_A)M-3m-s_D+c_C+mc_A.
+  \]
+  The report defines every quantity; minimum readers require this expression to be nonnegative.
+- **Price correction:** adv5’s stream-reification identity is valid, but its displayed literal-handler expansion costs **\(18+2F\) more before contraction** for `j`-free \(Q\). The claimed automatic saving needs an additional argument.
+
+The 727-source check took 0.061 seconds; its Lean verification took 10.642 seconds and 709 MB, with no cutoffs or unchecked exceptions. Enumeration completeness remains handwritten.
+
+Still unresolved: nonlinear multiplicity-2–5 sharing, first operands containing `j`, and stream-headed paths reaching those cases. The new inequalities do not establish their exclusion.
+
+[gaslamp] job: cx-20261022-031422-7d29 · session: 01a16275-ff98-7a93-9b3e-8586c98682a3 · thread: r5-firstop · resume: gaslamp codex --thread r5-firstop · tok: 3247k→36k
+[lane.sh] done rc=0 tries=1

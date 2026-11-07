@@ -1,0 +1,83 @@
+[
+  {
+    "file": "Bridge.lean",
+    "sha256": "afab5357690c696f7655db4462e8d57b062c0348c1c6c2bcf9e0009a9c8288ac",
+    "code": 0,
+    "seconds": 1.6471617089991923,
+    "peak_rss_bytes": 554844160,
+    "limit": null,
+    "threads": 2
+  },
+  {
+    "file": "PrefixPrice.lean",
+    "sha256": "8c5a3cc728b8b34fa59c6315847c6ad049e79997d334fdf3dee6af3ce2627a07",
+    "code": 0,
+    "seconds": 0.6681293330038898,
+    "peak_rss_bytes": 484687872,
+    "limit": null,
+    "threads": 2
+  },
+  {
+    "file": "LocalPrices.lean",
+    "sha256": "90f3f1eddf7c7afb9cd1733249a32a5061b760610a0817058313425fdb2ab292",
+    "code": 0,
+    "seconds": 0.4535144580004271,
+    "peak_rss_bytes": 465960960,
+    "limit": null,
+    "threads": 2
+  },
+  {
+    "file": "LinearPrices.lean",
+    "sha256": "0275aaf2e0ee2acdda688f4c5ebe687c720bf2988c86677a08527445f04922d9",
+    "code": 0,
+    "seconds": 0.4408351249876432,
+    "peak_rss_bytes": 455868416,
+    "limit": null,
+    "threads": 2
+  },
+  {
+    "file": "Certificates.lean",
+    "sha256": "5f9160ddc42aa4f4eda29978bc7b9b07c2628af8066ed26f73a547b0a11cb62e",
+    "code": 0,
+    "seconds": 0.4396380840044003,
+    "peak_rss_bytes": 451346432,
+    "limit": null,
+    "threads": 2
+  },
+  {
+    "file": "LinearNoHole0.lean",
+    "sha256": "148aebc707c0c0a24bb60080a86415a88149891c40855f208bdb4348deae362b",
+    "code": 0,
+    "seconds": 4.56537166700582,
+    "peak_rss_bytes": 566329344,
+    "limit": null,
+    "threads": 2
+  },
+  {
+    "file": "LinearNoHole1.lean",
+    "sha256": "a3c8f2792fe1a419b5b12fce3d1f6188c3bc548b5bdc75b85362ca4ba905d311",
+    "code": 0,
+    "seconds": 4.327914207999129,
+    "peak_rss_bytes": 543522816,
+    "limit": null,
+    "threads": 2
+  },
+  {
+    "file": "LinearNoHole2.lean",
+    "sha256": "697f23e9c74fcb1a4e4f39613e391af48f7d93a55e3db5532b12b9e3b94eaaf8",
+    "code": 0,
+    "seconds": 2.226048125012312,
+    "peak_rss_bytes": 495288320,
+    "limit": null,
+    "threads": 2
+  },
+  {
+    "file": "LinearExceptions.lean",
+    "sha256": "c737b8dc8c663f31175ac9024d5470b31170945abf3a82dcc9ab0f707cf84b22",
+    "code": 0,
+    "seconds": 1.6712593330012169,
+    "peak_rss_bytes": 474578944,
+    "limit": null,
+    "threads": 2
+  }
+]

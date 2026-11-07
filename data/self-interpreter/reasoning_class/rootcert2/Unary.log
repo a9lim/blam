@@ -1,0 +1,3 @@
+'Blc.Rootcert2Unary.betas_typed' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2Unary.check_sound' depends on axioms: [propext, Quot.sound]
+'Blc.Rootcert2Unary.reject' depends on axioms: [propext, Quot.sound]

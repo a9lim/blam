@@ -1,0 +1,1 @@
+{"source": "(\\x. x x x x x) (\\y. y y) I c j", "source_weight": 42, "after_root_contraction_weight": 60, "profile": {"k": 5, "a": 8, "M": 0, "T": 0, "d": 0, "S": 18}, "verdict": "not a reader: the head contains Delta Delta, so the zero probe has no head normal form"}

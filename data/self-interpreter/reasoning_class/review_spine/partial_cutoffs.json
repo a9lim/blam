@@ -1,0 +1,9 @@
+{
+  "patterns": 11,
+  "original_operands": 19,
+  "cycle_checks": 17,
+  "max_beta_steps_per_check": 256,
+  "upper_bound_beta_steps": 4369,
+  "seconds": 0.0008636249986011535,
+  "rss": 21086208
+}

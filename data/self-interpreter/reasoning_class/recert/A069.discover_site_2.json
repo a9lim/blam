@@ -1,0 +1,17 @@
+{
+  "label": "A069",
+  "id": "adv6/work/q_94fadb.json:25",
+  "source": "((\\x0. (\\x1. (x0 x0))) (\\x0. (x0 ((x0 (\\x1. ((x0 x1) _))) _))))",
+  "action": "discover_site_2",
+  "ok": true,
+  "states": 918,
+  "work": 1544,
+  "k": 2,
+  "mode": "site",
+  "portable_states": 810,
+  "checked": true,
+  "sha256": "996238743a734067bf3f686e197fcd0caef7482372aa4307bf271f3212164851",
+  "seconds": 0.008394500007852912,
+  "peak_rss_bytes": 25313280,
+  "threads": 1
+}

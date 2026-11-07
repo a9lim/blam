@@ -1,0 +1,18 @@
+[gaslamp] → codex · job cx-20261021-220934-1f60 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-220934-1f60/events.jsonl
+(・・) **No sub-162 interpreter found; no new optimality result.** Full findings, eleven design prices, proofs, and failure explanations are in [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/arch/REPORT.md).
+
+| Construction | Written → polished | Exact battery |
+|---|---:|---|
+| Callback selection before parsing | 163 → 163 | `ok=667 skip=1 fail=0` |
+| Joint `b c p` dispatch | 167 → 167 | `ok=667 skip=1 fail=0` |
+| Suffix thunk plus NEXT token | 201 → 201 | `ok=667 skip=1 fail=0` |
+
+The first two revisit recorded designs. The third forwards the final variable leaf’s suffix thunk and pending NEXT operand through constructor returns. Its variable arm saves **10 bits**, but APP adds **19** and the public decoder adds **30**: **201 total**. A handwritten structural proof accompanies the construction.
+
+All three also passed exact suffix projections on Ω, λz.Ω, and Ω Ω. These finite checks are distinguished from the handwritten universal argument.
+
+The remaining concrete opportunity is to make the returned NEXT token perform useful control work—perhaps starting the second parse. Its obstacle is that it captures the **leaf’s continuation**, not the parent’s continuation or a bare parser. No competitive conversion was derived.
+
+All artifacts remain in the lane directory; no sweeps or runs exceeding two minutes were used.
+
+[gaslamp] job: cx-20261021-220934-1f60 · session: 01a1615e-eff1-7ab0-bbc4-1a89d615f722 · thread: r4-arch · resume: gaslamp codex --thread r4-arch · tok: 1208k→39k

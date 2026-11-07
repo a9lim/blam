@@ -1,0 +1,6 @@
+input 88 bits; core 88 bits (35 nodes); 156 candidate cuts (8 shared)
+k=1: 156 valid, 0 invalid, 0.0s; smallest sizes 89:1 90:1 91:2 93:2 94:3 95:10
+k=2: 10410 valid, 1680 invalid, 0.0s; smallest sizes 92:2 94:3 95:2 96:13 97:23 98:32
+k=3: 402214 valid, 218406 invalid, 0.4s; smallest sizes 96:1 98:3 99:20 100:19 101:42 102:56
+smallest rendering over 0..=3 cuts: 88 bits
+best 88 0100011010000000011000000101011100101111110111110000111111001111010011111000100110000010

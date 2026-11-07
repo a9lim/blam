@@ -1,0 +1,16 @@
+{
+  "label": "R088",
+  "id": "rootnarrow/work/fix_4.json:6",
+  "source": "(((\\x0. (\\x1. (\\x2. ((x1 x1) _)))) j) (\\x0. (x0 (\\x1. ((x0 x1) _)))))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": "deadline",
+    "SFprime": true
+  },
+  "legacy": "SFprime",
+  "beta_calls": 11225,
+  "seconds": 0.5099036250030622,
+  "peak_rss_bytes": 24510464,
+  "threads": 1
+}

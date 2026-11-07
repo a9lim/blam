@@ -1,0 +1,37 @@
+{
+  "positive_controls": [
+    {
+      "source": "\\s. s I (\\u. s (\\q. c) (s s u)) j",
+      "weight": 46,
+      "probes": 9
+    },
+    {
+      "source": "\\s. s (\\b. (\\x.x x) (\\x.b)) (\\u. s (\\q.c) (s s u)) j",
+      "weight": 59,
+      "probes": 9
+    },
+    {
+      "source": "\\s. s I (\\u. s (\\q.c) (s s ((\\x.x x)(\\x.x x)))) j",
+      "weight": 62,
+      "probes": 9
+    },
+    {
+      "source": "\\s. (\\x. s (\\b t. b (x t) (c t x))) (s (\\b t. b (\\a k.k a) (t t)) j)",
+      "weight": 84,
+      "probes": 9
+    }
+  ],
+  "independent_unfiltered_components": 1265,
+  "admissible_components": 829,
+  "all_sources": 569,
+  "named_probe_agreements": 569,
+  "named_probe_cutoffs": 0,
+  "exact_direct_controls": 569,
+  "exact_hoist_controls": 569,
+  "max_direct_increase": 9,
+  "max_hoist_increase": 5,
+  "distinct_A": 401,
+  "distinct_B": 11,
+  "seconds": 1.7587594159995206,
+  "rss": 108134400
+}

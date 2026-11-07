@@ -1,0 +1,659 @@
+id	weight	source_file	exception_index	status	kind	probe	evidence	theorem	helper	source
+0	44	check_4_0_Cs_x_1_1.json	1297	Lean	flow	zero	FlowCases00.lean	Blc.Rootcert2.FlowCases00.reject0	\x1. x1 (\x2. x2 (x1 x2)) c	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x2 (x1 x2)) c) j
+1	44	check_4_0_Cs_x_1_1.json	1299	Lean	flow	zero	FlowCases01.lean	Blc.Rootcert2.FlowCases01.reject1	\x1. x1 (\x2. x1 x2 x2) c	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 x2) c) j
+2	44	check_4_0_Cs_x_1_1.json	1303	Lean	flow	zero	FlowCases00.lean	Blc.Rootcert2.FlowCases00.reject2	\x1. x1 (\x2. x2 (x1 x2)) c	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x2 (x1 x2)) c) j
+3	44	check_4_0_Cs_x_1_1.json	1305	Lean	flow	zero	FlowCases01.lean	Blc.Rootcert2.FlowCases01.reject3	\x1. x1 (\x2. x1 x2 x2) c	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 x2) c) j
+4	44	check_4_0_Cs_x_1_1.json	1317	Lean	flow	zero	FlowCases00.lean	Blc.Rootcert2.FlowCases00.reject4	\x1. x1 (\x2. x2 (x1 x2)) c	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x2 (x1 x2)) c) j
+5	44	check_4_0_Cs_x_1_1.json	1319	Lean	flow	zero	FlowCases01.lean	Blc.Rootcert2.FlowCases01.reject5	\x1. x1 (\x2. x1 x2 x2) c	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 x2) c) j
+6	44	check_4_0_Cs_x_1_1.json	1331	Lean	flow	zero	FlowCases00.lean	Blc.Rootcert2.FlowCases00.reject6	\x1. x1 (\x2. x2 (x1 x2)) c	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x2 (x1 x2)) c) j
+7	44	check_4_0_Cs_x_1_1.json	1333	Lean	flow	zero	FlowCases01.lean	Blc.Rootcert2.FlowCases01.reject7	\x1. x1 (\x2. x1 x2 x2) c	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 x2) c) j
+8	44	check_4_0_Cs_x_1_1.json	1345	Lean	flow	zero	FlowCases00.lean	Blc.Rootcert2.FlowCases00.reject8	\x1. x1 (\x2. x2 (x1 x2)) c	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x2 (x1 x2)) c) j
+9	44	check_4_0_Cs_x_1_1.json	1347	Lean	flow	zero	FlowCases01.lean	Blc.Rootcert2.FlowCases01.reject9	\x1. x1 (\x2. x1 x2 x2) c	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 x2) c) j
+10	44	check_4_0_Cs_x_1_1.json	1351	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject10	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 (x1 x1 c))) (\x1. x1 (\x2. x2 (x1 x2))) j
+11	44	check_4_0_Cs_x_1_1.json	1353	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject11	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 (x1 x1 c))) (\x1. x1 (\x2. x1 x2 x2)) j
+12	44	check_4_0_Cs_x_1_1.json	1357	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject12	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1 (c x1))) (\x1. x1 (\x2. x2 (x1 x2))) j
+13	44	check_4_0_Cs_x_1_1.json	1359	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject13	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1 (c x1))) (\x1. x1 (\x2. x1 x2 x2)) j
+14	44	check_4_0_Cs_x_1_1.json	1363	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject14	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1 (x1 c))) (\x1. x1 (\x2. x2 (x1 x2))) j
+15	44	check_4_0_Cs_x_1_1.json	1365	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject15	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1 (x1 c))) (\x1. x1 (\x2. x1 x2 x2)) j
+16	44	check_4_0_Cs_x_1_1.json	1369	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject16	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1 c x1)) (\x1. x1 (\x2. x2 (x1 x2))) j
+17	44	check_4_0_Cs_x_1_1.json	1371	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject17	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1 c x1)) (\x1. x1 (\x2. x1 x2 x2)) j
+18	44	check_4_0_Cs_x_1_1.json	1375	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject18	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 (x1 x1) c)) (\x1. x1 (\x2. x2 (x1 x2))) j
+19	44	check_4_0_Cs_x_1_1.json	1377	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject19	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 (x1 x1) c)) (\x1. x1 (\x2. x1 x2 x2)) j
+20	44	check_4_0_Cs_x_1_1.json	1381	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject20	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1 x1 c)) (\x1. x1 (\x2. x2 (x1 x2))) j
+21	44	check_4_0_Cs_x_1_1.json	1383	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject21	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1 x1 c)) (\x1. x1 (\x2. x1 x2 x2)) j
+22	44	check_4_0_Cs_x_1_1.json	1387	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject22	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1) (c x1)) (\x1. x1 (\x2. x2 (x1 x2))) j
+23	44	check_4_0_Cs_x_1_1.json	1389	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject23	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1) (c x1)) (\x1. x1 (\x2. x1 x2 x2)) j
+24	44	check_4_0_Cs_x_1_1.json	1393	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject24	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1) (x1 c)) (\x1. x1 (\x2. x2 (x1 x2))) j
+25	44	check_4_0_Cs_x_1_1.json	1395	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject25	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1) (x1 c)) (\x1. x1 (\x2. x1 x2 x2)) j
+26	44	check_4_0_Cs_x_1_1.json	1399	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject26	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (c (x1 x1))) (\x1. x1 (\x2. x2 (x1 x2))) j
+27	44	check_4_0_Cs_x_1_1.json	1401	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject27	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (c (x1 x1))) (\x1. x1 (\x2. x1 x2 x2)) j
+28	44	check_4_0_Cs_x_1_1.json	1405	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject28	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (x1 (c x1))) (\x1. x1 (\x2. x2 (x1 x2))) j
+29	44	check_4_0_Cs_x_1_1.json	1407	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject29	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (x1 (c x1))) (\x1. x1 (\x2. x1 x2 x2)) j
+30	44	check_4_0_Cs_x_1_1.json	1411	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject30	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (x1 (x1 c))) (\x1. x1 (\x2. x2 (x1 x2))) j
+31	44	check_4_0_Cs_x_1_1.json	1413	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject31	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (x1 (x1 c))) (\x1. x1 (\x2. x1 x2 x2)) j
+32	44	check_4_0_Cs_x_1_1.json	1417	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject32	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (c x1 x1)) (\x1. x1 (\x2. x2 (x1 x2))) j
+33	44	check_4_0_Cs_x_1_1.json	1419	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject33	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (c x1 x1)) (\x1. x1 (\x2. x1 x2 x2)) j
+34	44	check_4_0_Cs_x_1_1.json	1423	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject34	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (x1 c x1)) (\x1. x1 (\x2. x2 (x1 x2))) j
+35	44	check_4_0_Cs_x_1_1.json	1425	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject35	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (x1 c x1)) (\x1. x1 (\x2. x1 x2 x2)) j
+36	44	check_4_0_Cs_x_1_1.json	1429	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject36	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (x1 x1 c)) (\x1. x1 (\x2. x2 (x1 x2))) j
+37	44	check_4_0_Cs_x_1_1.json	1431	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject37	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (x1 x1 c)) (\x1. x1 (\x2. x1 x2 x2)) j
+38	44	check_4_0_Cs_x_1_1.json	1435	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject38	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 c (x1 x1)) (\x1. x1 (\x2. x2 (x1 x2))) j
+39	44	check_4_0_Cs_x_1_1.json	1437	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject39	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 c (x1 x1)) (\x1. x1 (\x2. x1 x2 x2)) j
+40	44	check_4_0_Cs_x_1_1.json	1441	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject40	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 x1 (c x1)) (\x1. x1 (\x2. x2 (x1 x2))) j
+41	44	check_4_0_Cs_x_1_1.json	1443	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject41	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 x1 (c x1)) (\x1. x1 (\x2. x1 x2 x2)) j
+42	44	check_4_0_Cs_x_1_1.json	1447	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject42	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 x1 (x1 c)) (\x1. x1 (\x2. x2 (x1 x2))) j
+43	44	check_4_0_Cs_x_1_1.json	1449	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject43	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 x1 (x1 c)) (\x1. x1 (\x2. x1 x2 x2)) j
+44	44	check_4_0_Cs_x_1_1.json	1453	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject44	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1 c) x1) (\x1. x1 (\x2. x2 (x1 x2))) j
+45	44	check_4_0_Cs_x_1_1.json	1455	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject45	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1 c) x1) (\x1. x1 (\x2. x1 x2 x2)) j
+46	44	check_4_0_Cs_x_1_1.json	1459	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject46	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1) c x1) (\x1. x1 (\x2. x2 (x1 x2))) j
+47	44	check_4_0_Cs_x_1_1.json	1461	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject47	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1) c x1) (\x1. x1 (\x2. x1 x2 x2)) j
+48	44	check_4_0_Cs_x_1_1.json	1465	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject48	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (c x1) x1) (\x1. x1 (\x2. x2 (x1 x2))) j
+49	44	check_4_0_Cs_x_1_1.json	1467	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject49	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (c x1) x1) (\x1. x1 (\x2. x1 x2 x2)) j
+50	44	check_4_0_Cs_x_1_1.json	1471	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject50	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (x1 c) x1) (\x1. x1 (\x2. x2 (x1 x2))) j
+51	44	check_4_0_Cs_x_1_1.json	1473	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject51	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (x1 c) x1) (\x1. x1 (\x2. x1 x2 x2)) j
+52	44	check_4_0_Cs_x_1_1.json	1477	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject52	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 c x1 x1) (\x1. x1 (\x2. x2 (x1 x2))) j
+53	44	check_4_0_Cs_x_1_1.json	1479	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject53	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 c x1 x1) (\x1. x1 (\x2. x1 x2 x2)) j
+54	44	check_4_0_Cs_x_1_1.json	1483	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject54	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 x1 c x1) (\x1. x1 (\x2. x2 (x1 x2))) j
+55	44	check_4_0_Cs_x_1_1.json	1485	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject55	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 x1 c x1) (\x1. x1 (\x2. x1 x2 x2)) j
+56	45	check_4_0_Cs_x_1_1.json	3792	Lean	flow	zero	FlowCases04.lean	Blc.Rootcert2.FlowCases04.reject56	\x1. x1 (\x2. x2 (x1 x2 c))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x2 (x1 x2 c))) j
+57	45	check_4_0_Cs_x_1_1.json	3794	Lean	flow	zero	FlowCases05.lean	Blc.Rootcert2.FlowCases05.reject57	\x1. x1 (\x2. x1 x2 (c x2))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 (c x2))) j
+58	45	check_4_0_Cs_x_1_1.json	3795	Lean	flow	zero	FlowCases06.lean	Blc.Rootcert2.FlowCases06.reject58	\x1. x1 (\x2. x1 x2 (x2 c))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 (x2 c))) j
+59	45	check_4_0_Cs_x_1_1.json	3798	Lean	flow	zero	FlowCases07.lean	Blc.Rootcert2.FlowCases07.reject59	\x1. x1 (\x2. x1 x2 c x2)	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 c x2)) j
+60	45	check_4_0_Cs_x_1_1.json	3803	Lean	flow	zero	FlowCases08.lean	Blc.Rootcert2.FlowCases08.reject60	\x1. x1 (\x2. x2 (x1 x2) c)	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x2 (x1 x2) c)) j
+61	45	check_4_0_Cs_x_1_1.json	3805	Lean	flow	zero	FlowCases09.lean	Blc.Rootcert2.FlowCases09.reject61	\x1. x1 (\x2. x1 x2 x2 c)	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 x2 c)) j
+62	45	check_4_0_Cs_x_1_1.json	3810	Lean	flow	zero	FlowCases04.lean	Blc.Rootcert2.FlowCases04.reject62	\x1. x1 (\x2. x2 (x1 x2 c))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x2 (x1 x2 c))) j
+63	45	check_4_0_Cs_x_1_1.json	3812	Lean	flow	zero	FlowCases05.lean	Blc.Rootcert2.FlowCases05.reject63	\x1. x1 (\x2. x1 x2 (c x2))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 (c x2))) j
+64	45	check_4_0_Cs_x_1_1.json	3813	Lean	flow	zero	FlowCases06.lean	Blc.Rootcert2.FlowCases06.reject64	\x1. x1 (\x2. x1 x2 (x2 c))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 (x2 c))) j
+65	45	check_4_0_Cs_x_1_1.json	3816	Lean	flow	zero	FlowCases07.lean	Blc.Rootcert2.FlowCases07.reject65	\x1. x1 (\x2. x1 x2 c x2)	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 c x2)) j
+66	45	check_4_0_Cs_x_1_1.json	3821	Lean	flow	zero	FlowCases08.lean	Blc.Rootcert2.FlowCases08.reject66	\x1. x1 (\x2. x2 (x1 x2) c)	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x2 (x1 x2) c)) j
+67	45	check_4_0_Cs_x_1_1.json	3823	Lean	flow	zero	FlowCases09.lean	Blc.Rootcert2.FlowCases09.reject67	\x1. x1 (\x2. x1 x2 x2 c)	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 x2 c)) j
+68	45	check_4_0_Cs_x_1_1.json	3828	Lean	flow	zero	FlowCases04.lean	Blc.Rootcert2.FlowCases04.reject68	\x1. x1 (\x2. x2 (x1 x2 c))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x2 (x1 x2 c))) j
+69	45	check_4_0_Cs_x_1_1.json	3830	Lean	flow	zero	FlowCases05.lean	Blc.Rootcert2.FlowCases05.reject69	\x1. x1 (\x2. x1 x2 (c x2))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 (c x2))) j
+70	45	check_4_0_Cs_x_1_1.json	3831	Lean	flow	zero	FlowCases06.lean	Blc.Rootcert2.FlowCases06.reject70	\x1. x1 (\x2. x1 x2 (x2 c))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 (x2 c))) j
+71	45	check_4_0_Cs_x_1_1.json	3834	Lean	flow	zero	FlowCases07.lean	Blc.Rootcert2.FlowCases07.reject71	\x1. x1 (\x2. x1 x2 c x2)	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 c x2)) j
+72	45	check_4_0_Cs_x_1_1.json	3839	Lean	flow	zero	FlowCases08.lean	Blc.Rootcert2.FlowCases08.reject72	\x1. x1 (\x2. x2 (x1 x2) c)	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x2 (x1 x2) c)) j
+73	45	check_4_0_Cs_x_1_1.json	3841	Lean	flow	zero	FlowCases09.lean	Blc.Rootcert2.FlowCases09.reject73	\x1. x1 (\x2. x1 x2 x2 c)	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 x2 c)) j
+74	45	check_4_0_Cs_x_1_1.json	3846	Lean	flow	zero	FlowCases04.lean	Blc.Rootcert2.FlowCases04.reject74	\x1. x1 (\x2. x2 (x1 x2 c))	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x2 (x1 x2 c))) j
+75	45	check_4_0_Cs_x_1_1.json	3848	Lean	flow	zero	FlowCases05.lean	Blc.Rootcert2.FlowCases05.reject75	\x1. x1 (\x2. x1 x2 (c x2))	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 (c x2))) j
+76	45	check_4_0_Cs_x_1_1.json	3849	Lean	flow	zero	FlowCases06.lean	Blc.Rootcert2.FlowCases06.reject76	\x1. x1 (\x2. x1 x2 (x2 c))	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 (x2 c))) j
+77	45	check_4_0_Cs_x_1_1.json	3852	Lean	flow	zero	FlowCases07.lean	Blc.Rootcert2.FlowCases07.reject77	\x1. x1 (\x2. x1 x2 c x2)	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 c x2)) j
+78	45	check_4_0_Cs_x_1_1.json	3857	Lean	flow	zero	FlowCases08.lean	Blc.Rootcert2.FlowCases08.reject78	\x1. x1 (\x2. x2 (x1 x2) c)	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x2 (x1 x2) c)) j
+79	45	check_4_0_Cs_x_1_1.json	3859	Lean	flow	zero	FlowCases09.lean	Blc.Rootcert2.FlowCases09.reject79	\x1. x1 (\x2. x1 x2 x2 c)	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 x2 c)) j
+80	45	check_4_0_Cs_x_1_1.json	3864	Lean	flow	zero	FlowCases04.lean	Blc.Rootcert2.FlowCases04.reject80	\x1. x1 (\x2. x2 (x1 x2 c))	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x2 (x1 x2 c))) j
+81	45	check_4_0_Cs_x_1_1.json	3866	Lean	flow	zero	FlowCases05.lean	Blc.Rootcert2.FlowCases05.reject81	\x1. x1 (\x2. x1 x2 (c x2))	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 (c x2))) j
+82	45	check_4_0_Cs_x_1_1.json	3867	Lean	flow	zero	FlowCases06.lean	Blc.Rootcert2.FlowCases06.reject82	\x1. x1 (\x2. x1 x2 (x2 c))	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 (x2 c))) j
+83	45	check_4_0_Cs_x_1_1.json	3870	Lean	flow	zero	FlowCases07.lean	Blc.Rootcert2.FlowCases07.reject83	\x1. x1 (\x2. x1 x2 c x2)	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 c x2)) j
+84	45	check_4_0_Cs_x_1_1.json	3875	Lean	flow	zero	FlowCases08.lean	Blc.Rootcert2.FlowCases08.reject84	\x1. x1 (\x2. x2 (x1 x2) c)	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x2 (x1 x2) c)) j
+85	45	check_4_0_Cs_x_1_1.json	3877	Lean	flow	zero	FlowCases09.lean	Blc.Rootcert2.FlowCases09.reject85	\x1. x1 (\x2. x1 x2 x2 c)	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 x2 c)) j
+86	45	check_4_0_Cs_x_1_1.json	4540	Lean	flow	zero	FlowCases10.lean	Blc.Rootcert2.FlowCases10.reject86	\x1. x1 (x1 (\x2. x1 x2 c))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (\x2. x1 x2 c))) j
+87	45	check_4_0_Cs_x_1_1.json	4542	Lean	flow	zero	FlowCases10.lean	Blc.Rootcert2.FlowCases10.reject87	\x1. x1 (x1 (\x2. x1 x2 c))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (x1 (\x2. x1 x2 c))) j
+88	45	check_4_0_Cs_x_1_1.json	4564	Lean	flow	zero	FlowCases11.lean	Blc.Rootcert2.FlowCases11.reject88	\x1. x1 (\x2. x1 x2 c) x1	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 c) x1) j
+89	45	check_4_0_Cs_x_1_1.json	4566	Lean	flow	zero	FlowCases11.lean	Blc.Rootcert2.FlowCases11.reject89	\x1. x1 (\x2. x1 x2 c) x1	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 c) x1) j
+90	45	check_4_0_Cs_x_1_1.json	4568	Lean	flow	zero	FlowCases12.lean	Blc.Rootcert2.FlowCases12.reject90	\x1. x1 (\x2. x1 (x1 x2)) c	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 (x1 x2)) c) j
+91	45	check_4_0_Cs_x_1_1.json	4571	Lean	flow	zero	FlowCases13.lean	Blc.Rootcert2.FlowCases13.reject91	\x1. x1 (\x2. x1 x2 x1) c	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 x1) c) j
+92	45	check_4_0_Cs_x_1_1.json	4573	Lean	flow	zero	FlowCases12.lean	Blc.Rootcert2.FlowCases12.reject92	\x1. x1 (\x2. x1 (x1 x2)) c	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 (x1 x2)) c) j
+93	45	check_4_0_Cs_x_1_1.json	4576	Lean	flow	zero	FlowCases13.lean	Blc.Rootcert2.FlowCases13.reject93	\x1. x1 (\x2. x1 x2 x1) c	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 x1) c) j
+94	45	check_4_0_Cs_x_1_1.json	4578	Lean	flow	zero	FlowCases10.lean	Blc.Rootcert2.FlowCases10.reject94	\x1. x1 (x1 (\x2. x1 x2 c))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (x1 (\x2. x1 x2 c))) j
+95	45	check_4_0_Cs_x_1_1.json	4590	Lean	flow	zero	FlowCases11.lean	Blc.Rootcert2.FlowCases11.reject95	\x1. x1 (\x2. x1 x2 c) x1	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 c) x1) j
+96	45	check_4_0_Cs_x_1_1.json	4592	Lean	flow	zero	FlowCases12.lean	Blc.Rootcert2.FlowCases12.reject96	\x1. x1 (\x2. x1 (x1 x2)) c	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 (x1 x2)) c) j
+97	45	check_4_0_Cs_x_1_1.json	4595	Lean	flow	zero	FlowCases13.lean	Blc.Rootcert2.FlowCases13.reject97	\x1. x1 (\x2. x1 x2 x1) c	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 x1) c) j
+98	45	check_4_0_Cs_x_1_1.json	4597	Lean	flow	zero	FlowCases10.lean	Blc.Rootcert2.FlowCases10.reject98	\x1. x1 (x1 (\x2. x1 x2 c))	(\x1. x1 (x1 x1) x1) (\x1. x1 (x1 (\x2. x1 x2 c))) j
+99	45	check_4_0_Cs_x_1_1.json	4609	Lean	flow	zero	FlowCases11.lean	Blc.Rootcert2.FlowCases11.reject99	\x1. x1 (\x2. x1 x2 c) x1	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 c) x1) j
+100	45	check_4_0_Cs_x_1_1.json	4611	Lean	flow	zero	FlowCases12.lean	Blc.Rootcert2.FlowCases12.reject100	\x1. x1 (\x2. x1 (x1 x2)) c	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 (x1 x2)) c) j
+101	45	check_4_0_Cs_x_1_1.json	4614	Lean	flow	zero	FlowCases13.lean	Blc.Rootcert2.FlowCases13.reject101	\x1. x1 (\x2. x1 x2 x1) c	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 x1) c) j
+102	45	check_4_0_Cs_x_1_1.json	4616	Lean	flow	zero	FlowCases10.lean	Blc.Rootcert2.FlowCases10.reject102	\x1. x1 (x1 (\x2. x1 x2 c))	(\x1. x1 x1 x1 x1) (\x1. x1 (x1 (\x2. x1 x2 c))) j
+103	45	check_4_0_Cs_x_1_1.json	4628	Lean	flow	zero	FlowCases11.lean	Blc.Rootcert2.FlowCases11.reject103	\x1. x1 (\x2. x1 x2 c) x1	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 c) x1) j
+104	45	check_4_0_Cs_x_1_1.json	4630	Lean	flow	zero	FlowCases12.lean	Blc.Rootcert2.FlowCases12.reject104	\x1. x1 (\x2. x1 (x1 x2)) c	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 (x1 x2)) c) j
+105	45	check_4_0_Cs_x_1_1.json	4633	Lean	flow	zero	FlowCases13.lean	Blc.Rootcert2.FlowCases13.reject105	\x1. x1 (\x2. x1 x2 x1) c	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 x1) c) j
+106	45	check_4_0_Cs_x_1_1.json	4635	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject106	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 (x1 x1 c))) (\x1. x1 (\x2. x1 (x1 x2))) j
+107	45	check_4_0_Cs_x_1_1.json	4638	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject107	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 (x1 x1 c))) (\x1. x1 (\x2. x1 x2 x1)) j
+108	45	check_4_0_Cs_x_1_1.json	4640	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject108	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1 (c x1))) (\x1. x1 (\x2. x1 (x1 x2))) j
+109	45	check_4_0_Cs_x_1_1.json	4643	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject109	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1 (c x1))) (\x1. x1 (\x2. x1 x2 x1)) j
+110	45	check_4_0_Cs_x_1_1.json	4645	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject110	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1 (x1 c))) (\x1. x1 (\x2. x1 (x1 x2))) j
+111	45	check_4_0_Cs_x_1_1.json	4648	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject111	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1 (x1 c))) (\x1. x1 (\x2. x1 x2 x1)) j
+112	45	check_4_0_Cs_x_1_1.json	4650	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject112	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1 c x1)) (\x1. x1 (\x2. x1 (x1 x2))) j
+113	45	check_4_0_Cs_x_1_1.json	4653	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject113	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1 c x1)) (\x1. x1 (\x2. x1 x2 x1)) j
+114	45	check_4_0_Cs_x_1_1.json	4655	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject114	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 (x1 x1) c)) (\x1. x1 (\x2. x1 (x1 x2))) j
+115	45	check_4_0_Cs_x_1_1.json	4658	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject115	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 (x1 x1) c)) (\x1. x1 (\x2. x1 x2 x1)) j
+116	45	check_4_0_Cs_x_1_1.json	4660	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject116	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1 x1 c)) (\x1. x1 (\x2. x1 (x1 x2))) j
+117	45	check_4_0_Cs_x_1_1.json	4663	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject117	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1 x1 c)) (\x1. x1 (\x2. x1 x2 x1)) j
+118	45	check_4_0_Cs_x_1_1.json	4665	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject118	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1) (c x1)) (\x1. x1 (\x2. x1 (x1 x2))) j
+119	45	check_4_0_Cs_x_1_1.json	4668	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject119	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1) (c x1)) (\x1. x1 (\x2. x1 x2 x1)) j
+120	45	check_4_0_Cs_x_1_1.json	4670	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject120	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1) (x1 c)) (\x1. x1 (\x2. x1 (x1 x2))) j
+121	45	check_4_0_Cs_x_1_1.json	4673	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject121	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1) (x1 c)) (\x1. x1 (\x2. x1 x2 x1)) j
+122	45	check_4_0_Cs_x_1_1.json	4675	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject122	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (c (x1 x1))) (\x1. x1 (\x2. x1 (x1 x2))) j
+123	45	check_4_0_Cs_x_1_1.json	4678	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject123	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (c (x1 x1))) (\x1. x1 (\x2. x1 x2 x1)) j
+124	45	check_4_0_Cs_x_1_1.json	4680	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject124	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (x1 (c x1))) (\x1. x1 (\x2. x1 (x1 x2))) j
+125	45	check_4_0_Cs_x_1_1.json	4683	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject125	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (x1 (c x1))) (\x1. x1 (\x2. x1 x2 x1)) j
+126	45	check_4_0_Cs_x_1_1.json	4685	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject126	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (x1 (x1 c))) (\x1. x1 (\x2. x1 (x1 x2))) j
+127	45	check_4_0_Cs_x_1_1.json	4688	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject127	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (x1 (x1 c))) (\x1. x1 (\x2. x1 x2 x1)) j
+128	45	check_4_0_Cs_x_1_1.json	4690	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject128	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (c x1 x1)) (\x1. x1 (\x2. x1 (x1 x2))) j
+129	45	check_4_0_Cs_x_1_1.json	4693	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject129	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (c x1 x1)) (\x1. x1 (\x2. x1 x2 x1)) j
+130	45	check_4_0_Cs_x_1_1.json	4695	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject130	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (x1 c x1)) (\x1. x1 (\x2. x1 (x1 x2))) j
+131	45	check_4_0_Cs_x_1_1.json	4698	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject131	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (x1 c x1)) (\x1. x1 (\x2. x1 x2 x1)) j
+132	45	check_4_0_Cs_x_1_1.json	4700	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject132	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (x1 x1 c)) (\x1. x1 (\x2. x1 (x1 x2))) j
+133	45	check_4_0_Cs_x_1_1.json	4703	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject133	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (x1 x1 c)) (\x1. x1 (\x2. x1 x2 x1)) j
+134	45	check_4_0_Cs_x_1_1.json	4705	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject134	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 c (x1 x1)) (\x1. x1 (\x2. x1 (x1 x2))) j
+135	45	check_4_0_Cs_x_1_1.json	4708	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject135	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 c (x1 x1)) (\x1. x1 (\x2. x1 x2 x1)) j
+136	45	check_4_0_Cs_x_1_1.json	4710	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject136	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 x1 (c x1)) (\x1. x1 (\x2. x1 (x1 x2))) j
+137	45	check_4_0_Cs_x_1_1.json	4713	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject137	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 x1 (c x1)) (\x1. x1 (\x2. x1 x2 x1)) j
+138	45	check_4_0_Cs_x_1_1.json	4715	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject138	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 x1 (x1 c)) (\x1. x1 (\x2. x1 (x1 x2))) j
+139	45	check_4_0_Cs_x_1_1.json	4718	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject139	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 x1 (x1 c)) (\x1. x1 (\x2. x1 x2 x1)) j
+140	45	check_4_0_Cs_x_1_1.json	4720	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject140	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1 c) x1) (\x1. x1 (\x2. x1 (x1 x2))) j
+141	45	check_4_0_Cs_x_1_1.json	4723	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject141	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1 c) x1) (\x1. x1 (\x2. x1 x2 x1)) j
+142	45	check_4_0_Cs_x_1_1.json	4725	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject142	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1) c x1) (\x1. x1 (\x2. x1 (x1 x2))) j
+143	45	check_4_0_Cs_x_1_1.json	4728	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject143	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1) c x1) (\x1. x1 (\x2. x1 x2 x1)) j
+144	45	check_4_0_Cs_x_1_1.json	4730	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject144	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (c x1) x1) (\x1. x1 (\x2. x1 (x1 x2))) j
+145	45	check_4_0_Cs_x_1_1.json	4733	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject145	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (c x1) x1) (\x1. x1 (\x2. x1 x2 x1)) j
+146	45	check_4_0_Cs_x_1_1.json	4735	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject146	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (x1 c) x1) (\x1. x1 (\x2. x1 (x1 x2))) j
+147	45	check_4_0_Cs_x_1_1.json	4738	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject147	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (x1 c) x1) (\x1. x1 (\x2. x1 x2 x1)) j
+148	45	check_4_0_Cs_x_1_1.json	4740	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject148	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 c x1 x1) (\x1. x1 (\x2. x1 (x1 x2))) j
+149	45	check_4_0_Cs_x_1_1.json	4743	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject149	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 c x1 x1) (\x1. x1 (\x2. x1 x2 x1)) j
+150	45	check_4_0_Cs_x_1_1.json	4745	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject150	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 x1 c x1) (\x1. x1 (\x2. x1 (x1 x2))) j
+151	45	check_4_0_Cs_x_1_1.json	4748	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject151	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 x1 c x1) (\x1. x1 (\x2. x1 x2 x1)) j
+152	44	check_4_0_Cs_x_1_1.json	7249	Lean	flow	zero	FlowCases16.lean	Blc.Rootcert2.FlowCases16.reject152	\x1. x1 (\x2. x1) c	(\x1. x1 (x1 (\x2. x1 (x2 x1)))) (\x1. x1 (\x2. x1) c) j
+153	44	check_4_0_Cs_x_1_1.json	7260	Lean	flow	zero	FlowCases16.lean	Blc.Rootcert2.FlowCases16.reject153	\x1. x1 (\x2. x1) c	(\x1. x1 (\x2. x1 (x2 x1)) x1) (\x1. x1 (\x2. x1) c) j
+154	44	check_4_0_Cs_x_1_1.json	7261	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject154	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x1 x2)) c)) (\x1. x1 (\x2. x1)) j
+155	44	check_4_0_Cs_x_1_1.json	7262	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject155	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x2 x1)) c)) (\x1. x1 (\x2. x1)) j
+156	44	check_4_0_Cs_x_1_1.json	7263	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject156	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (x1 (\x2. x1 (x2 c))))) (\x1. x1 (\x2. x1)) j
+157	44	check_4_0_Cs_x_1_1.json	7264	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject157	\x1. x1 (\x2. x1)	(\x1. x1 (x1 x1 (\x2. x1 (x2 c)))) (\x1. x1 (\x2. x1)) j
+158	44	check_4_0_Cs_x_1_1.json	7265	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject158	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x2 c)) x1)) (\x1. x1 (\x2. x1)) j
+159	44	check_4_0_Cs_x_1_1.json	7266	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject159	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x2)) (c x1)) (\x1. x1 (\x2. x1)) j
+160	44	check_4_0_Cs_x_1_1.json	7267	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject160	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 x1)) (c x1)) (\x1. x1 (\x2. x1)) j
+161	44	check_4_0_Cs_x_1_1.json	7268	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject161	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x2)) (x1 c)) (\x1. x1 (\x2. x1)) j
+162	44	check_4_0_Cs_x_1_1.json	7269	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject162	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 x1)) (x1 c)) (\x1. x1 (\x2. x1)) j
+163	44	check_4_0_Cs_x_1_1.json	7270	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject163	\x1. x1 (\x2. x1)	(\x1. x1 x1 (x1 (\x2. x1 (x2 c)))) (\x1. x1 (\x2. x1)) j
+164	44	check_4_0_Cs_x_1_1.json	7271	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject164	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 c)) (x1 x1)) (\x1. x1 (\x2. x1)) j
+165	44	check_4_0_Cs_x_1_1.json	7272	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject165	\x1. x1 (\x2. x1)	(\x1. x1 (x1 x1) (\x2. x1 (x2 c))) (\x1. x1 (\x2. x1)) j
+166	44	check_4_0_Cs_x_1_1.json	7273	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject166	\x1. x1 (\x2. x1)	(\x1. x1 x1 x1 (\x2. x1 (x2 c))) (\x1. x1 (\x2. x1)) j
+167	44	check_4_0_Cs_x_1_1.json	7274	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject167	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x2 c))) x1) (\x1. x1 (\x2. x1)) j
+168	44	check_4_0_Cs_x_1_1.json	7275	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject168	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x2)) c x1) (\x1. x1 (\x2. x1)) j
+169	44	check_4_0_Cs_x_1_1.json	7276	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject169	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 x1)) c x1) (\x1. x1 (\x2. x1)) j
+170	44	check_4_0_Cs_x_1_1.json	7277	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject170	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x2 c)) x1) (\x1. x1 (\x2. x1)) j
+171	44	check_4_0_Cs_x_1_1.json	7278	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject171	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 c)) x1 x1) (\x1. x1 (\x2. x1)) j
+172	45	check_4_0_Cs_x_1_1.json	7852	Lean	flow	zero	FlowCases16.lean	Blc.Rootcert2.FlowCases16.reject172	\x1. x1 (\x2. x1) c	(\x1. x1 (\x2. x1 (x1 (x2 x1)))) (\x1. x1 (\x2. x1) c) j
+173	45	check_4_0_Cs_x_1_1.json	7853	Lean	flow	zero	FlowCases16.lean	Blc.Rootcert2.FlowCases16.reject173	\x1. x1 (\x2. x1) c	(\x1. x1 (\x2. x1 (x2 (x1 x1)))) (\x1. x1 (\x2. x1) c) j
+174	45	check_4_0_Cs_x_1_1.json	7854	Lean	flow	zero	FlowCases16.lean	Blc.Rootcert2.FlowCases16.reject174	\x1. x1 (\x2. x1) c	(\x1. x1 (\x2. x1 (x2 x1) x1)) (\x1. x1 (\x2. x1) c) j
+175	45	check_4_0_Cs_x_1_1.json	7855	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject175	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x1 (x2 c))))) (\x1. x1 (\x2. x1)) j
+176	45	check_4_0_Cs_x_1_1.json	7856	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject176	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x2 (c x1))))) (\x1. x1 (\x2. x1)) j
+177	45	check_4_0_Cs_x_1_1.json	7857	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject177	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x2 (x1 c))))) (\x1. x1 (\x2. x1)) j
+178	45	check_4_0_Cs_x_1_1.json	7858	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject178	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x1 x2) c))) (\x1. x1 (\x2. x1)) j
+179	45	check_4_0_Cs_x_1_1.json	7859	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject179	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x2 x1) c))) (\x1. x1 (\x2. x1)) j
+180	45	check_4_0_Cs_x_1_1.json	7860	Lean	develop	zero	DevelopCases00.lean	Blc.Rootcert2.DevelopCases00.reject180	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 x1 (x2 c)))) (\x1. x1 (\x2. x1)) j
+181	45	check_4_0_Cs_x_1_1.json	7861	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject181	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x2 c) x1))) (\x1. x1 (\x2. x1)) j
+182	45	check_4_0_Cs_x_1_1.json	7862	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject182	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x1 (x2 c)))) (\x1. x1 (\x2. x1)) j
+183	45	check_4_0_Cs_x_1_1.json	7863	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject183	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x2 (c x1)))) (\x1. x1 (\x2. x1)) j
+184	45	check_4_0_Cs_x_1_1.json	7864	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject184	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x2 (x1 c)))) (\x1. x1 (\x2. x1)) j
+185	45	check_4_0_Cs_x_1_1.json	7865	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject185	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x1 x2) c)) (\x1. x1 (\x2. x1)) j
+186	45	check_4_0_Cs_x_1_1.json	7866	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject186	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x2 x1) c)) (\x1. x1 (\x2. x1)) j
+187	45	check_4_0_Cs_x_1_1.json	7867	Lean	develop	zero	DevelopCases00.lean	Blc.Rootcert2.DevelopCases00.reject187	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 x1 (x2 c))) (\x1. x1 (\x2. x1)) j
+188	45	check_4_0_Cs_x_1_1.json	7868	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject188	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x2 c) x1)) (\x1. x1 (\x2. x1)) j
+189	45	check_4_0_Cs_x_1_1.json	7869	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject189	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 (x2 c))) x1) (\x1. x1 (\x2. x1)) j
+190	45	check_4_0_Cs_x_1_1.json	7870	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject190	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 (c x1))) x1) (\x1. x1 (\x2. x1)) j
+191	45	check_4_0_Cs_x_1_1.json	7871	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject191	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 (x1 c))) x1) (\x1. x1 (\x2. x1)) j
+192	45	check_4_0_Cs_x_1_1.json	7872	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject192	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x2) c) x1) (\x1. x1 (\x2. x1)) j
+193	45	check_4_0_Cs_x_1_1.json	7873	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject193	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 x1) c) x1) (\x1. x1 (\x2. x1)) j
+194	45	check_4_0_Cs_x_1_1.json	7874	Lean	develop	zero	DevelopCases00.lean	Blc.Rootcert2.DevelopCases00.reject194	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 x1 (x2 c)) x1) (\x1. x1 (\x2. x1)) j
+195	45	check_4_0_Cs_x_1_1.json	7875	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject195	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 c) x1) x1) (\x1. x1 (\x2. x1)) j
+196	45	check_4_0_Cs_x_1_1.json	10357	Lean	develop	zero	DevelopCases01.lean	Blc.Rootcert2.DevelopCases01.reject196	\x1. x1 (x1 (\x2. \x3. x3) c) x1	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (\x2. \x3. x3) c) x1) j
+197	45	check_4_0_Cs_x_1_1.json	10358	Lean	develop	zero	DevelopCases01.lean	Blc.Rootcert2.DevelopCases01.reject197	\x1. x1 (x1 (\x2. \x3. x3) c) x1	(\x1. x1 (x1 x1 x1)) (\x1. x1 (x1 (\x2. \x3. x3) c) x1) j
+198	45	check_4_0_Cs_x_1_1.json	12248	Lean	flow	zero	FlowCases18.lean	Blc.Rootcert2.FlowCases18.reject198	\x1. x1 c (\x2. x1 (\x3. x3))	(\x1. x1 (x1 (x1 (\x2. x1)))) (\x1. x1 c (\x2. x1 (\x3. x3))) j
+199	45	check_4_0_Cs_x_1_1.json	12249	Lean	flow	zero	FlowCases18.lean	Blc.Rootcert2.FlowCases18.reject199	\x1. x1 c (\x2. x1 (\x3. x3))	(\x1. x1 (x1 (\x2. x1) x1)) (\x1. x1 c (\x2. x1 (\x3. x3))) j
+200	45	check_4_0_Cs_x_1_1.json	12276	Lean	flow	zero	FlowCases18.lean	Blc.Rootcert2.FlowCases18.reject200	\x1. x1 c (\x2. x1 (\x3. x3))	(\x1. x1 (\x2. x1) (x1 x1)) (\x1. x1 c (\x2. x1 (\x3. x3))) j
+201	45	check_4_0_Cs_x_1_1.json	12296	Lean	flow	zero	FlowCases18.lean	Blc.Rootcert2.FlowCases18.reject201	\x1. x1 c (\x2. x1 (\x3. x3))	(\x1. x1 (x1 (\x2. x1)) x1) (\x1. x1 c (\x2. x1 (\x3. x3))) j
+202	45	check_4_0_Cs_x_1_1.json	12310	Lean	flow	zero	FlowCases18.lean	Blc.Rootcert2.FlowCases18.reject202	\x1. x1 c (\x2. x1 (\x3. x3))	(\x1. x1 (\x2. x1) x1 x1) (\x1. x1 c (\x2. x1 (\x3. x3))) j
+203	44	check_4_0_Cs_x_1_2.json	0	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject203	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 (x1 x1 x1 c)) (\x1. \x2. x1 (x2 x2 x2)) j
+204	44	check_4_0_Cs_x_1_2.json	72	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject204	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 x1 x1 (c x1)) (\x1. \x2. x1 (x2 x2 x2)) j
+205	44	check_4_0_Cs_x_1_2.json	73	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject205	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 x1 x1 (x1 c)) (\x1. \x2. x1 (x2 x2 x2)) j
+206	44	check_4_0_Cs_x_1_2.json	165	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject206	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 x1 x1 c x1) (\x1. \x2. x1 (x2 x2 x2)) j
+207	45	check_4_0_Cs_x_1_2.json	178	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject207	\x1. \x2. x1 (x2 x2 x1)	(\x1. x1 (x1 x1 x1 c)) (\x1. \x2. x1 (x2 x2 x1)) j
+208	45	check_4_0_Cs_x_1_2.json	179	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject208	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 (x1 x1 x1 c)) (\x1. \x2. x1 (x1 x2 x2)) j
+209	45	check_4_0_Cs_x_1_2.json	180	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject209	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 (x1 x1 x1 c)) (\x1. \x2. x1 (x2 x1 x2)) j
+210	45	check_4_0_Cs_x_1_2.json	181	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject210	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 (x1 x1 c))) (\x1. \x2. x1 x1 (x2 x2)) j
+211	45	check_4_0_Cs_x_1_2.json	182	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject211	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1 (c x1))) (\x1. \x2. x1 x1 (x2 x2)) j
+212	45	check_4_0_Cs_x_1_2.json	183	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject212	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1 (x1 c))) (\x1. \x2. x1 x1 (x2 x2)) j
+213	45	check_4_0_Cs_x_1_2.json	184	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject213	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1 c x1)) (\x1. \x2. x1 x1 (x2 x2)) j
+214	45	check_4_0_Cs_x_1_2.json	185	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject214	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 (x1 x1) c)) (\x1. \x2. x1 x1 (x2 x2)) j
+215	45	check_4_0_Cs_x_1_2.json	186	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject215	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1 x1 c)) (\x1. \x2. x1 x1 (x2 x2)) j
+216	45	check_4_0_Cs_x_1_2.json	187	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject216	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 (x1 x1 x1 c)) (\x1. \x2. x1 x2 (x1 x2)) j
+217	45	check_4_0_Cs_x_1_2.json	200	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject217	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1) (c x1)) (\x1. \x2. x1 x1 (x2 x2)) j
+218	45	check_4_0_Cs_x_1_2.json	201	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject218	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1) (x1 c)) (\x1. \x2. x1 x1 (x2 x2)) j
+219	45	check_4_0_Cs_x_1_2.json	225	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject219	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (c (x1 x1))) (\x1. \x2. x1 x1 (x2 x2)) j
+220	45	check_4_0_Cs_x_1_2.json	226	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject220	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (x1 (c x1))) (\x1. \x2. x1 x1 (x2 x2)) j
+221	45	check_4_0_Cs_x_1_2.json	227	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject221	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (x1 (x1 c))) (\x1. \x2. x1 x1 (x2 x2)) j
+222	45	check_4_0_Cs_x_1_2.json	228	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject222	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (c x1 x1)) (\x1. \x2. x1 x1 (x2 x2)) j
+223	45	check_4_0_Cs_x_1_2.json	229	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject223	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (x1 c x1)) (\x1. \x2. x1 x1 (x2 x2)) j
+224	45	check_4_0_Cs_x_1_2.json	230	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject224	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (x1 x1 c)) (\x1. \x2. x1 x1 (x2 x2)) j
+225	45	check_4_0_Cs_x_1_2.json	250	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject225	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 c (x1 x1)) (\x1. \x2. x1 x1 (x2 x2)) j
+226	45	check_4_0_Cs_x_1_2.json	252	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject226	\x1. \x2. x1 (x2 x2 x1)	(\x1. x1 x1 x1 (c x1)) (\x1. \x2. x1 (x2 x2 x1)) j
+227	45	check_4_0_Cs_x_1_2.json	253	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject227	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 x1 x1 (c x1)) (\x1. \x2. x1 (x1 x2 x2)) j
+228	45	check_4_0_Cs_x_1_2.json	254	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject228	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 x1 x1 (c x1)) (\x1. \x2. x1 (x2 x1 x2)) j
+229	45	check_4_0_Cs_x_1_2.json	255	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject229	\x1. \x2. x1 (x2 x2 x1)	(\x1. x1 x1 x1 (x1 c)) (\x1. \x2. x1 (x2 x2 x1)) j
+230	45	check_4_0_Cs_x_1_2.json	256	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject230	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 x1 x1 (x1 c)) (\x1. \x2. x1 (x1 x2 x2)) j
+231	45	check_4_0_Cs_x_1_2.json	257	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject231	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 x1 x1 (x1 c)) (\x1. \x2. x1 (x2 x1 x2)) j
+232	45	check_4_0_Cs_x_1_2.json	258	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject232	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 x1 (c x1)) (\x1. \x2. x1 x1 (x2 x2)) j
+233	45	check_4_0_Cs_x_1_2.json	259	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject233	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 x1 (x1 c)) (\x1. \x2. x1 x1 (x2 x2)) j
+234	45	check_4_0_Cs_x_1_2.json	263	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject234	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 x1 x1 (c x1)) (\x1. \x2. x1 x2 (x1 x2)) j
+235	45	check_4_0_Cs_x_1_2.json	265	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject235	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 x1 x1 (x1 c)) (\x1. \x2. x1 x2 (x1 x2)) j
+236	45	check_4_0_Cs_x_1_2.json	297	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject236	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1 c) x1) (\x1. \x2. x1 x1 (x2 x2)) j
+237	45	check_4_0_Cs_x_1_2.json	315	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject237	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1) c x1) (\x1. \x2. x1 x1 (x2 x2)) j
+238	45	check_4_0_Cs_x_1_2.json	319	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject238	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (c x1) x1) (\x1. \x2. x1 x1 (x2 x2)) j
+239	45	check_4_0_Cs_x_1_2.json	320	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject239	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (x1 c) x1) (\x1. \x2. x1 x1 (x2 x2)) j
+240	45	check_4_0_Cs_x_1_2.json	335	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject240	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 c x1 x1) (\x1. \x2. x1 x1 (x2 x2)) j
+241	45	check_4_0_Cs_x_1_2.json	337	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject241	\x1. \x2. x1 (x2 x2 x1)	(\x1. x1 x1 x1 c x1) (\x1. \x2. x1 (x2 x2 x1)) j
+242	45	check_4_0_Cs_x_1_2.json	338	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject242	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 x1 x1 c x1) (\x1. \x2. x1 (x1 x2 x2)) j
+243	45	check_4_0_Cs_x_1_2.json	339	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject243	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 x1 x1 c x1) (\x1. \x2. x1 (x2 x1 x2)) j
+244	45	check_4_0_Cs_x_1_2.json	340	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject244	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 x1 c x1) (\x1. \x2. x1 x1 (x2 x2)) j
+245	45	check_4_0_Cs_x_1_2.json	341	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject245	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 x1 x1 c x1) (\x1. \x2. x1 x2 (x1 x2)) j
+246	45	check_4_0_Cs_x_1_2.json	381	Lean	flow	zero	FlowCases22.lean	Blc.Rootcert2.FlowCases22.reject246	\x1. \x2. x2 (x2 (x1 x2) c)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (x1 x2) c)) j
+247	45	check_4_0_Cs_x_1_2.json	384	Lean	flow	zero	FlowCases23.lean	Blc.Rootcert2.FlowCases23.reject247	\x1. \x2. x2 (x1 x2) (c x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) (c x2)) j
+248	45	check_4_0_Cs_x_1_2.json	385	Lean	flow	zero	FlowCases24.lean	Blc.Rootcert2.FlowCases24.reject248	\x1. \x2. x2 (x1 x2) (x2 c)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) (x2 c)) j
+249	45	check_4_0_Cs_x_1_2.json	389	Lean	flow	zero	FlowCases25.lean	Blc.Rootcert2.FlowCases25.reject249	\x1. \x2. x2 (x2 (x1 x2)) c	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (x1 x2)) c) j
+250	45	check_4_0_Cs_x_1_2.json	410	Lean	flow	zero	FlowCases26.lean	Blc.Rootcert2.FlowCases26.reject250	\x1. \x2. x2 (x1 x2) x2 c	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) x2 c) j
+251	45	check_4_0_Cs_x_1_2.json	411	Lean	flow	zero	FlowCases27.lean	Blc.Rootcert2.FlowCases27.reject251	\x1. \x2. x2 (x2 x1) x2 c	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 x1) x2 c) j
+252	45	check_4_0_Cs_x_1_2.json	425	Lean	flow	zero	FlowCases28.lean	Blc.Rootcert2.FlowCases28.reject252	\x1. \x2. x2 (x1 x2) c x2	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) c x2) j
+253	45	check_4_0_Cs_x_1_2.json	462	Lean	flow	zero	FlowCases26.lean	Blc.Rootcert2.FlowCases26.reject253	\x1. \x2. x2 (x1 x2) x2 c	(\x1. x1 (x1 x1) x1) (\x1. \x2. x2 (x1 x2) x2 c) j
+254	45	check_4_0_Cs_x_1_2.json	463	Lean	flow	zero	FlowCases27.lean	Blc.Rootcert2.FlowCases27.reject254	\x1. \x2. x2 (x2 x1) x2 c	(\x1. x1 (x1 x1) x1) (\x1. \x2. x2 (x2 x1) x2 c) j
+255	45	check_4_0_Cs_x_1_2.json	485	Lean	flow	zero	FlowCases29.lean	Blc.Rootcert2.FlowCases29.reject255	\x1. \x2. x2 (c x1) x2 x2	(\x1. x1 (x1 x1) x1) (\x1. \x2. x2 (c x1) x2 x2) j
+256	45	check_4_0_Cs_x_1_2.json	486	Lean	flow	zero	FlowCases30.lean	Blc.Rootcert2.FlowCases30.reject256	\x1. \x2. x2 (x1 c) x2 x2	(\x1. x1 (x1 x1) x1) (\x1. \x2. x2 (x1 c) x2 x2) j
+257	45	check_4_0_Cs_x_1_2.json	520	Lean	flow	zero	FlowCases26.lean	Blc.Rootcert2.FlowCases26.reject257	\x1. \x2. x2 (x1 x2) x2 c	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 (x1 x2) x2 c) j
+258	45	check_4_0_Cs_x_1_2.json	521	Lean	flow	zero	FlowCases27.lean	Blc.Rootcert2.FlowCases27.reject258	\x1. \x2. x2 (x2 x1) x2 c	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 (x2 x1) x2 c) j
+259	45	check_4_0_Cs_x_1_2.json	542	Lean	flow	zero	FlowCases29.lean	Blc.Rootcert2.FlowCases29.reject259	\x1. \x2. x2 (c x1) x2 x2	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 (c x1) x2 x2) j
+260	45	check_4_0_Cs_x_1_2.json	543	Lean	flow	zero	FlowCases30.lean	Blc.Rootcert2.FlowCases30.reject260	\x1. \x2. x2 (x1 c) x2 x2	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 (x1 c) x2 x2) j
+261	44	check_4_0_Cs_x_1_2.json	963	Lean	flow	zero	FlowCases31.lean	Blc.Rootcert2.FlowCases31.reject261	\x1. \x2. x2 (x1 c (\x3. x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 c (\x3. x2))) j
+262	44	check_4_0_Cs_x_1_2.json	964	Lean	flow	zero	FlowCases32.lean	Blc.Rootcert2.FlowCases32.reject262	\x1. \x2. x2 (x1 x2) (\x3. c)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) (\x3. c)) j
+263	44	check_4_0_Cs_x_1_2.json	981	Lean	flow	zero	FlowCases33.lean	Blc.Rootcert2.FlowCases33.reject263	\x1. \x2. x2 (\x3. x1) x2 c	(\x1. x1 (x1 x1) x1) (\x1. \x2. x2 (\x3. x1) x2 c) j
+264	44	check_4_0_Cs_x_1_2.json	992	Lean	flow	zero	FlowCases34.lean	Blc.Rootcert2.FlowCases34.reject264	\x1. \x2. x2 c (\x3. x1) x2	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 c (\x3. x1) x2) j
+265	44	check_4_0_Cs_x_1_2.json	995	Lean	flow	zero	FlowCases33.lean	Blc.Rootcert2.FlowCases33.reject265	\x1. \x2. x2 (\x3. x1) x2 c	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 (\x3. x1) x2 c) j
+266	44	check_4_0_Cs_x_1_2.json	1003	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject266	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 (x1 x1 c))) (\x1. \x2. x1 x1 (\x3. x2)) j
+267	44	check_4_0_Cs_x_1_2.json	1004	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject267	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1 (c x1))) (\x1. \x2. x1 x1 (\x3. x2)) j
+268	44	check_4_0_Cs_x_1_2.json	1005	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject268	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1 (x1 c))) (\x1. \x2. x1 x1 (\x3. x2)) j
+269	44	check_4_0_Cs_x_1_2.json	1006	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject269	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1 c x1)) (\x1. \x2. x1 x1 (\x3. x2)) j
+270	44	check_4_0_Cs_x_1_2.json	1007	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject270	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 (x1 x1) c)) (\x1. \x2. x1 x1 (\x3. x2)) j
+271	44	check_4_0_Cs_x_1_2.json	1008	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject271	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1 x1 c)) (\x1. \x2. x1 x1 (\x3. x2)) j
+272	44	check_4_0_Cs_x_1_2.json	1009	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject272	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1) (c x1)) (\x1. \x2. x1 x1 (\x3. x2)) j
+273	44	check_4_0_Cs_x_1_2.json	1010	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject273	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1) (x1 c)) (\x1. \x2. x1 x1 (\x3. x2)) j
+274	44	check_4_0_Cs_x_1_2.json	1011	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject274	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (c (x1 x1))) (\x1. \x2. x1 x1 (\x3. x2)) j
+275	44	check_4_0_Cs_x_1_2.json	1012	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject275	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (x1 (c x1))) (\x1. \x2. x1 x1 (\x3. x2)) j
+276	44	check_4_0_Cs_x_1_2.json	1013	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject276	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (x1 (x1 c))) (\x1. \x2. x1 x1 (\x3. x2)) j
+277	44	check_4_0_Cs_x_1_2.json	1014	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject277	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (c x1 x1)) (\x1. \x2. x1 x1 (\x3. x2)) j
+278	44	check_4_0_Cs_x_1_2.json	1015	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject278	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (x1 c x1)) (\x1. \x2. x1 x1 (\x3. x2)) j
+279	44	check_4_0_Cs_x_1_2.json	1016	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject279	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (x1 x1 c)) (\x1. \x2. x1 x1 (\x3. x2)) j
+280	44	check_4_0_Cs_x_1_2.json	1017	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject280	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 c (x1 x1)) (\x1. \x2. x1 x1 (\x3. x2)) j
+281	44	check_4_0_Cs_x_1_2.json	1018	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject281	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 x1 (c x1)) (\x1. \x2. x1 x1 (\x3. x2)) j
+282	44	check_4_0_Cs_x_1_2.json	1019	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject282	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 x1 (x1 c)) (\x1. \x2. x1 x1 (\x3. x2)) j
+283	44	check_4_0_Cs_x_1_2.json	1020	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject283	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1 c) x1) (\x1. \x2. x1 x1 (\x3. x2)) j
+284	44	check_4_0_Cs_x_1_2.json	1021	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject284	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1) c x1) (\x1. \x2. x1 x1 (\x3. x2)) j
+285	44	check_4_0_Cs_x_1_2.json	1022	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject285	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (c x1) x1) (\x1. \x2. x1 x1 (\x3. x2)) j
+286	44	check_4_0_Cs_x_1_2.json	1023	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject286	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (x1 c) x1) (\x1. \x2. x1 x1 (\x3. x2)) j
+287	44	check_4_0_Cs_x_1_2.json	1024	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject287	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 c x1 x1) (\x1. \x2. x1 x1 (\x3. x2)) j
+288	44	check_4_0_Cs_x_1_2.json	1025	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject288	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 x1 c x1) (\x1. \x2. x1 x1 (\x3. x2)) j
+289	45	check_4_0_Cs_x_1_2.json	1138	Lean	flow	zero	FlowCases36.lean	Blc.Rootcert2.FlowCases36.reject289	\x1. \x2. x1 x1 (c (\x3. x2))	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (c (\x3. x2))) j
+290	45	check_4_0_Cs_x_1_2.json	1139	Lean	flow	zero	FlowCases37.lean	Blc.Rootcert2.FlowCases37.reject290	\x1. \x2. x1 x1 (x2 (\x3. c))	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (x2 (\x3. c))) j
+291	45	check_4_0_Cs_x_1_2.json	1140	Lean	flow	zero	FlowCases36.lean	Blc.Rootcert2.FlowCases36.reject291	\x1. \x2. x1 x1 (c (\x3. x2))	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (c (\x3. x2))) j
+292	45	check_4_0_Cs_x_1_2.json	1141	Lean	flow	zero	FlowCases37.lean	Blc.Rootcert2.FlowCases37.reject292	\x1. \x2. x1 x1 (x2 (\x3. c))	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (x2 (\x3. c))) j
+293	45	check_4_0_Cs_x_1_2.json	1144	Lean	flow	zero	FlowCases38.lean	Blc.Rootcert2.FlowCases38.reject293	\x1. \x2. x1 x1 (\x3. x2) c	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (\x3. x2) c) j
+294	45	check_4_0_Cs_x_1_2.json	1146	Lean	flow	zero	FlowCases38.lean	Blc.Rootcert2.FlowCases38.reject294	\x1. \x2. x1 x1 (\x3. x2) c	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (\x3. x2) c) j
+295	45	check_4_0_Cs_x_1_2.json	1151	Lean	flow	zero	FlowCases39.lean	Blc.Rootcert2.FlowCases39.reject295	\x1. \x2. x2 x1 (\x3. x2 c)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 x1 (\x3. x2 c)) j
+296	45	check_4_0_Cs_x_1_2.json	1155	Lean	flow	zero	FlowCases40.lean	Blc.Rootcert2.FlowCases40.reject296	\x1. \x2. x1 (\x3. x2) (x1 c)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (\x3. x2) (x1 c)) j
+297	45	check_4_0_Cs_x_1_2.json	1156	Lean	flow	zero	FlowCases36.lean	Blc.Rootcert2.FlowCases36.reject297	\x1. \x2. x1 x1 (c (\x3. x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (c (\x3. x2))) j
+298	45	check_4_0_Cs_x_1_2.json	1157	Lean	flow	zero	FlowCases37.lean	Blc.Rootcert2.FlowCases37.reject298	\x1. \x2. x1 x1 (x2 (\x3. c))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (x2 (\x3. c))) j
+299	45	check_4_0_Cs_x_1_2.json	1159	Lean	flow	zero	FlowCases38.lean	Blc.Rootcert2.FlowCases38.reject299	\x1. \x2. x1 x1 (\x3. x2) c	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (\x3. x2) c) j
+300	45	check_4_0_Cs_x_1_2.json	1164	Lean	flow	zero	FlowCases41.lean	Blc.Rootcert2.FlowCases41.reject300	\x1. \x2. x2 c (\x3. x2 x1)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x2 c (\x3. x2 x1)) j
+301	45	check_4_0_Cs_x_1_2.json	1165	Lean	flow	zero	FlowCases39.lean	Blc.Rootcert2.FlowCases39.reject301	\x1. \x2. x2 x1 (\x3. x2 c)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x2 x1 (\x3. x2 c)) j
+302	45	check_4_0_Cs_x_1_2.json	1171	Lean	flow	zero	FlowCases36.lean	Blc.Rootcert2.FlowCases36.reject302	\x1. \x2. x1 x1 (c (\x3. x2))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (c (\x3. x2))) j
+303	45	check_4_0_Cs_x_1_2.json	1172	Lean	flow	zero	FlowCases37.lean	Blc.Rootcert2.FlowCases37.reject303	\x1. \x2. x1 x1 (x2 (\x3. c))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (x2 (\x3. c))) j
+304	45	check_4_0_Cs_x_1_2.json	1174	Lean	flow	zero	FlowCases38.lean	Blc.Rootcert2.FlowCases38.reject304	\x1. \x2. x1 x1 (\x3. x2) c	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (\x3. x2) c) j
+305	45	check_4_0_Cs_x_1_2.json	1178	Lean	flow	zero	FlowCases41.lean	Blc.Rootcert2.FlowCases41.reject305	\x1. \x2. x2 c (\x3. x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 c (\x3. x2 x1)) j
+306	45	check_4_0_Cs_x_1_2.json	1179	Lean	flow	zero	FlowCases39.lean	Blc.Rootcert2.FlowCases39.reject306	\x1. \x2. x2 x1 (\x3. x2 c)	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 x1 (\x3. x2 c)) j
+307	45	check_4_0_Cs_x_1_2.json	1184	Lean	flow	zero	FlowCases36.lean	Blc.Rootcert2.FlowCases36.reject307	\x1. \x2. x1 x1 (c (\x3. x2))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (c (\x3. x2))) j
+308	45	check_4_0_Cs_x_1_2.json	1185	Lean	flow	zero	FlowCases37.lean	Blc.Rootcert2.FlowCases37.reject308	\x1. \x2. x1 x1 (x2 (\x3. c))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (x2 (\x3. c))) j
+309	45	check_4_0_Cs_x_1_2.json	1188	Lean	flow	zero	FlowCases38.lean	Blc.Rootcert2.FlowCases38.reject309	\x1. \x2. x1 x1 (\x3. x2) c	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (\x3. x2) c) j
+310	45	check_4_0_Cs_x_1_2.json	1203	Lean	flow	zero	FlowCases42.lean	Blc.Rootcert2.FlowCases42.reject310	\x1. \x2. x1 x1 (c x2)	(\x1. x1 (x1 x1 (\x2. x1))) (\x1. \x2. x1 x1 (c x2)) j
+311	45	check_4_0_Cs_x_1_2.json	1204	Lean	flow	zero	FlowCases43.lean	Blc.Rootcert2.FlowCases43.reject311	\x1. \x2. x1 x1 (x2 c)	(\x1. x1 (x1 x1 (\x2. x1))) (\x1. \x2. x1 x1 (x2 c)) j
+312	45	check_4_0_Cs_x_1_2.json	1211	Lean	flow	zero	FlowCases42.lean	Blc.Rootcert2.FlowCases42.reject312	\x1. \x2. x1 x1 (c x2)	(\x1. x1 x1 (x1 (\x2. x1))) (\x1. \x2. x1 x1 (c x2)) j
+313	45	check_4_0_Cs_x_1_2.json	1212	Lean	flow	zero	FlowCases43.lean	Blc.Rootcert2.FlowCases43.reject313	\x1. \x2. x1 x1 (x2 c)	(\x1. x1 x1 (x1 (\x2. x1))) (\x1. \x2. x1 x1 (x2 c)) j
+314	45	check_4_0_Cs_x_1_2.json	1216	Lean	flow	zero	FlowCases43.lean	Blc.Rootcert2.FlowCases43.reject314	\x1. \x2. x1 x1 (x2 c)	(\x1. x1 (\x2. x1) (x1 x1)) (\x1. \x2. x1 x1 (x2 c)) j
+315	45	check_4_0_Cs_x_1_2.json	1217	Lean	flow	zero	FlowCases42.lean	Blc.Rootcert2.FlowCases42.reject315	\x1. \x2. x1 x1 (c x2)	(\x1. x1 (x1 x1) (\x2. x1)) (\x1. \x2. x1 x1 (c x2)) j
+316	45	check_4_0_Cs_x_1_2.json	1218	Lean	flow	zero	FlowCases43.lean	Blc.Rootcert2.FlowCases43.reject316	\x1. \x2. x1 x1 (x2 c)	(\x1. x1 (x1 x1) (\x2. x1)) (\x1. \x2. x1 x1 (x2 c)) j
+317	45	check_4_0_Cs_x_1_2.json	1223	Lean	flow	zero	FlowCases42.lean	Blc.Rootcert2.FlowCases42.reject317	\x1. \x2. x1 x1 (c x2)	(\x1. x1 x1 x1 (\x2. x1)) (\x1. \x2. x1 x1 (c x2)) j
+318	45	check_4_0_Cs_x_1_2.json	1224	Lean	flow	zero	FlowCases43.lean	Blc.Rootcert2.FlowCases43.reject318	\x1. \x2. x1 x1 (x2 c)	(\x1. x1 x1 x1 (\x2. x1)) (\x1. \x2. x1 x1 (x2 c)) j
+319	45	check_4_0_Cs_x_1_2.json	1230	Lean	flow	zero	FlowCases42.lean	Blc.Rootcert2.FlowCases42.reject319	\x1. \x2. x1 x1 (c x2)	(\x1. x1 x1 (\x2. x1) x1) (\x1. \x2. x1 x1 (c x2)) j
+320	45	check_4_0_Cs_x_1_2.json	1231	Lean	flow	zero	FlowCases43.lean	Blc.Rootcert2.FlowCases43.reject320	\x1. \x2. x1 x1 (x2 c)	(\x1. x1 x1 (\x2. x1) x1) (\x1. \x2. x1 x1 (x2 c)) j
+321	45	check_4_0_Cs_x_1_2.json	1237	Lean	flow	zero	FlowCases44.lean	Blc.Rootcert2.FlowCases44.reject321	\x1. \x2. x1 (x2 c x2)	(\x1. x1 x1 (\x2. x1 x1)) (\x1. \x2. x1 (x2 c x2)) j
+322	45	check_4_0_Cs_x_1_2.json	1346	Lean	mixed	zero	MixedCases00.lean	Blc.Rootcert2.MixedCases00.reject322	\x1. \x2. x2 (x2 (\x3. x3) x2)	(\x1. x1 x1 (x1 (c x1))) (\x1. \x2. x2 (x2 (\x3. x3) x2)) j
+323	45	check_4_0_Cs_x_1_2.json	1348	Lean	mixed	zero	MixedCases00.lean	Blc.Rootcert2.MixedCases00.reject323	\x1. \x2. x2 (x2 (\x3. x3) x2)	(\x1. x1 x1 (x1 (x1 c))) (\x1. \x2. x2 (x2 (\x3. x3) x2)) j
+324	45	check_4_0_Cs_x_1_2.json	1350	Lean	mixed	zero	MixedCases00.lean	Blc.Rootcert2.MixedCases00.reject324	\x1. \x2. x2 (x2 (\x3. x3) x2)	(\x1. x1 x1 (x1 c x1)) (\x1. \x2. x2 (x2 (\x3. x3) x2)) j
+325	45	check_4_0_Cs_x_1_2.json	1371	Lean	mixed	zero	MixedCases00.lean	Blc.Rootcert2.MixedCases00.reject325	\x1. \x2. x2 (x2 (\x3. x3) x2)	(\x1. x1 x1 x1 (x1 c)) (\x1. \x2. x2 (x2 (\x3. x3) x2)) j
+326	45	check_4_0_Cs_x_1_2.json	1385	Lean	mixed	zero	MixedCases00.lean	Blc.Rootcert2.MixedCases00.reject326	\x1. \x2. x2 (x2 (\x3. x3) x2)	(\x1. x1 x1 (x1 c) x1) (\x1. \x2. x2 (x2 (\x3. x3) x2)) j
+327	45	check_4_0_Cs_x_1_2.json	1586	Lean	flow	zero	FlowCases45.lean	Blc.Rootcert2.FlowCases45.reject327	\x1. \x2. (\x3. x3 (\x4. x3)) (x2 c)	(\x1. x1 x1 x1 x1) (\x1. \x2. (\x3. x3 (\x4. x3)) (x2 c)) j
+328	45	check_4_0_Cs_x_1_2.json	1587	Lean	flow	zero	FlowCases46.lean	Blc.Rootcert2.FlowCases46.reject328	\x1. \x2. x2 c (\x3. x2 (\x4. x4))	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 c (\x3. x2 (\x4. x4))) j
+329	45	check_4_0_Cs_x_1_3.json	8	Lean	flow	zero	FlowCases47.lean	Blc.Rootcert2.FlowCases47.reject329	\x1. \x2. \x3. x2 x2 (c x3)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. \x3. x2 x2 (c x3)) j
+330	45	check_4_0_Cs_x_1_3.json	9	Lean	flow	zero	FlowCases48.lean	Blc.Rootcert2.FlowCases48.reject330	\x1. \x2. \x3. x2 x2 (x3 c)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. \x3. x2 x2 (x3 c)) j
+331	45	check_4_0_Cs_x_1_3.json	11	Lean	flow	zero	FlowCases48.lean	Blc.Rootcert2.FlowCases48.reject331	\x1. \x2. \x3. x2 x2 (x3 c)	(\x1. x1 x1 x1 x1) (\x1. \x2. \x3. x2 x2 (x3 c)) j
+332	45	check_4_0_Cs_x_1_3.json	41	Lean	flow	zero	FlowCases49.lean	Blc.Rootcert2.FlowCases49.reject332	\x1. \x2. \x3. x3 (\x4. x2) x3	(\x1. x1 x1 c (x1 x1)) (\x1. \x2. \x3. x3 (\x4. x2) x3) j
+333	45	check_4_0_Cs_x_1_3.json	42	Lean	flow	zero	FlowCases49.lean	Blc.Rootcert2.FlowCases49.reject333	\x1. \x2. \x3. x3 (\x4. x2) x3	(\x1. x1 x1 x1 (x1 c)) (\x1. \x2. \x3. x3 (\x4. x2) x3) j
+334	42	check_4_0_Cs_x_2_1.json	142	Lean	develop	zero	DevelopCases02.lean	Blc.Rootcert2.DevelopCases02.reject334	\x1. x1 (x1 (x1 (\x2. x2)))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (x1 (\x2. x2)))) j c
+335	42	check_4_0_Cs_x_2_1.json	143	Lean	develop	zero	DevelopCases02.lean	Blc.Rootcert2.DevelopCases02.reject335	\x1. x1 (x1 (x1 (\x2. x2)))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (x1 (\x2. x2)))) c j
+336	42	check_4_0_Cs_x_2_1.json	148	Lean	develop	zero	DevelopCases02.lean	Blc.Rootcert2.DevelopCases02.reject336	\x1. x1 (x1 (x1 (\x2. x2)))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (x1 (x1 (\x2. x2)))) j c
+337	42	check_4_0_Cs_x_2_1.json	149	Lean	develop	zero	DevelopCases02.lean	Blc.Rootcert2.DevelopCases02.reject337	\x1. x1 (x1 (x1 (\x2. x2)))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (x1 (x1 (\x2. x2)))) c j
+338	42	check_4_0_Cs_x_2_1.json	166	Lean	develop	zero	DevelopCases03.lean	Blc.Rootcert2.DevelopCases03.reject338	\x1. x1 (x1 (\x2. x2)) x1	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (\x2. x2)) x1) j c
+339	42	check_4_0_Cs_x_2_1.json	167	Lean	develop	zero	DevelopCases03.lean	Blc.Rootcert2.DevelopCases03.reject339	\x1. x1 (x1 (\x2. x2)) x1	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (\x2. x2)) x1) c j
+340	43	check_4_0_Cs_x_2_1.json	642	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject340	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x2 (x1 x2))) j c
+341	43	check_4_0_Cs_x_2_1.json	643	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject341	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x2 (x1 x2))) c j
+342	43	check_4_0_Cs_x_2_1.json	646	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject342	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 x2)) j c
+343	43	check_4_0_Cs_x_2_1.json	647	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject343	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 x2)) c j
+344	43	check_4_0_Cs_x_2_1.json	654	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject344	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x2 (x1 x2))) j c
+345	43	check_4_0_Cs_x_2_1.json	655	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject345	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x2 (x1 x2))) c j
+346	43	check_4_0_Cs_x_2_1.json	658	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject346	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 x2)) j c
+347	43	check_4_0_Cs_x_2_1.json	659	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject347	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 x2)) c j
+348	43	check_4_0_Cs_x_2_1.json	666	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject348	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x2 (x1 x2))) j c
+349	43	check_4_0_Cs_x_2_1.json	667	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject349	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x2 (x1 x2))) c j
+350	43	check_4_0_Cs_x_2_1.json	670	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject350	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 x2)) j c
+351	43	check_4_0_Cs_x_2_1.json	671	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject351	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 x2)) c j
+352	43	check_4_0_Cs_x_2_1.json	678	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject352	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x2 (x1 x2))) j c
+353	43	check_4_0_Cs_x_2_1.json	679	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject353	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x2 (x1 x2))) c j
+354	43	check_4_0_Cs_x_2_1.json	682	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject354	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 x2)) j c
+355	43	check_4_0_Cs_x_2_1.json	683	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject355	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 x2)) c j
+356	43	check_4_0_Cs_x_2_1.json	690	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject356	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x2 (x1 x2))) j c
+357	43	check_4_0_Cs_x_2_1.json	691	Lean	flow	zero	FlowCases02.lean	Blc.Rootcert2.FlowCases02.reject357	\x1. x1 (\x2. x2 (x1 x2))	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x2 (x1 x2))) c j
+358	43	check_4_0_Cs_x_2_1.json	694	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject358	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 x2)) j c
+359	43	check_4_0_Cs_x_2_1.json	695	Lean	flow	zero	FlowCases03.lean	Blc.Rootcert2.FlowCases03.reject359	\x1. x1 (\x2. x1 x2 x2)	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 x2)) c j
+360	44	check_4_0_Cs_x_2_1.json	2358	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject360	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 (x1 x2))) j c
+361	44	check_4_0_Cs_x_2_1.json	2359	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject361	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 (x1 x2))) c j
+362	44	check_4_0_Cs_x_2_1.json	2364	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject362	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 x1)) j c
+363	44	check_4_0_Cs_x_2_1.json	2365	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject363	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (\x2. x1 x2 x1)) c j
+364	44	check_4_0_Cs_x_2_1.json	2368	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject364	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 (x1 x2))) j c
+365	44	check_4_0_Cs_x_2_1.json	2369	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject365	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 (x1 x2))) c j
+366	44	check_4_0_Cs_x_2_1.json	2374	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject366	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 x1)) j c
+367	44	check_4_0_Cs_x_2_1.json	2375	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject367	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1 x1)) (\x1. x1 (\x2. x1 x2 x1)) c j
+368	44	check_4_0_Cs_x_2_1.json	2378	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject368	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 (x1 x2))) j c
+369	44	check_4_0_Cs_x_2_1.json	2379	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject369	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 (x1 x2))) c j
+370	44	check_4_0_Cs_x_2_1.json	2384	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject370	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 x1)) j c
+371	44	check_4_0_Cs_x_2_1.json	2385	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject371	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. x1 x2 x1)) c j
+372	44	check_4_0_Cs_x_2_1.json	2388	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject372	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 (x1 x2))) j c
+373	44	check_4_0_Cs_x_2_1.json	2389	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject373	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 (x1 x2))) c j
+374	44	check_4_0_Cs_x_2_1.json	2394	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject374	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 x1)) j c
+375	44	check_4_0_Cs_x_2_1.json	2395	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject375	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. x1 x2 x1)) c j
+376	44	check_4_0_Cs_x_2_1.json	2398	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject376	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 (x1 x2))) j c
+377	44	check_4_0_Cs_x_2_1.json	2399	Lean	flow	zero	FlowCases14.lean	Blc.Rootcert2.FlowCases14.reject377	\x1. x1 (\x2. x1 (x1 x2))	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 (x1 x2))) c j
+378	44	check_4_0_Cs_x_2_1.json	2404	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject378	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 x1)) j c
+379	44	check_4_0_Cs_x_2_1.json	2405	Lean	flow	zero	FlowCases15.lean	Blc.Rootcert2.FlowCases15.reject379	\x1. x1 (\x2. x1 x2 x1)	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. x1 x2 x1)) c j
+380	43	check_4_0_Cs_x_2_1.json	5456	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject380	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x1 x2)))) (\x1. x1 (\x2. x1)) j c
+381	43	check_4_0_Cs_x_2_1.json	5457	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject381	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x1 x2)))) (\x1. x1 (\x2. x1)) c j
+382	43	check_4_0_Cs_x_2_1.json	5458	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject382	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x2 x1)))) (\x1. x1 (\x2. x1)) j c
+383	43	check_4_0_Cs_x_2_1.json	5459	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject383	\x1. x1 (\x2. x1)	(\x1. x1 (x1 (\x2. x1 (x2 x1)))) (\x1. x1 (\x2. x1)) c j
+384	43	check_4_0_Cs_x_2_1.json	5460	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject384	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x1 x2))) (\x1. x1 (\x2. x1)) j c
+385	43	check_4_0_Cs_x_2_1.json	5461	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject385	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x1 x2))) (\x1. x1 (\x2. x1)) c j
+386	43	check_4_0_Cs_x_2_1.json	5462	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject386	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x2 x1))) (\x1. x1 (\x2. x1)) j c
+387	43	check_4_0_Cs_x_2_1.json	5463	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject387	\x1. x1 (\x2. x1)	(\x1. x1 x1 (\x2. x1 (x2 x1))) (\x1. x1 (\x2. x1)) c j
+388	43	check_4_0_Cs_x_2_1.json	5464	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject388	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x2)) x1) (\x1. x1 (\x2. x1)) j c
+389	43	check_4_0_Cs_x_2_1.json	5465	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject389	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x2)) x1) (\x1. x1 (\x2. x1)) c j
+390	43	check_4_0_Cs_x_2_1.json	5466	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject390	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 x1)) x1) (\x1. x1 (\x2. x1)) j c
+391	43	check_4_0_Cs_x_2_1.json	5467	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject391	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 x1)) x1) (\x1. x1 (\x2. x1)) c j
+392	44	check_4_0_Cs_x_2_1.json	5744	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject392	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 (x1 x2)))) (\x1. x1 (\x2. x1)) j c
+393	44	check_4_0_Cs_x_2_1.json	5745	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject393	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 (x1 x2)))) (\x1. x1 (\x2. x1)) c j
+394	44	check_4_0_Cs_x_2_1.json	5746	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject394	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 (x2 x1)))) (\x1. x1 (\x2. x1)) j c
+395	44	check_4_0_Cs_x_2_1.json	5747	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject395	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 (x2 x1)))) (\x1. x1 (\x2. x1)) c j
+396	44	check_4_0_Cs_x_2_1.json	5748	Lean	develop	zero	DevelopCases00.lean	Blc.Rootcert2.DevelopCases00.reject396	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x1 x2))) (\x1. x1 (\x2. x1)) j c
+397	44	check_4_0_Cs_x_2_1.json	5749	Lean	develop	zero	DevelopCases00.lean	Blc.Rootcert2.DevelopCases00.reject397	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x1 x2))) (\x1. x1 (\x2. x1)) c j
+398	44	check_4_0_Cs_x_2_1.json	5750	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject398	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 (x1 x1)))) (\x1. x1 (\x2. x1)) j c
+399	44	check_4_0_Cs_x_2_1.json	5751	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject399	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 (x1 x1)))) (\x1. x1 (\x2. x1)) c j
+400	44	check_4_0_Cs_x_2_1.json	5752	Lean	develop	zero	DevelopCases00.lean	Blc.Rootcert2.DevelopCases00.reject400	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 x1 (x1 x2))) (\x1. x1 (\x2. x1)) j c
+401	44	check_4_0_Cs_x_2_1.json	5753	Lean	develop	zero	DevelopCases00.lean	Blc.Rootcert2.DevelopCases00.reject401	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 x1 (x1 x2))) (\x1. x1 (\x2. x1)) c j
+402	44	check_4_0_Cs_x_2_1.json	5754	Lean	develop	zero	DevelopCases00.lean	Blc.Rootcert2.DevelopCases00.reject402	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 x1 (x2 x1))) (\x1. x1 (\x2. x1)) j c
+403	44	check_4_0_Cs_x_2_1.json	5755	Lean	develop	zero	DevelopCases00.lean	Blc.Rootcert2.DevelopCases00.reject403	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 x1 (x2 x1))) (\x1. x1 (\x2. x1)) c j
+404	44	check_4_0_Cs_x_2_1.json	5756	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject404	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x2) x1)) (\x1. x1 (\x2. x1)) j c
+405	44	check_4_0_Cs_x_2_1.json	5757	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject405	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x1 x2) x1)) (\x1. x1 (\x2. x1)) c j
+406	44	check_4_0_Cs_x_2_1.json	5758	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject406	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 x1) x1)) (\x1. x1 (\x2. x1)) j c
+407	44	check_4_0_Cs_x_2_1.json	5759	Lean	flow	zero	FlowCases17.lean	Blc.Rootcert2.FlowCases17.reject407	\x1. x1 (\x2. x1)	(\x1. x1 (\x2. x1 (x2 x1) x1)) (\x1. x1 (\x2. x1)) c j
+408	45	check_4_0_Cs_x_2_1.json	7520	Lean	flow	zero	FlowCases50.lean	Blc.Rootcert2.FlowCases50.reject408	\x1. x1 (\x2. \x3. x2 (x3 x3))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. \x3. x2 (x3 x3))) j c
+409	45	check_4_0_Cs_x_2_1.json	7521	Lean	flow	zero	FlowCases50.lean	Blc.Rootcert2.FlowCases50.reject409	\x1. x1 (\x2. \x3. x2 (x3 x3))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. \x3. x2 (x3 x3))) c j
+410	45	check_4_0_Cs_x_2_1.json	7522	Lean	flow	zero	FlowCases51.lean	Blc.Rootcert2.FlowCases51.reject410	\x1. x1 (\x2. \x3. x3 (x2 x3))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. \x3. x3 (x2 x3))) j c
+411	45	check_4_0_Cs_x_2_1.json	7523	Lean	flow	zero	FlowCases51.lean	Blc.Rootcert2.FlowCases51.reject411	\x1. x1 (\x2. \x3. x3 (x2 x3))	(\x1. x1 x1 (x1 x1)) (\x1. x1 (\x2. \x3. x3 (x2 x3))) c j
+412	45	check_4_0_Cs_x_2_1.json	7544	Lean	flow	zero	FlowCases50.lean	Blc.Rootcert2.FlowCases50.reject412	\x1. x1 (\x2. \x3. x2 (x3 x3))	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. \x3. x2 (x3 x3))) j c
+413	45	check_4_0_Cs_x_2_1.json	7545	Lean	flow	zero	FlowCases50.lean	Blc.Rootcert2.FlowCases50.reject413	\x1. x1 (\x2. \x3. x2 (x3 x3))	(\x1. x1 (x1 x1) x1) (\x1. x1 (\x2. \x3. x2 (x3 x3))) c j
+414	45	check_4_0_Cs_x_2_1.json	7564	Lean	flow	zero	FlowCases50.lean	Blc.Rootcert2.FlowCases50.reject414	\x1. x1 (\x2. \x3. x2 (x3 x3))	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. \x3. x2 (x3 x3))) j c
+415	45	check_4_0_Cs_x_2_1.json	7565	Lean	flow	zero	FlowCases50.lean	Blc.Rootcert2.FlowCases50.reject415	\x1. x1 (\x2. \x3. x2 (x3 x3))	(\x1. x1 x1 x1 x1) (\x1. x1 (\x2. \x3. x2 (x3 x3))) c j
+416	45	check_4_0_Cs_x_2_1.json	8840	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject416	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 (x1 (x1 x1))) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) j c
+417	45	check_4_0_Cs_x_2_1.json	8841	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject417	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 (x1 (x1 x1))) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) c j
+418	45	check_4_0_Cs_x_2_1.json	8842	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject418	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 (x1 x1 x1)) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) j c
+419	45	check_4_0_Cs_x_2_1.json	8843	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject419	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 (x1 x1 x1)) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) c j
+420	45	check_4_0_Cs_x_2_1.json	8848	Lean	simplify	zero	SimplifyCases00.lean	Blc.Rootcert2.SimplifyCases00.reject420	\x1. x1 (x1 (\x2. x2 (\x3. x2)))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (\x2. x2 (\x3. x2)))) j c
+421	45	check_4_0_Cs_x_2_1.json	8849	Lean	simplify	zero	SimplifyCases00.lean	Blc.Rootcert2.SimplifyCases00.reject421	\x1. x1 (x1 (\x2. x2 (\x3. x2)))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (\x2. x2 (\x3. x2)))) c j
+422	45	check_4_0_Cs_x_2_1.json	8866	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject422	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 x1 (x1 x1)) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) j c
+423	45	check_4_0_Cs_x_2_1.json	8867	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject423	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 x1 (x1 x1)) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) c j
+424	45	check_4_0_Cs_x_2_1.json	8878	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject424	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 (x1 x1) x1) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) j c
+425	45	check_4_0_Cs_x_2_1.json	8879	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject425	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 (x1 x1) x1) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) c j
+426	45	check_4_0_Cs_x_2_1.json	8890	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject426	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 x1 x1 x1) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) j c
+427	45	check_4_0_Cs_x_2_1.json	8891	Lean	mixed	zero	MixedCases01.lean	Blc.Rootcert2.MixedCases01.reject427	\x1. (\x2. x2 x2) (x1 (\x2. x1))	(\x1. x1 x1 x1 x1) (\x1. (\x2. x2 x2) (x1 (\x2. x1))) c j
+428	45	check_4_0_Cs_x_2_1.json	9592	Lean	develop	zero	DevelopCases02.lean	Blc.Rootcert2.DevelopCases02.reject428	\x1. x1 (x1 (x1 (\x2. x2)))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (x1 (\x2. x2)))) j (\x1. c)
+429	45	check_4_0_Cs_x_2_1.json	9593	Lean	develop	zero	DevelopCases02.lean	Blc.Rootcert2.DevelopCases02.reject429	\x1. x1 (x1 (x1 (\x2. x2)))	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (x1 (\x2. x2)))) (\x1. c) j
+430	45	check_4_0_Cs_x_2_1.json	9598	Lean	develop	zero	DevelopCases02.lean	Blc.Rootcert2.DevelopCases02.reject430	\x1. x1 (x1 (x1 (\x2. x2)))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (x1 (x1 (\x2. x2)))) j (\x1. c)
+431	45	check_4_0_Cs_x_2_1.json	9599	Lean	develop	zero	DevelopCases02.lean	Blc.Rootcert2.DevelopCases02.reject431	\x1. x1 (x1 (x1 (\x2. x2)))	(\x1. x1 (x1 x1 x1)) (\x1. x1 (x1 (x1 (\x2. x2)))) (\x1. c) j
+432	45	check_4_0_Cs_x_2_1.json	9616	Lean	develop	zero	DevelopCases03.lean	Blc.Rootcert2.DevelopCases03.reject432	\x1. x1 (x1 (\x2. x2)) x1	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (\x2. x2)) x1) j (\x1. c)
+433	45	check_4_0_Cs_x_2_1.json	9617	Lean	develop	zero	DevelopCases03.lean	Blc.Rootcert2.DevelopCases03.reject433	\x1. x1 (x1 (\x2. x2)) x1	(\x1. x1 (x1 (x1 x1))) (\x1. x1 (x1 (\x2. x2)) x1) (\x1. c) j
+434	45	check_4_0_Cs_x_2_1.json	10016	Lean	mixed	zero	MixedCases02.lean	Blc.Rootcert2.MixedCases02.reject434	\x1. x1 (x1 (\x2. x1))	(\x1. x1 (x1 (x1 (\x2. x2)) x1)) (\x1. x1 (x1 (\x2. x1))) j c
+435	45	check_4_0_Cs_x_2_1.json	10017	Lean	mixed	zero	MixedCases02.lean	Blc.Rootcert2.MixedCases02.reject435	\x1. x1 (x1 (\x2. x1))	(\x1. x1 (x1 (x1 (\x2. x2)) x1)) (\x1. x1 (x1 (\x2. x1))) c j
+436	45	check_4_0_Cs_x_2_1.json	10018	Lean	mixed	zero	MixedCases02.lean	Blc.Rootcert2.MixedCases02.reject436	\x1. x1 (x1 (\x2. x1))	(\x1. x1 (x1 (\x2. x2) x1 x1)) (\x1. x1 (x1 (\x2. x1))) j c
+437	45	check_4_0_Cs_x_2_1.json	10019	Lean	mixed	zero	MixedCases02.lean	Blc.Rootcert2.MixedCases02.reject437	\x1. x1 (x1 (\x2. x1))	(\x1. x1 (x1 (\x2. x2) x1 x1)) (\x1. x1 (x1 (\x2. x1))) c j
+438	45	check_4_0_Cs_x_2_1.json	10230	Lean	mixed	zero	MixedCases03.lean	Blc.Rootcert2.MixedCases03.reject438	\x1. x1 (x1 (\x2. x2) x1)	(\x1. x1 (x1 (x1 (\x2. x1)))) (\x1. x1 (x1 (\x2. x2) x1)) j c
+439	45	check_4_0_Cs_x_2_1.json	10231	Lean	mixed	zero	MixedCases03.lean	Blc.Rootcert2.MixedCases03.reject439	\x1. x1 (x1 (\x2. x2) x1)	(\x1. x1 (x1 (x1 (\x2. x1)))) (\x1. x1 (x1 (\x2. x2) x1)) c j
+440	45	check_4_0_Cs_x_2_1.json	10370	Lean	mixed	zero	MixedCases03.lean	Blc.Rootcert2.MixedCases03.reject440	\x1. x1 (x1 (\x2. x2) x1)	(\x1. x1 (x1 (\x2. x1)) x1) (\x1. x1 (x1 (\x2. x2) x1)) j c
+441	45	check_4_0_Cs_x_2_1.json	10371	Lean	mixed	zero	MixedCases03.lean	Blc.Rootcert2.MixedCases03.reject441	\x1. x1 (x1 (\x2. x2) x1)	(\x1. x1 (x1 (\x2. x1)) x1) (\x1. x1 (x1 (\x2. x2) x1)) c j
+442	43	check_4_0_Cs_x_2_2.json	0	Lean	tri	zero	TriCases01.lean	Blc.Rootcert2.TriCases01.reject442	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x2 x2 x2)) j c
+443	43	check_4_0_Cs_x_2_2.json	1	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject443	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x2 x2 x2)) c j
+444	43	check_4_0_Cs_x_2_2.json	14	Lean	flow	zero	FlowCases52.lean	Blc.Rootcert2.FlowCases52.reject444	\x1. \x2. x2 (x2 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (x1 x2))) j c
+445	43	check_4_0_Cs_x_2_2.json	15	Lean	flow	zero	FlowCases52.lean	Blc.Rootcert2.FlowCases52.reject445	\x1. \x2. x2 (x2 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (x1 x2))) c j
+446	43	check_4_0_Cs_x_2_2.json	16	Lean	owls	zero	TripleOwlCases.lean	Blc.Rootcert2.TripleOwlCases.reject446	\x1. \x2. x2 (x2 (x2 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (x2 x1))) j c
+447	43	check_4_0_Cs_x_2_2.json	17	Lean	owls	zero	TripleOwlCases.lean	Blc.Rootcert2.TripleOwlCases.reject447	\x1. \x2. x2 (x2 (x2 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (x2 x1))) c j
+448	43	check_4_0_Cs_x_2_2.json	34	Lean	flow	zero	FlowCases53.lean	Blc.Rootcert2.FlowCases53.reject448	\x1. \x2. x2 (x1 x2) x2	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) x2) j c
+449	43	check_4_0_Cs_x_2_2.json	35	Lean	flow	zero	FlowCases53.lean	Blc.Rootcert2.FlowCases53.reject449	\x1. \x2. x2 (x1 x2) x2	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) x2) c j
+450	43	check_4_0_Cs_x_2_2.json	50	Lean	tri	zero	TriCases01.lean	Blc.Rootcert2.TriCases01.reject450	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 x2 x2)) j c
+451	43	check_4_0_Cs_x_2_2.json	51	Lean	tri	zero	TriCases01.lean	Blc.Rootcert2.TriCases01.reject451	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 x2 x2)) c j
+452	43	check_4_0_Cs_x_2_2.json	78	Lean	tri	zero	TriCases01.lean	Blc.Rootcert2.TriCases01.reject452	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x2 x2)) j c
+453	43	check_4_0_Cs_x_2_2.json	79	Lean	tri	zero	TriCases01.lean	Blc.Rootcert2.TriCases01.reject453	\x1. \x2. x1 (x2 x2 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x2 x2)) c j
+454	43	check_4_0_Cs_x_2_2.json	108	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject454	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) j (c c)
+455	43	check_4_0_Cs_x_2_2.json	109	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject455	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) (c c) j
+456	44	check_4_0_Cs_x_2_2.json	134	Lean	develop	zero	DevelopCases04.lean	Blc.Rootcert2.DevelopCases04.reject456	\x1. \x2. x1 (x1 (x2 x2))	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 (x2 x2))) j c
+457	44	check_4_0_Cs_x_2_2.json	135	Lean	develop	zero	DevelopCases04.lean	Blc.Rootcert2.DevelopCases04.reject457	\x1. \x2. x1 (x1 (x2 x2))	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 (x2 x2))) c j
+458	44	check_4_0_Cs_x_2_2.json	136	Lean	tri	zero	TriCases02.lean	Blc.Rootcert2.TriCases02.reject458	\x1. \x2. x1 (x2 x2 x1)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x2 x2 x1)) j c
+459	44	check_4_0_Cs_x_2_2.json	137	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject459	\x1. \x2. x1 (x2 x2 x1)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x2 x2 x1)) c j
+460	44	check_4_0_Cs_x_2_2.json	138	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject460	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 x2 x2)) j c
+461	44	check_4_0_Cs_x_2_2.json	139	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject461	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 x2 x2)) c j
+462	44	check_4_0_Cs_x_2_2.json	140	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject462	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x2 x1 x2)) j c
+463	44	check_4_0_Cs_x_2_2.json	141	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject463	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x2 x1 x2)) c j
+464	44	check_4_0_Cs_x_2_2.json	142	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject464	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (x2 x2)) j c
+465	44	check_4_0_Cs_x_2_2.json	143	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject465	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (x2 x2)) c j
+466	44	check_4_0_Cs_x_2_2.json	144	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject466	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (x2 x2)) j c
+467	44	check_4_0_Cs_x_2_2.json	145	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject467	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (x2 x2)) c j
+468	44	check_4_0_Cs_x_2_2.json	146	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject468	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x2 (x1 x2)) j c
+469	44	check_4_0_Cs_x_2_2.json	147	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject469	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x2 (x1 x2)) c j
+470	44	check_4_0_Cs_x_2_2.json	164	Lean	flow	zero	FlowCases55.lean	Blc.Rootcert2.FlowCases55.reject470	\x1. \x2. x1 (x1 (x2 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 (x2 x2))) j c
+471	44	check_4_0_Cs_x_2_2.json	165	Lean	flow	zero	FlowCases55.lean	Blc.Rootcert2.FlowCases55.reject471	\x1. \x2. x1 (x1 (x2 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 (x2 x2))) c j
+472	44	check_4_0_Cs_x_2_2.json	168	Lean	develop	zero	DevelopCases05.lean	Blc.Rootcert2.DevelopCases05.reject472	\x1. \x2. x1 (x2 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 (x1 x2))) j c
+473	44	check_4_0_Cs_x_2_2.json	169	Lean	develop	zero	DevelopCases05.lean	Blc.Rootcert2.DevelopCases05.reject473	\x1. \x2. x1 (x2 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 (x1 x2))) c j
+474	44	check_4_0_Cs_x_2_2.json	170	engine-only	DIVERGE	zero	deep.out:2		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 (x2 x1))) j c
+475	44	check_4_0_Cs_x_2_2.json	171	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject475	\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 (x2 x1))) c j
+476	44	check_4_0_Cs_x_2_2.json	174	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject476	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 x1 x2)) j c
+477	44	check_4_0_Cs_x_2_2.json	175	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject477	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 x1 x2)) c j
+478	44	check_4_0_Cs_x_2_2.json	176	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject478	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (x2 x2)) j c
+479	44	check_4_0_Cs_x_2_2.json	177	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject479	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (x2 x2)) c j
+480	44	check_4_0_Cs_x_2_2.json	178	Lean	flow	zero	FlowCases56.lean	Blc.Rootcert2.FlowCases56.reject480	\x1. \x2. x2 (x1 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 (x1 x2))) j c
+481	44	check_4_0_Cs_x_2_2.json	179	Lean	flow	zero	FlowCases56.lean	Blc.Rootcert2.FlowCases56.reject481	\x1. \x2. x2 (x1 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 (x1 x2))) c j
+482	44	check_4_0_Cs_x_2_2.json	180	Lean	owls	zero	NestedOwlCases.lean	Blc.Rootcert2.NestedOwlCases.reject482	\x1. \x2. x2 (x1 (x2 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 (x2 x1))) j c
+483	44	check_4_0_Cs_x_2_2.json	181	Lean	owls	zero	NestedOwlCases.lean	Blc.Rootcert2.NestedOwlCases.reject483	\x1. \x2. x2 (x1 (x2 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 (x2 x1))) c j
+484	44	check_4_0_Cs_x_2_2.json	190	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject484	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x2 (x1 x2)) j c
+485	44	check_4_0_Cs_x_2_2.json	191	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject485	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x2 (x1 x2)) c j
+486	44	check_4_0_Cs_x_2_2.json	214	Lean	flow	zero	FlowCases57.lean	Blc.Rootcert2.FlowCases57.reject486	\x1. \x2. x2 (x1 x2) x1	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) x1) j c
+487	44	check_4_0_Cs_x_2_2.json	215	Lean	flow	zero	FlowCases57.lean	Blc.Rootcert2.FlowCases57.reject487	\x1. \x2. x2 (x1 x2) x1	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) x1) c j
+488	44	check_4_0_Cs_x_2_2.json	224	Lean	flow	zero	FlowCases55.lean	Blc.Rootcert2.FlowCases55.reject488	\x1. \x2. x1 (x1 (x2 x2))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 (x2 x2))) j c
+489	44	check_4_0_Cs_x_2_2.json	225	Lean	flow	zero	FlowCases55.lean	Blc.Rootcert2.FlowCases55.reject489	\x1. \x2. x1 (x1 (x2 x2))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 (x2 x2))) c j
+490	44	check_4_0_Cs_x_2_2.json	228	Lean	develop	zero	DevelopCases05.lean	Blc.Rootcert2.DevelopCases05.reject490	\x1. \x2. x1 (x2 (x1 x2))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 (x1 x2))) j c
+491	44	check_4_0_Cs_x_2_2.json	229	Lean	develop	zero	DevelopCases05.lean	Blc.Rootcert2.DevelopCases05.reject491	\x1. \x2. x1 (x2 (x1 x2))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 (x1 x2))) c j
+492	44	check_4_0_Cs_x_2_2.json	230	engine-only	DIVERGE	zero	deep.out:4		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 (x2 x1))) j c
+493	44	check_4_0_Cs_x_2_2.json	231	engine-only	DIVERGE	zero	deep.out:1		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 (x2 x1))) c j
+494	44	check_4_0_Cs_x_2_2.json	232	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject494	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 x2 x2)) j c
+495	44	check_4_0_Cs_x_2_2.json	233	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject495	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 x2 x2)) c j
+496	44	check_4_0_Cs_x_2_2.json	236	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject496	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (x2 x2)) j c
+497	44	check_4_0_Cs_x_2_2.json	237	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject497	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (x2 x2)) c j
+498	44	check_4_0_Cs_x_2_2.json	238	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject498	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x2 (x1 x2)) j c
+499	44	check_4_0_Cs_x_2_2.json	239	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject499	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x2 (x1 x2)) c j
+500	44	check_4_0_Cs_x_2_2.json	272	Lean	flow	zero	FlowCases55.lean	Blc.Rootcert2.FlowCases55.reject500	\x1. \x2. x1 (x1 (x2 x2))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 (x2 x2))) j c
+501	44	check_4_0_Cs_x_2_2.json	273	Lean	flow	zero	FlowCases55.lean	Blc.Rootcert2.FlowCases55.reject501	\x1. \x2. x1 (x1 (x2 x2))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 (x2 x2))) c j
+502	44	check_4_0_Cs_x_2_2.json	274	Lean	tri	zero	TriCases02.lean	Blc.Rootcert2.TriCases02.reject502	\x1. \x2. x1 (x2 x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x2 x1)) j c
+503	44	check_4_0_Cs_x_2_2.json	275	Lean	tri	zero	TriCases02.lean	Blc.Rootcert2.TriCases02.reject503	\x1. \x2. x1 (x2 x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x2 x1)) c j
+504	44	check_4_0_Cs_x_2_2.json	276	Lean	develop	zero	DevelopCases05.lean	Blc.Rootcert2.DevelopCases05.reject504	\x1. \x2. x1 (x2 (x1 x2))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 (x1 x2))) j c
+505	44	check_4_0_Cs_x_2_2.json	277	Lean	develop	zero	DevelopCases05.lean	Blc.Rootcert2.DevelopCases05.reject505	\x1. \x2. x1 (x2 (x1 x2))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 (x1 x2))) c j
+506	44	check_4_0_Cs_x_2_2.json	278	engine-only	DIVERGE	zero	deep.out:3		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 (x2 x1))) j c
+507	44	check_4_0_Cs_x_2_2.json	279	engine-only	DIVERGE	zero	deep.out:5		\x1. \x2. x1 (x2 (x2 x1))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 (x2 x1))) c j
+508	44	check_4_0_Cs_x_2_2.json	280	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject508	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 x2 x2)) j c
+509	44	check_4_0_Cs_x_2_2.json	281	Lean	tri	zero	TriCases00.lean	Blc.Rootcert2.TriCases00.reject509	\x1. \x2. x1 (x1 x2 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 x2 x2)) c j
+510	44	check_4_0_Cs_x_2_2.json	282	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject510	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1 x2)) j c
+511	44	check_4_0_Cs_x_2_2.json	283	Lean	flow	zero	FlowCases19.lean	Blc.Rootcert2.FlowCases19.reject511	\x1. \x2. x1 (x2 x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1 x2)) c j
+512	44	check_4_0_Cs_x_2_2.json	284	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject512	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (x2 x2)) j c
+513	44	check_4_0_Cs_x_2_2.json	285	Lean	flow	zero	FlowCases20.lean	Blc.Rootcert2.FlowCases20.reject513	\x1. \x2. x1 x1 (x2 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (x2 x2)) c j
+514	44	check_4_0_Cs_x_2_2.json	286	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject514	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x2 (x1 x2)) j c
+515	44	check_4_0_Cs_x_2_2.json	287	Lean	flow	zero	FlowCases21.lean	Blc.Rootcert2.FlowCases21.reject515	\x1. \x2. x1 x2 (x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x2 (x1 x2)) c j
+516	44	check_4_0_Cs_x_2_2.json	334	Lean	develop	zero	DevelopCases06.lean	Blc.Rootcert2.DevelopCases06.reject516	\x1. \x2. x1 (x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1)) j (c c)
+517	44	check_4_0_Cs_x_2_2.json	335	Lean	develop	zero	DevelopCases06.lean	Blc.Rootcert2.DevelopCases06.reject517	\x1. \x2. x1 (x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1)) (c c) j
+518	45	check_4_0_Cs_x_2_2.json	416	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject518	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 (x1 x1 x2)) j c
+519	45	check_4_0_Cs_x_2_2.json	417	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject519	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 (x1 x1 x2)) c j
+520	45	check_4_0_Cs_x_2_2.json	418	Lean	flow	zero	FlowCases59.lean	Blc.Rootcert2.FlowCases59.reject520	\x1. \x2. x1 (x1 (x1 x2))	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 (x1 x2))) j c
+521	45	check_4_0_Cs_x_2_2.json	419	Lean	flow	zero	FlowCases59.lean	Blc.Rootcert2.FlowCases59.reject521	\x1. \x2. x1 (x1 (x1 x2))	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 (x1 x2))) c j
+522	45	check_4_0_Cs_x_2_2.json	420	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject522	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 x1 x2)) j c
+523	45	check_4_0_Cs_x_2_2.json	421	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject523	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 x1 x2)) c j
+524	45	check_4_0_Cs_x_2_2.json	422	Lean	tri	zero	TriCases03.lean	Blc.Rootcert2.TriCases03.reject524	\x1. \x2. x1 (x1 x2 x1)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 x2 x1)) j c
+525	45	check_4_0_Cs_x_2_2.json	423	Lean	tri	zero	TriCases03.lean	Blc.Rootcert2.TriCases03.reject525	\x1. \x2. x1 (x1 x2 x1)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x1 x2 x1)) c j
+526	45	check_4_0_Cs_x_2_2.json	424	Lean	tri	zero	TriCases04.lean	Blc.Rootcert2.TriCases04.reject526	\x1. \x2. x1 (x2 x1 x1)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x2 x1 x1)) j c
+527	45	check_4_0_Cs_x_2_2.json	425	Lean	unary	one	UnaryCases.lean	Blc.Rootcert2.UnaryCases.reject527	\x1. \x2. x1 (x2 x1 x1)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 (x2 x1 x1)) c j
+528	45	check_4_0_Cs_x_2_2.json	426	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject528	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (x1 x2)) j c
+529	45	check_4_0_Cs_x_2_2.json	427	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject529	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (x1 x2)) c j
+530	45	check_4_0_Cs_x_2_2.json	428	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject530	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (x2 x1)) j c
+531	45	check_4_0_Cs_x_2_2.json	429	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject531	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (x2 x1)) c j
+532	45	check_4_0_Cs_x_2_2.json	430	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject532	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (x1 x2)) j c
+533	45	check_4_0_Cs_x_2_2.json	431	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject533	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (x1 x2)) c j
+534	45	check_4_0_Cs_x_2_2.json	432	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject534	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (x2 x1)) j c
+535	45	check_4_0_Cs_x_2_2.json	433	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject535	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (x2 x1)) c j
+536	45	check_4_0_Cs_x_2_2.json	446	Lean	flow	zero	FlowCases59.lean	Blc.Rootcert2.FlowCases59.reject536	\x1. \x2. x1 (x1 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 (x1 x2))) j c
+537	45	check_4_0_Cs_x_2_2.json	447	Lean	flow	zero	FlowCases59.lean	Blc.Rootcert2.FlowCases59.reject537	\x1. \x2. x1 (x1 (x1 x2))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 (x1 x2))) c j
+538	45	check_4_0_Cs_x_2_2.json	448	Lean	develop	zero	DevelopCases07.lean	Blc.Rootcert2.DevelopCases07.reject538	\x1. \x2. x1 (x1 (x2 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 (x2 x1))) j c
+539	45	check_4_0_Cs_x_2_2.json	449	Lean	develop	zero	DevelopCases07.lean	Blc.Rootcert2.DevelopCases07.reject539	\x1. \x2. x1 (x1 (x2 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 (x2 x1))) c j
+540	45	check_4_0_Cs_x_2_2.json	450	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject540	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 x1 x2)) j c
+541	45	check_4_0_Cs_x_2_2.json	451	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject541	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 x1 x2)) c j
+542	45	check_4_0_Cs_x_2_2.json	452	Lean	arity	zero	ArityCases.lean	Blc.Rootcert2.ArityCases.reject542	\x1. \x2. x1 (x2 (x1 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 (x1 x1))) j c
+543	45	check_4_0_Cs_x_2_2.json	453	Lean	arity	zero	ArityCases.lean	Blc.Rootcert2.ArityCases.reject543	\x1. \x2. x1 (x2 (x1 x1))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 (x1 x1))) c j
+544	45	check_4_0_Cs_x_2_2.json	454	Lean	tri	zero	TriCases03.lean	Blc.Rootcert2.TriCases03.reject544	\x1. \x2. x1 (x1 x2 x1)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 x2 x1)) j c
+545	45	check_4_0_Cs_x_2_2.json	455	Lean	tri	zero	TriCases03.lean	Blc.Rootcert2.TriCases03.reject545	\x1. \x2. x1 (x1 x2 x1)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x1 x2 x1)) c j
+546	45	check_4_0_Cs_x_2_2.json	456	Lean	tri	zero	TriCases04.lean	Blc.Rootcert2.TriCases04.reject546	\x1. \x2. x1 (x2 x1 x1)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 x1 x1)) j c
+547	45	check_4_0_Cs_x_2_2.json	457	Lean	tri	zero	TriCases04.lean	Blc.Rootcert2.TriCases04.reject547	\x1. \x2. x1 (x2 x1 x1)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 (x2 x1 x1)) c j
+548	45	check_4_0_Cs_x_2_2.json	458	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject548	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (x1 x2)) j c
+549	45	check_4_0_Cs_x_2_2.json	459	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject549	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (x1 x2)) c j
+550	45	check_4_0_Cs_x_2_2.json	460	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject550	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (x2 x1)) j c
+551	45	check_4_0_Cs_x_2_2.json	461	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject551	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (x2 x1)) c j
+552	45	check_4_0_Cs_x_2_2.json	482	Lean	flow	zero	FlowCases59.lean	Blc.Rootcert2.FlowCases59.reject552	\x1. \x2. x1 (x1 (x1 x2))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 (x1 x2))) j c
+553	45	check_4_0_Cs_x_2_2.json	483	Lean	flow	zero	FlowCases59.lean	Blc.Rootcert2.FlowCases59.reject553	\x1. \x2. x1 (x1 (x1 x2))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 (x1 x2))) c j
+554	45	check_4_0_Cs_x_2_2.json	486	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject554	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 x1 x2)) j c
+555	45	check_4_0_Cs_x_2_2.json	487	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject555	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 x1 x2)) c j
+556	45	check_4_0_Cs_x_2_2.json	488	Lean	arity	zero	ArityCases.lean	Blc.Rootcert2.ArityCases.reject556	\x1. \x2. x1 (x2 (x1 x1))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 (x1 x1))) j c
+557	45	check_4_0_Cs_x_2_2.json	489	Lean	arity	zero	ArityCases.lean	Blc.Rootcert2.ArityCases.reject557	\x1. \x2. x1 (x2 (x1 x1))	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 (x1 x1))) c j
+558	45	check_4_0_Cs_x_2_2.json	490	Lean	tri	zero	TriCases03.lean	Blc.Rootcert2.TriCases03.reject558	\x1. \x2. x1 (x1 x2 x1)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 x2 x1)) j c
+559	45	check_4_0_Cs_x_2_2.json	491	Lean	tri	zero	TriCases03.lean	Blc.Rootcert2.TriCases03.reject559	\x1. \x2. x1 (x1 x2 x1)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x1 x2 x1)) c j
+560	45	check_4_0_Cs_x_2_2.json	492	Lean	tri	zero	TriCases04.lean	Blc.Rootcert2.TriCases04.reject560	\x1. \x2. x1 (x2 x1 x1)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 x1 x1)) j c
+561	45	check_4_0_Cs_x_2_2.json	493	Lean	tri	zero	TriCases04.lean	Blc.Rootcert2.TriCases04.reject561	\x1. \x2. x1 (x2 x1 x1)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 (x2 x1 x1)) c j
+562	45	check_4_0_Cs_x_2_2.json	494	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject562	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (x1 x2)) j c
+563	45	check_4_0_Cs_x_2_2.json	495	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject563	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (x1 x2)) c j
+564	45	check_4_0_Cs_x_2_2.json	496	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject564	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (x2 x1)) j c
+565	45	check_4_0_Cs_x_2_2.json	497	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject565	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (x2 x1)) c j
+566	45	check_4_0_Cs_x_2_2.json	514	Lean	flow	zero	FlowCases59.lean	Blc.Rootcert2.FlowCases59.reject566	\x1. \x2. x1 (x1 (x1 x2))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 (x1 x2))) j c
+567	45	check_4_0_Cs_x_2_2.json	515	Lean	flow	zero	FlowCases59.lean	Blc.Rootcert2.FlowCases59.reject567	\x1. \x2. x1 (x1 (x1 x2))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 (x1 x2))) c j
+568	45	check_4_0_Cs_x_2_2.json	516	Lean	develop	zero	DevelopCases07.lean	Blc.Rootcert2.DevelopCases07.reject568	\x1. \x2. x1 (x1 (x2 x1))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 (x2 x1))) j c
+569	45	check_4_0_Cs_x_2_2.json	517	Lean	develop	zero	DevelopCases07.lean	Blc.Rootcert2.DevelopCases07.reject569	\x1. \x2. x1 (x1 (x2 x1))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 (x2 x1))) c j
+570	45	check_4_0_Cs_x_2_2.json	518	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject570	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 x1 x2)) j c
+571	45	check_4_0_Cs_x_2_2.json	519	Lean	flow	zero	FlowCases58.lean	Blc.Rootcert2.FlowCases58.reject571	\x1. \x2. x1 (x1 x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 x1 x2)) c j
+572	45	check_4_0_Cs_x_2_2.json	520	Lean	arity	zero	ArityCases.lean	Blc.Rootcert2.ArityCases.reject572	\x1. \x2. x1 (x2 (x1 x1))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 (x1 x1))) j c
+573	45	check_4_0_Cs_x_2_2.json	521	Lean	arity	zero	ArityCases.lean	Blc.Rootcert2.ArityCases.reject573	\x1. \x2. x1 (x2 (x1 x1))	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 (x1 x1))) c j
+574	45	check_4_0_Cs_x_2_2.json	522	Lean	tri	zero	TriCases03.lean	Blc.Rootcert2.TriCases03.reject574	\x1. \x2. x1 (x1 x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 x2 x1)) j c
+575	45	check_4_0_Cs_x_2_2.json	523	Lean	tri	zero	TriCases03.lean	Blc.Rootcert2.TriCases03.reject575	\x1. \x2. x1 (x1 x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x1 x2 x1)) c j
+576	45	check_4_0_Cs_x_2_2.json	524	Lean	tri	zero	TriCases04.lean	Blc.Rootcert2.TriCases04.reject576	\x1. \x2. x1 (x2 x1 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1 x1)) j c
+577	45	check_4_0_Cs_x_2_2.json	525	Lean	tri	zero	TriCases04.lean	Blc.Rootcert2.TriCases04.reject577	\x1. \x2. x1 (x2 x1 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1 x1)) c j
+578	45	check_4_0_Cs_x_2_2.json	526	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject578	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (x1 x2)) j c
+579	45	check_4_0_Cs_x_2_2.json	527	Lean	flow	zero	FlowCases60.lean	Blc.Rootcert2.FlowCases60.reject579	\x1. \x2. x1 x1 (x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (x1 x2)) c j
+580	45	check_4_0_Cs_x_2_2.json	528	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject580	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (x2 x1)) j c
+581	45	check_4_0_Cs_x_2_2.json	529	Lean	flow	zero	FlowCases61.lean	Blc.Rootcert2.FlowCases61.reject581	\x1. \x2. x1 x1 (x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (x2 x1)) c j
+582	45	check_4_0_Cs_x_2_2.json	552	Lean	flow	zero	FlowCases62.lean	Blc.Rootcert2.FlowCases62.reject582	\x1. \x2. x2 (x1 x2) c	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) c) j c
+583	45	check_4_0_Cs_x_2_2.json	553	Lean	flow	zero	FlowCases62.lean	Blc.Rootcert2.FlowCases62.reject583	\x1. \x2. x2 (x1 x2) c	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) c) c j
+584	42	check_4_0_Cs_x_2_2.json	660	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject584	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) j (\x1. c)
+585	42	check_4_0_Cs_x_2_2.json	661	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject585	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) (\x1. c) j
+586	43	check_4_0_Cs_x_2_2.json	756	Lean	develop	zero	DevelopCases06.lean	Blc.Rootcert2.DevelopCases06.reject586	\x1. \x2. x1 (x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1)) j (\x1. c)
+587	43	check_4_0_Cs_x_2_2.json	757	Lean	develop	zero	DevelopCases06.lean	Blc.Rootcert2.DevelopCases06.reject587	\x1. \x2. x1 (x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1)) (\x1. c) j
+588	43	check_4_0_Cs_x_2_2.json	762	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject588	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (\x3. x2)) j c
+589	43	check_4_0_Cs_x_2_2.json	763	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject589	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 (x1 x1))) (\x1. \x2. x1 x1 (\x3. x2)) c j
+590	43	check_4_0_Cs_x_2_2.json	764	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject590	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (\x3. x2)) j c
+591	43	check_4_0_Cs_x_2_2.json	765	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject591	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1 x1)) (\x1. \x2. x1 x1 (\x3. x2)) c j
+592	43	check_4_0_Cs_x_2_2.json	766	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject592	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (\x3. x2)) j c
+593	43	check_4_0_Cs_x_2_2.json	767	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject593	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x1 x1 (\x3. x2)) c j
+594	43	check_4_0_Cs_x_2_2.json	768	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject594	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (\x3. x2)) j c
+595	43	check_4_0_Cs_x_2_2.json	769	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject595	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x1 x1 (\x3. x2)) c j
+596	43	check_4_0_Cs_x_2_2.json	770	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject596	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (\x3. x2)) j c
+597	43	check_4_0_Cs_x_2_2.json	771	Lean	flow	zero	FlowCases35.lean	Blc.Rootcert2.FlowCases35.reject597	\x1. \x2. x1 x1 (\x3. x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 x1 (\x3. x2)) c j
+598	44	check_4_0_Cs_x_2_2.json	868	Lean	mixed	zero	MixedCases00.lean	Blc.Rootcert2.MixedCases00.reject598	\x1. \x2. x2 (x2 (\x3. x3) x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (\x3. x3) x2)) j c
+599	44	check_4_0_Cs_x_2_2.json	869	Lean	mixed	zero	MixedCases00.lean	Blc.Rootcert2.MixedCases00.reject599	\x1. \x2. x2 (x2 (\x3. x3) x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (\x3. x3) x2)) c j
+600	45	check_4_0_Cs_x_2_2.json	944	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject600	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) j (c (\x1. x1))
+601	45	check_4_0_Cs_x_2_2.json	945	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject601	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) (c (\x1. x1)) j
+602	45	check_4_0_Cs_x_2_2.json	1002	Lean	flow	zero	FlowCases63.lean	Blc.Rootcert2.FlowCases63.reject602	\x1. \x2. x2 (x1 (\x3. x3) x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 (\x3. x3) x2)) j c
+603	45	check_4_0_Cs_x_2_2.json	1003	Lean	flow	zero	FlowCases63.lean	Blc.Rootcert2.FlowCases63.reject603	\x1. \x2. x2 (x1 (\x3. x3) x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 (\x3. x3) x2)) c j
+604	45	check_4_0_Cs_x_2_2.json	1004	Lean	mixed	zero	MixedCases04.lean	Blc.Rootcert2.MixedCases04.reject604	\x1. \x2. x2 (x2 (\x3. x3) x1)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (\x3. x3) x1)) j c
+605	45	check_4_0_Cs_x_2_2.json	1005	Lean	mixed	zero	MixedCases04.lean	Blc.Rootcert2.MixedCases04.reject605	\x1. \x2. x2 (x2 (\x3. x3) x1)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x2 (\x3. x3) x1)) c j
+606	45	check_4_0_Cs_x_2_2.json	1006	Lean	mixed	zero	MixedCases05.lean	Blc.Rootcert2.MixedCases05.reject606	\x1. \x2. x2 (\x3. x3) (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (\x3. x3) (x1 x2)) j c
+607	45	check_4_0_Cs_x_2_2.json	1007	Lean	mixed	zero	MixedCases05.lean	Blc.Rootcert2.MixedCases05.reject607	\x1. \x2. x2 (\x3. x3) (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (\x3. x3) (x1 x2)) c j
+608	45	check_4_0_Cs_x_2_2.json	1008	Lean	flow	zero	FlowCases64.lean	Blc.Rootcert2.FlowCases64.reject608	\x1. \x2. x2 (x1 x2) (\x3. x3)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) (\x3. x3)) j c
+609	45	check_4_0_Cs_x_2_2.json	1009	Lean	flow	zero	FlowCases64.lean	Blc.Rootcert2.FlowCases64.reject609	\x1. \x2. x2 (x1 x2) (\x3. x3)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2) (\x3. x3)) c j
+610	45	check_4_0_Cs_x_2_2.json	1038	Lean	mixed	zero	MixedCases05.lean	Blc.Rootcert2.MixedCases05.reject610	\x1. \x2. x2 (\x3. x3) (x1 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x2 (\x3. x3) (x1 x2)) j c
+611	45	check_4_0_Cs_x_2_2.json	1039	Lean	mixed	zero	MixedCases05.lean	Blc.Rootcert2.MixedCases05.reject611	\x1. \x2. x2 (\x3. x3) (x1 x2)	(\x1. x1 (x1 x1) x1) (\x1. \x2. x2 (\x3. x3) (x1 x2)) c j
+612	45	check_4_0_Cs_x_2_2.json	1072	Lean	mixed	zero	MixedCases05.lean	Blc.Rootcert2.MixedCases05.reject612	\x1. \x2. x2 (\x3. x3) (x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 (\x3. x3) (x1 x2)) j c
+613	45	check_4_0_Cs_x_2_2.json	1073	Lean	mixed	zero	MixedCases05.lean	Blc.Rootcert2.MixedCases05.reject613	\x1. \x2. x2 (\x3. x3) (x1 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 (\x3. x3) (x1 x2)) c j
+614	45	check_4_0_Cs_x_2_2.json	1114	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject614	\x1. \x2. x2 (x1 x2)	(\x1. x1 (\x2. x2) (x1 (x1 x1))) (\x1. \x2. x2 (x1 x2)) j c
+615	45	check_4_0_Cs_x_2_2.json	1115	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject615	\x1. \x2. x2 (x1 x2)	(\x1. x1 (\x2. x2) (x1 (x1 x1))) (\x1. \x2. x2 (x1 x2)) c j
+616	45	check_4_0_Cs_x_2_2.json	1118	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject616	\x1. \x2. x2 (x1 x2)	(\x1. x1 (\x2. x2) (x1 x1 x1)) (\x1. \x2. x2 (x1 x2)) j c
+617	45	check_4_0_Cs_x_2_2.json	1119	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject617	\x1. \x2. x2 (x1 x2)	(\x1. x1 (\x2. x2) (x1 x1 x1)) (\x1. \x2. x2 (x1 x2)) c j
+618	45	check_4_0_Cs_x_2_2.json	1122	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject618	\x1. \x2. x2 (x1 x2)	(\x1. x1 (x1 (\x2. x2)) (x1 x1)) (\x1. \x2. x2 (x1 x2)) j c
+619	45	check_4_0_Cs_x_2_2.json	1123	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject619	\x1. \x2. x2 (x1 x2)	(\x1. x1 (x1 (\x2. x2)) (x1 x1)) (\x1. \x2. x2 (x1 x2)) c j
+620	45	check_4_0_Cs_x_2_2.json	1162	Lean	develop	zero	DevelopCases08.lean	Blc.Rootcert2.DevelopCases08.reject620	\x1. \x2. x1 (x2 x2)	(\x1. x1 x1 (x1 (\x2. x2) x1)) (\x1. \x2. x1 (x2 x2)) j c
+621	45	check_4_0_Cs_x_2_2.json	1163	Lean	develop	zero	DevelopCases08.lean	Blc.Rootcert2.DevelopCases08.reject621	\x1. \x2. x1 (x2 x2)	(\x1. x1 x1 (x1 (\x2. x2) x1)) (\x1. \x2. x1 (x2 x2)) c j
+622	45	check_4_0_Cs_x_2_2.json	1168	Lean	develop	zero	DevelopCases09.lean	Blc.Rootcert2.DevelopCases09.reject622	\x1. \x2. x2 (x2 x1)	(\x1. x1 x1 (x1 (x1 (\x2. x2)))) (\x1. \x2. x2 (x2 x1)) j c
+623	45	check_4_0_Cs_x_2_2.json	1169	Lean	develop	zero	DevelopCases09.lean	Blc.Rootcert2.DevelopCases09.reject623	\x1. \x2. x2 (x2 x1)	(\x1. x1 x1 (x1 (x1 (\x2. x2)))) (\x1. \x2. x2 (x2 x1)) c j
+624	45	check_4_0_Cs_x_2_2.json	1170	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject624	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 (\x2. x2) x1)) (\x1. \x2. x2 (x1 x2)) j c
+625	45	check_4_0_Cs_x_2_2.json	1171	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject625	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 (\x2. x2) x1)) (\x1. \x2. x2 (x1 x2)) c j
+626	45	check_4_0_Cs_x_2_2.json	1172	Lean	develop	zero	DevelopCases09.lean	Blc.Rootcert2.DevelopCases09.reject626	\x1. \x2. x2 (x2 x1)	(\x1. x1 x1 (x1 (\x2. x2) x1)) (\x1. \x2. x2 (x2 x1)) j c
+627	45	check_4_0_Cs_x_2_2.json	1173	Lean	develop	zero	DevelopCases09.lean	Blc.Rootcert2.DevelopCases09.reject627	\x1. \x2. x2 (x2 x1)	(\x1. x1 x1 (x1 (\x2. x2) x1)) (\x1. \x2. x2 (x2 x1)) c j
+628	45	check_4_0_Cs_x_2_2.json	1196	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject628	\x1. \x2. x2 (x1 x2)	(\x1. x1 (\x2. x2) x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) j c
+629	45	check_4_0_Cs_x_2_2.json	1197	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject629	\x1. \x2. x2 (x1 x2)	(\x1. x1 (\x2. x2) x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) c j
+630	45	check_4_0_Cs_x_2_2.json	1214	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject630	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (\x2. x2) (x1 x1)) (\x1. \x2. x2 (x1 x2)) j c
+631	45	check_4_0_Cs_x_2_2.json	1215	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject631	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (\x2. x2) (x1 x1)) (\x1. \x2. x2 (x1 x2)) c j
+632	45	check_4_0_Cs_x_2_2.json	1216	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject632	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1) (\x2. x2)) (\x1. \x2. x2 (x1 x2)) j c
+633	45	check_4_0_Cs_x_2_2.json	1217	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject633	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1) (\x2. x2)) (\x1. \x2. x2 (x1 x2)) c j
+634	45	check_4_0_Cs_x_2_2.json	1264	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject634	\x1. \x2. x2 (x1 x2)	(\x1. x1 (\x2. x2) (x1 x1) x1) (\x1. \x2. x2 (x1 x2)) j c
+635	45	check_4_0_Cs_x_2_2.json	1265	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject635	\x1. \x2. x2 (x1 x2)	(\x1. x1 (\x2. x2) (x1 x1) x1) (\x1. \x2. x2 (x1 x2)) c j
+636	45	check_4_0_Cs_x_2_2.json	1345	Lean	flow	zero	FlowCases65.lean	Blc.Rootcert2.FlowCases65.reject636	\x1. \x2. x2 (\x3. x3 (x2 x3))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (\x3. x3 (x2 x3))) j c
+637	45	check_4_0_Cs_x_2_2.json	1346	Lean	flow	zero	FlowCases65.lean	Blc.Rootcert2.FlowCases65.reject637	\x1. \x2. x2 (\x3. x3 (x2 x3))	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (\x3. x3 (x2 x3))) c j
+638	45	check_4_0_Cs_x_2_2.json	1349	Lean	flow	zero	FlowCases66.lean	Blc.Rootcert2.FlowCases66.reject638	\x1. \x2. x2 (\x3. x2 x3 x3)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (\x3. x2 x3 x3)) j c
+639	45	check_4_0_Cs_x_2_2.json	1350	Lean	flow	zero	FlowCases66.lean	Blc.Rootcert2.FlowCases66.reject639	\x1. \x2. x2 (\x3. x2 x3 x3)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (\x3. x2 x3 x3)) c j
+640	45	check_4_0_Cs_x_2_2.json	1435	Lean	flow	zero	FlowCases67.lean	Blc.Rootcert2.FlowCases67.reject640	\x1. \x2. x2 x2 (\x3. x3 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 x2 (\x3. x3 x2)) j c
+641	45	check_4_0_Cs_x_2_2.json	1436	Lean	flow	zero	FlowCases67.lean	Blc.Rootcert2.FlowCases67.reject641	\x1. \x2. x2 x2 (\x3. x3 x2)	(\x1. x1 x1 x1 x1) (\x1. \x2. x2 x2 (\x3. x3 x2)) c j
+642	45	check_4_0_Cs_x_2_2.json	1695	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject642	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) j (\x1. \x2. c)
+643	45	check_4_0_Cs_x_2_2.json	1696	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject643	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) (\x1. \x2. c) j
+644	45	check_4_0_Cs_x_2_3.json	18	Lean	flow	zero	FlowCases68.lean	Blc.Rootcert2.FlowCases68.reject644	\x1. \x2. \x3. x2 x2 (\x4. x3)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. \x3. x2 x2 (\x4. x3)) j c
+645	45	check_4_0_Cs_x_2_3.json	19	Lean	flow	zero	FlowCases68.lean	Blc.Rootcert2.FlowCases68.reject645	\x1. \x2. \x3. x2 x2 (\x4. x3)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. \x3. x2 x2 (\x4. x3)) c j
+646	43	check_4_0_Cs_x_3_2.json	6	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject646	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) j c c
+647	43	check_4_0_Cs_x_3_2.json	7	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject647	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) c j c
+648	43	check_4_0_Cs_x_3_2.json	8	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject648	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) c c j
+649	44	check_4_0_Cs_x_3_2.json	66	Lean	develop	zero	DevelopCases06.lean	Blc.Rootcert2.DevelopCases06.reject649	\x1. \x2. x1 (x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1)) j c c
+650	44	check_4_0_Cs_x_3_2.json	67	Lean	develop	zero	DevelopCases06.lean	Blc.Rootcert2.DevelopCases06.reject650	\x1. \x2. x1 (x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1)) c j c
+651	44	check_4_0_Cs_x_3_2.json	68	Lean	develop	zero	DevelopCases06.lean	Blc.Rootcert2.DevelopCases06.reject651	\x1. \x2. x1 (x2 x1)	(\x1. x1 x1 x1 x1) (\x1. \x2. x1 (x2 x1)) c c j
+652	45	check_4_0_Cs_x_3_2.json	159	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject652	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) (\x1. x1) j c
+653	45	check_4_0_Cs_x_3_2.json	160	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject653	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) (\x1. x1) c j
+654	45	check_4_0_Cs_x_3_2.json	161	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject654	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) j (\x1. x1) c
+655	45	check_4_0_Cs_x_3_2.json	162	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject655	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) j c (\x1. x1)
+656	45	check_4_0_Cs_x_3_2.json	163	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject656	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) c (\x1. x1) j
+657	45	check_4_0_Cs_x_3_2.json	164	Lean	flow	zero	FlowCases54.lean	Blc.Rootcert2.FlowCases54.reject657	\x1. \x2. x2 (x1 x2)	(\x1. x1 x1 (x1 x1)) (\x1. \x2. x2 (x1 x2)) c j (\x1. x1)

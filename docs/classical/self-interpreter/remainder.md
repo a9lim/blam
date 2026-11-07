@@ -867,7 +867,7 @@ contract shows that `E F` is a closed exact remainder extractor on closed
 sources, of `|E|+8` bits. `SelfintRemainderChain.remainder_bound_transfers`
 kernel-checks the consequence: a universal remainder floor `n` gives
 `SelfintSizeBound (n−8)`. The 27-bit floor transfers only 19, below the
-37 of `global-floor.md`, and because `rem70` exists
+40 of `global-floor.md`, and because `rem70` exists
 (`remainder_bound_at_most_seventy`) no remainder floor can transfer more
 than 62. The same substitution, applied to the remainder payload of a
 literal continuation-headed interpreter, prices that payload in

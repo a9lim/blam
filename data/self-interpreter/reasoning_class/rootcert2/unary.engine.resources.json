@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/Users/a9lim/Work/blam/tmp/round4/rootcert2/blam-frozen",
+    "adjudicate",
+    "--file",
+    "/Users/a9lim/Work/blam/tmp/round4/rootcert2/unary.blc",
+    "--threads",
+    "2",
+    "--budget1",
+    "64",
+    "--budget2",
+    "4096",
+    "--bb-cap",
+    "100000",
+    "--rescue",
+    "10000",
+    "--work-mult",
+    "2",
+    "--no-oracle"
+  ],
+  "code": 0,
+  "seconds": 0.12910541699966416,
+  "peak_rss_bytes": 22904832,
+  "limit": null,
+  "threads": 2
+}

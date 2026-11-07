@@ -1,0 +1,7 @@
+-- 28-bit reader \s. s (\b. b (s s) c) j: returns c r j on variables (expected to fail)
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\b. b (list list) cont)
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

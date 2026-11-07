@@ -1,0 +1,9 @@
+{
+  "label": "R270",
+  "valid": true,
+  "source_matches": true,
+  "states": 73,
+  "sha256": "8dfd7d3c5289f5fa3ec2b42034124cffad554d86568739ddf770ce7746eb298e",
+  "seconds": 0.0002738750190474093,
+  "peak_rss_bytes": 24068096
+}

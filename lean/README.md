@@ -1,9 +1,9 @@
 # Blc — Lean 4 formalization
 
 The kernel-checked BLC formalization behind blam's certificate layer. No
-mathlib and no `sorry`; every theorem depends at most on `propext` and
-`Quot.sound`, except the remainder-growth synthesis (`SelfintGrowth*`) and the
-27-bit floor (`SelfintFloor*`), which also use `Classical.choice`.
+mathlib and no `sorry`; every theorem depends at most on the standard
+axioms `propext`, `Classical.choice` and `Quot.sound`. The certificate
+proofs and self-interpreter correctness proofs do not use choice.
 
 ```
 theorem loop32_noNormalForm : ¬ HasNormalForm loop32     -- axioms: propext
@@ -30,7 +30,7 @@ theorem not_selfintSizeBound_163 : ¬ SelfintSizeBound 163
                                                          -- propext, Quot.sound
 theorem isUniversal_uni172 : IsUniversal uni172          -- propext, Quot.sound
 theorem not_uniSizeBound_173 : ¬ UniSizeBound 173        -- propext, Quot.sound
-theorem selfintSizeBound_27 : SelfintSizeBound 27
+theorem selfintSizeBound_29 : SelfintSizeBound 29
                                     -- propext, Classical.choice, Quot.sound
 ```
 
@@ -246,6 +246,155 @@ Self-interpretation:
 - `Blc/SelfintNormal.lean` — the 204-bit β-normal interpreter, including its
   exact wire and directed contract for every closed source and arbitrary
   continuation and suffix.
+- `Blc/SelfintRound5BoundNormal196.lean` — a beta-normal interpreter whose
+  administrative parser reductions connect it to the verified 162;
+  exact wire, normality and all-source beta-join contract.
+- `Blc/SelfintRound6Normal188.lean` — the current normal construction:
+  any first Scott cell activates that generator through an ignored-field
+  diagonal; exact wire, normality and all-source beta-join contract.
+- `Blc/SelfintRound5BoundMixed.lean` and `SelfintRound5BoundCapture` — a
+  necessary mixed branch between nonlinear code and live capture, and
+  quantitative capture transport forcing duplication of capture-bearing
+  code during decoding. These are structural constraints, not new numeric
+  lower bounds.
+- `Blc/SelfintArchitecture5Depth.lean` — erasing ABS while only updating
+  a control state requires pairwise distinct states at all positive depths;
+  a finite-state repair is impossible with a fixed decoder.
+- `Blc/SelfintArchitecture5Bundle.lean` — the parser/continuation bundle's
+  exact wire and directed contract, plus its off-domain service identities.
+- `Blc/SelfintArchitecture5Inherited.lean` — all-index lookup through
+  inherited environments and a total bottom, plus an exact closed-source
+  refutation of the parser whose provisional ABS pass omits its binding.
+- `Blc/SelfintArchitecture5BundleCost.lean` — exact pricing of independent
+  bundle projections, and a closed-source head-loop refutation of replacing
+  NEXT by a recursive query for NEXT itself.
+- `Blc/SelfintArchitecture6Retag.lean` — the cheap Boolean service
+  correction loses suffix information on source cells; both an arbitrary
+  open-parser obstruction and a closed-source common-state obstruction.
+- `Blc/SelfintArchitecture6NextService.lean` — replacing the direct
+  continuation exit by a NEXT query creates an infinite identity-query
+  recurrence, reached by the exact closed-I probe.
+- `Blc/SelfintArchitecture6DelayedSharing.lean` — factoring a common
+  lambda out of a Boolean choice saves one bit in any context and preserves
+  both tag specializations. One delayed shared-argument contraction is
+  thereby reduced to the existing one-let price theorem.
+- `Blc/SelfintArchitecture6OneSided.lean` — a one-sided tag-created
+  contraction can be converted to the one-let form at an exact cost in
+  local free leaves, preserving both Boolean specializations.
+- `Blc/SelfintArchitecture6OneSidedPrice.lean` — structural inverse cuts
+  directly price every source in that one-sided grammar, including
+  arbitrary ordinary two-arm contexts, and establish the weighted frontier.
+- `Blc/SelfintRootCutoffs.lean` — four symbolic head-divergence families
+  closing the recorded short-hand-off cutoffs with arbitrary scoped
+  payloads. The withdrawn two-argument self-feeding rule is not used.
+- `Blc/SelfintRootLetPowers.lean`, `SelfintRootLetOrbit`, and
+  `SelfintRootLetEmbedding`, `SelfintRootLetCycles`, `SelfintRootLetPeel`,
+  and `SelfintRootLetIdentityCollapse` — power simplification, a finite-clock orbit
+  invariant, and a positive-head self-embedding criterion for pending
+  reader lets. Each is an unbounded theorem rather than a capped search.
+- `Blc/SelfintRootLetPending.lean` — exact archived-AST correspondence and
+  the aggregate exclusion for all listed pending cases, importing the
+  symbolic identity, forcing, and binary-orbit families.
+- `Blc/SelfintRootLetRigidPrefix.lean` — hereditary first-argument-forcing
+  terms fail before a rigid operand; every such reader with its hole at
+  depth zero is excluded, with no size bound.
+- `Blc/SelfintRootLetBudgetDelay.lean` — bounded hereditary lambda delay
+  cannot cross a sufficient rigid pending block; exact source escape
+  alternatives, a sharp live-captured-head price, and a family showing
+  that this local charge does not close the remaining coarse cells.
+- `Blc/SelfintRound6ReaderStrict.lean` — a beta-preserved strictness
+  interpretation permits captured heads and arbitrary nonlinear sharing;
+  it excludes good prefixes before rigid operands. Symbolic tower proofs
+  also close every small closed payload in the captured-head example family.
+- `Blc/SelfintRound6ReaderShallow.lean` — shallow binder uses cannot
+  disappear under beta reduction when every source binder has one.
+  Independently, every reader with its hole at depth zero needs a live
+  capture between source binders, permitting vacuous captures elsewhere.
+- `Blc/SelfintRound6BoundLiteral.lean` — internal capture remains necessary
+  after stripping the public interface; disjoint internal and public
+  index charges strengthen the kernel bounds for literal interfaces.
+- `Blc/SelfintRound6ReaderBinary.lean` — a three-grade strictness
+  interpretation excludes application algebras of flat unary and live
+  binary helpers before two rigid operands. Together with live capture,
+  it closes the entire three-lambda slice of the two-operand binary-helper
+  root-let family, including erasing helpers.
+- `Blc/SelfintRound6ReaderFourth.lean` — any four-lambda reader with a
+  binary helper and exactly two pending operands has normal components.
+  An unbounded captured-head family exposes a lambda yet still fails the
+  zero law, distinguishing head exposure from reader validity.
+- `Blc/SelfintRound7ReaderRoute.lean`, `SelfintRound7ReaderMiddle`, and
+  `SelfintRound7ReaderLast` — compositional head locks and symbolic
+  divergence exclude every applicative payload in the helper family
+  `λu v.u (λz.h p)`, for each `h ∈ {u,v,z}`, below the reader frontier.
+  The middle-head case is excluded at every size. The other cases use
+  structural price inductions, self-embeddings, and an advancing tower.
+- `Blc/SelfintRound6BoundGlobal.lean` and `SelfintRound6BoundNext` —
+  strengthen the unconditional kernel floor through source pricing and
+  symbolic exhaustion of the equality cases. The few residual templates
+  are derived from the syntax and refuted by fixed head reductions.
+- `Blc/SelfintRound6BoundRedLive.lean` and `SelfintRound6Next` — colored
+  live-binder accounting survives arbitrary beta contexts. A single chain
+  of live source binders cannot increase its live count; this forces more
+  internal binders in a literal rigid NEXT and strengthens the unrestricted
+  NEXT and assembly bounds.
+- `Blc/SelfintRound6BoundNextPrice.lean` — head exposure and symbolic
+  equality-case analysis strengthen the unrestricted NEXT floor without
+  a minimum-source or normal-form hypothesis.
+- `Blc/SelfintRound6BoundPotential.lean` and `SelfintRound6NextAbs` —
+  a small live-binder/nonlinearity potential cannot produce the ABS
+  target's five live source-origin binders. Full beta contexts and the
+  first escape from binary binder multiplicity are covered, strengthening
+  the literal NEXT bound.
+- `Blc/SelfintRound7SourceShape.lean` — every hypothetical interpreter
+  with three live binders reduces without source growth to one nonlinear
+  sharing redex with normal components. The closed operand owns both
+  remaining live binders and the internal capture. No minimum assumption
+  or finite source bound is used.
+- `Blc/SelfintRound7GlobalSharingBarrier.lean` — a symbolic family in
+  that residual shape has unbounded normal-output live counts. A binary
+  source at potential five already reaches six live binders, proving
+  sharpness of the preceding potential-four theorem.
+- `Blc/SelfintRound7GlobalLastHead.lean` and `SelfintRound7GlobalLastPrefix` —
+  an unbounded head algebra
+  excludes shared two-binder helpers whose zero-live bodies are headed
+  by the second binder. Arbitrary zero-live sharing bodies, applications,
+  duplication, and vacuous wrappers are allowed, without normality.
+  Explicit shifts retain arbitrary dead binders before, between, and
+  after the two live prefix binders.
+- `Blc/SelfintRound7NextSourceShape.lean` — any three-lambda NEXT source
+  is a lambda-free nonlinear sharing body applied to a normal two-lambda
+  helper, followed by lambda-free operands. Every component is already
+  normal, independently of source size or minimum assumptions.
+- `Blc/SelfintArchitecture7SharingContexts.lean` — common arbitrary
+  contexts, including dependent let stacks, factor out of Boolean
+  branches with exact strict source savings and nonincreasing captures.
+- `Blc/SelfintArchitecture7BranchAliases.lean` — known-Boolean test
+  deletion propagates through arbitrary dependent lets and alias chains
+  while retaining bare helper uses. Guarded rewrites preserve both
+  projections and strictly reduce every nonnegative source capture price.
+- `Blc/SelfintArchitecture7ReaderDiagonal.lean` — exact two-reader
+  equations for the 162 reader with arbitrary parameters. At identity
+  continuation, `P = R R J` satisfies `P →* J P J`; an explicit generator
+  specialization yields a fixed point of any `F`. No smaller interpreter
+  or source-price claim follows from that equation alone.
+- `Blc/SelfintRegularCertificate.lean`, `SelfintRegularSoundness`, and
+  `SelfintRegularExamples` — finite regular closure/stack invariants,
+  their sound translation to ordinary lambda terms with arbitrary scoped
+  opaque fillings, and a small exact instance. Administrative rank descent
+  is separate from actual beta progress.
+- `Blc/SelfintRound5BoundSink.lean` — unbounded normal capture output can
+  be generated by a closed noncapturing copier; capture-bearing source
+  binders need not themselves be used for nonlinear contractions.
+- `Blc/SelfintRound5BoundRank.lean` and `SelfintRound5BoundOrigins` — a
+  source-origin ranking bounds all charged output independently of the
+  quotation's length when every nonlinear copy strictly lowers the rank.
+- `Blc/SelfintRound5BoundCycle.lean` — exact copy-event extraction from
+  every supplied successful trace, preserving its ordinary beta edge list,
+  and canonical source-origin labelling for bounded-rank obstructions.
+- `Blc/SelfintRound5BoundGraph.lean` and `SelfintRound5BoundSelected` —
+  the finite graph ranking argument and a directed copy-dependency cycle
+  on every successful decode of a fixed source probe, including when
+  the contracted redexes are selected explicitly.
 - `Blc/SelfintSharp.lean` — a sound checker for explicit contextual β traces;
   a 584-bit interpreter with exactly two nonlinear binders, both closed in
   isolation; and a 742-bit β-normal interpreter with the same property.

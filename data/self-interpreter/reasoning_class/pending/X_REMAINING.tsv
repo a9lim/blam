@@ -1,0 +1,52 @@
+index	weight	source	sha256
+2162	43	((((λv0.(v0 v0) λv0.(v0 λv1.(v0 (v1 λv2.v0)))) j) c) c)	d19e3119b0c443aa78e6172ee6a44e9e00fe5d8f211ee5a1c06b3ce2a2577969
+2163	43	((((λv0.(v0 v0) λv0.(v0 λv1.(v0 (v1 λv2.v0)))) c) j) c)	f4c46699a11dfcdf2c7f1750a18f0e031c4b2a2299e527190a239d155156b90c
+2164	43	((((λv0.(v0 v0) λv0.(v0 λv1.(v0 (v1 λv2.v0)))) c) c) j)	ed120e28814c8fe30e8f77507fb397c773645b4f7df6d5c293624059eddb6981
+4157	45	((((λv0.(v0 v0) λv0.(v0 λv1.(v1 ((v1 λv2.v2) v0)))) j) c) c)	33b32fa9a762aa04b8767a7a3d244f7ec89dcf9533f40d21fd754a43299c1c94
+4158	45	((((λv0.(v0 v0) λv0.(v0 λv1.(v1 ((v1 λv2.v2) v0)))) c) j) c)	c9e8bfb03f3f5c4b0c44d6eaa66485433f2d6ba3426ed129d48b1c7825d56356
+4159	45	((((λv0.(v0 v0) λv0.(v0 λv1.(v1 ((v1 λv2.v2) v0)))) c) c) j)	03fd65b3adab2a9094d6f166b53a48a4ed83241df2211687702c0c901a54a35d
+4166	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v2) (v0 v1)))) j) c) c)	13661922e2bbb6915d493f9a255387d430d183d67785a0d5cd841475b69dd930
+4167	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v2) (v0 v1)))) c) j) c)	4cf78ba8cb6931d2ec904efa4999e22cf3e3f9ab096bbb621038b5f8e3c07e91
+4168	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v2) (v0 v1)))) c) c) j)	740b46d4c7bb958c374b21f5be6cd5aacf3a9a62f21c742d8163c824fba44be4
+4178	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v0 v1) (v1 λv2.v2)))) j) c) c)	5791427b48904d5fd121ed1c56eeae332aae7b3d61d238c5df83d93624fbd240
+4179	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v0 v1) (v1 λv2.v2)))) c) j) c)	6d3892d12af24ed9dc1aef99f7d266d1b1afd68312675446138d52a6d2529ce7
+4180	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v0 v1) (v1 λv2.v2)))) c) c) j)	9382ff5cbcc490fc1e77b74553a730c0a2beba95fbe222e81e5cd11e37b31afc
+4187	45	((((λv0.(v0 v0) λv0.(v0 λv1.(((v1 λv2.v2) v0) v1))) j) c) c)	ed05d8a81548516d89187994736515f0b0a4ca7a10f20168b539228f9440dd29
+4188	45	((((λv0.(v0 v0) λv0.(v0 λv1.(((v1 λv2.v2) v0) v1))) c) j) c)	3b1fd5bbc5d0a617d4a6f0f7056f5788492daa9f72007543202b990eb6180aad
+4189	45	((((λv0.(v0 v0) λv0.(v0 λv1.(((v1 λv2.v2) v0) v1))) c) c) j)	75667744c64993976ce9d6f0d0935a44331aae99a5258b74cefd1bc1c0f63e93
+4247	45	((((λv0.(v0 v0) λv0.((v0 λv1.v1) λv1.(v1 (v0 v1)))) j) c) c)	014ff73095f06b07b2cfaf6975de8d8c3968840a03a4e3f3b50eca7d845ecb76
+4248	45	((((λv0.(v0 v0) λv0.((v0 λv1.v1) λv1.(v1 (v0 v1)))) c) j) c)	f113408cc86ccc161a3ba7400ee981715a93ad969061e92322ead51c5dac5817
+4249	45	((((λv0.(v0 v0) λv0.((v0 λv1.v1) λv1.(v1 (v0 v1)))) c) c) j)	2960834a6738fb4dcccd31a8c5b69f41942d8e58df6ec659c97bb91c726ebe53
+4289	45	((((λv0.(v0 v0) λv0.((v0 λv1.λv2.(v2 (v1 v2))) v0)) j) c) c)	d0259626075f609e4da77200f467774ab522b682fb3017b8b4f76d70d8ac667c
+4290	45	((((λv0.(v0 v0) λv0.((v0 λv1.λv2.(v2 (v1 v2))) v0)) c) j) c)	4187e6c80eb9e0b9d69ee3b1acf29107e4223bebb28f873ba48537072141bc62
+4291	45	((((λv0.(v0 v0) λv0.((v0 λv1.λv2.(v2 (v1 v2))) v0)) c) c) j)	0ec40ac5d1665fea59bb79a841d02b2e6628573f0ec5f606316b6f40604de898
+4627	45	((((λv0.(v0 v0) λv0.(v0 (v0 λv1.((v1 λv2.v2) v0)))) j) c) c)	8183dc602c0dfd6eddf6f0e987b019a9170ed26fbd0c3cf770beff49ce6c8b8a
+4628	45	((((λv0.(v0 v0) λv0.(v0 (v0 λv1.((v1 λv2.v2) v0)))) c) j) c)	5f694e13f542a29b1abb4d8d1a8685877235b5e57ef1c8e2062174d7deb955ae
+4629	45	((((λv0.(v0 v0) λv0.(v0 (v0 λv1.((v1 λv2.v2) v0)))) c) c) j)	b9f5eaabeab812d377c9e5ee74b77b8e0e5780b97f49552e1be5d482c68f8988
+4995	45	((((λv0.(v0 v0) λv0.(v0 (v0 (v0 λv1.(v1 λv2.v1))))) j) c) c)	b6d00695dd524258ab7ea6c6d584d9b28efe034a6461cfa7e8b7abd1d01cdf2e
+4996	45	((((λv0.(v0 v0) λv0.(v0 (v0 (v0 λv1.(v1 λv2.v1))))) c) j) c)	2b0b7aea9a164fe74bf256d37aa73d9e94da29a63bae1f35f0eae3dbb719a52b
+4997	45	((((λv0.(v0 v0) λv0.(v0 (v0 (v0 λv1.(v1 λv2.v1))))) c) c) j)	9932d553090c1242f06416ee46d78be5322b29c9ccb969bc74282817281ab260
+4998	45	((((λv0.(v0 v0) λv0.(v0 ((v0 λv1.(v1 λv2.v1)) v0))) j) c) c)	47f07e512034f78f2ec0445fced09494b3f38f5b4f908fbbe9bc66f093099992
+4999	45	((((λv0.(v0 v0) λv0.(v0 ((v0 λv1.(v1 λv2.v1)) v0))) c) j) c)	b17eddaa7cba574bc159c0a0d454e58f6b2d46d495c44f90d9e6d43ada24bcf6
+5000	45	((((λv0.(v0 v0) λv0.(v0 ((v0 λv1.(v1 λv2.v1)) v0))) c) c) j)	6e931a5297ab075d4966e2a99375ff05ff240037df18a6277b5cdf7f0e4c355a
+7584	44	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) λv0.v0) j) c)	c028cad5fe516f06175b265ca7c9059caa4e6653b419efd0a31ce37deb3d6112
+7585	44	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) λv0.v0) c) j)	06d8b2dba119f38523d2801f4c76fc88f3999e4cc4d8972c0e1cabe6e5659741
+7586	44	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) j) λv0.v0) c)	94d973973bc157afd545145027701075b458237f91f92ec09d5172be05d3bd39
+7587	44	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) j) c) λv0.v0)	63cc9991ff298e115dc316a04fbf570f3b4b8bab0c006dea22c8807a09864fc9
+7588	44	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) c) λv0.v0) j)	682d72e3d41af6178b49a7827f39ff7bd0d2da7a22e283e108fdd0e31e8e3c4d
+7589	44	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) c) j) λv0.v0)	345355d339323194d84095001d0096aaa4bea898776352e0076071926278caca
+9030	45	((((λv0.(v0 v0) λv0.(v0 λv1.(v0 (v1 λv2.v0)))) λv0.v0) j) c)	d13c2fd9aa48f381d83196ea0e4dd0692c262c4e012afdc9945fdae0bc811825
+9031	45	((((λv0.(v0 v0) λv0.(v0 λv1.(v0 (v1 λv2.v0)))) λv0.v0) c) j)	16e421b9204f06d5d5adc0156b38a3ad4bc132d92da037e9a62489c9b24821ba
+9032	45	((((λv0.(v0 v0) λv0.(v0 λv1.(v0 (v1 λv2.v0)))) j) λv0.v0) c)	7a5f8df4695686d482857496c11d75cb4188c2f07b0012e76315a62d644ceeb7
+9033	45	((((λv0.(v0 v0) λv0.(v0 λv1.(v0 (v1 λv2.v0)))) j) c) λv0.v0)	5106ab006eb2be3a8391bafc08ee6449860cd09d4945e4972cafae51c7b43838
+9034	45	((((λv0.(v0 v0) λv0.(v0 λv1.(v0 (v1 λv2.v0)))) c) λv0.v0) j)	bb9836878bdcdd692a932c2b0d9aa6cc19273a2cbf02971458dae5cd2aa40ab2
+9035	45	((((λv0.(v0 v0) λv0.(v0 λv1.(v0 (v1 λv2.v0)))) c) j) λv0.v0)	f07ac94905a66699c9085e2f1576a2b03d6000f1401ce8b02895d91811a4cf28
+9456	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) j) c) λv0.c)	d67f2933c83cc12017ca568855c943e8bf3c8f65b99c43ed49482e63af4f1fd6
+9457	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) j) λv0.c) c)	9ae004a0deb0b3cae861fdbf830e4682838649543ba31f7db1ed92ea9750d244
+9458	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) c) j) λv0.c)	b2f8eeff148f283ee9acdc2bf251249eea573957ffaedfd58386506681899137
+9459	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) c) λv0.c) j)	c1de2b1848c87ebc156acb9fe3dfa05e5cc94ecc393d55f74445982719c9d8b1
+9460	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) λv0.c) j) c)	e98ec1b1fb3cf539acb192677542b9e2a4fd5cfcaf2c23f4461e58bba0b7606d
+9461	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.v1) v0))) λv0.c) c) j)	bd01ec4992e835420bc04443c2b7fe10bbedf6446db69e0b7d0db058e9f937f3
+9468	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.λv3.v0) v1))) j) c) c)	e5fb69b07910a5cee4c7b89c8607590663e005a69f7a531b8d409d38def88999
+9469	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.λv3.v0) v1))) c) j) c)	68fc9c5ebdae6a534198ea86566ad0cb354a3cf8450cb2b9ad00b6f999e1af34
+9470	45	((((λv0.(v0 v0) λv0.(v0 λv1.((v1 λv2.λv3.v0) v1))) c) c) j)	25c4d1b283ed06064e962a517aedcfb69d51cb8e8aff7d3727d1be1f9e99032b

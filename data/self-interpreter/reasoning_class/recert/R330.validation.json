@@ -1,0 +1,9 @@
+{
+  "label": "R330",
+  "valid": true,
+  "source_matches": true,
+  "states": 476,
+  "sha256": "8fa04244f68e4feaf2b964a85d132519ec8ac933c7f80ca4d56b37d1fc12ee49",
+  "seconds": 0.0009469590149819851,
+  "peak_rss_bytes": 24412160
+}

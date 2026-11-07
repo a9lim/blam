@@ -1,0 +1,317 @@
+[
+  {
+    "id": 0,
+    "kind": "W_grammar",
+    "theorem": "residual0"
+  },
+  {
+    "id": 7,
+    "kind": "W_grammar",
+    "theorem": "residual7"
+  },
+  {
+    "id": 14,
+    "kind": "W_grammar",
+    "theorem": "residual14"
+  },
+  {
+    "id": 21,
+    "kind": "W_grammar",
+    "theorem": "residual21"
+  },
+  {
+    "id": 22,
+    "kind": "W_grammar",
+    "theorem": "residual22"
+  },
+  {
+    "id": 28,
+    "kind": "W_grammar",
+    "theorem": "residual28"
+  },
+  {
+    "id": 35,
+    "kind": "W_grammar",
+    "theorem": "residual35"
+  },
+  {
+    "id": 42,
+    "kind": "W_grammar",
+    "theorem": "residual42"
+  },
+  {
+    "id": 49,
+    "kind": "W_grammar",
+    "theorem": "residual49"
+  },
+  {
+    "id": 56,
+    "kind": "W_grammar",
+    "theorem": "residual56"
+  },
+  {
+    "id": 63,
+    "kind": "W_grammar",
+    "theorem": "residual63"
+  },
+  {
+    "id": 64,
+    "kind": "W_grammar",
+    "theorem": "residual64"
+  },
+  {
+    "id": 70,
+    "kind": "W_grammar",
+    "theorem": "residual70"
+  },
+  {
+    "id": 77,
+    "kind": "W_grammar",
+    "theorem": "residual77"
+  },
+  {
+    "id": 91,
+    "kind": "W_grammar",
+    "theorem": "residual91"
+  },
+  {
+    "id": 93,
+    "kind": "W_grammar",
+    "theorem": "residual93"
+  },
+  {
+    "id": 96,
+    "kind": "W_grammar",
+    "theorem": "residual96"
+  },
+  {
+    "id": 97,
+    "kind": "W_grammar",
+    "theorem": "residual97"
+  },
+  {
+    "id": 98,
+    "kind": "W_grammar",
+    "theorem": "residual98"
+  },
+  {
+    "id": 116,
+    "kind": "W_grammar",
+    "theorem": "residual116"
+  },
+  {
+    "id": 118,
+    "kind": "W_grammar",
+    "theorem": "residual118"
+  },
+  {
+    "id": 120,
+    "kind": "W_grammar",
+    "theorem": "residual120"
+  },
+  {
+    "id": 121,
+    "kind": "W_grammar",
+    "theorem": "residual121"
+  },
+  {
+    "id": 122,
+    "kind": "W_grammar",
+    "theorem": "residual122"
+  },
+  {
+    "id": 123,
+    "kind": "W_grammar",
+    "theorem": "residual123"
+  },
+  {
+    "id": 124,
+    "kind": "rigid_payload_head",
+    "theorem": "residual124"
+  },
+  {
+    "id": 129,
+    "kind": "rigid_payload_head",
+    "theorem": "residual129"
+  },
+  {
+    "id": 135,
+    "kind": "W_grammar",
+    "theorem": "residual135"
+  },
+  {
+    "id": 136,
+    "kind": "W_grammar",
+    "theorem": "residual136"
+  },
+  {
+    "id": 137,
+    "kind": "W_grammar",
+    "theorem": "residual137"
+  },
+  {
+    "id": 138,
+    "kind": "W_grammar",
+    "theorem": "residual138"
+  },
+  {
+    "id": 141,
+    "kind": "W_grammar",
+    "theorem": "residual141"
+  },
+  {
+    "id": 143,
+    "kind": "W_grammar",
+    "theorem": "residual143"
+  },
+  {
+    "id": 146,
+    "kind": "W_grammar",
+    "theorem": "residual146"
+  },
+  {
+    "id": 148,
+    "kind": "W_grammar",
+    "theorem": "residual148"
+  },
+  {
+    "id": 150,
+    "kind": "W_grammar",
+    "theorem": "residual150"
+  },
+  {
+    "id": 152,
+    "kind": "W_grammar",
+    "theorem": "residual152"
+  },
+  {
+    "id": 158,
+    "kind": "W_grammar",
+    "theorem": "residual158"
+  },
+  {
+    "id": 162,
+    "kind": "W_grammar",
+    "theorem": "residual162"
+  },
+  {
+    "id": 176,
+    "kind": "W_grammar",
+    "theorem": "residual176"
+  },
+  {
+    "id": 178,
+    "kind": "W_grammar",
+    "theorem": "residual178"
+  },
+  {
+    "id": 180,
+    "kind": "W_grammar",
+    "theorem": "residual180"
+  },
+  {
+    "id": 182,
+    "kind": "W_grammar",
+    "theorem": "residual182"
+  },
+  {
+    "id": 188,
+    "kind": "W_grammar",
+    "theorem": "residual188"
+  },
+  {
+    "id": 192,
+    "kind": "W_grammar",
+    "theorem": "residual192"
+  },
+  {
+    "id": 196,
+    "kind": "W_grammar",
+    "theorem": "residual196"
+  },
+  {
+    "id": 198,
+    "kind": "W_grammar",
+    "theorem": "residual198"
+  },
+  {
+    "id": 200,
+    "kind": "W_grammar",
+    "theorem": "residual200"
+  },
+  {
+    "id": 202,
+    "kind": "W_grammar",
+    "theorem": "residual202"
+  },
+  {
+    "id": 208,
+    "kind": "W_grammar",
+    "theorem": "residual208"
+  },
+  {
+    "id": 212,
+    "kind": "W_grammar",
+    "theorem": "residual212"
+  },
+  {
+    "id": 214,
+    "kind": "rigid_payload_head",
+    "theorem": "residual214"
+  },
+  {
+    "id": 224,
+    "kind": "rigid_payload_head",
+    "theorem": "residual224"
+  },
+  {
+    "id": 687,
+    "kind": "W_grammar",
+    "theorem": "residual687"
+  },
+  {
+    "id": 690,
+    "kind": "rigid_payload_head",
+    "theorem": "residual690"
+  },
+  {
+    "id": 693,
+    "kind": "W_grammar",
+    "theorem": "residual693"
+  },
+  {
+    "id": 723,
+    "kind": "parametric_pump",
+    "theorem": "residual723"
+  },
+  {
+    "id": 759,
+    "kind": "W_grammar",
+    "theorem": "residual759"
+  },
+  {
+    "id": 765,
+    "kind": "W_grammar",
+    "theorem": "residual765"
+  },
+  {
+    "id": 919,
+    "kind": "W_grammar",
+    "theorem": "residual919"
+  },
+  {
+    "id": 920,
+    "kind": "W_grammar",
+    "theorem": "residual920"
+  },
+  {
+    "id": 934,
+    "kind": "W_grammar",
+    "theorem": "residual934"
+  },
+  {
+    "id": 935,
+    "kind": "W_grammar",
+    "theorem": "residual935"
+  }
+]

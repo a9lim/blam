@@ -1,0 +1,22 @@
+{
+  "sources": 92480,
+  "rows": {
+    "lambda_A:m6:L3": 7476,
+    "lambda_A:m5:L3": 61236,
+    "lambda_A:m5:L4": 21840,
+    "flat_ss:m5:L3": 1928
+  },
+  "failures": {
+    "n0": 91006,
+    "n1": 1474
+  },
+  "survivors": [],
+  "max_probe_nodes": 176,
+  "max_probe_beta_steps": 35,
+  "exceptions": 0,
+  "all_contracted_probes_affine": true,
+  "seconds": 11.371137583002564,
+  "peak_rss_bytes": 105824256,
+  "threads": 1,
+  "source_digest": "79e9f7472751cf2f68b97a26ecc534ff4144835fc3570e6ec6c413978014c8b0"
+}

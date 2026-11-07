@@ -1,0 +1,9 @@
+trail k 1 spos skipped(S<=0) 1352633 w <= 45 A cost 0 .. 18 candidates 696770 hits 0 unc caps 135 timeouts 0 28.8s
+  UNC (42, '\\x0. x0 (\\x1. x0)', ['\\x1. x (x1 s)'])
+  UNC (45, '\\x0. x0 (\\x1. x0)', ['\\x1. x (x1 (\\x2. s))'])
+  UNC (45, '\\x0. x0 (\\x1. x0)', ['\\x1. x (s (\\x2. x1))'])
+  UNC (44, '\\x0. s (x0 x0)', ['\\x1. x ((\\x2. x2) x1)'])
+  UNC (45, '\\x0. s (x0 x0)', ['\\x1. x1 ((\\x2. x1) x)'])
+  UNC (45, '\\x0. s (x0 x0)', ['\\x1. x (x1 (\\x2. x1))'])
+  UNC (45, '\\x0. s (x0 x0)', ['\\x1. x ((\\x2. x1) x1)'])
+  UNC (44, '\\x0. x0 x0 s', ['\\x1. x ((\\x2. x2) x1)'])

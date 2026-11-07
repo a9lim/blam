@@ -1,0 +1,135 @@
+{
+  "catalogue_body_shapes": {
+    "pure-x-tree": 370,
+    "application-with-c-or-j": 165,
+    "inner-lambda-or-let": 92
+  },
+  "catalogue_scanned": 631,
+  "catalogue_new_nonminimum": 4,
+  "catalogue_total_nonminimum": 31,
+  "catalogue_remaining": 627,
+  "catalogue_helper_leading": {
+    "1": 280,
+    "2": 340,
+    "3": 7
+  },
+  "catalogue_shapes": {
+    "(4, 0, 0, 1, 1)": 188,
+    "(4, 0, 0, 2, 1)": 126,
+    "(4, 0, 0, 3, 1)": 5,
+    "(4, 0, 0, 1, 2)": 92,
+    "(4, 0, 0, 2, 2)": 202,
+    "(4, 0, 0, 3, 2)": 2,
+    "(4, 0, 0, 2, 3)": 12
+  },
+  "overcap": [
+    {
+      "k": 3,
+      "depth": 0,
+      "cell": "('Cs', 'x', 2, 1)",
+      "before": 126994,
+      "nonminimum": 6404,
+      "after": 120590
+    },
+    {
+      "k": 3,
+      "depth": 0,
+      "cell": "('Cs', 'x', 1, 1)",
+      "before": 277140,
+      "nonminimum": 3338,
+      "after": 273802
+    },
+    {
+      "k": 2,
+      "depth": 1,
+      "cell": "('A', 'x', 0, 1)",
+      "before": 184004,
+      "nonminimum": 807,
+      "after": 183197
+    },
+    {
+      "k": 2,
+      "depth": 1,
+      "cell": "('B', 'x', 0, 1)",
+      "before": 112402,
+      "nonminimum": 0,
+      "after": 112402
+    },
+    {
+      "k": 2,
+      "depth": 1,
+      "cell": "('A', 'lambda', 0, 1)",
+      "before": 141728,
+      "nonminimum": 0,
+      "after": 141728
+    },
+    {
+      "k": 2,
+      "depth": 0,
+      "cell": "('Cs', 'x', 2, 1)",
+      "before": 399084,
+      "nonminimum": 37988,
+      "after": 361096
+    },
+    {
+      "k": 2,
+      "depth": 0,
+      "cell": "('Cs', 'x', 3, 1)",
+      "before": 113874,
+      "nonminimum": 15432,
+      "after": 98442
+    },
+    {
+      "k": 2,
+      "depth": 0,
+      "cell": "('Cs', 'x', 1, 1)",
+      "before": 716476,
+      "nonminimum": 35067,
+      "after": 681409
+    },
+    {
+      "k": 2,
+      "depth": 0,
+      "cell": "('Cs', 'x', 2, 2)",
+      "before": 201140,
+      "nonminimum": 47552,
+      "after": 153588
+    },
+    {
+      "k": 2,
+      "depth": 0,
+      "cell": "('Cs', 'x', 1, 2)",
+      "before": 254812,
+      "nonminimum": 38040,
+      "after": 216772
+    }
+  ],
+  "overcap_removed": 184628,
+  "overcap_remaining": 2343026,
+  "overcap_remaining_shapes": {
+    "('B-pure-x-tree', 'A-dependent-own-head')": 341711,
+    "('B-inner-lambda-or-let', 'A-dependent-own-head')": 607868,
+    "('B-pure-x-tree', 'A-independent-own-head')": 24232,
+    "('B-pure-x-tree', 'A-external-or-redex-head')": 214372,
+    "('B-application-with-c-or-j', 'A-dependent-own-head')": 173158,
+    "('B-application-with-c-or-j', 'A-independent-own-head')": 30934,
+    "('B-inner-lambda-or-let', 'A-independent-own-head')": 151711,
+    "('B-inner-lambda-or-let', 'A-external-or-redex-head')": 199329,
+    "('B-application-with-c-or-j', 'A-external-or-redex-head')": 60647,
+    "('B-inner-lambda-or-let', 'A-constant')": 35136,
+    "('B-application-with-c-or-j', 'A-constant')": 333,
+    "('B-leading-lambda', 'A-dependent-own-head')": 27394,
+    "('B-leading-lambda', 'A-independent-own-head')": 32292,
+    "('B-leading-lambda', 'A-constant')": 82032,
+    "('B-leading-lambda', 'A-external-or-redex-head')": 10,
+    "('B-pure-x-tree', 'A-multiple-leading-lambdas')": 160843,
+    "('B-application-with-c-or-j', 'A-multiple-leading-lambdas')": 64753,
+    "('B-inner-lambda-or-let', 'A-multiple-leading-lambdas')": 136271
+  },
+  "input_sha256": {
+    "rootnl/SURVIVORS.json": "302b9f8f050f39a0d05583a9d7fa72dd780fa26930b76979a36c31ceb3c1ff6c",
+    "rootnl/verification.json": "0285a70f7804d0229a76b2b69808994400d621673cbf59a33a6db95925efc66f",
+    "rootnl/grammar.py": "e7eff3b0230c8a8095c5b6444f41cf63d781a1250ea486033370f4324d8719d8",
+    "rootnl/boundary.py": "e24b0fad1ed3cf550cae06fed12ac6e47f90c3f337b0c68fd104ef818cf0480f"
+  }
+}

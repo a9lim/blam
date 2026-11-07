@@ -1,0 +1,12 @@
+skeletons 766 unhandled 60 0.0s
+  UNH (a/e) p0 q1 m1 | ph0 s@1 l1 | ph0 bit@0 l0
+  UNH (a/e) p0 q1 m1 | ph0 s@1 l1 | ph1 bit@0 l1
+  UNH (a/e) p0 q1 m1 | ph0 s@1 l1 | ph1 bit@1 l1
+  UNH (a/e) p0 q1 m2 | ph0 s@1 l1 | ph0 bit@0 l0
+  UNH (a/e) p0 q1 m2 | ph0 s@1 l1 | ph1 bit@0 l1
+  UNH (a/e) p0 q1 m2 | ph0 s@1 l1 | ph1 bit@1 l1
+  UNH (a/e) p0 q1 m3 | ph0 s@1 l1 | ph0 bit@0 l0
+  UNH (a/e) p0 q1 m3 | ph0 s@1 l1 | ph1 bit@0 l1
+  UNH (a/e) p0 q1 m3 | ph0 s@1 l1 | ph1 bit@1 l1
+  UNH (a/e) p0 q1 m4 | ph0 s@1 l1 | ph0 bit@0 l0
+hits 0 max pool 96229 79.2s

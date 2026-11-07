@@ -1,0 +1,6275 @@
+{
+  "candidates": 696,
+  "counts": {
+    "refuted": 696,
+    "capped": 0,
+    "survivor": 0
+  },
+  "seconds": 0.083,
+  "results": [
+    {
+      "bits": "01011011011111110",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011111110110",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101011111110",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101111111010",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011111111010110",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111011010",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01100111011111110",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111111110110",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011011111110",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011111111010",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01111111100110110",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100111010",
+      "size": 17,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "010110110111111110",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110111111110110",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111010111111110",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111011111111010",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111111111010110",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "010111111111011010",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "011001110111111110",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001111111110110",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100110111111110",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100111111111010",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011111111100110110",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "011111111100111010",
+      "size": 18,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "01001100111011111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001100111111110110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001110011011111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001110011111111010",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001111111100110110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 6
+    },
+    {
+      "bits": "01001111111100111010",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 6
+    },
+    {
+      "bits": "01010011011011111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011011111110110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011101011111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011101111111010",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011111111010110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01010011111111011010",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01011000111011111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011000111111110110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011000111111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011111110001110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100011011111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100011111111010",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101000111111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101111111000110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011111111000110110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111000111010",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111010001110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 6
+    },
+    {
+      "bits": "01011111111011000110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 6
+    },
+    {
+      "bits": "01100100111011111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100100111111110110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111000111111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111111110001110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010011011111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010011111111010",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011000111111110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011111111000110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01111111100100110110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100100111010",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100110001110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100111000110",
+      "size": 20,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "010001110111011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "010001110111111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "010001111011011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "010001111011111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "010001111111110110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "010001111111110111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "010011001110111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "010011001111111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "010011100110111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "010011100111111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "010011111111100110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 4
+    },
+    {
+      "bits": "010011111111100111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 4
+    },
+    {
+      "bits": "010100110110111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "010100110111111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "010100111010111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "010100111011111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "010100111111111010110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "bits": "010100111111111011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "bits": "010101101011011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "010101101011111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "010101101101011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "010101101101111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "010101101111111010110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "010101101111111011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "010101110101011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "010101110101111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "010101110111111101010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "010101111111101010110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "010101111111101011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "010101111111101101010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "010110001110111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110001111111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110011011011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110011011111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110011101011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110011101111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110011111111010110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110011111111011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110100111011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110100111111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110110001111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110110011011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110110011111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110111111100110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110111111100111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010110111111110001110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111000110111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111000111111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111001101011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111001101111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111001111111101010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111010001111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111010011011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111010011111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111011111110011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111011111111000110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "010111111110011010110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "010111111110011011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "010111111110011101010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "010111111110100110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "010111111110100111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "010111111110110011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "010111111111000110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 1,
+      "steps": 9
+    },
+    {
+      "bits": "010111111111000111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 1,
+      "steps": 9
+    },
+    {
+      "bits": "010111111111010001110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "010111111111011000110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "011000011110111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011000011111111101110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001001110111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001001111111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001011011011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001011011111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001011101011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001011101111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001011111111010110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001011111111011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001100111011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001100111111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001110001111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001110011011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001110011111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001111111100110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001111111100111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011001111111110001110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100001110111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100001111111110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100100110111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100100111111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100101101011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100101101111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100101111111101010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100110001111111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100110011011111110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100110011111111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100111111110011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011100111111111000110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "011111111000011101110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "011111111000011110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "011111111001011010110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "011111111001011011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "011111111001011101010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "011111111001100110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "011111111001100111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "011111111001110011010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "011111111100100110110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "011111111100100111010",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "011111111100110001110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "011111111100111000110",
+      "size": 21,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "0001011101110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "0001011101111111101110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "0001011110110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "0001011110111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "0001011111111101101110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 6
+    },
+    {
+      "bits": "0001011111111101110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 6
+    },
+    {
+      "bits": "0001110011110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "0001110011111111101110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "0001111001110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "0001111001111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "0001111111110011101110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 6
+    },
+    {
+      "bits": "0001111111110011110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 6
+    },
+    {
+      "bits": "0100011101110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "0100011101111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "0100011110110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "0100011110111111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "0100011111111110110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "bits": "0100011111111110111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "bits": "0101011010110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011010111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011011010111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011011011011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011011011111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011011011111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011011111110110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011011111111010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011011111111011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011101010111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011101011011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011101011111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011101011111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011101101011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011101101111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011101111111010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011101111111011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011101111111101010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "0101011111111010110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "0101011111111011010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "0101011111111011011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "0101011111111101010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 4
+    },
+    {
+      "bits": "0101011111111101011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 4
+    },
+    {
+      "bits": "0101011111111101101010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 4
+    },
+    {
+      "bits": "0101100110110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101100110111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101100111010111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101100111011011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101100111011111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101100111011111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101100111111110110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101100111111111010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101100111111111011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101101001110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101101001111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101101100110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101101100111011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101101100111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101101100111111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101101111111001110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101101111111100110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101101111111100111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110011010111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110011011011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110011011111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110011011111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110011101011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110011101111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110011111111010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110011111111011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110011111111101010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110100110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110100111011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110100111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110100111111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110110011011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110110011111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110111111100110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110111111100111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101110111111110011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "0101111111100110110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "0101111111100111010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "0101111111100111011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "0101111111101001110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "0101111111101100110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "0101111111101100111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "0101111111110011010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 8
+    },
+    {
+      "bits": "0101111111110011011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 8
+    },
+    {
+      "bits": "0101111111110011101010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 8
+    },
+    {
+      "bits": "0101111111110100110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "0101111111110100111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "0101111111110110011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "0110000111101111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110000111111111101110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110010110110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110010110111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110010111010111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110010111011011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110010111011111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110010111011111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110010111111110110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110010111111111010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110010111111111011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110011001110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110011001111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110011100110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110011100111011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110011100111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110011100111111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110011111111001110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110011111111100110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0110011111111100111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111000011101111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111000011111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001011010111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001011011011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001011011111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001011011111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001011101011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001011101111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001011111111010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001011111111011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001011111111101010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001100110111111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001100111011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001100111111110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001100111111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001110011011111110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001110011111111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001111111100110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001111111100111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111001111111110011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "0111111110010110110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "0111111110010111010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "0111111110010111011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "0111111110011001110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "0111111110011100110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "0111111110011100111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "0111111111000011101110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "0111111111000011110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "0111111111001011010110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "0111111111001011011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "0111111111001011101010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "0111111111001100110110",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "0111111111001100111010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "0111111111001110011010",
+      "size": 22,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "00010111011101111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "00010111011111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "00010111101101111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "00010111101111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "00010111111111101101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "bits": "00010111111111101110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 5
+    },
+    {
+      "bits": "00011100111101111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "00011100111111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "00011110011101111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "00011110011111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "00011111111110011101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 4
+    },
+    {
+      "bits": "00011111111110011110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 4
+    },
+    {
+      "bits": "01000011100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "bits": "01000011100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "bits": "01000011110011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "bits": "01000011110011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 1,
+      "steps": 2
+    },
+    {
+      "bits": "01000011111111100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 6
+    },
+    {
+      "bits": "01000011111111100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 6
+    },
+    {
+      "bits": "01001001011011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01001001011011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01001001011101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01001001011101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01001001011111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 6
+    },
+    {
+      "bits": "01001001011111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 6
+    },
+    {
+      "bits": "01001001100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01001001100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01001001110011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01001001110011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01001001111111100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01001001111111100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01001100100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001100100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001100111000111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001100111111110001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001110010011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001110010011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001110011000111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001110011111111000110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 1
+    },
+    {
+      "bits": "01001111111100100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 6
+    },
+    {
+      "bits": "01001111111100100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 6
+    },
+    {
+      "bits": "01001111111100110001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 6
+    },
+    {
+      "bits": "01001111111100111000110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 6
+    },
+    {
+      "bits": "01010000111011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 2
+    },
+    {
+      "bits": "01010000111011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 2
+    },
+    {
+      "bits": "01010000111101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 2
+    },
+    {
+      "bits": "01010000111101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 2
+    },
+    {
+      "bits": "01010000111111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 7
+    },
+    {
+      "bits": "01010000111111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 7
+    },
+    {
+      "bits": "01010010011011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01010010011011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01010010011101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01010010011101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01010010011111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 6
+    },
+    {
+      "bits": "01010010011111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 6
+    },
+    {
+      "bits": "01010010100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010010100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010010110011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010010110011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010010111111100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01010010111111100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01010011000111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011000111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011011000111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011011111110001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011100011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011100011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011101000111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011101111111000110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 1
+    },
+    {
+      "bits": "01010011111111000110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01010011111111000111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01010011111111010001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01010011111111011000110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 13
+    },
+    {
+      "bits": "01010100101011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01010100101011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01010100101101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01010100101101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 1
+    },
+    {
+      "bits": "01010100101111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 6
+    },
+    {
+      "bits": "01010100101111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 6
+    },
+    {
+      "bits": "01010110001011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110001011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110110001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110110110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110110111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110110111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110110111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110110111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110111011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110111011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110111111100010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110111111101100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110111111101101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110111111101110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010110111111110110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111000101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111000101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111010001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111010110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111010111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111010111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111010111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111010111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011010111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011111110001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011111110100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011111110101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011111110111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111011111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 0
+    },
+    {
+      "bits": "01010111101011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "bits": "01010111101011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 14
+    },
+    {
+      "bits": "01010111101101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "bits": "01010111101101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 14
+    },
+    {
+      "bits": "01010111101111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "bits": "01010111101111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "bits": "01010111111110001010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01010111111110001011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01010111111110100010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 10
+    },
+    {
+      "bits": "01010111111110101100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01010111111110101101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01010111111110101110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 24
+    },
+    {
+      "bits": "01010111111110110001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 10
+    },
+    {
+      "bits": "01010111111110110100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01010111111110110101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01010111111110110111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 24
+    },
+    {
+      "bits": "01010111111110111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01010111111110111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01010111111111010110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 4
+    },
+    {
+      "bits": "01010111111111011010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 4
+    },
+    {
+      "bits": "01010111111111011011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 4
+    },
+    {
+      "bits": "01011000001111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011000001111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011000100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011000100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011000111000111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011000111111110001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001001011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001001011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001110001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001110110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001110111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001110111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001110111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001110111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001111011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001111011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001111111100010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001111111101100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001111111101101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001111111101110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011001111111110110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011000001111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011001001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011001110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011001111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011001111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011001111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011001111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011111110000011110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011111110010010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011111110011100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011111110011101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011111110011110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011011111111001110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100000111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100000111111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100010011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100010011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100011000111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100011111111000110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100100101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100100101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100110001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100110110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100110111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100110111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100110111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100110111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111010111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111111110001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111111110100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111111110101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111111110111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011100111111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101000001111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101001001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101001110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101001111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101001111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101001111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101001111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101100110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101100111111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101110011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101110011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101111111000001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101111111001001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101111111001100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101111111001101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101111111001111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101111111100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011101111111100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 0
+    },
+    {
+      "bits": "01011110011011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 7
+    },
+    {
+      "bits": "01011110011011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 2
+    },
+    {
+      "bits": "01011110011101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 7
+    },
+    {
+      "bits": "01011110011101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 2
+    },
+    {
+      "bits": "01011110011111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 2
+    },
+    {
+      "bits": "01011110011111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 2
+    },
+    {
+      "bits": "01011110100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "bits": "01011110100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 14
+    },
+    {
+      "bits": "01011110110011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "bits": "01011110110011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 14
+    },
+    {
+      "bits": "01011110111111100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "bits": "01011110111111100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 2
+    },
+    {
+      "bits": "01011111111000001110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111000001111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111000100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111000100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111000110001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 4,
+      "steps": 6
+    },
+    {
+      "bits": "01011111111000111000110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 4,
+      "steps": 6
+    },
+    {
+      "bits": "01011111111001001010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111001001011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111001100010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111001101100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 10
+    },
+    {
+      "bits": "01011111111001101101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 17
+    },
+    {
+      "bits": "01011111111001101110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111001110001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111001110100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 10
+    },
+    {
+      "bits": "01011111111001110101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 17
+    },
+    {
+      "bits": "01011111111001110111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111001111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111001111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111010000011110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 7
+    },
+    {
+      "bits": "01011111111010010010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 5,
+      "steps": 6
+    },
+    {
+      "bits": "01011111111010011100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111010011101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111010011110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 12
+    },
+    {
+      "bits": "01011111111011000001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 7
+    },
+    {
+      "bits": "01011111111011001001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 5,
+      "steps": 6
+    },
+    {
+      "bits": "01011111111011001100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111011001101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111011001111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 12
+    },
+    {
+      "bits": "01011111111011100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111011100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 6,
+      "steps": 5
+    },
+    {
+      "bits": "01011111111100110110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 8
+    },
+    {
+      "bits": "01011111111100111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 8
+    },
+    {
+      "bits": "01011111111100111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 8
+    },
+    {
+      "bits": "01011111111101001110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "01011111111101100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "01011111111101100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 2,
+      "steps": 8
+    },
+    {
+      "bits": "01100100001111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100100001111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100100100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100100100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100100111000111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100100111111110001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101001011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101001011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101110001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101110110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101110111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101110111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101110111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101110111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101111011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101111011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101111111100010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101111111101100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101111111101101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101111111101110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100101111111110110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111000001111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111001001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111001110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111001111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111001111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111001111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111001111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111111110000011110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111111110010010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111111110011100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111111110011101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111111110011110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01100111111111001110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#0",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010000111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010000111111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010010011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010010011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010011000111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010011111111000110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010100101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010100101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010110001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010110110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010110111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010110111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010110111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010110111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111010111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111111110001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111111110100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111111110101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111111110111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110010111111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011000001111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011001001011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011001110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011001111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011001111111100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011001111111101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011001111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011100110111111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011100111111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011110011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011110011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011111111000001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011111111001001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011111111001100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011111111001101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011111111001111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011111111100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01110011111111100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#1",
+      "arity": 3,
+      "steps": 0
+    },
+    {
+      "bits": "01111001011011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001011011111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001011101011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001011101111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001011111111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001011111111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001100111011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001100111111110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001110011011111110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001110011111111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001111111100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111001111111100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 3
+    },
+    {
+      "bits": "01111111100100001110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100100001111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100100100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100100100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100100110001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100100111000110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101001010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101001011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101100010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101101100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101101101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101101110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101110001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101110100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101110101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101110111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100101111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100110000011110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100110010010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100110011100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100110011101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100110011110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100111000001110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100111001001010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100111001100010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100111001101110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100111001111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100111100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111100111100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "L",
+      "arity": 0,
+      "steps": 12
+    },
+    {
+      "bits": "01111111110010110110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "01111111110010111010110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "01111111110010111011010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "01111111110011001110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "01111111110011100110110",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    },
+    {
+      "bits": "01111111110011100111010",
+      "size": 23,
+      "verdict": "refuted",
+      "test": "K",
+      "head": "#2",
+      "arity": 3,
+      "steps": 4
+    }
+  ]
+}

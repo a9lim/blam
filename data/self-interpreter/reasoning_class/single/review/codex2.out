@@ -1,0 +1,31 @@
+[gaslamp] → codex · job cx-20261022-045352-c4cf · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-045352-c4cf/events.jsonl
+(•̀ᴗ•́)و **1. Correct.** Reproduced all counts: **30,832 / 16,124 / 12,335**, each with zero hits and zero uncertified caps.
+
+The 247 expanded cores exactly match the independently regenerated path results from my previous review, including the additional R and LᵃR cases. All 247 satisfy U3 too, so `unary_ok`’s extra U3 filter silently excludes nothing.
+
+“E not an ancestor of j” is the right path-preservation condition; it is redundant with E being j-free. For `x A` beneath a genuine handler `s (λx.P)`, it is automatic: any j there would violate M-depth zero. Both consequences follow:
+
+- `F A =β I`; `|x A| ≥ 12` precisely when `|x| + |A| ≥ 10`.
+- On unary input, `s (λx.x A) =β s F`, even when A depends on x. The handler costs `6 + |A|`, giving the stated threshold 8.
+
+**2. Broken as a general S2 exclusion; correct as the restricted computation.** Reproduced **0 candidates at 39**, and **121 candidates, zero readers/caps at 47**. The omitted 14 cores contain no lambda/lambda redex, so that omission is harmless.
+
+The problems are:
+
+- **Dependent A:** even for `H = λy.y A W`, the selector result is `A[K/y]`, not raw A. For example, `(λy.y y I) K =β K`. The reverse code cannot reconstruct such y-dependent arms.
+- **Non-root D:** arbitrary position is not faithful to the stated forward edit. With `H = λy.c (y s I)`, the selected D is `y s I`, but `H K =β c s`, not `A = s`.
+- **Re-indexing:** `dq − dp` is correct **under the code’s restriction** that A uses only variables outside the let. Completeness requires establishing that restriction.
+- **Selectors:** closed selectors through cost 9 suffice only after justifying replacement of arbitrary Y by K without increasing cost. The `[s,c]` selector minimum does not establish this for short local aliases.
+- **Multiple calls:** the docstring says pairs are tried; the code replaces only one call position.
+
+The “about 17” arithmetic does not justify multiple calls. For root D, y-independent A of cost `a`, `f` outward leaves, and k disjoint calls at depths `dᵢ`, the exact saving is
+\[
+6+\sum_i|gY_i|-(k-1)a-f\sum_i d_i.
+\]
+
+There is a simpler conditional exclusion: if **two disjoint calls each have literal selector arguments costing ≥7**, then `|B| ≥24`, the dispatcher costs ≥12, and the let contributes 4. Its redex already costs ≥40; j must lie outside it, so **|M| ≥42**. This handles that multiple-call case, but requires separate treatment of aliases and nested calls.
+
+No reader counterexample found; the S2 objections invalidate the proposed coverage argument.
+
+Details: [ADDON_REVIEW.md](/Users/a9lim/Work/blam/tmp/round4/single/review/ADDON_REVIEW.md).
+[gaslamp] job: cx-20261022-045352-c4cf · session: 01a162c5-7a45-7042-b928-f57779133b28 · thread: single-thmS-review · resume: gaslamp codex --thread single-thmS-review · tok: 1632k→21k

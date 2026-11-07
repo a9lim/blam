@@ -1,0 +1,9 @@
+{
+  "file": "Case04Block23Part1.lean",
+  "code": -9,
+  "seconds": 2.3529671659925953,
+  "peak_rss_bytes": 1855733760,
+  "limit": "memory",
+  "threads": 2,
+  "sha256": "1885a20529cbba5cfce90c0c34f4f4dc81a9d7f0f22229f3ee25e2b6b5c9ed33"
+}

@@ -225,12 +225,13 @@ fn unhex(text: &str) -> Option<String> {
             _ => None,
         }
     }
-    let chunks = text.as_bytes().chunks_exact(2);
-    if !chunks.remainder().is_empty() {
+    let (pairs, rest) = text.as_bytes().as_chunks::<2>();
+    if !rest.is_empty() {
         return None;
     }
-    let bytes: Option<Vec<u8>> = chunks
-        .map(|pair| Some((digit(pair[0])? << 4) | digit(pair[1])?))
+    let bytes: Option<Vec<u8>> = pairs
+        .iter()
+        .map(|&[hi, lo]| Some((digit(hi)? << 4) | digit(lo)?))
         .collect();
     String::from_utf8(bytes?).ok()
 }

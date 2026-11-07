@@ -177,12 +177,11 @@ struct WordHasher(u64);
 impl std::hash::Hasher for WordHasher {
     fn write(&mut self, bytes: &[u8]) {
         const K: u64 = 0x517c_c1b7_2722_0a95;
-        let mut chunks = bytes.chunks_exact(8);
-        for c in &mut chunks {
-            let w = u64::from_le_bytes(c.try_into().unwrap());
+        let (words, rem) = bytes.as_chunks::<8>();
+        for c in words {
+            let w = u64::from_le_bytes(*c);
             self.0 = (self.0.rotate_left(5) ^ w).wrapping_mul(K);
         }
-        let rem = chunks.remainder();
         if !rem.is_empty() {
             let mut buf = [0u8; 8];
             buf[..rem.len()].copy_from_slice(rem);

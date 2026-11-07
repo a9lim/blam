@@ -1,0 +1,79 @@
+[gaslamp] → codex · job cx-20261022-050623-c11c · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-050623-c11c/events.jsonl
+(•̀_•́) **Verdict: sound as a composition of the stated lane results.** No uncovered s-spine shape or incompatible minimality hypothesis found. The conclusion is precisely **no global minimum full-law one-hole reader below 46 is a literal s-spine**.
+
+Full review and reproduced checks: [REVIEW.md](/Users/a9lim/Work/blam/tmp/round4/review_spine/REVIEW.md).
+
+1. **Exhaustiveness**
+
+Assume a global minimum under `(weight, source λ count, source-j depth)` is literally `R = λs. s H T1…Tq`, with weight below 46.
+
+Depth zero is syntactically impossible: the stream λ encloses `j`. Depth02 excludes depths ≥2 under this minimum hypothesis. Thus `j` has depth one, and cannot occur beneath another source λ.
+
+The remaining partition is exhaustive:
+
+| First operand `H` | Closure |
+|---|---|
+| Literal λ, necessarily j-free | Loop §6 restricts source redexes in its body to multiplicities 2–5; handlerlet excludes them. Without such redexes, d1open applies, with its partial-selector exception closed by loop §6. |
+| J-free, nonliteral λ | Firstop §§3,5 exclude every source redex anywhere in `H`; the remaining first-operand skeletons fall under d1open. |
+| Contains j | Firstopj, including its inherited bare-j-argument closure and β-normal-reader exclusion. |
+
+There is no missing arity case. With no first operand, `λs.s` lacks `j` and fails the laws. The j-free cases require a trailing operand containing `j`. Firstopj allows no trailing operands and includes every split between operands inside `H` and those outside it.
+
+Bare heads add no case: `H=c` or `H=j` gives the wrong persistent zero head. `H=s` fails the unary law because `U_n U_n =β K N`.
+
+The β-normal-reader exclusion is an explicit additional dependency of firstopj. The dependency chain does not use the final s-spine conclusion circularly.
+
+2. **Hypothesis consistency**
+
+The minimum hypotheses agree. In the live Lean definitions, `ReaderLaws` quantifies over **all unary lengths**, and `MinimumReader` minimizes over all such readers with exactly one source `j`. The weaker probe predicate `SelfintClass.Reader` is used for refutations: `¬ Reader R` also excludes a full-law reader. Passing probes is never promoted to full reader laws.
+
+One distinction matters and is correctly handled: repository `LexMinimumReader` contains only weight and λ-count minimality. Firstop’s `JBarePrices.lean` defines an additional `DepthMinimum` premise; firstopj’s strict hoist theorem explicitly requires it. The three-coordinate minimum specified here supplies that premise.
+
+Weights and depths agree across the pieces. The hole contributes zero plus four per enclosing source λ; ordinary variables retain their actual index costs. Local operand depths exclude the stream λ, whose charge is restored by the whole-source constants. At source-j depth one, weighted price equals raw wire price, explaining firstopj’s four-bit raw `j` leaf.
+
+The replacements may leave the s-spine class. **That is legitimate under global minimality.** They must preserve the full laws and one source hole, which the relevant arguments address:
+
+- J-free contractions preserve both directly.
+- Contractions duplicating `j` are followed by one-hole restoration through hoisting or selective replacement.
+- Firstop’s equality case for j-free let sinking preserves all three coordinates and produces another global minimum with a literal handler; handlerlet therefore applies.
+- The j-bearing sink case correctly avoids that equality argument because hole depth changes.
+- Depth02’s corrected generator exempts nonlinear contractions that would duplicate `j`, rather than applying one-hole minimality to their raw contracta.
+
+Finite semantic pooling is used only to exclude necessary finite equations. It does not assert all-n equivalence between representatives.
+
+3. **The minimum chain**
+
+[Class-bound §3](/Users/a9lim/Work/blam/docs/classical/self-interpreter/class-bound.md:306) says exactly:
+
+> no minimum reader below 46 is an s-spine
+
+Its open-docket discussion preserves the qualification.
+
+The stronger statement about **every** s-spine reader below 46 does not follow. Starting from an arbitrary hypothetical cheap s-spine, the global minimum could instead have a root let or a let directly beneath the stream λ. Choosing a global minimum need not preserve source shape.
+
+Conversely, when the starting reader itself is globally minimum, any strictly improving full-law one-hole replacement contradicts minimality immediately. Its destination family need not already have been excluded.
+
+A useful documentation clarification would be to define “minimum” once near the beginning of §3 as the global three-coordinate minimum. This is editorial clarification, not a missing mathematical hypothesis under the supplied definition.
+
+4. **Spot checks**
+
+**Firstopj selective restoration.** I checked the replay argument and rederived its price. Label the `m` copies of `j` after the marked contraction. A finite zero reduction retains exactly one label; every unary normal output retains none. Fix the zero-surviving label once. Replacing the other source leaves by locally scoped variables preserves the chosen normalizing reductions, since their residuals are erased. The choice is independent of unary length, so this establishes all unary laws.
+
+The accounting gives exactly
+
+```text
+(m−1)a + (F−1)M + 4d − 2 − 4m − G.
+```
+
+Using `min(L_D,M)` instead of the selected occurrence’s depth only weakens the necessary filter.
+
+I reproduced the independent small validator: **21,855 ordinary sources, 1,681 j-bearing sources, and 95 concrete selective-contraction price checks passed**. Runtime: 0.036 seconds; peak RSS: 27.7 MB. The semantic replay existence lemma remains handwritten; the Lean module correctly exposes it as a premise.
+
+**Loop’s missing partial selector.** For `λs.s (λb.b X) A B`, the exact price `w=20+x+a+b` and unary reduction to `U_(n−1) A B` justify the helper interface. Its bounds imply 46 whether `j` is in `A/B` or in `X`.
+
+I inspected the helper’s constructor, finite-equivalence quotient, and cutoff pruning. The discarded operands contain identified unsolvable subterms; they are not discarded merely for exhausting fuel. I rechecked all **11 recorded cutoff patterns covering 19 operands**, using 17 bounded head-cycle checks: all passed. Runtime: 0.001 seconds; peak RSS: 21.1 MB. I did not rerun the 89,511-operand inventory.
+
+This verdict audits composition and those targeted checks. The large archived inventories and their recorded kernel certificates remain dependencies; this is not a new kernel-checked exhaustion theorem. All new checks respected the stated caps, and writes stayed inside `tmp/round4/review_spine/`.
+
+[gaslamp] job: cx-20261022-050623-c11c · session: 01a162dc-8bd5-7cf1-9425-7f65eddeda41 · thread: r5-review-spine · resume: gaslamp codex --thread r5-review-spine · tok: 2125k→16k
+[lane.sh] done rc=0 tries=1

@@ -1,0 +1,10 @@
+{
+  "core_sha256": "f84231eb7d74319c7b12359269de329d70ba0c3257ec448d27676f9ae35c53e7",
+  "file": "A011.lean",
+  "code": 0,
+  "seconds": 1.776878750009928,
+  "peak_rss_bytes": 567525376,
+  "limit": null,
+  "threads": 2,
+  "sha256": "e57af0f7cf2195728739acc95bdd6bbfbc488ad970d345d55df0028f2504f7bc"
+}

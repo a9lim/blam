@@ -1,0 +1,17 @@
+{
+  "label": "R250",
+  "id": "rootnarrow/work/h63re_1.json:0",
+  "source": "((\\x0. ((x0 _) x0)) (\\x0. (\\x1. (x1 (x1 ((x1 (x0 x1)) x1))))))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": "deadline",
+    "SR": "deadline",
+    "SFprime": false,
+    "SF2": false
+  },
+  "legacy": null,
+  "beta_calls": 7114,
+  "seconds": 0.6322000840154942,
+  "peak_rss_bytes": 24985600,
+  "threads": 1
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "name": "dual",
+    "probe": 0,
+    "steps": 8,
+    "expected": "#1",
+    "weight": 34
+  },
+  {
+    "name": "dual",
+    "probe": 1,
+    "steps": 9,
+    "expected": "#2 #1",
+    "weight": 34
+  },
+  {
+    "name": "dual",
+    "probe": 2,
+    "steps": 23,
+    "expected": "#2",
+    "weight": 34
+  },
+  {
+    "name": "dual",
+    "probe": 3,
+    "steps": 27,
+    "expected": "#2",
+    "weight": 34
+  },
+  {
+    "name": "near_reader",
+    "probe": 0,
+    "steps": 12,
+    "expected": "#3 #1",
+    "weight": 56
+  },
+  {
+    "name": "near_reader",
+    "probe": 1,
+    "steps": 15,
+    "expected": "#0 (\\a.a (\\b\\c.b) #3) (#2 #1)",
+    "weight": 56
+  },
+  {
+    "name": "near_reader",
+    "probe": 2,
+    "steps": 29,
+    "expected": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.c) #4)) #2",
+    "weight": 56
+  },
+  {
+    "name": "near_reader",
+    "probe": 3,
+    "steps": 33,
+    "expected": "#0 (\\a.a (\\b\\c.c) (\\b.b (\\c\\d.d) (\\c.c (\\d\\e.d) #5))) #2",
+    "weight": 56
+  },
+  {
+    "name": "flat_factory",
+    "bits": 10
+  },
+  {
+    "name": "nested_factory",
+    "bits": 13
+  }
+]

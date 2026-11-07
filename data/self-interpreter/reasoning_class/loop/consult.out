@@ -1,0 +1,29 @@
+[gaslamp] → codex · job cx-20261022-011123-1e20 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261022-011123-1e20/events.jsonl
+(•̀_•́) **The proposed finite-source ⇒ exact-periodicity inference is false.** Full findings and proofs are in [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/loop/REPORT.md).
+
+1. **Constructed and kernel-checked a counter-reader.** With Church zero `O`, successor `S`, and identity `I`, define:
+
+   ```text
+   W = λg t k. t (λb r. b r (k I (g g r (S k))))
+   G = W W
+   Rslow = λs. s I (λu. s (λq.c) (G s O)) j
+   ```
+
+   It has `w = 221`, exactly one source `j`, and satisfies both reader laws for **every unary length**. [Slow.lean](/Users/a9lim/Work/blam/tmp/round4/loop/Slow.lean) kernel-checks these laws and its price; no `sorry`. No complete interpreter or sub-162 candidate was built.
+
+2. **The operational obstruction is explicit.** After consuming i cells, G carries the live counter `S^i O`. Its next cell takes `10+4i` normal-order contractions; therefore:
+
+   ```text
+   steps(G U_n(N) O → N) = 2n² + 8n + 8.
+   ```
+
+   The clock proof is handwritten and independently checked through n=16. This refutes fixed exact contexts with only unread-stream parameters. It does not refute pumping restricted to minimum readers, or a weaker abstraction allowing growing auxiliary state.
+
+   Separately, the 162’s recurring skip applications originate in **input cells**. Its initial `s s` is a causal seed, not a surviving source-residual period.
+
+3. **Replacement results proved.** The report gives conditional finite-state pumping, an unconditional ≥n+1 input-cell exposure lemma, and source-union accounting that charges shared nodes once. It analytically proves the 20-bit minimum and uniqueness through 23 **within** `s H (s s j)`, and 46 within the corresponding serial-absorber family. **The unrestricted 20/23 claims were not independently reproved.**
+
+4. **Assessment of closing 46.** Periodicity alone cannot price shared source roles. The required readers expose precisely that gap: the 164 splits roles across operands; R84 shares a captured value; contracting the hoisted 165 raises its weight from 49 to 54. The missing theorem must control causal source overlap and depth charges in minimum readers. No new unconditional reader bound is claimed.
+
+[gaslamp] job: cx-20261022-011123-1e20 · session: 01a16205-662d-7183-be63-f7b1fc08aee6 · thread: r5-loop · resume: gaslamp codex --thread r5-loop · tok: 3030k→46k
+[lane.sh] done rc=0 tries=1

@@ -1,0 +1,46 @@
+[
+  {
+    "file": "bodyredex/REPORT.md",
+    "same": true
+  },
+  {
+    "file": "bodyredex/Followup.lean",
+    "same": true
+  },
+  {
+    "file": "bodylet/REPORT.md",
+    "same": true
+  },
+  {
+    "file": "bodylet/minimum.py",
+    "same": true
+  },
+  {
+    "file": "bodylet/check.py",
+    "same": true
+  },
+  {
+    "file": "bodylin/REPORT.md",
+    "same": true
+  },
+  {
+    "file": "bodylin/minimum.py",
+    "same": true
+  },
+  {
+    "file": "bodylin/check.py",
+    "same": true
+  },
+  {
+    "file": "bodylin/Bodies.lean",
+    "same": true
+  },
+  {
+    "file": "bodylin/BodyReplacement.lean",
+    "same": true
+  },
+  {
+    "file": "bodylin/LinearPrices.lean",
+    "same": true
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "label": "R092",
+  "valid": true,
+  "source_matches": true,
+  "states": 213,
+  "sha256": "5bb30e218e7346631d5c276f2b573a1f8722bb88a3b4bb57e28b36046dc54c12",
+  "seconds": 0.0005097089742776006,
+  "peak_rss_bytes": 24068096
+}

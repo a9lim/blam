@@ -1,0 +1,17 @@
+{
+  "label": "R235",
+  "id": "rootnarrow/work/h2_6.json:49",
+  "source": "((\\x0. (x0 x0)) (\\x0. (((\\x1. ((x1 _) (x1 _))) (\\x1. x0)) _)))",
+  "action": "legacy",
+  "outcomes": {
+    "W5": false,
+    "SR": "beta cap",
+    "SFprime": "beta cap",
+    "SF2": "beta cap"
+  },
+  "legacy": null,
+  "beta_calls": 30003,
+  "seconds": 0.292754291993333,
+  "peak_rss_bytes": 24559616,
+  "threads": 1
+}

@@ -1,0 +1,35 @@
+def spineBody104G : Term := (.lam (.lam (.lam (.app (.var 0) (.lam (.lam (.app (.app (.app (.var 1) (.app (.app (.var 4) (.var 4)) (.lam (.app (.var 4) (.lam (.lam (.app (.var 1) (.app (.app (.var 2) (.var 1)) (.var 0))))))))) (.app (.var 3) (.lam (.lam (.var 0))))) (.app (.app (.var 0) (.var 0)) (.var 0)))))))))
+
+def spineBody104 : Term := .app (.lam (.app (.var 0) (.var 0))) spineBody104G
+
+def spineBody104P : Term := .app spineBody104G spineBody104G
+
+theorem spineBody104P_closed : Closed spineBody104P := by decide
+
+theorem spineBody104_closed : Closed spineBody104 := by decide
+
+theorem spineBody104_size : (blcCode spineBody104).length = 104 := by decide
+
+def spineValueBody87G : Term := (.lam (.lam (.app (.var 0) (.lam (.lam (.app (.app (.var 1) (.lam (.lam (.app (.var 1) (.app (.app (.app (.app (.var 5) (.var 5)) (.app (.app (.var 2) (.var 2)) (.var 2))) (.var 1)) (.var 0)))))) (.lam (.lam (.var 0)))))))))
+
+def spineValueBody87 : Term := .app (.lam (.app (.var 0) (.var 0))) spineValueBody87G
+
+def spineValueBody87P : Term := .app spineValueBody87G spineValueBody87G
+
+theorem spineValueBody87P_closed : Closed spineValueBody87P := by decide
+
+theorem spineValueBody87_closed : Closed spineValueBody87 := by decide
+
+theorem spineValueBody87_size : (blcCode spineValueBody87).length = 87 := by decide
+
+def churchSpine154 : Term := (.lam (.lam (.app (.app (.app (.lam (.app (.var 0) (.var 0))) (.lam (.lam (.lam (.app (.var 0) (.lam (.lam (.app (.app (.app (.var 1) (.app (.app (.var 4) (.var 4)) (.lam (.app (.var 4) (.lam (.lam (.app (.var 1) (.app (.app (.var 2) (.var 1)) (.var 0))))))))) (.app (.var 3) (.lam (.lam (.var 0))))) (.app (.app (.var 0) (.var 0)) (.var 0)))))))))) (.lam (.app (.var 2) (.lam (.var 1))))) (.app (.lam (.app (.app (.app (.app (.var 1) (.var 0)) (.var 0)) (.var 0)) (.var 0))) (.lam (.lam (.var 0)))))))
+
+theorem churchSpine154_closed : Closed churchSpine154 := by decide
+
+theorem churchSpine154_size : (blcCode churchSpine154).length = 154 := by decide
+
+def churchValue123 : Term := (.lam (.lam (.app (.app (.lam (.app (.var 0) (.var 0))) (.lam (.lam (.app (.var 0) (.lam (.lam (.app (.app (.var 1) (.lam (.lam (.app (.var 1) (.app (.app (.app (.app (.var 5) (.var 5)) (.app (.app (.var 2) (.var 2)) (.var 2))) (.var 1)) (.var 0)))))) (.lam (.lam (.var 0)))))))))) (.app (.lam (.app (.app (.app (.app (.var 2) (.var 0)) (.var 0)) (.var 0)) (.var 0))) (.lam (.lam (.var 0)))))))
+
+theorem churchValue123_closed : Closed churchValue123 := by decide
+
+theorem churchValue123_size : (blcCode churchValue123).length = 123 := by decide

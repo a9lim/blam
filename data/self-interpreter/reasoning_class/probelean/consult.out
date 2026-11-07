@@ -1,0 +1,19 @@
+[gaslamp] → codex · job cx-20261021-224856-9829 · watch: tail -f /Users/a9lim/.gaslamp/jobs/cx-20261021-224856-9829/events.jsonl
+( •̀ᴗ•́ ) **Kernel-checked: Lemma A and the full two-argument corollary.**
+
+Files: [REPORT.md](/Users/a9lim/Work/blam/tmp/round4/probelean/REPORT.md), [Probe.lean](/Users/a9lim/Work/blam/tmp/round4/probelean/Probe.lean), [BUILD.log](/Users/a9lim/Work/blam/tmp/round4/probelean/BUILD.log).
+
+Verified results:
+
+- `lemmaA`: works for any unsolvable probe, including open probes.
+- `lemmaA_after_two`: unsolvability after two rigid arguments already suffices.
+- `classify_continuation`: κ reduces to `C`, `λa. C B`, or `λa b. C B b`.
+- `probe_two_argument_corollary`: the C-free caller **head-reduces to exactly `κ A B`**, and `B →β* N` with κ still free.
+- Canonical instantiation connects the actual 162 parser value for `λΩ` to `λe a. Ω`.
+- Infrastructure includes substitution/application closure of unsolvability and invariance of HNF head variables, leading lambdas, and spine arities under β-conversion.
+
+Final build: **Lean 4.32.2, `-j2`, exit 0, 0.484 seconds**. No `sorry`; audited axioms are only `propext`, `Quot.sound`, and `Classical.choice`. No files under `lean/Blc/` changed.
+
+The remaining obligation for other lanes is proving their parser’s interface hypotheses—especially FV(κ) ⊆ {C} and the single C-channel factorization. The solvability bridge itself is complete.
+
+[gaslamp] job: cx-20261021-224856-9829 · session: 01a16182-fda1-7071-a77f-781d43c49979 · thread: r4-probelean · resume: gaslamp codex --thread r4-probelean · tok: 3113k→40k

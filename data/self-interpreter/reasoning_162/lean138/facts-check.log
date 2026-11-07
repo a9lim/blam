@@ -1,0 +1,17 @@
+
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-j2",
+    "/Users/a9lim/Work/blam/tmp/round3/floor/Facts.lean"
+  ],
+  "cwd": "/Users/a9lim/Work/blam/lean",
+  "source": "/Users/a9lim/Work/blam/tmp/round3/floor/Facts.lean",
+  "sha256": "2ed65b795a0f3551b32b8dfeeef45ae257bcfa191fd7aaac6f3eb8a61600f3cb",
+  "exit_code": 0,
+  "wall_seconds": 0.7108280829997966,
+  "user_seconds": 0.8184080000000002,
+  "sys_seconds": 0.10397200000000001
+}

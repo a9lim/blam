@@ -1,0 +1,3 @@
+'Blc.FirstopPrices.minimum_lamfree_strict' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopPrices.charge' depends on axioms: [propext, Quot.sound]
+'Blc.FirstopPrices.nonlinear_ceilings' depends on axioms: [propext, Classical.choice, Quot.sound]

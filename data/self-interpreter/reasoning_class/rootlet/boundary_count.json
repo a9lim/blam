@@ -1,0 +1,32 @@
+{
+  "semantic_rows": {
+    "x_head": 89299,
+    "nested_head": 8968
+  },
+  "semantic_total": 98267,
+  "raw_components": {
+    "B": 64092,
+    "A": 3964,
+    "Cs": 487
+  },
+  "admissible_components": {
+    "B": 29197,
+    "A": 1371,
+    "Cs": 302
+  },
+  "rows": {
+    "L3_tax0": 6746,
+    "L3_tax1": 30190,
+    "L3_tax2": 27012,
+    "L3_tax3": 24936,
+    "L4_tax0": 11730,
+    "L4_tax1": 83999
+  },
+  "total": 184613,
+  "body_head": {
+    "v": 175645,
+    "l": 8968
+  },
+  "seconds": 0.4752279999956954,
+  "rss_bytes": 48267264
+}

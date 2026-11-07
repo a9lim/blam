@@ -1,0 +1,56 @@
+[
+  {
+    "part": "literal",
+    "id": 180,
+    "kind": "protected_active_pair",
+    "theorem": "Size39Residuals.excludedliteral180"
+  },
+  {
+    "part": "literal",
+    "id": 276,
+    "kind": "prefix_pump",
+    "theorem": "Size39Residuals.excludedliteral276"
+  },
+  {
+    "part": "four",
+    "id": 0,
+    "kind": "rigid_arity_mismatch",
+    "theorem": "Size39Residuals.excludedfour0"
+  },
+  {
+    "part": "four",
+    "id": 80,
+    "kind": "rigid_payload_mismatch",
+    "theorem": "Size39Residuals.excludedfour80"
+  },
+  {
+    "part": "four",
+    "id": 376,
+    "kind": "prefix_pump",
+    "theorem": "Size39Residuals.excludedfour376"
+  },
+  {
+    "part": "four",
+    "id": 399,
+    "kind": "prefix_pump",
+    "theorem": "Size39Residuals.excludedfour399"
+  },
+  {
+    "part": "four",
+    "id": 1000,
+    "kind": "prefix_pump",
+    "theorem": "Size39Residuals.excludedfour1000"
+  },
+  {
+    "part": "five",
+    "id": 312,
+    "kind": "prefix_pump",
+    "theorem": "Size39Residuals.excludedfive312"
+  },
+  {
+    "part": "five",
+    "id": 553,
+    "kind": "prefix_pump",
+    "theorem": "Size39Residuals.excludedfive553"
+  }
+]
