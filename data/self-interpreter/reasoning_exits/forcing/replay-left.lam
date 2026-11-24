@@ -1,0 +1,4 @@
+-- On APP the first suffix is discarded. The parent stream s b p recomputes it independently.
+(\x. x x)(\x. (\p \c \s. s (\i. i) (\u. s (\j. c) (s s u))
+    (\b. p (\f. b (c (\e \a. f (\b \r. b a (r e))))
+      (\u. p (\g. c (\e. f e (g e))) (s b p)))))(x x))

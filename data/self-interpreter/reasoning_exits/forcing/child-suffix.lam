@@ -1,0 +1,5 @@
+-- A variable returns only its suffix. The caller recovers its value from the child stream.
+(\x. x x) (\x. (\d \c \s. s (\i. i) (s s) (\tag. d
+    (\f. tag (c (\e \a. f (\b \r. b a (r e)))) (d
+      (\g. c (\e. f e (g e)))))))
+  (\k \t. t (\b. b (\u \v. v) k) (x x k t)))

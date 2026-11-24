@@ -240,7 +240,13 @@ and proofs; this section holds the current numbers and the open cells.
   *Outside the class* (`class-bound.md` §5): the 165-bit bundle below gives
   the reader access to recursion; NEXT under `λlist` can embed any closed
   interpreter at `+17`; no β-preserving conversion takes every interpreter
-  into the class.
+  into the class. Constructions through the exits (`interpreter.md` §6,
+  `data/self-interpreter/reasoning_exits/`): a 168 whose variable arm returns
+  through the parser, a 173 whose single `h h` is the knot's diagonal on a
+  0-tag and the skip on a variable, and callers that take over part of a
+  variable child's return at 181 and 195. With the knot and NEXT in scope no
+  variable arm through 27 bits passes the exact check (1,010,663 fills,
+  110,543 capped; `interpreter.md` §3).
 - **Other state protocols** (`protocol-obstructions.md`): a **165-bit
   parser/continuation bundle** (L 16, A 24, X 35) changes only the 162's
   erased skip operand; Lean proves its directed contract for all closed
@@ -482,7 +488,8 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    witnesses cap every proof that uses only identity towers (88) or Church
    spines (154), so a global argument must charge applications whose
    children both vary. Constructive: none of about thirty round-4 designs
-   (163–265 bits) beats 162. The 162's reader is on the
+   (163–265 bits) beats 162, nor does any of the fifteen built through the
+   class's exits (164–199 bits, `interpreter.md` §6). The 162's reader is on the
    fork's golf branch (tromp/AIT#13): `int.lam` 162, `uni.lam` 184 / 172,
    `ko2kp` 540, `nf` 535, `pairup_Kp` 1270, each verified
    against its previous version (`classical/golf.md`); the PR's title and a

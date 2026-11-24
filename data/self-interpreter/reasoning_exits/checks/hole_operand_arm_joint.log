@@ -1,0 +1,103 @@
+# hole _ frame (innermost first): ['list', 'cont', 'intL', 'x']
+# hole ~ frame (innermost first): ['list', 'cont', 'intL', 'x']
+# template bits without holes: 130
+template 130 bits + fills; `_` frame 4 must 0b00000000, `~` frame 4 must 0b00000000; 91 probes (self-interpreter)
+34 `~` fills up to 9 bits
+  `~` size 2 done: 3467032 pairs so far, 0.2s
+  `~` size 3 done: 5339154 pairs so far, 0.3s
+  `~` = 0010 (4 bits)
+     UNKNOWN  8 bits  01111010
+     UNKNOWN  9 bits  011110110
+     UNKNOWN  9 bits  011011110
+     UNKNOWN  10 bits  0111101110
+     UNKNOWN  10 bits  0111100010
+  `~` size 4 done: 7360480 pairs so far, 0.6s
+  `~` = 11110 (5 bits)
+     UNKNOWN  4 bits  1110
+     UNKNOWN  8 bits  01111010
+     UNKNOWN  10 bits  0000111110
+     UNKNOWN  10 bits  0100101110
+     UNKNOWN  10 bits  0111101110
+  `~` size 5 done: 8457228 pairs so far, 0.8s
+  `~` = 000010 (6 bits)
+     UNKNOWN  7 bits  0011110
+     UNKNOWN  12 bits  010111101010
+     UNKNOWN  13 bits  0001001011110
+     UNKNOWN  13 bits  0100001101110
+     UNKNOWN  13 bits  0100100011110
+  `~` size 6 done: 9348972 pairs so far, 0.9s
+  `~` = 0011110 (7 bits)
+     UNKNOWN  2 bits  10
+     UNKNOWN  4 bits  1110
+     UNKNOWN  4 bits  0010
+     UNKNOWN  5 bits  11110
+     UNKNOWN  7 bits  0011110
+  `~` = 0000110 (7 bits)
+     UNKNOWN  12 bits  010111101010
+     UNKNOWN  12 bits  010110111010
+     UNKNOWN  13 bits  0101111011010
+     UNKNOWN  14 bits  01011110111010
+     UNKNOWN  14 bits  01011110001010
+  `~` size 7 done: 9997856 pairs so far, 1.1s
+  `~` = 00111110 (8 bits)
+     UNKNOWN  2 bits  10
+     UNKNOWN  5 bits  00110
+     UNKNOWN  6 bits  011010
+     UNKNOWN  8 bits  01001010
+     UNKNOWN  8 bits  01101110
+  `~` = 00001110 (8 bits)
+     UNKNOWN  7 bits  0011110
+     UNKNOWN  12 bits  010111101010
+     UNKNOWN  13 bits  0001001011110
+     UNKNOWN  13 bits  0100001101110
+     UNKNOWN  13 bits  0100100011110
+  `~` = 00000010 (8 bits)
+     UNKNOWN  8 bits  01111010
+     UNKNOWN  9 bits  011110110
+     UNKNOWN  9 bits  011011110
+     UNKNOWN  10 bits  0111101110
+     UNKNOWN  10 bits  0111100010
+  `~` = 00011010 (8 bits)
+     UNKNOWN  12 bits  010111101010
+     UNKNOWN  13 bits  0101111011010
+     UNKNOWN  14 bits  01011110111010
+     UNKNOWN  14 bits  01011110001010
+     UNKNOWN  14 bits  01011110101110
+  `~` = 01111010 (8 bits)
+     UNKNOWN  2 bits  10
+     UNKNOWN  3 bits  110
+     UNKNOWN  4 bits  1110
+     UNKNOWN  4 bits  0010
+     UNKNOWN  5 bits  11110
+  `~` size 8 done: 10792916 pairs so far, 1.4s
+  `~` = 000011110 (9 bits)
+     UNKNOWN  12 bits  011001101110
+     UNKNOWN  12 bits  010111101010
+     UNKNOWN  12 bits  010110111010
+     UNKNOWN  14 bits  01011110111010
+     UNKNOWN  14 bits  01011110001010
+  `~` = 000110110 (9 bits)
+     UNKNOWN  7 bits  0011110
+     UNKNOWN  12 bits  010111101010
+     UNKNOWN  13 bits  0001001011110
+     UNKNOWN  13 bits  0100001101110
+     UNKNOWN  13 bits  0100100011110
+  `~` = 011011110 (9 bits)
+     UNKNOWN  7 bits  0011110
+     UNKNOWN  11 bits  01111000110
+     UNKNOWN  12 bits  010111101010
+     UNKNOWN  13 bits  0001001011110
+     UNKNOWN  13 bits  0100001101110
+  `~` = 011110110 (9 bits)
+     UNKNOWN  2 bits  10
+     UNKNOWN  4 bits  1110
+     UNKNOWN  4 bits  0010
+     UNKNOWN  5 bits  11110
+     UNKNOWN  5 bits  00110
+  `~` = 011111010 (9 bits)
+     UNKNOWN  14 bits  00000101101010
+     UNKNOWN  15 bits  000001011011010
+     UNKNOWN  16 bits  0000010110111010
+     UNKNOWN  16 bits  0000010110001010
+     UNKNOWN  16 bits  0000000101101010
+total 11375552 fill pairs in 1.5s: 0 survivors, 425006 unknown

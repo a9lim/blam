@@ -1,0 +1,8 @@
+-- reader s K A B: zero arm A = r NEXT built from list, variable arm B = s (\q.cont) (s s s)
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\p \q. p) (list (\p \q. q)
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+    (list (\q. cont) (list list list)))
+  (x x))

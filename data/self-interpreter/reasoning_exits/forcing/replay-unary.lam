@@ -1,0 +1,4 @@
+-- At a nonterminal unary bit, s p reparses the strictly shorter variable with the suffix projection.
+(\x. x x) (\x. (\p \c \s. s (\i. i) (\u. s (\b \r. c r (r (\i. i) (s p)))) (\tag. p
+    (\f. tag (c (\e \a. f (\b \r. b a (r e)))) (p
+      (\g. c (\e. f e (g e))))))) (x x))

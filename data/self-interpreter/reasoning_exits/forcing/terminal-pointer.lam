@@ -1,0 +1,5 @@
+-- The internal return carries the raw stream at the last variable leaf in place of the suffix.
+\C. ((\x. x x)(\x. (\p \c \s. s (\i. i) (\u. s (\j. c) s)
+    (\b. p (\f. b (c (\e \a. f (\b \r. b a (r e))))
+      (\t. p (\g. c (\e. f e (g e))) (t t t)))))(x x)))
+  (\v \t. C v (t t t))

@@ -1,0 +1,14 @@
+-- 160 bits, FAILS (ok=0 fail=667). The 162 with the variable arm's skip
+-- `list list u` (12 bits) replaced by a re-parse `list intL` (10 bits):
+-- list intL = intL bit0 list1 = intL F list1, "the rest after the term at
+-- list1". The recursion has no base case: intL F (1^k 0 ++ N) peels one 1 per
+-- call and ends at intL F (0 ++ N) = N NEXT_F, where the terminating 0 is
+-- read as a tag and the rigid N is destructured. Every index fails, not only
+-- index 1. A base needs "0 ++ N is a complete term", which is the skip
+-- function `list list j` itself, not the parser.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list intL))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

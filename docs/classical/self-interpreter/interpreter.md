@@ -220,6 +220,9 @@ Around the 162:
 | βη component | slack 16 / 20 / 24: 58,042 / 1,135,418 / 12,024,847 terms | none below 162, no tie | `component_162_slack24.log` |
 | contextual component | slack 18: 575,104 distinct terms | none below 162, no tie | `component_162_contextual18.log` |
 | variable arm, NEXT and `cont` opaque | `s I A j`: every `A` ≤ 30 bits over `[s, c]` (1,313,478 terms), and `λu. B` ≤ 32 with `u` free | only the 162's family `λu. s (λq. c) (s s X)` | `reasoning_162/handoff/` |
+| variable arm, the real knot and NEXT in scope (`blam selfint hole`) | `list I _ NEXT`: every arm ≤ 27 bits over `[list, cont, intL, x]` (1,010,663 fills) | no survivor; 110,543 exhaust the probe budget (those through 25 bits at the 512× escalation, the 88,528 at 26–27 bits at 8×) | `reasoning_exits/checks/hole_arm_23_27.log` (sizes 23–27; the log of the 48,553 fills below was not kept) |
+| first operand × variable arm | `list ~ _ NEXT`: first operand ≤ 9 bits, sum ≤ 31 (11,375,552 pairs) | no survivor; 425,006 capped at 8× | `reasoning_exits/checks/hole_operand_arm_joint.log` |
+| whole APP, `list` in its frame | 31–36 bits (317,046,859 fills) | no survivor; 1,147,432 capped at 8× | `reasoning_exits/checks/hole_app_31_36.log` |
 
 The 162's reader with NEXT let-bound measures 166, and NEXT as the last
 operand of a λ-handler `\b \r. b r (\t. cont r (r r t))` measures 168
@@ -242,17 +245,21 @@ first table row above: the 28-bit case analysis of
 `data/self-interpreter/reasoning_floor/golf162*/` is now exhaustive with NEXT
 opaque (the check is the handoff lane's own code, run on unary codes of
 length 1–3; every hit is in the family whose law is proved for all lengths).
-With the real NEXT and knot, an enumeration of every variable arm ≤ 27 bits
-over `[list, cont, intL, x]` (1,010,663 arms), of `list H NEXT` (`H` ≤ 27) and
-of the 164's dual-operand handler (`H` ≤ 17) found no passing term, but it is
-not a result: its symbolic checker unfolds the knot as `G X c s → B[x := G]`
-where the knot gives `B[x := X]`, wrong whenever an arm applies `x` to
-something other than the generator, and its comparison cache can reject
-β-equal terms; both defects are reproduced in Lean
+With the real NEXT and knot, the arm is checked exactly: `blam selfint hole`
+on the 162 with the arm as the hole finds no survivor among the 1,010,663
+arms of at most 27 bits over `[list, cont, intL, x]`, the arms that call
+the parser or the generator included; the 110,543 arms that exhaust the
+probe budget are not refuted (table). An earlier
+symbolic enumeration of the same arms, of `list H NEXT` (`H` ≤ 27) and of the
+164's dual-operand handler (`H` ≤ 17) also found no passing term, but for
+those two handler families it is not a result: its checker unfolds the knot
+as `G X c s → B[x := G]` where the knot gives `B[x := X]`, wrong whenever an
+arm applies `x` to something other than the generator, and its comparison
+cache can reject β-equal terms; both defects are reproduced in Lean
 (`Blc/SelfintGeneratorAudit.lean`). A separate certification
-resolved all but 29 distinct residuals of its 11,109 capped arms with grammar
-and pump certificates (`reasoning_162/pumps/` at `703f50d`; the residuals are
-kept in `reasoning_162/pumps/unresolved.md`).
+resolved all but 29 distinct residuals of that enumeration's 11,109 capped
+arms with grammar and pump certificates (`reasoning_162/pumps/` at `703f50d`;
+the residuals are kept in `reasoning_162/pumps/unresolved.md`).
 
 Around the 165:
 
@@ -575,10 +582,11 @@ one-helper sharing (Lean), every hole depth other than 1, and every
 changing its minimum (§4 there): NEXT of any syntax above a price frontier,
 any variable-value representation with a NEXT-free decoder, any opaque
 two-port recursion, and continuation-headed analogues (at least 165).
-Outside the class the cheapest priced mechanisms all cost at least 170
-(`class-bound.md` §5): in particular, under `λlist` NEXT can embed any closed
-interpreter at `+17` bits, so an unrestricted bound on the 162's NEXT region
-would itself be a 79-bit global floor.
+Outside the class the cheapest constructions are the 165-bit parser bundle
+and a 168 whose variable arm returns through the parser; every other exit
+built costs at least 171 (`class-bound.md` §5, §6 here). Under `λlist` NEXT
+can embed any closed interpreter at `+17` bits, so an unrestricted bound on
+the 162's NEXT region would itself be a 79-bit global floor.
 
 ### Bounds within the 165's reader shape
 
@@ -886,6 +894,40 @@ polished unless a lane recorded only the written size.
 | The 162's lets re-placed: the `intL` let around NEXT only, binder order `\cont \intL \list`, no let | 164 / 165 / 167 | knot | β-equal to the 162 |
 | Six inert wrappers around the hole and let-shared `c`, `p` in NEXT | 233 / 162 | widen | refutes the per-reader price `116 + w(R)` at deep holes; Lean proves its contract |
 
+### Variants outside the separated class
+
+Built by lanes that were each given one exit from the class
+(`class-bound.md` §5) and asked for a construction; sources are in
+`data/self-interpreter/reasoning_exits/<lane>/`. Each passes the battery
+unless marked. The 168 and the 171 are letopt minima (two and three cuts);
+the other sizes are as written. The arguments in the notes are handwritten.
+
+| idea | bits | lane | note |
+|---|---:|---|---|
+| Pairs of the 163–165 variants: select-first with the 25-bit cell, select-first with the dual operand, the dual operand with NEXT inline | 164 / 165 / 164 | stream | the costs add: no pair shares a binder, an operand slot or an index bit |
+| The skip as a parser call on the same stream: `s x s`, the body with dummy recursion and the tail as its continuation, or `s (λq. p) s` | 166 / 168 | timefree | `P r s = r r N = N`; the record's `s s u` is that call spelled without the parser, 12 bits against 16 and 18. The rest as a projection, `s p` or `p F s`, fails (160, 168): `p F (0 N)` applies `N`, and the arm asks itself |
+| Variable arm returning through the parser, `λu. s (p c) (s s c)` | 168 | recursion | Codex: `p c F = c` once the skip's junk is `c`; `p c` costs 4 more than `λq. c` and the junk 2, and the cheaper junks `u` and `s` make `p c F` NEXT and `F` (166 and 167, failing) |
+| K-form reader `s K (s F NEXT) (s (λq. c) (s s s))` | 171 | stream | the variable arm needs no junk binder (22 bits against 28), but `K` costs 3 more than `I` and the zero arm `s F NEXT` 12 |
+| The knot's diagonal shared with the skip: `R x k s = s (λb. b I k) (Δ (s (λb. b x)) k)` with `Δ = λh. h h`, and `x x k` the NEXT built on `R x` | 173 | forcing | Codex: one `h h` is `x x k` on a 0-tag and `r r k = N` on a variable; the selection `s (λb. b x)` costs 15 bits, and the reader is 58 bits in a closing context of 115 |
+| One combinator `f = λx y. c (λe. x e (y e))` as APP's continuation `f exp` and as the variable arm's return `s f` | 175 | consult | Gemini: the lift of the tag `F` and the tail is the tail, so `f F r = c r`; the let costs 35 against 22 saved |
+| The reader returns bare `N` on a variable and its caller supplies the value, `D k t = t (λb. b F k) (P k t)` | 181 | forcing | the dual-operand reader rotated around the knot |
+| The variable's rest replayed through the parser, `r I (s p)` | 181 | forcing | `s p = p F r` is the rest of a variable one bit shorter, and `r I` guards index one |
+| A worker entered after the two tag bits, with the root adapter `λc s. s F (J c)` | 187 | forcing | 166 + 21; no adapter for an opaque worker in that argument order is smaller |
+| APP's second parse started on `s b p`, replaying the left child for its rest | 189 | forcing | no literal `F` and no stream binder in NEXT; exponential time, and 27 bits over the record |
+| The variable arm returns its continuation alone, the caller having put a variable child's finished return `k r N` there | 195 | forcing | the arm is `λu. c`; the caller's wrapper costs 61 |
+| Returns carry the stream at the last variable leaf; APP's second parse and a root adapter skip it | 199 | forcing | 170 + 29 |
+| Variable arms returning `k F r`, `k NEXT s`, or `k (p s) N` with a Scott-pair cell | 145 / 149 / 157, *fail* | returns | Codex: `λx.x` and `λx.I` hand the ABS callback the same `(F, r)`; a callback that does not see its child's stream forwards its second argument whatever the first is; the parser applied to a pair leaves `a e V Q` |
+| APP's second parse restarted from the left value (`f f`, `x f`); the variable arm re-entering the generator on NEXT | 159 / 163 / 161, *fail* | recursion | Codex: on `I I` the left value and the tag are both `F`, and `{I, F}` is closed under application; `G Q k s` reads the continuation as a stream |
+
+The 195 and the 181 show that the exact two-argument return is forced only
+on a callback that does not read its child's stream: a caller that does can
+take over part of a variable child's return. Doing so costs more than the
+variable arm it shortens. Running time being free does not help either: a
+second pass over a subterm costs at least 13 bits (two applications, the
+parser, a Boolean and the stream) against the 2-bit binder that hands the
+same component to a continuation, and naming NEXT's stream alone costs 11
+(the 162 with `λb t. … t` measures 173).
+
 ## 7. Boundaries
 
 No verified sub-162 has been found: its let structure is minimal to three
@@ -899,7 +941,12 @@ moves are now all priced: a sub-162 there is exactly a reader of weight at
 most 45, and the same holds for the widened classes of `class-bound.md` §4.
 Outside them, the 165-bit parser bundle exposes recursion through the
 reader's erased operand (`protocol-obstructions.md`); using that bundled
-state more cheaply remains open.
+state more cheaply remains open. A round of lanes sent through each exit
+built fifteen correct interpreters between 164 and 199 bits and none below
+162 (§6): the root pins the return protocol, since ABS forwards its child's
+trailing arguments unchanged to a continuation that may be the rigid `C`,
+and what a caller can take over from a variable child costs more than it
+saves.
 
 Open:
 
@@ -911,9 +958,9 @@ Open:
   `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix
   cells, and knotless first heads with two nonlinear binders
   (`class-bound.md` §4);
-- with the real NEXT and knot, the `s I` family's variable arm (§3): the
-  enumeration through 27 bits needs a corrected checker, and 29 residuals
-  of its capped arms are uncertified;
+- with the real NEXT and knot, the `s I` family's variable arm (§3): no arm
+  through 27 bits passes the exact check, and the 110,543 that exhaust its
+  probe budget are not refuted;
 - the reader's diagonal `R Z →* next next` (§2): the 165 already contains the
   self-application a knot needs, and a smaller interpreter along this line
   would have `next`'s zero arm serve as the knot's generator. Built with a separate

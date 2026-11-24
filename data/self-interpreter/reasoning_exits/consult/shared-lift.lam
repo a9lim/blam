@@ -1,0 +1,11 @@
+-- Gemini: one combinator f = \x \y. cont (\args. x args (y args)) is APP's
+-- second-parse continuation (f exp) and the variable arm's return, since
+-- list f = f F r = cont (\args. F args (r args)) = cont r.
+(\x. x x) (\x. (\intL. \cont.
+  (\f. \list.
+    list (\a. a) (\u. list f (list list u))
+      (\bit1. intL (\exp. bit1
+        (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+        (intL (f exp)))))
+  (\x \y. cont (\args. x args (y args))))
+  (x x))

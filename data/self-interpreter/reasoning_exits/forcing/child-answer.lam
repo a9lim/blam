@@ -1,0 +1,5 @@
+-- A variable returns the bare callback. Its caller can precompute the entire answer from the child stream.
+(\x. x x) (\x. (\d \c \s. s (\i. i) (\u. c) (\tag. d
+    (\f. tag (c (\e \a. f (\b \r. b a (r e)))) (d
+      (\g. c (\e. f e (g e)))))))
+  (\k \t. x x (t (\b \r. b k (k r (r r r)))) t))

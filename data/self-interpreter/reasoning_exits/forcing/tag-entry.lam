@@ -1,0 +1,4 @@
+-- The closed core consumes a continuation, the second tag bit, and the first child stream.
+\c \s. s (\u \r. r) (((\x. x x) (\x. (\d \c \tag. d
+    (\f. tag (c (\e \a. f (\b \r. b a (r e)))) (d
+      (\g. c (\e. f e (g e)))))) (\k \s. s (\b. b (\i. i) k) ((\h. h h) (s (\b. b x)) k)))) c)

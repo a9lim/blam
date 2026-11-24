@@ -1,0 +1,10 @@
+-- 168 bits. The variable arm's rest as a parser call on the same stream with
+-- the tail as continuation: list (\q. intL) list = intL list1 list
+-- = list1 list1 (intL list1 list) = (K N) (...) = N. Productive because the
+-- inner call sits in the skip's erased operand.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list (\q. intL) list))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

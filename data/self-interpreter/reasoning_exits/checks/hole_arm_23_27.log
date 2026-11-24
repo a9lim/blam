@@ -1,0 +1,15 @@
+# hole _ frame (innermost first): ['list', 'cont', 'intL', 'x']
+# template bits without holes: 134
+template 134 bits + fills; `_` frame 4 must 0b00000000; 91 probes (self-interpreter)
+fill  total     candidates   unknown survivors   time_s
+  23    157          39787      2882         0     34.9
+  24    158          73881      5432         0     57.3
+  25    159         135027     10231         0    103.7
+  26    160         251126     31145         0      0.1
+  27    161         462289     57383         0      0.1
+     UNKNOWN  23 bits  00010110110000001001010
+     UNKNOWN  23 bits  00010110110000110111110
+     UNKNOWN  23 bits  00010110110000110011010
+     UNKNOWN  23 bits  00010110110000111000110
+     UNKNOWN  23 bits  00010110110000111100010
+total 962110 fills in 196.1s: 0 survivors, 107073 unknown

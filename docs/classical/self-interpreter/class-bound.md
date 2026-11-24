@@ -1016,12 +1016,20 @@ constructions in `interpreter.md` §6 and the archives:
   `Blc/SelfintArchitecture5Bundle.lean`; `protocol-obstructions.md` gives
   its equations and `docs/STATUS.md` its cost. The reader no longer has
   only the two rigid ambient parameters `c,j` used in the separated class.
+  A reader that calls the parser can also return through it: with the
+  skip's junk `c`, `p c F = c`, and the variable arm `λu. s (p c) (s s c)`
+  is a correct 168, `p c` costing 4 bits more than `λq. c` and the junk 2
+  (Codex). With the knot and NEXT in scope no variable arm of at most 27
+  bits passes the exact check (`interpreter.md` §3).
 - **NEXT uses the stream.** Inside the reader's `λs`, NEXT can embed any
   closed interpreter `Q` as `λb t. Q c s` for `|Q| + 17` bits, so an
   unrestricted NEXT bound would itself be a global floor (`|NEXT| ≥ 96`
   unrestricted would imply every interpreter has at least 79 bits). The
   useful extra modes measured: a separately guarded variable mode, exact
   minimum 177 in its family; markers and second-tag selections 182–193.
+  On a real 0-tag the stream offers NEXT nothing it lacks: NEXT already
+  receives `b2` and `r2`, and `list` yields only `K`, `r` and `K r`, each
+  at three bits or more a reference (handwritten).
 - **No conversion into the class.** A first-bit guard,
   `G(E) = λc s. s K (E c s) s`, preserves the closed-source contract at
   `|E| + 30` but violates a law every member satisfies
@@ -1032,14 +1040,28 @@ constructions in `interpreter.md` §6 and the archives:
   least 165 under the ordinary first-child cut and the unshared generator
   at least 167, attained (`Blc/SelfintRecursion.lean`); the cut is not
   forced (a 312-bit parent-replay witness), and knotless first heads with
-  two nonlinear binders are open (§4.3).
+  two nonlinear binders are open (§4.3). One self-application can serve the
+  knot and the skip (Codex): with `Δ = λh. h h`, `Δ (s (λb. b x)) k` is
+  `x x k` on a 0-tag and `r r k = N` on a variable, and the interpreter
+  built on it measures 173, its 15-bit selection costing more than the
+  shared diagonal saves.
 - **Returns that are not exact.** A continuation with only `C` free that
   receives a divergent value forwards its rest verbatim (§4.5), so a
   variable arm returning `c r NEXT` or a trailing argument fails whatever
   the continuations and NEXT do. Returning a suffix thunk and the pending
   NEXT as extra arguments is free at ABS but costs 19 bits at APP and 30 at
   the public boundary: 201 bits built, 199 and 211 for two variants priced
-  on paper (`reasoning_class/arch/`).
+  on paper (`reasoning_class/arch/`). The forwarding argument of §4.5
+  binds a callback that does not read its child's stream. A caller that
+  does can take over part of a variable child's return (Codex): it can
+  hand the child its finished `k r N`, so that the arm is `λu. c` (195
+  bits, the wrapper costing 61), or supply `k r` to a reader that returns
+  bare `N` (181). A return carrying the last variable's stream in place of
+  the rest, skipped at APP and at a root adapter, measures 199, and a
+  worker entered after the tag bits needs a 21-bit root adapter (187).
 - **No CPS parser.** Pair returns, stream-first parsers and direct
   evaluation lose the remainder's η (≥ 8 bits a site) or pay a public
-  adapter (13–21).
+  adapter (13–21). Running time is free, but replaying costs bits too:
+  APP's second parse started on `s b p`, which re-parses the left child for
+  its rest, measures 189, and a variable's rest replayed through the parser
+  as `r I (s p)` measures 181 (Codex).

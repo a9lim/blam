@@ -1,0 +1,11 @@
+-- 166 bits. The variable arm's rest by a recursive call: `list x list` =
+-- x F list1 list is the body with dummy recursion, run on the same stream
+-- with the tail list1 as its continuation; its variable arm returns
+-- list1 list1 (junk) = N. The record's `list list u` is this call spelled
+-- without the generator (12 bits against 16).
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (list x list))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))

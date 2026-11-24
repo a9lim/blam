@@ -1,0 +1,11 @@
+-- 168 bits, FAILS (ok=0 fail=667, no normal form). The variable arm asks for
+-- its own rest by projection, `intL F list`: intL F list = F list1 (intL F
+-- list) = intL F list, an unproductive loop. A rest can only be recomputed
+-- by the parser, and the parser's rests all originate in a variable arm, so
+-- the arm's own skip cannot be a projection.
+(\x. x x) (\x. (\intL. \cont. \list.
+  list (\a. a) (\u. list (\q. cont) (intL (\k1 \k2. k2) list))
+    (\bit1. intL (\exp. bit1
+      (cont (\args \arg. exp (\zx \zy. zx arg (zy args))))
+      (intL (\exp2. cont (\args. exp args (exp2 args)))))))
+  (x x))
