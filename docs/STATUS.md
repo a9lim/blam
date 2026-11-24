@@ -241,7 +241,8 @@ and proofs; this section holds the current numbers and the open cells.
   the reader access to recursion; NEXT under `λlist` can embed any closed
   interpreter at `+17`; no β-preserving conversion takes every interpreter
   into the class. Constructions through the exits (`interpreter.md` §6,
-  `data/self-interpreter/reasoning_exits/`): a 168 whose variable arm returns
+  `data/self-interpreter/reasoning_exits/`): a 166 whose skip is a call of
+  the generator on the same stream, a 168 whose variable arm returns
   through the parser, a 173 whose single `h h` is the knot's diagonal on a
   0-tag and the skip on a variable, and callers that take over part of a
   variable child's return at 181 and 195. With the knot and NEXT in scope no

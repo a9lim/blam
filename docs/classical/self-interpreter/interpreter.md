@@ -582,9 +582,10 @@ one-helper sharing (Lean), every hole depth other than 1, and every
 changing its minimum (§4 there): NEXT of any syntax above a price frontier,
 any variable-value representation with a NEXT-free decoder, any opaque
 two-port recursion, and continuation-headed analogues (at least 165).
-Outside the class the cheapest constructions are the 165-bit parser bundle
-and a 168 whose variable arm returns through the parser; every other exit
-built costs at least 171 (`class-bound.md` §5, §6 here). Under `λlist` NEXT
+Outside the class the cheapest constructions are the 165-bit parser bundle,
+a 166 whose skip is a call of the generator on the same stream, and a 168
+whose variable arm returns through the parser; the other exits built cost at
+least 171 (`class-bound.md` §5, §6 here). Under `λlist` NEXT
 can embed any closed interpreter at `+17` bits, so an unrestricted bound on
 the 162's NEXT region would itself be a 79-bit global floor.
 
