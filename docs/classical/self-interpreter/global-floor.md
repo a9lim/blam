@@ -842,11 +842,10 @@ finite certificate with a separately written reducer agrees
 (`audit/replay.py`, and `audit/replay_paths.py` for the certificates whose
 reductions name their redex positions), and fresh-context reviews by reading
 found the inventory filters, the finite predicates, the residual statements
-and the joins between lanes correct, at size 40 and at sizes 41 to 43
-(`reasoning_global/consult/`); size 44 has not had one yet. No fuel cap or
-timeout refutes anything. Lean's own proof (`structural-bounds.md`) covers
-the sizes up to its bound without any of this, except for the residual
-proofs it shares.
+and the joins between lanes correct, at size 40, at sizes 41 to 43 and at
+size 44 (`reasoning_global/consult/`). No fuel cap or timeout refutes
+anything. Lean's own proof (`structural-bounds.md`) covers the sizes up to
+its bound without any of this, except for the residual proofs it shares.
 
 ## 11. What probe families can charge
 
