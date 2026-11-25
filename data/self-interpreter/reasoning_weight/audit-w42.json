@@ -1,0 +1,25 @@
+{
+  "inclusive_weight": 42,
+  "sources": 210988,
+  "finite": {
+    "0": 198242,
+    "1": 39
+  },
+  "certificates": {
+    "flow": 555,
+    "grow": 46,
+    "head": 8,
+    "loop": 10915,
+    "missing": 356,
+    "mixed": 647,
+    "positive-head embedding": 2,
+    "recursor": 2,
+    "regular closure and stack": 15,
+    "replicator": 4,
+    "rigid grade": 5,
+    "shallow live binders": 11,
+    "targeted mixed cycle": 9,
+    "template": 118,
+    "two-lambda helper": 14
+  }
+}

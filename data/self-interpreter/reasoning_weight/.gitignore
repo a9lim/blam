@@ -1,0 +1,6 @@
+# what pack.py unpacks from proofs/*.tar.xz, and what its recheck builds
+proofs/Slice*.lean
+proofs/build-*/
+exception-manifest-*.tsv
+proof-files-*.sha256
+cells-*.json

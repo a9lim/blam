@@ -1,0 +1,32 @@
+[gaslamp] → codex · job cx-20261124-220006-c7fa · continuing thread reader-floor-by-weight
+(•̀ᴗ•́) **Weight 42 is closed. Every reader has weight at least 43, and every member of the separated class has at least 159 bits**, under the inherited round-4 coverage and minimality arguments. The standalone kernel-checked class floor remains 146 bits.
+
+All 104 nonempty cells matched their saved coefficients. Of **210,988 sources**, **198,242** failed the zero law and **39** failed at unary length one. The comparator recorded 7,686 cutoffs and 5,021 cycles. All **12,707 exceptions** received original-source Lean refutations. **No source passed all probes, and no exception remains.**
+
+| Certificate kind | Sources |
+|---|---:|
+| Weak-head prefix loop | 10,915 |
+| Mixed cycle | 647 |
+| Flow annotation | 555 |
+| Missing rigid leaf | 356 |
+| Template | 118 |
+| Growing helper | 46 |
+| Regular closure and stack | 15 |
+| Two-lambda helper | 14 |
+| Shallow live binders | 11 |
+| Targeted mixed cycle | 9 |
+| Rigid head mismatch | 8 |
+| Rigid grade | 5 |
+| Replicator | 4 |
+| Positive-head embedding | 2 |
+| Recursor | 2 |
+
+**Recursor** is the only certificate kind new since weight 41. Define `H = λf x. f (x f)` and `K = (H (H H)) H`. For every `x`, six weak-head steps take `K x` to `K (x K)`. A finite weak-head clock would therefore give a strictly smaller clock for another instance. For each of the two literal sources, Lean checked a β-reduction from its zero probe to `K x` with pending operands, where this theorem rules out normalization. [Generic theorem](/Users/a9lim/Work/blam/tmp/floor/work/proofs/Recursor.lean) · [Source replays](/Users/a9lim/Work/blam/tmp/floor/work/proofs/Slice42Main0097.lean)
+
+The final 15 refutations used closure-and-stack invariants. Lean checked each invariant against literal source subterms and verified the reduction identifying the divergent prefix demanded by the zero probe. The final audit matched all 12,707 exception ASTs to their theorem declarations and verified the axiom reports. The coverage argument and the Python finite mismatches retain the same evidence boundary as at weight 41.
+
+**Wall time was 8 min 8 s** from first probe through audit. The largest source check contained 48,370 sources. Python peaked at 102,989,824 bytes. The final Lean proofs and dependencies peaked at 610,041,856 bytes. Four preliminary Lean runs tripped the local 680 MB RSS watchdog, with a highest sampled RSS of 689,209,344 bytes. A smaller source model and four-state proof blocks completed within the cap. The outer watchdog did not fire. All children exited, and weight 43 was not started.
+
+[Saved report](/Users/a9lim/Work/blam/tmp/floor/work/REPORT-w42.md) · [Outcome ledger](/Users/a9lim/Work/blam/tmp/floor/work/audit-w42.json) · [Cell histogram](/Users/a9lim/Work/blam/tmp/floor/work/histogram-w42.tsv) · [Exception manifest](/Users/a9lim/Work/blam/tmp/floor/work/exception-manifest-w42.tsv) · [Exact Lean files for archival](/Users/a9lim/Work/blam/tmp/floor/work/w42/proof-files.sha256)
+
+[gaslamp] job cx-20261124-220006-c7fa · continue: gaslamp codex --thread reader-floor-by-weight
