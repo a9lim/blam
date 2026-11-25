@@ -107,6 +107,10 @@ term is β-convertible to an applicative combination of `S` and `K`, no `SO`
 term is β-convertible to `S` either. For width two this is Statman's theorem
 (*Two Variables Are Not Enough*, ICTCS 2005, pp. 406–409,
 https://doi.org/10.1007/11560586_32), which the argument here does not use.
+Lean has both forms directly, by observing `S A B` under the two selectors
+for two `SO` arguments (`Blc/SelfintStatman.lean`: `not_join_s` for `SO`
+terms, `narrow_not_join_s` for closed terms whose live abstractions each
+capture at most one variable).
 
 **Interpreters (`selfInterpreter_not_so`).** No self-interpreter is `SO`.
 
@@ -496,6 +500,45 @@ exhaustive classification:
 Every possible 33-bit minimum interpreter is therefore excluded;
 `global-floor.md` continues the same analysis through 36 bits, where Lean
 has it as `selfintSizeBound_37`.
+
+## Four live binders suffice
+
+The count of four live binders is attained (Codex; kernel-checked,
+`Blc/SelfintFourLiveWitness.lean`, `minimum_live`). Let `box⁴(x) = λp q r t.x`
+and
+
+```text
+U = λa b c. a (box⁴(c)) c (b c),        J = U U U.
+```
+
+`U` has exactly three live binders, on one chain, and `λc`'s body does not
+factor through one object. For arbitrary `d, x`,
+
+```text
+U U d x  →*  U (box⁴(x)) x (d x)
+         →*  box⁴(x) (box⁴(d x)) (d x) (x (d x))
+         →*  λt.x,
+```
+
+the second call handing the box three arguments and leaving one binder
+around `x`; so `J →* K`. And `U (K f) g x →* K f (box⁴(x)) x (g x) →* f x (g x)`,
+so `U (J (J U)) J →* S`. `{U}` is therefore a β-exact one-point applicative
+basis. Compile the 162 by bracket abstraction to an applicative tree `P(u)`
+over one variable standing for `U`, and share it:
+
+```text
+E₄ = (λu. P(u)) U  →*  the 162.
+```
+
+`E₄` is an exact self-interpreter of 7,625 bits
+(`data/self-interpreter/machines/int7625_four_live.blc`; 1,896 occurrences
+of `u`, `41 + 4m` bits for `m` occurrences) whose live binders are `u, a, b,
+c`. Only `u` and `c` are nonlinear, only `b` and `c` capture, and the width
+is three. So every count the global bound uses is attained by one
+interpreter: four live binders, two nonlinear binders, two live captures,
+width three. A lower bound above the 33 bits of those counts has to come
+from the behaviour of particular terms, not from another count of this
+kind.
 
 ## Joint sharpness by one shared S
 

@@ -349,10 +349,13 @@ and proofs; this section holds the current numbers and the open cells.
   (`SelfintRound8GlobalOuter{Route,Spine,Self}`, `…GlobalOffPrefix`). The count
   two is attained: witnesses of 584 bits, and of 742 bits β-normal, have
   exactly two nonlinear binders.
-  Open: the three-live-binder family with additional dead λs (dead binders can
-  become active, `SelfintRound8DeadApply`), and any additive size
-  decomposition; `SelfintRound7GlobalSharingBarrier` shows the live-binder
-  potential argument cannot simply raise its threshold.
+  The live-binder minimum is exactly four (`FourLiveWitness.minimum_live`):
+  Codex's `U = λa b c. a (λ_⁴.c) c (b c)` is a one-point applicative basis
+  with three live binders, and `(λu. P(u)) U`, with `P` the 162 compiled over
+  `U`, is an exact interpreter of 7,625 bits with four live binders, two
+  nonlinear binders, two live captures and width three. Every count the
+  bound uses is thus attained at once, and nothing above 33 bits can come
+  from a count of that kind. Open: any additive size decomposition.
 - **Head decomposition and remainder** (`head-decomposition.md`,
   `remainder.md`): every interpreter's head normal form has two leading λs,
   headed by the continuation or the stream; a literal continuation-headed
@@ -376,7 +379,7 @@ and proofs; this section holds the current numbers and the open cells.
   59-step cast-erasure trace to the literal 165). The 188, 196, 204, 584, 672,
   742 and four erased-skip variants pass the battery (667/1/0) and
   divergent-source suffix checks (`data/self-interpreter/theory/`).
-- **Lean.** `lake build Blc Certs BusyBeaver` is current (229 jobs); headline
+- **Lean.** `lake build Blc Certs BusyBeaver` is current (231 jobs); headline
   theorems use at most `propext`, `Classical.choice` and `Quot.sound`
   (`lean/README.md`).
 - **The universal machine** (`universal.md`): Tromp's wirings around the

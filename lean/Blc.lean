@@ -172,3 +172,5 @@ import Blc.SelfintSimplifyDependent
 import Blc.SelfintSimplifyExtendedCases
 import Blc.SelfintSimplifyMultiple
 import Blc.SelfintSingleObjectFloor37
+import Blc.SelfintStatman
+import Blc.SelfintFourLiveWitness

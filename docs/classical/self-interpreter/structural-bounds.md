@@ -118,7 +118,14 @@ two-argument interface cannot witness incomparability, so the pair lies
 inside its body. `capture-width.md` gives the proof and numerical
 consequences with Statman's width obstruction.
 
-## The remaining three-live-binder source shape
+## Terms with three live binders and one-helper algebras
+
+Every interpreter has at least four live binders (`interpreter_counts`),
+and four is attained (`FourLiveWitness.minimum_live`, `capture-width.md`):
+the minimum is exactly four. The theorems of this section were proved
+about a hypothetical interpreter with only three, which cannot exist; they
+stand as statements about three-live-binder terms and about application
+algebras over one closed helper.
 
 `SelfintRound7SourceShape.three_live_normal_reduction` proves an
 unconditional source reduction for any hypothetical interpreter with
@@ -249,8 +256,8 @@ step inside `A` would consume one lambda without copying another,
 contradicting the interpreter's three-live-binder floor. Therefore `A` is
 already normal, and the helper theorem applies directly. There is no
 architecture, source-size, minimum, or normality premise on `E`.
-This does not raise the three-live-binder bound: the residual family may
-have additional dead source lambdas, and those cases remain open.
+This argument does not reach three live binders with additional dead
+source lambdas; the width theorem does (`interpreter_counts`).
 
 ## The kernel-checked bit floor
 

@@ -747,11 +747,13 @@ and the 92 the finite pass left:
 
 - 49 by a regular invariant of an abstract Krivine machine: a finite set of
   machine states (12 to 1,969) that contains the start and a successor of
-  each of its states, so that a call the contract forces to normalize has no
-  finite weak-head clock. For 20 sources the call is the identity
-  invocation; the others use the contract at another closed source, with
-  rigid, `K`, `Ω` or custom continuations and suffixes, each written out in
-  its module;
+  each of its states, so that a term the contract forces to have a finite
+  weak-head clock has none. For 20 sources the term is a projection of the
+  identity invocation; the other 29 take the contract (27 of them still at
+  the source `I`) with other continuations, suffixes or trailing arguments
+  (rigid, `K`, Church false, `Ω`, three custom calls), each written out in
+  its module, and transport the clock of the required result's head normal
+  form across the join;
 - 42 by a weighted rank that holds at every size (`Weighted.no_clock`): give
   a λ rank one more than its body, an application
   `max(0, rank(f) − 1, rank(a) − c)`; if on every path from a binder to an
