@@ -116,13 +116,15 @@ theorem `¬ Reader r` about the literal source. So every reader has `w ≥ 45`
 and **every member has at least 161 bits**. This is not kernel-checked end to
 end: it is conditional on §3's reductions and on the coverage of the
 coefficient grammar that generates the open sources, both handwritten in
-part; the finite mismatches rest on a Python comparator; and two of the
-exclusions the grammar builds on rest in part on the engine's divergence
-verdicts (3,508 of the 73,311 three-λ sources of §3, and 1,511 of the
-66,577 hand-offs `(λx. x x)(λz a. z M⃗) j`). Two fresh-context audits by
-reading, of the first slice and of what changes from weight 42 to 45, found
-no omitted source shape, no invalid transfer at a weight tie, and no cut
-that leans on a cell still open. The 1,544,876 open sources all have
+part; the finite mismatches rest on a Python comparator; and four of the
+exclusions the chain builds on rest in part on the engine's divergence
+verdicts, 5,955 sources in all (3,508 of the 73,311 three-λ sources of §3,
+1,511 of the 66,577 hand-offs `(λx. x x)(λz a. z M⃗) j`, 560 cut-offs among
+the depth-0 readers whose `j` is a λ's argument, and the 376 unresolved
+pairs of the closed transport `Y j`). Three fresh-context reviews by
+reading (Codex on the first slice and on what changes from weight 42 to 45,
+Gemini on the whole chain) found no omitted source shape, no invalid
+transfer at a weight tie, and no cut that leans on a cell still open. The 1,544,876 open sources all have
 weight 45.
 
 **Hoisting is exact** (Lean): for `f` free `c` leaves and depth `d`,
@@ -513,7 +515,8 @@ family; the lists are in the round-4 lane archives (`703f50d`). Claude's lanes:
   **no minimum reader below 46 has a syntactic site**;
 - every reader with its hole at depth ≥ 2, and every depth-0 reader whose
   `j` is the argument of a λ, under the minimality order (weight, λ count,
-  depth). This corrects round 3's reduction, which handed depth-2 rows to
+  depth); 560 of the depth-0 cut-offs are certified by the engine's
+  divergence verdict. This corrects round 3's reduction, which handed depth-2 rows to
   depth 0 by hoisting: such hoists are never minima, and a hoisted depth-0
   form contracts to a deep reader of weight up to 50;
 - shared lets over the `s I` and `s K` spines, lets shared across a general
