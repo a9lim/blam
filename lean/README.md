@@ -30,7 +30,7 @@ theorem not_selfintSizeBound_163 : ¬ SelfintSizeBound 163
                                                          -- propext, Quot.sound
 theorem isUniversal_uni172 : IsUniversal uni172          -- propext, Quot.sound
 theorem not_uniSizeBound_173 : ¬ UniSizeBound 173        -- propext, Quot.sound
-theorem selfintSizeBound_44 : SelfintSizeBound 44
+theorem selfintSizeBound_45 : SelfintSizeBound 45
                                     -- propext, Classical.choice, Quot.sound
 ```
 
@@ -40,7 +40,7 @@ wire by `wire_intL`) is a self-interpreter: for every closed `M` and any terms
 `C`, `N`, `intL C (⌜M⌝ ++ N)` β-reduces to `C (λz. M) N`. So are the 165-bit
 `intL165` (`wire_intL165`) and the 162-bit `intL162` (`wire_intL162`), so no
 self-interpreter size bound above 162 holds; every self-interpreter has at
-least 44 bits (`SelfintSingleObject.selfintSizeBound_44`). Each gives universal machines,
+least 45 bits (`SelfintSingleObject.selfintSizeBound_45`). Each gives universal machines,
 `U (⌜M⌝ ++ N) →β* M N` for every closed `M`, in both of Tromp's wirings: the
 162 the 172 and the strict 184, the 165 the 175 and 187, and the 168 Tromp's
 own 178 and 190 (`IsUniversal`, each pinned to its wire), so no universal
@@ -523,6 +523,20 @@ Self-interpretation:
   prefix (`Split43.marked_flatten`, `plain_flatten`, `tryHints`);
   recursive intersection-arrow type rules as a size-independent necessary
   condition; `Grammar43.advance` and `selfintSizeBound_44`.
+- `Blc/SelfintKernelFloor45.lean` with `SelfintProfileGrid`,
+  `SelfintRowCoverNotation`, `SelfintRowDeclaration`, and the generated
+  `SelfintCompact44/` (with `ShellSplit`, `SiblingSplit`, `LinearShell`,
+  `Linear44`) and `SelfintResidual44/` — the kernel-checked floor
+  `SelfintSizeBound 45`: the five-live profiles derived from the wire
+  identity at any size (`ProfileGrid.resources`, `expose_profile`,
+  `five_mem_grid`) and `ProfileGrid.advance`, the step from the bound at
+  `n ≤ 44` and the two refuted grids to the bound at `n + 1`; contexts
+  partitioned by their outermost sibling (`ShellSplit.blocks_flatten`,
+  `frames_cover`, `SiblingSplit.sides_cover`, `contexts_cover`); rows with
+  a linear three-live atom excluded at every size
+  (`SiblingSplit.public_linear`, `LinearShell.closed_linear`);
+  `SelfintFiniteChain.appEq`; declaration macros for the recurring row
+  proofs; `selfintSizeBound_45`.
 - `Blc/SelfintFourLiveWitness.lean` — the live-binder minimum is exactly
   four (`minimum_live`): `U = λa b c. a (λ_⁴.c) c (b c)` is a one-point
   applicative basis (`kTree_ok`, `sTree_ok`, `iTree_ok`); bracket

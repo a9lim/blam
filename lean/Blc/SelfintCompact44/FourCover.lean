@@ -1,0 +1,36 @@
+import Blc.SelfintCompact44.FourCover00
+import Blc.SelfintCompact44.FourCover01
+import Blc.SelfintCompact44.FourCover02
+import Blc.SelfintCompact44.FourCover03
+import Blc.SelfintCompact44.FourCover04
+import Blc.SelfintCompact44.FourCover05
+import Blc.SelfintCompact44.FourCover06
+import Blc.SelfintCompact44.FourCover07
+import Blc.SelfintCompact44.FourCover08
+import Blc.SelfintCompact44.FourCover09
+import Blc.SelfintCompact44.FourCover10
+import Blc.SelfintCompact44.FourCover11
+import Blc.SelfintCompact44.FourCover12
+import Blc.SelfintCompact44.FourCover13
+import Blc.SelfintCompact44.FourCover14
+import Blc.SelfintCompact44.FourCover15
+import Blc.SelfintCompact44.FourCover16
+import Blc.SelfintCompact44.FourCover17
+import Blc.SelfintCompact44.FourCover18
+import Blc.SelfintCompact44.FourCover19
+import Blc.SelfintCompact44.FourCover20
+import Blc.SelfintCompact44.FourCover21
+import Blc.SelfintCompact44.FourCover22
+import Blc.SelfintCompact44.FourCover23
+import Blc.SelfintCompact44.FourCover24
+import Blc.SelfintCompact44.FourCover25
+import Blc.SelfintCompact44.FourCover26
+import Blc.SelfintProfileGrid
+import Blc.SelfintRowCoverNotation
+namespace Blc.SelfintSingleObject.Compact44
+open OperandGrammar SourceRefutations Grammar43
+set_option maxRecDepth 32000
+set_option Elab.async false
+theorem allFour : Every Four (CoverGrids.fourGrid 44) :=
+  rowProofs%[fourCell0,fourCell1,fourCell2,fourCell3,fourCell4,fourCell5,fourCell6,fourCell7,fourCell8,fourCell9,fourCell10,fourCell11,fourCell12,fourCell13,fourCell14,fourCell15,fourCell16,fourCell17,fourCell18,fourCell19,fourCell20,fourCell21,fourCell22,fourCell23,fourCell24,fourCell25,fourCell26,fourCell27,fourCell28,fourCell29,fourCell30,fourCell31,fourCell32,fourCell33,fourCell34,fourCell35,fourCell36,fourCell37,fourCell38,fourCell39,fourCell40,fourCell41,fourCell42,fourCell43,fourCell44,fourCell45,fourCell46,fourCell47,fourCell48,fourCell49,fourCell50,fourCell51,fourCell52,fourCell53,fourCell54,fourCell55,fourCell56,fourCell57,fourCell58,fourCell59,fourCell60,fourCell61,fourCell62,fourCell63,fourCell64,fourCell65,fourCell66,fourCell67,fourCell68,fourCell69,fourCell70,fourCell71,fourCell72,fourCell73,fourCell74,fourCell75,fourCell76,fourCell77,fourCell78,fourCell79,fourCell80,fourCell81,fourCell82,fourCell83,fourCell84,fourCell85,fourCell86,fourCell87,fourCell88,fourCell89,fourCell90,fourCell91,fourCell92,fourCell93,fourCell94,fourCell95,fourCell96,fourCell97,fourCell98,fourCell99,fourCell100,fourCell101,fourCell102,fourCell103,fourCell104,fourCell105,fourCell106,fourCell107,fourCell108,fourCell109,fourCell110,fourCell111,fourCell112,fourCell113,fourCell114,fourCell115,fourCell116,fourCell117,fourCell118,fourCell119,fourCell120,fourCell121,fourCell122,fourCell123,fourCell124,fourCell125,fourCell126,fourCell127,fourCell128,fourCell129,fourCell130,fourCell131,fourCell132,fourCell133,fourCell134,fourCell135,fourCell136,fourCell137,fourCell138,fourCell139,fourCell140,fourCell141,fourCell142,fourCell143,fourCell144,fourCell145,fourCell146,fourCell147,fourCell148,fourCell149,fourCell150,fourCell151,fourCell152,fourCell153,fourCell154,fourCell155,fourCell156,fourCell157,fourCell158,fourCell159,fourCell160,fourCell161,fourCell162,fourCell163,fourCell164,fourCell165,fourCell166,fourCell167,fourCell168,fourCell169,fourCell170,fourCell171,fourCell172,fourCell173,fourCell174,fourCell175,fourCell176,fourCell177,fourCell178,fourCell179,fourCell180,fourCell181,fourCell182,fourCell183,fourCell184,fourCell185,fourCell186,fourCell187,fourCell188,fourCell189,fourCell190,fourCell191,fourCell192,fourCell193,fourCell194,fourCell195,fourCell196,fourCell197,fourCell198,fourCell199,fourCell200,fourCell201,fourCell202,fourCell203,fourCell204,fourCell205,fourCell206,fourCell207,fourCell208,fourCell209,fourCell210,fourCell211,fourCell212,fourCell213,fourCell214,fourCell215]
+end Blc.SelfintSingleObject.Compact44

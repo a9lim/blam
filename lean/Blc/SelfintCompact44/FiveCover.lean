@@ -1,0 +1,37 @@
+import Blc.SelfintCompact44.FiveCover00
+import Blc.SelfintCompact44.FiveCover01
+import Blc.SelfintCompact44.FiveCover02
+import Blc.SelfintCompact44.FiveCover03
+import Blc.SelfintCompact44.FiveCover04
+import Blc.SelfintCompact44.FiveCover05
+import Blc.SelfintCompact44.FiveCover06
+import Blc.SelfintCompact44.FiveCover07
+import Blc.SelfintCompact44.FiveCover08
+import Blc.SelfintCompact44.FiveCover09
+import Blc.SelfintCompact44.FiveCover10
+import Blc.SelfintCompact44.FiveCover11
+import Blc.SelfintCompact44.FiveCover12
+import Blc.SelfintCompact44.FiveCover13
+import Blc.SelfintCompact44.FiveCover14
+import Blc.SelfintCompact44.FiveCover15
+import Blc.SelfintCompact44.FiveCover16
+import Blc.SelfintCompact44.FiveCover17
+import Blc.SelfintCompact44.FiveCover18
+import Blc.SelfintCompact44.FiveCover19
+import Blc.SelfintCompact44.FiveCover20
+import Blc.SelfintCompact44.FiveCover21
+import Blc.SelfintCompact44.FiveCover22
+import Blc.SelfintCompact44.FiveCover23
+import Blc.SelfintCompact44.FiveCover24
+import Blc.SelfintCompact44.FiveCover25
+import Blc.SelfintCompact44.FiveCover26
+import Blc.SelfintCompact44.FiveCover27
+import Blc.SelfintProfileGrid
+import Blc.SelfintRowCoverNotation
+namespace Blc.SelfintSingleObject.Compact44
+open OperandGrammar SourceRefutations Grammar43
+set_option maxRecDepth 32000
+set_option Elab.async false
+theorem allFive : Every Five (ProfileGrid.gridFor (ProfileGrid.profilesAt 44)) :=
+  rowProofs%[fiveCell0,fiveCell1,fiveCell2,fiveCell3,fiveCell4,fiveCell5,fiveCell6,fiveCell7,fiveCell8,fiveCell9,fiveCell10,fiveCell11,fiveCell12,fiveCell13,fiveCell14,fiveCell15,fiveCell16,fiveCell17,fiveCell18,fiveCell19,fiveCell20,fiveCell21,fiveCell22,fiveCell23,fiveCell24,fiveCell25,fiveCell26,fiveCell27,fiveCell28,fiveCell29,fiveCell30,fiveCell31,fiveCell32,fiveCell33,fiveCell34,fiveCell35,fiveCell36,fiveCell37,fiveCell38,fiveCell39,fiveCell40,fiveCell41,fiveCell42,fiveCell43,fiveCell44,fiveCell45,fiveCell46,fiveCell47,fiveCell48,fiveCell49,fiveCell50,fiveCell51,fiveCell52,fiveCell53,fiveCell54,fiveCell55,fiveCell56,fiveCell57,fiveCell58,fiveCell59,fiveCell60,fiveCell61,fiveCell62,fiveCell63,fiveCell64,fiveCell65,fiveCell66,fiveCell67,fiveCell68,fiveCell69,fiveCell70,fiveCell71,fiveCell72,fiveCell73,fiveCell74,fiveCell75,fiveCell76,fiveCell77,fiveCell78,fiveCell79,fiveCell80,fiveCell81,fiveCell82,fiveCell83,fiveCell84,fiveCell85,fiveCell86,fiveCell87,fiveCell88,fiveCell89,fiveCell90,fiveCell91,fiveCell92,fiveCell93,fiveCell94,fiveCell95,fiveCell96,fiveCell97,fiveCell98,fiveCell99,fiveCell100,fiveCell101,fiveCell102,fiveCell103,fiveCell104,fiveCell105,fiveCell106,fiveCell107,fiveCell108,fiveCell109,fiveCell110,fiveCell111,fiveCell112,fiveCell113,fiveCell114,fiveCell115,fiveCell116,fiveCell117,fiveCell118,fiveCell119,fiveCell120,fiveCell121,fiveCell122,fiveCell123,fiveCell124,fiveCell125,fiveCell126,fiveCell127,fiveCell128,fiveCell129,fiveCell130,fiveCell131,fiveCell132,fiveCell133,fiveCell134,fiveCell135,fiveCell136,fiveCell137,fiveCell138,fiveCell139,fiveCell140,fiveCell141,fiveCell142,fiveCell143,fiveCell144,fiveCell145,fiveCell146,fiveCell147,fiveCell148,fiveCell149,fiveCell150,fiveCell151,fiveCell152,fiveCell153,fiveCell154,fiveCell155,fiveCell156,fiveCell157,fiveCell158,fiveCell159,fiveCell160,fiveCell161,fiveCell162,fiveCell163,fiveCell164,fiveCell165,fiveCell166,fiveCell167,fiveCell168,fiveCell169,fiveCell170,fiveCell171,fiveCell172,fiveCell173,fiveCell174,fiveCell175,fiveCell176,fiveCell177,fiveCell178,fiveCell179,fiveCell180,fiveCell181,fiveCell182,fiveCell183,fiveCell184,fiveCell185,fiveCell186,fiveCell187,fiveCell188,fiveCell189,fiveCell190,fiveCell191,fiveCell192,fiveCell193,fiveCell194,fiveCell195,fiveCell196,fiveCell197,fiveCell198,fiveCell199,fiveCell200,fiveCell201,fiveCell202,fiveCell203,fiveCell204,fiveCell205,fiveCell206,fiveCell207,fiveCell208,fiveCell209,fiveCell210,fiveCell211,fiveCell212,fiveCell213,fiveCell214,fiveCell215,fiveCell216,fiveCell217,fiveCell218,fiveCell219,fiveCell220,fiveCell221,fiveCell222,fiveCell223]
+end Blc.SelfintSingleObject.Compact44

@@ -1,0 +1,77 @@
+import Blc.SelfintCompact44.G0664
+import Blc.SelfintCompact44.G0665
+import Blc.SelfintCompact44.G0667
+import Blc.SelfintCompact44.G0668
+import Blc.SelfintCompact44.G0669
+import Blc.SelfintCompact44.G0670
+import Blc.SelfintCompact44.G0671
+import Blc.SelfintCompact44.G0673
+import Blc.SelfintCompact44.G0675
+import Blc.SelfintCompact44.G0676
+import Blc.SelfintCompact44.G0677
+import Blc.SelfintCompact44.G0678
+import Blc.SelfintCompact44.G0679
+import Blc.SelfintCompact44.G0680
+import Blc.SelfintCompact44.G0681
+import Blc.SelfintCompact44.G0682
+import Blc.SelfintCompact44.G0683
+import Blc.SelfintCompact44.G0684
+import Blc.SelfintCompact44.G0685
+import Blc.SelfintCompact44.G0686
+import Blc.SelfintCompact44.G0687
+import Blc.SelfintCompact44.G0689
+import Blc.SelfintCompact44.G0690
+import Blc.SelfintCompact44.G0691
+import Blc.SelfintCompact44.G0692
+import Blc.SelfintCompact44.G0693
+import Blc.SelfintCompact44.G0694
+import Blc.SelfintCompact44.G0695
+import Blc.SelfintCompact44.G0696
+import Blc.SelfintCompact44.G0697
+import Blc.SelfintCompact44.G0698
+import Blc.SelfintCompact44.G0699
+import Blc.SelfintCompact44.G0700
+import Blc.SelfintCompact44.G0701
+import Blc.SelfintCompact44.G0702
+import Blc.SelfintCompact44.G0703
+import Blc.SelfintCompact44.G0704
+import Blc.SelfintCompact44.G0705
+import Blc.SelfintCompact44.G0706
+import Blc.SelfintCompact44.G0707
+import Blc.SelfintCompact44.G0708
+import Blc.SelfintCompact44.G0709
+import Blc.SelfintCompact44.G0710
+import Blc.SelfintCompact44.G0711
+import Blc.SelfintCompact44.G0712
+import Blc.SelfintCompact44.G0713
+import Blc.SelfintProfileGrid
+import Blc.SelfintResidual44.Claims004
+import Blc.SelfintResidual44.Claims008
+import Blc.SelfintResidual44.Claims025
+import Blc.SelfintResidual44.Claims026
+import Blc.SelfintResidual44.Claims027
+import Blc.SelfintResidual44.Claims028
+import Blc.SelfintResidual44.Claims029
+import Blc.SelfintResidual44.Claims035
+import Blc.SelfintRowCoverNotation
+namespace Blc.SelfintSingleObject.Compact44
+open OperandGrammar SourceRefutations Grammar43
+set_option maxRecDepth 32000
+set_option Elab.async false
+theorem fiveCell192 : Five ⟨8,5,4,false,3,2,3⟩ :=
+  rowProofs%[g13344,g13346,g13348,g13350,g13352,g13354,g13356,g13358,g13360,g13362]
+theorem fiveCell193 : Five ⟨8,5,4,false,3,2,4⟩ :=
+  rowProofs%[g13364,(g13366 rowProofs%[no4816454290286,no4836586949486,no4785047341934,no4816487844718,no4836620503918,no4785080896366,no4777833139054,no4818098457454,no4816622062446,no4777967356782]),(g13368 rowProofs%[no4816454290294,no4836586949494,no4816487844726,no4818098457462,no4816622062454]),g13370,(g13372 rowProofs%[no4816454291054,no4836586950254,no4816487845486,no4777833139822,no4816454290350,no4818098457518,no4816622062510]),g13374,(g13376 rowProofs%[no4836586950266,no4816487845498,no4818098458234,no4816622063226]),(g13378 rowProofs%[no4816454291254,no4836586950454,no4816487845686,no4836620504886,no4818098458422,no4816622063414,no4816454290390,no4836586949590,no4785047342038,no4816487844822,no4836620504022,no4785080896470,no4777833139158,no4818098457558,no4816622062550,no4777967356886]),(g13380 rowProofs%[no4816454291258,no4836586950458,no4816487845690,no4818098458426,no4816622063418]),g13382,g13384,g13386,g13388,g13390,g13392,g13394,g13396,g13398,g13400,g13402]
+theorem fiveCell194 : Five ⟨8,5,4,false,3,2,5⟩ :=
+  rowProofs%[g13404,(g13406 rowProofs%[no4817624501102,no4818161372014]),(g13408 rowProofs%[no4817624501110,no4818161372022]),g13410,(g13412 rowProofs%[no4817624501870,no4818161372782,no4817624501166,no4818161372078]),g13414,(g13416 rowProofs%[no4817624501882,no4818161372794,no4817622674874,no4818159545786]),(g13418 rowProofs%[no4817624502070,no4818161372982,no4817624501206,no4818161372118]),(g13420 rowProofs%[no4817624502074,no4818161372986,no4817622674906,no4818159545818]),g13422,g13424,g13426,(g13428 rowProofs%[no4817622677946,no4818159548858,no4817622675130,no4818159546042]),g13430,g13432,(g13434 rowProofs%[no4817622677994,no4818159548906]),g13436,(g13438 rowProofs%[no4817622678746,no4818159549658,no4817622675290,no4818159546202]),(g13440 rowProofs%[no4817622678762,no4818159549674]),g13442,g13444,g13446,g13448,g13450,g13452,g13454,g13456,g13458,g13460,g13462,g13464,g13466,g13468,g13470,g13472]
+theorem fiveCell195 : Five ⟨8,5,4,false,3,2,6⟩ :=
+  rowProofs%[g13474,g13476,g13478,g13480,g13482,g13484,g13486,g13488,g13490,g13492,g13494,g13496,g13498,g13500,g13502,g13504,g13506,g13508,g13510,g13512,g13514,g13516,g13518,g13520,g13522,g13524,g13526,g13528,g13530,g13532,g13534,g13536,g13538,g13540,g13542,g13544,g13546,g13548,g13550,g13552,g13554,g13556,g13558,g13560,g13562,g13564,g13566,g13568,g13570,g13572,g13574,g13576,g13578,g13580,g13582,g13584]
+theorem fiveCell196 : Five ⟨8,5,4,false,3,3,3⟩ :=
+  rowProofs%[g13586,g13588,g13590,g13592,g13594,g13596,g13598,g13600,g13602,g13604]
+theorem fiveCell197 : Five ⟨8,5,4,false,3,3,4⟩ :=
+  rowProofs%[g13606,g13608,g13610,g13612,g13614,g13616,g13618,g13620,g13622,g13624,g13626,g13628,g13630,g13632,g13634,g13636,g13638,g13640,g13642,g13644]
+theorem fiveCell198 : Five ⟨8,5,4,false,3,3,5⟩ :=
+  rowProofs%[g13646,g13648,g13650,g13652,g13654,g13656,g13658,g13660,g13662,g13664,g13666,g13668,g13670,g13672,g13674,g13676,g13678,g13680,g13682,g13684,g13686,g13688,g13690,g13692,g13694,g13696,g13698,g13700,g13702,g13704,g13706,g13708,g13710,g13712,g13714]
+theorem fiveCell199 : Five ⟨8,5,4,false,3,3,6⟩ :=
+  rowProofs%[g13716,g13718,g13720,g13722,g13724,g13726,g13728,g13730,g13732,g13734,g13736,g13738,g13740,g13742,g13744,g13746,g13748,g13750,g13752,g13754,g13756,g13758,g13760,g13762,g13764,g13766,g13768,g13770,g13772,g13774,g13776,g13778,g13780,g13782,g13784,g13786,g13788,g13790,g13792,g13794,g13796,g13798,g13800,g13802,g13804,g13806,g13808,g13810,g13812,g13814,g13816,g13818,g13820,g13822,g13824,g13826]
+end Blc.SelfintSingleObject.Compact44

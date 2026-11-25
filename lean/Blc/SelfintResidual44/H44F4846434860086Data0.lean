@@ -1,0 +1,92 @@
+import Blc.SelfintResidual44.H44Base
+import Blc.SelfintResidual44.H44Positive
+
+set_option Elab.async false
+namespace Blc.H44.H44F4846434860086
+open Term SelfintSharp SelfintControl SelfintLowerBound SelfintProbe WeakHeadClock SelfintRecursiveTypes Positive
+set_option maxRecDepth 20000
+def s0 : List Nat := []
+def s1 : List Nat := [4,14,28,36]
+def s2 : List Nat := [2]
+def s3 : List Nat := [6,8]
+def s4 : List Nat := [7,15]
+def s5 : List Nat := [0]
+def s6 : List Nat := [4,7]
+def s7 : List Nat := [10,11]
+def s8 : List Nat := [7]
+def s9 : List Nat := [10,13]
+def s10 : List Nat := [4]
+def s11 : List Nat := [4,22,27]
+def s12 : List Nat := [4,17]
+def s13 : List Nat := [17,18]
+def s14 : List Nat := [17]
+def s15 : List Nat := [19]
+def s16 : List Nat := [21,23,25]
+def s17 : List Nat := [22]
+def s18 : List Nat := [24]
+def s19 : List Nat := [26]
+def s20 : List Nat := [27]
+def s21 : List Nat := [10,31,34]
+def s22 : List Nat := [30,32,35]
+def s23 : List Nat := [31]
+def s24 : List Nat := [10]
+def s25 : List Nat := [33]
+def s26 : List Nat := [34]
+def s27 : List Nat := [30]
+def s28 : List Nat := [10,17]
+def s29 : List Nat := [17,38,40]
+def s30 : List Nat := [39]
+def s31 : List Nat := [41]
+def s32 : List Nat := [4,14]
+def s33 : List Nat := [21,23]
+def s34 : List Nat := [30,32]
+def s35 : List Nat := [38,40]
+def s36 : List Nat := [25]
+def s37 : List Nat := [28,36]
+def s38 : List Nat := [35]
+def s39 : List Nat := [3,5,9,12,16,20,29,37]
+def s40 : List Nat := [1]
+def b0 : Term := .var 0
+def b1 : Term := .var 1
+def b2 : Term := .var 2
+def b3 : Term := .app b0 b1
+def b4 : Term := .lam b3
+def b5 : Term := .app b2 b4
+def b6 : Term := .app b1 b5
+def b7 : Term := .lam b6
+def b8 : Term := .lam b7
+def b9 : Term := .app b0 b8
+def b10 : Term := .app b0 b9
+def b11 : Term := .lam b10
+def b12 : Term := .app b11 b4
+def b13 : Term := .app b1 b12
+def b14 : Term := .lam b13
+def b15 : Term := .lam b14
+def b16 : Term := .app b11 b15
+def b17 : Term := .app b11 b16
+def b18 : Term := .lam b0
+def b19 : Term := .lam b18
+def b20 : Term := .app b17 b19
+def b21 : Term := .lam b1
+def b22 : Term := .lam b21
+def b23 : Term := .app b0 b22
+def b24 : Term := .app b0 b19
+def b25 : Term := .var 8
+def b26 : Term := .app b23 b25
+def b27 : Term := .lam b26
+def b28 : Term := .app b24 b27
+def b29 : Term := .lam b28
+def b30 : Term := .app b23 b29
+def b31 : Term := .lam b30
+def b32 : Term := .app b24 b31
+def b33 : Term := .lam b32
+def b34 : Term := .app b24 b33
+def b35 : Term := .lam b34
+def b36 : Term := .app b23 b35
+def b37 : Term := .lam b36
+def b38 : Term := .app b23 b37
+def b39 : Term := .lam b38
+def b40 : Term := .app b23 b39
+def b41 : Term := .lam b40
+def b42 : Term := .app b20 b41
+end Blc.H44.H44F4846434860086

@@ -81,10 +81,10 @@ combines source-lambda, live-binder, leaf, and index charges with symbolic
 small-source classification, as described below; no source enumeration
 enters that proof. Both predate the width theorem in Lean. The current
 unconditional kernel theorem is
-`SelfintSingleObject.selfintSizeBound_44`: the single-object theorem of
+`SelfintSingleObject.selfintSizeBound_45`: the single-object theorem of
 `capture-width.md` supplies the width witness, hence four live binders, six
 leaves and index sum three (33 bits), and verified enumerations of the
-minimum sources exclude sizes 33 to 43 (*The kernel-checked bit floor*
+minimum sources exclude sizes 33 to 44 (*The kernel-checked bit floor*
 below). `global-floor.md` reaches 46 by handwritten and enumerated
 classifications with kernel-checked certificates.
 
@@ -262,8 +262,8 @@ source lambdas; the width theorem does (`interpreter_counts`).
 
 ## The kernel-checked bit floor
 
-**Every interpreter has at least 44 bits**
-(`SelfintSingleObject.selfintSizeBound_44`, `Blc/SelfintKernelFloor44.lean`;
+**Every interpreter has at least 45 bits**
+(`SelfintSingleObject.selfintSizeBound_45`, `Blc/SelfintKernelFloor45.lean`;
 Codex's Lean on Claude's single-object theorem). The chain through 36 bits
 (`Blc/SelfintSingleObject*.lean`, `selfintSizeBound_37`) is:
 
@@ -407,7 +407,32 @@ type tests (`SelfintRecursiveTypes`, the criterion of `global-floor.md`
 size; eight of its 25 rules are used), 23 regular invariants, eight
 weighted ranks, four `W`-grammar tests and one absence proof.
 
-`selfintSizeBound_38` to `_44` are stated without hypotheses and use
+Size 44 has the classes of 43 with one more index bit, and its proof is
+stated over the size. `ProfileGrid.resources` derives the five-live
+profiles from the wire identity (at 44, as lambdas, leaves and index sum,
+`(5,7,8)`, `(6,7,6)`, `(7,7,4)` and `(5,8,4)`), `ProfileGrid.expose_profile`
+exposes the shell with the lemmas above, and `ProfileGrid.advance` gives
+the bound at `n + 1` from the two refuted grids for every `n ≤ 44`. The
+grammars have 6,107 four-live and 14,812 five-live word rows over 216 and
+224 cells, 131,004 distinct sources after the static filters. A context is
+partitioned by the lambda, leaf and index budgets of its outermost sibling
+(`ShellSplit.blocks_flatten`, `frames_cover`) and, where one sibling takes
+most of the budget, by that sibling's index word and first application
+(`SiblingSplit.sides_cover`, `contexts_cover`). Two lemmas that hold at
+every size dispose of the rows whose marked atom has three live binders
+and no nonlinear one: under a public λ such a row cannot hold the two
+nonlinear sites its body needs (`SiblingSplit.public_linear`), and
+otherwise the atom contributes to the chain test what the identity does,
+so the test moves to the exterior context (`LinearShell.closed_linear`;
+six rows at `(6,7,6)` share one finite check, `LinearShell.exterior44`).
+1,574 sources are left to direct proofs: 836 finite-table grades, 464 type
+tests by eight rules of the library, 67 by five type libraries of the
+size-44 classification (56 of them by three shared tables), 83 regular
+invariants, 81 weighted ranks, 21 `W`-grammar tests, nine mismatching head
+observations, eight type derivations, three contextual reductions, the
+clock cycle of `global-floor.md` §10 and an ordered-table path.
+
+`selfintSizeBound_38` to `_45` are stated without hypotheses and use
 `propext`, `Classical.choice` and `Quot.sound`. The row and evidence
 modules for 37 to 40 are 569 generated files (`Blc/SelfintRows37` …
 `SelfintRows40`, `Selfint40Evidence`); the four sizes build in about 100,
@@ -416,8 +441,11 @@ modules for 37 to 40 are 569 generated files (`Blc/SelfintRows37` …
 `SelfintResidual42` and twelve modules of lemmas) and 18 and 34
 CPU-minutes of kernel checking; size 43 is 1,184 modules of 4.0 MB
 (`SelfintCompact43`, `SelfintResidual43` and seven modules of lemmas) and
-86 CPU-minutes, no single module above 77 seconds or 2.7 GB. STATUS has
-the forecast for the next size.
+86 CPU-minutes; size 44 is 2,343 modules of 7.8 MB (`SelfintCompact44`,
+`SelfintResidual44`, `SelfintProfileGrid` and two modules of notation) and
+210 CPU-minutes, no single module above 85 seconds or 2.7 GB. Each size
+has cost about twice the one before. STATUS has the forecast for the next
+size.
 
 The earlier route to 31 does not use the width theorem.
 `SelfintRound8BitFloor` combines the four-lambda theorem with the live and
