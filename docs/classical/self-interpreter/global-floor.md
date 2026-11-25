@@ -748,13 +748,16 @@ dead continuation or no internal width:
 | 44 | 840,144 | 425,664 | 37,568 | 188,144 |
 | 45 | 1,933,272 | 987,424 | 87,812 | 430,922 |
 
-Every candidate is excluded. Most have a finite certificate: a
-head-reduction trace to a reduct whose nonlinear binders lie on one chain,
-that is shorter than the size, has three leading lambdas, is a head normal
-form of the wrong shape or has internal width below three; or, on the
-identity source, a wrong rigid head or a normal payload other than the
-required one. The rest have complete Lean proofs of `¬ IsSelfInterpreter`:
-the `W/B` grammar of section 8, and for the residuals of the finite pass
+Every candidate is excluded. Most have a finite certificate: a checked
+sequence of β-contractions (head steps; from 44 also contractions at stated
+positions inside arguments; often empty, the layout itself showing the
+obstruction) to a reduct whose nonlinear binders lie on one chain, that is
+shorter than the size, has three leading lambdas, is a head normal form of
+the wrong shape or has internal width below three; or, on the identity
+source, a wrong rigid head or a normal payload other than the required
+one. The rest have complete Lean proofs of `¬ IsSelfInterpreter`: the `W/B`
+grammar of section 8, on the layout or on a reduct of it, and for the
+residuals of the finite pass
 
 - regular invariants of an abstract Krivine machine: a finite set of
   machine states that contains the start and a successor of each of its
@@ -774,11 +777,14 @@ the `W/B` grammar of section 8, and for the residuals of the finite pass
 - finite ordered application tables, a criterion that holds at every size
   (`ChainModel.necessary`): a finite chain of grades with a monotone
   application table whose top row is constant; a variable takes its
-  assigned grade, an application the table entry, a λ the least grade whose
-  row bounds its body at every grade of its variable. β-reduction cannot
-  raise the grade, so a call graded strictly below its required normal
-  output cannot reach it, whatever its head does. Four or five grades have
-  sufficed for every layout that needed a table;
+  assigned grade, an application the table entry, a λ the least grade, at
+  or above a floor that the table fixes, whose row bounds its body at every
+  grade of its variable. β-reduction cannot raise the grade, so a call
+  graded strictly below its required normal output cannot reach it,
+  whatever its head does; from 45 the comparison is also made after a probe
+  (`ProbeModel`), between reducts of the actual call and of the required
+  output. Four to six grades have sufficed for every layout that needed a
+  table;
 - type rules that hold at every size (`Types.lean`): finite tables of
   recursive intersection-arrow types, for which substitution and
   β-reduction preserve type membership; a rule gives a concrete invocation
@@ -854,10 +860,10 @@ finite certificate with a separately written reducer agrees
 reductions name their redex positions), and fresh-context reviews by reading
 found the inventory filters, the finite predicates, the residual statements
 and the joins between lanes correct, at size 40, at sizes 41 to 43 and at
-size 44 (`reasoning_global/consult/`); size 45 has not had one yet. No fuel
-cap or timeout refutes anything. Lean's own proof (`structural-bounds.md`)
-covers the sizes up to its bound without any of this, except for the
-residual proofs it shares.
+sizes 44 and 45 (`reasoning_global/consult/`). No fuel cap or timeout
+refutes anything. Lean's own proof (`structural-bounds.md`) covers the sizes
+up to its bound without any of this, except for the residual proofs it
+shares.
 
 ## 11. What probe families can charge
 
