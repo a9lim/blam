@@ -1,0 +1,12 @@
+import Blc.SelfintCompact45.Base
+import Blc.SelfintTagged45
+import Blc.SelfintCompact45.Frames.Data24
+import Blc.SelfintCompact45.Frames.Data26
+namespace Blc.SelfintSingleObject.Compact45
+open SourceRefutations OperandGrammar RowReplay Fast45
+set_option maxRecDepth 36000
+set_option maxHeartbeats 50000000
+set_option Elab.async false
+tagSlices g24200 on (row false false k294 5 5 2 5 [0,2,1,2,0]) byParts (fun j => piece 12 j false false k294 5 5 2 5 [0,2,1,2,0]) byCover (pieces_cover 12 (by decide) false false k294 5 5 2 5 [0,2,1,2,0]) withHints bank eachTags[[],[40,44,44,11,44,40,44,9,40,44,44,11,44,40,44,9,37,44,44,20,44,37,44,9],[1,44,44,29,44,1,44,9,1,44,44,17,44,1,44,9],[1,44,44,53,44,1,44,9,1,44,44,29,44,1,44,9],[1,44,44,17,44,1,44,9,1,44,44,31,44,1,44,9,1,44,44,17,44,1,44,9],[],[21,44,44,19,44,21,44,1,21,44,44,45,44,21,44,1,21,44,44,11,44,21,44,1],[],[],[],[44,0,44,44,27,44,0,44,2,8,8,8,44,48,8,8,44,2,8,8,8,44,27,8,8,44,2],[]] except [Floor45.e11219263874978,Floor45.e9570311458426]
+tagSlices g24201 on (row false true k318 5 5 2 5 [0,2,1,2,0]) byParts (fun j => piece 12 j false true k318 5 5 2 5 [0,2,1,2,0]) byCover (pieces_cover 12 (by decide) false true k318 5 5 2 5 [0,2,1,2,0]) withHints bank eachTags[[],[20,1,1,1,1,1,20,1,1,1,1,1,37,11,1,1,1,1],[20,1,1,1,1,1,20,1,1,1,1,1],[20,1,1,1,1,1,20,1,1,1,1,1],[20,1,1,1,1,1,20,1,1,1,1,1,20,1,1,1,1,1],[],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,14,1,1,12,37,1],[],[],[],[2,14,1,1,12,0,1,44,22,28,1,1,1,1,1,8,22,8,1,1,1,1,1,8,22,8,1,1,1,1,1,19,19,1,1,44,1,44,1,1,1],[]] except [Floor45.e2393382522490]
+end Blc.SelfintSingleObject.Compact45

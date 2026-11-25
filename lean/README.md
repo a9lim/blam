@@ -30,7 +30,7 @@ theorem not_selfintSizeBound_163 : ¬ SelfintSizeBound 163
                                                          -- propext, Quot.sound
 theorem isUniversal_uni172 : IsUniversal uni172          -- propext, Quot.sound
 theorem not_uniSizeBound_173 : ¬ UniSizeBound 173        -- propext, Quot.sound
-theorem selfintSizeBound_45 : SelfintSizeBound 45
+theorem selfintSizeBound_46 : SelfintSizeBound 46
                                     -- propext, Classical.choice, Quot.sound
 ```
 
@@ -40,7 +40,7 @@ wire by `wire_intL`) is a self-interpreter: for every closed `M` and any terms
 `C`, `N`, `intL C (⌜M⌝ ++ N)` β-reduces to `C (λz. M) N`. So are the 165-bit
 `intL165` (`wire_intL165`) and the 162-bit `intL162` (`wire_intL162`), so no
 self-interpreter size bound above 162 holds; every self-interpreter has at
-least 45 bits (`SelfintSingleObject.selfintSizeBound_45`). Each gives universal machines,
+least 46 bits (`SelfintSingleObject.selfintSizeBound_46`). Each gives universal machines,
 `U (⌜M⌝ ++ N) →β* M N` for every closed `M`, in both of Tromp's wirings: the
 162 the 172 and the strict 184, the 165 the 175 and 187, and the 168 Tromp's
 own 178 and 190 (`IsUniversal`, each pinned to its wire), so no universal
@@ -537,6 +537,25 @@ Self-interpretation:
   (`SiblingSplit.public_linear`, `LinearShell.closed_linear`);
   `SelfintFiniteChain.appEq`; declaration macros for the recurring row
   proofs; `selfintSizeBound_45`.
+- `Blc/SelfintKernelFloor46.lean` with `SelfintSize45Profiles`,
+  `SelfintSize45Cover`, `SelfintExactWidth45`, `SelfintSaturatedEight`,
+  `SelfintWordMeasures`, `SelfintPositiveWord45`, `SelfintFast45`,
+  `SelfintSplit45`, `SelfintTagged45`, `SelfintCachedCover45`,
+  `SelfintFrameCertificate45`, `SelfintFramePieces45`,
+  `SelfintGridCertificate45`, `SelfintTreeWords45`, `SelfintTreeCase45`,
+  `SelfintTreeCover45`, and the generated `SelfintCompact45/` and
+  `SelfintResidual45/` — the kernel-checked floor `SelfintSizeBound 46`:
+  the profiles at 45 bits (`Size45.resources`); six live binders
+  (`Size45.six_exact`, `consecutive_of_saturated`: two nonlinear binders,
+  at most two occurrences each, the witness's two nearest binders once
+  each); the saturated profile with one dead binder
+  (`SaturatedEight.constId_operand`, `exterior`; `Size45.expose_eight`,
+  `eight_mem_grid`); contexts filtered before pairing
+  (`Fast45.fits_required`), marked words with two positive leaves
+  (`OperandGrammar.marked_positive`), a grammar by application tree
+  (`TreeWords.term_mem`, `marked_word`) and context caches checked by
+  sibling word (`FrameCertificate.by_words`, `word_of_pieces`);
+  `Size45.advance` and `selfintSizeBound_46`.
 - `Blc/SelfintFourLiveWitness.lean` — the live-binder minimum is exactly
   four (`minimum_live`): `U = λa b c. a (λ_⁴.c) c (b c)` is a one-point
   applicative basis (`kTree_ok`, `sTree_ok`, `iTree_ok`); bracket

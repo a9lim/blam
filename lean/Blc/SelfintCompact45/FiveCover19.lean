@@ -1,0 +1,52 @@
+import Blc.SelfintGridCertificate45
+import Blc.SelfintCompact45.Frames.Proof114
+import Blc.SelfintCompact45.Frames.Proof115
+import Blc.SelfintCompact45.Frames.Proof116
+import Blc.SelfintCompact45.Frames.Proof117
+import Blc.SelfintCompact45.Frames.Proof118
+import Blc.SelfintCompact45.Frames.Proof119
+import Blc.SelfintCompact45.G0165
+import Blc.SelfintCompact45.G0166
+import Blc.SelfintCompact45.G0167
+import Blc.SelfintCompact45.G0168
+import Blc.SelfintCompact45.G0169
+import Blc.SelfintCompact45.G0170
+import Blc.SelfintCompact45.G0171
+import Blc.SelfintCompact45.G0172
+import Blc.SelfintCompact45.G0173
+import Blc.SelfintCompact45.G0174
+import Blc.SelfintCompact45.G0175
+import Blc.SelfintCompact45.G0176
+import Blc.SelfintCompact45.G0177
+import Blc.SelfintCompact45.G0178
+import Blc.SelfintCompact45.G0179
+import Blc.SelfintCompact45.G0180
+import Blc.SelfintCompact45.G0181
+import Blc.SelfintCompact45.G0182
+import Blc.SelfintCompact45.G0183
+import Blc.SelfintCompact45.G0184
+import Blc.SelfintCompact45.G0185
+import Blc.SelfintCompact45.G0186
+import Blc.SelfintCompact45.G0187
+import Blc.SelfintCompact45.G0188
+import Blc.SelfintCompact45.G0189
+import Blc.SelfintCompact45.G0190
+import Blc.SelfintRowCoverNotation
+import Blc.SelfintSize45Profiles
+namespace Blc.SelfintSingleObject.Compact45
+open SourceRefutations OperandGrammar Grammar43 Fast45
+set_option maxRecDepth 32000
+set_option Elab.async false
+theorem fiveCell114 : Five ⟨7,6,7,false,6,3,3⟩ :=
+  five_cell ⟨7,6,7,false,6,3,3⟩ k114 cf114 rowProofs%[g14536,g14538,g14540,g14542,g14544,g14546,g14548,g14550,g14552,g14554,g14556,g14558,g14560,g14562,g14564,g14566,g14568,g14570,g14572,g14574,g14576,g14578,g14580,g14582,g14584,g14586,g14588,g14590]
+theorem fiveCell115 : Five ⟨7,6,7,false,6,3,4⟩ :=
+  five_cell ⟨7,6,7,false,6,3,4⟩ k115 cf115 rowProofs%[g14592,g14594,g14596,g14598,g14600,g14602,g14604,g14606,g14608,g14610,g14612,g14614,g14616,g14618,g14620,g14622,g14624,g14626,g14628,g14630,g14632,g14634,g14636,g14638,g14640,g14642,g14644,g14646,g14648,g14650,g14652,g14654,g14656,g14658,g14660,g14662,g14664,g14666,g14668,g14670,g14672,g14674,g14676,g14678,g14680,g14682,g14684,g14686,g14688,g14690,g14692,g14694,g14696,g14698,g14700,g14702,g14704,g14706,g14708,g14710,g14712,g14714,g14716,g14718,g14720,g14722,g14724,g14726,g14728,g14730,g14732,g14734,g14736,g14738,g14740,g14742,g14744,g14746,g14748,g14750,g14752,g14754,g14756,g14758]
+theorem fiveCell116 : Five ⟨7,6,7,false,6,3,5⟩ :=
+  five_cell ⟨7,6,7,false,6,3,5⟩ k116 cf116 rowProofs%[g14760,g14762,g14764,g14766,g14768,g14770,g14772,g14774,g14776,g14778,g14780,g14782,g14784,g14786,g14788,g14790,g14792,g14794,g14796,g14798,g14800,g14802,g14804,g14806,g14808,g14810,g14812,g14814,g14816,g14818,g14820,g14822,g14824,g14826,g14828,g14830,g14832,g14834,g14836,g14838,g14840,g14842,g14844,g14846,g14848,g14850,g14852,g14854,g14856,g14858,g14860,g14862,g14864,g14866,g14868,g14870,g14872,g14874,g14876,g14878,g14880,g14882,g14884,g14886,g14888,g14890,g14892,g14894,g14896,g14898,g14900,g14902,g14904,g14906,g14908,g14910,g14912,g14914,g14916,g14918,g14920,g14922,g14924,g14926,g14928,g14930,g14932,g14934,g14936,g14938,g14940,g14942,g14944,g14946,g14948,g14950,g14952,g14954,g14956,g14958,g14960,g14962,g14964,g14966,g14968,g14970,g14972,g14974,g14976,g14978,g14980,g14982,g14984,g14986,g14988,g14990,g14992,g14994,g14996,g14998,g15000,g15002,g15004,g15006,g15008,g15010,g15012,g15014,g15016,g15018,g15020,g15022,g15024,g15026,g15028,g15030,g15032,g15034,g15036,g15038,g15040,g15042,g15044,g15046,g15048,g15050,g15052,g15054,g15056,g15058,g15060,g15062,g15064,g15066,g15068,g15070,g15072,g15074,g15076,g15078,g15080,g15082,g15084,g15086,g15088,g15090,g15092,g15094,g15096,g15098,g15100,g15102,g15104,g15106,g15108,g15110,g15112,g15114,g15116,g15118,g15120,g15122,g15124,g15126,g15128,g15130,g15132,g15134,g15136,g15138,g15140,g15142,g15144,g15146,g15148,g15150,g15152,g15154,g15156,g15158,g15160,g15162,g15164,g15166,g15168,g15170,g15172,g15174,g15176,g15178]
+theorem fiveCell117 : Five ⟨7,6,7,false,6,4,3⟩ :=
+  five_empty ⟨7,6,7,false,6,4,3⟩ cf117
+theorem fiveCell118 : Five ⟨7,6,7,false,6,4,4⟩ :=
+  five_empty ⟨7,6,7,false,6,4,4⟩ cf118
+theorem fiveCell119 : Five ⟨7,6,7,false,6,4,5⟩ :=
+  five_empty ⟨7,6,7,false,6,4,5⟩ cf119
+end Blc.SelfintSingleObject.Compact45

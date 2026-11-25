@@ -3,13 +3,13 @@
 **Theorem.** Every closed interpreter for the repository's beta-exact,
 closed-source contract has BLC length at least **46**.
 
-Lean proves **45** of these bits end to end
-(`SelfintSingleObject.selfintSizeBound_45`), by a classification of its own
+Lean proves the theorem end to end
+(`SelfintSingleObject.selfintSizeBound_46`), by a classification of its own
 that needs nothing from this document except the divergence proofs of a few
-residuals (`structural-bounds.md`, *The kernel-checked bit floor*). Size 45
-rests on the route recorded here, which also reaches the sizes below it:
-handwritten classifications through 39 and complete enumerations from 40,
-with kernel-checked certificates.
+residuals (`structural-bounds.md`, *The kernel-checked bit floor*). What
+follows is the record's other route to the same number: handwritten
+classifications through 39 and complete enumerations from 40, with
+kernel-checked certificates.
 
 The proof has four layers. Sections 1–5 are Codex's handwritten proof of
 37: the counting argument of `capture-width.md` gives 33 and excludes it,

@@ -1,0 +1,20 @@
+import Blc.SelfintPositiveWord45
+import Blc.SelfintCompact45.Base
+import Blc.SelfintTagged45
+import Blc.SelfintCompact45.Frames.Data27
+import Blc.SelfintCompact45.Frames.Data28
+namespace Blc.SelfintSingleObject.Compact45
+open SourceRefutations OperandGrammar RowReplay Fast45
+set_option maxRecDepth 36000
+set_option maxHeartbeats 50000000
+set_option Elab.async false
+tagSlices g26485 on (row true true k347 6 3 4 6 [1,0,2,0,0,0]) byParts (fun j => piece 12 j true true k347 6 3 4 6 [1,0,2,0,0,0]) byCover (pieces_cover 12 (by decide) true true k347 6 3 4 6 [1,0,2,0,0,0]) withHints bank eachTags[[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],[],[],[],[],[],[],[],[],[],[],[]] except []
+theorem g26486 : BadRow (row true false k335 6 3 4 6 [1,1,0,0,0,1]) := sparse_row true false k335 6 3 4 6 [1,1,0,0,0,1] (by decide)
+theorem g26487 : BadRow (row true true k347 6 3 4 6 [1,1,0,0,0,1]) := sparse_row true true k347 6 3 4 6 [1,1,0,0,0,1] (by decide)
+theorem g26488 : BadRow (row true false k335 6 3 4 6 [1,1,0,0,1,0]) := sparse_row true false k335 6 3 4 6 [1,1,0,0,1,0] (by decide)
+theorem g26489 : BadRow (row true true k347 6 3 4 6 [1,1,0,0,1,0]) := sparse_row true true k347 6 3 4 6 [1,1,0,0,1,0] (by decide)
+theorem g26490 : BadRow (row true false k335 6 3 4 6 [1,1,0,1,0,0]) := sparse_row true false k335 6 3 4 6 [1,1,0,1,0,0] (by decide)
+theorem g26491 : BadRow (row true true k347 6 3 4 6 [1,1,0,1,0,0]) := sparse_row true true k347 6 3 4 6 [1,1,0,1,0,0] (by decide)
+theorem g26492 : BadRow (row true false k335 6 3 4 6 [1,1,1,0,0,0]) := sparse_row true false k335 6 3 4 6 [1,1,1,0,0,0] (by decide)
+theorem g26493 : BadRow (row true true k347 6 3 4 6 [1,1,1,0,0,0]) := sparse_row true true k347 6 3 4 6 [1,1,1,0,0,0] (by decide)
+end Blc.SelfintSingleObject.Compact45

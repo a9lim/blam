@@ -1,0 +1,12 @@
+import Blc.SelfintCompact45.TreeF1158Base
+import Blc.SelfintTreeCase45
+namespace Blc.SelfintSingleObject.Compact45
+open SourceRefutations OperandGrammar TreeWords
+set_option maxRecDepth 30000
+set_option maxHeartbeats 30000000
+set_option Elab.async false
+treeCase f1158Tree20 on (tuf1158 sh6x20) withHints bank eachTags[[],[],[],[]] except thf1158
+treeCase f1158Tree21 on (tuf1158 sh6x21) withHints bank eachTags[[6],[],[6],[6]] except thf1158
+treeCase f1158Tree22 on (tuf1158 sh6x22) withHints bank eachTags[[],[],[],[]] except thf1158
+treeCase f1158Tree23 on (tuf1158 sh6x23) withHints bank eachTags[[6],[],[],[]] except thf1158
+end Blc.SelfintSingleObject.Compact45

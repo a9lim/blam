@@ -1,0 +1,392 @@
+import Blc.SelfintResidual45.Guided
+import Blc.SelfintResidual45.Probe9540465251246D0
+
+set_option Elab.async false
+namespace Blc.Floor45.Probe9540465251246
+open Term SelfintLowerBound SelfintControl SelfintSharp SelfintFiniteChain Round3Floor38
+set_option maxRecDepth 24000
+set_option maxHeartbeats 4000000
+
+theorem q157 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 4) (h2 : e 2 = 2) : Typed Op64d01e7a837a.G e lit6 4 := .app (q90 e h0 h1) (q129 e h2) (by decide)
+theorem q158 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 4) (h2 : e 2 = 2) : Typed Op64d01e7a837a.G e lit6 4 := .app (q93 e h0 h1) (q129 e h2) (by decide)
+theorem q159 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 2) : Typed Op64d01e7a837a.G e lit7 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q154 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q155 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q156 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q157 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q158 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q160 (e : Env 4) (h0 : e 0 = 2) : Typed Op64d01e7a837a.G e lit8 2 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q135 (push 0 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q141 (push 1 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q147 (push 2 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q153 (push 3 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q159 (push 4 e) rfl h0).weaken _ (by decide)
+theorem q161 (e : Env 4) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit5 3 := .var _ _ (by rw [h2]; decide)
+theorem q162 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 0) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 0 := .app (q4 e h0 h1) (q161 e h2) (by decide)
+theorem q163 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 0) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 0 := .app (q10 e h0 h1) (q161 e h2) (by decide)
+theorem q164 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 0) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 0 := .app (q15 e h0 h1) (q161 e h2) (by decide)
+theorem q165 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 0) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q20 e h0 h1) (q161 e h2) (by decide)
+theorem q166 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 0) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 4 := .app (q25 e h0 h1) (q161 e h2) (by decide)
+theorem q167 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 3) : Typed Op64d01e7a837a.G e lit7 1 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q162 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q163 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q164 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q165 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q166 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q168 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 1) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 0 := .app (q30 e h0 h1) (q161 e h2) (by decide)
+theorem q169 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 1) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q33 e h0 h1) (q161 e h2) (by decide)
+theorem q170 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 1) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q36 e h0 h1) (q161 e h2) (by decide)
+theorem q171 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 1) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q39 e h0 h1) (q161 e h2) (by decide)
+theorem q172 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 1) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 4 := .app (q42 e h0 h1) (q161 e h2) (by decide)
+theorem q173 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 3) : Typed Op64d01e7a837a.G e lit7 1 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q168 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q169 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q170 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q171 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q172 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q174 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 2) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 0 := .app (q47 e h0 h1) (q161 e h2) (by decide)
+theorem q175 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 2) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q50 e h0 h1) (q161 e h2) (by decide)
+theorem q176 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 2) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q53 e h0 h1) (q161 e h2) (by decide)
+theorem q177 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 2) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q56 e h0 h1) (q161 e h2) (by decide)
+theorem q178 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 2) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 4 := .app (q59 e h0 h1) (q161 e h2) (by decide)
+theorem q179 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 3) : Typed Op64d01e7a837a.G e lit7 1 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q174 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q175 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q176 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q177 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q178 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q180 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 3) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 0 := .app (q64 e h0 h1) (q161 e h2) (by decide)
+theorem q181 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 3) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q67 e h0 h1) (q161 e h2) (by decide)
+theorem q182 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 3) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q70 e h0 h1) (q161 e h2) (by decide)
+theorem q183 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 3) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 1 := .app (q73 e h0 h1) (q161 e h2) (by decide)
+theorem q184 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 3) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 4 := .app (q76 e h0 h1) (q161 e h2) (by decide)
+theorem q185 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 3) : Typed Op64d01e7a837a.G e lit7 1 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q180 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q181 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q182 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q183 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q184 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q186 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 4) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 2 := .app (q81 e h0 h1) (q161 e h2) (by decide)
+theorem q187 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 4) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 4 := .app (q84 e h0 h1) (q161 e h2) (by decide)
+theorem q188 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 4) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 4 := .app (q87 e h0 h1) (q161 e h2) (by decide)
+theorem q189 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 4) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 4 := .app (q90 e h0 h1) (q161 e h2) (by decide)
+theorem q190 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 4) (h2 : e 2 = 3) : Typed Op64d01e7a837a.G e lit6 4 := .app (q93 e h0 h1) (q161 e h2) (by decide)
+theorem q191 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 3) : Typed Op64d01e7a837a.G e lit7 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q186 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q187 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q188 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q189 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q190 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q192 (e : Env 4) (h0 : e 0 = 3) : Typed Op64d01e7a837a.G e lit8 2 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q167 (push 0 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q173 (push 1 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q179 (push 2 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q185 (push 3 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q191 (push 4 e) rfl h0).weaken _ (by decide)
+theorem q193 (e : Env 4) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit5 4 := .var _ _ (by rw [h2]; decide)
+theorem q194 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 0) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 2 := .app (q4 e h0 h1) (q193 e h2) (by decide)
+theorem q195 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 0) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 2 := .app (q10 e h0 h1) (q193 e h2) (by decide)
+theorem q196 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 0) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 2 := .app (q15 e h0 h1) (q193 e h2) (by decide)
+theorem q197 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 0) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q20 e h0 h1) (q193 e h2) (by decide)
+theorem q198 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 0) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q25 e h0 h1) (q193 e h2) (by decide)
+theorem q199 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit7 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q194 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q195 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q196 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q197 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q198 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q200 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 1) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 2 := .app (q30 e h0 h1) (q193 e h2) (by decide)
+theorem q201 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 1) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q33 e h0 h1) (q193 e h2) (by decide)
+theorem q202 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 1) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q36 e h0 h1) (q193 e h2) (by decide)
+theorem q203 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 1) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q39 e h0 h1) (q193 e h2) (by decide)
+theorem q204 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 1) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q42 e h0 h1) (q193 e h2) (by decide)
+theorem q205 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit7 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q200 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q201 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q202 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q203 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q204 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q206 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 2) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 2 := .app (q47 e h0 h1) (q193 e h2) (by decide)
+theorem q207 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 2) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q50 e h0 h1) (q193 e h2) (by decide)
+theorem q208 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 2) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q53 e h0 h1) (q193 e h2) (by decide)
+theorem q209 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 2) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q56 e h0 h1) (q193 e h2) (by decide)
+theorem q210 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 2) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q59 e h0 h1) (q193 e h2) (by decide)
+theorem q211 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit7 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q206 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q207 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q208 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q209 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q210 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q212 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 3) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 2 := .app (q64 e h0 h1) (q193 e h2) (by decide)
+theorem q213 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 3) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q67 e h0 h1) (q193 e h2) (by decide)
+theorem q214 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 3) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q70 e h0 h1) (q193 e h2) (by decide)
+theorem q215 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 3) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q73 e h0 h1) (q193 e h2) (by decide)
+theorem q216 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 3) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q76 e h0 h1) (q193 e h2) (by decide)
+theorem q217 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit7 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q212 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q213 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q214 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q215 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q216 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q218 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 4) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q81 e h0 h1) (q193 e h2) (by decide)
+theorem q219 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 4) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q84 e h0 h1) (q193 e h2) (by decide)
+theorem q220 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 4) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q87 e h0 h1) (q193 e h2) (by decide)
+theorem q221 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 4) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q90 e h0 h1) (q193 e h2) (by decide)
+theorem q222 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 4) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit6 4 := .app (q93 e h0 h1) (q193 e h2) (by decide)
+theorem q223 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit7 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q218 (push 0 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q219 (push 1 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q220 (push 2 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q221 (push 3 e) rfl h0 h1).weaken _ (by decide)
+  · subst a; exact (q222 (push 4 e) rfl h0 h1).weaken _ (by decide)
+theorem q224 (e : Env 4) (h0 : e 0 = 4) : Typed Op64d01e7a837a.G e lit8 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q199 (push 0 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q205 (push 1 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q211 (push 2 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q217 (push 3 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q223 (push 4 e) rfl h0).weaken _ (by decide)
+theorem q225 (e : Env 4)  : Typed Op64d01e7a837a.G e lit9 3 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q96 (push 0 e) rfl).weaken _ (by decide)
+  · subst a; exact (q128 (push 1 e) rfl).weaken _ (by decide)
+  · subst a; exact (q160 (push 2 e) rfl).weaken _ (by decide)
+  · subst a; exact (q192 (push 3 e) rfl).weaken _ (by decide)
+  · subst a; exact (q224 (push 4 e) rfl).weaken _ (by decide)
+theorem q226 (e : Env 4) (h0 : e 0 = 0) : Typed Op64d01e7a837a.G e lit10 2 := .app (q225 e) (q0 e h0) (by decide)
+theorem q227 (e : Env 4) (h0 : e 0 = 0) : Typed Op64d01e7a837a.G e lit11 0 := .app (q1 e h0) (q226 e h0) (by decide)
+theorem q228 (e : Env 4) (h0 : e 0 = 0) : Typed Op64d01e7a837a.G e lit12 0 := .app (q227 e h0) (q225 e) (by decide)
+theorem q229 (e : Env 4) (h0 : e 0 = 1) : Typed Op64d01e7a837a.G e lit10 2 := .app (q225 e) (q7 e h0) (by decide)
+theorem q230 (e : Env 4) (h0 : e 0 = 1) : Typed Op64d01e7a837a.G e lit11 1 := .app (q8 e h0) (q229 e h0) (by decide)
+theorem q231 (e : Env 4) (h0 : e 0 = 1) : Typed Op64d01e7a837a.G e lit12 1 := .app (q230 e h0) (q225 e) (by decide)
+theorem q232 (e : Env 4) (h0 : e 0 = 2) : Typed Op64d01e7a837a.G e lit10 2 := .app (q225 e) (q12 e h0) (by decide)
+theorem q233 (e : Env 4) (h0 : e 0 = 2) : Typed Op64d01e7a837a.G e lit11 1 := .app (q13 e h0) (q232 e h0) (by decide)
+theorem q234 (e : Env 4) (h0 : e 0 = 2) : Typed Op64d01e7a837a.G e lit12 1 := .app (q233 e h0) (q225 e) (by decide)
+theorem q235 (e : Env 4) (h0 : e 0 = 3) : Typed Op64d01e7a837a.G e lit10 2 := .app (q225 e) (q17 e h0) (by decide)
+theorem q236 (e : Env 4) (h0 : e 0 = 3) : Typed Op64d01e7a837a.G e lit11 1 := .app (q18 e h0) (q235 e h0) (by decide)
+theorem q237 (e : Env 4) (h0 : e 0 = 3) : Typed Op64d01e7a837a.G e lit12 1 := .app (q236 e h0) (q225 e) (by decide)
+theorem q238 (e : Env 4) (h0 : e 0 = 4) : Typed Op64d01e7a837a.G e lit10 4 := .app (q225 e) (q22 e h0) (by decide)
+theorem q239 (e : Env 4) (h0 : e 0 = 4) : Typed Op64d01e7a837a.G e lit11 4 := .app (q23 e h0) (q238 e h0) (by decide)
+theorem q240 (e : Env 4) (h0 : e 0 = 4) : Typed Op64d01e7a837a.G e lit12 4 := .app (q239 e h0) (q225 e) (by decide)
+theorem q241 (e : Env 4)  : Typed Op64d01e7a837a.G e lit13 1 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q228 (push 0 e) rfl).weaken _ (by decide)
+  · subst a; exact (q231 (push 1 e) rfl).weaken _ (by decide)
+  · subst a; exact (q234 (push 2 e) rfl).weaken _ (by decide)
+  · subst a; exact (q237 (push 3 e) rfl).weaken _ (by decide)
+  · subst a; exact (q240 (push 4 e) rfl).weaken _ (by decide)
+theorem q242 (e : Env 4)  : Typed Op64d01e7a837a.G e lit14 1 := .app (q241 e) (q225 e) (by decide)
+theorem q243 (e : Env 4) (h1 : e 1 = 0) : Typed Op64d01e7a837a.G e lit15 0 := .app (q242 e) (q2 e h1) (by decide)
+theorem q244 (e : Env 4) (h0 : e 0 = 0) : Typed Op64d01e7a837a.G e lit16 0 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q2 (push 0 e) h0).weaken _ (by decide)
+  · subst a; exact (q2 (push 1 e) h0).weaken _ (by decide)
+  · subst a; exact (q2 (push 2 e) h0).weaken _ (by decide)
+  · subst a; exact (q2 (push 3 e) h0).weaken _ (by decide)
+  · subst a; exact (q2 (push 4 e) h0).weaken _ (by decide)
+theorem q245 (e : Env 4) (h0 : e 0 = 1) : Typed Op64d01e7a837a.G e lit16 2 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q28 (push 0 e) h0).weaken _ (by decide)
+  · subst a; exact (q28 (push 1 e) h0).weaken _ (by decide)
+  · subst a; exact (q28 (push 2 e) h0).weaken _ (by decide)
+  · subst a; exact (q28 (push 3 e) h0).weaken _ (by decide)
+  · subst a; exact (q28 (push 4 e) h0).weaken _ (by decide)
+theorem q246 (e : Env 4) (h0 : e 0 = 2) : Typed Op64d01e7a837a.G e lit16 3 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q45 (push 0 e) h0).weaken _ (by decide)
+  · subst a; exact (q45 (push 1 e) h0).weaken _ (by decide)
+  · subst a; exact (q45 (push 2 e) h0).weaken _ (by decide)
+  · subst a; exact (q45 (push 3 e) h0).weaken _ (by decide)
+  · subst a; exact (q45 (push 4 e) h0).weaken _ (by decide)
+theorem q247 (e : Env 4) (h0 : e 0 = 3) : Typed Op64d01e7a837a.G e lit16 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q62 (push 0 e) h0).weaken _ (by decide)
+  · subst a; exact (q62 (push 1 e) h0).weaken _ (by decide)
+  · subst a; exact (q62 (push 2 e) h0).weaken _ (by decide)
+  · subst a; exact (q62 (push 3 e) h0).weaken _ (by decide)
+  · subst a; exact (q62 (push 4 e) h0).weaken _ (by decide)
+theorem q248 (e : Env 4) (h0 : e 0 = 4) : Typed Op64d01e7a837a.G e lit16 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q79 (push 0 e) h0).weaken _ (by decide)
+  · subst a; exact (q79 (push 1 e) h0).weaken _ (by decide)
+  · subst a; exact (q79 (push 2 e) h0).weaken _ (by decide)
+  · subst a; exact (q79 (push 3 e) h0).weaken _ (by decide)
+  · subst a; exact (q79 (push 4 e) h0).weaken _ (by decide)
+theorem q249 (e : Env 4)  : Typed Op64d01e7a837a.G e lit17 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q244 (push 0 e) rfl).weaken _ (by decide)
+  · subst a; exact (q245 (push 1 e) rfl).weaken _ (by decide)
+  · subst a; exact (q246 (push 2 e) rfl).weaken _ (by decide)
+  · subst a; exact (q247 (push 3 e) rfl).weaken _ (by decide)
+  · subst a; exact (q248 (push 4 e) rfl).weaken _ (by decide)
+theorem q250 (e : Env 4) (h0 : e 0 = 0) : Typed Op64d01e7a837a.G e lit18 2 := .app (q0 e h0) (q249 e) (by decide)
+theorem q251 (e : Env 4)  : Typed Op64d01e7a837a.G e lit19 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q0 (push 0 e) rfl).weaken _ (by decide)
+  · subst a; exact (q7 (push 1 e) rfl).weaken _ (by decide)
+  · subst a; exact (q12 (push 2 e) rfl).weaken _ (by decide)
+  · subst a; exact (q17 (push 3 e) rfl).weaken _ (by decide)
+  · subst a; exact (q22 (push 4 e) rfl).weaken _ (by decide)
+theorem q252 (e : Env 4)  : Typed Op64d01e7a837a.G e lit20 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q251 (push 0 e)).weaken _ (by decide)
+  · subst a; exact (q251 (push 1 e)).weaken _ (by decide)
+  · subst a; exact (q251 (push 2 e)).weaken _ (by decide)
+  · subst a; exact (q251 (push 3 e)).weaken _ (by decide)
+  · subst a; exact (q251 (push 4 e)).weaken _ (by decide)
+theorem q253 (e : Env 4) (h0 : e 0 = 0) : Typed Op64d01e7a837a.G e lit21 2 := .app (q0 e h0) (q252 e) (by decide)
+theorem q254 (e : Env 4) (h4 : e 4 = 4) : Typed Op64d01e7a837a.G e lit22 4 := .var _ _ (by rw [h4]; decide)
+theorem q255 (e : Env 4) (h0 : e 0 = 0) (h4 : e 4 = 4) : Typed Op64d01e7a837a.G e lit23 4 := .app (q250 e h0) (q254 e h4) (by decide)
+theorem q256 (e : Env 4) (h0 : e 0 = 1) : Typed Op64d01e7a837a.G e lit18 4 := .app (q7 e h0) (q249 e) (by decide)
+theorem q257 (e : Env 4) (h0 : e 0 = 1) (h4 : e 4 = 4) : Typed Op64d01e7a837a.G e lit23 4 := .app (q256 e h0) (q254 e h4) (by decide)
+theorem q258 (e : Env 4) (h0 : e 0 = 2) : Typed Op64d01e7a837a.G e lit18 4 := .app (q12 e h0) (q249 e) (by decide)
+theorem q259 (e : Env 4) (h0 : e 0 = 2) (h4 : e 4 = 4) : Typed Op64d01e7a837a.G e lit23 4 := .app (q258 e h0) (q254 e h4) (by decide)
+theorem q260 (e : Env 4) (h0 : e 0 = 3) : Typed Op64d01e7a837a.G e lit18 4 := .app (q17 e h0) (q249 e) (by decide)
+theorem q261 (e : Env 4) (h0 : e 0 = 3) (h4 : e 4 = 4) : Typed Op64d01e7a837a.G e lit23 4 := .app (q260 e h0) (q254 e h4) (by decide)
+theorem q262 (e : Env 4) (h0 : e 0 = 4) : Typed Op64d01e7a837a.G e lit18 4 := .app (q22 e h0) (q249 e) (by decide)
+theorem q263 (e : Env 4) (h0 : e 0 = 4) (h4 : e 4 = 4) : Typed Op64d01e7a837a.G e lit23 4 := .app (q262 e h0) (q254 e h4) (by decide)
+theorem q264 (e : Env 4) (h3 : e 3 = 4) : Typed Op64d01e7a837a.G e lit24 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q255 (push 0 e) rfl h3).weaken _ (by decide)
+  · subst a; exact (q257 (push 1 e) rfl h3).weaken _ (by decide)
+  · subst a; exact (q259 (push 2 e) rfl h3).weaken _ (by decide)
+  · subst a; exact (q261 (push 3 e) rfl h3).weaken _ (by decide)
+  · subst a; exact (q263 (push 4 e) rfl h3).weaken _ (by decide)
+theorem q265 (e : Env 4) (h0 : e 0 = 0) (h3 : e 3 = 4) : Typed Op64d01e7a837a.G e lit25 4 := .app (q253 e h0) (q264 e h3) (by decide)
+theorem q266 (e : Env 4) (h0 : e 0 = 1) : Typed Op64d01e7a837a.G e lit21 4 := .app (q7 e h0) (q252 e) (by decide)
+theorem q267 (e : Env 4) (h0 : e 0 = 1) (h3 : e 3 = 4) : Typed Op64d01e7a837a.G e lit25 4 := .app (q266 e h0) (q264 e h3) (by decide)
+theorem q268 (e : Env 4) (h0 : e 0 = 2) : Typed Op64d01e7a837a.G e lit21 4 := .app (q12 e h0) (q252 e) (by decide)
+theorem q269 (e : Env 4) (h0 : e 0 = 2) (h3 : e 3 = 4) : Typed Op64d01e7a837a.G e lit25 4 := .app (q268 e h0) (q264 e h3) (by decide)
+theorem q270 (e : Env 4) (h0 : e 0 = 3) : Typed Op64d01e7a837a.G e lit21 4 := .app (q17 e h0) (q252 e) (by decide)
+theorem q271 (e : Env 4) (h0 : e 0 = 3) (h3 : e 3 = 4) : Typed Op64d01e7a837a.G e lit25 4 := .app (q270 e h0) (q264 e h3) (by decide)
+theorem q272 (e : Env 4) (h0 : e 0 = 4) : Typed Op64d01e7a837a.G e lit21 4 := .app (q22 e h0) (q252 e) (by decide)
+theorem q273 (e : Env 4) (h0 : e 0 = 4) (h3 : e 3 = 4) : Typed Op64d01e7a837a.G e lit25 4 := .app (q272 e h0) (q264 e h3) (by decide)
+theorem q274 (e : Env 4) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit26 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q265 (push 0 e) rfl h2).weaken _ (by decide)
+  · subst a; exact (q267 (push 1 e) rfl h2).weaken _ (by decide)
+  · subst a; exact (q269 (push 2 e) rfl h2).weaken _ (by decide)
+  · subst a; exact (q271 (push 3 e) rfl h2).weaken _ (by decide)
+  · subst a; exact (q273 (push 4 e) rfl h2).weaken _ (by decide)
+theorem q275 (e : Env 4) (h0 : e 0 = 0) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit27 4 := .app (q250 e h0) (q274 e h2) (by decide)
+theorem q276 (e : Env 4) (h0 : e 0 = 1) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit27 4 := .app (q256 e h0) (q274 e h2) (by decide)
+theorem q277 (e : Env 4) (h0 : e 0 = 2) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit27 4 := .app (q258 e h0) (q274 e h2) (by decide)
+theorem q278 (e : Env 4) (h0 : e 0 = 3) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit27 4 := .app (q260 e h0) (q274 e h2) (by decide)
+theorem q279 (e : Env 4) (h0 : e 0 = 4) (h2 : e 2 = 4) : Typed Op64d01e7a837a.G e lit27 4 := .app (q262 e h0) (q274 e h2) (by decide)
+theorem q280 (e : Env 4) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit28 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q275 (push 0 e) rfl h1).weaken _ (by decide)
+  · subst a; exact (q276 (push 1 e) rfl h1).weaken _ (by decide)
+  · subst a; exact (q277 (push 2 e) rfl h1).weaken _ (by decide)
+  · subst a; exact (q278 (push 3 e) rfl h1).weaken _ (by decide)
+  · subst a; exact (q279 (push 4 e) rfl h1).weaken _ (by decide)
+theorem q281 (e : Env 4) (h0 : e 0 = 0) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit29 4 := .app (q250 e h0) (q280 e h1) (by decide)
+theorem q282 (e : Env 4) (h0 : e 0 = 1) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit29 4 := .app (q256 e h0) (q280 e h1) (by decide)
+theorem q283 (e : Env 4) (h0 : e 0 = 2) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit29 4 := .app (q258 e h0) (q280 e h1) (by decide)
+theorem q284 (e : Env 4) (h0 : e 0 = 3) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit29 4 := .app (q260 e h0) (q280 e h1) (by decide)
+theorem q285 (e : Env 4) (h0 : e 0 = 4) (h1 : e 1 = 4) : Typed Op64d01e7a837a.G e lit29 4 := .app (q262 e h0) (q280 e h1) (by decide)
+theorem q286 (e : Env 4) (h0 : e 0 = 4) : Typed Op64d01e7a837a.G e lit30 4 := by
+  apply Typed.lam (by decide)
+  intro a
+  have hcases : a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4 := (by decide : ∀ a : Fin 5, a=0 ∨ a=1 ∨ a=2 ∨ a=3 ∨ a=4) a
+  rcases hcases with el | el | el | el | el
+  · subst a; exact (q281 (push 0 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q282 (push 1 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q283 (push 2 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q284 (push 3 e) rfl h0).weaken _ (by decide)
+  · subst a; exact (q285 (push 4 e) rfl h0).weaken _ (by decide)
+end Blc.Floor45.Probe9540465251246

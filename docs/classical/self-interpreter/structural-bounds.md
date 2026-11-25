@@ -81,11 +81,11 @@ combines source-lambda, live-binder, leaf, and index charges with symbolic
 small-source classification, as described below; no source enumeration
 enters that proof. Both predate the width theorem in Lean. The current
 unconditional kernel theorem is
-`SelfintSingleObject.selfintSizeBound_45`: the single-object theorem of
+`SelfintSingleObject.selfintSizeBound_46`: the single-object theorem of
 `capture-width.md` supplies the width witness, hence four live binders, six
 leaves and index sum three (33 bits), and verified enumerations of the
-minimum sources exclude sizes 33 to 44 (*The kernel-checked bit floor*
-below). `global-floor.md` reaches 46 by handwritten and enumerated
+minimum sources exclude sizes 33 to 45 (*The kernel-checked bit floor*
+below). `global-floor.md` reaches the same 46 by handwritten and enumerated
 classifications with kernel-checked certificates.
 
 For a literal `λc s.B`, `SelfintRound6BoundLiteral` proves that `B` already
@@ -262,8 +262,8 @@ source lambdas; the width theorem does (`interpreter_counts`).
 
 ## The kernel-checked bit floor
 
-**Every interpreter has at least 45 bits**
-(`SelfintSingleObject.selfintSizeBound_45`, `Blc/SelfintKernelFloor45.lean`;
+**Every interpreter has at least 46 bits**
+(`SelfintSingleObject.selfintSizeBound_46`, `Blc/SelfintKernelFloor46.lean`;
 Codex's Lean on Claude's single-object theorem). The chain through 36 bits
 (`Blc/SelfintSingleObject*.lean`, `selfintSizeBound_37`) is:
 
@@ -432,7 +432,63 @@ invariants, 81 weighted ranks, 21 `W`-grammar tests, nine mismatching head
 observations, eight type derivations, three contextual reductions, the
 clock cycle of `global-floor.md` §10 and an ordered-table path.
 
-`selfintSizeBound_38` to `_45` are stated without hypotheses and use
+Size 45 has two new cases, both on six lambdas, eight leaves and index sum
+three (`Size45.resources`; the other five-live profiles, as lambdas,
+leaves and index sum, are `(5,7,9)`, `(6,7,7)`, `(7,7,5)`, `(8,7,3)` and
+`(5,8,5)`):
+
+- six live binders, which first fit here. The leaf bound and the witness's
+  index price are both attained, so there are exactly two nonlinear
+  binders, no binder occurs more than twice, and the two binders nearest
+  the width witness each occur once in its body, under no further lambda
+  (`Size45.six_exact`; `consecutive_of_saturated` proves the last part for
+  any term with a width witness and index sum at most three). Their raw
+  indices one and two are the whole index sum;
+- five live binders and one dead one. `EightLeaf.exterior` assumed every
+  lambda live; with a dead one, a one-leaf sibling of the width-bearing
+  abstraction can also be `F = λx y.y`. As an operator `F` erases its
+  argument, and under a public λ the closed abstraction and `F` leave the
+  public variable unused. As the operand of `λ.b`, a nonshrinking
+  contraction needs three occurrences of the root variable in `b`. That
+  binder is comparable with every binder of `b`, and `F` has only a dead
+  and a linear one, so both incomparable nonlinear binders lie in `b`.
+  The three live binders of `b` then need five leaves beside those three:
+  eight, where seven fit (`SaturatedEight.constId_operand`, Codex's
+  argument, which does not use the index sum). `SaturatedEight.exterior`
+  then gives two exterior leaves for five or six live binders.
+
+`Size45.advance` gives the bound at 46 from three refuted grids: the
+four-live grid, the five profiles above, and the saturated profile, whose
+marked body may hold up to six leaves and both nonlinear sites
+(`Size45.expose_eight`, `eight_mem_grid`). The grammars have 9,545
+four-live word rows over 296 cells and 26,508 others over 348 cells, 726
+of them in the saturated profile; 297,599 distinct sources after the
+static filters, 42,564 of them saturated (28,260 with five live binders,
+14,304 with six). Three things keep the rows checkable:
+
+- `Fast45.fits_required` tests an exterior context before pairing it with
+  a marked abstraction (nonshrinking siblings, the live count outside, the
+  lambda and leaf budgets of the marked body, the nonlinear sites outside):
+  6,202 of 55,488 contexts remain and 208 cells are empty;
+- `OperandGrammar.marked_positive`: every marked word has two distinct
+  positive raw leaves, which removes the words with a single one;
+- for the largest rows, a second grammar that fixes the application tree,
+  the leaf word and the lambda budget (`TreeWords.term_mem`,
+  `marked_word`, with `four_cover` and `frame_cover` for completeness),
+  and context caches checked one sibling word at a time
+  (`FrameCertificate.by_words`, `word_of_pieces`).
+
+4,079 sources are left to direct proofs: 2,993 by finite-table grades
+already in the library and 101 by new tables (44 of them on a probe's
+reduct; `upper_sound` checks bounded table derivations with abstraction
+floors, `afterTyped` moves a typed bound from a reduct to its source), 706
+by type rules and libraries of sizes 43 and 44 and 13 by new type
+derivations, 124 regular invariants, 102 weighted ranks, 17 contextual
+reductions, 11 mismatching head observations, four dead continuations,
+three single-object reducts, three absence proofs and the two sources
+with the common reduct of `global-floor.md` §10.
+
+`selfintSizeBound_38` to `_46` are stated without hypotheses and use
 `propext`, `Classical.choice` and `Quot.sound`. The row and evidence
 modules for 37 to 40 are 569 generated files (`Blc/SelfintRows37` …
 `SelfintRows40`, `Selfint40Evidence`); the four sizes build in about 100,
@@ -443,9 +499,13 @@ CPU-minutes of kernel checking; size 43 is 1,184 modules of 4.0 MB
 (`SelfintCompact43`, `SelfintResidual43` and seven modules of lemmas) and
 86 CPU-minutes; size 44 is 2,343 modules of 7.8 MB (`SelfintCompact44`,
 `SelfintResidual44`, `SelfintProfileGrid` and two modules of notation) and
-210 CPU-minutes, no single module above 85 seconds or 2.7 GB. Each size
-has cost about twice the one before. STATUS has the forecast for the next
-size.
+210 CPU-minutes, no single module above 85 seconds or 2.7 GB; size 45 is
+4,797 modules of 15.6 MB (`SelfintCompact45`, `SelfintResidual45` and
+seventeen modules of lemmas) and 454 CPU-minutes, no single module above
+145 seconds or 2.5 GB. Each size has cost about twice the one before.
+The source counts from 41 on are evaluations of the verified grammars
+outside the kernel; coverage is proved by membership, so no proof depends
+on a count. STATUS says what the next size needs.
 
 The earlier route to 31 does not use the width theorem.
 `SelfintRound8BitFloor` combines the four-lambda theorem with the live and

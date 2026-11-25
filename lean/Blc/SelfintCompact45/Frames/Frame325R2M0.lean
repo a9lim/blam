@@ -1,0 +1,8 @@
+import Blc.SelfintCompact45.Frames.Index325
+namespace Blc.SelfintSingleObject.Compact45
+open Fast45 SourceRefutations FrameCertificate
+set_option maxRecDepth 24000
+set_option maxHeartbeats 8000000
+set_option Elab.async false
+theorem h325_2_0_0 : WordRow 6 2 4 true false k325 idx325 3 0 3 4 0 2 0 0 := rowProofs%[by decide +kernel]
+end Blc.SelfintSingleObject.Compact45

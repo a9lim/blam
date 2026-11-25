@@ -1,0 +1,13 @@
+import Blc.SelfintCompact45.Base
+import Blc.SelfintTagged45
+namespace Blc.SelfintSingleObject.Compact45
+open SourceRefutations OperandGrammar RowReplay Fast45
+set_option maxRecDepth 36000
+set_option maxHeartbeats 50000000
+set_option Elab.async false
+tagSlices f23 on (Grammar43.fourRow ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,0,1,2]) byParts (fun j => Split43.four 8 j ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,0,1,2]) byCover (Split43.four_cover 8 (by decide) ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,0,1,2]) withHints bank eachTags[[],[28,28,28,28,28,20,20,20,20,28,28,28,28,20],[28,28,21,21,28],[21,21,21,21,28,28,28,28,28,8,8,20,8,28,28,8,20,8],[21,28,28,21,0],[21,28,28,20,20,28,21,21,28,28,0,28,21,0],[],[1,1,1,1,1,1,1,1,1,1,1,1,1,1]] except [Floor45.e9689626014958,Floor45.e9689627352430,Floor45.e9689625386350]
+tagSlices f24 on (Grammar43.fourRow ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,0,2,1]) byParts (fun j => Split43.four 8 j ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,0,2,1]) byCover (Split43.four_cover 8 (by decide) ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,0,2,1]) withHints bank eachTags[[],[28,28,28,28,20,20,20,28,20,20,28,20,20,0],[28,28,21,28,20],[21,21,28,28,28,28,28,28,28,8,8,20,8,28,28,8,20,8],[28,28,28,21,0],[28,0,28,0,0,28,0,21,21,28,0,28,21,0],[],[1,1,1,1,1,1,1,1,1,1,1,1,1,1]] except [Floor45.e9689658809718,Floor45.e9689626014966,Floor45.e9689634749814,Floor45.e9689633865078,Floor45.e9689633643894,Floor45.e9689628458358,Floor45.e9689627352438,Floor45.e9689625386358]
+tagSlices f25 on (Grammar43.fourRow ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,1,0,2]) byParts (fun j => Split43.four 8 j ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,1,0,2]) byCover (Split43.four_cover 8 (by decide) ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,1,0,2]) withHints bank eachTags[[],[28,28,28,28,28,20,20,21,28,28,28,0,28,0],[28,28,20,21,21],[21,21,50,28,0,0,8,0,8,8,8,8,8,0,8,8,8,8],[21,28,21,21,21],[20,21,28,21,0,21,20,21,28,20,0,20,21,28],[],[1,1,1,1,1,1,1,1,1,1,1,1,1,1]] except [Floor45.e9689659044782,Floor45.e9689658809774,Floor45.e9692683423342,Floor45.e9692683422638,Floor45.e9692683367342,Floor45.e9692679828398,Floor45.e9689633643950,Floor45.e9689627352494]
+certRow f26 on (Grammar43.fourRow ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,1,1,1]) using bank tags [50,21,11,11,11,21,21,28,21,39,28,20,21,21,20,37,28,20,20,21,11,21,21,39,20,20,21,21]
+tagSlices f27 on (Grammar43.fourRow ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,1,2,0]) byParts (fun j => Split43.four 8 j ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,1,2,0]) byCover (Split43.four_cover 8 (by decide) ⟨0,2,0,2,6,7⟩ [0,0] [0,2,2,1,2,0]) withHints bank eachTags[[],[28,28,28,28,20,20,20,21,21],[28,28,20,21,20],[21,21,28,21,0,8,8,8,8,8,8,8,8],[21,28,21,21,28],[21,20,21,21,20,224,20,21,21],[],[1,1,1,1,1,1,1,1,1]] except [Floor45.e9692683423354]
+end Blc.SelfintSingleObject.Compact45
