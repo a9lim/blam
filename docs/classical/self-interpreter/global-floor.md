@@ -712,12 +712,12 @@ An interpreter of the size would be a global minimum, by the bound for the
 sizes below, so no β-reduct of it, by a redex anywhere, is shorter. Four
 live binders, six leaves and index sum three bound the count triples
 `(L,V,X)`; six live binders need 45 bits, and 22,492 of the layouts at 45
-have them. A λ-rooted candidate is `λc.B`
-with `c` live and both the width witness and the incomparable pair inside
-`B` (section 6), and two leading lambdas cost 46 (`capture-width.md`). The
-candidates are the closed terms with two nonlinear binders in disjoint
-subtrees, a subterm with three distinct free variables (bound inside `B`
-for a λ-root), and no redex whose contraction shortens the term.
+have them. A λ-rooted candidate is `λc.B` with `c` live and both the width
+witness and the incomparable pair inside `B` (section 6), and two leading
+lambdas cost 46 (`capture-width.md`). The candidates are the closed terms
+with two nonlinear binders in disjoint subtrees, a subterm with three
+distinct free variables (bound inside `B` for a λ-root), and no redex whose
+contraction shortens the term.
 
 | size | closed terms | candidates | application-rooted | literal `λc.B` | finite certificates | Lean exclusions | residuals among them |
 |---:|---:|---:|---:|---:|---:|---:|---:|
