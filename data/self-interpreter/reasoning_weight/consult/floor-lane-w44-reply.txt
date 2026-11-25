@@ -1,0 +1,37 @@
+[gaslamp] → codex · job cx-20261124-225147-fd26 · continuing thread reader-floor-by-weight
+(•̀ᴗ•́) **Weight 44 is closed. Every reader has weight at least 45, so every member of the separated class has at least 161 bits**, under the inherited coverage and minimality arguments. All **819,916** open sources are accounted for. No source passed all probes, and no exception remains.
+
+| First outcome | Sources |
+|---|---:|
+| Zero-law mismatch | 776,149 |
+| Unary length-one mismatch | 242 |
+| Unary length-two or length-three mismatch | 0 |
+| Zero-law exception, subsequently refuted in Lean | 43,525 |
+
+The finite comparator found **776,391 mismatches**. The exceptions comprised 28,006 cutoffs and 15,519 detected cycles. Each has a checked theorem `¬ Reader r` about its literal source.
+
+| Certificate kind | Sources | Certificate kind | Sources |
+|---|---:|---|---:|
+| Weak-head prefix loop | 36,856 | Mixed cycle | 2,037 |
+| Flow annotation | 1,779 | Missing rigid leaf | 1,387 |
+| Template | 444 | Two-lambda helper | 267 |
+| Developed flow | 187 | Growing helper | 164 |
+| Shallow live binders | 89 | Rigid head mismatch | 79 |
+| Rigid grade | 78 | Recursive application types | 68 |
+| Targeted mixed cycle | 28 | Replicator | 26 |
+| Regular closure and stack | 11 | Lark | 8 |
+| Unbounded arity grades | 7 | Closed orbit with rigid arguments | 6 |
+| Diagonal power | 2 | Shared head reduction | 2 |
+
+**Two certificate kinds were first used at this weight.**
+
+- **Diagonal power.** For `J = λu.u (λ_.u)`, Lean proves that `(λx.x x) (λx.xⁿ J)` reduces to `J`, where the power denotes iterated application. Sources 16600 and 16601 contain the literal power-three diagonal. In 16600, applying `J` to `j` gives a rigid head. In 16601, Lean checks `J (λ_.c) j →* c j`. Both contradict the reader laws.
+- **Shared head reduction.** Sources 15938 and 15939 share a helper and reverse their last two variables. Lean checks the first contraction on each literal source. Then 59 reusable β-reduction statements establish the respective endpoints `j c` and `c j`. Both are rigid-headed.
+
+**Split-cell coverage.** The 124 nonempty cells occupied 125 checks. I verified that cell 6, `(2,0,Cs,x,1,1)`, has 22,730 distinct matching coefficient blocks. Ordinals `[0,7978)` generated 89,999 sources in `w44/cell6-part0.json`, and `[7978,22730)` generated 81,862 in `w44/cell6-part1.json`. Each file records its interval, counts and literal exceptions. Together they cover all 171,861 sources in the cell. Other checks use `w44/cell<i>.json`. The largest check held **90,162** sources. [Partition](/Users/a9lim/Work/blam/tmp/floor/work/w44/parts.json) · [Cell histogram](/Users/a9lim/Work/blam/tmp/floor/work/histogram-w44.tsv)
+
+**Audit and resources.** The audit matched all 43,525 exception ASTs to literal theorem declarations, verified compilation receipts and source hashes for 1,491 weight-specific Lean files, and checked each axiom report against `propext`, `Classical.choice` and `Quot.sound`. Preliminary Lean checks caught a wrong operand assumption for source 16601 and an invalid grade threshold. Both corrected proofs passed. Wall time from first probe through final audit was **17 min 20.5 s**. The longest individual job took **49.53 s**. Peak recorded RSS was **666,533,888 bytes** for Lean and **211,156,992 bytes** for a Python worker. The highest simultaneous sample was **1,953,579,008 bytes** across a supervisor and its workers. Group sampling began after finite probing and baseline discovery. No watchdog kill was observed, and the supervisors reaped their children. [Outcome ledger](/Users/a9lim/Work/blam/tmp/floor/work/audit-w44.json) · [Exception manifest](/Users/a9lim/Work/blam/tmp/floor/work/exception-manifest-w44.tsv) · [Proof hashes](/Users/a9lim/Work/blam/tmp/floor/work/w44/proof-files.sha256)
+
+**What the 161-bit floor inherits.** A counterexample below weight 45 would have a global minimum ordered by weight, λ count and depth of `j`. The handwritten shape exclusions place that minimum in the enumerated nonlinear root lets. Coverage depends on the coefficient grammar, its contraction, sinking, hole-repair and simplification cuts, and the earlier whole-cell and lower-weight closures. The finite evidence also depends on source generation, de Bruijn translation and weak-head comparison. Two earlier exclusions use engine divergence verdicts for 3,508 three-λ sources and 1,511 hand-offs. The class price is `|E| ≥ 116 + w(R)`. The standalone kernel-checked class floor is 146 bits. Reaching 162 bits by this route requires closing the **1,544,876** open sources at weight 45. [Full report](/Users/a9lim/Work/blam/tmp/floor/work/REPORT-w44.md) · [Residual ledger](/Users/a9lim/Work/blam/tmp/floor/work/w44/residual.tsv)
+
+[gaslamp] job cx-20261124-225147-fd26 · continue: gaslamp codex --thread reader-floor-by-weight

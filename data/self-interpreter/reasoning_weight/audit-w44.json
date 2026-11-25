@@ -1,0 +1,30 @@
+{
+  "inclusive_weight": 44,
+  "sources": 819916,
+  "finite": {
+    "0": 776149,
+    "1": 242
+  },
+  "certificates": {
+    "closed orbit with rigid arguments": 6,
+    "developed flow": 187,
+    "diagonal power": 2,
+    "flow": 1779,
+    "grow": 164,
+    "head": 79,
+    "lark": 8,
+    "loop": 36856,
+    "missing": 1387,
+    "mixed": 2037,
+    "recursive application types": 68,
+    "regular closure and stack": 11,
+    "replicator": 26,
+    "rigid grade": 78,
+    "shallow live binders": 89,
+    "shared head reduction": 2,
+    "targeted mixed cycle": 28,
+    "template": 444,
+    "two-lambda helper": 267,
+    "unbounded arity grades": 7
+  }
+}

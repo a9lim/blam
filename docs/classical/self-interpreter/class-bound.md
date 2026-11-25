@@ -109,11 +109,11 @@ exceptions refuted in Lean; `data/self-interpreter/reasoning_weight/`). A
 reader of weight below `W`, if one exists, has a global minimum of weight
 below `W`, and by §3 a minimum below 46 is a nonlinear root let in the cells
 still open; so refuting every open source of weight below `W` gives
-`w(R) ≥ W` for every reader without closing any cell whole. All 854,802 open
-sources of weight at most 43 fail: 806,277 with a finite mismatch (806,145 on
-the zero law, 132 at unary length one) and 48,525 with a Lean theorem
-`¬ Reader r` about the literal source. So every reader has `w ≥ 44` and
-**every member has at least 160 bits**. This is not kernel-checked end to
+`w(R) ≥ W` for every reader without closing any cell whole. All 1,674,718 open
+sources of weight at most 44 fail: 1,582,668 with a finite mismatch
+(1,582,294 on the zero law, 374 at unary length one) and 92,050 with a Lean
+theorem `¬ Reader r` about the literal source. So every reader has `w ≥ 45`
+and **every member has at least 161 bits**. This is not kernel-checked end to
 end: it is conditional on §3's reductions and on the coverage of the
 coefficient grammar that generates the open sources, both handwritten in
 part; the finite mismatches rest on a Python comparator; and two of the
@@ -122,7 +122,7 @@ verdicts (3,508 of the 73,311 three-λ sources of §3, and 1,511 of the
 66,577 hand-offs `(λx. x x)(λz a. z M⃗) j`). Two fresh-context audits by
 reading, of the first slice and of what changes from weight 42 to 45, found
 no omitted source shape, no invalid transfer at a weight tie, and no cut
-that leans on a cell still open. The open sources number 819,916 at weight 44 and 1,544,876 at
+that leans on a cell still open. The 1,544,876 open sources all have
 weight 45.
 
 **Hoisting is exact** (Lean): for `f` free `c` leaves and depth `d`,
@@ -731,9 +731,9 @@ so one branch of the source-head classification is left: **root lets**
 readers whose let argument hands control on before binding the stream,
 nonlinear, with two to four uses of `x` and `j` at depth at most 1 (the
 profile `k + d = 5` and every linear root let are closed).
-None of the open sources weighs less than 44 (§2). Besides the nine cells
+None of the open sources weighs less than 45 (§2). Besides the nine cells
 over the cap, 128 smaller cells of the same grammar had been counted and
-never checked whole; the open sources of weights 44 and 45 lie in both.
+never checked whole; the open sources, all of weight 45, lie in both.
 The current counts are in `docs/STATUS.md`.
 A hand-off's pre-stream computation can expand without any
 bound in the source weight: with `G = λp x. p (x x)`,

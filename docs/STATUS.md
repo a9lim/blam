@@ -170,10 +170,10 @@ and proofs; this section holds the current numbers and the open cells.
   at least that otherwise, where `w(R) = cost(R) + 4 depth(j)`; the 162 is
   `w = 46`, the 165 `w = 49`. Lean proves `|E| ≥ 138` and `w ≥ 30`
   (`Blc/SelfintClass.lean`, `Blc/SelfintReader30.lean`): **every member has at
-  least 146 bits**. No open reader weighs less than 44, so every member has
-  at least **160** bits at the reader bound's level of evidence: all 854,802
-  open sources through weight 43 fail, 806,277 with a finite mismatch and
-  48,525 with a Lean refutation of the literal source
+  least 146 bits**. No open reader weighs less than 45, so every member has
+  at least **161** bits at the reader bound's level of evidence: all 1,674,718
+  open sources through weight 44 fail, 1,582,668 with a finite mismatch and
+  92,050 with a Lean refutation of the literal source
   (`data/self-interpreter/reasoning_weight/`; conditional on the handwritten
   parts of the reader bound below). The 162 is optimal in the class if and only if every
   reader has `w ≥ 46`.
@@ -193,11 +193,11 @@ and proofs; this section holds the current numbers and the open cells.
     AST pinned by `SelfintRootLetPending`; `rootlet_pending.py --check`),
     which closes that cell.
   - What is left, by weight (`reasoning_weight/histogram.tsv`): nothing
-    below 44, and **2,364,792** open sources of weights 44 and 45 (819,916
-    and 1,544,876). Of these 1,624,176 lie in the nine cells
+    below 45, and **1,544,876** open sources, all of weight 45. Of these
+    1,046,556 lie in the nine cells
     over the cap (eight x-headed, `reasoning_class/pending/x_overcap.json`,
     and one λ-headed, after the hand-off simplifications of
-    `reasoning_class/simplify/`) and 740,616 in 128 smaller cells of the same
+    `reasoning_class/simplify/`) and 498,320 in 128 smaller cells of the same
     grammar that had been counted and never checked whole.
   - The recorded short-hand-off cut-offs are closed by symbolic divergence
     (`Blc/SelfintRootCutoffs.lean`), within their narrowing coverage.
@@ -486,8 +486,8 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    to four uses of the let variable and `j` at depth at most 1 (linear root
    lets and the profile `k + d = 5` are closed; the open cells and their
    counts are under *The separated class* above). The bound stands at
-   `w ≥ 44`, 160 bits for the class: the open sources were refuted by weight
-   through 43, and the two weights left hold about 2.4 million.
+   `w ≥ 45`, 161 bits for the class: the open sources were refuted by weight
+   through 44, and the one weight left holds about 1.5 million.
    The general step is still a theorem bounding the source that the two
    roles can share; neither periodicity of the unary run nor accounting
    alone can supply it (`class-bound.md` §3).

@@ -232,16 +232,24 @@ def match(name):
             cell = (int(r[0]), int(r[1]), r[2], r[3], int(r[4]), int(r[5]))
             if cell != CLOSED and int(r[col]):
                 want[cell] = int(r[col])
-    exc, mism, got = [], {}, {}
+    exc, mism, got, parts = [], {}, {}, {}
     for x in json.loads((P / f"cells-{name}.json").read_text()):
         cell = tuple(x["cell"])                  # a cell over the cap comes in parts
         assert cell in want and x["total"] <= 100000, cell
         got[cell] = got.get(cell, 0) + x["total"]
+        if "part" in x:                          # block interval [lo, hi) of the cell
+            parts.setdefault(cell, []).append((x["part"]["lo"], x["part"]["hi"]))
         assert x["total"] == sum(x["mismatch"].values()) + len(x["exceptions"]), cell
         for q, n in x["mismatch"].items():
             mism[int(q)] = mism.get(int(q), 0) + n
         exc += x["exceptions"]
     assert got == want
+    # Parts are consecutive block intervals from 0. Each block holds at least
+    # one source and the histogram count sums all of a cell's blocks, so
+    # abutting intervals that reach that count miss no block and repeat none.
+    for cell, iv in parts.items():
+        iv.sort()
+        assert iv[0][0] == 0 and all(a[1] == b[0] for a, b in zip(iv, iv[1:])), cell
     hashes = [sha(repr(tup(e["source"])).encode()) for e in exc]
     assert len(set(hashes)) == len(hashes)
     man = list(csv.DictReader((P / f"exception-manifest-{name}.tsv").open(), delimiter="\t"))
