@@ -94,6 +94,14 @@ work; moving numbers live there, not here.
   against our census unknowns) and `tools/frontier.py` (group an adjudication
   run's unknowns by λ-wrap seed and flag verdict disagreement within a
   chain).
+- **The 46-bit floor's Lean is packed.** `data/self-interpreter/global-floor.tar.xz`
+  holds its per-size assemblies and 9,577 generated row modules;
+  `scripts/global-floor.sh` unpacks them into `lean/Blc/` (gitignored) and
+  kernel-checks `selfintSizeBound_46`. They import about 140 in-tree
+  `Blc/Selfint*` modules (`lean/README.md`, "The global floor"), so an edit to
+  any of those, a comment included, invalidates the cached floor build, and a
+  cold rebuild is many CPU-hours. Touch them only when the change is worth
+  rerunning the script.
 - A self-interpreter or universal-machine candidate is a hypothesis until
   `tools/self-interpreter/battery.py` passes it; the battery compares
   β-normal forms, so η-only-correct interpreters fail it by design.
@@ -146,9 +154,7 @@ the M5 Max; user time is the stable number, wall tracks ambient load.
   passes an `EngineCfg` down, and the engine's only public entry points
   (`escalation::normal_form`, `normal_form_spine`) take it as an argument.
   `census`, `adjudicate`, `solomonoff`, `q census`, and `q skeleton` expose
-  `--work-mult` / `--probe-fuel`; `blam slots` has no knob flags and resolves
-  the environment alone, once, through a private `OnceLock` in
-  `src/cli/slots.rs`. `cert search` has no engine knobs — its budgets are the
+  `--work-mult` / `--probe-fuel`. `cert search` has no engine knobs — its budgets are the
   `head_step` steps / nodes / lemma-steps triple, not the work meter.
 - `blc::enumerate`: tasks are bit-reversal-interleaved on purpose. Expensive
   terms cluster by enumeration prefix and rayon splits by index range; do not

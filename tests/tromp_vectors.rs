@@ -80,7 +80,7 @@ fn bitlist(bits: &str, tail: Term) -> Term {
 
 #[test]
 fn self_interpreters_pass_the_harness_battery() {
-    // tools/self-interpreter/harness.py's ten programs: E passes when
+    // The ten programs of the record's self-interpreter harness: E passes when
     // E (\x. x false) ⌜p⌝ and p N share a normal form, ⌜p⌝ being p's wire
     // bits as a pair list ending in N = true.
     const TESTS: [&str; 10] = [

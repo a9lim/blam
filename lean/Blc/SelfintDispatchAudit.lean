@@ -1,6 +1,6 @@
 /-
 A repair to one step of the handwritten K-dispatch argument in
-data/self-interpreter/reasoning_class/jn/NOTES.md. Beneath the stream binder
+data/self-interpreter/reasoning_class/jn/NOTES.md (commit 703f50d). Beneath the stream binder
 the only one-hole operand of price at most 2 is j itself (`tiny_j_operand`),
 and no j-headed spine joins the zero output, whatever its arguments
 (`j_head_fails_zero`), so that branch's conclusion stands. Nothing here

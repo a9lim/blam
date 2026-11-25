@@ -1,3 +1,0 @@
-'Blc.HandlerLet.RootNLExtra.replay_lambda' depends on axioms: [propext, Quot.sound]
-'Blc.HandlerLet.RootNLExtra.zero_arg_head' depends on axioms: [propext, Quot.sound]
-'Blc.HandlerLet.RootNLExtra.zero_arg_lambda' depends on axioms: [propext, Quot.sound]

@@ -9,7 +9,7 @@ the run) on its core and on the term as written, report the smallest
 rendering, and battery-check any rendering below 165. A new algorithm's
 size is its letopt minimum, not its first written form.
 
-Needs target/release/blam with the lab feature.
+Needs target/release/blam (`cargo build --release`).
 """
 import os
 import re

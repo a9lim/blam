@@ -239,7 +239,7 @@ theorem split_class_165 {T fA aA fB aB QA QB : Term}
 
 #print axioms cassembly_lower
 #print axioms split_class_165
-/-! spec200 (the c-headed construction of data/self-interpreter/reasoning_class/chead/)
+/-! spec200 (the c-headed construction at tag selfint-record-2026-11-25)
     is literally a split-class member. -/
 def readerA : Term := .app (.app (.app (.var 0) (.lam (.var 0))) (.lam (.app (.var 1) (.lam (.lam (.var 0)))))) (.var 2)
 def readerB : Term := .app (.app (.app (.var 0) (.lam (.var 0))) (.app (.var 0) (.var 0))) (.var 2)

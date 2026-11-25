@@ -4,7 +4,7 @@ The universal machines. For every closed `M` and any `N`,
     U (⌜M⌝ ++ N)  →β*  M N,
 
 which is the figure algorithmic information theory reads its constants
-from (`docs/classical/self-interpreter/universal.md`). Tromp's two wirings
+from (`docs/classical/self-interpreter/interpreter.md`). Tromp's two wirings
 (`ref/AIT/ait/uni.lam`) turn any self-interpreter `E = dbl F` into one:
 
     non-strict:  E dbl                          →β*  dbl (λz. M) N  →β  M N

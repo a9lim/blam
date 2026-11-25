@@ -122,20 +122,20 @@ proven.
   and passes the parser's second-bit stage as an operand that the variable
   branch erases. Lean proves it correct for every closed program, as it does
   the previous record, the 165, and the 168. Nothing smaller appears in its
-  let structure or its βη components. Every self-interpreter has at least 40
-  bits by reviewed handwritten proofs with kernel-checked components, and at
-  least 31 kernel-checked in Lean
+  let structure or its βη components. Every self-interpreter has at least 46
+  bits, kernel-checked in Lean end to end
   ([global floor](docs/classical/self-interpreter/global-floor.md)). Every
   interpreter built like the 162 (an opaque knot, any reader, a separate
   NEXT building the canonical values) has at least 146 bits, kernel-checked
-  in Lean. The 162 is optimal among them exactly when every reader weighs at
-  least 46, which every β-normal reader does; the same holds for NEXT of any
-  syntax above a price frontier, other value representations and other
-  opaque recursion schemes
+  in Lean, and at least 162 by a complete check of every reader that could
+  be cheaper, its exceptions proved in Lean: the 162 is the smallest of
+  them. The same holds for NEXT of any syntax above a price frontier, other
+  value representations and other opaque recursion schemes
   ([separated class](docs/classical/self-interpreter/class-bound.md)). The same
   reader gives universal machines of 172 (non-strict) and 184 (strict) bits,
   against Tromp's 178 and 190, and Lean proves all four universal
-  ([universal](docs/classical/self-interpreter/universal.md)).
+  ([interpreter](docs/classical/self-interpreter/interpreter.md)). The full
+  research record behind these results is at tag `selfint-record-2026-11-25`.
 - **The rest of tromp/AIT** ([golf](docs/classical/golf.md), sent upstream as
   [tromp/AIT#13](https://github.com/tromp/AIT/pull/13)): 39 programs shrink by
   1,142 bits in all. The IOCCC BLC8 universal machine goes from 43 bytes to 38
@@ -366,8 +366,6 @@ says how to get them rather than pretending they do not exist.
 | `q oddmin` *(lab)* | gated reference-DP driver for the CNOT-free √2 theorem lane |
 | `qalc run` / `gram` / `compile` / `fixtures` | exact qALC evolution, Gram audits, the H/T/CNOT circuit compiler, and fixture regeneration |
 | `qalc census` | exact finite-clock `p h t` census with Ω brackets, optional sparse `M` output, and the `--speed` arrival spectrum with certified Ω_speed brackets |
-| `slots` *(lab)* | exhaustive self-interpreter slot searches |
-| `selfint ctx` / `hole` / `wiring` *(lab)* | searches below the self-interpreter and the universal machine: contextual slots, one- or two-hole sketches of any interpreter, every wiring around the parser |
 
 ```bash
 cargo build --release                 # everything not marked (lab)
@@ -445,7 +443,7 @@ guarantees, and records of what the measurements and searches establish.
 | classical engine | [architecture](docs/classical/architecture.md), [running programs: notation, blc, uni](docs/classical/programs.md), [speed prior](docs/classical/speed.md) |
 | classical results | [bits of Ω](docs/classical/omega.md), [coding theorem](docs/classical/coding.md), [AIT golf](docs/classical/golf.md) |
 | certificates | [specification](docs/classical/certificates/specification.md), [frontier maps](docs/classical/certificates/frontier.md), [BB(33/34/35)](docs/classical/certificates/busy-beaver.md), [Lean](lean/README.md) |
-| self-interpreter | [the 162](docs/classical/self-interpreter/interpreter.md), [global floor](docs/classical/self-interpreter/global-floor.md), [separated class](docs/classical/self-interpreter/class-bound.md), [universal machine](docs/classical/self-interpreter/universal.md), [slot searches](docs/classical/self-interpreter/slots.md) |
+| self-interpreter | [the 162](docs/classical/self-interpreter/interpreter.md), [global floor](docs/classical/self-interpreter/global-floor.md), [separated class](docs/classical/self-interpreter/class-bound.md) |
 | qBLC | [architecture](docs/quantum/architecture.md), [frontier adjudication](docs/quantum/escalation.md), [Galois structure](docs/quantum/galois.md), [odd-sector search](docs/quantum/oddmin.md), [bisimulation](docs/quantum/bisimulation.md) |
 | qALC | [architecture](docs/quantum-algebraic/architecture.md), [token machine](docs/quantum-algebraic/token.md), [kernel register](docs/quantum-algebraic/kernel.md), [instance identity](docs/quantum-algebraic/instance-identity.md), [objects](docs/quantum-algebraic/objects.md), [speed prior](docs/quantum-algebraic/speed.md), [Rust pillar](docs/quantum-algebraic/rust-pillar.md), [reference and proof records](qalc/README.md) |
 

@@ -1,2 +1,0 @@
-203 bits  ok=667 skip=1 fail=0  tagged_optional.lam
-[]

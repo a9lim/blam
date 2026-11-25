@@ -175,8 +175,7 @@ Tromp's review restoring his `int4`. Nothing for #13 is waiting to be sent.
     value `λz.I` is the same six bits as the input symbol `1`; the 168's
     parser as its own continuation gave a 180-bit universal machine (it no
     longer works with the new reader).
-  - Pointer: `docs/classical/self-interpreter/interpreter.md` (and
-    `universal.md` for the 175/187).
+  - Pointer: `docs/classical/self-interpreter/interpreter.md`.
 - **Busy-beaver and Ω results** (if still worth mentioning):
   - His A333479 values BBλ(33) = 1,812, BBλ(34) = 327,686,
     BBλ(35) = 38,127,987,424,941, independently confirmed: his BB.txt hand

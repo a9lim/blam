@@ -1,6 +1,7 @@
 //! The βη component search, and descent by it.
 //!
-//! A port of `tools/self-interpreter/beta_search.py`, move for move:
+//! A port of the record's `beta_search.py` (at tag
+//! `selfint-record-2026-11-25`), move for move:
 //!
 //! - **reduce** any β-redex (duplicating if it must), **η−**, **η+**;
 //! - **abstract** one occurrence, or all non-nested occurrences, of a subterm
@@ -1127,8 +1128,8 @@ mod tests {
     use super::*;
     use crate::q::selfint::INT168;
 
-    /// The Python reference's component sizes from the 168
-    /// (`docs/classical/self-interpreter/interpreter.md` §3, βη component table).
+    /// The Python reference's component sizes from the 168 (the record's
+    /// βη component table, at tag `selfint-record-2026-11-25`).
     #[test]
     fn reproduces_the_python_components() {
         for (slack, want) in [(4, 10), (8, 227), (12, 2717)] {

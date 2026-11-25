@@ -1,715 +1,357 @@
-# An unconditional 40-bit floor
+# A kernel-checked 46-bit floor
 
-**Theorem.** Every closed interpreter for the repository's beta-exact,
-closed-source contract has BLC length at least **40**.
+**Theorem** (`Blc.SelfintSingleObject.selfintSizeBound_46`). Every
+self-interpreter for the repository's closed-source, β-exact contract has a
+BLC encoding of at least 46 bits.
 
-The proof has three layers. Sections 1–5 are Codex's handwritten proof of
-37: the counting argument of `capture-width.md` gives 33 and excludes it,
-and sections 3–4 exclude 34, 35 and 36 using semantic consequences of the
-exact contract (head arity, internal width, internal nonlinearity, and exact
-identity-source outputs). Two independent adversarial reviews (a separate
-Codex consult and Gemini) found it correct; each re-derived the counting,
-the width-loss lemma and the six divergence invariants, and the Codex review
-replayed every finite refutation with its own reducer
-(`data/self-interpreter/reasoning_floor/verify/`). `Blc/SelfintFloor37.lean`
-kernel-checks the 144 fixed head-reduction clauses that case analysis cites,
-including the loop clauses and fixed instances of the six parametric
-divergence invariants, plus eight clauses for remainder extractors
-(`remainder.md`); `tools/self-interpreter/theory/floor37/verify.py`
-regenerates them and checks the 108 residual layouts in 0.05 seconds
-(`data/self-interpreter/theory/floor37.json`). Section 6 proves that every
-literal `λc.B` interpreter has at least 39 bits; sections 7–9 use it to
-exclude sizes 37, 38 and 39 (Codex's handwritten proofs with kernel-checked
-components, each found correct by two independent reviews). No Lean theorem
-states the numeric floor itself: the syntax classifications, the width
-argument and the implications of the finite certificates are handwritten;
-the parametric invariants are proved below or in Lean, and no fuel cap is
-used as a refutation anywhere.
+The proof is kernel-checked, has no hypotheses, and uses only `propext`,
+`Classical.choice` and `Quot.sound`. It is Codex's Lean, built on Claude's
+single-object theorem (§3). Its final assembly,
+`lean/Blc/SelfintKernelFloor46.lean`, and the generated modules it rests on
+ship in `data/self-interpreter/global-floor.tar.xz` and are checked by
+`scripts/global-floor.sh` (§9). With the 162 (`interpreter.md`;
+`not_selfintSizeBound_163`), the minimum self-interpreter lies in 46..162.
+The separated class, whose minimum is the 162, is `class-bound.md`.
 
-This is not an additive parser-module argument and does not approach a
-proof of 162-bit optimality; the conditional bound near 162 is
-`class-bound.md`.
+## 1. Statement
 
-## 1. Dependencies and conventions
+Terms are de Bruijn terms and `|M|` is the length of `blcCode M` (`wire`).
+With `L` abstractions, `A` applications, `V = A + 1` leaves and `X` the sum of
+the leaves' zero-based indices, every term satisfies
 
-Write `L,V,X` for the number of abstractions, variable leaves, and total
-zero-based de Bruijn index. Then
-
-```
-|E| = 2L + 4V - 2 + X.
+```text
+|M| = 2L + 4A + 2 + X = 2L + 4V − 2 + X          (wire_identity)
 ```
 
-The following established consequences are used.
+`IsSelfInterpreter E` (`Blc/SelfintProof.lean`) says that `E` is closed and
+that for every closed `M`
 
-1. `width(E) >= 3`. Here width is the maximum number of distinct variables
-   free relative to a source subterm. This uses Statman's theorem that a
-   closed term beta-convertible to `S` has width at least three (printed
-   p. 406), applied to `E K (stream(S,I)) I`. The interface argument is in
-   `capture-width.md`.
-2. Two nonlinear binders of `E` are incomparable in the source ancestor
-   order. This is `SelfintNonlinearChain.selfInterpreter_not_chain`.
-3. An interpreter has head normal form with exactly two leading lambdas.
-   If its head is the continuation, that head has exactly two arguments.
-   A beta reduct with three leading lambdas is already impossible, whether
-   or not its body head-normalizes. See `head-decomposition.md`.
-4. An interpreter literally `lambda c s.B` has two nonlinear binders in
-   `B`, and a subterm of `B` with three free variables bound **inside B**.
-   The first is kernel-checked; the second is the internal form of (1).
-   A literal interface costs at least 46 bits.
-5. Every beta reduct of a closed interpreter is an interpreter. Hence
-   every redex of a globally minimum interpreter is nonshrinking. In
-   particular no source redex erases its argument, and a linear redex
-   whose argument has at most one free occurrence strictly shrinks.
-   These follow from the exact formula in `SelfintWireCost`:
-
-   ```
-   delta_bits = (k-1)|A| + (f-1)D - 2k - 4 - g.
-   ```
-
-6. No interpreter has length at most 33: the counting argument and the
-   twelve-layout equality-case exclusion in `capture-width.md`.
-
-All uses of reduction here are beta reduction. Some of the inherited
-33-bit exclusions use beta-eta confluence to prove impossibility, as the
-existing document explicitly explains; that does not change the beta-exact
-contract.
-
-For every divergence argument below, defined global weak-head steps
-survive capture-avoiding substitution for the free placeholders: the
-contracted lambda and its application remain on the same head spine.
-Thus an infinite symbolic head trace with a placeholder stream remains
-an infinite head trace when that placeholder is replaced by `stream(I,N)`.
-This contradicts the exact contract on the normal source I. It is not
-necessary to assert correctness on an arbitrary rigid object supplied
-as the stream.
-
-Let `Delta = lambda x.x x`, and write `K T` as shorthand for the literal
-vacuous abstraction `lambda u.T` with fresh `u`. Thus a displayed box `K T`
-is already a lambda term, not an extra application of an inlined K.
-
-## 2. The inventory below 37 bits
-
-Assume a minimum interpreter has size at most 36. A width witness supplies
-three distinct live binders on a chain, called `a,b,c` from outside to
-inside. The incomparable nonlinear pair needs a fourth live binder.
-There are at least six leaves and index sum at least three. Consequently
-
-```
-(L,V) = (4,6) or (5,6),       X <= 6 or X <= 4 respectively.
+```text
+E C (⌜M⌝ ++ N)  =β  C (λz.M) N,
 ```
 
-In either case exactly four binders are live. Exactly two are nonlinear,
-each used twice; the other two are used once. For `L=5` the additional
-binder is vacuous. One nonlinear binder is on the width chain and the
-other, called `d`, is incomparable with it.
+where `C` and `N` are distinct free variables (instances at arbitrary terms
+follow by substitution), `=β` is β-joinability, and `⌜M⌝ ++ N` is the list of
+`M`'s wire bits ending in `N`: cells `λz.z b t`, bit `0` as `λx y.x`, `1` as
+`λx y.y`. `SelfintSizeBound n` says that every such `E` has `n ≤ |E|`. The
+contract is stated in `interpreter.md`.
 
-The `d` abstraction cannot contain any of `a,b,c`: that would make it an
-ancestor of the nonlinear binder on their chain. Nor can it capture a
-chain variable. Its possible enclosing chain binders are affine, and
-their sole occurrences are already needed in the width witness outside
-`d`. Thus `d` is closed in isolation, with precisely two own occurrences
-and at most the one vacuous binder.
+A binder is *live* if its variable occurs in its body and *dead* otherwise,
+*nonlinear* if the variable occurs at least twice.
+Two binders are *comparable* if one is an ancestor of the other. The *width*
+of a term is the largest number of distinct variables free in one of its
+subterms, counting those bound outside the subterm.
 
-There are at most one leading source lambda: two are ruled out by the
-46-bit literal-interface bound, and three by head arity. If there is one,
-call it `y`. It is live (otherwise the supplied rigid continuation could
-never occur in the output), affine (a nonlinear root would be comparable
-with all binders), and one of the width-chain binders. Follow the function
-spine, under this possible lambda, to its first source redex. A neutral
-head here would already be an impossible zero/one-lambda head normal form.
+## 2. Minima
 
-Write this redex `(lambda x.B) A`. An affine `x` would shrink: the only
-possible free variable of its argument is `y`, used at most once globally.
-A vacuous `x` also shrinks. Therefore `x` is one of the two nonlinear
-binders.
+`MinimalInterpreter E` (`SelfintWireCost`) says that `E` is an interpreter
+and none is shorter. `bound_of_minima` transfers a bound on minima to every
+interpreter by strong induction on size, so no existence argument enters,
+and each step from `SelfintSizeBound n` to `n + 1` shows that no minimum has
+exactly `n` bits. Every β-reduct of an interpreter, by a
+redex anywhere, is an interpreter (`selfInterpreter_beta`), so no redex of a
+minimum shrinks it (`minimal_redex_nonshrinking`). Contracting `(λx.B) A`
+changes the size by exactly `(k−1)|A| + (f−1)D − 2k − 4 − g`
+(`wire_beta_delta`), where `x` occurs `k` times in `B` under `D` λs in all,
+`A` has `f` free leaves and `g` leaves of `B` are bound outside the redex. So
+a minimum has no erasing redex (`minimal_no_erasing`), and no linear redex
+whose argument has at most one free leaf.
 
-### The width-chain binder cannot be this contractor
+## 3. One object per closure
 
-If `x` is on the three-binder chain, the width witness lies in `B`, as do
-all nonleading binders on that chain. All four chain-bound leaves lie in
-`B`: its nonlinear variable's two occurrences, and the two affine
-variables' required occurrences. The argument must be closed, since a
-possible `y` occurrence is already used in that witness. Its only possible
-live binder is `d`; an argument with only vacuous binders and no free
-variables is impossible. Thus the argument contains all of `d` and its
-two leaves. There are no leaves available for a pending spine argument.
+The base of the floor is a theorem about closures that hold one object
+(Claude's argument; Codex's Lean, `Blc/SelfintSingleObject.lean`).
 
-The argument is closed and has width one: its only live variable is `d`.
-Contracting substitutes copies of this closed width-one term and removes
-one of the three chain binders. Every remaining source subterm therefore
-has at most two distinct free variables. Vacuous binders supply no free
-variable. The reduct has width at most two, contradicting (1), since it
-is still an interpreter.
+Call `λu.Q` *single-object* if `Q = Q'[R/r]` with `u ∉ FV(R)` and
+`FV(Q') ⊆ {u, r}`: everything the body uses besides its own argument reaches
+it through copies of one term `R`. A dead abstraction is single-object (`R` is
+its body); `λu. u (a b) (a b)` is, with `R = a b`; `λu. u a b` is not. `SO` is
+the hereditary predicate: variables are `SO`, an application is `SO` when
+both sides are, and `λu.Q` is `SO` when `Q` is, the abstraction is
+single-object, and its `R` is `SO`. Every term of width at most two is `SO`,
+and `λa b u. a b u`, of width three, is `SO` too; so `¬SO` is strictly
+stronger than width three.
 
-The contractor is excluded by **loss of necessary width**, regardless of
-whether this particular contraction grows its wire length.
+**Proposition** (`single_object_unique`). Let `Z` be `SO` and let `G_A, G_B`
+be terms whose only free variable is a hole `ζ`. If `G_A[Z/ζ] =β x` and
+`G_B[Z/ζ] =β y` for variables `x, y`, then `x = y`.
 
-### The source has one of two diagonal forms
+*Sketch.* A term β-convertible to a variable weak-head-reduces to it; induct
+on the combined length of the two weak-head reductions. `SO` is preserved by
+substituting `SO` terms, since `Q'[R/r][N/v] = Q'[R[N/v]/r]`, hence by weak
+head steps (`so_weak`); not by arbitrary β, but the proof never reduces under
+a λ. The contexts do not mention `x` or `y`, so each reduction brings a copy
+of `Z` to the head, `G[Z/ζ] ↠w Z M⃗[Z/ζ]`. If `Z` is headed by a variable,
+that term is weak-head normal, so it is `x`, and likewise `y`. If `Z →w Z₁`,
+continue with the `SO` term `Z₁`. If `Z = λu.Q` is dead, the next step
+discards its argument; continue with `Q`. If `Z = λu.Q'[R/r]` is live, the
+next step gives `Q'[M/u, R/r] N⃗`, where `x` and `y` can only come from copies
+of `R`; continue with `R`, the hole now standing for `R` inside
+`λu.Q'[ζ/r]`. The last three cases shorten the combined length, so the
+descent ends at a variable-headed object, which delivers one variable. ∎
 
-The first contractor is consequently `d`. All nonleading chain binders
-and their four leaves belong to its argument; a pending argument would
-have no possible leaf. Up to the possible leading `y`,
+**Theorem R** (`theoremR`). If `T` is `SO`, then not both `T x y K =β x` and
+`T x y F =β y` (`K = λa b.a`, `F = λa b.b`): take `Z = T x y`, `G_A = ζ K`,
+`G_B = ζ F`. So no `SO` term is β-convertible to the pairing combinator
+`P = λa b f. f a b` (`not_join_pair`).
 
-```
-E = D N,                 or                 E = lambda y.D A(y).
-```
+**No interpreter is `SO`** (`selfInterpreter_not_so`). Take the contract at
+`M = P` with `C := K`, `N := I`, and apply both sides to `I`:
 
-`D` is closed, contains the nonlinear binder `d`, and has exactly two
-leaves. `N`, or `A` with `y` counted as the outermost chain variable, has
-three live variables on a chain and exactly four leaves. At most one
-vacuous lambda occurs in the two operands together.
-
-Both operands are beta-normal. For the four-leaf argument, a redex with
-a live contractor used `k` times has at least `k+2` body leaves: the `k`
-own occurrences and the other two variables required by the width witness.
-At most `2-k` leaves remain for its argument. `k=2` is impossible; `k=1`
-leaves at most one free argument occurrence and would shrink. A vacuous
-redex shrinks. The same conclusion is immediate for the two-leaf `D`.
-
-## 3. No extra vacuous binder: all four-lambda cases
-
-Here `D=Delta`. A normal four-leaf term with three live binders on one
-chain has the following exhaustive six shapes. `T3(a,b,c)` ranges over
-the twelve linear application trees on its three displayed leaves;
-`T4` ranges over the sixty trees on the displayed multiset.
-
-| Duplicated variable and location of its extra occurrence | Closed argument N | X |
-|---|---|---:|
-| outer, before the middle binder | `lambda a.a (lambda b c.T3(a,b,c))` | 3 |
-| outer, between the middle and inner binders | `lambda a b.a (lambda c.T3(a,b,c))` | 4 |
-| outer, below all three binders | `lambda a b c.T4(a,a,b,c)` | 5 |
-| middle, before the inner binder | `lambda a b.b (lambda c.T3(a,b,c))` | 3 |
-| middle, below the inner binder | `lambda a b c.T4(a,b,b,c)` | 4 |
-| inner | `lambda a b c.T4(a,b,c,c)` | 3 |
-
-Proof of completeness: one occurrence of each variable lies below all
-three binders and costs indices `2+1+0`. The only remaining leaf repeats
-one of them. If it is above a later lambda block, normality forces that
-leaf to be the function and the block its argument; the reverse orientation
-would be a redex. Otherwise all four leaves are below the last binder.
-This also shows `X<=5`; an alleged four-lambda minimum with `X=6` has no
-possible shape.
-
-The open argument `A(y)` has only the latter three shapes, with `a=y`
-and the `a` lambda omitted: `y` is affine, so it cannot be the repeated
-variable.
-
-The `X=3` closed cases, and the open middle-before-inner case, are already
-excluded by the established 33-bit bound. The open inner case also reduces
-to a literal two-lambda interface with at most one nonlinear binder inside
-the body.
-The closed middle-below-inner case also has only one internal nonlinear
-binder after `N N -> lambda b c.T4(N,b,b,c)`.
-
-For the open middle-below-inner case,
-
-```
-lambda y.A A -> lambda y c.T4(y,A,A,c).
+```text
+T = E K (⌜P⌝ ++ I) I  =β  K (λz.P) I I  →*  P.
 ```
 
-The body contains two copies of `A`, each with only two internal binders;
-`y,c` are public. No subterm has three free variables bound inside the
-body. This contradicts (4). Thus only the second and third closed rows
-need new finite analysis.
-
-### 3a. The twelve 34-bit layouts
-
-Let
-
-```
-N = lambda a b.a (lambda c.T3(a,b,c)),
-J(a,b) = lambda c.T3(a,b,c),
-B = J(J(N,b),d).
-```
-
-Four head steps, including `Delta N -> N N`, give
-
-```
-Delta N ->* lambda b d.T3(N,b,B).
-```
-
-The twelve possibilities are:
-
-| T3 | Refutation |
-|---|---|
-| `(a b) c` | Head form has two lambdas, continuation with one argument. |
-| `a (b c)` | A reduct has three leading lambdas. |
-| `(a c) b` | Advancing-wrapper divergence invariant below. |
-| `a (c b)` | A reduct has three leading lambdas. |
-| `(b a) c` | Continuation's first payload is fixed normal `N`, not `K I`. |
-| `b (a c)` | Continuation has one argument. |
-| `(b c) a` | Continuation's second payload is fixed normal `N`, not the rigid suffix. |
-| `b (c a)` | Continuation has one argument. |
-| `(c a) b` | Pair-pumping divergence invariant below. |
-| `c (a b)` | Continuation has one argument. |
-| `(c b) a` | Continuation has three arguments. |
-| `c (b a)` | Continuation's first payload is fixed normal `N`, not `K I`. |
-
-For `(a c) b`, put
-
-```
-J_t(X) = lambda u.X u t,
-N = lambda a b.a (J_b(a)).
-```
-
-A nonempty wrapper word `W=J_t1(...J_tk(N))` satisfies
-
-```
-W U ->* N U tk ... t1.
-N W P rest... ->* N (J_P(W)) tk ... t1 rest....
-```
-
-Every macro consists of head contractions. The new wrapper word is
-nonempty and there is still at least one pending argument. Starting
-`N N C S ->* N (J_C(N)) S` reaches this invariant. It gives infinitely
-many weak-head contractions, never a head normal form. This is a proof
-for all finite wrapper lengths, not a conclusion from the capped trace.
-
-For `(c a) b`, put `P(X,Y)=lambda u.u X Y` and
-`N=lambda a b.a P(a,b)`. With `W=P(N,C)` and `L=N W S`,
-
-```
-N N C S ->* L,
-L ->^4 L C.
-```
-
-Iterating the four head contractions, in their growing application
-contexts, proves weak-head divergence.
-
-### 3b. The sixty 35-bit layouts
-
-Now `N=lambda a b c.T4(a,a,b,c)`, and
-
-```
-Delta N ->^2 lambda b c.T4(N,N,b,c).
-```
-
-The multiset has twelve distinct orders and five application trees.
-Separate by the leftmost/head leaf of `T4`.
-
-**Thirty a-headed layouts.** Twenty-four have a reduct with at least
-three leading lambdas (the four non-left-spine shapes for each ordering
-of the other three leaves). Of the six remaining left spines:
-
-| T4 | Refutation |
-|---|---|
-| `a a b c` | Exact head cycle, period three after a two-step prefix. |
-| `a a c b` | Exact head cycle, period six after a two-step prefix. |
-| `a b a c` | Two leading lambdas, continuation with three arguments. |
-| `a b c a` | Same. |
-| `a c a b` | On source `I`, the rigid continuation has four arguments. |
-| `a c b a` | On source `I`, the result is `C K stream(I,Ntail)`, with wrong value and remainder. |
-
-For the first two cycles one can also inspect directly the equations
-`N N B C ->* N N B C` and `N N B C ->* N N C B ->* N N B C`.
-
-**Fifteen b-headed layouts.** Nine have one or three arguments at the
-continuation. The six two-argument cases give respectively
-
-```
-C N (N S),       C (N N) S,       C N (S N),
-C (N S) N,       C S (N N),       C (S N) N,
-```
-
-with `S=stream(I,Ntail)`. The first or second payload visibly disagrees
-with `K I` or the rigid `Ntail`: `N` is a fixed closed normal three-lambda
-term, and `S` is a nonempty normal Scott stream. No normalization of
-`N N` is needed.
-
-**Fifteen c-headed layouts.** Direct identity-source head reduction gives:
-
-| T4 | Result obstruction on source I |
-|---|---|
-| `c (a (a b))` | `C` has one argument. |
-| `c ((a a) b)` | An extra leading lambda. |
-| `(c a) (a b)` | `C` has three arguments. |
-| `(c (a a)) b` | Rigid suffix, rather than `C`, is the head. |
-| `c a a b` | An extra leading lambda. |
-| `c (a (b a))` | `C` has four arguments. |
-| `c ((a b) a)` | Result `C N C`, with the wrong rigid remainder. |
-| `(c a) (b a)` | `C` has three arguments. |
-| `(c (a b)) a` | `C` has five arguments. |
-| `c a b a` | `C` has four arguments. |
-| `c (b (a a))` | `C` has three arguments. |
-| `c ((b a) a)` | `C` has four arguments. |
-| `(c b) (a a)` | `C` has three arguments. |
-| `(c (b a)) a` | `C` has four arguments. |
-| `c b a a` | `C` has four arguments. |
-
-All these finite reductions are among the kernel-checked clauses.
-
-## 4. One extra vacuous lambda: the five-lambda cases
-
-Here `X<=4`. First suppose the vacuous lambda belongs to `D`. Its two
-own `d` leaves already have index zero. Placing the vacuous lambda around
-both would spend two index units, leaving fewer than the required three
-for the width witness. Placing it above `d` makes `D` vacuous-headed,
-contrary to source minimality. Placing it around one leaf gives either
-an erasing source redex or the single normal possibility
-
-```
-D = deltaK = lambda d.d (K d),             |D|=11.
-```
-
-This uses the one available index unit beyond the width witness. Its
-four-leaf argument is consequently one of the `X=3` shapes in section 3.
-Since `deltaK A -> A (K A)`, these fail uniformly:
-
-| Argument | Consequence |
-|---|---|
-| closed outer-duplicate-before-middle | `A (K A) ->* A`, a strictly smaller interpreter if it worked. |
-| closed middle-duplicate-before-inner | One-lambda head normal form. |
-| closed inner duplicate | Two-lambda interface with only one internal nonlinear binder. |
-| open middle duplicate | `lambda y.A (K A) ->* lambda y.A`; its body has no internal nonlinear binder after the interface lambdas. |
-| open inner duplicate | Two-lambda interface with only one internal nonlinear binder. |
-
-### If the vacuous lambda belongs to the four-leaf argument
-
-Then `D=Delta`. Delete the vacuous lambda, decrementing the affected
-indices, to obtain `N0` or `A0`. Deleting a vacuous lambda from a normal
-term preserves normality: it was not in function position of an
-application, since that would already be a redex. It also preserves the
-width-three witness and all live-binder occurrence counts.
-
-Reinserting the lambda around a subterm `U` costs exactly
-
-```
-2 + freeLeaves(U).
-```
-
-The base diagonal has at least 33 bits. Thus at size at most 36 there
-are only two possibilities:
-
-* A zero-free-leaf insertion into a base of 33 or 34 bits. The only closed
-  subterm of a closed four-leaf argument in the six-shape classification
-  is the whole argument. An open argument has none. Therefore this gives
-  `A=K N0`, and `Delta A -> A A -> N0`, contradicting minimality.
-* A one-free-leaf insertion into a 33-bit base. A subterm with one free
-  occurrence is either a variable leaf or the block containing the two
-  innermost live binders and the single free occurrence of the outer one.
-  There is no other possibility in these normal four-leaf trees.
-
-Inserting around that two-binder block gives, for the closed arguments,
-
-```
-lambda a.a (lambda u b c.T3(a,b,c)),
-lambda a u b.b (lambda c.T3(a,b,c)),
-lambda a u b c.T4(a,b,c,c).
-```
-
-After diagonal application the first has two interface lambdas with
-only one internal nonlinear binder; the second ignores its public
-continuation; the third leaves three leading lambdas. In the open forms,
-the corresponding reduction gives either zero internal nonlinear binders
-or three leading lambdas.
-
-For insertion at a variable leaf, boxing the exposed duplicate before its
-lambda block creates an erasing source redex. Boxing any leaf inside the
-block leaves the closed middle family with one-lambda head form, and the
-inner families with one internal nonlinear binder. A vacuous box introduces
-no nonlinearity and does not duplicate the one inserted copy in the inner
-families. The open middle family needs its own analysis in section 4b:
-its diagonal can create more than one residual copy of the argument.
-
-The remaining closed family is **outer-duplicate-before-middle**:
-
-```
-N = lambda a.a (lambda b c.T3(a,b,c) with one leaf boxed).
-```
-
-The exposed outer `a` cannot be boxed: that is an erasing source redex.
-Inside `T3`, a box cannot be the function of an application. Exactly
-eighteen normal layouts remain.
-
-### 4a. The eighteen normal boxed layouts at 36 bits
-
-The following table writes `Kx` for the literal box `lambda u.x`.
-
-| Boxed body | Refutation of `Delta N` |
-|---|---|
-| `(a Kb) c` | Two-lambda head form with zero arguments at C. |
-| `(a b) Kc` | Forward-wrapper divergence below. |
-| `a (b Kc)` | First payload is `K S`, not `K I`, on source I. |
-| `(a c) Kb` | One-lambda head form. |
-| `(a Kc) b` | One-lambda head form. |
-| `a (c Kb)` | One-lambda head form. |
-| `(b Ka) c` | One-lambda head form. |
-| `(b a) Kc` | Reverse-wrapper divergence below. |
-| `b (a Kc)` | Two-lambda head form with one argument at C. |
-| `(b c) Ka` | One-lambda head form. |
-| `(b Kc) a` | One-lambda head form. |
-| `b (c Ka)` | Fixed normal first payload `lambda u v.v (lambda p q.p (q (K v)))`, not K I. |
-| `(c Ka) b` | One-lambda head form. |
-| `(c a) Kb` | One-lambda head form. |
-| `c (a Kb)` | One-lambda head form. |
-| `(c b) Ka` | One-lambda head form. |
-| `(c Kb) a` | One-lambda head form. |
-| `c (b Ka)` | One-lambda head form. |
-
-For the forward case put
-
-```
-F(X) = lambda b c.X b (K c),
-N = lambda a.a (F(a)).
-```
-
-Induction on `k` gives, for `k>=1`,
-
-```
-F^k(N) U V ->* N U (K^k V),
-N F^k(N) P ->* N F^(k+1)(N) (K^k P).
-```
-
-Each macro is a nonempty finite head-reduction sequence. Starting
-`N N C S` reaches `N F^2(N) (K C) S`. The displayed invariant gives
-infinitely many weak-head contractions with `S` still pending.
-
-For the reverse case put
-
-```
-G(X) = lambda b c.b X (K c),
-N = lambda a.a (G(a)),
-Y = N G(N).
-```
-
-Then `N N -> Y`, and the exact head macro is
-
-```
-Y P ->^5 Y (K (K P)).
-```
-
-Again the invariant iterates indefinitely. These arguments work for
-arbitrary rigid public arguments; in particular they fail on quoted I.
-
-### 4b. The eighteen open middle-duplicate boxed layouts
-
-The second family is
-
-```
-E = lambda a.Delta A_a,
-A_a = lambda b.b (lambda c.T3(a,b,c) with one leaf boxed).
-```
-
-It has the same eighteen normal boxed bodies listed in section 4a.
-For **sixteen**, the head normal form of E has exactly one leading lambda;
-the exact finite reductions are in `g36open_*` in `Blc/SelfintFloor37.lean`.
-The only exceptions are `(b c) Ka` and `(c b) Ka`. Their nontermination
-does not rely on the capped exploratory traces.
-
-For `(b c) Ka`, fix the outer parameter a and put
-
-```
-T = K a,
-J(X) = lambda c.X c T,
-A = lambda b.b J(b).
-```
-
-For every `k>=1`,
-
-```
-J^k(A) U ->* A U T ... T       (k pending copies of T),
-A J^k(A) ->* A J^(k+1)(A) T ... T.
-```
-
-The second identity uses `1+k` head contractions. `A A -> A J(A)`
-enters this invariant. The active recursive argument always precedes
-every pending T and the eventual stream argument, so neither reaches
-the head. This proves weak-head divergence for each rigid a.
-
-For `(c b) Ka`, put
-
-```
-T = K a,
-P(X) = lambda c.c X T,
-A = lambda b.b P(b),
-L = A P(A).
-```
-
-Then `A A -> L` and
-
-```
-L ->^3 L T T.
-```
-
-This is another head-pumping invariant. Both exceptions are excluded,
-completing the vacuous-lambda case split.
-
-## 5. Conclusion and checking boundary
-
-Every minimum interpreter of at most 36 bits would have one of the two
-inventories in section 2. Sections 3 and 4 exclude both. Since the known
-162 supplies existence, well-ordering gives a minimum; therefore every
-interpreter has at least **37 bits**.
-
-`verify.py` checks exactly 108 residual layouts (12+60+18+18), and never
-treats a cap as a result. It produces exact repeated-state certificates
-for the two 35-bit loops. The six growing families have the handwritten
-parametric invariants above; their fixed macro clauses are additionally
-checked in Python and Lean. The global syntax classification, width
-argument, and infinitary invariants remain handwritten.
-
-The live 162 and 165, exact pinned 168, 170 inlined-NEXT variant, 204 normal,
-584 two-nonlinear, 672 typed-normal, and 742 two-nonlinear-normal
-references satisfy the used structural constraints (`floor37.json`;
-`verify.py --battery` also reruns their batteries); no syntactic-redex or
-untypability assumption is made.
-
-The next inventory is qualitatively more permissive: seven leaves can
-support a third nonlinear binder, or allow the off-chain nonlinear binder
-to capture a variable whose other occurrence lies in the width witness.
-Sections 6–8 handle it with a different first-contraction argument, which
-uses closedness of the first head argument rather than an index budget.
-
-## 6. A literal interface costs at least 39
-
-**Lemma.** Every interpreter that is literally `λc.B` has at least 39 bits,
-for arbitrary `B` (redexes allowed). Take the contract at `M = S` with
-`C := K`, `N := I`, and apply the result to `I`: the closed term
-`B[K/c] stream(S, I) I` is β-convertible to `S`, so it has width three. The
-inserted copies of `K`, the quotation and `I` have width one and are closed,
-so the witness descends from a subterm `U` of `B` whose three free
-variables other than `c` are bound inside `B`. The incomparable nonlinear
-pair is also inside `B` (the outer `c` is comparable with every binder), so
-`B` has at least four live binders owning at least six leaves; `c` itself is
-live, since otherwise the identity source could not produce the rigid `C`.
-That is five live binders, seven leaves and index sum at least three:
-`2·5 + 4·7 − 2 + 3 = 39`. Both reviews of section 7 and the two reviews of
-the round-3 class bound re-derived it
-(`data/self-interpreter/reasoning_162/floor/literal-interface.md`).
-
-## 7. Size 37
-
-A 37-bit interpreter would be globally minimum, so any strictly smaller
-β-reduct contradicts section 5. Section 6 excludes a λ root. The witness
-chain `a, b, c` and the incomparable pair force four live binders; five
-would need seven leaves and 39 bits. The only `(L, V, X)` triples are
-`(4,6,7)`, `(5,6,5)`, `(6,6,3)` and `(4,7,3)`. The first head redex of an
-application-rooted closed source has a closed argument, so an affine or
-vacuous contractor shrinks the term; a chain contractor leaves every
-subterm of width at most two; hence the contractor is the off-chain
-binder `d` and the source is `D N` with closed normal operands, `N` holding
-the whole chain. `(4,6,7)` has no admissible layout; the duplicators `D`
-and the leaf placements in `N` give 652 normal layouts, and the vacuous
-λ insertions 24 more: **676** layouts
-(`reasoning_162/floor/floor37-progress.md`).
-
-All 676 are excluded: 615 by finite exact certificates (413 nonlinear
-binders on one chain, 133 wrong candidate head forms, 28 wrong identity-source
-head forms, 18 wrong normal identity payloads, 15 three-λ heads, 6 exact
-repeated head states, 2 smaller reducts), 48 by five parametric divergence
-invariants (macro systems, direct `N N` pumps, two-pending-argument systems,
-duplicated-argument and boxed wrappers), and the last 13 by complete Lean
-proofs of `¬ IsSelfInterpreter` on the identity source: eight by a rank-zero
-macro invariant, one by a protected trailing-argument grammar, four by
-explicit pumps (`reasoning_162/floor38/proof.md`; the Lean builds with `floor38/check_lean.py`).
-
-Two independent reviews (a fresh Codex consult and Gemini) found this
-correct. The Codex review replayed all 615 finite certificates with a
-separately written reducer, re-derived the 652 + 24 counts by hand and
-matched every Lean term to its layout; Gemini re-enumerated the four count
-triples and reproduced the ledgers byte for byte
-(`reasoning_162/review38/`).
-
-## 8. Size 38
-
-The same argument at 38 bits gives the triples `(4,6,8)`, `(5,6,6)`,
-`(6,6,4)` and `(4,7,4)`. Three binders may now be nonlinear, but the
-first-contractor argument never uses which chain binder is, so again the
-source is `D N`. `(4,6,8)` has no layout; `(6,6,4)` forces a zero-charge
-vacuous wrapper whose every placement either makes the head contractor
-vacuous or is erased to a smaller interpreter; `(4,7,4)` gives 828 layouts
-and `(5,6,6)` 378: **1,206** layouts (`reasoning_162/floor38/inventory38.md`).
-
-All 1,206 are excluded: 1,143 by finite certificates whose predicates and
-replay traces are kernel-checked (chain 613, wrong source head 201, three-λ
-head 188, wrong identity head 59, wrong payload 72, head cycle 4, smaller
-reduct 6), and the last 63 by complete Lean proofs: 57 through a `W/B`
-grammar preserved by head reduction, one parametric pump and five rigid
-payload mismatches (`reasoning_162/floor38/proof39.md`).
-The certificates' implications for non-interpreter status are handwritten.
-
-Two independent reviews (a fresh Codex consult and a fresh Claude
-consult, standing in for Gemini) found this correct. The Codex review
-re-instantiated the layout templates independently and matched all 1,206;
-the Claude review enumerated the whole `D N` slice independently (1,602
-terms: the 1,206 plus 396 `(6,6,4)` terms, each with a smaller β-reduct
-within two steps), checked every certificate predicate against the
-contract and re-encoded every Lean term (`reasoning_162/review39/`). An
-earlier draft's claim that the first contraction of a two-vacuous-binder
-layout always shrinks is false (`(λd. d (λu. d)) (λv. N0)` grows from 38 to 54
-bits before reaching 23); the proof uses the two-step argument instead.
-
-## 9. Size 39
-
-At 39 bits the literal interface first becomes possible. Equality in
-section 6 forces `(L, V, X) = (5, 7, 3)`: no vacuous binder, `c` used once at
-index 0 outside every internal λ, four internal live binders with exactly
-two nonlinear. The maximal λ-rooted pieces of the application context are
-closed and each needs a live binder, so there are at most two. With one, the
-source is `λc. c P` or `λc. P c`: Lean proves that no `λc. c P` with closed `P`
-is an interpreter (the identity invocation reaches `C P ⌜I⌝` and projection
-would equate a λ-rooted stream with the rigid remainder), and that an
-interpreter `λc. P c` makes `P` one, of 33 bits, contradicting section 6.
-With two, the off-chain piece is `Δ` and the chain piece one of 84 normal
-shapes, in twelve contexts: 1,008 layouts
-(`reasoning_162/floor38/literal40.md`).
-
-Application roots give six count triples, now with a possible fifth live
-binder at `(5,7,3)`. With four live binders the size-38 argument applies
-unchanged (`E = D N`); with five, the witness uses the unique index-2 and
-index-1 leaves, so a chain first contractor leaves every index at most one
-and width at most two. The inventory has 2,248 four-live and 1,416
-five-live layouts (`reasoning_162/floor38/inventory39.md`).
-
-All 4,672 are excluded: 4,505 by kernel-checked finite certificates
-(`chain` 2,058, wrong source head 828, three-λ head 841, smaller reduct 439,
-wrong identity head 227, wrong payload 112) and 167 by complete Lean proofs
-(147 by the `W/B` grammar on sources and 2 on identity reducts, 9 head
-cycles, and the last 9 residuals: an active-pair invariant, six pumps, two
-rigid-shape obstructions; `reasoning_162/floor38/proof40.md`).
-
-Two independent reviews (a fresh Codex consult and a fresh Claude consult)
-found this correct (`reasoning_162/review40/`). The Codex review rebuilt the
-templates independently (exactly 1,008 + 2,248 + 1,416 terms) and replayed
-the nine late residuals. The Claude review went further: a standalone
-enumerator generated every closed term at the six application triples (35.4
-million terms) and filtered them by necessary conditions only (width,
-incomparable nonlinear pair, no smaller reduct within two steps); exactly the
-ledger's application-rooted layouts survive, so the five-live classification
-and the vacuous-wrapper counts are complete without the first-contractor
-lemma, and every λ-rooted survivor lies in a class section 6 or the two Lean
-lemmas exclude.
-
-The classifications grow quickly (676, 1,206 and 4,672 layouts at 37, 38 and
-39). A further step would want a size-aware structural lemma rather than a
-larger inventory.
-
-## 10. What probe families can charge
-
-A lower-bound argument that uses only some of the contract's obligations is
-capped by the smallest term meeting those obligations. Kernel-checked
-restricted-domain witnesses (Codex; `Blc/SelfintTowerBarriers.lean`,
-`Blc/SelfintSpineBarriers.lean`, `Blc/SelfintGlobalBarriers.lean`; inductions
-over every depth with arbitrary suffixes, not finite batteries) put those caps
-at:
-
-| obligations used | witness | cap on a floor for `E` |
-|---|---:|---:|
-| values on every `λⁿ.I` | 57 | 48 |
-| values on every `λⁿ.I` and `λⁿ.Ω` | 84 | 75 |
-| both outputs on every `λⁿ.I` | 88 | 88 |
-| values on every Church numeral `λf x. fⁿ x` | 121 | 112 |
-| both outputs on every Church numeral | 154 | 154 |
-
-The witnesses are not interpreters, and the caps do not add. The
-projections cost `|E (λv r. v)| = |E| + 9` and `|E (λv r. r)| = |E| + 8`
-(`projection_value`), so a value-decoder floor of 50 or a remainder floor of
-49 would already improve the 40. The Church-spine witness works because each
-left child is the same variable, whose code merges with the application tag
-into one unary skip; a proof that goes further must use applications whose
-two children both vary, and charge shared source connections once
-(`data/self-interpreter/reasoning_class/global/`).
-
-Source for the external theorem: Rick Statman, *Two Variables Are Not
-Enough*, ICTCS 2005, printed pp. 406-409,
-https://doi.org/10.1007/11560586_32 .
+`K`, `F`, `I` and every stream cell `λk.k b t` with closed `b, t` are `SO`,
+so if `E` were, `T` would be an `SO` term β-convertible to `P`
+(`specialized_not_so` covers every reduct of `E K`; §6 uses it).
+
+**The witness** (`selfInterpreter_width`, `Blc/SelfintSingleObjectWidth.lean`).
+A minimal non-`SO` subterm of `E` is a live `λu.Q` whose body uses two
+distinct variables bound inside `E` by enclosing binders and does not factor
+through one object (`Witness 0 E`). So `E` has width at least three: three
+live binders on one ancestor chain, the inner two capturing, the outer two
+variables occurring at zero-based indices at least 2 and 1.
+
+This implies Statman's theorem: a term β-convertible to `S` has the witness
+(`join_s_width`), so no `SO` term is (`not_join_s`), nor any term whose live
+abstractions each capture at most one variable (`narrow_not_join_s`, all in
+`Blc/SelfintStatman.lean`), in particular none of width two (Statman, *Two
+Variables Are Not Enough*, ICTCS 2005,
+https://doi.org/10.1007/11560586_32). The width-two form,
+`widthTwo_not_join_s`, is at tag `selfint-record-2026-11-25`. The floor does
+not use Statman's theorem.
+
+## 4. Two incomparable nonlinear binders
+
+`Chain T` says that the nonlinear binders of `T` lie on one ancestor chain:
+`Chain (F A)` requires both sides and that one of them has no nonlinear
+binder. β preserves it (`chain_beta`, `chain_betas`,
+`Blc/SelfintNonlinearChain.lean`): a redex with a nonlinear binder has an
+argument without one, an argument with one is inserted at most once, and a λ
+that becomes nonlinear is an ancestor of every nonlinear binder below it. Run the contract on
+`Ω = Δ Δ`, `Δ = λx.x x`. Stream cells have no nonlinear binder, so `Chain E`
+would make the invocation `Chain`; the required output `C (λz.Ω) N` has two
+incomparable nonlinear binders and is its own only reduct, so the join is a
+reduction to it, a contradiction (`selfInterpreter_not_chain`). For a literal
+`λc s.B` the pair lies in `B` (`selfInterpreter_body_not_chain`).
+
+## 5. Counting to 33, and the minima through 36
+
+**`interpreter_counts`.** The witness supplies three live binders on one
+chain, which cannot hold both incomparable nonlinear binders, so at least
+four binders are live (`width_split_live`). Each live binder owns a leaf and
+each nonlinear one a second (`leaves_bound`): six leaves. One occurrence of
+each witness variable costs indices at least 2, 1 and 0 (`width_price`):
+`X ≥ 3`. As `L` is at least the live count,
+`|E| ≥ 2·4 + 4·6 − 2 + 3 = 33` (`selfintSizeBound_33`).
+
+Counting alone stops here. Codex's `U = λa b c. a (λp q r t. c) c (b c)` is a
+one-point applicative basis (`J = U U U →* K`, `U (J (J U)) J →* S`), and the
+162 compiled over `U` and shared through one binder is a 7,625-bit
+interpreter with four live binders, two nonlinear, two live captures and
+width three: it attains every count above at once. Its Lean
+(`SelfintFourLiveWitness`, `minimum_live`) and wire are at tag
+`selfint-record-2026-11-25`.
+
+**Through 36.** A minimum of at most 36 bits is `(λb)(λa)`: a closed copier
+with two leaves and one live, nonlinear binder applied to a closed operand
+with four leaves, three live binders and the witness
+(`small_minimum_diagonal`). A verified enumerator lists every such operand
+(`routes_complete`, `minimum_cells`), and the kernel evaluates on each layout
+a Boolean test of necessary conditions (`minimum_passes`): no shrinking
+redex, enough binders in each of the first four head reducts, no observed
+mismatch with the identity source's normal output within 35 steps; a budget
+reached keeps the layout. At 33 the two layouts that pass,
+`Δ (λa. a (λb c. a b c))` and `Δ (λa. a (λb c. b a c))`, are `SO`
+(`factoredLayout_so`): `selfintSizeBound_34`. Through 36 eight pass
+(`minimum_residual`): those two and their variants with `c` boxed as `λu.c`,
+all `SO`; two with exact head cycles on the identity call; and two whose
+weak-head clock descends without bound (one appends a continuation to the
+spine on every trip, the other peels and regrows a word of wrappers). This
+is `selfintSizeBound_37`.
+
+## 6. Literal interfaces
+
+**`λc.B` costs at least 39** (`one_lambda_bound_39`). `E K →β B[K/c]`, so by
+`specialized_not_so` the witness descends from a subterm of `B` with three
+variables bound inside `B` (`one_lambda_width`); the pair is in `B` too, as
+`c` is comparable with every binder; and `c` is live, or the identity source
+could not produce the rigid `C`. Five live binders, seven leaves and index
+sum at least three: `2·5 + 4·7 − 2 + 3 = 39`.
+
+**`λc s.B` costs at least 46** (`two_lambda_bound_46`,
+`Blc/SelfintLiteralWidth46.lean`). The witness lies inside `B` with its three
+variables bound there (`two_lambda_width`), and so does the pair. Both `c`
+and `s` occur in `B`, and each occurrence of `c` lies under `s` and costs an
+index unit beyond the witness's. So `L ≥ 6`, `V ≥ 8`, `X ≥ 4`, and
+`2·6 + 4·8 − 2 + 4 = 46`. `B` may begin with λ, so this covers every source
+with two or more leading λs: below 46 a λ-rooted minimum is `λc.B` with one
+leading λ, first possible at 39.
+
+## 7. From 37: classification by live binders
+
+With `ℓ` live binders, two nonlinear, a source has at least `ℓ + 2` leaves
+and `L ≥ ℓ`, so `|E| ≥ 6ℓ + 9`: four live binders fit from 33, five from 39,
+six from 45. Each class has a lemma that holds at every size, turned into
+word grammars (resource totals and de Bruijn leaf words) proved complete for
+each size's resource profiles `(L, V, X)`: every minimum is a member.
+
+- **Four live** (`four_live_minimum`): a minimum is an application of two
+  closed abstractions, the function with one live binder, which is
+  nonlinear, the argument with three, the witness and at least four leaves
+  (a λ root would need five live binders). Grammars: `four_live_row`,
+  `four_live_marked_row`. Used from 43, `four_live_operator`: the copier's
+  body is β-normal, headed by its own variable and without a live binder.
+- **Five live, 39–42.** At 39 the width-bearing abstraction is closed and its
+  body has at most three λs and five leaves (`width_local_price`,
+  `closed_of_saturated_width`, `Saturated.five_live_shell`,
+  `Saturated.five_live_source`). At 40 each binder binds at most twice
+  (`atMostTwo_of_leaf_eq`), at most one reference leaves the width
+  abstraction (`one_spare_capture`), and internal width on five or fewer
+  leaves puts the nonlinear binders on one chain
+  (`FiveLive.chain_of_small_width`), so the surrounding shell holds a
+  nonlinear sibling (`FiveLive.bucket_mem`). At 41 and 42 the leaf count is
+  seven and no binder binds more than twice; a redex operand with at most one
+  free occurrence, under such a binder, costs eight bits
+  (`FiveLive.small_operand`), so the marked body has at most five leaves
+  (`FiveLive.small_atom`) and the shell holds a nonlinear binder
+  (`SharedShell.complete`).
+- **Five live on eight leaves, 43–44.** The profiles are `(5,7,7)`,
+  `(6,7,5)`, `(7,7,3)` and `(5,8,3)` at 43 (`resources`, `five_complete` in
+  `SelfintSize43Profiles`), `(5,7,8)`, `(6,7,6)`, `(7,7,4)`, `(5,8,4)` at 44
+  (`ProfileGrid.resources`); the new class has eight leaves, all λs live.
+  The leaf count no longer saturates, and two lemmas replace saturation.
+  `occBound_of_slack`: with at most `q` more leaves than live binders,
+  nonlinear binders and free leaves together, each binder has at most
+  `2 + q` occurrences; here three. `EightLeaf.exterior`: then a nonempty shell
+  around the width-bearing abstraction holds two leaves (a one-leaf sibling,
+  the public variable or the identity, makes its redex shrink or gives a
+  rigid head). So the marked body has at most six leaves, and with six both
+  incomparable binders may lie inside it.
+- **Size 45** (`Size45.resources`): four live; five live at `(5,7,9)`,
+  `(6,7,7)`, `(7,7,5)`, `(8,7,3)`, `(5,8,5)`; and `(6,8,3)` with five or six
+  live. *Six live* fit only there, with exactly two nonlinear binders, none
+  bound more than twice, and the witness's two nearest enclosing binders
+  each occurring once in its body under no further λ, their indices 1 and 2
+  being the whole index sum (`Size45.six_exact`, `consecutive_of_saturated`).
+  *Five live and one dead*: a one-leaf sibling can now also be
+  `F = λx y.y`. As an operator `F` erases its argument; under a public λ the
+  closed abstraction and `F` leave the public variable unused; as the operand
+  of `λ.b`, a nonshrinking contraction needs three occurrences of the root
+  variable in `b`, both incomparable nonlinear binders lie in `b`, and `b`'s
+  three live binders need five leaves beside those three: eight, where seven
+  fit (`SaturatedEight.constId_operand`, Codex's argument, which does not use
+  the index sum). `SaturatedEight.exterior` then gives two exterior leaves
+  (`Size45.expose_eight`, `eight_mem_grid`).
+
+From 41 a static filter prunes the grammars: `FactorFilter.markedHere` keeps
+a candidate witness only if a search for a one-object factorization of its
+body fails (`factored_sound` checks each factorization), the true witness
+survives (`markedHere_of_witness`), and every interpreter passes
+(`FactorFilter.required`), so the test applies to reducts too.
+
+The steps are `CoverGrids.advance` (for `n ≤ 42`: the bound at `n` and refuted
+grids give `n + 1`), `Grammar43.advance`, `ProfileGrid.advance` (`n ≤ 44`)
+and `Size45.advance`, which refutes three grids (four live, the five
+profiles, `(6,8,3)`) and excludes two leading λs by `two_lambda_bound_46`.
+
+## 8. Exclusions
+
+Every listed source has a kernel-checked exclusion. Most are checked
+certificates of a few kinds: a reduct that is shorter, has its nonlinear
+binders on one chain or lacks the internal width; a single-object
+factorization; a reduct in the `W/B` grammar (closed under head steps, each
+closed member having one, so no head normal form); an exact head cycle; a
+dead interface binder; a wrong head or normal output on an invocation; and
+clock invariants (`TwoPending.no_count`). Through 39 they exclude every
+source. From 41 rows are replayed by `RowReplay.discharge`: a row names a
+slice of a grammar by resource counts and leaf-index words, a list of
+integers picks a certificate for each source from a shared bank
+(`rejects_sound`), a failing certificate keeps the source, and the kernel
+computes what is kept and compares it with the row's explicit list, so
+neither the lists nor their producer is trusted. What the certificates
+leave, from 40, goes to direct proofs:
+
+- *finite ordered application tables* (`SelfintFiniteChain.necessary`): a
+  monotone grading that β cannot raise, so a call graded strictly below its
+  required normal output cannot reach it;
+- *recursive intersection-arrow types* (`SelfintRecursiveTypes`), preserved
+  by β: a call gets a type its required result lacks, or the bottom type,
+  which no term with a weak-head clock has (`noClock`);
+- *regular invariants* of a Krivine machine (`SelfintRegularSoundness`): a
+  finite state set containing the start and a successor of each state, so a
+  call the contract forces to a weak-head normal form has no finite clock;
+- *a weighted rank* (`Floor40.Weighted.no_clock`, in the archive): a λ ranks
+  one more than its body, an application `max(0, rank f − 1, rank a − c)`;
+  under a path condition weak head steps do not raise it, and a closed term
+  of rank zero has no weak head normal form;
+- single proofs: pumps, contextual reductions, head observations, dead
+  continuations, single-object reducts, absent free variables.
+
+| size | classes | sources listed | direct proofs |
+|---:|---|---:|---:|
+| 37 | four live | 1,522 | — |
+| 38 | four live | 2,070 | — |
+| 39 | four, five live | 6,680 (4,980 + 1,700) | — |
+| 40 | four, five live | 11,610 (8,634 + 2,976) | 25 |
+| 41 | four, five live | 18,104 | 306 |
+| 42 | four, five live | 33,237 | 197 |
+| 43 | + five live on eight leaves | 72,423 | 770 |
+| 44 | same classes | 131,004 | 1,574 |
+| 45 | + `(6,8,3)`: six live, or five and one dead | 297,599 | 4,079 |
+
+From 41 the counts are after the factorization filter and, from 43,
+`four_live_operator`; 42,564 of the sources at 45 are in `(6,8,3)` (28,260
+with five live binders, 14,304 with six). They are evaluations of the
+verified grammars outside the kernel; coverage is proved by membership, so
+no proof depends on a count. Of the 6,926 sources left at 41–45, tables
+exclude 5,023 and recursive types, from 43, 1,376; the rest fall to regular
+invariants, weighted ranks and single proofs. At 40 the 25 are 14 regular
+invariants, nine weighted ranks, one direct refutation and the parity of
+iterated argument swaps for `Δ (λx. x (λy z. x z y) (λy. x))`.
+
+## 9. Trust boundary and checking
+
+`selfintSizeBound_38` to `_46` have no hypotheses; each assembly prints its
+axioms, which are `propext`, `Classical.choice` and `Quot.sound`. Nothing
+outside the kernel is trusted: the grammars are Lean definitions with
+completeness theorems, hints and certificates are checked, no enumeration
+outside Lean enters, no budget refutes anything, and no external theorem or
+βη-conversion is used. The contract has rigid `C`
+and `N`, which every stronger form implies, and the bound covers non-normal
+sources with any number of leading λs.
+
+Through `selfintSizeBound_37` and the literal-interface bounds the proof is
+in `lake build Blc` (the nine `SelfintSingleObject*` modules build in about
+20 seconds). The assemblies `lean/Blc/SelfintKernelFloor38.lean` … `46.lean`,
+`SelfintCover43` and `SelfintSize45Cover` (which import them and hold
+`Grammar43.advance` and `Size45.advance`), and the 9,577 generated modules
+under `SelfintRows37/` … `SelfintRows40/`, `Selfint40Evidence/`,
+`SelfintCompact41/` … `45/` and `SelfintResidual41/` … `45/` ship in
+`data/self-interpreter/global-floor.tar.xz`, outside `lake build Blc`;
+every other module they import is in `lake build Blc`.
+`scripts/global-floor.sh` unpacks them into `lean/Blc/`, runs
+`lake build Blc.SelfintKernelFloor46` and checks the axioms of
+`selfintSizeBound_46` (`clean` removes the unpacked files). With a warm
+`lean/.lake` it is quick; a cold build is many CPU-hours, each size costing
+about twice the one before: excluding 44 takes 2,343 modules of
+7.8 MB and 210 CPU-minutes, excluding 45 4,797 modules of 15.6 MB and 454
+CPU-minutes, no module above 145 seconds or 2.5 GB. The job count of
+`lake build Blc` is in STATUS.
+
+## 10. What 47 would need
+
+Excluding 46 bits needs three things the classes above lack. The literal
+interface `λc s.B` first fits at 46: equality in `two_lambda_bound_46` gives
+`(L,V,X) = (6,8,4)` with four live binders of `B`'s own, so the restriction
+to at most one leading λ no longer holds. Six live binders also occur at
+`(6,8,4)`, where the width-bearing abstraction may capture its nearest
+exterior variable once (`one_spare_capture`). And the grids of the classes
+already met must be refuted again. By the doubling above that is roughly
+twice the Lean of size 45. Counts alone cannot help: the 7,625-bit witness
+of §5 attains every one.
+
+An independent route, Codex's handwritten classifications at 34–39 and
+complete enumerations of the closed terms at 40–45 with kernel-checked
+certificates, reaches the same 46 and is at tag `selfint-record-2026-11-25`.

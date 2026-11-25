@@ -8,3 +8,11 @@ __pycache__/
 lean/.lake/
 /tmp/
 /.phase2/
+# unpacked by scripts/global-floor.sh from data/self-interpreter/global-floor.tar.xz
+/lean/Blc/SelfintKernelFloor*.lean
+/lean/Blc/SelfintRows3*/
+/lean/Blc/Selfint40Evidence/
+/lean/Blc/SelfintCompact4*/
+/lean/Blc/SelfintResidual4*/
+/lean/Blc/SelfintCover43.lean
+/lean/Blc/SelfintSize45Cover.lean

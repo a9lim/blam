@@ -17,7 +17,7 @@ few deep-index extras.
 
 --strict (universal machines) also runs Tromp's strict filter: U applied to
 each open program in STRICT, terminated by nil, must have no normal form
-within 2^16 beta.  Like `blam selfint wiring --strict`, it is a filter, not a
+within 2^16 beta.  It is a filter, not a
 proof of strictness.
 
 --int4 encodes the programs in int4.lam's four-primitive code (00 lambda,

@@ -1,2 +1,0 @@
-'Blc.Firstop.refute_zero' depends on axioms: [propext, Quot.sound]
-'Blc.Firstop.refute_unary' depends on axioms: [propext, Quot.sound]

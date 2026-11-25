@@ -7,7 +7,7 @@ inside the argument. The positive-head clock criterion, not an arbitrary
 beta cycle or a fuel cutoff, proves divergence for every pending stack.
 
 The concrete corollaries close 7584--7589, 9456--9461 and 4627--4629 in
- data/self-interpreter/reasoning_class/pending/X_REMAINING.tsv.
+ data/self-interpreter/class-bound/pending/X_REMAINING.tsv.
 -/
 import Blc.SelfintRootLetEmbedding
 namespace Blc.SelfintRootLetCycles

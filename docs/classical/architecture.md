@@ -222,8 +222,7 @@ epistemic tier rather than by typing depth:
   accounting), `blam omega leaves` (leaf tables for the true-Ω bounds);
 - certificates: `blam cert search` (discovery), `blam cert lean` (Lean
   generation), `blam cert diag` (where discovery drops a term);
-- instruments: `blam trace` (reduction-shape classification), `blam slots`
-  and `blam selfint` (self-interpreter and universal-machine searches).
+- instruments: `blam trace` (reduction-shape classification).
 
 Every term argument takes wire bits, a `.lam` / `.blc` / `.blc8` file, or
 λ-notation (`programs.md` §1).
@@ -436,9 +435,9 @@ implementation would weaken the evidence:
 
 - `tools/blcc.py` checks compilation;
 - `tools/certificates/loop32_trace.py` checks the foundational growing loop;
-- `tools/self-interpreter/` (`harness.py` with `lc.py` and `db.py`,
-  `battery.py`, `search_fix.py`, `beta_search.py`, `module_bound.py`) checks
-  interpreter candidates and reproduces the self-interpreter searches
+- `tools/self-interpreter/` (`battery.py` with `db.py`, `polish.py`,
+  `rootlet_pending.py`) checks interpreter and universal-machine candidates
+  and pins the reader bound's pending sources to their Lean
   (`self-interpreter/interpreter.md`);
 - `tools/omega/` checks the true-Ω DP by brute force (`omega.md` §4);
 - `tools/bbtxt.py` cross-matches Tromp's `BB.txt` `-- TODO:` fail traces —

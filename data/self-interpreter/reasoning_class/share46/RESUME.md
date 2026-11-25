@@ -1,1 +1,0 @@
-Coordinator: your previous turn (the FOLLOWUP.md in tmp/round4/share46/) was cut off by a transient 'model at capacity' API error. Continue it from where you were and extend REPORT.md with the new section when done.

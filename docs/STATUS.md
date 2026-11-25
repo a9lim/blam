@@ -140,227 +140,64 @@ Lean development has no sorries or mathlib. The certificate proofs use
 standard `Classical.choice`.
 `scripts/bb-regen.sh` audits the BB registry's axioms, refreshes the
 frontier, and recomputes the exact bounds. A fresh census 4..40 is
-bit-identical to every canonical row. Both release suites pass: 368 tests
+bit-identical to every canonical row. Both release suites pass: 356 tests
 with all features (three opt-in tests ignored) and 328 with default features.
 
 ### Self-interpreter and universal machine
 
-The domain documents under `classical/self-interpreter/` hold the theorems
-and proofs; this section holds the current numbers and the open cells.
+The record is `classical/self-interpreter/`: `interpreter.md` (the 162 and
+the universal machines), `class-bound.md` (the 162 is the minimum of the
+separated class) and `global-floor.md` (every interpreter has at least 46
+bits). The lane archives, the side results, the enumeration route to the
+floor and the search logs are at tag `selfint-record-2026-11-25`.
 
-- **The 162** (`interpreter.md`, `data/self-interpreter/machines/int162.lam`):
-  the 165's knot and NEXT around the reader `list I V NEXT`, with
-  `V = λu. list (λq. cont) (list list u)` (L 16, A 24, X 32). The 44-bit
-  reader it descends from is Codex's, built while refuting a
-  reader-optimality proof; NEXT as a reader operand is Grok's idea; `blam golf
-  letopt` inlined NEXT into the operand slot of the resulting 166. Lean proves
-  it correct for every closed program (`selfint_contract162`,
-  `isSelfInterpreter_intL162`, `not_selfintSizeBound_163`; the parser
-  statement is per continuation, `not_parses_intL162`). Battery 667/1/0, and
-  3,341/2/0 through 21 bits; exact suffixes on divergent sources. Its let
-  structure is the unique minimum to three cuts, and its βη component to slack
-  24 (12,024,847 terms) and contextual component to slack 18 hold nothing
-  smaller (`data/self-interpreter/letopt_162.log`, `component_162_*.log`). The
-  165's reader searches and handler bounds below do not reach this reader,
-  whose last operand is the bare `next`.
-- **The separated class** (`class-bound.md`): an opaque fixed-point knot
-  around `λp c. R[Q/j]`, with any reader `R` obeying the independent rigid
-  reader laws and a separate β-normal NEXT `Q` obeying the canonical rigid
-  branch laws, costs exactly `116 + w(R)` with the canonical NEXT and knot and
-  at least that otherwise, where `w(R) = cost(R) + 4 depth(j)`; the 162 is
-  `w = 46`, the 165 `w = 49`. Lean proves `|E| ≥ 138` and `w ≥ 30`
-  (`Blc/SelfintClass.lean`, `Blc/SelfintReader30.lean`): **every member has at
-  least 146 bits**, and the 162 is optimal in the class if and only if every
-  reader has `w ≥ 46`.
-
-  *The reader bound* (`class-bound.md` §3). Every β-normal reader has
-  `w ≥ 46` (needed-narrowing search over the joint laws, no minimality
-  assumption), so a cheaper reader contains a source redex. No minimum reader
-  below 46 is λ-rooted (s-spines and stream-λ body lets are closed by complete
-  finite checks, every normalizer exception refuted in Lean), dispatches
-  through a syntactic site, or has a literal-λ first handler; the 164's and
-  the hoisted 165's families cost exactly 48 and 49. What remains is **root
-  lets** `(λx. B) A C⃗`: nonlinear, two to four uses of `x`, `j` at depth at
-  most 1 (every linear root let and the profile `k + d = 5` are closed). The
-  open cells:
-  - x-headed root lets: the 51 listed pending sources are refuted by
-    unbounded symbolic Lean theorems (`SelfintRootLet*`, each literal archived
-    AST pinned by `SelfintRootLetPending`; `rootlet_pending.py --check`),
-    which closes that cell. Eight over-cap cells keep **2,102,856** sources
-    after the hand-off simplification rules
-    (`reasoning_class/pending/x_overcap.json`).
-  - rootnl's over-cap cells keep **2,343,026** sources after the
-    kernel-checked hand-off simplifications mark 184,628 non-minimum
-    (`reasoning_class/simplify/`).
-  - The recorded short-hand-off cut-offs are closed by symbolic divergence
-    (`Blc/SelfintRootCutoffs.lean`), within their narrowing coverage.
-
-  Families closed without a source-size cap, none a whole cell: hereditary
-  first-argument-forcing readers with `j` at depth 0, and bounded λ-delay
-  before a rigid pending block, with a live non-η captured-head escape priced
-  at ≥ 13 (`SelfintRootLetRigidPrefix`, `…BudgetDelay`); every closed payload
-  in that escape family at `w ≤ 45` (`SelfintRound6ReaderStrict`); sources
-  whose binders all have a shallow use (`…ReaderShallow`); the three-λ slice
-  `((λx.B) (λu v.A)) C D …` at depth 0 (`…ReaderBinary`); all-live sources
-  with λ-nesting at most 2 (`SelfintRound8ReaderTwoLambda`), which leaves a
-  surviving all-live `j`-free three-λ helper β-normal with its binders on one
-  ancestor path; four-λ readers with two pending operands have normal
-  components (`SelfintRound6ReaderFourth`), and the four-λ family is open;
-  the diagonal family `(λx.x x) (λu v.u (λz.h p[u,v,z])) c j` at exact costs
-  `33`, `32` and `31` plus `price(p)` for `h = u, v, z`
-  (`SelfintRound7Reader{Route,Middle,Last}`). The regular closure checker's
-  translation to ordinary λ-terms is kernel-checked
-  (`SelfintRegularCertificate`, `SelfintRegularSoundness`); the 49 code-table
-  proofs are not replayed as individual source-level corollaries. A
-  hand-off's pre-stream computation can expand without bound, so closing root
-  lets needs a source-level simplification theorem, not an expansion bound.
-
-  *NEXT and the other hypotheses* (`class-bound.md` §4). The minimum survives
-  NEXT of any syntax above the price frontier `q ≥ 92`, `q + 3F ≥ 104`
-  (`Blc/SelfintWiden.lean`), any value representation with a NEXT-free decoder
-  (`Blc/SelfintValues.lean`) and any opaque two-port recursion (Lemma B, steps
-  in Lean); the continuation-headed split costs at least 165
-  (`Blc/SelfintChead.lean`). With NEXT unrestricted, `q ≥ 35` and the assembly
-  costs at least 79 (`SelfintRound6BoundNextPrice`, `SelfintRound6NextAbs`); a
-  literal NEXT needs four live binders and at least 42 bits, and a three-λ
-  NEXT is a λ-free nonlinear sharing body, a normal two-λ helper and λ-free
-  pending operands, all normal (`SelfintRound7NextSourceShape`). Sharing inside
-  NEXT: one delayed shared-argument contraction has `q ≥ 99`
-  (`SelfintArchitecture6DelayedSharing`), one one-sided delayed contraction
-  `q ≥ 96` (`…6OneSidedPrice`), and `n` non-nested designated lets
-  `q ≥ 92 + 6n` (`…8SharingForest`); common one-hole contexts, dependent let
-  stacks and known-Boolean tests through aliases factor out of a minimum
-  (`…7SharingContexts`, `…7BranchAliases`). Nested computational
-  substitutions and general shared functions are open. A divergent-probe
-  lemma derives the variable law's rest part and NEXT's data flow from the
-  contract (`Blc/SelfintProbe*.lean`); the value part, the zero law, the
-  control flow and the rigid forms do not follow (five correct
-  counterexamples, 194–265 bits).
-
-  *Outside the class* (`class-bound.md` §5): the 165-bit bundle below gives
-  the reader access to recursion; NEXT under `λlist` can embed any closed
-  interpreter at `+17`; no β-preserving conversion takes every interpreter
-  into the class.
-- **Other state protocols** (`protocol-obstructions.md`): a **165-bit
-  parser/continuation bundle** (L 16, A 24, X 35) changes only the 162's
-  erased skip operand; Lean proves its directed contract for all closed
-  sources and arbitrary continuations and suffixes
-  (`SelfintArchitecture5Bundle`), battery 667/1/0
-  (`data/self-interpreter/theory/bundle165.json`); a cheaper assembly using the
-  bundled state is open. The erased skip operand can also return the
-  continuation, parser or generator off the input domain (correct 167, 168 and
-  169). Lean excludes the uniform correction `s I s` (`…6Retag`), the 180-bit
-  continuation-through-NEXT design (`…6NextService`), uniform recovery of the
-  bare continuation or parser from canonical NEXT (`…8Continuation`), every
-  self-application knot whose reader reaches the continuation only through a
-  recursively guarded callback (`…8Guard`), every finite-state repair of a
-  protocol whose ABS clause only updates state (`…5Depth`), and `E E =β E`
-  for any exact interpreter. Two exact generators are kernel-checked without
-  yielding a saving: the reader diagonal `R R →* J (R R J)`
-  (`…7ReaderDiagonal`) and a Boolean-preserving recursion generator with 48
-  bits of generator and 58 of one-copy knot overhead (`…8BooleanKnot`), whose
-  hand-inlined canonical parser measures 197 bits (an unqualified sketch).
-  Correct constructions above 162: inherited-environment parsers at 241
-  (independent skipping), 278 (total bottom) and 289 (dummy binding), with
-  fixed checks only and the 239-bit form refuted in Lean
-  (`…5Inherited`); Scott-handler recursion at 196 / 206, a self-passed context
-  at 191, a remainder-in-metadata parser at 303 and a shared-tag generator at
-  323, each passing the 667/1/0 battery with exact Ω / λΩ suffixes
-  (`data/self-interpreter/theory/`).
-- **The 165**, the previous record (`interpreter.md`,
-  `data/self-interpreter/machines/int165.lam`), Codex's design: Palmer's 168
-  with a reader that computes the skip `list list list` once on the whole
-  stream and hands `list1` to the variable arm as `cont` (L 17, A 25, X 29).
-  Lean proves it and the 168 correct for every closed program
-  (`selfint_contract165`, `selfint_contract`). Its tested neighbourhoods hold
-  nothing smaller: let structure to three cuts (unique minimum), βη component
-  to +20 (2,183,051 terms) and contextual to +16, every reader slot singly and
-  handler × skip jointly through 164-bit interpreters (32,366,372 pairs, no
-  survivor, 4,052,176 capped), whole APP ≤ 34 bits, and the 168's near misses
-  rebuilt on it (≥ 166; `merges.py`). Handwritten and reviewed, not in Lean:
-  with the other 122 bits fixed, 165 is minimal across the skip operands
-  `T = s s s`, `s s` and `s` under the independent rigid reader laws (`|H| ≥
-  27`, `31` and `35`, so `s H T` costs at least 43 in each), permitting every
-  ambient variable, whole-stream access and source redexes (`handler-bound.md`,
-  `cheap-tail-bound.md`); bare operands `j, c`, λ-containing operands, other
-  reader heads and arbitrary complete interpreters are outside it. Lean proves
-  the inert-operand replacement principle (`SelfintInert`) and that an opaque
-  fixed point costs at least `18 + 2k` (`SelfintKnot`), so the 165's 31 bits of
-  recursion overhead are minimal in its frame. Codex's handwritten cell (24)
-  and lift (19) bounds under weaker laws are not yet independently reviewed
-  (`interpreter.md` §5). `data/self-interpreter/reasoning_floor/` holds about
-  forty further correct interpreters of 166–220 bits.
-- **Global floor and structure** (`global-floor.md`, `structural-bounds.md`,
-  `capture-width.md`): every interpreter has **at least 40 bits**, by Codex's
-  handwritten proof (reviewed): the Statman width obstruction and the
-  incomparable-binder theorem give 34, and first-contraction classifications
-  exclude 34–39 (676 layouts at 37, 1,206 at 38, 4,672 at 39), each finite
-  certificate's predicate kernel-checked and every residual (13, 63 and 167)
-  refuted by a complete Lean proof of `¬ IsSelfInterpreter`
-  (`data/self-interpreter/reasoning_162/floor38/`). No Lean theorem states 40.
-  The **kernel-checked floor is 31** (`SelfintRound8BitFloor.selfintSizeBound_31`,
-  without Statman's theorem), with an unconditional four-source-λ bound
-  (`SelfintRound8FourLambda`); at exactly 31 the remaining minimum-resource
-  triples `(L, V, X)` are `(4,6,1)` and `(5,5,3)`, neither claimed to contain
-  an interpreter. Literal interfaces: `λc.B` ≥ 31 and `λc s.B` ≥ 38 in Lean
-  (`SelfintRound6BoundLiteral`), 39 and 46 handwritten. Lean also proves two
-  nonlinear binders in incomparable branches (`SelfintNonlinearChain`), an
-  application separating nonlinear code from a live capture
-  (`SelfintRound5BoundMixed`), a copy-dependency cycle on every successful
-  decode (`SelfintRound5Bound{Rank,Origins,Cycle,Graph,Selected}`), and that
-  no application expression over a fixed `λa b.D` with λ-free `D`, or over a
-  closed normal helper with at most two λs, is an interpreter
-  (`SelfintRound8GlobalOuter{Route,Spine,Self}`, `…GlobalOffPrefix`). The count
-  two is attained: witnesses of 584 bits, and of 742 bits β-normal, have
-  exactly two nonlinear binders.
-  Open: the three-live-binder family with additional dead λs (dead binders can
-  become active, `SelfintRound8DeadApply`), and any additive size
-  decomposition; `SelfintRound7GlobalSharingBarrier` shows the live-binder
-  potential argument cannot simply raise its threshold.
-- **Head decomposition and remainder** (`head-decomposition.md`,
-  `remainder.md`): every interpreter's head normal form has two leading λs,
-  headed by the continuation or the stream; a literal continuation-headed
-  source has at least five nonlinear binders and costs at least 55, and at
-  least 73 by Codex's reviewed handwritten payload pricing. Head
-  normalization is not size-monotone (the literal 165's head form is 755
-  bits). `SelfintWireCost` proves the exact local β size balance, so a global
-  minimum has no erasing redex; the 165's three redexes cost +147, +3 and +5
-  when contracted. The 70-bit `rem70` extracts the exact suffix for every
-  source and suffix (Lean); every closed-source exact extractor has at least
-  27 bits (handwritten, reviewed), so the minimum lies in 27..70. Lean proves
-  an extractor needs two nonlinear binders (`SelfintZero`) and strictly grows
-  its residual-origin λ count on every long enough `λⁿ.I`
-  (`SelfintGrowth*`, `WeakHeadClock`), with no explicit threshold or bit bound.
-- **Normal and typed witnesses** (`normal.md`, `typed-normal.md`): the
-  β-normal interpreter is **188 bits** (`int188_normal`, L 19, A 27, X 40);
-  Lean proves its exact wire, normality and β-join contract for every closed
-  source, continuation and suffix (`Blc/SelfintRound6Normal188.lean`), and
-  three chosen contractions connect its parser to the 162. A 672-bit
-  construction is β-normal and simply typable (Lean: the STLC judgment and a
-  59-step cast-erasure trace to the literal 165). The 188, 196, 204, 584, 672,
-  742 and four erased-skip variants pass the battery (667/1/0) and
-  divergent-source suffix checks (`data/self-interpreter/theory/`).
-- **Lean.** `lake build Blc Certs BusyBeaver` is current (198 jobs); headline
+- **The 162** (`data/self-interpreter/machines/int162.lam`): the 165's knot
+  and NEXT around the reader `list I V NEXT`, with
+  `V = λu. list (λq. cont) (list list u)` (L 16, A 24, X 32). Lean proves it
+  correct for every closed program (`selfint_contract162`,
+  `isSelfInterpreter_intL162`, `not_selfintSizeBound_163`). Battery
+  667/1/0, and 3,341/2/0 through 21 bits; exact suffixes on divergent
+  sources. Its let structure is the unique minimum to three cuts, and its
+  βη component to slack 24 (12,024,847 terms) and contextual component to
+  slack 18 hold nothing smaller.
+- **The universal machines**: Tromp's two wirings around the 162's body
+  give 172 (non-strict) and 184 (strict; all seven strictness probes),
+  `machines/uni172.lam` and `uni184.lam`. Lean proves both universal for
+  every closed program, with the 165's 175 / 187 and the 168's 178 / 190
+  (`Blc/Universal.lean`, `not_uniSizeBound_173`); letopt finds no smaller
+  rendering of either.
+- **The separated class** (`class-bound.md`): a member costs exactly
+  `116 + w(R)` with the canonical NEXT and knot and at least that
+  otherwise, and Lean proves `w ≥ 30`, so **every member has at least 146
+  bits** (`SelfintReader30Final.class_bound_146`). Every reader has
+  `w ≥ 46`, so **the 162 is the minimum of the class**: all 3,219,594
+  sources a minimum reader below 46 could be fail, 3,042,734 with a finite
+  mismatch and 176,860 with a Lean refutation of the literal source
+  (`data/self-interpreter/class-bound/`). This is conditional on the
+  handwritten parts of the reduction to those sources and on the coverage of
+  the grammar that generates them, on a Python comparator for the
+  mismatches, and on 5,955 engine divergence verdicts in four of the
+  earlier exclusions. The minimum survives NEXT of any syntax above the
+  price frontier `q ≥ 92`, `q + 3F ≥ 104`, any NEXT-free value decoder and
+  any opaque two-port recursion; the continuation-headed split costs at
+  least 165.
+- **The global floor** (`global-floor.md`): every interpreter has **at
+  least 46 bits**, kernel-checked end to end
+  (`SelfintSingleObject.selfintSizeBound_46`; Codex's Lean).
+  `scripts/global-floor.sh` unpacks its per-size assemblies and 9,577
+  generated row modules from `data/self-interpreter/global-floor.tar.xz`
+  and builds them over the in-tree modules. The base is the single-object
+  theorem (Claude's argument): a term all of whose live abstractions factor
+  through one captured term is not β-convertible to pairing, and no
+  interpreter is such a term. Counts then give 33 bits, and from 37 bits a
+  classification by live binders lists every possible minimum source
+  (1,522 at 37 up to 297,599 at 45) and excludes each one in the kernel.
+  Static counts cannot go further: a 7,625-bit interpreter attains every
+  count the bound uses at once.
+- **Lean.** `lake build Blc Certs BusyBeaver` is current (206 jobs);
+  `scripts/global-floor.sh` adds the floor's 9,588 modules. Headline
   theorems use at most `propext`, `Classical.choice` and `Quot.sound`
   (`lean/README.md`).
-- **The universal machine** (`universal.md`): Tromp's wirings around the
-  162's body give 172 (non-strict) and 184 (strict; all seven strictness
-  probes), around the 165's 175 and 187, and around the 168's 178 and 190
-  (`machines/uni172.lam`, `uni184.lam`). Lean proves all six universal for
-  every closed program, each pinned to its wire (`Blc/Universal.lean`:
-  `isUniversal_uni172` … `uni190`, Tromp's 190 as his compiler emits
-  `uni.lam`, `not_uniSizeBound_173`); strictness stays a seven-probe check.
-  Letopt finds no smaller rendering of 172 or 184, and no wiring search has
-  run around the 162's body. Wirings around the 165's body give no non-strict
-  machine below 175 (14,856,126 contexts, 68,017 capped, 16,144 of those
-  certified divergent); around the old body no non-strict machine below 178
-  and no strict one below 185, conditional on 3,961 and 2,375,084 capped
-  contexts. Joint U-specific searches around the old body screened
-  2,207,444,203 assignments below 178 with no survivor and 1,462,818 caps
-  (`data/self-interpreter/universal.json`). Codex's probe `1 K F` shows that
-  186- and 188-bit machines around the 165 passing the first six probes are
-  not strict, and excludes parser-applying base environments at every size.
-  Unsearched: the strict contexts of 39..43 bits around either body.
 
 ### AIT golf
 
@@ -447,7 +284,7 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    pairs, which any uniform witness only bounds above. Parked as the next
    constants target after docket 9. A conditional census (each program
    applied to the stream x\*) would bound the true gap from below as the
-   census bounds c. The census range sits at the self-interpreter floor (40),
+   census bounds c. The census range lies below the self-interpreter floor (46),
    so those gaps will mostly measure pairing overhead.
 7. **AIT golf:** tromp/AIT#13 is in Tromp's review (about a dozen programs
    pass; `int4` withdrawn, his 189 stands). Terms
@@ -459,32 +296,24 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
 8. **Discrete Solomonoff induction:** measure Church bit-list decode coverage
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
-9. **The self-interpreter below 162** (`classical/self-interpreter/interpreter.md`
-   §7, `class-bound.md` §3). Proof: the reader weight bound `w(R) ≥ 46` would
-   make the 162 optimal in the separated class and in its widened forms (NEXT
-   of any syntax above the price frontier, any NEXT-free value decoder, any
-   opaque two-port recursion). Every β-normal reader has `w ≥ 46`, no minimum
-   reader below 46 is an s-spine or has a let as its stream-λ body; what is
-   open is minimum readers below 46 whose root is a let (depth-0 shared
-   top-level lets, application-rooted readers) that are nonlinear, with two
-   to four uses of the let variable and `j` at depth at most 1 (linear root
-   lets and the profile `k + d = 5` are closed; the open cells and their
-   counts are under *The separated class* above).
-   The general step is still a theorem bounding the source that the two
-   roles can share; neither periodicity of the unary run nor accounting
-   alone can supply it (`class-bound.md` §3).
-   Any reader with `w ≤ 45` is a sub-162 interpreter of exactly `116 + w`
-   bits. Also open on the class side: NEXT of arbitrary syntax in
-   `35 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two
-   nonlinear binders. The unconditional floor is 40; restricted-domain
-   witnesses cap every proof that uses only identity towers (88) or Church
-   spines (154), so a global argument must charge applications whose
-   children both vary. Constructive: none of about thirty round-4 designs
-   (163–265 bits) beats 162. The 162's reader is on the
-   fork's golf branch (tromp/AIT#13): `int.lam` 162, `uni.lam` 184 / 172,
-   `ko2kp` 540, `nf` 535, `pairup_Kp` 1270, each verified
-   against its previous version (`classical/golf.md`); the PR's title and a
-   summary comment carry the new table.
+9. **The self-interpreter below 162** (`classical/self-interpreter/`). The
+   162 is the minimum of the separated class and of its widened forms, so a
+   smaller interpreter lies outside them; none of the fifteen built through
+   the class's exits (164–199 bits) beats it. Open on the proof side: a
+   kernel-checked class bound above 146 bits (the reduction to the finite
+   set of sources is handwritten in part, its three million finite
+   mismatches rest on a Python comparator, and 5,955 sources on engine
+   verdicts), and a theorem bounding the source two roles can share, which
+   would replace the exhaustion. Open on the class side: NEXT of arbitrary
+   syntax in `35 ≤ q ≤ 91`, values decoded through NEXT, knotless first
+   heads with two nonlinear binders. A floor of 47 needs three things at 46
+   bits: the literal interface `λc s.B`, which first fits there (equality
+   in `two_lambda_bound_46`), six live binders at `(L,V,X) = (6,8,4)`, where
+   the width-bearing abstraction may capture its nearest exterior variable
+   once (`one_spare_capture`), and the grids of the classes already met.
+   Excluding size 45 took 454 CPU-minutes and 15.6 MB of Lean source, and
+   each size has about doubled both. The 162's reader is on the fork's golf
+   branch (tromp/AIT#13): `int.lam` 162, `uni.lam` 184 / 172 (`classical/golf.md`).
 10. **`blam uni` throughput:** within 4× of `uni.c` on byte streams. The next
    lever is allocation: a slab with index-based reference counts (or the
    open global-allocator decision) would remove most of malloc/free and the

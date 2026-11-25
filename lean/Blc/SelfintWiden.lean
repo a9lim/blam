@@ -16,7 +16,8 @@ at the root of a reader, c=0 and j=1.
 import Blc.SelfintClass
 
 /- The following namespace is copied unchanged (apart from its import and
-   name) from data/self-interpreter/reasoning_162/floor/ReaderHoist.lean. -/
+   name) from data/self-interpreter/reasoning_162/floor/ReaderHoist.lean
+   (commit 703f50d). -/
 /- General NEXT-hole hoisting and its exact capture-weight balance.
    Source variables are c=0 and j=1. This file does not prove the reader floor. -/
 

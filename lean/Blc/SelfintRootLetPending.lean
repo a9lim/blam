@@ -1,6 +1,6 @@
 /-
 Exact correspondence to the 51 records in
-data/self-interpreter/reasoning_class/pending/X_REMAINING.json.
+data/self-interpreter/class-bound/pending/X_REMAINING.json.
 Archive SHA256: 4a41c8118848fd8113a6e4694581df56c86637b0f222a2f3e4524bd304fa1d8f
 
 Each source below is the literal archived AST, with the distinguished
@@ -9,8 +9,8 @@ family instance and every non-reader conclusion is kernel checked.
 The Python companion only checks this fixed archive and regeneration;
 it does not enumerate candidates or provide semantic evidence.
 This closes this ledger, not the unrestricted reader-floor theorem.
-Regenerate: python tools/self-interpreter/theory/rootlet_pending.py --write
-Verify: python tools/self-interpreter/theory/rootlet_pending.py --check
+Regenerate: python tools/self-interpreter/rootlet_pending.py --write
+Verify: python tools/self-interpreter/rootlet_pending.py --check
 -/
 import Blc.SelfintRootLetBinaryOrbit
 import Blc.SelfintRootLetCycles

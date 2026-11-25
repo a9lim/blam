@@ -27,10 +27,6 @@ mod solomonoff;
 mod uni;
 
 #[cfg(feature = "lab")]
-mod selfint;
-#[cfg(feature = "lab")]
-pub(crate) mod slots;
-#[cfg(feature = "lab")]
 mod trace;
 
 const USAGE: &str = "\
@@ -67,8 +63,6 @@ CERTIFICATES
 INSTRUMENTS
   trace scan|single|dump|verify-loop32   reduction-shape classifier
                                                                  (lab feature)
-  slots var|abs|app            self-interpreter slot search       (lab feature)
-  selfint ctx|hole|wiring      self-interpreter searches          (lab feature)
   q galois idiom|complement    the dyadicity campaign             (lab feature)
   q oddmin [W]                 gated reference DP for the CNOT-free lane
                                                                  (lab feature)
@@ -119,14 +113,6 @@ fn dispatch(argv: &[String]) -> Result<(), String> {
         "trace" => trace::run(rest),
         #[cfg(not(feature = "lab"))]
         "trace" => Err(no_lab("trace")),
-        #[cfg(feature = "lab")]
-        "slots" => slots::run(rest),
-        #[cfg(not(feature = "lab"))]
-        "slots" => Err(no_lab("slots")),
-        #[cfg(feature = "lab")]
-        "selfint" => selfint::run(rest),
-        #[cfg(not(feature = "lab"))]
-        "selfint" => Err(no_lab("selfint")),
         "golf" => golf::run(rest),
         other => Err(format!(
             "blam: unknown command `{other}`\ntry `blam --help` for the command table"
@@ -254,10 +240,6 @@ mod tests {
     fn lab_subcommands_are_named_either_way() {
         let paths = [
             vec!["trace"],
-            vec!["slots"],
-            vec!["selfint"],
-            vec!["selfint", "ctx"],
-            vec!["selfint", "hole"],
             vec!["cert", "search"],
             vec!["cert", "diag"],
             vec!["q", "galois"],

@@ -1,1 +1,0 @@
---minfilt --nf --jarg --rootk 2,4 --jmax 1
