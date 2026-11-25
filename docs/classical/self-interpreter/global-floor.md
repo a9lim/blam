@@ -1,13 +1,13 @@
-# An unconditional 40-bit floor
+# An unconditional 41-bit floor
 
 **Theorem.** Every closed interpreter for the repository's beta-exact,
-closed-source contract has BLC length at least **40**.
+closed-source contract has BLC length at least **41**.
 
 Lean proves the floor through 36: **every interpreter has at least 37
 bits** (`SelfintSingleObject.selfintSizeBound_37`, `structural-bounds.md`).
 Above that the proof is handwritten with kernel-checked components.
 
-The proof has three layers. Sections 1–5 are Codex's handwritten proof of
+The proof has four layers. Sections 1–5 are Codex's handwritten proof of
 37: the counting argument of `capture-width.md` gives 33 and excludes it,
 and sections 3–4 exclude 34, 35 and 36 using semantic consequences of the
 exact contract (head arity, internal width, internal nonlinearity, and exact
@@ -25,9 +25,11 @@ regenerates them and checks the 108 residual layouts in 0.05 seconds
 (`data/self-interpreter/theory/floor37.json`). Section 6 proves that every
 literal `λc.B` interpreter has at least 39 bits; sections 7–9 use it to
 exclude sizes 37, 38 and 39 (Codex's handwritten proofs with kernel-checked
-components, each found correct by two independent reviews). No Lean theorem
-states 38, 39 or 40: for sizes 37 to 39 the syntax classifications and the
-implications of the finite certificates are handwritten; the width theorem
+components, each found correct by two independent reviews). Section 10
+excludes size 40 from a complete enumeration of the closed 40-bit terms,
+with the same kinds of certificate. No Lean theorem states a bound above
+37: from size 37 the syntax classifications or enumerations and the
+implications of the finite certificates are not kernel-checked; the width theorem
 and the literal-interface bound of section 6 are kernel-checked, the
 parametric invariants are proved below or in Lean, and no fuel cap is used
 as a refutation anywhere.
@@ -692,10 +694,87 @@ lemma, and every λ-rooted survivor lies in a class section 6 or the two Lean
 lemmas exclude.
 
 The classifications grow quickly (676, 1,206 and 4,672 layouts at 37, 38 and
-39). A further step would want a size-aware structural lemma rather than a
-larger inventory.
+39), and the first-contraction arguments with them. From size 40 the
+inventory is enumerated instead.
 
-## 10. What probe families can charge
+## 10. Size 40: complete enumeration
+
+From size 40 the inventory is not derived by a first-contraction argument.
+It is the set of all closed terms of the size that pass necessary conditions
+for a minimum interpreter, found by enumerating every one of them (Codex).
+
+A 40-bit interpreter would be a global minimum, so no β-reduct of it, by a
+redex anywhere, is shorter. Four live binders, six leaves and index sum
+three leave six count triples; a λ-rooted candidate is `λc.B` with `c` live
+and both the width witness and the incomparable pair inside `B` (section 6),
+which forces `(5,7,4)`, and two leading lambdas cost 46 (`capture-width.md`).
+The candidates are the closed terms with two nonlinear binders in disjoint
+subtrees, a subterm with three distinct free variables (bound inside `B`
+for a λ-root), and no redex whose contraction shortens the term.
+
+| `(L,V,X)` | closed terms | width, pair and root conditions | application-rooted candidates | λ-rooted |
+|---|---:|---:|---:|---:|
+| `(4,6,10)` | 28 | 0 | 0 | 0 |
+| `(4,7,6)` | 39,136 | 1,080 | 540 | 0 |
+| `(5,6,8)` | 26,778 | 336 | 144 | 0 |
+| `(5,7,4)` | 13,875,080 | 34,144 | 5,940 | 1,152 |
+| `(6,6,6)` | 546,580 | 12,240 | 2,058 | 0 |
+| `(7,6,4)` | 2,571,978 | 5,208 | 450 | 0 |
+| all | 17,059,580 | 53,008 | 9,132 | 1,152 |
+
+That is **10,284** layouts: 7,248 application-rooted with four live binders,
+1,884 with five, and 1,152 literal `λc.B` with five.
+
+Completeness rests on enumeration, not on a classification, and three
+enumerations agree: the one by resource triple above; a second traversal of
+all 130,880,047 closed 40-bit terms with no restriction on the triple, whose
+53,008 matches were filtered by carrying out every contraction; and an
+enumerator written separately from the definitions (Claude,
+`reasoning_global/audit/`), which keeps every closed 40-bit term with an
+incomparable nonlinear pair, a width-3 subterm and no shortening contraction:
+its application-rooted survivors are exactly the 9,132, and its λ-rooted
+survivors outside the 1,152 all have two leading lambdas (16,042), a dead
+continuation (1,686) or no internal width (8,580).
+
+All 10,284 are excluded. 9,978 have a finite certificate: a head-reduction
+trace to a reduct whose nonlinear binders lie on one chain (4,038), that is
+shorter than 40 bits (1,751), has three leading lambdas (1,630), is a head
+normal form of the wrong shape (1,243) or has internal width below three
+(932); or, on the identity source, a wrong rigid head (223) or a normal
+payload other than the required one (161). The other 306 have complete Lean
+proofs of `¬ IsSelfInterpreter`: 214 through the `W/B` grammar of section 8,
+and the 92 the finite pass left:
+
+- 49 by a regular invariant of an abstract Krivine machine: a finite set of
+  machine states (12 to 1,969) that contains the start and a successor of
+  each of its states, so that a call the contract forces to normalize has no
+  finite weak-head clock. For 20 sources the call is the identity
+  invocation; the others use the contract at another closed source, with
+  rigid, `K`, `Ω` or custom continuations and suffixes, each written out in
+  its module;
+- 42 by a weighted rank that holds at every size (`Weighted.no_clock`): give
+  a λ rank one more than its body, an application
+  `max(0, rank(f) − 1, rank(a) − c)`; if on every path from a binder to an
+  occurrence of its variable the sum of `+1` per λ, `−1` per left branch and
+  `−c` per right branch is at most `−c`, weak head steps of a closed term do
+  not raise the rank, and a closed term of rank zero has no weak head normal
+  form;
+- one, `Δ (λx. x (λy z. x z y) (λy. x))`, by induction on the parity of
+  iterated argument swaps.
+
+Each literal term's wire, each trace and each predicate is kernel-checked,
+and so are the 306 exclusions (`propext`, `Quot.sound`; 42 also
+`Classical.choice`): 345 modules outside `lake build`, recompiled from
+`reasoning_global/size40.tar.xz` in about three minutes, one Lean process
+under 900 MB (`pack.py check 40`). The enumerators, the implications from
+the seven finite predicates to the contract (those of sections 7 to 9; for a
+reduct with two leading lambdas, the internal width is the literal-interface
+statement of `capture-width.md`) and the combination with the 40-bit floor
+are not kernel-checked. A replay of all 9,978 finite certificates with a
+separately written reducer agrees (`audit/replay.py`). No fuel cap or
+timeout refutes anything.
+
+## 11. What probe families can charge
 
 A lower-bound argument that uses only some of the contract's obligations is
 capped by the smallest term meeting those obligations. Kernel-checked
@@ -714,8 +793,8 @@ at:
 
 The witnesses are not interpreters, and the caps do not add. The
 projections cost `|E (λv r. v)| = |E| + 9` and `|E (λv r. r)| = |E| + 8`
-(`projection_value`), so a value-decoder floor of 50 or a remainder floor of
-49 would already improve the 40. The Church-spine witness works because each
+(`projection_value`), so a value-decoder floor of 51 or a remainder floor of
+50 would already improve the 41. The Church-spine witness works because each
 left child is the same variable, whose code merges with the application tag
 into one unary skip; a proof that goes further must use applications whose
 two children both vary, and charge shared source connections once

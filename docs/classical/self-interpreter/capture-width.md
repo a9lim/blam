@@ -278,7 +278,7 @@ Combining the incomparable-pair theorem with the width witness and the
 ```
 
 The global count is the base of `global-floor.md`, which extends the
-exclusion through 39 and gives 40.
+exclusion through 40 and gives 41.
 
 Let `L,V,X` count abstractions, variable leaves, and the sum of zero-based
 de Bruijn indices. The BLC size identity is

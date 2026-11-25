@@ -516,10 +516,12 @@ a preliminary global floor of 33; analytical exclusion of the equality
 cases raises that floor to 34. `global-floor.md` excludes 34, 35 and 36 the
 same way (37; its 144 fixed reduction clauses are kernel-checked in
 `Blc/SelfintFloor37.lean`), proves that a literal interface `λc.B` costs at
-least 39, and with it excludes sizes 37, 38 and 39: **every interpreter has
-at least 40 bits** (Codex's handwritten classifications with kernel-checked
+least 39, and with it excludes sizes 37, 38 and 39; size 40 falls to a
+complete enumeration of its 10,284 candidate layouts: **every interpreter
+has at least 41 bits** (Codex's classifications with kernel-checked
 certificates and Lean exclusions of every residual; two independent reviews
-of each step). The kernel-checked floor is 37
+of each handwritten step, three agreeing enumerations at 40). The
+kernel-checked floor is 37
 (`SelfintSingleObject.selfintSizeBound_37`, `structural-bounds.md`).
 `capture-width.md` proves the single-object theorem and the interface
 statement, and gives a shared-S construction attaining these structural minima
@@ -980,10 +982,10 @@ Open:
   current `next` and parser doing it unchanged;
 - the capped fills of §3 (4,052,176 in the joint reader search, 7,790 in the
   handler, 218 in whole APP) and of §4;
-- an unconditional lower bound beyond 40 bits (`global-floor.md`). The
+- an unconditional lower bound well beyond 41 bits (`global-floor.md`). The
   minimum nonlinear-binder count two is attained, so counting more such
   binders cannot close the gap, and the exact classifications grow fast
-  (676 layouts at 37, 1,206 at 38, 4,672 at 39, where literal interfaces
+  (676 layouts at 37, 1,206 at 38, 4,672 at 39, 10,284 at 40; literal interfaces
   first appear). The remainder projection gives at most 62 even if its own
   minimum were 70, and a 45-bit partial reader meets every zero-stream
   obligation the known proofs use (`remainder.md`). A quantitative theorem

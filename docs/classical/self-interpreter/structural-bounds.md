@@ -85,7 +85,7 @@ unconditional kernel theorem is
 `capture-width.md` supplies the width witness, hence four live binders, six
 leaves and index sum three (33 bits), and verified enumerations of the
 minimum-resource layouts exclude sizes 33 to 36 (*The kernel-checked bit
-floor* below). The handwritten global floor is 40 (`global-floor.md`).
+floor* below). The established global floor is 41 (`global-floor.md`).
 
 For a literal `λc s.B`, `SelfintRound6BoundLiteral` proves that `B` already
 contains a live capture between internal binders: the supplied public
