@@ -76,21 +76,28 @@ fails for interpreters, which must also expose an abstraction body that is
 not an application; abstraction-rooted interpreters then need four
 abstractions (27 bits), and minimal application-rooted ones below 27 bits
 are classified and refuted by finite head reduction. The proof uses
-`Classical.choice`. The current unconditional kernel theorem is
-`SelfintRound8BitFloor.selfintSizeBound_31`. It combines source-lambda,
-live-binder, leaf, and index charges with symbolic small-source
-classification, as described below. No source enumeration enters this
-proof. The handwritten global floor remains 40 (`global-floor.md`).
+`Classical.choice`. `SelfintRound8BitFloor.selfintSizeBound_31` then
+combines source-lambda, live-binder, leaf, and index charges with symbolic
+small-source classification, as described below; no source enumeration
+enters that proof. Both predate the width theorem in Lean. The current
+unconditional kernel theorem is
+`SelfintSingleObject.selfintSizeBound_37`: the single-object theorem of
+`capture-width.md` supplies the width witness, hence four live binders, six
+leaves and index sum three (33 bits), and verified enumerations of the
+minimum-resource layouts exclude sizes 33 to 36 (*The kernel-checked bit
+floor* below). The handwritten global floor is 40 (`global-floor.md`).
 
 For a literal `λc s.B`, `SelfintRound6BoundLiteral` proves that `B` already
 contains a live capture between internal binders: the supplied public
 arguments cannot create one. Together with its internal incomparable
 nonlinear pair this forces three live binders inside `B`. An internal
 capture index bit and a continuation index bit charge disjoint leaves,
-giving a kernel-checked 38-bit literal-interface floor. Stripping only
-the public continuation similarly gives 31 bits for every source `λc.B`.
-The separate handwritten literal two-argument bound is 46. None of these
-small numerical consequences approaches 162-bit optimality.
+giving a kernel-checked 38-bit literal-interface floor. For a single
+leading lambda `λc.B`, the width witness lies inside `B`
+(`SelfintSingleObject.one_lambda_width`), which gives 39 bits
+(`one_lambda_bound_39`). The separate handwritten literal two-argument
+bound is 46. None of these small numerical consequences approaches 162-bit
+optimality.
 
 The nonlinear count is sharp, even among beta-normal interpreters.
 `Blc.SelfintSharp` gives a 584-bit interpreter reducing to the literal 165
@@ -247,6 +254,35 @@ have additional dead source lambdas, and those cases remain open.
 
 ## The kernel-checked bit floor
 
+**Every interpreter has at least 37 bits** (`Blc/SelfintSingleObject*.lean`,
+`selfintSizeBound_37`; Codex's Lean on Claude's single-object theorem). The
+chain is:
+
+- `selfInterpreter_not_so` and `selfInterpreter_width`: an interpreter has a
+  live abstraction whose body uses two enclosing variables and does not
+  factor through one object (`capture-width.md`);
+- `interpreter_counts`: with the incomparable nonlinear pair, at least four
+  live binders, six leaves and index sum three, so `selfintSizeBound_33`;
+- `small_minimum_diagonal`: a minimum of at most 36 bits is a closed copier
+  with two leaves applied to a closed operand with four leaves, three live
+  binders and the witness;
+- `routes_complete` and `minimum_cells`: a verified enumerator lists every
+  such operand, by the path to the witness, the leaf word under it and the
+  placement of the remaining lambdas, in three cells by lambda count;
+- `minimum_passes`: a Boolean test of necessary conditions for a minimum
+  (no shrinking redex, enough binders in the first four head reducts, no
+  observed mismatch with the identity source's output within 35 steps),
+  which the kernel evaluates on each layout; a budget reached keeps the
+  layout;
+- `minimum_residual`: eight layouts pass. Four are single-object, two have
+  exact head cycles on the identity source, and two diverge by an unbounded
+  descent of a weak-head clock (an argument appended to the spine on every
+  trip; a word of wrappers peeled and regrown).
+
+No external theorem, βη-conversion or scan over closed programs enters. The
+nine modules build in about 20 seconds.
+
+The earlier route to 31 does not use the width theorem.
 `SelfintRound8BitFloor` combines the four-lambda theorem with the live and
 nonlinear counts. Any interpreter below 31 bits has exactly five leaves
 and three live binders. For a minimum representative, the root sharing
@@ -312,22 +348,21 @@ The formal conclusions are:
 These are source-syntax constraints. They do not say that the captured
 binder must itself be nonlinear.
 
-The handwritten argument in `capture-width.md` strengthens this to two
-live capturing abstractions, or three for a literal two-argument interface
-and hence for a beta-normal interpreter. It applies Statman's published
-obstruction to a width-two term representing `S`: the closed quotation and
-interface arguments have width one, so the necessary width-three subterm
-must come from the interpreter. Combining that requirement with the
-incomparable-binder theorem and the 33-bit exclusion gives 34- and 46-bit
-floors, respectively:
+`capture-width.md` strengthens this to two live capturing abstractions
+(kernel-checked: an interpreter is not single-object, so some live
+abstraction's body uses two enclosing variables), or three for a literal
+two-argument interface and hence for a beta-normal interpreter
+(handwritten). The closed quotation and interface arguments have width
+one, so the necessary width-three subterm must come from the interpreter.
+Combining that requirement with the incomparable-binder theorem and the
+33-bit exclusion gives 34- and 46-bit floors, respectively:
 the three live binders on the width witness's ancestor chain cannot
 contain both incomparable nonlinear binders, requiring a fourth live
 binder. The resulting 33-bit global floor rises to 34 by analytically
 excluding its equality cases, and `global-floor.md` extends the exclusion
 through 39. The same document proves simultaneous sharpness of
-the width, capture, and nonlinear counts by a shared-S construction. These
-additions are handwritten; they do not strengthen the kernel-checked
-numerical theorem above.
+the width, capture, and nonlinear counts by a shared-S construction, which
+is handwritten.
 
 ## Nonlinear code and live capture must occupy separate branches
 

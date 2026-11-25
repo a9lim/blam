@@ -6,13 +6,13 @@ its source contains at least two live abstractions that capture an enclosing
 variable. Both bounds are sharp, even simultaneously with the established
 minimum of two nonlinear binders.
 
-The width lower bound uses a published theorem of Rick Statman and Codex's
-handwritten interface argument below. The incomparable-nonlinear-binder
-obstruction is kernel-checked; the numerical counting and exclusion
-arguments and the sharpness constructions are handwritten. Together they
-give 34 bits globally and 46 for literal or beta-normal interpreters;
-`global-floor.md` extends the global count to 40. None of this establishes
-162-bit optimality.
+The width lower bound is kernel-checked: it follows from a theorem about
+closures that hold one object, proved below, which is strictly stronger and
+needs no external result. The incomparable-nonlinear-binder obstruction and
+the global counts of 33 and 34 bits are kernel-checked too; the 46-bit count
+for literal two-argument interfaces and the sharpness constructions are
+handwritten. `global-floor.md` extends the global count. None of this
+establishes 162-bit optimality.
 
 ## The source measure
 
@@ -41,111 +41,111 @@ under beta reduction. For example,
 ```
 
 increases width from two to three. The lower bound therefore needs the
-specific impossibility theorem below; it does not follow by comparing
-input and output widths along a reduction.
+impossibility theorem below; it does not follow by comparing input and
+output widths along a reduction.
 
-## Statman's obstruction
+## One object per closure
 
-Write
-
-```text
-S = λf g x.f x (g x),
-K = λa b.a,
-I = λx.x.
-```
-
-Statman's *Two Variables Are Not Enough* states the following consequence
-on page 406:
+The width bound is a corollary of a statement about closures (Claude's
+argument; Codex's Lean, `Blc/SelfintSingleObject.lean`). Call an abstraction
+`λu.Q` *single-object* if its body is
 
 ```text
-P closed and P =β S  ⇒  width(P) ≥ 3.
+Q = Q'[R/r],        u ∉ FV(R),        FV(Q') ⊆ {u, r}
 ```
 
-The paper also states the corresponding consequence for `B`. Its
-two-variable result concerns the number of reusable variable names, not
-the total number of abstraction nodes. The connection to free-variable
-width allows insertion of `K` applications for vacuous abstractions; the
-displayed consequence is stated directly in the paper.
+for some terms `R, Q'`: everything the body uses besides its own argument and
+closed subterms reaches it through copies of one term `R`. A dead abstraction
+is single-object (`R` is its body). `λu. a b u` and `λu. u (a b) (a b)` are
+single-object, with `R = a b`; `λu. u a b` and `λu. a u (b u)` are not. `SO`
+is the hereditary predicate: variables are `SO`, an application is `SO` when
+both sides are, and `λu.Q` is `SO` when `Q` is, it is single-object, and its
+`R` is `SO`.
 
-Sources inspected:
+A term of width at most two is `SO`: a live `λu.Q` in it has
+`FV(Q) ⊆ {u, v}` for one variable `v`, so `R = v` works. The converse fails
+(`λa b u. a b u` has width three and is `SO`), so `¬SO` is strictly stronger
+than width three.
 
-- Rick Statman, [*Two Variables Are Not Enough*, ICTCS 2005, pp. 406–409](https://doi.org/10.1007/11560586_32).
-  The publisher's [two-page preview](https://page-one.springer.com/pdf/preview/10.1007/11560586_32)
-  contains the width consequence on page 406 and the conversion of
-  two-variable terms into HOT combinations on pages 406–407.
-- Rick Statman, [*Combinators Hereditarily of Order Two*, CMU Mathematics
-  Research Report 88-33, August 1988](https://doi.org/10.1184/R1/6477068.v1).
-  Printed pages 2–7 give the HOT definitions and the strict hierarchy by
-  definitional rank. The report distinguishes HOT rewriting from beta
-  conversion of the expanded lambda terms; its negative result is about
-  the latter.
+**Proposition (`single_object_unique`).** Let `Z` be `SO` and let `G_A, G_B`
+be any two terms whose only free variable is a hole `ζ`. If `G_A[Z/ζ] =β x`
+and `G_B[Z/ζ] =β y` for variables `x, y`, then `x = y`.
 
-The hierarchy prevents a finite collection of HOT definitions from
-representing every higher rank. This is a restriction on exact lambda-term
-representation, despite the computational power of the HOT system. The
-argument here invokes the published width consequence rather than
-claiming a new proof of Statman's theorem.
+No hypothesis is placed on the contexts: they may contain pairing and
+projections; they just reach `x` and `y` only through `Z`. The proof is an
+induction on the combined length of the two weak head reductions (weak head
+reduction contracts the head redex of the application spine, never under a
+λ; a term β-convertible to a variable weak-head-reduces to it). `SO` is
+preserved by substitution of `SO` terms, since `Q'[R/r][N/x] = Q'[R[N/x]/r]`,
+and hence by weak head steps; it is not preserved by arbitrary β, because
+contracting inside one copy of a shared object under a live λ can break the
+factorization, and the proof never reduces there. In both reductions the
+object must come to the head, so write `G_A[Z/ζ] ↠w Z M⃗[Z/ζ]`.
 
-## The exact interpreter contract crosses the obstruction
+- If `Z` is headed by a variable, `Z M⃗[Z/ζ]` is already weak-head normal, so
+  it is `x`; likewise it is `y`.
+- If `Z` has a weak head step `Z →w Z₁`, then `Z₁` is `SO`, and replacing the
+  remaining copies of `Z` by `Z₁` does not lengthen either reduction.
+  Continue with `Z₁` and the contexts `ζ M⃗`.
+- If `Z = λu.Q` is dead, the next step discards its argument: continue with
+  the object `Q` and the contexts in which `ζ` is replaced by `λu.ζ'`.
+- If `Z = λu. Q'[R/r]` is live, the next step yields `Q'[M/u, R/r] N⃗`, in
+  which `x` and `y` occur only inside copies of `R`: continue with the object
+  `R` and the contexts in which `ζ` is replaced by `λu. Q'[ζ'/r]`.
 
-Let `E` be closed and satisfy, for every closed source `M` and independent
-rigid `C,N`,
+In the last three cases the combined length drops by at least two. So a
+closure that still waits for an argument it will use holds one object, and
+the descent ends at an object headed by a variable, which can deliver only
+that variable.
+
+**Theorem R (`theoremR`).** If `T` is `SO`, then not both `T x y K =β x` and
+`T x y F =β y` for distinct variables `x, y`. In particular no `SO` term is
+β-convertible to the pairing combinator `λa b f. f a b`.
+
+Take `Z = T x y`, `G_A = ζ K`, `G_B = ζ F`. Since `K` is `SO` and every closed
+term is β-convertible to an applicative combination of `S` and `K`, no `SO`
+term is β-convertible to `S` either. For width two this is Statman's theorem
+(*Two Variables Are Not Enough*, ICTCS 2005, pp. 406–409,
+https://doi.org/10.1007/11560586_32), which the argument here does not use.
+
+**Interpreters (`selfInterpreter_not_so`).** No self-interpreter is `SO`.
+
+Let `E` be closed with `E C (stream(M,N)) =β C (λz.M) N` for every closed
+`M`. Take `M = P = λa b f. f a b`, substitute `C := K` and `N := I` in the
+finite β-join diagram, and apply both sides to `I`:
 
 ```text
-E C (stream(M,N)) =β C (λz.M) N.
+T = E K (stream(P,I)) I  =β  K (λz.P) I I  →*  P.
 ```
 
-Here `stream(M,N)` is the Scott list of the BLC bits of `M`, ending in
-`N`. Its cells are `λk.k b t`, and its bit terms are `K,F`, where
-`F = λa b.b`.
+`K`, `F`, `I` are `SO`, and a stream cell `λk.k b t` with closed `b, t` is
+`SO` because its body mentions only `k` and closed terms. So if `E` were
+`SO`, `T` would be a closed `SO` term with `T x y K =β x` and `T x y F =β y`.
 
-Take the closed source `M=S`. Capture-avoiding substitution of `C:=K` and
-`N:=I` into the finite beta-join diagram gives
+**The witness (`selfInterpreter_width`).** A minimal subterm of `E` that is
+not `SO` is a live abstraction `λu.Q` whose body does not factor through one
+object. Trying `R` = a variable shows that `Q` has two distinct free
+variables besides `u`; `E` is closed, so their binders `b₁ ⊃ b₂` enclose
+`b₃ = λu`. Hence
 
 ```text
-E K (stream(S,I)) =β K (λz.S) I.
+width(E) ≥ 3,
 ```
 
-Apply both sides to `I`. The resulting closed term
-
-```text
-P = E K (stream(S,I)) I
-```
-
-satisfies
-
-```text
-P =β K (λz.S) I I →* S.
-```
-
-This uses only beta conversion. It does not strengthen the interpreter's
-joinability contract to a directed reduction on arbitrary divergent
-sources.
-
-Every tail of `stream(S,I)` is closed. In a cell `λk.k b t`, both `b` and
-`t` are closed, so its application subterms have at most the one free
-variable `k`. Induction on the list, together with the literal definitions
-of `K,F,I`, gives
-
-```text
-width(stream(S,I)) = width(K) = width(I) = 1.
-```
-
-An application of two closed terms adds no new free-variable support at
-its root; its other subterms belong to its two operands. Thus
-
-```text
-width(P) = max(width(E), 1).
-```
-
-Statman's obstruction forces `width(E) ≥ 3`. The quotation and the two
-closed public arguments cannot supply the required source subterm.
+with three live binders on one ancestor chain, the inner two capturing, an
+occurrence of `b₁`'s variable at zero-based index at least 2 and one of
+`b₂`'s at index at least 1; and in addition no single `u`-free subterm of `Q`
+covers every occurrence of the captured variables. The last clause removes
+layouts that the width count admits, for instance innermost bodies
+`(a b) c` and `c (a b)` when `λc` is the only abstraction capturing two
+variables.
 
 ## At least two live capturing abstractions
 
-Choose a subterm `U` of the closed `E` with three distinct free variables.
-Their binders are ancestors of `U` in one syntax tree, so order them from
-outermost to innermost as `b₁,b₂,b₃`.
+Choose a subterm `U` of the closed `E` with three distinct free variables,
+for instance the body of the witness above. Their binders are ancestors of
+`U` in one syntax tree, so order them from outermost to innermost as
+`b₁,b₂,b₃`.
 
 The abstraction `b₂` is live because `U` contains its bound occurrence.
 Its body also contains the occurrence bound by `b₁`, so it captures an
@@ -165,21 +165,25 @@ Consequently at least two live captures occur wholly among internal
 binders: neither the public binders nor a capture of a public variable
 supplies these two witnesses.
 
-Set `Q = stream(S,I)` as above and perform the two interface contractions.
+Set `Q = stream(P,I)` as above and perform the two interface contractions.
 The closed term
 
 ```text
 B[K/c,Q/s] I
 ```
 
-is beta-convertible to `S`, so Statman's theorem requires width at least
-three. Both substituted terms are closed and have width one. A subterm
-inside an inserted copy therefore cannot witness width three. Every
-remaining subterm descends from a subterm `U` of `B`, and its free-variable
-set is exactly `FV(U) \ {c,s}`: closed substitution removes the two public
-variables and introduces no external variable. The final application to
-the closed `I` contributes no new support. Thus some original `U` has at
-least three free variables other than `c,s`.
+is beta-convertible to the pairing combinator `P`, so by Theorem R it is
+not `SO`, and in particular its width is at least three. Both substituted
+terms are closed and have width one. A subterm inside an inserted copy
+therefore cannot witness width three. Every remaining subterm descends from
+a subterm `U` of `B`, and its free-variable set is exactly
+`FV(U) \ {c,s}`: closed substitution removes the two public variables and
+introduces no external variable. The final application to the closed `I`
+contributes no new support. Thus some original `U` has at least three free
+variables other than `c,s`. For a single leading lambda `λc.B` the same
+argument is kernel-checked (`one_lambda_width` in
+`Blc/SelfintSingleObjectLiteral.lean`), with the 39-bit bound for that
+interface (`one_lambda_bound_39`).
 
 Since `λc s.B` is closed, those three variables must be bound inside `B`.
 Ordering their ancestor binders gives the two internal live captures by
@@ -264,8 +268,8 @@ consequences as `selfInterpreter_not_chain` and
 
 ## Numerical consequences: 34 and 46 bits
 
-Combining the incomparable-pair theorem with the published width
-obstruction and the 33-bit exclusion below gives
+Combining the incomparable-pair theorem with the width witness and the
+33-bit exclusion below gives
 
 ```text
 |E|_BLC ≥ 34                     for every exact self-interpreter,
@@ -312,18 +316,32 @@ width three, and two incomparable nonlinear binders; the literal
 Neither term is an interpreter. These are witnesses for the syntax
 counts, not proofs that either numerical interpreter bound is optimal.
 
-The repository's kernel-checked numerical lower bound is the weaker
-31-bit theorem in `structural-bounds.md`. The 34- and 46-bit consequences
-also use the published width theorem and handwritten interface, counting,
-and exclusion arguments here.
+The global counts are kernel-checked: `interpreter_counts` gives four live
+binders, six leaves and index sum three for every interpreter, hence
+`selfintSizeBound_33` (`Blc/SelfintSingleObjectWidth.lean`), and
+`selfintSizeBound_34` excludes the equality case
+(`Blc/SelfintSingleObjectFloor34.lean`). The 46-bit count for a literal
+two-argument interface is handwritten; for one leading lambda `λc.B` Lean
+proves 39 (`one_lambda_bound_39`).
 
 ## Excluding a 33-bit interpreter
 
-The following handwritten argument excludes the equality case of the
-global count bound. It uses the kernel-checked incomparable-pair theorem,
-exact beta wire costs, and the two-nonlinear-binders theorem inside a
-literal interface, together with the head-decomposition result in
-`head-decomposition.md`. No closed-term enumeration is used.
+Lean proves the exclusion (`selfintSizeBound_34`, Codex) by a route of its
+own: a minimum interpreter of at most 36 bits is a two-leaf closed copier
+applied to a four-leaf closed operand that carries the width witness
+(`small_minimum_diagonal`); a verified enumerator lists every such operand
+(`routes_complete`, `minimum_cells`); the kernel evaluates three necessary
+conditions on each layout (no shrinking redex, enough binders in the first
+reducts, no observed mismatch with the identity source's output:
+`minimum_passes`); and the two layouts left at 33 bits, whose captured
+variables form one application `a b` or `b a`, are single-object.
+
+The handwritten argument below reaches the same conclusion by hand, and
+shows where each layout fails. It uses the incomparable-pair theorem, exact
+beta wire costs, and the two-nonlinear-binders theorem inside a literal
+interface, together with the head-decomposition result in
+`head-decomposition.md`. No closed-term enumeration is used. Its two
+η-cases are the two single-object layouts.
 
 Choose a globally minimum interpreter `E`; existence follows from the
 proved 165-bit witness. Suppose its size is 33. Every beta reduct remains
@@ -475,9 +493,9 @@ exhaustive classification:
   `λc z.c N (z J(N))`. The first payload is the fixed normal `N`,
   distinct from the required `λe x.x`; source `I` again excludes it.
 
-Every possible 33-bit minimum interpreter is therefore excluded. This
-exclusion is handwritten, not a Lean theorem; `global-floor.md` continues
-the same analysis through 36 bits.
+Every possible 33-bit minimum interpreter is therefore excluded;
+`global-floor.md` continues the same analysis through 36 bits, where Lean
+has it as `selfintSizeBound_37`.
 
 ## Joint sharpness by one shared S
 

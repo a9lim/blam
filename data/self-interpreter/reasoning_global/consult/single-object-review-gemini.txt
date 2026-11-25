@@ -1,0 +1,28 @@
+(⌐■_■)
+
+Verified directly from [SINGLE_OBJECT.md](tmp/global/SINGLE_OBJECT.md), [Factor.lean](lean/Blc/Factor.lean#L218-L227), [Par.lean](lean/Blc/Par.lean), and [Beta.lean](lean/Blc/Beta.lean).
+
+**1. Counterexample search (Proposition & Theorem R) — Verdict: Holds (no counterexample).**
+- *Dead abstractions holding two terms* (`Z = λu. D`, `u ∉ FV(D)`): `(λu. D) M →w D` ignores `M`, so `A` and `B` cannot branch; spine copies of `Z` reconstruct from `D` via `λu. ζ'`.
+- *Nonlinear sharing / unevaluated redexes* (e.g. `λu. u R R`, `R = (λz. x) y`): internal β in one copy breaks `SO`, but `R` only yields `x`. Extracting `x` from one copy of `R` and `y` from another (`Q' = u (r K) (r F)`) requires `R` itself (`SO(R)`, `FV(R) ⊆ {x, y}`) to violate the Proposition.
+- *Capture tricks or non-`SO` templates `Q'`* (e.g. `Q' = λw. w (u r)`): `Q = Q'[R/r]` is capture-avoiding, so `Q'`'s binders cannot capture `FV(R)` differently across sites; `Q'` need not be `SO` because (c2) moves `Q'` into the unrestricted context `G'`.
+- *Context-supplied pairing / self-application* (`G` passing `P` to `Z = λv. B`): if `v` is live, `B = B'[R₀/r₀]` with `v ∉ FV(R₀)` forces `x, y` into a `v`-free `SO` term `R₀` before `v` can combine them.
+- *Application splits* (`Z = M N`, `x ∈ FV(M)`, `y ∈ FV(N)`): either `M` reduces to `x` leaving `N` stuck (`x N … ≠ x, y`), or `M` is an abstraction and `Z →w Z₁` stays `SO` by L2.
+
+**2. Lemmas L1–L4 and Proposition — Verdict: Holds, modulo one missing hypothesis in L3 (satisfied at its call site).**
+- **L1 (Holds):** With `u` fresh for `N, x` and `r ∉ {u, x}`, dead stays dead, live stays live (`u ≠ x`), `x ∉ FV(Q') ⊆ {u, r}` gives `(Q'[R/r])[N/x] = Q'[R[N/x]/r]`, and `u ∉ FV(R[N/x])`.
+- **L2 & `→w` sufficiency (Holds):** Both `λ`-clauses of `SO` carry `SO(Q)`, giving L2 via L1. Bridging `M =β x` to `M ↠w x` uses **Church-Rosser** (`M ↠β x` since `x` is normal; implicit in [SINGLE_OBJECT.md](tmp/global/SINGLE_OBJECT.md#L119-L125)) plus `headFactorizes_nf` in [Factor.lean](lean/Blc/Factor.lean#L218-L227): `M ↠h p ↠β x` with `headStep p = none` forces `p = x` and zero leading `λ`s along `M ↠h x`, where `→h` equals `→w`.
+- **L3 (Proof step broken without `ζ ∉ FV(Z₁)`; statement holds):** In branch `h = ζ` ([SINGLE_OBJECT.md](tmp/global/SINGLE_OBJECT.md#L62-L65)), applying the IH to `H' = Z₁ M⃗` requires `H'[Z/ζ] = Z₁ M⃗[Z/ζ]` and `H'[Z₁/ζ] = Z₁ M⃗[Z₁/ζ]`, both of which **fail when `ζ ∈ FV(Z₁)`** (witness: `Z = I ((λd. v) ζ) →w (λd. v) ζ = Z₁`, `H = ζ`; then `H'[Z₁/ζ] = (λd. v) Z₁ ≠ Z₁ = H[Z₁/ζ]`). Fix: assume `ζ ∉ FV(Z₁)` (holds in Proposition (b) since `FV(Z₁) ⊆ {x, y}` and `ζ ∉ {x, y}`) or α-rename `ζ` fresh in `H`. Under duplication, `(B[Z/ζ])[A[Z/ζ]/w] = (B[A/w])[Z/ζ]` holds for any multiplicity of `w`, each head-evaluated copy of `Z₁` *saves* 1 step (`≤ k`), and unevaluated copies are untouched by `→w`.
+- **L4 (Holds):** `FV(G) ⊆ {ζ}` restricts `G`'s head to `ζ` or `λw. B`; determinism of `→w` gives `j ≤ k` and `k - j` remaining steps.
+- **Proposition (Holds):**
+  - *Exhaustiveness:* Spine head `h` of `Z = h N⃗` is a variable (a), `λu.Q` with `N⃗ ≠ ∅` (b), or `λu.Q` alone (c), split into dead (c1) and live (c2).
+  - *Measure:* In (b), (c1), (c2), `Z M⃗_A[Z/ζ]` and `Z M⃗_B[Z/ζ]` are not weak-head normal, forcing `k_A - j_A ≥ 1` and `k_B - j_B ≥ 1` (no `ℕ` underflow) and new sum `≤ k - j_A - j_B - 2 ≤ k - 2`.
+  - *Contexts & identities:* Taking `u, r ∉ {x, y, ζ, ζ'}`: in (c1), `u ∉ FV(D)` gives `(λu. ζ')[D/ζ'] = Z`, and `ζ' ∉ FV(N⃗_A) ⊆ {ζ}` gives `G_A'[D/ζ'] = D N⃗_A[Z/ζ]`. In (c2), if `r ∉ FV(Q')` then `Z` is closed (`R := x` keeps `Q = Q'[x/r]`); otherwise capture-avoidance of `Q'[R/r]` gives `FV(R) ⊆ FV(Q) \ {u} ⊆ {x, y}`. Since `ζ' ∉ FV(Q')` and `u ∉ FV(R)`, `(Q'[ζ'/r])[R/ζ'] = Q`, `Λ[R/ζ'] = Z`, and `((Q'[ζ'/r])[M_A[Λ/ζ]/u])[R/ζ'] = Q[M_A[Z/ζ]/u]`. Here `D` and `(R, r, Q', Λ)` depend only on `Z`, and renaming `ζ' ↦ ζ` restores `FV(G') ⊆ {ζ}`.
+
+**3. Bridge to interpreters — Verdict: Holds (state `E` closed explicitly; needs Church-Rosser in Lean).**
+`I, K, F` are closed and `SO`. For closed `SO` `b, t`, `λz. z b t` has `FV(z b t) = {z} ⊆ {z, r}` and factors via `Q' = z b t`, `R = x₀`, so `⌜P⌝_I` is closed and `SO`. Assuming `E` is closed (used at [SINGLE_OBJECT.md](tmp/global/SINGLE_OBJECT.md#L140) and stated at line 146, omitted at line 133; open `E` closes via `[I/v]` and L1), `T = E K ⌜P⌝_I I` is closed and `SO`. Since `P` is closed, `T =β K (λz. P) I I →β³ P`, giving `T x y K =β x` and `T x y F =β y`. Bridging `=β` to `↠w` needs Church-Rosser (not yet in [Par.lean](lean/Blc/Par.lean); ~40 lines via Takahashi complete development) plus `headFactorizes_nf`.
+
+**4. Statman's theorem via SK-completeness — Verdict: Holds (for `=β`).**
+With `S = λx y z. x z (y z)`, `K = λx y. x`, and `I = S K K`, bracket abstraction on any `{S, K, vars}`-applicative term `U` satisfies `[x] U ↠β λx. U` in **pure `β`** (`S K K →β⁴ λx. x`; `K c →β λx. c`; `S ([x] U₁) ([x] U₂) →β² λx. ([x] U₁) x (([x] U₂) x) ↠β λx. U₁ U₂` via `ξ` under `λx`). Inductively (`⟦λx. B⟧ = [x] ⟦B⟧ ↠β λx. ⟦B⟧ ↠β λx. B`), an `{S, K}`-combination `⟦P⟧` `β`-reduces to `P` without `η` (`η` is only needed in the converse CL direction). Substituting a width-≤2 term `S₀ =β S` (closed via `[I/v]` and L1 if open) into `⟦P⟧` yields a closed `SO` term `=β P`, contradicting Theorem R. (Proving `=βη` would need more, as `λa b f z. f a b z =βη P` does not `β`-reduce `T x y K` to `x`.)
+
+Yes, I accept the Proposition as stated, once Lemma L3 explicitly adds the hypothesis `ζ ∉ FV(Z₁)` (or α-renames `ζ` fresh in `H`) required by its proof.

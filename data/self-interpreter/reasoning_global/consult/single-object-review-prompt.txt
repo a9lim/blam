@@ -1,0 +1,14 @@
+You are consulted as an independent reviewer from a different lineage than the author. I want a serious attempt to falsify a proof, not a summary. Reading and reasoning only: do not run searches, enumerations or builds (this is the user's laptop and other jobs are running). This is a research repository: one team, no adversary.
+
+THE CLAIM is in the file tmp/global/SINGLE_OBJECT.md in this repository (about 170 lines; read it whole). In short: call a live λ-abstraction `λu.Q` "single-object" if its body is `Q'[R/r]` with `u ∉ FV(R)` and `FV(Q') ⊆ {u, r}`; let SO be the terms all of whose live abstractions are single-object (hereditarily). The note claims:
+- (Proposition) for an SO term Z with free variables among x, y and ANY two contexts G_A, G_B whose only free variable is the hole, it cannot be that G_A[Z] weak-head-reduces to x and G_B[Z] weak-head-reduces to y;
+- (Theorem R) hence no closed SO term T has `T x y K ↠ x` and `T x y F ↠ y`, so none is β-convertible to the pairing combinator `λa b f. f a b`; since every term of width ≤ 2 (every subterm has at most two distinct free variables) is SO, this would give a short new proof of Statman's theorem that S is not β-convertible to a two-variable term;
+- (application) a BLC self-interpreter `E` (contract: `E c ⌜M⌝ₙ =β c (λz.M) n` for every closed M, with `⌜M⌝ₙ` the Scott-encoded bit stream of M's code ending in n) is not SO.
+
+YOUR JOB: break it or confirm it. In the order I would attack:
+1. Look for a counterexample to the Proposition or Theorem R: an SO term that acts as a pair. Try the obvious encodings and the less obvious ones (dead abstractions holding two things, a closure applied to itself, an object that is an unevaluated redex, selectors passed in by the context, Church/Scott/continuation encodings, anything using nonlinearity).
+2. Check each lemma's proof step by step: L1 (the substitution identity `Q[N/x] = Q'[R[N/x]/r]` and capture), L2 (is weak head reduction really enough, given that the final theorem is about β-conversion?), L3 (the simulation: is "at most k steps" right when the object is duplicated?), L4, and in the Proposition the three cases: is the case split on `Z = h N⃗` exhaustive, does the measure `k_A + k_B` strictly decrease in (b), (c1), (c2), and are the new contexts `G_A'` well formed with the claimed identities `G_A'[D/ζ'] = …`, `G_A'[R/ζ'] = …`?
+3. Check the bridge to interpreters: is `E K ⌜P⌝_I I` really SO when E is, is it β-convertible to P, and does standardization give the weak head reductions used?
+4. Check the remark that this implies Statman's theorem (the step through SK-completeness for β, not βη).
+
+Reply in under 900 words: for each of the four points, what you checked and your verdict (broken, holds, or could not decide, naming the exact step). If you find a counterexample, give the term and the two contexts. End with one sentence: would you accept the Proposition as stated?

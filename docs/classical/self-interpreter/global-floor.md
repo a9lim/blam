@@ -3,11 +3,16 @@
 **Theorem.** Every closed interpreter for the repository's beta-exact,
 closed-source contract has BLC length at least **40**.
 
+Lean proves the floor through 36: **every interpreter has at least 37
+bits** (`SelfintSingleObject.selfintSizeBound_37`, `structural-bounds.md`).
+Above that the proof is handwritten with kernel-checked components.
+
 The proof has three layers. Sections 1–5 are Codex's handwritten proof of
 37: the counting argument of `capture-width.md` gives 33 and excludes it,
 and sections 3–4 exclude 34, 35 and 36 using semantic consequences of the
 exact contract (head arity, internal width, internal nonlinearity, and exact
-identity-source outputs). Two independent adversarial reviews (a separate
+identity-source outputs). The Lean proof of the same bound classifies the
+layouts by a verified enumerator instead and leaves eight residuals. Two independent adversarial reviews (a separate
 Codex consult and Gemini) found it correct; each re-derived the counting,
 the width-loss lemma and the six divergence invariants, and the Codex review
 replayed every finite refutation with its own reducer
@@ -21,10 +26,11 @@ regenerates them and checks the 108 residual layouts in 0.05 seconds
 literal `λc.B` interpreter has at least 39 bits; sections 7–9 use it to
 exclude sizes 37, 38 and 39 (Codex's handwritten proofs with kernel-checked
 components, each found correct by two independent reviews). No Lean theorem
-states the numeric floor itself: the syntax classifications, the width
-argument and the implications of the finite certificates are handwritten;
-the parametric invariants are proved below or in Lean, and no fuel cap is
-used as a refutation anywhere.
+states 38, 39 or 40: for sizes 37 to 39 the syntax classifications and the
+implications of the finite certificates are handwritten; the width theorem
+and the literal-interface bound of section 6 are kernel-checked, the
+parametric invariants are proved below or in Lean, and no fuel cap is used
+as a refutation anywhere.
 
 This is not an additive parser-module argument and does not approach a
 proof of 162-bit optimality; the conditional bound near 162 is
@@ -42,10 +48,10 @@ zero-based de Bruijn index. Then
 The following established consequences are used.
 
 1. `width(E) >= 3`. Here width is the maximum number of distinct variables
-   free relative to a source subterm. This uses Statman's theorem that a
-   closed term beta-convertible to `S` has width at least three (printed
-   p. 406), applied to `E K (stream(S,I)) I`. The interface argument is in
-   `capture-width.md`.
+   free relative to a source subterm. This is kernel-checked
+   (`SelfintSingleObject.selfInterpreter_width`): no interpreter is
+   single-object, because `E K (stream(P,I)) I` is beta-convertible to the
+   pairing combinator `P`. The proof is in `capture-width.md`.
 2. Two nonlinear binders of `E` are incomparable in the source ancestor
    order. This is `SelfintNonlinearChain.selfInterpreter_not_chain`.
 3. An interpreter has head normal form with exactly two leading lambdas.
@@ -562,10 +568,12 @@ uses closedness of the first head argument rather than an index budget.
 
 ## 6. A literal interface costs at least 39
 
-**Lemma.** Every interpreter that is literally `λc.B` has at least 39 bits,
-for arbitrary `B` (redexes allowed). Take the contract at `M = S` with
-`C := K`, `N := I`, and apply the result to `I`: the closed term
-`B[K/c] stream(S, I) I` is β-convertible to `S`, so it has width three. The
+**Lemma** (kernel-checked, `SelfintSingleObject.one_lambda_bound_39`).
+Every interpreter that is literally `λc.B` has at least 39 bits,
+for arbitrary `B` (redexes allowed). Take the contract at `M = P`, the
+pairing combinator, with `C := K`, `N := I`, and apply the result to `I`:
+the closed term `B[K/c] stream(P, I) I` is β-convertible to `P`, so it is
+not single-object and has width three (`capture-width.md`). The
 inserted copies of `K`, the quotation and `I` have width one and are closed,
 so the witness descends from a subterm `U` of `B` whose three free
 variables other than `c` are bound inside `B`. The incomparable nonlinear
@@ -713,6 +721,3 @@ into one unary skip; a proof that goes further must use applications whose
 two children both vary, and charge shared source connections once
 (`data/self-interpreter/reasoning_class/global/`).
 
-Source for the external theorem: Rick Statman, *Two Variables Are Not
-Enough*, ICTCS 2005, printed pp. 406-409,
-https://doi.org/10.1007/11560586_32 .

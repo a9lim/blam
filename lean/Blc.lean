@@ -171,3 +171,4 @@ import Blc.SelfintSimplifyConstant
 import Blc.SelfintSimplifyDependent
 import Blc.SelfintSimplifyExtendedCases
 import Blc.SelfintSimplifyMultiple
+import Blc.SelfintSingleObjectFloor37

@@ -501,14 +501,16 @@ another additive cost.
 See `structural-bounds.md`, `Blc/SelfintLowerBound.lean`, and
 `Blc/SelfintSharp.lean`.
 
-**Capture and provenance.** Statman's published width obstruction implies
-that some subterm of `E` has three distinct free variables, forcing two
-live capturing abstractions. For a literal `λc s.B`, three variables of
-such a witness must be internal to `B`; the two internal captures and the
-public stream binder's capture give three in total. Combined with the
-incomparable-nonlinear theorem, these give handwritten wire floors of
-34 globally and 46 for literal interfaces, including beta-normal
-interpreters. The three binders on the width witness's ancestor chain
+**Capture and provenance.** No interpreter is single-object: some live
+abstraction of `E` has a body that uses two enclosing variables and does
+not factor through one captured term (Claude's theorem, kernel-checked;
+`capture-width.md`). So some subterm of `E` has three distinct free
+variables, forcing two live capturing abstractions. For a literal
+`λc s.B`, three variables of such a witness must be internal to `B`; the
+two internal captures and the public stream binder's capture give three in
+total. Combined with the incomparable-nonlinear theorem, these give wire
+floors of 34 globally (kernel-checked) and 46 for literal interfaces,
+including beta-normal interpreters (handwritten). The three binders on the width witness's ancestor chain
 cannot contain the incomparable pair, forcing a fourth live binder and
 a preliminary global floor of 33; analytical exclusion of the equality
 cases raises that floor to 34. `global-floor.md` excludes 34, 35 and 36 the
@@ -517,10 +519,10 @@ same way (37; its 144 fixed reduction clauses are kernel-checked in
 least 39, and with it excludes sizes 37, 38 and 39: **every interpreter has
 at least 40 bits** (Codex's handwritten classifications with kernel-checked
 certificates and Lean exclusions of every residual; two independent reviews
-of each step). Without Statman's theorem the kernel-checked floor is 31
-(`SelfintRound8BitFloor.selfintSizeBound_31`, `structural-bounds.md`).
-`capture-width.md` states the published result and the interface proof,
-and gives a shared-S construction attaining these structural minima
+of each step). The kernel-checked floor is 37
+(`SelfintSingleObject.selfintSizeBound_37`, `structural-bounds.md`).
+`capture-width.md` proves the single-object theorem and the interface
+statement, and gives a shared-S construction attaining these structural minima
 simultaneously, including in the beta-normal fragment with all zero-based
 indices at most two. The preliminary 33/46 syntax counts are attained;
 these witnesses do not establish optimal interpreter sizes.
