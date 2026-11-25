@@ -1,0 +1,51 @@
+[gaslamp] → codex · job cx-20261124-200147-0650 · new thread reader-floor-by-weight
+(•̀ᴗ•́) **Every reader has weight at least 42, so every member of the separated class has at least 158 bits**, under the inherited round-4 coverage and minimality arguments. I checked all 214,981 residual sources below weight 42. There were 202,944 finite mismatches, 12,037 original-source Lean refutations, and zero survivors. The standalone kernel-checked class floor remains 146 bits.
+
+**Coverage correction.** The nine named cells contain 2,244,584 sources through weight 45. The archived rootnl and pending reports also explicitly leave lower-multiplicity under-cap cells untested. I retained 128 additional cells wherever whole-cell closure was unestablished. They add 975,010 sources to the conservative envelope, including 48,654 below weight 42. The floor therefore does not require the assumption that the nine named cells are exhaustive.
+
+### Weight histogram
+
+Each row gives exact-weight coefficients after the archived boundary and simplify cuts. The cell key is `(uses of x, depth of j, location of j, body head, pending arity, helper λ-prefix length)`. The control cell `(2,0,Cs,x,3,1)` reproduced **98,442** and is excluded from the checked totals. The linked table gives every additional cell separately. [Full per-cell histogram](/Users/a9lim/Work/blam/tmp/floor/work/histogram.tsv)
+
+```text
+cell                 32  33  34  35   36   37   38   39    40    41    42     43     44     45
+2,0,Cs,x,2,1          8  48 108 270  454  878 1824 3882  7200 13364 25194  49082  90162 168622
+2,0,Cs,x,1,1          0  65 240 569 1135 1961 3630 7951 14151 27645 48370  92000 171861 311831
+2,0,Cs,x,2,2          2   2  56 118  152  480  814 1408  3130  5918 10460  21460  38322  71266
+2,0,Cs,x,1,2          0   0  10  77  331  598 1042 2422  4028  7656 15968  29134  52696 102810
+2,1,A,x,0,1           0   0   0   0    0  217  734 2066  3348  6434 11154  27615  44483  87146
+2,1,B,x,0,1           0   0   0   0    0  146  456 1142  2346  3923  6898  15962  27737  53792
+3,0,Cs,x,2,1          0   0   0   0   24  188  410 1070  1854  3664  7712  15734  31418  58516
+3,0,Cs,x,1,1          0   0   0   0    0  286 1125 2142  5392  9460 16320  37743  67175 134159
+2,1,A,lambda,0,1      0   0   0   0    0    0    0    0  2938  3335  8849  14426  53766  58414
+128 additional cells  2   8  60  86  281  990 2414 5359 11303 28151 60063 125677 242296 498320
+```
+
+### Refutations
+
+The comparator tried zero, then unary lengths 1, 2, and 3, stopping at the first mismatch or exception. **202,912** sources failed at zero and **32** at length one. The largest single source check contained 64,253 sources.
+
+| Original-source Lean certificate | Count |
+|---|---:|
+| Weak-head prefix loop | 10,264 |
+| Flow annotation | 599 |
+| Mixed cycle, including 3 found by targeted reduction | 494 |
+| Missing rigid leaf | 405 |
+| Template / growing-helper / lark / replicator family | 137 / 70 / 8 / 2 |
+| Shallow live binders / two-λ helper / rigid grade | 18 / 12 / 8 |
+| Rigid head mismatch | 12 |
+| Regular closure and stack | 4 |
+| Positive-head embedding / diagonal power | 2 / 2 |
+
+The last four sources shared two closed helper diagonals. Regular invariants with **140 and 252 states** proved the respective diagonals have no finite weak-head clock. Lean checked the decoding against each literal core and transported the result through the original pending operands. I verified the literal AST and successful theorem axiom report for all 12,037 exceptions. [Source-to-theorem manifest](/Users/a9lim/Work/blam/tmp/floor/work/exception-manifest.tsv) · [Audited totals](/Users/a9lim/Work/blam/tmp/floor/work/audit.json)
+
+### What the bound depends on
+
+- The reader has independent rigid `c,j`, one source `j`, the zero law, and every unary law. A counterexample gives a global minimum below the same threshold in lexicographic order `(weight, λ count, j depth)`. Finite probes enter only to refute individual sources.
+- The inherited source-head classification and closures exclude β-normal and λ-rooted minima, linear root lets, the tight `k+d=5` profiles, deeper holes, and the four-use residue. The pending and nested-head closures and the previously checked 98,442-source control cell supply the other whole-cell exclusions.
+- The coefficient coverage argument uses the rootlow/rootnl binder, leaf, scope and index-tax bounds, local contraction and hole-repair prices, η and sinking exclusions, forced prefix uses, direct-hole and full-chain exclusions, self-feeding and lift rules, and simplify’s strict-descent or valid tie rules. Their applicability to minima and the exhaustiveness of the coefficient grammar still rely in part on handwritten arguments and archived finite checks. The histogram gives the residue of the encoded cuts. Later symbolic families can overlap it.
+- The new finite part relies on the coefficient-to-source constructor, the de Bruijn translation and the weak-head mismatch comparator. Emission counts, literal weights and uniqueness were checked. Lean checked every exceptional source individually. The class conclusion additionally uses the kernel-checked price `|E| ≥ 116 + w(R)` under the separated-class hypotheses.
+
+**What blocks 43.** Exactly **210,988** weight-42 sources remain in this envelope across 104 nonempty cells: 150,925 in the nine named cells and 60,063 in the additional cells. The aggregate budget has **85,019** places left. I stopped before generating any weight-42 source. The exact remaining set is specified by the saved weight-42 coefficient blocks and the per-cell ledger. [Weight-42 ledger](/Users/a9lim/Work/blam/tmp/floor/work/next-weight.tsv)
+
+[gaslamp] job cx-20261124-200147-0650 · continue: gaslamp codex --thread reader-floor-by-weight

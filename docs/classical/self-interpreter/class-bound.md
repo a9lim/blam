@@ -104,6 +104,23 @@ not λ-rooted, which eliminates the non-λ case below 30; a λ-rooted one below
 enumerator, proved complete, produces exactly the 3,484 layouts those rows
 admit, each refuted by a non-joinability certificate.
 
+**The floor by weight** (Codex; a complete finite check, its normalizer
+exceptions refuted in Lean; `data/self-interpreter/reasoning_weight/`). A
+reader of weight below `W`, if one exists, has a global minimum of weight
+below `W`, and by §3 a minimum below 46 is a nonlinear root let in the cells
+still open; so refuting every open source of weight below `W` gives
+`w(R) ≥ W` for every reader without closing any cell whole. All 214,981 open
+sources of weight at most 41 fail: 202,944 with a finite mismatch (202,912 on
+the zero law, 32 at unary length one) and 12,037 with a Lean theorem
+`¬ Reader r` about the literal source. So every reader has `w ≥ 42` and
+**every member has at least 158 bits**. This is not kernel-checked end to
+end: it is conditional on §3's reductions and on the coverage of the
+coefficient grammar that generates the open sources, both handwritten in
+part, and the finite mismatches rest on a Python comparator (a fresh-context
+audit by reading found no omitted source shape and no invalid transfer at a
+weight tie). The open sources number 210,988 at weight 42 and 3,004,613 from
+42 to 45.
+
 **Hoisting is exact** (Lean): for `f` free `c` leaves and depth `d`,
 `w((λa. R[a/j]) j) = w(R) + 6 + f − 3d`, and the hoist reduces back to `R`.
 So depth ≥ 5 already has `w ≥ 46`, and a hoist from depth `d ≤ 2` is never a
@@ -708,7 +725,10 @@ so one branch of the source-head classification is left: **root lets**
 readers whose let argument hands control on before binding the stream,
 nonlinear, with two to four uses of `x` and `j` at depth at most 1 (the
 profile `k + d = 5` and every linear root let are closed).
-The current unresolved cell counts are in `docs/STATUS.md`.
+None of the open sources weighs less than 42 (§2). Besides the nine cells
+over the cap, 128 smaller cells of the same grammar had been counted and
+never checked whole; the open sources of weight 42 to 45 lie in both.
+The current counts are in `docs/STATUS.md`.
 A hand-off's pre-stream computation can expand without any
 bound in the source weight: with `G = λp x. p (x x)`,
 `H = λv n s. s v (λu. s (λq. c) (s s u)) n` and Church numerals,
