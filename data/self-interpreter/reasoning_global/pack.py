@@ -4,9 +4,17 @@
   pack.py pack SIZE SRCDIR     write sizeSIZE.tar.xz from the lane's directory:
                                its Lean modules (the import closure of the
                                ledger's modules), scripts, enumerators,
-                               ledgers and certificates; no build products
-  pack.py check SIZE           unpack into <repo>/tmp/recheck/sizeSIZE/ and run
-                               the lane's three checks there:
+                               ledgers and certificates; no build products.
+                               If SRCDIR has slim.json ({"regen": SCRIPT,
+                               "files": {NAME: SHA256}}), the listed files
+                               are left out: they are what SCRIPT regenerates
+                               from the rest (generated certificate batches,
+                               enumerator outputs), and each must have the
+                               listed hash when the archive is made
+  pack.py check SIZE           unpack into <repo>/tmp/recheck/sizeSIZE/, run
+                               the regeneration script if there is one and
+                               compare every regenerated file with its hash,
+                               then run the lane's three checks there:
                                  recheck_inventory.py  both enumerators again,
                                      byte-identical to the recorded inventory,
                                      and the comparison by explicit contraction
@@ -22,8 +30,10 @@ and import the floor38 archive (data/self-interpreter/reasoning_162/floor38),
 so the check runs from tmp/recheck/, which is ignored by git. `lake build Blc`
 must be current.
 """
+import hashlib
 import io
 import json
+import lzma
 import re
 import subprocess
 import sys
@@ -35,6 +45,14 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 KEEP_SUFFIX = {".py", ".cpp", ".rs", ".json", ".txt", ".tsv", ".md", ".in"}
 DROP = {"build.jsonl"}
+
+
+def sha256(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
 
 
 def closure(src):
@@ -62,16 +80,23 @@ def pack(size, src):
     for p in sorted(src.iterdir()):
         if p.is_file() and p.suffix in KEEP_SUFFIX and p.name not in DROP:
             names.append(p.name)
-    names = sorted(set(names))
+    slim = {}
+    if (src / "slim.json").is_file():
+        slim = json.loads((src / "slim.json").read_text())["files"]
+        for name, digest in slim.items():
+            if sha256(src / name) != digest:
+                sys.exit(f"slim.json: {name} does not have the listed hash")
+    names = sorted(set(names) - set(slim))
     out = HERE / f"size{size}.tar.xz"
-    with tarfile.open(out, "w:xz", preset=9) as tar:
+    with tarfile.open(out, "w:xz", preset=9 | lzma.PRESET_EXTREME) as tar:
         for name in names:
             data = (src / name).read_bytes()
             info = tarfile.TarInfo(name)
             info.size, info.mtime, info.mode = len(data), 0, 0o644
             tar.addfile(info, io.BytesIO(data))
     lean = sum(1 for n in names if n.endswith(".lean"))
-    print(f"{out.name}: {len(names)} files ({lean} Lean modules), {out.stat().st_size} bytes")
+    left = f", {len(slim)} regenerated files left out" if slim else ""
+    print(f"{out.name}: {len(names)} files ({lean} Lean modules), {out.stat().st_size} bytes{left}")
 
 
 def check(size):
@@ -81,10 +106,24 @@ def check(size):
     dest.mkdir(parents=True)
     with tarfile.open(HERE / f"size{size}.tar.xz") as tar:
         tar.extractall(dest, filter="data")
+    if (dest / "slim.json").is_file():
+        spec = json.loads((dest / "slim.json").read_text())
+        t = time.monotonic()
+        p = subprocess.run([sys.executable, spec["regen"]], cwd=dest, text=True,
+                           capture_output=True, timeout=7200)
+        if p.returncode:
+            print((p.stdout + p.stderr)[-2000:])
+            sys.exit(f"{spec['regen']}: exit {p.returncode}")
+        bad = [n for n, d in spec["files"].items()
+               if not (dest / n).is_file() or sha256(dest / n) != d]
+        if bad:
+            sys.exit(f"{len(bad)} regenerated files differ from slim.json, first {bad[0]}")
+        print(f"{spec['regen']}: {len(spec['files'])} files regenerated with the "
+              f"recorded hashes, {time.monotonic() - t:.0f} s")
     for script in ("recheck_inventory.py", "verify_ledger.py", "recheck.py"):
         t = time.monotonic()
         p = subprocess.run([sys.executable, script], cwd=dest, text=True,
-                           capture_output=True, timeout=1800)
+                           capture_output=True, timeout=14400)
         tail = (p.stdout + p.stderr).strip().splitlines()[-3:]
         print(f"{script}: exit {p.returncode}, {time.monotonic() - t:.0f} s")
         for line in tail:
@@ -95,9 +134,9 @@ def check(size):
 
 
 if __name__ == "__main__":
-    if sys.argv[1] == "pack":
+    if len(sys.argv) == 4 and sys.argv[1] == "pack":
         pack(sys.argv[2], sys.argv[3])
-    elif sys.argv[1] == "check":
+    elif len(sys.argv) == 3 and sys.argv[1] == "check":
         check(sys.argv[2])
     else:
         sys.exit(__doc__)

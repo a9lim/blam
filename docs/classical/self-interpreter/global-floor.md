@@ -1,15 +1,15 @@
-# An unconditional 44-bit floor
+# An unconditional 45-bit floor
 
 **Theorem.** Every closed interpreter for the repository's beta-exact,
-closed-source contract has BLC length at least **44**.
+closed-source contract has BLC length at least **45**.
 
-Lean proves the theorem end to end
+Lean proves **44** of these bits end to end
 (`SelfintSingleObject.selfintSizeBound_44`), by a classification of its own
 that needs nothing from this document except the divergence proofs of a few
-residuals (`structural-bounds.md`, *The kernel-checked bit floor*). What
-follows is the record's other route to the same number: handwritten
-classifications through 39 and complete enumerations from 40, with
-kernel-checked certificates.
+residuals (`structural-bounds.md`, *The kernel-checked bit floor*). Size 44
+rests on the route recorded here, which also reaches the sizes below it:
+handwritten classifications through 39 and complete enumerations from 40,
+with kernel-checked certificates.
 
 The proof has four layers. Sections 1–5 are Codex's handwritten proof of
 37: the counting argument of `capture-width.md` gives 33 and excludes it,
@@ -30,7 +30,7 @@ regenerates them and checks the 108 residual layouts in 0.05 seconds
 literal `λc.B` interpreter has at least 39 bits; sections 7–9 use it to
 exclude sizes 37, 38 and 39 (Codex's handwritten proofs with kernel-checked
 components, each found correct by two independent reviews). Section 10
-excludes sizes 40 to 43 from complete enumerations of the closed terms of
+excludes sizes 40 to 44 from complete enumerations of the closed terms of
 each size, with the same kinds of certificate. In this route the syntax classifications
 or enumerations from size 37 and the implications of the finite
 certificates are not kernel-checked; the width theorem
@@ -724,6 +724,7 @@ for a λ-root), and no redex whose contraction shortens the term.
 | 41 | 242,222,714 | 23,916 | 21,924 | 1,992 | 22,331 | 1,585 | 483 |
 | 42 | 452,574,468 | 43,244 | 37,568 | 5,676 | 41,022 | 2,222 | 491 |
 | 43 | 840,914,719 | 106,102 | 87,812 | 18,290 | 100,493 | 5,609 | 1,880 |
+| 44 | 1,573,331,752 | 188,768 | 153,766 | 35,002 | 179,166 | 9,602 | 3,386 |
 
 Completeness rests on enumeration, not on a classification, and at each
 size three enumerations agree: the lane's by resource triple; its second
@@ -742,6 +743,7 @@ dead continuation or no internal width:
 | 41 | 99,302 | 45,054 | 5,274 | 25,058 |
 | 42 | 187,140 | 87,822 | 9,132 | 46,942 |
 | 43 | 438,420 | 213,394 | 21,924 | 97,000 |
+| 44 | 840,144 | 425,664 | 37,568 | 188,144 |
 
 Every candidate is excluded. Most have a finite certificate: a
 head-reduction trace to a reduct whose nonlinear binders lie on one chain,
@@ -779,14 +781,23 @@ the `W/B` grammar of section 8, and for the residuals of the finite pass
   β-reduction preserve type membership; a rule gives a concrete invocation
   a type that its required β-normal result lacks, so every candidate
   meeting the rule's premises is excluded. 25 rules cover 1,668 layouts at
-  43, one of them 1,029;
+  43, one of them 1,029. From 44 further tables, and derivations extracted
+  from a call-by-name flow analysis of the layout, give a single term a
+  type that its required result lacks, or the bottom type, which a term
+  with a weak-head clock cannot have;
 - single-object reducts: some β-reduct of the layout, of the layout
   applied to the closed continuation `K`, or of its closed pairing
   projection is `SO` (`selfInterpreter_not_so`, `specialized_not_so`);
+- comparisons with a shorter term: `E` and a closed `F` of 37 bits have
+  β-joinable applications to the continuation variable, so `F` would
+  satisfy the contract, below the kernel-checked floor;
 - proofs for single layouts or small groups: the parity of iterated
   argument swaps for `Δ (λx. x (λy z. x z y) (λy. x))` at size 40, weak-head
-  pumps, a dead continuation or a missing free variable in a reduct, a
-  positive mismatch with a required normal output or with a probe's head.
+  pumps, a weak-head clock that strictly descends around a cycle of demand
+  edges (`(λa.a a) H` with `H = λa.a (λb.a (λc.a (c I) b))` at 44), a dead
+  or lost continuation or a missing free variable in a reduct, a positive
+  mismatch with a required normal output or with a probe's head (from 44
+  by a closure machine run on both sides of the contract).
 
 | size | chain | shorter | three λ | wrong head form | internal width | identity head | identity payload | `W/B` | regular | weighted rank | finite table | type rule | single-object | other |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -794,6 +805,7 @@ the `W/B` grammar of section 8, and for the residuals of the finite pass
 | 41 | 7,347 | 5,115 | 2,914 | 3,215 | 2,560 | 777 | 403 | 1,102 | 118 | 183 | 14 | 0 | 93 | 75 |
 | 42 | 12,666 | 9,276 | 7,047 | 6,182 | 3,755 | 1,368 | 728 | 1,731 | 54 | 67 | 215 | 0 | 127 | 28 |
 | 43 | 27,113 | 20,859 | 14,643 | 20,530 | 12,327 | 3,465 | 1,556 | 3,739 | 90 | 16 | 0 | 1,668 | 56 | 40 |
+| 44 | 47,544 | 37,686 | 24,885 | 36,994 | 23,304 | 5,814 | 2,939 | 6,216 | 1,648 | 748 | 2 | 72 | 818 | 98 |
 
 The finite pass leaves 92 layouts at 40: 49 fall to regular invariants (12
 to 1,969 machine states), 42 to the weighted rank and one to the parity
@@ -805,23 +817,36 @@ ranks, 54 regular invariants (three of them with Church false as the source
 and four trailing `Ω` arguments), 16 with a dead continuation in a reduct
 and 12 with a positive mismatch or a missing suffix. At 43 it leaves 1,880:
 1,668 type rules, 90 regular invariants (10,019 machine states in all), 56
-single-object reducts, 16 weighted ranks and 50 direct probes.
+single-object reducts, 16 weighted ranks and 50 direct probes. At 44 it
+leaves 3,386: 1,648 regular invariants (84 of them with states that stop at
+a λ where the contract requires a rigid head), 818 single-object reducts,
+748 weighted ranks, 90 mismatching head observations, 72 type proofs (59 by
+seven of the rules of size 43, 13 by new tables and flow-derived
+derivations), four with the continuation lost in a closed reduct, three
+comparisons with a 37-bit term, two finite tables and the clock cycle. The
+last 75, 72 of them with five live binders on eight leaves, were closed with
+the size-43 lane's tools.
 
 Each literal term's wire, each trace and each predicate is kernel-checked,
 and so are the complete exclusions (`propext`, `Quot.sound`, some
 `Classical.choice`), in modules outside `lake build` that are recompiled
 from `reasoning_global/sizeN.tar.xz` by Lean processes of under 1 GB each
-(`pack.py check N`). The enumerators, the implications from the seven
-finite predicates to the contract (those of sections 7 to 9; for a reduct
-with one or two leading lambdas, the internal width is `one_lambda_width`
-or `two_lambda_width`) and the combination with the bound below are not
-kernel-checked. At each size a replay of every finite certificate
-with a separately written reducer agrees (`audit/replay.py`), and
-fresh-context reviews by reading found the inventory filters, the finite
-predicates, the residual statements and the joins between lanes correct,
-at size 40 and at sizes 41 to 43 (`reasoning_global/consult/`). No fuel
-cap or timeout refutes anything. Lean's own proof (`structural-bounds.md`) covers the sizes up to its bound
-without any of this, except for the residual proofs it shares.
+(`pack.py check N`; from size 44 the archive leaves out the generated
+certificate batches and the enumerators' outputs, and the check first
+regenerates them and compares their hashes). The enumerators, the
+implications from the seven finite predicates to the contract (those of
+sections 7 to 9; for a reduct with one or two leading lambdas, the internal
+width is `one_lambda_width` or `two_lambda_width`) and the combination with
+the bound below are not kernel-checked. At each size a replay of every
+finite certificate with a separately written reducer agrees
+(`audit/replay.py`, and `audit/replay_paths.py` for the certificates whose
+reductions name their redex positions), and fresh-context reviews by reading
+found the inventory filters, the finite predicates, the residual statements
+and the joins between lanes correct, at size 40 and at sizes 41 to 43
+(`reasoning_global/consult/`); size 44 has not had one yet. No fuel cap or
+timeout refutes anything. Lean's own proof (`structural-bounds.md`) covers
+the sizes up to its bound without any of this, except for the residual
+proofs it shares.
 
 ## 11. What probe families can charge
 
@@ -842,8 +867,8 @@ at:
 
 The witnesses are not interpreters, and the caps do not add. The
 projections cost `|E (λv r. v)| = |E| + 9` and `|E (λv r. r)| = |E| + 8`
-(`projection_value`), so a value-decoder floor of 54 or a remainder floor of
-53 would already improve the 44. The Church-spine witness works because each
+(`projection_value`), so a value-decoder floor of 55 or a remainder floor of
+54 would already improve the 45. The Church-spine witness works because each
 left child is the same variable, whose code merges with the application tag
 into one unary skip; a proof that goes further must use applications whose
 two children both vary, and charge shared source connections once
