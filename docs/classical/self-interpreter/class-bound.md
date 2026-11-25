@@ -116,9 +116,13 @@ the zero law, 132 at unary length one) and 48,525 with a Lean theorem
 **every member has at least 160 bits**. This is not kernel-checked end to
 end: it is conditional on §3's reductions and on the coverage of the
 coefficient grammar that generates the open sources, both handwritten in
-part, and the finite mismatches rest on a Python comparator (a fresh-context
-audit by reading found no omitted source shape and no invalid transfer at a
-weight tie). The open sources number 819,916 at weight 44 and 1,544,876 at
+part; the finite mismatches rest on a Python comparator; and two of the
+exclusions the grammar builds on rest in part on the engine's divergence
+verdicts (3,508 of the 73,311 three-λ sources of §3, and 1,511 of the
+66,577 hand-offs `(λx. x x)(λz a. z M⃗) j`). Two fresh-context audits by
+reading, of the first slice and of what changes from weight 42 to 45, found
+no omitted source shape, no invalid transfer at a weight tie, and no cut
+that leans on a cell still open. The open sources number 819,916 at weight 44 and 1,544,876 at
 weight 45.
 
 **Hoisting is exact** (Lean): for `f` free `c` leaves and depth `d`,
@@ -206,7 +210,9 @@ the 39-bit one.
   Claude, `Blc/SelfintRootCertThree.lean`). Source η-contraction keeps both laws and the one hole and strictly
   lowers the weight (kernel-checked), so a minimum reader has no η-redex;
   of the lower profiles, the 73,311 sources with three λs and `V = k + 5`
-  fail too. **No minimum reader below 46 is a linear root let** (Codex,
+  fail too (69,793 with a finite mismatch, 3,508 by the engine's divergence
+  verdict on the zero instance, ten by Lean proofs; rootcert lane).
+  **No minimum reader below 46 is a linear root let** (Codex,
   rootlow lane: complete inventories of 135,652 sources, the 118 normalizer
   exceptions and 1,236 further failures refuted in Lean). Exposing the
   stream binder of `(λx y₁…y_t s. M) A C₁…C_t` changes the weight by

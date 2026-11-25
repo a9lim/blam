@@ -38,13 +38,15 @@ the M5 Max, with one Lean process for the first two rows and two after.
 | `count.py`, `table.py`, `probe.py`, `cert.py`, `leancheck.py`, … | the lane's scripts through weight 41: counting from the coefficient grammar, source generation, the finite check, certificate assignment, the Lean driver |
 | `scripts-w42/`, `scripts-w43/` | its scripts for each later weight: the finite check cell by cell, certificate assignment, the certificates built for the sources the standing finders left (fifteen at weight 42, sixty at weight 43), and its audit. They import the scripts above and expect to sit beside them |
 | `archive/` | the round-4 lane code those scripts import (from commit `703f50d`) |
-| `consult/` | the lane's replies and the reply of a fresh-context audit of the first slice that read the code and the arguments without running them |
+| `consult/` | the lane's replies, and the replies of two fresh-context audits that read the code and the arguments without running them: of the first slice, and of what changes from weight 42 to 45 |
 
 Evidence, by kind: the 48,525 theorems and the price `|E| ≥ 116 + w(R)` are
 kernel-checked (axioms `propext`, `Quot.sound`, in a few `Classical.choice`);
 the 806,277 mismatches rest on the Python generator and comparator; the claim
 that the enumerated envelope contains every source a minimum reader below 44
-could be rests on the round-4 reductions and the coefficient grammar.
+could be rests on the round-4 reductions and the coefficient grammar, two of
+whose exclusions use the engine's divergence verdicts (3,508 and 1,511
+sources; `class-bound.md` §2).
 
 The certificates are of two sorts. Nearly all exceptions fall to the standing
 families of the round-4 lanes, each a general Lean theorem applied to the
