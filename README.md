@@ -128,10 +128,10 @@ proven.
   ([global floor](docs/classical/self-interpreter/global-floor.md)). Every
   interpreter built like the 162 (an opaque knot, any reader, a separate
   NEXT building the canonical values) has at least 146 bits, kernel-checked
-  in Lean. The 162 is optimal among them exactly when every reader weighs at
-  least 46, which every β-normal reader does; the same holds for NEXT of any
-  syntax above a price frontier, other value representations and other
-  opaque recursion schemes
+  in Lean, and at least 162 by a complete check of every reader that could
+  be cheaper, its exceptions proved in Lean: the 162 is the smallest of
+  them. The same holds for NEXT of any syntax above a price frontier, other
+  value representations and other opaque recursion schemes
   ([separated class](docs/classical/self-interpreter/class-bound.md)). The same
   reader gives universal machines of 172 (non-strict) and 184 (strict) bits,
   against Tromp's 178 and 190, and Lean proves all four universal

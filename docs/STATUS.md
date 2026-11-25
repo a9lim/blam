@@ -170,13 +170,15 @@ and proofs; this section holds the current numbers and the open cells.
   at least that otherwise, where `w(R) = cost(R) + 4 depth(j)`; the 162 is
   `w = 46`, the 165 `w = 49`. Lean proves `|E| ≥ 138` and `w ≥ 30`
   (`Blc/SelfintClass.lean`, `Blc/SelfintReader30.lean`): **every member has at
-  least 146 bits**. No open reader weighs less than 45, so every member has
-  at least **161** bits at the reader bound's level of evidence: all 1,674,718
-  open sources through weight 44 fail, 1,582,668 with a finite mismatch and
-  92,050 with a Lean refutation of the literal source
+  least 146 bits**. Every reader has `w ≥ 46`, so every member has
+  at least 162 bits and **the 162 is the minimum of the class**, at the
+  reader bound's level of evidence: all 3,219,594 sources that a minimum
+  reader below 46 could be fail, 3,042,734 with a finite mismatch and
+  176,860 with a Lean refutation of the literal source
   (`data/self-interpreter/reasoning_weight/`; conditional on the handwritten
-  parts of the reader bound below). The 162 is optimal in the class if and only if every
-  reader has `w ≥ 46`.
+  parts of the reader bound below, on a Python comparator for the
+  mismatches, and on 5,955 engine divergence verdicts in four of the earlier
+  exclusions).
 
   *The reader bound* (`class-bound.md` §3). Every β-normal reader has
   `w ≥ 46` (needed-narrowing search over the joint laws, no minimality
@@ -184,21 +186,20 @@ and proofs; this section holds the current numbers and the open cells.
   below 46 is λ-rooted (s-spines and stream-λ body lets are closed by complete
   finite checks, every normalizer exception refuted in Lean), dispatches
   through a syntactic site, or has a literal-λ first handler; the 164's and
-  the hoisted 165's families cost exactly 48 and 49. What remains is **root
-  lets** `(λx. B) A C⃗`: nonlinear, two to four uses of `x`, `j` at depth at
-  most 1 (every linear root let and the profile `k + d = 5` are closed). The
-  open cells:
+  the hoisted 165's families cost exactly 48 and 49. The last branch is **root
+  lets** `(λx. B) A C⃗`: nonlinear, two or three uses of `x`, `j` at depth at
+  most 1 (every linear root let, four uses at depth 0 and the profile
+  `k + d = 5` are closed whole). It is closed by exhaustion:
   - x-headed root lets: the 51 listed pending sources are refuted by
     unbounded symbolic Lean theorems (`SelfintRootLet*`, each literal archived
     AST pinned by `SelfintRootLetPending`; `rootlet_pending.py --check`),
     which closes that cell.
-  - What is left, by weight (`reasoning_weight/histogram.tsv`): nothing
-    below 45, and **1,544,876** open sources, all of weight 45. Of these
-    1,046,556 lie in the nine cells
+  - The minimality cuts leave 3,219,594 sources of weight 32 to 45
+    (`reasoning_weight/histogram.tsv`): 2,244,584 in the nine cells
     over the cap (eight x-headed, `reasoning_class/pending/x_overcap.json`,
     and one λ-headed, after the hand-off simplifications of
-    `reasoning_class/simplify/`) and 498,320 in 128 smaller cells of the same
-    grammar that had been counted and never checked whole.
+    `reasoning_class/simplify/`) and 975,010 in 128 smaller cells of the same
+    grammar. All are refuted, weight by weight (above).
   - The recorded short-hand-off cut-offs are closed by symbolic divergence
     (`Blc/SelfintRootCutoffs.lean`), within their narrowing coverage.
 
@@ -476,23 +477,18 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    and build prefix-tree conditional predictions under `m` and `S`. Infinite
    streams belong to the separate monotone-machine `ref/AIT` lane.
 9. **The self-interpreter below 162** (`classical/self-interpreter/interpreter.md`
-   §7, `class-bound.md` §3). Proof: the reader weight bound `w(R) ≥ 46` would
-   make the 162 optimal in the separated class and in its widened forms (NEXT
-   of any syntax above the price frontier, any NEXT-free value decoder, any
-   opaque two-port recursion). Every β-normal reader has `w ≥ 46`, no minimum
-   reader below 46 is an s-spine or has a let as its stream-λ body; what is
-   open is minimum readers below 46 whose root is a let (depth-0 shared
-   top-level lets, application-rooted readers) that are nonlinear, with two
-   to four uses of the let variable and `j` at depth at most 1 (linear root
-   lets and the profile `k + d = 5` are closed; the open cells and their
-   counts are under *The separated class* above). The bound stands at
-   `w ≥ 45`, 161 bits for the class: the open sources were refuted by weight
-   through 44, and the one weight left holds about 1.5 million.
-   The general step is still a theorem bounding the source that the two
-   roles can share; neither periodicity of the unary run nor accounting
-   alone can supply it (`class-bound.md` §3).
-   Any reader with `w ≤ 45` is a sub-162 interpreter of exactly `116 + w`
-   bits. Also open on the class side: NEXT of arbitrary syntax in
+   §7, `class-bound.md` §2 and §3). The reader weight bound `w(R) ≥ 46` holds
+   at the reader bound's level of evidence, so the 162 is the minimum of the
+   separated class and of its widened forms (NEXT of any syntax above the
+   price frontier, any NEXT-free value decoder, any opaque two-port
+   recursion); a smaller self-interpreter lies outside them. Open on the
+   proof side: a kernel-checked bound above 146 bits (the reductions to the
+   finite set of sources are handwritten in part, its three million finite
+   mismatches rest on a Python comparator, and 5,955 sources on engine
+   verdicts), and a theorem bounding the source that the two roles can
+   share, which would replace the exhaustion; neither periodicity of the
+   unary run nor accounting alone can supply it (`class-bound.md` §3).
+   Open on the class side: NEXT of arbitrary syntax in
    `35 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two
    nonlinear binders. The unconditional floor is 40; restricted-domain
    witnesses cap every proof that uses only identity towers (88) or Church

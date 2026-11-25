@@ -1,0 +1,59 @@
+[gaslamp] → codex · job cx-20261124-231136-f9ce · continuing thread reader-floor-by-weight
+(•̀ᴗ•́) **Weight 45 is closed. Every reader has weight at least 46, and the attained minimum of the separated class is 162 bits**, under the inherited conditions below. All **1,544,876** open sources are accounted for. No candidate passed all four probes. No exception remains.
+
+The comparator found **1,460,066 finite mismatches**: 1,459,746 on zero and 320 first at unary length one. There were no first mismatches at lengths two or three. All **84,810 exceptions** arose on zero, comprising 55,815 cutoffs and 28,995 detected cycles. Each has a checked `¬ Reader r` theorem for its literal source. [Outcome ledger](/Users/a9lim/Work/blam/tmp/floor/work/audit-w45.json) · [Exception manifest](/Users/a9lim/Work/blam/tmp/floor/work/exception-manifest-w45.tsv)
+
+| Positive control | Weight | Zero | Unary 1 | Unary 2 | Unary 3 |
+|---|---:|---|---|---|---|
+| 162 reader | 46 | Pass | Pass | Pass | Pass |
+| 165 reader | 49 | Pass | Pass | Pass | Pass |
+
+Both controls used the workers’ rigid substitution, probe constructors and `ck.matches` call with fresh fuel 120 per probe. The 165 control retains the machine source’s outer `next` binding. [Control ASTs and outcomes](/Users/a9lim/Work/blam/tmp/floor/work/w45/positive-controls.json)
+
+| Certificate kind | Sources | Certificate kind | Sources |
+|---|---:|---|---:|
+| Weak-head prefix loop | 70,689 | Mixed cycle | 4,509 |
+| Flow annotation | 3,620 | Missing rigid leaf | 2,776 |
+| Template | 944 | Shallow live binders | 441 |
+| Developed flow | 372 | Growing helper | 354 |
+| Two-lambda helper | 338 | Rigid grade | 255 |
+| Recursive application types | 146 | Rigid head mismatch | 111 |
+| Targeted mixed cycle | 84 | Replicator | 47 |
+| Lark | 39 | Orbit omitting one rigid variable | 36 |
+| Simple replay | 10 | Internal head | 8 |
+| Shared head reduction | 7 | Positive-head embedding | 6 |
+| Unbounded arity grades | 5 | Internal missing | 3 |
+| Delayed rigid arguments | 2 | Parametric prefix recurrence | 2 |
+| Recursor | 2 | Regular closure and stack | 2 |
+| Diagonal power | 1 | Lambda | 1 |
+
+**Certificate kinds absent at weight 44**
+
+- **Orbit omitting one rigid variable.** Lean checks each literal source’s helper contractions and a grammar preserved by weak-head steps. At a stopped endpoint, either a required variable is absent or the head is rigid. Both contradict the reader laws.
+- **Delayed rigid arguments.** Sources 31218 and 31219 contract to the same helper diagonal with opposite operands. Its invariant admits arbitrarily many constant functions and applications above a rigid head. Every stopped endpoint is closed, rigid-headed or a constant function.
+- **Parametric prefix recurrence.** For 18589 and 50771, Lean checks the literal prefix and proves that positive weak-head progress returns to the same pattern with new arguments. The theorem quantifies over the terms in its holes. A finite weak-head clock would decrease at each return.
+- **Positive-head embedding and recursor.** Six sources instantiate a diagonal that embeds its head again after genuine weak-head progress. Two literal zero probes reach a spine headed by `K x`; Lean proves `K x` returns to `K (x K)` after six weak-head steps for every `x`. Both theorems rule out a finite clock.
+- **Simple replay, internal head, internal missing and lambda.** The ten simple replays check preparatory β-paths leading to four missing variables, four prefix loops and two wrong rigid signatures. The internal replays check reductions inside the literal probe before exposing eight wrong signatures and three missing variables. The lambda replay exposes a lambda on zero, incompatible with the required rigid-headed output.
+
+**Block coverage.** The 133 nonempty cells occupied 139 checks. A separate pass over the four coefficient files verified distinct keys and reconciled every block interval, ordered hash and multiplicity with its worker record. The largest check held 90,000 sources.
+
+| Cell | Matching block intervals, in part order | Sources per part |
+|---|---|---|
+| 6 `(2,0,Cs,x,1,1)` | `[0,5564)`, `[5564,14668)`, `[14668,27179)`, `[27179,35945)` | 90,000; 89,991; 89,994; 41,846 |
+| 7 `(2,0,Cs,x,1,2)` | `[0,13420)`, `[13420,17736)` | 89,992; 12,818 |
+| 11 `(2,0,Cs,x,2,1)` | `[0,9654)`, `[9654,25823)` | 90,000; 78,622 |
+| 81 `(3,0,Cs,x,1,1)` | `[0,8975)`, `[8975,17316)` | 89,999; 44,160 |
+
+Split records use `w45/cell<i>-part<j>.json`, numbered from zero. Unsplit records use `w45/cell<i>.json`. [Partition](/Users/a9lim/Work/blam/tmp/floor/work/w45/parts.json) · [Coverage check](/Users/a9lim/Work/blam/tmp/floor/work/w45/coverage.json) · [Histogram](/Users/a9lim/Work/blam/tmp/floor/work/histogram-w45.tsv)
+
+**Verification and resources.** The audit matched every exception AST to its theorem declaration, checked its axiom report against `propext`, `Classical.choice` and `Quot.sound`, and verified successful compilation receipts and hashes for **2,458 weight-specific Lean files**. Wall time from first probe through final audit was **23 min 1.5 s**. The longest individual job took **89.17 s**. Peak recorded RSS was **662,880,256 bytes** for a successful Lean proof, **381,747,200 bytes** for Python and **1,854,767,104 bytes** for a simultaneous supervisor-and-children sample. The local watchdog stopped two preliminary Lean arity proofs at 683,278,336 and 680,378,368 bytes. Factoring out the arithmetic bounds brought both replacement proofs below 446 MB. No outer-watchdog intervention was observed. All supervisors reaped their children. [Proof hashes](/Users/a9lim/Work/blam/tmp/floor/work/w45/proof-files.sha256) · [Empty residual ledger](/Users/a9lim/Work/blam/tmp/floor/work/w45/residual.tsv)
+
+**What the 162-bit conclusion inherits**
+
+1. The domain is the separated class of §1: an opaque knot, separate β-normal NEXT satisfying its branch laws, and a one-hole reader satisfying the independent rigid zero and all-unary laws. A counterexample gives a global minimum ordered by weight, λ count and depth of `j`. Placing that minimum in the coefficient grammar combines Lean theorems with handwritten reductions.
+2. Earlier searches supply the β-normal floor, including joint-law tabling and seven handwritten cutoff exclusions, and close s-spines, stream-λ body lets, deeper holes, linear roots, tight profiles, four-use depth-zero cells, pending literal-λ and nested heads, hand-offs and the 98,442-source control cell. Their narrowing coverage, price filters, inventories and source identifications are inherited. The 49 earlier regular code-table instances rely on archived source-to-table identifications. The protected-argument theorem supplies the case formerly assigned to the withdrawn two-argument self-feeding rule.
+3. Two earlier exclusions use **engine divergence verdicts** for 3,508 of 73,311 three-λ sources and 1,511 of 66,577 two-leading-λ hand-offs. The previous weight ledgers supply the closures through 44.
+4. Coefficient completeness depends on the binder, leaf, scope and index-tax bounds, contraction, hole repair, η and sinking, shielding and forced prefixes, self-feeding and lift, specialization and simplification cuts. The copied-hole colour-replay argument preserves every unary law by hand. P1/P4 uses the exposed weight. Equal-weight transfers require fewer lambdas or a justified decrease in hole depth. The earlier reading audit assessed those arguments; this run verified the resulting blocks.
+5. Finite mismatches rely on source construction, de Bruijn interpretation and the weak-head comparator. Lean verifies the necessary-probe bridge, the assembly price `|E| ≥ 116 + w(R)`, and attainment by the 162 witness. The standalone end-to-end Lean class floor remains **146 bits**. [Full report](/Users/a9lim/Work/blam/tmp/floor/work/REPORT-w45.md)
+
+[gaslamp] job cx-20261124-231136-f9ce · continue: gaslamp codex --thread reader-floor-by-weight

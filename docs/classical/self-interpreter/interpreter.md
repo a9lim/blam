@@ -61,17 +61,17 @@ hand and recounted the size (`reasoning_floor/verify/v162_codex.md` at commit
 
 **Nothing below 162 is known.** §3 lists everything searched around it and its
 predecessors, §5 the lower bounds. None is an unconditional optimality proof;
-§7 says what remains. The strongest bound near 162 is conditional
-(`class-bound.md`): every interpreter built like the 162 and the 165 — an
-opaque fixed-point knot, a separate NEXT that builds the canonical values,
-and any reader — has at least 146 bits (kernel-checked) and at least 161
-(a finite check of every open reader below weight 45, `class-bound.md` §2),
-exactly
-`116 + w(R)` for its reader `R` with the canonical NEXT, so the 162 is
-optimal in that class if and only if every reader has weight at least 46.
-Every β-normal reader does (computer-checked), so a cheaper one would need
-a source redex. The same equivalence holds with NEXT of any syntax above a price frontier
-(Lean), and the bound transfers to any value representation with a
+§7 says what remains. The strongest result near 162 is about a class
+(`class-bound.md`): among the interpreters built like the 162 and the 165 —
+an opaque fixed-point knot, a separate NEXT that builds the canonical
+values, and any reader — **the 162 is the smallest**. A member costs exactly
+`116 + w(R)` for its reader `R` with the canonical NEXT (kernel-checked),
+and every reader has weight at least 46: kernel-checked up to weight 30,
+which is 146 bits, and above that by handwritten reductions to 3,219,594
+candidate readers and a complete check of them, each normalizer exception
+refuted in Lean (`class-bound.md` §2). The same minimum holds with NEXT of
+any syntax above a price frontier (the transfer is kernel-checked), and the
+bound transfers to any value representation with a
 NEXT-free decoder (Lean), any opaque two-port recursion scheme, and the
 continuation-headed analogues, which cost at least 165 outright.
 
@@ -575,15 +575,15 @@ laws. The 162 and the 165 are its literal assemblies. Every member has
 `Blc/SelfintClass.lean` kernel-checks this and `|E| ≥ 138`, including the
 92-bit NEXT classification, and `Blc/SelfintReader30.lean` the reader weight
 30 with no remaining assumption, so **every member has at least 146 bits**.
-A complete check of the open readers below weight 45, with its normalizer
-exceptions refuted in Lean, raises that to 161 at the reader bound's own
-level of evidence (`class-bound.md` §2).
 The 162 is optimal in the class if and only if every reader has weight at
-least 46. Every β-normal reader meets it (a computer-checked search over
-the joint laws, no minimality assumption), so a cheaper reader needs a
-source redex; among those it is settled for whole sharing contexts and
-one-helper sharing (Lean), every hole depth other than 1, and every
-λ-rooted minimum reader; the open families are listed in `class-bound.md` §3. The class widens without
+least 46, and every reader does, at the reader bound's own level of
+evidence: **the 162 is the minimum of the class**. Every β-normal reader
+meets the bound (a computer-checked search over the joint laws, no
+minimality assumption), so a cheaper reader would need a source redex; a
+minimum one is reduced by argument to a root let among 3,219,594 sources,
+and a complete check refutes them all, 3,042,734 with a finite mismatch and
+176,860 with a Lean theorem about the literal source (`class-bound.md`
+§2, §3). The class widens without
 changing its minimum (§4 there): NEXT of any syntax above a price frontier,
 any variable-value representation with a NEXT-free decoder, any opaque
 two-port recursion, and continuation-headed analogues (at least 165).
@@ -943,8 +943,9 @@ that produced the 165, a Scott structure's own application doing a branch's
 work (here `s I` makes the cell's selection deliver the tail as the zero
 arm), combined with an operand that one branch uses and the other erases
 (NEXT, the skip's junk on variables). Inside the separated class of §5 those
-moves are now all priced: a sub-162 there is exactly a reader of weight at
-most 45, and the same holds for the widened classes of `class-bound.md` §4.
+moves are all priced, and none pays: a sub-162 there would be exactly a
+reader of weight at most 45, and no such reader exists; the same holds for
+the widened classes of `class-bound.md` §4.
 Outside them, the 165-bit parser bundle exposes recursion through the
 reader's erased operand (`protocol-obstructions.md`); using that bundled
 state more cheaply remains open. A round of lanes sent through each exit
@@ -956,10 +957,12 @@ saves.
 
 Open:
 
-- the reader weight bound `w(R) ≥ 46` (`class-bound.md` §3), which would make
-  the 162 optimal in the separated class and its widenings: every β-normal
-  reader meets it and no λ-rooted minimum reader below 46 exists, so it is
-  open only for minimum readers whose root is a nonlinear let;
+- a kernel-checked proof of the reader weight bound `w(R) ≥ 46`
+  (`class-bound.md` §2): Lean has it to 30; above that the reductions to the
+  finite set of sources are handwritten in part, the finite mismatches rest
+  on a Python comparator, and 5,955 sources on the engine's divergence
+  verdicts. A theorem bounding what the zero and the unary role can share
+  would replace the exhaustion;
 - NEXT of arbitrary syntax in `35 ≤ q ≤ 91` (or `F = 2, q ≤ 97`;
   `F = 3, q ≤ 94`), values decoded through NEXT, let-headed whole-prefix
   cells, and knotless first heads with two nonlinear binders

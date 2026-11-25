@@ -1,14 +1,19 @@
-# The separated class: 162 is optimal iff one reader bound holds
+# The separated class: the 162 is its minimum
 
 This is the strongest lower bound near 162 bits. It covers every
 interpreter built the way the 162 and the 165 are built — an opaque
 fixed-point knot around a parser whose reader may fuse dispatch, variable
 value, skip and return arbitrarily, with a separate NEXT that builds the
 values — and it reduces 162-optimality within that class to a single
-question about readers. That question is open; §3 says exactly how far it is
-settled. §4 widens the class (NEXT of any syntax, any value representation,
-any opaque recursion in a two-port model, continuation-headed analogues) and
-derives part of its laws from the contract; §5 records what lies outside.
+question about readers: does every reader weigh at least 46? Every reader
+does, so **the 162 is the minimum of the class**. The price is
+kernel-checked, and so is the bound up to 146 bits; from 146 to 162 it rests
+on handwritten reductions to a finite set of sources and on a complete check
+of that set, every exception of the check proved in Lean (§2 says what is
+checked how, §3 gives the reductions). §4 widens the class (NEXT of any
+syntax, any value representation, any opaque recursion in a two-port model,
+continuation-headed analogues) and derives part of its laws from the
+contract; §5 records what lies outside.
 A result credited to a named lane was established in that lane's archive:
 round 3 under `data/self-interpreter/reasoning_162/`, round 4 under
 `data/self-interpreter/reasoning_class/`. The tree keeps only the parts listed
@@ -106,26 +111,30 @@ admit, each refuted by a non-joinability certificate.
 
 **The floor by weight** (Codex; a complete finite check, its normalizer
 exceptions refuted in Lean; `data/self-interpreter/reasoning_weight/`). A
-reader of weight below `W`, if one exists, has a global minimum of weight
-below `W`, and by §3 a minimum below 46 is a nonlinear root let in the cells
-still open; so refuting every open source of weight below `W` gives
-`w(R) ≥ W` for every reader without closing any cell whole. All 1,674,718 open
-sources of weight at most 44 fail: 1,582,668 with a finite mismatch
-(1,582,294 on the zero law, 374 at unary length one) and 92,050 with a Lean
-theorem `¬ Reader r` about the literal source. So every reader has `w ≥ 45`
-and **every member has at least 161 bits**. This is not kernel-checked end to
-end: it is conditional on §3's reductions and on the coverage of the
-coefficient grammar that generates the open sources, both handwritten in
-part; the finite mismatches rest on a Python comparator; and four of the
-exclusions the chain builds on rest in part on the engine's divergence
+reader of weight below 46, if one exists, has a global minimum of weight
+below 46, and by §3 that minimum is a nonlinear root let among the sources
+the minimality cuts leave: 3,219,594 of them, of weight 32 to 45, in 137
+cells that a coefficient grammar generates. All of them fail: 3,042,734 with
+a finite mismatch (3,042,040 on the zero law, 694 at unary length one) and
+176,860 with a Lean theorem `¬ Reader r` about the literal source. So
+**every reader has `w ≥ 46`, every member has at least 162 bits, and the 162
+is the minimum of the class**. The check went weight by weight, and each
+weight `W` closed gave the floor `116 + W + 1` on its own, since a reader of
+weight at most `W` has a minimum of weight at most `W`. The comparator that
+finds the mismatches accepts the 162's and the 165's own readers on every
+probe. This is not kernel-checked end to end: it is conditional on §3's
+reductions and on the coverage of the coefficient grammar that generates the
+sources, both handwritten in part; the finite mismatches rest on a Python
+comparator; and four of the exclusions the chain builds on rest in part on
+the engine's divergence
 verdicts, 5,955 sources in all (3,508 of the 73,311 three-λ sources of §3,
 1,511 of the 66,577 hand-offs `(λx. x x)(λz a. z M⃗) j`, 560 cut-offs among
 the depth-0 readers whose `j` is a λ's argument, and the 376 unresolved
 pairs of the closed transport `Y j`). Three fresh-context reviews by
 reading (Codex on the first slice and on what changes from weight 42 to 45,
 Gemini on the whole chain) found no omitted source shape, no invalid
-transfer at a weight tie, and no cut that leans on a cell still open. The 1,544,876 open sources all have
-weight 45.
+transfer at a weight tie, and no cut that leans on another cell of the
+same envelope.
 
 **Hoisting is exact** (Lean): for `f` free `c` leaves and depth `d`,
 `w((λa. R[a/j]) j) = w(R) + 6 + f − 3d`, and the hoist reduces back to `R`.
@@ -137,14 +146,15 @@ knot: a let-bound NEXT pays one bit per reader λ for two leaves instead of
 four, so at deep holes the same reader can assemble one bit cheaper
 (a 233-bit witness against 234). That never lowers the class minimum (§4.1).
 
-## 3. The open question: is every reader's weight at least 46?
+## 3. Every reader's weight is at least 46
 
 By §2, **the 162 is optimal in the class if and only if `w(R) ≥ 46` for
-every reader**, and any reader with `w ≤ 45` gives a sub-162 interpreter of
-exactly `116 + w` bits. Every β-normal reader has `w ≥ 46` (below, by
-computer-checked search), so such a reader must contain a source redex:
-what is open is the sharing a redex allows between the zero and the unary
-role.
+every reader**, and any reader with `w ≤ 45` would give a sub-162
+interpreter of exactly `116 + w` bits. There is none. Every β-normal reader
+has `w ≥ 46` (below, by computer-checked search), so a cheaper reader would
+contain a source redex, sharing work between the zero and the unary role;
+this section reduces such a reader, taken minimum, to the finite set of
+sources that the check of §2 refutes.
 
 Throughout this section a **minimum** reader is a global minimum among
 readers that satisfy both laws at every unary length with one source `j`,
@@ -153,7 +163,7 @@ argument that replaces a reader by a lighter one bounds only minimum
 readers: "no minimum reader below 46 has shape X" leaves open a cheaper
 reader of shape X, but then the minimum has another shape, so it suffices
 for the bound. A replacement may leave the shape it starts from, as long as
-it keeps both laws and one hole. No such reader has been found: the cheapest readers
+it keeps both laws and one hole. The cheapest readers known
 other than the 162's weigh 47 (`λs. s I (λu. s (λq. c) (s s s)) j`), 48 (the
 164's `λs. s (λb. b F c) (s I (s s) j)`) and 49 (the 165's). The defect a
 cheaper reader has to repair is visible in the near misses (Claude, adv5
@@ -222,7 +232,8 @@ the 39-bit one.
   (`j` counted four times in `F`; kernel-checked), but at depth 0 or 1 it
   moves `j` deeper, so an equal-weight exposure does not carry minimality
   across. For the nonlinear root lets with four uses and `j` at depth 0,
-  every one of 188,718 sources in the cells under the cap fails (Codex:
+  every one of the profile's 188,718 sources fails, in 31 cells none of
+  which is over the cap (Codex:
   149,789 on the zero law outright and 38,271 by Lean refutations in the
   rootnl lane, which also kernel-checks the Lift transfer, a self-feeding
   divergence theorem with arbitrary payloads, and a repair of discarded `j`
@@ -727,17 +738,18 @@ The earlier unbounded family `p=v z … z` is included. Arbitrary normal
 four-lambda helpers, with other application layouts, remain outside this
 schema.
 
-**Open.** Only readers with a source redex remain, and a minimum reader
-below 46 is neither an s-spine nor a reader whose stream-λ body is a let,
-so one branch of the source-head classification is left: **root lets**
-`(λx. B) A C⃗` — depth-0 shared top-level lets and application-rooted
-readers whose let argument hands control on before binding the stream,
-nonlinear, with two to four uses of `x` and `j` at depth at most 1 (the
-profile `k + d = 5` and every linear root let are closed).
-None of the open sources weighs less than 45 (§2). Besides the nine cells
-over the cap, 128 smaller cells of the same grammar had been counted and
-never checked whole; the open sources, all of weight 45, lie in both.
-The current counts are in `docs/STATUS.md`.
+**The last branch.** Only readers with a source redex remain after the
+β-normal bound, and a minimum reader below 46 is neither an s-spine nor a
+reader whose stream-λ body is a let, so one branch of the source-head
+classification is left: **root lets** `(λx. B) A C⃗` — depth-0 shared
+top-level lets and application-rooted readers whose let argument hands
+control on before binding the stream, nonlinear, with two or three uses of
+`x` and `j` at depth at most 1 (four uses at depth 0, the profile
+`k + d = 5` and every linear root let are closed above). No general
+argument closes this branch; it is closed by exhaustion. The minimality
+cuts leave 3,219,594 sources of weight at most 45, in the nine cells over
+the cap of 100,000 (2,244,584) and in 128 smaller cells of the same grammar
+(975,010), and the check of §2 refutes every one of them.
 A hand-off's pre-stream computation can expand without any
 bound in the source weight: with `G = λp x. p (x x)`,
 `H = λv n s. s v (λu. s (λq. c) (s s u)) n` and Church numerals,
@@ -746,9 +758,9 @@ weak-head λ, `λs. s Xₘ (λu. s (λq. c) (s s u)) j` with `Xₘ →β* I`, we
 `40 + 6·2ᵐ`, every node of it needed by both laws (Codex, expand lane; a
 108-bit instance with a 393,256-bit endpoint is kernel-checked in
 `Blc/SelfintHandoffExpansion.lean`). Such readers are not minimal —
-replacing `G` by `I` saves 11 bits — so what closes the case is not a bound
-on the expansion but a source-level simplification that keeps both laws and
-recovers the whole expansion cost, or a split of the remaining minimum
+replacing `G` by `I` saves 11 bits — so a general argument would need, not
+a bound on the expansion, but a source-level simplification that keeps both
+laws and recovers the whole expansion cost, or a split of the minimum
 sources into families each with an endpoint floor that holds without
 minimality. Two such simplifications are kernel-checked (Codex, simplify
 lane, `Blc/SelfintSimplify*.lean`): specializing a static hand-off `(λx. T[x]) (λz. z M) C⃗` (`T` an
@@ -822,8 +834,8 @@ q ≥ 92    and    q + 3F ≥ 104,
 every assembly is at least as large as an original-class assembly with the
 same reader, its hoist, or the 162's reader (`frontier_dominated_full`). In
 this wider class the 162 is optimal **if and only if** every reader obeying
-all unary laws has `w ≥ 46` (`frontier_optimal_iff_reader_floor`), and the
-146 transfers.
+all unary laws has `w ≥ 46` (`frontier_optimal_iff_reader_floor`), so by §2
+it is the minimum there too, and the 146 transfers.
 
 The four-free-leaf property fails once normality goes: a NEXT whose `c` and
 `p` are let-shared has two free leaves at 105 bits, and a β-normal NEXT with

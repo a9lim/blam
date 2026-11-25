@@ -1,0 +1,38 @@
+{
+  "inclusive_weight": 45,
+  "sources": 1544876,
+  "finite": {
+    "0": 1459746,
+    "1": 320
+  },
+  "certificates": {
+    "delayed rigid arguments": 2,
+    "developed flow": 372,
+    "diagonal power": 1,
+    "flow": 3620,
+    "grow": 354,
+    "head": 111,
+    "internal head": 8,
+    "internal missing": 3,
+    "lambda": 1,
+    "lark": 39,
+    "loop": 70689,
+    "missing": 2776,
+    "mixed": 4509,
+    "orbit omitting one rigid variable": 36,
+    "parametric prefix recurrence": 2,
+    "positive-head embedding": 6,
+    "recursive application types": 146,
+    "recursor": 2,
+    "regular closure and stack": 2,
+    "replicator": 47,
+    "rigid grade": 255,
+    "shallow live binders": 441,
+    "shared head reduction": 7,
+    "simple": 10,
+    "targeted mixed cycle": 84,
+    "template": 944,
+    "two-lambda helper": 338,
+    "unbounded arity grades": 5
+  }
+}
