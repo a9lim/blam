@@ -81,11 +81,12 @@ combines source-lambda, live-binder, leaf, and index charges with symbolic
 small-source classification, as described below; no source enumeration
 enters that proof. Both predate the width theorem in Lean. The current
 unconditional kernel theorem is
-`SelfintSingleObject.selfintSizeBound_37`: the single-object theorem of
+`SelfintSingleObject.selfintSizeBound_41`: the single-object theorem of
 `capture-width.md` supplies the width witness, hence four live binders, six
 leaves and index sum three (33 bits), and verified enumerations of the
-minimum-resource layouts exclude sizes 33 to 36 (*The kernel-checked bit
-floor* below). The established global floor is 41 (`global-floor.md`).
+minimum sources exclude sizes 33 to 40 (*The kernel-checked bit floor*
+below). `global-floor.md` reaches the same 41 by handwritten and enumerated
+classifications with kernel-checked certificates.
 
 For a literal `λc s.B`, `SelfintRound6BoundLiteral` proves that `B` already
 contains a live capture between internal binders: the supplied public
@@ -261,9 +262,10 @@ source lambdas; the width theorem does (`interpreter_counts`).
 
 ## The kernel-checked bit floor
 
-**Every interpreter has at least 37 bits** (`Blc/SelfintSingleObject*.lean`,
-`selfintSizeBound_37`; Codex's Lean on Claude's single-object theorem). The
-chain is:
+**Every interpreter has at least 41 bits**
+(`SelfintSingleObject.selfintSizeBound_41`, `Blc/SelfintKernelFloor41.lean`;
+Codex's Lean on Claude's single-object theorem). The chain through 36 bits
+(`Blc/SelfintSingleObject*.lean`, `selfintSizeBound_37`) is:
 
 - `selfInterpreter_not_so` and `selfInterpreter_width`: an interpreter has a
   live abstraction whose body uses two enclosing variables and does not
@@ -288,6 +290,47 @@ chain is:
 
 No external theorem, βη-conversion or scan over closed programs enters. The
 nine modules build in about 20 seconds.
+
+From 37 to 40 the minimum sources are classified by their number of live
+binders, with lemmas that hold at every size:
+
+- `four_live_minimum`: a global minimum with exactly four live binders is
+  an application of two abstractions; the function is closed with one live
+  binder, which is nonlinear; the argument is closed with three live
+  binders, contains the width witness and has at least four leaves. So the
+  four-live sources are a copier applied to an operand, and
+  `four_live_row`, `four_live_marked_row` turn that into word grammars
+  (resource totals and de Bruijn leaf words) proved complete: 1,522 sources
+  at 37, 2,070 at 38, 4,980 at 39 and 8,634 at 40;
+- five live binders first fit at 39. There the width-bearing abstraction is
+  closed and its body has at most three lambdas and five leaves
+  (`width_local_price`, `closed_of_saturated_width`,
+  `Saturated.five_live_shell`, `Saturated.five_live_source`: 1,700 sources);
+  at 40 each binder binds at most twice, at most one reference leaves the
+  width abstraction, and a term with internal width on five or fewer leaves
+  has its nonlinear binders on one chain, so the surrounding application
+  shell must hold a nonlinear sibling (`atMostTwo_of_leaf_eq`,
+  `one_spare_capture`, `FiveLive.chain_of_small_width`,
+  `FiveLive.bucket_mem`: 2,976 sources). The grammars cover λ-rooted
+  sources too; `one_lambda_bound_39` and `two_lambda_bound_46` are the
+  literal-interface bounds;
+- every source of the grammars has a kernel-checked exclusion: a reduction
+  to a shorter term, to a term without the internal width, to a wrong head
+  or a wrong normal output on the identity source; a single-object
+  factorization; the `W/B` grammar; clock and cycle invariants
+  (`TwoPending.no_count` handles three helper shapes under all six variable
+  permutations); and for the 25 sources these leave at 40, the regular
+  invariants (14), weighted ranks (9) and parity proof of the size-40
+  classification in `global-floor.md` §10, with one direct refutation.
+  The grammars are supersets of the external inventories where that is
+  cheaper (2,070 extra sources at 40) and need no enumeration outside
+  Lean.
+
+`selfintSizeBound_38`, `_39`, `_40` and `_41` are stated without hypotheses
+and use `propext`, `Classical.choice` and `Quot.sound`. The row and evidence
+modules for 37 to 40 are 569 generated files (`Blc/SelfintRows37` …
+`SelfintRows40`, `Selfint40Evidence`); the four sizes build in about 100,
+155, 500 and 520 seconds.
 
 The earlier route to 31 does not use the width theorem.
 `SelfintRound8BitFloor` combines the four-lambda theorem with the live and

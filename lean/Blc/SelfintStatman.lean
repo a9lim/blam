@@ -1,4 +1,4 @@
-import Blc.SelfintSingleObjectWidth
+import Blc.SelfintSingleObjectLiteral
 
 namespace Blc.SelfintSingleObject
 open Term SelfintControl SelfintFloor
@@ -40,10 +40,32 @@ private theorem narrow_no_witness (t : Term) (h : NarrowBinders t) (d : Nat) : �
     · exact ih h.1 (d+1) hw
     · have := h.2 hl i j hi hj; omega
 
-theorem narrow_not_join_s {T : Term} (hc : Closed T) (h : NarrowBinders T) : ¬ BetaJoin T sTerm := by
-  apply not_join_s
-  exact Classical.byContradiction fun hn => narrow_no_witness T h 0 (witness_of_not_so T 0 hc hn)
+private theorem finite_scope (t : Term) : ∃ d, FreeUnder d t := by
+  induction t with
+  | var i => exact ⟨i+1,Nat.lt_succ_self _⟩
+  | lam b ih => obtain ⟨d,h⟩ := ih; exact ⟨d,freeUnder_mono (t := b) (Nat.le_succ d) h⟩
+  | app f a hf ha =>
+    obtain ⟨d,hd⟩ := hf
+    obtain ⟨k,hk⟩ := ha
+    exact ⟨max d k,freeUnder_mono (Nat.le_max_left _ _) hd,freeUnder_mono (Nat.le_max_right _ _) hk⟩
+
+/-- Closing arbitrary external slots with I reflects the internal witness
+at each substitution. This also covers open presentations of S. -/
+theorem join_s_width {T : Term} (hj : BetaJoin T sTerm) : Witness 0 T := by
+  obtain ⟨d,hc⟩ := finite_scope T
+  induction d generalizing T with
+  | zero => exact witness_of_not_so T 0 hc (fun h => not_join_s h hj)
+  | succ d ih =>
+    have hi : Closed identity := by decide
+    have hs := SelfintValues.freeUnder_substDec T identity d 0 (Nat.zero_le _) hc (closed_freeUnder hi d)
+    have j := SelfintValues.join_subst hj 0 identity
+    rw [substDec_closed _ _ (by decide : Closed sTerm)] at j
+    exact witness_subst_reflect hi (so_closed_lam hi (.var 0)) T 0 (ih j hs)
+
+theorem narrow_not_join_s {T : Term} (h : NarrowBinders T) : ¬ BetaJoin T sTerm :=
+  fun hj => narrow_no_witness T h 0 (join_s_width hj)
 
 #print axioms not_join_s
+#print axioms join_s_width
 #print axioms narrow_not_join_s
 end Blc.SelfintSingleObject

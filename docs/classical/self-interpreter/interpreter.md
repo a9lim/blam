@@ -520,9 +520,9 @@ least 39, and with it excludes sizes 37, 38 and 39; size 40 falls to a
 complete enumeration of its 10,284 candidate layouts: **every interpreter
 has at least 41 bits** (Codex's classifications with kernel-checked
 certificates and Lean exclusions of every residual; two independent reviews
-of each handwritten step, three agreeing enumerations at 40). The
-kernel-checked floor is 37
-(`SelfintSingleObject.selfintSizeBound_37`, `structural-bounds.md`).
+of each handwritten step, three agreeing enumerations at 40). Lean proves
+the same bound end to end, by its own classification of the minimum
+sources (`SelfintSingleObject.selfintSizeBound_41`, `structural-bounds.md`).
 `capture-width.md` proves the single-object theorem and the interface
 statement, and gives a shared-S construction attaining these structural minima
 simultaneously, including in the beta-normal fragment with all zero-based

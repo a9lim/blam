@@ -3,9 +3,13 @@
 **Theorem.** Every closed interpreter for the repository's beta-exact,
 closed-source contract has BLC length at least **41**.
 
-Lean proves the floor through 36: **every interpreter has at least 37
-bits** (`SelfintSingleObject.selfintSizeBound_37`, `structural-bounds.md`).
-Above that the proof is handwritten with kernel-checked components.
+Lean proves the theorem end to end
+(`SelfintSingleObject.selfintSizeBound_41`), by a classification of its own
+that needs nothing from this document except the divergence proofs of a few
+residuals (`structural-bounds.md`, *The kernel-checked bit floor*). What
+follows is the record's other route to the same number: handwritten
+classifications through 39 and a complete enumeration at 40, with
+kernel-checked certificates.
 
 The proof has four layers. Sections 1–5 are Codex's handwritten proof of
 37: the counting argument of `capture-width.md` gives 33 and excludes it,
@@ -27,9 +31,9 @@ literal `λc.B` interpreter has at least 39 bits; sections 7–9 use it to
 exclude sizes 37, 38 and 39 (Codex's handwritten proofs with kernel-checked
 components, each found correct by two independent reviews). Section 10
 excludes size 40 from a complete enumeration of the closed 40-bit terms,
-with the same kinds of certificate. No Lean theorem states a bound above
-37: from size 37 the syntax classifications or enumerations and the
-implications of the finite certificates are not kernel-checked; the width theorem
+with the same kinds of certificate. In this route the syntax classifications
+or enumerations from size 37 and the implications of the finite
+certificates are not kernel-checked; the width theorem
 and the literal-interface bound of section 6 are kernel-checked, the
 parametric invariants are proved below or in Lean, and no fuel cap is used
 as a refutation anywhere.

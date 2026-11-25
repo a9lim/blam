@@ -172,5 +172,13 @@ import Blc.SelfintSimplifyDependent
 import Blc.SelfintSimplifyExtendedCases
 import Blc.SelfintSimplifyMultiple
 import Blc.SelfintSingleObjectFloor37
+import Blc.SelfintKernelFloor38
 import Blc.SelfintStatman
 import Blc.SelfintFourLiveWitness
+import Blc.SelfintKernelFloor39
+import Blc.SelfintKernelFloor40
+import Blc.SelfintLiteralWidth46
+import Blc.SelfintStatmanWidth
+import Blc.SelfintMinimumRows40
+import Blc.SelfintFiveLiveProfiles
+import Blc.SelfintKernelFloor41

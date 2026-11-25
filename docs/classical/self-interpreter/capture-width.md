@@ -9,10 +9,11 @@ minimum of two nonlinear binders.
 The width lower bound is kernel-checked: it follows from a theorem about
 closures that hold one object, proved below, which is strictly stronger and
 needs no external result. The incomparable-nonlinear-binder obstruction and
-the global counts of 33 and 34 bits are kernel-checked too; the 46-bit count
-for literal two-argument interfaces and the sharpness constructions are
-handwritten. `global-floor.md` extends the global count. None of this
-establishes 162-bit optimality.
+the global counts of 33 and 34 bits and the 46-bit count for literal
+two-argument interfaces are kernel-checked too; the sharpness constructions
+other than the four-live-binder interpreter are handwritten.
+`global-floor.md` extends the global count. None of this establishes
+162-bit optimality.
 
 ## The source measure
 
@@ -107,10 +108,13 @@ term is β-convertible to an applicative combination of `S` and `K`, no `SO`
 term is β-convertible to `S` either. For width two this is Statman's theorem
 (*Two Variables Are Not Enough*, ICTCS 2005, pp. 406–409,
 https://doi.org/10.1007/11560586_32), which the argument here does not use.
-Lean has both forms directly, by observing `S A B` under the two selectors
+Lean has these forms directly, by observing `S A B` under the two selectors
 for two `SO` arguments (`Blc/SelfintStatman.lean`: `not_join_s` for `SO`
-terms, `narrow_not_join_s` for closed terms whose live abstractions each
-capture at most one variable).
+terms, open or closed; `join_s_width`, that any term β-convertible to `S`
+has the witness; `narrow_not_join_s` for terms whose live abstractions each
+capture at most one variable; and `Blc/SelfintStatmanWidth.lean`:
+`widthTwo_not_join_s`, Statman's statement for terms every subterm of which
+has at most two distinct free variables).
 
 **Interpreters (`selfInterpreter_not_so`).** No self-interpreter is `SO`.
 
@@ -325,8 +329,10 @@ binders, six leaves and index sum three for every interpreter, hence
 `selfintSizeBound_33` (`Blc/SelfintSingleObjectWidth.lean`), and
 `selfintSizeBound_34` excludes the equality case
 (`Blc/SelfintSingleObjectFloor34.lean`). The 46-bit count for a literal
-two-argument interface is handwritten; for one leading lambda `λc.B` Lean
-proves 39 (`one_lambda_bound_39`).
+two-argument interface is `two_lambda_bound_46`
+(`Blc/SelfintLiteralWidth46.lean`), with the internal witness as
+`two_lambda_width`; for one leading lambda `λc.B` Lean proves 39
+(`one_lambda_bound_39`).
 
 ## Excluding a 33-bit interpreter
 

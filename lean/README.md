@@ -465,10 +465,29 @@ Self-interpretation:
   enumeration of the minimum layouts through 36 bits with kernel-evaluated
   necessary conditions; `minimum_residual` the eight layouts left, and
   `selfintSizeBound_34`, `selfintSizeBound_37` their exclusion.
-- `Blc/SelfintStatman.lean` — Statman's theorem as a corollary of the
-  single-object proposition: no `SO` term is β-convertible to `S`
-  (`not_join_s`), in particular no closed term whose live abstractions each
-  capture at most one variable (`narrow_not_join_s`).
+- `Blc/SelfintStatman.lean`, `SelfintStatmanWidth` — Statman's theorem as a
+  corollary of the single-object proposition: no `SO` term is β-convertible
+  to `S` (`not_join_s`); a term β-convertible to `S` has the width witness
+  (`join_s_width`); no term whose live abstractions each capture at most
+  one variable (`narrow_not_join_s`), in particular none of width two
+  (`widthTwo_not_join_s`), is β-convertible to `S`.
+- `Blc/SelfintKernelFloor38.lean` … `SelfintKernelFloor41.lean` with
+  `SelfintFourLive`, `SelfintOperandGrammar`, `SelfintOperandWords`,
+  `SelfintOperandCells`, `SelfintMarkedWords`, `SelfintMinimumRows40`,
+  `SelfintTwoPending`, `SelfintWidthPrice`, `SelfintWidthSlack`,
+  `SelfintSaturatedShell`, `SelfintSaturatedRows`, `SelfintFiveLiveAtom`,
+  `SelfintFiveLiveRows40`, `SelfintFiveLiveProfiles`, `SelfintNonlinearShell`,
+  `SelfintInternalWidthCut`, `SelfintLiteralWidth46`,
+  `SelfintSourceRefutations`, `SelfintRare38`, `SelfintRare39`,
+  `Selfint37Evidence`, and the generated `SelfintRows37/` … `SelfintRows40/`
+  and `Selfint40Evidence/` — the kernel-checked floor
+  `SelfintSizeBound 41`: `four_live_minimum` (at every size a minimum with
+  four live binders is a one-live nonlinear copier applied to a three-live
+  operand with the witness), complete word grammars for the four-live and
+  five-live minimum sources at 37 to 40 (`four_live_row`,
+  `four_live_marked_row`, `Saturated.five_live_source`,
+  `FiveLive.bucket_mem`), `two_lambda_bound_46`, and a checked exclusion of
+  every source; `selfintSizeBound_38`, `_39`, `_40`, `_41`.
 - `Blc/SelfintFourLiveWitness.lean` — the live-binder minimum is exactly
   four (`minimum_live`): `U = λa b c. a (λ_⁴.c) c (b c)` is a one-point
   applicative basis (`kTree_ok`, `sTree_ok`, `iTree_ok`); bracket
