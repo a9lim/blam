@@ -64,8 +64,8 @@ predecessors, §5 the lower bounds. None is an unconditional optimality proof;
 §7 says what remains. The strongest bound near 162 is conditional
 (`class-bound.md`): every interpreter built like the 162 and the 165 — an
 opaque fixed-point knot, a separate NEXT that builds the canonical values,
-and any reader — has at least 146 bits (kernel-checked) and at least 159
-(a finite check of every open reader below weight 43, `class-bound.md` §2),
+and any reader — has at least 146 bits (kernel-checked) and at least 160
+(a finite check of every open reader below weight 44, `class-bound.md` §2),
 exactly
 `116 + w(R)` for its reader `R` with the canonical NEXT, so the 162 is
 optimal in that class if and only if every reader has weight at least 46.
@@ -575,8 +575,8 @@ laws. The 162 and the 165 are its literal assemblies. Every member has
 `Blc/SelfintClass.lean` kernel-checks this and `|E| ≥ 138`, including the
 92-bit NEXT classification, and `Blc/SelfintReader30.lean` the reader weight
 30 with no remaining assumption, so **every member has at least 146 bits**.
-A complete check of the open readers below weight 43, with its normalizer
-exceptions refuted in Lean, raises that to 159 at the reader bound's own
+A complete check of the open readers below weight 44, with its normalizer
+exceptions refuted in Lean, raises that to 160 at the reader bound's own
 level of evidence (`class-bound.md` §2).
 The 162 is optimal in the class if and only if every reader has weight at
 least 46. Every β-normal reader meets it (a computer-checked search over

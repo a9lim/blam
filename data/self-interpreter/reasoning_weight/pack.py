@@ -232,16 +232,16 @@ def match(name):
             cell = (int(r[0]), int(r[1]), r[2], r[3], int(r[4]), int(r[5]))
             if cell != CLOSED and int(r[col]):
                 want[cell] = int(r[col])
-    exc, mism, seen = [], {}, set()
+    exc, mism, got = [], {}, {}
     for x in json.loads((P / f"cells-{name}.json").read_text()):
-        cell = tuple(x["cell"])
-        assert cell in want and cell not in seen and x["total"] == want[cell], cell
-        seen.add(cell)
+        cell = tuple(x["cell"])                  # a cell over the cap comes in parts
+        assert cell in want and x["total"] <= 100000, cell
+        got[cell] = got.get(cell, 0) + x["total"]
         assert x["total"] == sum(x["mismatch"].values()) + len(x["exceptions"]), cell
         for q, n in x["mismatch"].items():
             mism[int(q)] = mism.get(int(q), 0) + n
         exc += x["exceptions"]
-    assert seen == set(want)
+    assert got == want
     hashes = [sha(repr(tup(e["source"])).encode()) for e in exc]
     assert len(set(hashes)) == len(hashes)
     man = list(csv.DictReader((P / f"exception-manifest-{name}.tsv").open(), delimiter="\t"))

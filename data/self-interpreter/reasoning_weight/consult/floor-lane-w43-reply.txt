@@ -1,0 +1,36 @@
+[gaslamp] → codex · job cx-20261124-221119-d556 · continuing thread reader-floor-by-weight
+(•̀ᴗ•́) **Weight 43 is closed. Every reader has weight at least 44, giving a 160-bit lower bound for the separated class** under the inherited coverage and minimality arguments. **No source passed all four probes. No exception remains.**
+
+All 107 nonempty open cells matched their saved coefficients. Of **428,833** distinct weight-43 sources, **404,991** failed the zero law and **61** failed at unary length one. There were zero first mismatches at lengths two and three. The other **23,781** comparisons raised 15,481 cutoffs and 8,300 cycles. Lean refuted each of those literal sources.
+
+| Certificate kind | Sources | Certificate kind | Sources |
+|---|---:|---|---:|
+| Weak-head prefix loop | 20,497 | Flow annotation | 1,005 |
+| Mixed cycle | 891 | Missing rigid leaf | 772 |
+| Template | 240 | Growing helper | 134 |
+| Developed flow | 75 | Rigid grade | 51 |
+| Regular closure and stack | 42 | Replicator | 15 |
+| Targeted mixed cycle | 14 | Shallow live binders | 11 |
+| Recursive application types | 8 | Two-lambda helper | 7 |
+| Finite grade table | 4 | Lark | 3 |
+| Closed orbit with rigid arguments | 2 | Rigid head mismatch | 2 |
+| Rigid head after internal reduction | 2 | Positive-head embedding | 2 |
+| Push and delay types | 2 | Unbounded arity grades | 2 |
+
+**Certificate kinds absent at weight 42**
+
+- **Developed flow** and **rigid head after internal reduction** replay explicit internal β-steps on the literal zero probe. In 75 cases a checked flow annotation excludes the required head variable `r` from the reduct. In two cases a subsequent weak-head prefix exposes a head and arity incompatible with the target.
+- **Lark.** For `H = λx y. x (y y)` and `K = (H H) (H H)`, four weak-head steps take `K x` to `K (x x)`. This rules out a finite head clock for every `K x`. All three literal zero probes reduce to a spine demanding such a prefix.
+- **Finite grade table.** Two three-grade application tables preserve typing under β-reduction. A term of rigid grade cannot expose the stream lambda a reader requires. Lean checked the tables and a rigid-grade derivation for each of four sources.
+- **Recursive application types.** A finite table specifies which output types a function must give for each listed input type. These requirements can refer back to the same types. Lean proves substitution and β-preservation and excludes a lambda at type zero. The eight literal sources have checked type-zero derivations. CaDiCaL supplied candidate tables.
+- **Push and delay types.** The rules describe functions that force an operand with one argument pending and functions that discard an argument and return a specified type. The latter types can nest arbitrarily. Lean types the helper and diagonal of 7755 and 7756, then derives rigid type zero after the first rigid operand.
+- **Unbounded arity grades.** Natural-number grades bound what a term can expose when applied. For 7741 and 7742, Lean proves the helper and diagonal have grade one. Applying the first rigid operand gives grade zero, which persists through the last application and through β-reduction.
+- **Closed orbit with rigid arguments.** The last pair shares the helper `H x y → (x y) (y (λ_.x))`. Lean proves a weak-head invariant for the prefix that has received the first rigid operand. At an endpoint, a closed prefix has lost a parameter required by the reader laws. The other endpoints force a rigid head, immediately or upon application to the last operand. A checked root β-step puts each literal source, 21043 and 21044, into this family.
+
+**Evidence boundary.** The audit matched all 23,781 original ASTs to theorem declarations, checked their axiom reports against `propext`, `Classical.choice` and `Quot.sound`, and verified source hashes and successful receipts for 2,701 weight-specific Lean files. The 160-bit conclusion inherits the lexicographic global-minimum argument, source-shape exclusions, coefficient grammar and simplification cuts, earlier whole-cell and lower-weight closures, and the finite source generator, de Bruijn translation and mismatch comparator. The class price is `|E| ≥ 116 + w(R)`. The standalone kernel-checked class floor is 146 bits.
+
+**Resources.** Wall time from first probe through final audit was **38 min 13 s**. The largest source check held **92,000** sources. Peak RSS among the final Lean proofs was **654,786,560 bytes**. The local watchdog stopped one preliminary Python discovery at **915,849,216 bytes** and two preliminary Lean checks at **688,652,288** and **680,181,760 bytes**. A contractum-size guard, smaller proof blocks and the recursive typing certificates resolved those cases. The longest individual job took **50.15 s**. No outer-watchdog intervention was observed. All children were reaped. Weight 44 was not started.
+
+[Report](/Users/a9lim/Work/blam/tmp/floor/work/REPORT-w43.md) · [Outcome ledger](/Users/a9lim/Work/blam/tmp/floor/work/audit-w43.json) · [Cell histogram](/Users/a9lim/Work/blam/tmp/floor/work/histogram-w43.tsv) · [Original-source theorem manifest](/Users/a9lim/Work/blam/tmp/floor/work/exception-manifest-w43.tsv) · [Exact Lean files for archival](/Users/a9lim/Work/blam/tmp/floor/work/w43/proof-files.sha256)
+
+[gaslamp] job cx-20261124-221119-d556 · continue: gaslamp codex --thread reader-floor-by-weight
