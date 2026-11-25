@@ -123,7 +123,7 @@ proven.
   branch erases. Lean proves it correct for every closed program, as it does
   the previous record, the 165, and the 168. Nothing smaller appears in its
   let structure or its βη components. Every self-interpreter has at least 44
-  bits by complete classifications with kernel-checked certificates, 41 of
+  bits by complete classifications with kernel-checked certificates, 43 of
   them kernel-checked in Lean end to end
   ([global floor](docs/classical/self-interpreter/global-floor.md)). Every
   interpreter built like the 162 (an opaque knot, any reader, a separate

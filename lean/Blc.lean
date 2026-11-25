@@ -182,3 +182,8 @@ import Blc.SelfintStatmanWidth
 import Blc.SelfintMinimumRows40
 import Blc.SelfintFiveLiveProfiles
 import Blc.SelfintKernelFloor41
+import Blc.SelfintKernelFloor42
+import Blc.SelfintFourLiveOperator
+import Blc.SelfintExteriorLeaves
+import Blc.SelfintGradeSubstitution
+import Blc.SelfintKernelFloor43

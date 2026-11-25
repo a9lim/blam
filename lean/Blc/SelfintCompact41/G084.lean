@@ -1,0 +1,68 @@
+import Blc.SelfintCompact41.Base
+namespace Blc.SelfintSingleObject.Compact41
+open Term SourceRefutations OperandGrammar RowReplay
+set_option maxRecDepth 36000
+set_option maxHeartbeats 50000000
+set_option Elab.async false
+
+theorem g1680 : BadRow (SharedShell.row 6 3 false 3 2 5 [3,0,0,0,0]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1681 : BadRow (SharedShell.row 6 3 true 3 2 5 [3,0,0,0,0]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1682 : BadRow (SharedShell.row 6 3 false 3 3 3 [0,0,3]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1683 : BadRow (SharedShell.row 6 3 true 3 3 3 [0,0,3]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1684 : BadRow (SharedShell.row 6 3 false 3 3 3 [0,1,2]) :=
+  row_of_forall (discharge bank [32,12,4] (hard := []) (by decide +kernel) .nil)
+
+theorem g1685 : BadRow (SharedShell.row 6 3 true 3 3 3 [0,1,2]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1686 : BadRow (SharedShell.row 6 3 false 3 3 3 [0,2,1]) :=
+  row_of_forall (discharge bank [32,12,4] (hard := []) (by decide +kernel) .nil)
+
+theorem g1687 : BadRow (SharedShell.row 6 3 true 3 3 3 [0,2,1]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1688 : BadRow (SharedShell.row 6 3 false 3 3 3 [0,3,0]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1689 : BadRow (SharedShell.row 6 3 true 3 3 3 [0,3,0]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1690 : BadRow (SharedShell.row 6 3 false 3 3 3 [1,0,2]) :=
+  row_of_forall (discharge bank [32,12,4,32,12,4] (hard := []) (by decide +kernel) .nil)
+
+theorem g1691 : BadRow (SharedShell.row 6 3 true 3 3 3 [1,0,2]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1692 : BadRow (SharedShell.row 6 3 false 3 3 3 [1,1,1]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1693 : BadRow (SharedShell.row 6 3 true 3 3 3 [1,1,1]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1694 : BadRow (SharedShell.row 6 3 false 3 3 3 [1,2,0]) :=
+  row_of_forall (discharge bank [32,12,4] (hard := []) (by decide +kernel) .nil)
+
+theorem g1695 : BadRow (SharedShell.row 6 3 true 3 3 3 [1,2,0]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1696 : BadRow (SharedShell.row 6 3 false 3 3 3 [2,0,1]) :=
+  row_of_forall (discharge bank [32,12,4,32,12,4] (hard := []) (by decide +kernel) .nil)
+
+theorem g1697 : BadRow (SharedShell.row 6 3 true 3 3 3 [2,0,1]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g1698 : BadRow (SharedShell.row 6 3 false 3 3 3 [2,1,0]) :=
+  row_of_forall (discharge bank [32,12,4] (hard := []) (by decide +kernel) .nil)
+
+theorem g1699 : BadRow (SharedShell.row 6 3 true 3 3 3 [2,1,0]) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+end Blc.SelfintSingleObject.Compact41

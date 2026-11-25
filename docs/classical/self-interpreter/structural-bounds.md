@@ -81,10 +81,10 @@ combines source-lambda, live-binder, leaf, and index charges with symbolic
 small-source classification, as described below; no source enumeration
 enters that proof. Both predate the width theorem in Lean. The current
 unconditional kernel theorem is
-`SelfintSingleObject.selfintSizeBound_41`: the single-object theorem of
+`SelfintSingleObject.selfintSizeBound_43`: the single-object theorem of
 `capture-width.md` supplies the width witness, hence four live binders, six
 leaves and index sum three (33 bits), and verified enumerations of the
-minimum sources exclude sizes 33 to 40 (*The kernel-checked bit floor*
+minimum sources exclude sizes 33 to 42 (*The kernel-checked bit floor*
 below). `global-floor.md` reaches 44 by handwritten and enumerated
 classifications with kernel-checked certificates.
 
@@ -262,8 +262,8 @@ source lambdas; the width theorem does (`interpreter_counts`).
 
 ## The kernel-checked bit floor
 
-**Every interpreter has at least 41 bits**
-(`SelfintSingleObject.selfintSizeBound_41`, `Blc/SelfintKernelFloor41.lean`;
+**Every interpreter has at least 43 bits**
+(`SelfintSingleObject.selfintSizeBound_43`, `Blc/SelfintKernelFloor43.lean`;
 Codex's Lean on Claude's single-object theorem). The chain through 36 bits
 (`Blc/SelfintSingleObject*.lean`, `selfintSizeBound_37`) is:
 
@@ -326,11 +326,64 @@ binders, with lemmas that hold at every size:
   cheaper (2,070 extra sources at 40) and need no enumeration outside
   Lean.
 
-`selfintSizeBound_38`, `_39`, `_40` and `_41` are stated without hypotheses
-and use `propext`, `Classical.choice` and `Quot.sound`. The row and evidence
+Sizes 41 and 42 keep the two classes and add three things:
+
+- a static filter that holds at every size. `FactorFilter.markedHere` keeps
+  a live abstraction with two distinct used outer binders only if a search
+  for a one-object factorization of its body fails; `factored_sound` checks
+  each proposed object and template against scope and the de Bruijn
+  substitution equation, and the width theorem guarantees a witness that
+  survives (`markedHere_of_witness`). Every interpreter passes
+  (`FactorFilter.required`), so the test applies to reducts too.
+  `four_live_operator` sharpens the four-live decomposition: in a minimum
+  `(λ.b)(λ.a)` the witness is in the operand, and `b` is β-normal, headed
+  by its own variable and without a live binder (a redex inside would erase
+  its argument and shorten the minimum; a leading λ would survive the first
+  contraction as a dead public binder). At 41 the filter keeps 11,752 of
+  19,370 four-live sources and the operator theorem leaves 10,864 of them;
+  at 42, 17,321 of 18,631;
+- five live binders through 42 bits: equality in the leaf count gives seven
+  leaves and each binder at most two occurrences; a redex operand with at
+  most one free occurrence, under such a binder, costs eight bits
+  (`FiveLive.small_operand`), so the marked body has at most five leaves
+  (`FiveLive.small_atom`) and the application context around it holds a
+  nonlinear binder (`SharedShell.complete`). The grammar picks the shell,
+  then a marked atom from a fixed index word, with the possible dead binder
+  inside or outside the atom; a public λ is handled separately;
+- `CoverGrids.advance`: for `n ≤ 42`, the bound at `n` and a refutation of
+  every cell of the four-live grid (all distributions of the excess bits in
+  the price equation) and of the five-live grid (the profiles `(L,V)` equal
+  to `(5,7)` and `(6,7)`) give the bound at `n + 1`.
+
+The cells are replayed by rows (`RowReplay.discharge`): a row names a slice
+of the verified grammar by resource counts and leaf-index words, and a
+list of integers selects a certificate for each source from a shared bank
+(a shorter reduct, loss of the internal width or of the incomparable pair,
+a `W`-grammar witness, a cycle, an unused interface binder, a mismatching
+invocation). A missing or failing certificate keeps the source, the kernel
+computes what is kept and compares it with the row's explicit list, and
+direct proofs discharge that list, so neither the lists nor their producer
+is trusted. The grammars give 1,677 four-live and 1,942 five-live rows at
+41 (18,104 distinct sources, 306 on explicit lists) and 2,530 and 3,950 at
+42 (33,237 and 197). Of the 503 listed sources, 476 fall to sixteen finite
+ordered application tables (`SelfintFiniteChain.necessary`, the criterion
+of `global-floor.md` §10, with the stream and target grades shared across
+candidates); the rest to thirteen weighted ranks, eight regular
+invariants, one more table, a pump, a scope argument, a mismatching call,
+a specialized single-object proof and a dead binder.
+
+`selfintSizeBound_38` to `_43` are stated without hypotheses and use
+`propext`, `Classical.choice` and `Quot.sound`. The row and evidence
 modules for 37 to 40 are 569 generated files (`Blc/SelfintRows37` …
 `SelfintRows40`, `Selfint40Evidence`); the four sizes build in about 100,
-155, 500 and 520 seconds.
+155, 500 and 520 seconds. Sizes 41 and 42 are 725 modules of 2.5 MB
+(`Blc/SelfintCompact41`, `SelfintCompact42`, `SelfintResidual41`,
+`SelfintResidual42` and twelve modules of lemmas) and 18 and 34
+CPU-minutes of kernel checking, no single module above 49 seconds or
+1.9 GB. A third class appears at 43 bits, five live binders with eight
+leaves and index sum three, where the occurrence bound and the placement
+of the nonlinear sibling outside a five-leaf atom both need new proofs;
+STATUS has the forecast.
 
 The earlier route to 31 does not use the width theorem.
 `SelfintRound8BitFloor` combines the four-lambda theorem with the live and

@@ -30,7 +30,7 @@ theorem not_selfintSizeBound_163 : ¬ SelfintSizeBound 163
                                                          -- propext, Quot.sound
 theorem isUniversal_uni172 : IsUniversal uni172          -- propext, Quot.sound
 theorem not_uniSizeBound_173 : ¬ UniSizeBound 173        -- propext, Quot.sound
-theorem selfintSizeBound_29 : SelfintSizeBound 29
+theorem selfintSizeBound_43 : SelfintSizeBound 43
                                     -- propext, Classical.choice, Quot.sound
 ```
 
@@ -39,7 +39,8 @@ normal form under arbitrary β-reduction. Palmer's 168-bit `intL` (pinned to its
 wire by `wire_intL`) is a self-interpreter: for every closed `M` and any terms
 `C`, `N`, `intL C (⌜M⌝ ++ N)` β-reduces to `C (λz. M) N`. So are the 165-bit
 `intL165` (`wire_intL165`) and the 162-bit `intL162` (`wire_intL162`), so no
-self-interpreter size bound above 162 holds. Each gives universal machines,
+self-interpreter size bound above 162 holds; every self-interpreter has at
+least 43 bits (`SelfintSingleObject.selfintSizeBound_43`). Each gives universal machines,
 `U (⌜M⌝ ++ N) →β* M N` for every closed `M`, in both of Tromp's wirings: the
 162 the 172 and the strict 184, the 165 the 175 and 187, and the 168 Tromp's
 own 178 and 190 (`IsUniversal`, each pinned to its wire), so no universal
@@ -488,6 +489,27 @@ Self-interpretation:
   `four_live_marked_row`, `Saturated.five_live_source`,
   `FiveLive.bucket_mem`), `two_lambda_bound_46`, and a checked exclusion of
   every source; `selfintSizeBound_38`, `_39`, `_40`, `_41`.
+- `Blc/SelfintKernelFloor42.lean`, `SelfintKernelFloor43.lean` with
+  `SelfintFactorFilter`, `SelfintFourLiveOperator`, `SelfintSmallOperandShell`,
+  `SelfintSharedShell`, `SelfintCoverGrids`, `SelfintRowReplay`,
+  `SelfintFiniteChain`, `SelfintGradeProbes`, `SelfintGradeSubstitution`,
+  `SelfintExteriorLeaves`, and the generated `SelfintCompact41/`,
+  `SelfintCompact42/`, `SelfintResidual41/`, `SelfintResidual42/` — the
+  kernel-checked floor `SelfintSizeBound 43`: a kernel-evaluated search for
+  a one-object factorization that every interpreter's witness survives
+  (`FactorFilter.factored_sound`, `markedHere_of_witness`, `required`);
+  `four_live_operator` (in a four-live minimum the copier's body is
+  β-normal, headed by its own variable and without a live binder);
+  the five-live shell with seven leaves (`FiveLive.small_operand`,
+  `small_atom`, `SharedShell.complete`; `FiveLive.seven_leaf_shell` and
+  `two_exterior_leaves` for any number of dead binders);
+  `CoverGrids.advance`, the step from the bound at `n ≤ 42` and refuted
+  four-live and five-live grids to the bound at `n + 1`;
+  `RowReplay.discharge`, rows that name slices of the grammars and leave
+  an explicit list for direct proofs; `SelfintFiniteChain.necessary`, the
+  finite ordered application tables as a size-independent necessary
+  condition (`eval_contract` and `necessary_redex` grade a root redex
+  without building the substituted term); `selfintSizeBound_42`, `_43`.
 - `Blc/SelfintFourLiveWitness.lean` — the live-binder minimum is exactly
   four (`minimum_live`): `U = λa b c. a (λ_⁴.c) c (b c)` is a one-point
   applicative basis (`kTree_ok`, `sTree_ok`, `iTree_ok`); bracket
