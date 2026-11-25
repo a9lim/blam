@@ -516,10 +516,10 @@ a preliminary global floor of 33; analytical exclusion of the equality
 cases raises that floor to 34. `global-floor.md` excludes 34, 35 and 36 the
 same way (37; its 144 fixed reduction clauses are kernel-checked in
 `Blc/SelfintFloor37.lean`), proves that a literal interface `λc.B` costs at
-least 39, and with it excludes sizes 37, 38 and 39; sizes 40 to 44 fall to
+least 39, and with it excludes sizes 37, 38 and 39; sizes 40 to 45 fall to
 complete enumerations of the candidate layouts (10,284 at 40 to
-188,768 at 44):
-**every interpreter has at least 45 bits** (Codex's classifications with
+427,114 at 45):
+**every interpreter has at least 46 bits** (Codex's classifications with
 kernel-checked certificates and Lean exclusions of every residual; two
 independent reviews of each handwritten step, three agreeing enumerations
 from 40 on). Lean proves 44 of these bits end to end, by its own
@@ -984,10 +984,10 @@ Open:
   current `next` and parser doing it unchanged;
 - the capped fills of §3 (4,052,176 in the joint reader search, 7,790 in the
   handler, 218 in whole APP) and of §4;
-- an unconditional lower bound well beyond 45 bits (`global-floor.md`). The
+- an unconditional lower bound well beyond 46 bits (`global-floor.md`). The
   minimum nonlinear-binder count two is attained, so counting more such
   binders cannot close the gap, and the exact classifications grow fast
-  (676 layouts at 37, 10,284 at 40, 188,768 at 44; literal interfaces
+  (676 layouts at 37, 10,284 at 40, 427,114 at 45; literal interfaces
   first appear). The remainder projection gives at most 62 even if its own
   minimum were 70, and a 45-bit partial reader meets every zero-stream
   obligation the known proofs use (`remainder.md`). A quantitative theorem

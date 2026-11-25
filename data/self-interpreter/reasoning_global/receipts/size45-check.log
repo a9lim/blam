@@ -1,0 +1,11 @@
+regen.py: 6955 files regenerated with the recorded hashes, 249 s
+recheck_inventory.py: exit 0, 259 s
+    Three inventories agree. 427114 exact candidates, 22492 with six live binders (see triples.tsv and root-shapes.tsv).
+verify_ledger.py: exit 0, 17 s
+    Direct residuals in the four literal proof partitions: 7026
+    Exact wire, declaration and independent finite replay checks passed {'predicate': 403617, 'complete': 23497}
+recheck.py: exit 0, 2051 s
+    7200 of 7257
+    7257 of 7257 modules verified; slice 86.29 seconds
+    {'modules': 7257, 'summed_seconds': 8112.338, 'peak_rss_bytes': 945373184, 'axiom_counts': {'propext, Quot.sound': 22968, 'propext, Classical.choice, Quot.sound': 529}, 'open': 0}
+size 45: all three checks pass (files left in tmp/recheck/size45)

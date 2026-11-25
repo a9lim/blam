@@ -306,9 +306,9 @@ and proofs; this section holds the current numbers and the open cells.
   (`interpreter.md` §5). `data/self-interpreter/reasoning_floor/` holds about
   forty further correct interpreters of 166–220 bits.
 - **Global floor and structure** (`global-floor.md`, `structural-bounds.md`,
-  `capture-width.md`): every interpreter has **at least 45 bits**, 44 of
+  `capture-width.md`): every interpreter has **at least 46 bits**, 44 of
   them proved by Lean end to end (`SelfintSingleObject.selfintSizeBound_44`,
-  below) and size 44 by a complete enumeration with
+  below) and sizes 44 and 45 by complete enumerations with
   kernel-checked certificates. The width
   theorem and the incomparable-binder theorem give 34; Codex's handwritten
   first-contraction classifications (reviewed) exclude 34–39 (676 layouts at
@@ -316,11 +316,11 @@ and proofs; this section holds the current numbers and the open cells.
   kernel-checked and every residual (13, 63 and 167) refuted by a complete
   Lean proof of `¬ IsSelfInterpreter`
   (`data/self-interpreter/reasoning_162/floor38/`, outside `lake build`;
-  `floor38/check_lean.py` rebuilds it in about a minute). Sizes 40 to 44 are
+  `floor38/check_lean.py` rebuilds it in about a minute). Sizes 40 to 45 are
   excluded from complete enumerations (Codex, one lane per size, in
-  parallel): of the 3,239,923,700 closed terms of those sizes,
-  372,314 pass the necessary conditions for a minimum (10,284 at 40 to
-  188,768 at 44; three agreeing enumerators at each size, one written
+  parallel): of the 6,173,020,901 closed terms of those sizes,
+  799,428 pass the necessary conditions for a minimum (10,284 at 40 to
+  427,114 at 45; three agreeing enumerators at each size, one written
   independently), and every one has a kernel-checked finite certificate
   or a complete Lean exclusion. The residual families
   are regular Krivine-machine invariants, an all-size weighted rank,
@@ -514,7 +514,7 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    pairs, which any uniform witness only bounds above. Parked as the next
    constants target after docket 9. A conditional census (each program
    applied to the stream x\*) would bound the true gap from below as the
-   census bounds c. The census range lies below the self-interpreter floor (45),
+   census bounds c. The census range lies below the self-interpreter floor (46),
    so those gaps will mostly measure pairing overhead.
 7. **AIT golf:** tromp/AIT#13 is in Tromp's review (about a dozen programs
    pass; `int4` withdrawn, his 189 stands). Terms
@@ -540,7 +540,7 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    unary run nor accounting alone can supply it (`class-bound.md` §3).
    Open on the class side: NEXT of arbitrary syntax in
    `35 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two
-   nonlinear binders. The unconditional floor is 45 (44 kernel-checked); restricted-domain
+   nonlinear binders. The unconditional floor is 46 (44 kernel-checked); restricted-domain
    witnesses cap every proof that uses only identity towers (88) or Church
    spines (154), so a global argument must charge applications whose
    children both vary. Lean's next size, 44, is forecast at 145 to 160

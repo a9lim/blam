@@ -1,15 +1,15 @@
-# An unconditional 45-bit floor
+# An unconditional 46-bit floor
 
 **Theorem.** Every closed interpreter for the repository's beta-exact,
-closed-source contract has BLC length at least **45**.
+closed-source contract has BLC length at least **46**.
 
 Lean proves **44** of these bits end to end
 (`SelfintSingleObject.selfintSizeBound_44`), by a classification of its own
 that needs nothing from this document except the divergence proofs of a few
-residuals (`structural-bounds.md`, *The kernel-checked bit floor*). Size 44
-rests on the route recorded here, which also reaches the sizes below it:
-handwritten classifications through 39 and complete enumerations from 40,
-with kernel-checked certificates.
+residuals (`structural-bounds.md`, *The kernel-checked bit floor*). Sizes 44 and 45
+rest on the route recorded here: handwritten
+classifications through 39 and complete enumerations from 40, with
+kernel-checked certificates.
 
 The proof has four layers. Sections 1–5 are Codex's handwritten proof of
 37: the counting argument of `capture-width.md` gives 33 and excludes it,
@@ -30,7 +30,7 @@ regenerates them and checks the 108 residual layouts in 0.05 seconds
 literal `λc.B` interpreter has at least 39 bits; sections 7–9 use it to
 exclude sizes 37, 38 and 39 (Codex's handwritten proofs with kernel-checked
 components, each found correct by two independent reviews). Section 10
-excludes sizes 40 to 44 from complete enumerations of the closed terms of
+excludes sizes 40 to 45 from complete enumerations of the closed terms of
 each size, with the same kinds of certificate. In this route the syntax classifications
 or enumerations from size 37 and the implications of the finite
 certificates are not kernel-checked; the width theorem
@@ -711,7 +711,8 @@ one lane per size).
 An interpreter of the size would be a global minimum, by the bound for the
 sizes below, so no β-reduct of it, by a redex anywhere, is shorter. Four
 live binders, six leaves and index sum three bound the count triples
-`(L,V,X)`; six live binders need 45 bits. A λ-rooted candidate is `λc.B`
+`(L,V,X)`; six live binders need 45 bits, and 22,492 of the layouts at 45
+have them. A λ-rooted candidate is `λc.B`
 with `c` live and both the width witness and the incomparable pair inside
 `B` (section 6), and two leading lambdas cost 46 (`capture-width.md`). The
 candidates are the closed terms with two nonlinear binders in disjoint
@@ -725,6 +726,7 @@ for a λ-root), and no redex whose contraction shortens the term.
 | 42 | 452,574,468 | 43,244 | 37,568 | 5,676 | 41,022 | 2,222 | 491 |
 | 43 | 840,914,719 | 106,102 | 87,812 | 18,290 | 100,493 | 5,609 | 1,880 |
 | 44 | 1,573,331,752 | 188,768 | 153,766 | 35,002 | 179,166 | 9,602 | 3,386 |
+| 45 | 2,933,097,201 | 427,114 | 341,738 | 85,376 | 403,617 | 23,497 | 7,026 |
 
 Completeness rests on enumeration, not on a classification, and at each
 size three enumerations agree: the lane's by resource triple; its second
@@ -744,6 +746,7 @@ dead continuation or no internal width:
 | 42 | 187,140 | 87,822 | 9,132 | 46,942 |
 | 43 | 438,420 | 213,394 | 21,924 | 97,000 |
 | 44 | 840,144 | 425,664 | 37,568 | 188,144 |
+| 45 | 1,933,272 | 987,424 | 87,812 | 430,922 |
 
 Every candidate is excluded. Most have a finite certificate: a
 head-reduction trace to a reduct whose nonlinear binders lie on one chain,
@@ -806,6 +809,7 @@ the `W/B` grammar of section 8, and for the residuals of the finite pass
 | 42 | 12,666 | 9,276 | 7,047 | 6,182 | 3,755 | 1,368 | 728 | 1,731 | 54 | 67 | 215 | 0 | 127 | 28 |
 | 43 | 27,113 | 20,859 | 14,643 | 20,530 | 12,327 | 3,465 | 1,556 | 3,739 | 90 | 16 | 0 | 1,668 | 56 | 40 |
 | 44 | 47,544 | 37,686 | 24,885 | 36,994 | 23,304 | 5,814 | 2,939 | 6,216 | 1,648 | 748 | 2 | 72 | 818 | 98 |
+| 45 | 98,796 | 85,763 | 56,088 | 88,961 | 53,841 | 13,897 | 6,271 | 16,471 | 662 | 343 | 5,596 | 36 | 175 | 214 |
 
 The finite pass leaves 92 layouts at 40: 49 fall to regular invariants (12
 to 1,969 machine states), 42 to the weighted rank and one to the parity
@@ -825,7 +829,14 @@ seven of the rules of size 43, 13 by new tables and flow-derived
 derivations), four with the continuation lost in a closed reduct, three
 comparisons with a 37-bit term, two finite tables and the clock cycle. The
 last 75, 72 of them with five live binders on eight leaves, were closed with
-the size-43 lane's tools.
+the size-43 lane's tools. At 45 it leaves 7,026: 5,596 finite tables (227 of
+them on a probe's call), 662 regular invariants, 343 weighted ranks, 175
+single-object reducts, 173 with a dead continuation in a reduct, 36 type
+proofs, 32 mismatching head observations, seven with a required free
+variable missing, and two with the common reduct `H H I`,
+`H = λa.a (λb c.a (a c) b)`, which with Church false as continuation reaches
+a λ after 951 weak-head steps where the contract returns the suffix. The
+last ten were closed with the size-43 lane's tools.
 
 Each literal term's wire, each trace and each predicate is kernel-checked,
 and so are the complete exclusions (`propext`, `Quot.sound`, some
@@ -843,9 +854,10 @@ finite certificate with a separately written reducer agrees
 reductions name their redex positions), and fresh-context reviews by reading
 found the inventory filters, the finite predicates, the residual statements
 and the joins between lanes correct, at size 40, at sizes 41 to 43 and at
-size 44 (`reasoning_global/consult/`). No fuel cap or timeout refutes
-anything. Lean's own proof (`structural-bounds.md`) covers the sizes up to
-its bound without any of this, except for the residual proofs it shares.
+size 44 (`reasoning_global/consult/`); size 45 has not had one yet. No fuel
+cap or timeout refutes anything. Lean's own proof (`structural-bounds.md`)
+covers the sizes up to its bound without any of this, except for the
+residual proofs it shares.
 
 ## 11. What probe families can charge
 
@@ -866,8 +878,8 @@ at:
 
 The witnesses are not interpreters, and the caps do not add. The
 projections cost `|E (λv r. v)| = |E| + 9` and `|E (λv r. r)| = |E| + 8`
-(`projection_value`), so a value-decoder floor of 55 or a remainder floor of
-54 would already improve the 45. The Church-spine witness works because each
+(`projection_value`), so a value-decoder floor of 56 or a remainder floor of
+55 would already improve the 46. The Church-spine witness works because each
 left child is the same variable, whose code merges with the application tag
 into one unary skip; a proof that goes further must use applications whose
 two children both vary, and charge shared source connections once

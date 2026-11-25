@@ -122,7 +122,7 @@ proven.
   and passes the parser's second-bit stage as an operand that the variable
   branch erases. Lean proves it correct for every closed program, as it does
   the previous record, the 165, and the 168. Nothing smaller appears in its
-  let structure or its βη components. Every self-interpreter has at least 45
+  let structure or its βη components. Every self-interpreter has at least 46
   bits by complete classifications with kernel-checked certificates, 44 of
   them kernel-checked in Lean end to end
   ([global floor](docs/classical/self-interpreter/global-floor.md)). Every

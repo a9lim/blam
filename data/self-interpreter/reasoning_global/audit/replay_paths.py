@@ -10,6 +10,8 @@ recorded in generated Lean modules instead of certs.json:
     def eN : Term := (.lam (.app ...))
     theorem cert_eN : check eN [[.under],[.under,.left], ...] .width = true := by decide
 
+(the theorem's prefix varies by lane: `cert_` at 44, `ex_` at 45).
+
 This reads the literal term and the list of positions from the source,
 contracts the redex at each position in turn with replay.py's own
 substitution, and tests the predicate with replay.py's own code. A position
@@ -93,7 +95,7 @@ for name in sys.argv[2:]:
     text = pathlib.Path(name).read_text()
     for m in re.finditer(r"^def (e\d+) : Term := (.*)$", text, re.M):
         defs[m.group(1)] = term(m.group(2))
-    for m in re.finditer(r"^theorem cert_(e\d+) : check \1 \[(.*)\] \.(\w+) = true", text, re.M):
+    for m in re.finditer(r"^theorem \w+_(e\d+) : check \1 \[(.*)\] \.(\w+) = true", text, re.M):
         paths = [[s.strip().lstrip(".") for s in p.split(",") if s.strip()]
                  for p in re.findall(r"\[([^\[\]]*)\]", m.group(2))]
         certs.append((m.group(1), paths, m.group(3)))
