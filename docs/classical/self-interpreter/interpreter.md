@@ -521,9 +521,9 @@ complete enumerations of the candidate layouts (10,284 at 40, 23,916 at 41, 43,2
 **every interpreter has at least 44 bits** (Codex's classifications with
 kernel-checked certificates and Lean exclusions of every residual; two
 independent reviews of each handwritten step, three agreeing enumerations
-from 40 on). Lean proves 43 of these bits end to end, by its own
+from 40 on). Lean proves the same bound end to end, by its own
 classification of the minimum sources
-(`SelfintSingleObject.selfintSizeBound_43`, `structural-bounds.md`).
+(`SelfintSingleObject.selfintSizeBound_44`, `structural-bounds.md`).
 `capture-width.md` proves the single-object theorem and the interface
 statement, and gives a shared-S construction attaining these structural minima
 simultaneously, including in the beta-normal fragment with all zero-based

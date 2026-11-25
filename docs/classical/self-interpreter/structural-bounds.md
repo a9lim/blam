@@ -81,11 +81,11 @@ combines source-lambda, live-binder, leaf, and index charges with symbolic
 small-source classification, as described below; no source enumeration
 enters that proof. Both predate the width theorem in Lean. The current
 unconditional kernel theorem is
-`SelfintSingleObject.selfintSizeBound_43`: the single-object theorem of
+`SelfintSingleObject.selfintSizeBound_44`: the single-object theorem of
 `capture-width.md` supplies the width witness, hence four live binders, six
 leaves and index sum three (33 bits), and verified enumerations of the
-minimum sources exclude sizes 33 to 42 (*The kernel-checked bit floor*
-below). `global-floor.md` reaches 44 by handwritten and enumerated
+minimum sources exclude sizes 33 to 43 (*The kernel-checked bit floor*
+below). `global-floor.md` reaches the same 44 by handwritten and enumerated
 classifications with kernel-checked certificates.
 
 For a literal `λc s.B`, `SelfintRound6BoundLiteral` proves that `B` already
@@ -262,8 +262,8 @@ source lambdas; the width theorem does (`interpreter_counts`).
 
 ## The kernel-checked bit floor
 
-**Every interpreter has at least 43 bits**
-(`SelfintSingleObject.selfintSizeBound_43`, `Blc/SelfintKernelFloor43.lean`;
+**Every interpreter has at least 44 bits**
+(`SelfintSingleObject.selfintSizeBound_44`, `Blc/SelfintKernelFloor44.lean`;
 Codex's Lean on Claude's single-object theorem). The chain through 36 bits
 (`Blc/SelfintSingleObject*.lean`, `selfintSizeBound_37`) is:
 
@@ -335,14 +335,13 @@ Sizes 41 and 42 keep the two classes and add three things:
   substitution equation, and the width theorem guarantees a witness that
   survives (`markedHere_of_witness`). Every interpreter passes
   (`FactorFilter.required`), so the test applies to reducts too. At 41 it
-  keeps 11,752 of 19,370 four-live sources. `four_live_operator`, which
-  these two sizes do not use, sharpens the four-live decomposition for the
-  sizes to come: in a minimum `(λ.b)(λ.a)` the witness is in the operand,
-  and `b` is β-normal, headed by its own variable and without a live
-  binder (a redex inside would erase its argument and shorten the minimum;
-  a leading λ would survive the first contraction as a dead public
-  binder). It would leave 10,864 of the 11,752 at 41 and 17,321 of 18,631
-  at 42;
+  keeps 11,752 of 19,370 four-live sources. `four_live_operator`, used
+  from size 43, sharpens the four-live decomposition: in a minimum
+  `(λ.b)(λ.a)` the witness is in the operand, and `b` is β-normal, headed
+  by its own variable and without a live binder (a redex inside would
+  erase its argument and shorten the minimum; a leading λ would survive
+  the first contraction as a dead public binder). It would leave 10,864 of
+  the 11,752 at 41 and 17,321 of 18,631 at 42;
 - five live binders through 42 bits: equality in the leaf count gives seven
   leaves and each binder at most two occurrences; a redex operand with at
   most one free occurrence, under such a binder, costs eight bits
@@ -373,18 +372,52 @@ candidates); the rest to thirteen weighted ranks, eight regular
 invariants, one more table, a pump, a scope argument, a mismatching call,
 a specialized single-object proof and a dead binder.
 
-`selfintSizeBound_38` to `_43` are stated without hypotheses and use
+Size 43 has a third class: five live binders on eight leaves with index
+sum three, all five lambdas live (`Size43Profiles.resources`: the
+five-live profiles, as leaves, lambdas and index sum, are `(7,5,7)`,
+`(7,6,5)`, `(7,7,3)` and `(8,5,3)`). There the leaf count no longer
+saturates, and two lemmas that hold at every size replace what saturation
+gave:
+
+- `occBound_of_slack`: if a term has at most `q` more leaves than its live
+  binders, nonlinear binders and free leaves together, every binder has at
+  most `2 + q` occurrences; here three;
+- `EightLeaf.exterior`: in a minimum whose lambdas are all live and whose
+  binders occur at most three times, a nonempty shell around the
+  width-bearing abstraction holds at least two leaves. A one-leaf sibling
+  would be the public variable or the identity; as an argument either
+  makes its redex shrink (the identity up to multiplicity three), and as
+  an operator the identity shrinks and the public variable gives a rigid
+  head. So the marked body has at most six leaves. With five or fewer the
+  nonlinear sibling lies outside it as before; with six, both incomparable
+  binders may lie inside, and the grammar allows that.
+
+`Grammar43.advance` then gives the bound at 44 from the refuted four-live
+grid and the grid of the four profiles (`Size43Profiles.five_complete`).
+The grammars have 4,033 four-live and 8,116 five-live word rows, 72,423
+distinct sources after the static filters, the operator theorem applied
+to the four-live ones before pairing. A row whose check would need too
+much memory is split at the first application below its lambda prefix
+(`Split43.marked_flatten`, `plain_flatten`, with `four_cover` and
+`five_cover` for completeness of the slices), and `Split43.tryHints` tries
+one small bank of hints on every source of a slice. 770 sources are left
+to direct proofs: 616 finite-table grades, 118 recursive intersection-arrow
+type tests (`SelfintRecursiveTypes`, the criterion of `global-floor.md`
+§10, whose substitution and subject-reduction theorems hold at every
+size; eight of its 25 rules are used), 23 regular invariants, eight
+weighted ranks, four `W`-grammar tests and one absence proof.
+
+`selfintSizeBound_38` to `_44` are stated without hypotheses and use
 `propext`, `Classical.choice` and `Quot.sound`. The row and evidence
 modules for 37 to 40 are 569 generated files (`Blc/SelfintRows37` …
 `SelfintRows40`, `Selfint40Evidence`); the four sizes build in about 100,
 155, 500 and 520 seconds. Sizes 41 and 42 are 725 modules of 2.5 MB
 (`Blc/SelfintCompact41`, `SelfintCompact42`, `SelfintResidual41`,
 `SelfintResidual42` and twelve modules of lemmas) and 18 and 34
-CPU-minutes of kernel checking, no single module above 49 seconds or
-1.9 GB. A third class appears at 43 bits, five live binders with eight
-leaves and index sum three, where the occurrence bound and the placement
-of the nonlinear sibling outside a five-leaf atom both need new proofs;
-STATUS has the forecast.
+CPU-minutes of kernel checking; size 43 is 1,184 modules of 4.0 MB
+(`SelfintCompact43`, `SelfintResidual43` and seven modules of lemmas) and
+86 CPU-minutes, no single module above 77 seconds or 2.7 GB. STATUS has
+the forecast for the next size.
 
 The earlier route to 31 does not use the width theorem.
 `SelfintRound8BitFloor` combines the four-lambda theorem with the live and

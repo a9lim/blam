@@ -306,10 +306,10 @@ and proofs; this section holds the current numbers and the open cells.
   (`interpreter.md` §5). `data/self-interpreter/reasoning_floor/` holds about
   forty further correct interpreters of 166–220 bits.
 - **Global floor and structure** (`global-floor.md`, `structural-bounds.md`,
-  `capture-width.md`): every interpreter has **at least 44 bits**, 43 of
-  them proved by Lean end to end (`SelfintSingleObject.selfintSizeBound_43`,
-  below) and size 43 by a complete enumeration with
-  kernel-checked certificates. The width
+  `capture-width.md`): every interpreter has **at least 44 bits**, and Lean
+  proves it end to end (`SelfintSingleObject.selfintSizeBound_44`, below).
+  The record also reaches it by a second route with kernel-checked
+  components. The width
   theorem and the incomparable-binder theorem give 34; Codex's handwritten
   first-contraction classifications (reviewed) exclude 34–39 (676 layouts at
   37, 1,206 at 38, 4,672 at 39), each finite certificate's predicate
@@ -330,7 +330,7 @@ and proofs; this section holds the current numbers and the open cells.
   `pack.py check N` recompiles a size from its archive in a few minutes).
   In that route the enumerations and the implications of the finite
   predicates are not kernel-checked.
-  The **kernel-checked floor is 43** (`SelfintSingleObject.selfintSizeBound_43`,
+  The **kernel-checked floor is 44** (`SelfintSingleObject.selfintSizeBound_44`,
   `lake build Blc`; Codex's Lean). Its base is the
   single-object theorem (`capture-width.md`; Claude's argument, Codex's
   Lean): a closure that still waits for an argument it will use holds one
@@ -349,17 +349,20 @@ and proofs; this section holds the current numbers and the open cells.
   has a closed width-bearing abstraction of bounded shape inside an
   application shell (`Saturated.five_live_source`, `FiveLive.bucket_mem`);
   word grammars proved complete list every such source (1,522 at 37, 2,070
-  at 38, 6,680 at 39, 11,610 at 40; 18,104 at 41 and 33,237 at 42, after a
-  kernel-evaluated search for a one-object factorization of each candidate
-  witness), and the kernel checks an exclusion of each one: reductions to
-  a wrong or shorter term, single-object factorizations,
-  the `W/B` grammar, and for the few left (25 at 40, 306 at 41, 197 at 42)
-  the divergence proofs of the classifications above: at 41 and 42 finite
-  ordered application tables for 476 of the 503 (`SelfintFiniteChain`),
-  then weighted ranks, regular invariants and single proofs. No
-  enumeration outside Lean enters. For the sizes to come,
-  `four_live_operator` cuts the four-live sources further: the copier's
-  body is β-normal, headed by its own variable and without a live binder.
+  at 38, 6,680 at 39, 11,610 at 40; 18,104 at 41, 33,237 at 42 and 72,423
+  at 43, after a kernel-evaluated search for a one-object factorization of
+  each candidate witness and, at 43, `four_live_operator`: the copier's
+  body is β-normal, headed by its own variable and without a live binder),
+  and the kernel checks an exclusion of each one: reductions to a wrong or
+  shorter term, single-object factorizations, the `W/B` grammar, and for
+  the few left (25 at 40, 306 at 41, 197 at 42, 770 at 43) the divergence
+  proofs of the classifications above: from 41 on finite ordered
+  application tables for 1,093 of the 1,273 (`SelfintFiniteChain`), at 43
+  recursive intersection-arrow type rules for 118 (`SelfintRecursiveTypes`),
+  then regular invariants, weighted ranks and single proofs. No
+  enumeration outside Lean enters. Size 43 brought a third class, five
+  live binders on eight leaves, closed by two lemmas that hold at every
+  size (`occBound_of_slack`, `EightLeaf.exterior`).
   The earlier route without the width theorem reached 31
   (`SelfintRound8BitFloor`), with an unconditional four-source-λ bound
   (`SelfintRound8FourLambda`). Literal interfaces, in Lean: `λc.B` ≥ 39
@@ -403,7 +406,7 @@ and proofs; this section holds the current numbers and the open cells.
   59-step cast-erasure trace to the literal 165). The 188, 196, 204, 584, 672,
   742 and four erased-skip variants pass the battery (667/1/0) and
   divergent-source suffix checks (`data/self-interpreter/theory/`).
-- **Lean.** `lake build Blc Certs BusyBeaver` is current (1,551 jobs); headline
+- **Lean.** `lake build Blc Certs BusyBeaver` is current (2,735 jobs); headline
   theorems use at most `propext`, `Classical.choice` and `Quot.sound`
   (`lean/README.md`).
 - **The universal machine** (`universal.md`): Tromp's wirings around the
@@ -536,13 +539,14 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    unary run nor accounting alone can supply it (`class-bound.md` §3).
    Open on the class side: NEXT of arbitrary syntax in
    `35 ≤ q ≤ 91`, values decoded through NEXT, knotless first heads with two
-   nonlinear binders. The unconditional floor is 44 (43 kernel-checked); restricted-domain
+   nonlinear binders. The unconditional floor is 44, kernel-checked; restricted-domain
    witnesses cap every proof that uses only identity towers (88) or Church
    spines (154), so a global argument must charge applications whose
-   children both vary. Lean's next size, 43, is forecast at about 77
-   CPU-minutes and 3.2 MB of source (75,243 sources after the static
-   filters), and needs a classification of one new class: five live
-   binders with eight leaves and index sum three. Constructive: none of
+   children both vary. Lean's next size, 44, is forecast at 145 to 160
+   CPU-minutes and about 7 MB of source (size 43 took 86 and 4.0 MB); it
+   has the classes of 43 with one more index bit (6,107 four-live and
+   14,812 five-live word rows), and six live binders first fit at 45.
+   Constructive: none of
    about thirty round-4 designs (163–265 bits) beats 162, nor does any of
    the fifteen built through the class's exits (164–199 bits,
    `interpreter.md` §6). The 162's reader is on the

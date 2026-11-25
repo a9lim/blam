@@ -1,0 +1,121 @@
+import Blc.SelfintCompact43.Base
+import Blc.SelfintSplit43
+namespace Blc.SelfintSingleObject.Compact43
+open Term SourceRefutations OperandGrammar RowReplay
+set_option maxRecDepth 36000
+set_option maxHeartbeats 50000000
+set_option Elab.async false
+
+private abbrev bg7664 (i : Nat) := Split43.five 8 i 8 5 3 false 3 2 4 [0,1,2,0]
+
+private theorem g7664s0 : BadRow (bg7664 0) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7664s1 : BadRow (bg7664 1) :=
+  row_of_forall (discharge bank [30,9,38,44,16,39,39,25,38,30,25,30,9,28,25,37,38,36,3,48,3,48,47,48,3,3,3,47,3,47,3,47,3,47,3,47,3,47,3,55,3,48,3,48,3,47,3,55,3,64,3,40,97,36] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7664s2 : BadRow (bg7664 2) :=
+  row_of_forall (discharge bank [25,9,28,1,16,39,39,25,28,1,25,25,9,28,1,37,14,36] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7664s3 : BadRow (bg7664 3) :=
+  row_of_forall (discharge bank [25,9,1,1,16,39,39,25,1,1,25,25,9,1,1,60,60,36] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7664s4 : BadRow (bg7664 4) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7664s5 (h : BadRow [Floor43.e2804664924698,Floor43.e2424727342714,Floor43.e2392515087994,Floor43.e2393119067770,Floor43.e2389293862522]) : BadRow (bg7664 5) :=
+  row_of_forall (discharge bank [9,24,0,0,16,39,39,30,0,0,0,9,24,38,38,34,31,36] (hard := [Floor43.e2804664924698,Floor43.e2424727342714,Floor43.e2392515087994,Floor43.e2393119067770,Floor43.e2389293862522]) (by decide +kernel) h)
+
+private theorem g7664s6 : BadRow (bg7664 6) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7664s7 : BadRow (bg7664 7) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g7664 (hard : BadRow [Floor43.e2804664924698,Floor43.e2424727342714,Floor43.e2392515087994,Floor43.e2393119067770,Floor43.e2389293862522]) : BadRow (Grammar43.fiveRow 8 5 3 false 3 2 4 [0,1,2,0]) :=
+  Split43.five_cover 8 (by decide) 8 5 3 false 3 2 4 [0,1,2,0] (.cons (g7664s0) (.cons (g7664s1) (.cons (g7664s2) (.cons (g7664s3) (.cons (g7664s4) (.cons (g7664s5 (.cons (hard.get (by decide : Floor43.e2804664924698 ∈ [Floor43.e2804664924698,Floor43.e2424727342714,Floor43.e2392515087994,Floor43.e2393119067770,Floor43.e2389293862522])) (.cons (hard.get (by decide : Floor43.e2424727342714 ∈ [Floor43.e2804664924698,Floor43.e2424727342714,Floor43.e2392515087994,Floor43.e2393119067770,Floor43.e2389293862522])) (.cons (hard.get (by decide : Floor43.e2392515087994 ∈ [Floor43.e2804664924698,Floor43.e2424727342714,Floor43.e2392515087994,Floor43.e2393119067770,Floor43.e2389293862522])) (.cons (hard.get (by decide : Floor43.e2393119067770 ∈ [Floor43.e2804664924698,Floor43.e2424727342714,Floor43.e2392515087994,Floor43.e2393119067770,Floor43.e2389293862522])) (.cons (hard.get (by decide : Floor43.e2389293862522 ∈ [Floor43.e2804664924698,Floor43.e2424727342714,Floor43.e2392515087994,Floor43.e2393119067770,Floor43.e2389293862522])) .nil)))))) (.cons (g7664s6) (.cons (g7664s7) .nil))))))))
+
+private abbrev bg7665 (i : Nat) := Split43.five 8 i 8 5 3 true 3 2 4 [0,1,2,0]
+
+private theorem g7665s0 : BadRow (bg7665 0) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7665s1 : BadRow (bg7665 1) :=
+  row_of_forall (discharge bank [4,41,41,41,1,1,1,1,25,39,30,25,1,1,4,41,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,13,37,38,38,1,1,1,1,3,26,47,1,3,26,47,1,1,1,1,1,11,38,1,1,1,1,49,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7665s2 : BadRow (bg7665 2) :=
+  row_of_forall (discharge bank [4,41,41,41,1,1,1,1,25,39,1,1,1,1,4,41,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7665s3 : BadRow (bg7665 3) :=
+  row_of_forall (discharge bank [4,41,41,41,1,1,1,1,25,39,1,1,1,1,4,41,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7665s4 : BadRow (bg7665 4) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7665s5 : BadRow (bg7665 5) :=
+  row_of_forall (discharge bank [4,41,41,41,1,1,1,1,25,39,37,38,1,1,4,41,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7665s6 : BadRow (bg7665 6) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7665s7 : BadRow (bg7665 7) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g7665 : BadRow (Grammar43.fiveRow 8 5 3 true 3 2 4 [0,1,2,0]) :=
+  Split43.five_cover 8 (by decide) 8 5 3 true 3 2 4 [0,1,2,0] (.cons (g7665s0) (.cons (g7665s1) (.cons (g7665s2) (.cons (g7665s3) (.cons (g7665s4) (.cons (g7665s5) (.cons (g7665s6) (.cons (g7665s7) .nil))))))))
+
+private abbrev bg7666 (i : Nat) := Split43.five 16 i 8 5 3 false 3 2 4 [0,2,0,1]
+
+private theorem g7666s0 : BadRow (bg7666 0) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s1 (h : BadRow [Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486]) : BadRow (bg7666 1) :=
+  row_of_forall (discharge bank [25,9,28,37,16,39,39,25,28,25,30,25,9,1,30,38,37,36,25,34,28,31,16,39,39,25,28,30,30,25,34,28,37,38,37,36,3,0,3,47,14,0,3,3,3,0,3,47,3,14,3,14,3,14,3,47,3,1,3,0,3,47,3,0,3,55,3,14,3,14,97,36,3,0,3,0,0,0,3,3,3,115,3,47,3,47,3,14,3,0,3,48,3,44,3,0,3,0,3,0,3,55,3,47,3,55,97,36] (hard := [Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486]) (by decide +kernel) h)
+
+private theorem g7666s2 : BadRow (bg7666 2) :=
+  row_of_forall (discharge bank [25,9,1,1,16,39,39,25,1,1,25,25,9,1,1,14,37,36] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s3 : BadRow (bg7666 3) :=
+  row_of_forall (discharge bank [25,34,28,1,16,39,39,25,28,1,30,25,34,28,1,37,14,36,25,34,1,1,16,39,39,25,1,1,25,25,34,1,1,58,61,36] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s4 : BadRow (bg7666 4) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s5 (h : BadRow [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846]) : BadRow (bg7666 5) :=
+  row_of_forall (discharge bank [17,13,74,14,16,39,39,30,74,14,14,17,13,1,1,9,14,36,17,55,0,0,16,39,39,30,0,0,0,17,55,38,37,9,14,36] (hard := [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846]) (by decide +kernel) h)
+
+private theorem g7666s6 : BadRow (bg7666 6) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s7 : BadRow (bg7666 7) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s8 : BadRow (bg7666 8) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s9 : BadRow (bg7666 9) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s10 : BadRow (bg7666 10) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s11 : BadRow (bg7666 11) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s12 : BadRow (bg7666 12) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s13 : BadRow (bg7666 13) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s14 : BadRow (bg7666 14) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+private theorem g7666s15 : BadRow (bg7666 15) :=
+  row_of_forall (discharge bank [] (hard := []) (by decide +kernel) .nil)
+
+theorem g7666 (hard : BadRow [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486]) : BadRow (Grammar43.fiveRow 8 5 3 false 3 2 4 [0,2,0,1]) :=
+  Split43.five_cover 16 (by decide) 8 5 3 false 3 2 4 [0,2,0,1] (.cons (g7666s0) (.cons (g7666s1 (.cons (hard.get (by decide : Floor43.e2803820983138 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2424727932726 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2418285481782 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2391509045046 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2388891799350 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2803820969314 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2797378518370 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2804815746586 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2424727931862 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2392515677142 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2391509044182 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2385066593238 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2388891798486 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) .nil)))))))))))))) (.cons (g7666s2) (.cons (g7666s3) (.cons (g7666s4) (.cons (g7666s5 (.cons (hard.get (by decide : Floor43.e2804664751642 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2424727342038 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2392515087318 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2393119067094 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) (.cons (hard.get (by decide : Floor43.e2389293861846 ∈ [Floor43.e2804664751642,Floor43.e2424727342038,Floor43.e2392515087318,Floor43.e2393119067094,Floor43.e2389293861846,Floor43.e2803820983138,Floor43.e2424727932726,Floor43.e2418285481782,Floor43.e2391509045046,Floor43.e2388891799350,Floor43.e2803820969314,Floor43.e2797378518370,Floor43.e2804815746586,Floor43.e2424727931862,Floor43.e2392515677142,Floor43.e2391509044182,Floor43.e2385066593238,Floor43.e2388891798486])) .nil)))))) (.cons (g7666s6) (.cons (g7666s7) (.cons (g7666s8) (.cons (g7666s9) (.cons (g7666s10) (.cons (g7666s11) (.cons (g7666s12) (.cons (g7666s13) (.cons (g7666s14) (.cons (g7666s15) .nil))))))))))))))))
+
+
+end Blc.SelfintSingleObject.Compact43
