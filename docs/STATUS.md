@@ -351,14 +351,15 @@ and proofs; this section holds the current numbers and the open cells.
   word grammars proved complete list every such source (1,522 at 37, 2,070
   at 38, 6,680 at 39, 11,610 at 40; 18,104 at 41 and 33,237 at 42, after a
   kernel-evaluated search for a one-object factorization of each candidate
-  witness and `four_live_operator`: the copier's body is β-normal and
-  headed by its own variable), and the kernel checks an exclusion of each
-  one: reductions to a wrong or shorter term, single-object factorizations,
+  witness), and the kernel checks an exclusion of each one: reductions to
+  a wrong or shorter term, single-object factorizations,
   the `W/B` grammar, and for the few left (25 at 40, 306 at 41, 197 at 42)
   the divergence proofs of the classifications above: at 41 and 42 finite
   ordered application tables for 476 of the 503 (`SelfintFiniteChain`),
   then weighted ranks, regular invariants and single proofs. No
-  enumeration outside Lean enters.
+  enumeration outside Lean enters. For the sizes to come,
+  `four_live_operator` cuts the four-live sources further: the copier's
+  body is β-normal, headed by its own variable and without a live binder.
   The earlier route without the width theorem reached 31
   (`SelfintRound8BitFloor`), with an unconditional four-source-λ bound
   (`SelfintRound8FourLambda`). Literal interfaces, in Lean: `λc.B` ≥ 39
@@ -541,9 +542,10 @@ GHC 9.10.3; `uni.rs` with rustc), all three harnesses in 11 minutes:
    children both vary. Lean's next size, 43, is forecast at about 77
    CPU-minutes and 3.2 MB of source (75,243 sources after the static
    filters), and needs a classification of one new class: five live
-   binders with eight leaves and index sum three. Constructive: none of about thirty round-4 designs
-   (163–265 bits) beats 162, nor does any of the fifteen built through the
-   class's exits (164–199 bits, `interpreter.md` §6). The 162's reader is on the
+   binders with eight leaves and index sum three. Constructive: none of
+   about thirty round-4 designs (163–265 bits) beats 162, nor does any of
+   the fifteen built through the class's exits (164–199 bits,
+   `interpreter.md` §6). The 162's reader is on the
    fork's golf branch (tromp/AIT#13): `int.lam` 162, `uni.lam` 184 / 172,
    `ko2kp` 540, `nf` 535, `pairup_Kp` 1270, each verified
    against its previous version (`classical/golf.md`); the PR's title and a

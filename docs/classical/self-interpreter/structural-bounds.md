@@ -334,14 +334,15 @@ Sizes 41 and 42 keep the two classes and add three things:
   each proposed object and template against scope and the de Bruijn
   substitution equation, and the width theorem guarantees a witness that
   survives (`markedHere_of_witness`). Every interpreter passes
-  (`FactorFilter.required`), so the test applies to reducts too.
-  `four_live_operator` sharpens the four-live decomposition: in a minimum
-  `(λ.b)(λ.a)` the witness is in the operand, and `b` is β-normal, headed
-  by its own variable and without a live binder (a redex inside would erase
-  its argument and shorten the minimum; a leading λ would survive the first
-  contraction as a dead public binder). At 41 the filter keeps 11,752 of
-  19,370 four-live sources and the operator theorem leaves 10,864 of them;
-  at 42, 17,321 of 18,631;
+  (`FactorFilter.required`), so the test applies to reducts too. At 41 it
+  keeps 11,752 of 19,370 four-live sources. `four_live_operator`, which
+  these two sizes do not use, sharpens the four-live decomposition for the
+  sizes to come: in a minimum `(λ.b)(λ.a)` the witness is in the operand,
+  and `b` is β-normal, headed by its own variable and without a live
+  binder (a redex inside would erase its argument and shorten the minimum;
+  a leading λ would survive the first contraction as a dead public
+  binder). It would leave 10,864 of the 11,752 at 41 and 17,321 of 18,631
+  at 42;
 - five live binders through 42 bits: equality in the leaf count gives seven
   leaves and each binder at most two occurrences; a redex operand with at
   most one free occurrence, under such a binder, costs eight bits
