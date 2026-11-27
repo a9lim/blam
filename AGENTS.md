@@ -397,12 +397,13 @@ pins.
 
 ## Collaboration
 
-Claude and Codex are co-equal here; handoffs run over the `gaslamp` CLI.
-Use the other seat for a genuinely independent read, adversarial pressure, or
-verification. Whoever owns the task owns the synthesis. Send raw evidence —
-encodings, diffs, measurements, and exact claims — not a softened summary.
-When independence matters, open a fresh context instead of reviving one that
-already contains the design argument.
+Claude and Gemini are the main seats here, with Codex and Grok in support;
+handoffs run over the `gaslamp` CLI. Use another seat for a genuinely
+independent read, adversarial pressure, or verification. Whoever owns the
+task owns the synthesis. Send raw evidence — encodings, diffs, measurements,
+and exact claims — not a softened summary. When independence matters, open a
+fresh context instead of reviving one that already contains the design
+argument.
 
 What a result needs depends on how it is established:
 
